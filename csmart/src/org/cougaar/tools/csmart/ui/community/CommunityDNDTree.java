@@ -124,9 +124,6 @@ public class CommunityDNDTree extends DNDTree {
 				  type.equals("Host") || 
 				  type.equalsIgnoreCase("Community")));
     model.insertNodeInto(newNode, node, node.getChildCount());
-    // expand branch below new node and scroll to display new node
-    expandBranch(newNode);
-    scrollPathToVisible(new TreePath(newNode.getPath()));
     return newNode;
   }
 
@@ -273,8 +270,6 @@ public class CommunityDNDTree extends DNDTree {
     model.insertNodeInto(newNode, target, ix);
     // copy the source node's descendants, recursively
     copyChildren(source, newNode);
-    // expand branch below new node and scroll to display new node
-    expandBranch(newNode);
     scrollPathToVisible(new TreePath(newNode.getPath()));
     return true;
   }
@@ -370,13 +365,6 @@ public class CommunityDNDTree extends DNDTree {
       }
     }
     return false;
-  }
-
-  // expand the branch from the specified node down
-  private void expandBranch(DefaultMutableTreeNode node) {
-    Enumeration nodes = node.depthFirstEnumeration();
-    while (nodes.hasMoreElements())
-      expandPath(new TreePath((DefaultMutableTreeNode)nodes.nextElement()));
   }
 
   private void readObject(ObjectInputStream ois)
