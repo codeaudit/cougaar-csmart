@@ -101,22 +101,25 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private String trialID = null;
   // Soon Experiment's Trials will have TrialIDs
 
-  // An Experiment has multiple Configuration pieces, potentially:
-  // Host/Node, Node/Agent would be 2, for example
-  private List configAssemblyIDs = new ArrayList();
-
   private ComponentData theWholeSoc = null;
   private transient LeafOnlyConfigWriter configWriter = null;
 
   private transient Logger log;
+  // Mark whether the experiment has been modified
+  // and should be saved
   private transient boolean modified = true;
+
+  // Mark experiment with Society created from INI files,
+  // which should therefore be saved using the PopulateDb that expects
+  // no CMT assembly
+  // Should this be extended to also handle societies from edited
+  // experiments? Such societies reloaded from DB?
+  // Experiments with recipes that do modify / remove?
   private transient boolean fromFile = false;
 
   /**
    * Build an experiment around a society or recipes.
-   * This builds an experiment which is not in the database.
    */
-
   public Experiment(String name, SocietyComponent societyComponent,
 		    RecipeComponent[] recipes)
   {
@@ -124,6 +127,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     createLogger();
     setSocietyComponent(societyComponent);
     if(societyComponent instanceof SocietyFileComponent) {
+      // Will use PopulateDb without CMT assembly
       fromFile = true;
     }
     setRecipes(recipes);
@@ -776,6 +780,14 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     configWriter.writeFile(filename, out);
   }
 
+  /**
+   * If the experiment has been modified, save it to the database.
+   * This creates the full ComponentData tree and then uses
+   * <code>PopulateDb</code> to save it to the database
+   *
+   * @param ch a <code>DBConflictHandler</code> to graphically handle conflicts
+   * @see org.cougaar.tools.csmart.core.db.PopulateDb
+   */
   public void saveToDb(DBConflictHandler ch) {
     if (!modified) {
       if (log.isDebugEnabled()) 
@@ -796,10 +808,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       addDefaultNodeArguments(theSoc);
       PopulateDb pdb = null;
       if(fromFile) {
+	// Created with a SocietyFileComponent
+	// Have no CMT assembly, nor previous
+	// experiment or trial ID.
+	// So save it all in the CSMI assembly
         pdb =
           new PopulateDb("CSHNA", "CSMI", getExperimentName(),
                          null, null, ch);
       } else {
+	// We'll clear out the old non-CMT assemblies,
+	// save everything in CMT / CSMI
         pdb =
           new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
                          getExperimentID(), trialID, ch);
@@ -838,6 +856,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         log.debug("Adding All Components");
       }
 
+      // So far we've just created the pdb (which
+      // sets up the Experimet & Trial IDs, and puts the CMT assembly
+      // in the right place if necc, and clears out the other 
+      // assemblies (CSMI, CSHNA)
+
       // Now ask each component in turn to add its stuff
       boolean componentWasRemoved = false;
       for (int i = 0, n = components.size(); i < n; i++) {
@@ -846,8 +869,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
           log.debug(soc + ".addComponentData");
         }
         soc.addComponentData(theSoc);
+	// Components can notice here if they had to remove
+	// a component (or, I suppose, modify)
         componentWasRemoved |= soc.componentWasRemoved();
+	// Note that no current component returns true here
       }
+      // If any component removed something, we need
+      // to recreate the CMT assembly (under the original ID)
+      // So this, currently destroys the orig CMT
+      // Note also it does not effect Agent asset data
+      // or relationships or OPLAN stuff
       if (componentWasRemoved) pdb.repopulateCMT(theSoc);
       pdb.populateHNA(theSoc);
 
