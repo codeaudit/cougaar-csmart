@@ -128,7 +128,7 @@ public final class DBExperiment extends ExperimentBase {
     theTrial.initProperties();
   }
 
-  private void setDefaultNodeArguments() {
+  protected void setDefaultNodeArguments() {
     defaultNodeArguments =
         new ReadOnlyProperties(Collections.singleton(EXPERIMENT_ID));
     createObserver();
