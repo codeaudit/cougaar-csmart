@@ -33,12 +33,17 @@ file 'PopulateDb.q' or the user created file 'recipeQueries.q'.
 	  <td>0 - MAX</td>
 	</tr>
 	<tr>
-	  <td><a href="#CLASSNAME">Classname of Servlet</a></td>
+	  <td><a href="#CLASSNAME">Classname of Servlet Loader</a></td>
 	  <td>String</td>
-	  <td></td>
+	  <td>(usu. org.cougaar.core.servlet.SimpleServletComponent)</td>
 	</tr>
 	<tr>
-	  <td><a href="#PATH">Path of Servlet</a></td>
+	  <td><a href="#ARG">Number of Servlet Arguments</a></td>
+	  <td>Integer</td>
+	  <td>0 - MAX, usu 2</td>
+	</tr>
+	<tr>
+	  <td>New Servlet arg [#]</td>
 	  <td>String</td>
 	  <td></td>
 	</tr>
@@ -50,11 +55,9 @@ file 'PopulateDb.q' or the user created file 'recipeQueries.q'.
 Specifies whether the particular corresponding servlet will be
 loaded.  If the values is <i>True</i>, the agent will contain the
 following: <br>
-org.cougaar.core.servlet.SimpleServletComponent(<i>'servlet class name','path'</i>)<br>
+[class of servlet loader, often org.cougaar.core.servlet.SimpleServletComponent](<i>'servlet class name','path'</i>)<br>
 
 The above item will <b>NOT</b> be included if the value is <i>False</i><br>
-<em>Note: Users requiring a servlet loader other than SimpleServletComponent
-should use Specific Insertion Recipe to add their servlet.</em><br>
 
 <a name="TARGET_QUERY"><h3>Target Agent Selection Query</h3></a>
 Specifies a defined query in a .q file.  This query is used to
@@ -73,18 +76,28 @@ in the list presented.  If you set this number to greater than 0 (and hit
 return to set your selection), then a number of new fields appear, one
 pair, appropriately numbered, for each new servlet you add:
 
-<a name="CLASSNAME"><h3>Classname of Servlet</h3></a>
-The full classname of the servlet that you wish to add.  For example
-for the PlanViewServlet, the classname is as follows:<br>
-org.cougaar.planning.servlet.PlanViewServlet<br>
+<a name="CLASSNAME"><h3>Classname of Servlet Loader</h3></a>
+The full classname of the servlet loader that you wish to add.  For example
+for the PlanViewServlet and most others, the classname is as follows:<br>
+org.cougaar.core.servlet.SimpleServletComponent<br>
 
-<a name="PATH"><h3>Path of Servlet</h3></a>
-The path that the browser uses to find the particular servlet.  Generally the 
-path begins with a '/'. For example
+<a name="ARG"><h3>Number of Servlet Arguments</h3></a>
+The number of arguments that this servlet has. Usually this is two: one for the class of the actual servlet (ie org.cougaar.planning.servlet.PlanViewServlet), and one for the URI at which to contact the servlet.
+Generally the path begins with a '/'. For example
 for the PlanViewServlet, the path is as follows:<br>
 /tasks<br>
+If you set this number to greater than 0 (and hit
+return to set your selection), then a number of new fields appear, one
+for each servlet argument you specify:<br>
+
+<h3>New Servlet arg [#]</h3>
+Here you may enter the value for each argument to your servlet. This
+may be anything you like. As indicated above, typically the first
+argument is the actual class of the servlet (for one that is loaded by
+another class), and the second is the URI at which to contact the
+servlet.<br>
 
 </body></html>
 
-<!-- Last Modified: $Date: 2002-01-24 19:30:31 $ -->
-<!-- By $Author: mkappler $ -->
+<!-- Last Modified: $Date: 2002-01-31 20:30:43 $ -->
+<!-- By $Author: ahelsing $ -->
