@@ -173,6 +173,7 @@ public class CSMARTConsole extends JFrame {
   private static final String ADD_APP_SERVER_ITEM = "Add...";
   private static final String DELETE_APP_SERVER_ITEM = "Delete...";
   private static final String REFRESH_APP_SERVER_ITEM = "Refresh";
+  private static final String SET_POLL_INTERVAL_ITEM = "Set Poll Interval";
   private static final String HELP_MENU = "Help";
   private static final String ABOUT_CONSOLE_ITEM = "About Experiment Controller";
   private static final String ABOUT_CSMART_ITEM = "About CSMART";
@@ -198,9 +199,11 @@ public class CSMARTConsole extends JFrame {
   private volatile boolean starting; // true while we're creating nodes
   private ArrayList nodeCreationInfoList;
 
-  // FIXME: Make this configurable
   // Time in milliseconds between looking for new Nodes to attach to.
-  private int asPollInterval = 30000;
+  // Note that the currently selected value stays constant
+  // For a given invocation of CSMART
+  private static int asPollInterval = 30000;
+  private volatile transient java.util.Timer asPollTimer = null;
 
   /**
    * Create and show console GUI.
@@ -224,16 +227,87 @@ public class CSMARTConsole extends JFrame {
       getAppServersFromExperiment();
     initGui();
 
-    // contact known app servers periodically to get lists of their nodes
-    // display dialog when new nodes are first detected
-    monitorAppServerTask = new TimerTask() {
-        public void run() {
-          if (appServerSupport.haveNewNodes())
-            JOptionPane.showMessageDialog(null, "There are new nodes");
-        }
-      };
-    // FIXME: I'd like to make the asPollInterval configurable
-    new java.util.Timer().schedule(monitorAppServerTask, new Date(), asPollInterval);
+    // Start up the Timer to poll for new AppServers
+    resetASPoller();
+  }
+
+  // Cancel any old AppServer poller
+  // Then, if the currently desired interval is not 0,
+  // Start up a new Timer to poll for new AppServers ever x milliseconds
+  private void resetASPoller() {
+    if (asPollTimer != null) {
+      if (log.isDebugEnabled()) {
+	log.debug("Canceling old ASPoller timer");
+      }
+      asPollTimer.cancel();
+      monitorAppServerTask.cancel();
+    }
+
+    if (asPollInterval != 0) {
+      if (log.isDebugEnabled()) {
+	log.debug("creating new ASPoller with interval " + asPollInterval);
+      }
+
+      // contact known app servers periodically to get lists of their nodes
+      // display dialog when new nodes are first detected
+      monitorAppServerTask = new TimerTask() {
+	  public void run() {
+	    if (appServerSupport.haveNewNodes())
+	      JOptionPane.showMessageDialog(null, "There are new nodes!");
+	  }
+	};
+      
+      asPollTimer = new java.util.Timer();
+      asPollTimer.schedule(monitorAppServerTask, new Date(), asPollInterval);
+    }
+  }
+
+  // Get from the user the new interval in milliseconds
+  // between polls for new AppServers to contact
+  // Return the newly desired value.
+  // Note that the new value is _not_ put in the static variable - 
+  // the caller must do that
+  private int getNewASPollInterval() {
+    if (log.isDebugEnabled()) {
+      log.debug("Getting new ASPoll Interval");
+    }
+    JPanel pollPanel = new JPanel(new GridBagLayout());
+    int x = 0;
+    int y = 0;
+    pollPanel.add(new JLabel("Interval in milliseconds between polls for live AppServers (0 to not poll):"),
+                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.NONE,
+                                           new Insets(10, 0, 5, 5),
+                                           0, 0));
+    JTextField pollField = 
+      new JTextField(7);
+    pollField.setText(String.valueOf(asPollInterval));
+    pollPanel.add(pollField,
+                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(10, 0, 5, 0),
+                                           0, 0));
+    x = 0;
+    int result = JOptionPane.showConfirmDialog(this, pollPanel, 
+                                               "Polling Interval",
+                                               JOptionPane.OK_CANCEL_OPTION);
+    if (result == JOptionPane.CANCEL_OPTION)
+      return asPollInterval;
+    String s = pollField.getText().trim();
+
+    if (s == null || s.length() == 0) {
+      return 0;
+    } else {
+      int res = asPollInterval;
+      try {
+	res = Integer.parseInt(s);
+      } catch (NumberFormatException e) {}
+      if (res < 0)
+	return asPollInterval;
+      return res;
+    }
   }
 
   private void createLogger() {
@@ -384,6 +458,22 @@ public class CSMARTConsole extends JFrame {
       });
     refreshMenuItem.setToolTipText("Refresh list of Application Servers");
     appServerMenu.add(refreshMenuItem);
+
+    JMenuItem pollIntervalMenuItem = new JMenuItem(SET_POLL_INTERVAL_ITEM);
+    pollIntervalMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+	  // Put up a dialog with the current interval.
+	  // If the user changes the interval, cancel the current timer
+	  // and create a new one
+	  int res = getNewASPollInterval();
+	  if (res != asPollInterval) {
+	    asPollInterval = res;
+	    resetASPoller();
+	  }
+        }
+      });
+    pollIntervalMenuItem.setToolTipText("Change Delay Between Checking for New Application Servers");
+    appServerMenu.add(pollIntervalMenuItem);
 
     JMenu helpMenu = new JMenu(HELP_MENU);
     JMenuItem helpMenuItem = new JMenuItem(ABOUT_CONSOLE_ITEM);
@@ -1486,6 +1576,8 @@ public class CSMARTConsole extends JFrame {
         delay = Integer.parseInt(tmp);
       } catch (NumberFormatException nfe) {
       }
+      if (delay < 1)
+	delay = 1;
     }
 
     final int interNodeStartDelay = delay;
@@ -1936,8 +2028,17 @@ public class CSMARTConsole extends JFrame {
     //    stopExperiments();
     // kill any node output listeners that this instance of CSMART started
     appServerSupport.killListeners();
-    // stop monitoring app servers
-    monitorAppServerTask.cancel();
+
+    // Stop polling the Appservers
+    if (asPollTimer != null) {
+      if (log.isDebugEnabled()) {
+	log.debug("Canceling old AS timer");
+      }
+      asPollTimer.cancel();
+      // stop monitoring app servers
+      monitorAppServerTask.cancel();
+    }
+
     updateControls(false);
     // this is set when entering the console and must be cleared on exit
     if (experiment != null)
@@ -1964,7 +2065,7 @@ public class CSMARTConsole extends JFrame {
     JRadioButton allButton = new JRadioButton("All");
     JRadioButton sizeButton = new JRadioButton("Buffer Size");
     JTextField sizeTF = new JTextField(8);
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.CSMARTConsole");
+    Logger log = CSMART.createLogger(CSMARTConsole.class.getName());
     if (currentViewSize == -1) {
       allButton.setSelected(true);
       sizeButton.setSelected(false);
@@ -2001,6 +2102,8 @@ public class CSMARTConsole extends JFrame {
         }
         return currentViewSize;
       }
+      if (newViewSize < 1)
+	return currentViewSize;
     }
     return newViewSize;
   }
