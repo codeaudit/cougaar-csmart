@@ -45,6 +45,8 @@ public interface RecipeComponent extends ModifiableComponent {
    * @return array of agent components
    */
   AgentComponent[] getAgents();
+
+  boolean saveToDatabase();
 }
 
 

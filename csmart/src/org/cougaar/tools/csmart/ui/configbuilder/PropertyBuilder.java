@@ -126,6 +126,48 @@ public class PropertyBuilder extends JFrame implements ActionListener {
 
   private void saveToDatabase() {
     if (configComponent instanceof RecipeComponent) {
+//       try {
+//         RecipeComponent rc = (RecipeComponent) configComponent;
+//         PDbBase pdb = new PDbBase();
+//         switch (pdb.recipeExists(rc)) {
+//         case PDbBase.RECIPE_STATUS_EXISTS:
+//           JOptionPane.showMessageDialog(this,
+//                                         "The recipe is already in the database with the same values.",
+//                                         "Write Not Needed",
+//                                         JOptionPane.INFORMATION_MESSAGE);
+//           return;
+//         case PDbBase.RECIPE_STATUS_DIFFERS:
+//           int answer =
+//             JOptionPane.showConfirmDialog(this,
+//                                           "Recipe "
+//                                           + rc.getRecipeName()
+//                                           + " already in database. Overwrite?",
+//                                           "Recipe Exists",
+//                                           JOptionPane.OK_CANCEL_OPTION,
+//                                           JOptionPane.WARNING_MESSAGE);
+//           if (answer != JOptionPane.OK_OPTION) return;
+//           break;
+//         case PDbBase.RECIPE_STATUS_ABSENT:
+//           break;                // Just write it
+//         }
+//         pdb.replaceLibRecipe(rc);
+//         JOptionPane.showMessageDialog(this,
+//                                       "Recipe written successfully.",
+//                                       "Recipe Written",
+//                                       JOptionPane.INFORMATION_MESSAGE);
+//       } catch (Exception sqle) {
+//         if(log.isErrorEnabled()) {
+//           log.error("Exception", sqle);
+//         }
+//         JOptionPane.showMessageDialog(this,
+//                                       "An exception occurred writing the recipe to the database",
+//                                       "Error Writing Database",
+//                                       JOptionPane.ERROR_MESSAGE);
+//       }
+//     }
+
+
+
       try {
         RecipeComponent rc = (RecipeComponent) configComponent;
         PDbBase pdb = new PDbBase();
@@ -150,7 +192,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
         case PDbBase.RECIPE_STATUS_ABSENT:
           break;                // Just write it
         }
-        pdb.replaceLibRecipe(rc);
+        rc.saveToDatabase();
         JOptionPane.showMessageDialog(this,
                                       "Recipe written successfully.",
                                       "Recipe Written",
@@ -165,6 +207,8 @@ public class PropertyBuilder extends JFrame implements ActionListener {
                                       JOptionPane.ERROR_MESSAGE);
       }
     }
+
+
   }
 
   public void reinit(ModifiableComponent newModifiableComponent) {

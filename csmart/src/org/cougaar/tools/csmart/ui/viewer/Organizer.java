@@ -700,11 +700,25 @@ public class Organizer extends JScrollPane {
     if (newName == null)
       return;
     DefaultMutableTreeNode node = getSelectedNode();
-    RecipeComponent recipe = (RecipeComponent) node.getUserObject();
+    final RecipeComponent recipe = (RecipeComponent) node.getUserObject();
     if (newName.equals(recipe.getRecipeName()))
       return;
     recipeNames.remove(recipe.getRecipeName());
     recipe.setName(newName);
+    GUIUtils.timeConsumingTaskStart(organizer);
+    try {
+      new Thread("SaveRecipe") {
+          public void run() {
+            recipe.saveToDatabase();
+            GUIUtils.timeConsumingTaskEnd(organizer);
+          }
+        }.start();
+    } catch (RuntimeException re) {
+      if(log.isErrorEnabled()) {
+        log.error("Runtime exception saving recipe", re);
+      }
+      GUIUtils.timeConsumingTaskEnd(organizer);
+    }
     recipeNames.add(newName);
     model.nodeChanged(node); // update the model...
   }

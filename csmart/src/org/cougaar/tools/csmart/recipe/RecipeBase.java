@@ -43,6 +43,7 @@ import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.core.db.PDbBase;
 
 /**
  * Holds basic recipe functionality
@@ -126,6 +127,21 @@ public abstract class RecipeBase
    */
   public ComponentData addComponentData(ComponentData data) {
     return data;
+  }
+
+  public boolean saveToDatabase() {
+    boolean result = false;
+    try {
+      PDbBase pdb = new PDbBase();
+      pdb.replaceLibRecipe(this);
+      result = true;
+    } catch (Exception sqle) {
+      if(log.isErrorEnabled()) {
+        log.error("Exception", sqle);
+      }
+      result = false;
+    }
+    return result;
   }
 
   private void readObject(ObjectInputStream ois)
