@@ -527,7 +527,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     DefaultMutableTreeNode root = 
       (DefaultMutableTreeNode)hostTree.getModel().getRoot();
     DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
-    HostComponent[] hosts = experiment.getHosts();
+    HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       HostComponent hostComponent = hosts[i];
       ConsoleTreeObject cto = new ConsoleTreeObject(hostComponent);
@@ -592,7 +592,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       (DefaultMutableTreeNode)hostTree.getModel().getRoot();
     DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
     DefaultMutableTreeNode hostNode = null;
-    HostComponent[] hostsInExperiment = experiment.getHosts();
+    HostComponent[] hostsInExperiment = experiment.getHostComponents();
     Vector hostNames = new Vector(hostsInExperiment.length);
     for (int i = 0; i < hostsInExperiment.length; i++) 
       hostNames.add(hostsInExperiment[i].toString());
@@ -615,8 +615,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private void addUnassignedNodesFromExperiment() {
     Set unassignedNodes;
     unassignedNodes = new TreeSet(dbBaseComponentComparator);
-    HostComponent[] hosts = experiment.getHosts();
-    NodeComponent[] nodes = experiment.getNodes();
+    HostComponent[] hosts = experiment.getHostComponents();
+    NodeComponent[] nodes = experiment.getNodeComponents();
     unassignedNodes.addAll(Arrays.asList(nodes));
     for (int i = 0; i < hosts.length; i++)
       unassignedNodes.removeAll(Arrays.asList(hosts[i].getNodes()));
@@ -706,7 +706,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     Set unassignedAgents;
     unassignedAgents = new TreeSet(dbBaseComponentComparator);
     AgentComponent[] agents = experiment.getAgents();
-    NodeComponent[] nodes = experiment.getNodes();
+    NodeComponent[] nodes = experiment.getNodeComponents();
     unassignedAgents.addAll(Arrays.asList(agents));
     for (int i = 0; i < nodes.length; i++) {
       //      System.out.println("Remove all in: " + nodes[i].getShortName() +
@@ -848,7 +848,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       hostName = JOptionPane.showInputDialog("New host name: ");
       if (hostName == null || hostName.length() == 0)
         return;
-      HostComponent[] hc = experiment.getHosts();
+      HostComponent[] hc = experiment.getHostComponents();
       boolean isUnique = true;
       for (int i = 0; i < hc.length; i++) 
         if (hostName.equals(hc[i].getShortName())) {
@@ -877,7 +877,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   private boolean isHostNameUnique(String name) {
-    HostComponent[] hc = experiment.getHosts();
+    HostComponent[] hc = experiment.getHostComponents();
     boolean isUnique = true;
     for (int i = 0; i < hc.length; i++) 
       if (name.equals(hc[i].getShortName()))
@@ -1550,14 +1550,14 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   public void findHost() {
     JTree[] trees = new JTree[1];
     trees[0] = hostTree;
-    findWorker(trees, experiment.getHosts(), "Host");
+    findWorker(trees, experiment.getHostComponents(), "Host");
   }
 
   public void findNode() {
     JTree[] trees = new JTree[2];
     trees[0] = hostTree;
     trees[1] = nodeTree;
-    findWorker(trees, experiment.getNodes(), "Node");
+    findWorker(trees, experiment.getNodeComponents(), "Node");
   }
 
   public void findAgent() {

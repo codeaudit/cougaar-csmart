@@ -136,7 +136,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     // searching its hosts for one with this node.
     experiment = 
       (Experiment)getPropertyValue(node, "Experiment");
-    HostComponent[] hosts = experiment.getHosts();
+    HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
       for (int j = 0; j < nodes.length; j++) {

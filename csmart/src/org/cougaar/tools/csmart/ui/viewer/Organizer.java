@@ -57,7 +57,6 @@ import org.cougaar.tools.csmart.recipe.ParameterInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
-//import org.cougaar.tools.csmart.society.cmt.CMTSociety;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -961,6 +960,10 @@ public class Organizer extends JScrollPane {
         return;
     }
 
+    if(log.isDebugEnabled()) {
+      log.debug("Experiment Id: " + experimentId);
+    }
+
     // get threads and groups information
     cmtDialog = new CMTDialog(csmart, this, experimentName, experimentId);
     while (!cmtDialog.isULThreadSelected() && !cmtDialog.wasCancelled()) {
@@ -989,7 +992,7 @@ public class Organizer extends JScrollPane {
 	      if (experiment != null) {
 		DefaultMutableTreeNode newNode =
 		  addExperimentToWorkspace(experiment);
-		RecipeComponent[] recipes = experiment.getRecipes();
+		RecipeComponent[] recipes = experiment.getRecipeComponents();
 		for (int i = 0; i < recipes.length; i++)
 		  if (!recipeNames.contains(recipes[i].getRecipeName()))
 		    addRecipeToWorkspace(recipes[i]);

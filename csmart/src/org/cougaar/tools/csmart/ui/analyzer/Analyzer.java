@@ -228,9 +228,9 @@ public class Analyzer extends JFrame implements ActionListener {
 	if (fileFilter != null && fileFilter.accept(f))
 	  return true;
       }
-      int m = experiment.getRecipeCount();
+      int m = experiment.getRecipeComponentCount();
       for (int i = 0; i < m; i++) {
-	RecipeComponent recipeComponent = experiment.getRecipe(i);
+	RecipeComponent recipeComponent = experiment.getRecipeComponent(i);
         if (recipeComponent instanceof MetricComponent) {
           MetricComponent metricComponent = (MetricComponent) recipeComponent;
           java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();

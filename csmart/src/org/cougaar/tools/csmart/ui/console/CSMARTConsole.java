@@ -167,7 +167,7 @@ public class CSMARTConsole extends JFrame {
     console = this;
     experiment.setRunInProgress(true);
     currentTrial = -1;
-    societyComponent = experiment.getSocietyComponent(0);
+    societyComponent = experiment.getSocietyComponent();
     desktop = new ConsoleDesktop();
     setSocietyComponent(societyComponent);
     createLogger();
@@ -635,7 +635,7 @@ public class CSMARTConsole extends JFrame {
    * one node to run which has at least one agent to run.
    */
   private void initRunButton() {
-    HostComponent[] hosts = experiment.getHosts();
+    HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
       if (nodes != null && nodes.length > 0) {
@@ -666,7 +666,7 @@ public class CSMARTConsole extends JFrame {
     userStoppedTrials = false;
     ArrayList nodesToUse = new ArrayList();
     hostsToUse = new ArrayList(); // hosts that nodes are on
-    HostComponent[] hosts = experiment.getHosts();
+    HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
       for (int j = 0; j < nodes.length; j++) {
@@ -806,7 +806,7 @@ public class CSMARTConsole extends JFrame {
    */
 
   private String getOPlanAgentURL() {
-    HostComponent[] hosts = experiment.getHosts();
+    HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
       for (int j = 0; j < nodes.length; j++) {
@@ -886,12 +886,12 @@ public class CSMARTConsole extends JFrame {
     // get the nodes in the experiment
     // note that this reconciles node agents to society agents,
     // removing any agents that no longer exist
-    NodeComponent[] nodes = experiment.getNodes();
+    NodeComponent[] nodes = experiment.getNodeComponents();
     if (nodes.length == 0)
       return; // no nodes to use
     // get all assigned agents
     ArrayList assignedAgents = new ArrayList();
-    HostComponent[] hosts = experiment.getHosts();
+    HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodesInHost = hosts[i].getNodes();
       for (int j = 0; j < nodesInHost.length; j++) { 
@@ -1499,7 +1499,7 @@ public class CSMARTConsole extends JFrame {
     java.util.List args = getNodeArguments(nodeComponent);
     // get host component by searching hosts for one with this node.
     String hostName = null;
-    HostComponent[] hosts = experiment.getHosts();
+    HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
       for (int j = 0; j < nodes.length; j++) {
@@ -1602,9 +1602,9 @@ public class CSMARTConsole extends JFrame {
       if(fileFilter != null && fileFilter.accept(thisFile))
 	return true;
     }
-    int nrecipes = experiment.getRecipeCount();
+    int nrecipes = experiment.getRecipeComponentCount();
     for (int i = 0; i < nrecipes; i++) {
-      RecipeComponent recipeComponent = experiment.getRecipe(i);
+      RecipeComponent recipeComponent = experiment.getRecipeComponent(i);
       if (recipeComponent instanceof MetricComponent) {
         MetricComponent metricComponent = (MetricComponent) recipeComponent;
         java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
@@ -1685,7 +1685,7 @@ public class CSMARTConsole extends JFrame {
         log.error("Exception creating trial results URL: ", e);
       }
     }
-    HostComponent[] hosts = experiment.getHosts();
+    HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       String hostName = hosts[i].getShortName();
 

@@ -282,7 +282,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     ArrayList results = new ArrayList();
     Experiment[] experiments = csmart.getExperimentsInWorkspace();
     for (int i = 0; i < experiments.length; i++) {
-      RecipeComponent[] recipes = experiments[i].getRecipes();
+      RecipeComponent[] recipes = experiments[i].getRecipeComponents();
       for (int j = 0; j < recipes.length; j++) {
         if (recipes[j].equals(rc)) {
           results.add(experiments[i]);

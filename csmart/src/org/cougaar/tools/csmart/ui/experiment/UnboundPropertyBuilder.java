@@ -271,8 +271,8 @@ public class UnboundPropertyBuilder extends JPanel {
     if (society != null) {
       addSocietyComponent(society);
     }
-    for (int i = 0, n = experiment.getRecipeCount(); i < n; i++) {
-      addRecipe(experiment.getRecipe(i));
+    for (int i = 0, n = experiment.getRecipeComponentCount(); i < n; i++) {
+      addRecipe(experiment.getRecipeComponent(i));
     }
     tree.expandNode(societies);
     tree.expandNode(recipes);
@@ -305,7 +305,7 @@ public class UnboundPropertyBuilder extends JPanel {
     } else if (nSocieties == 1) {
       SocietyComponent society = (SocietyComponent) ((DefaultMutableTreeNode) societies.getChildAt(0)).getUserObject();
       //      society.setEditable(false); // so society editability tracks experiment editability
-      experiment.setSocietyComponent(society);
+      experiment.addSocietyComponent(society);
     }
     int nRecipes = recipes.getChildCount();
     RecipeComponent[] recipeAry = new RecipeComponent[nRecipes];
@@ -314,7 +314,7 @@ public class UnboundPropertyBuilder extends JPanel {
         (RecipeComponent) ((DefaultMutableTreeNode) recipes.getChildAt(i)).getUserObject();
       //      recipeAry[i].setEditable(false);
     }
-    experiment.setRecipes(recipeAry);
+    experiment.setRecipeComponents(recipeAry);
     experiment.invalidateTrials(); // and force experiment to recreate trials
   }
 

@@ -577,9 +577,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       SocietyComponent sc = experimentCopy.getSocietyComponent();
       if (sc != null)
         experimentCopy.removeComponent(sc);
-      RecipeComponent[] recipes = experimentCopy.getRecipes();
+      RecipeComponent[] recipes = experimentCopy.getRecipeComponents();
       for (int i = 0; i < recipes.length; i++)
-        experimentCopy.removeRecipe(recipes[i]);
+        experimentCopy.removeRecipeComponent(recipes[i]);
       // create a new society based on the society component data
       // in the original experiment
       ComponentData cdata = experiment.getSocietyComponentData();

@@ -267,7 +267,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer.CSMARUL");
     ArrayList potentialHosts = new ArrayList();
     ArrayList potentialNodes = new ArrayList();
-    HostComponent[] hosts = experiment.getHosts();
+    HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
       // skip hosts that have no nodes

@@ -132,7 +132,7 @@ public class OrganizerHelper {
         if (recagents != null && recagents.length > 0) {
           agents.addAll(Arrays.asList(recagents));
         }      
-        experiment.addRecipe(mc);
+        experiment.addRecipeComponent(mc);
       }
     }
     AgentComponent[] socagents = soc.getAgents();
@@ -287,8 +287,8 @@ public class OrganizerHelper {
   private void mapNodesToHosts(Experiment experiment, 
 			       String assemblyMatch ) {
 
-    NodeComponent[] nodeComponents = experiment.getNodes();
-    HostComponent[] hostComponents = experiment.getHosts();
+    NodeComponent[] nodeComponents = experiment.getNodeComponents();
+    HostComponent[] hostComponents = experiment.getHostComponents();
     String query = null;
     try {
       Connection conn = DBUtils.getConnection();
