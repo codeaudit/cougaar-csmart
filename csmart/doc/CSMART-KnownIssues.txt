@@ -1,10 +1,5 @@
 CSMART contains a few known issues:
 
-* If the area under the menu is not being refreshed in the CSMART 
-  Performance Analyzer tool after the File-Open menu item is invoked, 
-  then you need to update your version of Java to jdk1.3.1_01 
-  (see http://developer.java.sun.com/developer/bugParade/bugs/4189244.html).
-
 * In configurable components, the Societies Task Verb currently does nothing.
   The purpose is for a future feature that will centralize input of all
   new tasks.  Currently, you must type the Verb everywhere it is required. 
@@ -18,6 +13,11 @@ CSMART contains a few known issues:
 
 * CMT Societies cannot be configured with a MySQL database.
 
+* The Configuration database must be installed in the same database as
+  an installation of the Cougaar military domain database (which, in a
+  MySQL database must be named 'cougaar' which is the default when
+  installing this database from the Cougaar install package).
+  
 * An experiment removed from the database may still show up in your
   CSMART workspace.
 

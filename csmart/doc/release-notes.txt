@@ -1,41 +1,72 @@
 CSMART Release Notes
 
+Release v8.6.0, Cougaar v8.6.0:
+CSMART is now the preferred means for running large Cougaar
+societies. Beginning with this release, CSMART version numbers track
+Cougaar version numbers. See the new more complete installation instructions.
+
+- Added support for configuring and running societies from a
+  configuration database.
+
+- Added a configuration database which defines several complex Cougaar
+societies.
+
+- Fixed Impacts so that all parameters are controlled from the
+configurable component.
+
+- Added more metrics to Basic Metric
+
+- Added ability to search / monitor Node console output streams
+
+- Added complex find function in Society Monitor Plan View
+
 Release v0.4.1, Cougaar v8.4.1:
-Numerous bug fixes
+- Numerous bug fixes
 
-Add support for displaying LocationSchedule information in Agent view
+- Add support for displaying LocationSchedule information in Agent view
 
-Initial support for format-independent initialization data generation:
+- Initial support for format-independent initialization data generation:
 preparing to convert to a purely database-driving society
 configuration.
 
-Agent view uses arrows between agents to indicate relationships.
+- Agent view uses arrows between agents to indicate relationships.
 
-Separate impacts and metrics into separate components that are
+- Separate impacts and metrics into separate components that are
 separately added to societies.
 
-Support search in Node STDOUT panes in console, including ctrl-s
+- Support search in Node STDOUT panes in console, including ctrl-s
 (search) and ctrl-t (find again) support
 
-Limited support for experiments whose parameters vary the number of
+- Limited support for experiments whose parameters vary the number of
 agents - new unassigned agents are assigned arbitrarily to existing
 Nodes.
 
-Complete support for ABC impacts on message transport
+- Complete support for ABC impacts on message transport
 
 
 Release v0.4, Cougaar v8.4:
-This release adds support for experiments with multiple trials. Set a property to <empty> in the ConfigurationBuilder, and you can vary it in the ExperimentBuilder. See the online help for details.
+- This release adds support for experiments with multiple trials. Set
+a property to <empty> in the ConfigurationBuilder, and you can vary it
+in the ExperimentBuilder. See the online help for details.
 
-The Community View now works in the Society Monitor. However, it is only interesting for societies the include the CommunityPG on their Entities (like the ABC Society).
+- The Community View now works in the Society Monitor. However, it is
+only interesting for societies the include the CommunityPG on their
+Entities (like the ABC Society).
 
-This release also includes preliminary support for configuring arbitrary Cougaar components, and mixing and matching components among societies.
+- This release also includes preliminary support for configuring
+  arbitrary Cougaar components, and mixing and matching components
+  among societies.
+  
+- This release includes multiple bug fixes and smaller enhancements.
 
-This release includes multiple bug fixes and smaller enhancements.
+- Beginning with this release, CSMART is included with the standard
+  Cougaar release, and no longer as a separate module.
+  
+- The CSMART required jar file: grappa1_2.jar has been
+  replaced. Instead, use the Cougaar 3rd party jar file:
+  grappa1_2_bbn.jar
 
-Beginning with this release, CSMART is included with the standard Cougaar release, and no longer as a separate module. 
+- Old & new CSMART users should see the CSMART-Install document for
+  new, simplified installation instructions.
 
-The CSMART required jar file: grappa1_2.jar has been replaced. Instead, use the Cougaar 3rd party jar file: grappa1_2_bbn.jar
-
-Old & new CSMART users should see the CSMART-Install document for new, simplified installation instructions.
 
