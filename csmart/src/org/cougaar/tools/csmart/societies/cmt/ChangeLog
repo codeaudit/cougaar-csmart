@@ -1,0 +1,8 @@
+2001-11-29  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CMTAgent.java:
+	Fix Bug 844
+	Set the plugin name from the database component name instead of
+	the component class name. This insures that there will be no
+	difference between the names when considering writing the
+	component back to the database.

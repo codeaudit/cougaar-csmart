@@ -38,7 +38,7 @@ A Specific Component Recipe contains the following parameters:
 	<tr>
 	  <td><a href="#TYPE">Type of Insertion</a></td>
 	  <td>String</td>
-	  <td></td>
+	  <td>One of: "plugin", "node binder", or "agent binder"</td>
 	</tr>
     </table>  
     <br><br>
@@ -79,9 +79,11 @@ Users should create their own queries in a file called
 "recipeQueries.q", which should be placed somplace on the Cougaar
 Config Path: in the directory from which you run CSMART, or in
 CIP/configs/common, for example.<br>
+<em>IMPORTANT: All recipes query names must begin with "recipeQuery"!</em><br>
 
 <a name="TYPE"><h3>Type Of Insertion</h3></a>
-Specifies the type of component, for example: plugin
+Specifies the type of component, for example: "plugin", "agent
+binder", or "node binder"
 
 <a name="VALUE"><h3>Value <i>X</i></h3></a>
 There will be one value parameter for every Argument added with the
