@@ -69,7 +69,7 @@ public final class EarthConstants {
    * Compute great-circle distance in KM between two points on globe
    * expressed as latitude and longitude.
    * @param latitude1 float latitude of first point (decimal degrees)
-   * @param longitude2 float longitude of first point (decimal degrees)
+   * @param longitude1 float longitude of first point (decimal degrees)
    * @param latitude2 float latitude of second point (decimal degrees)
    * @param longitude2 float longitude of second point (decimal degrees)
    * @return float great-circle distance between two points in KM

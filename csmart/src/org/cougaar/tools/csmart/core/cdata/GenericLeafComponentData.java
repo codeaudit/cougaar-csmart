@@ -93,7 +93,7 @@ public class GenericLeafComponentData implements LeafComponentData, Serializable
   /**
    * Sets the value of the component.
    *
-   * @param value (Object) of the component
+   * @param val (Object) of the component
    */
   public void setValue(Object val) {
     this.value = val;
