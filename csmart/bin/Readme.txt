@@ -54,8 +54,7 @@ dot-l386
         also available from the "csmart-3rdparty.zip" file. The
 	usual location is $COUGAAR_INSTALL_PATH/csmart/bin, but alternatives 
         such as $COUGAAR_INSTALL_PATY/sys and $COUGAAR_INSTALL_PATH/bin 
-        also work. You can also get these files from the ABC website
-        (http://ABCTestBed.bbn.com) or the AT&T GraphViz site.
+        also work. You can also get these files from the  GraphViz site.
 	
 CSMARTNode
 CSMARTsetarguments.bat
@@ -69,8 +68,6 @@ build-all.bat
 build.xml
 	ANT1.4.1 build script. ANT is available at http://jakarta.apache.org/ant
 
-[The sample scripts for running the AppServer have been moved to the server 
- module.]
 
 copy-experiment.sh
 [Helper file: copyASB.sql]
