@@ -34,8 +34,8 @@ import org.cougaar.tools.csmart.ui.component.*;
 
 import org.cougaar.tools.csmart.ui.component.ComponentName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
-import org.cougaar.tools.csmart.configgen.abcsociety.ABCAgent;
-import org.cougaar.tools.csmart.configgen.abcsociety.ABCSociety;
+import org.cougaar.tools.csmart.societies.abcsociety.ABCAgent;
+import org.cougaar.tools.csmart.societies.abcsociety.ABCSociety;
 import org.cougaar.tools.csmart.scalability.ScalabilityXAgent;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 
