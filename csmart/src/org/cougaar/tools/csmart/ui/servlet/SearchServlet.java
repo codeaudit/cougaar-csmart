@@ -22,27 +22,35 @@
 package org.cougaar.tools.csmart.ui.servlet;
 
 import java.io.ObjectOutputStream;
-import java.io.*;
+import java.io.ObjectInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+
 import java.net.URLEncoder;
 import java.util.*;
-import java.util.Vector;
-import java.lang.Object;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
 
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
-import org.cougaar.planning.ldm.asset.*;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.asset.AssetGroup;
+
 import org.cougaar.planning.ldm.plan.*;
 
 import org.cougaar.core.agent.ClusterIdentifier;
-import org.cougaar.util.UnaryPredicate;
 import org.cougaar.core.util.UniqueObject;
-import org.cougaar.util.*;
-import org.cougaar.tools.csmart.ui.psp.TranslateUtils;
+
+import org.cougaar.util.UnaryPredicate;
+
+import org.cougaar.tools.csmart.ui.servlet.TranslateUtils;
 
 
 /**
@@ -400,8 +408,7 @@ extends HttpServlet
       
       out.flush();
     }
-    
-    
+
     
     /** 
    * Get the Set of UIDs specified by the POSTed data.
