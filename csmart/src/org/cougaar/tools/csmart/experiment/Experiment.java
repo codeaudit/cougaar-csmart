@@ -2191,8 +2191,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	JOptionPane.showMessageDialog(null, "Writing ini file to " + f.getAbsolutePath() + "...");
 	cw.writeConfigFiles(f);
 	// Also, write out the community XML file
-	if (! CommunityDbUtils.dumpCommunityXML(f.getAbsolutePath() + "communities.xml", getCommAsbID())) 
+	if (! CommunityDbUtils.dumpCommunityXML(f.getAbsolutePath() + File.separatorChar + "communities.xml", getCommAsbID())) 
 	  log.error("Couldn't write communities.xml file");
+	else if (log.isDebugEnabled())
+	  log.debug("got true from commDbUtils.dump with path " + f.getAbsolutePath() + File.separatorChar + "communities.xml, and asbID " + getCommAsbID());
+	  
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
           log.error("Couldn't write ini files: ", e);
