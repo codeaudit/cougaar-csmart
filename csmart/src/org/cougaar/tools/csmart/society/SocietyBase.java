@@ -71,7 +71,7 @@ public abstract class SocietyBase
   protected static final String BACKUP_DESCRIPTION =
     "A Society: Agents, Binders, Plugins, etc.";
 
-  protected boolean isRunning = false;
+  protected transient boolean isRunning = false;
   protected boolean isSelfTerminating = false;
 
   protected transient Logger log;
@@ -84,7 +84,7 @@ public abstract class SocietyBase
   public static final int SOCIETY_SAVED = 2;
 
   // used to block modify notifications while saving
-  private boolean saveInProgress = false; 
+  private transient boolean saveInProgress = false; 
 
   /**
    * Constructs a <code>SocietyBase</code> object
