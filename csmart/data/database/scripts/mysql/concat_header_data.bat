@@ -1,5 +1,25 @@
 @ECHO OFF
 
+REM "<copyright>"
+REM " Copyright 2003 BBNT Solutions, LLC"
+REM " under sponsorship of the Defense Advanced Research Projects Agency (DARPA)."
+REM ""
+REM " This program is free software; you can redistribute it and/or modify"
+REM " it under the terms of the Cougaar Open Source License as published by"
+REM " DARPA on the Cougaar Open Source Website (www.cougaar.org)."
+REM ""
+REM " THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS"
+REM " PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR"
+REM " IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF"
+REM " MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, AND WITHOUT"
+REM " ANY WARRANTIES AS TO NON-INFRINGEMENT.  IN NO EVENT SHALL COPYRIGHT"
+REM " HOLDER BE LIABLE FOR ANY DIRECT, SPECIAL, INDIRECT OR CONSEQUENTIAL"
+REM " DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE OF DATA OR PROFITS,"
+REM " TORTIOUS CONDUCT, ARISING OUT OF OR IN CONNECTION WITH THE USE OR"
+REM " PERFORMANCE OF THE COUGAAR SOFTWARE."
+REM "</copyright>"
+
+
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\alib_component_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\alib_component_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\alib_component.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_agent_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\asb_agent_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\asb_agent.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_agent_pg_attr_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\asb_agent_pg_attr_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\asb_agent_pg_attr.csv
