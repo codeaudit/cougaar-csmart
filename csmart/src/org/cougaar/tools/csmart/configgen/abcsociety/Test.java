@@ -29,7 +29,7 @@ public class Test {
     ABCSociety society = new ABCSociety("MySociety");
 
     society.initProperties();
-    society.generateIniFiles(new File(configDir));
+//    society.generateIniFiles(new File(configDir));
   }
 
   public static void main(String[] args) {
