@@ -25,8 +25,20 @@ import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
  * A JTable that displays property names and values.
  */
 
-public class GridPanel2 extends JTable {
+public class PropertyTable extends JTable {
   private static class Model extends PropTableModelBase {
+    boolean isEditable;
+
+    public Model(boolean isEditable) {
+      this.isEditable = isEditable;
+    }
+
+    public boolean isCellEditable(int row, int col) {
+      if (!isEditable)
+	return false;
+      return super.isCellEditable(row, col);
+    }
+
     /**
      * If property value is not set, then render it as "<not set>".
      */
@@ -63,9 +75,11 @@ public class GridPanel2 extends JTable {
     }
   }
 
-  Model model = new Model();
+  //  Model model = new Model();
+  Model model;
       
-  public GridPanel2() {
+  public PropertyTable(boolean isEditable) {
+    model = new Model(isEditable);
     setModel(model);
     setDefaultRenderer(String.class, model.getCellRenderer());
     addMouseListener(new MouseAdapter() {

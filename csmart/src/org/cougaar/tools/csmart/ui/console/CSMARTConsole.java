@@ -13,6 +13,8 @@ package org.cougaar.tools.csmart.ui.console;
 import java.io.File;
 import java.awt.*;
 import java.awt.event.*;
+import java.net.InetAddress;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -27,16 +29,16 @@ import javax.swing.text.DefaultStyledDocument;
 import com.klg.jclass.chart.JCChart;
 
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
+import org.cougaar.tools.csmart.ui.builder.PropertyEditorPanel;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
-import org.cougaar.tools.csmart.ui.experiment.TrialBuilder;
 import org.cougaar.tools.csmart.ui.experiment.Trial;
+import org.cougaar.tools.csmart.ui.experiment.TrialResult;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.server.*;
 import org.cougaar.tools.server.rmi.ClientCommunityController;
-import java.net.URL;
 import org.cougaar.tools.csmart.ui.Browser;
 
 public class CSMARTConsole extends JFrame implements ChangeListener {
@@ -333,7 +335,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     JTabbedPane configTabbedPane = new JTabbedPane();
     configTabbedPane.add("Configuration", 
 			 new HostConfigurationBuilder(experiment, false));
-    configTabbedPane.add("Trial Values", new TrialBuilder(experiment, false));
+    configTabbedPane.add("Trial Values", 
+			 new PropertyEditorPanel(societyComponent, false));
 
     // create tabbed panes for running nodes, tabs are added dynamically
     tabbedPane = new JTabbedPane();
@@ -370,8 +373,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     });
 
     pack();
-    setSize(600, 600);
-    splitPane.setDividerLocation(200);
+    setSize(700, 600);
+    splitPane.setDividerLocation(400);
     setVisible(true);
   }
 
@@ -988,6 +991,19 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
        return;
     }
 
+    // create trial results with current time and add to experiment
+    // TODO: need to get results URL
+//     Trial trial = experiment.getTrials()[currentTrial];
+//     String filename = "Results.txt";
+//     try {
+//       String myHostName = InetAddress.getLocalHost().getHostName();
+//       URL url = new URL("File", myHostName, filename);
+//       trial.addTrialResult(new TrialResult(new Date(), url));
+//     } catch (Exception e) {
+//       System.out.println("Exception creating trial results URL: " + e);
+//       e.printStackTrace();
+//     }
+    
     // only add gui controls if successfully created node
     tabbedPane.add(nodeName, stdoutPane);
     addStatusButton(statusButton);

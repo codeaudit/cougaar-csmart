@@ -28,7 +28,7 @@ import javax.swing.tree.TreePath;
 // tools created by this user interface
 
 import org.cougaar.tools.csmart.ui.analyzer.Analyzer;
-import org.cougaar.tools.csmart.ui.builder.TreeBuilder;
+import org.cougaar.tools.csmart.ui.builder.PropertyBuilder;
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.experiment.*;
@@ -318,11 +318,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     // note that cc is guaranteed non-null when this is called
     // set the society as the selected society because
     // the builder will ask this object for the selected society
-    Class[] paramClasses = { CSMART.class, SocietyComponent.class };
-    Object[] params = new Object[2];
-    params[0] = this;
-    params[1] = cc;
-    createTool("Configuration Builder", TreeBuilder.class, 
+    Class[] paramClasses = { SocietyComponent.class };
+    Object[] params = new Object[1];
+    params[0] = cc;
+    createTool("Configuration Builder", PropertyBuilder.class, 
 	       alwaysNew, cc.getSocietyName(), cc,
 	       paramClasses, params);
   }
@@ -512,8 +511,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	  // set item to edit when reuse tools
 	  if (tool instanceof ExperimentBuilder)
 	    ((ExperimentBuilder)tool).reinit((Experiment)argument);
-	  else if (tool instanceof TreeBuilder)
-	    ((TreeBuilder)tool).reinit((SocietyComponent)argument);
+	  else if (tool instanceof PropertyBuilder)
+	    ((PropertyBuilder)tool).reinit((SocietyComponent)argument);
 	  else if (tool instanceof Analyzer)
 	    ((Analyzer)tool).reinit((Experiment)argument);
 	}

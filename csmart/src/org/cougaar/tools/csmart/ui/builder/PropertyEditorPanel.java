@@ -31,96 +31,32 @@ import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
-import org.cougaar.tools.csmart.ui.util.Renderer;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
-/**
- * User interface that supports building a society.
- */
-
-public class TreeBuilder
-  extends JFrame
+public class PropertyEditorPanel extends JPanel 
   implements ActionListener, PropertiesListener, PropertyListener,
-  TreeSelectionListener, HyperlinkListener
-{
-  private static final String FILE_MENU = "File";
-  private static final String EXIT_MENU_ITEM = "Exit";
-
-  private static final String HELP_MENU = "Help";
-
-  protected static final String HELP_DOC = "help.html";
-  protected static final String ABOUT_CSMART_ITEM = "About CSMART";
-  protected static final String ABOUT_DOC = "../help/about-csmart.html";
-  protected static final String HELP_MENU_ITEM = "Help";
-
-  private String[] helpMenuItems = {
-    HELP_MENU_ITEM, ABOUT_CSMART_ITEM
-  };
-
-  private static final String SOCIETY_TAB_LABEL = "Society Specification";
-  private static final String AGENT_TAB_LABEL = "Agent Specification";
-  private static final String PLUGIN_TAB_LABEL = "Plugin Specification";
-  private static final String LOAD_TAB_LABEL = "Load Specification";
-
-  CSMART csmart; // top level viewer, gives access to save method, etc.
+  TreeSelectionListener, HyperlinkListener {
   JComboBox selectionCB;
   JSplitPane societyPanel;
   JTree tree;
   DefaultMutableTreeNode root;
-  GridPanel2 componentPanel = null;
-  JScrollPane componentScrollPane;
+  PropertyTable propertyTable = null;
+  JScrollPane tableScrollPane;
   SocietyComponent societyCfg;
   Hashtable componentToProperty = new Hashtable();
   Hashtable propertyToComponent = new Hashtable();
   Hashtable propertyToLabel = new Hashtable();
+  boolean isEditable;
 
-  // for the window listener
-  private static TreeBuilder builder = null;
-
-  String[] societyNames = { "<selection>", "ABC Society", "Scalable Society" };
-
-  String[] societyClassNames = {
-    "foo",
-    "org.cougaar.tools.csmart.configgen.abcsociety.ABCSociety",
-    "org.cougaar.tools.csmart.scalability.ScalabilityXSociety"
-  };
-
-  public TreeBuilder(CSMART csmart, SocietyComponent society) {
-    this.csmart = csmart;
-
-    // initialize menus and gui panels
-    JMenuBar menuBar = new JMenuBar();
-    getRootPane().setJMenuBar(menuBar);
-    JMenu fileMenu = new JMenu(FILE_MENU);
-
-    JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
-    exitMenuItem.addActionListener(this);
-    fileMenu.add(exitMenuItem);
-
-    menuBar.add(fileMenu);
-
-    // placeholder help menu
-    JMenu helpMenu = new JMenu(HELP_MENU);
-    for (int i = 0; i < helpMenuItems.length; i++) {
-      JMenuItem mItem = new JMenuItem(helpMenuItems[i]);
-      mItem.addActionListener(this);
-      helpMenu.add(mItem);
-    }
-    menuBar.add(helpMenu);
-
+  public PropertyEditorPanel(SocietyComponent society,
+			     boolean isEditable) {
+    this.isEditable = isEditable;
     // create the society panel
     societyPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-
-    getContentPane().setLayout(new BorderLayout());
-    getContentPane().add(societyPanel, BorderLayout.CENTER);
-
-    getContentPane().add(societyPanel);
+    setLayout(new BorderLayout());
+    add(societyPanel, BorderLayout.CENTER);
 
     if (society != null)
       setSocietyComponent(society);
-
-    setSize(600,500);
-    setVisible(true);
   }
 
   /**
@@ -152,24 +88,7 @@ public class TreeBuilder
 	return;
       }
     }
-
-    // handle our own menu items
-    String s = ((AbstractButton)source).getActionCommand();
-    if (s.equals(EXIT_MENU_ITEM)) {
-      // notify top-level viewer that user quit the builder
-      NamedFrame.getNamedFrame().removeFrame(this);
-      dispose();
-    } else if (s.equals(HELP_MENU_ITEM)) {
-      URL help = (URL)getClass().getResource(HELP_DOC);
-      if (help != null)
-	Browser.setPage(help);
-    } else if (s.equals(ABOUT_CSMART_ITEM)) {
-      URL about = (URL)getClass().getResource(ABOUT_DOC);
-      if (about != null)
-	Browser.setPage(about);
-    }	       
-
-  }// end action listener
+  }
 
   /**
    * Handle conversions here; if possible make the value be an object
@@ -186,32 +105,10 @@ public class TreeBuilder
       }
       p.setValue(value);
     } catch (InvalidPropertyValueException e) {
-      System.err.println("TreeBuilder: can't set value in property: " + e);
+      System.err.println("PropertyBuilder: can't set value in property: " + e);
       e.printStackTrace();
     }
   }
-
-  /**
-   * Return property value or default value as a string
-   * using the Renderer utility.
-   */
-
-//   private String renderValue(Property property) {
-//     Class cls = property.getPropertyClass();
-//     Object value = null;
-//     //    value = property.getValue();
-//     if (property.isValueSet())
-//       value = property.getValue();
-//     if (cls == null) {
-//       System.err.println("getPropertyClass is null for " + property.getName());
-//       if (value == null) {
-// 	cls = Object.class;
-//       } else {
-// 	cls = value.getClass();
-//       }
-//     }
-//     return Renderer.renderValue(cls, value);
-//  }
 
   public void hyperlinkUpdate(HyperlinkEvent e) {
     if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -230,32 +127,36 @@ public class TreeBuilder
     tree = new JTree(new DefaultTreeModel(root));
     makeTree();
     tree.expandPath(new TreePath(root));
-    tree.setEditable(true);
+    tree.setEditable(isEditable);
     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     tree.addTreeSelectionListener(this);
     societyPanel.setLeftComponent(new JScrollPane(tree));
-    componentPanel = new GridPanel2();
-    componentScrollPane = new JScrollPane(componentPanel);
+    propertyTable = new PropertyTable(isEditable);
+    tableScrollPane = new JScrollPane(propertyTable);
     JPanel rightPanel = new JPanel(new BorderLayout());
-    rightPanel.add(componentScrollPane);
-    URL url = societyCfg.getDescription();
-    if (url != null) {
-      JTextPane pane = new JTextPane();
-      try {
-        pane.setEditable(false);
-        pane.addHyperlinkListener(this);
-        pane.setPage(url);
-        rightPanel.add(pane, BorderLayout.NORTH);
-      } catch (IOException ioe) {
-        ioe.printStackTrace();
+    rightPanel.add(tableScrollPane);
+    // only add description if user can edit the properties
+    if (isEditable) {
+      URL url = societyCfg.getDescription();
+      if (url != null) {
+	JTextPane pane = new JTextPane();
+	try {
+	  pane.setEditable(false);
+	  pane.addHyperlinkListener(this);
+	  pane.setPage(url);
+	  rightPanel.add(pane, BorderLayout.NORTH);
+	} catch (IOException ioe) {
+	  ioe.printStackTrace();
+	}
+      } else {
+	JLabel pane = new JLabel("No description available");
+	rightPanel.add(pane, BorderLayout.NORTH);
       }
-    } else {
-      JLabel pane = new JLabel("No description available");
-      rightPanel.add(pane, BorderLayout.NORTH);
     }
     societyPanel.setRightComponent(rightPanel);
     societyCfg.addPropertiesListener(this);
     societyPanel.validate();
+    societyPanel.setDividerLocation(200);
   }
 
   /**
@@ -291,10 +192,10 @@ public class TreeBuilder
    */
 
   private void addComponentForProperty(Property property) {
-    componentPanel.addProperty(property);
+    propertyTable.addProperty(property);
     // don't add yourself as listener until problem with changing propery
     // values is fixed: see propertyValueChanged
-    //    property.addPropertyListener(this);
+    property.addPropertyListener(this);
   }
 
   /**
@@ -318,7 +219,7 @@ public class TreeBuilder
       if (path == null) return;
       PropertyTreeNode node = (PropertyTreeNode)path.getLastPathComponent();
       if (name.getPrefix().equals(node.getName())) {
-        System.out.println("TreeBuilder: Property added: " + name);
+        System.out.println("PropertyBuilder: Property added: " + name);
         addComponentForProperty(prop);
       }
     }
@@ -338,7 +239,7 @@ public class TreeBuilder
       if (path == null) return;
       PropertyTreeNode node = (PropertyTreeNode)path.getLastPathComponent();
       if (name.getPrefix().equals(node.getName())) {
-        System.out.println("TreeBuilder: Property removed: " + prop.getName());
+        System.out.println("PropertyBuilder: Property removed: " + prop.getName());
         removeComponentForProperty(prop);
       }
     }
@@ -405,7 +306,7 @@ public class TreeBuilder
    */
 
   private void removeComponentForProperty(Property property) {
-    componentPanel.removeProperty(property);
+    propertyTable.removeProperty(property);
     property.removePropertyListener(this);
   }
 
@@ -416,28 +317,34 @@ public class TreeBuilder
    * then set the new value in the user inteface (table)
    * or (for aspects of the property other than the value), handle
    * the change (i.e. new label, default value, class or allowed values).
-   * TODO: this is called as the result of the user editing the table,
-   * which sets the value in the property (see GridPanel2 setValue());
-   * if the user enters a null value, this reinserts the default value;
-   * is there any way for the TreeBuilder to distinguish when it should ignore
-   * property value changes?
    */
 
   public void propertyValueChanged(PropertyEvent e) {
     Property p = e.getProperty();
     p.removePropertyListener(this);
     int row = 
-      ((PropTableModelBase)(componentPanel.getModel())).getRowForProperty(p);
+      ((PropTableModelBase)(propertyTable.getModel())).getRowForProperty(p);
     if (row != -1) {
-      componentPanel.setValueAt(p.getValue(), row, 1);
-      componentPanel.revalidate();
-      componentPanel.repaint();
+
+      Object value = null;
+      if (p.isValueSet())
+	value = p.getValue();
+      else
+	value = "<not set>";
+      Object valueInTable = propertyTable.getValueAt(row, 1);
+      if (valueInTable.equals(value)) {
+	p.addPropertyListener(this);
+	return; // don't need to update
+      }
+      propertyTable.setValueAt(p.getValue(), row, 1);
+      propertyTable.revalidate();
+      propertyTable.repaint();
     }
     p.addPropertyListener(this);
   }
 
   public void propertyOtherChanged(PropertyEvent e) {
-    //    System.out.println("TreeBuilder: propertyOtherChanged: " +
+    //    System.out.println("PropertyBuilder: propertyOtherChanged: " +
     //		       e.getWhatChanged());
     //    e.getProperty().printProperty(System.out);
     // TODO: handle DEFAULTVALUE_CHANGED, LABEL_CHANGED,
@@ -463,7 +370,7 @@ public class TreeBuilder
     if (path == null) return;
     Object o = path.getLastPathComponent();
     if (o instanceof PropertyTreeNode) {
-      componentPanel.removeAll(); // clear what was displayed
+      propertyTable.removeAll(); // clear what was displayed
       PropertyTreeNode node = (PropertyTreeNode) o;
       displayComponents(node.getPropertyNames());
     }
@@ -472,23 +379,5 @@ public class TreeBuilder
   /**
    * End TreeSelectionListener interface.
    */
-
-  public static void main(String[] args) {
-    TreeBuilder builder = new TreeBuilder(null, null);
-    final ABCSocietyComponent abc = new ABCSocietyComponent();
-    builder.setSocietyComponent(abc);
-    abc.initProperties();
-    JMenu testMenu = new JMenu("Test");
-    JMenuItem testMenuItem = new JMenuItem("Test Change");
-    testMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-	abc.test();
-      }
-    });
-    testMenu.add(testMenuItem);
-    builder.getRootPane().getJMenuBar().add(testMenu);
-    builder.pack();
-    builder.setDefaultCloseOperation(EXIT_ON_CLOSE);
-  }
 
 }

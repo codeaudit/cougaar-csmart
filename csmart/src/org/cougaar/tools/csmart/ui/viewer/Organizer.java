@@ -21,7 +21,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.*;
 import java.lang.reflect.Constructor;
-import org.cougaar.tools.csmart.ui.builder.TreeBuilder;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.experiment.Impact;
 import org.cougaar.tools.csmart.ui.experiment.Metric;

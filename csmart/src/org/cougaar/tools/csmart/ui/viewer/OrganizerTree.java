@@ -17,7 +17,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.dnd.*;
 import java.awt.datatransfer.*;
-import org.cougaar.tools.csmart.ui.builder.TreeBuilder;
 import org.cougaar.tools.csmart.ui.experiment.*;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.console.*;
