@@ -64,6 +64,8 @@ public abstract class SocietyBase
 
   protected transient Logger log;
 
+  private String assemblyId;
+
   public SocietyBase(String name){
     super(name);
     createLogger();
@@ -85,6 +87,14 @@ public abstract class SocietyBase
     ArrayList agents = 
       new ArrayList(getDescendentsOfClass(AgentComponent.class));
     return (AgentComponent[])agents.toArray(new AgentComponent[agents.size()]);
+  }
+
+  public void setAssemblyId(String assemblyId) {
+    this.assemblyId = assemblyId;
+  }
+
+  public String getAssemblyId() {
+    return this.assemblyId;
   }
 
   /**
