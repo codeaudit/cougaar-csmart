@@ -707,6 +707,8 @@ public class CMT {
    * Does not get rid of the CMT assembly or other assemblies.
    */
   public static void deleteExperiment(String experiment_id, String experiment_name) {
+    if (experiment_id == null)
+      return;
     boolean doIt = true;
     
     // HACK: Avoid deleting base experiments
