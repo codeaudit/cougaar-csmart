@@ -46,6 +46,7 @@ import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
@@ -110,6 +111,9 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
       addRecipeQueryProperty(PROP_TARGET_COMPONENT_QUERY,
                              PROP_TARGET_COMPONENT_QUERY_DFLT);
     propTargetComponent.setToolTip(PROP_TARGET_COMPONENT_QUERY_DESC);
+
+    modified = false;
+    fireModification(new ModificationEvent(this, RECIPE_SAVED));
 
   }
 
@@ -330,14 +334,29 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
   }
 
   public boolean saveToDatabase() {
+
+    // The only way to preserve the target overrides in the children is to make them
+    // arguments of the parent, save, and then remove them from the parent.
+
     for(int i=0; i < getChildCount(); i ++) {
-      ConfigurableComponent child = (ConfigurableComponent)getChild(i);
+      ComponentBase child = (ComponentBase)getChild(i);
       if(child.getProperty(PROP_TARGET_COMPONENT_QUERY) != null) {
-        addProperty(("$$CP=" + child.getProperty(PROP_TARGET_COMPONENT_QUERY).getName()), child.getProperty(PROP_TARGET_COMPONENT_QUERY).getValue());
+        addProperty(("$$CP=" + child.getComponentClassName() + "-" + i), child.getProperty(PROP_TARGET_COMPONENT_QUERY).getValue());
       }
     }
-    
-    return super.saveToDatabase();
+
+    boolean retVal = super.saveToDatabase();
+
+    // Save is finished, remove the properties from the parent.
+    Iterator iter = getProperties();
+    while(iter.hasNext()) {
+      Property p = (Property)iter.next();
+      if(p.getName().last().toString().startsWith("$$CP")) {
+        removeProperty(p);
+      }
+    }
+
+    return retVal;
   }
 
 }

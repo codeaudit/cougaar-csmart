@@ -44,6 +44,7 @@ import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.society.ComponentBase;
 import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.society.SocietyComponentCreator;
 import org.cougaar.tools.csmart.society.cdata.AgentCDataComponent;
@@ -219,6 +220,11 @@ public class ComplexRecipeBase extends RecipeBase
     } else if (cdata != null) {
       initFromCData();
     }
+
+    // After reading from the DB, it is not modified.
+    modified = false;
+    fireModification(new ModificationEvent(this, RECIPE_SAVED));
+
   }
 
   private void initFromDatabase() {
@@ -235,10 +241,6 @@ public class ComplexRecipeBase extends RecipeBase
       initPluginsFromDb();
       initBindersFromDb();
       initTargetsFromDb();
-      // After reading the soc from the DB, it is not modified.
-      //      modified = false;
-      modified = false;
-      fireModification(new ModificationEvent(this, RECIPE_SAVED));
     }
   }
 
@@ -328,10 +330,62 @@ public class ComplexRecipeBase extends RecipeBase
   }
 
   private void initBindersFromDb() {
-//     System.out.println("Not implemented yet");
+//     String assemblyMatch = DBUtils.getListMatch(assemblyId);
+//     if (assemblyMatch != null) {
+//       substitutions.put(":assemblyMatch", assemblyMatch);
+//       substitutions.put(":agent_name", name);
+//     }
+
+//     // Get Plugin Names, class names, and parameters
+//     try {
+//       Connection conn = DBUtils.getConnection();
+//       String query = "";
+//       substitutions.put(":comp_type:", "in ( '" + ComponentData.NODEBINDER + "', " + ComponentData.AGENTBINDER + "')");
+//       try {
+//         Statement stmt = conn.createStatement();	
+//         query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
+//         ResultSet rs = stmt.executeQuery(query);
+//         while(rs.next()) {
+//           String pluginClassName = rs.getString(1);
+//           String pluginName = rs.getString(4);
+//           String priority = rs.getString(6).intern();
+//           PluginBase plugin = new PluginBase(pluginName, pluginClassName, priority);
+//           plugin.initProperties();
+//           String alibId = rs.getString(2);
+//           String libId = rs.getString(3);
+//           plugin.setAlibID(alibId);
+//           plugin.setLibID(libId);
+//           substitutions.put(":comp_alib_id", alibId);
+//           substitutions.put(":comp_id", rs.getString(3));
+//           Statement stmt2 = conn.createStatement();
+//           String query2 = dbp.getQuery(QUERY_PLUGIN_ARGS, substitutions);
+//           ResultSet rs2 = stmt2.executeQuery(query2);
+//           while (rs2.next()) {
+//             String arg = rs2.getString(1);
+//             plugin.addParameter(arg);
+//           }
+//           rs2.close();
+//           stmt2.close();
+//           addChild(plugin);
+//         } // end of loop over plugins to add
+//         rs.close();
+//         stmt.close();
+//       } finally {
+//         conn.close();
+//       }
+//     } catch (Exception e) {
+//       if(log.isErrorEnabled()) {
+//         log.error("Exception", e);
+//       }
+//       throw new RuntimeException("Error" + e);
+//     }
   }
 
   private void initTargetsFromDb() {
+    if(log.isDebugEnabled()) {
+      log.debug("In initTargetsFromDb");
+    }
+
     Map substitutions = new HashMap();
     if (recipeId != null) {
       substitutions.put(":recipe_id", recipeId);
@@ -341,17 +395,32 @@ public class ComplexRecipeBase extends RecipeBase
 	try {
 	  Statement stmt = conn.createStatement();
 	  String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
+          if(log.isDebugEnabled()) {
+            log.debug("Run query: " + query);
+          }
+
 	  ResultSet rs = stmt.executeQuery(query);
 	  while (rs.next()) {
             String name = rs.getString(1);
-            if(name.startsWith("$$CP")) {
-              int start = name.indexOf(".");
-              String component = name.substring((start+1), name.indexOf(".", (start+1)));
+            if(name.startsWith("$$CP=")) {
+              int start = name.indexOf("=");
+              String component = name.substring(start+1);
+
               // Find the Component and add the Property
+              if(log.isDebugEnabled()) {
+                log.debug("Looking for: " + component);
+              }
               for(int i=0; i < getChildCount(); i++) {
-                ConfigurableComponent cc = (ConfigurableComponent)getChild(i);
-                if(cc.getShortName().equals(component)) {
-                  cc.addProperty(name.substring(name.lastIndexOf(".")+1), rs.getString(2));
+                ComponentBase cc = (ComponentBase)getChild(i);
+                String tag = cc.getComponentClassName() + "-" + i;
+                if(log.isDebugEnabled()) {
+                  log.debug("Compare with: " + tag);
+                }
+                if(tag.equals(component)) {
+                  if(log.isDebugEnabled()) {
+                    log.debug("Found Desired Parent: " + tag + " adding parameter");
+                  }
+                  cc.addProperty(PROP_TARGET_COMPONENT_QUERY, rs.getString(2));
                 }
               }
             }
