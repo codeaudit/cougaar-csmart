@@ -55,6 +55,64 @@ echo $COUGAAR_INSTALL_PATH | tr '\\' '/' > newcip.txt
 sed s/:cip/$(cat newcip.txt | sed 's/\//\\\//g')/ $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sql/load_ref_data.sql > load_ref_data_new.sql
 rm newcip.txt
 
+# Copy most files from the normal CSV dir. They are by definition the same
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/alploc.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/alploc.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+else
+    echo "CSV files in csmart/data/database/csv missing for reference tables, and required!"
+    exit
+fi
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_transportable_item.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_transportable_item.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_transportable_item_detail.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_transportable_item_detail.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unfrmd_srvc_occ_rnk_subcat.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unfrmd_srvc_occ_rnk_subcat.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unfrmd_srvc_occptn.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unfrmd_srvc_occptn.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unfrmd_srvc_rnk.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unfrmd_srvc_rnk.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unit.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unit.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unit_billet.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unit_billet.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unit_equipment.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unit_equipment.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/geoloc.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/geoloc.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/lib_pg_attribute.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/lib_pg_attribute.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
+# Done copying over files
+
 if [ ! -e "$COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sedscr.sh" ]; then
     echo "Cannot find $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sedscr.sh"
     exit
