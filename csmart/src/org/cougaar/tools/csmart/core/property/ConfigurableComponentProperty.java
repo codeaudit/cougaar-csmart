@@ -24,8 +24,15 @@ package org.cougaar.tools.csmart.core.property;
 import java.util.List;
 import java.util.Set;
 
+import java.io.Serializable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
 /**
  * A ConfigurableComponentProperty is a property within a ConfigurableComponent.
  * Usually these properties are displayed on the GUI, however, they don't always
@@ -179,8 +186,19 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
    * @param value of the property
    */
   public void setValue(Object value) {
-    if(value != this.value) {
+    // MIK: should this be .equals?
+    if ((value == null && this.value != null) || (value != null && ! value.equals(this.value))) {
+      //    if(value != this.value) {
       Object old = this.value;
+
+      // intern short (< 16 chars) strings
+      if (value instanceof String) {
+        String v = (String) value;
+        if (v.length() < 16) {
+          value = v.intern();
+        }
+      }
+
       this.value = value;
       try {
 	fireValueChanged(old);
@@ -258,5 +276,19 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
   public boolean isValueSet() {
     return value != null;
   }
+
+  private void readObject(ObjectInputStream stream)
+    throws IOException, ClassNotFoundException
+  {
+    stream.defaultReadObject();
+    // intern short (< 16 chars) strings
+    if (value instanceof String) {
+      String v = (String) value;
+      if (v.length() < 16) {
+        value = v.intern();
+      }
+    }
+  }
+
 }
 
