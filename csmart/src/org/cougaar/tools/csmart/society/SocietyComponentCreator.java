@@ -62,6 +62,7 @@ public class SocietyComponentCreator {
    * @return a <code>ComponentData</code> value
    */
   public static final ComponentData getComponentData(SocietyComponent society) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.SocietyComponentCreator");
 
     ComponentData cData = new GenericComponentData();
 
@@ -95,8 +96,6 @@ public class SocietyComponentCreator {
     ac.addParameter(agent.getShortName()); // Agents have one parameter, the agent name
     ac.setOwner(owner);
     ac.setParent(parent);
-    addContainer(ac, agent, "Binders");
-    addContainer(ac, agent, "Plugins");
     parent.addChild((ComponentData)ac);
   }
 
@@ -106,9 +105,6 @@ public class SocietyComponentCreator {
     Iterator iter = ((Collection)cp.getDescendentsOfClass(ContainerBase.class)).iterator();
     while(iter.hasNext()) {
       ContainerBase container = (ContainerBase)iter.next();
-      if(log.isDebugEnabled()) {
-        log.debug("Container Name: " + container.getShortName());
-      }
       if(container.getShortName().equals(name)) {
         for(int i=0; i < container.getChildCount(); i++) {
           BaseComponent base = (BaseComponent) container.getChild(i);
