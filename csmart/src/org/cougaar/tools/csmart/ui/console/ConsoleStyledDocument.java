@@ -28,6 +28,7 @@ import javax.swing.text.DefaultStyledDocument;
 public class ConsoleStyledDocument extends DefaultStyledDocument {
   static int MAX_CHARACTERS = 1000;
   static int MIN_REMOVE_CHARACTERS = 200;
+  // DefaultStyledDocument buffer size is 4096
 
   public void appendString(String s, AttributeSet a) {
     try {
@@ -35,23 +36,26 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       // special case, the string is larger than the document
       // just insert the end of the string
       if (len >= MAX_CHARACTERS) {
-        remove(0, MAX_CHARACTERS);
+        remove(0, getLength());
         super.insertString(0, s.substring(len - MAX_CHARACTERS), a);
         return;
       }
-      int neededSpace = getLength() + len;
+      int bufferLength = getLength();
+      int neededSpace = bufferLength + len;
       // if appending string will exceed buffer length
       // then remove at least the first 20% of buffer
       if (neededSpace > MAX_CHARACTERS) {
         int tmp = Math.max(neededSpace - MAX_CHARACTERS,
                            MIN_REMOVE_CHARACTERS);
-        remove(0, Math.max(neededSpace - MAX_CHARACTERS,
-                           MIN_REMOVE_CHARACTERS));
+        // don't remove more characters than exist
+        tmp = Math.min(tmp, bufferLength);
+        remove(0, tmp);
       }
       super.insertString(getLength(), s, a);
     } catch (BadLocationException ble) {
       System.out.println("Bad location exception: " + ble +
                          " " + ble.offsetRequested());
+      ble.printStackTrace();
     }
   }
 

@@ -54,6 +54,8 @@ public class ConsoleNodeListener implements NodeEventListener {
   private StripChartSource idleTimeDataModel;
   private JRadioButton statusButton;
   private long firsttime = 0l;
+  private String notifyCondition = null;
+  private boolean haveError = false;
 
   public ConsoleNodeListener(CSMARTConsole console,
 			     NodeComponent nodeComponent,
@@ -155,6 +157,7 @@ public class ConsoleNodeListener implements NodeEventListener {
    */
 
   public void handle(NodeServesClient nsc, NodeEvent nodeEvent) {
+    final NodeEvent myNodeEvent = nodeEvent; // for swing utilities
     final int nodeEventType = nodeEvent.getType();
     final String nodeEventDescription = getNodeEventDescription(nodeEvent);
     final SimpleAttributeSet style = getNodeEventStyle(nodeEventType);
@@ -174,8 +177,6 @@ public class ConsoleNodeListener implements NodeEventListener {
     } catch (Exception e) {
     }
 
-    //    System.out.println("CNL: " + nodeName + ": " + nodeEventDescription);
-
     // must use swing "invokeLater" to be thread-safe
     try {
       SwingUtilities.invokeLater(new Runnable() {
@@ -184,7 +185,7 @@ public class ConsoleNodeListener implements NodeEventListener {
 	    if (nodeEventType == NodeEvent.IDLE_UPDATE) 
 	      handleIdleUpdate(idleTime, timestamp);
 	    else {
-	      updateStatus(nodeEventType);
+	      updateStatus(myNodeEvent);
               userDisplay.appendString(nodeEventDescription, style);
 	    } 
 	  } catch (Exception e) {
@@ -213,7 +214,6 @@ public class ConsoleNodeListener implements NodeEventListener {
       do {
 	NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
 	logFile.write(getNodeEventDescription(nodeEvent));
-	//	System.out.println("CNL: " + nodeName + ": " + getNodeEventDescription(nodeEvent));
       } while (++i < n);
     } catch (Exception e) {
       System.out.println("Exception writing to log file: " + e);
@@ -240,7 +240,7 @@ public class ConsoleNodeListener implements NodeEventListener {
 	      String s = nodeEvent.getMessage();
 	      handleIdleUpdate(getIdleness(s), getTimestamp(s));
 	    } else {
-	      updateStatus(nodeEventType);
+	      updateStatus(nodeEvent);
 	      prevType = nodeEventType;
 	      prevDescription = getNodeEventDescription(nodeEvent);
 	      nextEventIndex = i+1;
@@ -254,7 +254,7 @@ public class ConsoleNodeListener implements NodeEventListener {
 	    NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(j);
 	    int nodeEventType = nodeEvent.getType();
 	    String description = getNodeEventDescription(nodeEvent);
-	    updateStatus(nodeEventType);
+	    updateStatus(nodeEvent);
 	    if (nodeEventType == NodeEvent.IDLE_UPDATE) {
 	      String s = nodeEvent.getMessage();
 	      handleIdleUpdate(getIdleness(s), getTimestamp(s));
@@ -320,20 +320,6 @@ public class ConsoleNodeListener implements NodeEventListener {
   private void handleIdleUpdate(double idleTime, long timestamp) {
     double result = 1/Math.log(idleTime);
     result = (result + 1)*50; // in range 0 to 100
-
-//     if (result <= -1)
-//       colorStatusButton(CSMARTConsole.lowBusyStatus);
-//     else if (result > -1 && result <= -.7)
-//       colorStatusButton(CSMARTConsole.mediumLowBusyStatus);
-//     else if (result > -.7 && result <= -.4)
-//       colorStatusButton(CSMARTConsole.mediumBusyStatus);
-//     else if (result > -.4 && result <= 0)
-//       colorStatusButton(CSMARTConsole.mediumHighBusyStatus);
-//     else if (result > 0 && result <= .5)
-//       colorStatusButton(CSMARTConsole.highBusyStatus);
-//     else if (result > .5)
-//       colorStatusButton(CSMARTConsole.busyStatus);
-      
     if (result <= 16)
       colorStatusButton(CSMARTConsole.lowBusyStatus);
     else if (result > 16 && result <= 33)
@@ -357,20 +343,43 @@ public class ConsoleNodeListener implements NodeEventListener {
       idleTimeDataModel.addValue(result, timestamp);
   }
 
-  private void updateStatus(int nodeEventType) {
+  private void updateStatus(NodeEvent nodeEvent) {
+    int nodeEventType = nodeEvent.getType();
     if (nodeEventType == NodeEvent.NODE_CREATED) 
       colorStatusButton(CSMARTConsole.idleStatus);
     else if (nodeEventType == NodeEvent.NODE_DESTROYED) {
       colorStatusButton(CSMARTConsole.errorStatus);
       console.nodeStopped(nodeComponent);
+    } else if (nodeEventType == NodeEvent.STANDARD_ERR) {
+      colorStatusButton(CSMARTConsole.stdErrStatus);
+      haveError = true;
+    }
+    else if ((nodeEventType == NodeEvent.STANDARD_OUT) &&
+             notifyCondition != null) {
+      String s = nodeEvent.getMessage().toLowerCase();
+      if (s.indexOf(notifyCondition) != -1) {
+        colorStatusButton(CSMARTConsole.notifyStatus);
+        haveError = true;
+      }
     }
   }
 
+  // color the node's status button according to type of node event received
+  // but don't change the color after an error has occurred
   private void colorStatusButton(Color statusColor) {
-    statusButton.setIcon(new ColoredCircle(statusColor, 20));
-    statusButton.setSelectedIcon(new SelectedColoredCircle(statusColor, 20));
+    if (!haveError) {
+      statusButton.setIcon(new ColoredCircle(statusColor, 20));
+      statusButton.setSelectedIcon(new SelectedColoredCircle(statusColor, 20));
+    } 
   }
 
+  public void setNotifyCondition(String s) {
+    notifyCondition = s.toLowerCase();
+  }
+
+  public void clearError() {
+    haveError = false;
+  }
 }
 
 

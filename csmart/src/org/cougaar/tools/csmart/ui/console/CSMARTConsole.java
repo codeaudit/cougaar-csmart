@@ -34,11 +34,6 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.DefaultStyledDocument;
-
-import com.klg.jclass.chart.JCChart;
 
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.ui.builder.PropertyEditorPanel;
@@ -54,7 +49,7 @@ import org.cougaar.tools.server.rmi.ClientCommunityController;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
 
-public class CSMARTConsole extends JFrame implements ChangeListener {
+public class CSMARTConsole extends JFrame {
   // must match port used in org.cougaar.tools.server package
   private static final int DEFAULT_PORT = 8484;
 
@@ -79,49 +74,40 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   boolean aborting = false;
   Hashtable runningNodes; // maps NodeComponents to NodeServesClient
   Hashtable oldNodes; // store old charts till next experiment is started
-  Hashtable charts; // maps node name to idle time chart
-  Hashtable chartFrames; // maps node name to chart frame
   NodeComponent[] nodesToRun; // node components that contain agents to run
   String[] hostsToRunOn;      // hosts that are assigned nodes to run
   ArrayList hostsToUse; // Hosts that are actually having stuff run on them
+  Hashtable nodeListeners; // indexed by node component
+  String notifyCondition; // if this appears in node stdout, notify user
 
   // gui controls
-  JTabbedPane tabbedPane;
   ButtonGroup statusButtons;
   JToggleButton runButton;
   JToggleButton stopButton;
   JToggleButton abortButton;
   JLabel trialNameLabel;
   JProgressBar trialProgressBar; // indicates how many trials have been run
-  JMenuItem historyMenuItem; // enabled only if experiment is running
-  Action searchAction;
-  Action searchNextAction;
   JPanel buttonPanel; // contains status buttons
-  JPopupMenu aboutMenu; // pop-up menu on status button
+  JPopupMenu nodeMenu; // pop-up menu on node status button
   public static Dimension HGAP10 = new Dimension(10,1);
   public static Dimension HGAP5 = new Dimension(5,1);
   public static Dimension VGAP30 = new Dimension(1,30);
-  Border loweredBorder = new CompoundBorder(new SoftBevelBorder(SoftBevelBorder.LOWERED), new EmptyBorder(5,5,5,5));
 
   // top level menus and menu items
   private static final String FILE_MENU = "File";
-  private static final String EXIT_MENU_ITEM = "Exit";
-  private static final String NODE_MENU = "Node";
-  private static final String HISTORY_MENU_ITEM = "Utilization History";
-  private static final String SEARCH_ACTION = "Search...";
-  private static final String SEARCH_NEXT_ACTION = "Search Next";
-  private static final String STATUS_MENU_ITEM = "Status";
-  private static final String LOAD_MENU_ITEM = "Load";
-  private static final String DESCRIBE_MENU_ITEM = "Describe";
   private static final String HELP_MENU = "Help";
+  private static final String NOTIFY_MENU = "Notify";
+  private static final String NOTIFY_MENU_ITEM = "Notify When...";
+  private static final String EXIT_MENU_ITEM = "Exit";
+  private static final String HELP_DOC = "help.html";
+  private static final String ABOUT_CSMART_ITEM = "About CSMART";
+  private static final String ABOUT_DOC = "../help/about-csmart.html";
+  private static final String HELP_MENU_ITEM = "Help";
 
-  protected static final String HELP_DOC = "help.html";
-  protected static final String ABOUT_CSMART_ITEM = "About CSMART";
-  protected static final String ABOUT_DOC = "../help/about-csmart.html";
-  protected static final String HELP_MENU_ITEM = "Help";
-
+  // for pop-up menu on node status buttons
   private static final String ABOUT_MENU = "About";
   private static final String ABOUT_ACTION = "About";
+  private static final String RESET_ACTION = "Reset";
 
   // status button colors
   public static Color busyStatus = new Color(230, 255, 230); // shades of green
@@ -134,6 +120,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   public static Color errorStatus = new Color(215, 0, 0); // red
   public static Color noAnswerStatus = new Color(245, 245, 0); // yellow
   public static Color unknownStatus = new Color(180, 180, 180); //gray
+  public static Color stdErrStatus = new Color(215, 145, 0); //orange
+  public static Color notifyStatus = Color.blue;
 
   // used for log file name
   private static DateFormat fileDateFormat =
@@ -148,8 +136,9 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   
   private ConsoleDesktop desktop;
 
-  // node frame whose status lamp is selected
-  private ConsoleInternalFrame selectedNodeFrame;
+  // node whose status lamp is selected
+  // set only when pop-up menu is displayed
+  private String selectedNodeName;
 
   /**
    * Create and show console GUI.
@@ -160,21 +149,9 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     isEditable = experiment.isEditable();
     experiment.setEditable(false); // not editable while we have it
     currentTrial = -1;
-    // TODO: support experiments with multiple societies
     societyComponent = experiment.getSocietyComponent(0);
     desktop = new ConsoleDesktop();
     setSocietyComponent(societyComponent);
-    //    initDesktop();
-  }
-
-  // for testing
-  private void initDesktop() {
-    JFrame frame = new JFrame();
-    desktop = new ConsoleDesktop();
-    frame.getContentPane().add(desktop);
-    frame.pack();
-    frame.setSize(200, 200);
-    frame.setVisible(true);
   }
 
   /**
@@ -184,8 +161,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     communitySupport = new ClientCommunityController();
     runningNodes = new Hashtable();
     oldNodes = new Hashtable();
-    charts = new Hashtable();
-    chartFrames = new Hashtable();
+    nodeListeners = new Hashtable();
 
     // top level menus
     JMenu fileMenu = new JMenu(FILE_MENU);
@@ -198,59 +174,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       }
     });
     fileMenu.add(exitMenuItem);
-
-    JMenu nodeMenu = new JMenu(NODE_MENU);
-    nodeMenu.setToolTipText("Display information about a node.");
-    historyMenuItem = new JMenuItem(HISTORY_MENU_ITEM);
-    historyMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-	historyMenuItem_actionPerformed(e);
-      }
-    });
-    historyMenuItem.setEnabled(false); // enable when node is run
-    historyMenuItem.setToolTipText("Display load at a node vs. time.");
-    nodeMenu.add(historyMenuItem);
-
-    searchAction = new AbstractAction(SEARCH_ACTION) {
-        public void actionPerformed(ActionEvent e) {
-          search_actionPerformed(e);
-        }
-    };
-    nodeMenu.add(searchAction);
-    searchAction.setEnabled(false);
-
-    searchNextAction = new AbstractAction(SEARCH_NEXT_ACTION) {
-        public void actionPerformed(ActionEvent e) {
-          searchNext_actionPerformed(e);
-        }
-    };
-    nodeMenu.add(searchNextAction);
-    searchNextAction.setEnabled(false);
-
-    JMenuItem statusMenuItem = new JMenuItem(STATUS_MENU_ITEM);
-    statusMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-	statusMenuItem_actionPerformed(e);
-      }
-    });
-    statusMenuItem.setEnabled(false);
-    nodeMenu.add(statusMenuItem);
-    JMenuItem loadMenuItem = new JMenuItem(LOAD_MENU_ITEM);
-    loadMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-	loadMenuItem_actionPerformed(e);
-      }
-    });
-    loadMenuItem.setEnabled(false);
-    nodeMenu.add(loadMenuItem);
-    JMenuItem describeMenuItem = new JMenuItem(DESCRIBE_MENU_ITEM);
-    describeMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-	describeMenuItem_actionPerformed(e);
-      }
-    });
-    describeMenuItem.setEnabled(false);
-    nodeMenu.add(describeMenuItem);
 
     JMenu helpMenu = new JMenu(HELP_MENU);
     JMenuItem helpMenuItem = new JMenuItem(HELP_MENU_ITEM);
@@ -271,12 +194,20 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	}
       });
     helpMenu.add(aboutMenuItem);
-    
+
+    JMenu notifyMenu = new JMenu(NOTIFY_MENU);
+    JMenuItem notifyMenuItem = new JMenuItem(NOTIFY_MENU_ITEM);
+    notifyMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        notifyMenuItem_actionPerformed();
+      }
+    });
+    notifyMenu.add(notifyMenuItem);
 
     JMenuBar menuBar = new JMenuBar();
     menuBar.add(fileMenu);
-    //    menuBar.add(nodeMenu);
     menuBar.add(helpMenu);
+    menuBar.add(notifyMenu);
     getRootPane().setJMenuBar(menuBar);
 
     // create panel which contains
@@ -394,17 +325,21 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 				     0, 0));
 
     statusButtons = new ButtonGroup();
-    aboutMenu = new JPopupMenu(ABOUT_MENU);
+    nodeMenu = new JPopupMenu();
     Action aboutAction = new AbstractAction(ABOUT_ACTION) {
       public void actionPerformed(ActionEvent e) {
         displayAboutNode();
       }
     };
-    aboutMenu.add(aboutAction);
-    
+    nodeMenu.add(aboutAction);
+    Action resetAction = new AbstractAction(RESET_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        resetNodeStatusButton();
+      }
+    };
+    nodeMenu.add(resetAction);
 
     // create tabbed panes for configuration information (not editable)
-    //    JTabbedPane configTabbedPane = new JTabbedPane();
     hostConfiguration = new HostConfigurationBuilder(experiment);
     JInternalFrame jif = new JInternalFrame("Configuration",
                                             true, false, true, true);
@@ -418,24 +353,10 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     jif = new JInternalFrame("Trial Values", true, false, true, true);
     jif.getContentPane().add(trialViewer);
     jif.setSize(300, 300);
-    jif.setLocation(10, 10);
+    jif.setLocation(310, 0);
     jif.setVisible(true);
     desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
 
-    //    configTabbedPane.add("Configuration", hostConfiguration);
-    //    configTabbedPane.add("Trial Values", 
-    //			 new PropertyEditorPanel(experiment.getComponentsAsArray()));
-
-    // create tabbed panes for running nodes, tabs are added dynamically
-    tabbedPane = new JTabbedPane();
-    tabbedPane.addChangeListener(this);
-
-    // create split pane to hold config panes on left and output panes on right
-    //    JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-    //    splitPane.setLeftComponent(configTabbedPane);
-    //    splitPane.setRightComponent(tabbedPane);
-
-    //    panel.add(splitPane,
     panel.add(desktop,
 	      new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
 				     GridBagConstraints.WEST,
@@ -486,20 +407,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   }
 
   /**
-   * Create a panel whose components are layed out vertically.
-   */
-  private JPanel createVerticalPanel(boolean threeD) {
-    JPanel p = new JPanel();
-    p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-    p.setAlignmentY(TOP_ALIGNMENT);
-    p.setAlignmentX(LEFT_ALIGNMENT);
-    if(threeD) {
-      p.setBorder(loweredBorder);
-    }
-    return p;
-  }
-
-  /**
    * Create a panel whose components are layed out horizontally.
    */
   private JPanel createHorizontalPanel(boolean makeBorder) {
@@ -527,11 +434,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     button.setBorderPainted(false);
     button.setContentAreaFilled(false);
     button.setMargin(new Insets(2,2,2,2));
-    button.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-	statusButton_actionPerformed(e);
-      }
-    });
     return button;
   }
 
@@ -542,6 +444,82 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     statusButtons.add(button);
     button.addMouseListener(myMouseListener);
     buttonPanel.add(button);
+  }
+
+  /**
+   * Display pop-up menu with "about" menu item, which provides
+   * the same functionality as the "about" menu item in the node window,
+   * but from the node status lamp.
+   */
+
+  private void doPopup(MouseEvent e) {
+    selectedNodeName = ((JRadioButton)e.getSource()).getActionCommand();
+    nodeMenu.show((Component)e.getSource(), e.getX(), e.getY());
+  }
+
+  private void displayAboutNode() {
+    desktop.getNodeFrame(selectedNodeName).displayAbout();
+  }
+
+  private void displayNodeFrame(MouseEvent e) {
+    String nodeName = ((JRadioButton)e.getSource()).getActionCommand();
+    JInternalFrame frame = desktop.getNodeFrame(nodeName);
+    try {
+      frame.setIcon(false);
+      frame.setSelected(true);
+    } catch (PropertyVetoException exc) {
+    }
+  }
+
+  // this clears the error in the console node listener
+  // as it must be told that it's ok to update the status button again
+  private void resetNodeStatusButton() {
+    ConsoleNodeListener listener = 
+      (ConsoleNodeListener)nodeListeners.get(selectedNodeName);
+    listener.clearError();
+  }
+
+  /**
+   * Listener on the node status buttons.
+   * Right click pops-up a menu with the "About" node menu item.
+   * Left double click opens the node standard out frame.
+   */
+
+  private MouseListener myMouseListener = new MouseAdapter() {
+    public void mouseClicked(MouseEvent e) {
+      if (e.isPopupTrigger()) 
+        doPopup(e);
+      else if (e.getClickCount() == 2) 
+        displayNodeFrame(e);
+    }
+    public void mousePressed(MouseEvent e) {
+      if (e.isPopupTrigger()) doPopup(e);
+    }
+    public void mouseReleased(MouseEvent e) {
+      if (e.isPopupTrigger()) doPopup(e);
+    }
+  };
+
+  /**
+   * Notify (by coloring status button) when the specified
+   * output is received on any node.
+   */
+
+  private void notifyMenuItem_actionPerformed() {
+    String s = 
+      (String)JOptionPane.showInputDialog(this,
+                                          "Notify if any node writes:",
+                                          "Notification",
+                                          JOptionPane.QUESTION_MESSAGE,
+                                          null, null, notifyCondition);
+    if (s == null || s.length() == 0) {
+      notifyCondition = null;
+      return;
+    }
+    Collection c = nodeListeners.values();
+    for (Iterator i = c.iterator(); i.hasNext(); )
+      ((ConsoleNodeListener)i.next()).setNotifyCondition(s);
+    notifyCondition = s;
   }
 
   /**
@@ -618,10 +596,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   private void runTrial() {
     setTrialValues();
     createNodes();
-    // select tabbed pane and status button for first node
-    String firstNodeName = nodesToRun[0].getShortName();
-    selectTabbedPane(firstNodeName);
-    selectStatusButton(firstNodeName);
   }
 
   /**
@@ -634,8 +608,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     runStart = new Date();
     for (int i = 0; i < nodesToRun.length; i++) {
       NodeComponent nodeComponent = nodesToRun[i];
-      if (createNode(nodeComponent, nodeComponent.getShortName(), 
-		     hostsToRunOn[i]))
+      if (createNode(nodeComponent, hostsToRunOn[i]))
 	haveRunningNode = true;
     }
     if (!haveRunningNode) {
@@ -807,27 +780,22 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     }
   }
 
-  // Kill any existing tabbed panes or history charts
+  // Kill any existing output frames or history charts
   private void destroyOldNodes() {
     Enumeration nodeComponents = oldNodes.keys();
     while (nodeComponents.hasMoreElements()) {
       NodeComponent nodeComponent = 
 	(NodeComponent)nodeComponents.nextElement();
       String nodeName = nodeComponent.getShortName();
-      removeTabbedPane(nodeName);
       removeStatusButton(nodeName);
       oldNodes.remove(nodeComponent);
     }
-    // dispose of all chart frames
-    Collection frames = chartFrames.values();
-    Iterator iter = frames.iterator();
-    while (iter.hasNext()) {
-      JFrame frame = (JFrame)iter.next();
-      NamedFrame.getNamedFrame().removeFrame(frame);
-      frame.dispose();
+    JInternalFrame[] frames = desktop.getAllFrames();
+    for (int i = 0; i < frames.length; i++) {
+      String s = frames[i].getTitle();
+      if (!s.equals("Configuration") && !s.equals("Trial Values"))
+        frames[i].dispose();
     }
-    chartFrames.clear();
-    charts.clear();
   }
     
   private void updateExperimentControls(Experiment experiment,
@@ -850,7 +818,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       stopButton.setSelected(false);
       abortButton.setEnabled(false);
       abortButton.setSelected(false);
-      historyMenuItem.setEnabled(false);
       return;
     }
 
@@ -864,7 +831,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     stopButton.setEnabled(isRunning);
     stopButton.setSelected(false);
     abortButton.setEnabled(isRunning);
-    historyMenuItem.setEnabled(isRunning);
   }
 
   /**
@@ -927,143 +893,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     experimentTimer.stop();
   }
 
-  /**
-   * TreeSelectionListener interface.
-   * If user selects an agent in the "Hosts" tree,
-   * then pop the tabbed pane for that node to the foreground, and
-   * select the node status button.
-   */
-
-//   public void valueChanged(TreeSelectionEvent event) {
-//     TreePath path = event.getPath();
-//     if (path == null) return;
-//     DefaultMutableTreeNode treeNode =
-//       (DefaultMutableTreeNode)path.getLastPathComponent();
-//     ConsoleTreeObject cto = (ConsoleTreeObject)treeNode.getUserObject();
-//     if (!cto.isNode())
-//       return; // ignore selecting if it's not a node
-//     String nodeName = 
-//       ((ConsoleTreeObject)treeNode.getUserObject()).getName();
-//     // select tabbed pane if one exists
-//     selectTabbedPane(nodeName);
-//     selectStatusButton(nodeName);
-//   }
-
-  /**
-   * If user selects a status button, then pop the tabbed pane
-   * for that node to the foreground, and select the node in the host
-   * tree.
-   */
-
-  public void statusButton_actionPerformed(ActionEvent e) {
-    String nodeName = ((JRadioButton)e.getSource()).getActionCommand();
-    //    selectNodeInHostTree(nodeName);
-    selectTabbedPane(nodeName);
-    displayStripChart(nodeName);
-  }
-
-  /**
-   * Display strip chart for node name.
-   */
-
-  public void displayStripChart(String nodeName) {
-//      JFrame f = (JFrame)chartFrames.get(nodeName);
-//      if (f != null) {
-//        f.toFront();
-//        f.setState(Frame.NORMAL);
-//        return;
-//      }
-//      JCChart chart = (JCChart)charts.get(nodeName);
-//      if (chart == null)
-//        return;
-//      final Frame newChartFrame = new StripChartFrame(chart);
-//      newChartFrame.setTitle(NamedFrame.getNamedFrame().addFrame(nodeName, (JFrame)newChartFrame));
-//      newChartFrame.addWindowListener(new WindowAdapter() {
-//        public void windowClosing(WindowEvent e) {
-//  	chartFrames.remove(newChartFrame.getTitle());
-//  	NamedFrame.getNamedFrame().removeFrame((JFrame)newChartFrame);
-//  	newChartFrame.dispose();
-//        }
-//      });
-//      chartFrames.put(nodeName, newChartFrame);
-  }
-
-  /**
-   * ChangeListener interface (for tabbed panes).
-   * If user selects a tab, then select the node in the "Nodes" tree,
-   * and select the node's button in the status buttons.
-   */
-
-  public void stateChanged(ChangeEvent e) {
-    JTabbedPane tabbedPane = (JTabbedPane)e.getSource();
-    String nodeName = tabbedPane.getTitleAt(tabbedPane.getSelectedIndex());
-    selectStatusButton(nodeName);
-    //    selectNodeInHostTree(nodeName);
-    JFrame f = (JFrame)chartFrames.get(nodeName);
-    if (f != null) {
-      f.toFront();
-      f.setState(Frame.NORMAL);
-    }
-  }
-
-  /**
-   * Select node in host tree.
-   */
-
-//   private void selectNodeInHostTree(String nodeName) {
-//     DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
-//     DefaultMutableTreeNode root = 
-//       (DefaultMutableTreeNode)model.getRoot();
-//     TreePath path = null;
-//     Enumeration nodes = root.breadthFirstEnumeration();
-//     while (nodes.hasMoreElements()) {
-//       DefaultMutableTreeNode node = 
-// 	(DefaultMutableTreeNode)nodes.nextElement();
-//       if (node.getUserObject() instanceof ConsoleTreeObject) {
-// 	ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
-// 	if (cto.isNode()) {
-// 	  if (cto.getName().equals(nodeName)) {
-// 	    path = new TreePath(node.getPath());
-// 	    break;
-// 	  }
-// 	}
-//       }
-//     }
-//     if (path != null) {
-//       hostTree.removeTreeSelectionListener(this);
-//       hostTree.setSelectionPath(path);
-//       hostTree.addTreeSelectionListener(this);
-//     }
-//   }
-
-  /**
-   * Select tabbed pane for node if it exists.
-   */
-
-  private void selectTabbedPane(String nodeName) {
-    int i = tabbedPane.indexOfTab(nodeName);
-    if (i != -1) 
-      tabbedPane.setSelectedIndex(i);
-  }
-
-  /**
-   * Remove tabbed pane for node if it exists.
-   * Remove tabbed pane change listener or stateChanged method gets called.
-   */
-
-  private void removeTabbedPane(String nodeName) {
-    int i = tabbedPane.indexOfTab(nodeName);
-    if (i != -1) {
-      tabbedPane.removeChangeListener(this);
-      tabbedPane.remove(i);
-      tabbedPane.addChangeListener(this);
-      // if no more tabs, disable search menu items
-      if (tabbedPane.getTabCount() == 0) {
-        searchAction.setEnabled(false);
-        searchNextAction.setEnabled(false);
-      }
-    }
-  }
 
   /**
    * Select status button for node.
@@ -1102,8 +931,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * so that it can update it.
    * Returns true if successful and false otherwise.
    */
-  private boolean createNode(NodeComponent nodeComponent,
-			     String nodeName, String hostName) {
+  private boolean createNode(NodeComponent nodeComponent, String hostName) {
+    String nodeName = nodeComponent.getShortName();
     // create an unique node name to circumvent server problems
     String uniqueNodeName = nodeName + currentTrial;
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
@@ -1125,13 +954,9 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       e.printStackTrace();
       return false;
     }
-
-    // set up idle chart
-    //    JCChart chart = new StripChart();
-    //    StripChartSource chartDataModel = new StripChartSource(chart);
-    //    ((StripChart)chart).init(chartDataModel);
-    //    ((ConsoleNodeListener)listener).setIdleChart(chart, chartDataModel);
-    //    charts.put(nodeName, chart);
+    if (notifyCondition != null)
+      ((ConsoleNodeListener)listener).setNotifyCondition(notifyCondition);
+    nodeListeners.put(nodeName, listener);
 
     // create node event filter with no buffering
     // so that idle display is "smooth"
@@ -1150,21 +975,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     args[1] = uniqueNodeName + ".ini";
     args[2] = "-controlPort";
     args[3] = Integer.toString(port);
-//     System.out.println("CSMARTConsole: creating node with:" + 
-// 		       " Host: " + hostName + 
-// 		       " Port: " + port +
-// 		       " Registry: " + regName +
-// 		       " Node: " + nodeName +
-// 		       " Args: " + args[0] +
-// 		       " Args: " + args[1] +
-// 		       " Args: " + args[2] +
-// 		       " Args: " + args[3] +
-// 		       " Listener: " + listener +
-// 		       " Filter: " + filter +
-// 		       " NodeComponent: " + nodeComponent);
-//     System.out.println(" Properties: ");
-//     properties.list(System.out);
-
     // set configuration file names in nodesToRun
     for (int i = 0; i < nodesToRun.length; i++) 
       ((ConfigurableComponent)nodesToRun[i]).addProperty("ConfigurationFileName", 
@@ -1200,15 +1010,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     }
     
     // only add gui controls if successfully created node
-    //    tabbedPane.add(nodeName, stdoutPane);
-    // for debugging
-    //    ArrayList names = 
-    //      (ArrayList)nodeComponent.getProperty(new ComponentName((ConfigurableComponent)nodeComponent, "AgentNames")).getValue();
-    //    for (int i = 0; i < names.size(); i++) {
-    //      System.out.println("Node: " + nodeName + " contains agent: " + 
-    //                         names.get(i));
-    //    }
-
     // need to pass consolenodelistener to internal frame
     // so that the listener can be invoked to gather idle chart information
     // when the user requests the chart
@@ -1216,8 +1017,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
                          (ConsoleNodeListener)listener, 
                          new NodeFrameListener(),
                          stdoutPane);
-    searchAction.setEnabled(true);
-    //    initKeyMap(stdoutPane);
     addStatusButton(statusButton);
     updateExperimentControls(experiment, true);
     startTimers();
@@ -1420,63 +1219,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     dispose();
   }
 
-  public void historyMenuItem_actionPerformed(ActionEvent e) {
-    // get selected node from tab
-    // tree, tabs, and status buttons should be in sync
-    int index = tabbedPane.getSelectedIndex();
-    if (index == -1)
-      return;
-    String nodeName = tabbedPane.getTitleAt(index);
-    displayStripChart(nodeName);
-  }
-
-  /**
-   * Set up a keymap so that ctrl-s invokes search and ctrl-t invokes
-   * search next.
-   */
-
-  private void initKeyMap(ConsoleTextPane pane) {
-    InputMap im = pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-    ActionMap am = pane.getActionMap();
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK), 
-           SEARCH_ACTION);
-    am.put(SEARCH_ACTION, searchAction);
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_T, Event.CTRL_MASK), 
-           SEARCH_NEXT_ACTION);
-    am.put(SEARCH_NEXT_ACTION, searchNextAction);
-  }
-
-  public void search_actionPerformed(ActionEvent e) {
-    // get string to search for
-    String s = JOptionPane.showInputDialog("Search string:");
-    if (s == null || s.length() == 0) {
-      return;
-    }
-    // search and highlight in current top pane
-    boolean found = 
-      ((ConsoleTextPane)(tabbedPane.getSelectedComponent())).search(s);
-    searchNextAction.setEnabled(found);
-  }
-
-  public void searchNext_actionPerformed(ActionEvent e) {
-    // search and highlight in current top pane
-    boolean found = 
-      ((ConsoleTextPane)(tabbedPane.getSelectedComponent())).searchNext();
-    searchNextAction.setEnabled(found);
-    JComponent c = (JComponent)tabbedPane.getSelectedComponent();
-    c.revalidate();
-    c.repaint();
-  }
-
-  public void statusMenuItem_actionPerformed(ActionEvent e) {
-  }
-
-  public void loadMenuItem_actionPerformed(ActionEvent e) {
-  }
-
-  public void describeMenuItem_actionPerformed(ActionEvent e) {
-  }
-
   public String getElapsedTimeLabel(String prefix, long startTime) {
     long now = new Date().getTime();
     long timeElapsed = now - startTime;
@@ -1494,6 +1236,60 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     sb.append(myNumberFormat.format(seconds));
     return sb.toString();
   }
+
+// the following two methods enable selection interactions
+// with the host configuration tree; currently not used
+//  /**
+//   * TreeSelectionListener interface.
+//   * If user selects an agent in the "Hosts" tree,
+//   * then pop the tabbed pane for that node to the foreground, and
+//   * select the node status button.
+//   */
+//
+//   public void valueChanged(TreeSelectionEvent event) {
+//     TreePath path = event.getPath();
+//     if (path == null) return;
+//     DefaultMutableTreeNode treeNode =
+//       (DefaultMutableTreeNode)path.getLastPathComponent();
+//     ConsoleTreeObject cto = (ConsoleTreeObject)treeNode.getUserObject();
+//     if (!cto.isNode())
+//       return; // ignore selecting if it's not a node
+//     String nodeName = 
+//       ((ConsoleTreeObject)treeNode.getUserObject()).getName();
+//     // select tabbed pane if one exists
+//     selectTabbedPane(nodeName);
+//     selectStatusButton(nodeName);
+//   }
+//
+//  /**
+//   * Select node in host tree.
+//   */
+//
+//   private void selectNodeInHostTree(String nodeName) {
+//     DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
+//     DefaultMutableTreeNode root = 
+//       (DefaultMutableTreeNode)model.getRoot();
+//     TreePath path = null;
+//     Enumeration nodes = root.breadthFirstEnumeration();
+//     while (nodes.hasMoreElements()) {
+//       DefaultMutableTreeNode node = 
+// 	(DefaultMutableTreeNode)nodes.nextElement();
+//       if (node.getUserObject() instanceof ConsoleTreeObject) {
+// 	ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
+// 	if (cto.isNode()) {
+// 	  if (cto.getName().equals(nodeName)) {
+// 	    path = new TreePath(node.getPath());
+// 	    break;
+// 	  }
+// 	}
+//       }
+//     }
+//     if (path != null) {
+//       hostTree.removeTreeSelectionListener(this);
+//       hostTree.setSelectionPath(path);
+//       hostTree.addTreeSelectionListener(this);
+//     }
+//   }
 
   public static void main(String[] args) {
     CSMARTConsole console = new CSMARTConsole(null);
@@ -1525,53 +1321,5 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       selectStatusButton(node.getShortName());
     }
   }
-
-  /**
-   * Display pop-up menu with "about" menu item, which provides
-   * the same functionality as the "about" menu item in the node window,
-   * but from the node status lamp.
-   */
-
-  private void doPopup(MouseEvent e) {
-    String nodeName = ((JRadioButton)e.getSource()).getActionCommand();
-    selectedNodeFrame = desktop.getNodeFrame(nodeName);
-    aboutMenu.show((Component)e.getSource(), e.getX(), e.getY());
-  }
-
-  private void displayAboutNode() {
-    selectedNodeFrame.displayAbout();
-  }
-
-  private void displayNodeFrame(MouseEvent e) {
-    String nodeName = ((JRadioButton)e.getSource()).getActionCommand();
-    selectedNodeFrame = desktop.getNodeFrame(nodeName);
-    try {
-      selectedNodeFrame.setIcon(false);
-      selectedNodeFrame.setSelected(true);
-    } catch (PropertyVetoException exc) {
-    }
-  }
-
-
-  /**
-   * Listener on the node status buttons.
-   * Right click pops-up a menu with the "About" node menu item.
-   * Left double click opens the node standard out frame.
-   */
-
-  private MouseListener myMouseListener = new MouseAdapter() {
-    public void mouseClicked(MouseEvent e) {
-      if (e.isPopupTrigger()) 
-        doPopup(e);
-      else if (e.getClickCount() == 2) 
-        displayNodeFrame(e);
-    }
-    public void mousePressed(MouseEvent e) {
-      if (e.isPopupTrigger()) doPopup(e);
-    }
-    public void mouseReleased(MouseEvent e) {
-      if (e.isPopupTrigger()) doPopup(e);
-    }
-  };
 
 }

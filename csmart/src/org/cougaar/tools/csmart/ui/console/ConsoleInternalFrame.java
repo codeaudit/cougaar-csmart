@@ -68,7 +68,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                               JComponent component) {
     super("",   // title
           true, //resizable
-          true, //closable
+          false, //not closable, because they can't be recreated
           true, //maximizable
           true);//iconifiable
     this.node = node;
