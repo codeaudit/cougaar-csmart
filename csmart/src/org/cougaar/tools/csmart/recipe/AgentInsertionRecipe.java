@@ -297,7 +297,7 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
     }
 
     public ComponentData addComponentData(ComponentData data) {
-      if (getShortName().equals(data.getName())) {
+      if (this.getShortName().equals(data.getName())) {
 
         // Add the planserver plugin.
         GenericComponentData plugin = new GenericComponentData();
