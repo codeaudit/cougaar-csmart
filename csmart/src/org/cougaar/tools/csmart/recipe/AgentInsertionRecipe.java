@@ -140,6 +140,11 @@ public class AgentInsertionRecipe extends RecipeBase
    */
   public void initProperties() {
     propName = addProperty(PROP_NAME, PROP_NAME_DFLT);
+    propName.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
+        public void propertyValueChanged(PropertyEvent e) {
+          updateAgent((String)e.getProperty().getValue());
+        }
+      });
     propName.setToolTip(PROP_NAME_DESC);
 
     propClassName = addProperty(PROP_CLASSNAME, PROP_CLASSNAME_DFLT);
@@ -157,16 +162,17 @@ public class AgentInsertionRecipe extends RecipeBase
     propAssetClass = addProperty(PROP_ASSETCLASS, PROP_ASSETCLASS_DFLT);
     propAssetClass.setToolTip(PROP_ASSETCLASS_DESC);
 
-    propOrgAsset = addBooleanProperty(PROP_ORGASSET, PROP_ORGASSET_DFLT);
-    propOrgAsset.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
-        public void propertyValueChanged(PropertyEvent e) {
-          updateOrgParameters((Boolean)e.getProperty().getValue());
-        }
-      });
-    propOrgAsset.setToolTip(PROP_ORGASSET_DESC);
+//     propOrgAsset = addBooleanProperty(PROP_ORGASSET, PROP_ORGASSET_DFLT);
+//     propOrgAsset.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
+//         public void propertyValueChanged(PropertyEvent e) {
+//           updateOrgParameters((Boolean)e.getProperty().getValue());
+//         }
+//       });
+//     propOrgAsset.setToolTip(PROP_ORGASSET_DESC);
 
-    propItemPG = addBooleanProperty(PROP_ITEMPG, PROP_ITEMPG_DFLT);
-    propItemPG.setToolTip(PROP_ITEMPG_DESC);
+
+//     propItemPG = addBooleanProperty(PROP_ITEMPG, PROP_ITEMPG_DFLT);
+//     propItemPG.setToolTip(PROP_ITEMPG_DESC);
 
     propRelationCount = addProperty(PROP_RELATIONCOUNT, PROP_RELATIONCOUNT_DFLT);
     propRelationCount.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
@@ -192,6 +198,11 @@ public class AgentInsertionRecipe extends RecipeBase
     prop.setPropertyClass(String.class);
     return prop;
   }
+
+  private void updateAgent(String name) {
+    System.out.println("Agent Value Changed!");
+  }
+
 
   private void updateOrgParameters(Boolean val) {
     boolean show = val.booleanValue();
@@ -396,13 +407,16 @@ public class AgentInsertionRecipe extends RecipeBase
     }
     assetData.addPropertyGroup(createTypeIdentificationPG());
 
-    if (((Boolean)propOrgAsset.getValue()).booleanValue()) {
-      assetData.addPropertyGroup(createClusterPG());
-    }
+    createClusterPG();
+//     if (((Boolean)propOrgAsset.getValue()).booleanValue()) {
+//       assetData.addPropertyGroup(createClusterPG());
+//     }
 
-    if (((Boolean)propItemPG.getValue()).booleanValue()) {
-      assetData.addPropertyGroup(createItemIdentificationPG());
-    }
+    createItemIdentificationPG();
+
+//     if (((Boolean)propItemPG.getValue()).booleanValue()) {
+//       assetData.addPropertyGroup(createItemIdentificationPG());
+//     }
 
     data.addAgentAssetData(assetData);
       
@@ -436,6 +450,9 @@ public class AgentInsertionRecipe extends RecipeBase
     PGPropData pgData = new PGPropData();
     pgData.setName("TypeIdentification");
     pgData.setType("String");
+    if(propType.getValue().toString().equals(PROP_TYPE_DFLT)) {
+      propType.setValue("UTC/" + propName.getValue().toString());
+    }
     pgData.setValue(propType.getValue().toString());
     pgd.addProperty(pgData);
 
@@ -505,7 +522,7 @@ public class AgentInsertionRecipe extends RecipeBase
     public ComponentData addComponentData(ComponentData data) {
       if (this.getShortName().equals(data.getName())) {
 
-        if (((Boolean)propOrgAsset.getValue()).booleanValue()) {
+//         if (((Boolean)propOrgAsset.getValue()).booleanValue()) {
           // Add the OrgRTData plugin.
           ComponentData plugin = new GenericComponentData();
           plugin.setType(ComponentData.PLUGIN);
@@ -523,7 +540,7 @@ public class AgentInsertionRecipe extends RecipeBase
           plugin.setClassName("org.cougaar.mlm.plugin.organization.OrgReportPlugin");
           plugin.setOwner(this);
           data.addChild(plugin);
-        }
+//         }
       }
       else if (data.childCount() > 0) {
         // for each child, call this same method.
