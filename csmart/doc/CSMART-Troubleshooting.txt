@@ -53,13 +53,13 @@ available in scalability/bin. If on a Windows or Linux i386 machine, be sure
 this libary is in a directory on your path. Otherwise, you may safely
 ignore this error.
 - If you see an error like: java.lang.RuntimeException: Loaded plugin
-org.cougaar.tools.csmart.plugin.LocalAssetBuilder[localAssets.dat] without
+org.cougaar.tools.csmart.runtime.plugin.LocalAssetBuilder[localAssets.dat] without
 CSMART Factory? Did you include the csmart domain in
 configs/common/LDMDomains.ini?
 
 This indicates that you have not loaded the csmart domain. Copy csmart/data/common/LDMDomains.ini to CIP/configs/common, or that you have edited the version of
 LDMDomains that you are using to include the csmart domain:
-csmart=org.cougaar.tools.csmart.ldm.CSMARTDomain
+csmart=org.cougaar.tools.csmart.runtime.ldm.CSMARTDomain
 - If you get an exception like:
  java.lang.reflect.InvocationTargetException:
  java.lang.NoClassDefFoundError: javax/net/ssl/SSLServerSocket
@@ -167,8 +167,6 @@ support having geographic locations.
 
 Starting a Society from the Experiment Controller
 - Ensure you've followed all the tips on running the Server above
-- If the configuration files are being written out, try running the various Nodes by hand
-from the command line
 - Be sure that the name of the host you've asked a Node to be started
 on is either an IP address or the fully-qualified host name
 - Be sure that you can resolve the host name into an IP address
@@ -205,7 +203,7 @@ issues. http://www.blackdown.org
 - See Linux Issues above in Database section
 
 Compiling CSMART
-- Compiling CSMART with Jikes 1.15 willl result is VerifyErrors in a few classes.  To
+- Compiling CSMART with Jikes 1.15 will result in VerifyErrors in a few classes.  To
   avoid these erros, use Jikes 1.14.
 
 
@@ -231,16 +229,6 @@ Note that if you have already loaded data into your Unix MySQL
 database, the table names may be uppercase in some instances. This
 will cause problems - you will need to reload your database, after
 setting the above parameter.
-
-Setting the Nameserver host property in Experiment Builder
-- If you have custom set the nameserver host / port on some Nodes in
-the Experiment Builder, but find that your setting didn't "stick", and
-some other host was used instead:
-  Did you add, remove, or reorder the hosts / Nodes after setting this
-  property? If you do so, CSMART re-calculates the nameserver host (to
-  be sure the host exists and has a node with an agent, etc). To get around this, be sure to set
-  the nameserver host / port _after_ you have set up all the hosts /
-  nodes that you want in your experiment.
 
 Recipe Queries not available:
 - You have written your own recipe queries, but they are not available

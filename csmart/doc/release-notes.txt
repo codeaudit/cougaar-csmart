@@ -1,5 +1,14 @@
 CSMART Release Notes
 
+Release 9.0:
+- Repackage and code cleanup for readability
+- Use Servlets instead of PSPs
+- Use new Cougaar Logging Service
+
+Release v8.8.0
+This relse represents all of the fixes made during integration on
+the 8.6.2 release
+
 Release v8.6.2, Cougaar v8.6.2:
 A patch release, with multiple usability improvements. Emphasis
 is on supporting much larger societies, the 1AD society in particular,

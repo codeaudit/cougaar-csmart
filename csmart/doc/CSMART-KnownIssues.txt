@@ -16,8 +16,5 @@ CSMART contains a few known issues:
 
 * Some relationship arrows in the Agent View erroneously point 2 ways
 
-* The Thread pane loses information (although the society retains
-  the necessary information).
-
 For up to date information on these and other CSMART issues see:
 http://www.cougaar.org/bugs

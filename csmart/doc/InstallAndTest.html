@@ -386,7 +386,7 @@ very similar for WinNT.
     to include the CSMART domain.  Append this line to the end
     of the file:
        <pre>
-      csmart=org.cougaar.tools.csmart.ldm.CSMARTDomain
+      csmart=org.cougaar.tools.csmart.runtime.ldm.CSMARTDomain
        </pre>
     An example "LDMDomains.ini" is kept in "csmart/data/common".</li><p>
 
@@ -692,7 +692,7 @@ installation using
 
     <li>Right-click, select "New Experiment", then select "From Database" to load a pre-configured experiment.</li><p>
 
-    <li>Select an experiment, "TINY_1AD_TRANS_STUB" is a simple place to start.  You may be prompted to pick a unique name for your experiment. Then a UI to select "Threads &amp; Groups" will popup.</li><p>
+    <li>Select an experiment, "TINY-1AD-TRANS-STUB" is a simple place to start.  You may be prompted to pick a unique name for your experiment. Then a UI to select "Threads &amp; Groups" will popup.</li><p>
 
     <li>Configure the "Threads &amp; Groups".  In this screen, you may
     modify the set of threads (military classes of supply) which the
@@ -770,10 +770,10 @@ installation using
     <li>Drag these selected Agent names to the "TRANSCOM_NODE" of the
       middle ("Nodes") panel.</li><p>
 
-    <li>Select "SMALL-135-TRANS-NODE" of the middle ("Nodes") panel.</li><p>
+    <li>Select "1AD-Tiny" of the middle ("Nodes") panel.</li><p>
 
     <li>Select the remaining 25 Agents and drag them onto
-      "SMALL-135-TRANS-NODE".  Use the shift-key to select a range of
+      "1AD-Tiny".  Use the shift-key to select a range of
       names.</li><p>
 
     <li>Select your machine's address from the top ("Hosts") panel.  If
@@ -782,7 +782,7 @@ installation using
       full host name or the IP address -- sometimes the DNS lookup
       causes problems.</li><p>
 
-    <li>Drag both "TRANSCOM-NODE" and "SMALL-135-NODE" onto your host
+    <li>Drag both "TRANSCOM-NODE" and "1AD-Tiny" onto your host
       entry of the top ("Hosts") panel.  If you were testing a
       multi-machine configuration then you would drag the Nodes onto
       multiple hosts.</li><p>
