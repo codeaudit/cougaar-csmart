@@ -209,6 +209,36 @@ public class PDbBase {
   }
 
   /**
+   * Is the given recipe in use by any trial in the DB.
+   * Returns true even if the contents of the recipe
+   * differ in some form.
+   * Returns false if the recipe is not in the DB at all.
+   *
+   * @param rc a <code>RecipeComponent</code> to look for
+   * @return a <code>boolean</code>, true if the recipe is in use
+   * @exception SQLException if an error occurs
+   */
+  public boolean isRecipeUsed(RecipeComponent rc) throws SQLException {
+    String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
+    return isRecipeUsed(recipeIdAndClass[0]);
+  }
+
+  private boolean isRecipeUsed(String recipeId) throws SQLException {
+    boolean used = true;
+    substitutions.put(":recipe_id:", recipeId);
+    Statement stmt = getStatement();
+    ResultSet rs = executeQuery(stmt, dbp.getQuery("queryRecipeUsed", substitutions));
+    if (! rs.next())
+      used = false;
+    rs.close();
+    stmt.close();
+    if (log.isDebugEnabled()) {
+      log.debug("isRecipeUsed for id " + recipeId + " returning " + used);
+    }
+    return used;
+  }
+
+  /**
    * Insures that the given recipe is in the database.
    * If the recipe is not in the database, it writes it to the database
    * with a new id.  If the recipe is in the database, it updates
