@@ -132,6 +132,11 @@ public class TrialBuilder extends JPanel {
     if (rowIndex == -1 || columnIndex == -1)
       return; // ignore, clicked outside of table
     else {
+      // If there is only one trial left, dont let the user remove it
+      // FIXME: Should really search and make sure were disabling
+      // The delete menu item, but I happen to know its the only option
+      if (trialTableModel.getRowCount() < 2) 
+	trialMenu.getComponent(0).setEnabled(false);
       trialMenu.show(e.getComponent(), e.getX(), e.getY());
       deleteRowIndex = rowIndex;
     }
