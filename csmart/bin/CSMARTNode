@@ -35,16 +35,15 @@
 # COUGAAR3RDPARTY = a directory containing 3rd party jar files
 #
 # COUGAAR bootstrapping classpath will be:
-#  $COUGAAR_DEV_PATH	if defined
 #  $COUGAAR_INSTALL_PATH/lib/core.jar
 #
 # once running, jar files will be searched for in (in order):
 #  -Dorg.cougaar.class.path 	like classpath
-#  $CLASSPATH		(Cougaar bootstrapping path from above)
 #  $COUGAAR_INSTALL_PATH/lib/*
 #  $COUGAAR_INSTALL_PATH/plugins/*
 #  -Dorg.cougaar.system.path=$COUGAAR3RDPARTY
 #  $COUGAAR_INSTALL_PATH/sys/*
+#  $CLASSPATH		(Cougaar bootstrapping path from above)
 #
 
 # set COUGAAR_INSTALL_PATH=/alpine/demo98
@@ -122,7 +121,7 @@ if ("$os" == "Linux") then
 endif
 
 #set javaargs="$osargs $MYPROPERTIES $MYMEMORY -classpath $LIBPATHS -Dorg.cougaar.core.message.isLogging=true -Djava.rmi.server.logCalls=true -Dsun.rmi.server.exceptionTrace=true -Dsun.rmi.transport.tcp.readTimeout=150000 "
-set javaargs="$osargs $MYPROPERTIES $MYMEMORY -classpath $LIBPATHS"
+set javaargs="$osargs $MYPROPERTIES $MYMEMORY -Dorg.cougaar.class.path=$LIBPATHS -classpath $LIBPATHS"
 
 if ($?COUGAAR_DEV_PATH) then
     echo java $javaargs org.cougaar.core.society.Node $args

@@ -32,18 +32,17 @@ if [ $os = "Linux" -o $os = "SunOS" ]; then SEP=":"; fi
 # One need only include the CSMART and core jar files
 
 # COUGAAR bootstrapping classpath will be:
-#  $COUGAAR_DEV_PATH	if defined
 #  $COUGAAR_INSTALL_PATH/lib/core.jar
 #
 # Plus any explicitly added entries - for us, the CSMART Jar file
     
 # once running, jar files will be searched for in (in order):
 #  -Dorg.cougaar.class.path 	like classpath
-#  $CLASSPATH		(Cougaar bootstrapping path from above)
 #  $COUGAAR_INSTALL_PATH/lib/*
 #  $COUGAAR_INSTALL_PATH/plugins/*
 #  -Dorg.cougaar.system.path=$COUGAAR3RDPARTY
 #  $COUGAAR_INSTALL_PATH/sys/*
+#  $CLASSPATH		(Cougaar bootstrapping path from above)
 #
     
 # To run without the Bootstrapper, set org.cougaar.useBootstrapper=false
@@ -89,7 +88,7 @@ MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY
 # Set the config path to include the basic CSMART config files first
 MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
 
-javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -classpath $LIBPATHS"
+javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -Dorg.cougaar.class.path=$LIBPATHS -classpath $LIBPATHS"
 
 if [ "$COUGAAR_DEV_PATH" != "" ]; then
    echo java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART

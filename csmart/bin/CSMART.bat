@@ -43,11 +43,11 @@ REM The following line is optional. Some output files are written to the working
 REM CD %TEMP%
 
 REM start the classpath with the optional COUGAAR_DEV_PATH
-SET LIBPATHS=
-IF NOT "%COUGAAR_DEV_PATH%" == "" SET LIBPATHS=%COUGAAR_DEV_PATH%;
+SET DEVPATH=
+IF NOT "%COUGAAR_DEV_PATH%" == "" SET DEVPATH=%COUGAAR_DEV_PATH%
 
 REM Add CSMART jar explicitly to get started
-SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\csmart.jar
+SET LIBPATHS=%DEVPATH%;%COUGAAR_INSTALL_PATH%\lib\csmart.jar
 
 REM The AppServer jar must also be specified
 SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\server.jar
@@ -62,6 +62,7 @@ REM You must add the MySQL jar file here if you want it
 SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\xerces.jar
 SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\jcchart451K.jar
 SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\grappa1_2_bbn.jar
+SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\mm-mysql-2.jar
 SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\oracle12.zip
 
 SET MYMEMORY=-Xms100m -Xmx300m
@@ -76,6 +77,6 @@ SET MYDELAY=-Dorg.cougaar.tools.csmart.startdelay=10000
 
 @ECHO ON
 
-java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %MYEXCEL% %MYDELAY% -classpath %LIBPATHS% org.cougaar.tools.csmart.ui.viewer.CSMART
+java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %MYEXCEL% %MYDELAY% -Dorg.cougaar.class.path=%LIBPATHS% -classpath %LIBPATHS% org.cougaar.tools.csmart.ui.viewer.CSMART
 
 :L_END
