@@ -63,13 +63,13 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 public abstract class ConfigurableComponent
   implements BaseComponent, ConfigurableComponentListener
 {
-  private static final long serialVersionUID = -7727291298618568087L;
+  private static final long serialVersionUID = -1294225527645517794L;
 
   private transient Map myProperties = new HashMap();
   private transient Collection myPropertyEntries = null;
-  private List children = null; // Our children, if any
+  private transient ComposableComponent parent; // Our parent, if any
+  private transient List children = null; // Our children, if any
   private Set blockedProperties = new HashSet();
-  private ComposableComponent parent; // Our parent, if any
   private static int nameCount = 0;
   private ComponentName myName;
   private boolean nameChangeMark = false;
@@ -938,6 +938,8 @@ public abstract class ConfigurableComponent
      throws IOException
   {
     stream.defaultWriteObject();
+    stream.writeObject(parent);
+    stream.writeObject(children);
     Map properties = getMyProperties();
     stream.writeInt(properties.size());
     for (Iterator i = properties.entrySet().iterator(); i.hasNext(); ) {
@@ -965,6 +967,8 @@ public abstract class ConfigurableComponent
     throws IOException, ClassNotFoundException
   {
     stream.defaultReadObject();
+    parent = (ComposableComponent) stream.readObject();
+    children = (List) stream.readObject();
     Map properties = getMyProperties();
     int n = stream.readInt();
     myPropertyEntries = new ArrayList(n);

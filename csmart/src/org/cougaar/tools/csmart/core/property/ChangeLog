@@ -1,3 +1,17 @@
+2002-05-15  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ConfigurableComponent.java:
+	Bug #1304
+	The default deserialization of ConfigurableComponents from
+	workspace files apparently was reading the children List before
+	setting the parent field. This had the effect of creating the
+	properties hash maps with keys that mutated when the parent slot
+	was eventually filled in. This made the properties inaccessible
+	under their new names. Fixed by making the parent and children
+	slots transient and controlling the order of processing with
+	explicit readObject/writeObject filling in the parent slot before
+	filling in properties and children.
+
 2002-01-14  travers@dhcp077-232.bbn.com  <travers@dhcp077-232.bbn.com>
 
 	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/BaseComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ComponentProperties.java:
