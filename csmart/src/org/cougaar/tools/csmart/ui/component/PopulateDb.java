@@ -328,7 +328,8 @@ public class PopulateDb extends PDbBase {
         int order = 0;
         for (Iterator i = recipes.iterator(); i.hasNext(); ) {
             RecipeComponent rc = (RecipeComponent) i.next();
-            addTrialRecipe(rc, 0);
+            addTrialRecipe(rc, order);
+            order++;
         }
     }
 
