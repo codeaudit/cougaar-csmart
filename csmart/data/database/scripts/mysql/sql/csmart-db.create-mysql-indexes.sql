@@ -94,25 +94,7 @@ CREATE INDEX refalib_component29 ON asb_component_hierarchy(PARENT_COMPONENT_ALI
 CREATE INDEX refasb_assembly30 ON asb_component_hierarchy(ASSEMBLY_ID);
 ;
 ## 
-## INDEX: refasb_assembly19 
-##
-
-CREATE INDEX refasb_assembly19 ON asb_oplan(ASSEMBLY_ID);
-;
-## 
-## INDEX: refasb_oplan20 
-##
-
-CREATE INDEX refasb_oplan20 ON asb_oplan_agent_attr(OPLAN_ID, ASSEMBLY_ID);
-;
-## 
-## INDEX: refalib_component21 
-##
-
-CREATE INDEX refalib_component21 ON asb_oplan_agent_attr(COMPONENT_ALIB_ID);
-;
-## 
-## INDEX: refalib_component21 
+## INDEX: refalib_component99 
 ##
 
 CREATE INDEX refalib_component99 ON oplan_agent_attr(ORG_ID);
@@ -152,48 +134,6 @@ CREATE INDEX refcfw_group32 ON cfw_group_org(CFW_GROUP_ID);
 ##
 
 CREATE INDEX reflib_organization33 ON cfw_group_org(ORG_ID);
-;
-## 
-## INDEX: refcfw_instance5 
-##
-
-CREATE INDEX refcfw_instance5 ON cfw_oplan(CFW_ID);
-;
-## 
-## INDEX: refcfw_oplan62 
-##
-
-CREATE INDEX refcfw_oplan62 ON cfw_oplan_activity(OPLAN_ID, CFW_ID);
-;
-## 
-## INDEX: reflib_org_group63 
-##
-
-CREATE INDEX reflib_org_group63 ON cfw_oplan_activity(ORG_GROUP_ID);
-;
-## 
-## INDEX: reflib_org_group67 
-##
-
-CREATE INDEX reflib_org_group67 ON cfw_oplan_loc(ORG_GROUP_ID);
-;
-## 
-## INDEX: refcfw_oplan64 
-##
-
-CREATE INDEX refcfw_oplan64 ON cfw_oplan_loc(OPLAN_ID, CFW_ID);
-;
-## 
-## INDEX: reflib_org_group36 
-##
-
-CREATE INDEX reflib_org_group36 ON cfw_oplan_og_attr(ORG_GROUP_ID);
-;
-## 
-## INDEX: refcfw_oplan7 
-##
-
-CREATE INDEX refcfw_oplan7 ON cfw_oplan_og_attr(OPLAN_ID, CFW_ID);
 ;
 ## 
 ## INDEX: reflib_org_group11 

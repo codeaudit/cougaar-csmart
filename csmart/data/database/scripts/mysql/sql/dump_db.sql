@@ -48,18 +48,6 @@ FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM asb_component_hierarchy;
 
-SELECT ASSEMBLY_ID,OPLAN_ID,OPERATION_NAME,PRIORITY,C0_DATE 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/asb_oplan_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY ",\n" FROM asb_oplan;
-
-SELECT ASSEMBLY_ID,OPLAN_ID,COMPONENT_ALIB_ID,COMPONENT_ID,START_CDAY,ATTRIBUTE_NAME,END_CDAY,ATTRIBUTE_VALUE 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/asb_oplan_agent_attr_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY ",\n" FROM asb_oplan_agent_attr;
-
 SELECT EXPT_ID,DESCRIPTION,NAME,CFW_GROUP_ID  
 INTO OUTFILE ":cip/csmart/data/database/raw_data/expt_experiment_data.csv" 
 FIELDS TERMINATED BY ',' 
@@ -183,31 +171,6 @@ INTO OUTFILE ":cip/csmart/data/database/raw_data/cfw_instance_data.csv"
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM cfw_instance;
-
-
-SELECT CFW_ID,OPLAN_ID,OPERATION_NAME,PRIORITY,C0_DATE 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/cfw_oplan_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY ",\n" FROM cfw_oplan;
-
-SELECT CFW_ID,OPLAN_ID,ORG_GROUP_ID,START_CDAY,END_CDAY,OPTEMPO,ACTIVITY_TYPE 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/cfw_oplan_activity_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY ",\n" FROM cfw_oplan_activity;
-
-SELECT CFW_ID,OPLAN_ID,ORG_GROUP_ID,START_CDAY,END_CDAY,LOCATION_CODE 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/cfw_oplan_loc_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY ",\n" FROM cfw_oplan_loc;
-
-SELECT CFW_ID,OPLAN_ID,ORG_GROUP_ID,START_CDAY,ATTRIBUTE_NAME,END_CDAY,ATTRIBUTE_VALUE 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/cfw_oplan_og_attr_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY ",\n" FROM cfw_oplan_og_attr;
 
 SELECT CFW_ID,ORG_GROUP_ID,ORG_ID 
 INTO OUTFILE ":cip/csmart/data/database/raw_data/cfw_org_group_org_member_data.csv" 

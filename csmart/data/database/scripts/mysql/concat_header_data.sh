@@ -31,8 +31,6 @@ cat $HEADER_PATH/alploc_header.csv $DATA_PATH/alploc_data.csv > $CSV_PATH/alploc
 cat $HEADER_PATH/asb_assembly_header.csv $DATA_PATH/asb_assembly_data.csv > $CSV_PATH/asb_assembly.csv
 cat $HEADER_PATH/asb_component_arg_header.csv $DATA_PATH/asb_component_arg_data.csv > $CSV_PATH/asb_component_arg.csv
 cat $HEADER_PATH/asb_component_hierarchy_header.csv $DATA_PATH/asb_component_hierarchy_data.csv > $CSV_PATH/asb_component_hierarchy.csv
-cat $HEADER_PATH/asb_oplan_header.csv $DATA_PATH/asb_oplan_data.csv > $CSV_PATH/asb_oplan.csv
-cat $HEADER_PATH/asb_oplan_agent_attr_header.csv $DATA_PATH/asb_oplan_agent_attr_data.csv > $CSV_PATH/asb_oplan_agent_attr.csv
 cat $HEADER_PATH/oplan_header.csv $DATA_PATH/oplan_data.csv > $CSV_PATH/oplan.csv
 cat $HEADER_PATH/oplan_agent_attr_header.csv $DATA_PATH/oplan_agent_attr_data.csv > $CSV_PATH/oplan_agent_attr.csv
 cat $HEADER_PATH/expt_experiment_header.csv $DATA_PATH/expt_experiment_data.csv > $CSV_PATH/expt_experiment.csv
@@ -56,10 +54,6 @@ cat $HEADER_PATH/cfw_group_header.csv $DATA_PATH/cfw_group_data.csv > $CSV_PATH/
 cat $HEADER_PATH/cfw_group_org_header.csv $DATA_PATH/cfw_group_org_data.csv > $CSV_PATH/cfw_group_org.csv
 cat $HEADER_PATH/cfw_group_member_header.csv $DATA_PATH/cfw_group_member_data.csv > $CSV_PATH/cfw_group_member.csv
 cat $HEADER_PATH/cfw_instance_header.csv $DATA_PATH/cfw_instance_data.csv > $CSV_PATH/cfw_instance.csv
-cat $HEADER_PATH/cfw_oplan_header.csv $DATA_PATH/cfw_oplan_data.csv > $CSV_PATH/cfw_oplan.csv
-cat $HEADER_PATH/cfw_oplan_activity_header.csv $DATA_PATH/cfw_oplan_activity_data.csv > $CSV_PATH/cfw_oplan_activity.csv
-cat $HEADER_PATH/cfw_oplan_loc_header.csv $DATA_PATH/cfw_oplan_loc_data.csv > $CSV_PATH/cfw_oplan_loc.csv
-cat $HEADER_PATH/cfw_oplan_og_attr_header.csv $DATA_PATH/cfw_oplan_og_attr_data.csv > $CSV_PATH/cfw_oplan_og_attr.csv
 cat $HEADER_PATH/cfw_org_group_org_member_header.csv $DATA_PATH/cfw_org_group_org_member_data.csv > $CSV_PATH/cfw_org_group_org_member.csv
 cat $HEADER_PATH/cfw_org_hierarchy_header.csv $DATA_PATH/cfw_org_hierarchy_data.csv > $CSV_PATH/cfw_org_hierarchy.csv
 cat $HEADER_PATH/cfw_org_list_header.csv $DATA_PATH/cfw_org_list_data.csv > $CSV_PATH/cfw_org_list.csv

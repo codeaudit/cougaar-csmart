@@ -88,23 +88,6 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_agent_attr.csv.tmp'
     IGNORE 1 LINES
     (OPLAN_ID,ORG_ID,COMPONENT_ID,START_CDAY,ATTRIBUTE_NAME,END_CDAY,ATTRIBUTE_VALUE);
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_oplan.csv.tmp'
-    INTO TABLE asb_oplan
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (ASSEMBLY_ID,OPLAN_ID,OPERATION_NAME,PRIORITY,C0_DATE);
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_oplan_agent_attr.csv.tmp'
-    INTO TABLE asb_oplan_agent_attr
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (ASSEMBLY_ID,OPLAN_ID,COMPONENT_ALIB_ID,COMPONENT_ID,START_CDAY,ATTRIBUTE_NAME,END_CDAY,ATTRIBUTE_VALUE);
 
 LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_context_plugin_arg.csv.tmp'
     INTO TABLE cfw_context_plugin_arg
@@ -150,42 +133,6 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_instance.csv.tmp'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
     (CFW_ID,DESCRIPTION);
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan.csv.tmp'
-    INTO TABLE cfw_oplan
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (CFW_ID,OPLAN_ID,OPERATION_NAME,PRIORITY,C0_DATE);
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan_activity.csv.tmp'
-    INTO TABLE cfw_oplan_activity
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (CFW_ID,OPLAN_ID,ORG_GROUP_ID,START_CDAY,END_CDAY,OPTEMPO,ACTIVITY_TYPE);
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan_loc.csv.tmp'
-    INTO TABLE cfw_oplan_loc
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (CFW_ID,OPLAN_ID,ORG_GROUP_ID,START_CDAY,END_CDAY,LOCATION_CODE);
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan_og_attr.csv.tmp'
-    INTO TABLE cfw_oplan_og_attr
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (CFW_ID,OPLAN_ID,ORG_GROUP_ID,START_CDAY,ATTRIBUTE_NAME,END_CDAY,ATTRIBUTE_VALUE);
 
 LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_group_org_member.csv.tmp'
     INTO TABLE cfw_org_group_org_member
