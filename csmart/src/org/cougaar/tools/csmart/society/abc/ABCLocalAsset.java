@@ -26,7 +26,7 @@ import org.cougaar.tools.csmart.core.property.range.LongRange;
 import org.cougaar.tools.csmart.core.cdata.LeafComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericLeafComponentData;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -94,10 +94,19 @@ public class ABCLocalAsset
   private Property propTimeDeviation;
   private Property propRoles;
 
+  /**
+   * Creates a new <code>ABCLocalAsset</code> instance.
+   *
+   */
   ABCLocalAsset() {
     this("LocalAssets");
   }
 
+  /**
+   * Creates a new <code>ABCLocalAsset</code> instance.
+   *
+   * @param name Name of the Local Asset Component
+   */
   ABCLocalAsset(String name) {
     super(name);
   }
@@ -153,26 +162,13 @@ public class ABCLocalAsset
   }
 
   /**
-   * Writes a Local Asset File to the specified directory. <br>
-   * Local Asset files are of the format:
+   * Creates a LeafComponent for a Local Asset file.
+   * 
+   * A Local asset line is in the form of:   <br>
    * [name], [dec amt], [avg time], [inv_stdev], [time_stdev], [roles]
-   * <br><br>
-   * @param File directory to place taskfile in.
-   * @throws IOException if the file cannot be created.
+   *
+   * @return a <code>LeafComponentData</code> value
    */
-  public void writeAssetFile(File configDir) throws IOException {
-    File taskFile = new File(configDir, (String)getProperty(PROP_ASSETFILENAME).getValue());
-    PrintWriter writer = new PrintWriter(new FileWriter(taskFile));
-
-    try {
-      writer.println("# [name], [dec amt], [avg time], [inv_stdev], [time_stdev], [roles]");
-      writer.println(getConfigLine());
-    }
-    finally {
-      writer.close();
-    }
-  }			     
-
   public LeafComponentData createAssetFileLeaf() {
     GenericLeafComponentData lcd = new GenericLeafComponentData();
     StringBuffer sb = new StringBuffer();

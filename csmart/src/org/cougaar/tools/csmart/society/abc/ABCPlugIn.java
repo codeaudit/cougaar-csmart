@@ -25,7 +25,7 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyAlias;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 
-import java.io.*;
+import java.io.Serializable;
 
 public class ABCPlugIn
   extends ConfigurableComponent
@@ -35,22 +35,50 @@ public class ABCPlugIn
   private int nParameters = 0;
   private String pluginClass;
 
+  /**
+   * Creates a new <code>ABCPlugIn</code> instance.
+   *
+   * @param name Name of the Plugin Component
+   * @param pluginClass Name of the plugin class
+   */
   public ABCPlugIn(String name, String pluginClass) {
     super(name);
     this.pluginClass = pluginClass;
   }
 
+  /**
+   * Initializes any properties for this component.
+   *
+   */
   public void initProperties() {
+    // Currently, no properties require initialization
   }
 
+  /**
+   * Gets the classname for this plugin
+   *
+   * @return a <code>String</code> value
+   */
   public String getPlugInClassName() {
     return pluginClass;
   }
 
+  /**
+   * Adds a Parameter to this component.
+   *
+   * @param param Unique Integer for this parameter
+   * @return a <code>Property</code> value
+   */
   public Property addParameter(int param) {
     return addProperty(PROP_PARAM + nParameters++, new Integer(param));
   }
 
+  /**
+   * Adds a Parameter to this component
+   *
+   * @param param Unique string for this parameter
+   * @return a <code>Property</code> value
+   */
   public Property addParameter(String param) {
     return addProperty(PROP_PARAM + nParameters++, param);
   }
@@ -63,6 +91,13 @@ public class ABCPlugIn
     return addProperty(new PropertyAlias(this, PROP_PARAM + nParameters++, prop));
   }
 
+  /**
+   * Returns the configuration line for this plugin.
+   * configuration lines are of the format:
+   * plugin = ...
+   *
+   * @return a <code>String</code> value
+   */
   public String getConfigLine() {
     StringBuffer buf = new StringBuffer();
     buf.append("plugin = ");
@@ -81,6 +116,12 @@ public class ABCPlugIn
     return buf.substring(0);
   }
 
+  /**
+   * Adds this component to the ComponentData structure.
+   *
+   * @param data 
+   * @return a <code>ComponentData</code> value
+   */
   public ComponentData addComponentData(ComponentData data) {
     data.setName(getPlugInClassName());
 
@@ -90,6 +131,14 @@ public class ABCPlugIn
     return data;
   }
 
+
+  /**
+   * Performs any modificaions to the ComponentData structure
+   * required by this component
+   *
+   * @param data 
+   * @return a <code>ComponentData</code> value
+   */
   public ComponentData modifyComponentData(ComponentData data) {
     return data;
   }

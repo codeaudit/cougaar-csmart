@@ -23,7 +23,7 @@ package org.cougaar.tools.csmart.society.abc;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 
-import java.io.*;
+import java.io.Serializable;
 import java.lang.StringBuffer;
 import java.util.Collection;
 import java.util.ArrayList;
@@ -47,10 +47,19 @@ public class ABCAllocationRule
   private Property propTaskVerb;
   private Property propRoles;
 
+  /**
+   * Creates a new <code>ABCAllocationRule</code> instance.
+   *
+   */
   ABCAllocationRule() {
     this("Alloc");
   }
 
+  /**
+   * Creates a new <code>ABCAllocationRule</code> instance.
+   *
+   * @param name Name of the Allocation Rule Component
+   */
   ABCAllocationRule(String name) {
     super("Rule" + "-" + name);
   }

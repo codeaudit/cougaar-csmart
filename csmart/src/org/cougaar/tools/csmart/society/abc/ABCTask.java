@@ -28,7 +28,7 @@ import org.cougaar.tools.csmart.core.property.range.DoubleRange;
 import org.cougaar.tools.csmart.core.property.range.LongRange;
 import org.cougaar.tools.csmart.core.property.range.IntegerRange;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.Collections;
 
 /** 
@@ -77,10 +77,19 @@ public class ABCTask
   private Property propRate;
   private Property propChaos;
 
+  /**
+   * Creates a new <code>ABCTask</code> instance.
+   *
+   */
   ABCTask() {
     this("Tasks");
   }
 
+  /**
+   * Creates a new <code>ABCTask</code> instance.
+   *
+   * @param name Component Name
+   */
   ABCTask(String name) {
     super(name);
   }

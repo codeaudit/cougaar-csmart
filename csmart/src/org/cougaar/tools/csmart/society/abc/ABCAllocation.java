@@ -20,7 +20,7 @@
  */
 package org.cougaar.tools.csmart.society.abc;
 
-import java.io.*;
+import java.io.Serializable;
 import java.lang.StringBuffer;
 import java.util.Collections;
 
@@ -101,10 +101,19 @@ public class ABCAllocation
   private Property propFileName;
   private Property propNumberOfRules;
 
+  /**
+   * Creates a new <code>ABCAllocation</code> instance.
+   *
+   */
   ABCAllocation() {
     this("Allocations");
   }
 
+  /**
+   * Creates a new <code>ABCAllocation</code> instance.
+   *
+   * @param name Name of the Allocation
+   */
   ABCAllocation(String name) {
     super(name);
   }
@@ -193,35 +202,15 @@ public class ABCAllocation
     return sb.toString();
   }
 
+  
   /**
-   * Writes an Allocation File to the specified directory. <br>
+   * Creates a Allocation file associated with this Allocation.
    * Allocation files are of the format:
    * [config, <fSuccess>, <tResp> (, <tAlloc>, <tTrans>, <tTry>)]
    * [[rule, ] <task>, <role> (, <role>)*]
    * <br><br>
-   * @param File directory to place taskfile in.
-   * @throws IOException if the file cannot be created.
+   * @return a <code>LeafComponentData</code> value
    */
-  public void writeAllocationFile(File configDir) throws IOException {
-
-    File taskFile = new File(configDir, (String)getProperty(PROP_ALLOCFILENAME).getValue());
-    PrintWriter writer = new PrintWriter(new FileWriter(taskFile));
-
-    try {
-      writer.println("# [config, <fSuccess>, <tResp> (, <tAlloc>, <tTrans>, <tTry>)]");
-      writer.println("# [[rule, ] <task>, <role> (, <role>)*]");
-      writer.println("# <more \"rule\" lines as necessary>");
-      writer.println(getConfigLine());
-      for(int i=0; i < getChildCount(); i++) {
-	ABCAllocationRule rule = (ABCAllocationRule)getChild(i);
-	writer.println(rule.getConfigLine());
-      }
-    } 
-    finally {
-      writer.close();
-    }
-  }
-  
   public LeafComponentData createAllocationLeaf() {
     GenericLeafComponentData lcd = new GenericLeafComponentData();
     StringBuffer sb = new StringBuffer();

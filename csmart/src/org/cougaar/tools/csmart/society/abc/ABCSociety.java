@@ -37,7 +37,6 @@ import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 
-// import java.io.File;
 import java.io.FileFilter;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -52,12 +51,9 @@ import java.util.Iterator;
 import javax.swing.JOptionPane;
 
 public class ABCSociety
-  extends ModifiableConfigurableComponent
-  implements PropertiesListener, Serializable, SocietyComponent
+  extends SocietyBase
+  implements Serializable
 {
-  private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
-  private static final String BACKUP_DESCRIPTION =
-    "ABCSociety description not available";
 
   /** Property Definition for Community Count **/
   public static final String PROP_COMMUNITYCOUNT = "Community Count";
@@ -75,9 +71,16 @@ public class ABCSociety
   public static final String PROP_TASKVERB = ABCTask.PROP_TASKVERB;
   public static final String PROP_STARTTIME = ABCAgent.PROP_STARTTIME;
   public static final String PROP_STOPTIME = ABCAgent.PROP_STOPTIME;
-  
-  private boolean isRunning = false;
-  private boolean editable = true;
+
+  // Initialize a default society of 8 communities.
+  private static final String[] DEMAND_INIT 
+            = {"5", "3", "4", "2", "2", "2", "2", "2"};
+  private static final String[] PRODUCTION_INIT 
+            = {"20", "20", "20", "20", "20", "20", "60", "400"};
+  private static final String[] LATITUDE_INIT 
+            = {"25", "27", "29", "26", "28", "25", "27", "29"};
+  private static final String[] LONGITUDE_INIT 
+            = {"52", "52", "52", "75", "75", "100", "100", "100"};
 
   private Property propCommunityCount;
   private Property propLevelCount;
@@ -90,24 +93,24 @@ public class ABCSociety
   private List hosts = new ArrayList();
   private List nodes = new ArrayList();
 
+  /**
+   * Creates a new <code>ABCSociety</code> instance.
+   *
+   */
   public ABCSociety() {
     this("ABC Society");
   }
 
+  /**
+   * Creates a new <code>ABCSociety</code> instance.
+   *
+   * @param name Name of this component
+   */
   public ABCSociety(String name) {
     super(name);
 
     // Init the CSMART Constants file to get Roles
     Constants.Role.init();
-  }
-
-  /**
-   * Returns the name of this Society
-   *
-   * @return Society Name
-   */
-  public String getSocietyName() {
-    return getShortName();
   }
 
   /**
@@ -162,25 +165,6 @@ public class ABCSociety
     buildDefaultCommunity();
   }
   
-  /**
-   * Called when a new property has been added to the
-   * society. 
-   *
-   * @param PropertyEvent Event for the new property
-   */
-  public void propertyAdded(PropertyEvent e) {
-    Property addedProperty = e.getProperty();
-    Property myProperty = getProperty(addedProperty.getName().last().toString());
-    if (myProperty != null) {
-      setPropertyVisible(addedProperty, true);
-    }
-  }
-
-  /**
-   * Called when a property has been removed from the society
-   */
-  public void propertyRemoved(PropertyEvent e) {}
-
   private Property addPropertyAlias(ABCCommunity c, Property prop, String name) {
     Property childProp = c.addAliasProperty(prop, name);
     setPropertyVisible(childProp, false);
@@ -345,52 +329,17 @@ public class ABCSociety
 	addPropertyAlias(child, propTaskVerb, PROP_TASKVERB);
 	addPropertyAlias(child, propStartTime, PROP_STARTTIME);
 	addPropertyAlias(child, propStopTime, PROP_STOPTIME);
-
 	child.initProperties();
-
-	if(child.getCommunity() == 0) {
-	  child.getProperty(ABCCommunity.PROP_DEMAND).setValue(new Integer(5));
-	  child.getProperty(ABCCommunity.PROP_PRODUCTION).setValue(new Integer(20));
-	  child.getProperty(ABCCommunity.PROP_LATITUDE).setValue(new Float(25));
-	  child.getProperty(ABCCommunity.PROP_LONGITUDE).setValue(new Float(52));
-	} else if(child.getCommunity() == 1) {
-	  child.getProperty(ABCCommunity.PROP_DEMAND).setValue(new Integer(3));
-	  child.getProperty(ABCCommunity.PROP_PRODUCTION).setValue(new Integer(20));
-	  child.getProperty(ABCCommunity.PROP_LATITUDE).setValue(new Float(27));
-	  child.getProperty(ABCCommunity.PROP_LONGITUDE).setValue(new Float(52));
-	} else if(child.getCommunity() == 2) {
-	  child.getProperty(ABCCommunity.PROP_DEMAND).setValue(new Integer(4));
-	  child.getProperty(ABCCommunity.PROP_PRODUCTION).setValue(new Integer(20));
-	  child.getProperty(ABCCommunity.PROP_LATITUDE).setValue(new Float(29));
-	  child.getProperty(ABCCommunity.PROP_LONGITUDE).setValue(new Float(52));
-	} else if(child.getCommunity() == 3) {
-	  child.getProperty(ABCCommunity.PROP_DEMAND).setValue(new Integer(2));
-	  child.getProperty(ABCCommunity.PROP_PRODUCTION).setValue(new Integer(12));
-	  child.getProperty(ABCCommunity.PROP_LATITUDE).setValue(new Float(26));
-	  child.getProperty(ABCCommunity.PROP_LONGITUDE).setValue(new Float(75));
-	} else if(child.getCommunity() == 4) {
-	  child.getProperty(ABCCommunity.PROP_DEMAND).setValue(new Integer(2));
-	  child.getProperty(ABCCommunity.PROP_PRODUCTION).setValue(new Integer(12));
-	  child.getProperty(ABCCommunity.PROP_LATITUDE).setValue(new Float(28));
-	  child.getProperty(ABCCommunity.PROP_LONGITUDE).setValue(new Float(75));
-	} else if(child.getCommunity() == 5) {
-	  child.getProperty(ABCCommunity.PROP_DEMAND).setValue(new Integer(2));
-	  child.getProperty(ABCCommunity.PROP_PRODUCTION).setValue(new Integer(60));
-	  child.getProperty(ABCCommunity.PROP_LATITUDE).setValue(new Float(25));
-	  child.getProperty(ABCCommunity.PROP_LONGITUDE).setValue(new Float(100));
-	} else if(child.getCommunity() == 6) {
-	  child.getProperty(ABCCommunity.PROP_DEMAND).setValue(new Integer(2));
-	  child.getProperty(ABCCommunity.PROP_PRODUCTION).setValue(new Integer(60));
-	  child.getProperty(ABCCommunity.PROP_LATITUDE).setValue(new Float(27));
-	  child.getProperty(ABCCommunity.PROP_LONGITUDE).setValue(new Float(100));
-	} else if(child.getCommunity() == 7) {
-	  child.getProperty(ABCCommunity.PROP_DEMAND).setValue(new Integer(2));
-	  child.getProperty(ABCCommunity.PROP_PRODUCTION).setValue(new Integer(400));
-	  child.getProperty(ABCCommunity.PROP_LATITUDE).setValue(new Float(29));
-	  child.getProperty(ABCCommunity.PROP_LONGITUDE).setValue(new Float(100));
-	}
+        child.getProperty(ABCCommunity.PROP_DEMAND).setValue(
+                                 new Integer(DEMAND_INIT[crntCommunity]));
+        child.getProperty(ABCCommunity.PROP_PRODUCTION).setValue(
+                                 new Integer(PRODUCTION_INIT[crntCommunity]));
+        child.getProperty(ABCCommunity.PROP_LATITUDE).setValue(
+                                 new Float(LATITUDE_INIT[crntCommunity]));
+        child.getProperty(ABCCommunity.PROP_LONGITUDE).setValue(
+                                 new Float(LONGITUDE_INIT[crntCommunity]));
 	child.addAgents();
-	
+
 	externalProviders = new String[getChildCount()];
 	int index = 0;
 	Iterator iter = ((Collection)getDescendentsOfClass(ABCCommunity.class)).iterator();
@@ -444,6 +393,11 @@ public class ABCSociety
     }
   }
 
+  /**
+   * Returns all the agents in this society.
+   *
+   * @return an <code>AgentComponent[]</code> value
+   */
   public AgentComponent[] getAgents() {
     Collection communities = getDescendentsOfClass(ABCCommunity.class);
     Iterator iter = communities.iterator();
@@ -456,120 +410,12 @@ public class ABCSociety
     return (AgentComponent[]) agents.toArray(new AgentComponent[agents.size()]);
   }
 
-  public NodeComponent[] getNodes() {
-    return (NodeComponent[]) nodes.toArray(new NodeComponent[nodes.size()]);
-  }
-
-  public HostComponent[] getHosts() {
-    return (HostComponent[]) hosts.toArray(new HostComponent[hosts.size()]);
-  }
-
-  public void addModificationListener(ModificationListener l) {
-    getEventListenerList().add(ModificationListener.class, l);
-  }
-
-  public void removeModificationListener(ModificationListener l) {
-    getEventListenerList().remove(ModificationListener.class, l);
-  }
-
-  protected void fireModification() {
-    fireModification(new ModificationEvent(this, ModificationEvent.SOMETHING_CHANGED));
-  }
-
-  protected void fireModification(ModificationEvent event) {
-    ModificationListener[] ls =
-      (ModificationListener[]) getEventListenerList()
-      .getListeners(ModificationListener.class);
-    for (int i = 0; i < ls.length; i++) {
-      try {
-	ls[i].modified(event);
-      } catch (RuntimeException re) {
-	re.printStackTrace();
-      }
-    }
-  }
-
-  public URL getDescription() {
-    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
-
-  }
-
   /**
-   * Returns whether or not the society can be edited.
-   * @return true if society can be edited and false otherwise
+   * Copies the society component.
+   *
+   * @param result society component to copy
+   * @return a <code>ComponentProperties</code> value
    */
-
-  public boolean isEditable() {
-    //    return !isRunning;
-    return editable;
-  }
-
-  /**
-   * Set whether or not the society can be edited.
-   * @param editable true if society is editable and false otherwise
-   */
-
-  public void setEditable(boolean editable) {
-    this.editable = editable;
-  }
-
-  /**
-   * Set by the experiment controller to indicate that the
-   * society is running.
-   * The society is running from the moment that any node
-   * is successfully created 
-   * until all nodes are terminated (aborted, self terminated, or
-   * manually terminated).
-   * @param flag indicating whether or not the society is running
-   */
-  public void setRunning(boolean isRunning) {
-    this.isRunning = isRunning;
-  }
-
-  /**
-   * Returns whether or not the society is running, 
-   * i.e. can be dynamically monitored.
-   * Running societies are not editable, but they can be copied,
-   * and the copy can be edited.
-   * @return true if society is running and false otherwise
-   */
-  public boolean isRunning() {
-    return isRunning;
-  }
-
-  // Change this to get getOutputFileFilter or something like that?
-  /**
-   * Return a file filter which can be used to fetch
-   * the metrics files for this experiment.
-   * @return file filter to get metrics files for this experiment
-   */
-  public FileFilter getResultFileFilter() {
-    return null;
-  }
-
-  /**
-   * Return a file filter which can be used to delete
-   * the files generated by this experiment.
-   * @return file filter for cleanup
-   */
-  public FileFilter getCleanupFileFilter() {
-    // TODO: return cleanup file filter
-    return null;
-  }
-
-
-  /**
-   * Returns whether the society is self terminating or must
-   * be manually terminated.
-   * Self terminating nodes cause a NODE_DESTROYED event
-   * to be generated (see org.cougaar.tools.server.NodeEvent).
-   * @return true if society is self terminating
-   * @see org.cougaar.tools.server.NodeEvent
-   */
-  public boolean isSelfTerminating() {
-    return false;
-  }
-
   public ComponentProperties copy(ComponentProperties result) {
     result = super.copy(result);
     // Try to get the PROP_SUPPLIES and PROP_INITIALIZER properties
@@ -579,6 +425,12 @@ public class ABCSociety
     return result;
   }
 
+  /**
+   * Adds the all the ComponentData for this society.
+   *
+   * @param data 
+   * @return a <code>ComponentData</code> value
+   */
   public ComponentData addComponentData(ComponentData data) {
     ComponentData[] children = data.getChildren();
 
@@ -603,11 +455,4 @@ public class ABCSociety
 
     return data;
   }
-
-  public ComponentData modifyComponentData(ComponentData data) {
-    ComponentData[] children = data.getChildren();
-
-    return data;
-  }
-
 }

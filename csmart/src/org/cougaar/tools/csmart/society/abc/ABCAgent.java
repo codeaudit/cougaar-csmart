@@ -20,11 +20,11 @@
  */
 package org.cougaar.tools.csmart.society.abc;
 
-import java.io.*;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.io.Serializable;
 
 import org.cougaar.planning.ldm.plan.Role;
 
@@ -119,6 +119,13 @@ public class ABCAgent
   private Property propIndex;
   private Property propSupplies;
 
+  /**
+   * Creates a new <code>ABCAgent</code> instance.
+   *
+   * @param level The level this agent resides
+   * @param type Type of agent (Customer, Provider)
+   * @param index Unique Index of Agent
+   */
   ABCAgent(int level, String type, int index) {
     super("Agent-" + level + "-" + type + index);
     this.level = level;
@@ -126,11 +133,15 @@ public class ABCAgent
     this.index = index;
   }
 
+  /**
+   * Creates a new <code>ABCAgent</code> instance.
+   *
+   * @param comm Community the agents belongs to.
+   * @param type Type of Agent (Customer, Provider)
+   * @param index Unique Index for Agent
+   */
   ABCAgent(String comm, String type, int index) {
     //    super("Agent-" + comm + "-" + type + index);
-
-    // Shorten agent name by removing the Agent-
-    //    super("Agent-" + type + index);
     // Do I want to add the comm to it to ensure the comm name is part of the agent name?
     super(type + index);
     this.level = level;
@@ -254,6 +265,7 @@ public class ABCAgent
    * @return a <code>ComponentData</code> value
    */
   public ComponentData modifyComponentData(ComponentData data) {
+    // Currently, agents perform zero modifications.
     return data;
   }
 

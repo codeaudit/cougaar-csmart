@@ -28,7 +28,7 @@ import org.cougaar.tools.csmart.core.property.range.IntegerRange;
 import org.cougaar.tools.csmart.core.property.range.FloatRange;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 
-import java.io.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Collection;
@@ -177,6 +177,12 @@ public class ABCCommunity
     return childProp;
   }
 
+  /**
+   * Creates a new <code>ABCCommunity</code> instance.
+   *
+   * @param level Level community resides on
+   * @param comm Community Identification Number
+   */
   public ABCCommunity(int level, int comm) {
     super("Community" + comm);
     this.level = level;
@@ -439,16 +445,11 @@ public class ABCCommunity
 
   /**
    * Adds an alias property
+   * @param prop Property to alias
+   * @param name Name of the Property Alias
+   * @return a <code>Property</code> value
    */
   public Property addAliasProperty(Property prop, String name) {
     return addProperty(new PropertyAlias(this, name, prop));
-  }
-
-  /**
-   * Generates all ini files for agents
-   *
-   * @param File Directory to write files to
-   */
-  public void generateIniFiles(File configDir) {
   }
 }

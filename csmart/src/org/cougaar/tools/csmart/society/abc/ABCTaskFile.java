@@ -20,7 +20,7 @@
  */
 package org.cougaar.tools.csmart.society.abc;
 
-import java.io.*;
+import java.io.Serializable;
 
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
@@ -57,10 +57,19 @@ public class ABCTaskFile
 
   private Property propTaskCount;
 
+  /**
+   * Creates a new <code>ABCTaskFile</code> instance.
+   *
+   */
   ABCTaskFile() {
     this("Task File");
   }
 
+  /**
+   * Creates a new <code>ABCTaskFile</code> instance.
+   *
+   * @param name Name of the component
+   */
   ABCTaskFile(String name) {
     super(name);
   }
@@ -102,28 +111,10 @@ public class ABCTaskFile
   }
 
   /**
-   * Writes a Task File to the specified directory. <br>
-   * Task file is of the format: <br>
-   * <WorldState>, <TaskVerb>, <Rate>, <Chaos>, <Vitality>, <Duration>
-   * <br><br>
-   * @param File directory to place taskfile in.
-   * @throws IOException if the file cannot be created.
+   * Adds the Taskfile as a LeafComponent in the ComponentData structure.
+   *
+   * @return a <code>LeafComponentData</code> value
    */
-  public void writeTaskFile(File configDir) throws IOException {
-
-    File taskFile = new File(configDir, (String)getProperty(PROP_TASKFILENAME).getValue());
-    PrintWriter writer = new PrintWriter(new FileWriter(taskFile));
-    try {
-      writer.println("# <WorldState>, <TaskVerb>, <Rate>, <Chaos>, <Vitality>, <Duration>");
-      for(int i=0; i < getChildCount(); i++) {
-	writer.println(((ABCTask)getChild(i)).getConfigLine());
-      }
-    } 
-    finally {
-      writer.close();
-    }
-  }
-
   public LeafComponentData createTaskFileLeaf() {
     GenericLeafComponentData lcd = new GenericLeafComponentData();
     StringBuffer sb = new StringBuffer();
