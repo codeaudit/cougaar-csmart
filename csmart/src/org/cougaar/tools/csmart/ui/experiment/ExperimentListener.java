@@ -21,7 +21,6 @@
 package org.cougaar.tools.csmart.ui.experiment;
 
 import java.util.*;
-import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 
 public interface ExperimentListener {
 
