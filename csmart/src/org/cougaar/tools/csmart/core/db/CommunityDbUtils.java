@@ -180,6 +180,12 @@ public class CommunityDbUtils {
     }
 
     File file = new File(xmlFileFullName);
+    if (file == null) {
+      if (log.isErrorEnabled())
+	log.error("dumpCommXML: unable to get file " + xmlFileFullName);
+      return false;
+    }
+
     try {
       if(file.exists())
       {
@@ -692,7 +698,8 @@ public class CommunityDbUtils {
       if(args[3].substring(args[3].indexOf("=")+1, args[3].length()).equals("replace"))
         clearRecordsInCommunity(assemblyID);
 
-      importCommunityXML(xmlFile, assemblyID);
+      if (xmlFile != null)
+	importCommunityXML(xmlFile, assemblyID);
     } else if(args[0].equals("export")) {
       if(args.length != 3)
       {
