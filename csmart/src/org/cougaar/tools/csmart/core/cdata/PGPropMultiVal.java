@@ -33,6 +33,12 @@ import java.io.Serializable;
  **/
 public class PGPropMultiVal implements Serializable {
   private List values; // of Strings or of name/value pairs
+
+
+  /**
+   * Creates a new <code>PGPropMultiVal</code> instance.
+   *
+   */
   public PGPropMultiVal() {
     values = new ArrayList();
   }

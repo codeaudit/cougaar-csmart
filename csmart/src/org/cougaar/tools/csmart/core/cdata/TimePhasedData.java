@@ -38,6 +38,10 @@ public class TimePhasedData implements Serializable {
   /** Stop time for the time phased object **/
   String stopTime = null;
 
+  /**
+   * Creates a new <code>TimePhasedData</code> instance.
+   *
+   */
   public TimePhasedData() {
   }
 

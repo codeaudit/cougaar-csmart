@@ -24,6 +24,18 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.io.Serializable;
 
+/**
+ * Represents a Relationship for an asset.
+ * All relationships contain three values:
+ * <ul>
+ * <li> Type:  This is the type of relationship </li>
+ * <li> Item:  This is Agent we are forming a relationship with </li>
+ * <li> Role: This is a role performed by this asset. </li>
+ * </ul>
+ *
+ * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
+ * @version 1.0
+ */
 public class RelationshipData implements Serializable {
   
   private String type = null;
@@ -33,33 +45,70 @@ public class RelationshipData implements Serializable {
   private long endTime = 0L;
   private String supported = null;
 
-  // Types of relationship (not really important if everything else is correct)
+  /** Types of relationships **/
+  // (not really important if everything else is correct)
   public static final String SUPERIOR = "Superior";
   public static final String SUPPORTING = "Supporting";
 
+  /**
+   * Creates a new <code>RelationshipData</code> instance.
+   *
+   */
   public RelationshipData() {
   }
 
+  /**
+   * Sets the type of relationship
+   *
+   * @param type of relationship
+   */
   public void setType(String type) {
     this.type = type;
   }
 
+  /**
+   * Gets the type of relationship.
+   *
+   * @return relationship type.
+   */
   public String getType() {
     return this.type;
   }
 
+  /**
+   * Sets the Item of a relationship, this
+   * is usually the agent name we are forming
+   * a relationship with.
+   *
+   * @param item name
+   */
   public void setItem(String item) {
     this.item = item;
   }
 
+  /**
+   * Gets the Item for this relationship
+   *
+   * @return an item name
+   */
   public String getItem() {
     return this.item;
   }
 
+  /**
+   * Sets a single role for this relationship
+   *
+   * @param role performed by this asset.
+   */
   public void setRole(String role) {
     this.role = role;
   }
 
+  /**
+   * Gets a single role performed by this asset.
+   *
+   * @return role
+   */
   public String getRole() {
     return this.role;
   }
@@ -104,11 +153,21 @@ public class RelationshipData implements Serializable {
     return endTime;
   }
   
+  /**
+   * Sets the agent supported by this relationship
+   *
+   * @param supported agent
+   */
   public void setSupported(String supported) {
      this.supported = supported;
    }
  
-   public String getSupported() {
+  /**
+   * Gets the agent supported by this relationship
+   *
+   * @return agent
+   */
+  public String getSupported() {
      return this.supported;
    }
 

@@ -24,7 +24,7 @@ package org.cougaar.tools.csmart.core.cdata;
 /**
  * Leaf Component Interface.
  *
- * This is used to contain aux. compoent data for a 
+ * This is used to contain auxiliary component data for a 
  * specific component.  This with mostly be files that
  * are needed by a component.
  */

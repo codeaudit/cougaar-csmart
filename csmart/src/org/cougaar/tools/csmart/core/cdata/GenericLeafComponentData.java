@@ -24,7 +24,7 @@ package org.cougaar.tools.csmart.core.cdata;
 import java.io.Serializable;
 
 /**
- * Generic Leaf Component Implementation.
+ * Generic implementation of LeafComponentData.
  *
  * @see LeafComponentData
  */
@@ -34,6 +34,10 @@ public class GenericLeafComponentData implements LeafComponentData, Serializable
   private String name = null;
   private Object value = null;
 
+  /**
+   * Creates a new <code>GenericLeafComponentData</code> instance.
+   *
+   */
   public GenericLeafComponentData() {
   }
 
@@ -95,6 +99,12 @@ public class GenericLeafComponentData implements LeafComponentData, Serializable
     this.value = val;
   }
 
+  /**
+   * Determines if two GenericLeafComponents are equal.
+   *
+   * @param o an GenericLeafComponent
+   * @return a <code>boolean</code> value
+   */
   public boolean equals(Object o) {
     if (o instanceof GenericLeafComponentData) {
       GenericLeafComponentData that = (GenericLeafComponentData)o;

@@ -26,7 +26,7 @@ import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 
 /** 
  * Interface that contains all data
- * associated with a component.
+ * associated with an UltraLog component.
  */
 public interface ComponentData extends Serializable {
 
@@ -67,7 +67,7 @@ public interface ComponentData extends Serializable {
   /**
    * Sets the name of this component.
    *
-   * @param The name of this component.
+   * @param name of this component.
    */
   void setName(String name);
   
@@ -82,7 +82,7 @@ public interface ComponentData extends Serializable {
   /**
    * Sets the class for this component.
    *
-   * @param String class name, including package.
+   * @param classname, including package.
    */
   void setClassName(String className);
 
@@ -245,7 +245,8 @@ public interface ComponentData extends Serializable {
    * @throws IndexOutOfBoundsException if the index is out of range
    *            (index &lt; 0 || index &gt; size()).
    */
-  void setLeafComponent(int index, LeafComponentData leaf);
+  void setLeafComponent(int index, LeafComponentData leaf) 
+    throws IndexOutOfBoundsException;
 
   /**
    * Adds a single leaf component to this component

@@ -21,7 +21,8 @@
 
 package org.cougaar.tools.csmart.core.cdata;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * Data structure used to store Community Time Phased data.

@@ -53,33 +53,63 @@ public class PropGroupData implements Serializable {
   public static final String ASSIGNMENT          = "AssignmentPG";
   public static final String ORGANIZATION        = "OrganizationPG";
   public static final String MAINTENANCE         = "MaintenancePG";
-  public static final String CSSCapability       = "CSSCapabilityPG";
+  public static final String CSSCAPABILITY       = "CSSCapabilityPG";
 
   private String name = null;
   private String val = null;
   private List properties;
 
+  /**
+   * Creates a new <code>PropGroupData</code> instance.
+   *
+   * @param name of the Property Group
+   */
   public PropGroupData(String name) {
     this.name = name;
     properties = new ArrayList();
   }
 
+  /**
+   * Gets the name of the Property Group.
+   *
+   * @return Name of the Property Group
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Sets the name of the property group
+   *
+   * @param name of property group
+   */
   public void setName(String name) {
     this.name = name;
   }
 
+  /**
+   * Get a single value for this property group.
+   *
+   * @return value
+   */
   public String getSingleValue() {
     return val;
   }
 
+  /**
+   * Determines if this property group has a single value.
+   *
+   * @return true if only contains one value.
+   */
   public boolean hasSingleValue() {
     return val != null;
   }
 
+  /**
+   * Sets a single value. For this Property Group
+   *
+   * @param val of this property group
+   */
   public void setSingleValue(String val) {
     this.val = val;
   }
@@ -143,6 +173,11 @@ public class PropGroupData implements Serializable {
     return properties.size();
   }
 
+  /**
+   * Converts PropGroup to a String
+   *
+   * @return string of Property Group
+   */
   public String toString() {
     StringBuffer buf = new StringBuffer();
     buf.append("<PropertyGroup: " + name);

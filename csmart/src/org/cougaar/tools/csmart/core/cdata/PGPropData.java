@@ -23,7 +23,7 @@ package org.cougaar.tools.csmart.core.cdata;
 import java.io.Serializable;
 
 /**
- * Hold the data for one property in a property group
+ * Holds the data for one property in a property group
  * The Value is usually a <code>String</code> but could
  * be a list of values.
  * The type might be one of the list types,
@@ -36,39 +36,88 @@ public class PGPropData implements Serializable {
   private Object value = null; // Usu. a String
   private static final String[] listtypes = {"Collection", "List"};
 
+  /**
+   * Creates a new <code>PGPropData</code> instance.
+   *
+   */
   public PGPropData() {
   }
 
+  /**
+   * Sets the name of the property.
+   *
+   * @param name of the property
+   */
   public void setName(String name) {
     this.name = name;
   }
 
+  /**
+   * Gets the name of the property.
+   *
+   * @return the property name.
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Sets the type of the property.
+   *
+   * @param type of property.
+   */
   public void setType(String type) {
     this.type = type;
     // check if its a list type here?
   }
 
+  /**
+   * Gets the type of the property.
+   *
+   * @return the property type.
+   */
   public String getType() {
     return type;
   }
 
+  /**
+   * Sets the type of the property when
+   * the type is a list.
+   *
+   * @param list type
+   * @param subtype of elements in the list.
+   */
   public void setType(String list, String subtype) {
     this.type = list;
     this.subtype = subtype;
   }
   
+  /**
+   * Gets the property type when the property
+   * contains a list of values.
+   *
+   * @return subtype of property value.
+   */
   public String getSubType() {
     return subtype;
   }
 
+  /**
+   * Sets the subtype.
+   *
+   * @param subtype of property
+   */
   public void setSubType(String subtype) {
     this.subtype = subtype;
   }
 
+  /**
+   * Determines if the value is a known listtype
+   * The known list types are:
+   * <code>Collection</code>, <code>List<code>
+   * 
+   * @return True if property is a listtype
+   */
   public boolean isListType() {
     if (type == null)
       return false;
@@ -79,6 +128,11 @@ public class PGPropData implements Serializable {
     return false;
   }
   
+  /**
+   * Sets the value of the property.
+   *
+   * @param val of the property.
+   */
   public void setValue(Object val) {
     // check that its a String of PGPropMultiVal?
     if(isListType() && !(val instanceof PGPropMultiVal)) {
@@ -88,10 +142,20 @@ public class PGPropData implements Serializable {
     }
   }
 
+  /**
+   * Returns the value of the property.
+   *
+   * @return property value.
+   */
   public Object getValue() {
     return value;
   }
 
+  /**
+   * String of the Property.
+   *
+   * @return a <code>String</code> of the property.
+   */
   public String toString() {
     StringBuffer buf = new StringBuffer();
     buf.append("Value: " + getName() + " of type " + getType());

@@ -52,20 +52,29 @@ import java.util.List;
  *
  */
 public class AgentAssetData implements Serializable {
-  // Asset of type entity
+
+  /** All Possible Entity Types **/
+
+  /** Asset of type Entity**/
   // Item & type should be specified explicitly
   // EntityPG not OrgPG will be included
   // UniqueID, UnitName & UIC will be excluded
   // Relationships will include type, item, start, & end
   public static final int ENTITY = 0;
+
+  /** Asset of type Org **/
   public static final int ORG = 1;
 
-  // Org with time-phased relationships
+  /** Asset of type Org with Time-Phased Relationships **/
   // The -relationships.ini file will be written out
   public static final int TPORG = 2; 
   
-  // Common Asset Class Types
+  /** Common Asset Class Types **/
+
+  /** Entity Asset Class **/
   public static final String ENTITY_ASSETCLASS = "Entity";
+
+  /** Combat Asset Class **/
   public static final String COMBAT_ASSETCLASS = "CombatOrganization";
 
   // The default type is ENTITY
@@ -83,6 +92,11 @@ public class AgentAssetData implements Serializable {
   private List propGroups; // PropGroupData objects
   private List relats; // RelatData objects
 
+  /**
+   * Creates a new <code>AgentAssetData</code> instance.
+   *
+   * @param parent an <code>AgentComponentData</code> value
+   */
   public AgentAssetData(AgentComponentData parent) {
     roles = new ArrayList();
     propGroups = new ArrayList();
@@ -90,38 +104,91 @@ public class AgentAssetData implements Serializable {
     agent = parent;
   }
 
+  /**
+   * Returns the parent of this asset.
+   * (This is the same value as <code>getAgent</code>
+   *
+   * @return an <code>AgentComponentData</code> value
+   * for the parent of this asset.
+   */
   public AgentComponentData getParent() {
     return agent;
   }
 
+  /**
+   * Returns the agent associated with this asset.
+   * (This is the same value as <code>getParent</code>
+   *
+   * @return an <code>AgentComponentData</code> for the
+   * agent of this asset.
+   */
   public AgentComponentData getAgent() {
     return agent;
   }
 
+  /**
+   * Assigns an agent to this asset data.
+   *
+   * @param agent an <code>AgentComponentData</code> for
+   * the agent associated with this asset.
+   */
   public void setAgent(AgentComponentData agent) {
     this.agent = agent;
   }
   
+  /**
+   * Returns the type of asset.
+   *
+   * @return an <code>int</code> value
+   * Representating the type of this asset.
+   */
   public int getType() {
     return type;
   }
 
+  /**
+   * Sets the type of this asset.
+   *
+   * @param type an <code>int</code> value
+   * representating the type of this asset.
+   */
   public void setType(int type) {
     this.type = type;
   }
 
+  /**
+   * Indicates if this asset is an Entity Asset.
+   *
+   * @return a <code>boolean</code> value
+   */
   public boolean isEntity() {
     return this.type == AgentAssetData.ENTITY;
   }
 
+  /**
+   * Indicates if this asset is an Org Asset.
+   *
+   * @return a <code>boolean</code> value
+   */
   public boolean isOrg() {
     return this.type == AgentAssetData.ORG;
   }
 
+  /**
+   * Indicates if this asset is an Time-Phased Org Asset.
+   *
+   * @return a <code>boolean</code> value
+   */
   public boolean isTPOrg() {
     return this.type == AgentAssetData.TPORG;
   }
 
+  /**
+   * Gets the ClusterID for this asset.
+   * This field is auto-calculated from the agent.
+   *
+   * @return a <code>String</code> value
+   */
   public String getClusterID() {
     if (agent != null) {
       return agent.getName();
@@ -130,30 +197,74 @@ public class AgentAssetData implements Serializable {
     }
   }
 
+  /**
+   * Gets the Asset Class for this asset.
+   *
+   * @return a <code>String</code> value
+   */
   public String getAssetClass() {
     return assetClass;
   }
 
+  /**
+   * Sets the asset class for this asset.
+   *
+   * @param clss a <code>String</code> value
+   */
   public void setAssetClass(String clss) {
     assetClass = clss;
   }
 
+  /**
+   * Gets the UniqueID for this asset.
+   * This field is only in Org Assets and
+   * it is REQUIRED.
+   *
+   * @return a <code>String</code> value
+   */
   public String getUniqueID() {
     return uniqID;
   }
 
+  /**
+   * Sets the UniqueID for this asset.
+   * This field is only in Org Assets and
+   * it is REQUIRED.
+   *
+   * @param uid a <code>String</code> value
+   */
   public void setUniqueID(String uid) {
     uniqID = uid;
   }
 
+  /**
+   * Gets the Unit name for this asset.
+   * This field is only on Org assets, and it
+   * is optional.
+   *
+   * @return a <code>String</code> value
+   */
   public String getUnitName() {
     return unitname;
   }
 
+  /**
+   * Sets the unit name for this asset.
+   * This field is only on Org assets, and it
+   * is optional.
+   *
+   * @param unit a <code>String</code> value
+   */
   public void setUnitName(String unit) {
     unitname = unit;
   }
 
+  /**
+   * Gets the UIC for this asset.
+   * Only Org assets have a UIC.
+   *
+   * @return a <code>String</code> value
+   */
   public String getUIC() {
     return (uic == null ? ((! isEntity()) && (getClusterID() != null)
 			   ? "UIC/" + getClusterID()
@@ -161,11 +272,18 @@ public class AgentAssetData implements Serializable {
 	    : uic);
   }
 
+  /**
+   * Sets the UIC for this asset.
+   * Only Org assets have a UIC.
+   *
+   * @param uic a <code>String</code> value
+   */
   public void setUIC(String uic) {
     this.uic = uic;
   }
 
-  // Add stuff to set the list of roles/relats/pgs, clear the list, add to the list, get the list, get by index
+  // Add stuff to set the list of roles/relats/pgs, 
+  // clear the list, add to the list, get the list, get by index
   // Add convenience methods to get/set values in the common PGs
   
   /**
