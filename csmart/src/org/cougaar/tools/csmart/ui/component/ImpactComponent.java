@@ -44,22 +44,6 @@ public interface ImpactComponent extends ModifiableComponent, ComponentPropertie
    */
   AgentComponent[] getAgents();
 
-  
-  /**
-   * Get Impact description
-   *
-   * @return an <code>URL</code> of the impact description
-   */
-  URL getDescription();
-
-
-  /**
-   * Returns whether or not the impacts can be edited.
-   *
-   * @return true if impacts can be edited and false otherwise
-   */
-  public boolean isEditable();
-  
   /**
    * Return a deep copy of the society
    *
