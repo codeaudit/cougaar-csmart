@@ -657,8 +657,10 @@ public class PropertyEditorPanel extends JPanel
    * Create a component for the binder, and a tree node
    * representing the binder, and add it to the agent node in the tree.
    */
-
   private void addBinder() {
+    // FIXME: Get the class from the user
+    // and provide a drop-down, just like for binders...
+
     String name = 
       (String)JOptionPane.showInputDialog(this, "Enter Binder Name",
                                           "Binder Name",
