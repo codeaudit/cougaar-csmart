@@ -26,8 +26,10 @@ import java.awt.Cursor;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
+import org.cougaar.tools.csmart.ui.component.PopulateDb;
 
 /**
  * Methods to put up a wait cursor and consume mouse events while
@@ -91,5 +93,20 @@ public class GUIUtils {
     public void mouseReleased(MouseEvent e) {
       e.consume();
     }
+  }
+
+  public static PopulateDb.ConflictHandler createSaveToDbConflictHandler(final Component parent) {
+    return new PopulateDb.ConflictHandler() {
+      public int handleConflict(Object msg, Object[] choices, Object defaultChoice) {
+        return JOptionPane.showOptionDialog(parent,
+                                            msg,
+                                            "Database Conflict",
+                                            JOptionPane.WARNING_MESSAGE,
+                                            JOptionPane.DEFAULT_OPTION,
+                                            null,
+                                            choices,
+                                            defaultChoice);
+      }
+    };
   }
 }

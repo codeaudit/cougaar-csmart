@@ -80,7 +80,9 @@ public class Organizer extends JScrollPane {
   private Map dbExptMap = new HashMap();
   private Map dbTrialMap = new HashMap();
   private CMTDialog cmtDialog;
-
+  private PopulateDb.ConflictHandler saveToDbConflictHandler =
+    GUIUtils.createSaveToDbConflictHandler(this);
+  
   // The societies which can be created in CSMART
   private Object[] socComboItems = {
     new ComboItem("Scalability", ScalabilityXSociety.class),
@@ -1796,8 +1798,9 @@ public class Organizer extends JScrollPane {
     mapNodesToHosts(experiment, assemblyMatch);
     workspace.setSelection(addExperimentToWorkspace(experiment, node));
     // if the experiment hasn't been cloned, then save it so it's runnable
-    if (!isCloned)
-      experiment.saveToDb();
+    if (!isCloned) {
+      experiment.saveToDb(saveToDbConflictHandler);
+    }
   }
 
   private void setComponentProperties(ConfigurableComponent cc,
@@ -1969,7 +1972,7 @@ public class Organizer extends JScrollPane {
       try {
         new Thread("SaveExperiment") {
           public void run() {
-            experiment.saveToDb(); // save under new name
+            experiment.saveToDb(saveToDbConflictHandler); // save under new name
             GUIUtils.timeConsumingTaskEnd(organizer);
           }
         }.start();
@@ -2351,7 +2354,7 @@ public class Organizer extends JScrollPane {
       try {
         new Thread("DuplicateExperiment") {
             public void run() {
-              experimentCopy.saveToDb();
+              experimentCopy.saveToDb(saveToDbConflictHandler);
               GUIUtils.timeConsumingTaskEnd(organizer);
             }
           }.start();

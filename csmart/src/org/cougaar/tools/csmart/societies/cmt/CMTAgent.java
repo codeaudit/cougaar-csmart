@@ -249,11 +249,12 @@ public class CMTAgent
 	while(rs.next()) {
 	  GenericComponentData plugin = new GenericComponentData();
           String pluginClassName = rs.getString(1);
+          String pluginName = rs.getString(4);
 	  plugin.setType(ComponentData.PLUGIN);
           plugin.setClassName(pluginClassName);
 	  plugin.setParent(data);
 	  plugin.setOwner(this);
-	  plugin.setName(pluginClassName);	  
+	  plugin.setName(pluginName);	  
 	  String alibId =rs.getString(2);
 	  plugin.setAlibID(alibId);
 	  substitutions.put(":comp_alib_id", alibId);

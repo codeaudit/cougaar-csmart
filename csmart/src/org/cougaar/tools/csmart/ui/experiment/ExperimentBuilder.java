@@ -33,6 +33,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.tools.csmart.ui.component.ModificationListener;
 import org.cougaar.tools.csmart.ui.component.ModificationEvent;
+import org.cougaar.tools.csmart.ui.component.PopulateDb;
 
 public class ExperimentBuilder extends JFrame implements ModificationListener {
   private static final String FILE_MENU = "File";
@@ -56,6 +57,8 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   private ThreadBuilder threadBuilder;
   private boolean modified = false;
   private JMenu findMenu;
+  private PopulateDb.ConflictHandler saveToDbConflictHandler =
+    GUIUtils.createSaveToDbConflictHandler(this);
 
   private Action helpAction = new AbstractAction(HELP_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
@@ -295,7 +298,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
 
   private void doSave() {
     if (experiment.isCloned()) {
-      experiment.saveToDb();
+      experiment.saveToDb(saveToDbConflictHandler);
       return;
     }
     // get unique name in both database and CSMART
@@ -305,7 +308,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
         return;
       experiment.setName(name);
     }
-    experiment.saveToDb();
+    experiment.saveToDb(saveToDbConflictHandler);
     experiment.setCloned(true);
   }
 

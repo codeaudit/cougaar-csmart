@@ -674,7 +674,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
   }
 
-  public void saveToDb() {
+  public void saveToDb(PopulateDb.ConflictHandler ch) {
     try {
       Set writtenNodes = new HashSet();
       List components = getComponents();
@@ -688,7 +688,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       addDefaultNodeArguments(theSoc);
       PopulateDb pdb =
         new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
-                       getExperimentID(), trialID, !isCloned());
+                       getExperimentID(), trialID, !isCloned(), ch);
       setExperimentID(pdb.getExperimentId());
       trialID = pdb.getTrialId();
 

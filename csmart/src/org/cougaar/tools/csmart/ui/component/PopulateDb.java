@@ -64,6 +64,9 @@ public class PopulateDb extends PDbBase {
     private Set alibComponents = new HashSet();
     private Map componentArgs = new HashMap();
     private boolean writeEverything = false;
+    private ConflictHandler conflictHandler;
+    private boolean keepAll = false;
+    private boolean overwriteAll = false;
 
     /**
      * Inner class to serve as the key to information about
@@ -175,7 +178,8 @@ public class PopulateDb extends PDbBase {
      **/
     public PopulateDb(String cmtType, String hnaType, String csmiType,
                       String experimentName,
-                      String exptId, String trialId, boolean createNew)
+                      String exptId, String trialId, boolean createNew,
+                      ConflictHandler ch)
         throws SQLException, IOException
     {
         super();
@@ -184,8 +188,10 @@ public class PopulateDb extends PDbBase {
         if (csmiType == null) throw new IllegalArgumentException("null csmiType");
         if (exptId == null) throw new IllegalArgumentException("null exptId");
         if (trialId == null) throw new IllegalArgumentException("null trialId");
+        if (ch == null) throw new IllegalArgumentException("null conflict handler");
         this.exptId = exptId;
         this.trialId = trialId;
+        this.conflictHandler = ch;
         substitutions.put(":expt_id:", exptId);
         substitutions.put(":cmt_type:", cmtType);
         if (createNew) {
@@ -513,10 +519,46 @@ public class PopulateDb extends PDbBase {
         return result;
     }
 
+    private boolean isOverwrite(Object msg) {
+        if (overwriteAll) return true;
+        if (keepAll) return false;
+        if (conflictHandler == null) return false;
+        switch (conflictHandler.handleConflict(msg,
+                                               ConflictHandler.STANDARD_CHOICES,
+                                               ConflictHandler.STANDARD_CHOICES[ConflictHandler.KEEP]))
+            {
+            case ConflictHandler.KEEP:
+                return false;
+            case ConflictHandler.OVERWRITE:
+                return true;
+            case ConflictHandler.KEEP_ALL:
+                keepAll = true;
+                return false;
+            case ConflictHandler.OVERWRITE_ALL:
+                overwriteAll = true;
+                return true;
+            }
+        return false;
+    }
+
     private void insureLib() throws SQLException {
         ResultSet rs = executeQuery(stmt, dbp.getQuery("checkLibComponent", substitutions));
-        if (!rs.next()) {       // Need to add it
+        if (!rs.next()) {
             executeUpdate(dbp.getQuery("insertLibComponent", substitutions));
+        } else if (rs.getBoolean(1)) {
+            // Value is ok
+        } else if (conflictHandler != null) {
+            String id = (String) substitutions.get(":component_lib_id:");
+            String query = dbp.getQuery("updateLibComponent", substitutions);
+            String[] msg = {
+                "You are attempting to redefine lib component: " + id,
+                "using query:",
+                query,
+                "Do you want to overwrite the definition?"
+            };
+            if (isOverwrite(msg)) {
+                executeUpdate(query);
+            }
         }
         rs.close();
     }
@@ -529,6 +571,19 @@ public class PopulateDb extends PDbBase {
         ResultSet rs = executeQuery(stmt, dbp.getQuery("checkAlibComponent", substitutions));
         if (!rs.next()) {
             executeUpdate(dbp.getQuery("insertAlibComponent", substitutions));
+        } else if (rs.getBoolean(1)) {
+            // Value is ok
+        } else if (conflictHandler != null) {
+            String query = dbp.getQuery("updateAlibComponent", substitutions);
+            String[] msg = {
+                "You are attempting to redefine alib component: " + id,
+                "using query:",
+                query,
+                "Do you want to overwrite the definition?"
+            };
+            if (isOverwrite(msg)) {
+                executeUpdate(query);
+            }
         }
         alibComponents.add(id); // Avoid re-querying later
         rs.close();
@@ -752,10 +807,10 @@ public class PopulateDb extends PDbBase {
             return sqlQuote("Node");
         }
         if (componentType.equals(ComponentData.HOST)) {
-            return sqlQuote(null);
+            return sqlQuote("Host");
         }
         if (componentType.equals(ComponentData.SOCIETY)) {
-            return sqlQuote(null);
+            return sqlQuote("Society");
         }
         return sqlQuote(null);
     }
@@ -851,5 +906,23 @@ public class PopulateDb extends PDbBase {
         public String toString() {
             return "[" + order + "]=" + argument;
         }
+    }
+
+    public interface ConflictHandler {
+        Object KEEP_CHOICE = "Keep Existing Definition";
+        Object OVERWRITE_CHOICE = "Overwrite";
+        Object KEEP_ALL_CHOICE = "Keep All";
+        Object OVERWRITE_ALL_CHOICE = "Overwrite All";
+        Object[] STANDARD_CHOICES = {
+            KEEP_CHOICE,
+            OVERWRITE_CHOICE,
+            KEEP_ALL_CHOICE,
+            OVERWRITE_ALL_CHOICE
+        };
+        int KEEP = 0;
+        int OVERWRITE = 1;
+        int KEEP_ALL = 2;
+        int OVERWRITE_ALL = 3;
+        int handleConflict(Object msg, Object[] options, Object defaultOption);
     }
 }
