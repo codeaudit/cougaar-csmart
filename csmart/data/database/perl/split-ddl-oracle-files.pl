@@ -29,9 +29,9 @@ print "index_prefix:   ",$index_prefix,"\n";
 # Open the input file
 open (ALL_DDL_IN,$input_filename);
 # Open the 3 initial output files
-open (CREATE_TABLES_OUT, ">".$filename_root.".create-tables.sql");
-open (CREATE_INDEXES_OUT,">".$filename_root.".create-indexes.sql");
-open (CREATE_FKEYS_OUT,  ">".$filename_root.".create-fkeys.sql");
+open (CREATE_TABLES_OUT, ">".$filename_root.".create-oracle-tables.sql");
+open (CREATE_INDEXES_OUT,">".$filename_root.".create-oracle-indexes.sql");
+open (CREATE_FKEYS_OUT,  ">".$filename_root.".create-oracle-fkeys.sql");
 
 # Copy all lines from ALL_DDL_IN to CREATE_TABLES_OUT, CREATE_INDEXES_OUT and CREATE_FKEYS_OUT
 print "sql_mode: ",$sql_mode,"\n";
@@ -74,13 +74,13 @@ close (CREATE_INDEXES_OUT);
 close (CREATE_FKEYS_OUT);
 
 # Open the 3 CREATE files for reading to make the 3 DROP files
-open (CREATE_TABLES_IN,  $filename_root.".create-tables.sql");
-open (CREATE_INDEXES_IN, $filename_root.".create-indexes.sql");
-open (CREATE_FKEYS_IN,   $filename_root.".create-fkeys.sql");
+open (CREATE_TABLES_IN,  $filename_root.".create-oracle-tables.sql");
+open (CREATE_INDEXES_IN, $filename_root.".create-oracle-indexes.sql");
+open (CREATE_FKEYS_IN,   $filename_root.".create-oracle-fkeys.sql");
 # Open the 3 DROP output files
-open (DROP_TABLES_OUT,   ">".$filename_root.".drop-tables.sql");
-open (DROP_INDEXES_OUT,  ">".$filename_root.".drop-indexes.sql");
-open (DROP_FKEYS_OUT,    ">".$filename_root.".drop-fkeys.sql");
+open (DROP_TABLES_OUT,   ">".$filename_root.".drop-oracle-tables.sql");
+open (DROP_INDEXES_OUT,  ">".$filename_root.".drop-oracle-indexes.sql");
+open (DROP_FKEYS_OUT,    ">".$filename_root.".drop-oracle-fkeys.sql");
 
 # Create DROP_TABLES
 while (<CREATE_TABLES_IN>) {
@@ -119,7 +119,7 @@ close (DROP_INDEXES_OUT);
 close (DROP_FKEYS_OUT);
 
 # Open the CREATE TABLE file for reading to make the LOAD DATA file
-open (CREATE_TABLES_IN,  $filename_root.".create-tables.sql");
+open (CREATE_TABLES_IN,  $filename_root.".create-oracle-tables.sql");
 # Create the load-ctl sub-directory
 unlink <./load-ctl/*>;                                        # Delete any existing files
 rmdir "./load-ctl";                                           # Remove the directory
@@ -139,14 +139,21 @@ while (<CREATE_TABLES_IN>) {
 				last;
 			}
 			else {
-				($column_name,$remainder) = split(' ',$input_line_2,2);  # The column name is first
-				$output_text = $output_text."    ".$column_name;         #Append the column name
-				$output_text = $output_text."        char terminated by ',' optionally enclosed by '\"',\n";
-#				print ($column_name,":: ",$input_line_2,"\n") # Debug printout
+				($column_name,$column_type,$remainder) = split(' ',$input_line_2,3);  # The column name is first
+				$column_type = substr($column_type,0,4);
+				$output_text = $output_text."    ".$column_name;         # Append the column name
+				if ($column_type eq "DATE") {                            # Properly convert dates
+					$output_text = $output_text."  DATE(25) \"YYYY-MM-DD HH24:MI:SS\" "
+					}
+				else {
+					$output_text = $output_text."  char "
+					}
+				$output_text = $output_text." terminated by ',' optionally enclosed by '\"',\n";
+#				print ($column_name,", ",$column_type,":: ",$input_line_2,"\n"); # Debug printout
 			}
 		}
 		$output_text = $output_text.")\n";                   # Tack on a ")"
-		$output_text =~ s/,\n\)/\n\)/;                        # Remove the last ","
+		$output_text =~ s/,\n\)/\n\)/;                       # Remove the last ","
         open (LOAD_TABLE_OUT,   ">"."./load-ctl/".$table_name.".ctl");
 		printf (LOAD_TABLE_OUT $output_text."\n");           # Dump the $output_text
 		close (LOAD_TABLE_OUT);
