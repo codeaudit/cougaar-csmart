@@ -59,6 +59,9 @@ Asset=true in component AGG-Agent
   Nodes will continue to run. You must either restart your AppServers,
   or use CSMART to connect to the AppServers and kill the Nodes. This
   fixes bugs 997, 1022, and partially addresses 1028. !!!!FIXME!!!!!
+  There's a new property that can be added to the "server.props":
+      org.cougaar.tools.server.swallowOutputConnectionException=true
+  which, when set, ?????!!!!!!
 - The menu items in the Organizer and Experiment Builder have been
   split up, for ease of use. No functionality has changed. (Bug 1581)
 - You may now import a communities.xml file into your experiment (bug
