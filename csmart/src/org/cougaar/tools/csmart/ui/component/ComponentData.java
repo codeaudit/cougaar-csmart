@@ -30,12 +30,12 @@ import java.io.Serializable;
 public interface ComponentData extends Serializable {
 
   /** Component Types **/
-  String SOCIETY = "Society";
-  String AGENT = "cluster";
-  String NODE = "Node";
+  String SOCIETY = "society";
+  String AGENT = "agent";
+  String NODE = "node";
   String PLUGIN = "plugin";
-  String BINDER = "Binder";
-  String SERVICE = "Service";
+  String BINDER = "binder";
+  String SERVICE = "service";
   
   /**
    * Gets the type of this component.  Component Types
