@@ -11,6 +11,7 @@
 package org.cougaar.tools.csmart.ui.experiment;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.*;
 import javax.swing.*;
@@ -22,16 +23,15 @@ public class TrialBuilder extends JPanel {
   JPopupMenu trialMenu;
   int deleteRowIndex; // row to delete
   Experiment experiment;
+  boolean isEditable;
+  boolean isRunnable;
   boolean needUpdate = true; // need to update display
 
   public TrialBuilder(Experiment experiment) {
-    this(experiment, true);
-  }
-
-  public TrialBuilder(Experiment experiment, boolean editable) {
+    this.experiment = experiment;
+    isEditable = experiment.isEditable();
+    isRunnable = experiment.isRunnable();
     trialTable = new JTable();
-    if (editable)
-      trialTable.addMouseListener(mouseListener);
     trialTable.setColumnSelectionAllowed(false);
     trialTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     JScrollPane scrollPane = new JScrollPane(trialTable);
@@ -45,7 +45,7 @@ public class TrialBuilder extends JPanel {
     trialMenu.add(deleteMenuItem);
     setLayout(new BorderLayout());
     add(scrollPane, BorderLayout.CENTER);
-    setExperiment(experiment);
+    needUpdate = true;
   }
 
   /**
@@ -53,12 +53,19 @@ public class TrialBuilder extends JPanel {
    * to edit a different experiment.  
    */
 
-  public void setExperiment(Experiment experiment) {
+  public void reinit(Experiment newExperiment) {
     if (this.experiment != null &&
-	this.experiment.equals(experiment))
+	this.experiment.equals(newExperiment))
       return; // no change
 
-    this.experiment = experiment;
+    // restore editable flag on previous experiment
+    if (isEditable) 
+      experiment.setEditable(isEditable);
+    if (isRunnable)
+      experiment.setRunnable(isRunnable);
+    experiment = newExperiment;
+    isEditable = newExperiment.isEditable();
+    isRunnable = newExperiment.isRunnable();
     if (isShowing())
       updateDisplay();
     else
@@ -66,6 +73,11 @@ public class TrialBuilder extends JPanel {
   }
 
   private void updateDisplay() {
+    if (isEditable) {
+      trialTable.addMouseListener(mouseListener);
+      trialTable.setForeground(Color.black);
+    } else
+      trialTable.setForeground(Color.gray);
     if (!experiment.hasValidTrials())
       experiment.getTrials();
     trialTableModel = new TrialTableModel(experiment);

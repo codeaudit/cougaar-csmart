@@ -10,8 +10,9 @@
 package org.cougaar.tools.csmart.ui.experiment;
 
 import java.awt.event.*;
-import java.awt.Dimension;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -27,6 +28,8 @@ public class UnboundPropertyBuilder extends JPanel {
   private DefaultTreeModel model;
   private ExperimentTree tree;
   private Experiment experiment;
+  private boolean isEditable;
+  private boolean isRunnable;
   private DefaultMutableTreeNode root;
   private DefaultMutableTreeNode societies;
   private DefaultMutableTreeNode impacts;
@@ -147,6 +150,9 @@ public class UnboundPropertyBuilder extends JPanel {
    */
 
   public UnboundPropertyBuilder(Experiment experiment) {
+    this.experiment = experiment;
+    isEditable = experiment.isEditable();
+    isRunnable = experiment.isRunnable();
     root = new DefaultMutableTreeNode();
     model = new DefaultTreeModel(root);
     societies = new DefaultMutableTreeNode(ExperimentTree.SOCIETIES);
@@ -211,7 +217,7 @@ public class UnboundPropertyBuilder extends JPanel {
     for (int i = 0; i < metricsActions.length; i++) {
       metricsMenu.add(metricsActions[i]);
     }
-    setExperiment(experiment);
+    initDisplay();
   }
 
   /**
@@ -219,13 +225,31 @@ public class UnboundPropertyBuilder extends JPanel {
    * re-use the display.
    */
 
-  public void setExperiment(Experiment experiment) {
+  public void reinit(Experiment newExperiment) {
+    // restore editable flag on previous experiment
+    if (isEditable) 
+      experiment.setEditable(isEditable);
+    if (isRunnable)
+      experiment.setRunnable(isRunnable);
+    experiment = newExperiment;
+    isEditable = newExperiment.isEditable();
+    isRunnable = newExperiment.isRunnable();
+    initDisplay();
+  }
+
+  private void initDisplay() {
     model.removeTreeModelListener(myTreeModelListener);
-    this.experiment = experiment;
     societies.removeAllChildren();
     impacts.removeAllChildren();
     metrics.removeAllChildren();
     model.nodeStructureChanged(root);
+    DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+    if (!isEditable) {
+      renderer.setTextNonSelectionColor(Color.gray);
+      renderer.setTextSelectionColor(Color.gray);
+    }
+    tree.setCellRenderer(renderer);
+    tree.setEditable(isEditable);
     for (int i = 0, n = experiment.getSocietyComponentCount(); i < n; i++) {
       addSocietyComponent(experiment.getSocietyComponent(i));
     }
@@ -265,8 +289,9 @@ public class UnboundPropertyBuilder extends JPanel {
     int nSocieties = societies.getChildCount();
     SocietyComponent[] societyComponentsAry = new SocietyComponent[nSocieties];
     for (int i = 0; i < nSocieties; i++) {
-      societyComponentsAry[i] =
-        (SocietyComponent) ((DefaultMutableTreeNode) societies.getChildAt(i)).getUserObject();
+      SocietyComponent society = (SocietyComponent) ((DefaultMutableTreeNode) societies.getChildAt(i)).getUserObject();
+      societyComponentsAry[i] = society;
+      society.setEditable(false); // so society editability tracks experiment editability
     }
     experiment.setSocietyComponents(societyComponentsAry);
     int nImpacts = impacts.getChildCount();
@@ -320,6 +345,15 @@ public class UnboundPropertyBuilder extends JPanel {
    */
 
   private void removeAllChildren(DefaultMutableTreeNode parent) {
+    for (int i = 0; i < parent.getChildCount(); i++) {
+      DefaultMutableTreeNode node = 
+	(DefaultMutableTreeNode)parent.getChildAt(i);
+      // make removed society component editable again
+      Object userObject = node.getUserObject();
+      if (userObject != null &&
+	  userObject instanceof SocietyComponent)
+	((SocietyComponent)userObject).setEditable(true);
+    }
     parent.removeAllChildren();
     model.nodeStructureChanged(parent);
   }
@@ -340,6 +374,11 @@ public class UnboundPropertyBuilder extends JPanel {
     }
     for (int i = 0; i < nodes.length; i++) {
       model.removeNodeFromParent(nodes[i]);
+      // make removed society component editable again
+      Object userObject = nodes[i].getUserObject();
+      if (userObject != null &&
+	  userObject instanceof SocietyComponent)
+	((SocietyComponent)userObject).setEditable(true);
     }
     propModel.clear(); // selected items were removed, so clear prop table
   }

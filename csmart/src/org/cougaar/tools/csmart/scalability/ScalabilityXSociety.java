@@ -10,7 +10,9 @@
 package org.cougaar.tools.csmart.scalability;
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.*;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -62,6 +64,7 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
   private static final long serialVersionUID = 4800304251932120182L;
 
   private boolean isRunning = false;
+  private boolean editable = true;
   private static FileFilter metricsFileFilter = new ScalabilityMetricsFileFilter();
 
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
@@ -375,7 +378,17 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
    */
 
   public boolean isEditable() {
-    return !isRunning;
+    //    return !isRunning;
+    return editable;
+  }
+
+  /**
+   * Set whether or not the society can be edited.
+   * @param editable true if society is editable and false otherwise
+   */
+
+  public void setEditable(boolean editable) {
+    this.editable = editable;
   }
 
   /**
@@ -429,9 +442,23 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
 	new ComponentName(result, s.substring(societyName.length()));
       Property hisProp = result.getProperty(hisPropName);
       try {
-	Object o = PropertyHelper.validateValue(myProp, myProp.getValue());
-	if (o != null)
-	  hisProp.setValue(o);
+	// if have experimental values, then copy those
+	// else copy the property value
+	if (myProp.getExperimentValues() != null) {
+	  List experimentValues = myProp.getExperimentValues();
+	  Object newValue = Array.newInstance(myProp.getPropertyClass(),
+					      experimentValues.size());
+	  for (int j = 0; j < experimentValues.size(); j++)
+	    Array.set(newValue, j,
+		      PropertyHelper.validateValue(myProp, 
+						   experimentValues.get(j)));
+	  hisProp.setExperimentValues(Arrays.asList((Object[])newValue));
+	  hisProp.setValue(null); // no specific value
+	} else {
+	  Object o = PropertyHelper.validateValue(myProp, myProp.getValue());
+	  if (o != null)
+	    hisProp.setValue(o);
+	}
       } catch (InvalidPropertyValueException e) {
 	System.out.println("ScalabilityXSociety: " + e);
       }

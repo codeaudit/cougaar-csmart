@@ -37,6 +37,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private static final String[] variationSchemes = {
     VARY_ONE_DIMENSION, VARY_TWO_DIMENSION, VARY_SEQUENTIAL, VARY_RANDOM };
   private String variationScheme = null;
+  private boolean editable = true;
+  private boolean runnable = true;
 
   public Experiment(String name, SocietyComponent[] societyComponents,
 		    Impact[] impacts, Metric[] metrics)
@@ -110,19 +112,55 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   /**
-   * Returns true if experiment is editable,
-   * i.e. it is not running and has no saved data.
-   * Returns true if all societies in the experiment are editable
-   * and the experiment has no saved data.
-   * TODO: determine when there is saved data from an experiment & return false
+   * Returns true if experiment is editable: 
+   * it is not being edited, 
+   * it is not being controlled by the console (regardless of whether
+   * or not it has started running),
+   * it has no saved data,
+   * and all of its societies are editable.
    * @return true if experiement is editable, false otherwise
    */
 
   public boolean isEditable() {
-    for (int i = 0; i < societies.size(); i++)
-      if (!((SocietyComponent)societies.get(i)).isEditable())
-	return false;
-    return true;
+    if (editable) { 
+      // make sure that societies are editable too
+      for (int i = 0; i < societies.size(); i++)
+	if (!((SocietyComponent)societies.get(i)).isEditable())
+	  return false;
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Set whether or not the experiment can be edited.
+   * @param editable true if experiment is editable and false otherwise
+   */
+
+  public void setEditable(boolean editable) {
+    this.editable = editable;
+    for (int i = 0; i < getSocietyComponentCount(); i++)
+      getSocietyComponent(i).setEditable(editable);
+  }
+
+  /**
+   * Get whether or not experiment is runnable.  An experiment is 
+   * runnable whenever it's not being edited.
+   * @return whether or not an experiment is runnable
+   */
+
+  public boolean isRunnable() {
+    return runnable;
+  }
+
+  /**
+   * Set whether or not experiment is runnable.  An experiment is 
+   * runnable whenever it's not being edited.
+   * @param runnable whether or not an experiment is runnable
+   */
+
+  public void setRunnable(boolean runnable) {
+    this.runnable = runnable;
   }
 
   /**

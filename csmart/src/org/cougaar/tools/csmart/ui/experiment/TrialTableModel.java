@@ -32,6 +32,14 @@ public class TrialTableModel extends AbstractTableModel {
     this.experiment = experiment;
   }
 
+  /**
+   * Cells aren't editable, maybe they should be.
+   */
+
+  public boolean isCellEditable(int row, int col) {
+    return false;
+  }
+
   public int getRowCount() {
     return experiment.getTrialCount();
   }

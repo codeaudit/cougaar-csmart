@@ -61,6 +61,7 @@ public class ABCSocietyComponent
 
   private String name;
   private boolean isRunning;
+  private boolean editable = true;
 
   private static FileFilter metricsFileFilter = new ScalabilityMetricsFileFilter();
 
@@ -194,7 +195,11 @@ public class ABCSocietyComponent
   }
 
   public boolean isEditable() {
-    return true;
+    return editable;
+  }
+
+  public void setEditable(boolean editable) {
+    this.editable = editable;
   }
 
   public void setRunning(boolean isRunning) {

@@ -54,6 +54,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   String nameServerHostName;
   SocietyComponent societyComponent;
   Experiment experiment;
+  boolean isEditable;
   int currentTrial; // index of currently running trial in experiment
   long startTrialTime; // in msecs
   long startExperimentTime;
@@ -126,6 +127,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   public CSMARTConsole(CSMART csmart) {
     this.csmart = csmart;
     experiment = csmart.getExperiment();
+    isEditable = experiment.isEditable();
+    experiment.setEditable(false); // not editable while we have it
     currentTrial = -1;
     // TODO: support experiments with multiple societies
     societyComponent = experiment.getSocietyComponent(0);
@@ -337,9 +340,10 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     // create tabbed panes for configuration information (not editable)
     JTabbedPane configTabbedPane = new JTabbedPane();
     configTabbedPane.add("Configuration", 
-			 new HostConfigurationBuilder(experiment, false));
+			 new HostConfigurationBuilder(experiment));
+    // TODO: society component should be non-editable at this point
     configTabbedPane.add("Trial Values", 
-			 new PropertyEditorPanel(societyComponent, false));
+			 new PropertyEditorPanel(societyComponent));
 
     // create tabbed panes for running nodes, tabs are added dynamically
     tabbedPane = new JTabbedPane();
@@ -371,6 +375,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     // this frame
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
+	updateExperimentEditability();
 	exitMenuItem_actionPerformed(e);
       }
     });
@@ -379,6 +384,24 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     setSize(700, 600);
     splitPane.setDividerLocation(400);
     setVisible(true);
+  }
+
+  /**
+   * If experiment has trial results it's no longer editable.
+   */
+
+  private void updateExperimentEditability() {
+    if (isEditable) { // only need to update if was editable
+      Trial[] trials = experiment.getTrials();
+      for (int i = 0; i < trials.length; i++) {
+	TrialResult[] results = trials[i].getTrialResults();
+	if (results.length != 0) {
+	  isEditable = false;
+	  break;
+	}
+      }
+      experiment.setEditable(isEditable);
+    }
   }
 
   /**
@@ -1236,6 +1259,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * Action listeners for top level menus.
    */
   public void exitMenuItem_actionPerformed(AWTEvent e) {
+    updateExperimentEditability();
     stopExperiments();
     // If this was this frame's exit menu item, we have to remove
     // the window from the list

@@ -128,7 +128,15 @@ public class OrganizerTree extends DNDTree {
     public boolean isDraggable(Object o) {
         if (o instanceof DefaultMutableTreeNode) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
-            return node != getModel().getRoot();
+	    if (node == getModel().getRoot()) 
+	      return false; // not draggable if it's the root node
+	    Object userObject = node.getUserObject();
+	    if (userObject != null &&
+		(userObject instanceof SocietyComponent) &&
+		!((SocietyComponent)userObject).isEditable())
+	      return false; // not draggable if it's a non-editable society
+	    return true;
+	    //            return node != getModel().getRoot();
         }
         return false;
     }

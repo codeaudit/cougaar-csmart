@@ -59,6 +59,7 @@ public class ABCSociety
   public static final String PROP_INITIALIZER = ABCAgent.PROP_INITIALIZER;
 
   private boolean isRunning = false;
+  private boolean editable = true;
 
   private Property propCommunityCount;
   private Property propLevelCount;
@@ -590,7 +591,17 @@ public class ABCSociety
    */
 
   public boolean isEditable() {
-    return !isRunning;
+    //    return !isRunning;
+    return editable;
+  }
+
+  /**
+   * Set whether or not the society can be edited.
+   * @param editable true if society is editable and false otherwise
+   */
+
+  public void setEditable(boolean editable) {
+    this.editable = editable;
   }
 
   /**

@@ -233,7 +233,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   public void valueChanged(TreeSelectionEvent e) {
     enableExperimentTools();
   }
-
+  
+  // TODO: experiment tool buttons should also be enabled/disabled
+  // as tools are run, but there are no listeners (on tool completion)
+  // to support this
   private void enableExperimentTools() {
     Experiment exp[] = organizer.getSelectedExperiments();
     if (exp == null || exp.length == 0) {
@@ -250,7 +253,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       //	  enableConsoleTool(true);
       //	  return;
       //	}
-      if (exp.length > 0 && exp[0].getSocietyComponentCount() != 0)
+      if (exp.length > 0 && 
+	  exp[0].getSocietyComponentCount() != 0 &&
+	  exp[0].isRunnable())
 	enableConsoleTool(true);
       else
 	enableConsoleTool(false);
@@ -314,10 +319,19 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * ActionListener interface.
    */
 
-  public void runBuilder(SocietyComponent cc, boolean alwaysNew) {
+  public void runBuilder(SocietyComponent cc, boolean alwaysNew,
+			 boolean openForEditing) {
+    if (!cc.isEditable() && openForEditing) {
+      int result = JOptionPane.showConfirmDialog(this,
+				    "Society is not editable; create copy?",
+				    "Society Not Editable",
+				    JOptionPane.YES_NO_OPTION,
+				    JOptionPane.WARNING_MESSAGE);
+      if (result != JOptionPane.YES_OPTION)
+	return;
+      cc = organizer.copySociety(cc, null);
+    }
     // note that cc is guaranteed non-null when this is called
-    // set the society as the selected society because
-    // the builder will ask this object for the selected society
     Class[] paramClasses = { SocietyComponent.class };
     Object[] params = new Object[1];
     params[0] = cc;
@@ -335,11 +349,22 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     for (int i = 0; i < societies.length; i++) {
       String s = "Configuration Builder: " + societies[i].getSocietyName();
       if (NamedFrame.getNamedFrame().getFrame(s) == null) 
-	runBuilder(societies[i], true);
+	runBuilder(societies[i], true, true);
     }
   }
 
-  public void runExperimentBuilder(Experiment experiment, boolean alwaysNew) {
+  public void runExperimentBuilder(Experiment experiment, boolean alwaysNew,
+				   boolean openForEditing) {
+    if (!experiment.isEditable() && openForEditing) {
+      int result = JOptionPane.showConfirmDialog(this,
+				    "Experiment is not editable; create copy?",
+				    "Experiment Not Editable",
+				    JOptionPane.YES_NO_OPTION,
+				    JOptionPane.WARNING_MESSAGE);
+      if (result != JOptionPane.YES_OPTION)
+	return;
+      experiment = organizer.copyExperiment(experiment, null);
+    }
     Class[] paramClasses = { CSMART.class, Experiment.class };
     Object[] params = new Object[2];
     params[0] = this;
@@ -358,7 +383,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     for (int i = 0; i < experiments.length; i++) {
       String s = "Experiment Builder: " + experiments[i].getExperimentName();
       if (NamedFrame.getNamedFrame().getFrame(s) == null) 
-	runExperimentBuilder(experiments[i], true);
+	runExperimentBuilder(experiments[i], true, true);
     }
   }
 
@@ -367,6 +392,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     // societies and removes all the societies, and then invokes the console
     if (experiment.getSocietyComponentCount() == 0) {
       // don't run console and disable it's button
+      enableConsoleTool(false);
+      return;
+    }
+    // TODO: we get here if the user is editing an experiment
+    // the isRunnable flag is off, but we don't detect it
+    if (!experiment.isRunnable()) {
       enableConsoleTool(false);
       return;
     }
@@ -441,7 +472,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	societies = organizer.getSelectedSocieties();
       }
       if (societies.length == 1)
-	runBuilder(societies[0], false);
+	runBuilder(societies[0], false, true);
       else if (societies.length > 1)
 	runMultipleBuilders(societies);
     } else if (s.equals(views[1])) {
@@ -452,7 +483,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	experiments = organizer.getSelectedExperiments();
       }
       if (experiments.length == 1)
-	runExperimentBuilder(experiments[0], false);
+	runExperimentBuilder(experiments[0], false, true);
       else if (experiments.length > 1)
 	runMultipleExperimentBuilders(experiments);
     } else if (s.equals(views[3])) {

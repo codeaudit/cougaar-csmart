@@ -27,6 +27,8 @@ public class ExperimentBuilder extends JFrame {
   protected static final String ABOUT_DOC = "../help/about-csmart.html";
   protected static final String HELP_MENU_ITEM = "Help";
   private Experiment experiment;
+  private boolean isEditable;
+  private boolean isRunnable;
   private UnboundPropertyBuilder propertyBuilder;
   private HostConfigurationBuilder hostConfigurationBuilder;
   private TrialBuilder trialBuilder;
@@ -48,6 +50,7 @@ public class ExperimentBuilder extends JFrame {
   private Action[] fileActions = {
     new AbstractAction(EXIT_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
+	exit();
         NamedFrame.getNamedFrame().removeFrame(ExperimentBuilder.this);
 	dispose();
       }
@@ -60,6 +63,9 @@ public class ExperimentBuilder extends JFrame {
   };
 
   public ExperimentBuilder(CSMART csmart, Experiment experiment) {
+    this.experiment = experiment;
+    isEditable = experiment.isEditable();
+    isRunnable = experiment.isRunnable();
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
     JMenu fileMenu = new JMenu(FILE_MENU);
@@ -81,12 +87,27 @@ public class ExperimentBuilder extends JFrame {
     tabbedPane.add("Configurations", hostConfigurationBuilder);
     trialBuilder = new TrialBuilder(experiment);
     tabbedPane.add("Trials", trialBuilder);
-    
+    // after starting all the editors, set experiment editability to false
+    experiment.setEditable(false);
+    experiment.setRunnable(false); // not runnable when editing it
     getContentPane().add(tabbedPane);
-    reinit(experiment);
     pack();
     setSize(450, 400);
+
+    addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent e) {
+	exit();
+      }
+    });
     show();
+  }
+
+  private void exit() {
+    // before exiting, restore experiment's and society's editability
+    if (isEditable) 
+      experiment.setEditable(isEditable);
+    if (isRunnable)
+      experiment.setRunnable(isRunnable);
   }
 
   /**
@@ -95,11 +116,20 @@ public class ExperimentBuilder extends JFrame {
    * the user interfaces (tabbed panes).
    */
 
-  public void reinit(Experiment experiment) {
-    this.experiment = experiment;
-    propertyBuilder.setExperiment(experiment);
-    hostConfigurationBuilder.setExperiment(experiment);
-    trialBuilder.setExperiment(experiment);
+  public void reinit(Experiment newExperiment) {
+    // restore editable flag on previous experiment
+    if (isEditable) 
+      experiment.setEditable(isEditable);
+    if (isRunnable)
+      experiment.setRunnable(isRunnable);
+    experiment = newExperiment;
+    isEditable = newExperiment.isEditable();
+    isRunnable = newExperiment.isRunnable();
+    propertyBuilder.reinit(experiment);
+    hostConfigurationBuilder.reinit(experiment);
+    trialBuilder.reinit(experiment);
+    experiment.setEditable(false);
+    experiment.setRunnable(false);
   }
 
 }

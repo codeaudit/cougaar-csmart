@@ -11,6 +11,7 @@
 package org.cougaar.tools.csmart.ui.experiment;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -34,6 +35,8 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class HostConfigurationBuilder extends JPanel implements TreeModelListener {
   Experiment experiment;
+  boolean isEditable;
+  boolean isRunnable;
   SocietyComponent societyComponent;
   JPopupMenu hostRootMenu;
   JPopupMenu hostHostMenu;
@@ -50,15 +53,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   //  private static final String DESCRIBE_MENU_ITEM = "Describe";
 
   public HostConfigurationBuilder(Experiment experiment) {
-    this(experiment, true);
+    this.experiment = experiment;
+    isEditable = experiment.isEditable();
+    isRunnable = experiment.isRunnable();
+    initDisplay();
   }
 
-  public HostConfigurationBuilder(Experiment experiment, boolean editable) {
-    initDisplay(editable);
-    setExperiment(experiment);
-  }
-
-  private void initDisplay(boolean editable) {
+  private void initDisplay() {
     // host split pane contains host tree and 
     // the bottom split pane which contains the node and agent trees
     JSplitPane hostPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -199,9 +200,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     bottomPane.setBottomComponent(agentTreeScrollPane);
     hostPane.setBottomComponent(bottomPane);
 
-    hostTree.setEditable(editable);
-    nodeTree.setEditable(editable);
-    agentTree.setEditable(editable);
 
     // fully expand trees
     //    expandTree(hostTree);
@@ -228,8 +226,15 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Set display to show a new experiment.
    */
 
-  public void setExperiment(Experiment experiment) {
-    this.experiment = experiment;
+  public void reinit(Experiment newExperiment) {
+    // restore editable flag on previous experiment
+    if (isEditable)
+      experiment.setEditable(isEditable);
+    if (isRunnable)
+      experiment.setRunnable(isRunnable);
+    experiment = newExperiment;
+    isEditable = newExperiment.isEditable();
+    isRunnable = newExperiment.isRunnable();
   }
 
   private void update() {
@@ -242,6 +247,17 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     removeAllChildren(hostTree);
     removeAllChildren(nodeTree);
     removeAllChildren(agentTree);
+    DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+    if (!isEditable) {
+      renderer.setTextNonSelectionColor(Color.gray);
+      renderer.setTextSelectionColor(Color.gray);
+    }
+    hostTree.setCellRenderer(renderer);
+    nodeTree.setCellRenderer(renderer);
+    agentTree.setCellRenderer(renderer);
+    hostTree.setEditable(isEditable);
+    nodeTree.setEditable(isEditable);
+    agentTree.setEditable(isEditable);
     if (societyComponent != null) {
       // get hosts, agents and nodes from experiment
       addHostsFromExperiment();

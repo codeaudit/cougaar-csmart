@@ -26,6 +26,8 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 
 public class PropertyBuilder extends JFrame implements ActionListener {
   private PropertyEditorPanel propertyEditor;
+  private SocietyComponent societyComponent;
+  private boolean isEditable; // remember if society was editable on entering
   private static final String FILE_MENU = "File";
   private static final String EXIT_MENU_ITEM = "Exit";
 
@@ -41,6 +43,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   };
 
   public PropertyBuilder(SocietyComponent society) {
+    societyComponent = society;
     // initialize menus and gui panels
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
@@ -60,7 +63,14 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     }
     menuBar.add(helpMenu);
 
-    propertyEditor = new PropertyEditorPanel(society, society.isEditable());
+    addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent e) {
+	exit();
+      }
+    });
+
+    isEditable = societyComponent.isEditable();
+    propertyEditor = new PropertyEditorPanel(societyComponent);
     getContentPane().setLayout(new BorderLayout());
     getContentPane().add(propertyEditor, BorderLayout.CENTER);
 
@@ -68,10 +78,17 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     setVisible(true);
   }
 
+  private void exit() {
+    // before exiting, restore society's editability
+    if (isEditable)
+      societyComponent.setEditable(isEditable);
+  }
+
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     String s = ((AbstractButton)source).getActionCommand();
     if (s.equals(EXIT_MENU_ITEM)) {
+      exit();
       // notify top-level viewer that user quit the builder
       NamedFrame.getNamedFrame().removeFrame(this);
       dispose();
@@ -86,14 +103,15 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     }	       
   }
 
-  public void reinit(SocietyComponent societyComponent) {
+  public void reinit(SocietyComponent newSocietyComponent) {
+    societyComponent = newSocietyComponent;
+    isEditable = newSocietyComponent.isEditable();
     propertyEditor.reinit(societyComponent);
   }
 
   public static void main(String[] args) {
-    PropertyBuilder builder = new PropertyBuilder(null);
     final ABCSocietyComponent abc = new ABCSocietyComponent();
-    builder.reinit(abc);
+    PropertyBuilder builder = new PropertyBuilder(abc);
     abc.initProperties();
     JMenu testMenu = new JMenu("Test");
     JMenuItem testMenuItem = new JMenuItem("Test Change");

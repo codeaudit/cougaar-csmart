@@ -11,6 +11,7 @@
 package org.cougaar.tools.csmart.ui.builder;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -21,6 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 import javax.swing.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -41,22 +43,20 @@ public class PropertyEditorPanel extends JPanel
   DefaultMutableTreeNode root;
   PropertyTable propertyTable = null;
   JScrollPane tableScrollPane;
-  SocietyComponent societyCfg;
   Hashtable componentToProperty = new Hashtable();
   Hashtable propertyToComponent = new Hashtable();
   Hashtable propertyToLabel = new Hashtable();
   boolean isEditable;
+  SocietyComponent societyComponent = null;
 
-  public PropertyEditorPanel(SocietyComponent society,
-			     boolean isEditable) {
-    this.isEditable = isEditable;
+  public PropertyEditorPanel(SocietyComponent society) {
     // create the society panel
     societyPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     setLayout(new BorderLayout());
     add(societyPanel, BorderLayout.CENTER);
-
-    if (society != null)
-      setSocietyComponent(society);
+    societyComponent = society;
+    isEditable = societyComponent.isEditable();
+    setSocietyComponent();
   }
 
   /**
@@ -64,8 +64,13 @@ public class PropertyEditorPanel extends JPanel
    * to edit a different society.
    */
 
-  public void reinit(SocietyComponent societyComponent) {
-    setSocietyComponent(societyComponent);
+  public void reinit(SocietyComponent newSocietyComponent) {
+    // restore editable flag on previous society
+    if (isEditable)
+      societyComponent.setEditable(isEditable);
+    societyComponent = newSocietyComponent;
+    isEditable = newSocietyComponent.isEditable();
+    setSocietyComponent();
   }
 
   /**
@@ -116,15 +121,22 @@ public class PropertyEditorPanel extends JPanel
     }
   }
 
-  private void setSocietyComponent(SocietyComponent societyCfg) {
-    this.societyCfg = societyCfg;
-    Iterator names = societyCfg.getPropertyNames();
+  private void setSocietyComponent() {
+    // society isn't editable while this tool is editing it
+    societyComponent.setEditable(false); 
+    Iterator names = societyComponent.getPropertyNames();
     if (tree != null)
       societyPanel.remove(tree);
     // create tree and model before adding to it
     // as the add methods reference the tree and model
     root = new DefaultMutableTreeNode("Properties");
     tree = new JTree(new DefaultTreeModel(root));
+    if (!isEditable) {
+      DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+      renderer.setTextNonSelectionColor(Color.gray);
+      renderer.setTextSelectionColor(Color.gray);
+      tree.setCellRenderer(renderer);
+    }
     makeTree();
     tree.expandPath(new TreePath(root));
     tree.setEditable(isEditable);
@@ -132,12 +144,15 @@ public class PropertyEditorPanel extends JPanel
     tree.addTreeSelectionListener(this);
     societyPanel.setLeftComponent(new JScrollPane(tree));
     propertyTable = new PropertyTable(isEditable);
+    if (!isEditable) {
+      propertyTable.setForeground(Color.gray);
+    }
     tableScrollPane = new JScrollPane(propertyTable);
     JPanel rightPanel = new JPanel(new BorderLayout());
     rightPanel.add(tableScrollPane);
     // only add description if user can edit the properties
     if (isEditable) {
-      URL url = societyCfg.getDescription();
+      URL url = societyComponent.getDescription();
       if (url != null) {
 	JTextPane pane = new JTextPane();
 	try {
@@ -154,7 +169,7 @@ public class PropertyEditorPanel extends JPanel
       }
     }
     societyPanel.setRightComponent(rightPanel);
-    societyCfg.addPropertiesListener(this);
+    societyComponent.addPropertiesListener(this);
     societyPanel.validate();
     societyPanel.setDividerLocation(200);
   }
@@ -165,7 +180,7 @@ public class PropertyEditorPanel extends JPanel
    */
 
   private DefaultMutableTreeNode makeTree() {
-    SortedSet names = new TreeSet(societyCfg.getPropertyNamesList());
+    SortedSet names = new TreeSet(societyComponent.getPropertyNamesList());
     for (Iterator i = names.iterator(); i.hasNext(); ) {
       CompositeName name = (CompositeName) i.next();
       addPropertyName(name);
@@ -181,7 +196,7 @@ public class PropertyEditorPanel extends JPanel
   private void displayComponents(Collection propertyNames) {
     for (Iterator i = propertyNames.iterator(); i.hasNext(); ) {
       CompositeName propName = (CompositeName) i.next();
-      Property property = societyCfg.getProperty(propName);
+      Property property = societyComponent.getProperty(propName);
       addComponentForProperty(property);
     }
   }

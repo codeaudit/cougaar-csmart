@@ -125,7 +125,8 @@ public class Organizer extends JScrollPane {
   private Action[] experimentAction = {
         new AbstractAction("Edit", new ImageIcon(getClass().getResource("EB16.gif"))) {
             public void actionPerformed(ActionEvent e) {
-                startExperimentBuilder(popupNode);
+                startExperimentBuilder(popupNode, 
+				       e.getActionCommand().equals("Edit"));
             }
         },
         new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
@@ -152,13 +153,13 @@ public class Organizer extends JScrollPane {
     private Action[] societyAction = {
         new AbstractAction("Edit", new ImageIcon(getClass().getResource("SB16.gif"))) {
             public void actionPerformed(ActionEvent e) {
-                startBuilder(popupNode);
+                startBuilder(popupNode, e.getActionCommand().equals("Edit"));
             }
         },
         new AbstractAction("New Experiment",
                            new ImageIcon(getClass().getResource("EB16.gif"))) {
             public void actionPerformed(ActionEvent e) {
-                startExperimentBuilder(popupNode);
+                startExperimentBuilder(popupNode, true);
             }
         },
         new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
@@ -196,7 +197,7 @@ public class Organizer extends JScrollPane {
         new AbstractAction("New Experiment",
                            new ImageIcon(getClass().getResource("EB16.gif"))) {
             public void actionPerformed(ActionEvent e) {
-                startExperimentBuilder(popupNode);
+                startExperimentBuilder(popupNode, true);
             }
         },
         new AbstractAction("Rename") {
@@ -229,7 +230,7 @@ public class Organizer extends JScrollPane {
         new AbstractAction("New Experiment",
                            new ImageIcon(getClass().getResource("EB16.gif"))) {
             public void actionPerformed(ActionEvent e) {
-                startExperimentBuilder(popupNode);
+                startExperimentBuilder(popupNode, true);
             }
         },
         new AbstractAction("Rename") {
@@ -385,33 +386,94 @@ public class Organizer extends JScrollPane {
         return selNode.getUserObject();
     }
 
-    private void doPopup(MouseEvent e) {
-        TreePath selPath = workspace.getPathForLocation(e.getX(), e.getY());
-        if (selPath == null) return;
-        // set the selected node to be the node the mouse is pointing at
-        workspace.setSelectionPath(selPath);
-        popupNode = (DefaultMutableTreeNode) selPath.getLastPathComponent();
-        Object o = popupNode.getUserObject();
-	if (popupNode.isRoot()) {
-	    rootMenu.show(workspace, e.getX(), e.getY());
-        } else if (o instanceof SocietyComponent) {
-            societyMenu.show(workspace, e.getX(), e.getY());
-        } else if (o instanceof Impact) {
-            impactMenu.show(workspace, e.getX(), e.getY());
-        } else if (o instanceof Metric) {
-            metricMenu.show(workspace, e.getX(), e.getY());
-        } else if (o instanceof Experiment) {
-            experimentMenu.show(workspace, e.getX(), e.getY());
-        } else if (o instanceof String) {
-            treeMenu.show(workspace, e.getX(), e.getY());
-        }
-    }
+  /**
+   * Popup appropriate menu, but first disable appropriate commands
+   * if component is not editable.
+   */
 
-    private void startBuilder(DefaultMutableTreeNode node) {
-        csmart.runBuilder((SocietyComponent) node.getUserObject(), false);
+  private void doPopup(MouseEvent e) {
+    TreePath selPath = workspace.getPathForLocation(e.getX(), e.getY());
+    if (selPath == null) return;
+    // set the selected node to be the node the mouse is pointing at
+    workspace.setSelectionPath(selPath);
+    popupNode = (DefaultMutableTreeNode) selPath.getLastPathComponent();
+    Object o = popupNode.getUserObject();
+    if (popupNode.isRoot()) {
+      rootMenu.show(workspace, e.getX(), e.getY());
+    } else if (o instanceof SocietyComponent) {
+      configureSocietyMenu(((SocietyComponent)o).isEditable());
+      societyMenu.show(workspace, e.getX(), e.getY());
+    } else if (o instanceof Impact) {
+      impactMenu.show(workspace, e.getX(), e.getY());
+    } else if (o instanceof Metric) {
+      metricMenu.show(workspace, e.getX(), e.getY());
+    } else if (o instanceof Experiment) {
+      configureExperimentMenu(((Experiment)o));
+      experimentMenu.show(workspace, e.getX(), e.getY());
+    } else if (o instanceof String) {
+      treeMenu.show(workspace, e.getX(), e.getY());
     }
+  }
+
+  private void configureExperimentMenu(Experiment experiment) {
+    boolean isEditable = experiment.isEditable();
+    if (isEditable) {
+      for (int i = 0; i < experimentAction.length; i++) {
+	String s = (String)experimentAction[i].getValue(Action.NAME);
+	if (s.equals("View"))
+	  experimentAction[i].putValue(Action.NAME, "Edit");
+	experimentAction[i].setEnabled(true);
+      } 
+    } else {
+      for (int i = 0; i < experimentAction.length; i++) {
+	String s = (String)experimentAction[i].getValue(Action.NAME);
+	if (s.equals("Rename"))
+	  experimentAction[i].setEnabled(false);
+	else if (s.equals("Edit"))
+	  experimentAction[i].putValue(Action.NAME, "View");
+      }
+    }
+    for (int i = 0; i < experimentAction.length; i++) {
+      String s = (String)experimentAction[i].getValue(Action.NAME);
+      if (s.equals("Run")) {
+	if (experiment.getSocietyComponentCount() != 0 &&
+	    experiment.isRunnable())
+	  experimentAction[i].setEnabled(true);
+	else
+	  experimentAction[i].setEnabled(false);
+	break;
+      }
+    }
+  }
+
+  private void configureSocietyMenu(boolean isEditable) {
+    if (isEditable) {
+      for (int i = 0; i < societyAction.length; i++) {
+	String s = (String)societyAction[i].getValue(Action.NAME);
+	if (s.equals("View"))
+	  societyAction[i].putValue(Action.NAME, "Edit");
+	societyAction[i].setEnabled(true);
+      } 
+    } else {
+      for (int i = 0; i < societyAction.length; i++) {
+	String s = (String)societyAction[i].getValue(Action.NAME);
+	if (s.equals("New Experiment") ||
+	    s.equals("Rename"))
+	  societyAction[i].setEnabled(false);
+	else if (s.equals("Edit"))
+	  societyAction[i].putValue(Action.NAME, "View");
+      }
+    }
+  }
+
+  private void startBuilder(DefaultMutableTreeNode node,
+			    boolean openForEditing) {
+    csmart.runBuilder((SocietyComponent) node.getUserObject(), false,
+		      openForEditing);
+  }
         
-    private void startExperimentBuilder(DefaultMutableTreeNode node) {
+    private void startExperimentBuilder(DefaultMutableTreeNode node,
+					boolean openForEditing) {
         Object o = node.getUserObject();
         Experiment experiment;
         if (o instanceof SocietyComponent) {
@@ -468,7 +530,7 @@ public class Organizer extends JScrollPane {
             experimentNames.add(experiment.getExperimentName());
 	    experiment.addModificationListener(myModificationListener);
         }
-        csmart.runExperimentBuilder(experiment, false);
+        csmart.runExperimentBuilder(experiment, false, openForEditing);
     }
 
     private void startConsole(DefaultMutableTreeNode node) {
@@ -669,10 +731,26 @@ public class Organizer extends JScrollPane {
     societyComponent.setName(name);
     model.nodeChanged(node);
   }
-  
+
+  /**
+   * Note that this simply deletes the society from the workspace;
+   * if the society was included in an experiment, then the experiment
+   * still retains the society.
+   */
+
     private void deleteSociety(DefaultMutableTreeNode node) {
-        model.removeNodeFromParent(node);
-        societyNames.remove(((SocietyComponent) node.getUserObject()).getSocietyName());
+      SocietyComponent society = (SocietyComponent)node.getUserObject();
+      if (!society.isEditable()) {
+	int result = JOptionPane.showConfirmDialog(this,
+				      "Society is in use; delete anyway?",
+				      "Society Not Editable",
+				      JOptionPane.YES_NO_OPTION,
+				      JOptionPane.WARNING_MESSAGE);
+	if (result != JOptionPane.YES_OPTION)
+	  return;
+      }
+      model.removeNodeFromParent(node);
+      societyNames.remove(society.getSocietyName());
     }
 
     private void newImpact(DefaultMutableTreeNode node) {
@@ -935,11 +1013,21 @@ public class Organizer extends JScrollPane {
     }
   }
 
-    private void deleteExperiment(DefaultMutableTreeNode node) {
-        if (node == null) return;
-        model.removeNodeFromParent(node);
-        experimentNames.remove(((Experiment) node.getUserObject()).getExperimentName());
-    }
+  private void deleteExperiment(DefaultMutableTreeNode node) {
+    if (node == null) return;
+    Experiment experiment = (Experiment)node.getUserObject();
+    if (!experiment.isEditable()) {
+      int result = JOptionPane.showConfirmDialog(this,
+		      "Experiment is in use; delete anyway?",
+  		      "Experiment Not Editable",
+		      JOptionPane.YES_NO_OPTION,
+		      JOptionPane.WARNING_MESSAGE);
+	if (result != JOptionPane.YES_OPTION)
+	  return;
+      }
+    model.removeNodeFromParent(node);
+    experimentNames.remove(experiment.getExperimentName());
+  }
 
     private void newFolder(DefaultMutableTreeNode node) {
         String name = JOptionPane.showInputDialog("New folder name");
@@ -1297,10 +1385,17 @@ public class Organizer extends JScrollPane {
     copyExperiment((Experiment)node.getUserObject(), node.getParent());
   }
 
-  public void copyExperiment(Experiment experiment, Object context) {
+  public Experiment copyExperiment(Experiment experiment, Object context) {
     // context is the tree node of the folder containing the experiment
     Experiment experimentCopy = experiment.copy(this, context);
-    addExperimentToWorkspace(experimentCopy, (DefaultMutableTreeNode)context);
+    if (context == null)
+      // add copy as sibling of original
+      addExperimentToWorkspace(experimentCopy,
+	       (DefaultMutableTreeNode)findNode(experiment).getParent());
+    else
+      addExperimentToWorkspace(experimentCopy, 
+			       (DefaultMutableTreeNode)context);
+    return experimentCopy;
   }
 
   private void copySocietyInNode(DefaultMutableTreeNode node) {
@@ -1310,7 +1405,12 @@ public class Organizer extends JScrollPane {
   public SocietyComponent copySociety(SocietyComponent society, 
 				      Object context) {
     SocietyComponent societyCopy = society.copy(this, context);
-    addSocietyToWorkspace(societyCopy, (DefaultMutableTreeNode)context);
+    if (context == null)
+      // add copy as sibling of original
+      addSocietyToWorkspace(societyCopy, 
+	    (DefaultMutableTreeNode)findNode(society).getParent());
+    else
+      addSocietyToWorkspace(societyCopy, (DefaultMutableTreeNode)context);
     return societyCopy;
   }
 
