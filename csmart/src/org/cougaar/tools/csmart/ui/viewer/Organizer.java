@@ -363,7 +363,7 @@ public class Organizer extends JScrollPane {
         try {
           inDatabase = ExperimentDB.isExperimentNameInDatabase(name);
         } catch (RuntimeException e) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("RuntimeException", e);
           }
         }
@@ -656,9 +656,8 @@ public class Organizer extends JScrollPane {
           }
         }.start();
     } catch (RuntimeException re) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Runtime exception saving experiment", re);
-        re.printStackTrace();
       }
       GUIUtils.timeConsumingTaskEnd(organizer);
     }
@@ -819,31 +818,32 @@ public class Organizer extends JScrollPane {
     try {
       new Thread("SelectExperiment") {
         public void run() {
-          cmtDialog.processResults(); // a potentially long process
-          final String trialId = cmtDialog.getTrialId();
-          if (trialId != null) {
-            Experiment experiment =
-              helper.createExperiment(originalExperimentName,
-                                         cmtDialog.getExperimentName(),
-                                         cmtDialog.getExperimentId(), 
-                                         trialId);
-            if (experiment != null) {
-              DefaultMutableTreeNode newNode =
-                addExperimentToWorkspace(experiment);
-              RecipeComponent[] recipes = experiment.getRecipes();
-              for (int i = 0; i < recipes.length; i++)
-                if (!recipeNames.contains(recipes[i].getRecipeName()))
-                  addRecipeToWorkspace(recipes[i]);
-              workspace.setSelection(newNode);
-            }
-          }
+	  // a potentially long process
+          if (cmtDialog.processResults()) {
+	    final String trialId = cmtDialog.getTrialId();
+	    if (trialId != null) {
+	      Experiment experiment =
+		helper.createExperiment(originalExperimentName,
+					cmtDialog.getExperimentName(),
+					cmtDialog.getExperimentId(), 
+					trialId);
+	      if (experiment != null) {
+		DefaultMutableTreeNode newNode =
+		  addExperimentToWorkspace(experiment);
+		RecipeComponent[] recipes = experiment.getRecipes();
+		for (int i = 0; i < recipes.length; i++)
+		  if (!recipeNames.contains(recipes[i].getRecipeName()))
+		    addRecipeToWorkspace(recipes[i]);
+		workspace.setSelection(newNode);
+	      }
+	    }
+	  }
           GUIUtils.timeConsumingTaskEnd(organizer);
         }
       }.start();
     } catch (RuntimeException re) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Runtime exception creating experiment", re);
-        re.printStackTrace();
       }
       GUIUtils.timeConsumingTaskEnd(organizer);
     }
@@ -923,9 +923,8 @@ public class Organizer extends JScrollPane {
           }
         }.start();
     } catch (RuntimeException re) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Runtime exception duplicating experiment", re);
-        re.printStackTrace();
       }
       GUIUtils.timeConsumingTaskEnd(organizer);
     }
@@ -1325,8 +1324,8 @@ public class Organizer extends JScrollPane {
 //          } catch (OptionalDataException ode) {
 //          } catch (IOException ioe) {
 	} catch (Exception e) {
-          if(log.isDebugEnabled()) {
-            log.error("Organizer: can't read file: " + f + " exception: " + e);
+          if(log.isErrorEnabled()) {
+            log.error("Organizer: can't read file: " + f, e);
           }
 	} finally {
 	  ois.close();
@@ -1351,13 +1350,19 @@ public class Organizer extends JScrollPane {
 			 RecipeComponent.class.getMethod("getRecipeName", noTypes));
 	return;
       } catch (NoSuchMethodException nsme) {
-	nsme.printStackTrace();
+	if (log.isErrorEnabled()) {
+	  log.error("Organizer error restoring workspace", nsme);
+	}
       } catch (SecurityException se) {
-	se.printStackTrace();
+	if (log.isErrorEnabled()) {
+	  log.error("Organizer error restoring workspace", se);
+	}
       }
     } catch (Exception ioe) {
-	ioe.printStackTrace();
-	return;
+      if (log.isErrorEnabled()) {
+	log.error("Organizer error restoring workspace", ioe);
+      }
+      return;
     }
   } // end of restore
 
@@ -1403,9 +1408,13 @@ public class Organizer extends JScrollPane {
             experimentNames.init(getLeaves(Experiment.class, root),
                 Experiment.class.getMethod("getExperimentName", noTypes));
           } catch (NoSuchMethodException nsme) {
-            nsme.printStackTrace();
+	    if (log.isErrorEnabled()) {
+	      log.error("Organizer error finding experiment name", nsme);
+	    }
           } catch (SecurityException se) {
-            se.printStackTrace();
+	    if (log.isErrorEnabled()) {
+	      log.error("Organizer error finding experiment name", se);
+	    }
           }
         }
 	update();
@@ -1450,7 +1459,9 @@ public class Organizer extends JScrollPane {
 	      oos.close();
             }
     } catch (Exception ioe) {
-      ioe.printStackTrace();
+      if (log.isErrorEnabled()) {
+	log.error("Organizer error saving workspace", ioe);
+      }
     }
   }
   

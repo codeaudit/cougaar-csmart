@@ -261,7 +261,7 @@ public class CMTDialog extends JDialog {
    * create a new trial.
    */
 
-  public void processResults() {
+  public boolean processResults() {
     boolean modified = false;
     int n = ULThreads.length;
     for (int i = 0; i < n; i++) {
@@ -271,7 +271,7 @@ public class CMTDialog extends JDialog {
         continue;
       if (!modified) {
         if (!cloneExperiment())
-          return; // user cancelled modifications
+          return false; // user cancelled modifications
         modified = true;
       }
       ExperimentDB.setULThreadSelected(trialId, ULDBThreads[i], 
@@ -285,7 +285,7 @@ public class CMTDialog extends JDialog {
       if (b.booleanValue() != cb.isSelected()) {
         if (!modified) {
           if (!cloneExperiment())
-            return; // user cancelled modifications
+            return false; // user cancelled modifications
           modified = true;
         }
         ExperimentDB.setGroupSelected(trialId, groupName, cb.isSelected());
@@ -298,7 +298,7 @@ public class CMTDialog extends JDialog {
           continue;
         if (!modified) {
           if (!cloneExperiment())
-            return; // user cancelled modifications
+            return false; // user cancelled modifications
           modified = true;
         }
         ExperimentDB.setMultiplier(trialId, groupName, newMultiplier);
@@ -306,7 +306,7 @@ public class CMTDialog extends JDialog {
       }
     }
     if(forceRecomputeBox.isSelected()) {
-      if(log.isDebugEnabled()) {
+      if(log.isInfoEnabled()) {
         log.info("Force Recompute Checked");
       }
       ExperimentDB.deleteCMTAssembly(experimentId);
@@ -316,17 +316,18 @@ public class CMTDialog extends JDialog {
     if (modified) {
       String newCMTasb = ExperimentDB.updateCMTAssembly(experimentId);
       if (forceRecomputeBox.isSelected()) {
-        if(log.isDebugEnabled()) {
+        if(log.isInfoEnabled()) {
           log.info("new CMTasb is: "+newCMTasb);
         }
 	ExperimentDB.deleteCMTAssembly(experimentId);
 	newCMTasb = ExperimentDB.updateCMTAssembly(experimentId);
-        if(log.isDebugEnabled()) {
+        if(log.isInfoEnabled()) {
           log.info("new CMTasb is: "+newCMTasb);
         }
       }
       trialId = ExperimentDB.getTrialId(experimentId);
     }
+    return true;
   }
 
   private boolean cloneExperiment() {
@@ -341,8 +342,11 @@ public class CMTDialog extends JDialog {
     // if experiment name is in the database, then ask user for new name
     // or allow user to re-use existing name
     if (ExperimentDB.isExperimentNameInDatabase(experimentName)) {
+      boolean allowOrig = true;
+      if (! experimentId.startsWith("EXPT-"))
+	allowOrig = false;
       String name = organizer.getUniqueExperimentName(experimentName,
-                                                      true);
+                                                      allowOrig);
       if (name == null)
         return false;
       experimentName = name;
