@@ -124,6 +124,7 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     }
     assetData = new AgentAssetData(null);
     assetData.setAssetClass(assetClassName);
+    assetData.setIniFormat(AgentAssetData.NEW_FORMAT);
   }
 
   /**
@@ -329,21 +330,20 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
    *
    * @param typeId Type Id for the new Relationship
    * @param itemId Item Id for the new Relationship
-   * @param otherClusterId Other Cluster referenced in new Relationship
-   * @param roleName Role performed in new Relationship
+   * @param supportedCluster Cluster supported in this relationship
+   * @param type Type of Relationship
    * @param start Start time for new Relationship
    * @param end Stop time for new Relationship
    */
-  public void addRelationship(String typeId, String itemId, String otherClusterId, String roleName, long start, long end) {
+  public void addRelationship(String typeId, String itemId, String supportedCluster, String type, long start, long end) {
 
     RelationshipData rd = new RelationshipData();
-    rd.setItem(itemId);
+    rd.setItemId(itemId);
     rd.setTypeId(typeId);
-    rd.setType(roleName);
-    rd.setRole(roleName);
+    rd.setType(type);
     rd.setStartTime(start);
     rd.setEndTime(end);
-    rd.setSupported(otherClusterId);
+    rd.setSupported(supportedCluster);
     assetData.addRelationship(rd);
   }
   
