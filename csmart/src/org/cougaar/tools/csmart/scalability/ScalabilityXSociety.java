@@ -143,17 +143,17 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
   };
   private static class MirroredPropertyInfo implements Serializable {
     public String name;
-    public int[] value;
+    public int[] values;
     public Integer lastValue;
     public Integer firstValue;
     public String tooltip;
     public URL help;
-    public MirroredPropertyInfo(String name, int[] value,
+    public MirroredPropertyInfo(String name, int[] values,
 				Integer firstValue, Integer lastValue,
 				String tooltip, String help)
     {
       this.name = name;
-      this.value = value;
+      this.values = values;
       this.firstValue = firstValue;
       this.lastValue = lastValue;
       this.tooltip = tooltip;
@@ -206,9 +206,10 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
 		  listener,
 		  PROP_LEVELCOUNT_TT,
 		  PROP_LEVELCOUNT_HELP);
+    getLevelCount();
     for (int i = 0; i < mirroredProperties.length; i++) {
       final MirroredPropertyInfo mp = mirroredProperties[i];
-      Property prop = addProperty(mp.name, mp.value, int[].class);
+      Property prop = addProperty(mp.name, mp.values, int[].class);
       prop.setToolTip(mp.tooltip);
       prop.setHelp(mp.help);
       prop.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
@@ -231,39 +232,39 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
    * last child. These children might be required to have particular
    * values.
    **/
-  private void distributeIntArrayProperty(MirroredPropertyInfo mp, PropertyEvent e) throws InvalidPropertyValueException {
+  private void distributeIntArrayProperty(MirroredPropertyInfo mp, PropertyEvent e)
+    throws InvalidPropertyValueException
+  {
     int nlvls = getChildCount();
     Property prop = e.getProperty();
     // We expect the value here to have a certain kind of look.
     // What is it? check it!
     Object o = PropertyHelper.validateValue(prop, prop.getValue());
-    int[] values = null;
     if (o != null) {
-      values = (int[]) prop.getValue();
-      if (values.length <= 0)
-	values = new int[0];
+      mp.values = (int[]) prop.getValue();
+      if (mp.values.length <= 0)
+	mp.values = new int[0];
     } else {
       // throw an exception?
       return;
     }
     for (int level = 0; level < nlvls; level++) {
       ConfigurableComponent child = getChild(level);
-      setMirroredProperty(child, mp, level, values);
+      setMirroredProperty(child, mp, level);
     }
     if (mp == agentCountMP) {
-      values[0] = 1;
+      mp.values[0] = 1;
       setProviderCount();
     }
   }
 
   private void setMirroredProperty(ConfigurableComponent child,
 				   MirroredPropertyInfo mp,
-				   int level,
-				   int[] values)
+				   int level)
   {
     Property cp = child.getProperty(mp.name);
     if (cp == null) {
-      System.out.println("Child has no " + mp.name);
+//        System.out.println("Child has no " + mp.name);
       return;
     }
     int nlvls = getChildCount();
@@ -272,13 +273,13 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
       cv = mp.firstValue;
     } else if (level == nlvls - 1 && mp.lastValue != null) {
       cv = mp.lastValue;
-    } else if (level < values.length) {
-      cv = new Integer(values[level]);
-    } else if (values.length <= 1) {
+    } else if (level < mp.values.length) {
+      cv = new Integer(mp.values[level]);
+    } else if (mp.values.length <= 0) {
       // the next line will cause an eror if we're not careful
       cv = null;
     } else {
-      cv = new Integer(values[values.length - 1]);
+      cv = new Integer(mp.values[mp.values.length - 1]);
     }
     cp.setValue(cv);
   }
@@ -340,7 +341,7 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
     }
     if (newLevels > getChildCount()) {
       int[] agentCount = (int[]) getProperty(PROP_AGENTCOUNT).getValue();
-      agentCount[0] = 1;
+//        agentCount[0] = 1;
       while (newLevels > getChildCount()) {
 	int level = getChildCount();
 	ScalabilityXAgent superior = null;
@@ -354,7 +355,7 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
 	setPropertyVisible(child.getProperty(ScalabilityXLevel.PROP_LEVEL), false);
 	for (int i = 0; i < mirroredProperties.length; i++) {
 	  MirroredPropertyInfo mp = mirroredProperties[i];
-	  setMirroredProperty(child, mp, level, agentCount);
+	  setMirroredProperty(child, mp, level);
 	}
       }
     }

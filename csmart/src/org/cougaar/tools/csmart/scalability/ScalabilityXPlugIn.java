@@ -51,12 +51,16 @@ public class ScalabilityXPlugIn
     return ((Integer) getProperty(PROP_PARAM + ix).getValue()).intValue();
   }
 
-  public Property addParameter(int param) {
-    return addProperty(PROP_PARAM + nParameters++, new Integer(param));
+  public Property addParameter(final int param) {
+    Property result = addInvisibleProperty(PROP_PARAM + nParameters++, new Integer(param));
+//      System.out.println(getShortName() + " parameter " + (nParameters-1) + " = " + result.getValue());
+    return result;
   }
 
-  public Property addParameter(String param) {
-    return addProperty(PROP_PARAM + nParameters++, param);
+  public Property addParameter(final String param) {
+    Property result = addInvisibleProperty(PROP_PARAM + nParameters++, param);
+//      System.out.println(getShortName() + " parameter " + (nParameters-1) + " = " + result.getValue());
+    return result;
   }
 
   /**
@@ -64,7 +68,8 @@ public class ScalabilityXPlugIn
    * property of our parnt.
    **/
   public Property addParameter(Property prop) {
-    return addProperty(new PropertyAlias(this, PROP_PARAM + nParameters++, prop));
+//      System.out.println(getShortName() + " parameter " + (nParameters) + " = " + prop.getValue());
+    return addInvisibleProperty(new PropertyAlias(this, PROP_PARAM + nParameters++, prop));
   }
 
   public String getConfigLine() {

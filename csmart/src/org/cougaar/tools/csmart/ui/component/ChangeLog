@@ -1,0 +1,9 @@
+2001-09-26  Ray Tomlinson  <RTomlinson@HEFEWEIZEN>
+
+	* PropertyEvent.java (Repository): 
+	* Property.java (Repository): 
+	* ConfigurableComponent.java (Repository):
+	Add versions of "addProperty" to add invisible properties. This
+	avoids the window of inopportunity between adding the property and
+	making it invisible. The added methods are named
+	addInvisibleProperty.

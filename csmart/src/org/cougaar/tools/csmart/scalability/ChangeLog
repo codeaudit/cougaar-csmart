@@ -1,0 +1,11 @@
+2001-09-26  Ray Tomlinson  <RTomlinson@HEFEWEIZEN>
+
+	* ScalabilityXSociety.java (Repository):
+	Fix MirroredPropertyInfo. The value of a mirrored property was not
+	being saved. In fact, the property values sent to new levels was
+	always from the agentCount array. Majorly broken.
+
+	* ScalabilityXPlugIn.java (Repository): 
+	Use new addInvisibleProperty methods for parameters. This are all
+	created and manipulated by the agent component and should not be
+	otherwise invisible.
