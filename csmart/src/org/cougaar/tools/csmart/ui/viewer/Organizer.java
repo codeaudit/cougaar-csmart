@@ -807,7 +807,6 @@ public class Organizer extends JScrollPane {
    * If it's not in an experiment, then warn the user that they
    * need to save any experiments that contain it.
    */
-
   protected void renameRecipe() {
     DefaultMutableTreeNode node = getSelectedNode();
     DefaultMutableTreeNode parentNode = 
@@ -820,8 +819,10 @@ public class Organizer extends JScrollPane {
       return;
     if (newName.equals(originalName))
       return;
-    recipeNames.remove(originalName);
+
     Object o = parentNode.getUserObject();
+
+    // If its local, create a copy with the new name
     if (o instanceof Experiment) {
       Experiment experiment = (Experiment)o;
       model.removeNodeFromParent(node);
@@ -830,18 +831,55 @@ public class Organizer extends JScrollPane {
       experiment.addRecipeComponent(recipeCopy);
       recipeCopy.saveToDatabase();
       addRecipeToWorkspace(recipeCopy, parentNode);
+
+      // If there are no other Nodes in the model with the originalName
+      // then and only then we want to remove that name from the list
+      // of recipeNames
+      boolean nameStillUsed = false;
+      Enumeration nodes = root.depthFirstEnumeration();
+      while (nodes.hasMoreElements()) {
+        node = (DefaultMutableTreeNode)nodes.nextElement();
+        if (node.getUserObject().equals(recipe)) {
+	  // Original recipe still in the model someplace
+	  // so don't remove the name
+	  nameStillUsed = true;
+	  break;
+	}
+      }
+      if (! nameStillUsed)
+	recipeNames.remove(originalName);
     } else {
+      // Only really want to remove
+      // the original name if there are no other nodes with this name
+      // If its global (as in this block) we're going to change
+      // the recipe name throughout so this is correct
+      recipeNames.remove(originalName);
+      
       recipeNames.add(newName);
+
+      // This method now updates the DB as well
       recipe.setName(newName);
-      recipe.saveToDatabase();
+
+      // So only save it to the DB if necessary
+      // Note however that
+      // since the property names may have changed,
+      // it may be I always want to re-save
+      if (recipe.isModified())
+	recipe.saveToDatabase();
+
       Enumeration nodes = root.depthFirstEnumeration();
       while (nodes.hasMoreElements()) {
         node = (DefaultMutableTreeNode)nodes.nextElement();
         if (node.getUserObject().equals(recipe))
           model.nodeChanged(node);
       }
-      displayExperiments(recipe);
-    }
+
+      // Now that changing a recipe name
+      // doesn't change the recipe ID, there is no need to
+      // resave all these experiments
+      // when you change a recipe name
+      //      displayExperiments(recipe);
+    } // end of block on global change
   }
 
   /**
