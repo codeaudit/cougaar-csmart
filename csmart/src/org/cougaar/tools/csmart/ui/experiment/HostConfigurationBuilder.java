@@ -53,6 +53,9 @@ import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 
+/**
+ * Tabbed pane for assigning Hosts to Nodes to Agents
+ **/
 public class HostConfigurationBuilder extends JPanel implements TreeModelListener {
   Experiment experiment;
   ExperimentBuilder experimentBuilder;
