@@ -188,18 +188,54 @@ society. For example, loading the network with background traffic, killing
 nodes, telling the system some inventory has been lost, etc. These impacts
 might be real (really loading up the network), or simulated (via a Binder
 on the MessageTransport or some other mechanism).
-<h3>
-Notes:</h3>
+<h3>Menus</h3>
+<h4>File Menu</h4>
+The File menu provides quick access to functions also available on the
+pop-up menu off of items in the workspace, plus other items.<br>
+Items available only off this menu:<br>
+<ul><li>Open Workspacee...: Open the named workspace file (for use
+when you previously renamed your workspace).</li>
+<li>Save New Results In..: Set the directory where Node log files and
+results files will be stored. Defaults to CIP/results</li>
+<li>Exit: Quit CSMART</li>
+</ul>
 
+Items available off of pop-up menus in the workspace:
+<ul><li>New Experiment </li>
+<li>New Recipe - with sub-items for From Database (pre-configured) or Built In</li>
+<li>New Society (temporarily disabled)</li>
+<li>New Folder</li>
+<li>Configure (enabled when a society or recipe is selected)</li>
+<li>Build (enabled for experiments)</li>
+<li>Run (an experiment)</li>
+<li>Duplicate (ie. copy)</li>
+<li>Delete (you will be prompted whether to also delete from the database)</li>
+<li>Delete Experiment From Database (to delete experiments not also in
+your workspace)</li>
+<li>Delete Recipe From Database (to delete recipes not also in your
+workspace)</li>
+<li>Rename</li>
+<li>Save To Database (to force a save now)</li>
+</ul>
+<br>
+
+<h4>Windows Menu</h4>
+This menu provides quick access to other open CSMART windows. It will
+have one item for each open window.<br>
+
+<h4>Help Menu</h4>
+Give help on CSMART. Of particular note is the option to "Show CSMART
+Version", which provides the CSMART build information. This is useful
+when reporting bugs.
+
+<h3>Notes:</h3>
 <ul>
-
-<li>
-If an appropriate item (experiment or recipe) is not selected in the Workspace,
+<li>If an appropriate item (experiment or recipe) is not selected in the Workspace,
 then the toolbar button will not be activated.</li>
 
-<li>
-Changes to your workspace are saved automatically.</li>
+<li>Changes to your workspace are saved automatically.</li>
 </ul>
+
 <br><br>
 <!-- hhmts start -->
 Last modified: Wed Feb 13 15:43:34 EST 2002
