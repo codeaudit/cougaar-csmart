@@ -669,13 +669,15 @@ CREATE TABLE lib_org_group(
 ## TABLE: lib_organization 
 ##
 
-CREATE TABLE lib_organization(
-    ORG_ID      VARCHAR(50)    BINARY NOT NULL DEFAULT '',
-    ORG_NAME    VARCHAR(50)    BINARY DEFAULT NULL,
-    UIC         VARCHAR(50)    BINARY DEFAULT NULL,
-    UNIQUE KEY pk_lib_organization (ORG_ID)
-) TYPE=MyISAM 
-;
+CREATE TABLE lib_organization (
+  ORG_ID varchar(50) binary NOT NULL default '',
+  ORG_NAME varchar(50) binary default NULL,
+  UIC varchar(50) binary default NULL,
+  ORG_CLASS varchar(50) binary default NULL,
+  UNIQUE KEY pk_lib_organization (ORG_ID),
+  KEY reflib_org45 (ORG_NAME),
+  KEY reflib_org46 (ORG_ID)
+) TYPE=MyISAM;
 
 
 ## 

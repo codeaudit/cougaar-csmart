@@ -419,7 +419,7 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_organization.csv.tmp'
         OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
-    (ORG_ID,ORG_NAME,UIC);
+    (ORG_ID,ORG_NAME,UIC,ORG_CLASS);
 
 LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_orgtype_ref.csv.tmp'
     INTO TABLE lib_orgtype_ref

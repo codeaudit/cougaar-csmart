@@ -85,6 +85,8 @@ IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\geoloc.csv COPY %COUGAA
 
 IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_pg_attribute.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_pg_attribute.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
 
+IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_organization.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_organization.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
+
 IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\oplan.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\oplan.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
 
 IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\oplan_agent_attr.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\oplan_agent_attr.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
@@ -105,6 +107,10 @@ mysql -u%1 -p%2 %3 < loadRef_new.sql
 
 DEL loadRef_new.sql
 DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv\*.tmp
+DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv\*loc.csv
+DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv\fdm*
+DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv\oplan*
+DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv\lib*
 
 ECHO Done.
 

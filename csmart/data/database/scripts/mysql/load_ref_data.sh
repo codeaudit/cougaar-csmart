@@ -103,6 +103,10 @@ if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/lib_pg_attribute.csv" ];
     cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/lib_pg_attribute.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
 fi
 
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/lib_organization.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/lib_organization.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+fi
+
 if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan.csv" ]; then
     cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
 fi
@@ -137,6 +141,10 @@ fi
 rm load_ref_data_new.sql
 rm -f load_ref_data_new_orig.sql
 rm $COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv/*.tmp
+rm $COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv/fdm*
+rm $COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv/oplan*
+rm $COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv/*loc.csv
+rm $COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv/lib*
 
 echo "Done."
 
