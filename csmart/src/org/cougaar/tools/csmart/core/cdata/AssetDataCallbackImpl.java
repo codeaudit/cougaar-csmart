@@ -33,6 +33,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -171,7 +172,7 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
         throw new RuntimeException("Unparsable collection type: "+type);
       }
 
-      Collection coll = org.cougaar.util.CSVUtility.parseToCollection(arg);
+      List coll = org.cougaar.util.CSVUtility.parseToList(arg);
       for (Iterator iterator = coll.iterator(); iterator.hasNext();) {
         String str = (String) iterator.next();
         c.add(parseE(etype, str));
@@ -203,7 +204,7 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
         throw new RuntimeException("Unparsable collection type: "+type);
       }
 
-      Collection coll = org.cougaar.util.CSVUtility.parseToCollection(arg);
+      List coll = org.cougaar.util.CSVUtility.parseToList(arg);
       for (Iterator iterator = coll.iterator(); iterator.hasNext();) {
         String o = (String) iterator.next();
         c.add(parseE(etype, o));

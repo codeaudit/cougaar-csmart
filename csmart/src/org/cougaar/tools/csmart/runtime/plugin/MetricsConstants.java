@@ -28,11 +28,11 @@ import org.cougaar.planning.ldm.plan.Verb;
 public interface MetricsConstants 
 {
   // special verbs
-  Verb Verb_Manage = Verb.getVerb("Manage");
-  Verb Verb_Ready = Verb.getVerb("Ready");
-  Verb Verb_Start = Verb.getVerb("Start");
-  Verb Verb_Finish = Verb.getVerb("Finish");
-  Verb Verb_Sample = Verb.getVerb("Sample");
+  Verb Verb_Manage = Verb.get("Manage");
+  Verb Verb_Ready = Verb.get("Ready");
+  Verb Verb_Start = Verb.get("Start");
+  Verb Verb_Finish = Verb.get("Finish");
+  Verb Verb_Sample = Verb.get("Sample");
 
  // special Roles
   String Role_METRICSPROVIDER = "MetricsProvider";
