@@ -617,16 +617,16 @@ public class CSMART extends JFrame {
    */
   protected void runExperimentBuilder(Experiment experiment, 
                                       boolean alwaysNew) {
-    // if this experiment is being edited, then don't edit again
-    if (isExperimentInEditor(experiment))
-      return;
-    if (!experiment.isEditable()) {
-      // otherwise editability can be overwritten
-      Object[] options = { "Edit", "View", "Copy", "Cancel" };
-      experiment = queryUser(experiment, options);
-      if (experiment == null)
-        return;
-    }
+//      // if this experiment is being edited, then don't edit again
+//      if (isExperimentInEditor(experiment))
+//        return;
+//      if (!experiment.isEditable()) {
+//        // otherwise editability can be overwritten
+//        Object[] options = { "Edit", "View", "Copy", "Cancel" };
+//        experiment = queryUser(experiment, options);
+//        if (experiment == null)
+//          return;
+//      }
     // gray out the children of the experiment in the tree
     // to avoid confusion while editing the experiment
     organizer.removeChildren(experiment);
@@ -635,29 +635,29 @@ public class CSMART extends JFrame {
     addTool(EXPERIMENT_BUILDER, experiment.getExperimentName(), tool);
   }
 
-  private Experiment queryUser(Experiment experiment,
-                               Object[] options) {
-    int result = 
-        JOptionPane.showOptionDialog(this,
-                                     experiment.getShortName() + 
-                                     " is not editable",
-                                     "Experiment Not Editable",
-                                     JOptionPane.DEFAULT_OPTION,
-                                     JOptionPane.WARNING_MESSAGE,
-                                     null,
-                                     options,
-                                     options[0]);
-    if (options[result].equals("Edit"))
-      // edit it anyway
-      experiment.setEditable(true);
-    else if (options[result].equals("Copy"))
-      // copy it
-      experiment = organizer.copyExperiment(experiment, true);
-    else if (options[result].equals("Cancel"))
-      // user cancelled
-      return null;
-    return experiment;
-  }
+//    private Experiment queryUser(Experiment experiment,
+//                                 Object[] options) {
+//      int result = 
+//          JOptionPane.showOptionDialog(this,
+//                                       experiment.getShortName() + 
+//                                       " is not editable",
+//                                       "Experiment Not Editable",
+//                                       JOptionPane.DEFAULT_OPTION,
+//                                       JOptionPane.WARNING_MESSAGE,
+//                                       null,
+//                                       options,
+//                                       options[0]);
+//      if (options[result].equals("Edit"))
+//        // edit it anyway
+//        experiment.setEditable(true);
+//      else if (options[result].equals("Copy"))
+//        // copy it
+//        experiment = organizer.copyExperiment(experiment, true);
+//      else if (options[result].equals("Cancel"))
+//        // user cancelled
+//        return null;
+//      return experiment;
+//    }
    
   /**
    * Run the specified experiment.  The experiment must be runnable.
