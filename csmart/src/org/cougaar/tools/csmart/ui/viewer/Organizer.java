@@ -1279,6 +1279,13 @@ public class Organizer extends JScrollPane {
       Experiment experiment = new Experiment(name);
       DefaultMutableTreeNode newNode =
 	addExperimentToWorkspace(experiment, node);
+      // if a single society is selected, add it to the experiment
+      DefaultMutableTreeNode selectedNode = getSelectedNode();
+      if (selectedNode != null) {
+	Object o = selectedNode.getUserObject();
+	if (o instanceof SocietyComponent) 
+	  experiment.addSocietyComponent((SocietyComponent)o);
+      }
       workspace.setSelection(newNode);
       return newNode;
     } catch (Exception e) {
