@@ -30,18 +30,4 @@ import java.io.IOException;
  * and can write their own Agent ini File.
  */
 public interface AgentComponent extends ComponentProperties {
-  /**
-   * Write out one line for the Node ini file
-   *
-   * @return a <code>String</code> line for the file
-   */
-  String getConfigLine();
-  
-  /**
-   * Write the Agents ini file
-   *
-   * @param configDir a <code>File</code> path to write the file into
-   * @exception IOException if an error occurs
-   */
-  //  void writeIniFile(File configDir) throws IOException;
 }
