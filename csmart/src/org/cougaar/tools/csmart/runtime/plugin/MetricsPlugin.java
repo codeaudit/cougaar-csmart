@@ -44,7 +44,7 @@ import org.cougaar.planning.ldm.plan.Task;
 import org.cougaar.planning.ldm.plan.Verb;
 import org.cougaar.planning.ldm.plan.AspectValue;
 import org.cougaar.planning.service.PrototypeRegistryService;
-import org.cougaar.tools.scalability.performance.jni.CpuClock;
+import org.cougaar.tools.csmart.runtime.jni.CpuClock;
 import org.cougaar.util.UnaryPredicate;
 
 import java.io.File;
@@ -74,8 +74,7 @@ import java.util.Vector;
  * Sample length in seconds<br>
  * CPU seconds used by Node during sample<br>
  * (NOTE: This CPU statistic required the separate CpuClock shared library,
- * included with the scalability module.  See the Scalability module's install
- * instructions for installing the CpuClock library. If you do not install
+ * included with the this module.  If you do not compile and install
  * this library, you will see a warning exception, which can be ignored.<br>
  * <br>x1
  * Memory used by Node in Megabytes<br>
