@@ -131,6 +131,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
   }
 
+  private void setDefaultNodeArguments(Properties props) {
+    defaultNodeArguments = props;
+  }
+
   public Properties getDefaultNodeArguments() {
     return defaultNodeArguments;
   }
@@ -358,6 +362,15 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       experimentCopy = new Experiment(uniqueName, expID, trialID);
     else
       experimentCopy = new Experiment(uniqueName);
+    Properties myProps = getDefaultNodeArguments();
+    Enumeration props = myProps.propertyNames();
+    Properties newProperties = new Properties();
+    while (props.hasMoreElements()) {
+      String propertyName = (String)props.nextElement();
+      newProperties.setProperty(propertyName, 
+                                myProps.getProperty(propertyName));
+    }
+    experimentCopy.setDefaultNodeArguments(newProperties);
     // this copies the society and the agents
     for (int i = 0; i < getComponentCount(); i++) {
       ModifiableConfigurableComponent sc = getComponent(i);

@@ -127,11 +127,15 @@ public class ExperimentNode
   public NodeComponent copy(Experiment experimentCopy) {
     NodeComponent nodeCopy = new ExperimentNode(getShortName(), 
                                                 experimentCopy);
-    Properties newProperties = new Properties();
-    Enumeration propertyNames = arguments.propertyNames();
-    while (propertyNames.hasMoreElements()) {
-      String key = (String)propertyNames.nextElement();
-      newProperties.setProperty(key, arguments.getProperty(key));
+    Properties newProperties = 
+      new Properties(experimentCopy.getDefaultNodeArguments());
+    Properties myProps = getArguments();
+    // only copy the non-default properties
+    Enumeration props = myProps.keys();
+    while (props.hasMoreElements()) {
+      String propertyName = (String)props.nextElement();
+      newProperties.setProperty(propertyName, 
+                                myProps.getProperty(propertyName));
     }
     nodeCopy.setArguments(newProperties);
     return nodeCopy;

@@ -1138,12 +1138,6 @@ public class CSMARTConsole extends JFrame {
     } else
       properties.setProperty("org.cougaar.experiment.id", 
                              experiment.getTrialID());
-    // update properties on node
-    nodeComponent.setArguments(properties); 
-    // set configuration file name as node component property; why?
-    //    ((ConfigurableComponent)nodeComponent).addProperty("ConfigurationFileName",
-    //                              nodeName + currentTrial);
-    
     // create a status button
     NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
 
