@@ -145,9 +145,8 @@ on is either an IP address or the fully-qualified host name
 - Be sure that you can resolve the host name into an IP address
 - If running Nodes on more than one machine, try running
 minitestconfig split among those machines, and ensure that that works
-- If running a database society, be sure that you can connect to the
-database using the appropriate username and password from a command
-line tool.
+- Be sure that you can connect to the database using the appropriate
+username and password from a command line tool.
 - If a running Node in an Experiment contains the exception:
 Xlib: connection to "servername" refused by server
 Xlib: client is not authorized to connect to server
@@ -178,7 +177,6 @@ issues. http://www.blackdown.org
 Compiling CSMART
 - Compiling CSMART with Jikes 1.15 will result in VerifyErrors in a few classes.  To
   avoid these erros, use Jikes 1.14.
-
 
 MySQL Database issues
 - If you get SQL errors, claiming that a table does not exist, eg
