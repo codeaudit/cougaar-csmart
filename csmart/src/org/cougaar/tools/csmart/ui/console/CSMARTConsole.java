@@ -94,6 +94,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   JLabel trialNameLabel;
   JProgressBar trialProgressBar; // indicates how many trials have been run
   JMenuItem historyMenuItem; // enabled only if experiment is running
+  JMenuItem searchMenuItem;
+  JMenuItem searchNextMenuItem;
   JPanel buttonPanel; // contains status buttons
   public static Dimension HGAP10 = new Dimension(10,1);
   public static Dimension HGAP5 = new Dimension(5,1);
@@ -105,6 +107,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   private static final String EXIT_MENU_ITEM = "Exit";
   private static final String NODE_MENU = "Node";
   private static final String HISTORY_MENU_ITEM = "Utilization History";
+  private static final String SEARCH_MENU_ITEM = "Search...";
+  private static final String SEARCH_NEXT_MENU_ITEM = "Search Next";
   private static final String STATUS_MENU_ITEM = "Status";
   private static final String LOAD_MENU_ITEM = "Load";
   private static final String DESCRIBE_MENU_ITEM = "Describe";
@@ -185,6 +189,25 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     historyMenuItem.setEnabled(false); // enable when node is run
     historyMenuItem.setToolTipText("Display load at a node vs. time.");
     nodeMenu.add(historyMenuItem);
+
+    searchMenuItem = new JMenuItem(SEARCH_MENU_ITEM);
+    searchMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+	searchMenuItem_actionPerformed(e);
+      }
+    });
+    searchMenuItem.setEnabled(false);
+    nodeMenu.add(searchMenuItem);
+
+    searchNextMenuItem = new JMenuItem(SEARCH_NEXT_MENU_ITEM);
+    searchNextMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+	searchNextMenuItem_actionPerformed(e);
+      }
+    });
+    searchNextMenuItem.setEnabled(false);
+    nodeMenu.add(searchNextMenuItem);
+
     JMenuItem statusMenuItem = new JMenuItem(STATUS_MENU_ITEM);
     statusMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -991,6 +1014,11 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       tabbedPane.removeChangeListener(this);
       tabbedPane.remove(i);
       tabbedPane.addChangeListener(this);
+      // if no more tabs, disable search menu items
+      if (tabbedPane.getTabCount() == 0) {
+        searchMenuItem.setEnabled(false);
+        searchNextMenuItem.setEnabled(false);
+      }
     }
   }
 
@@ -1035,10 +1063,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 			     String nodeName, String hostName) {
     // create an unique node name to circumvent server problems
     String uniqueNodeName = nodeName + currentTrial;
-    //    DefaultStyledDocument doc = new DefaultStyledDocument();
-    RollingStyledDocument doc = new RollingStyledDocument();
-    JTextPane pane = new JTextPane(doc);
-    JScrollPane stdoutPane = new JScrollPane(pane);
+    ConsoleStyledDocument doc = new ConsoleStyledDocument();
+    ConsoleTextPane stdoutPane = new ConsoleTextPane(doc);
 
     // create a status button
     JRadioButton statusButton = createStatusButton(nodeName);
@@ -1133,6 +1159,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     
     // only add gui controls if successfully created node
     tabbedPane.add(nodeName, stdoutPane);
+    searchMenuItem.setEnabled(true);
     addStatusButton(statusButton);
     updateExperimentControls(experiment, true);
     startTimers();
@@ -1343,6 +1370,25 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       return;
     String nodeName = tabbedPane.getTitleAt(index);
     displayStripChart(nodeName);
+  }
+
+  public void searchMenuItem_actionPerformed(ActionEvent e) {
+    // get string to search for
+    String s = JOptionPane.showInputDialog("Search string:");
+    if (s == null || s.length() == 0) {
+      return;
+    }
+    // search and highlight in current top pane
+    boolean found = 
+      ((ConsoleTextPane)(tabbedPane.getSelectedComponent())).search(s);
+    searchNextMenuItem.setEnabled(found);
+  }
+
+  public void searchNextMenuItem_actionPerformed(ActionEvent e) {
+    // search and highlight in current top pane
+    boolean found = 
+      ((ConsoleTextPane)(tabbedPane.getSelectedComponent())).searchNext();
+    searchNextMenuItem.setEnabled(found);
   }
 
   public void statusMenuItem_actionPerformed(ActionEvent e) {

@@ -26,7 +26,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.SimpleAttributeSet;
 
-public class RollingStyledDocument extends DefaultStyledDocument {
+public class ConsoleStyledDocument extends DefaultStyledDocument {
   static int MAX_CHARACTERS = 1000;
 
   public void appendString(String s, AttributeSet a) {
@@ -40,7 +40,7 @@ public class RollingStyledDocument extends DefaultStyledDocument {
         return;
       }
       int neededSpace = getLength() + len;
-      if (neededSpace > MAX_CHARACTERS)
+      if (neededSpace > MAX_CHARACTERS) 
         remove(0, neededSpace - MAX_CHARACTERS);
       super.insertString(getLength(), s, a);
     } catch (BadLocationException ble) {
@@ -49,7 +49,7 @@ public class RollingStyledDocument extends DefaultStyledDocument {
   }
 
   public static void main(String[] args) {
-    RollingStyledDocument doc = new RollingStyledDocument();
+    ConsoleStyledDocument doc = new ConsoleStyledDocument();
     AttributeSet a = new SimpleAttributeSet();
     // with MAX_CHARACTER = 5 this prints:
     // abc, abcde, fghij, vwxyz

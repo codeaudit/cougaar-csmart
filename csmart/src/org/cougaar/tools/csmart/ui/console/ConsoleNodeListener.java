@@ -47,7 +47,7 @@ public class ConsoleNodeListener implements NodeEventListener {
   private String nodeName;
   private Writer logFile;
   //  private StyledDocument userDisplay;
-  private RollingStyledDocument userDisplay;
+  private ConsoleStyledDocument userDisplay;
   private SimpleAttributeSet[] atts;
   private StripChartFrame chartFrame;
   private JCChart chart;
@@ -58,7 +58,7 @@ public class ConsoleNodeListener implements NodeEventListener {
   public ConsoleNodeListener(CSMARTConsole console,
 			     NodeComponent nodeComponent,
 			     String logFileName, 
-			     RollingStyledDocument userDisplay,
+			     ConsoleStyledDocument userDisplay,
 			     JRadioButton statusButton) throws IOException {
 
     this.console = console;
