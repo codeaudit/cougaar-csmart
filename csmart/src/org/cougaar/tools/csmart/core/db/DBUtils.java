@@ -1142,9 +1142,9 @@ public class DBUtils {
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("query: "+dbQuery, e);
+        log.error("dbGetPluginOrBinderClasses error using query: " + dbQuery, e);
       }
-      throw new RuntimeException("Error" + e);
+      throw new RuntimeException("Error getting Plugin or Binder classes" + e);
     }
     return s;
   }
