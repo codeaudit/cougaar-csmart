@@ -50,10 +50,8 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 public class AgentInsertionRecipe extends RecipeBase
   implements Serializable
 {
-  private static final String DESCRIPTION_RESOURCE_NAME = "agent-insertion-recipe-description.html";
-
-  private static final String TRUE = "True";
-  private static final String FALSE = "False";
+  private static final String DESCRIPTION_RESOURCE_NAME = 
+    "agent-insertion-recipe-description.html";
 
   private static final String PROP_NAME = "Agent Names";
   private static final String PROP_NAME_DFLT = "Agent";
@@ -89,15 +87,18 @@ public class AgentInsertionRecipe extends RecipeBase
 
   private static final String PROP_PSPPARAM = "PlanServer Parameter";
   private static final String PROP_PSPPARAM_DFLT = "";
-  private static final String PROP_PSPPARAM_DESC = "Additional Value passed to PlanServer";
+  private static final String PROP_PSPPARAM_DESC = 
+    "Additional Value passed to PlanServer, can be blank";
 
   private static final String PROP_ORGASSET = "Include Org Asset";
   private static final String PROP_ORGASSET_DFLT = TRUE;
-  private static final String PROP_ORGASSET_DESC = "Specifies if this agent should contain an Org Asset";
+  private static final String PROP_ORGASSET_DESC = 
+    "Specifies if this agent should contain an Org Asset";
 
   private static final String PROP_ITEMPG = "Include Item Identification PG";
   private static final String PROP_ITEMPG_DFLT = TRUE;
-  private static final String PROP_ITEMPG_DESC = "Specifies if this agent should contain an Item Identification PG";
+  private static final String PROP_ITEMPG_DESC = 
+    "Specifies if this agent should contain an Item Identification PG";
 
   private static final String PROP_ASSETCLASS = "Asset Class";
   private static final String PROP_ASSETCLASS_DFLT = "MilitaryOrganization";
@@ -146,16 +147,16 @@ public class AgentInsertionRecipe extends RecipeBase
     propPSPParameter = addProperty(PROP_PSPPARAM, PROP_PSPPARAM_DFLT);
     propPSPParameter.setToolTip(PROP_PSPPARAM_DESC);
 
-    propOrgAsset = addProperty(PROP_ORGASSET, PROP_ORGASSET_DFLT);
+    propOrgAsset = addBooleanProperty(PROP_ORGASSET, PROP_ORGASSET_DFLT);
+    propOrgAsset.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
+        public void propertyValueChanged(PropertyEvent e) {
+          updateOrgParameters((String)e.getProperty().getValue());
+        }
+      });
     propOrgAsset.setToolTip(PROP_ORGASSET_DESC);
-    HashSet boolSet = new HashSet();
-    boolSet.add(new StringRange(TRUE));
-    boolSet.add(new StringRange(FALSE));    
-    propOrgAsset.setAllowedValues(boolSet);
 
-    propItemPG = addProperty(PROP_ITEMPG, PROP_ITEMPG_DFLT);
+    propItemPG = addBooleanProperty(PROP_ITEMPG, PROP_ITEMPG_DFLT);
     propItemPG.setToolTip(PROP_ITEMPG_DESC);
-    propItemPG.setAllowedValues(boolSet);
 
     propRelationCount = addProperty(PROP_RELATIONCOUNT, PROP_RELATIONCOUNT_DFLT);
     propRelationCount.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
@@ -182,6 +183,23 @@ public class AgentInsertionRecipe extends RecipeBase
     return prop;
   }
 
+  private void updateOrgParameters(String val) {
+    boolean show = (val.equals(TRUE)) ? true : false;
+
+    setPropertyVisible(propRelationCount, show);
+    setPropertyVisible(propAssetClass, show);
+    setPropertyVisible(propNomenclature, show);
+    setPropertyVisible(propType, show);
+    setPropertyVisible(propAltType, show);
+
+    if(!show && propRelations != null && propRelations.length > 0) {
+      for(int i=0; i < propRelations.length; i++) {
+        removeProperty(propRelations[i]);
+        removeProperty(propRoles[i]);
+      }
+    }
+  }
+
   private void updateRelationCount(Integer newCount) {
     int count = newCount.intValue();
 
@@ -190,13 +208,6 @@ public class AgentInsertionRecipe extends RecipeBase
     if( propRelations != null && count != propRelations.length ) {
       for(int i=0; i < propRelations.length; i++) {
         removeProperty(propRelations[i]);
-      }
-    }
-
-    // These two arrays should never get out of sink add
-    // could probably be deleted in one loop.
-    if( propRoles != null && count != propRoles.length ) {
-      for(int i=0; i < propRoles.length; i++) {
         removeProperty(propRoles[i]);
       }
     }
