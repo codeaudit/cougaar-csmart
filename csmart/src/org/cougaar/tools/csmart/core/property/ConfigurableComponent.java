@@ -195,7 +195,17 @@ public abstract class ConfigurableComponent
    * @param props a <code>Map</code> of <code>String</code> property names and <code>Object</code> values
    */
   public void setProperties(Map props) {
+    // Set the properties in Alphabetical Order.
+    ArrayList names = new ArrayList();
     for (Iterator i = props.keySet().iterator(); i.hasNext(); ) {
+      names.add(i.next());
+    }
+
+    Collections.sort(names);
+
+    Iterator i = names.iterator();
+    
+    while(i.hasNext()) {
       try {
         String propName = (String) i.next();
         String propValue = (String) props.get(propName);
@@ -825,9 +835,11 @@ public abstract class ConfigurableComponent
   public void setPropertyVisible(Property prop, boolean newVisible) {
     CompositeName name = prop.getName();
     if (newVisible) {
-      Object np = getMyProperties().remove(name);
-      if (nullProperty.equals(np))
+      Object np = getMyProperties().get(name);
+      if (nullProperty.equals(np)) {
+        getMyProperties().remove(name);
         firePropertyAdded(prop);
+      }
     } else {
       Object np = getMyProperties().put(name, nullProperty);
       if (!nullProperty.equals(np))
