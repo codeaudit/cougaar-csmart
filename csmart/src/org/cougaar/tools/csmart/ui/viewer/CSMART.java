@@ -87,7 +87,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   protected static final String HELP_DOC = "help.html";
   protected static final String ABOUT_CSMART_ITEM = "About CSMART";
   protected static final String ABOUT_DOC = "../help/about-csmart.html";
-  protected static final String HELP_MENU_ITEM = "Help";
+  protected static final String HELP_MENU_ITEM = "About Launcher";
 
   //  private static boolean dbMode = false;
 
@@ -157,7 +157,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	dbConfigMenuItem_actionPerformed();
       }
     });
-    fileMenu.add(dbConfigMenuItem);
+    // Don't allow database configuration for now
+    //    fileMenu.add(dbConfigMenuItem);
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.addActionListener(this);
     exitMenuItem.setToolTipText("Exit");

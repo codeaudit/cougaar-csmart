@@ -115,26 +115,6 @@ public class Organizer extends JScrollPane {
   
   // Define actions for use on menus
   private Action[] rootAction = {
-    new AbstractAction("Rename") {
-	public void actionPerformed(ActionEvent e) {
-	  renameWorkspace();
-	}
-      },
-    new AbstractAction("New Folder") {
-	public void actionPerformed(ActionEvent e) {
-	  newFolder(popupNode);
-	}
-      },
-//      new AbstractAction("New Experiment") {
-//  	public void actionPerformed(ActionEvent e) {
-//  	  newExperiment(popupNode);
-//  	}
-//        },
-    //    new AbstractAction("Select Experiment from Database") {
-    //	public void actionPerformed(ActionEvent e) {
-    //	  selectExperimentFromDatabase(popupNode);
-    //	}
-    //      },
     new AbstractAction("New Society") {
 	public void actionPerformed(ActionEvent e) {
 	  newSociety(popupNode);
@@ -149,7 +129,17 @@ public class Organizer extends JScrollPane {
 	public void actionPerformed(ActionEvent e) {
 	  newMetric(popupNode);
 	}
-      }
+      },
+    new AbstractAction("New Folder") {
+	public void actionPerformed(ActionEvent e) {
+	  newFolder(popupNode);
+	}
+      },
+    new AbstractAction("Rename") {
+	public void actionPerformed(ActionEvent e) {
+	  renameWorkspace();
+	}
+      },
   };
   private Action[] newExperimentActions = {
     new AbstractAction("From Database") {
@@ -164,10 +154,10 @@ public class Organizer extends JScrollPane {
     }
   };
   private Action[] experimentAction = {
-    new AbstractAction("Edit", new ImageIcon(getClass().getResource("EB16.gif"))) {
+    new AbstractAction("Configure", new ImageIcon(getClass().getResource("EB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  startExperimentBuilder(popupNode, 
-				 e.getActionCommand().equals("Edit"));
+				 e.getActionCommand().equals("Configure"));
 	}
       },
     new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
@@ -175,9 +165,9 @@ public class Organizer extends JScrollPane {
 	  startConsole(popupNode);
 	}
       },
-    new AbstractAction("Rename") {
+    new AbstractAction("Duplicate") {
 	public void actionPerformed(ActionEvent e) {
-	  renameExperiment(popupNode);
+	  copyExperimentInNode(popupNode);
 	}
       },
     new AbstractAction("Delete") {
@@ -185,32 +175,32 @@ public class Organizer extends JScrollPane {
 	  deleteExperiment(popupNode);
 	}
       },
-    new AbstractAction("Copy") {
+    new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
-	  copyExperimentInNode(popupNode);
+	  renameExperiment(popupNode);
 	}
       }
   };
   private Action[] societyAction = {
-    new AbstractAction("Edit", new ImageIcon(getClass().getResource("SB16.gif"))) {
+    new AbstractAction("Configure", new ImageIcon(getClass().getResource("SB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
-	  startBuilder(popupNode, e.getActionCommand().equals("Edit"));
+	  startBuilder(popupNode, e.getActionCommand().equals("Configure"));
 	}
       },
-    new AbstractAction("New Experiment",
+    new AbstractAction("Build Experiment",
 		       new ImageIcon(getClass().getResource("EB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  startExperimentBuilder(popupNode, true);
 	}
       },
-    new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
+    new AbstractAction("Run Experiment", new ImageIcon(getClass().getResource("EC16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  startConsole(popupNode);
 	}
       },
-    new AbstractAction("Rename") {
+    new AbstractAction("Duplicate") {
 	public void actionPerformed(ActionEvent e) {
-	  renameSociety(popupNode);
+	  copySocietyInNode(popupNode);
 	}
       },
     new AbstractAction("Delete") {
@@ -218,16 +208,16 @@ public class Organizer extends JScrollPane {
 	  deleteSociety(popupNode);
 	}
       },
-    new AbstractAction("Copy") {
+    new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
-	  copySocietyInNode(popupNode);
+	  renameSociety(popupNode);
 	}
       }
   };
   private Action[] impactAction = {
-    new AbstractAction("Edit", new ImageIcon(getClass().getResource("SB16.gif"))) {
+    new AbstractAction("Configure", new ImageIcon(getClass().getResource("SB16.gif"))) {
       public void actionPerformed(ActionEvent e) {
-	startBuilder(popupNode, e.getActionCommand().equals("Edit"));
+	startBuilder(popupNode, e.getActionCommand().equals("Configure"));
       }
     },
     //          new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
@@ -235,15 +225,15 @@ public class Organizer extends JScrollPane {
     //                  startConsole(popupNode);
     //              }
     //          },
-    new AbstractAction("New Experiment",
+    new AbstractAction("Build Experiment",
 		       new ImageIcon(getClass().getResource("EB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  startExperimentBuilder(popupNode, true);
 	}
       },
-    new AbstractAction("Rename") {
+    new AbstractAction("Duplicate") {
 	public void actionPerformed(ActionEvent e) {
-	  renameImpact(popupNode);
+	  copyImpactInNode(popupNode);
 	}
       },
     new AbstractAction("Delete") {
@@ -251,9 +241,9 @@ public class Organizer extends JScrollPane {
 	  deleteImpact(popupNode);
 	}
       },
-    new AbstractAction("Copy") {
+    new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
-	  copyImpactInNode(popupNode);
+	  renameImpact(popupNode);
 	}
       }
   };
@@ -268,15 +258,15 @@ public class Organizer extends JScrollPane {
     //                  startConsole(popupNode);
     //              }
     //          },
-    new AbstractAction("New Experiment",
+    new AbstractAction("Build Experiment",
 		       new ImageIcon(getClass().getResource("EB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  startExperimentBuilder(popupNode, true);
 	}
       },
-    new AbstractAction("Rename") {
+    new AbstractAction("Duplicate") {
 	public void actionPerformed(ActionEvent e) {
-	  renameComponent(popupNode);
+	  copyComponentInNode(popupNode);
 	}
       },
     new AbstractAction("Delete") {
@@ -284,16 +274,16 @@ public class Organizer extends JScrollPane {
 	  deleteComponent(popupNode);
 	}
       },
-    new AbstractAction("Copy") {
+    new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
-	  copyComponentInNode(popupNode);
+	  renameComponent(popupNode);
 	}
       }
   };
   private Action[] metricAction = {
-    new AbstractAction("Edit", new ImageIcon(getClass().getResource("SB16.gif"))) {
+    new AbstractAction("Configure", new ImageIcon(getClass().getResource("SB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
-	  startBuilder(popupNode, e.getActionCommand().equals("Edit"));
+	  startBuilder(popupNode, e.getActionCommand().equals("Configure"));
 	}
       },
     //          new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
@@ -301,15 +291,15 @@ public class Organizer extends JScrollPane {
     //                  startConsole(popupNode);
     //              }
     //          },
-    new AbstractAction("New Experiment",
+    new AbstractAction("Build Experiment",
 		       new ImageIcon(getClass().getResource("EB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  startExperimentBuilder(popupNode, true);
 	}
       },
-    new AbstractAction("Rename") {
+    new AbstractAction("Duplicate") {
 	public void actionPerformed(ActionEvent e) {
-	  renameMetric(popupNode);
+	  copyMetricInNode(popupNode);
 	}
       },
     new AbstractAction("Delete") {
@@ -317,20 +307,13 @@ public class Organizer extends JScrollPane {
 	  deleteMetric(popupNode);
 	}
       },
-    new AbstractAction("Copy") {
+    new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
-	  copyMetricInNode(popupNode);
+	  renameMetric(popupNode);
 	}
       }
   };
   private Action[] treeAction = {
-    new AbstractAction("New Folder") {
-	public void actionPerformed(ActionEvent e) {
-	  while (! popupNode.getAllowsChildren())
-	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
-	  newFolder(popupNode);
-	}
-      },
     new AbstractAction("New Society") {
 	public void actionPerformed(ActionEvent e) {
 	  while (! popupNode.getAllowsChildren())
@@ -366,14 +349,21 @@ public class Organizer extends JScrollPane {
 //  	  selectExperimentFromDatabase(popupNode);
 //  	}
 //        },
-    new AbstractAction("Rename") {
+    new AbstractAction("New Folder") {
 	public void actionPerformed(ActionEvent e) {
-	  renameFolder(popupNode);
+	  while (! popupNode.getAllowsChildren())
+	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
+	  newFolder(popupNode);
 	}
       },
     new AbstractAction("Delete") {
 	public void actionPerformed(ActionEvent e) {
 	  deleteFolder(popupNode);
+	}
+      },
+    new AbstractAction("Rename") {
+	public void actionPerformed(ActionEvent e) {
+	  renameFolder(popupNode);
 	}
       }
   };
@@ -443,14 +433,14 @@ public class Organizer extends JScrollPane {
     workspace.setCellEditor(myEditor);
   
     workspace.setExpandsSelectedPaths(true);
-    for (int i = 0; i < rootAction.length; i++) {
-      rootMenu.add(rootAction[i]);
-    }
     JMenu newExperimentMenu = new JMenu("New Experiment");
     for (int i = 0; i < newExperimentActions.length; i++) {
       newExperimentMenu.add(newExperimentActions[i]);
     }
     rootMenu.add(newExperimentMenu);
+    for (int i = 0; i < rootAction.length; i++) {
+      rootMenu.add(rootAction[i]);
+    }
     for (int i = 0; i < societyAction.length; i++) {
       societyMenu.add(societyAction[i]);
     }
@@ -466,14 +456,14 @@ public class Organizer extends JScrollPane {
     for (int i = 0; i < experimentAction.length; i++) {
       experimentMenu.add(experimentAction[i]);
     }
-    for (int i = 0; i < treeAction.length; i++) {
-      treeMenu.add(treeAction[i]);
-    }
     JMenu newExperimentInTreeMenu = new JMenu("New Experiment");
     for (int i = 0; i < newExperimentActions.length; i++) {
       newExperimentInTreeMenu.add(newExperimentActions[i]);
     }
     treeMenu.add(newExperimentInTreeMenu);
+    for (int i = 0; i < treeAction.length; i++) {
+      treeMenu.add(treeAction[i]);
+    }
     workspace.addTreeSelectionListener(mySelectionListener);
     workspace.addAncestorListener(myAncestorListener);
     workspace.addMouseListener(mouseListener);
@@ -629,7 +619,7 @@ public class Organizer extends JScrollPane {
       for (int i = 0; i < experimentAction.length; i++) {
 	String s = (String)experimentAction[i].getValue(Action.NAME);
 	if (s.equals("View"))
-	  experimentAction[i].putValue(Action.NAME, "Edit");
+	  experimentAction[i].putValue(Action.NAME, "Configure");
 	experimentAction[i].setEnabled(true);
       } 
     } else {
@@ -637,7 +627,7 @@ public class Organizer extends JScrollPane {
 	String s = (String)experimentAction[i].getValue(Action.NAME);
 	if (s.equals("Rename"))
 	  experimentAction[i].setEnabled(false);
-	else if (s.equals("Edit"))
+	else if (s.equals("Configure"))
 	  experimentAction[i].putValue(Action.NAME, "View");
       }
     }
@@ -659,7 +649,7 @@ public class Organizer extends JScrollPane {
       for (int i = 0; i < societyAction.length; i++) {
 	String s = (String)societyAction[i].getValue(Action.NAME);
 	if (s.equals("View"))
-	  societyAction[i].putValue(Action.NAME, "Edit");
+	  societyAction[i].putValue(Action.NAME, "Configure");
 	societyAction[i].setEnabled(true);
       } 
     } else {
@@ -668,7 +658,7 @@ public class Organizer extends JScrollPane {
 	if (s.equals("New Experiment") ||
 	    s.equals("Rename"))
 	  societyAction[i].setEnabled(false);
-	else if (s.equals("Edit"))
+	else if (s.equals("Configure"))
 	  societyAction[i].putValue(Action.NAME, "View");
       }
     }
@@ -679,7 +669,7 @@ public class Organizer extends JScrollPane {
       for (int i = 0; i < componentAction.length; i++) {
 	String s = (String)componentAction[i].getValue(Action.NAME);
 	if (s.equals("View"))
-	  componentAction[i].putValue(Action.NAME, "Edit");
+	  componentAction[i].putValue(Action.NAME, "Configure");
 	componentAction[i].setEnabled(true);
       } 
     } else {
@@ -688,7 +678,7 @@ public class Organizer extends JScrollPane {
 	if (s.equals("New Experiment") ||
 	    s.equals("Rename"))
 	  componentAction[i].setEnabled(false);
-	else if (s.equals("Edit"))
+	else if (s.equals("Configure"))
 	  componentAction[i].putValue(Action.NAME, "View");
       }
     }
@@ -699,7 +689,7 @@ public class Organizer extends JScrollPane {
       for (int i = 0; i < impactAction.length; i++) {
 	String s = (String)impactAction[i].getValue(Action.NAME);
 	if (s.equals("View"))
-	  impactAction[i].putValue(Action.NAME, "Edit");
+	  impactAction[i].putValue(Action.NAME, "Configure");
 	impactAction[i].setEnabled(true);
       } 
     } else {
@@ -708,7 +698,7 @@ public class Organizer extends JScrollPane {
 	if (s.equals("New Experiment") ||
 	    s.equals("Rename"))
 	  impactAction[i].setEnabled(false);
-	else if (s.equals("Edit"))
+	else if (s.equals("Configure"))
 	  impactAction[i].putValue(Action.NAME, "View");
       }
     }
@@ -719,7 +709,7 @@ public class Organizer extends JScrollPane {
       for (int i = 0; i < metricAction.length; i++) {
 	String s = (String)metricAction[i].getValue(Action.NAME);
 	if (s.equals("View"))
-	  metricAction[i].putValue(Action.NAME, "Edit");
+	  metricAction[i].putValue(Action.NAME, "Configure");
 	metricAction[i].setEnabled(true);
       } 
     } else {
@@ -728,7 +718,7 @@ public class Organizer extends JScrollPane {
 	if (s.equals("New Experiment") ||
 	    s.equals("Rename"))
 	  metricAction[i].setEnabled(false);
-	else if (s.equals("Edit"))
+	else if (s.equals("Configure"))
 	  metricAction[i].putValue(Action.NAME, "View");
       }
     }
@@ -1831,6 +1821,17 @@ public class Organizer extends JScrollPane {
     }
     model.removeNodeFromParent(node);
     experimentNames.remove(experiment.getExperimentName());
+    // if experiment was in database, ask if it should be deleted from there
+    if (experiment.isInDatabase()) {
+      int result = 
+        JOptionPane.showConfirmDialog(this,
+                                      "Delete experiment from database?",
+                                      "Delete Experiment From Database",
+                                      JOptionPane.YES_NO_OPTION,
+                                      JOptionPane.WARNING_MESSAGE);
+      if (result == JOptionPane.YES_OPTION)
+        ExperimentDB.deleteExperiment(experiment.getExperimentID());
+    }
   }
   
   private void newFolder(DefaultMutableTreeNode node) {

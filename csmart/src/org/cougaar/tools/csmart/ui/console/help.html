@@ -16,10 +16,12 @@ The Experiment Controller allows the user to run through all Trials
 automatically, to stop after a Trial completes, or to abort a Trial.
 Trials are defined in the Experiment Builder.
 A Trial is one "run" of a Society with all Unbound Properties bound
-to one set of values as specified in the Experiment Builder.
+to one set of values as specified in the Experiment Builder.  Note that some experiments do not use Societies with Unbound Properties; these experiments
+have one trial, and the user interface is simplified accordingly.
 <p>Note that you must separately launch the Server on each host used in
 the experiment. See the installation instructions for running the Server.
 <br>
+<p>
 <b>Controlling the Experiment</b>
 <ul>
 <li>
@@ -36,34 +38,36 @@ you will be asked to confirm the Stop action.</li>
 <li>
 Select the "Abort" button to abort the trial, ending it immediately.</li>
 </ul>
+<p>
 <b>Information from a Running Experiment</b>
-<br>The information about a node in a running experiment can be displayed
-by selecting the Node's tab in
-the tabbed panels, or by selecting that Node's &quot;Node Status&quot; button. Selecting
-a node brings the following information for that node to the foreground.
+<br>The Node's window displays information about a node in a running experiment; a brief description of the Node's status can also be displayed by selecting that Node's &quot;Node Status&quot; button.
 <ul>
 <li>
-The standard output and standard error channels from each node in the experiment
-are displayed in a tabbed pane on the right side of the Experiment Controller.
+The Node's window displays the standard output and standard error channels from each node in the experiment, together with some additional specific event information (Node created, Node destroyed, Cluster added).
 Output is displayed in black, and errors are displayed in red.</li>
-
 <li>
 A colored circle following the &quot;Node Status&quot; label near the top right of
-the Experiment Controller illustrates the node status. The status of the
-currently selected node is displayed as a filled circle; the statuses of
-unselected nodes are displayed as hollow circles. The node color indicates
-the node status: red for error (as when the Node has been killed), gray
-for unknown, and green for busy status (lighter green implies busier).</li>
-
+the Experiment Controller illustrates the node status. The color
+of the circle indicates the relative load on the node (how busy or idle it is);
+an exclamation mark in the circle indicates an error condition.
+The circle corresponding to the currently selected Node is outlined in black.
+Clicking the right mouse button over the Node Status button displays a menu with the following options:
+<ul>
 <li>
-Selecting the Node-Utilization History menu item, or clicking on the Node
-Status icon for that Node displays the Utilization History, a graph of
-&quot;Load vs. Time&quot;.</li>
+Information: Information about the node and the host on which it is running.
+</li>
+<li>
+Reset: Reset (remove) the error mark on the button.  Continue scanning the output from the Node for new error conditions.
+</li>
+<li>
+Legend: A legend explaining the colors of the Node Status button.
+</li>
 </ul>
-In addition, the Configuration and "Trial Values" tabbed panes on the left
+</ul>
+In addition, the Configuration and "Trial Values" windows
 present non-editable views of information about the Trial.  The Configuration
-tab displays the Host-Node-Agent configuration which was specified in
-the Experiment Builder.  The "Trial Values" tab displays all the values being
+window displays the Host-Node-Agent configuration which was specified in
+the Experiment Builder.  The "Trial Values" window displays all the values being
 used in the current Trial; this is a combination of the properties specified
 in the Configuration Builder and the Trial values specified in the Experiment
 Builder.
@@ -82,9 +86,7 @@ Experiment and stores these in the indicated location.  For a description
 of the Experiment results hierarchy, see the Help information for the
 Performance Analyzer.
 <h3>Notes:</h3>
-If either of these error messages is displayed
-<blockquote>Cannot write configuration on hostname; check that server is
-running
+If this error message is displayed:
 <br>Cannot create node on hostname; check that server is running</blockquote>
 then ensure that all hosts are referenced by full IP address or fully qualified
 machine name. Also, in some cases, it appears that Solaris machines fail

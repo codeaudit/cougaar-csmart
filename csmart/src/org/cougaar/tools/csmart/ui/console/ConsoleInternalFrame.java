@@ -21,6 +21,7 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
+import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
@@ -41,11 +42,14 @@ import org.cougaar.tools.csmart.ui.component.HostComponent;
 import org.cougaar.tools.csmart.ui.component.NodeComponent;
 import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
+import org.cougaar.tools.server.NodeServesClient;
+import org.cougaar.tools.server.system.ProcessStatus;
 
 public class ConsoleInternalFrame extends JInternalFrame {
   private static final String NODE_MENU = "Node";
   private static final String INFO_ACTION = "Info";
-  private static final String CPU_USAGE_ACTION = "CPU Usage";
+  private static final String CPU_USAGE_ACTION = "Machine CPU Usage";
+  private static final String NODE_CPU_USAGE_ACTION = "Node CPU Usage";
   private static final String MEMORY_USAGE_ACTION = "Memory Usage";
   private static final String HISTORY_ACTION = "Utilization History";
 
@@ -89,12 +93,14 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private JRadioButton statusButton;
   private String logFileName;
   private ConsoleNodeOutputFilter filter;
+  private NodeServesClient nodeServer;
 
   public ConsoleInternalFrame(NodeComponent node, 
                               ConsoleNodeListener listener,
                               JScrollPane pane,
                               JRadioButton statusButton,
-                              String logFileName) {
+                              String logFileName,
+                              NodeServesClient nodeServer) {
     super("",   // title
           true, //resizable
           false, //not closable, because they can't be recreated
@@ -104,9 +110,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
     this.listener = listener;
     this.statusButton = statusButton;
     this.logFileName = logFileName;
+    this.nodeServer = nodeServer;
     consoleTextPane = (ConsoleTextPane)pane.getViewport().getView();
-    //    filter = new ConsoleNodeOutputFilter();
-    //    listener.setFilter(filter);
     // get host component by getting the experiment and 
     // searching its hosts for one with this node.
     Experiment experiment = 
@@ -137,10 +142,16 @@ public class ConsoleInternalFrame extends JInternalFrame {
     nodeMenu.add(infoAction);
     Action cpuUsageAction = new AbstractAction(CPU_USAGE_ACTION) {
       public void actionPerformed(ActionEvent e) {
+        totalCPUUsage_actionPerformed();
       }
     };
-    cpuUsageAction.setEnabled(false);
     nodeMenu.add(cpuUsageAction);
+    Action nodeCPUUsageAction = new AbstractAction(NODE_CPU_USAGE_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        nodeCPUUsage_actionPerformed();
+      }
+    };
+    nodeMenu.add(nodeCPUUsageAction);
     Action memoryUsageAction = new AbstractAction(MEMORY_USAGE_ACTION) {
       public void actionPerformed(ActionEvent e) {
       }
@@ -161,7 +172,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
         cut_actionPerformed();
       }
     };
-    cutAction.setEnabled(false);
     JMenuItem mi = editMenu.add(cutAction);
     mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
                                              Event.CTRL_MASK));
@@ -170,7 +180,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
         copy_actionPerformed();
       }
     };
-    copyAction.setEnabled(false);
     mi = editMenu.add(copyAction);
     mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
                                              Event.CTRL_MASK));
@@ -179,7 +188,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
         paste_actionPerformed();
       }
     };
-    pasteAction.setEnabled(false);
     mi = editMenu.add(pasteAction);
     mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
                                              Event.CTRL_MASK));
@@ -260,9 +268,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
     controlMenu.add(stopAction);
     Action traceAction = new AbstractAction(STACK_TRACE_ACTION) {
       public void actionPerformed(ActionEvent e) {
+        trace_actionPerformed();
       }
     };
-    traceAction.setEnabled(false);
     controlMenu.add(traceAction);
 
     // notify menu
@@ -519,6 +527,47 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   // Implementations for the action items from the menu
 
+  private void totalCPUUsage_actionPerformed() {
+    try {
+      displayProcessInfo(nodeServer.listProcesses(true));
+    } catch (Exception e) {
+      JOptionPane.showConfirmDialog(this, 
+                         "This information is not available for this node.", 
+                                    "Information Not Available",
+                                    JOptionPane.PLAIN_MESSAGE);
+    }
+  }
+
+  private void nodeCPUUsage_actionPerformed() {
+    try {
+      displayProcessInfo(nodeServer.listProcesses(false));
+    } catch (Exception e) {
+      JOptionPane.showConfirmDialog(this, 
+                         "This information is not available for this node.", 
+                                    "Information Not Available",
+                                    JOptionPane.PLAIN_MESSAGE);
+    }
+  }
+
+  private void displayProcessInfo(ProcessStatus[] ps) {
+    String[][] psInfo = new String[ps.length][];
+    for (int i = 0; i < ps.length; i++) {
+      String[] singlePSInfo = new String[5];
+      singlePSInfo[0] = String.valueOf(ps[i].getProcessIdentifier());
+      singlePSInfo[1] = String.valueOf(ps[i].getStartTime());
+      singlePSInfo[2] = String.valueOf(ps[i].getParentProcessIdentifier());
+      singlePSInfo[3] = ps[i].getUserName();
+      singlePSInfo[4] = ps[i].getCommand();
+      psInfo[i] = singlePSInfo;
+    }
+    String[] columnNames = { "PID", "Start Time", "Parent PID",
+                             "User Name", "Command" };
+    JTable table = new JTable(psInfo, columnNames);
+    JScrollPane jsp = new JScrollPane(table);
+    table.setPreferredScrollableViewportSize(new Dimension(400, 100));
+    JOptionPane.showConfirmDialog(this, jsp, "Process Status", 
+                                  JOptionPane.OK_OPTION);
+  }
 
   /**
    * Display strip chart for node.
@@ -540,7 +589,12 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   private void find_actionPerformed() {
     // get string to search for
-    String s = JOptionPane.showInputDialog("Find string:");
+    String s = (String)JOptionPane.showInputDialog(this,
+                                           "Search string:",
+                                           "Search",
+                                           JOptionPane.QUESTION_MESSAGE,
+                                           null, null,
+                                           consoleTextPane.getSearchString());
     if (s == null || s.length() == 0) {
       return;
     }
@@ -562,12 +616,18 @@ public class ConsoleInternalFrame extends JInternalFrame {
   }
 
   private void cut_actionPerformed() {
+    consoleTextPane.requestFocus();
+    consoleTextPane.cut();
   }
 
   private void copy_actionPerformed() {
+    consoleTextPane.requestFocus();
+    consoleTextPane.copy();
   }
 
   private void paste_actionPerformed() {
+    consoleTextPane.requestFocus();
+    consoleTextPane.paste();
   }
 
   private void clear_actionPerformed() {
@@ -611,6 +671,18 @@ public class ConsoleInternalFrame extends JInternalFrame {
     listener.setFilter(filter);
   }
 
+  private void trace_actionPerformed() {
+    try {
+      nodeServer.dumpThreads();
+    } catch (Exception e) {
+      JOptionPane.showConfirmDialog(this, 
+                         "This operation is not available for this node.", 
+                                    "Operation Not Available",
+                                    JOptionPane.PLAIN_MESSAGE);
+
+    }
+  }
+
   /**
    * Notify (by coloring status button) when the specified
    * output is received on this node.
@@ -619,7 +691,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private void notify_actionPerformed() {
     String s = 
       (String)JOptionPane.showInputDialog(this,
-                                          "Notify if node writes:",
+                                          "Search string:",
                                           "Notification",
                                           JOptionPane.QUESTION_MESSAGE,
                                           null, null, 

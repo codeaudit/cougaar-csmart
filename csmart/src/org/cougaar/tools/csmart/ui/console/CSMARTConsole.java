@@ -1078,12 +1078,13 @@ public class CSMARTConsole extends JFrame {
     configWriter = experiment.getConfigurationWriter(nodesToRun);
 
     // create the node
+    NodeServesClient nsc = null;
     try {
       HostServesClient hsc = communitySupport.getHost(hostName, DEFAULT_PORT);
       System.out.println("Host: " + hostName + " port: " + DEFAULT_PORT + 
                          " name: " + uniqueNodeName);
-      NodeServesClient nsc = hsc.createNode(uniqueNodeName, properties, null,
-                                            listener, filter, configWriter);
+      nsc = hsc.createNode(uniqueNodeName, properties, null,
+                           listener, filter, configWriter);
       if (nsc != null)
 	runningNodes.put(nodeComponent, nsc);
     } catch (Exception e) {
@@ -1102,7 +1103,8 @@ public class CSMARTConsole extends JFrame {
                          new NodeFrameListener(),
                          scrollPane,
                          statusButton,
-                         logFileName);
+                         logFileName,
+                         nsc);
     updateExperimentControls(experiment, true);
     startTimers();
     return true;
@@ -1420,7 +1422,7 @@ public class CSMARTConsole extends JFrame {
   private void setNotifyMenuItem_actionPerformed() {
     String s = 
       (String)JOptionPane.showInputDialog(this,
-                                          "Notify if any node writes:",
+                                          "Search string:",
                                           "Notification",
                                           JOptionPane.QUESTION_MESSAGE,
                                           null, null, notifyCondition);

@@ -68,7 +68,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   // menu items for popup menu in hostTree
   private static final String NEW_HOST_MENU_ITEM = "New Host";
   private static final String NEW_NODE_MENU_ITEM = "New Node";
-  private static final String DELETE_MENU_ITEM = "Remove";
+  private static final String DELETE_MENU_ITEM = "Delete";
   private static final String DESCRIPTION_MENU_ITEM = "Description";
   private static final String NODE_COMMAND_LINE_MENU_ITEM = "Command Line Arguments";
   private static final String HOST_TYPE_MENU_ITEM = "Type";
@@ -214,7 +214,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     // bottom split pane contains the node and agent trees
     JSplitPane bottomPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
     // tree of unassigned nodes
-    ConsoleTreeObject cto = new ConsoleTreeObject("Unassigned Nodes", 
+    ConsoleTreeObject cto = new ConsoleTreeObject("Nodes (unassigned)", 
                  "org.cougaar.tools.csmart.ui.component.NodeComponent");
     root = new DefaultMutableTreeNode(cto, true);
     model = createModel(experiment, root, true);
@@ -292,7 +292,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     nodeTree.addMouseListener(nodeTreeMouseListener);
 
     // tree of unassigned agents
-    cto = new ConsoleTreeObject("Unassigned Agents", 
+    cto = new ConsoleTreeObject("Agents (unassigned)", 
 		"org.cougaar.tools.csmart.ui.component.AgentComponent");
     root = new DefaultMutableTreeNode(cto, true);
     model = createModel(experiment, root, true);

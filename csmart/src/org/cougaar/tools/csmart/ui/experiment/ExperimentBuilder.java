@@ -32,12 +32,12 @@ import org.cougaar.tools.csmart.ui.Browser;
 public class ExperimentBuilder extends JFrame {
   private static final String FILE_MENU = "File";
   private static final String SAVE_MENU_ITEM = "Save";
-  private static final String EXIT_MENU_ITEM = "Exit";
+  private static final String EXIT_MENU_ITEM = "Close";
   private static final String HELP_MENU = "Help";
   protected static final String HELP_DOC = "help.html";
   protected static final String ABOUT_CSMART_ITEM = "About CSMART";
   protected static final String ABOUT_DOC = "../help/about-csmart.html";
-  protected static final String HELP_MENU_ITEM = "Help";
+  protected static final String HELP_MENU_ITEM = "About Experiment Builder";
   private Experiment experiment;
   private boolean isEditable;
   private boolean isRunnable;

@@ -227,6 +227,10 @@ public class ConsoleTextPane extends JTextPane {
     return worker(s, doc.getStartPosition(), true);
   }
 
+  public String getSearchString() {
+    return searchString;
+  }
+
   /**
    * Search for the "current" string (i.e. the last string specified in
    * a call to the search method) starting at the end of the last 

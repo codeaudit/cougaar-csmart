@@ -27,6 +27,7 @@ import javax.swing.*;
 import javax.swing.event.InternalFrameListener;
 
 import org.cougaar.tools.csmart.ui.component.NodeComponent;
+import org.cougaar.tools.server.NodeServesClient;
 
 public class ConsoleDesktop extends JDesktopPane {
   Hashtable myFrames = new Hashtable();
@@ -41,9 +42,11 @@ public class ConsoleDesktop extends JDesktopPane {
                            InternalFrameListener frameListener,
                            JScrollPane pane,
                            JRadioButton statusButton,
-                           String logFileName) {
-    JInternalFrame frame = new ConsoleInternalFrame(node, listener, pane,
-                                                    statusButton, logFileName);
+                           String logFileName,
+                           NodeServesClient nsc) {
+    JInternalFrame frame = 
+      new ConsoleInternalFrame(node, listener, pane,
+                               statusButton, logFileName, nsc);
     frame.addInternalFrameListener(frameListener);
     addFrame(frame, true);
     myFrames.put(node.getShortName(), frame);
