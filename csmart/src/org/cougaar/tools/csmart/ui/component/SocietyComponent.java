@@ -46,11 +46,6 @@ public interface SocietyComponent extends ModifiableComponent, ComponentProperti
   AgentComponent[] getAgents();
 
   /**
-   * Get Society description
-   **/
-  URL getDescription();
-
-  /**
    * Set by the experiment controller to indicate that the
    * society is running.
    * The society is running from the moment that any node
