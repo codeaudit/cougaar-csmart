@@ -742,7 +742,12 @@ public class CSMART extends JFrame {
           NamedFrame.getNamedFrame().removeFrame(frameArg);
 	  // Next line can cause NPE in Container.removeNotify(line 1878)
 	  // Is there some test we can/should do on the JFrame before calling?
-          frameArg.dispose();
+	  try {
+	    frameArg.dispose();
+	  } catch (NullPointerException npe) {
+	    if (log.isWarnEnabled())
+	      log.warn("Bug 1439: Was a drop-down list open? Using: " + writeDebug(), npe);
+	  }
         }
       }
     });
