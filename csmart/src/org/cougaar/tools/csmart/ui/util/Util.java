@@ -136,6 +136,10 @@ public class Util {
       else
         return null;
     } else {
+      // FIXME: Bug 1929: Selection still possible.
+      // maybe do list.setEnabled(false);?
+      // But that greys out the text, making it hard to read
+      //list.setEnabled(false);
       Object[] options = { "OK" };
       JOptionPane.showOptionDialog(parent, infoPanel,
                                    title,
