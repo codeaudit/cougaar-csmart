@@ -2,7 +2,7 @@ CSMART Release Notes
 
 Release 10.4:
 This release includes a major reworking on the Console.
-- Broke up the Console into Model and View.  
+- Broke up the Console into Model and View.
 - Seperated out the knowledge of Nodes into their own classes,
   also Model and View.
 - Fixed buttons to prevent unknown button states.
@@ -14,11 +14,11 @@ The Viewer tool (ui.organization.Viewer) supports selecting agents to
 include in a society.  After selecting the appropriate agents, the user
 typically saves the society to an XML file, then applies ruby rules to the
 society in order to produce a runnable society.  This tool is intended as
-an aid in composing and validating societies that will be composed from 
+an aid in composing and validating societies that will be composed from
 CSV or XML files and ruby rules.
 
-The Viewer tool can read CSV or XML files (using the commands on the File 
-menu).  These files describe agents and their facets (i.e. roles, 
+The Viewer tool can read CSV or XML files (using the commands on the File
+menu).  These files describe agents and their facets (i.e. roles,
 echelons, superiors, etc.).  The Viewer tool displays the
 agents in a tree.  If the agent descriptions were read from a CSV file,
 then the user can select or deselect agents to include in the society by
@@ -40,16 +40,26 @@ either a CSV file or an XML file (using the commands on the File menu).
 If the results are written to an XML file, then that file can be used
 as input to the ruby rules to produce a runnable society.
 
+The Experiment Console can now run stand alone, using the appropiate CONSOLE
+script in the bin directory.
+
+The Experiment Console now has a the ability to load in an ACME XML file and run
+it, assuming the AppServers are running on the specified machines and the other
+XML parameters are setup correctly.  At the very least, the XML configuration can
+be viewed in the Configuration Window.  This is a read only display.
+
+To load in an XML file Use the new item in the file menu: "Load XML Society".
+
 Release 10.3:
 This patch release includes updates to various 1AD configurations, and
 related changes to database table definitions.
 
-- Removed the domain data file CIP/csmart/data/database/Domain_MySQL.zip. 
+- Removed the domain data file CIP/csmart/data/database/Domain_MySQL.zip.
   This file contained a sql script which loaded domain
   data into the csmart configuration database.  This data
   has been made into separate .csv files which are now loaded
   simultaneously with the csmart configuration database via the
-  load script ./load_1ad_mysql.sh[bat]. 
+  load script ./load_1ad_mysql.sh[bat].
 - Added new database loading script 'load_1ad_all.sh[bat]' which
   loads the domain data from CIP/dbms/data/mysql/1ADDomainData.sql
   as well as the configuration database.  This script takes an
@@ -57,7 +67,7 @@ related changes to database table definitions.
   to be loaded.
 - New oplan propagation mechanism.  Each agent reads the database
   for the oplan and its org activities. GetOplanPlugin replaced by
-  OplanReaderPlugin.  
+  OplanReaderPlugin.
 
 Release 10.2:
 This is a minor patch release, preparing for future work.
@@ -76,7 +86,7 @@ This is a minor patch release, preparing for future work.
   oplan and OrgAssets as reference data, as well as the 1AD Domain
   data contained in the other local dump. Use this as the definition
   of the org.cougaar.refconfig database when running 1AD societies
-  from XML files. See configs/ul/Readme.txt. See also the added /new 
+  from XML files. See configs/ul/Readme.txt. See also the added /new
   directory for table definition files, and the associated Readme.
 
 Release 10.0:
@@ -106,7 +116,7 @@ reloaded, in particular to reflect the obsolesence of ClusterIdentifier.
   the provided update script,
   csmart/data/database/scripts/mysql/sql/cluster-id-removal.sql. In
   addition, at CSMART experiment load time, any instance of
-  ClusterIdentifier will be replaced by MessageAddress. 
+  ClusterIdentifier will be replaced by MessageAddress.
 - Replaced generic Completion Servlet in Default Servlets recipe with
   the GLM specific completion servlet, to more accurately portray
   society completion. (Bug 2524)
@@ -125,7 +135,7 @@ reloaded, in particular to reflect the obsolesence of ClusterIdentifier.
 - Bugs 2071 and 2072: Avoid runtime exceptions in the Console if the
   current trial counter somehow gets out of line. This does not
   avoid the counter from getting off, but should avoid runtime errors
-  if this happens. 
+  if this happens.
 - Clean up export-all-recipes.sh script
 - Fixed bug 2463 in PDbBase
 - AspectValue cleanup (bug 2430).
@@ -146,7 +156,7 @@ A further patch release to support Fall 2002 efforts.
 - Bug 2218: Large societies, under heavy load, may "thrash" when you
   try to stop the run by hitting "Stop" in the Console. The result is
   a long wait time to kill the society, and many messages like:
-10:55:13,970 WARN  [CSMARTConsole] - Remote Process for NCA-NODE says it is not 
+10:55:13,970 WARN  [CSMARTConsole] - Remote Process for NCA-NODE says it is not
 alive. Marking it dead.
 
   The fix is to turn down AppServer polling when the user is stopping
@@ -192,7 +202,7 @@ save behavior (bug 2002).
 - Bug 2002: Multiple additional optimizations to the manipulation and
   traversing of internal data structures, giving overall speedup
   throughout CSMART operations. Users should see no difference, except
-  in faster operations. These changes include: 
+  in faster operations. These changes include:
   - Multiple optimizations to getProperty and getProperties
   (ConfigurableComponent). Rely on the fact that Component names
   reflect their position in the hierarchy and that Property names
@@ -314,7 +324,7 @@ Other bugs fixed:
 - Put a reasonable label on a number of dialogs. (bugs 1881 - new
   Experiment from file, 1896 - import HNA,
   1907 - apply command line arguments from file, 1918 - save a Society
-  Monitor graph, 1916 - open a saved Society Monitor graph) 
+  Monitor graph, 1916 - open a saved Society Monitor graph)
 - Ensure that all OK/Cancel dialogs treat closing the window like
   Cancel, and not like OK. (bugs 1926, 1928, 1930, 1916, 1888)
 - Clean up and clarify the dialog to set the Refresh interval in the
@@ -377,16 +387,16 @@ Database changes:
   Domain-MySQL.ZIP (see the Install instructions).
 - Database load scripts are now generated
   from ER/Studio files, which themselves are available in the
-  csmart/data/database/db_src directory (with screenshots in 
+  csmart/data/database/db_src directory (with screenshots in
   csmart/data/database/doc). This change is transparent to the user.
 - MySQL load scripts now work on networked drives if you have MySQL
   server 3.23.49 or better and use the new "local" option to the .sh
   script. (bug 1257)
 - Multiple fixes to recipe and experiment export scripts to support
   new recipe types.
-- A load_communities.sh script has been provided in csmart/data/database/scripts/mysql 
-  to load community tables from csv files that are in the original 9.2 format 
-  (i.e. no ASSEMBLY_ID column). (bug 1799) The script loads community_attribute.csv and 
+- A load_communities.sh script has been provided in csmart/data/database/scripts/mysql
+  to load community tables from csv files that are in the original 9.2 format
+  (i.e. no ASSEMBLY_ID column). (bug 1799) The script loads community_attribute.csv and
   community_entity_attribute.csv tables only and will not work on csv files that
   contain an ASSEMBLY_ID column.
   See csmart/data/database/README.txt for usage and instructions.
@@ -475,7 +485,7 @@ Console and AppServer changes:
   polls the known Application Servers every 30 seconds. This frequency
   is configurable, also via the menu item on the "Application Server"
   menu (you may disable polling by setting the frequency to 0).
-  This fixes bugs 997, 1022, and partially addresses 1028. 
+  This fixes bugs 997, 1022, and partially addresses 1028.
 - The Console (Experiment Controller) tries hard to find the GLS
   Servlet to connect the client UI (bug 1560). You MUST
   specify the web server http or https port for the NCA agent through
@@ -700,7 +710,7 @@ additions for the June Ultra*Log integration. Changes include:
   servlets using the ServletGroupInsertion Recipe.
 
 Release 9.2.2:
-- Solved bug 1304 & related 1279. Note that now that this is solved, we 
+- Solved bug 1304 & related 1279. Note that now that this is solved, we
   have reverted the default for doWorkspace! By default, the workspace
   is no re-enabled. As before, the startup scripts indicate how to
   disable this.
@@ -789,13 +799,13 @@ InstallAndTest.html)
   get around this, wait until the society has quiesced before hitting the
   Connect button. If you have already done so, use the stand-alone
   GLS UI in CIP/bin/GLSInit.[bat/sh]  See bug# 1215
-- Known issue: Experiment and recipe export scripts may no longer work. 
+- Known issue: Experiment and recipe export scripts may no longer work.
   As a workaround, try using the complete DB export scripts in
   csmart/data/database/scripts/mysql/dump_1ad_mysql.sh  See bug # 1231 (and 1229)
 
 Release 9.0:
-- The CSMART required Cougaar 3rd party jar file: grappa1_2_bbn.jar has been changed 
-  to grappa1_2.jar. The BBN modifications in the prior jar are now included in the 
+- The CSMART required Cougaar 3rd party jar file: grappa1_2_bbn.jar has been changed
+  to grappa1_2.jar. The BBN modifications in the prior jar are now included in the
   standard Grappa jar.
 - Repackage and code cleanup for readability
 - Use Servlets instead of PSPs. You must now explicitly add
@@ -827,7 +837,7 @@ running off of MySQL databases.
 
 - Metrics and Impacts merged into general purpose concept: Recipes.
 Use Recipes to define steps to take to modify an experiment. Recipes
-typically add a plugin, binder, or agent to one or more spots in a 
+typically add a plugin, binder, or agent to one or more spots in a
 society.
 
 - MySQL Thread selection now supported
@@ -839,7 +849,7 @@ society.
 - Save all host, node attributes in database
 
 - Support setting non -D arguments, global -D arguments on Nodes (with
-  defaults provided), showing these in Node info screen on console, and possibly 
+  defaults provided), showing these in Node info screen on console, and possibly
   loading a set of values from a file
 
 - Support a delay between Node launches, default to 0
@@ -917,12 +927,12 @@ Entities (like the ABC Society).
 - This release also includes preliminary support for configuring
   arbitrary Cougaar components, and mixing and matching components
   among societies.
-  
+
 - This release includes multiple bug fixes and smaller enhancements.
 
 - Beginning with this release, CSMART is included with the standard
   Cougaar release, and no longer as a separate module.
-  
+
 - The CSMART required jar file: grappa1_2.jar has been
   replaced. Instead, use the Cougaar 3rd party jar file:
   grappa1_2_bbn.jar
