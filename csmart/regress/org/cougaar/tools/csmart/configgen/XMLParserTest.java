@@ -10,28 +10,75 @@
 
 package org.cougaar.tools.csmart.configgen;
 
-/**
- * XMLParserTest.java
- *
- *
- * Created: Tue Feb 20 14:15:00 2001
- *
- * @author Brian Krisler
- * @version 1.0
- */
-
 import junit.framework.*;
 import org.w3c.dom.*;
+import java.io.*;
 
 public class XMLParserTest extends TestCase {
   
-  XMLParser xp = new XMLParser("xmlParserTest.xml");
-
+  XMLParser xp = null;
+  File testFile = null;
+  private static final String testFileName = "xmlParserTest.xml";
   public XMLParserTest(String name) {
     super(name);
   }
   
   protected void setUp() {
+    try {
+      testFile = new File(testFileName);
+    } catch (NullPointerException e) {
+    }
+    try {
+      PrintWriter writer = new PrintWriter(new FileOutputStream(testFile));
+      writer.println("<CommunityConfig>");
+      writer.println("  <Community name=\"Comm 1\" template=\"Four Agent\">");
+      writer.println("    <Demand>10</Demand>");
+      writer.println("    <Production>5</Production>");
+      writer.println("    <Supports/>");
+      writer.println("    <Geography>");
+      writer.println("      <Latitude>25</Latitude>");
+      writer.println("      <Longitude>52</Longitude>");
+      writer.println("    </Geography>");
+      writer.println("  </Community>");
+      writer.println("  <Community name=\"Comm 2\" template=\"Four Agent\">");
+      writer.println("    <Demand>23</Demand>");
+      writer.println("    <Production>13</Production>");
+      writer.println("    <Supports>");
+      writer.println("      <SupportedCommunity>Comm 1</SupportedCommunity>");
+      writer.println("    </Supports>");
+      writer.println("    <Geography>");
+      writer.println("      <Latitude>45</Latitude>");
+      writer.println("      <Longitude>75</Longitude>");
+      writer.println("    </Geography>");
+      writer.println("  </Community>");
+      writer.println("  <Community name=\"Comm 3\" template=\"Four Agent\">");
+      writer.println("    <Demand>3</Demand>");
+      writer.println("    <Production>43</Production>");
+      writer.println("    <Supports>");
+      writer.println("      <SupportedCommunity>Comm 2</SupportedCommunity>");
+      writer.println("    </Supports>");
+      writer.println("    <Geography>");
+      writer.println("      <Latitude>145</Latitude>");
+      writer.println("      <Longitude>175</Longitude>");
+      writer.println("    </Geography>");
+      writer.println("  </Community>");
+      writer.println("</CommunityConfig>");
+      writer.close();
+    } catch (SecurityException e) {
+      fail("Got exception writing test file: " + e);
+    } catch (FileNotFoundException e) {
+      fail("Got exception writing test file: " + e);
+    }
+
+    xp = new XMLParser(testFileName);
+  }
+
+  protected void tearDown() {
+    if (testFile != null) {
+      try {
+	testFile.delete();
+      } catch (SecurityException e) {}
+    }
   }
 
   public void testGetFirstChild() {

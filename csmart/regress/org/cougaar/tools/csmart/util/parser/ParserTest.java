@@ -30,6 +30,7 @@ public class ParserTest extends TestCase {
   private TaskFileParser tfp = new TaskFileParser();
   private Enumeration tasks = null;
   File testFile = null; // handle to test file, to remove when done
+  private static final String testFileName = "testScript.ini";
 
   public ParserTest(String name) {
      super(name);
@@ -38,7 +39,7 @@ public class ParserTest extends TestCase {
   // Write out the test data file, then load it
   protected void setUp() {
     try {
-      testFile = new File("testScript.ini");
+      testFile = new File(testFileName);
     } catch (NullPointerException e) {
     }
     try {
@@ -55,7 +56,7 @@ public class ParserTest extends TestCase {
     }
 
     try {
-      tfp.load("testScript.ini");
+      tfp.load(testFileName);
       tfp.parse();
     } catch(IOException e) {
       fail("Got exception loading testcript: " + e);
