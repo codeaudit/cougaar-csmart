@@ -1560,6 +1560,47 @@ public class Organizer extends JScrollPane {
     return hosts;
   }
 
+  private void mapNodesToHosts(Experiment experiment, 
+			       String assemblyMatch ) {
+
+    NodeComponent[] nodeComponents = experiment.getNodes();
+    HostComponent[] hostComponents = experiment.getHosts();
+
+    try {
+      Connection conn = DBUtils.getConnection();
+      Map substitutions = new HashMap();
+      substitutions.put(":assemblyMatch", assemblyMatch);
+      Statement stmt = conn.createStatement();
+      String query = DBUtils.getQuery("queryHostNodes", substitutions);
+      System.out.println(query);
+      ResultSet rs = stmt.executeQuery(query);
+      while(rs.next()) {
+	String hostName = rs.getString(1);
+	String nodeName = rs.getString(2);	
+	for (int i=0; i < hostComponents.length; i++) {
+	  HostComponent hc = hostComponents[i];
+	  if (hc.getShortName().equals(hostName)) {
+	    for (int j=0; j < nodeComponents.length; j++) {
+	      NodeComponent nc = nodeComponents[j];
+	      if (nc.getShortName().equals(nodeName)) {
+		hc.addNode(nc);
+		break;
+	      }	      
+	    }	    
+	    break;
+	  }	  
+	} 
+      }
+      rs.close();
+
+      stmt.close();
+      conn.close();   
+    } catch (SQLException se) {
+      System.out.println("Caught SQL exception: " + se);
+      se.printStackTrace();
+    }
+  }
+
   private void addAgents(Experiment experiment,
                          ArrayList nodes,
                          AgentComponent[] agents,
@@ -1643,6 +1684,7 @@ public class Organizer extends JScrollPane {
     while (hostIter.hasNext()) {
       experiment.addHost((String)hostIter.next());
     }
+    mapNodesToHosts(experiment, assemblyMatch);
     final DefaultMutableTreeNode experimentNode = node;
     final Experiment newExperiment = experiment;
     final java.awt.Component glass = 
