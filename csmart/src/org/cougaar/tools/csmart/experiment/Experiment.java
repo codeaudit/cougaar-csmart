@@ -1008,8 +1008,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   {
     ois.defaultReadObject();
     createLogger();
-    modified = true; // causes config writer to write the ComponentData tree
-    createConfigWriter();
+    modified = false;
+//     modified = true; // causes config writer to write the ComponentData tree
+//     createConfigWriter();
   }
 
   private void addPropertiesAsParameters(ComponentData cd, BaseComponent cp)
