@@ -430,26 +430,25 @@ public class CSMART extends JFrame {
     //    return new JButton(label, icon);
   }
 
-  /**
-   * Window management for windows launched by CSMART.
-   * Updates which tools are enabled and updates the Window menu.
-   * @param o the <code>NamedFrame</code> that was added, removed or changed
-   * @param arg an event describing the change
-   */
-  
   Observer myFrameObserver = new Observer() {
       ActionListener myActionListener = new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                  String s = 
-                    ((AbstractButton)e.getSource()).getActionCommand();
-                  JFrame f = NamedFrame.getNamedFrame().getFrame(s);
-                  if (f != null) {
-                    f.toFront();
-                    f.setState(Frame.NORMAL);
-                  }
-                }
+	  public void actionPerformed(ActionEvent e) {
+	    String s = 
+	      ((AbstractButton)e.getSource()).getActionCommand();
+	    JFrame f = NamedFrame.getNamedFrame().getFrame(s);
+	    if (f != null) {
+	      f.toFront();
+	      f.setState(Frame.NORMAL);
+	    }
+	  }
         };
-
+      
+      /**
+       * Window management for windows launched by CSMART.
+       * Updates which tools are enabled and updates the Window menu.
+       * @param o the <code>NamedFrame</code> that was added, removed or changed
+       * @param arg an event describing the change
+       */
       public void update(Observable o, Object arg) {
         if (o instanceof NamedFrame) {
           NamedFrame namedFrame = (NamedFrame) o;
