@@ -114,7 +114,10 @@ public class CSMARTConsole extends JFrame {
   private static final String VIEW_NOTIFY_MENU_ITEM = "View Notification";
   private static final String REMOVE_NOTIFY_MENU_ITEM = "Remove All Notifications";
   private static final String RESET_NOTIFY_MENU_ITEM = "Reset All Notifications";
-
+  private static final String FIND_MENU = "Find";
+  private static final String FIND_HOST_MENU_ITEM = "Find Host...";
+  private static final String FIND_NODE_MENU_ITEM = "Find Node...";
+  private static final String FIND_AGENT_MENU_ITEM = "Find Agent...";
   private static final String HELP_MENU = "Help";
   private static final String ABOUT_CONSOLE_ITEM = "About Experiment Controller";
   private static final String ABOUT_CSMART_ITEM = "About CSMART";
@@ -211,6 +214,29 @@ public class CSMARTConsole extends JFrame {
     formatMenuItem.setEnabled(false);
     viewMenu.add(formatMenuItem);
 
+    JMenu findMenu = new JMenu(FIND_MENU);
+    JMenuItem findHostMenuItem = new JMenuItem(FIND_HOST_MENU_ITEM);
+    findHostMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        hostConfiguration.findHost();
+      }
+    });
+    findMenu.add(findHostMenuItem);
+    JMenuItem findNodeMenuItem = new JMenuItem(FIND_NODE_MENU_ITEM);
+    findNodeMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        hostConfiguration.findNode();
+      }
+    });
+    findMenu.add(findNodeMenuItem);
+    JMenuItem findAgentMenuItem = new JMenuItem(FIND_AGENT_MENU_ITEM);
+    findAgentMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        hostConfiguration.findAgent();
+      }
+    });
+    findMenu.add(findAgentMenuItem);
+
     JMenu notifyMenu = new JMenu(NOTIFY_MENU);
     JMenuItem setNotifyMenuItem = new JMenuItem(SET_NOTIFY_MENU_ITEM);
     setNotifyMenuItem.addActionListener(new ActionListener() {
@@ -273,6 +299,7 @@ public class CSMARTConsole extends JFrame {
     JMenuBar menuBar = new JMenuBar();
     menuBar.add(fileMenu);
     menuBar.add(viewMenu);
+    menuBar.add(findMenu);
     menuBar.add(notifyMenu);
     menuBar.add(helpMenu);
     getRootPane().setJMenuBar(menuBar);

@@ -34,6 +34,7 @@ import javax.swing.event.*;
 
 import org.cougaar.tools.csmart.ui.component.AgentComponent;
 import org.cougaar.tools.csmart.ui.component.ComponentName;
+import org.cougaar.tools.csmart.ui.component.ComponentProperties;
 import org.cougaar.tools.csmart.ui.component.CompositeName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.HostComponent;
@@ -1232,9 +1233,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void selectNodeInHostTree(String nodeName) {
-    DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
-    DefaultMutableTreeNode root = 
-      (DefaultMutableTreeNode)model.getRoot();
+    selectNodeInTree(hostTree, HostComponent.class, nodeName);
+  }
+
+  private boolean selectNodeInTree(JTree tree, Class componentClass,
+                                   String name) {
+    DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+    DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
     TreePath path = null;
     Enumeration nodes = root.breadthFirstEnumeration();
     while (nodes.hasMoreElements()) {
@@ -1242,16 +1247,17 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
  	(DefaultMutableTreeNode)nodes.nextElement();
         if (node.getUserObject() instanceof ConsoleTreeObject) {
           ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
-          if (cto.isNode()) {
-            if (cto.getName().equals(nodeName)) {
-              path = new TreePath(node.getPath());
-              break;
-            }
-          }
+          if (cto.getComponent() != null &&
+              cto.getComponent().getClass().equals(componentClass) &&
+              cto.getName().equals(name)) {
+            path = new TreePath(node.getPath());
+            tree.setSelectionPath(path);
+            tree.scrollPathToVisible(path);
+            return true;
+          } 
         }
     }
-    if (path != null)
-      hostTree.setSelectionPath(path);
+    return false;
   }
 
   public void addHostTreeSelectionListener(TreeSelectionListener listener) {
@@ -1315,6 +1321,59 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	  }
 	}
       };
+  }
+
+  /**
+   * Display dialog of component names and ask user to select one.
+   * Search the trees for the component the user selected and select it.
+   * @param trees trees to search (i.e. hostTree, nodeTree, agentTree)
+   * @param components list of components from which user should select
+   * @param label to use in dialog boxes (i.e. Host, Node, Agent)
+   */
+
+  private void findWorker(JTree[] trees, ComponentProperties[] components,
+                          String label) {
+    if (components.length == 0) {
+      JOptionPane.showMessageDialog(this, "No " + label + "s.");
+      return;
+    }
+    Vector names = new Vector(components.length);
+    for (int i = 0; i < components.length; i++)
+      names.add(components[i].getShortName());
+    String[] choices = (String[])names.toArray(new String[names.size()]);
+    Object answer = 
+      JOptionPane.showInputDialog(this, "Select " + label,
+                                  "Find " + label,
+                                  JOptionPane.QUESTION_MESSAGE,
+                                  null,
+                                  choices,
+                                  null);
+    if (answer == null)
+      return;
+    for (int i = 0; i < trees.length; i++)
+      if (selectNodeInTree(trees[i], components[0].getClass(), (String)answer))
+        return;
+  }
+
+  public void findHost() {
+    JTree[] trees = new JTree[1];
+    trees[0] = hostTree;
+    findWorker(trees, experiment.getHosts(), "Host");
+  }
+
+  public void findNode() {
+    JTree[] trees = new JTree[2];
+    trees[0] = hostTree;
+    trees[1] = nodeTree;
+    findWorker(trees, experiment.getNodes(), "Node");
+  }
+
+  public void findAgent() {
+    JTree[] trees = new JTree[3];
+    trees[0] = hostTree;
+    trees[1] = nodeTree;
+    trees[2] = agentTree;
+    findWorker(trees, experiment.getAgents(), "Agent");
   }
 }
 

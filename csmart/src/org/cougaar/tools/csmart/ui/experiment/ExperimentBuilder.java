@@ -38,6 +38,10 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   private static final String FILE_MENU = "File";
   private static final String SAVE_MENU_ITEM = "Save";
   private static final String EXIT_MENU_ITEM = "Close";
+  private static final String FIND_MENU = "Find";
+  private static final String FIND_HOST_MENU_ITEM = "Find Host...";
+  private static final String FIND_NODE_MENU_ITEM = "Find Node...";
+  private static final String FIND_AGENT_MENU_ITEM = "Find Agent...";
   private static final String HELP_MENU = "Help";
   protected static final String HELP_DOC = "help.html";
   protected static final String ABOUT_CSMART_ITEM = "About CSMART";
@@ -51,6 +55,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   private TrialBuilder trialBuilder;
   private ThreadBuilder threadBuilder;
   private boolean modified = false;
+  private JMenu findMenu;
 
   private Action helpAction = new AbstractAction(HELP_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
@@ -80,6 +85,23 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
       }
     }
   };
+  private Action[] findActions = {
+    new AbstractAction(FIND_HOST_MENU_ITEM) {
+      public void actionPerformed(ActionEvent e) {
+        hostConfigurationBuilder.findHost();
+      }
+    },
+    new AbstractAction(FIND_NODE_MENU_ITEM) {
+      public void actionPerformed(ActionEvent e) {
+        hostConfigurationBuilder.findNode();
+      }
+    },
+    new AbstractAction(FIND_AGENT_MENU_ITEM) {
+      public void actionPerformed(ActionEvent e) {
+        hostConfigurationBuilder.findAgent();
+      }
+    }
+  };
 
   private Action[] helpActions = {
     helpAction,
@@ -95,15 +117,28 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     for (int i = 0; i < fileActions.length; i++) {
       fileMenu.add(fileActions[i]);
     }
+    findMenu = new JMenu(FIND_MENU);
+    for (int i = 0; i < findActions.length; i++) {
+      findMenu.add(findActions[i]);
+    }
     JMenu helpMenu = new JMenu(HELP_MENU);
     for (int i = 0; i < helpActions.length; i++) {
       helpMenu.add(helpActions[i]);
     }
     menuBar.add(fileMenu);
+    menuBar.add(findMenu);
     menuBar.add(helpMenu);
     setJMenuBar(menuBar);
 
     tabbedPane = new JTabbedPane();
+    tabbedPane.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        if (tabbedPane.getSelectedComponent().equals(hostConfigurationBuilder))
+          findMenu.setEnabled(true);
+        else
+          findMenu.setEnabled(false);
+      }
+    });
     propertyBuilder = new UnboundPropertyBuilder(experiment, this);
     tabbedPane.add("Properties", propertyBuilder);
     hostConfigurationBuilder = 
@@ -274,4 +309,14 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     experiment.setCloned(true);
   }
 
+//    private void find() {
+//      String s = JOptionPane.showInputDialog(this, "Find Host, Node or Agent:",
+//                                             "Find", JOptionPane.PLAIN_MESSAGE);
+//      if (s == null)
+//        return;
+//      s = s.trim();
+//      if (s.length() == 0)
+//        return;
+//      hostConfigurationBuilder.find(s);
+//    }
 }
