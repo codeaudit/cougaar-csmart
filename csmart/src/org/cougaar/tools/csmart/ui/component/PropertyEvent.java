@@ -34,6 +34,8 @@ public class PropertyEvent extends EventObject {
     public static final int EXPERIMENTVALUES_CHANGED = 6;
     public static final int         PROPERTY_ADDED   = 7;
     public static final int         PROPERTY_REMOVED = 8;
+    public static final int          TOOLTIP_CHANGED = 9;
+    public static final int             HELP_CHANGED =10;
 
     private Object previousValue;
     private int whatChanged;

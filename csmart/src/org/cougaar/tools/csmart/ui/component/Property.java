@@ -55,11 +55,11 @@ public interface Property extends Serializable {
     void removePropertyListener(PropertyListener l);
     Iterator getPropertyListeners();
     ConfigurableComponent getConfigurableComponent();
-    // For debugging
-    void printProperty(PrintStream out);
-    void printProperty(PrintStream out, String indent);
     String getToolTip();
     Property setToolTip(String tt);
     URL getHelp();
     Property setHelp(URL url);
+    // For debugging
+    void printProperty(PrintStream out);
+    void printProperty(PrintStream out, String indent);
 }

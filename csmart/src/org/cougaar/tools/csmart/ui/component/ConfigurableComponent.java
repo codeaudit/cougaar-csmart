@@ -408,23 +408,45 @@ public abstract class ConfigurableComponent
    **/
   public Property addProperty(String name, Object value) {
     if (value == null) throw new IllegalArgumentException("null value not allowed");
-    return addProperty(name, value, value.getClass());
+    return addProperty(name, value, value.getClass(), true);
+  }
+
+  public Property addInvisibleProperty(String name, Object value) {
+    if (value == null) throw new IllegalArgumentException("null value not allowed");
+    return addProperty(name, value, value.getClass(), false);
   }
 
   public Property addProperty(String name, Object value, Class cls) {
-    Property result = addProperty(new ConfigurableComponentProperty(this, name, value));
+    return addProperty(name, value, cls, true);
+  }
+
+  public Property addInvisibleProperty(String name, Object value, Class cls) {
+    return addProperty(name, value, cls, false);
+  }
+
+  private Property addProperty(String name, Object value, Class cls, boolean visible) {
+    Property result = addProperty(new ConfigurableComponentProperty(this, name, value), visible);
     result.setPropertyClass(cls);
     return result;
   }
 
   public Property addProperty(Property p) {
+    return addProperty(p, true);
+  }
+
+  public Property addInvisibleProperty(Property p) {
+    return addProperty(p, false);
+  }
+
+  private Property addProperty(Property p, boolean visible) {
+    if (!visible) setPropertyVisible(p, false);
     getMyProperties().put(p.getName(), p);
-    firePropertyAdded(p);
+    if (visible) firePropertyAdded(p);
     return p;
   }
 
   public Property addProperty(String name, Object value, PropertyListener l) {
-    Property p = addProperty(name, value, value.getClass());
+    Property p = addProperty(name, value, value.getClass(), false);
     p.addPropertyListener(l);
     return p;
   }
