@@ -45,6 +45,9 @@ import java.util.Arrays;
 import org.cougaar.util.FilteredIterator;
 import org.cougaar.util.UnaryPredicate;
 
+import org.cougaar.tools.csmart.core.property.name.ComponentName;
+import org.cougaar.tools.csmart.core.property.name.SimpleName;
+
 /**
  * For each property, define:
  * name, label, default value, current value, allowed values, experiment values

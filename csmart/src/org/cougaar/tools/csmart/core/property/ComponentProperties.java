@@ -25,6 +25,9 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
 
 /**
  * The interface that every configurable component must implement.
