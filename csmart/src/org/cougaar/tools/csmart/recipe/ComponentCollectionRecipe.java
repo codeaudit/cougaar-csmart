@@ -328,7 +328,7 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
         for(int j=0; j < component.getChildCount(); j++) {
           ConfigurableComponent newChild = (ConfigurableComponent)component.getChild(j);
           if(newChild.getShortName().equals(child.getShortName()))
-            newChild.addProperty(propName.substring(name.lastIndexOf(".")+1), prop.getValue());
+            newChild.addProperty(prop.getName().last().toString(), prop.getValue());
         }
 
       }
