@@ -30,9 +30,10 @@ import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.event.*;
 import java.util.*;
-import javax.swing.*;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.URL;
+import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -42,7 +43,8 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
@@ -55,6 +57,8 @@ import org.cougaar.tools.csmart.core.property.PropertyHelper;
 import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.AssetComponent;
+import org.cougaar.tools.csmart.society.ComponentBase;
+import org.cougaar.tools.csmart.society.MiscComponent;
 import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.society.BinderComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
@@ -68,12 +72,11 @@ import org.cougaar.tools.csmart.society.RelationshipComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.ui.AgentUIComponent;
 import org.cougaar.tools.csmart.society.ui.AssetUIComponent;
+import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 import org.cougaar.tools.csmart.ui.util.ComboDialog;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.ObjectInputStream;
 
 /**
  * Panel that holds the PropertyEditor for editing the properties of a <code>ModifiableConfigurableComponent</code>. <br>
@@ -87,11 +90,13 @@ public class PropertyEditorPanel extends JPanel
   JTree tree;
   JPopupMenu societyMenu;
   JPopupMenu bindersMenu;
+  JPopupMenu componentsMenu;
   JPopupMenu pluginsMenu;
   JPopupMenu assetMenu;
   JPopupMenu propertyGroupsMenu;
   JPopupMenu relationshipsMenu;
   JPopupMenu baseComponentMenu;
+  JPopupMenu agentMenu;
   DefaultMutableTreeNode root;
   PropertyTable propertyTable = null;
   JScrollPane tableScrollPane;
@@ -144,6 +149,12 @@ public class PropertyEditorPanel extends JPanel
           addBinder();
         }
       };
+  private AbstractAction addComponentAction =
+    new AbstractAction("Add Other Component") {
+        public void actionPerformed(ActionEvent e) {
+          addComponent();
+        }
+      };
   private AbstractAction addPluginAction =
     new AbstractAction("Add Plugin") {
         public void actionPerformed(ActionEvent e) {
@@ -162,10 +173,20 @@ public class PropertyEditorPanel extends JPanel
           addRelationship();
         }
       };
-  private AbstractAction addParameterAction =
+  private AbstractAction addAssetParameterAction =
     new AbstractAction("Add Parameter") {
         public void actionPerformed(ActionEvent e) {
           addParameter();
+        }
+      };
+  // Used for PropertyGroups, Relationships, Binder, Plugins, Other Components
+  // For the last three, we really want the argument to be false,
+  // but within the method it resets it
+  // if the component is a MiscComponent anyhow
+  private AbstractAction addParameterAction =
+    new AbstractAction("Add Parameter") {
+        public void actionPerformed(ActionEvent e) {
+          addParameter(true);
         }
       };
   private AbstractAction deleteAction =
@@ -180,11 +201,14 @@ public class PropertyEditorPanel extends JPanel
   private Object[] bindersMenuItems = {
     addBinderAction
   };
+  private Object[] componentsMenuItems = {
+    addComponentAction
+  };
   private Object[] pluginsMenuItems = {
     addPluginAction
   };
   private Object[] assetMenuItems = {
-    addParameterAction
+    addAssetParameterAction
   };
   private Object[] propertyGroupsMenuItems = {
     addPropertyGroupAction
@@ -194,6 +218,9 @@ public class PropertyEditorPanel extends JPanel
   };
   private Object[] baseComponentMenuItems = {
     addParameterAction,
+    deleteAction
+  };
+  private Object[] agentMenuItems = {
     deleteAction
   };
 
@@ -278,7 +305,9 @@ public class PropertyEditorPanel extends JPanel
     // create popup menus to be displayed in tree
     societyMenu = new JPopupMenu();
     baseComponentMenu = new JPopupMenu();
+    agentMenu = new JPopupMenu();
     bindersMenu = new JPopupMenu();
+    componentsMenu = new JPopupMenu();
     pluginsMenu = new JPopupMenu();
     assetMenu = new JPopupMenu();
     propertyGroupsMenu = new JPopupMenu();
@@ -287,8 +316,12 @@ public class PropertyEditorPanel extends JPanel
       societyMenu.add((Action)societyMenuItems[i]);
     for (int i = 0; i < baseComponentMenuItems.length; i++)
       baseComponentMenu.add((Action)baseComponentMenuItems[i]);
+    for (int i = 0; i < agentMenuItems.length; i++)
+      agentMenu.add((Action)agentMenuItems[i]);
     for (int i = 0; i < bindersMenuItems.length; i++)
       bindersMenu.add((Action)bindersMenuItems[i]);
+    for (int i = 0; i < componentsMenuItems.length; i++)
+      componentsMenu.add((Action)componentsMenuItems[i]);
     for (int i = 0; i < pluginsMenuItems.length; i++)
       pluginsMenu.add((Action)pluginsMenuItems[i]);
     for (int i = 0; i < assetMenuItems.length; i++)
@@ -574,12 +607,16 @@ public class PropertyEditorPanel extends JPanel
         bindersMenu.show(tree, x, y);
       else if (name.equals("Plugins"))
         pluginsMenu.show(tree, x, y);
+      else if (name.equals("Other Components"))
+        componentsMenu.show(tree, x, y);
       else if (name.equals("Relationships"))
         relationshipsMenu.show(tree, x, y);
       else if (name.equals("Property Groups"))
         propertyGroupsMenu.show(tree, x, y);
     } else if (o instanceof AssetComponent)
       assetMenu.show(tree, x, y);
+    else if (o instanceof AgentComponent)
+      agentMenu.show(tree, x, y);
     else if (o instanceof BaseComponent)
       baseComponentMenu.show(tree, x, y);
     else if (log.isErrorEnabled())
@@ -617,6 +654,7 @@ public class PropertyEditorPanel extends JPanel
     PropertyTreeNode agentNode = createTreeNode(agentComponent, selNode);
     agentComponent.initProperties();
     tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(agentNode));
+    addContainerComponent(agentNode, agentComponent, "Other Components");
     addContainerComponent(agentNode, agentComponent, "Binders");
     addContainerComponent(agentNode, agentComponent, "Plugins");
     AssetComponent asset = (AssetComponent)new AssetUIComponent();
@@ -653,7 +691,7 @@ public class PropertyEditorPanel extends JPanel
   }
 
   /**
-   * Query the user for the name of the binder.
+   * Query the user for the name of the bindere.
    * Create a component for the binder, and a tree node
    * representing the binder, and add it to the agent node in the tree.
    */
@@ -661,9 +699,68 @@ public class PropertyEditorPanel extends JPanel
     // FIXME: Get the class from the user
     // and provide a drop-down, just like for binders...
 
+    // get plugins from all existing agents
+    Enumeration components = componentToNode.keys();
+    ArrayList binderNames = new ArrayList();
+    ArrayList binderClasses = new ArrayList();
+    while (components.hasMoreElements()) {
+      Object o = components.nextElement();
+      if (o instanceof BinderComponent) {
+        BinderComponent binder = (BinderComponent)o;
+        String name = ((BaseComponent)binder).getShortName();
+        // if name is prefixed with an agentname|, strip it off
+        int index = name.indexOf('|');
+        if (index != -1)
+          name = name.substring(index+1);
+        if (!binderNames.contains(name)) {
+          binderNames.add(name);
+          binderClasses.add(binder.getComponentClassName());
+        }
+      }
+    }
+    ArrayList sortedNames = (ArrayList)binderNames.clone();
+    Collections.sort(sortedNames);
     String name = 
-      (String)JOptionPane.showInputDialog(this, "Enter Binder Name",
-                                          "Binder Name",
+      (String)ComboDialog.showDialog(this, "Binder", new Vector(sortedNames));
+    if (name == null)
+      return;
+    name = name.trim();
+    if (name.length() == 0)
+      return;
+    String className = null;
+    int index = binderNames.indexOf(name);
+    if (index > -1 && index < binderNames.size())
+      className = (String)binderClasses.get(index);
+    else {
+      className = 
+      (String)JOptionPane.showInputDialog(this, "Enter Binder Full Class",
+                                          "Binder Class",
+                                          JOptionPane.QUESTION_MESSAGE,
+                                          null, null, className);
+      if (className == null) return;
+      className = className.trim(); // trim white space
+      if (className.length() == 0) return;
+    }
+    BinderComponent binder = new BinderBase(name, className);
+    addBaseComponent(binder);
+    binder.setComponentType(ComponentData.AGENTBINDER);
+  }
+
+  /**
+   * Query the user for the name of the component.
+   * Create a component for it, and a tree node
+   * representing the component, and add it to the agent node in the tree.
+   */
+  private void addComponent() {
+    // FIXME: Get the class from the user
+    // and provide a drop-down, just like for plugins...
+
+    // Also, get the component type from the user, using a drop
+    // down that lists at least plugin, 2 binders
+
+    String name = 
+      (String)JOptionPane.showInputDialog(this, "Enter Component Name",
+                                          "Component Name",
                                           JOptionPane.QUESTION_MESSAGE,
                                           null, null, "");
     if (name == null)
@@ -671,7 +768,7 @@ public class PropertyEditorPanel extends JPanel
     name = name.trim();
     if (name.length() == 0)
       return;
-    BinderComponent binder = new BinderBase(name);
+    MiscComponent binder = new ComponentBase(name);
     addBaseComponent(binder);
   }
 
@@ -697,7 +794,7 @@ public class PropertyEditorPanel extends JPanel
           name = name.substring(index+1);
         if (!pluginNames.contains(name)) {
           pluginNames.add(name);
-          pluginClasses.add(plugin.getPluginClassName());
+          pluginClasses.add(plugin.getComponentClassName());
         }
       }
     }
@@ -716,8 +813,8 @@ public class PropertyEditorPanel extends JPanel
       className = (String)pluginClasses.get(index);
     else {
       className =
-        (String)JOptionPane.showInputDialog(this, "Enter Plugin Class Name",
-                                            "Plugin Class Name",
+        (String)JOptionPane.showInputDialog(this, "Enter Plugin Full Class",
+                                            "Plugin Class",
                                             JOptionPane.QUESTION_MESSAGE,
                                             null, null, className);
       if (className == null) return;
@@ -852,21 +949,58 @@ public class PropertyEditorPanel extends JPanel
    * on listeners that were previously set up on the configurable components
    * to update the user interface.
    */
-
   private void addParameter() {
-    String name =
-      (String)JOptionPane.showInputDialog(this, "Enter Parameter Name",
-                                          "Parameter Name",
-                                          JOptionPane.QUESTION_MESSAGE,
-                                          null, null, "");
-    if (name == null) return;
-    name = name.trim(); // trim white space
-    if (name.length() == 0) return;
+    addParameter(true);
+  }
+
+  private void addParameter(boolean getName) {
+    // FIXME:
+    // This probably should not used named parameter.
+    // or if it does, compute the names automatically,
+    // and have them be in ascending alphabetical order within
+    // the component.
+    // FIXME
+    // boolean getName = true;
+
     DefaultMutableTreeNode selNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     ModifiableComponent cc = 
       (ModifiableComponent)nodeToComponent.get(selNode);
-    Property p = cc.addProperty(name, "");
+
+    if (cc instanceof MiscComponent)
+      getName = false;
+
+    String name = "";
+    if (getName) {
+      name =
+	(String)JOptionPane.showInputDialog(this, "Enter Parameter Name",
+					    "Parameter Name",
+					    JOptionPane.QUESTION_MESSAGE,
+					    null, null, name);
+      if (name == null) return;
+      name = name.trim(); // trim white space
+      if (name.length() == 0) return;
+    }
+    
+    String value =
+      (String)JOptionPane.showInputDialog(this, "Enter Parameter Value",
+                                          "Parameter Value",
+                                          JOptionPane.QUESTION_MESSAGE,
+                                          null, null, "");
+    if (value == null) return;
+    value = value.trim(); // trim white space
+    if (value.length() == 0) return;
+
+    if (getName) {
+      Property p = cc.addProperty(name, value);
+    } else {
+      if (cc instanceof MiscComponent) {
+	Property p = ((MiscComponent)cc).addParameter(value);
+      }
+      // In general you have to give both a name and a value
+      // So if it is not a ComponentBase, what name would we give?
+      // FIXME!!
+    }
   }
 
   /**
