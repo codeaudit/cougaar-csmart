@@ -176,7 +176,7 @@ public class PopulateDb {
         return assemblyId;
     }
 
-    private void setAssemblyId(String assemblyIdPrefix, String exptId, String trialId)
+    private void setAssemblyId(String assemblyType, String exptId, String trialId)
         throws SQLException
     {
         String assemblyIdPrefix = assemblyType + "-";
@@ -261,10 +261,12 @@ public class PopulateDb {
      * connection. Well-behaved users of this class will close when
      * done. Otherwise, the finalizer will close it.
      **/
-    public void close() throws SQLException {
-        dbConnection.commit();
-        dbConnection.close();
-        dbConnection = null;
+    public synchronized void close() throws SQLException {
+        if (dbConnection != null) {
+            dbConnection.commit();
+            dbConnection.close();
+            dbConnection = null;
+        }
     }
 
     protected void finalize() {
