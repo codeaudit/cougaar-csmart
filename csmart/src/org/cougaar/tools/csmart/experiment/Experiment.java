@@ -1248,8 +1248,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * Insure that we have a valid nameserver specification. There are
    * several possibilities: If the default node nameserver argument
    * has been set, try to make that be the name server. Parse out the
-   * host name part. Then scan all the hosts of nodes having agents
-   * and check to see if any such host matches that specified by the
+   * host name part. Then scan all the hosts that have nodes
+   * and check to see if any host matches that specified by the
    * default node nameserver argument. If it does, keep that
    * nameserver. If it doesn't (or if there was no default node
    * nameserver argument) then use the first host as the nameserver.
@@ -1273,21 +1273,17 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   hostLoop:
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
-      for (int j = 0; j < nodes.length; j++) {
-	AgentComponent[] agents = nodes[j].getAgents();
-	// skip nodes that have no agents
-	if (agents == null || agents.length == 0)
-	  continue;
-        String thisHost = hosts[i].getShortName();
-        if (thisHost.equals(nameServerHost)) {
-          newNameServer = oldNameServer;
-          break hostLoop;       // Use existing nameserver definition
-        }
-        if (dfltNameServer == null) { // First host is default
-          dfltNameServer = thisHost + ":" + NAME_SERVER_PORTS;
-          if (oldNameServer == null) {
-            break hostLoop;     // Use dfltNameServer
-          }
+      if (nodes.length == 0)
+        continue;
+      String thisHost = hosts[i].getShortName();
+      if (thisHost.equals(nameServerHost)) {
+        newNameServer = oldNameServer;
+        break hostLoop;       // Use existing nameserver definition
+      }
+      if (dfltNameServer == null) { // First host is default
+        dfltNameServer = thisHost + ":" + NAME_SERVER_PORTS;
+        if (oldNameServer == null) {
+          break hostLoop;     // Use dfltNameServer
         }
       }
     }
