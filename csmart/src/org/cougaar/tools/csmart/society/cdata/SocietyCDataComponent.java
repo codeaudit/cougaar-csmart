@@ -44,6 +44,10 @@ public class SocietyCDataComponent extends SocietyBase {
     ArrayList agentData = new ArrayList();
     ArrayList alldata = new ArrayList();
     alldata.add(cdata);
+    
+    // FIXME: It'd be nice to deal with binders of Agents in here!!!
+
+    // Find all the agents
     for (int i = 0; i < alldata.size(); i++) {
       ComponentData someData = (ComponentData)alldata.get(i);
       if (someData.getType().equals(ComponentData.AGENT)) {
@@ -54,6 +58,8 @@ public class SocietyCDataComponent extends SocietyBase {
           alldata.add(moreData[j]);
       }
     }
+
+    // For each agent, create a component and add it as a child
     for (int i = 0; i < agentData.size(); i++) {
       AgentComponent agentComponent = 
         new AgentCDataComponent((ComponentData)agentData.get(i));
