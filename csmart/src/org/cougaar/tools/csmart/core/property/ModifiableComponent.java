@@ -27,7 +27,7 @@ import java.net.URL;
  * The interface for ConfigurableComponents that can be modified from
  * a society.
  **/
-public interface ModifiableComponent {
+public interface ModifiableComponent extends BaseComponent {
   /**
    * Add a listener for non-property changes to the society. E.g.
    * adding a host.
@@ -52,4 +52,14 @@ public interface ModifiableComponent {
    * @param editable true if society is editable and false otherwise
    */
   void setEditable(boolean editable);
+
+  /**
+   * Create a copy of the given component
+   * with the given name and return the copy.
+   * @param name the name for the copied object
+   * @param mc the component to copy
+   * @return the copy
+   */
+
+  ModifiableComponent copy(String name);
 }

@@ -21,6 +21,7 @@
 
 package org.cougaar.tools.csmart.core.property;
 
+import java.lang.reflect.Constructor;
 import javax.swing.event.EventListenerList;
 
 /**
@@ -99,4 +100,21 @@ public abstract class ModifiableConfigurableComponent
       }
     }
   }
+
+  private static Class[] constructorArgTypes = {String.class};
+
+  public ModifiableComponent copy(String name) {
+    Class cls = this.getClass();
+    try {
+      Constructor constructor = cls.getConstructor(constructorArgTypes);
+      ModifiableComponent component = 
+	(ModifiableComponent) constructor.newInstance(new String[] {name});
+      component.initProperties();
+      return component;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
 }

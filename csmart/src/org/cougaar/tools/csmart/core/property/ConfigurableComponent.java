@@ -59,7 +59,7 @@ import org.cougaar.tools.csmart.core.db.PopulateDb;
  */
 
 public abstract class ConfigurableComponent
-  implements ComposableComponent, ComponentProperties, ConfigurableComponentListener
+  implements ComposableComponent, BaseComponent, ConfigurableComponentListener
 {
   private static final long serialVersionUID = -7727291298618568087L;
 
@@ -760,12 +760,12 @@ public abstract class ConfigurableComponent
   }
 
   /**
-   * Copies a ComponentProperties Object
+   * Copies a BaseComponent Object
    *
    * @param result Object to copy
-   * @return a <code>ComponentProperties</code> value
+   * @return a <code>BaseComponent</code> value
    */
-  public ComponentProperties copy(ComponentProperties result) {
+  public BaseComponent copy(BaseComponent result) {
     // Make sure we're copying apples into apples
     // The result can be a sub-class, but we want it
     // to at least have the same set of properties
