@@ -324,9 +324,10 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
   public void addRelationship(String typeId, String itemId, String otherClusterId, String roleName, long start, long end) {
 
     RelationshipData rd = new RelationshipData();
-    rd.setType(typeId);
     rd.setItem(itemId);
-    rd.setRole(roleName);
+    rd.setTypeId(typeId);
+    rd.setType(roleName);
+    rd.setRole("");   // Role (as we know it) does not exist in this format.
     rd.setStartTime(start);
     rd.setEndTime(end);
     rd.setSupported(otherClusterId);
