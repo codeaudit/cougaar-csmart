@@ -204,13 +204,59 @@ public class OrganizerMouseListener extends MouseAdapter {
     int n = menu.getComponentCount();
     for (int i = 0; i < n; i++) {
       Component c = menu.getComponent(i);
-      if (c != null && c instanceof JMenuItem) {
-        Action action = ((JMenuItem)c).getAction();
-        // skip submenus which have null actions
-        if (action != null)
-          ActionUtil.setActionAllowed(action, organizer);
+      if (c != null) {
+        if (c instanceof JMenu)
+          enableActions((JMenu)c);
+        else if (c instanceof JMenuItem) {
+          Action action = ((JMenuItem)c).getAction();
+          if (action != null) 
+            ActionUtil.setActionAllowed(action, organizer);
+        }
       }
     }
   }
 
+  private boolean enableActions(JMenu menu) {
+    boolean haveEnabledActions = false;
+    int n = menu.getItemCount();
+    for (int i = 0; i < n; i++) {
+      JMenuItem menuItem = menu.getItem(i);
+      if (menuItem == null)
+        continue;
+      if (menuItem instanceof JMenu) {
+        if (enableActions((JMenu)menuItem)) {
+          menuItem.setEnabled(true);
+          haveEnabledActions = true;
+        } else
+          menuItem.setEnabled(false);
+      } else {
+        Action action = menuItem.getAction();
+        if (action != null) {
+          ActionUtil.setActionAllowed(action, organizer);
+          if (action.isEnabled())
+            haveEnabledActions = true;
+        }
+      }
+    }
+    return haveEnabledActions;
+  }
+
+  private boolean enableActions(JMenuItem c) {
+    boolean haveEnabledActions = false;
+    if (c instanceof JMenu) {
+      if (enableActions(c)) {
+        c.setEnabled(true);
+        haveEnabledActions = true;
+      } else
+        c.setEnabled(false);
+    } else {
+      Action action = ((JMenuItem)c).getAction();
+      if (action != null) {
+        ActionUtil.setActionAllowed(action, organizer);
+        if (action.isEnabled())
+          haveEnabledActions = true;
+      }
+    }
+    return haveEnabledActions;
+  }
 }

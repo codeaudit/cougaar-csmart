@@ -25,17 +25,19 @@ import java.util.Enumeration;
 import javax.swing.Action;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Set of utilities for determining what tools & actions
  * should be enabled, based on what items are being currently used.
  */
 public class ActionUtil {
-
   public static String CONFIGURE_ACTION = "Configure";
   public static String BUILD_ACTION = "Build";
   public static String RUN_ACTION = "Run";
@@ -62,13 +64,13 @@ public class ActionUtil {
 
   public static void setActionAllowed(Action action,
                                       Organizer organizer) {
-    String s = (String)action.getValue(Action.NAME);
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer.ActionUtil");
     DefaultMutableTreeNode selectedNode = organizer.getSelectedNode();
 
     // If nothing is selected, some things are still legitimate
     if (selectedNode == null) {
-      if (s.equals(DELETE_EXPERIMENT_FROM_DATABASE_ACTION) ||
-          s.equals(DELETE_RECIPE_FROM_DATABASE_ACTION)) {
+      if (action.equals(organizer.deleteExperimentFromDatabaseAction) ||
+          action.equals(organizer.deleteRecipeFromDatabaseAction)) {
         action.setEnabled(true);
         return;
       } else {
@@ -85,12 +87,16 @@ public class ActionUtil {
 
     // handle if selected object is root of workspace
     if (selectedNode.isRoot()) {
-      if (s.equals(NEW_EXPERIMENT_ACTION) ||
-          s.equals(NEW_RECIPE_ACTION) ||
-          s.equals(NEW_FOLDER_ACTION) ||
-          s.equals(RENAME_ACTION) ||
-          s.equals(DELETE_EXPERIMENT_FROM_DATABASE_ACTION) ||
-          s.equals(DELETE_RECIPE_FROM_DATABASE_ACTION)) {
+      if (action.equals(organizer.newExperimentFromDBAction) ||
+          action.equals(organizer.newExperimentFromFileAction) ||
+          action.equals(organizer.newExperimentFromUIAction) ||
+          action.equals(organizer.newFolderAction) ||
+          action.equals(organizer.renameAction) ||
+          action.equals(organizer.renameWorkspaceAction) ||
+          action.equals(organizer.newRecipeFromDatabaseAction) ||
+          action.equals(organizer.newRecipeBuiltInAction) ||
+          action.equals(organizer.deleteExperimentFromDatabaseAction) ||
+          action.equals(organizer.deleteRecipeFromDatabaseAction)) {
         action.setEnabled(true);
         return;
       }
@@ -101,19 +107,22 @@ public class ActionUtil {
     Object selectedObject = selectedNode.getUserObject();
 
     if (selectedObject instanceof String) 
-      action.setEnabled(isActionAllowedOnFolder(s, organizer, 
+      action.setEnabled(isActionAllowedOnFolder(action, organizer, 
                                                 organizer.getSelectedNode()));
     else if (selectedObject instanceof Experiment)
-      action.setEnabled(isActionAllowedOnExperiment(s, organizer,
+      action.setEnabled(isActionAllowedOnExperiment(action, organizer,
                                        (Experiment)selectedObject));
     else if (selectedObject instanceof SocietyComponent)
-      action.setEnabled(isActionAllowedOnSociety(s, organizer,
+      action.setEnabled(isActionAllowedOnSociety(action, organizer,
                                    (SocietyComponent)selectedObject));
     else if (selectedObject instanceof RecipeComponent)
-      action.setEnabled(isActionAllowedOnRecipe(s, organizer,
+      action.setEnabled(isActionAllowedOnRecipe(action, organizer,
                             (RecipeComponent)selectedObject));
     else {
-      System.out.println("ActionUtil: unhandled case: " + s);
+      if(log.isErrorEnabled()) {
+        log.error("ActionUtil: unhandled case: " +
+                  (String)action.getValue(Action.NAME));
+      }
       action.setEnabled(false);
     }
     return;
@@ -125,20 +134,25 @@ public class ActionUtil {
    * Other actions are allowed on a folder if and only
    * they're allowed on at least one of its children.
    */
-  private static boolean isActionAllowedOnFolder(String action,
+  private static boolean isActionAllowedOnFolder(Action action,
                                                  Organizer organizer,
                                                  DefaultMutableTreeNode node) {
-    if (action.equals(NEW_EXPERIMENT_ACTION) ||
-        action.equals(NEW_RECIPE_ACTION) ||
-        action.equals(NEW_FOLDER_ACTION) ||
-        action.equals(RENAME_ACTION)) 
+    if (action.equals(organizer.newExperimentFromDBAction) ||
+        action.equals(organizer.newExperimentFromFileAction) ||
+        action.equals(organizer.newExperimentFromUIAction) ||
+        action.equals(organizer.newFolderAction) ||
+        action.equals(organizer.newRecipeFromDatabaseAction) ||
+        action.equals(organizer.newRecipeBuiltInAction) ||
+        action.equals(organizer.renameAction) ||
+        action.equals(organizer.renameFolderAction))
       return true;
 
     Enumeration nodes = node.breadthFirstEnumeration();
     nodes.nextElement(); // advance over first element which is the folder
     // can delete empty folder, but not root
     if (!nodes.hasMoreElements() && !node.isRoot()) 
-      return action.equals(DELETE_ACTION);
+      return (action.equals(organizer.deleteAction) ||
+              action.equals(organizer.deleteFolderAction));
     return false;
   }
 
@@ -150,12 +164,19 @@ public class ActionUtil {
    * Don't allow deleting, renaming, configuring or building
    * if you're building or running the experiment.
    */
-  private static boolean isActionAllowedOnExperiment(String action,
+  private static boolean isActionAllowedOnExperiment(Action action,
                                                      Organizer organizer,
                                                      Experiment experiment) {
-    if (action.equals(DUPLICATE_ACTION))
+    if (action.equals(organizer.newExperimentFromDBAction) ||
+        action.equals(organizer.newExperimentFromFileAction) ||
+        action.equals(organizer.newExperimentFromUIAction) ||
+        action.equals(organizer.newFolderAction) ||
+        action.equals(organizer.newRecipeFromDatabaseAction) ||
+        action.equals(organizer.newRecipeBuiltInAction))
+      return false;
+    if (action.equals(organizer.duplicateAction))
       return true;
-    if (action.equals(SAVE_ACTION) && experiment.isModified())
+    if (action.equals(organizer.saveAction) && experiment.isModified())
       return !experiment.isEditInProgress();
     SocietyComponent society = experiment.getSocietyComponent();
     if (society != null && !society.isEditable()) {
@@ -168,16 +189,18 @@ public class ActionUtil {
       }
     }
     if (society == null) {
-      if (action.equals(RUN_ACTION) ||
-          action.equals(CONFIGURE_ACTION))
+      if (action.equals(organizer.runExperimentAction) ||
+          action.equals(organizer.configureAction))
         return false;
     }
-    if (action.equals(RUN_ACTION))
+    if (action.equals(organizer.runExperimentAction))
       return experiment.isRunnable();
-    if (action.equals(DELETE_ACTION) || 
-        action.equals(RENAME_ACTION) ||
-        action.equals(CONFIGURE_ACTION) ||
-        action.equals(BUILD_ACTION))
+    if (action.equals(organizer.deleteAction) || 
+        action.equals(organizer.deleteExperimentAction) || 
+        action.equals(organizer.renameAction) ||
+        action.equals(organizer.renameExperimentAction) ||
+        action.equals(organizer.configureAction) ||
+        action.equals(organizer.buildExperimentAction))
       return (!experiment.isEditInProgress() &&
               !experiment.isRunInProgress());
     return false;
@@ -191,28 +214,38 @@ public class ActionUtil {
    * Don't allow configuring if the society is in an experiment
    * which is being configured or run.
    */
-  private static boolean isActionAllowedOnSociety(String action,
+  private static boolean isActionAllowedOnSociety(Action action,
                                                   Organizer organizer,
                                                   SocietyComponent society) {
+    if (action.equals(organizer.newExperimentFromDBAction) ||
+        action.equals(organizer.newExperimentFromFileAction) ||
+        action.equals(organizer.newExperimentFromUIAction) ||
+        action.equals(organizer.newFolderAction) ||
+        action.equals(organizer.newRecipeFromDatabaseAction) ||
+        action.equals(organizer.newRecipeBuiltInAction))
+      return false;
     if (!society.isEditable())
       return false;
     if (isNodeInExperiment(organizer)) {
-      if (action.equals(DUPLICATE_ACTION) ||
-          action.equals(BUILD_ACTION) ||
-          action.equals(DELETE_ACTION) ||
-          action.equals(RUN_ACTION))
+      if (action.equals(organizer.duplicateAction) ||
+          action.equals(organizer.buildExperimentAction) ||
+          action.equals(organizer.deleteAction) ||
+          action.equals(organizer.deleteSocietyAction) ||
+          action.equals(organizer.runExperimentAction))
         return false;
     }
-    if (action.equals(DUPLICATE_ACTION))
+    if (action.equals(organizer.duplicateAction))
       return true;
-    if (action.equals(SAVE_ACTION) && society.isModified())
+    if (action.equals(organizer.saveAction) && society.isModified())
       return (!CSMART.isSocietyInEditor(society));
-    if (action.equals(DELETE_ACTION) ||
-        action.equals(RENAME_ACTION))
+    if (action.equals(organizer.deleteAction) ||
+        action.equals(organizer.deleteSocietyAction) ||
+        action.equals(organizer.renameAction) ||
+        action.equals(organizer.renameSocietyAction))
       return (!CSMART.isSocietyInEditor(society));
-    if (action.equals(CONFIGURE_ACTION) ||
-        action.equals(BUILD_ACTION) ||
-        action.equals(RUN_ACTION))
+    if (action.equals(organizer.configureAction) ||
+        action.equals(organizer.buildExperimentAction) ||
+        action.equals(organizer.runExperimentAction))
       return !organizer.isComponentInUse(society) &&
         !CSMART.isSocietyInEditor(society);
     return false;
@@ -226,24 +259,34 @@ public class ActionUtil {
    * Don't allow configuring if the recipe is in an experiment
    * which is being configured or run.
    */
-  private static boolean isActionAllowedOnRecipe(String action,
+  private static boolean isActionAllowedOnRecipe(Action action,
                                                  Organizer organizer,
                                                  RecipeComponent recipe) {
+    if (action.equals(organizer.newExperimentFromDBAction) ||
+        action.equals(organizer.newExperimentFromFileAction) ||
+        action.equals(organizer.newExperimentFromUIAction) ||
+        action.equals(organizer.newFolderAction) ||
+        action.equals(organizer.newRecipeFromDatabaseAction) ||
+        action.equals(organizer.newRecipeBuiltInAction)) 
+      return false;
     if (!recipe.isEditable())
       return false;
     if (isNodeInExperiment(organizer)) {
-      if (action.equals(DUPLICATE_ACTION) ||
-          action.equals(DELETE_ACTION))
+      if (action.equals(organizer.duplicateAction) ||
+          action.equals(organizer.deleteAction) ||
+          action.equals(organizer.deleteRecipeAction))
         return false;
     }
-    if (action.equals(SAVE_ACTION) && recipe.isModified())
+    if (action.equals(organizer.saveAction) && recipe.isModified())
       return (!CSMART.isRecipeInEditor(recipe));
-    if (action.equals(DUPLICATE_ACTION))
+    if (action.equals(organizer.duplicateAction))
       return true;
-    if (action.equals(DELETE_ACTION) ||
-        action.equals(RENAME_ACTION))
+    if (action.equals(organizer.deleteAction) ||
+        action.equals(organizer.deleteRecipeAction) ||
+        action.equals(organizer.renameAction) ||
+        action.equals(organizer.renameRecipeAction))
       return (!CSMART.isRecipeInEditor(recipe));
-    if (action.equals(CONFIGURE_ACTION))
+    if (action.equals(organizer.configureAction))
       return !organizer.isComponentInUse(recipe) &&
         !CSMART.isRecipeInEditor(recipe);
     return false;

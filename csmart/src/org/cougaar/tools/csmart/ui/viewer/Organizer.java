@@ -132,28 +132,37 @@ public class Organizer extends JScrollPane {
 
   // Define actions for use on menus
 
-  protected Action[] newExperimentActions = {
+  protected Action newExperimentFromDBAction =
     new AbstractAction(ActionUtil.NEW_EXPERIMENT_FROM_DB_ACTION) {
         public void actionPerformed(ActionEvent e) {
           organizer.selectExperimentFromDatabase();
         }
-      },
+      };
+
+  protected Action newExperimentFromFileAction =
     new AbstractAction(ActionUtil.NEW_EXPERIMENT_FROM_FILE_ACTION) {
         public void actionPerformed(ActionEvent e) {
           organizer.createExperimentFromFile();
         }
-      },
+      };
+
+  protected Action newExperimentFromUIAction =
     new AbstractAction(ActionUtil.NEW_EXPERIMENT_FROM_UI_ACTION) {
         public void actionPerformed(ActionEvent e) {
           organizer.createExperimentFromUI();
         }
-      }
-  };
+      };
 
+  protected Action[] newExperimentActions = {
+    newExperimentFromDBAction,
+    newExperimentFromFileAction,
+    newExperimentFromUIAction 
+  };
+  
   protected Action newFolderAction = 
     new AbstractAction(ActionUtil.NEW_FOLDER_ACTION) {
 	public void actionPerformed(ActionEvent e) {
-	  organizer.newFolder();
+          organizer.newFolder();
 	}
       };
 
@@ -279,17 +288,23 @@ public class Organizer extends JScrollPane {
         }
       };
 
-  protected Action[] newRecipeActions = {
+  protected AbstractAction newRecipeFromDatabaseAction =
     new AbstractAction("From Database") {
 	public void actionPerformed(ActionEvent e) {
           organizer.selectRecipeFromDatabase();
   	}
-    },
+      };
+
+  protected AbstractAction newRecipeBuiltInAction =
     new AbstractAction("Built In") {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.newRecipe();
 	}
-    }
+      };
+
+  protected Action[] newRecipeActions = {
+    newRecipeFromDatabaseAction,
+    newRecipeBuiltInAction 
   };
 
   protected AbstractAction saveAction = 
@@ -307,8 +322,6 @@ public class Organizer extends JScrollPane {
    */
   public Organizer(CSMART csmart) {
     this(csmart, null);
-    organizer = this;
-    helper = new OrganizerHelper(this);
   }
   
   /**
@@ -321,6 +334,7 @@ public class Organizer extends JScrollPane {
    */
   public Organizer(CSMART csmart, String workspaceFileName) {
     createLogger();
+    organizer = this;
     helper = new OrganizerHelper(this);
     initRecipes();
 

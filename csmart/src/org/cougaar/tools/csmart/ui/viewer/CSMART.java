@@ -92,7 +92,7 @@ public class CSMART extends JFrame {
   private static Organizer organizer;
   private static JFileChooser workspaceFileChooser;
   private static ArrayList runningExperiments = new ArrayList();
-  private static JToolBar toolBar;
+  private static JToolBar toolBar = null;
   private static JMenu windowMenu;
   private static CSMARTConsole console;
   private static File resultDir;
@@ -189,7 +189,31 @@ public class CSMART extends JFrame {
     resultDir = initResultDir();
 
     organizer = new Organizer(this);
+    initDisplay();
+    setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
+    // if user closes this window, quit
+    addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent e) {
+        if(!CSMART.this.getGlassPane().isVisible()) {
+          exit();
+        }
+      }
+    });
+
+    NamedFrame.getNamedFrame().addObserver(myFrameObserver);
+
+    pack();
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    int w = getWidth();
+    int h = getHeight();
+    setSize(w, h);
+    setLocation((screenSize.width - w)/2, (screenSize.height - h)/2);
+    setVisible(true);
+  }
+
+  // must be called whenever there's a new organizer (i.e. new workspace)
+  private void initDisplay() {
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
     // set-up file menu which includes entries based on workspace selection
@@ -254,7 +278,9 @@ public class CSMART extends JFrame {
     menuBar.add(fileMenu);
     menuBar.add(windowMenu);
     menuBar.add(helpMenu);
-
+    
+    if (toolBar != null)
+      getContentPane().remove(toolBar); // get rid of old tool bar if any
     toolBar = new JToolBar();
     toolBar.setLayout(new GridLayout(1, 5, 2, 2));
     getContentPane().add("North", toolBar);
@@ -309,27 +335,6 @@ public class CSMART extends JFrame {
     buildButton = (JButton)toolBar.getComponentAtIndex(1);
     runButton = (JButton)toolBar.getComponentAtIndex(2);
     enableCSMARTTools();
-
-    setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-
-    // if user closes this window, quit
-    addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-        if(!CSMART.this.getGlassPane().isVisible()) {
-          exit();
-        }
-      }
-    });
-
-    NamedFrame.getNamedFrame().addObserver(myFrameObserver);
-
-    pack();
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    int w = getWidth();
-    int h = getHeight();
-    setSize(w, h);
-    setLocation((screenSize.width - w)/2, (screenSize.height - h)/2);
-    setVisible(true);
   }
 
   /**
@@ -353,17 +358,40 @@ public class CSMART extends JFrame {
         public void menuDeselected(MenuEvent e) {
         }
         public void menuSelected(MenuEvent e) {
-          int n = fileMenu.getItemCount();
-          // skip Open Workspace, Save New Results, and Exit 
-          // which are always enabled
-          for (int i = 2; i < n-1; i++) {
-            JMenuItem menuItem = fileMenu.getItem(i);
-            if (menuItem != null) {
+          enableActions((JMenu)e.getSource());
+        }
+        // set whether actions in menu are enabled
+        // and return true if any are enabled
+        private boolean enableActions(JMenu menu) {
+          boolean haveEnabledActions = false;
+          int n = menu.getItemCount();
+          for (int i = 0; i < n; i++) {
+            JMenuItem menuItem = menu.getItem(i);
+            if (menuItem == null)
+              continue;
+            String s = menuItem.getText();
+            if (s.equals(NEW_MENU_ITEM) ||
+                s.equals(NEW_RESULTS_MENU_ITEM) ||
+                s.equals(EXIT_MENU_ITEM)) {
+              haveEnabledActions = true;
+              continue;
+            }
+            if (menuItem instanceof JMenu) {
+              if (enableActions((JMenu)menuItem)) {
+                menuItem.setEnabled(true);
+                haveEnabledActions = true;
+              } else
+                menuItem.setEnabled(false);
+            } else {
               Action action = menuItem.getAction();
-              if (action != null)
+              if (action != null) {
                 ActionUtil.setActionAllowed(action, organizer);
+                if (action.isEnabled())
+                  haveEnabledActions = true;
+              }
             }
           }
+          return haveEnabledActions;
         }
       }; // end of listener
 
@@ -789,6 +817,7 @@ public class CSMART extends JFrame {
     organizer.exitAllowed();
     getContentPane().remove(organizer);
     organizer = new Organizer(this, file.getPath());
+    initDisplay();
     getContentPane().add("Center", organizer);
     validate();
   }
