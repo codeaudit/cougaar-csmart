@@ -10,7 +10,12 @@ any Oplan related information in the database.
 <br>
 <i>Note: The agents do not contain an OrgAsset by default.  This will
 result in the agent not being visible from the Society Monitor.  If
-a OrgAsset is added, be sure to add the OrgData and OrgReport plugins.</i>
+a OrgAsset is added, be sure to add the OrgData
+(<code>org.cougaar.mlm.plugin.organization.OrgDataPlugin</code>) and
+OrgReport
+(<code>org.cougaar.mlm.plugin.organization.OrgReportPlugin</code>)
+plugins, and include a ClusterPG, ItemIdentificationPG, and
+TypeIdentificationPG on your Asset.</i>
 <br>
 <p>Within an Agent, there are 4 Categories in which you may add
 components: Plugins, Binders (of Plugins), Other Components (whose
@@ -47,13 +52,14 @@ the numbers given in their names.
 <p>Times should be specified in a standard Java parsable format, eg:
 MM/DD/YY HH:MI AM.
 <p>Elements in a collection should be separated by a comma and a space.
-<p>Components within agents now have a <tt>Priority</tt> field.  The priority
+<p>Components within agents have a <tt>Priority</tt> field.  The priority
 indicates the load priority of the component in it's container relative to
 other children components loaded at the same time at the same containment point.
 
-The default component priority is: <tt>COMPONENT</tt>
+The default component priority is: <tt>COMPONENT</tt>, and for
+Binders, it should usually be <tt>BINDER</tt>.<br>
 
 </body></html>
 
-<!-- Last Modified: $Date: 2002-06-27 20:57:00 $ -->
-<!-- By $Author: bkrisler $ -->
+<!-- Last Modified: $Date: 2002-07-03 15:40:33 $ -->
+<!-- By $Author: ahelsing $ -->
