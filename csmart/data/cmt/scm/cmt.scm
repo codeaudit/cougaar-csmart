@@ -1,4 +1,4 @@
-;;(create-cmt-asb assembly_description cfw_group_id threads version clones)
+
 
 (import "java.sql.DriverManager")
 (load "elf/jdbc.scm")
@@ -28,11 +28,12 @@
  ;; temporary hack for testing
 ;;(set! cfw_group_id "3ID-CFW-GRP-A")
 
-(set! assembly_description "small-3ID,all threads, no clones")
-(set! threads all-threads)
+(set! assembly_description "test assembly")
+(set! threads 135threads)
 ;;(set! threads 3thread)
-(set! version "-8")
+(set! version "")
 (set! clones ())
+;;(create-cmt-asb assembly_description cfw_group_id threads version clones)
 
 ;; for BBN Eiger access
 (define (use-eiger user password)
@@ -434,8 +435,8 @@
     (string-append
      "select assembly_id from "
      asb-prefix "asb_assembly aa"
-     "   where aa.assembly_type='CMT'"
-     "   and aa.assembly_id not in"
+;;     "   where aa.assembly_type='CMT'"
+     "   where aa.assembly_id not in"
      "   (select assembly_id from "
      asb-prefix "expt_trial_assembly)"
      )
@@ -1362,7 +1363,8 @@
   (println (string-append "dbu:" query))
   (db-update
    (getrefDBConnection)
-   query))
+   query)
+  )
 
 (define (missing-asb-component-hierarchy-plugin-sql assembly_id cfw_group_id)
   (string-append 
@@ -2162,3 +2164,13 @@
     "   and ta.assembly_id=aa.assembly_id"
     )
    "component_alib_id"))
+
+
+(define [] java.lang.reflect.Array.get)
+(define []! java.lang.reflect.Array.set)
+(define [].length java.lang.reflect.Array.getLength)
+
+(define (string-array l)
+  (list->array String.class l))
+
+

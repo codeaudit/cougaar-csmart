@@ -53,20 +53,9 @@ public class ExperimentDB {
 	    } catch (java.io.FileNotFoundException e){
 		e.printStackTrace();
 	    }
-	    cmtLoaded=true;
 	    try{
-		DBProperties dbProps = DBProperties.readQueryFile("org.cougaar.configuration.database", "CSMART.q");
-//  		String database = dbProps.getProperty("database");
-//  		String username = dbProps.getProperty("username");
-//  		String password = dbProps.getProperty("password");
-		String database = CSMART.getDatabaseConfiguration();
-		String username = CSMART.getDatabaseUserName();
-		String password = CSMART.getDatabaseUserPassword();
-//  		System.out.println("call(use-database,"+database+","+username+","+password+")");
-//		call("use-database",database,username,password);
+		cmtLoaded=true;
 		call("setDBConnection",DBUtils.getConnection());
-	    } catch (java.io.IOException e){
-		e.printStackTrace();
 	    } catch (java.sql.SQLException e){
 		e.printStackTrace();
 	    }
@@ -81,7 +70,7 @@ public class ExperimentDB {
      */
 
     public static Hashtable getExperimentNames() {
-	return (Hashtable)call("getExperimentNames");
+	return (Hashtable)CMT.getExperimentNames();
     }
 
 
@@ -91,7 +80,7 @@ public class ExperimentDB {
      * Does not get rid of the CMT assembly or other assemblies.
      */
     public static void deleteExperiment(String experimentId) {
-	call("deleteExperiment",experimentId);
+	CMT.deleteExperiment(experimentId);
     }
 
     /**
@@ -115,12 +104,12 @@ public class ExperimentDB {
      */
 
     public static Hashtable getTrialNames(String experimentId) {
-	return (Hashtable)call("getTrialNames",experimentId);
+	return (Hashtable)CMT.getTrialNames(experimentId);
     }
 
 
     public static String getTrialId(String experimentId) {
-	return (String)call("getUniqueTrialName",experimentId); 
+	return CMT.getTrialId(experimentId); 
     }
 
     /**
@@ -129,13 +118,13 @@ public class ExperimentDB {
      */
 
     public static String addTrialName(String experimentId, String name) {
-	return (String)call("addTrialName",experimentId,name);
+	return (String)CMT.addTrialName(experimentId,name);
     }
 
     public static String addAssembly(String experimentId,
 				     String assemblyId,
 				     String trialId) {
-	return (String)call("addAssembly",experimentId,assemblyId,trialId);
+	return (String)CMT.addAssembly(experimentId,assemblyId,trialId);
     }
 
     /*
@@ -145,7 +134,7 @@ public class ExperimentDB {
      */
 
     public static String getSocietyTemplateForExperiment(String experimentId) {
-	return (String)call("getSocietyTemplateForExperiment",experimentId);
+	return (String)CMT.getSocietyTemplateForExperiment(experimentId);
     }
 
     /*
@@ -154,15 +143,15 @@ public class ExperimentDB {
      */
 
     public static String createExperiment(String experimentName,String societyTemplate) {
-	return (String)call("createExperiment",experimentName,societyTemplate);
+	return (String)CMT.createExperiment(experimentName,societyTemplate);
     }
 
     public static String addNodeAssignments(Hashtable nodeTable ,String assemblyName) {
-	return (String)call("addNodeAssignments",nodeTable,assemblyName);
+	return (String)CMT.addNodeAssignments(nodeTable,assemblyName);
     }
 
     public static String addMachineAssignments(Hashtable machineTable ,String assemblyName) {
-	return (String)call("addMachineAssignments",machineTable,assemblyName);
+	return (String)CMT.addMachineAssignments(machineTable,assemblyName);
     }
 
 
@@ -171,51 +160,44 @@ public class ExperimentDB {
      */
 
     public static Hashtable getSocietyTemplates() {
-	return (Hashtable)call("getSocietyTemplates");
+	return (Hashtable)CMT.getSocietyTemplates();
 
     }
 
     public static Hashtable getOrganizationGroups(String experimentId) {
-	return (Hashtable)call("getOrganizationGroups",experimentId);
+	return (Hashtable)CMT.getOrganizationGroups(experimentId);
     }
 
     public static HashSet getOrganizationsInGroup(String experimentId, String groupId){
-	return (HashSet)call("getOrganizationsInGroup",experimentId,groupId);
+	return (HashSet)CMT.getOrganizationsInGroup(experimentId,groupId);
     }
 
     public static boolean isULThreadSelected(String trialId, String threadName) {
-	Boolean b =(Boolean)call("isULThreadSelected", trialId,threadName);
-	return b.booleanValue();
+	return CMT.isULThreadSelected( trialId,threadName);
     }
 
     public static void setULThreadSelected(String trialId, String threadName, 
 					   boolean selected) {
-	if(selected){
-	    call("setULThreadSelected",trialId,threadName);
-	} else {
-	    call("setULThreadNotSelected",trialId,threadName);
-	}
-
+	
+	    CMT.setULThreadSelected(trialId,threadName,selected);
 	//System.out.println("Thread: " + threadName + " selected: " + selected);
     }
 
     public static boolean isGroupSelected(String trialId, String groupName) {
-	Boolean b =(Boolean)call("isGroupSelected", trialId,groupName);
-	return b.booleanValue();
+	return CMT.isGroupSelected( trialId,groupName);
     }
 
     public static void setGroupSelected(String trialId, String groupName, 
 					boolean selected) {
-	call("setGroupSelected", trialId,groupName,new Boolean(selected));
+	CMT.setGroupSelected( trialId,groupName,selected);
     }
     
     public static int getMultiplier(String trialId, String groupName) {
-	Integer i = (Integer)call("getMultiplier", trialId,groupName);
-	return i.intValue();
+	return CMT.getMultiplier( trialId,groupName);
     }
 
     public static void setMultiplier(String trialId, String groupName, int value) {
-	call("setMultiplier",trialId, groupName, new Integer(value));
+	CMT.setMultiplier(trialId, groupName, value);
     }
 
     /**
@@ -225,7 +207,7 @@ public class ExperimentDB {
      */
 
     public static String cloneExperiment(String experimentId, String newName) {
-	return (String)call("cloneExperiment",experimentId, newName);
+	return (String)CMT.cloneExperiment(experimentId, newName);
     }
 
     /**
@@ -234,7 +216,7 @@ public class ExperimentDB {
      */
 
     public static void updateCMTAssembly(String experimentId) {
-	call("updateCMTAssembly",experimentId);
+	CMT.updateCMTAssembly(experimentId);
     }
 
     /**Silk utility functions
