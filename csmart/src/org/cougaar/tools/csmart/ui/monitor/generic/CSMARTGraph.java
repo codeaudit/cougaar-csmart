@@ -112,81 +112,60 @@ public class CSMARTGraph extends Graph
    * Figure out the path to the dot executable
    * We look for it in CIP/sys, CIP/csmart/bin, CIP/bin, and CIP/csmart/lib
    * in that order.<br>
-   * We usually look for a file named dot.exe, but if os.name is Linux or
-   * SunOS, then we look for dot-L386<br>
+   * We expect the file to be dot.exe on Windows, else dot-l386.<br>
+   * That is what we look for first. However, if we don't find it,
+   * we look for dot-L386 or dot as well.<br>
    * If we cant recognize the OS, or can't find the expected dot
    * executable, exit (rather drastic!).
-   *
    */
   private void setupDotPath() {
+    if (dotExecutable != null)
+      return;
     // Win: x86, Linux: i386, Solaris: sparc
     String arch = (String)System.getProperty("os.arch");
     // Win: Windows NT, Linux: Linux, Solaris: SunOS
     String os = (String)System.getProperty("os.name");
-    
+    String[] dotNames = {"dot.exe", "dot-l386", "dot-L386", "dot"};
+    String[] dotPaths = new String[4];
+    dotPaths[0] = System.getProperty("org.cougaar.install.path") + File.separatorChar + "sys" + File.separatorChar;
+    dotPaths[1] = System.getProperty("org.cougaar.install.path") + File.separatorChar + "csmart" + File.separatorChar + "bin" + File.separatorChar;
+    dotPaths[2] = System.getProperty("org.cougaar.install.path") + File.separatorChar + "bin" + File.separatorChar;
+    dotPaths[3] = System.getProperty("org.cougaar.install.path") + File.separatorChar + "csmart" + File.separatorChar + "lib" + File.separatorChar;
+
     String dotName = "dot.exe";
     if (os.equals("Linux") || os.equals("SunOS")) {
-      dotName = "dot-L386";
+      dotName = "dot-l386";
+      dotNames[1] = dotNames[0];
+      dotNames[0] = dotName;
     } else if (! os.startsWith("Windows")) {
       // What is this OS?
       System.err.println("Unknown OS, " + os + ", not recognized. If this is a Windows or Linux variant, please report it on the Cougaar bug-tracking site. \n\nCannot lay out graphs without recognizing your system as either Windows or Linux.");
       System.exit(-1);
     }
-    
-    dotExecutable = System.getProperty("org.cougaar.install.path");
-
-    // First try CIP/sys
-    if (dotExecutable != null)
-      dotExecutable = dotExecutable + File.separatorChar + "sys" + File.separatorChar + dotName;
-    else
-      dotExecutable = dotName;
 
     File dotFile = null;
-    try {
-      dotFile = new File(dotExecutable);
-    } catch (NullPointerException e) {
-      //System.out.println("CSMARTGraph: Could not open file handle for " + dotExecutable");
-      dotFile = null;
-    }
-
-    // Next try CIP/csmart/bin
-    if (dotFile == null) {
-      dotExecutable = System.getProperty("org.cougaar.install.path") + File.separatorChar + "csmart" + File.separatorChar + "bin" + File.separatorChar + dotName;
-      try {
-	dotFile = new File(dotExecutable);
-      } catch (NullPointerException e) {
-	//System.out.println("CSMARTGraph: Could not open file handle for " + dotExecutable");
-	dotFile = null;
-      }
-    }
-
-    // Next try CIP/bin
-    if (dotFile == null) {
-      dotExecutable = System.getProperty("org.cougaar.install.path") + File.separatorChar + "bin" + File.separatorChar + dotName;
-      try {
-	dotFile = new File(dotExecutable);
-      } catch (NullPointerException e) {
-	//System.out.println("CSMARTGraph: Could not open file handle for " + dotExecutable");
-	dotFile = null;
-      }
-    }
-
-    // Next try CIP/csmart/lib
-    if (dotFile == null) {
-      dotExecutable = System.getProperty("org.cougaar.install.path") + File.separatorChar + "csmart" + File.separatorChar + "lib" + File.separatorChar + dotName;
-      try {
-	dotFile = new File(dotExecutable);
-      } catch (NullPointerException e) {
-	//System.out.println("CSMARTGraph: Could not open file handle for " + dotExecutable");
-	dotFile = null;
-      }
-    }
+    for (int j = 0; j < dotNames.length; j++) {
+      for (int i = 0; i < dotPaths.length; i++) {
+	dotExecutable = dotPaths[i] + dotNames[j];
+	try {
+	  System.out.println("Looking for " + dotExecutable);
+	  dotFile = new File(dotExecutable);
+	} catch (NullPointerException e) {
+	  //System.out.println("CSMARTGraph: Could not open file handle for " + dotExecutable");
+	  dotFile = null;
+	}
+	if (dotFile != null && dotFile.exists())
+	  break;
+      } // end of dotPaths loop
+      if (dotFile != null && dotFile.exists())
+	break;
+    } // end of dotNames loop	
 
     if (dotFile == null || ! dotFile.exists()) {
       System.err.println("CSMARTGraph: Could not find dot executable: " + dotName + " (the version used for your OS, " + os + ").\n Make sure it is in CIP/sys, CIP/csmart/bin, CIP/bin, or CIP/csmart/lib.");
       System.exit(-1);
     }
-  }
+  } // end of setupDotPath
 
   /**
    * Create a graph from a dot file.
