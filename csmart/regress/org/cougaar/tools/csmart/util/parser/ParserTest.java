@@ -73,7 +73,7 @@ public class ParserTest extends TestCase {
 
   public void testParse() {     
      tasks = tfp.elements();
-     assert(tasks.hasMoreElements());
+     assertTrue(tasks.hasMoreElements());
   }
   
   public void testEntries() {
