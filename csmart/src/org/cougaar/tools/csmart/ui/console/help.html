@@ -10,8 +10,8 @@
 <h2>Cougaar Society Management, Analysis, and Reporting Tool</h2>
 <h3>Experiment Controller</h3>
 The Experiment Controller is used to control running an experiment. 
-The Experiment Controller is enabled only when an experiment that 
-contains a society is selected in the workspace.
+The Experiment Controller is enabled only when an experiment 
+is selected in the workspace.
 The Experiment Controller allows the user to run through all Trials
 automatically, to stop after a Trial completes, or to abort a Trial.
 Trials are defined in the Experiment Builder.
@@ -83,10 +83,10 @@ been running.
 The progress bar and trial time are not displayed for experiments with one
 trial.
 <h3>Saving Experiment Results</h3>
-At the end of the first trial, the first time that the Experiment is run,
-the user is queried for a folder or directory in which to store the results.
 The Experiment Controller retrieves results from all the hosts used in the
-Experiment and stores these in the indicated location.  For a description
+Experiment and stores these by default in the COUGAAR_INSTALL_PATH/results folder.
+To change the location for storing results, use the CSMART File menu, "Save New Results in..." menu item.
+For a description
 of the Experiment results hierarchy, see the Help information for the
 Performance Analyzer.
 <h3>Experiment Controller Menus</h3>
@@ -118,7 +118,7 @@ The Experiment Controller menus are as follows:
 </ul>
 </ul>
 <li><a NAME=Notify>Notify</a>
-<br>This menu allows users to set up "Notifications".  CSMART automatically scans all output from all nodes searching for the notify conditions set by the user.  If a notification condition is detected, an exclamation mark is displayed in the <a href=#NodeStatusButton>Node's status button</a>.  Output is scanned starting at the time that the notification is set.    Notify conditions can be either a specified string, or any output on Standard Error.  Thus, for example, the user could ask for a notification, if the Node writes the string "Exception". Notifications set here can be overridden by specific notifications set in each node's window.</li>
+<br>This menu allows users to set up "Notifications".  CSMART automatically scans all output from all nodes searching for the notify conditions set by the user.  If a notification condition is detected, an exclamation mark is displayed in the <a href=#NodeStatusButton>Node's status button</a>.  Output is scanned starting at the time that the notification is set.    Notify conditions can be either a specified string, or any output on Standard Error.  Thus, for example, the user could ask for a notification, if the Node writes the string "not found". Notifications set here can be overridden by specific notifications set in each node's window.  Initially, the notification string is set to "exception" so that any exceptions caught at a Node will trigger a notification.</li>
 <ul>
 <li>Set Notification: Set the string on which to be notified; optionally ask to be notified for all output on Standard Error.</li>
 <li>View Notification: View the current notify string.</li>

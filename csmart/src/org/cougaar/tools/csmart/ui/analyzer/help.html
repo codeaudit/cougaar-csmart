@@ -13,8 +13,8 @@ The Performance Analyzer displays Metrics files created by agents in
 an experiment using data analysis tools (currently,
 Microsoft Excel or similar application). Metrics files are automatically 
 retrieved by the Experiment Controller from the machines on which the experiment was run
-at the end of each trial.  The user is queried by the Experiment
-Controller to supply a folder or directory in which to store the results.
+at the end of each trial.
+The results are stored by default in the COUGAAR_INSTALL_PATH/results folder, but this location can be changed using the CSMART File menu, "Save New Results in..." menu item.
 In future versions, some common analyses may be pre-defined
 for the user (perhaps using Excel templates).
 <p>If Excel does not launch, be sure you have specified the location of
@@ -30,8 +30,7 @@ a metrics file. If the error message:
 is displayed, then results were not saved for this Experiment.
 <p><b>Experiment Results</b>
 <br>
-Experiment results are stored in the location specified by the user in
-the Experiment Controller when the Experiment is first run.  Results are
+Results are
 stored in a hierarchy as follows.  The "Results" folder names are
 suffixed with a timestamp of the time that the trial was run.
 <ul>
@@ -41,7 +40,7 @@ Experiment
 <ul>
 <li>Results-time1</li>
 <ul>
-<li>Text Files - all files that matched a generous filter for that experiment</li>
+<li>Text Files - all files that matched a filter for that experiment</li>
 </ul>
 <li>Results-time2</li>
 <ul>
