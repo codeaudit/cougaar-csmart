@@ -43,7 +43,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpUtils;
 import org.cougaar.core.logging.NullLoggingServiceImpl;
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
@@ -130,21 +129,22 @@ public class PlanServlet
    * For example, if "?limit=50" and there are 100 matching 
    * objects, then 51 PropertyTrees are returned.
    */
-  private static class PlanProvider {
+  private static class PlanProvider implements ServletUtil.ParamVisitor {
 
     /* flags set by the client to control what objects are returned */
-    static boolean ignorePlanElements = false;
-    static boolean ignoreWorkflows = false;
-    static boolean ignoreAssets = false;
+    boolean ignorePlanElements = false;
+    boolean ignoreWorkflows = false;
+    boolean ignoreAssets = false;
     
     /* stream variables */
-    static ServletInputStream in;
+    ServletInputStream in;
     ServletOutputStream out;
     
     /* limit on number of PropertyTrees to return; see javadocs above */
-    static int limit = Integer.MAX_VALUE;
+    int limit = Integer.MAX_VALUE;
 
-    private transient Logger log = (Logger)NullLoggingServiceImpl.getNullLoggingServiceImpl();
+    private transient Logger log = 
+      (Logger) NullLoggingServiceImpl.getNullLoggingServiceImpl();
  
     /* since "PlanProvider" is a static inner class, here
      * we hold onto the support API.
@@ -152,7 +152,7 @@ public class PlanServlet
      * this makes it clear that PlanProvider only uses
      * the "support" from the outer class.
      */    
-    static SimpleServletSupport support;
+    SimpleServletSupport support;
     
     public PlanProvider(SimpleServletSupport support) {
       this.support = support;
@@ -184,20 +184,18 @@ public class PlanServlet
     {
       this.out = response.getOutputStream();
       
-      try{
-	parseParams(request);
+      try {
+        ServletUtil.parseParams(this, request);
 	
 	List ret = getObjects();
-	if (ret!=null)
-	  {
-	    ObjectOutputStream p = new ObjectOutputStream(out);
-	    p.writeObject(ret);
-	    
-            if(log.isDebugEnabled()) {
-              log.debug("Sent Objects");
-            }
-	    
-	  }
+        if (ret!=null) {
+          ObjectOutputStream p = new ObjectOutputStream(out);
+          p.writeObject(ret);
+
+          if(log.isDebugEnabled()) {
+            log.debug("Sent Objects");
+          }
+        }
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
           log.error("PlanServlet Exception: ", e);
@@ -211,7 +209,7 @@ public class PlanServlet
      * for a HappinessChangeEvent.
      * @return List
      */
-    private static List getObjects() {
+    private List getObjects() {
       
       // create predicate
       UnaryPredicate pred = getPred();
@@ -296,61 +294,12 @@ public class PlanServlet
     }
     
     /**
-     * Make the GET and POST passing of parameters transparent to 
-     * the user.
-     * <p>
-     * Determine either GET or POST methods, call with respective 
-     * ServletUtil methods.
-     *
-     * @see ParamVisitor interface setParam method defined below
-     */
-    public static void parseParams( 
-				   HttpServletRequest req) throws IOException
-    {  
-      String meth = req.getMethod();
-      if (meth.equals("GET")) {
-	// check for no query params
-	if (req.getQueryString() != null) {
-	  Map m = HttpUtils.parseQueryString(req.getQueryString());
-	  parseParams(m);
-	}
-      } else if (meth.equals("PUT")) {
-	int len = req.getContentLength();
-	in = req.getInputStream();
-	Map m = HttpUtils.parsePostData(len, in);
-	parseParams(m);
-      }
-    }
-
-    /**
-     * Given a <code>Map</code> of (name, value) pairs, call back 
-     * to the given <code>ParamVisitor</code>'s "setParam(name,value)"
-     * method.
-     *
-     * @see ParamVisitor inner-class defined at the end of this class
-     */
-    public static void parseParams(
-				   Map m) {
-      Iterator iter = m.entrySet().iterator();
-      while (iter.hasNext()) {
-	Map.Entry me = (Map.Entry)iter.next();
-	String key = me.getKey().toString();
-	String[] value_array = (String[])me.getValue();
-	String value = value_array[0];
-	setParams(key, value);      
-      }
-    }
-    
-    /**
      * Sets "objects to ignore" variables from
      * string in URL predicated with ?ignorePlanObjects
      * @param name name of parameter
      * @param value value of parameter
      */
-    
-    public static void setParams(String name, String value) {
-      Logger log = (Logger)NullLoggingServiceImpl.getNullLoggingServiceImpl();
-
+    public void setParam(String name, String value) {
       if (name.equals(PropertyNames.PLAN_OBJECTS_TO_IGNORE)) {
         try {
           StringTokenizer st = 
