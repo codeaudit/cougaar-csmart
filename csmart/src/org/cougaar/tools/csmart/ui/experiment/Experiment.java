@@ -87,6 +87,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   public Experiment(String name) {
     super(name);
+    setDefaultNodeArguments();
   }
 
   public Experiment(String name, String expID, String trialID) {
