@@ -22,10 +22,17 @@
         <!-- Per user properties can be specified here. In particular,
 	use this to specify the Jikes compiler, with properties:
 	build.compiler=jikes
-        build.compiler.warnings=true
+        build.compiler.pedantic=true
 	build.compiler.emacs=true
 
-	This latter makes the error messages prettier in Emacs -->
+	This latter makes the error messages prettier in Emacs
+
+	You may also toggle deprecation warnings and debug/optimize.
+	Default is to include debug & deprecation. Turn them off with:
+	doDebug=off
+	doOptimize=on
+	doDeprecation=off
+	-->
 	<property file="${user.home}/.ant.properties" />
 
 	<!-- Set some global properties -->
@@ -51,8 +58,15 @@
 	<!-- Single module Javadocs go in doc/javadoc -->
 	<property name="build.javadocs" value="./doc/javadoc" />
 
-	<property name="build.compiler" value="classic"/>
-	<property name="doDeprecation" value="yes"/>
+	<!-- These are defaults. You may override them in your
+	.ant.properties file -->
+	<!-- Note that a popular alternative build.compiler is 'jikes' -->
+	<property name="build.compiler" value="modern"/>
+	
+	<!-- If Debug is on, optimize should be off and vice versa -->
+	<property name="doDebug" value="on"/>
+	<property name="doOptimize" value="off"/>
+	<property name="doDeprecation" value="on"/>
 
 	<!-- ========================================================== -->
 	<!-- ========================================================== -->
@@ -189,7 +203,10 @@
 	<!-- ========================================================== -->	
 	<target name="compile-examples" depends="prepare, compile" description="Compiles the example Code" if="has.examples">
 		<mkdir dir="${examples.build}" />
-		<javac srcdir="${examples}" destdir="${examples.build}" 
+		<javac srcdir="${examples}"
+		       destdir="${examples.build}"
+		       debug="${doDebug}"
+		       optimize="${doOptimize}"
 		       includeAntRuntime="no" deprecation="${doDeprecation}">
  	             	<classpath>
 			  <path location="${build}" />
@@ -268,6 +285,8 @@
 		<mkdir dir="${build}" />
 		<available property="has.build" file="${build}"/>
 		<javac srcdir="${src}" destdir="${build}"
+		       debug="${doDebug}"
+		       optimize="${doOptimize}"
 		       includeAntRuntime="no" deprecation="${doDeprecation}">
  	             	<classpath>
         	          <path refid="${module}.classpath" />
@@ -309,7 +328,9 @@
 	<!-- ====================================================================== -->	
 	<target name="compile-tests" depends="prepare, junit, compile" description="Compile unit tests" if="junit.present"> 
 	     <mkdir dir="${testbuild}" />
-	     <javac srcdir="${testsrc}" destdir="${testbuild}" >
+	     <javac srcdir="${testsrc}" destdir="${testbuild}"
+	            deprecation="${doDeprecation}"
+		    debug="on">
 	            <classpath>
 		          <path refid="junit.classpath"/>
 		    </classpath>
