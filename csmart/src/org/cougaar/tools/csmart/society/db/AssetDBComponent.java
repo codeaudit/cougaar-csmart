@@ -179,7 +179,9 @@ public class AssetDBComponent
 
   private void getAssemblies() {
     // Get list of assemblies for use in query, ignoring CMT assemblies
-    assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
+    // Why ignore CMT? Makes no sense...
+    //    assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
+    assemblyMatch = DBUtils.getListMatch(assemblyID);
 
     if (assemblyMatch != null) {
       substitutions.put(":assemblyMatch", assemblyMatch);
