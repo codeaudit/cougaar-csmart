@@ -2450,11 +2450,19 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
             }
           }
           if(!foundInNode) {
-            node.addAgent(addAgent);
+            if(node.getShortName().equalsIgnoreCase(addAgent.getShortName())) {
+              if(log.isWarnEnabled()) {
+                log.warn("Agent name same as node, cannot perform addition");
+              }
+              JOptionPane.showMessageDialog(null, "Cannot Map Agent to Node of Same name, ignoring agent: " + addAgent.getShortName());
+            } else {
+              node.addAgent(addAgent);
+            }
           }
         } else {
+          JOptionPane.showMessageDialog(null, "Cannot Map Unknown Agent: " + addAgent.getShortName());
           if(log.isWarnEnabled()) {
-            log.warn("Agent: " + child.getName() + "not known.  Add aborted");
+            log.warn("Agent: " + child.getName() + " not known.  Add aborted");
           }
         }
       } else {
