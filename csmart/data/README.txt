@@ -53,8 +53,8 @@ This directory contains several configuration sub-directories:
 	Experiment-* files from here. Also edit the Node
 	files to include the two Experiment agents.
     singleCluster/
-	A simple ABC Society with only one Agent, but which uses the Metrics collection PlugIns
-	Note that these MetricsCollection PlugIns can be used with any society, not just a CSMART society.
+	A simple ABC Society with only one Agent, but which uses the Metrics collection Plugins
+	Note that these MetricsCollection Plugins can be used with any society, not just a CSMART society.
         See MyCluster.ini for comments on using these plugins.
 
     twoCluster/
@@ -62,5 +62,5 @@ This directory contains several configuration sub-directories:
 
     threeCluster/
 	A slightly richer 3 Agent society, with two different task types, illustrating some of the 
-	capabilities of the ABC PlugIns
+	capabilities of the ABC Plugins
 	
