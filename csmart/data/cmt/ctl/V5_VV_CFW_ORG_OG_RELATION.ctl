@@ -10,5 +10,6 @@ into table VV_CFW_ORG_OG_RELATION
    ORG_ID                  char terminated by ',' optionally enclosed by '"',
    ORG_GROUP_ID            char terminated by ',' optionally enclosed by '"',
    START_DATE              char terminated by ',' optionally enclosed by '"',
-   END_DATE                char terminated by ',' optionally enclosed by '"'
+   END_DATE                char terminated by ',' optionally enclosed by '"',
+   RELATION_ORDER          char terminated by ',' optionally enclosed by '"'
   )
