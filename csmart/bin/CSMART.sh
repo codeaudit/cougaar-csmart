@@ -80,7 +80,11 @@ fi
 MYEXCEL=-Dorg.cougaar.tools.csmart.excelpath=\"C:/Program\\ Files/Microsoft\\ Office/Office/excel.exe\"
 
 MYMEMORY="-Xms100m -Xmx300m"
-MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL"
+
+# The delay between starting nodes, in milliseconds
+MYDELAY="-Dorg.cougaar.tools.csmart.startdelay=10000"
+
+MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY"
 
 # Set the config path to include the basic CSMART config files first
 MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"

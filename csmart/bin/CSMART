@@ -73,8 +73,11 @@ endif
 # The performance analyzer uses Excel. To use it or an equivalent,
 # edit the following property:
 set MYEXCEL="-Dorg.cougaar.tools.csmart.excelpath=C:/Program Files/Microsoft Office/Office/excel.exe"
+# The delay between starting nodes, in milliseconds
+set MYDELAY="-Dorg.cougaar.tools.csmart.startdelay=10000"
+
 set MYMEMORY="-Xms100m -Xmx300m"
-set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL"
+set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY"
 
 # Set the config path to include the basic CSMART config files first
 set MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
