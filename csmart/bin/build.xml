@@ -28,10 +28,10 @@
 	This latter makes the error messages prettier in Emacs
 
 	You may also toggle deprecation warnings and debug/optimize.
-	Default is to include debug & deprecation. Turn them off with:
-	doDebug=off
-	doOptimize=on
-	doDeprecation=off
+	Default is to include debug & deprecation, not optimize. Turn them off with:
+	build.compiler.debug=off
+	build.compiler.deprecation=off
+	build.compiler.optimize=on
 	-->
 	<property file="${user.home}/.ant.properties" />
 
@@ -62,11 +62,12 @@
 	.ant.properties file -->
 	<!-- Note that a popular alternative build.compiler is 'jikes' -->
 	<property name="build.compiler" value="modern"/>
-	
-	<!-- If Debug is on, optimize should be off and vice versa -->
-	<property name="doDebug" value="on"/>
-	<property name="doOptimize" value="off"/>
-	<property name="doDeprecation" value="on"/>
+	<!-- Include extra debug info in compilations -->
+	<property name="build.compiler.debug" value="on"/>
+	<!-- Include deprecation warnings -->
+	<property name="build.compiler.deprecation" value="on"/>
+	<!-- Don't exclude basic debug info -->
+	<property name="build.compiler.optimize" value="off"/>
 
 	<!-- ========================================================== -->
 	<!-- ========================================================== -->
@@ -94,9 +95,9 @@
 	   <pathelement location="${sys}/grappa1_2.jar" />
 	   <pathelement location="${sys}/xerces.jar" />
 	   <pathelement location="${sys}/jcchart451K.jar" />
-	   <pathelement location="${sys}/junit.jar" />
            <pathelement location="${sys}/servlet.jar" />
            <pathelement location="${sys}/log4j.jar" />
+	   <pathelement location="${sys}/junit.jar" />
 	</path>
 
 	<!-- Set this to the comma separate list of class files to run rmic on -->
@@ -162,7 +163,7 @@
 	destdir:restofclasspath listoffiles -->
 	<target name="rmic-source" depends="prepare-rmic, prepare" unless="rmic.notRequired" if="has.build">
 	  <rmic base="${build}" stubversion="1.2" verify="true"
-	        debug="true" includes="${rmicfiles.list}" >
+	        debug="${build.compiler.debug}" includes="${rmicfiles.list}" >
 	    <classpath>
   	      <path location="${build}" />
 	      <path refid="${module}.classpath"/>
@@ -205,9 +206,10 @@
 		<mkdir dir="${examples.build}" />
 		<javac srcdir="${examples}"
 		       destdir="${examples.build}"
-		       debug="${doDebug}"
-		       optimize="${doOptimize}"
-		       includeAntRuntime="no" deprecation="${doDeprecation}">
+		       includeAntRuntime="no"
+ 		       debug="${build.compiler.debug}"
+		       optimize="${build.compiler.optimize}"
+		       deprecation="${build.compiler.deprecation}">
  	             	<classpath>
 			  <path location="${build}" />
         	          <path refid="${module}.classpath" />
@@ -285,9 +287,10 @@
 		<mkdir dir="${build}" />
 		<available property="has.build" file="${build}"/>
 		<javac srcdir="${src}" destdir="${build}"
-		       debug="${doDebug}"
-		       optimize="${doOptimize}"
-		       includeAntRuntime="no" deprecation="${doDeprecation}">
+		       includeAntRuntime="no"
+		       debug="${build.compiler.debug}"
+		       optimize="${build.compiler.optimize}"
+		       deprecation="${build.compiler.deprecation}">
  	             	<classpath>
         	          <path refid="${module}.classpath" />
               		</classpath>
@@ -329,7 +332,8 @@
 	<target name="compile-tests" depends="prepare, junit, compile" description="Compile unit tests" if="junit.present"> 
 	     <mkdir dir="${testbuild}" />
 	     <javac srcdir="${testsrc}" destdir="${testbuild}"
-	            deprecation="${doDeprecation}"
+	            deprecation="${build.compiler.deprecation}"
+		    optimize="off"
 		    debug="on">
 	            <classpath>
 		          <path refid="junit.classpath"/>
@@ -393,7 +397,7 @@
 				 version="true"
 				 windowtitle="${UpModule} API"
 				 doctitle="${UpModule} API"
-				 bottom="Copyright &#169; 2001 by BBNT Solutions LLC, all rights reserved.">
+				 bottom="Copyright &#169; 2002 by BBNT Solutions LLC, all rights reserved.">
 			<classpath refid="${module}.classpath" />
 		</javadoc>
 	</target>
