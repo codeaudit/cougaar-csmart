@@ -32,16 +32,27 @@ import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.console.*;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
-import org.cougaar.tools.csmart.ui.viewer.OrganizerTree;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 
 public class ExperimentTree extends DNDTree {
     public static final String RECIPES = "Recipes";
     public static final String SOCIETIES = "Societies";
     public static final String COMPONENTS = "Components";
-    public static final CSMARTDataFlavor recipeFlavor = OrganizerTree.recipeFlavor;
-    public static final CSMARTDataFlavor societyFlavor = OrganizerTree.societyFlavor;
-    public static final CSMARTDataFlavor componentFlavor = OrganizerTree.componentFlavor;
+    public static final CSMARTDataFlavor societyFlavor =
+        new CSMARTDataFlavor(SocietyComponent.class,
+                             null,
+                             ExperimentTree.class,
+                             "Society");
+    public static final CSMARTDataFlavor recipeFlavor =
+      new CSMARTDataFlavor(RecipeComponent.class,
+                             null,
+                             ExperimentTree.class,
+                             "Recipe");
+    public static final CSMARTDataFlavor componentFlavor =
+        new CSMARTDataFlavor(ModifiableConfigurableComponent.class,
+                             null,
+                             ExperimentTree.class,
+                             "Modifiable Component");
 
     private DefaultTreeModel model;
 
@@ -101,6 +112,7 @@ public class ExperimentTree extends DNDTree {
             DataFlavor flavor = possibleFlavors[i];
             if (flavor instanceof CSMARTDataFlavor) {
                 CSMARTDataFlavor cflavor = (CSMARTDataFlavor) flavor;
+                System.out.println(cflavor.getSourceClassName());
                 if (cflavor.equals(testFlavor)) {
                     if (getClass().getName()
                         .equals(cflavor.getSourceClassName())) {
@@ -136,9 +148,17 @@ public class ExperimentTree extends DNDTree {
         return DnDConstants.ACTION_NONE;
     }
 
-    public boolean isDraggable(Object o) {
-        return false;
+  public boolean isDraggable(Object o) {
+    if (o instanceof DefaultMutableTreeNode) {
+      DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
+      if( node == getModel().getRoot()) {
+        return false; // not draggable if it's the root node
+      }
+      return true;
     }
+
+    return false;
+  }
 
     public int addElement(Transferable t,
                           DefaultMutableTreeNode target,
