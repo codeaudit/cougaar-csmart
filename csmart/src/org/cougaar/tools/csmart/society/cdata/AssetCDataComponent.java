@@ -152,10 +152,11 @@ public class AssetCDataComponent
 	  if (rel != null) {
 	    if (rel.getProperty(PROP_TYPE) == null) {
 	      if (log.isErrorEnabled()) {
-		log.error(this + " got null relationship type in rel #" + i);
+		log.error(this + " got null relationship type for " + data.getName() + " in rel #" + i);
 	      }
+	    } else {
+	      rData.setType((String)rel.getProperty(PROP_TYPE).getValue());
 	    }
-	    rData.setType((String)rel.getProperty(PROP_TYPE).getValue());
 	    rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
 	    rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
             rData.setTypeId((String)rel.getProperty(RelationshipBase.PROP_TYPEID).getValue());
