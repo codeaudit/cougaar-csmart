@@ -412,16 +412,17 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     newProps.clear();
     newProps.putAll(getDefaultNodeArguments());
 
-    // this copies the society and the agents
-    // TODO: do agents have to be copied explicitly?
+    // this copies the society and the recipes
     for (int i = 0; i < getComponentCount(); i++) {
-      ModifiableComponent sc = getComponent(i);
-      if (sc instanceof SocietyComponent) {
-        // this gets around asking the organizer for a new unique name
-        ModifiableComponent copiedSC = sc.copy("Society for " + uniqueName);
-        experimentCopy.addComponent(copiedSC);
-      } else
-        System.out.println("Experiment: error in copying: unexpected component of class: " + sc.getClass().getName());
+      ModifiableComponent mc = getComponent(i);
+      ModifiableComponent copiedComponent = null;
+      if (mc instanceof SocietyComponent) {
+        copiedComponent = mc.copy("Society for " + uniqueName);
+      } else if (mc instanceof RecipeComponent) {
+        copiedComponent = mc.copy("Recipe for " + uniqueName);
+      }
+      if (copiedComponent != null)
+        experimentCopy.addComponent(copiedComponent);
     }
     // copy hosts
     HostComponent[] hosts = getHosts();
