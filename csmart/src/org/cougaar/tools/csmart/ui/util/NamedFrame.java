@@ -109,9 +109,6 @@ public class NamedFrame extends Observable {
     int otherIndex = 1;
     while (titleToFrame.get(title) != null)
       title = baseTitle + " " + otherIndex++;
-    if(log.isDebugEnabled()) {
-      log.debug("NamedFrame: adding: " + title);
-    }
     titleToFrame.put(title, frame);
     setChanged();
     // notify observers with title and frame
@@ -121,9 +118,6 @@ public class NamedFrame extends Observable {
   }
 
   public JFrame getFrame(String title) {
-    if(log.isDebugEnabled()) {
-      log.debug("NamedFrame: getFrame: " + title);
-    }
     return (JFrame) titleToFrame.get(title);
   }
 
@@ -168,9 +162,6 @@ public class NamedFrame extends Observable {
   public void removeFrame(JFrame frame) {
     //    String s = removeTitleColon(frame.getTitle());
     String s = frame.getTitle();
-    if(log.isDebugEnabled()) {
-      log.debug("NamedFrame: removing: " + s);
-    }
     titleToFrame.remove(s);
     setChanged();
     notifyObservers(new Event(frame, s, Event.REMOVED, null));
