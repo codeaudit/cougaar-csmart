@@ -24,6 +24,8 @@ import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -36,6 +38,8 @@ import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Properties panel in experiment builder.<br>
@@ -62,6 +66,8 @@ public class UnboundPropertyBuilder extends JPanel {
   private JPopupMenu societiesMenu = new JPopupMenu();
   private JPopupMenu recipesMenu = new JPopupMenu();
   private JTextField trialCountField;
+
+  private transient Logger log;
 
   /**
    * Define actions for pop-up menus on societies and recipes.
@@ -171,6 +177,7 @@ public class UnboundPropertyBuilder extends JPanel {
                                 ExperimentBuilder experimentBuilder) {
     this.experiment = experiment;
     this.experimentBuilder = experimentBuilder;
+    createLogger();
     isEditable = experiment.isEditable();
     root = new DefaultMutableTreeNode();
     model = new DefaultTreeModel(root);
@@ -244,6 +251,10 @@ public class UnboundPropertyBuilder extends JPanel {
     initDisplay();
   }
 
+  private void createLogger() {
+    log = CSMART.createLogger(this.getClass().getName());
+  }
+
   /**
    * Display information about the experiment.  Called to 
    * re-use the display.
@@ -300,12 +311,19 @@ public class UnboundPropertyBuilder extends JPanel {
   private void reconcileExperimentNodes() {
     int nSocieties = societies.getChildCount();
     if (nSocieties > 1) {
-      // Only 1 society should be allowed!
-      System.err.println("Only 1 society in an experiment!");
+      if (log.isErrorEnabled())
+        log.error("More than one society in experiment.");
     } else if (nSocieties == 1) {
-      SocietyComponent society = (SocietyComponent) ((DefaultMutableTreeNode) societies.getChildAt(0)).getUserObject();
+      SocietyComponent newSociety = (SocietyComponent) ((DefaultMutableTreeNode) societies.getChildAt(0)).getUserObject();
       //      society.setEditable(false); // so society editability tracks experiment editability
-      experiment.addSocietyComponent(society);
+      SocietyComponent society = experiment.getSocietyComponent();
+      if (society == null)
+        experiment.addSocietyComponent(newSociety);
+      else if (!society.equals(newSociety))
+        if (log.isErrorEnabled())
+          log.error("Attempted to add society to experiment that has a society.");
+    } else if (nSocieties == 0) {
+      experiment.removeSocietyComponent();
     }
     int nRecipes = recipes.getChildCount();
     RecipeComponent[] recipeAry = new RecipeComponent[nRecipes];
@@ -333,14 +351,12 @@ public class UnboundPropertyBuilder extends JPanel {
       (DefaultMutableTreeNode) selPath.getLastPathComponent();
     Object o = popupNode.getUserObject();
     if (o instanceof SocietyComponent) {
-      //      popupMenu.show(tree, e.getX(), e.getY());
     } else if (o instanceof RecipeComponent) {
-      //} else if (o instanceof Recipe) {
       popupMenu.show(tree, e.getX(), e.getY());
     } else if (o instanceof Experiment) {
       popupMenu.show(tree, e.getX(), e.getY());
     } else if (popupNode == societies) {
-      //      societiesMenu.show(tree, e.getX(), e.getY());
+      societiesMenu.show(tree, e.getX(), e.getY());
     } else if (popupNode == recipes) {
       recipesMenu.show(tree, e.getX(), e.getY());
     }
@@ -427,6 +443,13 @@ public class UnboundPropertyBuilder extends JPanel {
   private void updateTrialCount() {
     experiment.setVariationScheme(variationScheme);
     trialCountField.setText(Integer.toString(experiment.getTrialCount()));
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
 }

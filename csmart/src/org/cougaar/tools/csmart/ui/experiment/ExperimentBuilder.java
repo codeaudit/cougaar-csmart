@@ -40,6 +40,7 @@ import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
+import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.util.log.Logger;
 import java.io.ObjectInputStream;
 import java.io.IOException;
@@ -322,6 +323,9 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   private void exit() {
     saveSilently(); // if experiment from database was modified, save it
     experiment.setEditInProgress(false);
+    // display experiment components in organizer
+    Organizer organizer = CSMART.getOrganizer();
+    organizer.addChildren(experiment);
   }
 
   /**
