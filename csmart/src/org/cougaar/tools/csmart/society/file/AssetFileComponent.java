@@ -20,6 +20,7 @@
  */
 package org.cougaar.tools.csmart.society.file;
 
+import java.io.File;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Collection;
@@ -98,6 +99,15 @@ public class AssetFileComponent
       }
       AssetDataCallbackImpl callback = new AssetDataCallbackImpl(clusterName);
       AssetDataFileReader reader = new AssetDataFileReader();
+      // If this filename is a Windows style filename, then absolute paths wont work.
+      // Try to let the ConfigFinder find it.
+      if (filename.indexOf(':') == 1) {
+	String nfilename = filename.substring(filename.lastIndexOf(File.separatorChar) + 1);
+	if (log.isDebugEnabled()) {
+	  log.debug("Agent filename was windows style (" + filename + "), trying short version (" + nfilename + ") & letting ConfigFinder find it. This requires the files be on the ConfigPath");
+	}
+	filename = nfilename;
+      }
       reader.readAsset(filename, callback);
       // Warning: the above line will cause a FileNotFoundException
       // Any time you use a new-style INI
