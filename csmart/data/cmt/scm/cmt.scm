@@ -5,16 +5,21 @@
 (load "elf/basic.scm")
 (load "build/compile.scm")
 (import "java.util.Date")
+(import "org.cougaar.tools.csmart.ui.console.CMT")
 
 
 ;; for changing between the CFW_ORG_GROUP table and the LIB_ORG_GROUP
 ;;(set! cog-type "CFW_")
 ;;(set! cfw-prefix "V5_")
-;;(set! cfw_group_id "SMALL-3ID-CFW-GRP")
+(set! cfw_group_id "SMALL-3ID-CFW-GRP")
 (set! cog-type "LIB_")
-(set! cfw-prefix "V6_")
-(set! cfw_group_id "SMALL-3ID-TRANS-CFW-GRP")
-
+;;(set! cfw-prefix "V6_")
+(set! cfw-prefix "V7_")
+;;(set! cfw_group_id "SMALL-3ID-TRANS-CFW-GRP")
+;;(set! cfw_group_id "TINY-1AD-TRANS-STUB-CFW-GRP")
+;;(set! cfw_group_id "TINY-1AD-TRANS-CFW-GRP")
+;;(set! cfw_group_id "SMALL-1AD-TRANS-CFW-GRP")
+(set! cfw_group_id "1AD-TRANS-CFW-GRP")
 
 (set! asb-prefix "V4_")
 (set! refDBConnection #null)
@@ -33,7 +38,15 @@
 ;;(set! threads 3thread)
 (set! version "")
 (set! clones ())
-;;(create-cmt-asb assembly_description cfw_group_id threads version clones)
+;;(set! aid (create-cmt-asb assembly_description cfw_group_id threads version clones))
+;;(createCSMARTExperiment expt_id cfw_group_id aid)
+
+(define (createBaseExperiment  expt_name cfw_group_id)
+  (CMT.setTraceQueries #t)
+  (CMT.createBaseExperiment expt_name cfw_group_id)
+  (CMT.setTraceQueries #f)
+  )
+
 
 ;; for BBN Eiger access
 (define (use-eiger user password)
@@ -46,6 +59,14 @@
 
 (define (use-database database user password)
   (set! refDBDriver   "oracle.jdbc.driver.OracleDriver")
+  (set! refDBConnURL  database)
+  (set! refDBUser     user)
+  (set! refDBPasswd   password)
+  (initialize)
+  )
+
+(define (use-mysql database user password)
+  (set! refDBDriver   "org.gjt.mm.mysql.Driver")
   (set! refDBConnURL  database)
   (set! refDBUser     user)
   (set! refDBPasswd   password)
@@ -2175,5 +2196,70 @@
 
 (define (string-array l)
   (list->array String.class l))
+
+(define (plugin_args agent-match)
+  (let
+      ((query
+	(string-append
+	 "select * from v4_asb_component_arg where component_alib_id like '%"
+	 agent-match
+	 "%' and assembly_id like '%ST3%' order by component_alib_id")))
+    (println (list 'query query))
+    (vq query)))
+
+
+(list '
+ (vq "SELECT DISTINCT 
+   ':assembly_id'  AS ASSEMBLY_ID, 
+   CH.COMPONENT_ALIB_ID AS COMPONENT_ALIB_ID, 
+   PA.ARGUMENT AS ARGUMENT, 
+   PA.ARGUMENT_ORDER AS ARGUMENT_ORDER 
+  FROM 
+    V4_ASB_COMPONENT_HIERARCHY CH, 
+    V4_ALIB_COMPONENT PLUGIN_ALIB, 
+    V4_ASB_AGENT ORG_AGENT, 
+    V6_CFW_CONTEXT_PLUGIN_ARG CPA, 
+    V6_LIB_PLUGIN_ARG PA, 
+    V6_LIB_PLUGIN_ARG_THREAD PAT 
+  WHERE 
+    PLUGIN_ALIB.COMPONENT_TYPE='plugin'
+    AND CH.PARENT_COMPONENT_ALIB_ID=ORG_AGENT.COMPONENT_ALIB_ID 
+    AND CH.COMPONENT_ALIB_ID=PLUGIN_ALIB.COMPONENT_ALIB_ID 
+    AND CPA.CFW_ID IN (SELECT CFW_ID FROM V6_CFW_GROUP_MEMBER WHERE CFW_GROUP_ID LIKE 'TINY-1AD-TRANS-STUB%')
+    AND PA.ARGUMENT IS NOT NULL 
+    AND CPA.ORG_CONTEXT = ORG_AGENT.COMPONENT_LIB_ID 
+    AND PA.PLUGIN_ARG_ID=CPA.PLUGIN_ARG_ID 
+    AND ('plugin|' || PA.PLUGIN_CLASS)=PLUGIN_ALIB.COMPONENT_LIB_ID 
+    AND PA.PLUGIN_ARG_ID=PAT.PLUGIN_ARG_ID ")
+
+
+'(vq "  SELECT DISTINCT 
+   ':assembly_id'  AS ASSEMBLY_ID, 
+   CH.COMPONENT_ALIB_ID AS COMPONENT_ALIB_ID, 
+   PA.ARGUMENT AS ARGUMENT, 
+   PA.ARGUMENT_ORDER AS ARGUMENT_ORDER 
+  FROM 
+   V4_ASB_COMPONENT_HIERARCHY CH, 
+   V4_ALIB_COMPONENT PLUGIN_ALIB, 
+   V4_ASB_AGENT ORG_AGENT, 
+   V6_CFW_CONTEXT_PLUGIN_ARG CPA, 
+   V6_CFW_ORG_ORGTYPE OT, 
+   V6_LIB_PLUGIN_ARG PA, 
+   V6_LIB_PLUGIN_ARG_THREAD PAT 
+  WHERE 
+   CH.PARENT_COMPONENT_ALIB_ID=ORG_AGENT.COMPONENT_ALIB_ID 
+   AND CH.COMPONENT_ALIB_ID=PLUGIN_ALIB.COMPONENT_ALIB_ID 
+   AND CPA.CFW_ID IN (SELECT CFW_ID FROM V6_CFW_GROUP_MEMBER WHERE CFW_GROUP_ID LIKE 'TINY-1AD-TRANS-STUB%') 
+   AND OT.CFW_ID IN (SELECT CFW_ID FROM V6_CFW_GROUP_MEMBER WHERE CFW_GROUP_ID LIKE 'TINY-1AD-TRANS-STUB%') 
+   AND OT.ORG_ID=ORG_AGENT.COMPONENT_LIB_ID 
+   AND PA.ARGUMENT IS NOT NULL 
+   AND CPA.ORG_CONTEXT = OT.ORGTYPE_ID 
+   AND PA.PLUGIN_ARG_ID=CPA.PLUGIN_ARG_ID 
+   AND ('plugin|' || PA.PLUGIN_CLASS)=PLUGIN_ALIB.COMPONENT_LIB_ID 
+   AND PA.PLUGIN_ARG_ID=PAT.PLUGIN_ARG_ID")
+
+
+
+)
 
 
