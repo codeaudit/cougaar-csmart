@@ -3,7 +3,7 @@ CSMART Release Notes
 Release 9.2.1:
 - Multiple bug fixes
 - Note that changes to the default AppServer properties file to use
-the Java "server" VM may require Path changes on some systems, when
+the Java "server" VM on some Nodes may require Path changes on some systems, when
 you upgrade your AppServer properties file. See the Install
 instructions (./InstallAndTest.html) for details.
 - Add Community tables to CSMART DB to begin support for Community configuration
@@ -28,7 +28,8 @@ the name of the machine on which the Node will be running (bug 861)
 - Ensure possible to use Analyzer to view old Experiment results
 - Use lower-case database table names throughout
 - Remove unused database tables (bug 1225)
-- Known issues: There are some very rare NPEs (bugs 1304, 1279). Some
+- Known issues: There are some rare NPEs (bugs 1304, 1279). To avoid
+these, try setting the doWorkspace flag to false (see above). Some
 elements of experiments are not copied - like Node descriptions, etc
 (bug 1076). We have seen intermittent Swing exceptions while running a
 society (bug 1104). Finally, command-line scripts to export/copy experiments &

@@ -20,7 +20,8 @@ CSMART contains a few known issues:
 
 * There are a couple NPEs that can occur but we have not been able to
   reproduce. If you see an error message mentioning a bug #, please
-  report on Bugzilla what you saw.
+  report on Bugzilla what you saw. Some users manage to avoid these by
+  setting the doWorkspace flag to false (see the CSMART startup scripts).
 
 * We have seen occasional Swing exceptions while running an Experiment
   in the console. See bug #1104.

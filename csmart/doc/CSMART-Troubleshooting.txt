@@ -81,6 +81,15 @@ machine's system PATH environment variable, and put %JAVA_HOME%/bin on
 your path before %SYSTEMROOT%/system32 (ie D:\JDK1.4\bin before
 C:\WINNT\system32).
 
+- If on startup you get an error like:
+     SQLException: Cannot connect to MySQL server on localhost:3306. Is
+     there a MySQL server running on the machine/port you are trying to
+     connect to? (java.net.SocketException)
+You should confirm that you started your MySQL database at that host/port,
+     and that your database permissions are configured to allow access
+     from "localhost" in both the "db" and "user" tables. See the
+     MySQL documentation.
+
 - If on startup you get a JDBC error like:
 java.sql.SQLException: Unknown driver driver.mysql//localhost
 then make sure your JDBC connection string is correctly formatted.
@@ -245,7 +254,18 @@ server.props file on each machine on which you will run part of this
 society. For example, to run small-135 through CSMART, you will still
 have to have available on your org.cougaar.config.path the various
 '.xml' files found in CIP/configs/small-135, but your society will not
-use the '.dat' or '.ini' files.
+use the '.dat' or '.ini' files. 
+- If while running (particularly minitestconfig) you get an error
+like: 
+Error parsing file: MCCGlobalMode.ldm.xml
+java.lang.NullPointerException
+        at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:1094
+        at org.cougaar.util.ConfigFinder.parseXMLConfigFile(ConfigFinder.java:308)
+        at org.cougaar.mlm.plugin.ldm.LDMXMLComponentPlugin.parseXMLFile
+This indicates that your org.cougaar.config.path as specified in your
+server.props file lists CIP/configs/minitestconfig after
+CIP/configs/common. To run minitestconfig, you _must_ list
+configs/minitestconfig _before_ configs/common.
 
       
 Be sure to check the Cougaar Bug list for known issues, at http://www.cougaar.org/bugs 
