@@ -20,18 +20,31 @@
 # PERFORMANCE OF THE COUGAAR SOFTWARE.
 # </copyright>
 
+# Load the Configuration data contained in csmart/data/database/csv
+# This data comes with the distribution.
+# You may also move the original data aside, and "dump" the data from a database
+# for sharing, or editing and reloading
+# Note that MySQL must be installed on the local machine, and
+# Cougaar Install Path must be set
+
 if [ "x$3" = "x" ]; then
   echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] "
   exit
 fi
 
+if [ "x$COUGAAR_INSTALL_PATH" = "x" ] ; then
+  echo "You must set COUGAAR_INSTALL_PATH to the root of your Cougaar install."
+  echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] "
+  exit
+fi
+
+
 #Change potential backslashes in COUGAAR_INSTALL_PATH to forward slashes
 echo $COUGAAR_INSTALL_PATH | tr '\\' '/' > newcip.txt
+
 #Replace variable in sql script with CIP
-sed s/:cip/$(cat newcip.txt | sed 's/\//\\\//g')/ load_db.sql > load_mysql_db_new.sql
+sed s/:cip/$(cat newcip.txt | sed 's/\//\\\//g')/ $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/load_db.sql > load_mysql_db_new.sql
 rm newcip.txt
-#sed s/:cip/$(echo "$COUGAAR_INSTALL_PATH" | sed 's/\\/\\\\\\\\/g')/ load_db.sql > load_mysql_db_new.sql
-#sed s/:cip/$(echo "$COUGAAR_INSTALL_PATH" | sed 's/\//\\\//g')/ load_db.sql > load_mysql_db_new.sql
 
 echo "Loading '.csv' files to database."
 mysql -u$1 -p$2 $3 < load_mysql_db_new.sql
@@ -39,6 +52,3 @@ mysql -u$1 -p$2 $3 < load_mysql_db_new.sql
 rm load_mysql_db_new.sql
 
 echo "Done."
-
-
-
