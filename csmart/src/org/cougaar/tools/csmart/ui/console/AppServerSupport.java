@@ -84,11 +84,11 @@ public class AppServerSupport {
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
         log.error("Unable to contact app-server on " + 
-                  hostName + " : " + port + ". Error: " + e);
+                  hostName + ":" + port + ". Error: " + e);
       }
       JOptionPane.showMessageDialog(null,
                                     "Unable to contact app-server on " +
-                                    hostName + " : " + port +
+                                    hostName + ":" + port +
                                     "; check that server is running");
       return null;
     }
@@ -158,6 +158,45 @@ public class AppServerSupport {
   public synchronized void displayAppServers() {
     Util.showObjectsInList(null, appServers, "Application Servers", 
                            "Application Servers");
+  }
+
+  /**
+   * Kill all running processes on all known AppServers,
+   * without first trying to attach to them
+   */
+  public void killAllProcesses() {
+    refreshAppServers();
+    killAllProcessesWorker();
+  }
+  
+  /**
+   * Synchronized worker for above
+   */
+  private synchronized void killAllProcessesWorker() {
+    Set names = nodeToAppServer.keySet();
+    for (Iterator i = names.iterator(); i.hasNext(); ) {
+      String name = (String)i.next();
+      AppServerDesc desc = (AppServerDesc)nodeToAppServer.get(name);
+      RemoteHost appServer = desc.appServer;
+      try {
+        RemoteProcess node = appServer.getRemoteProcess(name);
+	try {
+	  node.getRemoteListenable().flushOutput();
+	} catch (Exception e) {
+	  if (log.isWarnEnabled()) {
+	    log.warn("Exeption flushing output for " + name, e);
+	  }
+	}
+	if (log.isDebugEnabled()) {
+	  log.debug("About to kill process " + name);
+	}
+	node.destroy();
+      } catch (Exception e) {
+        if (log.isErrorEnabled()) {
+          log.error("Exception killing process for " + name + ": ", e);
+        }
+      }
+    }
   }
 
   /**
@@ -255,7 +294,7 @@ public class AppServerSupport {
    * Immediately update the node to app server mappings to get any new nodes.
    */
   public void addAppServer() {
-    JTextField tf = new JTextField("localhost:8484", 20);
+    JTextField tf = new JTextField("localhost:" + Experiment.APP_SERVER_DEFAULT_PORT, 20);
     JPanel panel = new JPanel();
     panel.add(new JLabel("Enter HostName:Port:"));
     panel.add(tf);
@@ -268,16 +307,28 @@ public class AppServerSupport {
       return;
     String s = tf.getText().trim();
     int index = s.indexOf(':');
-    if (index == -1)
-      return;
+    String hostName = s;
+    String port = String.valueOf(Experiment.APP_SERVER_DEFAULT_PORT);
+//     if (index == -1)
+//       return;
 
-    String hostName = s.substring(0, index);
-    hostName = hostName.trim();
-    if (hostName.equals(""))
-      return;
+    // If user included the colon
+    if (index != -1) {
+      // Then hostname is the part before
+      hostName = s.substring(0, index);
+      hostName = hostName.trim();
+      // But if there's nothing before the colon, use localhost
+      if (hostName.equals(""))
+	hostName = "localhost";
 
-    String port = s.substring(index+1);
-    port = port.trim();
+      // Port is the part after the colon
+      port = s.substring(index+1);
+      port = port.trim();
+      // But if that is empty use 8484
+      if (port.equals(""))
+	port = String.valueOf(Experiment.APP_SERVER_DEFAULT_PORT);
+    }
+
     int remotePort = 0;
     try {
       remotePort = Integer.parseInt(port);
@@ -470,6 +521,32 @@ public class AppServerSupport {
                                properties, args));
     }
     return results;
+  }
+
+  /**
+   * Find out if there is a process by this name already,
+   * so we can avoid re-using it
+   */
+  public boolean isProcessNameUsed(String pName) {
+    if (pName == null || pName.equals(""))
+      return true;
+    
+    refreshAppServers();
+    return isProcUsedWorker(pName);
+  }
+
+  /**
+   * Synchronized worker for above
+   */
+  private synchronized boolean isProcUsedWorker(String pName) {
+    if (nodeToAppServer == null || nodeToAppServer.isEmpty())
+      return false;
+
+    AppServerDesc desc = (AppServerDesc)nodeToAppServer.get(pName);
+    if (desc == null)
+      return false;
+
+    return true;
   }
 
   // for debugging
