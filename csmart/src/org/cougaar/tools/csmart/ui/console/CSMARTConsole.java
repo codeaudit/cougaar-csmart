@@ -1212,9 +1212,13 @@ public class CSMARTConsole extends JFrame {
     Properties props = nc.getArguments();
     String commandArguments =
       props.getProperty(COMMAND_ARGUMENTS);
-    if (commandArguments == null) {
+    if (commandArguments == null || commandArguments.trim().equals("")) {
       // Warning: If you are running the bootstrapper and supply
       // nothing here, nothing will run!
+      //  So if were using the default bootstrapper and have no arguments
+      // Give it an argument with the default node class
+      if (props.getProperty(Experiment.BOOTSTRAP_CLASS) == null || props.getProperty(Experiment.BOOTSTRAP_CLASS).equals(DEFAULT_BOOTSTRAP_CLASS)) 
+	return Collections.singletonList(DEFAULT_NODE_CLASS);
       return Collections.EMPTY_LIST;
     }
     StringTokenizer tokens = 
@@ -1223,6 +1227,7 @@ public class CSMARTConsole extends JFrame {
     for (int i = 0; i < result.length; i++) {
       result[i] = tokens.nextToken();
     }
+
     java.util.List l = Arrays.asList(result);
     return l;
   }
