@@ -167,7 +167,7 @@ public class ULPlanFrame extends CSMARTFrame {
       // will gather these parameters:
       String UID;
       String agentName;
-      int limit;
+      int limit = 0;
       boolean isDown;
 
       // get the parameter values
@@ -185,19 +185,28 @@ public class ULPlanFrame extends CSMARTFrame {
       if (agentName == null)
         return;
       isDown = (command.equals(THREAD_DOWN_MENU_ITEM));
-      // popup for limit
-      String sLimit = JOptionPane.showInputDialog("Trace limit (e.g. 200 objects): ");
-      if (sLimit == null) {
-        return;
-      }
-      try {
-        limit = Integer.parseInt(sLimit);
-      } catch (NumberFormatException nfe) {
-        if(log.isErrorEnabled()) {
-          log.error("Illegal number: "+sLimit, nfe);
-        }
-        return;
-      }
+
+      // Get the thread size limit (non-0)
+      while (limit == 0) {
+	// popup for limit
+	String sLimit = JOptionPane.showInputDialog("Trace limit (e.g. 200 objects, negative for all): ", "200");
+	
+	if (sLimit == null || sLimit.trim().equals("") || sLimit.trim().equals("0")) {
+	  if (log.isDebugEnabled())
+	    log.debug("User canceled trace by entering limit of " + sLimit);
+	  return;
+	}
+	
+	try {
+	  limit = Integer.parseInt(sLimit);
+	} catch (NumberFormatException nfe) {
+	  if(log.isErrorEnabled()) {
+	    log.error("Illegal limit size number: "+sLimit);
+	  }
+	  // Pop up message, re-query
+	  JOptionPane.showMessageDialog(null, "Invalid limit. Must be valid number: " + sLimit, "Invalid limit", JOptionPane.WARNING_MESSAGE);
+	}
+      } // end of while loop
 
       // create the thread graph
       CSMARTUL.makeThreadGraph(UID, agentName, isDown, limit);
