@@ -51,6 +51,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
 import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.logging.NullLoggingServiceImpl;
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
@@ -68,7 +69,6 @@ import org.cougaar.planning.ldm.plan.PlanElement;
 import org.cougaar.planning.ldm.plan.Task;
 import org.cougaar.planning.ldm.plan.Workflow;
 import org.cougaar.tools.csmart.ui.servlet.TranslateUtils;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.UnaryPredicate;
 import org.cougaar.util.log.Logger;
 
@@ -364,7 +364,8 @@ public class SearchServlet
 				      Set startUIDs,
 				      boolean isDown,
 				      List l) {
-      Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
+      Logger log = (Logger) NullLoggingServiceImpl.getNullLoggingServiceImpl();
+
       int nStartUIDs = ((startUIDs != null) ? startUIDs.size() : 0);
       out.print(
 		"<html><head><title>Search results</title></head><body>\n"+

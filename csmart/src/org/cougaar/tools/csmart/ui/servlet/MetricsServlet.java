@@ -21,29 +21,29 @@
 
 package org.cougaar.tools.csmart.ui.servlet;
 
+
+
+
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.ObjectOutputStream;
-
-import java.util.Collection;
-import java.util.Vector;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
-
+import java.util.Vector;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
-
+import org.cougaar.core.logging.NullLoggingServiceImpl;
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
-import org.cougaar.util.UnaryPredicate;
 import org.cougaar.planning.ldm.plan.AllocationResult;
 import org.cougaar.planning.ldm.plan.PlanElement;
 import org.cougaar.planning.ldm.plan.Task;
+import org.cougaar.util.UnaryPredicate;
 import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Servlet to gather Metrics for CSMART. 
@@ -73,7 +73,8 @@ public class MetricsServlet
   public MetricsServlet(SimpleServletSupport support) {
     super();
     this.support = support;
-    log = CSMART.createLogger(this.getClass().getName());
+    log = (Logger) NullLoggingServiceImpl.getNullLoggingServiceImpl();
+
     if ( !  ( "/CSMART_MetricsServlet".equals(support.getPath()) ) ) {
       System.out.println("Error in servlet path: " + support.getPath());
     }
@@ -128,7 +129,7 @@ public class MetricsServlet
      */      
     private SimpleServletSupport support;
 
-    private transient Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
+    private transient Logger log = (Logger)NullLoggingServiceImpl.getNullLoggingServiceImpl();
     
     /* Inner class constructor
      * 

@@ -21,34 +21,34 @@
 
 package org.cougaar.tools.csmart.ui.servlet;
 
-import java.io.ObjectOutputStream;
-import java.io.IOException;
-import java.net.URL;
 
+
+
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
-
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
-
+import org.cougaar.core.logging.NullLoggingServiceImpl;
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
-import org.cougaar.planning.ldm.asset.CommunityPG;
 import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.asset.CommunityPG;
 import org.cougaar.planning.ldm.plan.HasRelationships;
-
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames; 
 import org.cougaar.util.PropertyTree;
 import org.cougaar.util.UnaryPredicate;
 import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Returns agent name and community name from Entity object. <br>
@@ -72,7 +72,8 @@ public class CommunityProviderServlet
   public CommunityProviderServlet(SimpleServletSupport support) {
     super();
     this.support = support;
-    log = CSMART.createLogger(this.getClass().getName());
+    log = (Logger)NullLoggingServiceImpl.getNullLoggingServiceImpl();
+
     if ( !  ( "/CSMART_CommunityProviderServlet".equals(support.getPath()) ) ) {
       System.out.println("Error in servlet path: " + support.getPath());
     }
@@ -113,7 +114,7 @@ public class CommunityProviderServlet
      * parameters from the URL:
      */
     ServletOutputStream out; 
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
+    Logger log = (Logger)NullLoggingServiceImpl.getNullLoggingServiceImpl();
 
     /* since "ClusterProvider" is a static inner class, here
      * we hold onto the support API.
