@@ -20,21 +20,23 @@
  */
 package org.cougaar.tools.csmart.society.cdata;
 
+
 import java.util.Collection;
 import java.util.Iterator;
-
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.society.AgentBase;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.AssetComponent;
+import org.cougaar.tools.csmart.society.BinderBase;
+import org.cougaar.tools.csmart.society.ComponentBase;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PluginBase;
-import org.cougaar.tools.csmart.society.BinderBase;
-import org.cougaar.tools.csmart.society.AgentBase;
-import org.cougaar.tools.csmart.society.ComponentBase;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Create a ConfigurableComponent which represents an Agent
@@ -61,11 +63,12 @@ public class AgentCDataComponent
    *
    */
   public void initProperties() {
+    initProperties();
     Property p = addProperty(PROP_CLASSNAME, new String(cdata.getClassName()));
     p.setToolTip(PROP_CLASSNAME_DESC);
 
-    addBinders();
-    addPlugins();
+    addComponent(ComponentData.AGENTBINDER, "Binders");
+    addComponent(ComponentData.PLUGIN, "Plugins");
     addComponents();
     addAssetData();
   }
@@ -111,6 +114,34 @@ public class AgentCDataComponent
       }
     }
 
+  }
+
+  protected void addComponent(String typeid, String containerName) {
+    ContainerBase container = new ContainerBase(containerName);
+    container.initProperties();
+    addChild(container);
+
+    ComponentData[] childCData = cdata.getChildren();
+    ComponentBase component = null;
+    for (int i = 0; i < childCData.length; i++) {
+      if (childCData[i].getType().equals(typeid)) {
+        
+        if(typeid.equals(ComponentData.PLUGIN)) {
+          component = new PluginBase(childCData[i].getName(),
+                                                   childCData[i].getClassName());
+        } else if (typeid.equals(ComponentData.AGENTBINDER)) {
+          component = new BinderBase(childCData[i].getName(),
+                                             childCData[i].getClassName());
+        }
+        component.initProperties();
+	component.setComponentType(childCData[i].getType());
+
+        Object[] parameters = childCData[i].getParameters();
+        for (int j = 0; j < parameters.length; j++) 
+          component.addProperty(ComponentBase.PROP_PARAM + j, (String)parameters[j]);
+        container.addChild(component);
+      }
+    }
   }
 
     // FIXME: Add misc components -- how do I find the type though?
