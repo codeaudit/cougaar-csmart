@@ -328,7 +328,7 @@ public class Organizer extends JScrollPane {
       }
       DefaultMutableTreeNode parentNode =
         (DefaultMutableTreeNode) node.getParent();
-      addExperimentToWorkspace(experiment, parentNode);
+      addExperimentAndComponentsToWorkspace(experiment, parentNode);
     } else if (o instanceof Experiment) 
       experiment = (Experiment) o;
     if (experiment != null)
@@ -1127,42 +1127,43 @@ public class Organizer extends JScrollPane {
 	return;
     }
     model.removeNodeFromParent(societyNode);
-    int result =
-      JOptionPane.showConfirmDialog(this,
-                                    "Delete society " +
-                                    society.getSocietyName() +
-                                    " from all experiments?",
-                                    "Delete Society",
-                                    JOptionPane.YES_NO_OPTION,
-                                    JOptionPane.WARNING_MESSAGE);
-    if (result == JOptionPane.NO_OPTION) {
-      return; // just delete this node
-    }
+//      int result =
+//        JOptionPane.showConfirmDialog(this,
+//                                      "Delete society " +
+//                                      society.getSocietyName() +
+//                                      " from all experiments?",
+//                                      "Delete Society",
+//                                      JOptionPane.YES_NO_OPTION,
+//                                      JOptionPane.WARNING_MESSAGE);
+//      if (result == JOptionPane.NO_OPTION) {
+//        return; // just delete this node
+//      }
 
-    // delete society from all experiments in the workspace
-    // and warn user to resave them
-    displayExperimentsInWorkspace(society);
-    ArrayList nodesToDelete = new ArrayList();
-    Enumeration nodes = root.depthFirstEnumeration(); 
-    while (nodes.hasMoreElements()) {
-      DefaultMutableTreeNode node = 
-        (DefaultMutableTreeNode)nodes.nextElement();
-      Object o = node.getUserObject();
-      if (o instanceof Experiment) {
-        Experiment exp = (Experiment)o;
-        if (exp.getSocietyComponent().equals(society))
-          exp.removeSocietyComponent();
-      } else if (society.equals(o)) {
-        nodesToDelete.add(node);
-      }
-    }
-    // remove nodes containing this society
-    for (int i = 0; i < nodesToDelete.size(); i++)
-      model.removeNodeFromParent((DefaultMutableTreeNode)nodesToDelete.get(i));
+//      // delete society from all experiments in the workspace
+//      // and warn user to resave them
+//      displayExperimentsInWorkspace(society);
+//      ArrayList nodesToDelete = new ArrayList();
+//      Enumeration nodes = root.depthFirstEnumeration(); 
+//      while (nodes.hasMoreElements()) {
+//        DefaultMutableTreeNode node = 
+//          (DefaultMutableTreeNode)nodes.nextElement();
+//        Object o = node.getUserObject();
+//        if (o instanceof Experiment) {
+//          Experiment exp = (Experiment)o;
+//          if (exp.getSocietyComponent().equals(society))
+//            exp.removeSocietyComponent();
+//        } else if (society.equals(o)) {
+//          nodesToDelete.add(node);
+//        }
+//      }
+//      // remove nodes containing this society
+//      for (int i = 0; i < nodesToDelete.size(); i++)
+//        model.removeNodeFromParent((DefaultMutableTreeNode)nodesToDelete.get(i));
 
+    // if deleted last reference to society in the workspace
     // ask if society should be deleted from database and delete it
-    // TODO: this should only delete the society from the database
-    // if no experiment in the database references it
+    if (findNodeNamed(society.getSocietyName()) != null)
+        return;
     int answer =
       JOptionPane.showConfirmDialog(this,
                                     "Delete society " +
@@ -1198,47 +1199,48 @@ public class Organizer extends JScrollPane {
   private void deleteRecipeInNode(DefaultMutableTreeNode recipeNode) {
     RecipeComponent recipe = (RecipeComponent) recipeNode.getUserObject();
     model.removeNodeFromParent(recipeNode);
-    int result =
-      JOptionPane.showConfirmDialog(this,
-                                    "Delete recipe " +
-                                    recipe.getRecipeName() +
-                                    " from all experiments?",
-                                    "Delete Recipe",
-                                    JOptionPane.YES_NO_OPTION,
-                                    JOptionPane.WARNING_MESSAGE);
-    if (result == JOptionPane.NO_OPTION) {
-      return; // just delete this node
-    }
+//      int result =
+//        JOptionPane.showConfirmDialog(this,
+//                                      "Delete recipe " +
+//                                      recipe.getRecipeName() +
+//                                      " from all experiments?",
+//                                      "Delete Recipe",
+//                                      JOptionPane.YES_NO_OPTION,
+//                                      JOptionPane.WARNING_MESSAGE);
+//      if (result == JOptionPane.NO_OPTION) {
+//        return; // just delete this node
+//      }
 
-    // delete recipe from all experiments in the workspace
-    // and warn user to resave them
-    displayExperimentsInWorkspace(recipe);
-    ArrayList nodesToDelete = new ArrayList();
-    Enumeration nodes = root.depthFirstEnumeration(); 
-    while (nodes.hasMoreElements()) {
-      DefaultMutableTreeNode node = 
-        (DefaultMutableTreeNode)nodes.nextElement();
-      Object o = node.getUserObject();
-      if (o instanceof Experiment) {
-        Experiment exp = (Experiment)o;
-        RecipeComponent[] recipes = exp.getRecipeComponents();
-        for (int j = 0; j < recipes.length; j++) {
-          if (recipes[j].equals(recipe)) {
-            exp.removeRecipeComponent(recipe);
-            break;
-          }
-        }
-      } else if (recipe.equals(o)) {
-        nodesToDelete.add(node);
-      }
-    }
-    // remove nodes containing this recipe
-    for (int i = 0; i < nodesToDelete.size(); i++)
-      model.removeNodeFromParent((DefaultMutableTreeNode)nodesToDelete.get(i));
+//      // delete recipe from all experiments in the workspace
+//      // and warn user to resave them
+//      displayExperimentsInWorkspace(recipe);
+//      ArrayList nodesToDelete = new ArrayList();
+//      Enumeration nodes = root.depthFirstEnumeration(); 
+//      while (nodes.hasMoreElements()) {
+//        DefaultMutableTreeNode node = 
+//          (DefaultMutableTreeNode)nodes.nextElement();
+//        Object o = node.getUserObject();
+//        if (o instanceof Experiment) {
+//          Experiment exp = (Experiment)o;
+//          RecipeComponent[] recipes = exp.getRecipeComponents();
+//          for (int j = 0; j < recipes.length; j++) {
+//            if (recipes[j].equals(recipe)) {
+//              exp.removeRecipeComponent(recipe);
+//              break;
+//            }
+//          }
+//        } else if (recipe.equals(o)) {
+//          nodesToDelete.add(node);
+//        }
+//      }
+//      // remove nodes containing this recipe
+//      for (int i = 0; i < nodesToDelete.size(); i++)
+//        model.removeNodeFromParent((DefaultMutableTreeNode)nodesToDelete.get(i));
 
+    // if deleted last reference to recipe in the workspace
     // ask if recipe should be deleted from database and delete it
-    // TODO: this should only delete the recipe from the database
-    // if no experiment in the database references it
+    if (findNodeNamed(recipe.getRecipeName()) != null)
+      return;
     try {
       PDbBase pdb = new PDbBase();
       try {
@@ -1363,6 +1365,8 @@ public class Organizer extends JScrollPane {
 
   /**
    * Delete experiment from database and from workspace if it's there.
+   * Don't allow deleting an experiment that's in the console,
+   * because that would make it unrunnable.
    */
 
   protected void deleteExperimentFromDatabase() {
@@ -1380,17 +1384,30 @@ public class Organizer extends JScrollPane {
     if (result != JOptionPane.OK_OPTION)
       return;
     String experimentName = (String)cb.getSelectedItem();
+    if (findNodeNamed(experimentName) != null) {
+      JOptionPane.showMessageDialog(this,
+                                    "You cannot delete an experiment that is in the workspace; delete it from the workspace first.",
+                                    "Cannot Delete Experiment",
+                                    JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+//      if (CSMART.isExperimentInConsole(experimentName)) {
+//        JOptionPane.showMessageDialog(this,
+//                                      "You cannot delete an experiment that is in the Experiment Controller",
+//                                      "Cannot Delete Experiment",
+//                                      JOptionPane.ERROR_MESSAGE);
+//        return;
+    //    }
     String experimentId = (String)experimentNamesMap.get(experimentName);
     ExperimentDB.deleteExperiment(experimentId, experimentName);
-    // if experiment is in workspace, 
-    // select it and delete it from there as well
-    // selecting the experiment first notifies listeners appropriately
-    DefaultMutableTreeNode node = findNodeNamed(experimentName);
-    if (node != null) {
-      workspace.setSelection(node);
-      model.removeNodeFromParent(node);
-      experimentNames.remove(experimentName);
-    }
+    // if experiment is in workspace, then mark it as needing to be resaved
+//      DefaultMutableTreeNode node = findNodeNamed(experimentName);
+//      if (node != null) {
+//        if (node.getUserObject() instanceof Experiment) {
+//          Experiment experiment = (Experiment)node.getUserObject();
+//          experiment.fireModification();
+//        }
+//      }
   }
 
   /**
@@ -1418,6 +1435,13 @@ public class Organizer extends JScrollPane {
     if (result != JOptionPane.OK_OPTION)
       return;
     String recipeName = (String)cb.getSelectedItem();
+    if (findNodeNamed(recipeName) != null) {
+      JOptionPane.showMessageDialog(this,
+                                    "You cannot delete a recipe that is in the workspace; delete it from the workspace first.",
+                                    "Cannot Delete Recipe",
+                                    JOptionPane.ERROR_MESSAGE);
+      return;
+    }
     try {
       helper.deleteRecipe(recipeName);
     } catch (Exception e) {
@@ -1429,12 +1453,12 @@ public class Organizer extends JScrollPane {
     // if recipe is in workspace, 
     // select it and delete it from there as well
     // selecting the recipe first notifies listeners appropriately
-    DefaultMutableTreeNode node = findNodeNamed(recipeName);
-    if (node != null) {
-      workspace.setSelection(node);
-      model.removeNodeFromParent(node);
-      recipeNames.remove(recipeName);
-    }
+//      DefaultMutableTreeNode node = findNodeNamed(recipeName);
+//      if (node != null) {
+//        workspace.setSelection(node);
+//        model.removeNodeFromParent(node);
+//        recipeNames.remove(recipeName);
+//      }
   }
 
 
@@ -1792,7 +1816,7 @@ public class Organizer extends JScrollPane {
     while (nodes.hasMoreElements()) {
       DefaultMutableTreeNode node = 
 	(DefaultMutableTreeNode)nodes.nextElement();
-      if (node.isLeaf() && node.toString().equals(s))
+      if (node.toString().equals(s))
 	return node;
     }
     return null;
