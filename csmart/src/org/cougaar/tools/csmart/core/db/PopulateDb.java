@@ -1085,7 +1085,7 @@ public class PopulateDb extends PDbBase {
   public String getNewCommAsbFromExpt(String exptId, String trialId) throws SQLException {
     // get the comm asb for that expt/trial
     String oldCommAsb = getCommAsbForExpt(exptId, trialId);
-    if (oldCommAsb == null) {
+    if (oldCommAsb == null || oldCommAsb.equals("")) {
       if (log.isWarnEnabled()) {
 	log.warn("getNewCommAsbFromExpt found no community assembly for expt " + exptId + ", trial: " + trialId);
       }
