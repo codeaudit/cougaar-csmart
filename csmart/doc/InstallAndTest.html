@@ -79,6 +79,11 @@ very similar for WinNT) and a MYSQL database.
     Walks through a step-by-step run of CSMART, from experiment creation,
     running the experiment using the AppServer, to the final results
     analysis.</li><p>
+
+  <li><a href="#csmartLogging">CSMART Logging</a>.<br>
+    Covers the Logging service within CSMART.
+    </li><p>
+    
 </ol>
 
 <p>
@@ -88,17 +93,15 @@ very similar for WinNT) and a MYSQL database.
 <font size=+2><b>Sections:</b></font>
 
 <p>
-
 <ol>
-<a name="machineReqs"/>
-<li><font size=+1><b>To check your machine's requirements:</b></font>
+<a name="machineReqs">
+<li><font size=+1><b>To check your machine's requirements:</b></font></a>
   <p>
   Make sure you check your machine before proceeding with an
   installation!
   <p>
   <ol>
   <p>
-
   <li>Make sure that JDK 1.3.1 is installed.  This can be done using:
       <pre>
        java -version
@@ -149,10 +152,10 @@ very similar for WinNT) and a MYSQL database.
   </ol>
 </li><p>
 
-<p>
+<br><br>
 
-<a name="dbInst"/>
-<li><font size=+1><b>To install a configuration database:</b></font>
+<a name="dbInst">
+<li><font size=+1><b>To install a configuration database:</b></font></a>
   <p>
    A database is required to run the larger
    <a href="http://www.cougaar.org">Cougaar</a>
@@ -168,7 +171,7 @@ very similar for WinNT) and a MYSQL database.
    that file before continuing with the example MySQL installation
    below.
    <p>
-   <a name="mysqlWarning"/>
+   <a name="mysqlWarning"></a>
    These notes highlight a basic installation for MySQL.  You 
    <b>MUST</b> refer to the MySQL documentation for proper
    installation and security documentation!
@@ -273,9 +276,8 @@ very similar for WinNT) and a MYSQL database.
 
 <p>
 
-<a name="cougaarInst"/>
-<li><font size=+1><b>To install 
-<a href="http://www.cougaar.org">Cougaar</a>:</b></font>
+<a name="cougaarInst">
+<li><font size=+1><b>To install <a href="http://www.cougaar.org">Cougaar</a>:</b></font></a>
   <p>
   These are notes for the installation
   <a href="http://www.cougaar.org">Cougaar</a>,
@@ -286,7 +288,8 @@ very similar for WinNT) and a MYSQL database.
   <ol>
   <p>
 
-  <li>First check your <a href="#machineReqs">machine's configuration</a> and <a href="#dbInst">install a database</a> (for use of the supplied military logistics plugins).</li><p>
+  <li>First check your <a href="#machineReqs">machine's configuration</a> and <a href="#dbInst">install a database</a> (for use of the supplied military logistics plugins).
+  <br><br></li><p>
 
   <li>Select a base directory for your install.  The typical choice is
     "/opt", but any directory will do.  Change to that directory:
@@ -295,7 +298,8 @@ very similar for WinNT) and a MYSQL database.
        </pre>
     Many of the following commands reference this default "/opt".  If you've
     selected a different directory then simply substitute the base-path 
-    with your path.</li><p>
+    with your path.
+  <br><br></li><p>
 
   <li>Create a directory for your "cougaar" installation.  One can 
     simply create a single "cougaar" directory, but if you expect to
@@ -313,16 +317,17 @@ very similar for WinNT) and a MYSQL database.
        </pre>
     This makes it easier to maintain multiple build versions and to
     still use the simple "/opt/cougaar" directory name to refer to the
-    most recent installation.</li><p>
+    most recent installation.
+  <br><br></li><p>
 
   <li>Change directory into your "cougaar" directory.
        <pre>
        cd cougaar
        </pre>
-    <a name="cip"/>
     Most of the commands for the remainder of this document assume that you
     start in the "/opt/cougaar" directory.  This path is later set as the
-    "$COUGAAR_INSTALL_PATH" <a href="#cougaarEnv">environment variable</a>.</li><p>
+    "$COUGAAR_INSTALL_PATH" <a href="#cougaarEnv">environment variable</a>.
+  <br><br></li><p>
 
   <li>Download <i>cougaar.zip</i> and <i>cougaar-support.zip</i> from 
     <a href="http://www.cougaar.org">http://www.cougaar.org</a>.
@@ -331,7 +336,7 @@ very similar for WinNT) and a MYSQL database.
        <pre>
        unzip cougaar-support.zip
        unzip cougaar.zip
-       </pre></li>
+       </pre>
     Ignore any "overwriting file 'version.txt'" warnings.  Once
     unpacked you can (optionally) remove both ".zip" files:
        <pre>
@@ -398,12 +403,12 @@ very similar for WinNT) and a MYSQL database.
   </ol>
 </li><p>
 
-<p>
+<br><br>
 
-<a name="cougaarEnv"/>
+<a name="cougaarEnv">
 <li><font size=+1><b>To set your 
 <a href="http://www.cougaar.org">Cougaar</a>
-environment variables:</b></font>
+environment variables:</b></font></a>
     <p>
     Set the following environment variables:
        <pre>
@@ -429,13 +434,13 @@ environment variables:</b></font>
     This is typically not required.
 </li><p>
 
-<p>
+<br><br>
 
-<a name="minitest"/>
+<a name="minitest">
 <li><font size=+1><b>To verify the 
 <a href="http://www.cougaar.org">Cougaar</a>
 installation using 
-"minitestconfig":</b></font>
+"minitestconfig":</b></font></a>
   <p> 
    This is a simple verification that 
    <a href="http://www.cougaar.org">Cougaar</a>
@@ -474,15 +479,15 @@ installation using
   </ol>
 </li><p>
 
-<p>
+<br><br>
 
-<a name="httpVisuals"/>
-<li><font size=+1><b>To use an HTTP browser to view the society:</b></font>
+<a name="httpVisuals">
+<li><font size=+1><b>To use an HTTP browser to view the society:</b></font></a>
   <p>Cougaar includes the <a href="http://jakarta.apache.org/tomcat/">Apache Tomcat</a> servlet server by default. It usually runs on port 8800. For details, see the <a href="../../doc/details/Servlet.html">core documentation</a>. There are a number of servlets loaded by default, and others included in most societies (including the above <a href="#minitest">minitestconfig</a>). To use these:<br><br>
   <ol>
   <li>Open any HTTP browser, such as 
     <a href="http://www.netscape.com">Netscape</a>.</li><p>
-  <a name="tasksSVLT"/>
+  <a name="tasksSVLT"></a>
   <li>Choose the hostname of any host (e.g. "localhost") in your society 
     that's running a Node, and in your browser open this URL:
       <a href="http://localhost:8800/tasks">http://localhost:8800/tasks</a>
@@ -501,10 +506,10 @@ installation using
   </ol>
 </li><p>
 
-<p>
+<br><br>
 
-<a name="socMonitor"/>
-<li><font size=+1><b>To just use the CSMART Society Monitor UIs:</b></font>
+<a name="socMonitor">
+<li><font size=+1><b>To just use the CSMART Society Monitor UIs:</b></font></a>
   <p>
    CSMART contains several UIs that can be used independent of the full CSMART
    society contruction/management and AppServer.  These UIs can be used with
@@ -545,10 +550,10 @@ installation using
   </ol>
 </li><p>
 
-<p>
+<br><br>
 
-<a name="appServer"/>
-<li><font size=+1><b>To configure the AppServer:</b></font>
+<a name="appServer">
+<li><font size=+1><b>To configure the AppServer:</b></font></a>
   <p>
    The AppServer is a remote process manager that is used by the CSMART UI to
    create and destroy 
@@ -598,10 +603,10 @@ installation using
   </ol>
 </li><p>
 
-<p>
+<br><br>
 
-<a name="csmartConfig"/>
-<li><font size=+1><b>To configure CSMART:</b></font>
+<a name="csmartConfig">
+<li><font size=+1><b>To configure CSMART:</b></font></a>
   <p>
    The CSMART UI is a tool for creating 
    <a href="http://www.cougaar.org">Cougaar</a>
@@ -616,7 +621,7 @@ installation using
   testing your <a href="#minitest">installation</a> with minitestconfig (and installing a
   <a href="#dbInst">database</a> if necessary), you are ready for CSMART.</li><p>
   
-  <a name="excelPath"/>
+  <a name="excelPath"></a>
   <li>You may need to modify the supplied "CSMART" or "CSMART.bat" startup script in csmart/bin.  For example, a Java System
     Property 
     "org.cougaar.tools.csmart.excelpath=.." specifies the path to
@@ -653,10 +658,10 @@ installation using
   </ol>
 </li><p>
 
-<p>
+<br><br>
 
-<a name="csmartRun"/>
-<li><font size=+1><b>Example run of CSMART:</b></font>
+<a name="csmartRun">
+<li><font size=+1><b>Example run of CSMART:</b></font></a>
   <p>
   These notes detail how to configure and run the standard two-Node 
   "TINY-1AD + TRANSPORTATION" society on a single machine.  It is assumed in
@@ -734,7 +739,7 @@ installation using
        <li>Drag the "My Metric" onto the "Recipes" folder of the
          "Properties" panel, from the Default Workspace.</li><p>
 
-       </li>The recipe is now associated with the experiment.</li><p>
+       <li>The recipe is now associated with the experiment.</li><p>
        </ol>
      </li><p>
 
@@ -874,10 +879,10 @@ installation using
 
     <li>Close the "Experiment Monitor" window.</li><p>
   </ol>
-  </li><p>
-
-  <a name="analyzeResults"/>
-  <li>To analyze the results of an Experiment (see section 8 of the User's Guide):
+  </li>
+  
+  <br><br>
+  <li><a name="analyzeResults">To analyze the results of an Experiment (see section 8 of the User's Guide):</a>
     <ol>
     <li>This is only useful if a metrics was selected during experiment
      configuration.</li><p>
@@ -899,9 +904,38 @@ installation using
     <ol>
     <li>Close the main "CSMART" UI window.</li><p>
     </ol>
-  </li><p>
+  </li>
+</ol>
+</li>
+<br><br>
 
-<ol>
+<a name="csmartLogging">
+<li>
+<font size=+1><b>About CSMART Logging</b></font></a>
+  <p>
+   The CSMART Logging is a tool, mostly for developers, but also useful for users.
+   All logging is package specific and can be controlled by the debug.properties file
+   located in csmart/data/common.  The logging uses <a href="http://jakarta.apache.org/log4j">log4j</a>.  For detailed configuration options, see log4j specific documentation.  Default logging
+   is displayed on the Console (where CSMART was started) and only displays log messages of
+   priority WARN or Higher.  All logs are also, by default, output to a file: csmart.log which
+   is in the Current Working Directory.  This file is a rolling logfile that will role at a
+   size of: 1024KB.
+  <p>
+  The only options that a user may want to modify in the debug.properties file are:
+  <ol>
+  <li>Change the Log Level<br>
+  To change the log level for the entire society Change:
+  <tt>log4j.rootCategory=WARN, stdout, rolling</tt>
+  in the debug.properties file to the desired log level.
+  FATAL > ERROR > WARN > INFO > DEBUG
+</li>
+  <li>Change Log Level for a specific package.<br>
+  To change the logging level for a specific package.  Add a line:
+  <tt>log4j.category.org.cougaar.tools.csmart.ui.console=DEBUG</tt> with the
+  desired package name and debug level to the debug.properties file.
+  </li>
+
+  </ol>
 
 </body>
 </html>
