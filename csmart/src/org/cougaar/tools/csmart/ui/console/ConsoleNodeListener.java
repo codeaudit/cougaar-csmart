@@ -80,17 +80,19 @@ public class ConsoleNodeListener implements NodeEventListener {
     this.doc = doc;
 
     // create our attributes
-    // stdout is black, stderr is red, heartbeat messages are green,
-    // others (what?) are blue
+    // stdout	0,0,0 (black)
+    // stderr	192,64,64 (dark red)
+    // Idle, Heartbeat	205,205,205 (light gray)
+    // Node created, Node destroyed, Cluster Added	64,64,192 (dark blue)
     atts = new SimpleAttributeSet[4];
     atts[0] = new SimpleAttributeSet();
     StyleConstants.setForeground(atts[0], Color.black);
     atts[1] = new SimpleAttributeSet();
-    StyleConstants.setForeground(atts[1], Color.red);
+    StyleConstants.setForeground(atts[1], new Color(192, 64, 64));
     atts[2] = new SimpleAttributeSet();
-    StyleConstants.setForeground(atts[2], Color.green);
+    StyleConstants.setForeground(atts[2], new Color(205, 205, 205));
     atts[3] = new SimpleAttributeSet();
-    StyleConstants.setForeground(atts[3], Color.blue);
+    StyleConstants.setForeground(atts[3], new Color(64, 64, 192));
   }
 
   public void setIdleChart(JCChart chart, ChartDataModel dataModel) {

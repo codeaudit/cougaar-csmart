@@ -365,7 +365,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(10, 0, 5, 0),
                                           0, 0));
     x = 0;
-    aboutPanel.add(new JLabel("Notify Conditions Found:"),
+    aboutPanel.add(new JLabel("Notifications:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.NONE,
@@ -379,13 +379,13 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
-    aboutPanel.add(new JLabel("Log File Name:"),
+    aboutPanel.add(new JLabel("Log File:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel(logFileName),
+    aboutPanel.add(new JTextField(logFileName),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
@@ -424,19 +424,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
-    aboutPanel.add(new JLabel("Host Description:"),
-                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                          GridBagConstraints.WEST,
-                                          GridBagConstraints.NONE,
-                                          new Insets(0, 0, 5, 5),
-                                          0, 0));
-    aboutPanel.add(new JLabel((String)getPropertyValue((ConfigurableComponent)host, "Description")),
-                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-                                          GridBagConstraints.WEST,
-                                          GridBagConstraints.HORIZONTAL,
-                                          new Insets(0, 0, 5, 0),
-                                          0, 0));
-    x = 0;
     aboutPanel.add(new JLabel("Host Type:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
@@ -463,6 +450,19 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
+    aboutPanel.add(new JLabel("Host Description:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 5, 5),
+                                          0, 0));
+    aboutPanel.add(new JLabel((String)getPropertyValue((ConfigurableComponent)host, "Description")),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(0, 0, 5, 0),
+                                          0, 0));
+    x = 0;
     aboutPanel.add(new JLabel("Node Description: "),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
@@ -476,19 +476,19 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
-    aboutPanel.add(new JLabel("Command Line Arguments:"),
-                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                          GridBagConstraints.WEST,
-                                          GridBagConstraints.NONE,
-                                          new Insets(0, 0, 5, 5),
-                                          0, 0));
-    aboutPanel.add(new JLabel((String)getPropertyValue((ConfigurableComponent)node, "CmdLineArgs")),
-                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-                                          GridBagConstraints.WEST,
-                                          GridBagConstraints.HORIZONTAL,
-                                          new Insets(0, 0, 5, 0),
-                                          0, 0));
-    x = 0;
+//      aboutPanel.add(new JLabel("Command Line Args:"),
+//                     new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+//                                            GridBagConstraints.WEST,
+//                                            GridBagConstraints.NONE,
+//                                            new Insets(0, 0, 5, 5),
+//                                            0, 0));
+//      aboutPanel.add(new JLabel((String)getPropertyValue((ConfigurableComponent)node, "CmdLineArgs")),
+//                     new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+//                                            GridBagConstraints.WEST,
+//                                            GridBagConstraints.HORIZONTAL,
+//                                            new Insets(0, 0, 5, 0),
+//                                            0, 0));
+//      x = 0;
     aboutPanel.add(new JLabel("Agents:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
@@ -504,7 +504,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     JOptionPane.showMessageDialog(this, aboutPanel, 
-                                  "About " + node.getShortName(), 
+                                  "Information: " + node.getShortName() + 
+                                  " (" + hostName + ")",
                                   JOptionPane.PLAIN_MESSAGE);
   }
 

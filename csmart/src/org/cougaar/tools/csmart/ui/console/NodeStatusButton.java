@@ -109,9 +109,9 @@ public class NodeStatusButton extends JRadioButton {
     String s = getToolTipText((java.awt.event.MouseEvent)null);
     if (s == null)
       return;
-    int index = s.lastIndexOf(':');
+    int index = s.lastIndexOf("), ");
     if (index != -1) {
-      s = s.substring(0, index+1) + descriptions[status];
+      s = s.substring(0, index+3) + descriptions[status];
       setToolTipText(s);
     }
   }

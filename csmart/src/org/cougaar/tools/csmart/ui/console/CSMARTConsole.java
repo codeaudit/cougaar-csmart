@@ -288,7 +288,7 @@ public class CSMARTConsole extends JFrame {
     descriptionPanel.add(Box.createRigidArea(HGAP10));
     
     runButton = new JToggleButton("Run");
-    runButton.setToolTipText("Start running experiments.");
+    runButton.setToolTipText("Start running experiment");
     runButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	runButton_actionPerformed(e);
@@ -299,7 +299,7 @@ public class CSMARTConsole extends JFrame {
     descriptionPanel.add(Box.createRigidArea(HGAP5));
     
     stopButton = new JToggleButton("Stop");
-    stopButton.setToolTipText("Stop running experiments when the current experiment completes.");
+    stopButton.setToolTipText("Halt experiment at end of current");
     stopButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	stopButton_actionPerformed(e);
@@ -310,7 +310,7 @@ public class CSMARTConsole extends JFrame {
     descriptionPanel.add(Box.createRigidArea(HGAP5));
 
     abortButton = new JToggleButton("Abort");
-    abortButton.setToolTipText("Stop experiment now and discard results.");
+    abortButton.setToolTipText("Interrupt experiment");
     abortButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	abortButton_actionPerformed(e);
@@ -499,7 +499,7 @@ public class CSMARTConsole extends JFrame {
     NodeStatusButton button =
       new NodeStatusButton(new ColoredCircle(NodeStatusButton.unknownStatus, 20, null));
     button.setSelectedIcon(new SelectedColoredCircle(NodeStatusButton.unknownStatus, 20, null));
-    button.setToolTipText(nodeName + ":" + hostName + ":unknown");
+    button.setToolTipText("Node " + nodeName + " (" + hostName + "), unknown");
     button.setActionCommand(nodeName);
     button.setFocusPainted(false);
     button.setBorderPainted(false);
