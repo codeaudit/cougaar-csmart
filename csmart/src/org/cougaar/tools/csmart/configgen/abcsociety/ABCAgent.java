@@ -529,8 +529,39 @@ public class ABCAgent
     }
     return rlist;
   }
-  
-  public ComponentData addComponentData(ComponentData data) {
+
+  private ComponentData addTimePhasedData(ComponentData data) {
+    // Add Community
+    CommunityTimePhasedData ctpd = new CommunityTimePhasedData();
+    ctpd.addCommunity(getParent().getShortName());
+    data.addTimePhasedData(ctpd);
+    
+    // Add Relationships
+    Iterator iter = getAllRoles().iterator();
+    while(iter.hasNext()) {
+      String role = (String)iter.next();
+      String[] supplies = (String[])getProperty(PROP_SUPPLIES).getValue();
+      for(int i=0; i < supplies.length; i++) {
+	RelationshipTimePhasedData rtpd = new RelationshipTimePhasedData();
+	rtpd.setRole(role);
+	rtpd.setItem(supplies[i].trim());
+	rtpd.setType(supplies[i].substring(supplies[i].lastIndexOf(".")+1));
+	rtpd.setCluster(supplies[i].trim());
+	data.addTimePhasedData(rtpd);
+      }
+    }
+    RelationshipTimePhasedData rel = new RelationshipTimePhasedData();
+    String initializer = (String)getProperty(PROP_INITIALIZER).getValue();
+    rel.setRole("MetricsControlProvider");
+    rel.setItem(initializer);
+    rel.setType(initializer.substring(initializer.lastIndexOf(".")+1));
+    rel.setCluster(initializer);
+    data.addTimePhasedData(rel);
+
+    return data;
+  }
+
+public ComponentData addComponentData(ComponentData data) {
     data.setType(ComponentData.AGENT);
     data.setName(getFullName().toString());
     data.setClassName(agentClassName);
@@ -578,6 +609,9 @@ public class ABCAgent
 
     // Add data file leaves.
     data = createLeafComponents(data);
+
+    // Add Time Phased Data.
+    data = addTimePhasedData(data);
 
     return data;
   }
