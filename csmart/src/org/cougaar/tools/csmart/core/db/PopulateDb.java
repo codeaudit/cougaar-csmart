@@ -640,7 +640,7 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":assembly_id_pattern:", assemblyIdPrefix + "____");
     substitutions.put(":assembly_type:", idType);
     assemblyId = getNextId("queryMaxAssemblyId", assemblyIdPrefix);
-    substitutions.put(":assembly_id:", sqlQuote(assemblyId));
+    substitutions.put(":assembly_id:", assemblyId);
     substitutions.put(":trial_id:", trialId);
     executeUpdate(dbp.getQuery("insertAssemblyId", substitutions));
     executeUpdate(dbp.getQuery("insertTrialAssembly", substitutions));
@@ -1489,16 +1489,22 @@ public class PopulateDb extends PDbBase {
 
     Statement stmt = dbConnection.createStatement();
     substitutions.put(":attribute_lib_id:", sqlQuote(pgName + "|" + propName));
-    substitutions.put(":pg_name:", pgName);
-    substitutions.put(":attribute_name:", propName);
+    substitutions.put(":pg_name:", sqlQuote(pgName));
+    substitutions.put(":attribute_name:", sqlQuote(propName));
     // FIXME:  Below is a hack, as an attempt to run past this point.
     // Really should figure out why propSubtype is sometimes null.
-    substitutions.put(":attribute_type:", (propSubtype == null) ? "Fixme" : propSubtype);
+    substitutions.put(":attribute_type:", 
+                      sqlQuote((propSubtype == null) ? "String" : propSubtype));
     if(propType.equalsIgnoreCase("Collection")) {
-      substitutions.put(":aggregate_type:", "COLLECTION");
+      substitutions.put(":aggregate_type:", sqlQuote("COLLECTION"));
     } else {
-      substitutions.put(":aggregate_type:", "SINGLE");
+      substitutions.put(":aggregate_type:", sqlQuote("SINGLE"));
     }
+    log.debug("att_lib: " + substitutions.get(":attribute_lib_id:"));
+    log.debug("pg_name: " + substitutions.get(":pg_name:"));
+    log.debug("att_name: " + substitutions.get(":attribute_name:"));
+    log.debug("att_type: " + substitutions.get(":attribute_type:"));
+    log.debug("agg_type: " + substitutions.get(":aggregate_type:"));
     executeUpdate(dbp.getQuery("insertLibPGAttribute", substitutions));
   }
 
