@@ -1,24 +1,19 @@
 package org.cougaar.tools.csmart.ui.console;
 
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.tools.csmart.util.XMLUtils;
-import org.cougaar.tools.csmart.core.cdata.ComponentDataXML;
 import org.cougaar.tools.csmart.experiment.XMLExperiment;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.server.ProcessDescription;
+import org.cougaar.tools.server.RemoteFileSystem;
+import org.cougaar.tools.server.RemoteHost;
 import org.cougaar.tools.server.RemoteListenable;
 import org.cougaar.tools.server.RemoteListenableConfig;
 import org.cougaar.tools.server.RemoteProcess;
-import org.cougaar.tools.server.RemoteHost;
-import org.cougaar.tools.server.RemoteFileSystem;
 import org.cougaar.util.log.Logger;
-import org.w3c.dom.Document;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.io.File;
 import java.io.BufferedOutputStream;
-import java.io.OutputStream;
 import java.io.FileReader;
+import java.io.OutputStream;
 
 /**
  * org.cougaar.tools.csmart.ui.console
@@ -99,13 +94,11 @@ public class CreateNodeThread extends Thread {
       try {
         RemoteHost rh = model.getInfo().getAppServer();
         RemoteFileSystem rfs = rh.getRemoteFileSystem();
-        Document doc = ComponentDataXML.createXMLDocument(((XMLExperiment)cmodel.getExperiment()).getExperiment());
         String filename = ((XMLExperiment)cmodel.getExperiment()).getSocietyFileName();
-        XMLUtils.writeXMLFile(new File("/tmp/"), doc, filename);
 
         OutputStream os = rfs.write("./" + filename);
         BufferedOutputStream bos = new BufferedOutputStream(os);
-        FileReader in = new FileReader("/tmp/" + filename);
+        FileReader in = new FileReader(cmodel.getXMLFile());
         int c;
         while((c = in.read()) != -1) {
           bos.write(c);
