@@ -42,19 +42,19 @@ public class NodeStatusButton extends JRadioButton {
   public static int STATUS_NOTIFY = 11;
 
   // status button colors
-  private static Color busyStatus = new Color(230, 255, 230); // shades of green
-  private static Color highBusyStatus = new Color(175, 255, 175);
-  private static Color mediumHighBusyStatus = new Color(0, 255, 0);
-  private static Color mediumBusyStatus = new Color(0, 235, 0);
-  private static Color mediumLowBusyStatus = new Color(0, 215, 0);
-  private static Color lowBusyStatus = new Color(0, 195, 0);
-  private static Color idleStatus = new Color(0, 175, 0);
-  private static Color errorStatus = new Color(215, 0, 0); // red
-  private static Color noAnswerStatus = new Color(245, 245, 0); // yellow
-  private static Color unknownStatus = new Color(180, 180, 180); //gray
-  private static Color stdErrStatus = new Color(215, 145, 0); //orange
-  private static Color notifyStatus = Color.blue;
-  private static Color[] statusColors = {
+  public static Color busyStatus = new Color(230, 255, 230); // shades of green
+  public static Color highBusyStatus = new Color(175, 255, 175);
+  public static Color mediumHighBusyStatus = new Color(0, 255, 0);
+  public static Color mediumBusyStatus = new Color(0, 235, 0);
+  public static Color mediumLowBusyStatus = new Color(0, 215, 0);
+  public static Color lowBusyStatus = new Color(0, 195, 0);
+  public static Color idleStatus = new Color(0, 175, 0);
+  public static Color errorStatus = new Color(215, 0, 0); // red
+  public static Color noAnswerStatus = new Color(245, 245, 0); // yellow
+  public static Color unknownStatus = new Color(180, 180, 180); //gray
+  public static Color stdErrStatus = new Color(215, 145, 0); //orange
+  public static Color notifyStatus = Color.blue;
+  public static Color[] statusColors = {
     busyStatus,
     highBusyStatus,
     mediumHighBusyStatus,
@@ -123,6 +123,14 @@ public class NodeStatusButton extends JRadioButton {
 
   public void clearError() {
     error = false;
+  }
+
+  public static String[] getStatusDescriptions() {
+    return descriptions;
+  }
+
+  public static Color[] getStatusColors() {
+    return statusColors;
   }
 
 }

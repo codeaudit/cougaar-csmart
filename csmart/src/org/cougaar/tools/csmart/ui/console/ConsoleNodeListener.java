@@ -115,7 +115,6 @@ public class ConsoleNodeListener implements NodeEventListener {
       return 0.0;
     }
     String idle = nodemsg.substring(0, nodemsg.indexOf(':'));
-    //    System.err.println("From " + nodemsg + " got idle string " + idle);
     double ret = 0.0;
     try {
       ret = Double.parseDouble(idle);
@@ -141,7 +140,6 @@ public class ConsoleNodeListener implements NodeEventListener {
       return 0L;
     }
     String time = nodemsg.substring(nodemsg.indexOf(':') + 1);
-    //    System.err.println("From " + nodemsg + " got time string " + time);
     long ret = 0L;
     try {
       ret = Long.parseLong(time);
@@ -192,9 +190,6 @@ public class ConsoleNodeListener implements NodeEventListener {
             handleIdleUpdate(idleTime, timestamp);
           else {
             updateStatus(myNodeEvent);
-            //            if (doc.appendString(nodeEventDescription, style)) {
-            //              colorStatusButton(CSMARTConsole.notifyStatus);
-            //              haveError = true;
             doc.appendString(nodeEventDescription, style);
           }
 	}
@@ -268,23 +263,12 @@ public class ConsoleNodeListener implements NodeEventListener {
 	    } else if (nodeEventType == prevType) {
 	      prevDescription += description;
 	    } else {
-              //              if (doc.appendString(prevDescription, 
-              //                                        getNodeEventStyle(prevType))) {
-              //                colorStatusButton(CSMARTConsole.notifyStatus);
-              //                haveError = true;
-              //              }
               doc.appendString(prevDescription, 
                                getNodeEventStyle(prevType));
 	      prevDescription = description;
 	      prevType = nodeEventType;
 	    }
 	  }
-	  // write the last batch of descriptions
-          //          if (doc.appendString(prevDescription,
-          //                                    getNodeEventStyle(prevType))) {
-          //            colorStatusButton(CSMARTConsole.notifyStatus);
-          //            haveError = true;
-          //          }
           doc.appendString(prevDescription,
                            getNodeEventStyle(prevType));
 	}
@@ -331,22 +315,16 @@ public class ConsoleNodeListener implements NodeEventListener {
     double result = 1/Math.log(idleTime);
     result = (result + 1)*50; // in range 0 to 100
     if (result <= 16)
-      //      colorStatusButton(CSMARTConsole.lowBusyStatus);
       statusButton.setStatus(NodeStatusButton.STATUS_LOW_BUSY);
     else if (result > 16 && result <= 33)
-      //      colorStatusButton(CSMARTConsole.mediumLowBusyStatus);
       statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_LOW_BUSY);
     else if (result > 33 && result <= 50)
-      //      colorStatusButton(CSMARTConsole.mediumBusyStatus);
       statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_BUSY);
     else if (result > 50 && result <= 67)
-      //      colorStatusButton(CSMARTConsole.mediumHighBusyStatus);
       statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_HIGH_BUSY);
     else if (result > 67 && result <= 83)
-      //      colorStatusButton(CSMARTConsole.highBusyStatus);
       statusButton.setStatus(NodeStatusButton.STATUS_HIGH_BUSY);
     else if (result > 83)
-      //      colorStatusButton(CSMARTConsole.busyStatus);
       statusButton.setStatus(NodeStatusButton.STATUS_BUSY);
 
     // reset times to 0. Maybe this looks better?
@@ -361,15 +339,6 @@ public class ConsoleNodeListener implements NodeEventListener {
 
   private void updateStatus(NodeEvent nodeEvent) {
     int nodeEventType = nodeEvent.getType();
-//      if (nodeEventType == NodeEvent.NODE_CREATED) 
-//        colorStatusButton(CSMARTConsole.idleStatus);
-//      else if (nodeEventType == NodeEvent.NODE_DESTROYED) {
-//        colorStatusButton(CSMARTConsole.errorStatus);
-//        console.nodeStopped(nodeComponent);
-//      } else if (nodeEventType == NodeEvent.STANDARD_ERR) {
-//        colorStatusButton(CSMARTConsole.stdErrStatus);
-//        haveError = true;
-//      }
       if (nodeEventType == NodeEvent.NODE_CREATED) 
         statusButton.setStatus(NodeStatusButton.STATUS_IDLE);
       else if (nodeEventType == NodeEvent.NODE_DESTROYED) {
@@ -378,22 +347,6 @@ public class ConsoleNodeListener implements NodeEventListener {
         statusButton.setStatus(NodeStatusButton.STATUS_STD_ERROR);
       }
   }
-
-  // color the node's status button according to type of node event received
-  // but don't change the color after an error has occurred
-//    private void colorStatusButton(Color statusColor) {
-//      if (!haveError) {
-//        statusButton.setIcon(new ColoredCircle(statusColor, 20));
-//        statusButton.setSelectedIcon(new SelectedColoredCircle(statusColor, 20));
-//        String s = statusButton.getToolTipText((java.awt.event.MouseEvent)null);
-//        int index = s.lastIndexOf(':');
-//        if (index != -1) {
-//          s = s.substring(0, index+1) + 
-//            CSMARTConsole.getStatusColorDescription(statusColor);
-//          statusButton.setToolTipText(s);
-//        }
-//      } 
-//    }
 
   /**
    * Clear an error; if the node status button was set because of a notify
@@ -404,24 +357,6 @@ public class ConsoleNodeListener implements NodeEventListener {
   public void clearError() {
     haveError = false;
   }
-
-//    /**
-//     * Get the log file name.
-//     * @return the log file name
-//     */
-
-//    public String getLogFileName() {
-//      return logFileName;
-//    }
-
-//    /**
-//     * Get the log file.
-//     * @return the log file
-//     */
-
-//    public Writer getLogFile() {
-//      return logFile;
-//    }
 
   /**
    * Flush and close the log file.

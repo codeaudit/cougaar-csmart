@@ -58,8 +58,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String STATUS_MENU = "Status";
   private static final String HISTORY_ACTION = "Utilization History";
   private static final String DISPLAY_MENU = "Display";
-  //  private static final String DISPLAY_ACTION = "Set Screen Buffer Size...";
-  //  private static final String DISPLAY_ALL_ACTION = "Display All";
   private static final String DISPLAY_LOG_ACTION = "Display Log";
   private static final String SELECT_ALL_ACTION = "Select All";
   private static final String FILTER_ACTION = "Filter...";
@@ -161,18 +159,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
     traceAction.setEnabled(false);
     controlMenu.add(traceAction);
     JMenu displayMenu = new JMenu(DISPLAY_MENU);
-    //    Action displayAction = new AbstractAction(DISPLAY_ACTION) {
-    //      public void actionPerformed(ActionEvent e) {
-    //        display_actionPerformed();
-    //      }
-    //    };
-    //    displayMenu.add(displayAction);
-    //    Action displayAllAction = new AbstractAction(DISPLAY_ALL_ACTION) {
-    //      public void actionPerformed(ActionEvent e) {
-    //        displayAll_actionPerformed();
-    //      }
-    //    };
-    //    displayMenu.add(displayAllAction);
     Action displayLogAction = new AbstractAction(DISPLAY_LOG_ACTION) {
       public void actionPerformed(ActionEvent e) {
         displayLog_actionPerformed();
@@ -241,8 +227,11 @@ public class ConsoleInternalFrame extends JInternalFrame {
   }
 
   /**
-   * Set up a keymap so that ctrl-s invokes search and ctrl-t invokes
-   * search next.
+   * Set up a keymap:
+   * ctrl-s search 
+   * ctrl-t search next
+   * ctrl-n notify
+   * ctrl-o notify next
    */
 
   private void initKeyMap(ConsoleTextPane pane) {
@@ -265,6 +254,10 @@ public class ConsoleInternalFrame extends JInternalFrame {
   public NodeComponent getNodeComponent() {
     return node;
   }
+
+  /**
+   * Display information about node in pop-up dialog.
+   */
 
   public void displayAbout() {
     ArrayList agentNames = 
@@ -430,7 +423,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     return prop.getValue();
   }
 
-  public void search_actionPerformed() {
+  private void search_actionPerformed() {
     // get string to search for
     String s = JOptionPane.showInputDialog("Search string:");
     if (s == null || s.length() == 0) {
@@ -441,7 +434,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     searchNextAction.setEnabled(found);
   }
 
-  public void searchNext_actionPerformed() {
+  private void searchNext_actionPerformed() {
     // search and highlight
     boolean found = consoleTextPane.searchNext();
     searchNextAction.setEnabled(found);
@@ -453,7 +446,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
    * Display strip chart for node.
    */
 
-  public void history_actionPerformed() {
+  private void history_actionPerformed() {
     JCChart chart = new StripChart();
     StripChartSource chartDataModel = new StripChartSource(chart);
     ((StripChart)chart).init(chartDataModel);
@@ -463,55 +456,20 @@ public class ConsoleInternalFrame extends JInternalFrame {
     desktop.addFrame(chartFrame, false);
   }
 
-  /**
-   * Change number of characters displayed in the node's output pane.
-   */
-
-//    public void display_actionPerformed() {
-//      ConsoleStyledDocument doc = 
-//        (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
-//      int n = doc.getBufferSize();
-//      String tmp = "";
-//      if (n != -1)
-//        tmp = String.valueOf(n);
-//      String s = 
-//        (String)JOptionPane.showInputDialog(this,
-//                                            "Enter Screen Buffer Size",
-//                                            "Screen Buffer Size",
-//                                            JOptionPane.QUESTION_MESSAGE,
-//                                            null, null, tmp);
-//      try {
-//        n = Integer.parseInt(s);
-//      } catch (NumberFormatException nfe) {
-//        System.out.println("Not a valid number: " + s);
-//        return;
-//      }
-//      doc.setBufferSize(n);
-//    }
-
-//    /**
-//     * Display entire log in node's output pane.
-//     */
-
-//    public void displayAll_actionPerformed() {
-//      ConsoleStyledDocument doc = 
-//        (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
-//      doc.setBufferSize(-1);
-//    }
 
   /**
    * Select everything in the node's output pane.
    * TODO: this only works if the user has explicitly set the caret(?) using left mouse click
    */
 
-  public void selectAll_actionPerformed() {
+  private void selectAll_actionPerformed() {
     System.out.println("Selecting all...");
     consoleTextPane.setCaretPosition(0);
     consoleTextPane.moveCaretPosition(consoleTextPane.getDocument().getLength());
     System.out.println("Done Selecting all...");
   }
 
-  public void filter_actionPerformed() {
+  private void filter_actionPerformed() {
     ConsoleStyledDocument doc = 
       (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
     filter.setBufferSize(doc.getBufferSize());
@@ -530,7 +488,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
    * output is received on this node.
    */
 
-  public void notify_actionPerformed() {
+  private void notify_actionPerformed() {
     String s = 
       (String)JOptionPane.showInputDialog(this,
                                           "Notify if node writes:",
@@ -545,7 +503,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     notifyNextAction.setEnabled(true);
   }
 
-  public void notifyNext_actionPerformed() {
+  private void notifyNext_actionPerformed() {
     boolean found = consoleTextPane.notifyNext();
     notifyNextAction.setEnabled(found);
     consoleTextPane.revalidate();

@@ -54,11 +54,7 @@ import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
 public class CSMARTConsole extends JFrame {
   // must match port used in org.cougaar.tools.server package
   private static final int DEFAULT_PORT = 8484;
-
   CSMART csmart; // top level viewer, gives access to save method, etc.
-  // Name of the remote registry that contains the runtime information.
-  public static final String DEFAULT_SERVER_NAME = "ServerHook";
-
   HostConfigurationBuilder hostConfiguration;
   CommunityServesClient communitySupport;
   String nameServerHostName;
@@ -92,9 +88,9 @@ public class CSMARTConsole extends JFrame {
   JProgressBar trialProgressBar; // indicates how many trials have been run
   JPanel buttonPanel; // contains status buttons
   JPopupMenu nodeMenu; // pop-up menu on node status button
-  public static Dimension HGAP10 = new Dimension(10,1);
-  public static Dimension HGAP5 = new Dimension(5,1);
-  public static Dimension VGAP30 = new Dimension(1,30);
+  private static Dimension HGAP10 = new Dimension(10,1);
+  private static Dimension HGAP5 = new Dimension(5,1);
+  private static Dimension VGAP30 = new Dimension(1,30);
 
   // top level menus and menu items
   private static final String FILE_MENU = "File";
@@ -113,21 +109,6 @@ public class CSMARTConsole extends JFrame {
   private static final String ABOUT_MENU = "About";
   private static final String ABOUT_ACTION = "About";
   private static final String RESET_ACTION = "Reset";
-
-  // status button colors
-  public static Color busyStatus = new Color(230, 255, 230); // shades of green
-  public static Color highBusyStatus = new Color(175, 255, 175);
-  public static Color mediumHighBusyStatus = new Color(0, 255, 0);
-  public static Color mediumBusyStatus = new Color(0, 235, 0);
-  public static Color mediumLowBusyStatus = new Color(0, 215, 0);
-  public static Color lowBusyStatus = new Color(0, 195, 0);
-  public static Color idleStatus = new Color(0, 175, 0);
-  public static Color errorStatus = new Color(215, 0, 0); // red
-  public static Color noAnswerStatus = new Color(245, 245, 0); // yellow
-  public static Color unknownStatus = new Color(180, 180, 180); //gray
-  public static Color stdErrStatus = new Color(215, 145, 0); //orange
-  public static Color notifyStatus = Color.blue;
-  private static Hashtable colorDescriptions;
 
   // used for log file name
   private static DateFormat fileDateFormat =
@@ -424,7 +405,7 @@ public class CSMARTConsole extends JFrame {
    * Display dialog that allows user to configure the database.
    */
 
-  public void dbConfigMenuItem_actionPerformed() {
+  private void dbConfigMenuItem_actionPerformed() {
     if (dbConfigDialog != null) {
       dbConfigDialog.setVisible(true);
       return;
@@ -535,12 +516,9 @@ public class CSMARTConsole extends JFrame {
    * Create a button representing a node.
    */
   private NodeStatusButton createStatusButton(String nodeName, String hostName) {
-    // use unknown color
-    //    JRadioButton button = 
-    //      new JRadioButton(new ColoredCircle(unknownStatus, 20));
     NodeStatusButton button =
-      new NodeStatusButton(new ColoredCircle(unknownStatus, 20));
-    button.setSelectedIcon(new SelectedColoredCircle(unknownStatus, 20));
+      new NodeStatusButton(new ColoredCircle(NodeStatusButton.unknownStatus, 20));
+    button.setSelectedIcon(new SelectedColoredCircle(NodeStatusButton.unknownStatus, 20));
     button.setToolTipText(nodeName + ":" + hostName + ":unknown");
     button.setActionCommand(nodeName);
     button.setFocusPainted(false);
@@ -590,9 +568,6 @@ public class CSMARTConsole extends JFrame {
    */
 
   private void resetNodeStatus() {
-    ConsoleNodeListener listener = 
-      (ConsoleNodeListener)nodeListeners.get(selectedNodeName);
-    //    listener.clearError();
     ConsoleTextPane consoleTextPane =
       (ConsoleTextPane)nodePanes.get(selectedNodeName);
     consoleTextPane.clearNotify();
@@ -693,7 +668,7 @@ public class CSMARTConsole extends JFrame {
    * tabbed pane for it.
    */
 
-  public void runButton_actionPerformed(ActionEvent e) {
+  private void runButton_actionPerformed(ActionEvent e) {
     destroyOldNodes(); // Get rid of any old stuff before creating the new
     userStoppedTrials = false;
     ArrayList nodesToUse = new ArrayList();
@@ -842,7 +817,7 @@ public class CSMARTConsole extends JFrame {
    * If any society is not self terminating, determine if the experiment
    * is being monitored, and if so, ask the user to confirm the stop. 
    */
-  public void stopButton_actionPerformed(ActionEvent e) {
+  private void stopButton_actionPerformed(ActionEvent e) {
     stopButton.setSelected(true); // indicate stopping
     stopButton.setEnabled(false); // disable until experiment stops
     int nSocieties = experiment.getSocietyComponentCount();
@@ -877,7 +852,7 @@ public class CSMARTConsole extends JFrame {
    * Abort all nodes, (using NodeServesClient interface which is
    * returned by createNode).
    */
-  public void abortButton_actionPerformed(ActionEvent e) {
+  private void abortButton_actionPerformed(ActionEvent e) {
     aborting = true;
     stopAllNodes();
   }
@@ -885,7 +860,7 @@ public class CSMARTConsole extends JFrame {
   /**
    * Stop all experiments.  Called before exiting CSMART.
    */
-  public void stopExperiments() {
+  private void stopExperiments() {
     stopAllNodes(); // stop the nodes
     destroyOldNodes(); // kill all their outputs
     unsetTrialValues(); // unset values from last trial
@@ -1091,8 +1066,8 @@ public class CSMARTConsole extends JFrame {
     NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
 
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
-    ConsoleTextPane stdoutPane = new ConsoleTextPane(doc, statusButton);
-    JScrollPane scrollPane = new JScrollPane(stdoutPane);
+    ConsoleTextPane textPane = new ConsoleTextPane(doc, statusButton);
+    JScrollPane scrollPane = new JScrollPane(textPane);
 
     // create a node event listener to get events from the node
     NodeEventListener listener = null;
@@ -1109,9 +1084,9 @@ public class CSMARTConsole extends JFrame {
       return false;
     }
     if (notifyCondition != null)
-      stdoutPane.setNotifyCondition(notifyCondition);
+      textPane.setNotifyCondition(notifyCondition);
     nodeListeners.put(nodeName, listener);
-    nodePanes.put(nodeName, stdoutPane);
+    nodePanes.put(nodeName, textPane);
 
     NodeEventFilter filter = new NodeEventFilter(10);
 
@@ -1125,17 +1100,15 @@ public class CSMARTConsole extends JFrame {
                    nameServerPorts);
     properties.put("org.cougaar.name.server", 
 		   nameServerHostName + ":" + nameServerPorts);
-    int port = 8484;
-    properties.put("org.cougaar.control.port", Integer.toString(port));
+    properties.put("org.cougaar.control.port", Integer.toString(DEFAULT_PORT));
     if (!CSMART.inDBMode()) {
       properties.put("org.cougaar.filename", uniqueNodeName + ".ini");
     } else {
       properties.put("org.cougaar.configuration.database", dbConfig);
       properties.put("org.cougaar.configuration.user", dbName);
       properties.put("org.cougaar.configuration.password", dbPassword);
-      properties.put("org.cougaar.experiment.id", 
-                     "\"SMALL-135-TRANS|TRIAL-A\"");
-                     //                     experiment.getExperimentID());
+      properties.put("org.cougaar.experiment.id", experiment.getTrialID());
+                     //                     "\"SMALL-135-TRANS|TRIAL-A\"");
     }
     // set configuration file names in nodesToRun
     for (int i = 0; i < nodesToRun.length; i++) 
@@ -1148,9 +1121,9 @@ public class CSMARTConsole extends JFrame {
 
     // create the node
     try {
-      HostServesClient hsc = communitySupport.getHost(hostName, port);
-      System.out.println("Host: " + hostName + " port: " + port + " name: " +
-                         uniqueNodeName);
+      HostServesClient hsc = communitySupport.getHost(hostName, DEFAULT_PORT);
+      System.out.println("Host: " + hostName + " port: " + DEFAULT_PORT + 
+                         " name: " + uniqueNodeName);
       NodeServesClient nsc = hsc.createNode(uniqueNodeName, properties, null,
                                             listener, filter, configWriter);
       if (nsc != null)
@@ -1229,9 +1202,6 @@ public class CSMARTConsole extends JFrame {
 	  continue;
 	File newResultFile = 
 	  new File(dirname + File.separator + filenames[i]);
-	//	System.out.println("CSMARTConsole: saving results in: " +
-	//			   dirname + File.separatorChar + 
-	//			   filenames[i].substring(2));
 	InputStream is = hostInfo.open(filenames[i]);
 	BufferedReader reader = 
 	  new BufferedReader(new InputStreamReader(is), 1000);
@@ -1380,7 +1350,7 @@ public class CSMARTConsole extends JFrame {
   /**
    * Action listeners for top level menus.
    */
-  public void exitMenuItem_actionPerformed(AWTEvent e) {
+  private void exitMenuItem_actionPerformed(AWTEvent e) {
     stopExperiments();
     updateExperimentControls(experiment, false);
     updateExperimentEditability();
@@ -1393,7 +1363,7 @@ public class CSMARTConsole extends JFrame {
     dispose();
   }
 
-  public String getElapsedTimeLabel(String prefix, long startTime) {
+  private String getElapsedTimeLabel(String prefix, long startTime) {
     long now = new Date().getTime();
     long timeElapsed = now - startTime;
     long hours = timeElapsed / MSECS_PER_HOUR;
@@ -1445,28 +1415,6 @@ public class CSMARTConsole extends JFrame {
     hostConfiguration.addHostTreeSelectionListener(myTreeListener);
   }
 
-  public static String getStatusColorDescription(Color statusColor) {
-    if (colorDescriptions == null) {
-      colorDescriptions = new Hashtable();
-      colorDescriptions.put(CSMARTConsole.busyStatus, "extremely busy");
-      colorDescriptions.put(CSMARTConsole.highBusyStatus, "very busy");
-      colorDescriptions.put(CSMARTConsole.mediumHighBusyStatus, "busy");
-      colorDescriptions.put(CSMARTConsole.mediumBusyStatus, "somewhat busy");
-      colorDescriptions.put(CSMARTConsole.mediumLowBusyStatus, "somewhat idle");
-      colorDescriptions.put(CSMARTConsole.lowBusyStatus, "idle");
-      colorDescriptions.put(CSMARTConsole.idleStatus, "node created");
-      colorDescriptions.put(CSMARTConsole.errorStatus, "node destroyed");
-      colorDescriptions.put(CSMARTConsole.noAnswerStatus, "no answer");
-      colorDescriptions.put(CSMARTConsole.unknownStatus, "unknown");
-      colorDescriptions.put(CSMARTConsole.stdErrStatus, "error");
-      colorDescriptions.put(CSMARTConsole.notifyStatus, "notify");
-    }
-    String s = (String)colorDescriptions.get(statusColor);
-    if (s == null)
-      s = "";
-    return s;
-  }
-
   public static void main(String[] args) {
     CSMARTConsole console = new CSMARTConsole(null);
     // for debugging, create our own society
@@ -1492,7 +1440,7 @@ public class CSMARTConsole extends JFrame {
       frameSelected(e);
     }
     /**
-     * When frame is selected, s
+     * When frame is selected,
      * select status button and node in configuration tree.
      */
     private void frameSelected(InternalFrameEvent e) {

@@ -49,19 +49,10 @@ public class Legend extends JDialog {
     colorPanel.setLayout(new GridBagLayout());
     TitledBorder colorPanelTitledBorder = new TitledBorder("Status Legend");
     colorPanel.setBorder(colorPanelTitledBorder);
-
-    makeLegend(CSMARTConsole.busyStatus);
-    makeLegend(CSMARTConsole.highBusyStatus);
-    makeLegend(CSMARTConsole.mediumHighBusyStatus);
-    makeLegend(CSMARTConsole.mediumBusyStatus);
-    makeLegend(CSMARTConsole.mediumLowBusyStatus);
-    makeLegend(CSMARTConsole.lowBusyStatus);
-    makeLegend(CSMARTConsole.idleStatus);
-    makeLegend(CSMARTConsole.errorStatus);
-    makeLegend(CSMARTConsole.noAnswerStatus);
-    makeLegend(CSMARTConsole.unknownStatus);
-    makeLegend(CSMARTConsole.stdErrStatus);
-    makeLegend(CSMARTConsole.notifyStatus);
+    String[] descriptions = NodeStatusButton.getStatusDescriptions();
+    Color[] colors = NodeStatusButton.getStatusColors();
+    for (int i = 0; i < descriptions.length; i++)
+      makeLegend(descriptions[i], colors[i]);
     box.add(colorPanel);
 
     legendPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -73,8 +64,8 @@ public class Legend extends JDialog {
     Legend legend = new Legend();
     legend.setVisible(true);
   }
-  private void makeLegend(Color color) {
-    JButton newButton = new JButton(CSMARTConsole.getStatusColorDescription(color));
+  private void makeLegend(String s, Color color) {
+    JButton newButton = new JButton(s);
     newButton.setBackground(color);
     colorPanel.add(newButton,
                    new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
