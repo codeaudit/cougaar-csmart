@@ -114,12 +114,12 @@ public class ComponentConnector {
      CSMART.createLogger("org.cougaar.tools.csmart.core.cdata.ComponentConnector");
 
     String type = desc.getInsertionPoint();
-    type = type.substring(type.lastIndexOf(".")+1);
+    String shorttype = type.substring(type.lastIndexOf(".")+1);
     if(log.isDebugEnabled()) {
-      log.debug("Component Type is: " + type);
+      log.debug("Component Type is: " + shorttype);
     }
 
-    if(type.equalsIgnoreCase("agent")) {
+    if(shorttype.equalsIgnoreCase("agent")) {
       if(log.isDebugEnabled()) {
         log.debug("Creating AgentComponentData");
       }
@@ -135,18 +135,26 @@ public class ComponentConnector {
       }
 
       data = new GenericComponentData();
-      if(type.equalsIgnoreCase("plugin")) {
-        data.setType(ComponentData.PLUGIN);
-      } else {
-        if(log.isWarnEnabled()) {
-          log.warn("Un-Supported Type: " + type);
-        }
-        // TODO: Add all other types.
-      }
+      data.setType(type);
       data.setName(desc.getName());
       Vector v = (Vector)desc.getParameter();
       for(int i=0; i < v.size(); i++) {
         data.addParameter(v.get(i));
+      }
+      if(shorttype.equalsIgnoreCase("plugin")) {
+        data.setType(ComponentData.PLUGIN);
+      } else {
+	if (shorttype.equalsIgnoreCase("binder")) {
+	  // Node or Agent?
+	  if (type.equalsIgnoreCase("Node.AgentManager.Binder")) 
+	    data.setType(ComponentData.NODEBINDER);
+	  else if (type.equalsIgnoreCase("Node.AgentManager.PluginManager.Binder")) 
+	    data.setType(ComponentData.NODEBINDER);
+	}
+        if(log.isWarnEnabled()) {
+          log.warn("Un-Supported Type: " + shorttype);
+        }
+        // TODO: Add all other types.
       }
     }
     if(log.isDebugEnabled()) {
