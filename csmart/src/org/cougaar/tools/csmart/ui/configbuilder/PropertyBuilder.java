@@ -67,11 +67,14 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   private CSMART csmart;
   private transient Logger log;
   private Experiment experiment;
+  private ModifiableComponent originalComponent;
 
   public PropertyBuilder(CSMART csmart, ModifiableComponent mc, 
+                         ModifiableComponent originalComponent,
                          Experiment experiment) {
     log = CSMART.createLogger(this.getClass().getName());
     this.csmart = csmart;
+    this.originalComponent = originalComponent;
     this.experiment = experiment;
 
     // initialize menus and gui panels
@@ -116,16 +119,38 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   private void exit() {
     propertyEditor.stopEditing(); // accept any edit in progress
     propertyEditor.exit();
-    if (experiment != null && !experiment.isModified())
-      return;
-    saveToDatabase(true); // silently save
+    // if we modified a component in an experiment, 
+    // update the experiment and update the workspace view
+    // and save the component in the database
+    if (isModified() && experiment != null) {
+      if (configComponent instanceof SocietyComponent) {
+        SocietyComponent society = (SocietyComponent)configComponent;
+        experiment.removeSocietyComponent();
+        experiment.addSocietyComponent(society);
+        CSMART.getOrganizer().replaceComponent(experiment, originalComponent, society);
+      } else if (configComponent instanceof RecipeComponent) {
+        RecipeComponent recipe = (RecipeComponent)configComponent;
+        experiment.removeRecipeComponent((RecipeComponent)originalComponent);
+        experiment.addRecipeComponent(recipe);
+        CSMART.getOrganizer().replaceComponent(experiment, originalComponent, recipe);
+      }
+      saveToDatabase();
+    }
   }
 
+  private boolean isModified() {
+    return ((configComponent instanceof SocietyComponent && 
+             ((SocietyComponent)configComponent).isModified()) ||
+            (configComponent instanceof RecipeComponent &&
+             ((RecipeComponent)configComponent).isModified()));
+  }
+
+  // user selected save from menu
   private void save() {
-    if (experiment != null && !experiment.isModified()) {
+    if (!isModified()) {
       String[] msg = {
         "No modifications were made.",
-        "Do you want to save this experiment anyway?"
+        "Do you want to save anyway?"
       };
       int answer =
         JOptionPane.showConfirmDialog(this, msg,
@@ -134,7 +159,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
                                       JOptionPane.WARNING_MESSAGE);
       if (answer != JOptionPane.YES_OPTION) return;
     }
-    saveToDatabase(false);
+    saveToDatabase(); // force save
   }
 
   public void actionPerformed(ActionEvent e) {
@@ -160,20 +185,15 @@ public class PropertyBuilder extends JFrame implements ActionListener {
 
   /** 
    * Save society and recipes to database.
-   * If editing a society or recipe from within an experiment,
-   * save the experiment also,
-   * otherwise save the society or recipe and tell the user
-   * what experiments will have to be updated.
-   * If silently is true, display no dialog boxes (used on exit).
    */
-  private void saveToDatabase(boolean silently) {
+
+  private void saveToDatabase() {
     if (configComponent instanceof SocietyComponent) {
-      if (((SocietyComponent)configComponent).isModified()) {
-	final PropertyBuilder propertyBuilder = this;
-	GUIUtils.timeConsumingTaskStart(this);
-	GUIUtils.timeConsumingTaskStart(csmart);
-	try {
-	  new Thread("SaveSociety") {
+      final PropertyBuilder propertyBuilder = this;
+      GUIUtils.timeConsumingTaskStart(this);
+      GUIUtils.timeConsumingTaskStart(csmart);
+      try {
+        new Thread("SaveSociety") {
 	    public void run() {
 	      boolean success = ((SocietyComponent)configComponent).saveToDatabase();
 	      GUIUtils.timeConsumingTaskEnd(propertyBuilder);
@@ -185,96 +205,15 @@ public class PropertyBuilder extends JFrame implements ActionListener {
 	      }
 	    }
 	  }.start();
-	} catch (RuntimeException re) {
-	  if(log.isErrorEnabled()) {
-	    log.error("Runtime exception saving society", re);
-	  }
-	  GUIUtils.timeConsumingTaskEnd(propertyBuilder);
-	  GUIUtils.timeConsumingTaskEnd(csmart);
-	}
-	//((SocietyComponent)configComponent).saveToDatabase();
-	// Only give the user the list of experiments
-	// to save
-	if (experiment == null)
-	  CSMART.getOrganizer().displayExperiments((SocietyComponent)configComponent);
-      } else {
-	// If we opened a "local" version of a society within an experiment,
-	// then we want to remove this SocietyComponent from the workspace
-	// FIXME!
-	if (experiment != null) {
-	  // Get back the old society that was in the experiment somehow
-	  // FIXME!! Maybe save the copied society anyhow?
-	  if (log.isInfoEnabled()) {
-	    log.info("Opened local society for experiment " + experiment.getExperimentName() + " but didnt modify it, so dont want to save. Need to get original back!");
-	  }
-	}
+      } catch (RuntimeException re) {
+        if(log.isErrorEnabled()) {
+          log.error("Runtime exception saving society", re);
+        }
+        GUIUtils.timeConsumingTaskEnd(propertyBuilder);
+        GUIUtils.timeConsumingTaskEnd(csmart);
       }
     } else if (configComponent instanceof RecipeComponent) {
-      try {
-        RecipeComponent rc = (RecipeComponent) configComponent;
-        PDbBase pdb = new PDbBase();
-        switch (pdb.recipeExists(rc)) {
-        case PDbBase.RECIPE_STATUS_EXISTS:
-          if (silently)
-            return; // don't need to save, don't say anything
-          JOptionPane.showMessageDialog(this,
-                                        "The recipe is already in the database with the same values.",
-                                        "Write Not Needed",
-                                        JOptionPane.INFORMATION_MESSAGE);
-          return;
-        case PDbBase.RECIPE_STATUS_DIFFERS:
-          // save the recipe, so workspace is consistent with database
-          break;
-        case PDbBase.RECIPE_STATUS_ABSENT:
-          break;                // Just write it
-        }
-        rc.saveToDatabase();
-        if (!silently)
-          JOptionPane.showMessageDialog(this,
-                                        "Recipe written successfully.",
-                                        "Recipe Written",
-                                        JOptionPane.INFORMATION_MESSAGE);
-	// Only give the user this list if not editing a local experiment
-	if (experiment == null)
-	  CSMART.getOrganizer().displayExperiments(rc);
-      } catch (Exception sqle) {
-        if(log.isErrorEnabled()) {
-          log.error("Exception", sqle);
-        }
-        JOptionPane.showMessageDialog(this,
-                                      "An exception occurred writing the recipe to the database",
-                                      "Error Writing Database",
-                                      JOptionPane.ERROR_MESSAGE);
-      }
-    }
-    if (experiment != null && experiment.isModified()) {
-      // This gets called when editing a society within an experiment.
-      // But the society itself still must be saved!
-      saveExperiment();
-    }
-  }
-
-
-  private void saveExperiment() {
-    final DBConflictHandler saveToDbConflictHandler =
-      GUIUtils.createSaveToDbConflictHandler(this);
-    final PropertyBuilder propertyBuilder = this;
-    GUIUtils.timeConsumingTaskStart(this);
-    GUIUtils.timeConsumingTaskStart(csmart);
-    try {
-      new Thread("SaveExperiment") {
-          public void run() {
-            experiment.saveToDb(saveToDbConflictHandler);
-            GUIUtils.timeConsumingTaskEnd(propertyBuilder);
-            GUIUtils.timeConsumingTaskEnd(csmart);
-          }
-        }.start();
-    } catch (RuntimeException re) {
-      if(log.isErrorEnabled()) {
-        log.error("Runtime exception saving experiment", re);
-      }
-      GUIUtils.timeConsumingTaskEnd(propertyBuilder);
-      GUIUtils.timeConsumingTaskEnd(csmart);
+      ((RecipeComponent)configComponent).saveToDatabase();
     }
   }
 
