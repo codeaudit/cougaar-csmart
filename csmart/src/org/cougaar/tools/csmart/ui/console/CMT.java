@@ -499,39 +499,41 @@ public class CMT {
     }
 
     /*
-     * Deletes the given experiment from the database. Gets rid of the trial and associated other data.
+     * Deletes the given experiment from the database. 
+     * Gets rid of the trial and associated other data.
      * Does not get rid of the CMT assembly or other assemblies.
      */
 
-    public static void deleteExperiment(String experiment_id) {
-	boolean doIt = true;
-	if(experiment_id.equals("EXPT_TRANS")){
-	    doIt=false;
-	    int response = 
-		JOptionPane.showConfirmDialog(null,
-					      "You seem to be trying to delete the base experiment -- do you REALLY want to do this?",
-					      "Confirm Delete",
-					      JOptionPane.YES_NO_OPTION);
-      
-	    if (response == JOptionPane.YES_OPTION) {
-		doIt = true;
-	    }
-	}
-
-	if (doIt){
-	    String expt_id = sqlQuote(experiment_id);
-            String trial_id = sqlQuote(getTrialId(experiment_id));
-	    deleteItems(asbPrefix+"expt_trial_assembly", "expt_id", expt_id);
-	    deleteItems(asbPrefix+"expt_trial_thread", "expt_id", expt_id);
-	    deleteItems(asbPrefix+"expt_trial_org_mult", "expt_id", expt_id);
-	    deleteItems(asbPrefix+"expt_trial_metric_prop", "trial_id", trial_id);
-	    deleteItems(asbPrefix+"expt_trial_metric", "trial_id", trial_id);
-	    deleteItems(asbPrefix+"expt_trial_mod_recipe", "trial_id", trial_id);
-	    deleteItems(asbPrefix+"expt_trial", "expt_id", expt_id);
-	    deleteItems(asbPrefix+"expt_experiment", "expt_id", expt_id);
-	    clearUnusedCMTassemblies();
-	}
+  public static void deleteExperiment(String experiment_id) {
+    boolean doIt = true;
+    // confirm deleting the base experiment
+    if(experiment_id.equals("EXPT_TRANS")){
+      doIt=false;
+      int response = 
+        JOptionPane.showConfirmDialog(null,
+                                      "You seem to be trying to delete the base experiment -- do you REALLY want to do this?",
+                                      "Confirm Delete",
+                                      JOptionPane.YES_NO_OPTION);
+      if (response == JOptionPane.YES_OPTION) {
+        doIt = true;
+      }
     }
+    if (!doIt)
+      return;
+    String expt_id = sqlQuote(experiment_id);
+    String trial_id = sqlQuote(getTrialId(experiment_id));
+    ArrayList queries = new ArrayList();
+    queries.add(makeDeleteQuery(asbPrefix+"expt_trial_assembly", "expt_id", expt_id));
+    queries.add(makeDeleteQuery(asbPrefix+"expt_trial_thread", "expt_id", expt_id));
+    queries.add(makeDeleteQuery(asbPrefix+"expt_trial_org_mult", "expt_id", expt_id));
+    queries.add(makeDeleteQuery(asbPrefix+"expt_trial_metric_prop", "trial_id", trial_id));
+    queries.add(makeDeleteQuery(asbPrefix+"expt_trial_metric", "trial_id", trial_id));
+    queries.add(makeDeleteQuery(asbPrefix+"expt_trial_mod_recipe", "trial_id", trial_id));
+    queries.add(makeDeleteQuery(asbPrefix+"expt_trial", "expt_id", expt_id));
+    queries.add(makeDeleteQuery(asbPrefix+"expt_experiment", "expt_id", expt_id));
+    executeQueries(queries);
+    clearUnusedCMTassemblies();
+  }
 
     public static void iterateUpdate(String op, String subs, Set items){
 	Iterator i = items.iterator();
@@ -541,6 +543,36 @@ public class CMT {
 	}
     }
 
+  public static String makeDeleteQuery(String table, String column, 
+                                       String val) {
+    return "delete from "+ table.toUpperCase() +" where "+column+"="+val;
+  }
+
+  public static void executeQueries(ArrayList queries) {
+    if (!execute)
+      return;
+    String dbQuery = "";
+    try {
+      Connection conn = DBUtils.getConnection(QUERY_FILE);
+      try {
+        Statement stmt = conn.createStatement();	
+        for (int i = 0; i < queries.size(); i++) {
+          dbQuery = (String)queries.get(i);
+          //          System.out.println("Query: " + dbQuery);
+          int count = stmt.executeUpdate(dbQuery);
+          //          System.out.println("Deleted "+count+" items from the database");
+        }
+        stmt.close();
+      } finally {
+        conn.close();
+      }
+    } catch (Exception e) {
+      System.out.println("dbDelete: "+dbQuery);
+      e.printStackTrace();
+      throw new RuntimeException("Error" + e);
+    }
+  }
+    
     public static int deleteItems(String table, String column, String val){
 	String dbQuery = "delete from "+ table.toUpperCase() +" where "+column+"="+val;
 	int count=0;

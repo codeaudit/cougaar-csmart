@@ -56,6 +56,7 @@ import org.cougaar.util.Parameters;
 public class CSMARTConsole extends JFrame {
   // org.cougaar.control.port; port for contacting applications server
   public static final int APP_SERVER_DEFAULT_PORT = 8484;
+  public static final String NAME_SERVER_PORTS = "8888:5555";
   // number of characters displayed in the node output window
   private static final int DEFAULT_VIEW_SIZE = 50000;
   CSMART csmart; // top level viewer, gives access to save method, etc.
@@ -75,7 +76,7 @@ public class CSMARTConsole extends JFrame {
   boolean stopping = false;
   //  boolean aborting = false;
   Hashtable runningNodes; // maps NodeComponents to NodeServesClient
-  Hashtable oldNodes; // store old charts till next experiment is started
+  ArrayList oldNodes; // node components to destroy before running again
   NodeComponent[] nodesToRun; // node components that contain agents to run
   String[] hostsToRunOn;      // hosts that are assigned nodes to run
   ArrayList hostsToUse; // Hosts that are actually having stuff run on them
@@ -161,7 +162,7 @@ public class CSMARTConsole extends JFrame {
   private void setSocietyComponent(SocietyComponent cc) {
     communitySupport = new ClientCommunityController();
     runningNodes = new Hashtable();
-    oldNodes = new Hashtable();
+    oldNodes = new ArrayList();
     nodeListeners = new Hashtable();
     nodePanes = new Hashtable();
 
@@ -889,14 +890,13 @@ public class CSMARTConsole extends JFrame {
 
   // Kill any existing output frames or history charts
   private void destroyOldNodes() {
-    Enumeration nodeComponents = oldNodes.keys();
-    while (nodeComponents.hasMoreElements()) {
-      NodeComponent nodeComponent = 
-	(NodeComponent)nodeComponents.nextElement();
+    Iterator nodeComponents = oldNodes.iterator();
+    while (nodeComponents.hasNext()) {
+      NodeComponent nodeComponent = (NodeComponent)nodeComponents.next();
       String nodeName = nodeComponent.getShortName();
       removeStatusButton(nodeName);
-      oldNodes.remove(nodeComponent);
     }
+    oldNodes.clear();
     nodeListeners.clear();
     nodePanes.clear();
     JInternalFrame[] frames = desktop.getAllFrames();
@@ -953,8 +953,10 @@ public class CSMARTConsole extends JFrame {
    * Update the gui controls.
    */
   public void nodeStopped(NodeComponent nodeComponent) {
-    oldNodes.put(nodeComponent, runningNodes.get(nodeComponent));
-    runningNodes.remove(nodeComponent);
+    if (runningNodes.get(nodeComponent) != null) {
+      oldNodes.add(nodeComponent);
+      runningNodes.remove(nodeComponent);
+    }
     // enable restart command on node output window
     desktop.getNodeFrame(nodeComponent.getShortName()).enableRestart();
     // if any node has stopped, then don't kill the rest of the nodes
@@ -1542,10 +1544,10 @@ public class CSMARTConsole extends JFrame {
   private void filterMenuItem_actionPerformed() {
     if (displayFilter == null)
       displayFilter = 
-        new ConsoleNodeOutputFilter(null, true);
+        new ConsoleNodeOutputFilter(this, null, true);
     else
       displayFilter =
-        new ConsoleNodeOutputFilter(displayFilter.getValues(),
+        new ConsoleNodeOutputFilter(this, displayFilter.getValues(),
                                     displayFilter.isAllSelected());
     Enumeration listeners = nodeListeners.elements();
     while (listeners.hasMoreElements()) {

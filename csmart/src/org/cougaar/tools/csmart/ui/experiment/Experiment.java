@@ -305,6 +305,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       experimentCopy = new Experiment(uniqueName, expID, trialID);
     else
       experimentCopy = new Experiment(uniqueName);
+    // this copies the society and the agents
     for (int i = 0; i < getComponentCount(); i++) {
       ModifiableConfigurableComponent sc = getComponent(i);
       ModifiableConfigurableComponent copiedSC = organizer.copyComponent(sc, context);
@@ -321,8 +322,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     // copy nodes
     NodeComponent[] nodes = getNodes();
     NodeComponent[] nnodes = new NodeComponent[nodes.length];
-    for (int i = 0; i < nodes.length; i++) 
-      nnodes[i] = experimentCopy.addNode(nodes[i].getShortName().toString());
+    for (int i = 0; i < nodes.length; i++) {
+      nnodes[i] = ((ExperimentNode)nodes[i]).copy(experimentCopy);
+      experimentCopy.addNodeComponent((ExperimentNode)nnodes[i]);
+    }
     // reconcile hosts-nodes-agents
     AgentComponent[] nagents = experimentCopy.getAgents();
     NodeComponent nnode = null;
@@ -420,14 +423,18 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     fireModification();
   }
 
+  private void addNodeComponent(ExperimentNode node) {
+    nodes.add(node);
+    node.addModificationListener(this);
+    fireModification();
+  }
+
   public NodeComponent addNode(String name) {
     // FIXME! This allows 2 Nodes with the same name. Of itself, that's
     // OK, but on the same Host, that would be bad, and in general
     // its confusing.
     ExperimentNode result = new ExperimentNode(name, this);
-    nodes.add(result);
-    result.addModificationListener(this);
-    fireModification();
+    addNodeComponent(result);
     return result;
   }
 

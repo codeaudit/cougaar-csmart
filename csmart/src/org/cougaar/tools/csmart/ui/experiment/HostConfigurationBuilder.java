@@ -26,8 +26,6 @@ import java.awt.Color;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.*;
 import javax.swing.tree.*;
 import javax.swing.*;
@@ -430,7 +428,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       NodeComponent[] nodes = hostComponent.getNodes();
       for (int j = 0; j < nodes.length; j++) {
 	NodeComponent nodeComponent = nodes[j];
-        addDefaultArgumentsToNode((ConfigurableComponent)nodeComponent);
 	cto = new ConsoleTreeObject(nodeComponent);
 	DefaultMutableTreeNode nodeTreeNode = 
 	  new DefaultMutableTreeNode(cto, true);
@@ -516,7 +513,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     Iterator iter = unassignedNodes.iterator();
     while (iter.hasNext()) {
       NodeComponent node = (NodeComponent)iter.next();
-      addDefaultArgumentsToNode((ConfigurableComponent)node);
       ConsoleTreeObject cto = new ConsoleTreeObject(node);
       DefaultMutableTreeNode newNodeTreeNode = 
 	new DefaultMutableTreeNode(cto, true);
@@ -673,7 +669,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       return;
     DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
     NodeComponent nodeComponent = experiment.addNode(nodeName);
-    addDefaultArgumentsToNode((ConfigurableComponent)nodeComponent);
     DefaultMutableTreeNode newNode =
       new DefaultMutableTreeNode(new ConsoleTreeObject(nodeComponent));
     model.insertNodeInto(newNode,
@@ -1180,45 +1175,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       NodeComponent node = nodes[i];
       Properties arguments = node.getArguments();
       arguments.setProperty("org.cougaar.name.server",
-                            nameServerHostName + ":8888:5555");
+                            nameServerHostName + ":" +
+                            CSMARTConsole.NAME_SERVER_PORTS);
       node.setArguments(arguments);
     }
-  }
-
-  /**
-   * Adds default arguments to a node, if and only if, there are
-   * no arguments on the node.
-   */
-
-  private void addDefaultArgumentsToNode(ConfigurableComponent node) {
-    if (((NodeComponent)node).getArguments() != null)
-      return;
-    Properties properties = new Properties();
-    String nameServerPorts = "8888:5555";
-    properties.put("org.cougaar.tools.server.nameserver.ports", 
-                   nameServerPorts);
-    properties.put("org.cougaar.name.server", 
-  		   nameServerHostName + ":" + nameServerPorts);
-    properties.put("org.cougaar.control.port", 
-                   Integer.toString(CSMARTConsole.APP_SERVER_DEFAULT_PORT));
-    if (experiment.isInDatabase()) {
-      properties.put("org.cougaar.configuration.database", 
-                     CSMART.getDatabaseConfiguration());
-      properties.put("org.cougaar.configuration.user", 
-                     CSMART.getDatabaseUserName());
-      properties.put("org.cougaar.configuration.password", 
-                     CSMART.getDatabaseUserPassword());
-      properties.put("org.cougaar.experiment.id", experiment.getTrialID());
-
-      properties.put("org.cougaar.node.name", node.getShortName());
-    }
-    try {
-      properties.put("env.DISPLAY", InetAddress.getLocalHost().getHostName() +
-                     ":0.0");
-    } catch (UnknownHostException uhe) {
-      System.out.println(uhe);
-    }
-    ((NodeComponent)node).setArguments(properties);
   }
 
   private DefaultTreeModel createModel(final Experiment experiment, DefaultMutableTreeNode node, boolean askKids) {

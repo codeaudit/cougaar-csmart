@@ -55,8 +55,9 @@ public class ConsoleNodeOutputFilter extends JDialog {
   boolean[] msgArray = { false, false, false, false, false, false, false };
   private boolean allSelected = true;
 
-  public ConsoleNodeOutputFilter(boolean[] initialValues, boolean acceptAll) {
-    super((java.awt.Frame)null, "Filter", true); // modal dialog
+  public ConsoleNodeOutputFilter(Frame parent,
+                                 boolean[] initialValues, boolean acceptAll) {
+    super(parent, "Filter", true); // modal dialog
     filterPanel = new JPanel(new BorderLayout());
 
     // ok and cancel buttons panel
@@ -90,7 +91,8 @@ public class ConsoleNodeOutputFilter extends JDialog {
     // Message Types Panel
     JPanel msgTypesPanel = new JPanel();
     msgTypesPanel.setLayout(new GridBagLayout());
-    TitledBorder msgTypesTitledBorder = new TitledBorder("Messages Types");
+    TitledBorder msgTypesTitledBorder = 
+      new TitledBorder("Message Types To Display");
     Font msgfont = msgTypesTitledBorder.getTitleFont();
     Font msgtitleFont = msgfont.deriveFont(Font.ITALIC);
     msgTypesTitledBorder.setTitleFont(msgtitleFont);
@@ -173,6 +175,14 @@ public class ConsoleNodeOutputFilter extends JDialog {
       idlenessCB.setSelected(msgArray[NodeEvent.IDLE_UPDATE]);
       heartbeatCB.setSelected(msgArray[NodeEvent.HEARTBEAT]);
     }
+    setSize(225, 300);
+    // make dialog display over the middle of the caller's frame
+    Point p = parent.getLocation();
+    Dimension d = parent.getSize();
+    int centerX = p.x + d.width/2;
+    int centerY = p.y + d.height/2;
+    Dimension myD = getSize();
+    setLocation(new Point(centerX - myD.width/2, centerY - myD.height/2));
     setVisible(true);
   }
   
@@ -237,7 +247,8 @@ public class ConsoleNodeOutputFilter extends JDialog {
   }
 
   public static void main(String[] args) {
-    ConsoleNodeOutputFilter filter = new ConsoleNodeOutputFilter(null, true);
+    ConsoleNodeOutputFilter filter = 
+      new ConsoleNodeOutputFilter(null, null, true);
     filter.setVisible(true);
   }
 } 

@@ -683,7 +683,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
       isAllSelected = currentFilter.isAllSelected();
     }
     ConsoleNodeOutputFilter filter =
-      new ConsoleNodeOutputFilter(filterValues, isAllSelected);
+      new ConsoleNodeOutputFilter(console, filterValues, isAllSelected);
     listener.setFilter(filter);
   }
 
