@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -32,13 +32,13 @@ import java.util.Properties;
  * AppServerSupport classes.
  */
 
-public class NodeInfo {
-  RemoteHost appServer;
-  String nodeName;
-  String hostName;
-  String processName;
-  Properties properties;
-  List args;
+public final class NodeInfo {
+  private final RemoteHost appServer;
+  private final String nodeName;
+  private final String hostName;
+  private final String processName;
+  private final Properties properties;
+  private final List args;
 
   public NodeInfo(RemoteHost appServer,
                   String nodeName, String hostName, String processName,
@@ -51,4 +51,27 @@ public class NodeInfo {
     this.args = args;
   }
 
+  public RemoteHost getAppServer() {
+    return appServer;
+  }
+
+  public String getNodeName() {
+    return nodeName;
+  }
+
+  public String getHostName() {
+    return hostName;
+  }
+
+  public String getProcessName() {
+    return processName;
+  }
+
+  public Properties getProperties() {
+    return properties;
+  }
+
+  public List getArgs() {
+    return args;
+  }
 }
