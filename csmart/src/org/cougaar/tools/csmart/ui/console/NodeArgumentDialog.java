@@ -34,10 +34,12 @@ import java.util.Vector;
 public class NodeArgumentDialog extends JDialog {
   JTable argTable;
   DefaultTableModel nodeArgTableModel;
+  JTextArea args;
 
-  public NodeArgumentDialog() {
-    super((Frame)null, true); // display modal dialog
-    JPanel nodeArgPanel = new JPanel(new BorderLayout());
+  public NodeArgumentDialog(String title) {
+    super((Frame)null, title, true); // display modal dialog
+    Box nodeArgPanel = Box.createVerticalBox();
+    JPanel argumentPanel = new JPanel();
     // ok and cancel buttons panel
     JPanel buttonPanel = new JPanel();
     JButton okButton = new JButton("OK");
@@ -55,9 +57,6 @@ public class NodeArgumentDialog extends JDialog {
     });
     buttonPanel.add(cancelButton);
 
-    // panel for table
-    JPanel tablePanel = new JPanel();
-
     // add JTable
     argTable = new JTable();
     // don't allow user to reorder columns
@@ -65,8 +64,9 @@ public class NodeArgumentDialog extends JDialog {
     argTable.setColumnSelectionAllowed(false);
     argTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     JScrollPane scrollPane = new JScrollPane(argTable);
-    tablePanel.setLayout(new BorderLayout());
-    tablePanel.add(scrollPane, BorderLayout.CENTER);
+    JPanel tablePanel = new JPanel(new BorderLayout());
+    tablePanel.setBorder(BorderFactory.createTitledBorder("-D Options"));
+    tablePanel.add(scrollPane);
 
     // add buttons to add/delete properties
     JPanel tableButtonPanel = new JPanel();
@@ -89,11 +89,16 @@ public class NodeArgumentDialog extends JDialog {
       }
     });
     tableButtonPanel.add(deleteButton);
-
     tablePanel.add(tableButtonPanel, BorderLayout.SOUTH);
 
-    nodeArgPanel.add(tablePanel, BorderLayout.CENTER);
-    nodeArgPanel.add(buttonPanel, BorderLayout.SOUTH);
+    argumentPanel.setBorder(BorderFactory.createTitledBorder("Arguments"));
+    args = new JTextArea(10, 40);
+    args.setToolTipText("Enter command line args one per line");
+    argumentPanel.add(args);
+
+    nodeArgPanel.add(tablePanel);
+    nodeArgPanel.add(argumentPanel);
+    nodeArgPanel.add(buttonPanel);
     getContentPane().add(nodeArgPanel);
     pack();
   }
@@ -104,12 +109,17 @@ public class NodeArgumentDialog extends JDialog {
    * number of rows.
    */
 
-  public void setData(Vector data) {
-    Vector columnNames = new Vector(2);
+  public void setData(Vector data, int nColumns) {
+    Vector columnNames = new Vector(nColumns);
     columnNames.add("Name");
     columnNames.add("Value");
+    if (nColumns > 2) columnNames.add("Global");
     nodeArgTableModel = new DefaultTableModel(data, columnNames);
     argTable.setModel(nodeArgTableModel);
+  }
+
+  public void setArguments(String arguments) {
+    args.setText(arguments);
   }
 
   /**
@@ -122,8 +132,12 @@ public class NodeArgumentDialog extends JDialog {
     return nodeArgTableModel.getDataVector();
   }
 
+  public String getArguments() {
+    return args.getText();
+  }
+
   public static void main(String[] args) {
-    NodeArgumentDialog nad = new NodeArgumentDialog();
+    NodeArgumentDialog nad = new NodeArgumentDialog("Test");
     Vector data = new Vector();
     Vector row = new Vector();
     row.add("Color");
@@ -137,7 +151,7 @@ public class NodeArgumentDialog extends JDialog {
     row.add("Day");
     row.add("Friday");
     data.add(row);
-    nad.setData(data);
+    nad.setData(data, 2);
     nad.setVisible(true);
     Vector newData = nad.getData();
     for (int i = 0; i < newData.size(); i++) {
