@@ -1,3 +1,23 @@
+/* 
+ * <copyright>
+ * Copyright 2001 BBNT Solutions, LLC
+ * under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
+
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the Cougaar Open Source License as published by
+ * DARPA on the Cougaar Open Source Website (www.cougaar.org).
+
+ * THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
+ * PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
+ * IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, AND WITHOUT
+ * ANY WARRANTIES AS TO NON-INFRINGEMENT.  IN NO EVENT SHALL COPYRIGHT
+ * HOLDER BE LIABLE FOR ANY DIRECT, SPECIAL, INDIRECT OR CONSEQUENTIAL
+ * DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE OF DATA OR PROFITS,
+ * TORTIOUS CONDUCT, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THE COUGAAR SOFTWARE.
+ * </copyright>
+ */
 package org.cougaar.tools.csmart.ui.component;
 
 import java.io.IOException;
@@ -24,6 +44,9 @@ import org.cougaar.core.society.Node;
 import org.cougaar.util.DBConnectionPool;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.Parameters;
+
+import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
+import java.awt.Container;
 
 /**
  * A JUnit TestCase for testing the NamingDirContext and server
@@ -152,6 +175,7 @@ public class TestPopulateDb extends TestCase {
                                                           })})})
     };
 
+  private Container myCon;
     private PopulateDb pdb;
     private DBProperties dbp;
     private String cmtAssemblyId;
@@ -223,6 +247,7 @@ public class TestPopulateDb extends TestCase {
     }
 
     public void setUp() throws SQLException, IOException, ClassNotFoundException {
+      myCon = new Container();
         Map substitutions = new HashMap();
         dbp = getDBProperties();
 //          dbp.setDebug(true);
@@ -249,6 +274,8 @@ public class TestPopulateDb extends TestCase {
                                                   this,
                                                   InitializerService.class,
                                                   initializerService);
+	myCon.removeAll();
+	myCon.invalidate();
         dbp = null;
         substitutions = null;
     }
@@ -454,7 +481,7 @@ public class TestPopulateDb extends TestCase {
      **/
     private void populateCMT() throws SQLException, IOException {
         pdb = new PopulateDb("", CMT_TYPE, CMT_TYPE, "REGRESSION Experiment " + exptId,
-                             exptId, trialId, false);
+                             exptId, trialId, false, GUIUtils.createSaveToDbConflictHandler(myCon));
 //          pdb.setDebug(true);
         for (int i = 0; i < nodeData.length; i++) {
             ComponentData node = new GenericComponentData();
