@@ -994,10 +994,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     for (int i = 0; i < hosts.length; i++) {
       // FIXME: instead to nhosts[i] = hosts[i].copy();
       // and then don't need the following 2 set calls hopefully
-      nhosts[i] = experimentCopy.addHost(hosts[i].getShortName().toString());
-      nhosts[i].setServerPort(hosts[i].getServerPort());
-      nhosts[i].setMonitoringPort(hosts[i].getMonitoringPort());
-
+//       nhosts[i] = experimentCopy.addHost(hosts[i].getShortName().toString());
+//       nhosts[i].setServerPort(hosts[i].getServerPort());
+//       nhosts[i].setMonitoringPort(hosts[i].getMonitoringPort());
+      hosts[i].copy(nhosts[i]);
       // FIXME: What about other Host fields? OS, etc?
       // -- answer - see above fixme
     }
@@ -2042,6 +2042,50 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   private void createConfigWriter() {
     if(configWriter == null) {
       configWriter = new LeafOnlyConfigWriter(getSocietyComponentData());
+    }
+  }
+
+
+  
+
+
+  public void dumpHNA() {
+    generateCompleteSociety();
+
+    ExperimentXML xmlWriter = new ExperimentXML();
+
+    File resultDir = getResultDirectory();
+    // if user didn't specify results directory, save in local directory
+    if (resultDir == null) {
+      resultDir = new File(".");
+    }
+    Trial trial = getTrials()[0];
+    String dirname = resultDir.getAbsolutePath() + File.separatorChar + 
+      getExperimentName() + File.separatorChar +
+      trial.getShortName() + File.separatorChar +
+      "HNA-XML";
+    File f = null;
+    try {
+      f = new File(dirname);
+      // guarantee that directories exist
+      if (!f.exists() && !f.mkdirs() && !f.exists()) 
+	f = new File(".");
+    } catch (Exception e) {
+      JOptionPane.showMessageDialog(null, "Couldn't create results directory: " + e, "Can't create directory", JOptionPane.ERROR_MESSAGE);
+      if(log.isErrorEnabled()) {
+        log.error("Couldn't create results directory: ", e);
+      }
+    }
+    if (f != null) {
+      try {
+	JOptionPane.showMessageDialog(null, "Writing xml file to " + f.getAbsolutePath() + "...");
+
+        xmlWriter.createExperimentFile(completeSociety, f);
+      } catch (Exception e) {
+        if(log.isErrorEnabled()) {
+          log.error("Couldn't write ini files: ", e);
+        }
+      }
     }
   }
 
