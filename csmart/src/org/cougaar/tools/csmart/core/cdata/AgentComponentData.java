@@ -24,8 +24,13 @@ import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import java.util.ArrayList;
 
 /**
- * AgentComponentData extends ComponentData and fills in the
- * Agent values of some fields.
+ * <code>AgentComponentData</code> extends <code>GenericComponentData</code>
+ * and sets the Component Type to {@link ComponentData#AGENT} and the
+ * class name to <code>org.cougaar.core.agent.ClusterImpl</code>.
+ * <br><br>
+ * This class also provides access to the agents plugins and their arguments.
+ *
+ * @see GenericComponentData
  */
 public class AgentComponentData extends GenericComponentData {
 
@@ -40,7 +45,7 @@ public class AgentComponentData extends GenericComponentData {
   /**
    * Returns a list of all plugin names for this agent.
    *
-   * @return a <code>String[]</code> value
+   * @return a <code>String[]</code> array of all plugin names
    */
   public String[] getPluginNames() {
     ArrayList names = new ArrayList();
@@ -57,12 +62,12 @@ public class AgentComponentData extends GenericComponentData {
   }
   
   /**
-   * Returns all arg for a specific plugin
+   * Returns all arguments for a specific plugin
    *
    * @param name Name of the plugin
-   * @return an <code>Object[]</code> value
+   * @return an <code>Object[]</code> array of all plugin arguments
    */
-  Object[] getPluginArgs(String name) {
+  public Object[] getPluginArgs(String name) {
     ComponentData plugin = findPlugin(name);
     if(plugin != null) {
       return plugin.getParameters();
@@ -70,6 +75,14 @@ public class AgentComponentData extends GenericComponentData {
     return null;
   }
 
+  /**
+   * Finds a specific plugin, for this agent, based
+   * on a name and returns the <code>ComponentData</code> 
+   * for that plugin.
+   *
+   * @param name Name of the plugin to search for.
+   * @return a <code>ComponentData</code> for the specified plugin
+   */
   private ComponentData findPlugin(String name) {
     ComponentData[] plugins = getChildren();
     for(int i=0; i < plugins.length; i++) {
