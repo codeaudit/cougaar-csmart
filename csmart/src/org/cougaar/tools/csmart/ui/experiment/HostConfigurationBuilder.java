@@ -101,9 +101,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     this.experiment = experiment;
     this.experimentBuilder = experimentBuilder;
     hostConfigurationBuilder = this; // for inner class dialogs
-    isEditable = experiment.isEditable();
     if (experimentBuilder == null)
       isEditable = false; // not editable if we're not in experiment builder
+    else
+      isEditable = true;
     initDisplay();
   }
 
@@ -448,7 +449,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   public void reinit(Experiment newExperiment) {
     experiment = newExperiment;
-    isEditable = experiment.isEditable();
     // if this pane is being displayed, then bring it up-to-date
     if (isShowing())
       update(); 

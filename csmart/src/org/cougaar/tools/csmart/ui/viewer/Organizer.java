@@ -236,15 +236,6 @@ public class Organizer extends JScrollPane {
           organizer.startBuilder();
         }
       };
-          // use invokeLater so if this was invoked from a popup menu
-          // the menu is taken down first
-//  	  SwingUtilities.invokeLater(new Runnable() {
-//                public void run() {
-          //                organizer.startBuilder();
-          //              }
-          //            });
-          //	}
-          //      };
 
   protected AbstractAction deleteRecipeAction =
     new AbstractAction(ActionUtil.DELETE_ACTION) {

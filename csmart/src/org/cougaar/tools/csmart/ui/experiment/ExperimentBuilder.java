@@ -296,9 +296,7 @@ public class ExperimentBuilder extends JFrame {
     //    trialBuilder = new TrialBuilder(experiment);
     //    tabbedPane.add("Trials", trialBuilder);
     // after starting all the editors, set experiment editability to false
-    // if we're really editing and not just viewing
-    if (experiment.isEditable())
-      experiment.setEditInProgress(true);
+    experiment.setEditInProgress(true);
     getContentPane().add(tabbedPane);
     pack();
     setSize(650, 400);

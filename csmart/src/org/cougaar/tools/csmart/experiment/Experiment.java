@@ -123,7 +123,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   private static final String[] variationSchemes = {
     VARY_ONE_DIMENSION, VARY_TWO_DIMENSION, VARY_SEQUENTIAL, VARY_RANDOM };
   private String variationScheme = variationSchemes[0];
-  private boolean overrideEditable = false;
+  //  private boolean overrideEditable = false;
   //  private boolean cloned = false;
   private transient boolean editInProgress = false;
   private transient boolean runInProgress = false;
@@ -556,24 +556,24 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * The first condition can be overridden using the setEditable method.
    * @return true if experiment is editable, false otherwise
    */
-  public boolean isEditable() {
-    if (editInProgress)
-      return false;
-    if (overrideEditable)
-      return true;
-    else
-      return !hasResults();
-  }
+//    public boolean isEditable() {
+//      if (editInProgress)
+//        return false;
+//      if (overrideEditable)
+//        return true;
+//      else
+//        return !hasResults();
+//    }
 
   /**
    * Make an experiment editable even if
    * it has experiment results.
    */
-  public void setEditable(boolean editable) {
-    if (editable == overrideEditable) return; // no change
-    overrideEditable = editable;
-    fireModification();
-  }
+//    public void setEditable(boolean editable) {
+//      if (editable == overrideEditable) return; // no change
+//      overrideEditable = editable;
+//      fireModification();
+//    }
 
 
   ////////////////////////////////////////////

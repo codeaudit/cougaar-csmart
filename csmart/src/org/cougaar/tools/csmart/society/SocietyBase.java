@@ -83,6 +83,9 @@ public abstract class SocietyBase
   // modification event
   public static final int SOCIETY_SAVED = 2;
 
+  // used to block modify notifications while saving
+  private boolean saveInProgress = false; 
+
   /**
    * Constructs a <code>SocietyBase</code> object
    * with the given name.
@@ -287,6 +290,7 @@ public abstract class SocietyBase
    * @return a <code>boolean</code>, false on error
    */
   public boolean saveToDatabase() {
+    saveInProgress = true;
     if(log.isInfoEnabled()) {
       log.info("saveToDatabase society (" + getSocietyName() + ") with asb: " + getAssemblyId() + " and old Assembly: " + oldAssemblyId);
     }
@@ -307,7 +311,6 @@ public abstract class SocietyBase
       oldCMTAsbid = currAssID;
       currAssID = null;
       name = name + " edited";
-      //      return false;
     }
 
     // And what is my current assemblyID?
@@ -341,6 +344,7 @@ public abstract class SocietyBase
       }
     }
     modified = false;
+    saveInProgress = false;
     // tell listeners society is now saved
     fireModification(new ModificationEvent(this, SOCIETY_SAVED));
     return ret;
@@ -449,13 +453,6 @@ public abstract class SocietyBase
 
   ModificationListener myModificationListener = new MyModificationListener();
 
-//    ModificationListener myModificationListener = 
-//      new ModificationListener() {
-//          public void modified(ModificationEvent e) {
-//            fireModification();
-//          }
-//        };
-
   public int addChild(ComposableComponent c) {
     ((ModifiableConfigurableComponent)c).addModificationListener(myModificationListener);
     fireModification();
@@ -471,7 +468,9 @@ public abstract class SocietyBase
 
   class MyModificationListener implements ModificationListener, ConfigurableComponentListener {
     public void modified(ModificationEvent e) {
-      fireModification();
+      // don't propagate modifications when we're saving
+      if (!saveInProgress)
+        fireModification();
     }
   }
 
