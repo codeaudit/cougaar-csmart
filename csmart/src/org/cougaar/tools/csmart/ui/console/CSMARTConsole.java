@@ -47,10 +47,11 @@ import org.cougaar.tools.csmart.ui.experiment.Trial;
 import org.cougaar.tools.csmart.ui.experiment.TrialResult;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.tools.server.*;
 import org.cougaar.tools.server.rmi.ClientCommunityController;
 import org.cougaar.tools.csmart.ui.Browser;
-import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
+import org.cougaar.util.Parameters;
 
 public class CSMARTConsole extends JFrame {
   // must match port used in org.cougaar.tools.server package
@@ -660,7 +661,19 @@ public class CSMARTConsole extends JFrame {
 
   private void runTrial() {
     setTrialValues();
-    createNodes();
+    final CSMARTConsole console = this;
+    GUIUtils.timeConsumingTaskStart(this);
+    try {
+      new Thread("CreateNodes") {
+        public void run() {
+          createNodes();
+          GUIUtils.timeConsumingTaskEnd(console);
+        }
+      }.start();
+    } catch (RuntimeException re) {
+      re.printStackTrace();
+      GUIUtils.timeConsumingTaskEnd(this);
+    }
   }
 
   /**
@@ -669,9 +682,22 @@ public class CSMARTConsole extends JFrame {
    */
 
   private void createNodes() {
+    String tmp =
+      Parameters.findParameter("org.cougaar.tools.csmart.startdelay");
+    int delay = 1;
+    if (tmp != null) {
+      try {
+        delay = Integer.parseInt(tmp);
+      } catch (NumberFormatException nfe) {
+      }
+    }
     boolean haveRunningNode = false;
     runStart = new Date();
     for (int i = 0; i < nodesToRun.length; i++) {
+      try {
+        Thread.sleep(delay);
+      } catch (Exception e) {
+      }
       NodeComponent nodeComponent = nodesToRun[i];
       if (createNode(nodeComponent, hostsToRunOn[i]))
 	haveRunningNode = true;
@@ -914,10 +940,11 @@ public class CSMARTConsole extends JFrame {
     oldNodes.put(nodeComponent, runningNodes.get(nodeComponent));
     runningNodes.remove(nodeComponent);
 
+    // if any node has stopped, then don't kill the rest of the nodes
     // when any node has stopped, kill the rest of the nodes
     // unless we're already killing the other nodes
-    if (!stopping) 
-      stopAllNodes();
+    //    if (!stopping) 
+    //      stopAllNodes();
     // when all nodes have stopped, save results
     // run the next trial and update the gui controls
     if (runningNodes.isEmpty()) {

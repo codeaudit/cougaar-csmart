@@ -648,9 +648,11 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private void makePlanGraph() {
-
     // get community<->agent mapping
     getCommunities(); 
+
+    if (communityToAgents == null || communityToAgents.size() == 0)
+      return; // nothing to graph
 
     // get filter
     ULPlanFilter filter = new ULPlanFilter(communityToAgents);
@@ -659,6 +661,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
     // get the list of agents
     Vector agentsToContact = filter.getAgentsSelected();
+    if (agentsToContact == null || agentsToContact.size() == 0)
+      return;
+
     Vector agentURLs = new Vector();
     for (int i = 0; i < agentsToContact.size(); i++) {
       String URL = 

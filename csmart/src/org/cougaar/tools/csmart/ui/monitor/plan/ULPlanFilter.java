@@ -26,6 +26,8 @@ import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import att.grappa.*;
 
@@ -36,7 +38,7 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
 
 public class ULPlanFilter {
-  // maps community names to names of agents in community
+  // maps community names to names of agents in community (Vector)
   Hashtable communityToAgents; 
   // ask user if should fetch more objects than this
   private static int DEFAULT_OBJECT_LIMIT = 200;
@@ -45,6 +47,7 @@ public class ULPlanFilter {
     PropertyNames.PLAN_ELEMENT_OBJECT,
     PropertyNames.DIRECT_OBJECT,
     PropertyNames.WORKFLOW_OBJECT,
+    PropertyNames.ASSET_OBJECT
   };
 
   // filter dialog controls referenced in set-up and processing dialog
@@ -52,12 +55,15 @@ public class ULPlanFilter {
   private Vector buttonGroups;
   private Vector buttonLabels;
   private JList communityList;
+  private Vector allCommunities;
+  private JList agentList;
   private Vector planObjectComponents;
   private JRadioButton allPlanObjectsButton;
   private JTextField limitField;
 
   // results of displaying filter
   private Vector agentsSelected = null;
+  private Vector agentNames;
   private boolean allPlanObjectsSelected;
   private Vector showObjectTypes;
   private Vector hideObjectTypes;
@@ -89,6 +95,7 @@ public class ULPlanFilter {
 
   public ULPlanFilter(Hashtable communityToAgents) {
     this.communityToAgents = communityToAgents;
+    agentNames = new Vector();
     showObjectTypes = new Vector();
     hideObjectTypes = new Vector();
     ignoreObjectTypes = new Vector();
@@ -100,10 +107,12 @@ public class ULPlanFilter {
    */
 
   public ULPlanFilter(Hashtable communityToAgents,
+                      Vector agentNames,
 		      Vector showObjectTypes,
 		      Vector hideObjectTypes,
 		      Vector ignoreObjectTypes) {
     this.communityToAgents = communityToAgents;
+    this.agentNames = agentNames;
     this.showObjectTypes = showObjectTypes;
     this.hideObjectTypes = hideObjectTypes;
     this.ignoreObjectTypes = ignoreObjectTypes;
@@ -116,6 +125,7 @@ public class ULPlanFilter {
 
   public ULPlanFilter(CSMARTGraph graph) {
     communityToAgents = getCommunityToAgents(graph);
+    agentNames = new Vector();
     showObjectTypes = new Vector();
     hideObjectTypes = new Vector();
     ignoreObjectTypes = new Vector();
@@ -129,6 +139,7 @@ public class ULPlanFilter {
 
   public ULPlanFilter copy() {
     return new ULPlanFilter(communityToAgents, 
+                            (Vector)agentNames.clone(),
                             (Vector)showObjectTypes.clone(),
 			    (Vector)hideObjectTypes.clone(), 
                             (Vector)ignoreObjectTypes.clone());
@@ -156,8 +167,10 @@ public class ULPlanFilter {
 	agents = new Vector();
 	agents.addElement(agentName);
 	communityToAgents.put(communityName, agents);
-      } else
-	agents.addElement(agentName);
+      } else {
+        if (!agents.contains(agentName))
+          agents.addElement(agentName);
+      }
     }
     return communityToAgents;
   }
@@ -169,7 +182,6 @@ public class ULPlanFilter {
    */
 
   public Vector getAgentsSelected() {
-    //    displayFilter();
     return agentsSelected;
   }
 
@@ -201,28 +213,57 @@ public class ULPlanFilter {
     Box box = new Box(BoxLayout.Y_AXIS);
 
     // community panel; list of communities
-    JPanel communityPanel = new JPanel();
-    communityPanel.setLayout(new GridBagLayout());
+    JPanel communityPanel = new JPanel(new GridBagLayout());
     TitledBorder communityTitledBorder = new TitledBorder("Communities");
     Font font = communityTitledBorder.getTitleFont();
     Font titleFont = font.deriveFont(Font.ITALIC);
     communityTitledBorder.setTitleFont(titleFont);
     communityPanel.setBorder(communityTitledBorder);
-    Vector allCommunities = new Vector(communityToAgents.keySet());
+    allCommunities = new Vector(communityToAgents.keySet());
     communityList = new JList(allCommunities);
-    JScrollPane scrollPane = new JScrollPane(communityList);
     communityList.setVisibleRowCount(4);
     // if just one community, then select it
     if (allCommunities.size() == 1)
       communityList.setSelectedIndex(0);
+    communityList.addListSelectionListener(new MyListSelectionListener());
     int x = 0;
     int y = 0;
-    communityPanel.add(scrollPane,
+    communityPanel.add(new JScrollPane(communityList),
 		       new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
 					      GridBagConstraints.WEST,
 					      GridBagConstraints.HORIZONTAL,
 					      new Insets(0, 0, 0, 0), 0, 0));
     box.add(communityPanel);
+
+    // agents panel; list of agents
+    JPanel agentPanel = new JPanel(new GridBagLayout());
+    TitledBorder agentTitledBorder = new TitledBorder("Agents");
+    font = agentTitledBorder.getTitleFont();
+    titleFont = font.deriveFont(Font.ITALIC);
+    agentTitledBorder.setTitleFont(titleFont);
+    agentPanel.setBorder(agentTitledBorder);
+    // if agent names is empty, then derive them from community names
+    // otherwise they are the names of the only agents in this graph
+    if (agentNames.size() == 0) {
+      Enumeration values = communityToAgents.elements();
+      while (values.hasMoreElements()) 
+        agentNames.addAll((Vector)values.nextElement());
+      Collections.sort(agentNames);
+    }
+    agentList = new JList(agentNames);
+    agentList.setVisibleRowCount(4);
+    // if just one agent, then select it
+    if (agentNames.size() == 1)
+      agentList.setSelectedIndex(0);
+    x = 0;
+    y = 0;
+    agentPanel.add(new JScrollPane(agentList),
+		       new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+					      GridBagConstraints.WEST,
+					      GridBagConstraints.HORIZONTAL,
+					      new Insets(0, 0, 0, 0), 0, 0));
+    box.add(agentPanel);
+
 
     // the label, show, hide and ignore buttons which are enabled/disabled
     // when the user selects the "All" or "Selected Plan Objects" buttons
@@ -434,15 +475,15 @@ public class ULPlanFilter {
       return false; // user cancelled
 
     // get selected agent names
-    Object names[] = communityList.getSelectedValues();
-    if (names.length == 0) {
-      JOptionPane.showMessageDialog(null,
-				    "No communities selected.");
+    agentsSelected = new Vector();
+    Object names[] = agentList.getSelectedValues();
+    for (int i = 0; i < names.length; i++)
+      agentsSelected.add(names[i]);
+
+    if (agentsSelected.size() == 0) {
+      JOptionPane.showMessageDialog(null, "No agents selected.");
       return false;
     }
-    agentsSelected = new Vector();
-    for (int i = 0; i < names.length; i++) 
-      agentsSelected.addAll((Vector)communityToAgents.get(names[i]));
 
     // get types of plan objects to show/hide/ignore
     if (!allPlanObjectsSelected) {
@@ -466,6 +507,12 @@ public class ULPlanFilter {
 	}
       }
     }
+    // if pre-filtering, set agentNames to agentsSelected
+    // because that's all we can pick from next time
+    if (preFilter) {
+      agentNames = (Vector)agentsSelected.clone();
+      agentList.setListData(agentNames);
+    }
     // if pre-filtering, disable controls for ignored types
     // because user can no longer ask for information on those
     if (preFilter && ignoreObjectTypes.size() != 0) {
@@ -484,24 +531,34 @@ public class ULPlanFilter {
 
   /**
    * Display filter and create new graph from results.
+   * Ignore objects that are not from a selected agent.
    */
 
   public void postFilter(CSMARTFrame frame, CSMARTGraph graph) {
     preFilter = false;
     if (!displayFilter())
-      return; // user cancelled, do nothing
-
+      return; // user cancelled or no agents selected, do nothing
     // get names of nodes to show, hide, and ignore
     Vector nodes = graph.vectorOfElements(GrappaConstants.NODE);
     Vector showNames = new Vector();
     Vector hideNames = new Vector();
     Vector ignoreNames = new Vector();
+    // this puts all nodes in either showNames, hideNames or ignoreNames
     for (int i = 0; i < nodes.size(); i++) {
       Node node = (Node)nodes.elementAt(i);
+      String nodeName = node.getName();
+      String agentName =
+        (String)node.getAttributeValue(PropertyNames.PLAN_OBJECT_AGENT_NAME);
+      if (agentName == null || !agentsSelected.contains(agentName)) {
+        ignoreNames.addElement(nodeName);
+        continue;
+      }
       String objectType =
 	(String)node.getAttributeValue(PropertyNames.OBJECT_TYPE);
-      if (objectType == null)
+      if (objectType == null) {
+        showNames.addElement(nodeName);
 	continue;
+      }
       // special case direct objects
       // TODO: if an asset is a direct object and also
       // the object of an allocation, then treating it as simply
@@ -509,28 +566,21 @@ public class ULPlanFilter {
       if (objectType.equals(PropertyNames.ASSET_OBJECT)) {
 	String isDirectObject =
 	  (String)node.getAttributeValue(PropertyNames.ASSET_IS_DIRECT_OBJECT);
-	if (isDirectObject == null)
-	  continue;
-	if (isDirectObject.equals("true"))
+        //	if (isDirectObject == null)
+        //	  continue;
+	if (isDirectObject != null && isDirectObject.equals("true"))
 	  objectType = PropertyNames.DIRECT_OBJECT;
       }
-      String nodeName = node.getName();
       if (ignoreObjectTypes.contains(objectType))
 	ignoreNames.addElement(nodeName);
       else if (hideObjectTypes.contains(objectType))
 	hideNames.addElement(nodeName);
-      else {
-	String agentName =
-	  (String)node.getAttributeValue(PropertyNames.PLAN_OBJECT_AGENT_NAME);
-	if (agentName == null)
-	  continue;
-	if (allPlanObjectsSelected || showObjectTypes.contains(objectType)) 
-	  if (agentsSelected.contains(agentName))
-	    showNames.addElement(nodeName);
-	  else
-	    hideNames.addElement(nodeName);
-      }
+      else 
+        showNames.addElement(nodeName);
     } // end filtering nodes      
+
+    if (showNames.size() == 0)
+      return; // no nodes selected
 
     // create a new graph from the selected nodes
     // first copy the current graph
@@ -560,9 +610,61 @@ public class ULPlanFilter {
     // shown/ignored/hidden in the accompanying frame
     new ULPlanFrame(NamedFrame.PLAN, newGraph, 
 		    new ULPlanFilter(communityToAgents, 
+                                     agentsSelected,
 				     showObjectTypes, hideObjectTypes,
 				     ignoreObjectTypes));
 
+  }
+
+  /**
+   * Used to listen for changes in community selection, and
+   * select or de-select agents in communities.
+   */
+
+  class MyListSelectionListener implements ListSelectionListener {
+    int[] selectedIndices;
+
+    public MyListSelectionListener() {
+      super();
+      selectedIndices = communityList.getSelectedIndices();
+    }
+
+    public void valueChanged(ListSelectionEvent e) {
+      if (e.getValueIsAdjusting())
+        return;
+      // if the community selection changed, then add or delete its agents
+      int firstIndex = e.getFirstIndex();
+      int lastIndex = e.getLastIndex();
+      for (int i = firstIndex; i <= lastIndex; i++) {
+        if (communityList.isSelectedIndex(i) && !wasSelected(i))
+          selectAgents((Vector)communityToAgents.get(allCommunities.get(i)),
+                       true);
+        else if (!communityList.isSelectedIndex(i) && wasSelected(i))
+          selectAgents((Vector)communityToAgents.get(allCommunities.get(i)),
+                       false);
+
+      }
+      selectedIndices = communityList.getSelectedIndices();
+    }
+
+    private boolean wasSelected(int index) {
+      for (int i = 0; i < selectedIndices.length; i++)
+        if (selectedIndices[i] == index)
+          return true;
+      return false;
+    }
+
+    private void selectAgents(Vector agents, boolean select) {
+      for (int i = 0; i < agents.size(); i++) {
+        int j = agentNames.indexOf(agents.get(i));
+        if (j == -1)
+          return; // selected community, but all its agents aren't in this graph
+        if (select) 
+          agentList.addSelectionInterval(j, j);
+        else
+          agentList.removeSelectionInterval(j, j);
+      }
+    }
   }
 
 }
