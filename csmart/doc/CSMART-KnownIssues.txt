@@ -1,34 +1,15 @@
 CSMART contains a few known issues:
 
-* CSMART is slow - multiple minutes to load & start a Full-1AD
-  society. Improvements for this will be added for a 9.2.1 patch
-  release in mid-May. See bug # 1226
-
-* Society Monitor fails to contact all Agents. You get an error
-  message listing the agents it fails to contact. This includes every
-  Node Agent, but also Agents that have working CSMART servlets.
-  See bug # 1241
-
-* Copying an Agent Insertion Recipe causes NPE. See bug # 1240
-
-* If you hit "Connect" in the GLS Init Window in the console
-  too early, the servlet will not update after you publish the OPLAN. To
-  get around this, wait until the society has quiesced before hitting the
-  Connect button. If you have already done so, use the stand-alone
-  GLS UI in CIP/bin/GLSInit.[bat/sh]  See bug# 1215
+* Society Monitor will warn about an inability to contact Agents in
+  which no CSMART Servlets are running. This will usually include all
+  Node Agents. While not a bug, it is annoyin. See bug # 1241
 
 * Experiment and recipe export scripts may no longer work. 
   As a workaround, try using the complete DB export scripts in
   csmart/data/database/scripts/mysql/dump_1ad_mysql.sh  See bug # 1231 
 
-* Database dump scripts not available as BAT scripts. Bug 1229
-
 * An experiment removed from the database may still show up in your
   CSMART workspace.
-
-* Selecting groups in the Thread/Group view does not work
-
-* Some relationship arrows in the Agent View erroneously point 2 ways
 
 * Running a node on a multiprocessor machines may result in the CSMART
   console freezing up

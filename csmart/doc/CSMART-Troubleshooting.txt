@@ -73,6 +73,14 @@ they are installed in your JRE installation if you have one in
 addition to any JDK install.
 
 Running any other society
+- If on Windows you get an error at startup:
+Error: no `server' JVM at `C:\Program Files\Java\j2re1.4.0\bin\server\jvm.dll'.
+then you are running the JRE version of Java 1.4
+You must instead run the full JDK version of Java. To do so, edit your
+machine's system PATH environment variable, and put %JAVA_HOME%/bin on
+your path before %SYSTEMROOT%/system32 (ie D:\JDK1.4\bin before
+C:\WINNT\system32).
+
 - If on startup you get a JDBC error like:
 java.sql.SQLException: Unknown driver driver.mysql//localhost
 then make sure your JDBC connection string is correctly formatted.
@@ -80,7 +88,7 @@ For mysql: jdbc:mysql://localhost/configdb
 For Oracle: jdbc:oracle:thin:@myhost:1521:cougaar
 - If in configuring a host/node/agent mapping, you get an error like:
 SQLException query: DROP TABLE `TMP_CMTA_CSHNA-0001`
-java.sql.SQLException: General error: Access denied for user: 'soconfig_test_3i@
+java.sql.SQLException: General error: Access denied for user: 'soconfig@
 localhost' to database 'cougaar'
 
 Then the permissions for your database user must be expanded to
@@ -135,7 +143,7 @@ You have an error in your SQL syntax near ') AND C.INSERTION_POINT LIKE
 Running CSMART
 - Ensure that bootstrap.jar is on your CLASSPATH
 - Ensure that all jar files are from the same build
-- When you get a message at startup on STDOUT that says SHOUT [CSMART] - CSMART 9.2.0 built on.....
+- When you get a message at startup on STDOUT that says SHOUT [CSMART] - CSMART 9.2.1 built on.....
 This is not an error, but normal operation.
 
 Starting a Society from the Experiment Controller
@@ -176,7 +184,7 @@ issues. http://www.blackdown.org
 
 Compiling CSMART
 - Compiling CSMART with Jikes 1.15 will result in VerifyErrors in a few classes.  To
-  avoid these erros, use Jikes 1.14.
+  avoid these errors, use Jikes 1.14.
 
 MySQL Database issues
 - If you get SQL errors, claiming that a table does not exist, eg
