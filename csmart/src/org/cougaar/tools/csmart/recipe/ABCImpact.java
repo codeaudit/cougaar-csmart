@@ -116,6 +116,10 @@ public class ABCImpact
     agentNames = new ArrayList();
   }
 
+  public String getRecipeName() {
+    return this.name;
+  }
+
   public void initProperties() {
     propCyberCount = addProperty(PROP_CYBERCOUNT, PROP_CYBERCOUNT_DFLT, 
 			       new ConfigurableComponentPropertyAdapter() {

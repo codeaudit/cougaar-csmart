@@ -117,6 +117,10 @@ public class ComponentInsertionRecipe extends RecipeBase
     super(name);
   }
 
+  public String getRecipeName() {
+    return this.name;
+  }
+
   public void initProperties() {
     propTargetComponentQuery =
       addRecipeQueryProperty(PROP_TARGET_COMPONENT_QUERY,

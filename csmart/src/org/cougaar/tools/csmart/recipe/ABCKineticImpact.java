@@ -73,6 +73,10 @@ public class ABCKineticImpact
   public ABCKineticImpact(String name) {
     super(name);
   }
+  
+  public String getRecipeName() {
+    return this.name;
+  }
 
   public void initProperties() {
     propLatitude = addProperty(PROP_LATITUDE, PROP_LATITUDE_DFLT, 
