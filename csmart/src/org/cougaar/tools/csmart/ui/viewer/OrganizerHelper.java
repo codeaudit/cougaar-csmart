@@ -832,7 +832,7 @@ public class OrganizerHelper {
         query = DBUtils.getQuery("queryRecipe", substitutions);
         ResultSet rs = stmt.executeQuery(query);
         if (rs.next()) {
-          if(isComplexRecipe(rs.getString(4))) {
+          if(isComplexRecipe(conn, substitutions)) {
             if(log.isDebugEnabled()) {
               log.debug("Creating Complex Recipe from Database");
             }
@@ -905,16 +905,37 @@ public class OrganizerHelper {
     return rc;
   }
 
-  private boolean isComplexRecipe(String desc) {
+  // Is the recipe whose ID is in the substitutions Complex?
+  private boolean isComplexRecipe(Connection conn, Map substitutions) {
     boolean retVal = false;
-
-    if(desc.equals(PDbBase.COMPLEX_RECIPE_DESC)) {
-      retVal = true;
+    try {
+      Statement stmt = conn.createStatement();
+      try {
+        String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        
+	// If the recipe has an Assembly, it is Complex
+        while(rs.next()) {
+          if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
+            retVal = true;
+	    break;
+          }
+        }
+	rs.close();
+	stmt.close();
+      } catch(SQLException sqle) {
+        if(log.isErrorEnabled()) {
+          log.error("SQLException checking recipe type", sqle);
+        }
+      }
+    } catch (SQLException sqe) {
+      if(log.isErrorEnabled()) {
+        log.error("SQLException checking recipe type", sqe);
+      }
     }
-
+    
     return retVal;
-  }
-
+  }  
 
   private String getRecipeAssembly(Connection conn, Map substitutions) {
     String assemblyId = null;
