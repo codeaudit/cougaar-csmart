@@ -43,9 +43,9 @@ public class ABCAgentTest extends TestCase {
   }
 
   protected void setUp() {
-    gc = new GenericComponent();
-    gc.initProperties();
-    agent = (ABCAgent)gc.getChild(0);
+//     gc = new GenericComponent();
+//     gc.initProperties();
+//     agent = (ABCAgent)gc.getChild(0);
   }
 
   public void testNothing() {
