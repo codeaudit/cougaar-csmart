@@ -378,8 +378,16 @@ public class CSMARTConsole extends JFrame {
       log.debug("markNodeDead for " + nodeName + " doing it " + (completely ? "completely." : "partially."));
 
     // if there's a thread still creating nodes, stop it
+    // FIXME: Really? Just cause one node had problems, we give up
+    // creating all the Nodes?
+    // Or do I just want to wait till all the Nodes have been created?
     stopNodeCreation = true;
     // wait for the creating thread to stop
+    // note that this means blocking on that thread which waits on RMI
+    // So if this method is called from the AWT thread, that's probably bad.
+    // Note though that nodeCreator will try to bail out quickly if 
+    // stopNodeCreation is true. So unless we're in the process of doing the RMI
+    // thing, this shouldn't be too bad.
     if (nodeCreator != null) {
       try {
 	nodeCreator.join();
@@ -477,14 +485,23 @@ public class CSMARTConsole extends JFrame {
       if (appServerSupport.thereAreRunningNodes()) {
 	if (glsClient == null)
 	  addGLSMenuItem.setEnabled(true);
-	else
-	  addGLSMenuItem.setEnabled(false);
+	else {
+	  // Bug 2258 workaround
+	  //	  addGLSMenuItem.setEnabled(false);
+	  if (log.isInfoEnabled())
+	    log.info("Bug 2258 workaround. Have Valid AppServers & running nodes. But glsClient is non-null. Enabling menu item anyhow.");
+	  addGLSMenuItem.setEnabled(true);
+	}
 
 	killAllMenuItem.setEnabled(true);
 	attachButton.setEnabled(true);
 	attachMenuItem.setEnabled(true);
       } else {
-	addGLSMenuItem.setEnabled(false);
+	// Bug 2258 workaround
+	//	addGLSMenuItem.setEnabled(false);
+	if (log.isInfoEnabled())
+	  log.info("Bug 2258 workaround. Have valid AppServers but no running nodes. Enabling menu item anyhow. (BTW, glsClient " + ((glsClient == null) ? "is null" : "is non null") + ")");
+	addGLSMenuItem.setEnabled(true);
 	attachButton.setEnabled(false);
 	attachMenuItem.setEnabled(false);
 	killAllMenuItem.setEnabled(false);
@@ -495,7 +512,11 @@ public class CSMARTConsole extends JFrame {
       displayMenuItem.setEnabled(false);
       deleteMenuItem.setEnabled(false);
       killAllMenuItem.setEnabled(false);
-      addGLSMenuItem.setEnabled(false);
+      // Bug 2258 work-around
+      //      addGLSMenuItem.setEnabled(false);
+      if (log.isInfoEnabled())
+	log.info("Bug 2258 workaround. Do not have valid appservers. (BTW, glsClient " + ((glsClient == null) ? "is null" : "is non null") + ")");
+      addGLSMenuItem.setEnabled(true);
     }
   }
 
@@ -1241,6 +1262,8 @@ public class CSMARTConsole extends JFrame {
       log.debug("runTrial about to start createNodes thread");
     }
 
+    // Create the nodes in a separate thread. Creating the nodes does RMI, so
+    // may block on the network. So avoid doing this in the AWT thread.
     nodeCreator = new Thread("CreateNodes") {
       public void run() {
         createNodes();
@@ -1333,6 +1356,7 @@ public class CSMARTConsole extends JFrame {
    * should be able to get servlet class to use from client
    */
   private String findServlet() {
+    // bug 2258: perhaps usingExperiment is being set to false erroneously?
     if (experiment == null || !usingExperiment)
       return null;
     ArrayList componentData = new ArrayList();
@@ -1368,6 +1392,8 @@ public class CSMARTConsole extends JFrame {
     for (int i = 0; i < names.length; i++) {
       // Could the name ever add the OPLAN? In which case, we should
       // do an indexOf != -1
+      // BUG 2258: Do indexOfIgnoreCase?
+      // Or must I not rely on the PluginNames at all, and look at the class?
       if (names[i].endsWith(GLS_SERVLET))
         return true;
     }
@@ -1526,6 +1552,10 @@ public class CSMARTConsole extends JFrame {
     // if there's a thread still creating nodes, stop it
     stopNodeCreation = true;
     // wait for the creating thread to stop
+    // FIXME: This means waiting on the node creator that waits on RMI
+    // so this may block the UI. However, the nodeCreator does try hard
+    // to bail out if stopNodeCreation is true. So unless we're in the process
+    // of doing the RMI thing here, this shouldn't take too long.
     if (nodeCreator != null) {
       try {
         nodeCreator.join();
@@ -1588,6 +1618,10 @@ public class CSMARTConsole extends JFrame {
 	      if (rl != null) {
 		rl.flushOutput();
 		remoteNode.destroy();
+		// Note that the above can take a while
+		// Note that also calling this ends up causing the callback
+		// to nodeStopped, which does
+		// most of the work
 		retries = 0; // Done, dont loop again
 	      }
 	      // Note that currently if rl == null and get
@@ -1611,7 +1645,7 @@ public class CSMARTConsole extends JFrame {
 		// FIXME!!
 		
 		if (log.isWarnEnabled())
-		  log.warn("Never got RemoteListenable. Exception possibly cause of load? Will pause and retry.", ex);
+		  log.warn("Never got RemoteListenable for node " + nodeName + ". Exception possibly cause of load? Will pause and retry.", ex);
 		
 		// Pause here. How long will be good?
 		try {
@@ -1624,7 +1658,7 @@ public class CSMARTConsole extends JFrame {
 		// Got the RemoteListenable, but couldn't
 		// destroy it
 		if(log.isWarnEnabled()) {
-		  log.warn("Unable to destroy node, assuming it's dead: ", ex);
+		  log.warn("Unable to destroy node " + nodeName + ", assuming it's dead: ", ex);
 		}
 		
 		// call the method that would have been called
@@ -1640,13 +1674,36 @@ public class CSMARTConsole extends JFrame {
       nodeDestroyer.start();
     }
 
+    // FIXME: Bug 2282: Wrap here to end of method
+    // in a SwingUtilities.invokeLater so the UI is not frozen?
+    // But doesnt doing so mean we lose the whole point of joining
+    // the threads in the first place?
+    // What happens in the UI if it looks like you can keep going, 
+    // but the Nodes have not been killed yet?
+    // To put it another way: the point of joining is so that when the abort or stop
+    // button action method completes, the Nodes are all really stopped.
+    // Then the UI reflects this and the user can keep going
+    // If you don't do this, I suppose the user might hit run again and be surprised
+    // when funny things happen on some machines where there are Nodes still running.
+    // They also might be surprised that some Nodes are still green,
+    // indicating its still running, and they thought they had stopped it
+
+    // Note that this also gets called in some circumstances when you hit Exit.
+    // In this case, that other thread probably needs some of the state the exit
+    // method is going to try to destroy. So maybe there I do need to block?
+
+    // Todd suggests we don't wait, and change all the status lights
+    // to Yellow or some such.
+
+//     SwingUtilities.invokeLater(new Runnable() {
+// 	public void run() {
     for (int i = 0; i < destroyerThreads.size(); i++) {
       try {
         Thread destroyer = (Thread)destroyerThreads.get(i);
         destroyer.join(); // wait for node destruction to complete
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error("Exception", e);
+          log.error("Exception joining node destroyer threads", e);
         }
       }
     }
@@ -1654,6 +1711,8 @@ public class CSMARTConsole extends JFrame {
     if (log.isDebugEnabled()) {
       log.debug(".... done killing Nodes");
     }
+// 	}
+//       });
   } // end of stopAllNodes
 
   // Kill any existing output frames or history charts
@@ -1973,6 +2032,7 @@ public class CSMARTConsole extends JFrame {
    * appserver.  
    * Uses the NodeCreationInfo object returned by prepareToCreateNodes
    * to get all the information needed to actually create the node.
+   * Does RMI, so may block on the network.
    */
   private void createNodes() {
     int delay = 1;
@@ -2033,8 +2093,16 @@ public class CSMARTConsole extends JFrame {
           new RemoteListenableConfig(nci.listener, 
                                      CSMART.getNodeListenerId(), 
                                      null, nci.outputPolicy);
+
+	// Last chance to bail out of creating the Node
+	if (stopNodeCreation)
+	  break;
+
+	// Next line does the actual creation -- including RMI stuff
+	// that could take a while
         remoteNode =
           nci.remoteAppServer.createRemoteProcess(desc, conf);
+
 	if (log.isDebugEnabled())
 	  log.debug("Adding listener: " +
                            CSMART.getNodeListenerId() +
@@ -2087,6 +2155,8 @@ public class CSMARTConsole extends JFrame {
     public void run() {
       // don't create gui controls if node creation has been stopped
       if (nodeCreator == null) return;
+      if (stopNodeCreation)
+        return;
       addStatusButton(nci.statusButton);
       ConsoleInternalFrame frame = 
 	new ConsoleInternalFrame(nci.nodeName,
@@ -2131,6 +2201,8 @@ public class CSMARTConsole extends JFrame {
     if (remoteNode == null)
       return;
 
+    // Note: Next couple lines do RMI, so could take a while.
+    // Should we try to do this try/catch outside the AWT thread?
     try {
       remoteNode.getRemoteListenable().flushOutput();
       remoteNode.destroy();
@@ -2177,6 +2249,7 @@ public class CSMARTConsole extends JFrame {
     // then don't treat that the same
     // as hitting Run
     if ((experiment == null || usingExperiment) && doRun) {
+      // Note that this next method is potentially time-consuming, does RMI
       runButton_actionPerformed();
       return null; // return null, caller (ConsoleInternalFrame) is going away
     }
@@ -2186,6 +2259,7 @@ public class CSMARTConsole extends JFrame {
     properties.remove(Experiment.PERSIST_CLEAR);
 
     int remotePort = appServerSupport.getAppServerPort(properties);
+    // Next line may do RMI -- do in non-AWT thread?
     RemoteHost remoteAppServer = 
       appServerSupport.getAppServer(hostName, remotePort);
     if (remoteAppServer == null)
@@ -2265,6 +2339,7 @@ public class CSMARTConsole extends JFrame {
         experimentName = experiment.getExperimentName();
       String procName = appServerSupport.getProcessName(experimentName, nodeName);
 
+      // Next method does RMI, could block
       // Check that a process with description desc is not
       // already running, modify the process name if so
       while (appServerSupport.isProcessNameUsed(procName)) {
@@ -2283,6 +2358,10 @@ public class CSMARTConsole extends JFrame {
       RemoteListenableConfig conf =
         new RemoteListenableConfig(listener, CSMART.getNodeListenerId(),
                                    null, new OutputPolicy(10));
+
+      // Next line is where all the work happens. Does RMI & could block
+      // Should I check for the stopNodeCreation flag here and bail if true?
+      // Should I try to do this in a non-AWT thread?
       remoteNode = 
         remoteAppServer.createRemoteProcess(desc, conf);
       if (log.isDebugEnabled())
@@ -2381,6 +2460,7 @@ public class CSMARTConsole extends JFrame {
       RemoteProcess remoteNode = null;
       // add listener to node
       try {
+	// FIXME: Next few lines do RMI, could block. Avoid doing it in AWT thread?
         remoteNode =
           nodeInfo.appServer.getRemoteProcess(nodeInfo.processName);
 	if (remoteNode != null) {
@@ -2708,6 +2788,13 @@ public class CSMARTConsole extends JFrame {
       }
       
       if (killButton.isSelected()) {
+	// This next ends up calling stopAllNodes
+	// which causes nodeStopped to be called for each Node,
+	// but not until we've waited on the RMI / network
+	// so unless I take out that wait, we're blocking here (in AWT thread)
+	// on the network. But if I don't block, this method
+	// will later destroy some state that the nodeStopped method
+	// probably wants, and this may cause errors
 	abortButton_actionPerformed();
 	// don't stop experiments when exiting the console
 	//    stopExperiments();
@@ -2717,6 +2804,11 @@ public class CSMARTConsole extends JFrame {
 
 	// if there's a thread still creating nodes, stop it
 	stopNodeCreation = true;
+	// FIXME: This means the AWT thread will block on the Node creation
+	// thread, which in turn has to wait on RMI stuff.
+	// This is probably bad. However, the nodeCreator does check stopNodeCreation
+	// when it can to try to bail out, so unless we're doing the RMI
+	// thing now, this _shouldn't_ be too bad.
 	// wait for the creating thread to stop
 	if (nodeCreator != null) {
 	  try {
@@ -2751,8 +2843,8 @@ public class CSMARTConsole extends JFrame {
 	  experimentTimer.stop();
 
 	updateControls(false);
-      }
-    }
+      } // end of block to detach from all Nodes
+    } // end of block to deal with attached running Nodes
 
     // Stop polling the Appservers
     if (asPollTimer != null) {

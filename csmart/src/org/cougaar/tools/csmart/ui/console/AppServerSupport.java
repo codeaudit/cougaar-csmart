@@ -85,7 +85,7 @@ public class AppServerSupport {
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
         log.error("Unable to contact app-server on " + 
-                  hostName + ":" + port + ". Error: " + e);
+                  hostName + ":" + port, e);
       }
 
       // FIXME: Maybe only invoke this in certain circumstances?
