@@ -133,14 +133,18 @@ public class PropertyTable extends JTable {
   }
 
   /**
-   * Override to supply a combobox editor when the property being
-   * edited makes this appropriate. There must be allowed values where
-   * every range has exactly one allowed value (minimum equals
-   * maximum).
-   **/
+   * Set the cell editor to be a combo box or check box if appropriate.
+   * @param row row for which to return editor
+   * @param column column for which to return editor
+   * @return TableCellEditor editor for the row and column
+   */
+
   public TableCellEditor getCellEditor(int row, int column) {
     if (column == model.VALUE_COL) {
       Property prop = model.getProperty(row);
+      Class propClass = prop.getPropertyClass();
+      if (propClass.equals(Boolean.class))
+        return new DefaultCellEditor(new JCheckBox());
       Set allowedValues = prop.getAllowedValues();
       if (allowedValues != null) {
         JComboBox comboBox = null;
@@ -162,6 +166,42 @@ public class PropertyTable extends JTable {
       }
     }
     return super.getCellEditor(row, column);
+  }
+
+  // borrowed from javax.swing.JTable
+  private static class BooleanRenderer extends JCheckBox implements TableCellRenderer
+  {
+    public BooleanRenderer() {
+      super();
+      setHorizontalAlignment(JLabel.CENTER);
+    }
+
+    public Component getTableCellRendererComponent(JTable table, Object value,
+                                                   boolean isSelected, 
+                                                   boolean hasFocus, 
+                                                   int row, int column) {
+      if (isSelected) {
+        setForeground(table.getSelectionForeground());
+        super.setBackground(table.getSelectionBackground());
+      } else {
+        setForeground(table.getForeground());
+        setBackground(table.getBackground());
+      }
+      //      setSelected((value != null && ((Boolean)value).booleanValue()));
+      setSelected(value != null && 
+                  new Boolean(value.toString()).booleanValue());
+      return this;
+    }
+  } // end BooleanRenderer
+
+  public TableCellRenderer getCellRenderer(int row, int column) {
+    if (column == model.VALUE_COL) {
+      Property prop = model.getProperty(row);
+      Class propClass = prop.getPropertyClass();
+      if (propClass.equals(Boolean.class))
+        return new BooleanRenderer();
+    }
+    return super.getCellRenderer(row, column);
   }
 
   public void addProperty(Property prop) {
