@@ -30,7 +30,7 @@ import java.io.Serializable;
 public class SimpleName implements CompositeName {
   static final long serialVersionUID = 3189070403185567285L;
 
-  String name;
+  private String name;
 
   public SimpleName(String name) {
     this.name = name;
