@@ -45,14 +45,14 @@ public class CommunityTimePhasedData extends TimePhasedData {
     try {
       setStartTime("");
     } catch (ParseException pe) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Caught an exception setting startTime");
       }
     }
     try {
       setStopTime("");
     } catch (ParseException pe) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Caught an exception setting stopTime");
       }
     }
