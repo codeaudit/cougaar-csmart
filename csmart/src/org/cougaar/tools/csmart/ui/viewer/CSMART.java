@@ -26,9 +26,9 @@ import java.awt.event.*;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.GridLayout;
-import java.net.URL;
 import java.io.File;
 import java.lang.reflect.Constructor;
+import java.net.URL;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
@@ -44,16 +44,17 @@ import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.experiment.*;
 
-import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
+import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.HostComponent;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
+import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
-import org.cougaar.tools.csmart.ui.Browser;
+
+import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 import org.cougaar.core.society.Bootstrapper;
-import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
 
 /**
  * Top level CSMART user interface.
@@ -205,10 +206,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   }
 
   public ModifiableConfigurableComponent getComponent() {
-    ModifiableConfigurableComponent[] societies = organizer.getSelectedComponents();
-    if (societies == null || societies.length == 0)
+    ModifiableConfigurableComponent[] comps = organizer.getSelectedComponents();
+    if (comps == null || comps.length == 0)
       return null;
-    return societies[0];
+    return comps[0];
   }
 
   /**
@@ -361,11 +362,11 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * If an tree builder is not editing this society,
    * then start a new tree builder to edit this society.
    */
-  private void runMultipleBuilders(ModifiableConfigurableComponent[] societies) {
-    for (int i = 0; i < societies.length; i++) {
-      String s = "Configuration Builder: " + societies[i].getShortName();
+  private void runMultipleBuilders(ModifiableConfigurableComponent[] comps) {
+    for (int i = 0; i < comps.length; i++) {
+      String s = "Configuration Builder: " + comps[i].getShortName();
       if (NamedFrame.getNamedFrame().getFrame(s) == null) 
-	runBuilder(societies[i], true, true);
+	runBuilder(comps[i], true, true);
     }
   }
 
