@@ -1,3 +1,17 @@
+2001-10-16  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* TestPopulateDb.java (Repository):
+	Many revisions to adapt to new API of PopulateDb. Mostly concerned
+	with distinguishing CMT, CSMART, and CSM assemblies.
+
+	* Experiment.java (Repository):
+	Add saveToDB function that writes additional assemblies to the
+	database for the host-node-agent assigments, metrics, and impacts.
+
+	* PopulateDb.java (Repository):
+	Many modifications to treat CMT, CSMART, and CSM assemblies
+	separately. Added experiment/trial cloning and cleaning.
+
 2001-10-12  Ray Tomlinson  <RTomlinson@HEFEWEIZEN>
 
 	* PopulateDb.java (Repository):

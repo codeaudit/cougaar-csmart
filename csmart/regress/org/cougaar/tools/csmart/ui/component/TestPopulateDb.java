@@ -202,11 +202,11 @@ public class TestPopulateDb extends TestCase {
         return DBConnectionPool.getConnection(database, username, password);
     }
 
-    public void cleanAll() throws SQLException, IOException, ClassNotFoundException {
+    public void cleanAll(String cleanType) throws SQLException, IOException, ClassNotFoundException {
         dbp = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
         Connection dbConnection = openConnection();
         try {
-            removeAll(dbConnection);
+            removeAll(dbConnection, cleanType);
             dbConnection.commit();
         } finally {
             dbConnection.close();
@@ -219,14 +219,11 @@ public class TestPopulateDb extends TestCase {
         dbp.setDebug(true);
         Connection dbConnection = openConnection();
         try {
-            insertTestLib(dbConnection);
-            insertTestExpt(dbConnection);
-            insertTestTrial(dbConnection);
-            insertTestAssembly(dbConnection);
+            insertLib(dbConnection);
+            insertExpt(dbConnection);
+            insertTrial(dbConnection);
+            cmtAssemblyId = insertAssembly(dbConnection, CMT_TYPE);
             dbConnection.commit();
-            pdb = new PopulateDb(CMT_TYPE, CSMART_TYPE, CMT_TYPE,
-                                 exptId, trialId, false);
-            pdb.setDebug(true);
         } finally {
             dbConnection.close();
         }
@@ -251,21 +248,22 @@ public class TestPopulateDb extends TestCase {
     /**
      * Insert a regression assembly with the next higher number
      **/
-    private void insertTestAssembly(Connection dbConnection) throws SQLException {
-        MessageFormat cmtAssemblyIdFormat = new MessageFormat(CMT_TYPE + "_" + "{0,number,0000}");
-        cmtAssemblyId = getNextId(dbConnection, QUERY_MAX_ASSEMBLY, cmtAssemblyIdFormat);
-        substitutions.put(":assembly_id", cmtAssemblyId);
+    private String insertAssembly(Connection dbConnection, String type) throws SQLException {
+        MessageFormat assemblyIdFormat = new MessageFormat(type + "_" + "{0,number,0000}");
+        String assemblyId = getNextId(dbConnection, QUERY_MAX_ASSEMBLY, assemblyIdFormat);
+        substitutions.put(":assembly_id", assemblyId);
         substitutions.put(":description", "TestPopulateDb " + new Date().toString());
         Statement stmt = dbConnection.createStatement();
         executeUpdate(stmt, dbp.getQuery(INSERT_ASSEMBLY, substitutions));
         executeUpdate(stmt, dbp.getQuery(INSERT_TRIAL_ASSEMBLY, substitutions));
         stmt.close();
+        return assemblyId;
     }
 
     /**
      * Insert a regression trial with the next higher number
      **/
-    private void insertTestTrial(Connection dbConnection) throws SQLException {
+    private void insertTrial(Connection dbConnection) throws SQLException {
         MessageFormat trialIdFormat = new MessageFormat(TRIAL_PREFIX + "{0,number,0000}");
         trialId = getNextId(dbConnection, QUERY_MAX_TRIAL, trialIdFormat);
         Statement stmt = dbConnection.createStatement();
@@ -279,7 +277,7 @@ public class TestPopulateDb extends TestCase {
     /**
      * Insert a regression experiment with the next higher number
      **/
-    private void insertTestExpt(Connection dbConnection) throws SQLException {
+    private void insertExpt(Connection dbConnection) throws SQLException {
         MessageFormat exptIdFormat = new MessageFormat(EXPT_PREFIX + "{0,number,0000}");
         exptId = getNextId(dbConnection, QUERY_MAX_EXPT, exptIdFormat);
         Statement stmt = dbConnection.createStatement();
@@ -293,7 +291,7 @@ public class TestPopulateDb extends TestCase {
     /**
      * Insert lib definitions for components to be inserted during testing
      **/
-    private void insertTestLib(Connection dbConnection) throws SQLException {
+    private void insertLib(Connection dbConnection) throws SQLException {
         insertLibComponent(dbConnection,
                            NODE_TYPE + "|" + nodeData.name,
                            NODE_TYPE,
@@ -346,17 +344,20 @@ public class TestPopulateDb extends TestCase {
      * testing. Because of integrity constraints, some deletions will
      * fail so we repeat as long as progress is being made.
      **/
-    private void removeAll(Connection dbConnection) throws SQLException {
+    private void removeAll(Connection dbConnection, String cleanType) throws SQLException {
         Map substitutions = new HashMap();
         Set doneTables = new HashSet();
         Statement stmt = dbConnection.createStatement();
         Statement stmt2 = dbConnection.createStatement();
         boolean done = false;
         SQLException e = null;
+        String q = null;
+        substitutions.put(":clean_type", cleanType);
         try {
             while (!done) {
                 done = true;        // Unless something is found to do
                 e = null;
+                q = null;
                 ResultSet rs = executeQuery(stmt, dbp.getQuery(QUERY_ALL_TABLE_COLUMNS, null));
                 String currentTableName = null;
                 StringBuffer qbuf = new StringBuffer();
@@ -379,7 +380,10 @@ public class TestPopulateDb extends TestCase {
                                     done = false;
                                 doneTables.add(currentTableName);
                             } catch (SQLException sqle) {
-                                if (e == null) e = sqle;
+                                if (e == null) {
+                                    e = sqle;
+                                    q = qbuf.toString();
+                                }
                                 System.out.println("    failed");
                                 // Probably a constraint violation due to random order of deletion
                             }
@@ -399,7 +403,10 @@ public class TestPopulateDb extends TestCase {
             stmt.close();
             stmt2.close();
         }
-        if (e != null) throw e;
+        if (e != null) {
+            System.err.println(q);
+            throw e;
+        }
     }
 
     private String getNextId(Connection dbConnection, String queryName, MessageFormat format) {
@@ -430,64 +437,82 @@ public class TestPopulateDb extends TestCase {
     }
 
     /**
-     * Tests the insertion of a Node component. Inserting a node
-     * component should make an entry in the asb_component table
-     * having no parent. 
+     * Populate the CMT assembly. Since PopulateDb does not usually
+     * modify the CMT assembly, we specify the CMT_TYPE for all
+     * assemblies. This causes the entire component structure to be
+     * stored in the with an assembly id that is identified as CMT.
      **/
-    public void test() throws SQLException, InitializerServiceException {
+    private void populateCMT() throws SQLException, IOException {
+        pdb = new PopulateDb(CMT_TYPE, CMT_TYPE, CMT_TYPE,
+                             exptId, trialId, true);
+        pdb.setDebug(true);
+        
+            AgentData[] agentData = nodeData.agentData;
+            for (int j = 0; j < agentData.length; j++) {
+                ComponentData agent = new GenericComponentData();
+                agent.setType(ComponentData.AGENT);
+                agent.setName(agentData[j].name);
+                agent.setClassName(agentData[j].className);
+//                  agent.setParent(node);
+//                  node.addChild(agent);
+                PluginData[] pluginData = agentData[j].pluginData;
+                for (int k = 0; k < pluginData.length; k++) {
+                    ComponentData plugin = new GenericComponentData();
+                    plugin.setType(ComponentData.PLUGIN);
+                    plugin.setName(pluginData[k].name);
+                    plugin.setClassName(pluginData[k].className);
+                    plugin.setParameters(pluginData[k].paramData);
+                    plugin.setParent(agent);
+                    agent.addChild(plugin);
+                }
+                pdb.populate(agent, 1f);
+            }
+
+        pdb.close();
+    }
+
+    private void checkCMT() throws SQLException, IOException, InitializerServiceException {
+        ComponentDescription[] agents =
+            initializerService.getComponentDescriptions(nodeData.name, AGENT_INSERTION_POINT);
+        assertEquals("Wrong number of agents", nodeData.agentData.length, agents.length);
+        for (int i = 0; i < agents.length; i++) {
+            String agentName = agents[i].getName();
+            String className = agents[i].getClassname();
+            AgentData agentData = nodeData.agentData[i];
+            assertEquals("Wrong agent name", agentData.name, agentName);
+            assertEquals("Wrong agent class ", agentData.className, className);
+            ComponentDescription[] plugins =
+                initializerService.getComponentDescriptions(agentData.name, PLUGIN_INSERTION_POINT);
+            assertEquals("Wrong number of plugins", agentData.pluginData.length, plugins.length);
+            for (int j = 0; j < plugins.length; j++) {
+                String pluginName = plugins[j].getName();
+                className = plugins[j].getClassname();
+                PluginData pluginData = agentData.pluginData[j];
+                assertEquals("Wrong plugin name", pluginData.name, pluginName);
+                assertEquals("Wrong plugin class ", pluginData.className, className);
+                Vector vParams = (Vector) plugins[j].getParameter();
+                String[] params = (String[]) vParams.toArray(new String[0]);
+                assertEquals("Wrong number of parameters", pluginData.paramData.length, params.length);
+                for (int k = 0; k < params.length; k++) {
+                    assertEquals("Wrong parameter value", pluginData.paramData[k], params[k]);
+                }
+            }
+        }
+    }
+
+    /**
+     *
+     **/
+    public void test() throws SQLException, IOException, InitializerServiceException {
+        populateCMT();
+        checkCMT();
         {
             ComponentData node = new GenericComponentData();
             node.setType(ComponentData.NODE);
             node.setName(nodeData.name);
             node.setClassName(nodeData.className);
-            AgentData[] agentData = nodeData.agentData;
-            for (int i = 0; i < agentData.length; i++) {
-                ComponentData agent = new GenericComponentData();
-                agent.setType(ComponentData.AGENT);
-                agent.setName(agentData[i].name);
-                agent.setClassName(agentData[i].className);
-                agent.setParent(node);
-                node.addChild(agent);
-                PluginData[] pluginData = agentData[i].pluginData;
-                for (int j = 0; j < pluginData.length; j++) {
-                    ComponentData plugin = new GenericComponentData();
-                    plugin.setType(ComponentData.PLUGIN);
-                    plugin.setName(pluginData[j].name);
-                    plugin.setClassName(pluginData[j].className);
-                    plugin.setParameters(pluginData[j].paramData);
-                    plugin.setParent(agent);
-                    agent.addChild(plugin);
-                }
-            }
-            pdb.populate(node, 1f);
         }
         {
-            ComponentDescription[] agents =
-                initializerService.getComponentDescriptions(nodeData.name, AGENT_INSERTION_POINT);
-            assertEquals("Wrong number of agents", nodeData.agentData.length, agents.length);
-            for (int i = 0; i < agents.length; i++) {
-                String agentName = agents[i].getName();
-                String className = agents[i].getClassname();
-                AgentData agentData = nodeData.agentData[i];
-                assertEquals("Wrong agent name", agentData.name, agentName);
-                assertEquals("Wrong agent class ", agentData.className, className);
-                ComponentDescription[] plugins =
-                    initializerService.getComponentDescriptions(agentData.name, PLUGIN_INSERTION_POINT);
-                assertEquals("Wrong number of plugins", agentData.pluginData.length, plugins.length);
-                for (int j = 0; j < plugins.length; j++) {
-                    String pluginName = plugins[j].getName();
-                    className = plugins[j].getClassname();
-                    PluginData pluginData = agentData.pluginData[j];
-                    assertEquals("Wrong plugin name", pluginData.name, pluginName);
-                    assertEquals("Wrong plugin class ", pluginData.className, className);
-                    Vector vParams = (Vector) plugins[j].getParameter();
-                    String[] params = (String[]) vParams.toArray(new String[0]);
-                    assertEquals("Wrong number of parameters", pluginData.paramData.length, params.length);
-                    for (int k = 0; k < params.length; k++) {
-                        assertEquals("Wrong parameter value", pluginData.paramData[k], params[k]);
-                    }
-                }
-            }
         }
     }
 
@@ -496,10 +521,12 @@ public class TestPopulateDb extends TestCase {
      **/
     public static void launch(String[] args) {
         String what = "test";
+        String cleanType = "REGRESSION";
         if (args.length > 0) what = args[0];
+        if (args.length > 1) cleanType = args[1];
         if (what.equals("clean")) {
             try {
-                new TestPopulateDb("cleanAll").cleanAll();
+                new TestPopulateDb("cleanAll").cleanAll(cleanType);
             } catch (Exception e) {
                 e.printStackTrace();
             }
