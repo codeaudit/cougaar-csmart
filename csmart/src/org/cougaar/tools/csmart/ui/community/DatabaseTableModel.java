@@ -394,23 +394,34 @@ public class DatabaseTableModel extends AbstractTableModel {
       log.error("updateCommAtt has null dbValue on column " + columnName + ", Comm: " + communityName + ", commId: " + communityId + " in row " + row);
     }
 
-    // FIXME: If making this change makes the whole DB row a duplicate
-    // don't make the change, else get an SQL exception
-
     if (columnName.equalsIgnoreCase("ATTRIBUTE_ID") || columnName.equalsIgnoreCase("COMMUNITY_ATTRIBUTE_ID")) {
-      // If queryCommunityInfo returns a row that has communityId, dbValue, curr att_val
-      // then log & return
-      CommunityDBUtils.setCommunityAttributeId(communityId, dbValue,
-                               dbRepresentation(1, getValueAt(row, 1)),
-                               dbRepresentation(2, getValueAt(row, 2)),
-					       assemblyId);
+      // This throws an exception if it looks like a duplicate
+      try {
+	CommunityDBUtils.setCommunityAttributeId(communityId, dbValue,
+						 dbRepresentation(1, getValueAt(row, 1)),
+						 dbRepresentation(2, getValueAt(row, 2)),
+						 assemblyId);
+      } catch (IllegalArgumentException iae) {
+	if (log.isWarnEnabled()) {
+	  log.warn("updateCommAtt failed to set the Att ID for comm " + communityId + ": " + iae.toString());
+	}
+	// Couldnt make the edit, so dont update the UI
+	return;
+      }
     } else if (columnName.equalsIgnoreCase("ATTRIBUTE_VALUE") || columnName.equalsIgnoreCase("COMMUNITY_ATTRIBUTE_VALUE")) {
-      // If queryCommunityInfo returns a row that has communityId, curr att_id, dbValue
-      // then log & return
-      CommunityDBUtils.setCommunityAttributeValue(communityId, dbValue,
+      // This throws an exception if it looks like a duplicate
+      try {
+	CommunityDBUtils.setCommunityAttributeValue(communityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
                                dbRepresentation(2, getValueAt(row, 2)),
 						  assemblyId);
+      } catch (IllegalArgumentException iae) {
+	if (log.isWarnEnabled()) {
+	  log.warn("updateCmmAtt failed to set the Att Value for com " + communityId + ": " + iae.toString());
+	}
+	// Couldnt make the edit, so dont update the UI
+	return;
+      }
     } else if (columnName.equalsIgnoreCase("COMMUNITY_ID")) {
       // Can't edit the community ID here
       if (log.isInfoEnabled()) {
@@ -442,19 +453,34 @@ public class DatabaseTableModel extends AbstractTableModel {
       log.error("updateCommEntityAtt has null dbValue on column " + columnName + ", Comm: " + communityName + ", entity: " + entityId + " in row " + row);
     }
 
-    // FIXME: If making this change makes the whole DB row a duplicate
-    // don't make the change, else get an SQL exception
-
     if (columnName.equalsIgnoreCase("ATTRIBUTE_ID") || columnName.equalsIgnoreCase("ENTITY_ATTRIBUTE_ID")) {
-      CommunityDBUtils.setEntityAttributeId(communityName, entityId, dbValue,
+      try {
+      // This throws an exception if it looks like a duplicate
+	CommunityDBUtils.setEntityAttributeId(communityName, entityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
                                dbRepresentation(2, getValueAt(row, 2)),
 					    assemblyId);
+      } catch (IllegalArgumentException iae) {
+	if (log.isWarnEnabled()) {
+	  log.warn("updateCommEntAtt failed to set the Att ID for comm " + communityName + ", entity " + entityId + ": " + iae.toString());
+	}
+	// Couldnt make the edit, so dont update the UI
+	return;
+      }
     } else if (columnName.equalsIgnoreCase("ATTRIBUTE_VALUE") || columnName.equalsIgnoreCase("ENTITY_ATTRIBUTE_VALUE")) {
-      CommunityDBUtils.setEntityAttributeValue(communityName, entityId, dbValue,
+      // This throws an exception if it looks like a duplicate
+      try {
+	CommunityDBUtils.setEntityAttributeValue(communityName, entityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
                                dbRepresentation(2, getValueAt(row, 2)),
 					       assemblyId);
+      } catch (IllegalArgumentException iae) {
+	if (log.isWarnEnabled()) {
+	  log.warn("updateCommEntAtt failed to set the Att value for comm " + communityName + ", entity " + entityId + ": " + iae.toString());
+	}
+	// Couldnt make the edit, so dont update the UI
+	return;
+      }
     } else if (columnName.equalsIgnoreCase("ENTITY_ID")) {
       // Can't edit the community ID here
       if (log.isInfoEnabled()) {
