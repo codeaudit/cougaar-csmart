@@ -317,7 +317,7 @@ public class Organizer extends JScrollPane {
     helper = new OrganizerHelper(this);
     initRecipes();
 
-    setPreferredSize(new Dimension(400, 100));
+    setPreferredSize(new Dimension(400, 400));
     JPanel panel = new JPanel(new BorderLayout());
     setViewportView(panel);
     this.csmart = csmart;
