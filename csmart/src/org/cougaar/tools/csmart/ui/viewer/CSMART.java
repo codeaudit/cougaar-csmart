@@ -356,13 +356,13 @@ public class CSMART extends JFrame {
     toolBar = new JToolBar();
     toolBar.setLayout(new GridLayout(1, 5, 2, 2));
     getContentPane().add("North", toolBar);
+    // Warning: This listener will fire as the organizer restores
+    // the XML workspace
     organizer.addTreeSelectionListener(new TreeSelectionListener() {
         public void valueChanged(TreeSelectionEvent e) {
           enableCSMARTTools();
         }
       });
-
-    getContentPane().add("Center", organizer);
 
     Action societyAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
@@ -406,6 +406,11 @@ public class CSMART extends JFrame {
     configureButton = (JButton)toolBar.getComponentAtIndex(0);
     buildButton = (JButton)toolBar.getComponentAtIndex(1);
     runButton = (JButton)toolBar.getComponentAtIndex(2);
+
+    // Add the Organizer much later, so the listeners dont fire
+    // before the buttons have been defined.
+    getContentPane().add("Center", organizer);
+
     enableCSMARTTools();
   }
 
@@ -506,6 +511,10 @@ public class CSMART extends JFrame {
    */
 
   protected void enableCSMARTTools() {
+    // When restoring Organizer XML, the listener can get fired
+    // before the buttons have been defined, causing an NPE.
+    if (configureButton == null)
+      return;
     ActionUtil.setActionAllowed(configureButton.getAction(), organizer);
     ActionUtil.setActionAllowed(buildButton.getAction(), organizer);
     ActionUtil.setActionAllowed(runButton.getAction(), organizer);
