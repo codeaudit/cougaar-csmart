@@ -1029,6 +1029,8 @@ public class PopulateDb extends PDbBase {
   public void copyOPLANData(String oldAssemblyID, String newAssemblyID) 
     throws SQLException
   {
+    if (oldAssemblyID == null || oldAssemblyID.equals("") || newAssemblyID == null || newAssemblyID.equals(""))
+      return;
     substitutions.put(":old_assembly_id:", oldAssemblyID);
     substitutions.put(":new_assembly_id:", newAssemblyID);
     String qs = dbp.getQuery("copyOPLANQueryNames", substitutions);
