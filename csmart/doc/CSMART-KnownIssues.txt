@@ -44,7 +44,17 @@ CSMART contains a few known issues:
   database, it is possible for these exports to conflict. Bug # 1364
 
 * Do not use a host name of "localhost" or one with "non-standard"
-  characters in it when configuring your Experiment in the Experiment Builder.
+  characters in it when configuring your Experiment in the Experiment
+  Builder.
+
+* When running some Nodes, if you kill them individually via the
+  Control menu, the Run and Stop buttons may be erroneously
+  enabled/disabled. (Bug #1637)
+
+* If you attach to a Node in the Console, then Run an Experiment which
+  has a Node of the same name, you will lose visibility of the
+  previous Node, and the runtime NameServer entries for the original
+  Node will be corrupted. (Bug #1639)
 
 For up to date information on these and other CSMART issues see:
 http://www.cougaar.org/bugs
