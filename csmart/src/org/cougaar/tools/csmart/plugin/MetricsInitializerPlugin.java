@@ -246,8 +246,14 @@ public class MetricsInitializerPlugin
         setCurrentState(RUNNING);
 	// Keep the system going
         //fillTaskQueue();
+      } else {
+	// Only want to break and wait to be called again
+	// if we are still in the SAMPLING state.
+	// If we are in the RUNNING state now, we want
+	// to check if we're done now, if the time has expired,
+	// etc. So we fall through to the RUNNING case.
+	break;
       }
-      break;
 
     case RUNNING:
       // Without this next, there's no way to stop!
