@@ -164,7 +164,7 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
    PostGreSQL database is used. Only MySQL is currently supported for CSMART.
    A single database can be shared with other CSMART users, but you
    must first arrange access to the database --
-   these notes detail how to create your own database and <a href="../../doc/details/DataAccess.html">cougaar.rc</a>
+   these notes detail how to create your own database and <a href="../../doc/ReleaseNotes/10.4/DataAccess.html">cougaar.rc</a>
    password file.
    <p>
    See the database writeup and Cougaar install docs at <a href="http://www.cougaar.org">http://www.cougaar.org</a> for detailed 
@@ -240,7 +240,7 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
 <ul><li>For the 
   CSMART configuration database, first create the database (if necessary).  
   For later reference when
-    creating your <a href="../../doc/details/DataAccess.html">cougaar.rc</a>, 
+    creating your <a href="../../doc/ReleaseNotes/10.4/DataAccess.html">cougaar.rc</a>, 
     suppose the database will be on host 
     "myhost".  Be sure you have started the database, using the
     appropriate "mysqld" executable. Here we name
@@ -354,19 +354,19 @@ To install this database, you should:
 <p>
 
   <li>The database is now ready.  You must now create a 
-    <a href="../../doc/details/DataAccess.html">cougaar.rc</a>
+    <a href="../../doc/ReleaseNotes/10.4/DataAccess.html">cougaar.rc</a>
     for the database users, which is used to store the database location and
     username/password information.  See	
-    <a href="../../doc/details/DataAccess.html">DataAccess</a> 
+    <a href="../../doc/ReleaseNotes/10.4/DataAccess.html">DataAccess</a> 
     and documention on the Cougaar website the database writeup 
     for detailed information.
     <br><br></li><p>
 
-  <li>Copy your <a href="../../doc/details/DataAccess.html">cougaar.rc</a> to "/tmp" for later use during the installation
+  <li>Copy your <a href="../../doc/ReleaseNotes/10.4/DataAccess.html">cougaar.rc</a> to "/tmp" for later use during the installation
     of 
     <a href="http://www.cougaar.org">Cougaar</a>.  
     All installations must have this 
-    <a href="../../doc/details/DataAccess.html">cougaar.rc</a> 
+    <a href="../../doc/ReleaseNotes/10.4/DataAccess.html">cougaar.rc</a> 
     to access your database.<br><br></li><p>
   </ol>
 </li><p>
@@ -461,21 +461,21 @@ To install this database, you should:
            </li>
       </ol></li><p>
 
-  <li>Next you need to have your <a href="../../doc/details/DataAccess.html">cougaar.rc</a> available for your
+  <li>Next you need to have your <a href="../../doc/ReleaseNotes/10.4/DataAccess.html">cougaar.rc</a> available for your
     <a href="http://www.cougaar.org">Cougaar</a>
     installation.  Previously we placed this file in "/tmp",
     and here we move it to "configs/common":
        <pre>
        mv /tmp/cougaar.rc configs/common
        </pre>
-    Make sure you don't have a <a href="../../doc/details/DataAccess.html">cougaar.rc</a> in your home directory:
+    Make sure you don't have a <a href="../../doc/ReleaseNotes/10.4/DataAccess.html">cougaar.rc</a> in your home directory:
        <pre>
        ls ~/cougaar.rc ~/.cougaarrc
        </pre>
     Remove or rename any matches to the above files, since these would
     override your "/opt/cougaar/configs/common/cougaar.rc" and could
     contain incorrect database information.  Alternately you can keep
-    your <a href="../../doc/details/DataAccess.html">cougaar.rc</a> only in your home directory -- just make sure that 
+    your <a href="../../doc/ReleaseNotes/10.4/DataAccess.html">cougaar.rc</a> only in your home directory -- just make sure that 
     <a href="http://www.cougaar.org">Cougaar</a>
     finds the appropriate file. Note that the home directory is
     preferred, for easy upgrade to newer Cougaar versions.</li><p>
@@ -583,7 +583,7 @@ installation using
   <p>Cougaar includes the <a
   href="http://jakarta.apache.org/tomcat/">Apache Tomcat</a> servlet
   server by default. It usually runs on port 8800. For details, see
-  the <a href="../../doc/details/Servlet.html">core
+  the Cougaar Developers Guide
   documentation</a>. Note that no additional installation is required
   to use Tomcat. There are a number of servlets loaded by default, and
   others included in most societies (including the above <a
@@ -599,9 +599,8 @@ installation using
     of an Agent's Blackboard.  Other pages (or servlets) are
     available. Go to <a href="http://localhost:8800">http://localhost:8800</a> 
     for some basic help, and links to show you the available running
-    servlets. You may also look at the related core <a
-    href="../../doc/details/Servlet.html">servlet documentation</a>,
-    or see the
+    servlets. You may also look at the related core servlet
+    documentation in the
     <a href="http://www.cougaar.org/documents/pdg.html">Cougaar Developers Guide</a> 
     for further details.</li><p>
 
