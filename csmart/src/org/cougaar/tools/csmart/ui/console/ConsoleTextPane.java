@@ -42,59 +42,93 @@ public class ConsoleTextPane extends JTextPane {
   Position startPosition;
   String searchString;
   Position searchPosition;
-  Highlighter highlighter;
-  DefaultHighlighter.DefaultHighlightPainter highlight;
-  Object previousHighlight;
   String notifyCondition;
+  Position notifyPosition;
+  Highlighter highlighter;
+  DefaultHighlighter.DefaultHighlightPainter searchHighlight;
+  DefaultHighlighter.DefaultHighlightPainter notifyHighlight;
+  Object searchHighlightReference;
+  Object notifyHighlightReference;
 
   public ConsoleTextPane(ConsoleStyledDocument doc) {
     super(doc);
     this.doc = doc;
     startPosition = doc.getStartPosition();
     highlighter = getHighlighter();
-    highlight = new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
+    searchHighlight = 
+      new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
+    notifyHighlight =
+      new DefaultHighlighter.DefaultHighlightPainter(Color.magenta);
     searchString = null;
   }
 
-  /**
-   * Search for the string starting at the beginning of the document, and
-   * highlight it if found. 
-   * Search is case insensitive.
-   * @param s string to search for
-   * @return true if string found and false otherwise
-   */
+  private void highlightSearchString(int startOffset, int endOffset) {
+    if (searchHighlightReference != null)
+      highlighter.removeHighlight(searchHighlightReference);
+    try {
+      searchHighlightReference =
+        highlighter.addHighlight(startOffset, endOffset, searchHighlight);
+    } catch (BadLocationException ble) {
+      System.out.println("Bad location exception: " + ble.offsetRequested() +
+                         " " + ble);
+    }
+    displayHighlightedText(startOffset, endOffset);
+  }
 
-  public boolean search(String s) {
-    return searchWorker(s, startPosition);
+  private void highlightNotifyString(int startOffset, int endOffset) {
+    if (notifyHighlightReference != null)
+      highlighter.removeHighlight(notifyHighlightReference);
+    try {
+      notifyHighlightReference =
+        highlighter.addHighlight(startOffset, endOffset, notifyHighlight);
+    } catch (BadLocationException ble) {
+      System.out.println("Bad location exception: " + ble.offsetRequested() +
+                         " " + ble);
+    }
+    displayHighlightedText(startOffset, endOffset);
+  }
+
+  private void displayHighlightedText(int startOffset, int endOffset) {
+    try {
+      setCaretPosition(endOffset);
+      Rectangle r = modelToView(startOffset);
+      scrollRectToVisible(r);
+    } catch (BadLocationException ble) {
+      System.out.println("Bad location exception: " + ble.offsetRequested() +
+                         " " + ble);
+    }
   }
 
   /**
    * Search for a string starting at a given position.
-   * Remember the end of the string as the start of the next search.
+   * If the string is found, set the position at the end of the
+   * string so it can be used as the start of the next search.
+   * If the string is not found, return false.
+   * @param s string to search for
+   * @param startPosition position in document to start search
+   * @param search true for "search"; false for "notify"
+   * @return boolean whether or not string was found
    */
 
-  private boolean searchWorker(String s, Position startSearchPosition) {
-    searchString = s.toLowerCase();
-    int startOffset = startSearchPosition.getOffset();
+  private boolean worker(String s, Position startPosition, boolean search) {
+    s = s.toLowerCase();
+    int startOffset = startPosition.getOffset();
     try {
       String content = getText(startOffset, 
                                doc.getEndPosition().getOffset() - startOffset);
       content = content.toLowerCase();
-      int index = content.indexOf(searchString);
+      int index = content.indexOf(s);
       if (index == -1)
         return false;
       startOffset = startOffset + index;
-      int endOffset = startOffset + searchString.length();
-      if (previousHighlight != null)
-        highlighter.removeHighlight(previousHighlight);
-      // translate content offsets into document offsets and highlight
-      previousHighlight =
-        highlighter.addHighlight(startOffset, endOffset, highlight);
-      searchPosition = doc.createPosition(endOffset);
-      setCaretPosition(endOffset);
-      Rectangle r = modelToView(startOffset);
-      // scroll so that highlighted text is visible
-      scrollRectToVisible(r);
+      int endOffset = startOffset + s.length();
+      if (search) {
+        highlightSearchString(startOffset, endOffset);
+        searchPosition = doc.createPosition(endOffset);
+      } else {
+        highlightNotifyString(startOffset, endOffset);
+        notifyPosition = doc.createPosition(endOffset);
+      }
     } catch (BadLocationException ble) {
       System.out.println("Bad location exception: " + ble.offsetRequested() +
                          " " + ble);
@@ -125,24 +159,16 @@ public class ConsoleTextPane extends JTextPane {
         doc.appendString(s, a);
         return false;
       }
-      // note that caret position is one less than doc end position
-      // when the caret is "at the end of" the document
-      if ((getCaretPosition()+1) != doc.getEndPosition().getOffset()) {
+      if (notifyPosition != null) {
         doc.appendString(s, a);
         return true;
       }
       int startOffset = doc.getEndPosition().getOffset() + index -1;
-      doc.appendString(s, a); 
-      if (previousHighlight != null)
-        highlighter.removeHighlight(previousHighlight);
-      // translate content offsets into document offsets and highlight
       int endOffset = startOffset + notifyCondition.length();
+      doc.appendString(s, a); 
+      highlightNotifyString(startOffset, endOffset);
       try {
-        previousHighlight =
-          highlighter.addHighlight(startOffset, endOffset, highlight);
-        setCaretPosition(endOffset);
-        Rectangle r = modelToView(startOffset);
-        scrollRectToVisible(r);
+        notifyPosition = doc.createPosition(endOffset);
       } catch (BadLocationException ble) {
         System.out.println("Bad location exception: " + ble.offsetRequested() +
                            " " + ble);
@@ -150,7 +176,26 @@ public class ConsoleTextPane extends JTextPane {
       return true;
     }
   }
+
+  public boolean notifyNext() {
+    if (notifyCondition != null) 
+      return worker(notifyCondition, notifyPosition, false);
+    return false;
+  }
         
+  /**
+   * Search for the string starting at the beginning of the document, and
+   * highlight it if found. 
+   * Search is case insensitive.
+   * @param s string to search for
+   * @return true if string found and false otherwise
+   */
+
+  public boolean search(String s) {
+    searchString = s;
+    return worker(s, startPosition, true);
+  }
+
   /**
    * Search for the "current" string (i.e. the last string specified in
    * a call to the search method) from the "current" location (i.e. the
@@ -160,8 +205,8 @@ public class ConsoleTextPane extends JTextPane {
    */
 
   public boolean searchNext() {
-    if (searchString != null)
-      return searchWorker(searchString, searchPosition);
+    if (searchString != null) 
+      return worker(searchString, searchPosition, true);
     return false;
   }
 
@@ -180,26 +225,33 @@ public class ConsoleTextPane extends JTextPane {
       notifyCondition = s.toLowerCase();
   }
 
+  /**
+   * Clear the notify highlighting and position.  Starts searching for
+   * notify conditions with new text appended after this method is called.
+   */
+
+  public void clearNotify() {
+    notifyPosition = null;
+    if (notifyHighlightReference != null)
+      highlighter.removeHighlight(notifyHighlightReference);
+  }
+
   public static void main(String[] args) {
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
     javax.swing.text.AttributeSet a = 
       new javax.swing.text.SimpleAttributeSet();
     ConsoleTextPane pane = new ConsoleTextPane(doc);
-    pane.setNotifyCondition("xyzdef");
-    pane.appendString("abcdefghijklmnopqrstuvwxyzdef", a);
+    pane.appendString("abcdefghijklmnopqrstuvw", a);
+    pane.search("ab");
+    pane.setNotifyCondition("xyz");
+    pane.appendString("xyzabc", a);
+    pane.searchNext();
+    pane.appendString("xyz", a);
+    pane.notifyNext();
     javax.swing.JFrame frame = new javax.swing.JFrame();
     frame.getContentPane().add(pane);
     frame.pack();
     frame.setSize(200, 200);
-    //    pane.search("xyzdef");
-//      try {
-//        doc.remove(0, doc.getLength());
-//        doc.appendString("abcdefghijklmnopqrstuvwxyzdef", a);
-//      } catch (BadLocationException ble) {
-//        System.out.println("Bad location exception: " + ble.offsetRequested() +
-//                           " " + ble);
-//      }
-//      pane.searchNext();
     frame.setVisible(true);
   }
   

@@ -58,6 +58,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String DISPLAY_ALL_ACTION = "Display All";
   private static final String NOTIFY_MENU = "Notify";
   private static final String NOTIFY_ACTION = "Notify When...";
+  private static final String NOTIFY_NEXT_ACTION = "Notify Next";
   private static int openFrameCount = 0;
   private static final int xOffset = 30, yOffset = 30;
   private NodeComponent node;
@@ -65,6 +66,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private ConsoleTextPane consoleTextPane;
   private Action searchAction;
   private Action searchNextAction;
+  private Action notifyAction;
+  private Action notifyNextAction;
   private HostComponent host;
   private String hostName;
   private String notifyCondition;
@@ -159,12 +162,19 @@ public class ConsoleInternalFrame extends JInternalFrame {
     };
     searchMenu.add(searchNextAction);
     JMenu notifyMenu = new JMenu(NOTIFY_MENU);
-    Action notifyAction = new AbstractAction(NOTIFY_ACTION) {
+    notifyAction = new AbstractAction(NOTIFY_ACTION) {
       public void actionPerformed(ActionEvent e) {
 	notify_actionPerformed();
       }
     };
     notifyMenu.add(notifyAction);
+    JMenu notifyNextMenu = new JMenu(NOTIFY_MENU);
+    notifyNextAction = new AbstractAction(NOTIFY_NEXT_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+	notifyNext_actionPerformed();
+      }
+    };
+    notifyMenu.add(notifyNextAction);
     JMenu statusMenu = new JMenu(STATUS_MENU);
     Action historyAction = new AbstractAction(HISTORY_ACTION) {
       public void actionPerformed(ActionEvent e) {
@@ -195,12 +205,20 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private void initKeyMap(ConsoleTextPane pane) {
     InputMap im = pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
     ActionMap am = pane.getActionMap();
+    //    InputMap im = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+    //    ActionMap am = getActionMap();
     im.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK), 
            SEARCH_ACTION);
     am.put(SEARCH_ACTION, searchAction);
     im.put(KeyStroke.getKeyStroke(KeyEvent.VK_T, Event.CTRL_MASK), 
            SEARCH_NEXT_ACTION);
     am.put(SEARCH_NEXT_ACTION, searchNextAction);
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK), 
+           NOTIFY_ACTION);
+    am.put(NOTIFY_ACTION, notifyAction);
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK), 
+           NOTIFY_NEXT_ACTION);
+    am.put(NOTIFY_NEXT_ACTION, notifyNextAction);
   }
 
   public NodeComponent getNodeComponent() {
@@ -405,6 +423,14 @@ public class ConsoleInternalFrame extends JInternalFrame {
     else
       notifyCondition = s;
     consoleTextPane.setNotifyCondition(notifyCondition);
+    notifyNextAction.setEnabled(true);
+  }
+
+  public void notifyNext_actionPerformed() {
+    boolean found = consoleTextPane.notifyNext();
+    notifyNextAction.setEnabled(found);
+    consoleTextPane.revalidate();
+    consoleTextPane.repaint();
   }
 
 }

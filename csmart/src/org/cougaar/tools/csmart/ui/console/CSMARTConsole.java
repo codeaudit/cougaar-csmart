@@ -77,7 +77,8 @@ public class CSMARTConsole extends JFrame {
   NodeComponent[] nodesToRun; // node components that contain agents to run
   String[] hostsToRunOn;      // hosts that are assigned nodes to run
   ArrayList hostsToUse; // Hosts that are actually having stuff run on them
-  Hashtable nodeListeners; // indexed by node component
+  Hashtable nodeListeners; // ConsoleNodeListener referenced by node name
+  Hashtable nodePanes;     // ConsoleTextPane referenced by node name
   String notifyCondition; // if this appears in node stdout, notify user
 
   // gui controls
@@ -99,6 +100,7 @@ public class CSMARTConsole extends JFrame {
   private static final String NOTIFY_MENU = "Notify";
   private static final String NOTIFY_MENU_ITEM = "Notify When...";
   private static final String EXIT_MENU_ITEM = "Exit";
+  private static final String DBCONFIG_MENU_ITEM = "Configure Database";
   private static final String HELP_DOC = "help.html";
   private static final String ABOUT_CSMART_ITEM = "About CSMART";
   private static final String ABOUT_DOC = "../help/about-csmart.html";
@@ -131,14 +133,20 @@ public class CSMARTConsole extends JFrame {
   private static final int MSECS_PER_SECOND = 1000;
   private static final int MSECS_PER_MINUTE = 60000;
   private static final int MSECS_PER_HOUR = 3600000;
-
   private Date runStart = null;
-  
   private ConsoleDesktop desktop;
-
   // node whose status lamp is selected
   // set only when pop-up menu is displayed
   private String selectedNodeName;
+
+  // used for database
+  static JDialog dbConfigDialog = null;
+  static JTextField dbConfigField;
+  static JTextField dbNameField;
+  static JPasswordField dbPasswordField;
+  String dbConfig = "jdbc:oracle:thin:@eiger.alpine.bbn.com:1521:alp";
+  String dbName = "society_config";
+  String dbPassword = "s0ciety_c0nfig";
 
   /**
    * Create and show console GUI.
@@ -162,10 +170,19 @@ public class CSMARTConsole extends JFrame {
     runningNodes = new Hashtable();
     oldNodes = new Hashtable();
     nodeListeners = new Hashtable();
+    nodePanes = new Hashtable();
 
     // top level menus
     JMenu fileMenu = new JMenu(FILE_MENU);
     fileMenu.setToolTipText("Save configuration or exit.");
+    JMenuItem dbConfigMenuItem = new JMenuItem(DBCONFIG_MENU_ITEM);
+    dbConfigMenuItem.setToolTipText("Configure the database.");
+    dbConfigMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+	dbConfigMenuItem_actionPerformed();
+      }
+    });
+    fileMenu.add(dbConfigMenuItem);
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.setToolTipText("Exit this tool.");
     exitMenuItem.addActionListener(new ActionListener() {
@@ -334,7 +351,7 @@ public class CSMARTConsole extends JFrame {
     nodeMenu.add(aboutAction);
     Action resetAction = new AbstractAction(RESET_ACTION) {
       public void actionPerformed(ActionEvent e) {
-        resetNodeStatusButton();
+        resetNodeStatus();
       }
     };
     nodeMenu.add(resetAction);
@@ -386,6 +403,86 @@ public class CSMARTConsole extends JFrame {
     pack();
     setSize(700, 600);
     setVisible(true);
+  }
+
+  /**
+   * Display dialog that allows user to configure the database.
+   */
+
+  public void dbConfigMenuItem_actionPerformed() {
+    if (dbConfigDialog != null) {
+      dbConfigDialog.setVisible(true);
+      return;
+    }
+    JPanel panel = new JPanel(new GridBagLayout());
+    int x = 0;
+    int y = 0;
+    dbConfigField = new JTextField(dbConfig);
+    dbNameField = new JTextField(dbName);
+    dbPasswordField = new JPasswordField(dbPassword);
+    panel.add(new JLabel("Database:"),
+              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.NONE,
+                                     new Insets(10, 0, 5, 5),
+                                     0, 0));
+    panel.add(dbConfigField,
+              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.HORIZONTAL,
+                                     new Insets(10, 0, 5, 0),
+                                     0, 0));
+    x = 0;
+    panel.add(new JLabel("User:"),
+              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.NONE,
+                                     new Insets(10, 0, 5, 5),
+                                     0, 0));
+    panel.add(dbNameField,
+              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.HORIZONTAL,
+                                     new Insets(10, 0, 5, 0),
+                                     0, 0));
+    x = 0;
+    panel.add(new JLabel("Password:"),
+              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.NONE,
+                                     new Insets(10, 0, 5, 5),
+                                     0, 0));
+    panel.add(dbPasswordField,
+              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.HORIZONTAL,
+                                     new Insets(10, 0, 5, 0),
+                                     0, 0));
+    
+    dbConfigDialog = new JDialog(this, "Database Configuration", true);
+    dbConfigDialog.getContentPane().setLayout(new BorderLayout());
+    dbConfigDialog.getContentPane().add(panel, BorderLayout.CENTER);
+    JPanel buttonPanel = new JPanel();
+    JButton okButton = new JButton("OK");
+    okButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        dbConfig = dbConfigField.getText();
+        dbName = dbNameField.getText();
+        dbPassword = new String(dbPasswordField.getPassword());
+        dbConfigDialog.setVisible(false);
+      }
+    });
+    buttonPanel.add(okButton);
+    JButton cancelButton = new JButton("Cancel");
+    cancelButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        dbConfigDialog.setVisible(false);
+      }
+    });
+    buttonPanel.add(cancelButton);
+    dbConfigDialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+    dbConfigDialog.setSize(400, 200);
+    dbConfigDialog.setVisible(true);
   }
 
   /**
@@ -470,12 +567,19 @@ public class CSMARTConsole extends JFrame {
     }
   }
 
-  // this clears the error in the console node listener
-  // as it must be told that it's ok to update the status button again
-  private void resetNodeStatusButton() {
+  /**
+   * Clears the error in the console node listener so it 
+   * updates the status button again.
+   * Clears the notify position in the console text pane.
+   */
+
+  private void resetNodeStatus() {
     ConsoleNodeListener listener = 
       (ConsoleNodeListener)nodeListeners.get(selectedNodeName);
     listener.clearError();
+    ConsoleTextPane consoleTextPane =
+      (ConsoleTextPane)nodePanes.get(selectedNodeName);
+    consoleTextPane.clearNotify();
   }
 
   /**
@@ -892,6 +996,7 @@ public class CSMARTConsole extends JFrame {
       ((ConsoleNodeListener)i.next()).closeLogFile();
     saveResults();
     nodeListeners.clear();
+    nodePanes.clear();
     updateExperimentControls(experiment, false);
   }
 
@@ -973,6 +1078,7 @@ public class CSMARTConsole extends JFrame {
     if (notifyCondition != null)
       stdoutPane.setNotifyCondition(notifyCondition);
     nodeListeners.put(nodeName, listener);
+    nodePanes.put(nodeName, stdoutPane);
 
     NodeEventFilter filter = new NodeEventFilter(10);
     Properties properties = new Properties();

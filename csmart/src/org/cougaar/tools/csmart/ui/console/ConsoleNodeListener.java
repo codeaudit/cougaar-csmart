@@ -360,6 +360,9 @@ public class ConsoleNodeListener implements NodeEventListener {
     if (!haveError) {
       statusButton.setIcon(new ColoredCircle(statusColor, 20));
       statusButton.setSelectedIcon(new SelectedColoredCircle(statusColor, 20));
+      //      String s = statusButton.getToolTipText((MouseEvent)null);
+      // TODO: parse string, strip off string following last colon
+      // and add in description of this color
     } 
   }
 
