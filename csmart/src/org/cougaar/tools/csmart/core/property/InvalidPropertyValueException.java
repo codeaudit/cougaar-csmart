@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.core.property;
 
 public class InvalidPropertyValueException extends Exception {
     public InvalidPropertyValueException(String msg) {

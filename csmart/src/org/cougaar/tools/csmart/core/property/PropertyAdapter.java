@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.core.property;
 
 public class PropertyAdapter implements PropertyListener {
     static final long serialVersionUID = -4211836577257677972L;

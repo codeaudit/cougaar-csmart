@@ -18,7 +18,7 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.core.property;
 
 import java.util.EventListener;
 import java.io.Serializable;
