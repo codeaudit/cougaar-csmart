@@ -219,19 +219,11 @@ public class DBUtils {
     return conn;
   }
   
-  public static String getSocietyName(ArrayList assemblyIds) {
+  public static String getSocietyName(String assemblyId) {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
-    Iterator iter = assemblyIds.iterator();
     Map substitutions = new HashMap();
     String result = null;
-
-    while(iter.hasNext()) {
-      String id = (String)iter.next();
-      if(id.startsWith("CMT") || id.startsWith("CSA")) { 
-        substitutions.put(":assembly_id:", id);
-        break; 
-      }
-    }
+    substitutions.put(":assembly_id:", assemblyId);
 
     if( !substitutions.isEmpty() ) {
       String query = null;
