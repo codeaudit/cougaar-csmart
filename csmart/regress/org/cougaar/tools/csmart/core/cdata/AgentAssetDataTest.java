@@ -30,9 +30,7 @@ import java.util.Iterator;
  * Created: Tue Jan 15 13:04:34 2002
  *
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version
  */
-
 public class AgentAssetDataTest extends TestCase {
 
   private AgentAssetData aad;
@@ -56,7 +54,6 @@ public class AgentAssetDataTest extends TestCase {
   public static Test suite() {
     return new TestSuite(AgentAssetDataTest.class);
   }
-
 
   public void testGetAgentAndParent() {
     assertEquals("Test Get Agent", acd, aad.getAgent());
@@ -133,7 +130,6 @@ public class AgentAssetDataTest extends TestCase {
     assertEquals("Test UIC", UIC, aad.getUIC());
   }
 
-
   public void testPropGroups() {
     PropGroupData[] pgs = new PropGroupData[5];
     for(int i=0; i < pgs.length; i++) {
@@ -196,7 +192,6 @@ public class AgentAssetDataTest extends TestCase {
     assertEquals("Test getPropGroupsIterator", true, 
                  (aad.getPropGroupsIterator() instanceof Iterator));
   }
-
 
   public void testRoles() {
     String[] roles = new String[4];

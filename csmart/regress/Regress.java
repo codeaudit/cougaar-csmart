@@ -56,7 +56,6 @@ public class Regress extends TestSuite {
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyTest.class));
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.ConfigurableComponentTest.class));    
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.cdata.GenericLeafComponentDataTest.class));    
-    //csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.cdata.AgentComponentDataTest.class));    
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.cdata.CommunityTimePhasedDataTest.class));    
 
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.cdata.TimePhasedDataTest.class));    
