@@ -54,7 +54,7 @@ public final class ThreadUtils {
    * Name of the <code>PSP_Search</code> on all agents.
    */
   //  public static final String SEARCH_PSP_NAME = "/csmart/monitor/THREADS.PSP";
-  public static final String SEARCH_PSP_NAME = "CSMART_SearchServlet";
+  public static final String SEARCH_PSP_NAME = "/CSMART_SearchServlet";
 
   /**
    * Enable/disable debug messages.
@@ -299,7 +299,11 @@ public final class ThreadUtils {
    *
    * @return List of PropertyTrees, or null if an error occurred
    */
-  public static List getLocalThread(
+
+  // TODO: make this method use the utilities in ui.util
+  // so that we don't have to debug problems connecting to servlets
+  // in two different places
+  private static List getLocalThread(
       AgentMapping am,
       boolean isDown,
       String agentName, 
