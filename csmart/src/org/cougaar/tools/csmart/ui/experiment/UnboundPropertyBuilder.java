@@ -169,10 +169,11 @@ public class UnboundPropertyBuilder extends JPanel {
   };
 
   /**
-   * User interface for specifying values of properties of configurable
-   * components to use in trials.
+   * Constructs user interface for specifying values of
+   * properties of configurable components to use in experiments.
+   * @param experiment the experiment to edit
+   * @param experimentBuilder the <code>ExperimentBuilder</code> that this user interface was invoked from
    */
-
   public UnboundPropertyBuilder(Experiment experiment, 
                                 ExperimentBuilder experimentBuilder) {
     this.experiment = experiment;
@@ -257,9 +258,9 @@ public class UnboundPropertyBuilder extends JPanel {
 
   /**
    * Display information about the experiment.  Called to 
-   * re-use the display.
+   * re-use this interface.
+   * @param newExperiment the new experiment to edit
    */
-
   public void reinit(Experiment newExperiment) {
     experiment = newExperiment;
     isEditable = newExperiment.isEditable();
@@ -426,8 +427,8 @@ public class UnboundPropertyBuilder extends JPanel {
 
   /**
    * User modified variation scheme; update minimum number of trials.
+   * @param e the event describing the change
    */
-
   public void variationSchemeCB_actionPerformed(ActionEvent e) {
     variationScheme = (String)((JComboBox)e.getSource()).getSelectedItem();
     if (variationScheme.equals(Experiment.VARY_TWO_DIMENSION)) {

@@ -45,7 +45,7 @@ import org.cougaar.util.log.Logger;
 import java.io.ObjectInputStream;
 import java.io.IOException;
 
-public class ExperimentBuilder extends JFrame implements ModificationListener {
+public class ExperimentBuilder extends JFrame {
   private static final String FILE_MENU = "File";
   private static final String SAVE_MENU_ITEM = "Save";
   private static final String SAVE_AS_MENU_ITEM = "Save As...";
@@ -148,6 +148,13 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     aboutAction
   };
 
+  /**
+   * Construct an <code>ExperimentBuilder</code> which is used
+   * to edit experiments (add/remove societies and recipes) and
+   * specify hosts, nodes and agents.
+   * @param csmart The <code>CSMART</code> object from which this is invoked
+   * @param experiment The <code>Experiment</code> to edit
+   */
   public ExperimentBuilder(CSMART csmart, Experiment experiment) {
     this.csmart = csmart;
     createLogger();
@@ -303,21 +310,8 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     log = CSMART.createLogger(this.getClass().getName());
   }
 
-  // The user interface fires modification events to the experiment,
-  // so that the experiment saves itself when asked.
-
   private void setExperiment(Experiment newExperiment) {
-    //    if (experiment != null) {
-    //      experiment.removeModificationListener(this);
-    //    }
     experiment = newExperiment;
-    //    if (experiment != null) {
-    //      experiment.addModificationListener(this);
-    //    }
-  }
-
-  public void modified(ModificationEvent e) {
-    setModified(true);
   }
 
   private void exit() {
@@ -332,9 +326,9 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
    * Set experiment to edit; used to re-use a running editor
    * to edit a different experiment.  Set the new experiment in all
    * the user interfaces (tabbed panes).
-   * Silently save the previous experiment if necessary.
+   * Silently save the previous experiment if it was modified.
+   * @param newExperiment the new experiment to edit
    */
-
   public void reinit(Experiment newExperiment) {
     saveSilently();
     // restore editable flag on previous experiment
@@ -350,12 +344,13 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   }
 
   /**
-   * Called by HostConfigurationBuilder or UnboundPropertyBuilder
+   * Called by <code>HostConfigurationBuilder</code> 
+   * or <code>UnboundPropertyBuilder</code>
    * if they modify an experiment.
-   * Tell the experiment it's modified, so when we save the experiment,
-   * it writes itself to the database.
+   * Tell the experiment it's modified, 
+   * so when the <code>ExperimentBuilder</code>
+   * saves the experiment, the experiment writes itself to the database.
    */
-
   public void setModified(boolean modified) {
     this.modified = modified;
     experiment.modified(new ModificationEvent(this, 0));
