@@ -34,17 +34,17 @@ fi
 # check that its a copy (does not have a base assembly)
 
 if [ "x$5" = "x" ]; then
-    ${COUGAAR_INSTALL_PATH}/csmart/bin/copy-experiment.sh $1 "" $2 $3 $4 export
+    ${COUGAAR_INSTALL_PATH}/csmart/bin/copy-experiment.sh $1 "exprt" $2 $3 $4 export
 else
-    ${COUGAAR_INSTALL_PATH}/csmart/bin/copy-experiment.sh $1 "" $2 $3 $4 export $5
+    ${COUGAAR_INSTALL_PATH}/csmart/bin/copy-experiment.sh $1 "exprt" $2 $3 $4 export $5
 fi
 
 # Check that named experiment exists
 # if this fails, something went wrong in copy
 if [ "x$5" = "x" ]; then
-  EID=`mysql -s -e "select distinct name from v4_expt_experiment where name = '$1-'" -u $2 -p$3 tempcopy`
+  EID=`mysql -s -e "select distinct name from v4_expt_experiment where name = '$1-exprt'" -u $2 -p$3 tempcopy`
 else
-  EID=`mysql -s -e "select distinct name from v4_expt_experiment where name = '$1-'" -u $2 -p$3 -h $5 tempcopy`
+  EID=`mysql -s -e "select distinct name from v4_expt_experiment where name = '$1-exprt'" -u $2 -p$3 -h $5 tempcopy`
 fi
 
 if [ -z $EID ]; then

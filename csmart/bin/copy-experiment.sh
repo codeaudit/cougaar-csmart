@@ -40,7 +40,7 @@ fi
 
 if [ -z $EID ]; then
  echo ""
- echo "The experiment, $1 is not a know experiment."
+ echo "The experiment, $1 is not a known experiment."
  echo "All known experiment names:"
  if [ "x$7" = "x" ]; then
      echo "select NAME from v4_expt_experiment" | mysql -s -u $3 -p$4 $5
