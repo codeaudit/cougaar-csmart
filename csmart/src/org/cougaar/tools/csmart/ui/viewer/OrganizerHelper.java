@@ -99,7 +99,7 @@ public class OrganizerHelper {
       Iterator metIter = recipes.iterator();
       while (metIter.hasNext()) {
         DbRecipe dbRecipe = (DbRecipe) metIter.next();
-        RecipeComponent mc = createRecipeComponent(dbRecipe.name, dbRecipe.cls);
+        RecipeComponent mc = createRecipe(dbRecipe.name, dbRecipe.cls);
         setRecipeComponentProperties(dbRecipe, mc);
         AgentComponent[] recagents = mc.getAgents(); 
         if (recagents != null && recagents.length > 0) {
@@ -513,8 +513,7 @@ public class OrganizerHelper {
               new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
             getRecipeProperties(dbRecipe, conn, substitutions);
             dbRecipe.name = recipeName;
-            RecipeComponent rc = 
-              createRecipeComponent(dbRecipe.name, dbRecipe.cls);
+            RecipeComponent rc = createRecipe(dbRecipe.name, dbRecipe.cls);
             setRecipeComponentProperties(dbRecipe, rc);
             return rc;
           } catch (ClassNotFoundException cnfe) {
@@ -558,7 +557,7 @@ public class OrganizerHelper {
 
   private static Class[] constructorArgTypes = {String.class};
 
-  private RecipeComponent createRecipeComponent(String name, Class cls) {
+  public RecipeComponent createRecipe(String name, Class cls) {
     try {
       Constructor constructor = cls.getConstructor(constructorArgTypes);
       RecipeComponent recipe =
@@ -568,6 +567,20 @@ public class OrganizerHelper {
     } catch (Exception e) {
       e.printStackTrace();
       return null;
+    }
+  }
+
+  /**
+   * Delete the named recipe from the database.
+   * @param name the name of the recipe to delete
+   */
+
+  public void deleteRecipe(String name) throws Exception {
+    PDbBase pdb = new PDbBase();
+    try {
+      pdb.removeLibRecipeNamed(name);
+    } finally {
+      pdb.close();
     }
   }
 

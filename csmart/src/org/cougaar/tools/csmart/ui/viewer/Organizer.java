@@ -27,8 +27,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.io.*;
 import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.lang.reflect.Constructor;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
@@ -84,14 +82,12 @@ public class Organizer extends JScrollPane {
   DefaultTreeModel model;
   private OrganizerTree workspace;
   private Organizer organizer;
-  private Map dbExptMap = new HashMap();
-  private Map dbTrialMap = new HashMap();
   private CMTDialog cmtDialog;
   private DBConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(this);
   
   // The societies which can be created in CSMART
-  private Object[] socNameClassItems = {
+  private NameClassItem[] builtInSocieties = {
     new NameClassItem("Scalability", ScalabilityXSociety.class),
     new NameClassItem("ABC", ABCSociety.class),
   };
@@ -110,6 +106,7 @@ public class Organizer extends JScrollPane {
   private UniqueNameSet societyNames = new UniqueNameSet("Society");
   private UniqueNameSet experimentNames = new UniqueNameSet("Experiment");
   private UniqueNameSet recipeNames = new UniqueNameSet("Recipe");
+  private UniqueNameSet folderNames = new UniqueNameSet("Folder");
 
   // define helper class
   private OrganizerHelper helper = new OrganizerHelper();
@@ -134,7 +131,6 @@ public class Organizer extends JScrollPane {
     if (root == null) {
       root = new DefaultMutableTreeNode(null, true);
       model = new DefaultTreeModel(root);
-      //      model = createModel(this, root);
     }
     model.setAsksAllowsChildren(true);
     model.addTreeModelListener(myModelListener);
@@ -168,8 +164,11 @@ public class Organizer extends JScrollPane {
     setViewportView(panel);
     updater.start();
   }
-  
+
+  ///////////////////////////////////////  
   // Methods to get the user's selection
+  ///////////////////////////////////////  
+
   public DefaultMutableTreeNode getSelectedNode() {
     TreePath selPath = workspace.getSelectionPath();
     if (selPath == null) return null;
@@ -233,7 +232,8 @@ public class Organizer extends JScrollPane {
     return selNode.getUserObject();
   }
 
-  // End of methods to get the User's selection
+  ////////////////////////////////////  
+  // Start tools
   ////////////////////////////////////  
 
   public void configure() {
@@ -329,561 +329,9 @@ public class Organizer extends JScrollPane {
     csmart.runConsole(experiment);
   }
   
-  private int nameCounter = 0;
-  
-  private static Class[] constructorArgTypes = {String.class};
-
-  // This is to support auto-saving
-  
-  PropertyListener myPropertyListener = new PropertyListener() {
-      public void propertyValueChanged(PropertyEvent e) {
-	update();
-      }
-      
-      public void propertyOtherChanged(PropertyEvent e) {
-	update();
-      }
-    };
-  
-  PropertiesListener myPropertiesListener = new PropertiesListener() {
-      public void propertyAdded(PropertyEvent e) {
-	e.getProperty().addPropertyListener(myPropertyListener);
-	update();
-      }
-      
-      public void propertyRemoved(PropertyEvent e) {
-	e.getProperty().removePropertyListener(myPropertyListener);
-	update();
-      }
-    };
-
-  /**
-   * Call update if anything changed.
-   * Also handle experiment name having been changed:
-   *   update the name of the experiment in the tree
-   *   update the name of the experiment in the set of experiment names
-   *    (currently done by re-initting the experiment names)
-   */
-
-  ModificationListener myModificationListener = new ModificationListener() {
-      public void modified(ModificationEvent event) {
-        if (event.getSource() instanceof Experiment) {
-          model.nodeChanged(findNode(event.getSource()));
-          try {
-            Class[] noTypes = new Class[0];
-            experimentNames.clear();
-            experimentNames.init(getLeaves(Experiment.class, root),
-                Experiment.class.getMethod("getExperimentName", noTypes));
-          } catch (NoSuchMethodException nsme) {
-            nsme.printStackTrace();
-          } catch (SecurityException se) {
-            se.printStackTrace();
-          }
-        }
-	update();
-      }
-    };
-  
-  public boolean exitAllowed() {
-    synchronized(root) {
-      if (updateNeeded) {
-	nextUpdate = System.currentTimeMillis();
-	root.notify();
-	while (updateNeeded) {
-	  try {
-	    root.wait();
-	  } catch (InterruptedException ie) {
-	  }
-	}
-      }
-    }
-    return true;
-  }
-
-  /**
-   * Create a new built-in society.
-   */
-
-  public DefaultMutableTreeNode newSociety() {
-    Object answer =
-      JOptionPane.showInputDialog(this, "Select Society Type",
-				  "Select Society",
-				  JOptionPane.QUESTION_MESSAGE,
-				  null,
-				  socNameClassItems,
-				  "ScalabilityX");
-    if (answer == null)
-      return null;
-    SocietyComponent sc = null;
-    if (answer instanceof NameClassItem) {
-      // create a scalability or abc society
-      NameClassItem item = (NameClassItem) answer;
-      String name = societyNames.generateName(item.name);
-      while (true) {
-	name = (String) JOptionPane.showInputDialog(this, "Enter Society Name",
-						    "Name Society",
-						    JOptionPane.QUESTION_MESSAGE,
-						    null, null,
-						    name);
-	if (name == null) return null;
-	if (!societyNames.contains(name)) break;
-	int ok = JOptionPane.showConfirmDialog(this,
-					       "Use an unique name",
-					       "Society Name Not Unique",
-					       JOptionPane.OK_CANCEL_OPTION,
-					       JOptionPane.ERROR_MESSAGE);
-	if (ok != JOptionPane.OK_OPTION) return null;
-      }
-      sc = helper.createSociety(name, item.cls);
-    }
-    if (sc == null)
-      return null;
-    DefaultMutableTreeNode newNode = 
-      addSocietyToWorkspace(sc, getSelectedNode());
-    workspace.setSelection(newNode);
-    return newNode;
-  }
-
-  private DefaultMutableTreeNode addSocietyToWorkspace(SocietyComponent sc,
-						       DefaultMutableTreeNode node) {
-    DefaultMutableTreeNode newNode = 
-      new DefaultMutableTreeNode(sc, false);
-    addNode(node, newNode);
-    societyNames.add(sc.getSocietyName());
-    installListeners(sc);
-    return newNode;
-  }
-  
-  private void installListeners(ModifiableComponent component) {
-    component.addPropertiesListener(myPropertiesListener);
-    for (Iterator i = component.getPropertyNames(); i.hasNext(); ) {
-      Property p = component.getProperty((CompositeName) i.next());
-      PropertyEvent event = new PropertyEvent(p, PropertyEvent.PROPERTY_ADDED);
-      myPropertiesListener.propertyAdded(event);
-    }
-    component.addModificationListener(myModificationListener);
-  }
-
-  public void rename() {
-    DefaultMutableTreeNode node = getSelectedNode();
-    if (node == null)
-      return;
-    Object o = node.getUserObject();
-    if (o == null)
-      return;
-    if (node.isRoot())
-      renameWorkspace();
-    else if (o instanceof Experiment)
-      renameExperiment();
-    else if (o instanceof SocietyComponent)
-      renameSociety();
-    else if (o instanceof RecipeComponent)
-      renameRecipe();
-    else if (o instanceof String)
-      renameFolder();
-  }
-
-  public void renameWorkspace() {
-    String name = JOptionPane.showInputDialog("New workspace name");
-    if (name == null || name.equals(""))
-      return;
-    workspaceFileName = name;
-    String rootName = this.workspaceFileName;
-    int extpos = this.workspaceFileName.lastIndexOf('.');
-    if (extpos >= 0) {
-      rootName = rootName.substring(0, extpos);
-    }
-    root.setUserObject(rootName);
-    model.nodeChanged(root);
-    update();
-  }
-  
-  public void renameSociety() {
-    String name = JOptionPane.showInputDialog("New society name");
-    if (name == null || name.equals("")) 
-      return;
-    DefaultMutableTreeNode node = getSelectedNode();
-    SocietyComponent societyComponent = 
-      (SocietyComponent) node.getUserObject();
-    if (name.equals(societyComponent.getSocietyName()))
-      return;
-    while (true) {
-      if (!societyNames.contains(name)) break;
-      int ok = JOptionPane.showConfirmDialog(this,
-					     "Use an unique name",
-					     "Society Name Not Unique",
-					     JOptionPane.OK_CANCEL_OPTION,
-					     JOptionPane.ERROR_MESSAGE);
-      if (ok != JOptionPane.OK_OPTION) return;
-      name = JOptionPane.showInputDialog("New society name");
-      if (name == null || name.equals("")) return;
-    }
-    societyNames.remove(societyComponent.getSocietyName());
-    societyNames.add(name);
-    societyComponent.setName(name);
-    model.nodeChanged(node);
-  }
-  
-  /**
-   * Note that this simply deletes the society from the workspace;
-   * if the society was included in an experiment, then the experiment
-   * still retains the society.
-   */
-  public void deleteSociety() {
-    DefaultMutableTreeNode node = getSelectedNode();
-    SocietyComponent society = (SocietyComponent)node.getUserObject();
-    if (!society.isEditable()) {
-      int result = JOptionPane.showConfirmDialog(this,
-						 "Society has been or is being used; delete anyway?",
-						 "Society Not Editable",
-						 JOptionPane.YES_NO_OPTION,
-						 JOptionPane.WARNING_MESSAGE);
-      if (result != JOptionPane.YES_OPTION)
-	return;
-    }
-    model.removeNodeFromParent(node);
-    societyNames.remove(society.getSocietyName());
-  }
-  
-  /**
-   * Note that this simply deletes the component from the workspace;
-   * if the component was included in an experiment, then the experiment
-   * still retains the component.
-   */
-  private void deleteComponent() {
-    DefaultMutableTreeNode node = getSelectedNode();
-    ModifiableComponent component = 
-      (ModifiableComponent)node.getUserObject();
-    if (component instanceof SocietyComponent)
-      deleteSociety();
-    else if (component instanceof Experiment)
-      deleteExperiment();
-    else if (component instanceof RecipeComponent)
-      deleteRecipe();
-  }
-
-  public void newRecipe() {
-    Object[] values = metNameClassItems;
-    Object answer =
-      JOptionPane.showInputDialog(this, "Select Recipe Type",
-				  "Select Recipe",
-				  JOptionPane.QUESTION_MESSAGE,
-				  null,
-				  values,
-				  "Empty Recipe");
-				  //"Mo Recipe");
-    if (answer instanceof NameClassItem) {
-      NameClassItem item = (NameClassItem) answer;
-      String name = recipeNames.generateName(item.name);
-      while (true) {
-	name = (String) JOptionPane.showInputDialog(this, "Enter Recipe Name",
-						    "Name Recipe",
-						    JOptionPane.QUESTION_MESSAGE,
-						    null, null,
-						    name);
-	if (name == null) return;
-	if (!recipeNames.contains(name)) break;
-	int ok = JOptionPane.showConfirmDialog(this,
-					       "Use an unique name",
-					       "Recipe Name Not Unique",
-					       JOptionPane.OK_CANCEL_OPTION,
-					       JOptionPane.ERROR_MESSAGE);
-	if (ok != JOptionPane.OK_OPTION) return;
-      }
-      try {
-	Constructor constructor = item.cls.getConstructor(constructorArgTypes);
-	RecipeComponent recipe =
-		  (RecipeComponent) constructor.newInstance(new String[] {name});
-	recipe.initProperties();
-	DefaultMutableTreeNode newNode =
-	  addRecipeToWorkspace(recipe, getSelectedNode());
-	workspace.setSelection(newNode);
-      } catch (Exception e) {
-	e.printStackTrace();
-      }
-    }
-  } // end of newRecipe
-
-  private DefaultMutableTreeNode addRecipeToWorkspace(RecipeComponent recipe) {
-    return addRecipeToWorkspace(recipe, getSelectedNode());
-  }
-
-  private DefaultMutableTreeNode addRecipeToWorkspace(RecipeComponent recipe,
-						      DefaultMutableTreeNode node) {
-    DefaultMutableTreeNode newNode = 
-      new DefaultMutableTreeNode(recipe, false);
-    addNode(node, newNode);
-    recipeNames.add(recipe.getRecipeName());
-    installListeners(recipe);
-    return newNode;
-  }
-  
-  public void renameRecipe() {
-    String name = JOptionPane.showInputDialog("New recipe name");
-    if (name == null || name.equals(""))
-      return;
-    DefaultMutableTreeNode node = getSelectedNode();
-    RecipeComponent recipe =
-      (RecipeComponent) node.getUserObject();
-    if (name.equals(recipe.getRecipeName()))
-      return;
-    while (true) {
-      if (!recipeNames.contains(name)) break;
-      int ok = JOptionPane.showConfirmDialog(this,
-					     "Use an unique name",
-					     "Recipe Name Not Unique",
-					     JOptionPane.OK_CANCEL_OPTION,
-					     JOptionPane.ERROR_MESSAGE);
-      if (ok != JOptionPane.OK_OPTION) return;
-      name = JOptionPane.showInputDialog("New recipe name");
-      if (name == null || name.equals("")) return;
-    }
-    if (name != null) {
-      recipeNames.remove(recipe.getRecipeName());
-      recipe.setName(name);
-      recipeNames.add(recipe.getRecipeName());
-      model.nodeChanged(node); // update the model...
-    }
-  }
-  
-  public void deleteRecipe() {
-    DefaultMutableTreeNode node = getSelectedNode();
-    if (node == null) return;
-    model.removeNodeFromParent(node);
-    RecipeComponent rc = (RecipeComponent) node.getUserObject();
-    try {
-      PDbBase pdb = new PDbBase();
-      try {
-        int status = pdb.recipeExists(rc);
-        if (status == PDbBase.RECIPE_STATUS_EXISTS || status == PDbBase.RECIPE_STATUS_DIFFERS) {
-          int answer =
-            JOptionPane.showConfirmDialog(this,
-                                          "Delete recipe from database?",
-                                          "Delete Recipe",
-                                          JOptionPane.YES_NO_OPTION);
-          if (answer == JOptionPane.YES_OPTION) {
-            pdb.removeLibRecipe(rc);
-          }
-        }
-      } finally {
-        pdb.close();
-      }
-    } catch (Exception e) {
-      JOptionPane.showMessageDialog(this,
-                                    "An exception occurred deleting the recipe from the database",
-                                    "Error Writing Database",
-                                    JOptionPane.ERROR_MESSAGE);
-    }
-    recipeNames.remove(rc.getRecipeName());
-  }
-  
-  public void saveRecipe() {
-    DefaultMutableTreeNode node = getSelectedNode();
-    if (node == null) return;
-    RecipeComponent rc = (RecipeComponent) node.getUserObject();
-    saveRecipe(rc);
-  }
-
-  private void saveRecipe(RecipeComponent rc) {
-    try {
-      PDbBase pdb = new PDbBase();
-      switch (pdb.recipeExists(rc)) {
-      case PDbBase.RECIPE_STATUS_EXISTS:
-        JOptionPane.showMessageDialog(this,
-                                      "The recipe is already in the database with the same values.",
-                                      "Write Not Needed",
-                                      JOptionPane.INFORMATION_MESSAGE);
-        return;
-      case PDbBase.RECIPE_STATUS_DIFFERS:
-        int answer =
-          JOptionPane.showConfirmDialog(this,
-                                        "Recipe "
-                                        + rc.getRecipeName()
-                                        + " already in database. Overwrite?",
-                                        "Recipe Exists",
-                                        JOptionPane.OK_CANCEL_OPTION,
-                                        JOptionPane.WARNING_MESSAGE);
-        if (answer != JOptionPane.OK_OPTION) return;
-        break;
-      case PDbBase.RECIPE_STATUS_ABSENT:
-        break;                // Just write it
-      }
-      pdb.replaceLibRecipe(rc);
-      JOptionPane.showMessageDialog(this,
-                                    "Recipe written successfully.",
-                                    "Recipe Written",
-                                    JOptionPane.INFORMATION_MESSAGE);
-    } catch (Exception sqle) {
-      sqle.printStackTrace();
-      JOptionPane.showMessageDialog(this,
-                                    "An exception occurred writing the recipe to the database",
-                                    "Error Writing Database",
-                                    JOptionPane.ERROR_MESSAGE);
-    }
-  }
-
-  public void selectRecipeFromDatabase() {
-    Map recipeNamesHT = helper.getRecipeNamesFromDatabase();
-    Set dbRecipeNames = recipeNamesHT.keySet();
-    if (dbRecipeNames.isEmpty()) {
-      JOptionPane.showMessageDialog(this,
-                                    "There are no recipes in the database",
-                                    "No Database Recipes",
-                                    JOptionPane.INFORMATION_MESSAGE);
-      return;
-    }
-    JComboBox cb = new JComboBox(dbRecipeNames.toArray());
-    cb.setEditable(false);
-    JPanel panel = new JPanel();
-    panel.add(new JLabel("Select Recipe:"));
-    panel.add(cb);
-    int result = 
-      JOptionPane.showConfirmDialog(null, panel, "Recipe",
-                                    JOptionPane.OK_CANCEL_OPTION,
-                                    JOptionPane.PLAIN_MESSAGE);
-    if (result != JOptionPane.OK_OPTION)
-      return;
-    String recipeName = (String)cb.getSelectedItem();
-    String recipeId = (String) recipeNamesHT.get(recipeName);
-    // produce an unique name for CSMART if necessary
-    if (recipeNames.contains(recipeName)) {
-      JOptionPane.showMessageDialog(null,
-                                    "There is already a recipe named "
-                                    + recipeName
-                                    + " in your workspace.\nDelete or rename it first.",
-                                    "Recipe Exists",
-                                    JOptionPane.ERROR_MESSAGE);
-      return;
-    }
-    RecipeComponent rc = helper.getDatabaseRecipe(recipeId, recipeName);
-    if (rc != null)
-      addRecipeToWorkspace(rc, getSelectedNode());
-  }
-
-  public void selectExperimentFromDatabase() {
-    Map experimentNamesMap = ExperimentDB.getExperimentNames();
-    Set keys = experimentNamesMap.keySet();
-    JComboBox cb = new JComboBox(keys.toArray(new String[keys.size()]));
-    cb.setEditable(false);
-    JPanel panel = new JPanel();
-    panel.add(new JLabel("Select Experiment:"));
-    panel.add(cb);
-    int result = 
-      JOptionPane.showConfirmDialog(null, panel, "Experiment",
-                                    JOptionPane.OK_CANCEL_OPTION,
-                                    JOptionPane.PLAIN_MESSAGE);
-    if (result != JOptionPane.OK_OPTION)
-      return;
-    String experimentName = (String)cb.getSelectedItem();
-    final String originalExperimentName = experimentName;
-    String experimentId = (String)experimentNamesMap.get(experimentName);
-    // if the CSMART workspace contains an experiment with this name,
-    // then force the user to select a new unique name
-    if (experimentNames.contains(experimentName)) {
-      experimentName = 
-        getUniqueExperimentName(experimentNames.generateName(experimentName),
-                                false);
-      if (experimentName == null)
-        return;
-    }
-
-    // get threads and groups information
-    cmtDialog = new CMTDialog(csmart, this, experimentName, experimentId);
-    while (!cmtDialog.isULThreadSelected() && !cmtDialog.wasCancelled()) {
-      JOptionPane.showMessageDialog(this,
-                                    "You must select at least one thread.",
-                                    "No Thread Selected",
-                                    JOptionPane.ERROR_MESSAGE);
-      cmtDialog = new CMTDialog(csmart, this, experimentName, experimentId);
-    }
-    if (cmtDialog.wasCancelled())
-      return;
-
-    GUIUtils.timeConsumingTaskStart(organizer);
-    try {
-      new Thread("SelectExperiment") {
-        public void run() {
-          cmtDialog.processResults(); // a potentially long process
-          final String trialId = cmtDialog.getTrialId();
-          if (trialId != null) {
-            Experiment experiment =
-              helper.createExperiment(originalExperimentName,
-                                         cmtDialog.getExperimentName(),
-                                         cmtDialog.getExperimentId(), 
-                                         trialId);
-            if (experiment != null)
-              workspace.setSelection(addExperimentToWorkspace(experiment));
-            // TODO: why are recipes listed in the organizer tree separately?
-            RecipeComponent[] recipes = experiment.getRecipes();
-            for (int i = 0; i < recipes.length; i++)
-              if (!recipeNames.contains(recipes[i].getRecipeName()))
-                  addRecipeToWorkspace(recipes[i], getSelectedNode());
-          }
-          GUIUtils.timeConsumingTaskEnd(organizer);
-        }
-      }.start();
-    } catch (RuntimeException re) {
-      System.out.println("Runtime exception creating experiment: " + re);
-      re.printStackTrace();
-      GUIUtils.timeConsumingTaskEnd(organizer);
-    }
-  }
-
-  public void deleteExperimentFromDatabase() {
-    Map experimentNamesMap = ExperimentDB.getExperimentNames();
-    Set keys = experimentNamesMap.keySet();
-    JComboBox cb = new JComboBox(keys.toArray(new String[keys.size()]));
-    cb.setEditable(false);
-    JPanel panel = new JPanel();
-    panel.add(new JLabel("Delete Experiment:"));
-    panel.add(cb);
-    int result = 
-      JOptionPane.showConfirmDialog(null, panel, "Delete Experiment",
-                                    JOptionPane.OK_CANCEL_OPTION,
-                                    JOptionPane.PLAIN_MESSAGE);
-    if (result != JOptionPane.OK_OPTION)
-      return;
-    String experimentName = (String)cb.getSelectedItem();
-    String experimentId = (String)experimentNamesMap.get(experimentName);
-    ExperimentDB.deleteExperiment(experimentId, experimentName);
-  }
-
-  public void deleteRecipeFromDatabase() {
-    Map recipeNamesHT = helper.getRecipeNamesFromDatabase();
-    Set dbRecipeNames = recipeNamesHT.keySet();
-    if (dbRecipeNames.isEmpty()) {
-      JOptionPane.showMessageDialog(this,
-                                    "There are no recipes in the database",
-                                    "No Database Recipes",
-                                    JOptionPane.INFORMATION_MESSAGE);
-      return;
-    }
-    JComboBox cb = new JComboBox(dbRecipeNames.toArray());
-    cb.setEditable(false);
-    JPanel panel = new JPanel();
-    panel.add(new JLabel("Delete Recipe:"));
-    panel.add(cb);
-    int result = 
-      JOptionPane.showConfirmDialog(null, panel, "Delete Recipe",
-                                    JOptionPane.OK_CANCEL_OPTION,
-                                    JOptionPane.PLAIN_MESSAGE);
-    if (result != JOptionPane.OK_OPTION)
-      return;
-    String recipeName = (String)cb.getSelectedItem();
-    try {
-      PDbBase pdb = new PDbBase();
-      try {
-        pdb.removeLibRecipeNamed(recipeName);
-      } finally {
-        pdb.close();
-      }
-    } catch (Exception e) {
-      JOptionPane.showMessageDialog(this,
-                                    "An exception occurred deleting the recipe from the database",
-                                    "Error Writing Database",
-                                    JOptionPane.ERROR_MESSAGE);
-    }
-  }
+  ///////////////////////////////////
+  // New Experiments
+  //////////////////////////////////
 
   /**
    * Ensure that experiment name is unique in both CSMART and the database.
@@ -957,6 +405,17 @@ public class Organizer extends JScrollPane {
     }
   }
 
+  /**
+   * Create a new experiment and make it be the selected experiment.
+   * Allows tools that need an experiment to create one
+   * if it does not exist when the tool is invoked.
+   */
+  public void addExperiment() {
+    // make root be the selected node
+    workspace.setSelectionPath(new TreePath(root.getPath())); 
+    DefaultMutableTreeNode newNode = newExperiment();
+  }
+
   private DefaultMutableTreeNode addExperimentToWorkspace(Experiment experiment) {
     return addExperimentToWorkspace(experiment, getSelectedNode());
   }
@@ -972,48 +431,539 @@ public class Organizer extends JScrollPane {
     experiment.addModificationListener(myModificationListener);
     return newNode;
   }
+
+  ///////////////////////////////////
+  // New Societies
+  //////////////////////////////////
+
+  /**
+   * Create a new built-in society.
+   */
+
+  public DefaultMutableTreeNode newSociety() {
+    Object answer =
+      JOptionPane.showInputDialog(this, "Select Society Type",
+				  "Select Society",
+				  JOptionPane.QUESTION_MESSAGE,
+				  null,
+                                  builtInSocieties,
+				  "ScalabilityX");
+    if (answer == null)
+      return null;
+    SocietyComponent sc = null;
+    if (answer instanceof NameClassItem) {
+      // create a scalability or abc society
+      NameClassItem item = (NameClassItem) answer;
+      String name = societyNames.generateName(item.name);
+      while (true) {
+	name = (String) JOptionPane.showInputDialog(this, "Enter Society Name",
+						    "Name Society",
+						    JOptionPane.QUESTION_MESSAGE,
+						    null, null,
+						    name);
+	if (name == null) return null;
+	if (!societyNames.contains(name)) break;
+	int ok = JOptionPane.showConfirmDialog(this,
+					       "Use an unique name",
+					       "Society Name Not Unique",
+					       JOptionPane.OK_CANCEL_OPTION,
+					       JOptionPane.ERROR_MESSAGE);
+	if (ok != JOptionPane.OK_OPTION) return null;
+      }
+      sc = helper.createSociety(name, item.cls);
+    }
+    if (sc == null)
+      return null;
+    DefaultMutableTreeNode newNode = 
+      addSocietyToWorkspace(sc, getSelectedNode());
+    workspace.setSelection(newNode);
+    return newNode;
+  }
+  /**
+   * Create a new society and make it be the selected society.
+   * Allows tools that need a society to create one,
+   * if none exists when the tool is invoked.
+   */
+  public void addSociety() {
+    // make root be the selected node
+    workspace.setSelectionPath(new TreePath(root.getPath())); 
+    DefaultMutableTreeNode newNode = newSociety();
+  }
   
-  public void renameExperiment() {
-    String name = JOptionPane.showInputDialog("New experiment name");
+  private DefaultMutableTreeNode addSocietyToWorkspace(SocietyComponent sc,
+						       DefaultMutableTreeNode node) {
+    DefaultMutableTreeNode newNode = 
+      new DefaultMutableTreeNode(sc, false);
+    addNode(node, newNode);
+    societyNames.add(sc.getSocietyName());
+    installListeners(sc);
+    return newNode;
+  }
+
+  /////////////////////////////////
+  // New Recipes
+  /////////////////////////////////  
+
+  public void newRecipe() {
+    Object[] values = metNameClassItems;
+    Object answer =
+      JOptionPane.showInputDialog(this, "Select Recipe Type",
+				  "Select Recipe",
+				  JOptionPane.QUESTION_MESSAGE,
+				  null,
+				  values,
+				  "Empty Recipe");
+    if (answer instanceof NameClassItem) {
+      NameClassItem item = (NameClassItem) answer;
+      String name = recipeNames.generateName(item.name);
+      while (true) {
+	name = (String) JOptionPane.showInputDialog(this, "Enter Recipe Name",
+						    "Name Recipe",
+						    JOptionPane.QUESTION_MESSAGE,
+						    null, null,
+						    name);
+	if (name == null) return;
+	if (!recipeNames.contains(name)) break;
+	int ok = JOptionPane.showConfirmDialog(this,
+					       "Use an unique name",
+					       "Recipe Name Not Unique",
+					       JOptionPane.OK_CANCEL_OPTION,
+					       JOptionPane.ERROR_MESSAGE);
+	if (ok != JOptionPane.OK_OPTION) return;
+      }
+      RecipeComponent recipe = helper.createRecipe(name, item.cls);
+      workspace.setSelection(addRecipeToWorkspace(recipe));
+    }
+  } // end of newRecipe
+
+  private DefaultMutableTreeNode addRecipeToWorkspace(RecipeComponent recipe) {
+    return addRecipeToWorkspace(recipe, getSelectedNode());
+  }
+
+  private DefaultMutableTreeNode addRecipeToWorkspace(RecipeComponent recipe,
+						      DefaultMutableTreeNode node) {
+    DefaultMutableTreeNode newNode = 
+      new DefaultMutableTreeNode(recipe, false);
+    addNode(node, newNode);
+    recipeNames.add(recipe.getRecipeName());
+    installListeners(recipe);
+    return newNode;
+  }
+  
+  public void newFolder() {
+    String name = getUniqueName("New folder name",
+                                "Folder Name Not Unique",
+                                folderNames);
+    if (name == null) return;
+    DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(name, true);
+    addNode(getSelectedNode(), newNode);
+    workspace.setSelection(newNode);
+  }
+  
+  /////////////////////////////////////
+  // Rename items
+  /////////////////////////////////////
+
+  /**
+   * Rename a folder, experiment, society or recipe.
+   */
+
+  public void rename() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node == null)
+      return;
+    Object o = node.getUserObject();
+    if (o == null)
+      return;
+    if (node.isRoot())
+      renameWorkspace();
+    else if (o instanceof Experiment)
+      renameExperiment();
+    else if (o instanceof SocietyComponent)
+      renameSociety();
+    else if (o instanceof RecipeComponent)
+      renameRecipe();
+    else if (o instanceof String)
+      renameFolder();
+  }
+
+  /**
+   * Rename the top-level workspace.
+   */
+
+  public void renameWorkspace() {
+    String name = JOptionPane.showInputDialog("New workspace name");
     if (name == null || name.equals(""))
       return;
-    DefaultMutableTreeNode node = getSelectedNode();
-    final Experiment experiment =
-      (Experiment) node.getUserObject();
-    if (name.equals(experiment.getExperimentName()))
-      return;
-    while (true) {
-      if (!experimentNames.contains(name)) break;
-      int ok = JOptionPane.showConfirmDialog(this,
-					     "Use an unique name",
-					     "Experiment Name Not Unique",
-					     JOptionPane.OK_CANCEL_OPTION,
-					     JOptionPane.ERROR_MESSAGE);
-      if (ok != JOptionPane.OK_OPTION) return;
-      name = JOptionPane.showInputDialog("New experiment name");
-      if (name == null || name.equals("")) return;
+    workspaceFileName = name;
+    String rootName = this.workspaceFileName;
+    int extpos = this.workspaceFileName.lastIndexOf('.');
+    if (extpos >= 0) {
+      rootName = rootName.substring(0, extpos);
     }
-    if (name != null) {
-      experimentNames.remove(experiment.getExperimentName());
-      experiment.setName(name);
-      GUIUtils.timeConsumingTaskStart(organizer);
-      try {
-        new Thread("SaveExperiment") {
+    root.setUserObject(rootName);
+    model.nodeChanged(root);
+    update();
+  }
+
+  private String getUniqueName(String prompt, String errorMsgTitle,
+                               UniqueNameSet uniqueNames) {
+    String name;
+    while (true) {
+      name = JOptionPane.showInputDialog(prompt);
+      if (name == null || name.equals(""))
+        return null;
+      if (!uniqueNames.contains(name)) break;
+      int result = JOptionPane.showConfirmDialog(this,
+                                                 "Use an unique name",
+                                                 errorMsgTitle,
+                                                 JOptionPane.OK_CANCEL_OPTION,
+                                                 JOptionPane.ERROR_MESSAGE);
+      if (result != JOptionPane.OK_OPTION)
+        return null;
+    }
+    return name;
+  }
+
+  /**
+   * Rename an experiment.
+   */
+
+  public void renameExperiment() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    final Experiment experiment = (Experiment) node.getUserObject();
+    String originalName = experiment.getExperimentName();
+    String newName = getUniqueExperimentName(originalName, true);
+    if (newName == null)
+      return;
+    if (newName.equals(originalName))
+      return;
+    experimentNames.remove(originalName);
+    experiment.setName(newName);
+    GUIUtils.timeConsumingTaskStart(organizer);
+    try {
+      new Thread("SaveExperiment") {
           public void run() {
             experiment.saveToDb(saveToDbConflictHandler); // save under new name
             GUIUtils.timeConsumingTaskEnd(organizer);
           }
         }.start();
+    } catch (RuntimeException re) {
+      System.out.println("Runtime exception saving experiment: " + re);
+      re.printStackTrace();
+      GUIUtils.timeConsumingTaskEnd(organizer);
+    }
+    experimentNames.add(newName);
+    model.nodeChanged(node);
+  }
+
+  /**
+   * Rename a society.
+   */
+
+  public void renameSociety() {
+    String newName = getUniqueName("New society name",
+                                   "Society Name Not Unique",
+                                   societyNames);
+    if (newName == null)
+      return;
+    DefaultMutableTreeNode node = getSelectedNode();
+    SocietyComponent societyComponent = 
+      (SocietyComponent) node.getUserObject();
+    if (newName.equals(societyComponent.getSocietyName()))
+      return;
+    societyNames.remove(societyComponent.getSocietyName());
+    societyNames.add(newName);
+    societyComponent.setName(newName);
+    model.nodeChanged(node);
+  }
+  
+  /**
+   * Rename a recipe.
+   */
+
+  public void renameRecipe() {
+    String newName = getUniqueName("New recipe name",
+                                   "Recipe Name not Unique",
+                                   recipeNames);
+    if (newName == null)
+      return;
+    DefaultMutableTreeNode node = getSelectedNode();
+    RecipeComponent recipe = (RecipeComponent) node.getUserObject();
+    if (newName.equals(recipe.getRecipeName()))
+      return;
+    recipeNames.remove(recipe.getRecipeName());
+    recipe.setName(newName);
+    recipeNames.add(newName);
+    model.nodeChanged(node); // update the model...
+  }
+
+  /**
+   * Rename a folder.
+   */
+
+  public void renameFolder() {
+    String newName = getUniqueName("New folder name",
+                                   "Folder Name Not Unique",
+                                   folderNames);
+    if (newName == null) return;
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node.getUserObject().equals(newName))
+      return;
+    node.setUserObject(newName);
+    model.nodeChanged(node);
+  }
+
+  ///////////////////////////////
+  // Save recipe
+  ///////////////////////////////
+
+  public void saveRecipe() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node == null) return;
+    RecipeComponent rc = (RecipeComponent) node.getUserObject();
+    saveRecipe(rc);
+  }
+
+  private void saveRecipe(RecipeComponent rc) {
+    try {
+      PDbBase pdb = new PDbBase();
+      switch (pdb.recipeExists(rc)) {
+      case PDbBase.RECIPE_STATUS_EXISTS:
+        JOptionPane.showMessageDialog(this,
+                                      "The recipe is already in the database with the same values.",
+                                      "Write Not Needed",
+                                      JOptionPane.INFORMATION_MESSAGE);
+        return;
+      case PDbBase.RECIPE_STATUS_DIFFERS:
+        int answer =
+          JOptionPane.showConfirmDialog(this,
+                                        "Recipe "
+                                        + rc.getRecipeName()
+                                        + " already in database. Overwrite?",
+                                        "Recipe Exists",
+                                        JOptionPane.OK_CANCEL_OPTION,
+                                        JOptionPane.WARNING_MESSAGE);
+        if (answer != JOptionPane.OK_OPTION) return;
+        break;
+      case PDbBase.RECIPE_STATUS_ABSENT:
+        break;                // Just write it
+      }
+      pdb.replaceLibRecipe(rc);
+      JOptionPane.showMessageDialog(this,
+                                    "Recipe written successfully.",
+                                    "Recipe Written",
+                                    JOptionPane.INFORMATION_MESSAGE);
+    } catch (Exception sqle) {
+      sqle.printStackTrace();
+      JOptionPane.showMessageDialog(this,
+                                    "An exception occurred writing the recipe to the database",
+                                    "Error Writing Database",
+                                    JOptionPane.ERROR_MESSAGE);
+    }
+  }
+
+  ///////////////////////////////////
+  // Select items from database
+  ///////////////////////////////////
+
+  public void selectExperimentFromDatabase() {
+    Map experimentNamesMap = ExperimentDB.getExperimentNames();
+    Set keys = experimentNamesMap.keySet();
+    JComboBox cb = new JComboBox(keys.toArray(new String[keys.size()]));
+    cb.setEditable(false);
+    JPanel panel = new JPanel();
+    panel.add(new JLabel("Select Experiment:"));
+    panel.add(cb);
+    int result = 
+      JOptionPane.showConfirmDialog(null, panel, "Experiment",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.PLAIN_MESSAGE);
+    if (result != JOptionPane.OK_OPTION)
+      return;
+    String experimentName = (String)cb.getSelectedItem();
+    final String originalExperimentName = experimentName;
+    String experimentId = (String)experimentNamesMap.get(experimentName);
+    // if the CSMART workspace contains an experiment with this name,
+    // then force the user to select a new unique name
+    if (experimentNames.contains(experimentName)) {
+      experimentName = 
+        getUniqueExperimentName(experimentNames.generateName(experimentName),
+                                false);
+      if (experimentName == null)
+        return;
+    }
+
+    // get threads and groups information
+    cmtDialog = new CMTDialog(csmart, this, experimentName, experimentId);
+    while (!cmtDialog.isULThreadSelected() && !cmtDialog.wasCancelled()) {
+      JOptionPane.showMessageDialog(this,
+                                    "You must select at least one thread.",
+                                    "No Thread Selected",
+                                    JOptionPane.ERROR_MESSAGE);
+      cmtDialog = new CMTDialog(csmart, this, experimentName, experimentId);
+    }
+    if (cmtDialog.wasCancelled())
+      return;
+
+    GUIUtils.timeConsumingTaskStart(organizer);
+    try {
+      new Thread("SelectExperiment") {
+        public void run() {
+          cmtDialog.processResults(); // a potentially long process
+          final String trialId = cmtDialog.getTrialId();
+          if (trialId != null) {
+            Experiment experiment =
+              helper.createExperiment(originalExperimentName,
+                                         cmtDialog.getExperimentName(),
+                                         cmtDialog.getExperimentId(), 
+                                         trialId);
+            if (experiment != null)
+              workspace.setSelection(addExperimentToWorkspace(experiment));
+            // TODO: why are recipes listed in the organizer tree separately?
+            RecipeComponent[] recipes = experiment.getRecipes();
+            for (int i = 0; i < recipes.length; i++)
+              if (!recipeNames.contains(recipes[i].getRecipeName()))
+                addRecipeToWorkspace(recipes[i]);
+          }
+          GUIUtils.timeConsumingTaskEnd(organizer);
+        }
+      }.start();
+    } catch (RuntimeException re) {
+      System.out.println("Runtime exception creating experiment: " + re);
+      re.printStackTrace();
+      GUIUtils.timeConsumingTaskEnd(organizer);
+    }
+  }
+
+  public void selectRecipeFromDatabase() {
+    Map recipeNamesHT = helper.getRecipeNamesFromDatabase();
+    Set dbRecipeNames = recipeNamesHT.keySet();
+    if (dbRecipeNames.isEmpty()) {
+      JOptionPane.showMessageDialog(this,
+                                    "There are no recipes in the database",
+                                    "No Database Recipes",
+                                    JOptionPane.INFORMATION_MESSAGE);
+      return;
+    }
+    JComboBox cb = new JComboBox(dbRecipeNames.toArray());
+    cb.setEditable(false);
+    JPanel panel = new JPanel();
+    panel.add(new JLabel("Select Recipe:"));
+    panel.add(cb);
+    int result = 
+      JOptionPane.showConfirmDialog(null, panel, "Recipe",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.PLAIN_MESSAGE);
+    if (result != JOptionPane.OK_OPTION)
+      return;
+    String recipeName = (String)cb.getSelectedItem();
+    String recipeId = (String) recipeNamesHT.get(recipeName);
+    // produce an unique name for CSMART if necessary
+    if (recipeNames.contains(recipeName)) {
+      JOptionPane.showMessageDialog(null,
+                                    "There is already a recipe named "
+                                    + recipeName
+                                    + " in your workspace.\nDelete or rename it first.",
+                                    "Recipe Exists",
+                                    JOptionPane.ERROR_MESSAGE);
+      return;
+    }
+    RecipeComponent rc = helper.getDatabaseRecipe(recipeId, recipeName);
+    if (rc != null)
+      addRecipeToWorkspace(rc);
+  }
+
+  ////////////////////////////////////
+  // Copy items
+  ////////////////////////////////////
+  
+  /**
+   * Copy an experiment, society or recipe.
+   */
+
+  public void duplicate() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node == null)
+      return;
+    Object o = node.getUserObject();
+    if (o == null)
+      return;
+    if (o instanceof Experiment)
+      copyExperiment((Experiment)o);
+    else if (o instanceof SocietyComponent)
+      copySociety((SocietyComponent)o);
+    else if (o instanceof RecipeComponent)
+      copyRecipe((RecipeComponent)o);
+  }
+
+  public Experiment copyExperiment(Experiment experiment) {
+    String newName = generateExperimentName(experiment.getExperimentName());
+    final Experiment experimentCopy = (Experiment)experiment.copy(newName);
+    // if the experiment was from a database, then save copy in the database
+    // if the copy isn't modified, this is the only place it's put in the
+    // database and hence made runnable
+    if (experiment.isInDatabase()) {
+      //      experimentCopy.setCloned(false);
+      GUIUtils.timeConsumingTaskStart(organizer);
+      try {
+        new Thread("DuplicateExperiment") {
+            public void run() {
+              experimentCopy.saveToDb(saveToDbConflictHandler);
+              GUIUtils.timeConsumingTaskEnd(organizer);
+            }
+          }.start();
       } catch (RuntimeException re) {
-        System.out.println("Runtime exception saving experiment: " + re);
+        System.out.println("Runtime exception duplicating experiment: " + re);
         re.printStackTrace();
         GUIUtils.timeConsumingTaskEnd(organizer);
       }
-      experimentNames.add(name);
-      // This next line is the key line, that updates things
-      model.nodeChanged(node);
     }
+    DefaultMutableTreeNode node = 
+      (DefaultMutableTreeNode)findNode(experiment).getParent();
+    // add copy as sibling of original
+    workspace.setSelection(addExperimentToWorkspace(experimentCopy, node));
+    return experimentCopy;
   }
+  
+  public SocietyComponent copySociety(SocietyComponent society) {
+    String newName = generateSocietyName(society.getSocietyName());
+    SocietyComponent societyCopy = (SocietyComponent)society.copy(newName);
+
+    boolean builtIn = false;
+    for (int i = 0; i < builtInSocieties.length; i++) 
+      if (builtInSocieties[i].cls.isInstance(societyCopy)) {
+        builtIn = true;
+        break;
+      }
+    // add society to workspace only if it's builtin
+    if (builtIn) {
+      DefaultMutableTreeNode node = 
+        (DefaultMutableTreeNode)findNode(society).getParent();
+      workspace.setSelection(addSocietyToWorkspace(societyCopy, node));
+    } else
+      societyNames.add(newName);
+    return societyCopy;
+  }
+
+  /**
+   * Copy the recipe component; generate a new unique name for the copy;
+   * add the copy to the Workspace as a sibling of the original.
+   * @return RecipeComponent the copied recipe
+   */
+
+  public RecipeComponent copyRecipe(RecipeComponent recipe) {
+    DefaultMutableTreeNode node = 
+      (DefaultMutableTreeNode)findNode(recipe).getParent();
+    String newName = generateRecipeName(recipe.getRecipeName());
+    RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
+    workspace.setSelection(addRecipeToWorkspace(recipeCopy, node));
+    return recipeCopy;
+  }
+  
+  ////////////////////////////////////
+  // Delete items
+  ////////////////////////////////////
 
   public void delete() {
     DefaultMutableTreeNode node = getSelectedNode();
@@ -1077,29 +1027,56 @@ public class Organizer extends JScrollPane {
     }
   }
   
-  public void newFolder() {
-    String name = JOptionPane.showInputDialog("New folder name");
-    if (name != null) {
-      DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(name, true);
-      addNode(getSelectedNode(), newNode);
-      workspace.setSelection(newNode);
-    }
-  }
-  
-  private void addNode(DefaultMutableTreeNode node, DefaultMutableTreeNode newNode) {
-    if (node == null)
-      node = root;
-    model.insertNodeInto(newNode, node, node.getChildCount());
-    workspace.scrollPathToVisible(new TreePath(newNode.getPath()));
-  }
-  
-  public void renameFolder() {
-    String name = JOptionPane.showInputDialog("New folder name");
-    if (name == null || name.equals(""))
-      return;
+  /**
+   * Note that this simply deletes the society from the workspace;
+   * if the society was included in an experiment, then the experiment
+   * still retains the society.
+   */
+  public void deleteSociety() {
     DefaultMutableTreeNode node = getSelectedNode();
-    node.setUserObject(name);
-    model.nodeChanged(node);
+    SocietyComponent society = (SocietyComponent)node.getUserObject();
+    if (!society.isEditable()) {
+      int result = JOptionPane.showConfirmDialog(this,
+						 "Society has been or is being used; delete anyway?",
+						 "Society Not Editable",
+						 JOptionPane.YES_NO_OPTION,
+						 JOptionPane.WARNING_MESSAGE);
+      if (result != JOptionPane.YES_OPTION)
+	return;
+    }
+    model.removeNodeFromParent(node);
+    societyNames.remove(society.getSocietyName());
+  }
+
+  public void deleteRecipe() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node == null) return;
+    model.removeNodeFromParent(node);
+    RecipeComponent rc = (RecipeComponent) node.getUserObject();
+    try {
+      PDbBase pdb = new PDbBase();
+      try {
+        int status = pdb.recipeExists(rc);
+        if (status == PDbBase.RECIPE_STATUS_EXISTS || status == PDbBase.RECIPE_STATUS_DIFFERS) {
+          int answer =
+            JOptionPane.showConfirmDialog(this,
+                                          "Delete recipe from database?",
+                                          "Delete Recipe",
+                                          JOptionPane.YES_NO_OPTION);
+          if (answer == JOptionPane.YES_OPTION) {
+            pdb.removeLibRecipe(rc);
+          }
+        }
+      } finally {
+        pdb.close();
+      }
+    } catch (Exception e) {
+      JOptionPane.showMessageDialog(this,
+                                    "An exception occurred deleting the recipe from the database",
+                                    "Error Writing Database",
+                                    JOptionPane.ERROR_MESSAGE);
+    }
+    recipeNames.remove(rc.getRecipeName());
   }
   
   public void deleteFolder() {
@@ -1115,6 +1092,195 @@ public class Organizer extends JScrollPane {
     if (reply == JOptionPane.OK_OPTION)
       model.removeNodeFromParent(node);
   }
+
+  public void deleteExperimentFromDatabase() {
+    Map experimentNamesMap = ExperimentDB.getExperimentNames();
+    Set keys = experimentNamesMap.keySet();
+    JComboBox cb = new JComboBox(keys.toArray(new String[keys.size()]));
+    cb.setEditable(false);
+    JPanel panel = new JPanel();
+    panel.add(new JLabel("Delete Experiment:"));
+    panel.add(cb);
+    int result = 
+      JOptionPane.showConfirmDialog(null, panel, "Delete Experiment",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.PLAIN_MESSAGE);
+    if (result != JOptionPane.OK_OPTION)
+      return;
+    String experimentName = (String)cb.getSelectedItem();
+    String experimentId = (String)experimentNamesMap.get(experimentName);
+    ExperimentDB.deleteExperiment(experimentId, experimentName);
+  }
+
+  public void deleteRecipeFromDatabase() {
+    Map recipeNamesHT = helper.getRecipeNamesFromDatabase();
+    Set dbRecipeNames = recipeNamesHT.keySet();
+    if (dbRecipeNames.isEmpty()) {
+      JOptionPane.showMessageDialog(this,
+                                    "There are no recipes in the database",
+                                    "No Database Recipes",
+                                    JOptionPane.INFORMATION_MESSAGE);
+      return;
+    }
+    JComboBox cb = new JComboBox(dbRecipeNames.toArray());
+    cb.setEditable(false);
+    JPanel panel = new JPanel();
+    panel.add(new JLabel("Delete Recipe:"));
+    panel.add(cb);
+    int result = 
+      JOptionPane.showConfirmDialog(null, panel, "Delete Recipe",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.PLAIN_MESSAGE);
+    if (result != JOptionPane.OK_OPTION)
+      return;
+    String recipeName = (String)cb.getSelectedItem();
+    try {
+      helper.deleteRecipe(recipeName);
+    } catch (Exception e) {
+      JOptionPane.showMessageDialog(this,
+                                    "An exception occurred deleting the recipe from the database",
+                                    "Error Writing Database",
+                                    JOptionPane.ERROR_MESSAGE);
+    }
+  }
+
+  ////////////////////////////////
+  // Utilities
+  ///////////////////////////////
+
+  public String generateExperimentName(String name) {
+    return experimentNames.generateName(name);
+  }
+  
+  private String generateSocietyName(String name) {
+    return societyNames.generateName(name);
+  }
+
+  private String generateRecipeName(String name) {
+    return recipeNames.generateName(name);
+  }
+
+  private void installListeners(ModifiableComponent component) {
+    component.addPropertiesListener(myPropertiesListener);
+    for (Iterator i = component.getPropertyNames(); i.hasNext(); ) {
+      Property p = component.getProperty((CompositeName) i.next());
+      PropertyEvent event = new PropertyEvent(p, PropertyEvent.PROPERTY_ADDED);
+      myPropertiesListener.propertyAdded(event);
+    }
+    component.addModificationListener(myModificationListener);
+  }
+
+  private void addNode(DefaultMutableTreeNode node, DefaultMutableTreeNode newNode) {
+    if (node == null)
+      node = root;
+    model.insertNodeInto(newNode, node, node.getChildCount());
+    workspace.scrollPathToVisible(new TreePath(newNode.getPath()));
+  }
+  
+  private DefaultMutableTreeNode findNode(Object userObject) {
+    Enumeration nodes = root.depthFirstEnumeration();
+    while (nodes.hasMoreElements()) {
+      //      System.out.println("Have Element");
+      DefaultMutableTreeNode node = 
+	(DefaultMutableTreeNode)nodes.nextElement();
+      if (node.isLeaf() &&
+	  node.getUserObject().equals(userObject))
+	return node;
+    }
+    return null;
+  }
+  
+  /**
+   * Fully expand the tree; called in initialization
+   * so that the initial view of the tree is fully expanded.
+   */
+  private void expandTree() {
+    Enumeration nodes = root.depthFirstEnumeration();
+    while (nodes.hasMoreElements()) {
+      DefaultMutableTreeNode node = 
+	(DefaultMutableTreeNode)nodes.nextElement();
+      workspace.expandPath(new TreePath(node.getPath()));
+    }
+  }
+
+  ////////////////////////////////
+  // Title utilities
+  ///////////////////////////////
+  
+  private void setFrameTitle() {
+    setFrameTitle(workspace.getSelectionPath());
+  }
+  
+  private void setFrameTitle(TreePath newSelection) {
+    String doc;
+    if (newSelection != null) {
+      doc = newSelection.toString();
+    } else {
+      doc = null;
+    }
+    setFrameTitleDocument(doc);
+  }
+  
+  private void setFrameTitleDocument(String doc) {
+    JFrame frame =
+      (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, workspace);
+    if (frame == null) return;
+    String oldTitle = frame.getTitle();
+    if (oldTitle == null) {
+      oldTitle = FRAME_TITLE;
+    } else {
+      int colon = oldTitle.indexOf(':');
+      if (colon >= 0) oldTitle = oldTitle.substring(0, colon).trim();
+    }
+    if (doc == null)
+      frame.setTitle(oldTitle);
+    else
+      frame.setTitle(oldTitle + ":" + doc);
+  }
+
+  ///////////////////////////////////////////
+  // workspace listeners
+  ///////////////////////////////////////////  
+
+  private TreeModelListener myModelListener = new TreeModelListener() {
+      public void treeNodesChanged(TreeModelEvent e) {
+	update();
+      }
+      public void treeNodesInserted(TreeModelEvent e) {
+	update();
+      }
+      public void treeNodesRemoved(TreeModelEvent e) {
+	update();
+      }
+      public void treeStructureChanged(TreeModelEvent e) {
+	update();
+      }
+    };
+  
+  private TreeSelectionListener mySelectionListener =
+    new TreeSelectionListener() {
+        public void valueChanged(TreeSelectionEvent e) {
+	  setFrameTitle(e.getNewLeadSelectionPath());
+        }
+      };
+  
+  private AncestorListener myAncestorListener =
+    new AncestorListener()
+      {
+        public void ancestorAdded(AncestorEvent e) {
+	  setFrameTitle();
+        }
+        public void ancestorRemoved(AncestorEvent e) {}
+        public void ancestorMoved(AncestorEvent e) {}
+      };
+  
+  public void addTreeSelectionListener(TreeSelectionListener listener) {
+    workspace.addTreeSelectionListener(listener);
+  }
+  
+  ///////////////////////////////////////
+  // Restore (read from file) and save workspace.
+  ///////////////////////////////////////
 
   private void restore(String fileName) {
     PropertyListener l = null;
@@ -1176,21 +1342,74 @@ public class Organizer extends JScrollPane {
 	return;
     }
   } // end of restore
-    
-  private void initSocietyNames() {
-    // initialize known society names
-    Enumeration nodes = root.depthFirstEnumeration();
-    while (nodes.hasMoreElements()) {
-      DefaultMutableTreeNode node = 
-	(DefaultMutableTreeNode)nodes.nextElement();
-      if (node.isLeaf()) {
-	Object o = node.getUserObject();
-	if (o instanceof SocietyComponent)
-	  societyNames.add(((SocietyComponent)o).getSocietyName());
+
+  // This is to support auto-saving
+  
+  PropertyListener myPropertyListener = new PropertyListener() {
+      public void propertyValueChanged(PropertyEvent e) {
+	update();
+      }
+      
+      public void propertyOtherChanged(PropertyEvent e) {
+	update();
+      }
+    };
+  
+  PropertiesListener myPropertiesListener = new PropertiesListener() {
+      public void propertyAdded(PropertyEvent e) {
+	e.getProperty().addPropertyListener(myPropertyListener);
+	update();
+      }
+      
+      public void propertyRemoved(PropertyEvent e) {
+	e.getProperty().removePropertyListener(myPropertyListener);
+	update();
+      }
+    };
+
+  /**
+   * Call update if anything changed.
+   * Also handle experiment name having been changed:
+   *   update the name of the experiment in the tree
+   *   update the name of the experiment in the set of experiment names
+   *    (currently done by re-initting the experiment names)
+   */
+
+  ModificationListener myModificationListener = new ModificationListener() {
+      public void modified(ModificationEvent event) {
+        if (event.getSource() instanceof Experiment) {
+          model.nodeChanged(findNode(event.getSource()));
+          try {
+            Class[] noTypes = new Class[0];
+            experimentNames.clear();
+            experimentNames.init(getLeaves(Experiment.class, root),
+                Experiment.class.getMethod("getExperimentName", noTypes));
+          } catch (NoSuchMethodException nsme) {
+            nsme.printStackTrace();
+          } catch (SecurityException se) {
+            se.printStackTrace();
+          }
+        }
+	update();
+      }
+    };
+  
+  public boolean exitAllowed() {
+    synchronized(root) {
+      if (updateNeeded) {
+	nextUpdate = System.currentTimeMillis();
+	root.notify();
+	while (updateNeeded) {
+	  try {
+	    root.wait();
+	  } catch (InterruptedException ie) {
+	  }
+	}
       }
     }
+    return true;
   }
-  
+
   /** 
    * Force an update, which saves the current workspace.
    */
@@ -1251,231 +1470,9 @@ public class Organizer extends JScrollPane {
       root.notify();
     }
   }
-  
-  private TreeModelListener myModelListener = new TreeModelListener() {
-      public void treeNodesChanged(TreeModelEvent e) {
-	update();
-      }
-      public void treeNodesInserted(TreeModelEvent e) {
-	update();
-      }
-      public void treeNodesRemoved(TreeModelEvent e) {
-	update();
-      }
-      public void treeStructureChanged(TreeModelEvent e) {
-	update();
-      }
-    };
-  
-  private void setFrameTitle() {
-    setFrameTitle(workspace.getSelectionPath());
-  }
-  
-  private void setFrameTitle(TreePath newSelection) {
-    String doc;
-    if (newSelection != null) {
-      doc = newSelection.toString();
-    } else {
-      doc = null;
-    }
-    setFrameTitleDocument(doc);
-  }
-  
-  private void setFrameTitleDocument(String doc) {
-    JFrame frame =
-      (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, workspace);
-    if (frame == null) return;
-    String oldTitle = frame.getTitle();
-    if (oldTitle == null) {
-      oldTitle = FRAME_TITLE;
-    } else {
-      int colon = oldTitle.indexOf(':');
-      if (colon >= 0) oldTitle = oldTitle.substring(0, colon).trim();
-    }
-    if (doc == null)
-      frame.setTitle(oldTitle);
-    else
-      frame.setTitle(oldTitle + ":" + doc);
-  }
-  
-  private TreeSelectionListener mySelectionListener =
-    new TreeSelectionListener() {
-        public void valueChanged(TreeSelectionEvent e) {
-	  setFrameTitle(e.getNewLeadSelectionPath());
-        }
-      };
-  
-  private AncestorListener myAncestorListener =
-    new AncestorListener()
-      {
-        public void ancestorAdded(AncestorEvent e) {
-	  setFrameTitle();
-        }
-        public void ancestorRemoved(AncestorEvent e) {}
-        public void ancestorMoved(AncestorEvent e) {}
-      };
-  
-//      public void setRoot(ObjectInputStream init) {
-//          root = (DefaultMutableTreeNode) init.readObject();
-//      }
 
-  /**
-   * Create a new experiment and make it be the selected experiment.
-   * Allows tools that need an experiment to create one
-   * if it does not exist when the tool is invoked.
-   */
-  public void addExperiment() {
-    // make root be the selected node
-    workspace.setSelectionPath(new TreePath(root.getPath())); 
-    DefaultMutableTreeNode newNode = newExperiment();
-  }
-
-  private DefaultMutableTreeNode findNode(Object userObject) {
-    Enumeration nodes = root.depthFirstEnumeration();
-    while (nodes.hasMoreElements()) {
-      //      System.out.println("Have Element");
-      DefaultMutableTreeNode node = 
-	(DefaultMutableTreeNode)nodes.nextElement();
-      if (node.isLeaf() &&
-	  node.getUserObject().equals(userObject))
-	return node;
-    }
-    return null;
-  }
+  ////////////////////////////////////////////
   
-  /**
-   * Fully expand the tree; called in initialization
-   * so that the initial view of the tree is fully expanded.
-   */
-  private void expandTree() {
-    Enumeration nodes = root.depthFirstEnumeration();
-    while (nodes.hasMoreElements()) {
-      DefaultMutableTreeNode node = 
-	(DefaultMutableTreeNode)nodes.nextElement();
-      workspace.expandPath(new TreePath(node.getPath()));
-    }
-  }
-  
-  /**
-   * Create a new society and make it be the selected society.
-   * Allows tools that need a society to create one,
-   * if none exists when the tool is invoked.
-   */
-  public void addSociety() {
-    // make root be the selected node
-    workspace.setSelectionPath(new TreePath(root.getPath())); 
-    DefaultMutableTreeNode newNode = newSociety();
-  }
-  
-  public void addTreeSelectionListener(TreeSelectionListener listener) {
-    workspace.addTreeSelectionListener(listener);
-  }
-  
-
-  ////////////////////////////////////
-  // Stuff to copy items
-  
-  /**
-   * Copy an experiment, society or recipe.
-   */
-
-  public void duplicate() {
-    DefaultMutableTreeNode node = getSelectedNode();
-    if (node == null)
-      return;
-    Object o = node.getUserObject();
-    if (o == null)
-      return;
-    if (o instanceof Experiment)
-      copyExperiment((Experiment)o);
-    else if (o instanceof SocietyComponent)
-      copySociety((SocietyComponent)o);
-    else if (o instanceof RecipeComponent)
-      copyRecipe((RecipeComponent)o);
-  }
-
-  public Experiment copyExperiment(Experiment experiment) {
-    String newName = generateExperimentName(experiment.getExperimentName());
-    final Experiment experimentCopy = (Experiment)experiment.copy(newName);
-    // if the experiment was from a database, then save copy in the database
-    // if the copy isn't modified, this is the only place it's put in the
-    // database and hence made runnable
-    if (experiment.isInDatabase()) {
-      //      experimentCopy.setCloned(false);
-      GUIUtils.timeConsumingTaskStart(organizer);
-      try {
-        new Thread("DuplicateExperiment") {
-            public void run() {
-              experimentCopy.saveToDb(saveToDbConflictHandler);
-              GUIUtils.timeConsumingTaskEnd(organizer);
-            }
-          }.start();
-      } catch (RuntimeException re) {
-        System.out.println("Runtime exception duplicating experiment: " + re);
-        re.printStackTrace();
-        GUIUtils.timeConsumingTaskEnd(organizer);
-      }
-    }
-    DefaultMutableTreeNode node = 
-      (DefaultMutableTreeNode)findNode(experiment).getParent();
-    // add copy as sibling of original
-    workspace.setSelection(addExperimentToWorkspace(experimentCopy, node));
-    return experimentCopy;
-  }
-  
-  // The societies which can be created in CSMART
-  private NameClassItem[] builtInSocieties = {
-    new NameClassItem("Scalability", ScalabilityXSociety.class),
-    new NameClassItem("ABC", ABCSociety.class),
-  };
-
-  public SocietyComponent copySociety(SocietyComponent society) {
-    String newName = generateSocietyName(society.getSocietyName());
-    SocietyComponent societyCopy = (SocietyComponent)society.copy(newName);
-
-    boolean builtIn = false;
-    for (int i = 0; i < builtInSocieties.length; i++) 
-      if (builtInSocieties[i].cls.isInstance(societyCopy)) {
-        builtIn = true;
-        break;
-      }
-    // add society to workspace only if it's builtin
-    if (builtIn) {
-      DefaultMutableTreeNode node = 
-        (DefaultMutableTreeNode)findNode(society).getParent();
-      workspace.setSelection(addSocietyToWorkspace(societyCopy, node));
-    } else
-      societyNames.add(newName);
-    return societyCopy;
-  }
-
-  /**
-   * Copy the recipe component; generate a new unique name for the copy;
-   * add the copy to the Workspace as a sibling of the original.
-   * @return RecipeComponent the copied recipe
-   */
-
-  public RecipeComponent copyRecipe(RecipeComponent recipe) {
-    DefaultMutableTreeNode node = 
-      (DefaultMutableTreeNode)findNode(recipe).getParent();
-    String newName = generateRecipeName(recipe.getRecipeName());
-    RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
-    workspace.setSelection(addRecipeToWorkspace(recipeCopy, node));
-    return recipeCopy;
-  }
-  
-  public String generateExperimentName(String name) {
-    return experimentNames.generateName(name);
-  }
-  
-  private String generateSocietyName(String name) {
-    return societyNames.generateName(name);
-  }
-
-  private String generateRecipeName(String name) {
-    return recipeNames.generateName(name);
-  }
-
   // Class for holding name/Class pairs in UIs
   private static class NameClassItem {
     public String name;
