@@ -23,7 +23,6 @@ package org.cougaar.tools.csmart.plugin;
 
 import org.cougaar.core.cluster.IncrementalSubscription;
 import org.cougaar.core.cluster.ClusterIdentifier;
-import org.cougaar.core.plugin.SimplePlugIn;
 import org.cougaar.domain.planning.ldm.asset.*;
 import org.cougaar.domain.planning.ldm.plan.*;
 
@@ -73,10 +72,11 @@ public class MetricsPlugin
   private int completedPlanElementCount = 0;   // Count of completed plan elements for (manage tasks)
   private int startPlanElementCount = 0; // count since last stats record
   private Set completedPlanElements = new HashSet();
-  private PrintWriter writer;
-  private MessageStatisticsService messageStatsService = null;
+  private PrintWriter writer; // write out the metrics
+  
+  private MessageStatisticsService messageStatsService = null; // service for message stats
 
-  boolean started = false;
+  boolean started = false; // dont call start twice by mistake
   
   static NumberFormat timeFormat = new DecimalFormat("0.000 seconds");
   static NumberFormat memoryFormat = new DecimalFormat("0.000 MBi");
@@ -288,7 +288,8 @@ public class MetricsPlugin
     // This forces the MessageStatistics to be reset
     // Deprecated...
     //    getMetricsSnapshot(mstats, true);
-    messageStatsService.getMessageStatistics(true);
+    if (messageStatsService != null)
+      messageStatsService.getMessageStatistics(true);
 //      System.out.println("Statistics start " + ourCluster);
 
     // Write out column headers in output file
@@ -390,7 +391,7 @@ public class MetricsPlugin
     
     writer.print("\t");
     //    if (mstats.averageMessageQueueLength == -1) {
-    if (messageStatsService.getMessageStatistics(false).averageMessageQueueLength == -1) {
+    if (messageStatsService == null || messageStatsService.getMessageStatistics(false).averageMessageQueueLength == -1) {
         writer.print("0.0");
     } else {
         writer.print(messageStatsService.getMessageStatistics(false).averageMessageQueueLength);
@@ -398,7 +399,7 @@ public class MetricsPlugin
     
     writer.print("\t");
     //    if (mstats.totalMessageBytes == -1) {
-    if (messageStatsService.getMessageStatistics(false).totalMessageBytes == -1) {
+    if (messageStatsService == null || messageStatsService.getMessageStatistics(false).totalMessageBytes == -1) {
         writer.print("0.0");
     } else {
         writer.print(messageStatsService.getMessageStatistics(false).totalMessageBytes);
@@ -406,7 +407,7 @@ public class MetricsPlugin
    
     writer.print("\t");
     //    if (mstats.totalMessageCount == -1) {
-    if (messageStatsService.getMessageStatistics(false).totalMessageCount == -1) {
+    if (messageStatsService == null || messageStatsService.getMessageStatistics(false).totalMessageCount == -1) {
       writer.print("0.0");
       } else {
         writer.print(messageStatsService.getMessageStatistics(false).totalMessageCount);
@@ -419,13 +420,19 @@ public class MetricsPlugin
       log.log(this, log.DEBUG, "Duration     : " + timeFormat.format(elapsedTime/1000.0) + "\n" + 
 	      "CPU          : " + timeFormat.format(cpuTime/1000.0) + "\n" + 
 	      "Used Memory  : " + memoryFormat.format(usedMemory/(1024.0*1024.0)) + "\n" + 
-	      "Total Memory : " + memoryFormat.format(totalMemory/(1024.0*1024.0)) + "\n" + 
+	      "Total Memory : " + memoryFormat.format(totalMemory/(1024.0*1024.0)) + "\n");
+      if (messageStatsService != null) {
+	log.log(this, log.DEBUG, 
   	      "Message Queue: " + messageStatsService.getMessageStatistics(false).averageMessageQueueLength + "\n" + 
   	      "Message Bytes: " + messageStatsService.getMessageStatistics(false).totalMessageBytes + "\n" + 
-  	      "Message Count: " + messageStatsService.getMessageStatistics(false).totalMessageCount + "\n" + 
+		"Message Count: " + messageStatsService.getMessageStatistics(false).totalMessageCount + "\n");
+      } else {
+	log.log(this, log.DEBUG, 
 	      "Message Queue: 0.0\n" + 
 	      "Message Bytes: 0.0\n" + 
-	      "Message Count: 0.0\n" + 
+		"Message Count: 0.0\n");
+      }
+      log.log(this, log.DEBUG, 
 	      "Tasks Done   : " + deltaPlanElementCount);
     }
     // Flush the writer?
