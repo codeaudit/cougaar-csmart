@@ -5,8 +5,8 @@
 <body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
 <h1>Complete Agent Recipe Configuration Help</h1>
 The Complete Agent Recipe allows users to create an arbitrary agent
-for inclusion in a society. Note however that added agents will not have
-any Oplan related information in the database.
+for inclusion in a society. Note however that added agents will not
+have any Oplan related information in the database.
 <br>
 <i>Note: The agents do not contain an OrgAsset by default.  This will
 result in the agent not being visible from the Society Monitor.  If
@@ -21,18 +21,20 @@ TypeIdentificationPG on your Asset. See below.</i>
 components: Plugins, Binders (of Plugins), Other Components (whose
 insertion point falls within the Agent), and Asset Data (ie Entity or
 Organization Assets).
-<br>
+
 <p>To add an Agent, use the pop-up menu on the top-level folder.
 <p>To remove an Agent, use the pop-up menu on the Agent folder.
 <p>To add a Plugin, Binder, or Other Component, use the pop-up menu on
 that folder. The drop-down lists of components are editable, and are
-populated from the list of Plugins / Binders currently known in the database.
-<p>Components within agents now have a <tt>Priority</tt> field.  The priority
-indicates the load priority of the component in it's container relative to
-other children components loaded at the same time at the same containment point.
+populated from the list of Plugins / Binders currently known in the
+database.
+<p>Components within agents now have a <tt>Priority</tt> field.  The
+priority indicates the load priority of the component in it's
+container relative to other children components loaded at the same
+time at the same containment point. 
 
 The default component priority is: <tt>COMPONENT</tt>, and for Binders
-it should usually be <tt>BINDER</tt>.<br>
+it should usually be <tt>BINDER</tt>.
 
 <p>To edit a parameter in your Asset, edit the values in the right pane.
 Within an Asset, you may add Relationships or
@@ -60,60 +62,66 @@ space, and the entire list enclosed by curly-braces or square brackets.
 <br><br>
 
 <b>AssetData</b>
-<p>When adding parameters to PropertyGroups,
-you will be asked for a parameter name and a type (Java class). Note that the names of
-parameters of Property Groups, once displayed, include the type of Object used to fill
-in that value. For example, OrganizationPG has one Parameter, whose name is:<br>
+<p>When adding parameters to PropertyGroups, you will be asked for a
+parameter name and a type (Java class). Note that the names of
+parameters of Property Groups, once displayed, include the type of
+Object used to fill in that value. For example, OrganizationPG has one
+Parameter, whose name is:<br> 
 Roles (Role)<br>
-and whose value is a list, something like "{TransportationProvider, StrategicTransportationProvider}". This means that the slot in
+and whose value is a list, something like "{TransportationProvider,
+StrategicTransportationProvider}". This means that the slot in 
 the PropertyGroup is called "Roles", and the Java Class of each object
 is "Role". In this case, there are many values enclosed in curly
 braces or square brackets, so the slot contains a
 Collection. 
 The "INI" equivalent lines would be something like:<br>
 <pre>[OrganizationPG]
-Roles                    Collection&lt;Role&gt;       "TransportationProvider, StrategicTransportationProvider"
-</pre><br>
+Roles   Collection&lt;Role&gt;  "TransportationProvider, StrategicTransportationProvider"
+</pre>
 
 <h2>Adding an Agent Asset</h2>
-<br>
-To have a working organization when doing an agent asset addition, you must include the following: 
+
+To have a working organization when doing an agent asset addition, you
+must include the following:  
 
 <h3>Asset Class</h3>
-Something like "Military Organization". Be sure the default asset class is correct, edit as needed.
+Something like "Military Organization". Be sure the default asset
+class is correct, edit as needed. 
 
 <h3>Unique Id</h3>
 Be sure the Unique Id is correct, edit as needed.
 
 <h3> Property Groups: </h3>
-The following must be added:<br>
+The following must be added:<br><br>
 
-<b>TypeIdentificationPG</b>
-<br>with the following parameters:</br>
-* <b>TypeIdentification String <i>(value usually the UTC of the agent)</i></b><br>
+<b>TypeIdentificationPG</b><br>
+with the following parameters:<br>
+* <b>TypeIdentification String <i>(value usually the UTC of the
+agent)</i></b><br> 
 * <b>Nomenclature String <i>(optional)</i></b><br>
 * <b>AlternateTypeIdentification String <i>(optional)</i></b><br>
 
-<br><br>
-<b>ClusterPG</b>
-<br> with the following parameters:</br>
+<br>
+<b>ClusterPG</b><br>
+with the following parameters:<br>
 * <b>ClusterIdentifier ClusterIdentifier <i>AgentName</i></b><br>
 
-<br><br>
-<b>ItemIdentificationPG</b>
-<br>with the following parameters:</br>
+<br>
+<b>ItemIdentificationPG</b><br>
+with the following parameters:<br>
 * <b>ItemIdentification String <i>AgentName</i></b><br>
 * <b>Nomenclature String <i>(optional)</i></b>
 
 <br><br>
 <b>Org related Plugins</b><br>
-You must also include the 2 org-related Plugins for your OrgAsset
-(Asset Data) to be loaded at runtime.
-These are the OrgData (<code>org.cougaar.mlm.plugin.organization.OrgDataPlugin</code>) and
-OrgReport
-(<code>org.cougaar.mlm.plugin.organization.OrgReportPlugin</code>)
+You must also include the 2 org-related Plugins for your OrgAsset 
+(Asset Data) to be loaded at runtime. 
+These are the OrgData
+(<code>org.cougaar.mlm.plugin.organization.OrgDataPlugin</code>) and 
+OrgReport 
+(<code>org.cougaar.mlm.plugin.organization.OrgReportPlugin</code>) 
 Plugins (which take no arguments).<br>
 </body></html>
 
-<!-- Last Modified: $Date: 2002-07-31 21:20:33 $ -->
-<!-- By $Author: mthome $ -->
+<!-- Last Modified: $Date: 2002-08-01 18:14:33 $ -->
+<!-- By $Author: ahelsing $ -->
