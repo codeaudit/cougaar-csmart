@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2002-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -54,7 +54,7 @@ public class SocietyComponentCreator {
    * Given a SocietyComponent, this method will
    * return a complete ComponentData tree.
    *
-   * @param society 
+   * @param society
    * @return a <code>ComponentData</code> value
    */
   public static final ComponentData getComponentData(SocietyComponent society) {
@@ -67,7 +67,7 @@ public class SocietyComponentCreator {
     cData.setName(society.getSocietyName());
     cData.setOwner(null);
     cData.setParent(null);
-    
+
     AgentComponent[] agents = society.getAgents();
     for (int i = 0; i < agents.length; i++) {
       generateAgentComponentData(agents[i], cData, null);
@@ -82,8 +82,8 @@ public class SocietyComponentCreator {
   }
 
 
-  private static final void generateAgentComponentData(AgentComponent agent, 
-                             ComponentData parent, 
+  private static final void generateAgentComponentData(AgentComponent agent,
+                             ComponentData parent,
                              ConfigurableComponent owner) {
 
     AgentComponentData ac = new AgentComponentData();
@@ -110,7 +110,7 @@ public class SocietyComponentCreator {
     }
   }
 
-  private static final void addPropertiesAsParameters(ComponentData cd, 
+  private static final void addPropertiesAsParameters(ComponentData cd,
                                                       BaseComponent cp)
   {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.SocietyComponentCreator");
@@ -139,8 +139,8 @@ public class SocietyComponentCreator {
 
   }
 
-  private static final void dumpChild(ComponentData child, 
-                                      PrintStream stream, 
+  private static final void dumpChild(ComponentData child,
+                                      PrintStream stream,
                                       int sp) {
     stream.println(repeat(sp, " ") + "Name: " + child.getName());
     stream.println(repeat(sp, " ") + "Type: " + child.getType());
@@ -148,10 +148,12 @@ public class SocietyComponentCreator {
 
     if(child instanceof AgentComponentData) {
       AgentAssetData aad = child.getAgentAssetData();
-      
-      stream.println(repeat(sp+2, " ") + "UIC: "+ aad.getUIC());
-      stream.println(repeat(sp+2, " ") + "UniqueName: " + aad.getUniqueID());
-      stream.println(repeat(sp+2, " ") + "Unit Name: " + aad.getUnitName());
+
+      if(aad != null) {
+        stream.println(repeat(sp+2, " ") + "UIC: "+ aad.getUIC());
+        stream.println(repeat(sp+2, " ") + "UniqueName: " + aad.getUniqueID());
+        stream.println(repeat(sp+2, " ") + "Unit Name: " + aad.getUnitName());
+      }
     }
 
   }
