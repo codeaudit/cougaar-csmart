@@ -190,6 +190,8 @@ public class PropertyEditorPanel extends JPanel
     tree.addTreeSelectionListener(this);
     configCompPanel.setLeftComponent(new JScrollPane(tree));
     propertyTable = new PropertyTable(isEditable);
+    // don't allow user to reorder columns
+    propertyTable.getTableHeader().setReorderingAllowed(false);
     if (!isEditable) {
       propertyTable.setForeground(Color.gray);
     }

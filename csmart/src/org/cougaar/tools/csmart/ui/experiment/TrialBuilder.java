@@ -43,6 +43,8 @@ public class TrialBuilder extends JPanel {
     isEditable = experiment.isEditable();
     isRunnable = experiment.isRunnable();
     trialTable = new JTable();
+    // don't allow user to reorder columns
+    trialTable.getTableHeader().setReorderingAllowed(false);
     trialTable.setColumnSelectionAllowed(false);
     trialTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     JScrollPane scrollPane = new JScrollPane(trialTable);

@@ -191,6 +191,8 @@ public class UnboundPropertyBuilder extends JPanel {
     model.addTreeModelListener(myTreeModelListener);
     tree.addTreeSelectionListener(myTreeSelectionListener);
 
+    // don't allow user to reorder columns
+    propTable.getTableHeader().setReorderingAllowed(false);
     propTable.setCellSelectionEnabled(true);
     propTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     propModel.addTableModelListener(myTableModelListener);
