@@ -328,6 +328,7 @@ public class AgentInsertionRecipe extends RecipeBase
             nchild.setOwner(this);            
             nchild.addParameter(agent.getShortName().toString());
 	    nchild.setAlibID(child.getAlibID());
+	    // Shouldn't the parent equivalently be the data object?
 	    nchild.setParent(child.getParent());
 
 	    // FIXME: what about the alib ids for the plugins?

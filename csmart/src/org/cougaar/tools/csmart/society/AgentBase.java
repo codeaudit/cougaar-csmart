@@ -120,6 +120,8 @@ public abstract class AgentBase
       return data;
     }
 
+    // When this was created we did agent.getShortName().
+    // Is name the same thing?
     if (! data.getName().equals(name)) {
       if (log.isErrorEnabled()) {
 	log.error("Got an agent with wrong name to be self: " + data + ". My name is " + name);
