@@ -118,16 +118,15 @@ public class SocietyComponentCreator {
                                                       BaseComponent cp)
   {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.SocietyComponentCreator");
-    for (Iterator it = cp.getPropertyNames(); it.hasNext(); ) {
-      ComponentName pname = (ComponentName) it.next();
-      Property prop = cp.getProperty(pname);
+    for (Iterator it = cp.getProperties(); it.hasNext(); ) {
+      Property prop = (Property) it.next();
       if (prop != null) {
         Object pvalue = prop.getValue();
         if (pvalue instanceof String)
           if(log.isWarnEnabled()) {
             log.warn("Adding Parameter.");
           }
-          cd.addParameter(PROP_PREFIX + pname.last() + "=" + pvalue);
+          cd.addParameter(PROP_PREFIX + prop.getName().last() + "=" + pvalue);
       }
     }
   }

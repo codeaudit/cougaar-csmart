@@ -319,8 +319,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   private void installListeners(ModifiableConfigurableComponent component) {
     component.addModificationListener(myModificationListener);
     component.addPropertiesListener(myPropertiesListener);
-    for (Iterator i = component.getPropertyNames(); i.hasNext(); ) {
-      Property p = component.getProperty((CompositeName)i.next());
+    for (Iterator i = component.getProperties(); i.hasNext(); ) {
+      Property p = (Property) i.next();
       p.addPropertyListener(myPropertyListener);
     }
   }
@@ -328,8 +328,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   private void removeListeners(ModifiableConfigurableComponent component) {
     component.removeModificationListener(myModificationListener);
     component.removePropertiesListener(myPropertiesListener);
-    for (Iterator i = component.getPropertyNames(); i.hasNext(); ) {
-      Property p = component.getProperty((CompositeName)i.next());
+    for (Iterator i = component.getProperties(); i.hasNext(); ) {
+      Property p = (Property) i.next();
       p.removePropertyListener(myPropertyListener);
     }
   }
@@ -652,9 +652,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     ModifiableComponent comp = getSocietyComponent();
     List propertyNames = null;
     if (comp != null) {
-      propertyNames = comp.getPropertyNamesList();
-      for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
-        Property property = comp.getProperty((CompositeName)j.next());
+       for (Iterator j = comp.getProperties(); j.hasNext(); ) {
+        Property property = (Property)j.next();
         List values = property.getExperimentValues();
         if (values != null && values.size() != 0) {
           properties.add(property);
@@ -667,9 +666,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     int n = getRecipeComponentCount();
     for (int i = 0; i < n; i++) {
       comp = getRecipeComponent(i);
-      propertyNames = comp.getPropertyNamesList();
-      for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
-	Property property = comp.getProperty((CompositeName)j.next());
+       for (Iterator j = comp.getProperties(); j.hasNext(); ) {
+	Property property = (Property)j.next();
 	List values = property.getExperimentValues();
 	if (values != null && values.size() != 0) {
 	  properties.add(property);
@@ -731,9 +729,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     ModifiableComponent comp = getSocietyComponent();
     if (comp == null)
       return 1; // always assume one trial
-    Iterator names = comp.getPropertyNames();
-    while (names.hasNext()) {
-      Property property = comp.getProperty((CompositeName)names.next());
+    Iterator props = comp.getProperties();
+    while (props.hasNext()) {
+      Property property = (Property)props.next();
       List values = property.getExperimentValues();
       if (values != null)
         experimentValueCounts.add(new Integer(values.size()));
@@ -743,9 +741,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     int n = getRecipeComponentCount();
     for (int i = 0; i < n; i++) {
       comp = getRecipeComponent(i);
-      names = comp.getPropertyNames();
-      while (names.hasNext()) {
-	Property property = comp.getProperty((CompositeName)names.next());
+      props = comp.getProperties();
+      while (props.hasNext()) {
+        Property property = (Property)props.next();
 	List values = property.getExperimentValues();
 	if (values != null)
 	  experimentValueCounts.add(new Integer(values.size()));
@@ -1183,17 +1181,16 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   // This may cause problems for Agents, I think....
   private void addPropertiesAsParameters(ComponentData cd, BaseComponent cp)
   {
-    for (Iterator it = cp.getPropertyNames(); it.hasNext(); ) {
-      ComponentName pname = (ComponentName) it.next();
-      Property prop = cp.getProperty(pname);
+    for (Iterator it = cp.getProperties(); it.hasNext(); ) {
+      Property prop = (Property) it.next();
       if (prop != null) {
         Object pvalue = prop.getValue();
         if (pvalue instanceof String)
-	  // FIXME: by doing pname.last(), it flattens out any
+	  // FIXME: by doing getName.last(), it flattens out any
 	  // internal hierarchy. Surely that makes
 	  // it impossible for these to be much use?
 	  // FIXME??
-          cd.addParameter(PROP_PREFIX + pname.last() + "=" + pvalue);
+          cd.addParameter(PROP_PREFIX + prop.getName().last() + "=" + pvalue);
       }
     }
   }
@@ -2028,9 +2025,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     ModifiableComponent comp = getSocietyComponent();
     List propertyNames = null;
     if (comp != null) {
-      propertyNames = comp.getPropertyNamesList();
-      for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
-        Property property = comp.getProperty((CompositeName)j.next());
+       for (Iterator j = comp.getProperties(); j.hasNext(); ) {
+        Property property = (Property)j.next();
         if (! property.isValueSet()) {
           List values = property.getExperimentValues();
           if (values == null || values.size() == 0) {
@@ -2044,9 +2040,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     int n = getRecipeComponentCount();
     for (int i = 0; i < n; i++) {
       comp = getRecipeComponent(i);
-      propertyNames = comp.getPropertyNamesList();
-      for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
-	Property property = comp.getProperty((CompositeName)j.next());
+      for (Iterator j = comp.getProperties(); j.hasNext(); ) {
+	Property property = (Property)j.next();
 	if (! property.isValueSet()) {
 	  List values = property.getExperimentValues();
 	  if (values == null || values.size() == 0) {

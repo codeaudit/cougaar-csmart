@@ -1777,8 +1777,8 @@ public class Organizer extends JScrollPane {
 
   private void installListeners(ModifiableComponent component) {
     component.addPropertiesListener(myPropertiesListener);
-    for (Iterator i = component.getPropertyNames(); i.hasNext(); ) {
-      Property p = component.getProperty((CompositeName) i.next());
+    for (Iterator i = component.getProperties(); i.hasNext(); ) {
+      Property p = (Property) i.next();
       PropertyEvent event = new PropertyEvent(p, PropertyEvent.PROPERTY_ADDED);
       myPropertiesListener.propertyAdded(event);
     }

@@ -43,8 +43,8 @@ public class PropTableModel extends PropTableModelBase {
   }
 
     public void setComponentProperties(BaseComponent cp) {
-        for (Iterator i = cp.getPropertyNames(); i.hasNext(); ) {
-            Property prop = (Property) cp.getProperty((CompositeName) i.next());
+        for (Iterator i = cp.getProperties(); i.hasNext(); ) {
+            Property prop = (Property) i.next();
             if (!prop.isValueSet()) {
                 addProperty(prop);
             }

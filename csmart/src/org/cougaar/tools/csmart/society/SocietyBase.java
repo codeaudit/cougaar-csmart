@@ -408,8 +408,8 @@ public abstract class SocietyBase
 
   private void installListeners() {
     addPropertiesListener(this);
-    for (Iterator i = getPropertyNames(); i.hasNext(); ) {
-      Property p = getProperty((CompositeName)i.next());
+    for (Iterator i = getProperties(); i.hasNext(); ) {
+      Property p = (Property)i.next();
       p.addPropertyListener(myPropertyListener);
     }
   }
