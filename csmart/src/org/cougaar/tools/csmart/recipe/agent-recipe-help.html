@@ -12,6 +12,15 @@ this recipe in the Experiment Builder.<br>
 <br>
 <i>Note: As of COUGAAR v9.0, PlanServerPlugin is not included in
 agents created with this recipe.</i>
+<i> Note: As of COUGAAR v9.4, OrgAsset is automatically included for
+all Agents.  This is to address bug #937.  The inclusion of an OrgAsset
+Adds the following plugins to the agent: <br>
+<ul>
+<li>org.cougaar.mlm.plugin.organization.OrgDataPlugin</li>
+<li>org.cougaar.mlm.plugin.organization.OrgReportPlugin</li>
+<li>ClusterPG</li>
+</ul>
+<br>
 
     <h2>Component Fields</h2>
     <table width="400">
@@ -34,11 +43,6 @@ agents created with this recipe.</i>
 	  <td><a href="#CLASS_NAME">Class Name</a></td>
 	  <td>String</td>
 	  <td></td>
-	</tr>
-	<tr>
-	  <td><a href="#ORGASSET">Include Org Asset</a></td>
-	  <td>String</td>
-	  <td>True, False</td>
 	</tr>
 	<tr>
 	  <td><a href="#NOMEN">Nomenclature</a></td>
@@ -81,22 +85,6 @@ A verbose nomenclature for this Organization.
 <a name="CLASS_NAME"><h3>Class Name</h3></a>
 The class for this Agent. The default is almost always correct.
 
-<a name="ITEMPG"><h3>Include Item IdentificationPG</h3></a>
-Specifies whether or not this agent includes an Item IdentificationPG.
-An ItemIdentificationPG is required for all agents that are not prototypes.
-
-<a name="ORGASSET"><h3>Include Org Asset</h3></a>
-Specifies whether or not this agent includes an org asset.
-If an Org asset is <i>True</i>, the agent will contain the following: <br>
-<ul>
-<li>org.cougaar.mlm.plugin.organization.OrgDataPlugin</li>
-<li>org.cougaar.mlm.plugin.organization.OrgReportPlugin</li>
-<li>ClusterPG</li>
-</ul>
-The items in the list above will <b>NOT</b> be included if the value
-is <i>False</i>.  Relationships and Roles will also not be included if
-no OrgAsset is included.
-
 <a name="NUM_REL"><h3>Number of Relationships</h3></a>
 The number of relationships which this Organization should have with
 other organizations. If you set this number to greater than 0 (and hit
@@ -117,5 +105,5 @@ The type identification for this agent.
 
 </body></html>
 
-<!-- Last Modified: $Date: 2002-05-10 13:58:57 $ -->
-<!-- By $Author: ahelsing $ -->
+<!-- Last Modified: $Date: 2002-06-11 17:12:36 $ -->
+<!-- By $Author: bkrisler $ -->
