@@ -82,7 +82,6 @@ import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
-import org.cougaar.tools.csmart.society.SocietyBase;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.cdata.SocietyCDataComponent;
 import org.cougaar.tools.csmart.ui.Browser;
@@ -620,7 +619,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
       // Copy the old society assembly_id into the new
       // so it can copy the OPLAN info, if any
-      ((SocietyBase)cc).setAssemblyId(((SocietyBase)experiment.getSocietyComponent()).getAssemblyId());
+      ((SocietyComponent)cc).setAssemblyId(((SocietyComponent)experiment.getSocietyComponent()).getAssemblyId());
 
       cc.initProperties();
 
