@@ -803,6 +803,7 @@ public class DBUtils {
    * @param qFile a <code>String</code> query file name
    */
   static void executeQuerySet(String queryBase, Map substitutions, String qFile){
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     if (traceQueries){
       System.out.println("\nexecuteQuerySet "+queryBase);
     }
@@ -823,17 +824,82 @@ public class DBUtils {
       }
     } else {
       StringTokenizer queries = new StringTokenizer(qs);
-      while (queries.hasMoreTokens()) {
-	String queryName = queries.nextToken();
-	dbQuery = DBUtils.getQuery(queryName, substitutions, qFile);
-	if (dbQuery != null) {
-	  dbExecute(dbQuery, "Execute", qFile);
-	} else {
-	  System.out.println("Can't find query - " + queryBase);
+      Connection conn = null;
+      try {
+	conn = DBUtils.getConnection(qFile);
+	while (queries.hasMoreTokens()) {
+	  String queryName = queries.nextToken();
+	  dbQuery = DBUtils.getQuery(queryName, substitutions, qFile);
+	  if (dbQuery != null) {
+	    dbExecute(dbQuery, "Execute", qFile, conn);
+	  } else {
+	    System.out.println("Can't find query - " + queryBase);
+	  }
+	}
+      } catch (SQLException e) {
+	// Got an error opening the exception
+	if (log.isErrorEnabled()) {
+	  log.error("dbExecuteQuerySet error opening connection to file " + qFile, e);
+	}
+      } finally {
+	if (conn != null) {
+	  try {
+	    conn.close();
+	  } catch (SQLException e) {
+	  }
 	}
       }
     }
   }
+
+  /**
+   * Execute the given update, optionally timing it. Use the given connection,
+   * leaving it open for the caller to close.
+   *
+   * @param dbQuery a <code>String</code> query to execute (update/delete/insert...)
+   * @param type a <code>String</code> type of update
+   * @param qFile a <code>String</code> query file name, indicating the DB to use
+   * @param conn a <code>Connection</code> to the DB to use, to be left open
+   * @return an <code>int</code>, the number of lines affected
+   */
+  public static int dbExecute(String dbQuery, String type, String qFile, Connection conn) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
+
+    int count=0;
+    boolean gotConn = false;
+
+    try {
+      if (conn != null && ! conn.isClosed())
+	gotConn = true;
+      else
+	conn = DBUtils.getConnection(qFile);
+      if (traceQueries){
+	System.out.println("\nStarting dbExecute at "+new Date()+"\n\n"+dbQuery);
+      }
+      try {
+        if (execute){
+          Statement stmt = conn.createStatement();	
+          count = stmt.executeUpdate(dbQuery);
+          //  		    System.out.println("db"+type+" "+type+"d "+count+" items in the database"); 
+          stmt.close();
+        }
+      } finally {
+	if (! gotConn)
+	  conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("db"+type+": "+dbQuery, e);
+      }
+      throw new RuntimeException("Error" + e);
+    }
+
+    if (traceQueries){
+      System.out.println("\nexiting dbExecute with "+count+" at "+new Date());
+    }
+    return count;
+  }
+  
   
   /**
    * Execute the given update, optionally timing it
