@@ -212,6 +212,10 @@ very similar for WinNT.
       You could instead create this user such that any machine in your domain can access it (with the security risks that entails), by doing: <pre>myname@"%.foo.com"</pre> instead.
       </li><p>
 
+  <li>Once you have imported the CMT MySQL datafile, be sure to follow
+  the same steps to import the Cougaar domain plugin MySQL database on
+  the same machine.<li><p>
+      
   <li>The database is now ready.  You must now create a "cougaar.rc"
     for the database users (<a href="http://www.cougaar.org">Cougaar</a>
     and CSMART), which is used to store the database location and
