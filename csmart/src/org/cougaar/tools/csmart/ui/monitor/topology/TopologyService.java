@@ -31,6 +31,8 @@ public class TopologyService {
   ArrayList parameterNames;
   ArrayList parameterValues;
 
+  StringBuffer errors = null; // Collection of errors from Agents
+
   public TopologyService() {
     parameterNames = new ArrayList(2);
     parameterValues = new ArrayList(2);
@@ -41,12 +43,18 @@ public class TopologyService {
   }
 
   public ArrayList getAgentLocations() {
+    errors = new StringBuffer(200); // re-init the errors received
     Vector urls = CSMARTUL.getAgentURLs();
     for (int i = 0; i < urls.size(); i++) {
+      // Bug 1585: If the servlet is not loaded, don't
+      // pop up an error message for each Agent, but instead want one for all of them
       ArrayList results = getAgentLocations((String)urls.get(i));
       if (results != null)
         return results;
     }
+    // If we fall through to here, no one could answer the question. Put up an error.
+    JOptionPane.showMessageDialog(null, errors.toString());
+    errors = null;
     return null;
   }
 
@@ -58,14 +66,14 @@ public class TopologyService {
                                                parameterValues,
                                                null, -1);
     Collection result = response.getCollection();
-    StringBuffer buf = new StringBuffer(100);
     String s = response.getErrorMessage();
     if (s != null) {
-      buf.append("Contacting: ");
-      buf.append(response.getURL());
-      buf.append(" ");
-      buf.append(response.getErrorMessage());
-      JOptionPane.showMessageDialog(null, buf.toString());
+      // Had an error of some sort
+      errors.append("Contacting: ");
+      errors.append(response.getURL());
+      errors.append(" ");
+      errors.append(response.getErrorMessage());
+      errors.append('\n');
     } 
     ArrayList resultList = null;
     if (result == null)
@@ -80,6 +88,7 @@ public class TopologyService {
     //    return getFakeData();
   }
 
+  ///////////////////////////////////////////
   // for debugging
   private int incarnation = -1;
 
