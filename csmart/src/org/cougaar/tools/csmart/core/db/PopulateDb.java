@@ -50,6 +50,12 @@ import org.cougaar.util.Parameters;
 import org.cougaar.util.DBConnectionPool;
 import org.cougaar.util.log.Logger;
 
+import org.cougaar.core.agent.Agent;
+import org.cougaar.core.agent.AgentManager;
+import org.cougaar.core.node.Node;
+import org.cougaar.core.plugin.PluginBase;
+import org.cougaar.core.plugin.PluginManager;
+
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.cdata.*;
 import org.cougaar.tools.csmart.core.property.Property;
@@ -60,7 +66,6 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  * the configuration database with some or all of the components
  * described by the data. It can save just a society, or an experiment.
  **/
-
 public class PopulateDb extends PDbBase {
   private String exptId;
   private String trialId;
@@ -2636,6 +2641,40 @@ public class PopulateDb extends PDbBase {
 // 	  if (log.isDebugEnabled()) {
 // 	    log.debug("Pag for " + data.getName() + " at PropGroupData " + i + " with name " + pgName + " has " + props.length + " props, of which #" + j + " is " + propInfo.toString());
 // 	  }
+
+	  // HACK for 10.0:
+	  // If this is MessageAddress, look for a ClusterIdentifier
+	  // already in the DB. In this case, must save this as a CSA
+	  if (prop.getName().equals("MessageAddress")) {
+	    // will run checkAttribute
+	    // must bind the old pg_attribute_lib_id and current attribute value, order, start_date, assembly_match
+	    substitutions.put(":component_alib_id:", sqlQuote(getComponentAlibId(data)));
+	    substitutions.put(":pg_attribute_lib_id:", sqlQuote(pgName + "|ClusterIdentifier"));
+	    substitutions.put(":start_date:", sqlQuote("2000-01-01 00:00:00"));
+	    substitutions.put(":end_date:", sqlQuote(null));
+	    substitutions.put(":attribute_value:", sqlQuote(prop.getValue().toString()));
+	    substitutions.put(":attribute_order:", "0");
+
+	    stmt = getStatement();
+	    String checkQuery = dbp.getQuery("checkAttribute", substitutions);
+	    if (log.isDebugEnabled()) 
+	      log.debug("Checking for PG Attr entry query: " + checkQuery);
+	    ResultSet rschck = executeQuery(stmt, checkQuery);
+	    boolean hadIt = rschck.next();
+	    rschck.close();
+	    stmt.close();
+
+	    if (hadIt) {
+	      // BAD! Have a ClusterIdentifier entry for this already.
+	      // Must throw the exception
+	      if (log.isWarnEnabled()) {
+		log.warn("Had an obsolete ClusterPG|ClusterIdentifier in runtime for " + data.getName() + ", must redo as a CSA using MessageAddress only!");
+	      }
+	      componentWasRemoved = true;
+	      throw new IllegalArgumentException("ClusterPG|ClusterIdentifier was removed, must resave as CSA.");
+	    }
+	  } // end of hack for MessageAddress
+
 	  substitutions.put(":component_alib_id:", sqlQuote(getComponentAlibId(data)));
 	  substitutions.put(":pg_attribute_lib_id:", sqlQuote(propInfo.getAttributeLibId()));
 
@@ -2733,7 +2772,9 @@ public class PopulateDb extends PDbBase {
 	  }
 	} // loop over properties in pg
       } // loop over PGs
-    }
+    } // if isAdded
+
+    // FIXME: If user _removes_ a PG, this wont notice, so old PG remains
 
     // Add relationships even to Agents that
     // aren't new here
@@ -3253,19 +3294,19 @@ public class PopulateDb extends PDbBase {
     if (data == null) return sqlQuote(null);
     String componentType = data.getType();
     if (componentType.equals(ComponentData.PLUGIN)) {
-      return sqlQuote("Node.AgentManager.Agent.PluginManager.Plugin");
+      return sqlQuote(PluginBase.INSERTION_POINT);
     }
     if (componentType.equals(ComponentData.NODEBINDER)) {
-      return sqlQuote("Node.AgentManager.Binder");
+      return sqlQuote(AgentManager.INSERTION_POINT + ".Binder");
     }
     if (componentType.equals(ComponentData.AGENTBINDER)) {
-      return sqlQuote("Node.AgentManager.Agent.PluginManager.Binder");
+      return sqlQuote(PluginManager.INSERTION_POINT + ".Binder");
     }
     if (componentType.equals(ComponentData.AGENT)) {
-      return sqlQuote("Node.AgentManager.Agent");
+      return sqlQuote(Agent.INSERTION_POINT);
     }
     if (componentType.equals(ComponentData.NODE)) {
-      return sqlQuote("Node");
+      return sqlQuote(Node.INSERTION_POINT);
     }
     if (componentType.equals(ComponentData.HOST)) {
       return sqlQuote("Host");
