@@ -168,8 +168,22 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 	  }
 	}
       } else {
-	if (log.isWarnEnabled())
-	  log.warn("Unable to find servlets.txt!");
+	if (log.isWarnEnabled()) {
+	  log.warn("Unable to find servlets.txt! Report bug 2000.");
+	  log.warn("config.path= " + System.getProperty("org.cougaar.config.path"));
+	  log.warn("Trying again with verbose on: ");
+	  cf.setVerbose(true);
+	  try {
+	    inputFile = cf.locateFile("servlets.txt");
+	  } catch(Exception e) {
+	    log.error("Could not read servlets file.", e);
+	  } 
+	  if (inputFile != null) {
+	    log.warn(".. this time we found it?");
+	  } else {
+	    log.warn("... still couldn't find it?");
+	  }
+	}
       }
     }
     return vec;    
