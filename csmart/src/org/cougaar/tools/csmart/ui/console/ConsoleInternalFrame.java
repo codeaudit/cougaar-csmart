@@ -365,7 +365,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
   }
 
   /**
-   * Display information about node in pop-up dialog.
+   * Display information about node in pop-up dialog. Colloquially the "Node Info" window.
    */
   public void displayAbout() {
     ArrayList agentNames = 
@@ -507,6 +507,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
+
     // display -D options
     aboutPanel.add(new JLabel("-D Options (in CSMART):"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
@@ -564,7 +565,10 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.BOTH,
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
+
     x = 0;
+
+    // Now the contents of the Node
     aboutPanel.add(new JLabel("Agents (initial configuration):"),
                    new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
@@ -577,12 +581,17 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
+
+    // Put together the list of Agents in the Node
     JList agentsList = null;
     if (agentNames == null)
       agentsList = new JList();
     else
       agentsList = new JList(agentNames.toArray());
     agentsList.setBackground(aboutPanel.getBackground());
+
+    // Allow user to select an Agent in the list and get the detailed
+    // contents of that Agent in a pop-up window
     agentsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     agentsList.addListSelectionListener(new ListSelectionListener() {
       public void valueChanged(ListSelectionEvent e) {
@@ -594,6 +603,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
           displayPlugins(agentName);
       }
     });
+
     JScrollPane jspAgents = new JScrollPane(agentsList);
     jspAgents.setMinimumSize(new Dimension(50, 50));
     // FIXME: Put in horizontal scrollbar maybe?
@@ -865,6 +875,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     ((NodeStatusButton)statusButton).clearError();
   }
 
+  // Display pop-up with the INI style contents of an Agent listed
   private void displayPlugins(String agentName) {
     ComponentData societyComponentData = experiment.getSocietyComponentData();
     if (societyComponentData == null) {
@@ -886,15 +897,19 @@ public class ConsoleInternalFrame extends JInternalFrame {
         }
       }
     }
+
+    //  If couldn't find the node in the ComponentData, give up
     if (nodeComponentData == null)
       return;
-    ComponentData[] agents = nodeComponentData.getChildren();
+
     ComponentData agentComponentData = null;
+
     // The "agent" might be a NodeAgent, in which case this is the right spot.
     if (agentName.equals(nodeComponentData.getName())) {
       agentComponentData = nodeComponentData;
     } else {
       // OK. Find the sub-Agent with the right name
+      ComponentData[] agents = nodeComponentData.getChildren();
       for (int i = 0; i < agents.length; i++) {
 	if (agents[i] instanceof AgentComponentData &&
 	    agents[i].getName().equals(agentName)) {
@@ -903,18 +918,21 @@ public class ConsoleInternalFrame extends JInternalFrame {
 	}
       }
     }
+    
+    // If couldn't find the Agent in the ComponentData for the node, give up
     if (agentComponentData == null)
       return;
+
+    // Loop through the children
     ComponentData[] agentChildren = agentComponentData.getChildren();
     ArrayList entries = new ArrayList(agentChildren.length);
     for (int i = 0; i < agentChildren.length; i++) {
-//       if (!agentChildren[i].getType().equals(ComponentData.PLUGIN))
-//         continue;
 
       // If this Agent is a NodeAgent, ignore its Agent children.
       if (agentChildren[i].getType().equals(ComponentData.AGENT))
 	continue;
 
+      // FIXME: This should use same code as ExperimentINIWriter if possible
       StringBuffer sb = new StringBuffer();
       if (agentChildren[i].getType().equals(ComponentData.AGENTBINDER)) {
 	sb.append("Node.AgentManager.Agent.PluginManager.Binder");
