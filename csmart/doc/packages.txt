@@ -1,4 +1,4 @@
-Last updated: 04/29/02
+Last updated: 04/30/02
 
 The document outlines the current CSMART package structure:
 
@@ -26,36 +26,45 @@ The document outlines the current CSMART package structure:
       All CSMART Plugins.
 
   -- society
-	This is where the classes for creating societies live. This directory has base classes
-	and interfaces for Societies, Agents, Plugins, and other Components.
+	All classes for Creating a complete Society. All base classes and interfaces
+        reside in this package.
     -- abc
-        All classes for the ABC Configurable Components 
+        This package contains all classes to represent an ABC Society 
+    -- cdata
+        This package contains classes to generate a Society from a 
+        complete ComponentData structure. 
     -- db
-        All classes for the societies created from the database
+        This package contains all classes to represent a Database Society.
+    -- file
+        This package contains all classes to represent a Society created from INI Files.
     -- scalability
-      All classes for the Scalability Configurable Components
+        This package contains all classes to represent a Scalability society.
+    -- ui
+        This package contains all classes to represnt a UI based Society.
 
   -- recipe
      All classes about recipes (including metrics and impacts)
      
   -- experiment
-     All classes about Experiments and Trials
+     All classes representing Experiments and Trials.  This includes 
+     ConfigurationWriters for Experiments that write complete Exeriments to ini files.
      
   -- core
      -- property
-	Properties and objects that hold them and edit them.
+	Component Properties and objects that hold them and edit them.
 	-- name
-	   Names of properties
+	   Names of properties.
 	-- range
-	   Utilities to mark a property as existing in a range of
-	   values
+	   Utilities to mark a property as existing in a range of values
   
      -- cdata
-        The ComponentData tree for translating CSMART configuration
-	data representation into the form used to run.
+        The ComponentData tree for translating the CSMART configuration
+	data representation into a runable form.  All classes within this
+	package represent components and sub-components of the complete 
+	ComponentData structure.
   
      -- db
-	Database access mechanisms
+	All Database access mechanisms used by the ComponentData structure.
   -- ui
     -- analyzer
 	Performance Analyzer
