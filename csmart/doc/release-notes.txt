@@ -26,6 +26,9 @@ InstallAndTest.html)
   get around this, wait until the society has quiesced before hitting the
   Connect button. If you have already done so, use the stand-alone
   GLS UI in CIP/bin/GLSInit.[bat/sh]  See bug# 1215
+- Known issue: Experiment and recipe export scripts may no longer work. 
+  As a workaround, try using the complete DB export scripts in
+  csmart/data/database/scripts/mysql/dump_1ad_mysql.sh  See bug # 1231 (and 1229)
 
 
 
