@@ -1,3 +1,15 @@
+2001-11-08  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* SelectedColoredCircle.java:
+	Extend ColorCircle and set "selected" boolean to cause outline to
+	be drawn. Most code is now gone.
+
+	* ColoredCircle.java:
+	Merge with SelectedColoredCircle to avoid code duplication and
+	accidental differences.
+	Leave a margin around the circle to avoid clipping the outline or
+	the anti-aliasing fringe.
+
 2001-11-07  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* CMT.java:
