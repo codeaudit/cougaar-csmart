@@ -81,6 +81,8 @@ public class PDbBase {
 
   private transient Logger log;
 
+  public static final String COMPLEX_RECIPE_DESC = "Complex Recipe Component";
+
   protected Map substitutions = new HashMap() {
       public Object put(Object key, Object val) {
 	if (val == null) throw new IllegalArgumentException("Null value for " + key);
@@ -373,7 +375,7 @@ public class PDbBase {
 	executeUpdate(dbp.getQuery("insertLibRecipe", substitutions));
       }
 
-      // Now save all the recipe arguments
+//       substitutions.put(":description:", COMPLEX_RECIPE_DESC);
       int order = 0;
       for (Iterator j = rc.getLocalPropertyNames(); j.hasNext(); ) {
 	CompositeName pname = (CompositeName) j.next();
