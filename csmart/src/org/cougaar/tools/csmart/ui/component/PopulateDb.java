@@ -407,32 +407,28 @@ public class PopulateDb extends PDbBase {
         boolean isSociety = data.getType().equals(ComponentData.SOCIETY);
         boolean isAdded = isAdded(data);
         substitutions.put(":assembly_id:", sqlQuote(isAdded ? csmiAssemblyId : hnaAssemblyId));
-        if (!isSociety) {
-            addComponentDataSubstitutions(data);
-            ResultSet rs = executeQuery(stmt, dbp.getQuery("checkLibComponent", substitutions));
-            if (rs.next()) {    // Already exists
-            } else {            // Need to add it
-                executeUpdate(dbp.getQuery("insertLibComponent", substitutions));
-            }
-            rs.close();
-            rs = executeQuery(stmt, dbp.getQuery("checkAlibComponent", substitutions));
-            if (rs.next()) {    // Already exists
-                // Use the one that is there
-            } else {
-                executeUpdate(dbp.getQuery("insertAlibComponent", substitutions));
-                result = true;
-            }
-            rs.close();
-            if (isAdded) {
-                Object[] params = data.getParameters();
-                for (int i = 0; i < params.length; i++) {
-//                      System.out.println("param value = " + params[i]);
-                    substitutions.put(":argument_value:", sqlQuote(params[i].toString()));
-                    substitutions.put(":argument_order:", sqlQuote(String.valueOf(i + 1)));
-                    executeUpdate(dbp.getQuery("insertComponentArg", substitutions));
-                    result = true;
-                }
-            }
+        addComponentDataSubstitutions(data);
+        ResultSet rs = executeQuery(stmt, dbp.getQuery("checkLibComponent", substitutions));
+        if (rs.next()) {    // Already exists
+        } else {            // Need to add it
+            executeUpdate(dbp.getQuery("insertLibComponent", substitutions));
+        }
+        rs.close();
+        rs = executeQuery(stmt, dbp.getQuery("checkAlibComponent", substitutions));
+        if (rs.next()) {    // Already exists
+            // Use the one that is there
+        } else {
+            executeUpdate(dbp.getQuery("insertAlibComponent", substitutions));
+            result = true;
+        }
+        rs.close();
+        Object[] params = data.getParameters();
+        for (int i = 0; i < params.length; i++) {
+//              System.out.println(data.getName() + " param value = " + params[i]);
+            substitutions.put(":argument_value:", sqlQuote(params[i].toString()));
+            substitutions.put(":argument_order:", sqlQuote(String.valueOf(i + 1)));
+            executeUpdate(dbp.getQuery("insertComponentArg", substitutions));
+            result = true;
         }
         if (isAgent) {
             // Must be a recipe agent because that's all that gets added
@@ -444,17 +440,19 @@ public class PopulateDb extends PDbBase {
         ComponentData parent = data.getParent();
         if (parent != null) {
             String parentType = parent.getType();
-            if (!parentType.equals(ComponentData.SOCIETY)) {
-                substitutions.put(":parent_component_alib_id:", sqlQuote(getComponentAlibId(parent)));
-                substitutions.put(":component_alib_id:", sqlQuote(getComponentAlibId(data)));
-                substitutions.put(":insertion_order:", String.valueOf(insertionOrder));
-                ResultSet rs =
-                    executeQuery(stmt, dbp.getQuery("checkComponentHierarchy", substitutions));
-                if (!rs.next()) {
-                    executeUpdate(dbp.getQuery("insertComponentHierarchy", substitutions));
-                    result = true;
-                }
+            substitutions.put(":parent_component_alib_id:",
+                              sqlQuote(getComponentAlibId(parent)));
+            substitutions.put(":component_alib_id:",
+                              sqlQuote(getComponentAlibId(data)));
+            substitutions.put(":insertion_order:", String.valueOf(insertionOrder));
+            rs = executeQuery(stmt, dbp.getQuery("checkComponentHierarchy",
+                                                 substitutions));
+            if (!rs.next()) {
+                executeUpdate(dbp.getQuery("insertComponentHierarchy",
+                                           substitutions));
+                result = true;
             }
+            rs.close();
         }
 
         ComponentData[] children = data.getChildren();
@@ -648,6 +646,10 @@ public class PopulateDb extends PDbBase {
             String hostName = data.getName();
             return sqlQuote(hostName);
         }
+        if (componentType.equals(ComponentData.SOCIETY)) {
+            String societyName = data.getName();
+            return sqlQuote(data.getType() + "|" + societyName);
+        }
         ComponentData parent = data.getParent();
         return sqlQuote(data.getType() + "|" + getFullName(data));
     }
@@ -678,6 +680,9 @@ public class PopulateDb extends PDbBase {
         if (componentType.equals(ComponentData.HOST)) {
             return sqlQuote(null);
         }
+        if (componentType.equals(ComponentData.SOCIETY)) {
+            return sqlQuote(null);
+        }
         return sqlQuote(null);
     }
 
@@ -692,13 +697,17 @@ public class PopulateDb extends PDbBase {
         if (result == null) {
             String componentType = data.getType();
             if (componentType.equals(ComponentData.PLUGIN)) {
-                String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
+                String agentName =
+                    findAncestorOfType(data, ComponentData.AGENT).getName();
                 result = agentName + "|" + data.getClassName();
             } else if (componentType.equals(ComponentData.NODEBINDER)) {
               result = data.getType() + "|" + data.getClassName();
             } else if (componentType.equals(ComponentData.AGENTBINDER)) {
-                String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
+                String agentName =
+                    findAncestorOfType(data, ComponentData.AGENT).getName();
                 result = agentName + "|" + data.getClassName();
+            } else if (componentType.equals(ComponentData.SOCIETY)) {
+                result = ComponentData.SOCIETY + "|" + data.getName();
             } else {
                 result = data.getName();
             }
