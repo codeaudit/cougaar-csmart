@@ -39,7 +39,6 @@ public class Util {
    * @param filename the filename for which to get the path
    * @return the pathname or null if an error
    */
-
   public static String getPath(String filename) {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.util.Util");
     ConfigFinder configFinder = ConfigFinder.getInstance();
@@ -48,8 +47,8 @@ public class Util {
     try {
       path = file.getCanonicalPath();
     } catch (Exception e) {
-      if(log.isErrorEnabled()) {
-        log.error("Could not find: " + filename);
+      if(log.isWarnEnabled()) {
+        log.warn("Could not find: " + filename);
       }
     }
     return path;
