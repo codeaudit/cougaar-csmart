@@ -233,6 +233,12 @@ public class AssetDBComponent
           }
           if (endDate != null) rd.setEndTime(endDate.getTime());
           relationshipData.add(rd);
+	  if (log.isDebugEnabled()) {
+	    log.debug(this + " doing query " + query + " and created Relationship: " + rd);
+	  }
+	  if (rd.getType() == null && log.isErrorEnabled()) {
+	    log.error("Please report bug 1304: using CSMART " + CSMART.writeDebug() + " just created a RelationshipData from the DB and type is now null: " + rd, new Throwable());
+	  }
         }
         rs.close();
         stmt.close();
@@ -255,8 +261,25 @@ public class AssetDBComponent
     for(int i=0; i < rel.length; i++) {
       RelationshipBase newR = new RelationshipBase(rel[i]);
       newR.initProperties();
+      if (newR.getProperty(RelationshipBase.PROP_TYPE) == null && log.isErrorEnabled()) {
+	log.error("Please report bug 1304: using CSMART" + CSMART.writeDebug() + " just created a RelationshipBase with null PROP_TYPE (" + newR + ") built from RelationshipData: " + rel[i] + " at child spot# " + i, new Throwable());
+      }
       relContainer.addChild(newR);
     }
+    if (log.isDebugEnabled()) {
+      for (int i = 0; i < relContainer.getChildCount(); i++) {
+	RelationshipBase relt = (RelationshipBase) relContainer.getChild(i);
+	if (relt == null) {
+	  if (log.isErrorEnabled()) {
+	    log.error("Please report seeing Bug 1304: Using CSMART " + CSMART.writeDebug() + " had Null RelationshipBase at child spot # " + i + " out of " + relContainer.getChildCount() + " where the corresponding RelationshipData should have been: " + rel[i], new Throwable());
+	  }
+	} else if (relt.getProperty(RelationshipBase.PROP_TYPE) == null) {
+	  if (log.isErrorEnabled()) {
+	    log.error("Please report seeing Bug 1304: Using CSMART " + CSMART.writeDebug() + " had Null Relationship type for relationship at child spot #" + i + " out of " + relContainer.getChildCount() + " where relationship role=" + relt.getProperty(RelationshipBase.PROP_ROLE) + ", and ItemID=" + relt.getProperty(RelationshipBase.PROP_ITEM) + ", and supported=" + relt.getProperty(RelationshipBase.PROP_SUPPORTED) + ", where the corresponding RelationshipData should have been " + rel[i], new Throwable());
+	  }
+	}
+      } // for loop
+    } // if debug
   }
 
   private void addPropGroups() {

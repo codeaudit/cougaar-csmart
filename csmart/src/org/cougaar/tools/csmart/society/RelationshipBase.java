@@ -103,6 +103,11 @@ public class RelationshipBase
     }
     propType = addProperty(PROP_TYPE, relationship.getType());
     propType.setToolTip(PROP_TYPE_DESC);
+
+    if (getProperty(PROP_TYPE) == null && log.isErrorEnabled()) {
+      log.error("Please report bug 1304: Using CSMART " + CSMART.writeDebug() + " just finished setting Type and getProperty(type) returns null. Initializing from RelationshipData: " + relationship, new Throwable());
+    }
+
     propRole = addProperty(PROP_ROLE, relationship.getRole());
     propRole.setToolTip(PROP_ROLE_DESC);
     propItem = addProperty(PROP_ITEM, relationship.getItemId());
