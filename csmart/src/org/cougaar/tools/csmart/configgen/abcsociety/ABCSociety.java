@@ -29,7 +29,7 @@ import java.util.Iterator;
 import javax.swing.JOptionPane;
 
 public class ABCSociety
-  extends ConfigurableComponent
+  extends ModifiableConfigurableComponent
   implements PropertiesListener, Serializable, SocietyComponent
 {
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
