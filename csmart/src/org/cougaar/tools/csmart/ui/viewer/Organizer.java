@@ -33,7 +33,7 @@ import java.awt.Dimension;
 import java.io.*;
 import java.lang.reflect.Constructor;
 import org.cougaar.tools.csmart.ui.component.*;
-import org.cougaar.tools.csmart.ui.experiment.Impact;
+import org.cougaar.tools.csmart.ui.experiment.ABCImpact;
 import org.cougaar.tools.csmart.ui.experiment.Metric;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.configgen.abcsociety.ABCSociety;
@@ -358,8 +358,8 @@ public class Organizer extends JScrollPane {
         return (SocietyComponent[]) getLeaves(SocietyComponent.class, node);
     }
 
-    private Impact[] getImpacts(TreeNode node) {
-        return (Impact[]) getLeaves(Impact.class, node);
+    private ImpactComponent[] getImpacts(TreeNode node) {
+        return (ImpactComponent[]) getLeaves(Impact.class, node);
     }
 
     private Metric[] getMetrics(TreeNode node) {
@@ -492,21 +492,21 @@ public class Organizer extends JScrollPane {
             String name = "Experiment for " + sc.getSocietyName();
             experiment = new Experiment(experimentNames.generateName(name),
                                         new SocietyComponent[] {sc},
-                                        new Impact[0],
+                                        new ImpactComponent[0],
                                         new Metric[0]);
         } else if (o instanceof Impact) {
-            Impact impact = (Impact) o;
-            String name = "Experiment for " + impact.getName();
+            ImpactComponent impact = (ImpactComponent) o;
+            String name = "Experiment for " + impact.getImpactName();
             experiment = new Experiment(experimentNames.generateName(name),
                                         new SocietyComponent[0],
-                                        new Impact[] {impact},
+                                        new ImpactComponent[] {impact},
                                         new Metric[0]);
         } else if (o instanceof Metric) {
             Metric metric = (Metric) o;
             String name = "Experiment for " + metric.getName();
             experiment = new Experiment(experimentNames.generateName(name),
                                         new SocietyComponent[0],
-                                        new Impact[0],
+                                        new ImpactComponent[0],
                                         new Metric[] {metric});
         } else if (o instanceof Experiment) {
             experiment = (Experiment) o;
@@ -553,7 +553,7 @@ public class Organizer extends JScrollPane {
             name = experimentNames.generateName(name);
             experiment = new Experiment(name,
                                         new SocietyComponent[] {sc},
-                                        new Impact[0],
+                                        new ImpactComponent[0],
                                         new Metric[0]);
             DefaultMutableTreeNode parent = 
 	      (DefaultMutableTreeNode) node.getParent();
@@ -808,8 +808,8 @@ public class Organizer extends JScrollPane {
 	    }
             try {
                 Constructor constructor = item.cls.getConstructor(constructorArgTypes);
-                Impact impact =
-                    (Impact) constructor.newInstance(new String[] {name});
+                ImpactComponent impact =
+                    (ImpactComponent) constructor.newInstance(new String[] {name});
 		DefaultMutableTreeNode newNode =
 		  addImpactToWorkspace(impact, node);
 		workspace.setSelection(newNode);
@@ -822,11 +822,11 @@ public class Organizer extends JScrollPane {
         }
     }
 
-    private DefaultMutableTreeNode addImpactToWorkspace(Impact impact,
+    private DefaultMutableTreeNode addImpactToWorkspace(ImpactComponent impact,
 							DefaultMutableTreeNode node) {
       DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(impact, false);
       addNode(node, newNode);
-      impactNames.add(impact.getName());
+      impactNames.add(impact.getImpactName());
       //   installListeners(sc);
       return newNode;
     }
@@ -837,9 +837,9 @@ public class Organizer extends JScrollPane {
   }
   
   private void renameImpact(DefaultMutableTreeNode node, String name) {
-    Impact impact =
-      (Impact) node.getUserObject();
-    if (name == null || name.equals(impact.getName()) || name.equals("")) return;
+    ImpactComponent impact =
+      (ImpactComponent) node.getUserObject();
+    if (name == null || name.equals(impact.getImpactName()) || name.equals("")) return;
     while (true) {
       if (!impactNames.contains(name)) break;
       int ok = JOptionPane.showConfirmDialog(this,
@@ -852,9 +852,9 @@ public class Organizer extends JScrollPane {
       if (name == null || name.equals("")) return;
     }
     if (name != null) {
-      impactNames.remove(impact.getName());
+      impactNames.remove(impact.getImpactName());
       impact.setName(name);
-      impactNames.add(impact.getName());
+      impactNames.add(impact.getImpactName());
       model.nodeChanged(node);
     }
   }
@@ -862,7 +862,7 @@ public class Organizer extends JScrollPane {
     private void deleteImpact(DefaultMutableTreeNode node) {
         if (node == null) return;
         model.removeNodeFromParent(node);
-        impactNames.remove(((Impact) node.getUserObject()).getName());
+        impactNames.remove(((ImpactComponent) node.getUserObject()).getImpactName());
     }
 
     private void newMetric(DefaultMutableTreeNode node) {
@@ -1118,8 +1118,8 @@ public class Organizer extends JScrollPane {
                                   SocietyComponent.class.getMethod("getSocietyName", noTypes));
                 experimentNames.init(getLeaves(Experiment.class, root),
                                      Experiment.class.getMethod("getExperimentName", noTypes));
-                impactNames.init(getLeaves(Impact.class, root),
-                                 Impact.class.getMethod("getName", noTypes));
+                impactNames.init(getLeaves(ImpactComponent.class, root),
+                                 ImpactComponent.class.getMethod("getName", noTypes));
                 metricNames.init(getLeaves(Metric.class, root),
                                  Metric.class.getMethod("getName", noTypes));
                 return;
@@ -1426,11 +1426,11 @@ public class Organizer extends JScrollPane {
   }
 
   private void copyImpactInNode(DefaultMutableTreeNode node) {
-    copyImpact((Impact)node.getUserObject(), node.getParent());
+    copyImpact((ImpactComponent)node.getUserObject(), node.getParent());
   }
 
-  public Impact copyImpact(Impact impact, Object context) {
-    Impact impactCopy = impact.copy(this, context);
+  public ImpactComponent copyImpact(ImpactComponent impact, Object context) {
+    ImpactComponent impactCopy = impact.copy(this, context);
     addImpactToWorkspace(impactCopy, (DefaultMutableTreeNode)context);
     return impactCopy;
   }
@@ -1477,7 +1477,7 @@ public class Organizer extends JScrollPane {
 	    //	    System.err.println("Resetting node type to SocietyComponent");
 	    myorg.renameSociety(aNode, newValue.toString());
 	    
-	  } else if (aNode.getUserObject() instanceof Impact) {
+	  } else if (aNode.getUserObject() instanceof ImpactComponent) {
 	    myorg.renameImpact(aNode, newValue.toString());
 	  } else if (aNode.getUserObject() instanceof Metric) {
 	    myorg.renameMetric(aNode, newValue.toString());

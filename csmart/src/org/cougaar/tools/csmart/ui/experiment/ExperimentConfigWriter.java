@@ -29,6 +29,7 @@ import org.cougaar.tools.server.ConfigurationWriter;
 import org.cougaar.tools.csmart.ui.component.NodeComponent;
 import org.cougaar.tools.csmart.ui.component.AgentComponent;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
+import org.cougaar.tools.csmart.ui.component.ImpactComponent;
 
 /**
  * Write out all config data for an Experiment. Delegate
@@ -54,7 +55,7 @@ public class ExperimentConfigWriter implements ConfigurationWriter {
   public void writeConfigFiles(File configDir) throws IOException {
     String addition = null;
     for (int i = 0; i < impacts.size(); i++) {
-      Impact impact = (Impact)impacts.get(i);
+      ImpactComponent impact = (ImpactComponent)impacts.get(i);
       addition = (addition != null ? addition : "") + impact.getNodeFileAddition();
       ConfigurationWriter writer = impact.getConfigurationWriter(nodes);
       if (writer != null)

@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -39,14 +40,7 @@ import javax.swing.JFileChooser;
 import org.cougaar.tools.server.ConfigurationWriter;
 import org.cougaar.util.EmptyIterator;
 
-import org.cougaar.tools.csmart.ui.component.AgentComponent;
-import org.cougaar.tools.csmart.ui.component.CompositeName;
-import org.cougaar.tools.csmart.ui.component.NodeComponent;
-import org.cougaar.tools.csmart.ui.component.PropertiesListener;
-import org.cougaar.tools.csmart.ui.component.Property;
-import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
-import org.cougaar.tools.csmart.ui.component.ConcatenatedName;
-import org.cougaar.tools.csmart.ui.component.SimpleName;
+import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.tools.csmart.configgen.abcsociety.ABCAgent;
 
@@ -61,15 +55,23 @@ import org.cougaar.tools.csmart.configgen.abcsociety.ABCAgent;
  * @see org.cougaar.tools.csmart.ldm.event.RealWorldEvent
  * @see org.cougaar.tools.csmart.plugin.ScriptedEventPlugIn
  */
-public class ABCImpact implements Impact {
+public class ABCImpact 
+  extends ModifiableConfigurableComponent
+  implements PropertiesListener, Serializable, ImpactComponent {
   private String name;
   private transient File xmlfile;
   private String fileContents;
+
+  private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
+  private static final String BACKUP_DESCRIPTION = 
+    "Impact description not available";
+
   private static final String rweFileName = "RealWorldEvents.xml";
   private static final String tAgentName = "Transducer";
   private static final String gAgentName = "Generator";
   private static final String socFileName = "Society.dat";
   private ABCImpactAgentComponent[] agents;
+  private boolean editable = false;
 
   /**
    * Filter to look for XML files: Return true for such files,
@@ -111,18 +113,27 @@ public class ABCImpact implements Impact {
       return null;
     return fileChooser.getSelectedFile();
   }
-    
+  
+  public ABCImpact() {
+    this("ABC Impact");
+  }
+
   public ABCImpact (String name) {
+    super(name);
     this.name = name;
     createGeneratorAgent();
     createTransducerAgent();
   }
-  
+
+  public void initProperties() {
+    // Currently no properties to init.
+  }
+
   public void setName(String newName) {
     this.name = newName;
   }
 
-  public String getName() {
+  public String getImpactName() {
     return name;
   }
 
@@ -141,11 +152,11 @@ public class ABCImpact implements Impact {
     return xmlfile;
   }
   
-  public Impact copy(Organizer organizer, Object context) {
-    //    Impact newImpact = organizer.copyImpact(new ABCImpact(organizer.generateImpactName(name)), context);
-    Impact newImpact = new ABCImpact(organizer.generateImpactName(name));
-    ((ABCImpact)newImpact).setFile(xmlfile);
-    return newImpact;
+  public ImpactComponent copy(Organizer organizer, Object context) {
+//     ImpactComponent newImpact = new ABCImpact(organizer.generateImpactName(name));
+//     ((ABCImpact)newImpact).setFile(xmlfile);
+//     return newImpact;
+    return null;
   }
   
   /**
@@ -412,5 +423,48 @@ public class ABCImpact implements Impact {
     }
     return result;
   }
-  
+
+  public URL getDescription() {
+    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
+  }
+
+  public boolean isEditable() {
+    return this.editable;
+  }
+
+  public void setEditable(boolean editable) {
+    this.editable = editable;
+  }
+
+  public void addModificationListener(ModificationListener l) {
+    getEventListenerList().add(ModificationListener.class, l);
+  }
+
+  public void removeModificationListener(ModificationListener l) {
+    getEventListenerList().remove(ModificationListener.class, l);
+  }
+
+  public void fireModification() {
+    fireModification(new ModificationEvent(this, ModificationEvent.SOMETHING_CHANGED));
+  }
+
+  /**
+   * Called when a new property has been added to the
+   * society. 
+   *
+   * @param PropertyEvent Event for the new property
+   */
+  public void propertyAdded(PropertyEvent e) {
+    Property addedProperty = e.getProperty();
+    Property myProperty = getProperty(addedProperty.getName().last().toString());
+    if (myProperty != null) {
+      setPropertyVisible(addedProperty, true);
+    }
+  }
+
+  /**
+   * Called when a property has been removed from the society
+   */
+  public void propertyRemoved(PropertyEvent e) {}
+
 }// ABCImpact

@@ -52,7 +52,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private boolean runnable = true;
 
   public Experiment(String name, SocietyComponent[] societyComponents,
-		    Impact[] impacts, Metric[] metrics)
+		    ImpactComponent[] impacts, Metric[] metrics)
   {
     this(name);
     setSocietyComponents(societyComponents);
@@ -74,7 +74,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     societies.clear();
     societies.addAll(Arrays.asList(ary));
   }
-  public void setImpacts(Impact[] ary) {
+  public void setImpacts(ImpactComponent[] ary) {
     impacts.clear();
     impacts.addAll(Arrays.asList(ary));
   }
@@ -85,7 +85,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void addSocietyComponent(SocietyComponent sc) {
     if (!societies.contains(sc)) societies.add(sc);
   }
-  public void addImpact(Impact impact) {
+  public void addImpact(ImpactComponent impact) {
     if (!impacts.contains(impact)) impacts.add(impact);
   }
   public void addMetric(Metric metric) {
@@ -94,7 +94,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void removeSociety(SocietyComponent sc) {
     societies.remove(sc);
   }
-  public void removeImpact(Impact impact) {
+  public void removeImpact(ImpactComponent impact) {
     impacts.remove(impact);
   }
   public void removeMetric(Metric metric) {
@@ -112,8 +112,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public SocietyComponent getSocietyComponent(int i) {
     return (SocietyComponent) societies.get(i);
   }
-  public Impact getImpact(int i) {
-    return (Impact) impacts.get(i);
+  public ImpactComponent getImpact(int i) {
+    return (ImpactComponent) impacts.get(i);
   }
   public Metric getMetric(int i) {
     return (Metric) metrics.get(i);
@@ -244,8 +244,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
     // copy impacts & metrics the same
     for (int i = 0; i < impacts.size(); i++) {
-      Impact impact = (Impact)impacts.get(i);
-      Impact copiedImpact = organizer.copyImpact(impact, context);
+      ImpactComponent impact = (ImpactComponent)impacts.get(i);
+      ImpactComponent copiedImpact = organizer.copyImpact(impact, context);
       experimentCopy.addImpact(copiedImpact);
     }
     for (int i = 0; i < metrics.size(); i++) {

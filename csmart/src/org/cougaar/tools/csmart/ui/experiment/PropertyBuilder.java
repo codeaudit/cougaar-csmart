@@ -31,6 +31,7 @@ import org.cougaar.tools.csmart.ui.component.CompositeName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
+import org.cougaar.tools.csmart.ui.component.ImpactComponent;
 
 public class PropertyBuilder extends JPanel {
   private static final String REMOVE_MENU_ITEM = "Remove";
@@ -241,7 +242,7 @@ public class PropertyBuilder extends JPanel {
       addSocietyComponent(experiment.getSocietyComponent(i));
     }
     for (int i = 0, n = experiment.getImpactCount(); i < n; i++) {
-      addImpact(experiment.getImpact(i));
+      addImpactComponent(experiment.getImpact(i));
     }
     for (int i = 0, n = experiment.getMetricCount(); i < n; i++) {
       addMetric(experiment.getMetric(i));
@@ -281,10 +282,10 @@ public class PropertyBuilder extends JPanel {
     }
     experiment.setSocietyComponents(societyComponentsAry);
     int nImpacts = impacts.getChildCount();
-    Impact[] impactAry = new Impact[nImpacts];
+    ImpactComponent[] impactAry = new ImpactComponent[nImpacts];
     for (int i = 0; i < nImpacts; i++) {
       impactAry[i] =
-        (Impact) ((DefaultMutableTreeNode) impacts.getChildAt(i)).getUserObject();
+        (ImpactComponent) ((DefaultMutableTreeNode) impacts.getChildAt(i)).getUserObject();
     }
     experiment.setImpacts(impactAry);
     int nMetrics = metrics.getChildCount();
@@ -311,7 +312,7 @@ public class PropertyBuilder extends JPanel {
     Object o = popupNode.getUserObject();
     if (o instanceof SocietyComponent) {
       popupMenu.show(tree, e.getX(), e.getY());
-    } else if (o instanceof Impact) {
+    } else if (o instanceof ImpactComponent) {
       popupMenu.show(tree, e.getX(), e.getY());
     } else if (o instanceof Metric) {
       popupMenu.show(tree, e.getX(), e.getY());
@@ -368,8 +369,8 @@ public class PropertyBuilder extends JPanel {
    * Add impact component to tree.
    */
 
-  private void addImpact(Impact impact) {
-    DefaultMutableTreeNode node = new DefaultMutableTreeNode(impact, false);
+  private void addImpactComponent(ImpactComponent ic) {
+    DefaultMutableTreeNode node = new DefaultMutableTreeNode(ic, false);
     model.insertNodeInto(node, impacts, impacts.getChildCount());
   }
 

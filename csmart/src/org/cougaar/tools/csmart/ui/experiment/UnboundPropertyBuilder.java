@@ -32,6 +32,7 @@ import org.cougaar.tools.csmart.ui.component.CompositeName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
+import org.cougaar.tools.csmart.ui.component.ImpactComponent;
 
 public class UnboundPropertyBuilder extends JPanel {
   private static final String REMOVE_MENU_ITEM = "Remove";
@@ -306,10 +307,10 @@ public class UnboundPropertyBuilder extends JPanel {
     }
     experiment.setSocietyComponents(societyComponentsAry);
     int nImpacts = impacts.getChildCount();
-    Impact[] impactAry = new Impact[nImpacts];
+    ImpactComponent[] impactAry = new ImpactComponent[nImpacts];
     for (int i = 0; i < nImpacts; i++) {
       impactAry[i] =
-        (Impact) ((DefaultMutableTreeNode) impacts.getChildAt(i)).getUserObject();
+        (ImpactComponent) ((DefaultMutableTreeNode) impacts.getChildAt(i)).getUserObject();
     }
     experiment.setImpacts(impactAry);
     int nMetrics = metrics.getChildCount();
@@ -336,7 +337,7 @@ public class UnboundPropertyBuilder extends JPanel {
     Object o = popupNode.getUserObject();
     if (o instanceof SocietyComponent) {
       popupMenu.show(tree, e.getX(), e.getY());
-    } else if (o instanceof Impact) {
+    } else if (o instanceof ImpactComponent) {
       popupMenu.show(tree, e.getX(), e.getY());
     } else if (o instanceof Metric) {
       popupMenu.show(tree, e.getX(), e.getY());
@@ -407,7 +408,7 @@ public class UnboundPropertyBuilder extends JPanel {
    * Add impact component to tree.
    */
 
-  private void addImpact(Impact impact) {
+  private void addImpact(ImpactComponent impact) {
     DefaultMutableTreeNode node = new DefaultMutableTreeNode(impact, false);
     model.insertNodeInto(node, impacts, impacts.getChildCount());
   }

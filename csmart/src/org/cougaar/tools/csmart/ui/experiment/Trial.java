@@ -36,6 +36,8 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
   private ArrayList trialValues; // array of objects; values of trialParameters
   private ArrayList trialResults; // array of TrialResult
 
+  private boolean editable = false;
+
   /**
    * Construct a trial with the given name.
    * @param name
@@ -152,6 +154,14 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
 
   public Object[] getValues() {
     return (Object[])trialValues.toArray(new Object[trialValues.size()]);
+  }
+
+  public boolean isEditable() {
+    return this.editable;
+  }
+
+  public void setEditable(boolean editable) {
+    this.editable = editable;
   }
 
   public void printParametersAndValues() {

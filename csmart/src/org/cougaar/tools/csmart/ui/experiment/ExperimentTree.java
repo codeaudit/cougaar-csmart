@@ -50,7 +50,7 @@ public class ExperimentTree extends DNDTree {
         DataFlavor[] flavors;
         public MyTransferable(DefaultMutableTreeNode aNode) {
             theData = aNode.getUserObject();
-            if (theData instanceof Impact)
+            if (theData instanceof ImpactComponent)
                 flavors = new DataFlavor[] {impactFlavor};
             else if (theData instanceof Metric)
                 flavors = new DataFlavor[] {metricFlavor};
