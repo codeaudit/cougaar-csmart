@@ -43,6 +43,8 @@ import org.cougaar.util.DBProperties;
 import org.cougaar.util.DBConnectionPool;
 
 import org.cougaar.tools.csmart.core.db.DBUtils;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Methods for constructing a society in the configuration database' assembly
@@ -138,6 +140,8 @@ public class CMT {
   }
   
   static boolean hasRows(String dbQuery){
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+
     ResultSet rs = null;
     try {
       StringBuffer q = new StringBuffer();
@@ -157,8 +161,10 @@ public class CMT {
 	stmt.close();	
       } 
     } catch (Exception e) {
-      System.out.println("hasRows"+dbQuery);
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+         log.error("hasRows"+dbQuery);
+         e.printStackTrace();
+      }
       throw new RuntimeException("Error" + e);
     }
   }
@@ -171,12 +177,15 @@ public class CMT {
   }
   
   static String sqlListFromQuery (String query, Map substitutions) {
-    if (DBUtils.traceQueries){
-      System.out.println("\nsqlListFromQuery "+query);
+    Logger qLog = CSMART.createLogger("queries");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+
+    if (qLog.isDebugEnabled()){
+      qLog.debug("\nsqlListFromQuery "+query);
     }
     String dbQuery = DBUtils.getQuery(query, substitutions, QUERY_FILE);
-    if (DBUtils.traceQueries){
-      System.out.println("\nsqlListFromQuery "+dbQuery);
+    if (qLog.isDebugEnabled()){
+      qLog.debug("\nsqlListFromQuery "+dbQuery);
     }
     try {
       StringBuffer q = new StringBuffer();
@@ -203,8 +212,10 @@ public class CMT {
       return q.toString();
     }
     catch (Exception e) {
-      System.out.println("sqlListFromQuery: "+dbQuery);
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+         log.error("sqlListFromQuery: "+dbQuery);
+         e.printStackTrace();
+      }
       throw new RuntimeException("Error" + e);
     }
   }
@@ -274,11 +285,13 @@ public class CMT {
   }
 
   static String createCMTasb(String assembly_description,String cfw_g_id,String[] threads, Map clones){
+    Logger qLog = CSMART.createLogger("queries");
+
     clearUnusedCMTassemblies();
     String assembly_id = getAssemblyID(cfw_g_id, threads, clones);
     if (hasRows(asbPrefix+"asb_assembly", "assembly_id", DBUtils.sqlQuote(assembly_id))){
-      if (DBUtils.traceQueries) {
-	System.out.println("Not creating new assembly for: "+assembly_id+" which is already in the DB");
+      if (qLog.isDebugEnabled()) {
+	qLog.debug("Not creating new assembly for: "+assembly_id+" which is already in the DB");
       }
       return assembly_id;
     } else {
@@ -557,6 +570,7 @@ public class CMT {
     Map substitutions = new HashMap();
     substitutions.put(":max_id_pattern", prefix + "____");
     String id = format.format(1); // Default
+    Logger qLog = CSMART.createLogger("queries");
     try {
       Connection dbConnection = DBUtils.getConnection(QUERY_FILE);
       Statement stmt = dbConnection.createStatement();
@@ -564,8 +578,8 @@ public class CMT {
 	if(dbp==null)
 	  dbp = DBProperties.readQueryFile(QUERY_FILE);
 	String query = dbp.getQuery(queryName, substitutions);
-	if (DBUtils.traceQueries) {
-	  System.out.println("getNextId: "+query);
+	if (qLog.isDebugEnabled()) {
+	  qLog.debug("getNextId: "+query);
 	}
 	ResultSet rs = stmt.executeQuery(query);
 	try {
@@ -573,12 +587,12 @@ public class CMT {
 	    String maxId = rs.getString(1);
 	    if (maxId != null) {
 	      int n = format.parse(maxId).intValue();
-	      if (DBUtils.traceQueries) {
-		System.out.println("getNextId: n="+n+", maxId ="+maxId);
+	      if (qLog.isDebugEnabled()) {
+		qLog.debug("getNextId: n="+n+", maxId ="+maxId);
 	      }
 	      id = format.format(n + 1);
-	      if (DBUtils.traceQueries) {
-		System.out.println("getNextId: id="+id);
+	      if (qLog.isDebugEnabled()) {
+		 qLog.debug("getNextId: id="+id);
 	      }
 	    }
 	  }
