@@ -61,19 +61,10 @@ public class ConsoleDesktop extends JDesktopPane {
   /**
    * Add a node output frame to the desktop.
    * The frame is iconified and not selected.
+   * @param frame the frame to add
+   * @param nodeName the name of the node
    */
-
-  public void addNodeFrame(NodeComponent node, 
-                           ConsoleNodeListener listener,
-                           InternalFrameListener frameListener,
-                           JScrollPane pane,
-                           JRadioButton statusButton,
-                           String logFileName,
-                           RemoteProcess remoteNode,
-                           CSMARTConsole console) {
-    JInternalFrame frame = 
-      new ConsoleInternalFrame(node, listener, pane,
-                               statusButton, logFileName, remoteNode, console);
+  public void addNodeFrame(JInternalFrame frame, String nodeName) {
     //Set the window's location.
     frameCount++;
     Insets insets = this.getInsets();
@@ -82,11 +73,15 @@ public class ConsoleDesktop extends JDesktopPane {
     int x = (dx <= 0) ? 0 : ((frameXOffset * frameCount) % dx);
     int y = (dy <= 0) ? 0 : ((frameYOffset * frameCount) % dy);
     frame.setLocation(x, y);
-    frame.addInternalFrameListener(frameListener);
     addFrame(frame, true);
-    myFrames.put(node.getShortName(), frame);
+    myFrames.put(nodeName, frame);
   }
 
+  /**
+   * Get the frame for this node.
+   * @param nodeName the name of the node
+   * @return the frame for the node
+   */
   public ConsoleInternalFrame getNodeFrame(String nodeName) {
     return (ConsoleInternalFrame)myFrames.get(nodeName);
   }

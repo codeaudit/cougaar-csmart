@@ -67,6 +67,13 @@ public class ActionUtil {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer.ActionUtil");
     DefaultMutableTreeNode selectedNode = organizer.getSelectedNode();
 
+    // you can always "run an experiment" using the CSMARTConsole
+    // because you can attach to running nodes
+    if (action.equals(organizer.runExperimentAction)) {
+      action.setEnabled(true);
+      return;
+    }
+
     // If nothing is selected, some things are still legitimate
     if (selectedNode == null) {
       if (action.equals(organizer.deleteExperimentFromDatabaseAction) ||

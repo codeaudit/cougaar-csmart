@@ -495,13 +495,18 @@ public class Organizer extends JScrollPane {
   }
 
   /**
-   * Try to run the console.  This is called in two cases:
+   * Try to run the console.  This is called in three cases:
    * 1) the user has selected a runnable experiment
    * 2) the user has selected a society and this method creates an experiment
+   * 3) the user has not selected an experiment and plans to attach to running nodes
    */
 
   protected void startConsole() {
     DefaultMutableTreeNode node = getSelectedNode();
+    if (node == null) {
+      csmart.runConsole(null);
+      return;
+    }
     Object o = node.getUserObject();
     Experiment experiment = null;
     if (o instanceof SocietyComponent) {
@@ -521,10 +526,9 @@ public class Organizer extends JScrollPane {
       experiment.saveToDb(saveToDbConflictHandler);
     } else if (o instanceof Experiment) {
       experiment = (Experiment)o;
-    }
-    // Start up the console on the experiment
-    if (experiment != null)
-      csmart.runConsole(experiment);
+    } 
+    // Start up the console on the experiment or with no experiment
+    csmart.runConsole(experiment);
   }
   
 
@@ -604,7 +608,7 @@ public class Organizer extends JScrollPane {
     if (society == null)
       return;
     Experiment experiment = createExperiment(society);
-    
+
     // Add in community info for this society
     JFileChooser chooser = 
       new JFileChooser(SocietyFinder.getInstance().getPath());
@@ -612,20 +616,20 @@ public class Organizer extends JScrollPane {
     chooser.setDialogTitle("Select the communities.xml file for this Society, if any");
     // Allow selection of XML files and directories
     chooser.addChoosableFileFilter(new FileFilter() {
-	public boolean accept(File f) {
-	  if (f == null)
-	    return false;
-	  if (f.isDirectory())
-	    return true;
-	  return f.getName().endsWith(".xml");
-	}
-	
-	public String getDescription() {
-	  return "XML Files";
-	}
-	
+      public boolean accept(File f) {
+	if (f == null)
+	  return false;
+	if (f.isDirectory())
+	  return true;
+	return f.getName().endsWith(".xml");
+      }
+
+      public String getDescription() {
+	return "XML Files";
+      }
+
       });
-    
+
     File xmlFile = null;
     while (xmlFile == null) {
       int result = chooser.showDialog(organizer, "OK");
@@ -645,11 +649,12 @@ public class Organizer extends JScrollPane {
       addExperimentToWorkspace(experiment, getSelectedNode());
     addSocietyToWorkspace(society, experimentNode);
   }
-  
+
   /**
    * Create an experiment and a society that will be specified
    * from the user interface.
    */
+
   protected void createExperimentFromUI() {
     String name = getUniqueExperimentName("", false);
     if (name == null)

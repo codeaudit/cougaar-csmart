@@ -23,13 +23,13 @@ package org.cougaar.tools.csmart.ui.console;
 
 import java.awt.Color;
 import java.io.*;
-import java.util.Hashtable;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.SwingUtilities;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
-
-import org.cougaar.tools.csmart.experiment.NodeComponent;
 
 import org.cougaar.tools.server.NodeEvent;
 import org.cougaar.tools.server.OutputBundle;
@@ -46,7 +46,6 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class ConsoleNodeListener implements OutputListener {
   private CSMARTConsole console;
-  private NodeComponent nodeComponent;
   private String nodeName;
   private String logFileName;
   private Writer logFile;
@@ -62,11 +61,11 @@ public class ConsoleNodeListener implements OutputListener {
   private ConsoleNodeOutputFilter filter = null;
   private Object logFileLock = new Object();
   private int nLogEvents = 0;
-
+  private TimerTask logFlushTask;
   private transient Logger log;
 
   public ConsoleNodeListener(CSMARTConsole console,
-			     NodeComponent nodeComponent,
+                             String nodeName,
 			     String logFileName, 
 			     NodeStatusButton statusButton,
                              ConsoleStyledDocument doc) throws IOException {
@@ -74,8 +73,7 @@ public class ConsoleNodeListener implements OutputListener {
 
     createLogger();
     this.console = console;
-    this.nodeComponent = nodeComponent;
-    nodeName = nodeComponent.toString();
+    this.nodeName = nodeName;
 
     // status button for node on console display
     this.statusButton = statusButton;
@@ -98,6 +96,18 @@ public class ConsoleNodeListener implements OutputListener {
     StyleConstants.setForeground(atts[1], new Color(192, 64, 64));
     atts[2] = new SimpleAttributeSet();
     StyleConstants.setForeground(atts[2], new Color(64, 64, 192));
+    // write the log file every 5 seconds
+    logFlushTask = new TimerTask() {
+        public void run() {
+          synchronized (logFileLock) {
+            try {
+              logFile.flush();
+            } catch (Exception e) {
+            }
+          }
+        }
+      };
+    new Timer().schedule(logFlushTask, new Date(), 5000);
   }
 
   private void createLogger() {
@@ -164,12 +174,19 @@ public class ConsoleNodeListener implements OutputListener {
     return ret;
   }
   
+  /**
+   * Called by appserver to stream standard output and standard err
+   * to this listener.
+   * @param outputBundle the standard out and err
+   */
   public void handleOutputBundle(OutputBundle outputBundle) {
+    // fix to use the new app-server APIs
     // see the app-server example "GuiConsole"
     java.util.List l = 
-      org.cougaar.tools.server.NodeEventTranslator.toNodeEvents(outputBundle);  // fix to use the new app-server APIs
+      org.cougaar.tools.server.NodeEventTranslator.toNodeEvents(outputBundle); 
     handleAll(l);
   }
+
 
   /**
    * Handle the specified list of node events (List of NodeEvent)
@@ -323,7 +340,7 @@ public class ConsoleNodeListener implements OutputListener {
         statusButton.setStatus(NodeStatusButton.STATUS_NODE_CREATED);
       else if (nodeEventType == NodeEvent.PROCESS_DESTROYED) {
         statusButton.setStatus(NodeStatusButton.STATUS_NODE_DESTROYED);
-        console.nodeStopped(nodeComponent);
+        console.nodeStopped(nodeName);
       } else if (nodeEventType == NodeEvent.STANDARD_ERR) {
         statusButton.setStatus(NodeStatusButton.STATUS_STD_ERROR);
       }
@@ -347,6 +364,7 @@ public class ConsoleNodeListener implements OutputListener {
     synchronized (logFileLock) {
       try {
         logFile.close();
+        logFlushTask.cancel();
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
           log.error("Exception closing log file: ", e);
@@ -358,6 +376,7 @@ public class ConsoleNodeListener implements OutputListener {
   /**
    * Close the log file, fill the display with the contents of the log file,
    * and re-open the log file for appending.
+   * TODO: update the log file timer task as well
    */
 
   public void fillFromLogFile() {

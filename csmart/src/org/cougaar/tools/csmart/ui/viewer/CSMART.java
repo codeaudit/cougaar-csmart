@@ -701,7 +701,10 @@ public class CSMART extends JFrame {
   protected void runConsole(Experiment experiment) {
     JFrame tool =
       (JFrame)new CSMARTConsole(this, experiment);
-    addTool(EXPERIMENT_CONTROLLER, experiment.getExperimentName(), tool);
+    String s = "";
+    if (experiment != null)
+      s = experiment.getExperimentName();
+    addTool(EXPERIMENT_CONTROLLER, s, tool);
   }
 
   /**

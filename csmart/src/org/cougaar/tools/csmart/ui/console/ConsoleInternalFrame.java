@@ -47,13 +47,11 @@ import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 
 import org.cougaar.tools.csmart.experiment.HostComponent;
-import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 import org.cougaar.util.log.Logger;
-import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.tools.server.RemoteProcess;
 import org.cougaar.tools.server.system.ProcessStatus;
 
@@ -97,7 +95,10 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String NOTIFY_NEXT_ACTION = "Find Next Notification";
   private static final String RESET_NOTIFY_ACTION = "Reset Notification";
 
-  private NodeComponent node;
+  private String nodeName;
+  private String hostName;
+  private Properties properties;
+  private java.util.List args;
   private ConsoleNodeListener listener;
   private ConsoleTextPane consoleTextPane;
   private Action findAction;
@@ -106,8 +107,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private Action notifyNextAction;
   private Action startAction;
   private Action stopAction;
-  private HostComponent host;
-  private String hostName;
   private JRadioButton statusButton;
   private String logFileName;
   private ConsoleNodeOutputFilter filter;
@@ -117,7 +116,24 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   private transient Logger log;
 
-  public ConsoleInternalFrame(NodeComponent node, 
+  /**
+   * A frame for displaying the node's standard out and err,
+   * and information about the node (if node component is non-null).
+   * @param nodeName the name of the node
+   * @param hostName the name of the host on which the node is running
+   * @param minusDArgs arguments specified with "-D"
+   * @param commandArguments command line arguments
+   * @param listener listener for getting standard out/err from AppServer
+   * @param pane the pane in which to display standard out/err
+   * @param statusButton the status button for this node in the console
+   * @param logFileName name of file to which to write log
+   * @param remoteNode handle on remote process
+   * @param console the CSMART console
+   */
+  public ConsoleInternalFrame(String nodeName,
+                              String hostName,
+                              Properties properties,
+                              java.util.List args,
                               ConsoleNodeListener listener,
                               JScrollPane pane,
                               JRadioButton statusButton,
@@ -129,7 +145,10 @@ public class ConsoleInternalFrame extends JInternalFrame {
           false, //not closable, because they can't be recreated
           true, //maximizable
           true);//iconifiable
-    this.node = node;
+    this.nodeName = nodeName;
+    this.hostName = hostName;
+    this.properties = properties;
+    this.args = args;
     this.listener = listener;
     this.statusButton = statusButton;
     this.logFileName = logFileName;
@@ -139,24 +158,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     createLogger();
 
     consoleTextPane = (ConsoleTextPane)pane.getViewport().getView();
-    // get host component by getting the experiment and 
-    // searching its hosts for one with this node.
-    experiment = 
-      (Experiment)getPropertyValue(node, "Experiment");
-    HostComponent[] hosts = experiment.getHostComponents();
-    for (int i = 0; i < hosts.length; i++) {
-      NodeComponent[] nodes = hosts[i].getNodes();
-      for (int j = 0; j < nodes.length; j++) {
-        if (nodes[j].equals(node)) {
-          host = hosts[i];
-          hostName = host.getShortName();
-          break;
-        }
-      }
-    }
-    // title is "Node name (host name)"
-    setTitle("Node " + node.getShortName() + " (" + hostName + ")");
-    // init menubar
+    setTitle("Node " + nodeName + " (" + hostName + ")");
     JMenuBar menuBar = new JMenuBar();
 
     // Node menu
@@ -360,22 +362,24 @@ public class ConsoleInternalFrame extends JInternalFrame {
     am.put(NOTIFY_NEXT_ACTION, notifyNextAction);
   }
 
-  public NodeComponent getNodeComponent() {
-    return node;
+  public String getNodeName() {
+    return nodeName;
   }
 
   /**
-   * Display information about node in pop-up dialog. Colloquially the "Node Info" window.
+   * Display information about node in pop-up dialog. 
+   * Colloquially the "Node Info" window.
    */
   public void displayAbout() {
     // clone the agent names so we don't modify them when we add the NodeAgent
     ArrayList agentNames = 
-      (ArrayList)((ArrayList)getPropertyValue(node, "AgentNames")).clone();
+      (ArrayList)console.getNodePropertyValue(nodeName, "AgentNames");
     if (agentNames == null)
       agentNames = new ArrayList();
-
+    else
+      agentNames = (ArrayList)agentNames.clone();
     // Add the NodeAgent as the first Agent in the list
-    agentNames.add(0, node.getShortName());
+    agentNames.add(0, nodeName);
 
     JPanel aboutPanel = new JPanel();
     aboutPanel.setLayout(new GridBagLayout());
@@ -461,7 +465,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel((String)getPropertyValue(host, "MachineType")),
+    aboutPanel.add(new JLabel((String)console.getHostPropertyValue(hostName, 
+                                                           "MachineType")),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
@@ -474,7 +479,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel((String)getPropertyValue(host, "Location")),
+    aboutPanel.add(new JLabel((String)console.getHostPropertyValue(hostName, 
+                                                           "Location")),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
@@ -487,7 +493,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel((String)getPropertyValue(host, "Description")),
+    aboutPanel.add(new JLabel((String)console.getHostPropertyValue(hostName, 
+                                                           "Description")),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
@@ -500,7 +507,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel((String)getPropertyValue(node, "Description")),
+    aboutPanel.add(new JLabel((String)console.getNodePropertyValue(nodeName, 
+                                             "Description")),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
@@ -515,9 +523,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    Properties properties = console.getNodeMinusD(node, hostName);
     Vector data = new Vector();
-    //    Properties properties = node.getArguments();
     Enumeration propertyNames = properties.propertyNames();
     while (propertyNames.hasMoreElements()) {
       String name = (String)propertyNames.nextElement();
@@ -550,14 +556,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    JTextArea args = new JTextArea(5, 40);
-    Properties props = node.getArguments();
-    String commandArguments =
-      props.getProperty(CSMARTConsole.COMMAND_ARGUMENTS);
-    if (commandArguments == null)
-      commandArguments = "";
-    args.setText(commandArguments);
-    JScrollPane jspArgs = new JScrollPane(args);
+    JScrollPane jspArgs = new JScrollPane(new JList(args.toArray()));
     jspArgs.setMinimumSize(new Dimension(50, 50));
     aboutPanel.add(jspArgs,
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 1.0,
@@ -606,7 +605,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
     JScrollPane jspAgents = new JScrollPane(agentsList);
     jspAgents.setMinimumSize(new Dimension(50, 50));
-    // FIXME: Put in horizontal scrollbar maybe?
     aboutPanel.add(jspAgents,
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 1.0,
                                           GridBagConstraints.WEST,
@@ -614,16 +612,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     JOptionPane.showMessageDialog(this, aboutPanel, 
-                                  "Information: " + node.getShortName() + 
+                                  "Information: " + nodeName +
                                   " (" + hostName + ")",
                                   JOptionPane.PLAIN_MESSAGE);
-  }
-
-  private Object getPropertyValue(BaseComponent component, String name) {
-    Property prop = component.getProperty(name);
-    if (prop == null)
-      return null;
-    return prop.getValue();
   }
 
   // Implementations for the action items from the menu
@@ -782,7 +773,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   private void restart_actionPerformed() {
     startAction.setEnabled(false);
-    RemoteProcess newRemoteNode = console.restartNode(node);
+    RemoteProcess newRemoteNode = console.restartNode(nodeName);
     if (newRemoteNode != null) {
       remoteNode = newRemoteNode;
       stopAction.setEnabled(true);
@@ -791,7 +782,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   private void stop_actionPerformed() {
     stopAction.setEnabled(false);
-    console.stopNode(node);
+    console.stopNode(nodeName);
   }
 
   private void trace_actionPerformed() {
@@ -876,89 +867,12 @@ public class ConsoleInternalFrame extends JInternalFrame {
   }
 
   // Display pop-up with the INI style contents of an Agent listed
+  // invoked from window displayed by displayAbout method
   private void displayPlugins(String agentName) {
-    ComponentData societyComponentData = experiment.getSocietyComponentData();
-    if (societyComponentData == null) {
-      if(log.isWarnEnabled()) {
-        log.warn("ConsoleInternalFrame: Need to save experiment");
-      }
+    ArrayList entries = 
+      console.getAgentComponentDescriptions(nodeName, agentName);
+    if (entries == null)
       return;
-    }
-    ComponentData[] children = societyComponentData.getChildren();
-    ComponentData nodeComponentData = null;
-    for (int i = 0; i < children.length; i++) {
-      if (children[i].getType().equals(ComponentData.HOST)) {
-        ComponentData[] nodes = children[i].getChildren();
-        for (int j = 0; j < nodes.length; j++) {
-          if (nodes[j].getName().equals(node.getShortName())) {
-            nodeComponentData = nodes[j];
-            break;
-          }
-        }
-      }
-    }
-
-    //  If couldn't find the node in the ComponentData, give up
-    if (nodeComponentData == null)
-      return;
-
-    ComponentData agentComponentData = null;
-
-    // The "agent" might be a NodeAgent, in which case this is the right spot.
-    if (agentName.equals(nodeComponentData.getName())) {
-      agentComponentData = nodeComponentData;
-    } else {
-      // OK. Find the sub-Agent with the right name
-      ComponentData[] agents = nodeComponentData.getChildren();
-      for (int i = 0; i < agents.length; i++) {
-	if (agents[i] instanceof AgentComponentData &&
-	    agents[i].getName().equals(agentName)) {
-	  agentComponentData = agents[i];
-	  break;
-	}
-      }
-    }
-    
-    // If couldn't find the Agent in the ComponentData for the node, give up
-    if (agentComponentData == null)
-      return;
-
-    // Loop through the children
-    ComponentData[] agentChildren = agentComponentData.getChildren();
-    ArrayList entries = new ArrayList(agentChildren.length);
-    for (int i = 0; i < agentChildren.length; i++) {
-
-      // If this Agent is a NodeAgent, ignore its Agent children.
-      if (agentChildren[i].getType().equals(ComponentData.AGENT))
-	continue;
-
-      // FIXME: This should use same code as ExperimentINIWriter if possible
-      StringBuffer sb = new StringBuffer();
-      if (agentChildren[i].getType().equals(ComponentData.AGENTBINDER)) {
-	sb.append("Node.AgentManager.Agent.PluginManager.Binder");
-      } else if (agentChildren[i].getType().equals(ComponentData.NODEBINDER)) {
-	sb.append("Node.AgentManager.Binder");
-      } else {
-	sb.append(agentChildren[i].getType());
-      }
-      if(ComponentDescription.parsePriority(agentChildren[i].getPriority()) != 
-	 ComponentDescription.PRIORITY_COMPONENT) {
-	sb.append("(" + agentChildren[i].getPriority() + ")");
-      }
-      sb.append(" = ");
-      sb.append(agentChildren[i].getClassName());
-      if (agentChildren[i].parameterCount() != 0) {
-        sb.append("(");
-        Object[] params = agentChildren[i].getParameters();
-        sb.append(params[0].toString());
-        for (int j = 1; j < agentChildren[i].parameterCount(); j++) {
-          sb.append(",");
-          sb.append(params[j].toString());
-        }
-        sb.append(")");
-      }
-      entries.add(sb.toString());
-    }
     JList plugInsList = new JList(entries.toArray());
     JScrollPane jsp = 
       new JScrollPane(plugInsList, 
