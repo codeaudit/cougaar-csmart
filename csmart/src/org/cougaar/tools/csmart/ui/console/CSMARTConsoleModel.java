@@ -32,6 +32,7 @@ import org.cougaar.util.log.Logger;
 
 import javax.swing.*;
 import java.util.*;
+import java.io.File;
 
 /**
  * org.cougaar.tools.csmart.ui.console
@@ -76,6 +77,7 @@ public class CSMARTConsoleModel extends Observable implements Observer {
   private String selectedNodeName = null; // name of node whose status button is selected
   private String notifyCondition = "exception";
   private boolean notifyOnStdErr;
+  private File XMLFile;
 
   // Default contact info for the GLSInit UI
   private String[] glsContactInfo = { "http", "localhost", "8800", "NCA" };
@@ -913,5 +915,13 @@ public class CSMARTConsoleModel extends Observable implements Observer {
 
   public boolean isCSMARTNull() {
     return (csmart == null) ? true : false;
+  }
+
+  public void setXMLFile(File selectedFile) {
+    this.XMLFile = selectedFile;
+  }
+
+  public File getXMLFile() {
+    return this.XMLFile;
   }
 }
