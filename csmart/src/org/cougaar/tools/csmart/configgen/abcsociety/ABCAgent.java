@@ -384,12 +384,6 @@ public class ABCAgent
 
   /** Private Methods **/
 
-  private Property addProperty(String name, Object value, PropertyListener l) {
-    Property p = addProperty(name, value, value.getClass());
-    p.addPropertyListener(l);
-    return p;
-  }
-
   /**
    * Adds all plugins required by a Provider
    */

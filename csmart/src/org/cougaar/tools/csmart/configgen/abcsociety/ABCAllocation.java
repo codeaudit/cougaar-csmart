@@ -102,12 +102,6 @@ public class ABCAllocation
     super(name);
   }
 
-  private Property addProperty(String name, Object value, PropertyListener l) {
-    Property p = addProperty(name, value, value.getClass());
-    p.addPropertyListener(l);
-    return p;
-  }
-
   /**
    * Initializes all the properties
    */

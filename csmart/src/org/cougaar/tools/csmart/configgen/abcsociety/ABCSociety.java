@@ -100,12 +100,6 @@ public class ABCSociety
   // FileFilter for metrics:
   private static FileFilter metricsFileFilter = new ScalabilityMetricsFileFilter();
 
-  private Property addProperty(String name, Object value, PropertyListener l) {
-    Property p = addProperty(name, value, value.getClass());
-    p.addPropertyListener(l);
-    return p;
-  }
-
   public ABCSociety() {
     this("ABC Society");
   }
@@ -695,7 +689,6 @@ public class ABCSociety
    * @return true if society is self terminating
    * @see org.cougaar.tools.server.NodeEvent
    */
-
   public boolean isSelfTerminating() {
     return false;
   }

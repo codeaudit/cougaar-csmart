@@ -423,6 +423,12 @@ public abstract class ConfigurableComponent
     return p;
   }
 
+  public Property addProperty(String name, Object value, PropertyListener l) {
+    Property p = addProperty(name, value, value.getClass());
+    p.addPropertyListener(l);
+    return p;
+  }
+
   public Iterator getLocalPropertyNames() {
     return new FilteredIterator(getPropertyNames(), localPropertyNamePredicate);
   }

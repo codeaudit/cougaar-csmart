@@ -88,11 +88,14 @@ public class ABCCommunity
 
   public static final String PROP_STARTTIME = ABCAgent.PROP_STARTTIME;
   public static final String PROP_STOPTIME = ABCAgent.PROP_STOPTIME;
+
+  // Stuff for metrics:
   public static final String PROP_NUMBPROVIDERS = ABCAgent.PROP_NUMBPROVIDERS;
   public static final String PROP_SAMPLEINTERVAL = ABCAgent.PROP_SAMPLEINTERVAL;
   public static final String PROP_STARTDELAY = ABCAgent.PROP_STARTDELAY;
   public static final String PROP_MAXNUMBSAMPLES = ABCAgent.PROP_MAXNUMBSAMPLES;
   public static final String PROP_INITIALIZER = ABCAgent.PROP_INITIALIZER;
+  // End of stuff for metrics
   
 
   /** Name of the Customer Agent **/
@@ -172,16 +175,11 @@ public class ABCCommunity
   private Property propLatitude;
   private Property propLongitude;
   private Property propLevel;
+  // Prop for metrics:
   private Property propFirstAgent;
 
   private int level;
   private int community;
-
-  private Property addProperty(String name, Object value, PropertyListener l) {
-    Property p = addProperty(name, value, value.getClass());
-    p.addPropertyListener(l);
-    return p;
-  }
 
   private Property addPropertyAlias(ABCAgent a, Property prop, String name) {
     Property childProp = a.addAliasProperty(prop, name);
@@ -219,6 +217,7 @@ public class ABCCommunity
     propLongitude.setToolTip(PROP_LONGITUDE_DESC);
     propLongitude.setAllowedValues(Collections.singleton(new FloatRange(-180.0F, 180.0F)));
 
+    // Prop for metrics:
     propFirstAgent = addProperty(PROP_FIRSTAGENT, new String(""));
   }
 
@@ -268,23 +267,27 @@ public class ABCCommunity
 
     String c1 = addCustomerAgent(DEFAULT_CUSTOMER_NAME, 1, C1_DFLT_FACTOR, 
 				 C1_DFLT_DURATION, C1_DFLT_VITAL, C1_DFLT_CHAOS,
-				 C1_DFLT_DISTANCE, C1_DFLT_DIRECTION, roles, null);
+				 C1_DFLT_DISTANCE, C1_DFLT_DIRECTION, roles);
+    
+    // This next line is specific to metrics
     propFirstAgent.setValue(c1);
+    
     String c2 = addCustomerAgent(DEFAULT_CUSTOMER_NAME, 2, C2_DFLT_FACTOR,
 				 C2_DFLT_DURATION, C2_DFLT_VITAL, C2_DFLT_CHAOS,
-				 C2_DFLT_DISTANCE, C2_DFLT_DIRECTION, roles, c1);
+				 C2_DFLT_DISTANCE, C2_DFLT_DIRECTION, roles);
 
     String[] supplies = new String[2];
     supplies[0] = c1;
     supplies[1] = c2;
     String p1 = addProviderAgent(DEFAULT_PROVIDER_NAME, 1, supplies, P1_DFLT_DISTANCE,
 				 P1_DFLT_DIRECTION, DEFAULT_ASSETNAME, roles, P1_DFLT_DEPLETE,
-				 P1_DFLT_INVCHAOS, P1_DFLT_TIMECHAOS, P1_DFLT_AVGTIME, roles, c1);
+				 P1_DFLT_INVCHAOS, P1_DFLT_TIMECHAOS, P1_DFLT_AVGTIME, roles);
     supplies = new String[1];
     supplies[0] = p1;
+    
     addProviderAgent(DEFAULT_PROVIDER_NAME, 2, supplies, P2_DFLT_DISTANCE, 
 		     P2_DFLT_DIRECTION, DEFAULT_ASSETNAME, roles, P2_DFLT_DEPLETE, 
-		     P2_DFLT_INVCHAOS, P2_DFLT_TIMECHAOS, P2_DFLT_AVGTIME, roles, c1);
+		     P2_DFLT_INVCHAOS, P2_DFLT_TIMECHAOS, P2_DFLT_AVGTIME, roles);
   }
 
   /**
@@ -325,14 +328,12 @@ public class ABCCommunity
    * @param timeChaos How much chaos to apply to completion time
    * @param avgTime Average completion time
    * @param allocRoles All roles for the local allocation
-   * @param initializer Name of the Plugin that is the metric initializer
    * @return Agents name
    */
-
   private String addProviderAgent(String name, int index, String[] supplies, int distance,
 				  int direction, String assetName, String[] roles,
 				  long deplete, long invChaos, long timeChaos, long avgTime,
-				  String[] allocRoles, String initializer) {
+				  String[] allocRoles) {
 
     Property p = null;
 
@@ -395,12 +396,10 @@ public class ABCCommunity
    * @param distance How far this agent is from the center of the community
    * @param direction Which direction this agent is from the center of community
    * @param roles All Roles for the customers tasks
-   * @param initializer Name of the initializer plugin for metrics
    */
   private String addCustomerAgent(String name, int index, int factor, 
 				  int duration, double vital, int chaos,
-				  int distance, int direction, String[] roles, 
-				  String initializer ) {
+				  int distance, int direction, String[] roles) {
 
     Property p = null;
 
@@ -444,10 +443,13 @@ public class ABCCommunity
 
     addPropertyAlias(agent, getProperty(PROP_STARTTIME), PROP_STARTTIME);
     addPropertyAlias(agent, getProperty(PROP_STOPTIME), PROP_STOPTIME);
+
+    // These are for metrics:
     addPropertyAlias(agent, getProperty(PROP_SAMPLEINTERVAL), PROP_SAMPLEINTERVAL);
     addPropertyAlias(agent, getProperty(PROP_MAXNUMBSAMPLES), PROP_MAXNUMBSAMPLES);
     addPropertyAlias(agent, getProperty(PROP_STARTDELAY), PROP_STARTDELAY);
     addPropertyAlias(agent, getProperty(PROP_NUMBPROVIDERS), PROP_NUMBPROVIDERS);
+    // End of stuff for metrics
 
     agent.initProperties();
     agent.getProperty(PROP_DISTANCE).setValue(new Integer(distance));
@@ -465,6 +467,7 @@ public class ABCCommunity
     return addProperty(new PropertyAlias(this, name, prop));
   }
 
+  // This is for metrics!!!
   /**
    * Adds a property alias for the Metric Initializer
    *
