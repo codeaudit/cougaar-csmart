@@ -53,14 +53,14 @@ import org.cougaar.tools.csmart.recipe.ui.ComplexRecipeUIComponent;
 import org.cougaar.util.log.Logger;
 
 /**
- * Recipe to add an empty Agent to the society.
- * User may decide to include an Organization asset.
+ * Recipe to add a complete Agent to the society.  This agent
+ * consists of all required plugins relationships and asset data.
  */
 public class CompleteAgentRecipe extends ComplexRecipeUIComponent
   implements Serializable
 {
   private static final String DESCRIPTION_RESOURCE_NAME = 
-    "agent-insertion-recipe-description.html";
+    "complete-agent-recipe-description.html";
 
   /**
    * Creates a new <code>CompleteAgentRecipe</code> instance.
@@ -96,9 +96,6 @@ public class CompleteAgentRecipe extends ComplexRecipeUIComponent
     return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
   }
 
-
-  private void updateAgent(String name) {
-  }
 
   /**
    * Get the name of this Recipe.
