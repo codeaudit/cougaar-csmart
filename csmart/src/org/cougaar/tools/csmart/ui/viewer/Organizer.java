@@ -107,7 +107,6 @@ public class Organizer extends JScrollPane {
   private UniqueNameSet componentNames = new UniqueNameSet("Component");
   
   // Define menus
-  private DefaultMutableTreeNode popupNode;
   private JPopupMenu societyMenu = new JPopupMenu();
   private JPopupMenu componentMenu = new JPopupMenu();
   private JPopupMenu recipeMenu = new JPopupMenu();
@@ -119,17 +118,12 @@ public class Organizer extends JScrollPane {
   private Action[] rootAction = {
     new AbstractAction("New Society") {
 	public void actionPerformed(ActionEvent e) {
-	  newSociety(popupNode);
+	  newSociety();
 	}
       },
-//      new AbstractAction("New Recipe") {
-//  	public void actionPerformed(ActionEvent e) {
-//  	  newRecipe(popupNode);
-//  	}
-//        },
     new AbstractAction("New Folder") {
 	public void actionPerformed(ActionEvent e) {
-	  newFolder(popupNode);
+	  newFolder();
 	}
       },
     new AbstractAction("Rename") {
@@ -139,246 +133,191 @@ public class Organizer extends JScrollPane {
       },
     new AbstractAction("Delete Experiment From Database") {
       public void actionPerformed(ActionEvent e) {
-        GUIUtils.timeConsumingTaskStart(organizer);
-        try {
-          new Thread("DeleteExperiment") {
-            public void run() {
-              deleteExperimentFromDatabase();
-              GUIUtils.timeConsumingTaskEnd(organizer);
-            }
-          }.start();
-        } catch (RuntimeException re) {
-          System.out.println("Runtime exception deleting experiment: " + re);
-          re.printStackTrace();
-          GUIUtils.timeConsumingTaskEnd(organizer);
-        }
+        deleteExperimentFromDatabase();
       }
     }
   };
   private Action[] newExperimentActions = {
     new AbstractAction("From Database") {
   	public void actionPerformed(ActionEvent e) {
-//            GUIUtils.timeConsumingTaskStart(organizer);
-//            try {
-//              new Thread("SelectExperiment") {
-//                public void run() {
-                  selectExperimentFromDatabase(popupNode);
-//                  GUIUtils.timeConsumingTaskEnd(organizer);
-//                }
-//              }.start();
-//            } catch (RuntimeException re) {
-//              System.out.println("Runtime exception creating experiment: " + re);
-//              re.printStackTrace();
-//              GUIUtils.timeConsumingTaskEnd(organizer);
-//            }
+          selectExperimentFromDatabase();
     	}
     },
     new AbstractAction("Built In") {
 	public void actionPerformed(ActionEvent e) {
-	  newExperiment(popupNode);
+	  newExperiment();
 	}
     }
   };
   private Action[] experimentAction = {
     new AbstractAction("Configure", new ImageIcon(getClass().getResource("EB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
-	  startExperimentBuilder(popupNode, 
-				 e.getActionCommand().equals("Configure"));
+	  startExperimentBuilder();
 	}
       },
     new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
-	  startConsole(popupNode);
+	  startConsole();
 	}
       },
     new AbstractAction("Duplicate") {
 	public void actionPerformed(ActionEvent e) {
-	  copyExperimentInNode(popupNode);
+	  copyExperimentInNode();
 	}
       },
     new AbstractAction("Delete") {
 	public void actionPerformed(ActionEvent e) {
-	  deleteExperiment(popupNode);
+	  deleteExperiment();
 	}
       },
     new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
-	  renameExperiment(popupNode);
+	  renameExperiment();
 	}
       }
   };
   private Action[] societyAction = {
     new AbstractAction("Configure", new ImageIcon(getClass().getResource("SB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
-	  startBuilder(popupNode, e.getActionCommand().equals("Configure"));
+	  startBuilder();
 	}
       },
     new AbstractAction("Build Experiment",
 		       new ImageIcon(getClass().getResource("EB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
-	  startExperimentBuilder(popupNode, true);
+	  startExperimentBuilder();
 	}
       },
     new AbstractAction("Run Experiment", new ImageIcon(getClass().getResource("EC16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
-	  startConsole(popupNode);
+	  startConsole();
 	}
       },
     new AbstractAction("Duplicate") {
 	public void actionPerformed(ActionEvent e) {
-	  copySocietyInNode(popupNode);
+	  copySocietyInNode();
 	}
       },
     new AbstractAction("Delete") {
 	public void actionPerformed(ActionEvent e) {
-	  deleteSociety(popupNode);
+	  deleteSociety();
 	}
       },
     new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
-	  renameSociety(popupNode);
+	  renameSociety();
 	}
       }
   };
   private Action[] componentAction = {
-    //          new AbstractAction("Edit", new ImageIcon(getClass().getResource("SB16.gif"))) {
-    //              public void actionPerformed(ActionEvent e) {
-    //                  startBuilder(popupNode);
-    //              }
-    //          },
-    //          new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
-    //              public void actionPerformed(ActionEvent e) {
-    //                  startConsole(popupNode);
-    //              }
-    //          },
     new AbstractAction("Build Experiment",
 		       new ImageIcon(getClass().getResource("EB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
-	  startExperimentBuilder(popupNode, true);
+	  startExperimentBuilder();
 	}
       },
     new AbstractAction("Duplicate") {
 	public void actionPerformed(ActionEvent e) {
-	  copyComponentInNode(popupNode);
+	  copyComponentInNode();
 	}
       },
     new AbstractAction("Delete") {
 	public void actionPerformed(ActionEvent e) {
-	  deleteComponent(popupNode);
+	  deleteComponent();
 	}
       },
     new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
-	  renameComponent(popupNode);
+	  renameComponent();
 	}
       }
   };
   private Action[] newRecipeActions = {
     new AbstractAction("From Database") {
 	public void actionPerformed(ActionEvent e) {
-          GUIUtils.timeConsumingTaskStart(organizer);
-          try {
-            new Thread("SelectRecipe") {
-              public void run() {
-                selectRecipeFromDatabase(popupNode);
-                GUIUtils.timeConsumingTaskEnd(organizer);
-              }
-            }.start();
-          } catch (RuntimeException re) {
-            System.out.println("Runtime exception creating recipe: " + re);
-            re.printStackTrace();
-            GUIUtils.timeConsumingTaskEnd(organizer);
-          }
+          selectRecipeFromDatabase();
   	}
     },
     new AbstractAction("Built In") {
 	public void actionPerformed(ActionEvent e) {
-	  newRecipe(popupNode);
+	  newRecipe();
 	}
     }
   };
   private Action[] recipeAction = {
     new AbstractAction("Configure", new ImageIcon(getClass().getResource("SB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
-	  startBuilder(popupNode, e.getActionCommand().equals("Configure"));
+	  startBuilder();
 	}
       },
-    //          new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
-    //              public void actionPerformed(ActionEvent e) {
-    //                  startConsole(popupNode);
-    //              }
-    //          },
     new AbstractAction("Build Experiment",
 		       new ImageIcon(getClass().getResource("EB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
-	  startExperimentBuilder(popupNode, true);
+	  startExperimentBuilder();
 	}
       },
     new AbstractAction("Duplicate") {
 	public void actionPerformed(ActionEvent e) {
-	  copyRecipeInNode(popupNode);
+	  copyRecipeInNode();
 	}
       },
     new AbstractAction("Delete") {
 	public void actionPerformed(ActionEvent e) {
-	  deleteRecipe(popupNode);
+	  deleteRecipe();
 	}
       },
     new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
-	  renameRecipe(popupNode);
+	  renameRecipe();
 	}
       },
     new AbstractAction("Save To Database") {
 	public void actionPerformed(ActionEvent e) {
-	  saveRecipe(popupNode);
+	  saveRecipe();
 	}
       }
   };
   private Action[] treeAction = {
     new AbstractAction("New Society") {
 	public void actionPerformed(ActionEvent e) {
-	  while (! popupNode.getAllowsChildren())
-	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
-	  newSociety(popupNode);
+          // TODO: its unclear when you would get to this point
+          // and not have a node that allows children
+          DefaultMutableTreeNode node = getSelectedNode();
+          while (!node.getAllowsChildren()) 
+            node = (DefaultMutableTreeNode)node.getParent();
+          if (!node.equals(getSelectedNode()))
+            workspace.setSelectionPath(new TreePath(node.getPath()));
+          newSociety();
 	}
       },
     new AbstractAction("New Recipe") {
 	public void actionPerformed(ActionEvent e) {
-	  while (! popupNode.getAllowsChildren())
-	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
-	  newRecipe(popupNode);
+          DefaultMutableTreeNode node = getSelectedNode();
+          while (!node.getAllowsChildren()) 
+            node = (DefaultMutableTreeNode)node.getParent();
+          if (!node.equals(getSelectedNode()))
+            workspace.setSelectionPath(new TreePath(node.getPath()));
+	  newRecipe();
 	}
       },
-//      new AbstractAction("New Experiment") {
-//  	public void actionPerformed(ActionEvent e) {
-//  	  while (! popupNode.getAllowsChildren())
-//  	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
-//  	  newExperiment(popupNode);
-//  	}
-//        },
-//      new AbstractAction("Select Experiment from Database") {
-//  	public void actionPerformed(ActionEvent e) {
-//  	  while (! popupNode.getAllowsChildren())
-//  	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
-//  	  selectExperimentFromDatabase(popupNode);
-//  	}
-//        },
     new AbstractAction("New Folder") {
 	public void actionPerformed(ActionEvent e) {
-	  while (! popupNode.getAllowsChildren())
-	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
-	  newFolder(popupNode);
+          DefaultMutableTreeNode node = getSelectedNode();
+          while (!node.getAllowsChildren()) 
+            node = (DefaultMutableTreeNode)node.getParent();
+          if (!node.equals(getSelectedNode()))
+            workspace.setSelectionPath(new TreePath(node.getPath()));
+	  newFolder();
 	}
       },
     new AbstractAction("Delete") {
 	public void actionPerformed(ActionEvent e) {
-	  deleteFolder(popupNode);
+	  deleteFolder();
 	}
       },
     new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
-	  renameFolder(popupNode);
+	  renameFolder();
 	}
       }
   };
@@ -499,7 +438,7 @@ public class Organizer extends JScrollPane {
   
   ////////////////////////////////////////////////
   // Methods to get the user's selection
-  private DefaultMutableTreeNode getSelectedNode() {
+  public DefaultMutableTreeNode getSelectedNode() {
     TreePath selPath = workspace.getSelectionPath();
     if (selPath == null) return null;
     return (DefaultMutableTreeNode) selPath.getLastPathComponent();
@@ -594,9 +533,10 @@ public class Organizer extends JScrollPane {
     if (selPath == null) return;
     // set the selected node to be the node the mouse is pointing at
     workspace.setSelectionPath(selPath);
-    popupNode = (DefaultMutableTreeNode) selPath.getLastPathComponent();
-    Object o = popupNode.getUserObject();
-    if (popupNode.isRoot()) {
+    DefaultMutableTreeNode selectedNode =
+      (DefaultMutableTreeNode) selPath.getLastPathComponent();
+    Object o = selectedNode.getUserObject();
+    if (selectedNode.isRoot()) {
       rootMenu.show(workspace, e.getX(), e.getY());
     } else if (o instanceof SocietyComponent) {
       configureSocietyMenu(((SocietyComponent)o).isEditable());
@@ -618,19 +558,15 @@ public class Organizer extends JScrollPane {
   private void configureExperimentMenu(Experiment experiment) {
     boolean isEditable = experiment.isEditable();
     if (isEditable) {
-      for (int i = 0; i < experimentAction.length; i++) {
-	String s = (String)experimentAction[i].getValue(Action.NAME);
-	if (s.equals("View"))
-	  experimentAction[i].putValue(Action.NAME, "Configure");
+      for (int i = 0; i < experimentAction.length; i++)
 	experimentAction[i].setEnabled(true);
-      } 
     } else {
       for (int i = 0; i < experimentAction.length; i++) {
 	String s = (String)experimentAction[i].getValue(Action.NAME);
-	if (s.equals("Rename"))
+	if (s.equals("Rename")) {
 	  experimentAction[i].setEnabled(false);
-	else if (s.equals("Configure"))
-	  experimentAction[i].putValue(Action.NAME, "View");
+          break;
+        }
       }
     }
     for (int i = 0; i < experimentAction.length; i++) {
@@ -648,72 +584,61 @@ public class Organizer extends JScrollPane {
 
   private void configureSocietyMenu(boolean isEditable) {
     if (isEditable) {
-      for (int i = 0; i < societyAction.length; i++) {
-	String s = (String)societyAction[i].getValue(Action.NAME);
-	if (s.equals("View"))
-	  societyAction[i].putValue(Action.NAME, "Configure");
+      for (int i = 0; i < societyAction.length; i++) 
 	societyAction[i].setEnabled(true);
-      } 
     } else {
       for (int i = 0; i < societyAction.length; i++) {
 	String s = (String)societyAction[i].getValue(Action.NAME);
-	if (s.equals("New Experiment") ||
+	if (s.equals("Build Experiment") ||
 	    s.equals("Rename"))
 	  societyAction[i].setEnabled(false);
-	else if (s.equals("Configure"))
-	  societyAction[i].putValue(Action.NAME, "View");
       }
     }
   }
   
   private void configureComponentMenu(boolean isEditable) {
     if (isEditable) {
-      for (int i = 0; i < componentAction.length; i++) {
-	String s = (String)componentAction[i].getValue(Action.NAME);
-	if (s.equals("View"))
-	  componentAction[i].putValue(Action.NAME, "Configure");
+      for (int i = 0; i < componentAction.length; i++) 
 	componentAction[i].setEnabled(true);
-      } 
     } else {
       for (int i = 0; i < componentAction.length; i++) {
 	String s = (String)componentAction[i].getValue(Action.NAME);
-	if (s.equals("New Experiment") ||
+	if (s.equals("Build Experiment") ||
 	    s.equals("Rename"))
 	  componentAction[i].setEnabled(false);
-	else if (s.equals("Configure"))
-	  componentAction[i].putValue(Action.NAME, "View");
       }
     }
   }
   
   private void configureRecipeMenu(boolean isEditable) {
     if (isEditable) {
-      for (int i = 0; i < recipeAction.length; i++) {
-	String s = (String)recipeAction[i].getValue(Action.NAME);
-	if (s.equals("View"))
-	  recipeAction[i].putValue(Action.NAME, "Configure");
+      for (int i = 0; i < recipeAction.length; i++) 
 	recipeAction[i].setEnabled(true);
-      } 
     } else {
       for (int i = 0; i < recipeAction.length; i++) {
 	String s = (String)recipeAction[i].getValue(Action.NAME);
-	if (s.equals("New Experiment") ||
+	if (s.equals("Build Experiment") ||
 	    s.equals("Rename"))
 	  recipeAction[i].setEnabled(false);
-	else if (s.equals("Configure"))
-	  recipeAction[i].putValue(Action.NAME, "View");
       }
     }
   }
 
-  private void startBuilder(DefaultMutableTreeNode node,
-			    boolean openForEditing) {
-    csmart.runBuilder((ModifiableConfigurableComponent) node.getUserObject(), false,
-		      openForEditing);
+  public void configure() {
+    Object selectedObject = getSelectedObject();
+    if (selectedObject instanceof Experiment)
+      startExperimentBuilder();
+    else if (selectedObject instanceof SocietyComponent ||
+             selectedObject instanceof RecipeComponent)
+      startBuilder();
   }
-  
-  private void startExperimentBuilder(DefaultMutableTreeNode node,
-				      boolean openForEditing) {
+
+  private void startBuilder() {
+    csmart.runBuilder((ModifiableConfigurableComponent) getSelectedNode().getUserObject(), false);
+  }
+
+  public void startExperimentBuilder() {
+    DefaultMutableTreeNode node = getSelectedNode();
     Object o = node.getUserObject();
     Experiment experiment;
     if (o instanceof SocietyComponent) {
@@ -724,8 +649,6 @@ public class Organizer extends JScrollPane {
       				  new RecipeComponent[0]);
     } else if (o instanceof RecipeComponent) {
       RecipeComponent recipe = (RecipeComponent) o;
-      //} else if (o instanceof Recipe) {
-      //Recipe recipe = (Recipe) o;
       String name = "Experiment for " + recipe.getRecipeName();
       experiment = new Experiment(experimentNames.generateName(name),
 				  new SocietyComponent[0],
@@ -762,10 +685,11 @@ public class Organizer extends JScrollPane {
       experimentNames.add(experiment.getExperimentName());
       experiment.addModificationListener(myModificationListener);
     }
-    csmart.runExperimentBuilder(experiment, false, openForEditing);
+    csmart.runExperimentBuilder(experiment, false);
   }
   
-  private void startConsole(DefaultMutableTreeNode node) {
+  public void startConsole() {
+    DefaultMutableTreeNode node = getSelectedNode();
     Object o = node.getUserObject();
     Experiment experiment;
     if (o instanceof SocietyComponent) {
@@ -792,7 +716,7 @@ public class Organizer extends JScrollPane {
     // In addition, its possible there are unbound properties!
     if (experiment.hasUnboundProperties()) {
       // can't run it without setting these
-      csmart.runExperimentBuilder(experiment, false, true);
+      csmart.runExperimentBuilder(experiment, false);
     }
     // At this point the user may not have created a configuration.
     // So they really can't run the console quite yet.
@@ -877,7 +801,7 @@ public class Organizer extends JScrollPane {
    * Create a new society.
    */
 
-  private DefaultMutableTreeNode newSociety(DefaultMutableTreeNode node) {
+  public DefaultMutableTreeNode newSociety() {
     Object answer =
       JOptionPane.showInputDialog(this, "Select Society Type",
 				  "Select Society",
@@ -911,7 +835,8 @@ public class Organizer extends JScrollPane {
     }
     if (sc == null)
       return null;
-    DefaultMutableTreeNode newNode = addSocietyToWorkspace(sc, node);
+    DefaultMutableTreeNode newNode = 
+      addSocietyToWorkspace(sc, getSelectedNode());
     workspace.setSelection(newNode);
     return newNode;
   }
@@ -969,7 +894,28 @@ public class Organizer extends JScrollPane {
     }
     sc.addModificationListener(myModificationListener);
   }
-  
+
+  public void rename() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node == null)
+      return;
+    Object o = node.getUserObject();
+    if (o == null)
+      return;
+    if (node.isRoot())
+      renameWorkspace();
+    else if (o instanceof Experiment)
+      renameExperiment();
+    else if (o instanceof SocietyComponent)
+      renameSociety();
+    else if (o instanceof RecipeComponent)
+      renameRecipe();
+    else if (o instanceof ModifiableConfigurableComponent)
+      renameComponent();
+    else if (o instanceof String)
+      renameFolder();
+  }
+
   private void renameWorkspace() {
     String name = JOptionPane.showInputDialog("New workspace name");
     renameWorkspace(name);
@@ -989,25 +935,17 @@ public class Organizer extends JScrollPane {
     update();
   }
   
-  private void renameSociety(DefaultMutableTreeNode node) {
+  private void renameSociety() {
+    DefaultMutableTreeNode node = getSelectedNode();
     SocietyComponent societyComponent =
       (SocietyComponent) node.getUserObject();
     String name = JOptionPane.showInputDialog("New society name");
     renameSociety(node, name);
   }
   
-  private void renameComponent(DefaultMutableTreeNode node) {
-    ModifiableConfigurableComponent societyComponent =
-      (ModifiableConfigurableComponent) node.getUserObject();
-    if (societyComponent instanceof SocietyComponent) {
-      renameSociety(node);
-    } else if (societyComponent instanceof Experiment) {
-      renameExperiment(node);
-    } else if (societyComponent instanceof RecipeComponent) {
-      renameRecipe(node);
-    }
+  private void renameComponent() {
     String name = JOptionPane.showInputDialog("New component name");
-    renameComponent(node, name);
+    renameComponent(getSelectedNode(), name);
   }
   
   private void renameSociety(DefaultMutableTreeNode node, String name) {
@@ -1057,7 +995,8 @@ public class Organizer extends JScrollPane {
    * if the society was included in an experiment, then the experiment
    * still retains the society.
    */
-  private void deleteSociety(DefaultMutableTreeNode node) {
+  private void deleteSociety() {
+    DefaultMutableTreeNode node = getSelectedNode();
     SocietyComponent society = (SocietyComponent)node.getUserObject();
     if (!society.isEditable()) {
       int result = JOptionPane.showConfirmDialog(this,
@@ -1077,14 +1016,16 @@ public class Organizer extends JScrollPane {
    * if the component was included in an experiment, then the experiment
    * still retains the component.
    */
-  private void deleteComponent(DefaultMutableTreeNode node) {
-    ModifiableConfigurableComponent component = (ModifiableConfigurableComponent)node.getUserObject();
+  private void deleteComponent() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    ModifiableConfigurableComponent component = 
+      (ModifiableConfigurableComponent)node.getUserObject();
     if (component instanceof SocietyComponent)
-      deleteSociety(node);
+      deleteSociety();
     else if (component instanceof Experiment)
-      deleteExperiment(node);
+      deleteExperiment();
     else if (component instanceof RecipeComponent)
-      deleteRecipe(node);
+      deleteRecipe();
     else {
       if (!component.isEditable()) {
 	int result = JOptionPane.showConfirmDialog(this,
@@ -1100,7 +1041,7 @@ public class Organizer extends JScrollPane {
     }
   }
 
-  private void newRecipe(DefaultMutableTreeNode node) {
+  public void newRecipe() {
     Object[] values = metComboItems;
     Object answer =
       JOptionPane.showInputDialog(this, "Select Recipe Type",
@@ -1134,7 +1075,7 @@ public class Organizer extends JScrollPane {
 		  (RecipeComponent) constructor.newInstance(new String[] {name});
 	recipe.initProperties();
 	DefaultMutableTreeNode newNode =
-	  addRecipeToWorkspace(recipe, node);
+	  addRecipeToWorkspace(recipe, getSelectedNode());
 	workspace.setSelection(newNode);
       } catch (Exception e) {
 	e.printStackTrace();
@@ -1166,9 +1107,9 @@ public class Organizer extends JScrollPane {
     return newNode;
   }
   
-  private void renameRecipe(DefaultMutableTreeNode node) {
+  private void renameRecipe() {
     String name = JOptionPane.showInputDialog("New recipe name");
-    renameRecipe(node, name);
+    renameRecipe(getSelectedNode(), name);
   }
   
   // Separate method for use from model...
@@ -1197,7 +1138,8 @@ public class Organizer extends JScrollPane {
     }
   }
   
-  private void deleteRecipe(DefaultMutableTreeNode node) {
+  private void deleteRecipe() {
+    DefaultMutableTreeNode node = getSelectedNode();
     if (node == null) return;
     model.removeNodeFromParent(node);
     RecipeComponent rc = (RecipeComponent) node.getUserObject();
@@ -1227,7 +1169,8 @@ public class Organizer extends JScrollPane {
     recipeNames.remove(rc.getRecipeName());
   }
   
-  private void saveRecipe(DefaultMutableTreeNode node) {
+  public void saveRecipe() {
+    DefaultMutableTreeNode node = getSelectedNode();
     if (node == null) return;
     RecipeComponent rc = (RecipeComponent) node.getUserObject();
     saveRecipe(rc);
@@ -1271,8 +1214,7 @@ public class Organizer extends JScrollPane {
     }
   }
 
-  // CAUTION: this runs in a non-swing thread
-  private void selectRecipeFromDatabase(DefaultMutableTreeNode node) {
+  public void selectRecipeFromDatabase() {
     Map recipeNamesHT = getRecipeNamesFromDatabase();
     Set dbRecipeNames = recipeNamesHT.keySet();
     if (dbRecipeNames.isEmpty()) {
@@ -1310,10 +1252,10 @@ public class Organizer extends JScrollPane {
     dbRecipe.name = recipeName;
     RecipeComponent mc = createRecipeComponent(dbRecipe.name, dbRecipe.cls);
     setRecipeComponentProperties(dbRecipe, mc);
-    addRecipeToWorkspace(mc, node);
+    addRecipeToWorkspace(mc, getSelectedNode());
   }
 
-  private void selectExperimentFromDatabase(DefaultMutableTreeNode node) {
+  public void selectExperimentFromDatabase() {
     Map experimentNamesMap = ExperimentDB.getExperimentNames();
     Set keys = experimentNamesMap.keySet();
     JComboBox cb = new JComboBox(keys.toArray(new String[keys.size()]));
@@ -1355,7 +1297,6 @@ public class Organizer extends JScrollPane {
     if (cmtDialog.wasCancelled())
       return;
 
-    final DefaultMutableTreeNode treeNode = node;
     GUIUtils.timeConsumingTaskStart(organizer);
     try {
       new Thread("SelectExperiment") {
@@ -1363,14 +1304,10 @@ public class Organizer extends JScrollPane {
           cmtDialog.processResults(); // a potentially long process
           final String trialId = cmtDialog.getTrialId();
           if (trialId != null)
-            createCMTExperiment(treeNode, originalExperimentName,
+            createCMTExperiment(getSelectedNode(), originalExperimentName,
                                 cmtDialog.getExperimentName(),
                                 cmtDialog.getExperimentId(), 
                                 trialId);
-//              createCMTExperiment(treeNode, originalExperimentName,
-//                                  cmtDialog.getExperimentName(),
-//                                  cmtDialog.getExperimentId(), 
-//                                  trialId, cmtDialog.isCloned());
           GUIUtils.timeConsumingTaskEnd(organizer);
         }
       }.start();
@@ -1381,8 +1318,7 @@ public class Organizer extends JScrollPane {
     }
   }
 
-  // CAUTION: this runs in a non-swing thread
-  private void deleteExperimentFromDatabase() {
+  public void deleteExperimentFromDatabase() {
     Map experimentNamesMap = ExperimentDB.getExperimentNames();
     Set keys = experimentNamesMap.keySet();
     JComboBox cb = new JComboBox(keys.toArray(new String[keys.size()]));
@@ -1798,16 +1734,6 @@ public class Organizer extends JScrollPane {
     List agents = new ArrayList();  
 
     List recipes = checkForRecipes(trialId, experimentId);
-    
-    AgentComponent[] socagents = soc.getAgents();
-    if (socagents!= null && socagents.length > 0) {
-      for (int i = 0; i < socagents.length; i++) {
-        AgentComponent ac = socagents[i];
-        setComponentProperties((ConfigurableComponent) ac, ac.getShortName(), assemblyMatch);
-      }
-      agents.addAll(Arrays.asList(socagents));
-    }
-
     if (recipes.size() != 0) {
       Iterator metIter = recipes.iterator();
       while (metIter.hasNext()) {
@@ -1816,12 +1742,7 @@ public class Organizer extends JScrollPane {
         setRecipeComponentProperties(dbRecipe, mc);
         AgentComponent[] recagents = mc.getAgents(); 
         if (recagents != null && recagents.length > 0) {
-	  // Only add in agents that aren't already there
-	  for (int i = 0; i < recagents.length; i++) {
-	    if (! agents.contains(recagents[i]) )
-	      agents.add(recagents[i]);
-	  }
-	  //          agents.addAll(Arrays.asList(recagents));
+          agents.addAll(Arrays.asList(recagents));
         }      
         experiment.addRecipe(mc);
         if (!recipeNames.contains(mc.getRecipeName())) {
@@ -1829,7 +1750,14 @@ public class Organizer extends JScrollPane {
         }
       }
     }
-
+    AgentComponent[] socagents = soc.getAgents();
+    if (socagents!= null && socagents.length > 0) {
+      for (int i = 0; i < socagents.length; i++) {
+        AgentComponent ac = socagents[i];
+        setComponentProperties((ConfigurableComponent) ac, ac.getShortName(), assemblyMatch);
+      }
+      agents.addAll(Arrays.asList(socagents));
+    }
     AgentComponent[] allagents = (AgentComponent[])agents.toArray(new AgentComponent[agents.size()]); 
 
     experiment.addSocietyComponent((SocietyComponent)soc);
@@ -1968,7 +1896,7 @@ public class Organizer extends JScrollPane {
     return name;
   }
 
-  private DefaultMutableTreeNode newExperiment(DefaultMutableTreeNode node) {
+  public DefaultMutableTreeNode newExperiment() {
     String name = getUniqueExperimentName(experimentNames.generateName(),
                                           false);
     if (name == null) return null;
@@ -1976,7 +1904,7 @@ public class Organizer extends JScrollPane {
     try {
       Experiment experiment = new Experiment(name);
       DefaultMutableTreeNode newNode =
-	addExperimentToWorkspace(experiment, node);
+	addExperimentToWorkspace(experiment, getSelectedNode());
       // if a single society is selected, add it to the experiment
       DefaultMutableTreeNode selectedNode = getSelectedNode();
       if (selectedNode != null) {
@@ -2004,9 +1932,9 @@ public class Organizer extends JScrollPane {
     return newNode;
   }
   
-  private void renameExperiment(DefaultMutableTreeNode node) {
+  private void renameExperiment() {
     String name = JOptionPane.showInputDialog("New experiment name");
-    renameExperiment(node, name);
+    renameExperiment(getSelectedNode(), name);
   }
   
   // Separate method that takes a new name, for use by model.valueChanged...
@@ -2047,8 +1975,26 @@ public class Organizer extends JScrollPane {
       model.nodeChanged(node);
     }
   }
-  
-  private void deleteExperiment(DefaultMutableTreeNode node) {
+
+  public void delete() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node == null)
+      return;
+    Object o = node.getUserObject();
+    if (o == null)
+      return;
+    if (o instanceof Experiment)
+      deleteExperiment();
+    else if (o instanceof SocietyComponent)
+      deleteSociety();
+    else if (o instanceof RecipeComponent)
+      deleteRecipe();
+    else if (o instanceof ModifiableConfigurableComponent)
+      deleteComponent();
+  }
+
+  public void deleteExperiment() {
+    DefaultMutableTreeNode node = getSelectedNode();
     if (node == null) return;
     Experiment experiment = (Experiment)node.getUserObject();
     if (!experiment.isEditable()) {
@@ -2094,11 +2040,11 @@ public class Organizer extends JScrollPane {
     }
   }
   
-  private void newFolder(DefaultMutableTreeNode node) {
+  public void newFolder() {
     String name = JOptionPane.showInputDialog("New folder name");
     if (name != null) {
       DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(name, true);
-      addNode(node, newNode);
+      addNode(getSelectedNode(), newNode);
       workspace.setSelection(newNode);
     }
   }
@@ -2114,10 +2060,10 @@ public class Organizer extends JScrollPane {
     //          System.out.println(path);
   }
   
-  private void renameFolder(DefaultMutableTreeNode node) {
+  private void renameFolder() {
     String name = JOptionPane.showInputDialog("New folder name");
     // FIXME Unique?
-    renameFolder(node, name);
+    renameFolder(getSelectedNode(), name);
   }
   
   private void renameFolder(DefaultMutableTreeNode node, String name) {    
@@ -2128,7 +2074,8 @@ public class Organizer extends JScrollPane {
     }
   }
   
-  private void deleteFolder(DefaultMutableTreeNode node) {
+  private void deleteFolder() {
+    DefaultMutableTreeNode node = getSelectedNode();
     if (node == root) return;
     if (node == null) return;
     int reply = 
@@ -2326,8 +2273,7 @@ public class Organizer extends JScrollPane {
   }
   
   private TreeSelectionListener mySelectionListener =
-    new TreeSelectionListener()
-      {
+    new TreeSelectionListener() {
         public void valueChanged(TreeSelectionEvent e) {
 	  setFrameTitle(e.getNewLeadSelectionPath());
         }
@@ -2353,7 +2299,9 @@ public class Organizer extends JScrollPane {
    * if it does not exist when the tool is invoked.
    */
   public void addExperiment() {
-    DefaultMutableTreeNode newNode = newExperiment(root);
+    // make root be the selected node
+    workspace.setSelectionPath(new TreePath(root.getPath())); 
+    DefaultMutableTreeNode newNode = newExperiment();
   }
 
   private DefaultMutableTreeNode findNode(Object userObject) {
@@ -2388,7 +2336,9 @@ public class Organizer extends JScrollPane {
    * if none exists when the tool is invoked.
    */
   public void addSociety() {
-    DefaultMutableTreeNode newNode = newSociety(root);
+    // make root be the selected node
+    workspace.setSelectionPath(new TreePath(root.getPath())); 
+    DefaultMutableTreeNode newNode = newSociety();
   }
   
   public void addTreeSelectionListener(TreeSelectionListener listener) {
@@ -2402,7 +2352,26 @@ public class Organizer extends JScrollPane {
   /**
    * Copy an experiment.
    */
-  private void copyExperimentInNode(DefaultMutableTreeNode node) {
+
+  public void duplicate() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node == null)
+      return;
+    Object o = node.getUserObject();
+    if (o == null)
+      return;
+    if (o instanceof Experiment)
+      copyExperimentInNode();
+    else if (o instanceof SocietyComponent)
+      copySocietyInNode();
+    else if (o instanceof RecipeComponent)
+      copyRecipeInNode();
+    else if (o instanceof ModifiableConfigurableComponent)
+      copyComponentInNode();
+  }
+
+  private void copyExperimentInNode() {
+    DefaultMutableTreeNode node = getSelectedNode();
     copyExperiment((Experiment)node.getUserObject(), node.getParent());
   }
   
@@ -2440,7 +2409,8 @@ public class Organizer extends JScrollPane {
     return experimentCopy;
   }
   
-  private void copySocietyInNode(DefaultMutableTreeNode node) {
+  private void copySocietyInNode() {
+    DefaultMutableTreeNode node = getSelectedNode();
     copySociety((SocietyComponent)node.getUserObject(), node.getParent());
   }
   
@@ -2478,7 +2448,8 @@ public class Organizer extends JScrollPane {
     return societyCopy;
   }
   
-  private void copyComponentInNode(DefaultMutableTreeNode node) {
+  private void copyComponentInNode() {
+    DefaultMutableTreeNode node = getSelectedNode();
     copyComponent((ModifiableConfigurableComponent)node.getUserObject(), node.getParent());
   }
   
@@ -2503,7 +2474,8 @@ public class Organizer extends JScrollPane {
     return compCopy;
   }
   
-  private void copyRecipeInNode(DefaultMutableTreeNode node) {
+  private void copyRecipeInNode() {
+    DefaultMutableTreeNode node = getSelectedNode();
     copyRecipe((RecipeComponent)node.getUserObject(), node.getParent());
   }
   

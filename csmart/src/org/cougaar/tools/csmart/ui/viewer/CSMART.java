@@ -28,6 +28,8 @@ import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -78,6 +80,22 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   // the running experiment; set by the console
   private static Experiment runningExperiment;
   private static CSMARTConsole console;
+  // the entries in the file menu; conditionally enabled
+  // based on selection in the workspace
+  private static JMenu fileMenu;
+  private static JMenu newExperimentMenu;
+  private static JMenu newRecipeMenu;
+  private static JMenuItem newSocietyMenuItem;
+  private static JMenuItem newFolderMenuItem;
+  private static JMenuItem configureMenuItem;
+  private static JMenuItem buildMenuItem;
+  private static JMenuItem runMenuItem;
+  private static JMenuItem duplicateMenuItem;
+  private static JMenuItem deleteMenuItem;
+  private static JMenuItem deleteFromDatabaseMenuItem;
+  private static JMenuItem renameMenuItem;
+  private static JMenuItem saveToDatabaseMenuItem;
+
   // define strings here so we can easily change them
   private static final String FILE_MENU = "File";
   private static final String NEW_MENU_ITEM = "Open Workspace...";
@@ -136,6 +154,34 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   static String dbName;
   static String dbPassword;
 
+  // Actions for file menu; enabled dependent on workspace selection
+  private Action[] newExperimentActions = {
+    new AbstractAction("From Database") {
+        public void actionPerformed(ActionEvent e) {
+          organizer.selectExperimentFromDatabase();
+        }
+      },
+    new AbstractAction("Built In") {
+        public void actionPerformed(ActionEvent e) {
+          organizer.newExperiment();
+        }
+      }
+  };
+  private Action[] newRecipeActions = {
+    new AbstractAction("From Database") {
+        public void actionPerformed(ActionEvent e) {
+          organizer.selectRecipeFromDatabase();
+        }
+      },
+    new AbstractAction("Built In") {
+        public void actionPerformed(ActionEvent e) {
+          organizer.newRecipe();
+        }
+      }
+  };
+
+  // Constructor
+
   public CSMART() {
     setTitle("CSMART");
 
@@ -147,12 +193,93 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     //    CSMART.inDBMode(true);
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
-    JMenu fileMenu = new JMenu(FILE_MENU);
+    // set-up file menu which includes entries based on workspace selection
+    fileMenu = new JMenu(FILE_MENU);
     fileMenu.setToolTipText("Create new workspace or quit.");
+    fileMenu.addMenuListener(myMenuListener);
     JMenuItem newMenuItem = new JMenuItem(NEW_MENU_ITEM);
     newMenuItem.addActionListener(this);
     newMenuItem.setToolTipText("Create a new workspace.");
     fileMenu.add(newMenuItem);
+    newExperimentMenu = new JMenu("New Experiment");
+    for (int i = 0; i < newExperimentActions.length; i++)
+      newExperimentMenu.add(newExperimentActions[i]);
+    fileMenu.add(newExperimentMenu);
+    newRecipeMenu = new JMenu("New Recipe");
+    for (int i = 0; i < newRecipeActions.length; i++)
+      newRecipeMenu.add(newRecipeActions[i]);
+    fileMenu.add(newRecipeMenu);
+    newSocietyMenuItem = new JMenuItem("New Society");
+    newSocietyMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          organizer.newSociety();
+        }
+      });
+    fileMenu.add(newSocietyMenuItem);
+    newFolderMenuItem = new JMenuItem("New Folder");
+    newFolderMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          organizer.newFolder();
+        }
+      });
+    fileMenu.add(newFolderMenuItem);
+    fileMenu.addSeparator();
+    configureMenuItem = new JMenuItem("Configure");
+    configureMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          organizer.configure();
+        }
+      });
+    fileMenu.add(configureMenuItem);
+    buildMenuItem = new JMenuItem("Build");
+    buildMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          organizer.startExperimentBuilder();
+        }
+      });
+    fileMenu.add(buildMenuItem);
+    runMenuItem = new JMenuItem("Run");
+    runMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          organizer.startConsole();
+        }
+      });
+    fileMenu.add(runMenuItem);
+    duplicateMenuItem = new JMenuItem("Duplicate");
+    duplicateMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          organizer.duplicate();
+        }
+      });
+    fileMenu.add(duplicateMenuItem);
+    deleteMenuItem = new JMenuItem("Delete");
+    deleteMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          organizer.delete();
+        }
+      });
+    fileMenu.add(deleteMenuItem);
+    deleteFromDatabaseMenuItem = new JMenuItem("Delete From Database");
+    deleteFromDatabaseMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          organizer.deleteExperimentFromDatabase();
+        }
+      });
+    fileMenu.add(deleteFromDatabaseMenuItem);
+    renameMenuItem = new JMenuItem("Rename");
+    renameMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          organizer.rename();
+        }
+      });
+    fileMenu.add(renameMenuItem);
+    saveToDatabaseMenuItem = new JMenuItem("Save To Database");
+    saveToDatabaseMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          organizer.saveRecipe();
+        }
+      });
+    fileMenu.add(saveToDatabaseMenuItem);
     JMenuItem dbConfigMenuItem = new JMenuItem(DBCONFIG_MENU_ITEM);
     dbConfigMenuItem.setToolTipText("Configure the database.");
     dbConfigMenuItem.addActionListener(new ActionListener() {
@@ -162,6 +289,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     });
     // Don't allow database configuration for now
     //    fileMenu.add(dbConfigMenuItem);
+    fileMenu.addSeparator();
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.addActionListener(this);
     exitMenuItem.setToolTipText("Exit");
@@ -219,6 +347,81 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     setLocation((screenSize.width - w)/2, (screenSize.height - h)/2);
     setVisible(true);
   }
+
+  /**
+   * Enable/disable entries in the File menu dependent on what
+   * is selected in the organizer.
+   */
+
+  private MenuListener myMenuListener =
+    new MenuListener() {
+        public void menuCanceled(MenuEvent e) {
+        }
+        public void menuDeselected(MenuEvent e) {
+        }
+        public void menuSelected(MenuEvent e) {
+          int n = fileMenu.getItemCount();
+          // disable all but the first and last items
+          for (int i = 1; i < n-1; i++) {
+            JMenuItem menuItem = fileMenu.getItem(i);
+            if (menuItem != null)
+              menuItem.setEnabled(false);
+          }
+          // now enable the menu items specific to the class of object
+          // selected in the Organizer
+          if (organizer.getSelectedNode().isRoot()) {
+            newExperimentMenu.setEnabled(true);
+            newRecipeMenu.setEnabled(true);
+            newSocietyMenuItem.setEnabled(true);
+            newFolderMenuItem.setEnabled(true);
+            renameMenuItem.setEnabled(true);
+            deleteFromDatabaseMenuItem.setEnabled(true);
+            return;
+          } 
+          Object selObject = organizer.getSelectedObject();
+          if (selObject instanceof ModifiableConfigurableComponent) {
+            if (((ModifiableConfigurableComponent)selObject).isEditable()) {
+              renameMenuItem.setEnabled(true);
+            } else {
+              renameMenuItem.setEnabled(false);
+            }
+          }
+          if (selObject instanceof Experiment) {
+            configureMenuItem.setEnabled(true);
+            if (((Experiment)selObject).getSocietyComponentCount() != 0 &&
+                ((Experiment)selObject).isRunnable())
+              runMenuItem.setEnabled(true);
+            duplicateMenuItem.setEnabled(true);
+            deleteMenuItem.setEnabled(true);
+          } else if (selObject instanceof SocietyComponent) {
+            configureMenuItem.setEnabled(true);
+            if (((ModifiableConfigurableComponent)selObject).isEditable())
+              buildMenuItem.setEnabled(true);
+            runMenuItem.setEnabled(true);
+            duplicateMenuItem.setEnabled(true);
+            deleteMenuItem.setEnabled(true);
+          } else if (selObject instanceof RecipeComponent) {
+            configureMenuItem.setEnabled(true);
+            if (((ModifiableConfigurableComponent)selObject).isEditable())
+              buildMenuItem.setEnabled(true);
+            duplicateMenuItem.setEnabled(true);
+            deleteMenuItem.setEnabled(true);
+            saveToDatabaseMenuItem.setEnabled(true);
+          } else if (selObject instanceof ModifiableConfigurableComponent) {
+            if (((ModifiableConfigurableComponent)selObject).isEditable())
+              buildMenuItem.setEnabled(true);
+            duplicateMenuItem.setEnabled(true);
+            deleteMenuItem.setEnabled(true);
+          } else if (selObject instanceof String) {
+            newExperimentMenu.setEnabled(true);
+            newRecipeMenu.setEnabled(true);
+            newSocietyMenuItem.setEnabled(true);
+            newFolderMenuItem.setEnabled(true);
+            deleteMenuItem.setEnabled(true);
+            renameMenuItem.setEnabled(true);
+          }
+        }
+      };
 
   /**
    * Display dialog that allows user to configure the database.
@@ -489,9 +692,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   /**
    * ActionListener interface.
    */
-  public void runBuilder(ModifiableConfigurableComponent cc, boolean alwaysNew,
-			 boolean openForEditing) {
-    if (!cc.isEditable() && openForEditing) {
+  public void runBuilder(ModifiableConfigurableComponent cc, 
+                         boolean alwaysNew) {
+    if (!cc.isEditable()) {
       Object[] options = { "Edit", "View", "Copy", "Cancel" };
       int result = 
         JOptionPane.showOptionDialog(this,
@@ -539,13 +742,13 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     for (int i = 0; i < comps.length; i++) {
       String s = "Configuration Builder: " + comps[i].getShortName();
       if (NamedFrame.getNamedFrame().getFrame(s) == null) 
-  	runBuilder(comps[i], true, true);
+  	runBuilder(comps[i], true);
     }
   }
 
-  public void runExperimentBuilder(Experiment experiment, boolean alwaysNew,
-				   boolean openForEditing) {
-    if (!experiment.isEditable() && openForEditing) {
+  public void runExperimentBuilder(Experiment experiment, 
+                                   boolean alwaysNew) {
+    if (!experiment.isEditable()) {
       Object[] options = { "Edit", "View", "Copy", "Cancel" };
       int result = 
         JOptionPane.showOptionDialog(this,
@@ -584,7 +787,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     for (int i = 0; i < experiments.length; i++) {
       String s = "Experiment Builder: " + experiments[i].getExperimentName();
       if (NamedFrame.getNamedFrame().getFrame(s) == null) 
-	runExperimentBuilder(experiments[i], true, true);
+	runExperimentBuilder(experiments[i], true);
     }
   }
 
@@ -707,7 +910,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
             components.add(societies[i]);
       }
       if (components.size() == 1)
-	runBuilder((ModifiableConfigurableComponent)components.get(0), false, true);
+	runBuilder((ModifiableConfigurableComponent)components.get(0), false);
       else if (components.size() > 1) {
 	runMultipleBuilders((ModifiableConfigurableComponent[])components.toArray(new ModifiableConfigurableComponent[components.size()]));
       }
@@ -719,7 +922,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	experiments = organizer.getSelectedExperiments();
       }
       if (experiments.length == 1)
-	runExperimentBuilder(experiments[0], false, true);
+	runExperimentBuilder(experiments[0], false);
       else if (experiments.length > 1)
 	runMultipleExperimentBuilders(experiments);
     } else if (s.equals(views[3])) {
