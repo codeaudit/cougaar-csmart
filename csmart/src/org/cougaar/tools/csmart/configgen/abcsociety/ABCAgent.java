@@ -212,17 +212,17 @@ public class ABCAgent
       writer.println("plugin = " + AssetDataPlugIn_name);
       writer.println("plugin = " + AssetReportPlugIn_name);
 
-      // Add the initializer plugin if this is the Initializer Agent.
-      if(getFullName().toString().equals(getProperty(PROP_INITIALIZER).getValue())) {
-	ABCPlugIn init = new ABCPlugIn("MetricsInitializer", MetricsInitializerPlugIn_name);
-	addChild(init);
-	init.initProperties();
-	addPropertyAlias(init, getProperty(PROP_NUMBPROVIDERS));
-	addPropertyAlias(init, getProperty(PROP_SAMPLEINTERVAL));
-	addPropertyAlias(init, getProperty(PROP_STARTDELAY));
-	addPropertyAlias(init, getProperty(PROP_MAXNUMBSAMPLES));
-	writer.println(init.getConfigLine());
-      }
+//       // Add the initializer plugin if this is the Initializer Agent.
+//       if(getFullName().toString().equals(getProperty(PROP_INITIALIZER).getValue())) {
+// 	ABCPlugIn init = new ABCPlugIn("MetricsInitializer", MetricsInitializerPlugIn_name);
+// 	addChild(init);
+// 	init.initProperties();
+// 	addPropertyAlias(init, getProperty(PROP_NUMBPROVIDERS));
+// 	addPropertyAlias(init, getProperty(PROP_SAMPLEINTERVAL));
+// 	addPropertyAlias(init, getProperty(PROP_STARTDELAY));
+// 	addPropertyAlias(init, getProperty(PROP_MAXNUMBSAMPLES));
+// 	writer.println(init.getConfigLine());
+//       }
       
       // Add all other plugins
       for(int i=0, n = getChildCount(); i < n; i++) {
@@ -285,9 +285,12 @@ public class ABCAgent
    * @param File The directory to write the file to.
    * @throws IOException if the file cannot be created.
    */
-  public void writePrototypeIniFile(File configDir) throws IOException {
-    File taskFile = new File(configDir, getFullName().toString() + "-prototype-ini.dat");
-    PrintWriter writer = new PrintWriter(new FileWriter(taskFile));
+//   public void writePrototypeIniFile(File configDir) throws IOException {
+//     File taskFile = new File(configDir, getFullName().toString() + "-prototype-ini.dat");
+//     PrintWriter writer = new PrintWriter(new FileWriter(taskFile));
+  
+  public void writePrototypeIniFile(PrintWriter writer) {
+    System.out.println("*** Im here");
 
     try {
       writer.println("[Prototype] Entity");
@@ -304,11 +307,11 @@ public class ABCAgent
 			 + "\" \"\" \"\"");	  
 	}
 
-	// Add MetricPlugin Role.
-	String initializer = (String)getProperty(PROP_INITIALIZER).getValue();
-	writer.println("\"MetricsControlProvider\"  \"" + initializer +
-		       "\"  \"" + initializer.substring(initializer.lastIndexOf(".")+1) + 
-		       "\"  \"" + initializer + "\"  \"\"  \"\"");
+// 	// Add MetricPlugin Role.
+// 	String initializer = (String)getProperty(PROP_INITIALIZER).getValue();
+// 	writer.println("\"MetricsControlProvider\"  \"" + initializer +
+// 		       "\"  \"" + initializer.substring(initializer.lastIndexOf(".")+1) + 
+// 		       "\"  \"" + initializer + "\"  \"\"  \"\"");
       }
       writer.println();
       writer.println("[ItemIdentificationPG]");
@@ -550,21 +553,18 @@ public class ABCAgent
 	data.addTimePhasedData(rtpd);
       }
     }
-    RelationshipTimePhasedData rel = new RelationshipTimePhasedData();
-    String initializer = (String)getProperty(PROP_INITIALIZER).getValue();
-    rel.setRole("MetricsControlProvider");
-    rel.setItem(initializer);
-    rel.setType(initializer.substring(initializer.lastIndexOf(".")+1));
-    rel.setCluster(initializer);
-    data.addTimePhasedData(rel);
+//     RelationshipTimePhasedData rel = new RelationshipTimePhasedData();
+//     String initializer = (String)getProperty(PROP_INITIALIZER).getValue();
+//     rel.setRole("MetricsControlProvider");
+//     rel.setItem(initializer);
+//     rel.setType(initializer.substring(initializer.lastIndexOf(".")+1));
+//     rel.setCluster(initializer);
+//     data.addTimePhasedData(rel);
 
     return data;
   }
 
 public ComponentData addComponentData(ComponentData data) {
-//     data.setClassName(agentClassName);
-//     data.setOwner(this);
-//     data.setParent(getParent());
 
     // Add Asset Data PlugIn
     GenericComponentData plugin = new GenericComponentData();
@@ -582,20 +582,20 @@ public ComponentData addComponentData(ComponentData data) {
     plugin.setName(AssetReportPlugIn_name);
     data.addChild(plugin);
 
-    if(getFullName().toString().equals(getProperty(PROP_INITIALIZER).getValue())) {
-      ABCPlugIn init = new ABCPlugIn("MetricsInitializer", MetricsInitializerPlugIn_name);
-      addChild(init);
-      init.initProperties();
-      addPropertyAlias(init, getProperty(PROP_NUMBPROVIDERS));
-      addPropertyAlias(init, getProperty(PROP_SAMPLEINTERVAL));
-      addPropertyAlias(init, getProperty(PROP_STARTDELAY));
-      addPropertyAlias(init, getProperty(PROP_MAXNUMBSAMPLES));
+//     if(getFullName().toString().equals(getProperty(PROP_INITIALIZER).getValue())) {
+//       ABCPlugIn init = new ABCPlugIn("MetricsInitializer", MetricsInitializerPlugIn_name);
+//       addChild(init);
+//       init.initProperties();
+//       addPropertyAlias(init, getProperty(PROP_NUMBPROVIDERS));
+//       addPropertyAlias(init, getProperty(PROP_SAMPLEINTERVAL));
+//       addPropertyAlias(init, getProperty(PROP_STARTDELAY));
+//       addPropertyAlias(init, getProperty(PROP_MAXNUMBSAMPLES));
 
-      plugin = new GenericComponentData();
-      plugin.setOwner(this);
-      plugin.setParent(data);
-      data.addChild(init.addComponentData(plugin));
-    }
+//       plugin = new GenericComponentData();
+//       plugin.setOwner(this);
+//       plugin.setParent(data);
+//       data.addChild(init.addComponentData(plugin));
+//     }
 
     for(int i = 0 ; i < getChildCount(); i++) {
       if(getChild(i) instanceof ABCPlugIn) {
@@ -603,6 +603,7 @@ public ComponentData addComponentData(ComponentData data) {
 	plugin = new GenericComponentData();
 	plugin.setOwner(this);
 	plugin.setParent(data);
+	plugin.setType(ComponentData.PLUGIN);
 	data.addChild(pg.addComponentData(plugin));
       }	
     }
