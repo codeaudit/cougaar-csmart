@@ -295,6 +295,12 @@ public class PDbBase {
       for (Iterator j = rc.getLocalPropertyNames(); j.hasNext(); ) {
 	CompositeName pname = (CompositeName) j.next();
 	Property prop = rc.getProperty(pname);
+	if (prop == null) {
+	  if (log.isErrorEnabled()) {
+	    log.error("Saving recipe " + rc.getRecipeName() + " under ID " + recipeId + " couldn't find property " + pname);
+	  }
+	  continue;
+	}
 	Object val = prop.getValue();
 	if (val == null) continue; // Don't write null values
 	String sval = val.toString();
