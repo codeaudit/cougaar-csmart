@@ -1,5 +1,9 @@
 2001-09-26  Ray Tomlinson  <RTomlinson@HEFEWEIZEN>
 
+	* ScalabilityXLevel.java (Repository):
+	Repeat properties to all agents otherwise the first agent is the
+	only one with the correct values.
+
 	* ScalabilityXSociety.java (Repository):
 	Fix MirroredPropertyInfo. The value of a mirrored property was not
 	being saved. In fact, the property values sent to new levels was
