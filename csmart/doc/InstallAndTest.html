@@ -58,7 +58,7 @@ very similar for WinNT.
     was correctly installed.</li><p>
 
   <li><a href="#httpVisuals">Browser-based views of a running society</a>.<br>
-    Shows how to run the HTTP-based visualizations (TASKS.PSP, 
+    Shows how to run the HTTP-based visualizations (Tasks servlet, 
     Inventory Charts, etc).
     </li><p>
 
@@ -479,12 +479,12 @@ installation using
   <li>Open any HTTP browser, such as 
     <a href="http://www.netscape.com">Netscape</a>.</li><p>
 
-  <a name="tasksPSP"/>
+  <a name="tasksSVLT"/>
   <li>Choose the hostname of any host (e.g. "localhost") in your society 
     that's running a Node, and in your browser open this URL:
-      <a href="http://localhost:5555/alpine/demo/TASKS.PSP">http://localhost:5555/alpine/demo/TASKS.PSP</a>
+      <a href="http://localhost:8800/tasks">http://localhost:8800/tasks</a>
     This should create an HTML page that can be used to view the contents
-    of an Agent's Blackboard.  Other pages (or PSPs) are available -- see the
+    of an Agent's Blackboard.  Other pages (or servlets) are available -- see the
     "
     <a href="http://www.cougaar.org">Cougaar</a>
     Developers Guide", available at 
@@ -538,7 +538,7 @@ installation using
     engine, which calls the program <tt>csmart/bin/dot-l386</tt> 
     (<tt>csmart/bin/dot.exe</tt> for WinNT).  Note that large queries 
     (1000+ objects) can be slow and consume lots of memory.  Often it
-    is best to start with the <a href="#tasksPSP">TASKS.PSP</a> to find
+    is best to start with the <a href="#tasksSVLT">Tasks servlet</a> to find
     a single starting-point Task, then use the CSMART Society Monitor's
     "Thread view" to display that Task.</li><p>
 

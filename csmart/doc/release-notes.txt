@@ -1,11 +1,14 @@
 CSMART Release Notes
 
-- The CSMART required Cougaar 3rd party jar file: grappa1_2_bbn.jar has been changed to grappa1_2.jar.  
-
 Release 9.0:
+- The CSMART required Cougaar 3rd party jar file: grappa1_2_bbn.jar has been changed to grappa1_2.jar. The BBN modifications in the prior jar are now included in the standard Grappa jar.
 - Repackage and code cleanup for readability
 - Use Servlets instead of PSPs
+- New ServletGroupInsertion recipe for inserting sets of servlets
+- Default inclusion of basic servlets with built-in experiments
 - Use new Cougaar Logging Service
+- Disabled built-in societies, pending full database support
+- Due to above, experiments with multiple trials are temporarily disabled
 
 Release v8.8.0
 This relse represents all of the fixes made during integration on
