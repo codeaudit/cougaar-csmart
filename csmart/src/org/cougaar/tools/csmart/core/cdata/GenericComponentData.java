@@ -1,12 +1,12 @@
-/* 
+/*
  * <copyright>
  *  Copyright 2001-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -22,6 +22,9 @@
 package org.cougaar.tools.csmart.core.cdata;
 
 import org.cougaar.core.component.ComponentDescription;
+import org.cougaar.core.plugin.PluginManager;
+import org.cougaar.core.agent.AgentManager;
+import org.cougaar.core.agent.Agent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
@@ -42,8 +45,8 @@ public class GenericComponentData implements ComponentData, Serializable {
   protected String type = null;
   private String name = null;
   protected String className = null;
-  private String priority = 
-    ComponentDescription.priorityToString(ComponentDescription.PRIORITY_COMPONENT);
+  private String priority =
+      ComponentDescription.priorityToString(ComponentDescription.PRIORITY_COMPONENT);
   private ArrayList children = null;
   private ArrayList parameters = null;
   private ComponentData parent = null;
@@ -66,7 +69,7 @@ public class GenericComponentData implements ComponentData, Serializable {
     leafComponents = new ArrayList();
     timePhasedData = new ArrayList();
   }
-  
+
   private void createLogger() {
     log = CSMART.createLogger(this.getClass().getName());
   }
@@ -78,7 +81,7 @@ public class GenericComponentData implements ComponentData, Serializable {
   public void setType(String type) {
     if (type == null || type.trim().equals("")) {
       if (log.isDebugEnabled())
-	log.debug("setType got empty type in " + this, new Throwable());
+        log.debug("setType got empty type in " + this, new Throwable());
       return;
     }
     if (type.equals(this.type))
@@ -124,12 +127,12 @@ public class GenericComponentData implements ComponentData, Serializable {
     try {
       ComponentDescription.parsePriority(priority);
       if (this.priority.equals(priority))
-	return;
+        return;
       this.priority = priority;
       //      log.debug(this + " fireModified due to changed priority");
       fireModified();
-    } catch(IllegalArgumentException e) {
-      if(log.isErrorEnabled()) {
+    } catch (IllegalArgumentException e) {
+      if (log.isErrorEnabled()) {
         log.error("IllegalArgumentException setting component priority", e);
       }
     }
@@ -140,18 +143,18 @@ public class GenericComponentData implements ComponentData, Serializable {
       String old = this.priority;
       this.priority = ComponentDescription.priorityToString(priority);
       if (old.equals(this.priority))
-	return;
+        return;
       //      log.debug(this + " fireModified due to changed priority");
       fireModified();
-    } catch(IllegalArgumentException e) {
-      if(log.isErrorEnabled()) {
+    } catch (IllegalArgumentException e) {
+      if (log.isErrorEnabled()) {
         log.error("IllegalArgumentException setting component priority", e);
       }
     }
   }
-  
+
   public ComponentData[] getChildren() {
-    return (ComponentData[])children.toArray(new ComponentData[children.size()]);
+    return (ComponentData[]) children.toArray(new ComponentData[children.size()]);
   }
 
   public void setChildren(ComponentData[] child) {
@@ -160,28 +163,28 @@ public class GenericComponentData implements ComponentData, Serializable {
     }
 
     this.children.clear();
-    for(int i=0; i < child.length; i++) {
+    for (int i = 0; i < child.length; i++) {
       if (child[i] != null) {
-	this.children.add(child[i]);
-	//	log.debug(this + " fireModified due to setChildren");
-	if (! child[i].isModified()) {
-	  if (log.isDebugEnabled())
-	    log.debug("where the child being added IS NOT MODIFIED!");
-	  child[i].fireModified();
-	} else {
-	  // If the child is already modified then it will not propagate
-	  // up, so call locally to be safe
-	  if (log.isDebugEnabled()) {
-	    if (! isModified())
-	      log.debug("setChildren where child was modified but parent(this) not!");
-	    else 
-	      log.debug("setChildren where both child & parent modified");
-	  }
-	  fireModified();
-	}
-	// or should I do child.fireModified()?
+        this.children.add(child[i]);
+        //	log.debug(this + " fireModified due to setChildren");
+        if (!child[i].isModified()) {
+          if (log.isDebugEnabled())
+            log.debug("where the child being added IS NOT MODIFIED!");
+          child[i].fireModified();
+        } else {
+          // If the child is already modified then it will not propagate
+          // up, so call locally to be safe
+          if (log.isDebugEnabled()) {
+            if (!isModified())
+              log.debug("setChildren where child was modified but parent(this) not!");
+            else
+              log.debug("setChildren where both child & parent modified");
+          }
+          fireModified();
+        }
+        // or should I do child.fireModified()?
       } else if (log.isDebugEnabled()) {
-	log.debug(getName() + ".setChildren got a null child at index " + i);
+        log.debug(getName() + ".setChildren got a null child at index " + i);
       }
     }
   }
@@ -190,25 +193,25 @@ public class GenericComponentData implements ComponentData, Serializable {
     if (child != null) {
       this.children.add(child);
       //      log.debug(this + " fireModified due to addChild");
-      if (! child.isModified()) {
-	  if (log.isDebugEnabled())
-	    log.debug("addChild where the child being added IS NOT MODIFIED!");
-	child.fireModified();
+      if (!child.isModified()) {
+        if (log.isDebugEnabled())
+          log.debug("addChild where the child being added IS NOT MODIFIED!");
+        child.fireModified();
       } else {
-	  if (log.isDebugEnabled()) {
-	    if (! isModified())
-	      log.debug("addChild where child was modified but parent(this) not!");
-	    else 
-	      log.debug("addChild where child was modified and so was parent.");
-	  }
-	fireModified();
+        if (log.isDebugEnabled()) {
+          if (!isModified())
+            log.debug("addChild where child was modified but parent(this) not!");
+          else
+            log.debug("addChild where child was modified and so was parent.");
+        }
+        fireModified();
       }
       // or should I do child.fireModified()?
     } else {
-      if (log.isDebugEnabled()) 
-	log.debug(getName() + ".addChild got a null child");
+      if (log.isDebugEnabled())
+        log.debug(getName() + ".addChild got a null child");
       if (log.isErrorEnabled())
-	log.error("addChild", new Throwable());
+        log.error("addChild", new Throwable());
     }
   }
 
@@ -216,26 +219,26 @@ public class GenericComponentData implements ComponentData, Serializable {
     if (child != null) {
       this.children.add(index, child);
       //      log.debug(this + " fireModified due to addChild");
-      if (! child.isModified()) {
-	if (log.isDebugEnabled())
-	  log.debug("addChild where the child being added IS NOT MODIFIED!");
-	child.fireModified();
+      if (!child.isModified()) {
+        if (log.isDebugEnabled())
+          log.debug("addChild where the child being added IS NOT MODIFIED!");
+        child.fireModified();
       } else {
-	if (log.isDebugEnabled()) {
-	  if (! isModified())
-	    log.debug("addChild where child was modified but parent(this) not!");
-	  else 
-	    log.debug("addChild where child was modified and so was parent.");
-	}
-	  
-	fireModified();
+        if (log.isDebugEnabled()) {
+          if (!isModified())
+            log.debug("addChild where child was modified but parent(this) not!");
+          else
+            log.debug("addChild where child was modified and so was parent.");
+        }
+
+        fireModified();
       }
       // or should I do child.fireModified()?
     } else {
       if (log.isDebugEnabled())
-	log.debug(getName() + ".addChild got a null child to add at index " + index);
+        log.debug(getName() + ".addChild got a null child to add at index " + index);
       if (log.isErrorEnabled())
-	log.error("addChild index, child", new Throwable());
+        log.error("addChild index, child", new Throwable());
     }
   }
 
@@ -243,25 +246,25 @@ public class GenericComponentData implements ComponentData, Serializable {
     if (child != null) {
       this.children.set(index, child);
       //      log.debug(this + " fireModified due to setChild");
-      if (! child.isModified()) {
-	if (log.isDebugEnabled())
-	  log.debug("addChild where the child being added IS NOT MODIFIED!");
-	child.fireModified();
+      if (!child.isModified()) {
+        if (log.isDebugEnabled())
+          log.debug("addChild where the child being added IS NOT MODIFIED!");
+        child.fireModified();
       } else {
-	if (log.isDebugEnabled()) {
-	  if (! isModified())
-	    log.debug("setChild where child was modified but parent(this) not!");
-	  else 
-	    log.debug("setChild where child was modified and so was parent.");
-	}
-	fireModified();
+        if (log.isDebugEnabled()) {
+          if (!isModified())
+            log.debug("setChild where child was modified but parent(this) not!");
+          else
+            log.debug("setChild where child was modified and so was parent.");
+        }
+        fireModified();
       }
       // or should I do child.fireModified()?
     } else {
       if (log.isDebugEnabled())
-	log.debug(getName() + ".setChild got a null child to put at index " + index);
+        log.debug(getName() + ".setChild got a null child to put at index " + index);
       if (log.isErrorEnabled())
-	log.error("setChild index, child", new Throwable());
+        log.error("setChild index, child", new Throwable());
     }
   }
 
@@ -276,10 +279,10 @@ public class GenericComponentData implements ComponentData, Serializable {
   public void addChildDefaultLoc(ComponentData comp) {
     if (comp == null) {
       if (log.isDebugEnabled()) {
-	log.debug(getName() + ".addChildDefaultLoc got null component");
+        log.debug(getName() + ".addChildDefaultLoc got null component");
       }
       if (log.isErrorEnabled())
-	log.error("addChildDefaultLoc", new Throwable());
+        log.error("addChildDefaultLoc", new Throwable());
       return;
     }
 
@@ -287,7 +290,7 @@ public class GenericComponentData implements ComponentData, Serializable {
     // at the same level.
     // Components that are .equals with other items already
     // there will replace the existing versions
-    if(log.isDebugEnabled()) {
+    if (log.isDebugEnabled()) {
       log.debug("Adding comp: " + comp + " to " + this.getName());
     }
     ComponentData[] dkids = this.getChildren();
@@ -298,37 +301,37 @@ public class GenericComponentData implements ComponentData, Serializable {
     for (int i = 0; i < dkids.length; i++) {
       ComponentData kid = dkids[i];
       if (this.getType().equals(ComponentData.NODE)) {
-	if (kid.getType().equals(ComponentData.AGENT)) {
+        if (kid.getType().equals(ComponentData.AGENT)) {
 //            if(log.isDebugEnabled()) {
 //  	    log.debug("Got an agent at index: " + i);
 //            }
-	  if (firstother < 0)
-	    firstother = i;
-	} else if (kid.getType().equals(ComponentData.NODEBINDER)) {
+          if (firstother < 0)
+            firstother = i;
+        } else if (kid.getType().equals(ComponentData.NODEBINDER)) {
 //            if(log.isDebugEnabled()) {
 //              log.debug("Got a nodebinder at index: " + i);
 //            }
-	  lastbinder = i;
-	} else {
-	  // Plugins, AgentBinders, misc components
-	  // FIXME!!!
-	}
+          lastbinder = i;
+        } else {
+          // Plugins, AgentBinders, misc components
+          // FIXME!!!
+        }
       } else if (this.getType().equals(ComponentData.AGENT)) {
-	if (kid.getType().equals(ComponentData.PLUGIN)) {
+        if (kid.getType().equals(ComponentData.PLUGIN)) {
 //            if(log.isDebugEnabled()) {
 //              log.debug("Got a plugin at index: " + i);
 //            }
-	  if (firstother < 0)
-	    firstother = i;	      
-	} else if (kid.getType().equals(ComponentData.AGENTBINDER)) {
+          if (firstother < 0)
+            firstother = i;
+        } else if (kid.getType().equals(ComponentData.AGENTBINDER)) {
 //            if(log.isDebugEnabled()) {
 //              log.debug("Got an agentbinder at index: " + i);
 //            }
-	  lastbinder = i;
-	} else {
-	  // Misc components
-	  // FIXME!!!
-	}
+          lastbinder = i;
+        } else {
+          // Misc components
+          // FIXME!!!
+        }
       } else if (this.getType().equals(ComponentData.RECIPE)) {
         if (firstother < 0)
           firstother = i;
@@ -337,7 +340,7 @@ public class GenericComponentData implements ComponentData, Serializable {
     } // end of loop over kids of this data item
     // Now lastbinder points to the last binder.
     // I use lastbinder+1
-    
+
     // If this is a binder
     if (comp.getType().equals(ComponentData.NODEBINDER) || comp.getType().equals(ComponentData.AGENTBINDER)) {
 //        if(log.isDebugEnabled()) {
@@ -345,43 +348,43 @@ public class GenericComponentData implements ComponentData, Serializable {
 //        }
       // see if it is in node/agent at all
       if (this.getChildIndex(comp) >= 0) {
-	// if it is there
-	// see if there are any agents/plugins before it
-	if (firstother < this.getChildIndex(comp)) {
-	  // if there are, must remove it and later add it
-	  // Its easiest to do a complete fix
-	  // FIXME: This shuffles all the other binders,
-	  // when maybe they're intentionally placed where they are?
-	  ArrayList dkidsnew = new ArrayList();
-	  for (int i = 0; i < dkids.length; i++) {
-	    // First add all the binders
-	    if (dkids[i].getType().equals(comp.getType())) {
-	      if (i == this.getChildIndex(comp)) {
-		dkidsnew.add(comp);
-	      } else {
-		dkidsnew.add(dkids[i]);
-	      }
-	      dkids[i] = null;
-	    }
-	  } // end of loop to add binders
-	  for (int i = 0; i < dkids.length; i++) {
-	    if (dkids[i] != null)
-	      dkidsnew.add(dkids[i]);
-	  } // end of loop to add others
-	  this.setChildren((ComponentData [])dkidsnew.toArray(new ComponentData[dkidsnew.size()]));
-	} else {
+        // if it is there
+        // see if there are any agents/plugins before it
+        if (firstother < this.getChildIndex(comp)) {
+          // if there are, must remove it and later add it
+          // Its easiest to do a complete fix
+          // FIXME: This shuffles all the other binders,
+          // when maybe they're intentionally placed where they are?
+          ArrayList dkidsnew = new ArrayList();
+          for (int i = 0; i < dkids.length; i++) {
+            // First add all the binders
+            if (dkids[i].getType().equals(comp.getType())) {
+              if (i == this.getChildIndex(comp)) {
+                dkidsnew.add(comp);
+              } else {
+                dkidsnew.add(dkids[i]);
+              }
+              dkids[i] = null;
+            }
+          } // end of loop to add binders
+          for (int i = 0; i < dkids.length; i++) {
+            if (dkids[i] != null)
+              dkidsnew.add(dkids[i]);
+          } // end of loop to add others
+          this.setChildren((ComponentData[]) dkidsnew.toArray(new ComponentData[dkidsnew.size()]));
+        } else {
 //            if(log.isDebugEnabled()) {
 //              log.debug(".. replacing old version with new");
 //            }
-	  // else all agents/plugins are after it. Replace old with new
-	  this.setChild(this.getChildIndex(comp), comp);
-	}
+          // else all agents/plugins are after it. Replace old with new
+          this.setChild(this.getChildIndex(comp), comp);
+        }
       } else {
 //            if(log.isDebugEnabled()) {
 //              log.debug("Adding at index: " + (lastbinder + 1));
 //            }
-	// else if it is not there at all, insert it after last binder
-	this.addChild(lastbinder + 1, comp);
+        // else if it is not there at all, insert it after last binder
+        this.addChild(lastbinder + 1, comp);
       }
     } else {
 //        if(log.isDebugEnabled()) {
@@ -390,23 +393,23 @@ public class GenericComponentData implements ComponentData, Serializable {
       // else if its an agent or a plugin
       // see if it is there at all
       if (this.getChildIndex(comp) >= 0) {
-	// if it is, do this.setChild(its index>, comp)
-	this.setChild(this.getChildIndex(comp), comp);
+        // if it is, do this.setChild(its index>, comp)
+        this.setChild(this.getChildIndex(comp), comp);
       } else {
-	// else (it is not there), do this.addChild(comp)
-	// FIXME: Maybe this should add it after the last item not its type?
-	this.addChild(comp);
+        // else (it is not there), do this.addChild(comp)
+        // FIXME: Maybe this should add it after the last item not its type?
+        this.addChild(comp);
       }
     } // finished handling non binders
   }
-  
+
   public Object[] getParameters() {
     return parameters.toArray();
   }
 
   public void setParameters(Object[] params) {
     this.parameters.clear();
-    for(int i=0; i < params.length; i++) {
+    for (int i = 0; i < params.length; i++) {
       this.parameters.add(params[i]);
     }
     //    log.debug(this + " fireModified due to setParams");
@@ -422,7 +425,7 @@ public class GenericComponentData implements ComponentData, Serializable {
   public void setParameter(int index, Object param) {
     if (index < 0 || index >= parameterCount()) {
       if (log.isErrorEnabled())
-	log.error(this + " got illegal new param index " + index + " when parameters size is " + parameterCount());
+        log.error(this + " got illegal new param index " + index + " when parameters size is " + parameterCount());
       return;
     }
     this.parameters.set(index, param);
@@ -473,7 +476,7 @@ public class GenericComponentData implements ComponentData, Serializable {
 
   public void setLeafComponents(LeafComponentData[] leaves) {
     leafComponents.clear();
-    for(int i = 0 ; i < leaves.length; i++) {
+    for (int i = 0; i < leaves.length; i++) {
       leafComponents.add(leaves[i]);
     }
     fireModified();
@@ -537,7 +540,7 @@ public class GenericComponentData implements ComponentData, Serializable {
 
   public void setTimePhasedData(TimePhasedData[] data) {
     timePhasedData.clear();
-    for(int i = 0 ; i < data.length; i++) {
+    for (int i = 0; i < data.length; i++) {
       timePhasedData.add(data[i]);
     }
     fireModified();
@@ -585,46 +588,45 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   private void readObject(ObjectInputStream ois)
-    throws IOException, ClassNotFoundException
-  {
+      throws IOException, ClassNotFoundException {
     ois.defaultReadObject();
     createLogger();
   }
 
   public boolean equals(Object o) {
     if (o instanceof GenericComponentData) {
-      GenericComponentData that = (GenericComponentData)o;
+      GenericComponentData that = (GenericComponentData) o;
       // FIXME: Compare AlibIDs if they're both not null first?
 //        if (this.getAlibID() != null && that.getAlibID() != null) {
 //  	return (this.getAlibID().equals(that.getAlibID()));
 //        } else
       if (this.getName() == null) {
-	if (this.getClassName() != null && this.getClassName().equals(that.getClassName()) && this.getType() != null && this.getType().equals(that.getType()) && this.parameterCount() == that.parameterCount() && this.getPriority() != null && this.getPriority().equals(that.getPriority())) {
-	  for (int j = 0; j < that.parameterCount(); j++) {
-	    if (! that.getParameter(j).equals(this.getParameter(j))) {
-	      return false;
-	    }
-	  }
-	  // FIXME: Compare the children?
-	  return true;
-	}
+        if (this.getClassName() != null && this.getClassName().equals(that.getClassName()) && this.getType() != null && this.getType().equals(that.getType()) && this.parameterCount() == that.parameterCount() && this.getPriority() != null && this.getPriority().equals(that.getPriority())) {
+          for (int j = 0; j < that.parameterCount(); j++) {
+            if (!that.getParameter(j).equals(this.getParameter(j))) {
+              return false;
+            }
+          }
+          // FIXME: Compare the children?
+          return true;
+        }
       } else if (this.getName().equals(that.getName())) {
-	return true;
+        return true;
       }
     }
     return false;
   }
 
   /**
-   * Generate the standard unique name for a sub-component (Binder, Plugin). 
-   * The rule is that the name should be parent|<classname>. 
+   * Generate the standard unique name for a sub-component (Binder, Plugin).
+   * The rule is that the name should be parent|<classname>.
    * However, if the ComponentData has a non-null name when passed in,
    * then use that as the base.
-   * But if that is taken within this parent, and you have a first parameter, add |<param 0>. 
+   * But if that is taken within this parent, and you have a first parameter, add |<param 0>.
    * Otherwise, or if that too is taken, add a number: The index at which
-   * this component will be added to the parent. 
+   * this component will be added to the parent.
    * Note that the self component should <i>not</i> be currently a child of the parent - at least,
-   * not to the best of the caller's knowledge. 
+   * not to the best of the caller's knowledge.
    * Also note that this method does not <i>set</i> the name, just calculate it.
    *
    * @param parent a <code>ComponentData</code> to which this Component has <i>not yet</i> been added
@@ -637,24 +639,24 @@ public class GenericComponentData implements ComponentData, Serializable {
       return null;
 
     String cname = self.getName();
-    if (parent == null) 
+    if (parent == null)
       if (cname != null)
-	return cname;
-      else 
-	return self.getClassName();
-     
+        return cname;
+      else
+        return self.getClassName();
+
     String type = self.getType();
 
     // Create a default component name if necessary
-    if (cname == null) 
+    if (cname == null)
       cname = self.getClassName();
-    
+
     // Either way, ensure the name starts with the parent name
     // for things that arent Nodes or Agents,
     // cause PopulateDb will assume so in creating Alib IDs
-    if (type != null && ! type.equals(ComponentData.NODE) && ! type.equals(ComponentData.AGENT) && ! type.equals(ComponentData.HOST) && ! type.equals(ComponentData.SOCIETY) && ! cname.startsWith(parent.getName() + "|"))
+    if (type != null && !type.equals(ComponentData.NODE) && !type.equals(ComponentData.AGENT) && !type.equals(ComponentData.HOST) && !type.equals(ComponentData.SOCIETY) && !cname.startsWith(parent.getName() + "|"))
       cname = parent.getName() + "|" + cname;
-    
+
     ComponentData[] children = parent.getChildren();
     if (children == null)
       return cname;
@@ -662,33 +664,33 @@ public class GenericComponentData implements ComponentData, Serializable {
     for (int i = 0; i < children.length; i++) {
       ComponentData kid = children[i];
       if (kid != null && kid.getName().equals(cname)) {
-	// OK, must at least add a paramter if it has one
-	if (self.parameterCount() > 0 && ! addedparam) {
-	    cname = cname + "|" + self.getParameter(0);
-	    addedparam = true;
-	} else {
-	  // OK, no params. Add a number? Maybe the others do have a param?
-	  cname = cname + children.length;
-	}
+        // OK, must at least add a paramter if it has one
+        if (self.parameterCount() > 0 && !addedparam) {
+          cname = cname + "|" + self.getParameter(0);
+          addedparam = true;
+        } else {
+          // OK, no params. Add a number? Maybe the others do have a param?
+          cname = cname + children.length;
+        }
       }
     }
     return cname;
   }
 
   /**
-   * Look for the given ComponentData in the given parent, 
+   * Look for the given ComponentData in the given parent,
    * using its class, type, and parameters.
-   * Do not consider the name of the child, or any 
+   * Do not consider the name of the child, or any
    * AssetData or children it might have.
-   * That is, if any existing child of the given parent has the same type, 
+   * That is, if any existing child of the given parent has the same type,
    * class, and parameter list
-   * of the given candidate child, return true. Also return true 
+   * of the given candidate child, return true. Also return true
    * if the parent or child is null.
    * Return false if the parent has no children.
    *
    * @param parent <code>ComponentData</code> that may already contain the component
    * @param self a <code>ComponentData</code> a component to look for
-   * @return a <code>boolean</code>, true if a component with the same type, 
+   * @return a <code>boolean</code>, true if a component with the same type,
    *         class, and parameters is already present
    */
   public static boolean alreadyAdded(final ComponentData parent, final ComponentData self) {
@@ -714,32 +716,32 @@ public class GenericComponentData implements ComponentData, Serializable {
       boolean isdiff = false;
       ComponentData kid = children[i];
       if (kid == null) {
-	if (log.isErrorEnabled()) {
-	  log.error("Please report seeing Bug 1279: Using CSMART " + CSMART.writeDebug() + " Child " + i + " out of " + parent.childCount() + " is null in " + parent.getName() + " while considering adding " + self.getName() + " with class " + self.getClassName(), new Throwable());
-	}
-	// FIXME: Maybe do a parent.setChildren with a new list that doesn't include
-	// the null?
+        if (log.isErrorEnabled()) {
+          log.error("Please report seeing Bug 1279: Using CSMART " + CSMART.writeDebug() + " Child " + i + " out of " + parent.childCount() + " is null in " + parent.getName() + " while considering adding " + self.getName() + " with class " + self.getClassName(), new Throwable());
+        }
+        // FIXME: Maybe do a parent.setChildren with a new list that doesn't include
+        // the null?
       } else if (kid.getClassName().equals(self.getClassName())) {
-	if (kid.getType().equals(self.getType())) {
-	  if (kid.parameterCount() == self.parameterCount()) {
-	    // Then we better compare the parameters in turn.
-	    // As soon as we find one that differs, were OK.
-	    for (int j = 0; j < kid.parameterCount(); j++) {
-	      if (! kid.getParameter(j).equals(self.getParameter(j))) {
-		isdiff = true;
-		break;
-	      }
-	    } // loop over params
-	    // If we get here, we finished comparing the parameters
-            // Either cause we broke out, and isdiff is true
-            // Or we completely compared the child, and it is
-            // identical.
-            // If we did not mark this child as different,
-            // then return true - it is the same
-	    if (! isdiff)
-	      return true;
-	  } // check param count
-	} // check comp type
+        if (kid.getType().equals(self.getType())) {
+          if (kid.parameterCount() == self.parameterCount()) {
+            // Then we better compare the parameters in turn.
+            // As soon as we find one that differs, were OK.
+            for (int j = 0; j < kid.parameterCount(); j++) {
+              if (!kid.getParameter(j).equals(self.getParameter(j))) {
+                isdiff = true;
+                break;
+              }
+            } // loop over params
+            // If we get here, we finished comparing the parameters
+// Either cause we broke out, and isdiff is true
+// Or we completely compared the child, and it is
+// identical.
+// If we did not mark this child as different,
+// then return true - it is the same
+            if (!isdiff)
+              return true;
+          } // check param count
+        } // check comp type
       } // check comp class
     } // loop over children
 
@@ -759,7 +761,7 @@ public class GenericComponentData implements ComponentData, Serializable {
    */
   public void resetModified() {
     // If this is not modified, neither are its children
-    if (! modified) return;
+    if (!modified) return;
 //     if (log.isDebugEnabled())
 //       log.debug(this + " resetmodified");
     modified = false;
@@ -771,7 +773,7 @@ public class GenericComponentData implements ComponentData, Serializable {
     // recurse down
     if (children != null) {
       for (int i = 0; i < children.size(); i++) {
-	((ComponentData)children.get(i)).resetModified();
+        ((ComponentData) children.get(i)).resetModified();
       }
     }
   }
@@ -794,6 +796,61 @@ public class GenericComponentData implements ComponentData, Serializable {
     // recurse _up_
     if (parent != null)
       parent.fireModified();
+  }
+
+  public static String getCanonicalType(String type) {
+    if (type == null || type.equals("")) {
+      return null;
+    }
+
+    if (type.equalsIgnoreCase(Agent.INSERTION_POINT))
+      type = ComponentData.AGENT;
+    else if (type.equalsIgnoreCase(AgentManager.INSERTION_POINT + ".Binder"))
+      type = ComponentData.NODEBINDER;
+    else if (type.equalsIgnoreCase(PluginManager.INSERTION_POINT + ".Binder"))
+      type = ComponentData.AGENTBINDER;
+    else if (type.equalsIgnoreCase(org.cougaar.core.plugin.PluginBase.INSERTION_POINT))
+      type = ComponentData.PLUGIN;
+    else if (type.equalsIgnoreCase("binder"))
+      type = ComponentData.AGENTBINDER;
+    else if (type.equalsIgnoreCase("nodebinder"))
+      type = ComponentData.NODEBINDER;
+    else if (type.equalsIgnoreCase("agentbinder"))
+      type = ComponentData.AGENTBINDER;
+    else if (type.equalsIgnoreCase("domain"))
+      type = ComponentData.DOMAIN;
+    else if (type.equalsIgnoreCase(ComponentData.NODEBINDER))
+      type = ComponentData.NODEBINDER;
+    else if (type.equalsIgnoreCase(ComponentData.AGENTBINDER))
+      type = ComponentData.AGENTBINDER;
+    else if (type.equalsIgnoreCase(ComponentData.PLUGIN))
+      type = ComponentData.PLUGIN;
+    else if (type.equalsIgnoreCase(ComponentData.AGENT))
+      type = ComponentData.AGENT;
+    else if (type.equalsIgnoreCase(ComponentData.DOMAIN))
+      type = ComponentData.DOMAIN;
+
+    return type;
+  }
+
+
+  public static String getLongType(String type) {
+    if (type == null || type.equals("")) {
+      return null;
+    }
+
+    if (type.equalsIgnoreCase(ComponentData.AGENT))
+      type = Agent.INSERTION_POINT;
+    else if (type.equalsIgnoreCase(ComponentData.NODEBINDER))
+      type = AgentManager.INSERTION_POINT + ".Binder";
+    else if (type.equalsIgnoreCase(ComponentData.AGENTBINDER))
+      type = PluginManager.INSERTION_POINT + ".Binder";
+    else if (type.equalsIgnoreCase(ComponentData.PLUGIN))
+      type = org.cougaar.core.plugin.PluginBase.INSERTION_POINT;
+    else if (type.equalsIgnoreCase(ComponentData.DOMAIN))
+      type = "domain";
+
+    return type;
   }
 
 }
