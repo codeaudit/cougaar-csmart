@@ -30,7 +30,7 @@ fi
 
 
 if [ "$1" = "extended" ]; then
-    echo "Moving extended oplan versions of csv files to loadable versions."
+    echo "Copying extended oplan versions of csv files to loadable versions."
 
     if [ ! -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_ext.csv" ]; then
         echo "Cannot find $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_ext.csv"
@@ -44,17 +44,17 @@ if [ "$1" = "extended" ]; then
         echo "Cannot find $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a_ext.csv"
         exit
     fi 
-    mv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_orig.csv
-    mv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_ext.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv
+    cp $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_orig.csv
+    cp $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_ext.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv
     
-    mv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage_orig.csv
-    mv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage_ext.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage.csv
+    cp $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage_orig.csv
+    cp $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage_ext.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage.csv
     
-    mv $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a.csv $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a_orig.csv
-    mv $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a_ext.csv $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a.csv
+    cp $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a.csv $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a_orig.csv
+    cp $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a_ext.csv $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a.csv
     echo "Database is now in extended oplan timeframe format."
 else
-    echo "Moving compressed oplan versions of csv files to loadable versions."
+    echo "Copying compressed oplan versions of csv files to loadable versions."
     if [ ! -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_orig.csv" ]; then
         echo "Cannot find $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_orig.csv"
         exit
@@ -67,13 +67,10 @@ else
         echo "Cannot find $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a_orig.csv"
         exit
     fi 
-    mv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_ext.csv
-    mv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_orig.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv
+    cp $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_orig.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv
     
-    mv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage_ext.csv
-    mv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage_orig.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage.csv
+    cp $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage_orig.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_stage.csv
     
-    mv $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a.csv $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a_ext.csv
-    mv $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a_orig.csv $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a.csv
+    cp $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a_orig.csv $COUGAAR_INSTALL_PATH/fcsua/data/database/csv/mission_period_3a.csv
     echo "Database is now in compressed oplan timeframe format."
 fi
