@@ -69,7 +69,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   JPopupMenu nodeNodeMenu;
   JPopupMenu nodeAgentMenu;
   JPopupMenu agentAgentMenu;
-  JPopupMenu viewOnlyMenu;
+  JPopupMenu viewOnlyHostMenu;
+  JPopupMenu viewOnlyNodeMenu;
   JMenuItem cmdLineNodeMenuItem;
   JMenuItem cmdLineNodeInHostMenuItem;
   JMenuItem newNodeInHostMenuItem;
@@ -205,7 +206,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostHostMenu = new JPopupMenu();
     hostNodeMenu = new JPopupMenu();
     hostAgentMenu = new JPopupMenu();
-    viewOnlyMenu = new JPopupMenu();
+    viewOnlyHostMenu = new JPopupMenu();
+    viewOnlyNodeMenu = new JPopupMenu();
 
     JMenuItem newHostMenuItem = new JMenuItem(NEW_HOST_MENU_ITEM);
     newHostMenuItem.addActionListener(new ActionListener() {
@@ -315,12 +317,15 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
     hostAgentMenu.add(showComponentsHostAMenuItem);
 
-    Action viewArgumentsAction = new AbstractAction(DISPLAY_ARGS_ACTION) {
+    Action viewArgumentsHostAction = new AbstractAction(DISPLAY_ARGS_ACTION) {
         public void actionPerformed(ActionEvent e) {
-          displayArguments(viewOnlyMenu.getInvoker());
+          displayArguments(viewOnlyHostMenu.getInvoker());
         }
       };
-    viewOnlyMenu.add(viewArgumentsAction);
+    viewOnlyHostMenu.add(viewArgumentsHostAction);
+
+    // Can't add this directly - must be a copy
+    //    viewOnlyHostMenu.add(showComponentsHostMenuItem);
     
     // attach a mouse listener to the host tree to display menu 
     MouseListener hostTreeMouseListener = new MouseAdapter() {
@@ -450,6 +455,16 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     nodeNodeMenu.add(showComponentsNodeMenuItem);
 
     nodeAgentMenu.add(showComponentsNodeAMenuItem);
+
+    Action viewArgumentsNodeAction = new AbstractAction(DISPLAY_ARGS_ACTION) {
+        public void actionPerformed(ActionEvent e) {
+          displayArguments(viewOnlyNodeMenu.getInvoker());
+        }
+      };
+    viewOnlyNodeMenu.add(viewArgumentsNodeAction);
+    
+    // Can't add this directly, must be a copy
+    //    viewOnlyNodeMenu.add(showComponentsNodeMenuItem);
 
     // attach a mouse listener to the node tree to display menu 
     MouseListener nodeTreeMouseListener = new MouseAdapter() {
@@ -858,7 +873,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         if (hostTree.isEditable())
           hostHostMenu.show(hostTree, e.getX(), e.getY());
         else
-          viewOnlyMenu.show(hostTree, e.getX(), e.getY());
+          viewOnlyHostMenu.show(hostTree, e.getX(), e.getY());
         return;
       } else if (haveNodes) {
         cmdLineNodeInHostMenuItem.setEnabled(false);
@@ -867,7 +882,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         if (hostTree.isEditable())
           hostNodeMenu.show(hostTree, e.getX(), e.getY());
         else
-          viewOnlyMenu.show(hostTree, e.getX(), e.getY());
+          viewOnlyHostMenu.show(hostTree, e.getX(), e.getY());
         return;
       }
     } else {
@@ -882,13 +897,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         if (hostTree.isEditable())
           hostRootMenu.show(hostTree, e.getX(), e.getY());
         else
-          viewOnlyMenu.show(hostTree, e.getX(), e.getY());
+          viewOnlyHostMenu.show(hostTree, e.getX(), e.getY());
       } else if (selected.isHost()) {
         newNodeInHostMenuItem.setEnabled(true);
         if (hostTree.isEditable())
           hostHostMenu.show(hostTree, e.getX(), e.getY());
         else
-          viewOnlyMenu.show(hostTree, e.getX(), e.getY());
+          viewOnlyHostMenu.show(hostTree, e.getX(), e.getY());
       } else if (selected.isNode()) {
 	// Allow showAgentComponents here!
         cmdLineNodeInHostMenuItem.setEnabled(true);
@@ -896,8 +911,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	showComponentsHostAMenuItem.setEnabled(false);
         if (hostTree.isEditable())
           hostNodeMenu.show(hostTree, e.getX(), e.getY());
-        else
-          viewOnlyMenu.show(hostTree, e.getX(), e.getY());
+        else {
+          viewOnlyHostMenu.show(hostTree, e.getX(), e.getY());
+	}
       } else if (selected.isAgent()) {
 	showComponentsHostMenuItem.setEnabled(false);
 	showComponentsHostAMenuItem.setEnabled(true);
@@ -1013,7 +1029,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         if (nodeTree.isEditable())
           nodeNodeMenu.show(nodeTree, e.getX(), e.getY());
         else
-          viewOnlyMenu.show(nodeTree, e.getX(), e.getY());
+          viewOnlyNodeMenu.show(nodeTree, e.getX(), e.getY());
         return;
       }
     } else {
@@ -1028,7 +1044,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         if (nodeTree.isEditable())
           nodeRootMenu.show(nodeTree, e.getX(), e.getY());
         else
-          viewOnlyMenu.show(nodeTree, e.getX(), e.getY());
+          viewOnlyNodeMenu.show(nodeTree, e.getX(), e.getY());
       } else if (selected.isNode()) {
 	// allow showAgentComponents here
 	// Also, what if it's the Agent inside the Host?
@@ -1037,8 +1053,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         showComponentsNodeAMenuItem.setEnabled(false);
         if (nodeTree.isEditable())
           nodeNodeMenu.show(nodeTree, e.getX(), e.getY());
-        else
-          viewOnlyMenu.show(nodeTree, e.getX(), e.getY());
+        else {
+          viewOnlyNodeMenu.show(nodeTree, e.getX(), e.getY());
+	}
       } else if (selected.isAgent()) {
         showComponentsNodeMenuItem.setEnabled(false);
         showComponentsNodeAMenuItem.setEnabled(true);
