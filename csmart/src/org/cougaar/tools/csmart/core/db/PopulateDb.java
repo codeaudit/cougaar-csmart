@@ -1491,7 +1491,9 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":attribute_lib_id:", sqlQuote(pgName + "|" + propName));
     substitutions.put(":pg_name:", pgName);
     substitutions.put(":attribute_name:", propName);
-    substitutions.put(":attribute_type:", propSubtype);
+    // FIXME:  Below is a hack, as an attempt to run past this point.
+    // Really should figure out why propSubtype is sometimes null.
+    substitutions.put(":attribute_type:", (propSubtype == null) ? "Fixme" : propSubtype);
     if(propType.equalsIgnoreCase("Collection")) {
       substitutions.put(":aggregate_type:", "COLLECTION");
     } else {
