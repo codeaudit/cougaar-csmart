@@ -103,9 +103,17 @@ public class OrganizerHelper {
     //    experiment.setCloned(isCloned);
 
     //to hold all potential agents
-    List agents = new ArrayList();  
+    List agents = new ArrayList(); 
 
+    Map experimentNamesMap = ExperimentDB.getExperimentNames();
+    String origExperimentId = (String)experimentNamesMap.get(originalExperimentName);
+    String origTrialId = ExperimentDB.getTrialId(origExperimentId);
+    
+    List defaultRecipes = checkForRecipes(origTrialId, origExperimentId);
+  
     List recipes = checkForRecipes(trialId, experimentId);
+    recipes.addAll(defaultRecipes);
+
     if (recipes.size() != 0) {
       Iterator metIter = recipes.iterator();
       while (metIter.hasNext()) {
@@ -150,6 +158,7 @@ public class OrganizerHelper {
     }
     return experiment;
   }
+
 
   private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
