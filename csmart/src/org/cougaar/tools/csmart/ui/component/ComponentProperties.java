@@ -53,5 +53,9 @@ public interface ComponentProperties extends Serializable {
   List getPropertyNamesList();
   void addPropertiesListener(PropertiesListener l);
   void removePropertiesListener(PropertiesListener l);
+
+  ComponentData addComponentData(ComponentData data);
+  ComponentData modifyComponentData(ComponentData data);
+
   ComponentProperties copy(ComponentProperties result);
 }
