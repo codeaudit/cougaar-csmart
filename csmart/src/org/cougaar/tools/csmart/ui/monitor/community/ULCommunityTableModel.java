@@ -35,7 +35,7 @@ public class ULCommunityTableModel extends AbstractTableModel {
     this.node = node;
     names = new Vector();
     values = new Vector();
-    addAttribute(ULCommunityNode.MEMBERS);
+    addAttribute(PropertyNames.COMMUNITY_MEMBERS);
     makePrettyNames();
   }
 
