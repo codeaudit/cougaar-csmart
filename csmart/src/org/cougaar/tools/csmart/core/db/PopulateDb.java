@@ -121,6 +121,7 @@ public class PopulateDb extends PDbBase {
     this.conflictHandler = ch;
     this.cmtType = csaType;
     this.exptId = null;
+    this.trialId = null;
     substitutions.put(":cmt_type:", cmtType);
     if (assemblyId != null) {
       // Society already in DB.
