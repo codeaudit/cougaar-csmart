@@ -1442,3 +1442,8 @@ TheaterGround,TheaterGround,TheaterGround,agent,0
 TRANSCOM,TRANSCOM,TRANSCOM,agent,0
 USAEUR,USAEUR,USAEUR,agent,0
 USEUCOM,USEUCOM,USEUCOM,agent,0
+OSCAmmoPacker,OSCAmmoPacker,recipe|##RECIPE_CLASS##,recipe,0
+OSCAmmoPacker|org.cougaar.logistics.plugin.packer.ALAmmoPacker,OSCAmmoPacker|org.cougaar.logistics.plugin.packer.ALAmmoPacker,plugin|org.cougaar.logistics.plugin.packer.ALAmmoPacker,plugin,0
+OSCAmmoPacker|org.cougaar.logistics.plugin.trans.AmmoLowFidelityExpanderPlugin,OSCAmmoPacker|org.cougaar.logistics.plugin.trans.AmmoLowFidelityExpanderPlugin,plugin|org.cougaar.logistics.plugin.trans.AmmoLowFidelityExpanderPlugin,plugin,0
+OSCAmmoPacker|org.cougaar.logistics.plugin.trans.AmmoProjectionExpanderPlugin,OSCAmmoPacker|org.cougaar.logistics.plugin.trans.AmmoProjectionExpanderPlugin,plugin|org.cougaar.logistics.plugin.trans.AmmoProjectionExpanderPlugin,plugin,0
+OSCAmmoPacker|org.cougaar.mlm.plugin.generic.GenericTablePlugin,OSCAmmoPacker|org.cougaar.mlm.plugin.generic.GenericTablePlugin,plugin|org.cougaar.mlm.plugin.generic.GenericTablePlugin,plugin,0

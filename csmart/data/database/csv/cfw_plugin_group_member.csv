@@ -43,6 +43,7 @@ CFW_ID,PLUGIN_GROUP_ID,PLUGIN_ID,PLUGIN_CLASS_ORDER,BLANK
 "1AD-CFW","TheaterConstruction","org.cougaar.mlm.construction.ConstructionInventoryPlugin",1.000000000000000000000000000000
 "1AD-CFW","AmmoPacking","org.cougaar.logistics.plugin.packer.ALAmmoPacker",0.000000000000000000000000000000
 "1AD-CFW","AmmoPacking","org.cougaar.logistics.plugin.trans.AmmoLowFidelityExpanderPlugin",0.000000000000000000000000000000
+"1AD-CFW","AmmoPacking","org.cougaar.logistics.plugin.trans.AmmoProjectionExpanderPlugin",0.000000000000000000000000000000
 "1AD-CFW","AmmoPacking","org.cougaar.mlm.plugin.generic.GenericTablePlugin",1.000000000000000000000000000000
 "1AD-CFW","AntsAssets","org.cougaar.logistics.plugin.demand.projection.LogMEILDMPlugin",1.000000000000000000000000000000
 "1AD-CFW","AntsAssets","org.cougaar.logistics.plugin.demand.projection.LogPartsLDMPlugin",2.000000000000000000000000000000

@@ -57,3 +57,4 @@ org.cougaar.logistics.plugin.trans.GenericVishnuPlugin,org.cougaar.logistics.plu
 org.cougaar.logistics.plugin.trans.TransportAllocatorPlugin,org.cougaar.logistics.plugin.trans.TransportAllocatorPlugin,Handles allocations to generic transportation assets
 org.cougaar.logistics.plugin.trans.SeaVishnuPlugin,org.cougaar.logistics.plugin.trans.SeaVishnuPlugin,Vishnu scheduler that uses a custom translation specific to ships
 org.cougaar.logistics.plugin.trans.AmmoLowFidelityExpanderPlugin,org.cougaar.logistics.plugin.trans.AmmoLowFidelityExpanderPlugin,Low-fi supply transport expander
+org.cougaar.logistics.plugin.trans.AmmoProjectionExpanderPlugin,org.cougaar.logistics.plugin.trans.AmmoProjectionExpanderPlugin,Projection supply transport expander

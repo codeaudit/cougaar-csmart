@@ -24,6 +24,7 @@ PLUGIN_ID,THREAD_ID,DESCRIPTION,BLANK
 "mil.darpa.log.alpine.blackjack.plugins.TransportExpanderPlugin","BASE","TransportExpander"
 "org.cougaar.logistics.plugin.packer.ALAmmoPacker","BASE","Packsammo"
 "org.cougaar.logistics.plugin.trans.AmmoLowFidelityExpanderPlugin","BASE","Low-fi supply transport expander"
+"org.cougaar.logistics.plugin.trans.AmmoProjectionExpanderPlugin","BASE","Projection supply transport expander"
 "org.cougaar.mlm.construction.ConstructionInventoryPlugin","CLASS-4","ConstructionInventoryPlugin"
 "org.cougaar.mlm.construction.ConstructionProjectionPlugin","CLASS-4","ConstructionProjectionPlugin"
 "org.cougaar.mlm.construction.DTConstructionExpanderPlugin","CLASS-4","ConstructionExpanderPlugin"

@@ -7,3 +7,5 @@ MOD_RECIPE_LIB_ID,NAME,JAVA_CLASS,DESCRIPTION,BLANK
 "RECIPE-Enable47FSBLogging","Enable 47-FSB Logging","org.cougaar.tools.csmart.recipe.ParameterInsertionRecipe","AL servlet-Enable Logging at 47-FSB"
 "RECIPE-FallingBehindConditionServlet","FallingBehindConditionServlet","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","AL servlet"
 "RECIPE-OplanEditServlet","OplanEditServlet","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe",Add Servlet to Edit Oplan"
+"RECIPE-OSCUniversalAllocator","OSCUniversalAllocatorPlugin","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","Add UniversalAllocator to OSC for Ammo"
+"RECIPE-OSCAmmoPacker","OSCAmmoPacker","org.cougaar.tools.csmart.recipe.ComponentCollectionRecipe","Add AmmoPacker to OSC"
