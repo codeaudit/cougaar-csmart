@@ -44,7 +44,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     fireModification();
   }
   public String getExperimentName() {
-    return getName().last().toString();
+    return getShortName();
   }
   public void setSocietyComponents(SocietyComponent[] ary) {
     societies.clear();
@@ -95,7 +95,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return (Metric) metrics.get(i);
   }
   public String toString() {
-    return getName().last().toString();
+    return getShortName();
   }
 
   /**

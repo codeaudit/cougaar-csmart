@@ -240,7 +240,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   private void setHostToMonitor(Experiment experiment) {
     HostComponent[] hosts = experiment.getHosts();
-    agentHost = ((ConfigurableComponent)hosts[0]).getName().last().toString();
+    agentHost = hosts[0].getShortName();
     agentPort = 5555; // default
     agentURL = "http://" + agentHost + ":5555/"; 
     agentMap = new CSMARTAgentMap(agentHost, agentPort);

@@ -214,9 +214,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Ensure that display is up-to-date before showing it.
    */
 
-  public void show() {
-    update();
-    super.show();
+  public void setVisible(boolean visible) {
+    if (visible)
+      update();
+    super.setVisible(visible);
   }
 
   /**
@@ -404,7 +405,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     public int compare(Object o1, Object o2) {
       ConfigurableComponent c1 = (ConfigurableComponent) o1;
       ConfigurableComponent c2 = (ConfigurableComponent) o2;
-      return c1.getName().compareTo(c2.getName());
+      return c1.getFullName().compareTo(c2.getFullName());
     }
   };
 

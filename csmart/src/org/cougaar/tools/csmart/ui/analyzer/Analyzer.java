@@ -128,8 +128,7 @@ public class Analyzer extends JFrame implements ActionListener {
     CommunityServesClient communitySupport = new ClientCommunityController();
     HostComponent[] hosts = experiment.getHosts();
     for (int i = 0; i < hosts.length; i++) {
-      String hostName = 
-	((ConfigurableComponent)hosts[i]).getName().last().toString();
+      String hostName = hosts[i].getShortName();
       HostServesClient hostInfo = null;
       try {
 	hostInfo = communitySupport.getHost(hostName, DEFAULT_PORT);

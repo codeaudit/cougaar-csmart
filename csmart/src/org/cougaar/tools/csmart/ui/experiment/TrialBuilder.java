@@ -59,9 +59,10 @@ public class TrialBuilder extends JPanel {
    * Update the table before displaying it.
    */
 
-  public void show() {
-    trialTableModel.update(propertyBuilder.getVariationScheme());
-    super.show();
+  public void setVisible(boolean visible) {
+    if (visible)
+      trialTableModel.update(propertyBuilder.getVariationScheme());
+    super.setVisible(visible);
   }
 
   private MouseListener mouseListener = new MouseAdapter() {

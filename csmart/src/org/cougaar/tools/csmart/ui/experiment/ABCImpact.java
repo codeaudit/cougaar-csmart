@@ -346,7 +346,7 @@ public class ABCImpact implements Impact {
       // First, get the name of the Agent.
       // get the property ABCAgent.PROP_NAME?
       // cast it to a ConfigurableComponent?
-      String thisAg = ((ConfigurableComponent)curr).getName().toString();
+      String thisAg = curr.getFullName().toString();
       // Now get the lat & long.
       // Hard code to zeros for now.
       thisAg = thisAg + ",0.0,0.0";

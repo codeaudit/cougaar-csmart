@@ -915,7 +915,7 @@ public class Organizer extends JScrollPane {
   private void renameExperiment(DefaultMutableTreeNode node, String name) {
     Experiment experiment =
       (Experiment) node.getUserObject();
-    if (name == null || name.equals(experiment.getName()) || name.equals("")) return;
+    if (name == null || name.equals(experiment.getExperimentName()) || name.equals("")) return;
     while (true) {
       if (!experimentNames.contains(name)) break;
       int ok = JOptionPane.showConfirmDialog(this,
@@ -939,7 +939,7 @@ public class Organizer extends JScrollPane {
     private void deleteExperiment(DefaultMutableTreeNode node) {
         if (node == null) return;
         model.removeNodeFromParent(node);
-        experimentNames.remove(((Experiment) node.getUserObject()).getName());
+        experimentNames.remove(((Experiment) node.getUserObject()).getExperimentName());
     }
 
     private void newFolder(DefaultMutableTreeNode node) {

@@ -379,8 +379,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   public void runMonitor() {
     HostComponent[] hosts = getRunningExperiment().getHosts();
-    String name = 
-      ((ConfigurableComponent)hosts[0]).getName().last().toString();
+    String name = hosts[0].getShortName();
     createTool(MONITOR, CSMARTUL.class, name, null, null, null);
   }
 
