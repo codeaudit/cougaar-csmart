@@ -114,6 +114,9 @@ public class CompleteAgentRecipe extends ComplexRecipeBase
 	  AgentComponent agent = (AgentComponent)iter.next();
           // if the component data name matches the agent name
 	  if (child.getName().equals(agent.getShortName().toString())) {
+	    if (log.isDebugEnabled())
+	      log.debug("addComponentData found my agent " + child.getName() + " which currently says isModified=" + child.isModified());
+
             // then set me as the owner of the component data
 	    child.setOwner(this);
             // and add the component data
