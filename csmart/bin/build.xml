@@ -174,14 +174,14 @@
 	<!-- Clean up generated code                             	-->
 	<!-- ============================================================= -->
 	<target name="clean-gencode" depends="prepare, prepare-defrunner" description="Delete generated code" if="have.buildjar">
-	   <execon executable="java"
+	   <apply executable="java"
 	           parallel="false"
 		   failonerror="false" >
 	     <arg line="-classpath ${genpath} org.cougaar.tools.build.DefCleaner" />
 	     <fileset dir="${src}" >
 		<include name="**/*.gen" />
 	     </fileset>
-	   </execon>
+	   </apply>
 	</target>
 	
 	<!-- ========================================================== -->
