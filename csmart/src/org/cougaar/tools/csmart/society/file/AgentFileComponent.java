@@ -124,8 +124,9 @@ public class AgentFileComponent
       if(insertionPoint.endsWith("Plugin")) {
         int start = 0;
         if((start = name.indexOf("OrgRTData")) != -1) {
-          name.replace(start, name.lastIndexOf("OrgRT"), "Org");
-          className.replace(className.indexOf("OrgRT"), className.lastIndexOf("OrgRT"), "org");
+          name.delete(start, start+2);
+          start = className.indexOf("RT");
+          className.delete(start, start+2);
         }
 
         int index = name.lastIndexOf(".");
