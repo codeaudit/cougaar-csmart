@@ -323,7 +323,6 @@ public class BasicMetric extends ModifiableConfigurableComponent
     }
     
     // Then, reset the value of the first parameter
-    System.out.println("Setting Parameter to: " + numAgs2);    
     picd.setParameter(0, new Integer(numAgs2));
    
     return data;
