@@ -266,8 +266,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
           continue;
         } else if (children[i].getType().equals(ComponentData.NODE) || 
                    children[i].getType().equals(ComponentData.SOCIETY) || 
-                   children[i].getType().equals(ComponentData.AGENT) || 
-                   children[i].getType().equals(ComponentData.PLUGIN)) {
+                   children[i].getType().equals(ComponentData.AGENT)) {
           if(log.isErrorEnabled()) {
             log.error("Got unexpected child of Node type: " + children[i].getType());
           }
@@ -279,10 +278,14 @@ public class ExperimentINIWriter implements ConfigurationWriter {
           // What is the prefix line I write here?
           if (children[i].getType().equals(ComponentData.NODEBINDER)) {
             writer.print("Node.AgentManager.Binder = ");
-          } else {
-            // FIXME!!!!!!
-            // This assumes the name is always the prefix.
-            writer.print(children[i].getName() + " = ");
+	  } else if (children[i].getType().equals(ComponentData.AGENTBINDER)) {
+	    writer.print("Node.AgentManager.Agent.PluginManager.Binder = ");
+	  } else {
+	    if (log.isDebugEnabled()) {
+	      log.debug("writeNodeFile writing component of type: " + children[i].getType() + ", and name " + children[i].getName());
+	    }
+	    writer.print(children[i].getType() + " = ");
+            // This assumes the type is always the prefix.
           }
           writeChildLine(writer, children[i]);
           // Could one of these guys have children?
@@ -320,8 +323,8 @@ public class ExperimentINIWriter implements ConfigurationWriter {
         } else {
           //  	} else if (!children[i].getType().equals(ComponentData.NODEBINDER) 
           //                     || !children[i].getType().equals(ComponentData.AGENTBINDER)) {
-          if(log.isErrorEnabled()) {
-            log.error("Got a child of a Node that wasn't an Agent or Node Binder Type: "
+          if(log.isInfoEnabled()) {
+            log.info("Got a child of a Node that wasn't an Agent or Node Binder Type: "
                       + children[i].getType());
           }
         }
