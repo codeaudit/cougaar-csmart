@@ -132,7 +132,7 @@ import org.cougaar.tools.scalability.performance.jni.CpuClock;
  * MetricsPlugin Usage: [[<directory name to write results in>],[<Task Verb to search for>],
  * [<1 or 0>], [<1 or 0>],[<1 or 0>],[<1 or 0>],[<1 or 0>]] -- where the [1/0] indicates
  * turning on or off the following services for Metrics collection: BlackboardService,
- * ProtypeRegistryService, NodeMetricsService, MessageStatsService, and
+ * PrototypeRegistryService, NodeMetricsService, MessageStatsService, and
  * MessageWatcherService. Default is to use only the MessageStatsService<br>
  * <br>
  * @see CSMARTPlugIn
@@ -262,6 +262,8 @@ public class MetricsPlugin
       if (params.size() > 1) {
 	// 2nd slot, number 1
 	searchVerb = (String)params.elementAt(1);
+	if (searchVerb.equals("") || searchVerb.equals(" "))
+	  searchVerb = null;
       }
 
       // Take the additional parameters here
