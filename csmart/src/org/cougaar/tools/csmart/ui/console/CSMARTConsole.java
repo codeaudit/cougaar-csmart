@@ -77,8 +77,10 @@ import org.cougaar.tools.csmart.util.ResultsFileFilter;
 
 /**
  * The Console or Experiment Controller is the tool for 
- * starting, stopping, and monitoring
- * a running Cougaar society.
+ * starting, stopping, and monitoring a running Cougaar society.
+ *
+ * @property org.cougaar.tools.csmart.startdelay is the CSMART startup argument indicating the time
+ *        to pause between Node creation invocations (defaults to none).
  **/
 public class CSMARTConsole extends JFrame {
   private static final String DEFAULT_BOOTSTRAP_CLASS = "org.cougaar.bootstrap.BootStrapper";
@@ -788,10 +790,10 @@ public class CSMARTConsole extends JFrame {
         Properties properties = getNodeMinusD(nodeComponent, hostName);
         java.util.List args = getNodeArguments(nodeComponent);
 
-	if (experiment.getTrialID() != null)
+	if (experiment.getTrialID() != null) {
 	  properties.setProperty(Experiment.EXPERIMENT_ID, 
                                  experiment.getTrialID());
-	else {
+	} else {
 	  log.error("Null trial ID for experiment!");
 	}
         // get the app server to use
@@ -949,7 +951,6 @@ public class CSMARTConsole extends JFrame {
    * TODO: shouldn't have to hard code servlet class names;
    * should be able to get servlet class to use from client
    */
-
   private String findServlet() {
     if (experiment == null)
       return null;
@@ -981,7 +982,6 @@ public class CSMARTConsole extends JFrame {
   /**
    * Find the GLS servlet.
    */
-
   private boolean hasServlet(AgentComponentData cdata) {
     String[] names = cdata.getPluginNames();
     for (int i = 0; i < names.length; i++) {
@@ -1019,7 +1019,9 @@ public class CSMARTConsole extends JFrame {
    * use https and the port number;
    * else look for a definition of http port, and if it exists,
    * use http and the port number;
-   * else use http and the default port number.
+   * else use http and the default port number. 
+   * Note that this means that the HTTP(S) ports are best specified
+   * through CSMART if it is to find the Servlet.
    */
   private String getURL(String hostName, String agentName,
                         Properties arguments) {
@@ -1032,27 +1034,29 @@ public class CSMARTConsole extends JFrame {
     if (s != null) {
       try {
         port = Integer.parseInt(s);
+	return GLS_SECURE_PROTOCOL + "://" + hostName + ":" + port + "/$" + agentName;
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
           log.error("Exception parsing " + CSMARTUL.AGENT_HTTPS_PORT 
                     + " : ", e);
         }
-        return defaultURL;
       }
-      return GLS_SECURE_PROTOCOL + "://" + hostName + ":" + port + "/$" + agentName;
     }
+
+    // No HTTPS argument. Assume it is HTTP.
     s = arguments.getProperty(CSMARTUL.AGENT_HTTP_PORT);
     if (s != null) {
       try {
         port = Integer.parseInt(s);
+	return GLS_PROTOCOL + "://" + hostName + ":" + port + "/$" + agentName;
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
           log.error("Exception parsing " + CSMARTUL.AGENT_HTTP_PORT);
         }
-        return defaultURL;
       }
-      return GLS_PROTOCOL + "://" + hostName + ":" + port + "/$" + agentName;
     }
+
+    // No HTTP argument. Assume it is on default port
     return defaultURL;
   }
 
@@ -1155,6 +1159,7 @@ public class CSMARTConsole extends JFrame {
     synchronized (runningNodesLock) {
       nodeNames = runningNodes.keys();
     } // end synchronized
+
     // before destroying nodes, stop the GLSClient so
     // we don't get error messages
     if (glsClient != null) 
@@ -1177,6 +1182,7 @@ public class CSMARTConsole extends JFrame {
             }
             return;
           }
+
           try {
             RemoteListenable rl = 
               remoteNode.getRemoteListenable();
@@ -1272,7 +1278,6 @@ public class CSMARTConsole extends JFrame {
    * Run the next trial.
    * Update the gui controls.
    */
-
   public void nodeStopped(String nodeName) {
     RemoteProcess remoteNode = null;
     synchronized (runningNodesLock) {
@@ -1282,6 +1287,7 @@ public class CSMARTConsole extends JFrame {
         runningNodes.remove(nodeName);
       }
     } // end synchronized
+
     // remove the node listener
     if (remoteNode != null) {
       try {
@@ -1294,6 +1300,7 @@ public class CSMARTConsole extends JFrame {
         }
       }
     }
+
     // enable restart command on node output window, only if we're not stopping
     ConsoleInternalFrame frame = 
       desktop.getNodeFrame(nodeName);
@@ -1395,12 +1402,16 @@ public class CSMARTConsole extends JFrame {
       if (pname.equals(COMMAND_ARGUMENTS)) continue;
       if (pname.equals(Experiment.BOOTSTRAP_CLASS)) foundclass = true;
       String value = props.getProperty(pname);
+
+      // Allow $HOST to stand for hostName
       int index = value.indexOf("$HOST");
       if (index != -1)
         value = value.substring(0, index) + hostName + 
           value.substring(index+5);
+
+      // Could add other substitutions here - for the node name, for example
+
       result.put(pname, value);
-      //      result.put(pname, props.getProperty(pname));
     }
     // make sure that the classname is "Node"
     //
@@ -1472,6 +1483,7 @@ public class CSMARTConsole extends JFrame {
       return null;
     }
 
+    // Set up Node filters & notifications
     if (notifyCondition != null)
       textPane.setNotifyCondition(notifyCondition);
     ((ConsoleStyledDocument)textPane.getStyledDocument()).setBufferSize(viewSize);
@@ -1479,6 +1491,7 @@ public class CSMARTConsole extends JFrame {
       statusButton.setNotifyOnStandardError(true);
     if (displayFilter != null)
       ((ConsoleNodeListener)listener).setFilter(displayFilter);
+
     nodeListeners.put(nodeName, listener);
     nodePanes.put(nodeName, textPane);
     OutputPolicy outputPolicy = new OutputPolicy(10);
@@ -1507,20 +1520,27 @@ public class CSMARTConsole extends JFrame {
       } catch (NumberFormatException nfe) {
       }
     }
+
     final int interNodeStartDelay = delay;
     String experimentName = "Experiment";
     if (experiment != null)
       experimentName = experiment.getExperimentName();
+
+    // For each Node to create
     for (int i = 0; i < nodeCreationInfoList.size(); i++) {
+      // First pause
       try {
         Thread.sleep(interNodeStartDelay);
       } catch (Exception e) {
       }
       if (stopNodeCreation)
         break;
+
       final NodeCreationInfo nci = 
         (NodeCreationInfo)nodeCreationInfoList.get(i);
       final RemoteProcess remoteNode;
+
+      // Create the process description, then the proccess
       try {
         String procName = 
           appServerSupport.getProcessName(experimentName, nci.nodeName);
@@ -1533,11 +1553,13 @@ public class CSMARTConsole extends JFrame {
         RemoteListenableConfig conf =
           new RemoteListenableConfig(nci.listener, 
                                      nci.outputPolicy);
+
         // register listener
         remoteNode = 
           nci.remoteAppServer.createRemoteProcess(desc, conf);
         RemoteListenable rl = remoteNode.getRemoteListenable();
-        System.out.println("Adding listener: " +
+	if (log.isDebugEnabled())
+	  log.debug("Adding listener: " +
                            CSMART.getNodeListenerId() +
                            " for: " + procName);
         rl.addListener(nci.listener, CSMART.getNodeListenerId());
@@ -1552,9 +1574,12 @@ public class CSMARTConsole extends JFrame {
                                       "; check that server is running");
         continue;
       }
+
       synchronized (runningNodesLock) {
         runningNodes.put(nci.nodeName, remoteNode);
       } // end synchronized
+
+      // Set up the UI for the Node
       SwingUtilities.invokeLater(new Runnable() {
           public void run() {
             // don't create gui controls if node creation has been stopped
@@ -1591,16 +1616,20 @@ public class CSMARTConsole extends JFrame {
       if (runningNodes.size() == 1)
         doAbort = true;
     } // end synchronized
+
     if (doAbort) {
       abortButton_actionPerformed();
       return;
     }
+
     RemoteProcess remoteNode;
     synchronized (runningNodesLock) {
       remoteNode = (RemoteProcess)runningNodes.get(nodeName);
     } // end synchronized
+
     if (remoteNode == null)
       return;
+
     try {
       remoteNode.getRemoteListenable().flushOutput();
       remoteNode.destroy();
@@ -1621,7 +1650,6 @@ public class CSMARTConsole extends JFrame {
    * If this is the only node, then it is handled the same
    * as selecting the Run button on the console.
    */
-
   public RemoteProcess restartNode(String nodeName) {
     NodeInfo nodeInfo = (NodeInfo)nodeToNodeInfo.get(nodeName);
     String hostName = nodeInfo.hostName;
@@ -1632,10 +1660,12 @@ public class CSMARTConsole extends JFrame {
       if (oldNodes.size() + runningNodes.size() == 1)
         doRun = true;
     } // end synchronized
+
     if (doRun) {
       runButton_actionPerformed();
       return null; // return null, caller (ConsoleInternalFrame) is going away
     }
+
     properties.remove(Experiment.PERSIST_CLEAR);
     int remotePort = appServerSupport.getAppServerPort(properties);
     RemoteHost remoteAppServer = 
@@ -1684,7 +1714,8 @@ public class CSMARTConsole extends JFrame {
       remoteNode = 
         remoteAppServer.createRemoteProcess(desc, conf);
       RemoteListenable rl = remoteNode.getRemoteListenable();
-      System.out.println("Adding listener: " +
+      if (log.isDebugEnabled())
+	log.debug("Adding listener: " +
                          CSMART.getNodeListenerId() +
                          " for: " + procName);
       rl.addListener(listener, CSMART.getNodeListenerId());
@@ -2205,7 +2236,8 @@ public class CSMARTConsole extends JFrame {
           nodeInfo.appServer.getRemoteProcess(nodeInfo.processName);
         RemoteListenable rl =
           remoteNode.getRemoteListenable();
-        System.out.println("Adding listener: " +
+        if (log.isDebugEnabled())
+	  log.debug("Adding listener: " +
                            CSMART.getNodeListenerId() +
                            " for: " +
                            nodeInfo.processName);
