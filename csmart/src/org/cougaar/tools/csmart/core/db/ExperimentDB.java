@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.DBProperties;
 
   /**
