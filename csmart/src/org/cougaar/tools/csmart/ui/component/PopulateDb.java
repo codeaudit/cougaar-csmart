@@ -427,8 +427,13 @@ public class PopulateDb extends PDbBase {
 //              System.out.println(data.getName() + " param value = " + params[i]);
             substitutions.put(":argument_value:", sqlQuote(params[i].toString()));
             substitutions.put(":argument_order:", sqlQuote(String.valueOf(i + 1)));
-            executeUpdate(dbp.getQuery("insertComponentArg", substitutions));
-            result = true;
+            rs = executeQuery(stmt, dbp.getQuery("checkComponentArg", substitutions));
+            if(rs.next()) { // Already Exists
+              // Use the one that is there
+            } else {
+              executeUpdate(dbp.getQuery("insertComponentArg", substitutions));
+              result = true;
+            }
         }
         if (isAgent) {
             // Must be a recipe agent because that's all that gets added
@@ -701,7 +706,10 @@ public class PopulateDb extends PDbBase {
                     findAncestorOfType(data, ComponentData.AGENT).getName();
                 result = agentName + "|" + data.getClassName();
             } else if (componentType.equals(ComponentData.NODEBINDER)) {
-              result = data.getType() + "|" + data.getClassName();
+              String nodeName =
+                findAncestorOfType(data, ComponentData.NODE).getName();
+              result = nodeName + "|" + data.getClassName();
+              System.out.println("Result = " + result);
             } else if (componentType.equals(ComponentData.AGENTBINDER)) {
                 String agentName =
                     findAncestorOfType(data, ComponentData.AGENT).getName();
