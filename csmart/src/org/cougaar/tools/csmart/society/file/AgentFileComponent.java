@@ -125,7 +125,7 @@ public class AgentFileComponent
         int start = 0;
         if((start = name.indexOf("OrgRTData")) != -1) {
           name.replace(start, name.lastIndexOf("OrgRT"), "Org");
-          className.replace(className.indexOf("OrgRT"), className.indexOf("OrgRt"), "org");
+          className.replace(className.indexOf("OrgRT"), className.lastIndexOf("OrgRT"), "org");
         }
 
         int index = name.lastIndexOf(".");
