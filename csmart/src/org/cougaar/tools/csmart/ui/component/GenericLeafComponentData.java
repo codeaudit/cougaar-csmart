@@ -26,7 +26,7 @@ package org.cougaar.tools.csmart.ui.component;
  *
  * @see LeafComponentData
  */
-public class GenericLeafComponentData {
+public class GenericLeafComponentData implements LeafComponentData {
 
   private String type = null;
   private String name = null;

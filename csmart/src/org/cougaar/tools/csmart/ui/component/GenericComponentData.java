@@ -40,6 +40,12 @@ public class GenericComponentData implements ComponentData {
   private ConfigurableComponent owner = null;
   private ArrayList leafComponents = null;
 
+  public GenericComponentData() {
+    children = new ArrayList();
+    parameters = new ArrayList();
+    leafComponents = new ArrayList();
+  }
+
   public String getType() {
     return this.type;
   }
@@ -65,7 +71,7 @@ public class GenericComponentData implements ComponentData {
   }
 
   public ComponentData[] getChildren() {
-    return (ComponentData[])children.toArray();
+    return (ComponentData[])children.toArray(new ComponentData[0]);
   }
 
   public void setChildren(ComponentData[] child) {
@@ -125,7 +131,7 @@ public class GenericComponentData implements ComponentData {
   }
 
   public LeafComponentData[] getLeafComponents() {
-    return (LeafComponentData[]) leafComponents.toArray();
+    return (LeafComponentData[]) leafComponents.toArray(new LeafComponentData[0]);
   }
 
   public void setLeafComponents(LeafComponentData[] leaves) {
