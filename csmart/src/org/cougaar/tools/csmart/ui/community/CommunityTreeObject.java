@@ -82,18 +82,24 @@ public class CommunityTreeObject implements Cloneable {
     } else {
       if (type.equals("Root"))
         isRoot = true;
-      else if (type.equals("Community"))
+      else if (type.equalsIgnoreCase("Community"))
         isCommunity = true;
       else if (type.equals("Host"))
         isHost = true;
-      else if (type.equals("Agent")) {
+      else if (type.equalsIgnoreCase("Agent")) {
         isAgent = true;
         allowsChildren = false;
-      } else
-        if(log.isErrorEnabled()) {
-          log.error("CommunityTreeObject created with unknown type: " +
-                    type);
+      } else if (type.equalsIgnoreCase("Node")) {
+        isAgent = true;
+        allowsChildren = false;
+      } else {
+	allowsChildren = false;
+	isAgent = true;
+        if(log.isWarnEnabled()) {
+          log.warn("CommunityTreeObject " + label + " created with unknown type: " +
+                    type + " in community " + communityName);
         }
+      }
     }
     this.label = label;
     this.toolTip = toolTip;
