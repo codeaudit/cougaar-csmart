@@ -102,7 +102,7 @@ public class CMTAgent
   }
 
   private void initDBProperties() throws IOException {
-    dbp = DBProperties.readQueryFile(DBUtils.DATABASE, DBUtils.QUERY_FILE);
+    dbp = DBProperties.readQueryFile(DBUtils.QUERY_FILE);
     //    dbp.setDebug(true);
   }
 

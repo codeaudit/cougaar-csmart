@@ -192,6 +192,10 @@ public class ABCImpact
     return name;
   }
   
+  public String getRecipeName() {
+    return name;
+  }
+  
   /**
    * Get the agents, both assigned and unassigned.
    * @return array of agent components

@@ -32,7 +32,6 @@ import org.cougaar.util.DBConnectionPool;
  * still an issue.
  **/
 public class PopulateDb {
-    public static final String DATABASE = "org.cougaar.configuration.database";
     public static final String QUERY_FILE = "PopulateDb.q";
     private Map substitutions = new HashMap() {
         public Object put(Object key, Object val) {
@@ -170,7 +169,7 @@ public class PopulateDb {
         if (exptId == null) throw new IllegalArgumentException("null exptId");
         if (trialId == null) throw new IllegalArgumentException("null trialId");
         log = new PrintWriter(new FileWriter("PopulateDbQuery.log"));
-        dbp = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
+        dbp = DBProperties.readQueryFile(QUERY_FILE);
         //        dbp.setDebug(true);
         String database = dbp.getProperty("database");
         String username = dbp.getProperty("username");
@@ -232,6 +231,7 @@ public class PopulateDb {
         newExperiment(idType, experimentName);
         newTrial(idType, experimentName); // Trial and experiment have same name
         copyCMTAssemblies(oldTrialId, trialId);
+        copyCMTThreads(oldTrialId, trialId);
     }
 
     /**
@@ -264,35 +264,15 @@ public class PopulateDb {
             executeUpdate(dbp.getQuery("cleanTrialAssembly", substitutions));
         }
         rs.close();
-        executeUpdate(dbp.getQuery("cleanTrialMetric", substitutions));
-        executeUpdate(dbp.getQuery("cleanTrialMetricProp", substitutions));
+        executeUpdate(dbp.getQuery("cleanTrialRecipe", substitutions));
     }
 
     private void newExperiment(String idType, String experimentName) throws SQLException {
         String exptIdPrefix = idType + "-";
-        substitutions.put(":expt_id_pattern:", exptIdPrefix + "____");
         substitutions.put(":expt_type:", idType);
         substitutions.put(":expt_name:", experimentName);
         substitutions.put(":description:", experimentName);
-        DecimalFormat exptIdFormat =
-            new DecimalFormat(exptIdPrefix + "0000");
-        ResultSet rs =
-            executeQuery(stmt, dbp.getQuery("queryMaxExptId",
-                                            substitutions));
-        exptId = null;
-        if (rs.next()) {
-            String maxId = rs.getString(1);
-            if (maxId != null) {
-                try {
-                    int n = exptIdFormat.parse(maxId).intValue();
-                    exptId = exptIdFormat.format(n + 1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    // Use default
-                }
-            }
-        }
-        if (exptId == null) exptId = exptIdFormat.format(1);
+        exptId = getNextId("queryMaxExptId", exptIdPrefix);
         substitutions.put(":expt_id:", exptId);
         executeUpdate(dbp.getQuery("insertExptId", substitutions));
     }
@@ -305,27 +285,8 @@ public class PopulateDb {
         throws SQLException
     {
         String trialIdPrefix = idType + "-";
-        substitutions.put(":trial_id_pattern:", trialIdPrefix + "____");
         substitutions.put(":trial_type:", idType);
-        DecimalFormat trialIdFormat =
-            new DecimalFormat(trialIdPrefix + "0000");
-        ResultSet rs =
-            executeQuery(stmt, dbp.getQuery("queryMaxTrialId",
-                                            substitutions));
-        trialId = null;
-        if (rs.next()) {
-            String maxId = rs.getString(1);
-            if (maxId != null) {
-                try {
-                    int n = trialIdFormat.parse(maxId).intValue();
-                    trialId = trialIdFormat.format(n + 1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    // Use default
-                }
-            }
-        }
-        if (trialId == null) trialId = trialIdFormat.format(1);
+        trialId = getNextId("queryMaxTrialId", trialIdPrefix);
         substitutions.put(":trial_id:", trialId);
         substitutions.put(":description:", "Modified Trial");
         substitutions.put(":trial_name:", trialName);
@@ -339,25 +300,7 @@ public class PopulateDb {
         String assemblyIdPrefix = idType + "-";
         substitutions.put(":assembly_id_pattern:", assemblyIdPrefix + "____");
         substitutions.put(":assembly_type:", idType);
-        DecimalFormat assemblyIdFormat =
-            new DecimalFormat(assemblyIdPrefix + "0000");
-        ResultSet rs =
-            executeQuery(stmt, dbp.getQuery("queryMaxAssemblyId",
-                                            substitutions));
-        assemblyId = null;
-        if (rs.next()) {
-            String maxId = rs.getString(1);
-            if (maxId != null) {
-                try {
-                    int n = assemblyIdFormat.parse(maxId).intValue();
-                    assemblyId = assemblyIdFormat.format(n + 1);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    // Use default
-                }
-            }
-        }
-        if (assemblyId == null) assemblyId = assemblyIdFormat.format(1);
+        assemblyId = getNextId("queryMaxAssemblyId", assemblyIdPrefix);
         substitutions.put(":assembly_id:", sqlQuote(assemblyId));
         substitutions.put(":trial_id:", trialId);
         executeUpdate(dbp.getQuery("insertAssemblyId", substitutions));
@@ -371,6 +314,20 @@ public class PopulateDb {
         substitutions.put(":old_trial_id:", oldTrialId);
         substitutions.put(":new_trial_id:", newTrialId);
         String qs = dbp.getQuery("copyCMTAssembliesQueryNames", substitutions);
+        StringTokenizer queries = new StringTokenizer(qs);
+        while (queries.hasMoreTokens()) {
+            String queryName = queries.nextToken();
+            executeUpdate(dbp.getQuery(queryName, substitutions));
+        }
+    }
+
+    private void copyCMTThreads(String oldTrialId, String newTrialId)
+        throws SQLException
+    {
+        dbp.setDebug(true);
+        substitutions.put(":old_trial_id:", oldTrialId);
+        substitutions.put(":new_trial_id:", newTrialId);
+        String qs = dbp.getQuery("copyCMTThreadsQueryNames", substitutions);
         StringTokenizer queries = new StringTokenizer(qs);
         while (queries.hasMoreTokens()) {
             String queryName = queries.nextToken();
@@ -396,25 +353,114 @@ public class PopulateDb {
         }
     }
 
-    public void setMetrics(List metrics) throws SQLException, IOException {
+    public void setModRecipes(List recipes) throws SQLException, IOException {
         //        dbp.setDebug(true);
-//          System.out.println(metrics.size() + " metrics to save");
-        for (Iterator i = metrics.iterator(); i.hasNext(); ) {
-            MetricComponent mc = (MetricComponent) i.next();
-            substitutions.put(":metric_id:", mc.getMetricName());
-            executeUpdate(dbp.getQuery("insertTrialMetric", substitutions));
-            for (Iterator j = mc.getPropertyNames(); j.hasNext(); ) {
-                CompositeName pname = (CompositeName) j.next();
-                Property prop = mc.getProperty(pname);
-                Object val = prop.getValue();
-                if (val == null) continue; // Don't write null values
-                String sval = val.toString();
-                if (sval.equals("")) continue; // Don't write empty values
-                substitutions.put(":prop_name:", pname.last().toString());
-                substitutions.put(":prop_value:", prop.getValue().toString());
-                executeUpdate(dbp.getQuery("insertTrialMetricProp", substitutions));
-            }
+        int order = 0;
+        for (Iterator i = recipes.iterator(); i.hasNext(); ) {
+            RecipeComponent rc = (RecipeComponent) i.next();
+            addTrialRecipe(rc, 0);
         }
+    }
+
+    public String insureLibRecipe(RecipeComponent rc) throws SQLException {
+        Map newProps = new HashMap();
+        for (Iterator j = rc.getPropertyNames(); j.hasNext(); ) {
+            CompositeName pname = (CompositeName) j.next();
+            Property prop = rc.getProperty(pname);
+            Object val = prop.getValue();
+            if (val == null) continue; // Don't write null values
+            String sval = val.toString();
+            if (sval.equals("")) continue; // Don't write empty values
+            String name = pname.last().toString();
+            newProps.put(name, sval);
+        }
+        String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
+        if (recipeIdAndClass != null) { // Already exists, check equality
+            Map oldProps = new HashMap();
+            if (!recipeIdAndClass[1].equals(rc.getClass().getName()))
+                throw new SQLException("Attempt to overwrite recipe "
+                                       + rc.getRecipeName());
+            substitutions.put(":recipe_id:", recipeIdAndClass[0]);
+            ResultSet rs =
+                executeQuery(stmt, dbp.getQuery("queryLibRecipeProps", substitutions));
+            while (rs.next()) {
+                oldProps.put(rs.getString(1), rs.getString(2));
+            }
+            rs.close();
+            if (!oldProps.equals(newProps)) {
+                throw new SQLException("Attempt to overwrite recipe "
+                                       + rc.getRecipeName());
+            }
+            return recipeIdAndClass[0];
+        }
+        String recipeId = getNextId("queryMaxRecipeId", "RECIPE-");
+        substitutions.put(":recipe_id:", recipeId);
+        substitutions.put(":java_class:", rc.getClass().getName());
+        substitutions.put(":description:", "No description available");
+        executeUpdate(dbp.getQuery("insertLibRecipe", substitutions));
+        int order = 0;
+        for (Iterator j = newProps.entrySet().iterator(); j.hasNext(); ) {
+            Map.Entry entry = (Map.Entry) j.next();
+            substitutions.put(":arg_name:", entry.getKey());
+            substitutions.put(":arg_value:", entry.getValue());
+            substitutions.put(":arg_order:", String.valueOf(order++));
+            executeUpdate(dbp.getQuery("insertLibRecipeProp", substitutions));
+        }
+        return recipeId;
+    }
+
+    private String[] getRecipeIdAndClass(String recipeName) throws SQLException {
+        substitutions.put(":recipe_name:", recipeName);
+        ResultSet rs =
+            executeQuery(stmt, dbp.getQuery("queryLibRecipeByName", substitutions));
+        try {
+            if (rs.next()) {
+                return new String[] {rs.getString(1), rs.getString(2)};
+            } else {
+                return null;
+            }
+        } finally {
+            rs.close();
+        }
+    }
+
+    public void addTrialRecipe(RecipeComponent rc, int recipeOrder)
+        throws SQLException
+    {
+        String recipeId = insureLibRecipe(rc);
+        substitutions.put(":recipe_id:", recipeId);
+        substitutions.put(":recipe_order:", String.valueOf(recipeOrder));
+        executeUpdate(dbp.getQuery("insertTrialRecipe", substitutions));
+    }
+
+    private String getNextId(String queryName, String prefix) {
+        DecimalFormat format = new DecimalFormat(prefix + "0000");
+        substitutions.put(":max_id_pattern:", prefix + "____");
+        String id = format.format(1); // Default
+        try {
+            Statement stmt = dbConnection.createStatement();
+            try {
+                String query = dbp.getQuery(queryName, substitutions);
+                ResultSet rs = executeQuery(stmt, query);
+                try {
+                    if (rs.next()) {
+                        String maxId = rs.getString(1);
+                        if (maxId != null) {
+                            int n = format.parse(maxId).intValue();
+                            id = format.format(n + 1);
+                        }
+                    }
+                } finally {
+                    rs.close();
+                }
+            } finally {
+                stmt.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            // Ignore exceptions and use default
+        }
+        return id;
     }
 
     /**
@@ -436,6 +482,10 @@ public class PopulateDb {
             return result;
         } catch (SQLException sqle) {
             System.err.println("SQLException query: " + query);
+            if (log != null) {
+                log.println("SQLException query: " + query);
+                log.flush();
+            }
             throw sqle;
         }
     }
@@ -459,6 +509,10 @@ public class PopulateDb {
             return rs;
         } catch (SQLException sqle) {
             System.err.println("SQLException query: " + query);
+            if (log != null) {
+                log.println("SQLException query: " + query);
+                log.flush();
+            }
             throw sqle;
         }
     }
@@ -510,7 +564,7 @@ public class PopulateDb {
      * This is inordinately difficult because of the haphazard way the
      * the db is populated. Our aim is two-fold: to write an assembly
      * describing the host-node-agent assignments and to write a
-     * different assembly describing the effect of impacts an metrics.
+     * different assembly describing the effect of recipes.
      * Both types of assemblies have agent-node assigments. The
      * distinction is made using the preexistingItems Set.
      * Components in this set are either part of the CMT assembly
@@ -559,7 +613,7 @@ public class PopulateDb {
             }
         }
         if (isAgent) {
-            // Must be a metric or impact agent because that's all that gets added
+            // Must be a recipe agent because that's all that gets added
             populateAgent(data, isAdded);
             result = true;
             force = true;   // Force writing of all plugins, too
@@ -715,6 +769,10 @@ public class PopulateDb {
             String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
             return sqlQuote(data.getType() + "|" + data.getClassName());
         }
+        if (componentType.equals(ComponentData.BINDER)) {
+            String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
+            return sqlQuote(data.getType() + "|" + data.getClassName());
+        }
         if (componentType.equals(ComponentData.AGENT)) {
             String agentName = data.getName();
             return sqlQuote(agentName);
@@ -742,6 +800,9 @@ public class PopulateDb {
         if (componentType.equals(ComponentData.PLUGIN)) {
             return sqlQuote("Node.AgentManager.Agent.PluginManager.Plugin");
         }
+        if (componentType.equals(ComponentData.BINDER)) {
+            return sqlQuote("Node.AgentManager.Agent.PluginManager.Binder");
+        }
         if (componentType.equals(ComponentData.AGENT)) {
             return sqlQuote("Node.AgentManager.Agent");
         }
@@ -765,6 +826,10 @@ public class PopulateDb {
         if (result != null) return sqlQuote(result);
         String componentType = data.getType();
         if (componentType.equals(ComponentData.PLUGIN)) {
+            String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
+            return sqlQuote(agentName + "|" + data.getClassName());
+        }
+        if (componentType.equals(ComponentData.BINDER)) {
             String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
             return sqlQuote(agentName + "|" + data.getClassName());
         }

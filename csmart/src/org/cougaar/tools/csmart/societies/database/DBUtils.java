@@ -36,9 +36,11 @@ import org.cougaar.util.DBConnectionPool;
 
 public class DBUtils {
 
+  // The following three variables are all implied by QUERY_FILE and not be needed
   public static final String DATABASE = "org.cougaar.configuration.database";
   public static final String USER = "org.cougaar.configuration.user";
   public static final String PASSWORD = "org.cougaar.configuration.password";
+
   public static final String QUERY_FILE = "CSMART.q";
   public static final String ASSEMBLYID_QUERY = "queryAssemblyID";
 
@@ -97,7 +99,7 @@ public class DBUtils {
 
     if(isValidRCFile()) {
       try {
- 	dbProps = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
+ 	dbProps = DBProperties.readQueryFile(QUERY_FILE);
 	substitutions.put(":assembly_type", "CMT");
 	try {
 	  String dbtype = dbProps.getDBType();
@@ -150,7 +152,7 @@ public class DBUtils {
 
     if(isValidRCFile()) {
       try {	
-	dbProps = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
+	dbProps = DBProperties.readQueryFile(QUERY_FILE);
 	database = dbProps.getProperty("database");
 	username = dbProps.getProperty("username");
 	password = dbProps.getProperty("password");
@@ -179,7 +181,7 @@ public class DBUtils {
 
     if(isValidRCFile()) {
       try {
-	dbProps = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
+	dbProps = DBProperties.readQueryFile(QUERY_FILE);
 	result = dbProps.getQuery(query, substitutions);
       } catch(IOException e) {}      
     }

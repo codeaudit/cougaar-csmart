@@ -715,7 +715,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       if (pdb.populate(theSoc, 1)) {
         setCloned(true);        // If not cloned before, we certainly are now
       }
-      pdb.setMetrics(metrics);
+      pdb.setModRecipes(metrics);
       pdb.close();
     } catch (Exception sqle) {
       sqle.printStackTrace();

@@ -65,6 +65,10 @@ public class EmptyMetric extends ModifiableConfigurableComponent
     return getShortName();
   }
 
+  public String getRecipeName() {
+    return getShortName();
+  }
+
   /**
    * Get the agents, both assigned and unassigned.
    * Only return new agents.

@@ -24,14 +24,27 @@ package org.cougaar.tools.csmart.ui.component;
 import java.net.URL;
 
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
+import java.net.URL;
 
 /**
- * Parent interface for all Impacts to a CSMART system. Just extends
- * RecipeComponent with one additional method: getImpactName should
- * return the same thing as getRecipeName
+ * Parent interface for all Recipes to a CSMART system.
+ * Recipes may have Agents, and may need to be able to write
+ * out information in the various Nodes. These interfaces are
+ * exposed.
  */
-public interface ImpactComponent extends RecipeComponent {
-  String getImpactName();
+public interface RecipeComponent extends ModifiableComponent, ComponentProperties {
+
+  final String CLASS_NAME_PROP = "recipe_class_name";
+
+  void setName(String newName);
+
+  String getRecipeName();
+
+  /**
+   * Get the agents, both assigned and unassigned.
+   * @return array of agent components
+   */
+  AgentComponent[] getAgents();
 }
 
 

@@ -18,18 +18,8 @@ import java.net.URL;
  * These are configurable components that can be added to an experiment.
  *
  */
-public interface MetricComponent extends ModifiableComponent, ComponentProperties {
-
-  void setName(String newName);
-
+public interface MetricComponent extends RecipeComponent {
   String getMetricName();
-
-  /**
-   * Get the agents, both assigned and unassigned.
-   * Only return new agents.
-   * @return array of agent components
-   */
-  AgentComponent[] getAgents();
 
   /**
    * Return a file filter which can be used to fetch

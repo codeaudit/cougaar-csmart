@@ -565,7 +565,7 @@ public class CMT {
 
 	if(isValidRCFile()) {
 	    try {
-		dbProps = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
+		dbProps = DBProperties.readQueryFile(QUERY_FILE);
 		substitutions.put(":assembly_type", "CMT");
 		try {
 		    String dbtype = dbProps.getDBType();
@@ -617,7 +617,7 @@ public class CMT {
 	Connection conn = null;
 	if(isValidRCFile()) {
 	    try {	
-		dbProps = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
+		dbProps = DBProperties.readQueryFile(QUERY_FILE);
 		database = dbProps.getProperty("database");
 		username = dbProps.getProperty("username");
 		password = dbProps.getProperty("password");
@@ -644,7 +644,7 @@ public class CMT {
 
 	if(isValidRCFile()) {
 	    try {
-		dbProps = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
+		dbProps = DBProperties.readQueryFile(QUERY_FILE);
 		result = dbProps.getQuery(query, substitutions);
 	    } catch(IOException e) {}      
 	}
