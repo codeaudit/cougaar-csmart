@@ -333,7 +333,9 @@ public class DBUtils {
       while (iter.hasNext()) {
 	String val = (String)iter.next();
 	// Ignore entries that start with the given pattern
-	if (badStartPattern != null && ! val.startsWith(badStartPattern))
+	if (badStartPattern != null && val.startsWith(badStartPattern))
+	  continue;
+	if (val.equals(""))
 	  continue;
 	if (first) {
 	  first = false;
@@ -345,7 +347,11 @@ public class DBUtils {
 	assemblyMatch.append("'");
       }
       assemblyMatch.append(")");
-      return assemblyMatch.toString();
+      if (first) {
+	return "is null";
+      } else {
+	return assemblyMatch.toString();
+      }
     } else {
       return "is null";
     }
