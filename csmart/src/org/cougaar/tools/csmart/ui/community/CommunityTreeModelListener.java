@@ -22,14 +22,37 @@
 
 package org.cougaar.tools.csmart.ui.community;
 
+import java.util.ArrayList;
+import java.util.Hashtable;
 import javax.swing.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+/**
+ * Update the database when user modifies the community tree.
+ * This maintains a hashtable of names of nodes in the tree
+ * and their community (don't use the actual nodes, as they change),
+ * so that treeNodesInserted can both handle the insertion of a node,
+ * and its removal from its previous community, then treeNodesRemoved does
+ * nothing.  This approach is taken because the listener can be messaged
+ * with treeNodesInserted, before treeNodesRemoved.
+ */
+
 public class CommunityTreeModelListener implements TreeModelListener {
   CommunityTableUtils communityTableUtils;
+  Hashtable communities = new Hashtable();
 
   public CommunityTreeModelListener(CommunityTableUtils communityTableUtils) {
     this.communityTableUtils = communityTableUtils;
+  }
+
+  /**
+   * Just update the hashtable of nodes and communities.
+   * Used when creating a tree from the database, in which case,
+   * the database doesn't have to be modified.
+   */
+  public void addNode(DefaultMutableTreeNode node, String communityName) {
+    CommunityTreeObject cto = (CommunityTreeObject)node.getUserObject();
+    communities.put(cto.toString(), communityName);
   }
 
   public void treeNodesChanged(TreeModelEvent e) {
@@ -50,56 +73,107 @@ public class CommunityTreeModelListener implements TreeModelListener {
    */
   public void treeNodesInserted(TreeModelEvent e) {
     Object[] addedNodes = e.getChildren();
-    DefaultMutableTreeNode parentNode =
+    // first, take remove action
+    for (int i = 0; i < addedNodes.length; i++)
+      removeNode((DefaultMutableTreeNode)addedNodes[i]);
+    // get parent of added nodes
+    DefaultMutableTreeNode node =
       (DefaultMutableTreeNode)e.getTreePath().getLastPathComponent();
-    CommunityTreeObject cto = 
-      (CommunityTreeObject)parentNode.getUserObject();
-    // if parent is a community, add info on the new entity
-    if (cto.isCommunity()) {
-      String communityName = cto.toString();
-      for (int i = 0; i < addedNodes.length; i++) {
-        DefaultMutableTreeNode node = 
-          (DefaultMutableTreeNode)addedNodes[i];
-        CommunityTreeObject addedObject = 
-          (CommunityTreeObject)node.getUserObject();
-        String entityName = addedObject.toString();
-        String query = CommunityFrame.INSERT_ENTITY_INFO_QUERY + 
-          communityName +
-          "', '" + entityName +
-          "', 'MemberType', '" + addedObject.getType() + "')";
-        communityTableUtils.executeQuery(query);
-        query = CommunityFrame.INSERT_ENTITY_INFO_QUERY + communityName + 
-          "', '" + entityName +
-          "', 'Role', 'Member')";
-        communityTableUtils.executeQuery(query);
-      }
+    if (node.isRoot())
+      return; // don't do anything if adding to root
+
+    // find community this node belongs in and add info on the new entity
+    CommunityTreeObject cto = null;
+    while (node != null) {
+      cto = (CommunityTreeObject)node.getUserObject();
+      if (cto.isCommunity())
+        break;
+      node = (DefaultMutableTreeNode)node.getParent();
+    }
+    if (cto == null) {
+      System.out.println("Inserted node that is not in a community: " +
+                         node);
+      return;
+    }
+
+    String communityName = cto.toString();
+    for (int i = 0; i < addedNodes.length; i++) {
+      node = (DefaultMutableTreeNode)addedNodes[i];
+      CommunityTreeObject addedObject = 
+        (CommunityTreeObject)node.getUserObject();
+      String entityName = addedObject.toString();
+      String query = CommunityFrame.INSERT_ENTITY_INFO_QUERY + 
+        communityName + "', '" + entityName +
+        "', 'MemberType', '" + addedObject.getType() + "')";
+      communityTableUtils.executeQuery(query);
+      query = CommunityFrame.INSERT_ENTITY_INFO_QUERY + communityName + 
+        "', '" + entityName + "', 'Role', 'Member')";
+      communityTableUtils.executeQuery(query);
+      addNode(node, communityName);
     }
   }
 
   /**
-   * Remove info on deleted nodes from community_entity_attribute table.
-   * TODO: if a community is deleted, should all info on it be deleted?
+   * Do nothing; the remove action is taken by the inserted method,
+   * because these messages are received backwards (insert before remove).
    */
   public void treeNodesRemoved(TreeModelEvent e) {
-    Object[] deletedNodes = e.getChildren();
-    DefaultMutableTreeNode parentNode =
-      (DefaultMutableTreeNode)e.getTreePath().getLastPathComponent();
-    CommunityTreeObject cto = 
-      (CommunityTreeObject)parentNode.getUserObject();
-    // if parent is a community, remove the entity info from the community
-    if (cto.isCommunity()) {
-      String communityName = cto.toString();
-      for (int i = 0; i < deletedNodes.length; i++) {
-        DefaultMutableTreeNode node = 
-          (DefaultMutableTreeNode)deletedNodes[i];
-        CommunityTreeObject deletedObject = 
-          (CommunityTreeObject)node.getUserObject();
-        String query = CommunityFrame.DELETE_ENTITY_INFO_QUERY + 
-          communityName +
-          "' and entity_id = '" + deletedObject.toString() + "'";
-        communityTableUtils.executeQuery(query);
+  }
+
+  /**
+   * Remove the node from the hashtable of nodes and communities
+   * and update the database table.
+   * Invoked when inserting a node which may have
+   * been moved from some other community, or when deleting nodes.
+   */
+  public void removeNode(DefaultMutableTreeNode node) {
+    // remove from previous community
+    CommunityTreeObject deletedObject =
+      (CommunityTreeObject)node.getUserObject();
+    String entityName = deletedObject.toString();
+    String communityName = (String)communities.remove(entityName);
+    if (communityName == null)
+      return;
+    String query = CommunityFrame.DELETE_ENTITY_INFO_QUERY + 
+      communityName + "' and entity_id = '" + entityName + "'";
+    communityTableUtils.executeQuery(query);
+  }
+
+  /**
+   * Remove a node and all its descendants from the community.
+   * Invoked when deleting a node.
+   * Delete subcommunities only if this is the last reference.
+   */
+  public void removeBranch(DefaultMutableTreeNode node) {
+    int nChildren = node.getChildCount();
+    for (int i = 0; i < nChildren; i++) {
+      DefaultMutableTreeNode childNode = 
+        (DefaultMutableTreeNode)node.getChildAt(i);
+      CommunityTreeObject childObject = 
+        (CommunityTreeObject)childNode.getUserObject();
+      if (childObject.isCommunity()) {
+        removeNode(childNode);
+        removeCommunity(childObject.toString());
+      } else {
+        removeBranch(childNode);
+        removeNode(childNode);
       }
     }
+    removeNode(node);
+  }
+
+  /**
+   * Remove this community if it's not in any other community.
+   */
+  private void removeCommunity(String communityName) {
+    String query = CommunityFrame.IS_COMMUNITY_IN_USE_QUERY +
+      communityName + "'";
+    ArrayList results = CommunityDBUtils.getQueryResults(query);
+    if (results.size() == 0) {
+      query = CommunityFrame.DELETE_COMMUNITY_INFO_QUERY +
+        communityName + "'";
+      communityTableUtils.executeQuery(query);
+    } 
   }
 
   public void treeStructureChanged(TreeModelEvent e) {

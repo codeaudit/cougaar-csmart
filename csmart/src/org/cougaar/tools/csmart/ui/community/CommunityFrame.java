@@ -50,7 +50,9 @@ public class CommunityFrame extends JFrame {
   public static final String GET_ENTITY_INFO_QUERY = "Select entity_id, attribute_id, attribute_value from community_entity_attribute where community_entity_attribute.community_id = '";
   public static final String INSERT_COMMUNITY_INFO_QUERY = "Insert into community_attribute values ('";
   public static final String INSERT_ENTITY_INFO_QUERY = "Insert into community_entity_attribute values ('";
+  public static final String DELETE_COMMUNITY_INFO_QUERY = "Delete from community_attribute where community_id = '";
   public static final String DELETE_ENTITY_INFO_QUERY = "Delete from community_entity_attribute where community_id = '";
+  public static final String IS_COMMUNITY_IN_USE_QUERY = "Select entity_id from community_entity_attribute where community_id = '";
   private static final String FILE_MENU = "File";
   private static final String CLOSE_ACTION = "Close";
   private static final String VIEW_MENU = "View";
@@ -379,7 +381,7 @@ public class CommunityFrame extends JFrame {
 
   /**
    * Delete the community or entity selected in the tree.
-   * Just removes it from the model, the model listener updates the database.
+   * Tell the model listener to update it's hashtable and the database.
    */
   private void delete() {
     TreePath selectedPath = communityTree.getSelectionPath();
@@ -388,6 +390,7 @@ public class CommunityFrame extends JFrame {
     DefaultMutableTreeNode selectedNode =
       (DefaultMutableTreeNode)selectedPath.getLastPathComponent();
     ((DefaultTreeModel)communityTree.getModel()).removeNodeFromParent(selectedNode);
+    treeModelListener.removeBranch(selectedNode);
   }
 
   /**
@@ -565,6 +568,8 @@ public class CommunityFrame extends JFrame {
         entityType = (String)results.get(0);
       DefaultMutableTreeNode newNode = 
         communityTree.addNode(node, entityName, entityType);
+      // tell our tree model listener to simply add the node to its hashtable
+      treeModelListener.addNode(newNode, communityName);
       if (entityType.equals("Community"))
         addToTree(newNode, entityName);
     }

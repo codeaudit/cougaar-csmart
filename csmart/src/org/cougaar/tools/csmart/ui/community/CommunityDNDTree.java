@@ -126,15 +126,9 @@ public class CommunityDNDTree extends DNDTree {
       new DefaultMutableTreeNode(new CommunityTreeObject(name, type),
                                  !type.equals("Agent"));
     model.insertNodeInto(newNode, node, node.getChildCount());
-    // expand tree to display new node
+    // expand branch below new node and scroll to display new node
+    expandBranch(newNode);
     scrollPathToVisible(new TreePath(newNode.getPath()));
-    // expand tree
-//      Enumeration treeNodes = root.depthFirstEnumeration();
-//      while (treeNodes.hasMoreElements()) {
-//        DefaultMutableTreeNode tmpNode = 
-//  	(DefaultMutableTreeNode)treeNodes.nextElement();
-//        expandPath(new TreePath(tmpNode.getPath()));
-//      }
     return newNode;
   }
 
@@ -221,8 +215,6 @@ public class CommunityDNDTree extends DNDTree {
 
  /**
    * Adds dropped object to this tree; called by drop method.
-   * Object is either a CommunityTreeObject or a DefaultMutableTreeNode
-   * depending on whether the user is dragging a leaf or a node.
    * Returns true if successful.
    */
    
@@ -258,38 +250,58 @@ public class CommunityDNDTree extends DNDTree {
     return action;
   }
 
-  // add an element by getting the user object out of the source
-  // and creating a new tree node for it
-  // do the same thing for all the node's descendants
+  /** 
+   * Add an element by getting the user object out of the source
+   * and creating a new tree node for it; 
+   * recurse for all the node's descendants;
+   * nodes must be added "top-down" in order for the model listener
+   * to correctly add them to the database.
+   */
+
   private boolean addElement(DefaultMutableTreeNode source,
                              DefaultMutableTreeNode target,
                              DefaultMutableTreeNode before) {
     // disallow move if source is an ancestor of target
     if (target.isNodeAncestor(source))
       return false;
-    DefaultMutableTreeNode newNode = copyNode(source);
-    int ix = target.getChildCount(); // Drop at end by default
     DefaultTreeModel model = (DefaultTreeModel) getModel();
-    if (before != null)        // If before specified, put it there.
+    // drop new node at end by default, unless before target is specified
+    int ix = target.getChildCount();
+    if (before != null)
       ix = model.getIndexOfChild(target, before);
+    DefaultMutableTreeNode newNode =
+      new DefaultMutableTreeNode(source.getUserObject(), 
+                !((CommunityTreeObject)source.getUserObject()).isAgent());
     model.insertNodeInto(newNode, target, ix);
+    // copy the source node's descendants, recursively
+    copyChildren(source, newNode);
+    // expand branch below new node and scroll to display new node
+    expandBranch(newNode);
     scrollPathToVisible(new TreePath(newNode.getPath()));
     return true;
   }
 
-  private DefaultMutableTreeNode copyNode(DefaultMutableTreeNode node) {
-    DefaultMutableTreeNode newNode =
-      new DefaultMutableTreeNode(node.getUserObject(), 
-                                 !((CommunityTreeObject)node.getUserObject()).isAgent());
+  private void copyChildren(DefaultMutableTreeNode oldNode,
+                            DefaultMutableTreeNode newNode) {
     DefaultTreeModel model = (DefaultTreeModel)getModel();
-    int nChildren = node.getChildCount();
+    int nChildren = oldNode.getChildCount();
     for (int i=0; i < nChildren; i++) {
-      //      newNode.add(copyNode((DefaultMutableTreeNode)node.getChildAt(i)));
+      DefaultMutableTreeNode oldChildNode = 
+        (DefaultMutableTreeNode)oldNode.getChildAt(i);
+      CommunityTreeObject cto = 
+        (CommunityTreeObject)oldChildNode.getUserObject();
       DefaultMutableTreeNode newChildNode =
-        copyNode((DefaultMutableTreeNode)node.getChildAt(i));
+        new DefaultMutableTreeNode(cto, !cto.isAgent());
       model.insertNodeInto(newChildNode, newNode, i);
+      copyChildren(oldChildNode, newChildNode);
     }
-    return newNode;
+  }
+
+  // expand the branch from the specified node down
+  private void expandBranch(DefaultMutableTreeNode node) {
+    Enumeration nodes = node.depthFirstEnumeration();
+    while (nodes.hasMoreElements())
+      expandPath(new TreePath((DefaultMutableTreeNode)nodes.nextElement()));
   }
 
   private void readObject(ObjectInputStream ois)
