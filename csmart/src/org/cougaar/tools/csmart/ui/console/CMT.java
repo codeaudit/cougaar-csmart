@@ -671,13 +671,8 @@ public class CMT {
 	boolean doIt = true;
 
 	// HACK: Avoid deleting base experiments
-	String[] baseExpts = new String[] {"EXPT_TRANS","TINY-1AD-TRANS-STUB","FULL-1AD-TRANS","TINY-1AD-TRANS","SMALL-1AD-TRANS","SMALL-1AD-TRANS-STUB","FULL-1AD-TRANS-STUB"};
-	for (int i = 0; i < baseExpts.length; i++) {
-	  if (experiment_id.equals(baseExpts[i])) {
-	    doIt = false;
-	    break;
-	  }
-	}
+	if (! experiment_id.startsWith("EXPT-"))
+	  doIt = false;
 	
 	if (doIt == false) {
 	    int response = 
