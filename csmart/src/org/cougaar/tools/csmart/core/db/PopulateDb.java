@@ -895,7 +895,11 @@ public class PopulateDb extends PDbBase {
       substitutions.put(":soc_desc:", societyName);
     } else {
       // cmtAssemblyId = cmtAsbID;
-      substitutions.put(":soc_desc:", societyName + " based on " + cmtAsbID);
+
+      // Putting the old AssemblyID in the society name is a bit ugly.
+      //      substitutions.put(":soc_desc:", societyName + " based on " + cmtAsbID);
+      substitutions.put(":soc_desc:", societyName + "-modified");
+
       // Came from a CMT assembly. Copy the OPLAN stuff
       copyOPLANData(cmtAsbID, assemblyId);
     }
