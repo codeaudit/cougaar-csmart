@@ -22,7 +22,9 @@
         <!-- Per user properties can be specified here. In particular,
 	use this to specify the Jikes compiler, with properties:
 	build.compiler=jikes
-	build.compile.emacs=true
+        build.compiler.warnings=true
+	build.compiler.emacs=true
+
 	This latter makes the error messages prettier in Emacs -->
 	<property file="${user.home}/.ant.properties" />
 
@@ -79,6 +81,8 @@
 	   <pathelement location="${sys}/grappa1_2_bbn.jar" />
 	   <pathelement location="${sys}/xerces.jar" />
 	   <pathelement location="${sys}/jcchart451K.jar" />
+	   <pathelement location="${sys}/junit.jar" />
+           <pathelement location="${sys}/silk.jar" />
 	</path>
 
 	<!-- Backwards compatibility -->
