@@ -31,12 +31,12 @@ import java.util.ArrayList;
  * @see ComponentData for docs.
  */
 public class GenericComponentData implements ComponentData {
-  private String type = null;
+  protected String type = null;
   private String name = null;
-  private String className = null;
+  protected String className = null;
   private ArrayList children = null;
   private ArrayList parameters = null;
-  private ConfigurableComponent parent = null;
+  private ComponentData parent = null;
   transient private ConfigurableComponent owner = null;
   private ArrayList leafComponents = null;
   private ArrayList timePhasedData = null;
@@ -116,11 +116,11 @@ public class GenericComponentData implements ComponentData {
     return parameters.size();
   }
 
-  public ConfigurableComponent getParent() {
+  public ComponentData getParent() {
     return parent;
   }
 
-  public void setParent(ConfigurableComponent parent) {
+  public void setParent(ComponentData parent) {
     this.parent = parent;
   }
 
@@ -152,6 +152,25 @@ public class GenericComponentData implements ComponentData {
 
   public int leafCount() {
     return leafComponents.size();
+  }
+
+  // For testing, dump out the tree from here down
+  public String toString() {
+    StringBuffer buf = new StringBuffer();
+    buf.append(this.getClass().toString() + ": ");
+    buf.append("Name: " + getName());
+    buf.append(", Type: " + getType());
+    buf.append(", Class: " + getClassName());
+    if (owner != null) {
+      buf.append(", Owner: " + getOwner());
+    }
+    buf.append(", LeafCount: " + leafCount());
+    buf.append(", ChildCount: " + childCount());
+    ComponentData[] children = getChildren();
+    for (int i = 0; i < childCount(); i++) {
+      buf.append(", Child[" + i + "]: \n" + children[i] + "\n");
+    }
+    return buf.toString();
   }
 
   public TimePhasedData[] getTimePhasedData() {

@@ -29,9 +29,9 @@ public interface ComponentData {
 
   /** Component Types **/
   public static final String SOCIETY = "Society";
-  public static final String AGENT = "Agent";
+  public static final String AGENT = "cluster";
   public static final String NODE = "Node";
-  public static final String PLUGIN = "Plugin";
+  public static final String PLUGIN = "plugin";
   public static final String BINDER = "Binder";
   public static final String SERVICE = "Service";
   
@@ -162,16 +162,16 @@ public interface ComponentData {
   /**
    * Returns the parent of this component.
    *
-   * @return ConfigurableComponent Parent of this Component
+   * @return ComponentData Parent of this Component
    */
-  public ConfigurableComponent getParent();
+  public ComponentData getParent();
 
   /**
    * Sets the parent of this component.
    *
-   * @param ConfigurableComponent Parent of this component.
+   * @param ComponentData Parent of this component.
    */
-  public void setParent(ConfigurableComponent parent);
+  public void setParent(ComponentData parent);
 
   /**
    * Gets the ConfigurableComponent associated with this
