@@ -331,10 +331,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     if (!recipes.contains(recipe)) {
       recipes.add(recipe);
       installListeners((ModifiableConfigurableComponent)recipe);
+      fireModification();
     } else {
       throw new IllegalArgumentException("Recipe already exists in experiment");
     }
-    fireModification();
   }
   
   /**
@@ -562,6 +562,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public void setTrialID(String trialID) {
     this.trialID = trialID;
     defaultNodeArguments.setReadOnlyProperty(EXPERIMENT_ID, trialID);
+    modified = true;
   }
 
   public String getTrialID() {
@@ -832,6 +833,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    */
   public void setExperimentID(String expID) {
     this.expID = expID;
+    modified = true;
   }
 
   public String getExperimentID() {
@@ -985,7 +987,12 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @return ComponentData the component data for the society
    */
   public ComponentData getSocietyComponentData() {
-    saveToDb(); // if modified, update component data and save to database
+    if (modified)
+      saveToDb(); // if modified, update component data and save to database
+    
+    if (completeSociety == null)
+      generateCompleteSociety();
+    
     return completeSociety;
   }
 
@@ -1050,6 +1057,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       Map.Entry entry = (Map.Entry) i.next();
       theSoc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
     }
+    modified = true;
   }
 
   private void readObject(ObjectInputStream ois)
@@ -1072,6 +1080,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       installListeners((ModifiableConfigurableComponent)nodeComponents[i]);
   }
 
+  // Put a bunch of Prop$ as parameters to the given component.
+  // even if the component itself doesnt think it wants it.
+  // This may cause problems for Agents, I think....
   private void addPropertiesAsParameters(ComponentData cd, BaseComponent cp)
   {
     for (Iterator it = cp.getPropertyNames(); it.hasNext(); ) {
@@ -1080,6 +1091,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       if (prop != null) {
         Object pvalue = prop.getValue();
         if (pvalue instanceof String)
+	  // FIXME: by doing pname.last(), it flattens out any
+	  // internal hierarchy. Surely that makes
+	  // it impossible for these to be much use?
+	  // FIXME??
           cd.addParameter(PROP_PREFIX + pname.last() + "=" + pvalue);
       }
     }
@@ -1122,7 +1137,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     if(hostExists(name)) {
       throw new IllegalArgumentException("Host Already Exists in Society");
     } else {
-      return addHostComponent(new ExperimentHost(name));
+      ExperimentHost eh = new ExperimentHost(name);
+      eh.initProperties();
+      return addHostComponent(eh);
     }
   }
 
@@ -1259,6 +1276,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public NodeComponent addNode(String name) throws IllegalArgumentException {
     if(!nodeExists(name)) {
       ExperimentNode result = new ExperimentNode(name, this);
+      result.initProperties();
       addNodeComponent(result);
       return result;
     } else {
@@ -1432,7 +1450,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
                              ComponentData parent, 
                              ConfigurableComponent owner) {
     if(log.isDebugEnabled()) {
-      log.debug("Adding Agent: " + agent.getShortName() + "To " + parent.getName());
+      log.debug("Adding Agent: " + agent.getShortName() + " To " + parent.getName());
     }
 
     AgentComponentData ac = new AgentComponentData();
@@ -1441,7 +1459,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     ac.addParameter(agent.getShortName()); // Agents have one parameter, the agent name
     ac.setOwner(owner);
     ac.setParent(parent);
-    addPropertiesAsParameters(ac, agent);
+
+    // FIXME: This is the lines that forces all the $Prop things
+    // on the agents to be stored!!!
+    //addPropertiesAsParameters(ac, agent);
     parent.addChild((ComponentData)ac);
   }
 
@@ -1507,6 +1528,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       // between saves. So this can throw that IllegalArgumentException
       // FIXME!!!!
       // Save what we have so far in the CSHNA assembly
+      if (log.isDebugEnabled()) {
+	log.debug("About to save HNA data");
+      }
       pdb.populateHNA(completeSociety);
 
       // Now let components add in their pieces
@@ -1543,6 +1567,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	  // Incrementally save
 	  // so that later recipes have the benefit
 	  // of the earlier modifications
+	  if (log.isDebugEnabled()) {
+	    log.debug("About to save CSMI data, having just done mod in " + soc.getShortName());
+	  }
 	  pdb.populateCSMI(completeSociety);
 	} catch (IllegalArgumentException iae) {
 	  if (log.isInfoEnabled()) {
@@ -1550,11 +1577,14 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	  }
 	  pdb.populateCSA(completeSociety);
 	}
-      }
+      } // end of loop over components to do mod
       pdb.setModRecipes(recipes);
 
       // Now make sure the runtime/ config time assemblies
       // are all correct
+      if (log.isDebugEnabled()) {
+	log.debug("About to do fix assemblies");
+      }
       if (! pdb.fixAssemblies()) {
 	// Some sort of error trying to ensure the assemblies are all correct.
 	if (log.isErrorEnabled()) {
@@ -1659,6 +1689,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       if(log.isDebugEnabled()) {
         log.debug(soc + ".addComponentData");
       }
+      // Warning: This is a no-op in general
+      // for recipes that use RecipeBase. AgentInsertion and ABCImpact
+      // use it though. Basically, you can only use
+      // it if you don't need a DB query to know what to do.
       soc.addComponentData(completeSociety);
       // Components can notice here if they had to remove
       // a component (or, I suppose, modify)
@@ -1674,8 +1708,39 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @return a <code>boolean</code>, true if any component was removed
    */
   public boolean generateCompleteSociety() {
+    if (! modified && completeSociety != null)
+      return false;
     generateHNACDATA();
-    return askComponentsToAddCDATA();
+
+    boolean mods = askComponentsToAddCDATA();
+    return mods |= allowModifyCData();
+  }
+
+  private boolean allowModifyCData() {
+    // then give everyone a chance to modify what they've collectively produced
+    boolean modified = false;
+    List components = getComponents();
+    try {
+      PopulateDb pdb = new PopulateDb(getExperimentID(), trialID);
+      for (int i = 0, n = components.size(); i < n; i++) {
+	BaseComponent soc = (BaseComponent) components.get(i);
+	if (log.isDebugEnabled()) {
+	  log.debug("allowModify letting comps modify. comp: " + soc.getShortName());
+	}
+	// Recipes typically need to do DB queries
+	// in order to do these insertions correctly,
+	// so need the version of modify that takes a pdb called.
+	soc.modifyComponentData(completeSociety, pdb);
+	modified |= soc.componentWasRemoved();
+      }
+      
+      pdb.close();
+    } catch (Exception e) {
+      if (log.isErrorEnabled()) {
+	log.error("dumpINIFiles error with pdb", e);
+      }
+    }
+    return modified;
   }
 
   ////////////////////////////////////////////
@@ -1697,28 +1762,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
     // Generate the complete Society
     generateCompleteSociety();
-
-    // then give everyone a chance to modify what they've collectively produced
-    List components = getComponents();
-    try {
-      PopulateDb pdb = new PopulateDb(getExperimentID(), trialID);
-      for (int i = 0, n = components.size(); i < n; i++) {
-	BaseComponent soc = (BaseComponent) components.get(i);
-	if (log.isDebugEnabled()) {
-	  log.debug("dumpINIs letting comps modify. comp: " + soc.getShortName());
-	}
-	// FIXME: Recipes typically need to do DB queries
-	// in order to do these insertions correctly,
-	// so need the version of modify that takes a pdb called.
-	soc.modifyComponentData(completeSociety, pdb);
-      }
-      
-      pdb.close();
-    } catch (Exception e) {
-      if (log.isErrorEnabled()) {
-	log.error("dumpINIFiles error with pdb", e);
-      }
-    }
 
     ExperimentINIWriter cw = new ExperimentINIWriter(completeSociety); 
     File resultDir = getResultDirectory();
