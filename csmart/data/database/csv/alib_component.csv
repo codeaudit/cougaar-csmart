@@ -1929,15 +1929,11 @@ COMPONENT_ALIB_ID,COMPONENT_NAME,COMPONENT_LIB_ID,COMPONENT_TYPE,CLONE_SET_ID,BL
 "244-ENGBN-CBTHVY|org.cougaar.mlm.plugin.generic.GenericTablePlugin","244-ENGBN-CBTHVY|org.cougaar.mlm.plugin.generic.GenericTablePlugin","plugin|org.cougaar.mlm.plugin.generic.GenericTablePlugin","plugin",0.000000000000000000000000000000
 "52-ENGBN-CBTHVY|org.cougaar.mlm.plugin.generic.GenericTablePlugin","52-ENGBN-CBTHVY|org.cougaar.mlm.plugin.generic.GenericTablePlugin","plugin|org.cougaar.mlm.plugin.generic.GenericTablePlugin","plugin",0.000000000000000000000000000000
 "SMALL_135","SMALL_135","SMALL_135","node",0.000000000000000000000000000000
-"matterhorn","matterhorn","matterhorn","host",0.000000000000000000000000000000
 "SMALL_1AD","SMALL_1AD","SMALL_1AD","node",0.000000000000000000000000000000
-"washington","washington","washington","host",0.000000000000000000000000000000
 "SMALL_1AD_PART","SMALL_1AD_PART","SMALL_1AD_PART","node",0.000000000000000000000000000000
 "FULL_1AD_top","FULL_1AD_top","FULL_1AD_top","node",0.000000000000000000000000000000
 "FULL_1AD_a","FULL_1AD_a","FULL_1AD_a","node",0.000000000000000000000000000000
-"sandwich","sandwich","sandwich","host",0.000000000000000000000000000000
 "FULL_1AD_b","FULL_1AD_b","FULL_1AD_b","node",0.000000000000000000000000000000
-"mt-blanc","mt-blanc","mt-blanc","host",0.000000000000000000000000000000
 "FULL_1AD_c","FULL_1AD_c","FULL_1AD_c","node",0.000000000000000000000000000000
 "21-TSC-HQ|org.cougaar.mlm.plugin.ldm.XMLPolicyPlugin","21-TSC-HQ|org.cougaar.mlm.plugin.ldm.XMLPolicyPlugin","plugin|org.cougaar.mlm.plugin.ldm.XMLPolicyPlugin","plugin",0.000000000000000000000000000000
 "77-MAINTCO|org.cougaar.mlm.plugin.ldm.XMLPolicyPlugin","77-MAINTCO|org.cougaar.mlm.plugin.ldm.XMLPolicyPlugin","plugin|org.cougaar.mlm.plugin.ldm.XMLPolicyPlugin","plugin",0.000000000000000000000000000000
