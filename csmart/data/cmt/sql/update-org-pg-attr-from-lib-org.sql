@@ -214,3 +214,5 @@ where
     liborg.uic is NULL
 and org.org_id = liborg.org_id
 ;
+exit
+;

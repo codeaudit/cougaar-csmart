@@ -241,3 +241,5 @@ from
 where
     org.org_id = orgrelate.org_id
 ;
+exit
+;
