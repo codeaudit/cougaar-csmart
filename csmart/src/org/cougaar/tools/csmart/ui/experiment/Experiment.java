@@ -47,7 +47,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public static final String VARY_RANDOM = "Random";
   private static final String[] variationSchemes = {
     VARY_ONE_DIMENSION, VARY_TWO_DIMENSION, VARY_SEQUENTIAL, VARY_RANDOM };
-  private String variationScheme = null;
+  private String variationScheme = variationSchemes[0];
   private boolean editable = true;
   private boolean runnable = true;
 
@@ -191,10 +191,15 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   /**
    * Get whether or not experiment is runnable.  An experiment is 
-   * runnable whenever it's not being edited.
+   * runnable whenever it's not being edited, if it is fully defined.<br>
    * @return whether or not an experiment is runnable
    */
   public boolean isRunnable() {
+    //    if (! hasConfiguration() || hasUnboundProperties())
+    if (hasUnboundProperties())
+      // FIXME!!! Restore check of hasConfiguration once it works!!
+    //    if (! hasConfiguration())
+      setRunnable(false);
     return runnable;
   }
 
@@ -247,7 +252,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   /**
    * Notify listeners that experiment was terminated.
    */
-
   public void experimentStopped() {
     if (listeners == null)
       return;
@@ -255,6 +259,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       ExperimentListener listener = (ExperimentListener)listeners.get(i);
       listener.experimentTerminated();
     }
+    // Tell the Societies in the experiment they are no longer running?
+    // FIXME!!
   }
 
   /**
@@ -263,7 +269,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * Add experiments and societies to workspace.
    * @return the copy of the experiment.
    */
-
   public Experiment copy(Organizer organizer, Object context) {
     String uniqueName = organizer.generateExperimentName(getExperimentName());
     Experiment experimentCopy = new Experiment(uniqueName);
@@ -279,9 +284,56 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       Metric copiedMetric = organizer.copyMetric(metric, context);
       experimentCopy.addMetric(copiedMetric);
     }
+
+    // What about copying Hosts & Nodes????
+    NodeComponent[] nodes = getNodes();
+    for (int i = 0; i < nodes.length; i++) {
+      NodeComponent nnode = experimentCopy.addNode(nodes[i].getFullName().toString());
+      AgentComponent[] agents = nodes[i].getAgents();
+      for (int j = 0; j < agents.length; j++) {
+	// add not the old agent but the new one
+	// with the same name?
+	// FIXME!!!
+	AgentComponent[] nags = experimentCopy.getAgents();
+	CompositeName tail = new SimpleName(agents[j].getFullName().toString().substring(agents[j].getFullName().getPrefix(0).toString().length()));
+	for (int k = 0; k < nags.length; k++) {
+	  if (nags[k].getFullName().endsWith(tail)) {
+	    nnode.addAgent(nags[k]);
+	    break;
+	  }
+	}
+	//nnode.addAgent(agents[j]);
+	// remove the agent from the list of those in the agents tree?
+      }
+    }
+
+    HostComponent[] hosts = getHosts();
+    for (int i = 0; i < hosts.length; i++) {
+      HostComponent nhost = experimentCopy.addHost(hosts[i].getFullName().toString());
+      nhost.setServerPort(hosts[i].getServerPort());
+      nhost.setMonitoringPort(hosts[i].getMonitoringPort());
+      NodeComponent[] onodes = hosts[i].getNodes();
+      for (int j = 0; j < onodes.length; j++) {
+	// add not the old node but the new one
+	// with the same name?
+	// FIXME!!!
+	NodeComponent[] nnodes = experimentCopy.getNodes();
+	for (int k = 0; k < nnodes.length; k++) {
+	  if (nnodes[k].getFullName().equals(onodes[j].getFullName())) {
+	    nhost.addNode(nnodes[k]);
+	    break;
+	  }
+	}
+	//nhost.addNode(onodes[j]);
+	// remove the node from the list of those in the Nodes tree?
+      }
+    }
+
+    // copy results directory???
+    // FIXME!!
+    
     return experimentCopy;
   }
-
 
   /**
    * Add a listener that is queried
@@ -528,11 +580,83 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   /**
+   * If the experiment has still unbound properties,
+   * then we can't run it yet.<br>
+   * For each property in the experiment, if it is not set,
+   * and we don't have a set of experimental values, return true;
+   *
+   * @return a <code>boolean</code> value
+   */
+  public boolean hasUnboundProperties() {
+    int n = getComponentCount();
+    for (int i = 0; i < n; i++) {
+      ModifiableConfigurableComponent comp = getComponent(i);
+      List propertyNames = comp.getPropertyNamesList();
+      for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
+	Property property = comp.getProperty((CompositeName)j.next());
+	List values = property.getExperimentValues();
+	if (! property.isValueSet() && (values == null || values.size() == 0)) {
+	  return true;
+	}
+      }
+    }
+    return false;
+  }
+
+  // FIXME!!! This method is buggy!!!
+  public boolean hasConfiguration() {
+    if (hosts.isEmpty() || nodes.isEmpty() || getAgents() == null || getAgents().length == 0) {
+      return false;
+    }
+    // An experiment has a configuration if it has at least one host
+    // which has at least one Node
+    // which has at least one Agent
+    HostComponent[] hosts = getHosts();
+    for (int i = 0; i < hosts.length; i++) {
+      if (hosts[i] == null)
+	continue;
+      NodeComponent[] nodes = hosts[i].getNodes();
+      for (int j = 0; j < nodes.length; j++) {
+	if (nodes[i] == null)
+	  continue;
+	AgentComponent[] agents = nodes[j].getAgents();
+	if (agents.length > 0)
+	  return true;
+      } // loop over nodes in host
+    } // loop over hosts in experiment
+    return false;
+  }
+  
+  // Assume an experiment with no nodes or hosts
+  public void createDefaultConfiguration() {
+    // Check if it already has a node?
+    // create one Node
+    NodeComponent node = addNode("Node0");
+    
+    // Put all the agents in this Node
+    // Skip agents already assigned to Nodes?
+    AgentComponent[] agents = getAgents();
+    for (int i = 0; i < agents.length; i++) {
+      node.addAgent(agents[i]);
+    }
+      
+    // Create one host
+    // get this machine's name and use it
+    String localhost = "localhost";
+    try {
+      localhost = java.net.InetAddress.getLocalHost().getHostName();
+    } catch (java.net.UnknownHostException e) {}
+    HostComponent host = addHost(localhost);
+
+    // put the one node on that host
+    host.addNode(node);
+  }
+  
+  /**
    * Return the trials defined for this experiment.  Computes trials
    * if necessary.
    * @return array of Trials
    */
-
   public Trial[] getTrials() {
     if (hasValidTrials)
       return (Trial[])trials.toArray(new Trial[trials.size()]);
@@ -562,8 +686,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       hasValidTrials = true;
       numberOfTrials = 1;
       Trial trial = new Trial("Trial 1");
+      trial.initProperties();
       trials = new ArrayList(1);
       trials.add(trial);
+      variationScheme = VARY_ONE_DIMENSION;
       return (Trial[])trials.toArray(new Trial[trials.size()]);
     }
 
