@@ -282,6 +282,16 @@ public class DatabaseTableModel extends AbstractTableModel {
   }
 
   public boolean isCellEditable(int row, int column) {
+    String columnName = getColumnName(column);
+    if (columnName != null) {
+      if (columnName.equalsIgnoreCase("ENTITY_ID") || columnName.equalsIgnoreCase("COMMUNITY_ID") || columnName.equalsIgnoreCase("Entity") || columnName.equalsIgnoreCase("Entity ID") || columnName.equalsIgnoreCase("Name") || columnName.equalsIgnoreCase("Community ID") || columnName.equalsIgnoreCase("Community")) {
+	if (log.isDebugEnabled()) {
+	  log.debug("isCellEditable: Column " + column + "(" + columnName + ") not editable by name.");
+	}
+	return false;
+      }
+    }
+    
     try {
       return metaData.isWritable(column+1);
     }
@@ -387,6 +397,12 @@ public class DatabaseTableModel extends AbstractTableModel {
                                dbRepresentation(1, getValueAt(row, 1)),
                                dbRepresentation(2, getValueAt(row, 2)),
 						  assemblyId);
+    } else if (columnName.equalsIgnoreCase("COMMUNITY_ID")) {
+      // Can't edit the community ID here
+      if (log.isInfoEnabled()) {
+	log.info("Cannot edit the " + columnName + " column here.");
+      }
+      return;
     } else {
       if (log.isErrorEnabled()) {
         log.error("Attempting to set value for unknown column name: " + 
@@ -421,6 +437,12 @@ public class DatabaseTableModel extends AbstractTableModel {
                                dbRepresentation(1, getValueAt(row, 1)),
                                dbRepresentation(2, getValueAt(row, 2)),
 					       assemblyId);
+    } else if (columnName.equalsIgnoreCase("ENTITY_ID")) {
+      // Can't edit the community ID here
+      if (log.isInfoEnabled()) {
+	log.info("Cannot edit the " + columnName + " column here.");
+      }
+      return;
     } else {
       if (log.isErrorEnabled()) {
         log.error("Attempting to set value for unknown column name: " + 
