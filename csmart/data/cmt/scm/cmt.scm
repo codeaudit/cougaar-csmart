@@ -13,7 +13,7 @@
 ;;(set! cfw_group_id "SMALL-3ID-CFW-GRP")
 (set! cog-type "LIB_")
 (set! cfw-prefix "V6_")
-(set! cfw_group_id "SMALL-3ID-TRANS-STUB-CFW-GRP")
+(set! cfw_group_id "SMALL-3ID-TRANS-CFW-GRP")
 
 
 (set! asb-prefix "V4_")
@@ -823,7 +823,7 @@
    "   and supported_org.assembly_id="(sqlQuote assembly_id)
    "   and supporting_org.assembly_id="(sqlQuote assembly_id)
    "   and supporting_org.component_lib_id=orgrel.org_id"
-   "   and ogom.cfw_id=orgrel.cfw_id"
+   "   and ogom.cfw_id in (select cfw_id from   " cfw-prefix "cfw_group_member where cfw_group_id="(sqlQuote  cfw_group_id)")"
    "   and ogom.org_group_id = orgrel.org_group_id"
    "   and supported_org.component_lib_id=ogom.org_id"
    "   and supporting_org.clone_set_id=supported_org.clone_set_id"
@@ -867,7 +867,7 @@
    "   and supported_org.assembly_id="(sqlQuote assembly_id)
    "   and supporting_org.assembly_id="(sqlQuote assembly_id)
    "   and supporting_org.component_lib_id=orgrel.org_id"
-   "   and ogom.cfw_id=orgrel.cfw_id"
+   "   and ogom.cfw_id in (select cfw_id from   " cfw-prefix "cfw_group_member where cfw_group_id="(sqlQuote  cfw_group_id)")"
    "   and ogom.org_group_id = orgrel.org_group_id"
    "   and supported_org.component_lib_id=ogom.org_id"
    "   and supporting_org.clone_set_id=0"
