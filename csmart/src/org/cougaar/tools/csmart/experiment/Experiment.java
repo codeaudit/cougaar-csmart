@@ -2161,6 +2161,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     generateCompleteSociety();
 
     ExperimentINIWriter cw = new ExperimentINIWriter(completeSociety); 
+    cw.setTrialID(getTrialID());
+
     File resultDir = getResultDirectory();
     // if user didn't specify results directory, save in local directory
     if (resultDir == null) {

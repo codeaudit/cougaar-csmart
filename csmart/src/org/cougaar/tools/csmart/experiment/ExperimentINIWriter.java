@@ -56,6 +56,10 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     createLogger();
   }
 
+  public void setTrialID(String id) {
+    this.trialID = id;
+  }
+
   private void createLogger() {
     log = CSMART.createLogger(this.getClass().getName());
   }
