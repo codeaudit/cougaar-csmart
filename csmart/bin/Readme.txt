@@ -158,7 +158,7 @@ export-all-recipes.sh
 	have problems. Therefore you will have to edit the generated
 	script if any of your recipe names contain spaces.
 
-TreeViewer[.bat/.sh]
+Viewer[.bat/.sh]
 	Run a simple Society Monitor-like viewer of a military
 	organization structure defined in particular database tables.
 
