@@ -1359,7 +1359,7 @@
 
 (define (dbu query)
   (newline)
-  ;;(println (string-append "dbu:" query))
+  (println (string-append "dbu:" query))
   (db-update
    (getrefDBConnection)
    query))
@@ -2000,7 +2000,7 @@
 
     (dbu (string-append
 	  "insert into " asb-prefix "expt_trial_thread"
-	  "(TRIAL_ID, THREAD_ID, EXPT_ID)"
+	  "( EXPT_ID, TRIAL_ID, THREAD_ID)"
 	  "   select " 
 	  "   " (sqlQuote new_expt_id) ","
 	  "   " (sqlQuote (string-append new_expt_id ".TRIAL")) ","
@@ -2047,6 +2047,7 @@
 	  "   and a.assembly_type <> 'CSM'"))
     new_expt_id
     ))
+
 
 
 (define (deleteExperiment experiment_id)
