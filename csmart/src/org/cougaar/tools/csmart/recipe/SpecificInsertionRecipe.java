@@ -26,14 +26,14 @@ import java.net.URL;
 import java.util.Set;
 import java.util.Iterator;
 
+import org.cougaar.core.component.ComponentDescription;
+
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
-
 import org.cougaar.tools.csmart.core.db.PopulateDb;
-
 import org.cougaar.tools.csmart.society.AgentComponent;
 
 public class SpecificInsertionRecipe extends RecipeBase
@@ -73,10 +73,16 @@ public class SpecificInsertionRecipe extends RecipeBase
   private static final String PROP_TARGET_COMPONENT_QUERY_DESC = 
     "The query name for selecting components to modify";
 
+  private static final String PROP_PRIORITY = "Component Priority";
+  private static final String PROP_PRIORITY_DFLT = 
+    ComponentDescription.priorityToString(ComponentDescription.PRIORITY_STANDARD);
+  public static final String PROP_PRIORITY_DESC = "Load Priority of the component in it's container relative to other child components";
+
   private Property propName;
   private Property propType;
   private Property propClass;
   private Property propArgs;
+  private Property propPriority;
   private Property propTargetComponentQuery;
   private Property[] variableProps = null;
 
@@ -106,12 +112,16 @@ public class SpecificInsertionRecipe extends RecipeBase
       });
     propArgs.setToolTip(PROP_ARGS_DESC);
 
+    propPriority = addPriorityProperty(PROP_PRIORITY, PROP_PRIORITY_DESC);
+    propPriority.setToolTip(PROP_PRIORITY_DESC);
+
     propTargetComponentQuery =
       addRecipeQueryProperty(PROP_TARGET_COMPONENT_QUERY,
                              PROP_TARGET_COMPONENT_QUERY_DFLT);
     propTargetComponentQuery.setToolTip(PROP_TARGET_COMPONENT_QUERY_DESC);
 
   }
+
 
   /**
    * Gets the name of the html help file for this component.
@@ -129,6 +139,12 @@ public class SpecificInsertionRecipe extends RecipeBase
 
   private Property addRecipeQueryProperty(String name, String dflt) {
     Property prop = addProperty(new RecipeQueryProperty(this, name, dflt));
+    prop.setPropertyClass(String.class);
+    return prop;
+  }
+
+  private Property addPriorityProperty(String name, String dflt) {
+    Property prop = addProperty(new PriorityProperty(this, name, dflt));
     prop.setPropertyClass(String.class);
     return prop;
   }
@@ -173,6 +189,7 @@ public class SpecificInsertionRecipe extends RecipeBase
       // do insertion
       GenericComponentData comp = new GenericComponentData();
       comp.setName(propName.getValue().toString());
+      comp.setPriority(propPriority.getValue().toString());
       // FIXME: Do an equals with the ComponentData constants here?
       String type = propType.getValue().toString();
       if (type == null) {
