@@ -856,8 +856,10 @@ public class CSMARTConsole extends JFrame {
     trialProgressBar.setValue(currentTrial+1);
     Property[] properties = trial.getParameters();
     Object[] values = trial.getValues();
-    for (int i = 0; i < properties.length; i++) 
-      properties[i].setValue(values[i]);
+    for (int i = 0; i < properties.length; i++) {
+      if (properties[i].getValue() == null || ! properties[i].getValue().equals(values[i]))
+	properties[i].setValue(values[i]);
+    }
     // assign any unassigned agents 
     assignUnassignedAgents();
     // update host-node-agent panel
