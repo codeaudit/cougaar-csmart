@@ -51,6 +51,8 @@ public abstract class SocietyBase
     "Description not available";
 
   protected boolean isRunning = false;
+  protected boolean isSelfTerminating = false;
+
   protected List nodes = new ArrayList();
   protected List hosts = new ArrayList();
 
@@ -77,7 +79,7 @@ public abstract class SocietyBase
    * manually terminated).
    * @param flag indicating whether or not the society is running
    */
-  public void setRunning(boolean isRunning) {
+   public void setRunning(boolean isRunning) {
     this.isRunning = isRunning;
   }
 
@@ -119,7 +121,18 @@ public abstract class SocietyBase
    * @see org.cougaar.tools.server.NodeEvent
    */
   public boolean isSelfTerminating() {
-    return false;
+    return this.isSelfTerminating;
+  }
+
+  /**
+   * Sets if the society is self terminating or not.
+   * Self terminating nodes cause a NODE_DESTROYED event
+   * to be generated (see org.cougaar.tools.server.NodeEvent).
+   *
+   * @param isSelfTerminating 
+   */
+  protected void setSelfTerminating(boolean isSelfTerminating) {
+    this.isSelfTerminating = isSelfTerminating;
   }
 
   /**
