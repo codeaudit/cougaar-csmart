@@ -121,8 +121,13 @@ very similar for WinNT.
        </pre>
     If you lack these jars then download them from:
        <a href="http://java.sun.com/products/jsse"
-       >http://java.sun.com/products/jsse</a>.  
-    You may also need to modify the default JSSE security file.</li><p>
+       >http://java.sun.com/products/jsse</a>. Note that Windows often
+       installs JRE in 2 places: under JDK, and also in C:\Program
+       Files\JavaSoft\JRE, and both places need JSSE installed.
+    You may also need to modify the default JSSE security file (in
+    JRE/lib/security/java.security), by
+    adding the line:
+    security.provider.3=com.sun.net.ssl.internal.ssl.Provider.</li><p>
 
   <li>If you require a local database (Oracle or MySQL) then you must
     install this database (limited CSMART functionality is available without one).</li><p>
@@ -139,7 +144,8 @@ very similar for WinNT.
   <li>If you plan to run CSMART from a Windows machine and to control remote 
     machines that will create UI popups, then you will need to install an
     "X-Server" such as
-    <a href="http://www.hummingbird.com/products/nc/exceed/">Exceed</a>.
+    <a href="http://www.hummingbird.com/products/nc/exceed/">Exceed</a>
+     or <a href="xfree86.cygwin.com">XFree (install on cygwin, free)</a>.
     </li><p>
   </ol>
 </li><p>
@@ -214,7 +220,8 @@ very similar for WinNT.
   </pre></li>       
 
     <li>Once you have imported the CMT MySQL datafile, be sure to follow
-  the same steps to import the Cougaar domain plugin MySQL database.</li><p>
+  the same steps to import the Cougaar domain plugin MySQL database
+  (from CIP/dbms/mysql/mysqldump.8.6.txt).</li><p>
       
   <li>The database is now ready.  You must now create a "cougaar.rc"
     for the database users (<a href="http://www.cougaar.org">Cougaar</a>
