@@ -133,8 +133,8 @@ public class EntityDNDTree extends DNDTree {
       CSMARTDataFlavor[] theFlavors = null;
       if (userObject.isAgent())
         theFlavors = new CSMARTDataFlavor[] { agentArrayFlavor };
-      else if (userObject.isNode())
-        theFlavors = new CSMARTDataFlavor[] { nodeArrayFlavor };
+      //      else if (userObject.isNode())
+      //        theFlavors = new CSMARTDataFlavor[] { nodeArrayFlavor };
       else if (userObject.isHost())
         theFlavors = new CSMARTDataFlavor[] { hostArrayFlavor };
       return new CommunityArrayTransferable(nodeArray, theFlavors);

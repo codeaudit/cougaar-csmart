@@ -40,7 +40,6 @@ public class CommunityTreeObject {
   private boolean isRoot = false;
   private boolean isCommunity = false;
   private boolean isHost = false;
-  private boolean isNode = false;
   private boolean isAgent = false;
   private boolean allowsChildren = true;
   private transient Logger log;
@@ -80,12 +79,7 @@ public class CommunityTreeObject {
         isCommunity = true;
       else if (type.equals("Host"))
         isHost = true;
-      else if (type.equals("Node")) {
-        if (log.isDebugEnabled()) {
-          log.debug("WARNING: tried to create Node object");
-        }
-        isAgent = true; // treat nodes as agents
-      } else if (type.equals("Agent")) {
+      else if (type.equals("Agent")) {
         isAgent = true;
         allowsChildren = false;
       } else
@@ -129,10 +123,6 @@ public class CommunityTreeObject {
     return isHost;
   }
 
-  protected boolean isNode() {
-    return isNode;
-  }
-
   protected boolean isAgent() {
     return isAgent;
   }
@@ -140,8 +130,6 @@ public class CommunityTreeObject {
   protected String getType() {
     if (isAgent())
       return "Agent";
-    else if (isNode())
-      return "Node";
     else if (isHost())
       return "Host";
     else if (isCommunity())

@@ -50,24 +50,25 @@ public class DatabaseTableModel extends AbstractTableModel {
       }
       Statement statement = conn.createStatement();
       ResultSet resultSet = statement.executeQuery(query);
-      metaData = resultSet.getMetaData();
 
-      // get column names
-      int numberOfColumns =  metaData.getColumnCount();
-      columnNames = new String[numberOfColumns];
-      for(int column = 0; column < numberOfColumns; column++) {
-        columnNames[column] = metaData.getColumnLabel(column+1);
-      }
-
-      // if there is data (i.e. column count non-zero), get all rows
-      if (numberOfColumns != 0) {
-        rows = new ArrayList();
-        while (resultSet.next()) {
-          ArrayList newRow = new ArrayList();
-          for (int i = 1; i <= getColumnCount(); i++) {
-            newRow.add(resultSet.getString(i));
+      // if it's an update or insert don't change rows, columns or metadata
+      if (!query.startsWith("update") &&
+          !query.startsWith("insert")) {
+        metaData = resultSet.getMetaData();
+        // get column names
+        int numberOfColumns =  metaData.getColumnCount();
+        columnNames = new String[numberOfColumns];
+        for (int column = 0; column < numberOfColumns; column++)
+          columnNames[column] = metaData.getColumnLabel(column+1);
+        // if there is data (i.e. column count non-zero), get all rows
+        if (numberOfColumns != 0) {
+          rows = new ArrayList();
+          while (resultSet.next()) {
+            ArrayList newRow = new ArrayList();
+            for (int i = 1; i <= getColumnCount(); i++)
+              newRow.add(resultSet.getString(i));
+            rows.add(newRow);
           }
-          rows.add(newRow);
         }
       }
       fireTableChanged(null); // Tell the listeners a new table has arrived.
@@ -124,9 +125,10 @@ public class DatabaseTableModel extends AbstractTableModel {
   public void deleteRow(int rowIndex) {
     if (rowIndex >= rows.size()) 
       return;
+    String query = "";
     try {
       String tableName = metaData.getTableName(1);
-      String query = "delete from "+ tableName + " where ";
+      query = "delete from "+ tableName + " where ";
       int n = getColumnCount();
       for (int col = 0; col < n; col++) {
         String colName = getColumnName(col);
@@ -137,10 +139,9 @@ public class DatabaseTableModel extends AbstractTableModel {
         query = query + colName +" = "+
           dbRepresentation(col, getValueAt(rowIndex, col));
       }
-      System.out.println(query);
       executeQuery(query);
     } catch (SQLException e) {
-      System.err.println("Update failed");
+      System.err.println("Update failed: " + query);
     }
     rows.remove(rowIndex);
     fireTableRowsDeleted(rowIndex, rowIndex);
@@ -217,6 +218,8 @@ public class DatabaseTableModel extends AbstractTableModel {
       return metaData.isWritable(column+1);
     }
     catch (SQLException e) {
+      System.out.println("Exception on is cell editable: " +
+                         row + "," + column);
       return false;
     }
   }
@@ -260,19 +263,26 @@ public class DatabaseTableModel extends AbstractTableModel {
     case Types.DATE:
       return value.toString(); // This will need some conversion.
     default:
-      return "\""+value.toString()+"\"";
+      return value.toString();
     }
 
   }
 
+  /**
+   * Update the database table with the new information.
+   * @param value new value
+   * @param row index of row in which to set value
+   * @param column index of column in which to set value
+   */
   public void setValueAt(Object value, int row, int column) {
+    String query = "";
     try {
       String tableName = metaData.getTableName(column+1);
       String columnName = getColumnName(column);
-      String query =
-        "update "+tableName+
-        " set "+columnName+" = "+dbRepresentation(column, value)+
-        " where ";
+      query =
+        "update " + tableName +
+        " set " + columnName + " = '" + dbRepresentation(column, value) + 
+        "' where ";
       // We don't have a model of the schema so we don't know the
       // primary keys or which columns to lock on. To demonstrate
       // that editing is possible, we'll just lock on everything.
@@ -284,14 +294,13 @@ public class DatabaseTableModel extends AbstractTableModel {
         if (col != 0) {
           query = query + " and ";
         }
-        query = query + colName +" = "+
-          dbRepresentation(col, getValueAt(row, col));
+        query = query + colName + " = '" +
+          dbRepresentation(col, getValueAt(row, col)) + "'";
       }
-      System.out.println(query);
       executeQuery(query);
     }
     catch (SQLException e) {
-      System.err.println("Update failed");
+      System.err.println("Update failed: " + query);
     }
     ArrayList dataRow = (ArrayList)rows.get(row);
     dataRow.set(column, value);

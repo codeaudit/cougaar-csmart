@@ -53,6 +53,7 @@ public class CommunityFrame extends JFrame {
   public static final String DELETE_COMMUNITY_INFO_QUERY = "Delete from community_attribute where community_id = '";
   public static final String DELETE_ENTITY_INFO_QUERY = "Delete from community_entity_attribute where community_id = '";
   public static final String IS_COMMUNITY_IN_USE_QUERY = "Select entity_id from community_entity_attribute where community_id = '";
+  public static final String IS_IN_COMMUNITY_QUERY =  "Select entity_id from community_entity_attribute where community_id = '";
   private static final String FILE_MENU = "File";
   private static final String CLOSE_ACTION = "Close";
   private static final String VIEW_MENU = "View";
@@ -73,6 +74,7 @@ public class CommunityFrame extends JFrame {
   private CommunityTableUtils communityTableUtils;
   private JPopupMenu rootMenu;
   private JPopupMenu communityMenu;
+  private JPopupMenu parentEntityMenu;
   private JPopupMenu entityMenu;
 
   private Action closeAction = new AbstractAction(CLOSE_ACTION) {
@@ -214,6 +216,8 @@ public class CommunityFrame extends JFrame {
     communityMenu.add(new JMenuItem(viewCommunityInfoAction));
     communityMenu.add(new JMenuItem(deleteAction));
     communityMenu.add(new JMenuItem(addParameterAction));
+    parentEntityMenu = new JPopupMenu();
+    parentEntityMenu.add(new JMenuItem(deleteAction));
     entityMenu = new JPopupMenu();
     entityMenu.add(new JMenuItem(addParameterAction));
     entityMenu.add(new JMenuItem(deleteAction));
@@ -309,6 +313,8 @@ public class CommunityFrame extends JFrame {
       rootMenu.show(communityTree, x, y);
     else if (cto.isCommunity())
       communityMenu.show(communityTree, x, y);
+    else if (node.getChildCount() != 0)
+      parentEntityMenu.show(communityTree, x, y);
     else
       entityMenu.show(communityTree, x, y);
   }
@@ -387,10 +393,49 @@ public class CommunityFrame extends JFrame {
   }
 
   /**
-   * Add new empty row to table.
+   * Add parameter to community_attribute for community
+   * or to community_entity_attribute for entity.
    */
   private void addParameter() {
-    communityTableUtils.addRow();
+    TreePath selectedPath = communityTree.getSelectionPath();
+    if (selectedPath == null)
+      return;
+    DefaultMutableTreeNode selectedNode =
+      (DefaultMutableTreeNode)selectedPath.getLastPathComponent();
+    CommunityTreeObject cto = 
+      (CommunityTreeObject)selectedNode.getUserObject();
+    if (cto.isCommunity()) {
+      String communityName = cto.toString();
+      String query = 
+        INSERT_COMMUNITY_INFO_QUERY + communityName + "', '', '')";
+      communityTableUtils.executeQuery(query);
+      // populate table by retrieving new info from database
+      query = CommunityFrame.GET_COMMUNITY_INFO_QUERY + communityName + "'";
+      communityTableUtils.executeQuery(query);
+    } else {
+      String communityName = null;
+      String entityName = cto.toString();
+      DefaultMutableTreeNode parent = 
+        (DefaultMutableTreeNode)selectedNode.getParent();
+      while (parent != null) {
+        CommunityTreeObject o = (CommunityTreeObject)parent.getUserObject();
+        if (o.isCommunity()) {
+          communityName = o.toString();
+          break;
+        }
+        parent = (DefaultMutableTreeNode)parent.getParent();
+      }
+      if (communityName == null)
+        return;
+      String query =
+        INSERT_ENTITY_INFO_QUERY + communityName + "', '" +
+        entityName + "', '', '')";
+      communityTableUtils.executeQuery(query);
+      // populate table by retrieving new info from database
+      query = CommunityFrame.GET_ENTITY_INFO_QUERY + communityName +
+        "' and community_entity_attribute.entity_id = '" + entityName + "'";
+      communityTableUtils.executeQuery(query);
+    }
   }
 
   /**

@@ -39,7 +39,7 @@ public class EntityTreeObjectTransferable implements Transferable {
     CommunityTreeObject cto = (CommunityTreeObject) treeNode.getUserObject();
     if (cto == null) throw new IllegalArgumentException("null userObject");
     if (cto.isAgent()) theFlavors = new CSMARTDataFlavor[] {EntityDNDTree.agentFlavor};
-    if (cto.isNode()) theFlavors = new CSMARTDataFlavor[] {EntityDNDTree.nodeFlavor};
+    //    if (cto.isNode()) theFlavors = new CSMARTDataFlavor[] {EntityDNDTree.nodeFlavor};
     if (cto.isHost()) theFlavors = new CSMARTDataFlavor[] {EntityDNDTree.hostFlavor};
     if (theFlavors == null) throw new IllegalArgumentException("Unknown EntityTreeOObject");
   }

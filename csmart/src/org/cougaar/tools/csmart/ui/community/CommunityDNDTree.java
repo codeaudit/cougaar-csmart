@@ -164,8 +164,8 @@ public class CommunityDNDTree extends DNDTree {
         theFlavors = new CSMARTDataFlavor[] { communityArrayFlavor };
       else if (userObject.isHost())
         theFlavors = new CSMARTDataFlavor[] { hostArrayFlavor };
-      else if (userObject.isNode())
-        theFlavors = new CSMARTDataFlavor[] { nodeArrayFlavor };
+      //      else if (userObject.isNode())
+      //        theFlavors = new CSMARTDataFlavor[] { nodeArrayFlavor };
       else if (userObject.isAgent())
         theFlavors = new CSMARTDataFlavor[] { agentArrayFlavor };
       return new CommunityArrayTransferable(nodeArray, theFlavors);
@@ -252,18 +252,16 @@ public class CommunityDNDTree extends DNDTree {
 
   /** 
    * Add an element by getting the user object out of the source
-   * and creating a new tree node for it; 
-   * recurse for all the node's descendants;
-   * nodes must be added "top-down" in order for the model listener
-   * to correctly add them to the database.
+   * and creating a new tree node for it.
    */
 
   private boolean addElement(DefaultMutableTreeNode source,
                              DefaultMutableTreeNode target,
                              DefaultMutableTreeNode before) {
     // disallow move if source is an ancestor of target
-    if (target.isNodeAncestor(source))
+    if (target.isNodeAncestor(source)) {
       return false;
+    }
     DefaultTreeModel model = (DefaultTreeModel) getModel();
     // drop new node at end by default, unless before target is specified
     int ix = target.getChildCount();
@@ -272,6 +270,9 @@ public class CommunityDNDTree extends DNDTree {
     CommunityTreeObject cto = (CommunityTreeObject)source.getUserObject();
     DefaultMutableTreeNode newNode =
       new DefaultMutableTreeNode(cto, cto.allowsChildren());
+    if (isDuplicate(newNode, target) || isInCommunity(newNode, target)) {
+      return false;
+    }
     model.insertNodeInto(newNode, target, ix);
     // copy the source node's descendants, recursively
     copyChildren(source, newNode);
@@ -281,6 +282,15 @@ public class CommunityDNDTree extends DNDTree {
     return true;
   }
 
+  /**
+   * Add an element by getting the user object out of the source
+   * and creating a new tree node for it; 
+   * recurse for all the node's descendants;
+   * nodes must be added "top-down" in order for the model listener
+   * to correctly add them to the database.
+   * Reject duplicates.  Sibling nodes and nodes in the same community
+   * must be unique.
+   */
   private void copyChildren(DefaultMutableTreeNode oldNode,
                             DefaultMutableTreeNode newNode) {
     DefaultTreeModel model = (DefaultTreeModel)getModel();
@@ -292,9 +302,82 @@ public class CommunityDNDTree extends DNDTree {
         (CommunityTreeObject)oldChildNode.getUserObject();
       DefaultMutableTreeNode newChildNode =
         new DefaultMutableTreeNode(cto, cto.allowsChildren());
-      model.insertNodeInto(newChildNode, newNode, i);
+      if (isDuplicate(newChildNode, newNode) ||
+          isInCommunity(newChildNode, newNode))
+        continue;
+      model.insertNodeInto(newChildNode, newNode, newNode.getChildCount());
       copyChildren(oldChildNode, newChildNode);
     }
+  }
+
+  /**
+   * Return true if the given node is a duplicate of a node in the parent,
+   * i.e. has the same label.
+   */
+  private boolean isDuplicate(DefaultMutableTreeNode node,
+                              DefaultMutableTreeNode parent) {
+    String s = node.getUserObject().toString();
+    int nChildren = parent.getChildCount();
+    for (int i = 0; i < nChildren; i++)
+      if (((DefaultMutableTreeNode)parent.getChildAt(i)).getUserObject().toString().equals(s))
+        return true;
+    return false;
+  }
+
+  /**
+   * Return true if the given node is already in the community;
+   * community is determined by tracing up the tree from the parent
+   * until the community is found.
+   */
+  private boolean isInCommunity(DefaultMutableTreeNode node,
+                                DefaultMutableTreeNode parent) {
+    // find the community starting with parent
+    DefaultMutableTreeNode communityNode = null;
+    while (parent != null) {
+      CommunityTreeObject cto = (CommunityTreeObject)parent.getUserObject();
+      if (cto.isCommunity()) {
+        communityNode = parent;
+        break;
+      }
+      parent = (DefaultMutableTreeNode)parent.getParent();
+    }
+    if (communityNode == null)
+      return false;
+    String nodeName = ((CommunityTreeObject)node.getUserObject()).toString();
+    // get the descendants of the community
+    // and make sure they don't include this node
+    return isNodeNameInCommunity(communityNode, nodeName);
+    // TODO: either way you check, you can't move a node within a community
+//      String communityName = 
+//        ((CommunityTreeObject)communityNode.getUserObject()).toString();
+//      String query = CommunityFrame.IS_IN_COMMUNITY_QUERY +
+//        communityName + "' and entity_id = '" + nodeName + "'";
+//      System.out.println(query);
+//      ArrayList results = CommunityDBUtils.getQueryResults(query);
+//      return results.size() != 0;
+  }
+
+  /**
+   * Return true if the node name is in the community starting at node.
+   */
+  private boolean isNodeNameInCommunity(DefaultMutableTreeNode node, 
+                                        String nodeName) {
+    int nChildren = node.getChildCount();
+    for (int i = 0; i < nChildren; i++) {
+      DefaultMutableTreeNode childNode = 
+        (DefaultMutableTreeNode)node.getChildAt(i);
+      CommunityTreeObject cto = (CommunityTreeObject)childNode.getUserObject();
+      if (cto.toString().equals(nodeName)) {
+        return true;
+      } else {
+        if (childNode.getChildCount() != 0 && !cto.isCommunity()) {
+          boolean result = isNodeNameInCommunity(childNode, nodeName);
+          if (result)
+            return true;
+        }
+      }
+    }
+    return false;
   }
 
   // expand the branch from the specified node down

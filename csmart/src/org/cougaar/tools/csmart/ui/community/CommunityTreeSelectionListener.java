@@ -39,6 +39,8 @@ public class CommunityTreeSelectionListener implements TreeSelectionListener {
    * or the user has deleted the node (in which case,
    * the node selection event is received AFTER the node is deleted);
    * so if the node has no parent, ignore the selection event.
+   * If the node is not a community and has children, 
+   * display parameters for all the children.
    * @param e the tree selection event
    */
 
@@ -52,22 +54,53 @@ public class CommunityTreeSelectionListener implements TreeSelectionListener {
     String query = null;
     if (cto.isRoot())
       return; // ignore selecting root
-    if (cto.isCommunity())
+    // node is a community; display information for a community 
+    if (cto.isCommunity()) {
       query = CommunityFrame.GET_COMMUNITY_INFO_QUERY + name + "'";
-    else {
-      String communityName = "";
-      node = (DefaultMutableTreeNode)node.getParent();
-      while (node != null) {
-        if (((CommunityTreeObject)node.getUserObject()).isCommunity()) {
-          communityName = node.toString();
-          break;
-        } else
-          node = (DefaultMutableTreeNode)node.getParent();
-      }
-      query = CommunityFrame.GET_ENTITY_INFO_QUERY + communityName + 
-        "' and community_entity_attribute.entity_id = '" + name + "'";
+      communityTableUtils.executeQuery(query);
+      return;
+    } 
+    // get community that node is in
+    String communityName = "";
+    DefaultMutableTreeNode tmpNode = (DefaultMutableTreeNode)node.getParent();
+    while (tmpNode != null) {
+      if (((CommunityTreeObject)tmpNode.getUserObject()).isCommunity()) {
+        communityName = tmpNode.toString();
+        break;
+      } else
+        tmpNode = (DefaultMutableTreeNode)tmpNode.getParent();
     }
-    communityTableUtils.executeQuery(query);
+    displayEntityInfo(communityName, node);
   }
 
+  private void displayEntityInfo(String communityName,
+                                DefaultMutableTreeNode node) {
+    int nChildren = node.getChildCount();
+    if (nChildren == 0) {
+      String entityName =
+        ((CommunityTreeObject)node.getUserObject()).toString();
+      String query = CommunityFrame.GET_ENTITY_INFO_QUERY + communityName + 
+        "' and community_entity_attribute.entity_id = '" + entityName + "'";
+      communityTableUtils.executeQuery(query);
+    } else {
+      StringBuffer sbuf = new StringBuffer(500);
+      sbuf.append(CommunityFrame.GET_ENTITY_INFO_QUERY);
+      sbuf.append(communityName);
+      sbuf.append("' and (");
+      for (int i = 0; i < nChildren; i++) {
+        DefaultMutableTreeNode childNode =
+          (DefaultMutableTreeNode)node.getChildAt(i);
+        String entityName = 
+          ((CommunityTreeObject)childNode.getUserObject()).toString();
+        sbuf.append("community_entity_attribute.entity_id = '");
+        sbuf.append(entityName);
+        if (i < (nChildren-1))
+          sbuf.append("' or ");
+        else
+          sbuf.append("')");
+      }
+      communityTableUtils.executeQuery(sbuf.toString());
+    }
+  }
+                                
 }

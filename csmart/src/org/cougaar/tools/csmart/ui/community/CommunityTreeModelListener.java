@@ -47,8 +47,6 @@ public class CommunityTreeModelListener implements TreeModelListener {
 
   /**
    * Just update the hashtable of nodes and communities.
-   * Used when creating a tree from the database, in which case,
-   * the database doesn't have to be modified.
    */
   public void addNode(DefaultMutableTreeNode node, String communityName) {
     CommunityTreeObject cto = (CommunityTreeObject)node.getUserObject();
@@ -101,14 +99,16 @@ public class CommunityTreeModelListener implements TreeModelListener {
       node = (DefaultMutableTreeNode)addedNodes[i];
       CommunityTreeObject addedObject = 
         (CommunityTreeObject)node.getUserObject();
-      String entityName = addedObject.toString();
-      String query = CommunityFrame.INSERT_ENTITY_INFO_QUERY + 
-        communityName + "', '" + entityName +
-        "', 'MemberType', '" + addedObject.getType() + "')";
-      communityTableUtils.executeQuery(query);
-      query = CommunityFrame.INSERT_ENTITY_INFO_QUERY + communityName + 
-        "', '" + entityName + "', 'Role', 'Member')";
-      communityTableUtils.executeQuery(query);
+      if (!addedObject.isHost()) { // don't add info about hosts to database
+        String entityName = addedObject.toString();
+        String query = CommunityFrame.INSERT_ENTITY_INFO_QUERY + 
+          communityName + "', '" + entityName +
+          "', 'MemberType', '" + addedObject.getType() + "')";
+        communityTableUtils.executeQuery(query);
+        query = CommunityFrame.INSERT_ENTITY_INFO_QUERY + communityName + 
+          "', '" + entityName + "', 'Role', 'Member')";
+        communityTableUtils.executeQuery(query);
+      }
       addNode(node, communityName);
     }
   }
@@ -134,9 +134,11 @@ public class CommunityTreeModelListener implements TreeModelListener {
     String communityName = (String)communities.remove(entityName);
     if (communityName == null)
       return;
-    String query = CommunityFrame.DELETE_ENTITY_INFO_QUERY + 
-      communityName + "' and entity_id = '" + entityName + "'";
-    communityTableUtils.executeQuery(query);
+    if (!deletedObject.isHost()) {
+      String query = CommunityFrame.DELETE_ENTITY_INFO_QUERY + 
+        communityName + "' and entity_id = '" + entityName + "'";
+      communityTableUtils.executeQuery(query);
+    } 
   }
 
   /**
@@ -160,6 +162,10 @@ public class CommunityTreeModelListener implements TreeModelListener {
       }
     }
     removeNode(node);
+    CommunityTreeObject deletedObject = 
+      (CommunityTreeObject)node.getUserObject();
+    if (deletedObject.isCommunity())
+      removeCommunity(deletedObject.toString());
   }
 
   /**
@@ -168,12 +174,15 @@ public class CommunityTreeModelListener implements TreeModelListener {
   private void removeCommunity(String communityName) {
     String query = CommunityFrame.IS_COMMUNITY_IN_USE_QUERY +
       communityName + "'";
+    System.out.println(query);
     ArrayList results = CommunityDBUtils.getQueryResults(query);
     if (results.size() == 0) {
       query = CommunityFrame.DELETE_COMMUNITY_INFO_QUERY +
         communityName + "'";
+      System.out.println(query);
       communityTableUtils.executeQuery(query);
-    } 
+    } else
+      System.out.println("Community not deleted");
   }
 
   public void treeStructureChanged(TreeModelEvent e) {
