@@ -2,6 +2,7 @@ package org.cougaar.tools.csmart.ui.console;
 
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
@@ -38,8 +39,8 @@ public class CSMARTConsoleView extends JFrame implements Observer {
   private JMenuItem addGLSMenuItem; // call addGLSWindow
   private JToggleButton runButton;
   private JToggleButton stopButton;
-  private JToggleButton invisButton;  // Used to turn off both run and stop button.
-  private ButtonGroup runningState;
+  //  private JToggleButton invisButton;  // Used to turn off both run and stop button.
+  //  private ButtonGroup runningState;
   private JPanel buttonPanel; // contains status buttons
   private JPopupMenu nodeMenu; // pop-up menu on node status button
   private Legend legend;
@@ -172,7 +173,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     descriptionPanel.add(runButton);
     descriptionPanel.add(Box.createRigidArea(HGAP5));
 
-    invisButton = new JToggleButton("Invisible");
+    //    invisButton = new JToggleButton("Invisible");
     stopButton = new JToggleButton("Stop");
     stopButton.setToolTipText("Halt experiment at end of current");
     stopButton.addActionListener(new ActionListener() {
@@ -185,10 +186,10 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     descriptionPanel.add(Box.createRigidArea(HGAP5));
 
     // Sets up a ButtonGroup to handle toggling between buttons.
-    runningState = new ButtonGroup();
-    runningState.add(runButton);
-    runningState.add(stopButton);
-    runningState.add(invisButton);
+    //    runningState = new ButtonGroup();
+    //    runningState.add(runButton);
+    //    runningState.add(stopButton);
+    //    runningState.add(invisButton);
 
     // create progress panel for time labels
     // these are referenced elsewhere, so are created even if not displayed
@@ -744,21 +745,21 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     // If this was this frame's exit menu item, we have to remove
     // the window from the list
     // if it was a WindowClose, the parent notices this as well
-//    if (e instanceof ActionEvent) {
-//      NamedFrame.getNamedFrame().removeFrame(this);
-//    } else {
-//      if (log.isDebugEnabled()) {
-//        log.debug("Not doing a removeFrame: event was " + e);
-//      }
-//    }
+    if (e instanceof ActionEvent) {
+      NamedFrame.getNamedFrame().removeFrame(this);
+    } else {
+      if (log.isDebugEnabled()) {
+        log.debug("Not doing a removeFrame: event was " + e);
+      }
+    }
 //
 //    // remove listeners from this window
 //    WindowListener[] lists = getWindowListeners();
 //    for (int i = 0; i < lists.length; i++)
 //      removeWindowListener(lists[i]);
 
-    dispose();
-    System.exit(0);
+//    dispose();
+//    System.exit(0);
 
   }
 
@@ -796,13 +797,18 @@ public class CSMARTConsoleView extends JFrame implements Observer {
 
   public void update(Observable o, Object arg) {
     if (arg.equals(CSMARTConsoleModel.TOGGLE_RUNNING_STATE)) {
-      if(!model.isRunning()) {
-        invisButton.getModel().setPressed(true);
-      }
+      //      if(!model.isRunning()) {
+      //        invisButton.getModel().setPressed(true);
+      //      }
       if (runButton.getModel().isEnabled() &&
           !stopButton.getModel().isEnabled()) {
         stopButton.getModel().setEnabled(true);
       }
+    }
+
+    if (arg.equals(CSMARTConsoleModel.RUN_FAILED)) {
+      // this should "pop the button back up" indicating its selectable
+      runButton.getModel().setPressed(false);
     }
 
     if (arg.equals(CSMARTConsoleModel.TOGGLE_ATTACHED_STATE)) {
@@ -818,7 +824,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
 
     if (arg instanceof NodeView) {
       // TODO: second argument should be node name
-      desktop.add((NodeView)arg, "");
+      desktop.addNodeFrame((NodeView)arg, "");
       return;
     }
   }

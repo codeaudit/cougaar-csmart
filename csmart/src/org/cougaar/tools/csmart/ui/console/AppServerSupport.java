@@ -281,6 +281,7 @@ public class AppServerSupport implements Observer {
   /** 
    * Get the nodes for each app server.  If CSMART isn't listening
    * on the node, then return it as an unattached node.
+   * Returns an array of Strings (node names).
    */
   public ArrayList getUnattachedNodes() {
     ArrayList unattachedNodes = new ArrayList();
@@ -288,10 +289,13 @@ public class AppServerSupport implements Observer {
     for (int i = 0; i < appServers.size(); i++) {
       AppServerDesc appServerDesc = (AppServerDesc)appServers.get(i);
       List nodes = getNodesOfAppServer(appServerDesc.appServer);
-      for (int j = 0; j < nodes.size(); j++) {
-        String node = (String)nodes.get(j);
-        if (findListener(appServerDesc.appServer, node) == null)
-          unattachedNodes.add(node);
+      if (nodes != null) {
+        for (Iterator j = nodes.iterator(); j.hasNext(); ) {
+          ProcessDescription pd = (ProcessDescription)j.next();
+          String name = pd.getName();
+          if (findListener(appServerDesc.appServer, name) == null)
+            unattachedNodes.add(name);
+        }
       }
     }
     return unattachedNodes;

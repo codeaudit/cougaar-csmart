@@ -32,6 +32,7 @@ public class CSMARTConsoleModel extends Observable {
   public static final String APP_SERVER_ADDED = "App Server Added";
   public static final String APP_SERVER_DELETED = "App Server Deleted";
   public static final String NODE_ADDED = "Node Added";
+  public static final String RUN_FAILED = "Run Failed";
 
   public static final int APP_SERVER_DEFAULT_PORT = 8484;
 
@@ -205,6 +206,7 @@ public class CSMARTConsoleModel extends Observable {
       startNodes();
       isRunning = running;
     } catch(IllegalStateException ise) {
+      notifyObservers(RUN_FAILED);
       JOptionPane.showMessageDialog(null, ("Cannot start run,  " + ise.getMessage()),
                                     "Cannot start run",JOptionPane.ERROR_MESSAGE);
 
@@ -228,6 +230,7 @@ public class CSMARTConsoleModel extends Observable {
       Object key = enum.nextElement();
       NodeView view = new NodeView((NodeModel)nodeModels.get(key));
       this.nodeViews.put(key, view);
+      setChanged();
       notifyObservers(view);
     }
   }
@@ -1050,6 +1053,7 @@ public class CSMARTConsoleModel extends Observable {
 
   /**
    * Get list of nodes to which CSMART is not attached.
+   * Returns an array of Strings (node names).
    */
   public ArrayList getUnattachedNodes() {
     return appServerSupport.getUnattachedNodes();
@@ -1057,6 +1061,7 @@ public class CSMARTConsoleModel extends Observable {
 
   /**
    * Get list of nodes to which CSMART is attached.
+   * Returns an array of Strings (node names).
    */
   public ArrayList getAttachedNodes() {
     ArrayList nodes = null;
