@@ -440,14 +440,20 @@ public class CMT {
   }
   
   public static SortedMap getTrialNames(String experiment_id) {
+    if (experiment_id == null)
+      return null;
     return DBUtils.queryHT("getTrialNames",DBUtils.addSubs(new HashMap(),":experiment_id",experiment_id), QUERY_FILE);
   }
   
   public static String getTrialId(String experiment_id) {
+    if (experiment_id == null)
+      return null;
     return DBUtils.query1String("getTrialId",DBUtils.addSubs(new HashMap(),":experiment_id",experiment_id), QUERY_FILE); 
   }
   
   public static SortedMap getOrganizationGroups(String experiment_id) {
+    if (experiment_id == null)
+      return null;
     Map subs = new HashMap();
     subs.put(":experiment_id",experiment_id);
     return DBUtils.queryHT("getOrganizationGroups",subs, QUERY_FILE);
