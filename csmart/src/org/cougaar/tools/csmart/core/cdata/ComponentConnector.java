@@ -51,7 +51,7 @@ public class ComponentConnector {
   
   public static ComponentData createComponentData(String filename) {
     ComponentConnector cc= new ComponentConnector();
-
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.cdata.ComponentConnector");
     ComponentData data = new GenericComponentData();
     ComponentDescription[] desc = null;
 
@@ -65,6 +65,9 @@ public class ComponentConnector {
       for(int j=0; j < agentDesc.length; j++) {
         ComponentData plugin = cc.createComponentData(agentDesc[j]);
         plugin.setParent(agent);
+        if(log.isDebugEnabled()) {
+          log.debug("Creating: " + plugin.getName() + " with parent: " + agent.getName());
+        }
         agent.addChild(plugin);
       }
 
