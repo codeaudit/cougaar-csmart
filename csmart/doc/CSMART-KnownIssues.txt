@@ -37,5 +37,8 @@ CSMART contains a few known issues:
 * The Console (Experiment Controller) kills Nodes sequentially which
   is sometimes slow. Bug 1416.
 
+* Some Linux users get an error when loading database scripts. (bug 1257)
+  For a workout, see the bug report.
+
 For up to date information on these and other CSMART issues see:
 http://www.cougaar.org/bugs
