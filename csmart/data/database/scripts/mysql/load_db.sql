@@ -1357,44 +1357,6 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_loc.csv.tmp'
     (ORG_GROUP_ID,LOCATION_CODE,START_CDAY,END_CDAY);
 
 #
-# Table structure for table 'v6_tpfdd'
-#
-
-DROP TABLE IF EXISTS v6_tpfdd;
-CREATE TABLE v6_tpfdd (
-  RLN varchar(7) binary default NULL,
-  SERVICE_CODE char(1) binary default NULL,
-  UIC varchar(6) binary default NULL,
-  ULC char(3) binary default NULL,
-  UTC varchar(5) binary default NULL,
-  UNIT_NAME varchar(50) binary default NULL,
-  DESCRIPTION varchar(100) binary default NULL,
-  NUM_PAX decimal(68,30) default NULL,
-  ORIGIN_GEOLOC varchar(4) binary default NULL,
-  ORIGIN_NAME varchar(50) binary default NULL,
-  POE_GEOLOC varchar(4) binary default NULL,
-  POE_NAME varchar(50) binary default NULL,
-  POD_GEOLOC varchar(4) binary default NULL,
-  POD_NAME varchar(50) binary default NULL,
-  DEST_GEOLOC varchar(4) binary default NULL,
-  DEST_NAME varchar(50) binary default NULL,
-  RLD_ORIGIN decimal(68,30) default NULL,
-  ALD_POE decimal(68,30) default NULL,
-  EAD_POD decimal(68,30) default NULL,
-  LAD_POD decimal(68,30) default NULL,
-  RDD_DEST decimal(68,30) default NULL
-) TYPE=MyISAM;
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/tpfdd.csv.tmp'
-    INTO TABLE v6_tpfdd
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (RLN,SERVICE_CODE,UIC,ULC,UTC,UNIT_NAME,DESCRIPTION,NUM_PAX,ORIGIN_GEOLOC,ORIGIN_NAME,POE_GEOLOC,POE_NAME,POD_GEOLOC,POD_NAME,DEST_GEOLOC,DEST_NAME,RLD_ORIGIN,ALD_POE,EAD_POD,LAD_POD,RDD_DEST);
-
-#
 # Table structure for table 'community_entity_attribute'
 #
 
