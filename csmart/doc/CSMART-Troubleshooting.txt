@@ -188,7 +188,7 @@ CpuClock exception: java.lang.UnsatisfiedLinkError: no mylib in
   java.library.path
 
 this indicates that the metrics Plugins could not find the named library,
-available in scalability/bin. If on a Windows or Linux i386 machine, be sure
+available in csmart/bin. If on a Windows or Linux i386 machine, be sure
 this libary is in a directory on your path. Otherwise, you may safely
 ignore this error.
 
@@ -249,8 +249,6 @@ display value.
 You need to run 'xhost +' in the X Server on the machine running CSMART.
 
 Viewing Metrics Results
-- Set the Sample Interval to non-zero (but small) to force the
-scalability society to take some intermediate samples
 - Be sure that on Windows you edited the command-line parameter
 specifying the location of Excel
 - Results files are not automatically retrieved until you "stop" the society.

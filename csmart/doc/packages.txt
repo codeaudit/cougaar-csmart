@@ -9,6 +9,10 @@ highlighting key classes and interfaces.
     This is where plugins, Assets, and other society runtime pieces
    go. In particular, the Basic Metric pieces are here.
    
+   -- jni
+      JNI code for the CPUClock metrics support, include build
+      scripts.
+
    -- plugin
       All CSMART Plugins, including those supporting the Basic Metric.
 

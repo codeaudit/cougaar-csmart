@@ -21,11 +21,13 @@ Linux/Solaris versions of this file.
 
 Also note: To get access to the CPU related metrics, you will need to
 install the Mylib.dll/.so in your path: $COUGAAR_INSTALL_PATH/csmart/bin 
-or JDK_HOME/bin work well. 
+or JDK_HOME/bin work well. The libraries are in this directory already,
+so just put this directory on your path if not already there. See
+below for details.
 
 
 Some key parameters that you will want to locally edit:
-Excel location is specified in CMSART / CSMART.bat / CSMART.sh
+  Excel location is specified in CMSART / CSMART.bat / CSMART.sh
 
 
 Contents:
@@ -60,6 +62,31 @@ dot-l386
 	usual location is $COUGAAR_INSTALL_PATH/csmart/bin, but alternatives 
         such as $COUGAAR_INSTALL_PATY/sys and $COUGAAR_INSTALL_PATH/bin 
         also work. You can also get these files from the  GraphViz site.
+
+libmylib.so / mylib.dll
+    The BasicMetric uses a JNI library to measure CPU time used.
+    This library needs to be installed in a location that is accessible
+    during execution of the Java virtual machine running the society. The
+    library file and the location where it needs to be installed is
+    platform-specific.
+
+    Linux Installation
+
+    You have two options: Option one is to put the mylib.so anywhere you
+    want and include the directory in your LD_LIBRARY_PATH definition.
+    Option two is to put the mylib.so into your JDK installation lib
+    directory. For a 386 Linux, this is in the jre/lib/i386 directory. The
+    second option is preferable if you have access to the directory.
+
+    Windows Installation
+
+    The same two options exist: Option one is to put the mylib.dll
+    anywhere and add the directory to your PATH variable. Option two is to
+    put it in the jre/bin directory.
+
+    Remember the .dll is for windows and the .so is for i386 Linux. There
+    is no version for Linux on other platforms or for any other operating
+    system. The .dll works with at least NT 4.0 and Windows 2000.
 	
 copy-experiment.sh
 [Helper file: copyASB.sql]
