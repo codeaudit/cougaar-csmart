@@ -65,7 +65,8 @@ public class ClientServletUtil {
     // get agent URLs from servlet
     InputStream is = connection.getInputStream();
     ObjectInputStream p = new ObjectInputStream(is);
-    return (Vector)p.readObject();
+    Vector readobjects = (Vector) p.readObject();
+    return readobjects;
   }
 
   /**
@@ -156,9 +157,7 @@ public class ClientServletUtil {
       InputStream is = connection.getInputStream();
       ObjectInputStream p = new ObjectInputStream(is);
       results = (Collection)p.readObject();
-    } catch (Exception e) {
-      results = null; // caller handles reporting the error
-    }
+    } catch (Exception e){}
     return results;
   }
 
