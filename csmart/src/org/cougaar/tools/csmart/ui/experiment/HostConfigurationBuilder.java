@@ -23,7 +23,6 @@ package org.cougaar.tools.csmart.ui.experiment;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -46,17 +45,15 @@ import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.configuration.ConsoleDNDTree;
 import org.cougaar.tools.csmart.ui.configuration.ConsoleTreeObject;
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
-import org.cougaar.tools.csmart.ui.console.ExperimentDB;
 import org.cougaar.tools.csmart.ui.console.NodeArgumentDialog;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 
 public class HostConfigurationBuilder extends JPanel implements TreeModelListener {
   Experiment experiment;
-  CSMART csmart;
+  ExperimentBuilder experimentBuilder;
   boolean isEditable;
   boolean isRunnable;
   SocietyComponent societyComponent;
@@ -69,7 +66,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   DNDTree nodeTree;
   DNDTree agentTree;
   String nameServerHostName = "";
-  private boolean modified = false; // set true if any mapping changes
   // menu items for popup menu in hostTree
   private static final String NEW_HOST_MENU_ITEM = "New Host";
   private static final String NEW_NODE_MENU_ITEM = "New Node";
@@ -79,9 +75,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private static final String HOST_TYPE_MENU_ITEM = "Type";
   private static final String HOST_LOCATION_MENU_ITEM = "Location";
 
-  public HostConfigurationBuilder(Experiment experiment, CSMART csmart) {
+  public HostConfigurationBuilder(Experiment experiment, 
+                                  ExperimentBuilder experimentBuilder) {
     this.experiment = experiment;
-    this.csmart = csmart;
+    this.experimentBuilder = experimentBuilder;
     isEditable = experiment.isEditable();
     isRunnable = experiment.isRunnable();
     initDisplay();
@@ -666,7 +663,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private void newNodeInTree(JTree tree) {
     TreePath path = tree.getSelectionPath();
     if (path == null) {
-      System.out.println("CSMARTConsole newNodeInTree called with null path; ignoring");
+      System.out.println("HostConfigurationBuilder newNodeInTree called with null path; ignoring");
       return;
     }
     DefaultMutableTreeNode selectedNode = 
@@ -697,7 +694,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private void deleteNodeFromTree(JTree tree) {
     TreePath path = tree.getSelectionPath();
     if (path == null) {
-      System.out.println("CSMARTConsole deleteNodeMenuItem called with null path; ignoring");
+      System.out.println("HostConfigurationBuilder deleteNodeMenuItem called with null path; ignoring");
       return;
     }
     DefaultMutableTreeNode selectedNode = 
@@ -748,7 +745,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       treeNodesInsertedInHostTree(e);
     else if (nodeTree.getModel().equals(source))
       treeNodesInsertedInNodeTree(e);
-    modified = true;
+    experimentBuilder.setModified(true);
   }
 
   /**
@@ -852,7 +849,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       treeNodesRemovedFromHostTree(e);
     else if (nodeTree.getModel().equals(source))
       treeNodesRemovedFromNodeTree(e);
-    modified = true;
+    experimentBuilder.setModified(true);
   }
 
 
@@ -927,7 +924,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     Object source = e.getSource();
     if (hostTree.getModel().equals(source))
       setNameServerHostName();
-    modified = true;
+    experimentBuilder.setModified(true);
   }
 
   /**
@@ -1198,64 +1195,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       System.out.println(uhe);
     }
     ((NodeComponent)node).setArguments(properties);
-  }
-
-  /**
-   * If host-node-agent mapping was modified, then save it,
-   * otherwise display a dialog indicating that no modifications were made.
-   */
-
-  public void save() {
-    if (!experiment.isInDatabase())
-      return;
-    if (modified)
-      saveHelper();
-    else
-      JOptionPane.showMessageDialog(this, "No modifications were made.");
-  }
-
-  /**
-   * Silently save the host-node-agent mapping if it was modified.
-   */
-
-  public void exit() {
-    if (modified && experiment.isInDatabase())
-      saveHelper();
-  }
-
-  private void saveHelper() {
-    final Component c = this;
-    GUIUtils.timeConsumingTaskStart(c);
-    GUIUtils.timeConsumingTaskStart(csmart);
-    try {
-      new Thread("Save") {
-        public void run() {
-          doSave();
-          GUIUtils.timeConsumingTaskEnd(c);
-          GUIUtils.timeConsumingTaskEnd(csmart);
-        }
-      }.start();
-    } catch (RuntimeException re) {
-      System.out.println("Error saving experiment: " + re);
-      GUIUtils.timeConsumingTaskEnd(c);
-    }
-  }
-
-  private void doSave() {
-    modified = false;
-    if (experiment.isCloned()) {
-      experiment.saveToDb();
-      return;
-    }
-    // get unique name in both database and CSMART
-    if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
-      String name = csmart.getUniqueExperimentName(experiment.getShortName());
-      if (name == null)
-        return;
-      experiment.setName(name);
-    }
-    experiment.saveToDb();
-    experiment.setCloned(true);
   }
 
   private DefaultTreeModel createModel(final Experiment experiment, DefaultMutableTreeNode node, boolean askKids) {

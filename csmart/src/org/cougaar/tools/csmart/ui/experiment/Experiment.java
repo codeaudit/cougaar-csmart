@@ -321,16 +321,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       for (int j = 0; j < onodes.length; j++) {
 	NodeComponent nnode = experimentCopy.addNode(onodes[j].getFullName().toString());
 	AgentComponent[] oagents = onodes[j].getAgents();
+        // compare short names only, as full names may be different
 	for (int x=0; x < oagents.length; x++) {
-	    AgentComponent[] nagents = experimentCopy.getAgents();
-	    for (int y=0; y < nagents.length; y++ ) {
-		if (nagents[y].getFullName().equals(oagents[x].getFullName())) {
-		    nnode.addAgent(nagents[y]);
-		}
-	    }
+          AgentComponent[] nagents = experimentCopy.getAgents();
+          for (int y=0; y < nagents.length; y++ ) {
+            if (nagents[y].getShortName().equals(oagents[x].getShortName())) {
+              nnode.addAgent(nagents[y]);
+            } 
+          }
 	}	      
 	nhost.addNode(nnode);
-	break;
       }
     }
 

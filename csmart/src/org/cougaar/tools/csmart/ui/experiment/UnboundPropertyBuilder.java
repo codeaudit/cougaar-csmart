@@ -37,6 +37,7 @@ import org.cougaar.tools.csmart.ui.component.RecipeComponent;
 
 public class UnboundPropertyBuilder extends JPanel {
   private static final String REMOVE_MENU_ITEM = "Remove";
+  private ExperimentBuilder experimentBuilder;
   private String variationScheme;
   private DefaultTreeModel model;
   private ExperimentTree tree;
@@ -135,15 +136,19 @@ public class UnboundPropertyBuilder extends JPanel {
 
   private TreeModelListener myTreeModelListener = new TreeModelListener() {
     public void treeNodesChanged(TreeModelEvent e) {
+      experimentBuilder.setModified(true);
       reconcileExperimentNodes();
     }
     public void treeNodesInserted(TreeModelEvent e) {
+      experimentBuilder.setModified(true);
       reconcileExperimentNodes();
     }
     public void treeNodesRemoved(TreeModelEvent e) {
+      experimentBuilder.setModified(true);
       reconcileExperimentNodes();
     }
     public void treeStructureChanged(TreeModelEvent e) {
+      experimentBuilder.setModified(true);
       reconcileExperimentNodes();
     }
   };
@@ -153,8 +158,10 @@ public class UnboundPropertyBuilder extends JPanel {
    * components to use in trials.
    */
 
-  public UnboundPropertyBuilder(Experiment experiment) {
+  public UnboundPropertyBuilder(Experiment experiment, 
+                                ExperimentBuilder experimentBuilder) {
     this.experiment = experiment;
+    this.experimentBuilder = experimentBuilder;
     isEditable = experiment.isEditable();
     isRunnable = experiment.isRunnable();
     root = new DefaultMutableTreeNode();

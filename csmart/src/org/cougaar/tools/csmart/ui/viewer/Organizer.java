@@ -2262,7 +2262,8 @@ public class Organizer extends JScrollPane {
     else if (comp instanceof Experiment)
       return (ModifiableConfigurableComponent)copyExperiment((Experiment)comp, context);
     else if (comp instanceof RecipeComponent)
-      return (ModifiableConfigurableComponent)copyRecipe((RecipeComponent)comp, context);
+      return comp; // don't copy recipes
+      //      return (ModifiableConfigurableComponent)copyRecipe((RecipeComponent)comp, context);
     //ModifiableConfigurableComponent compCopy = comp.copy(this, context);
     // FIXME!!!
     ModifiableConfigurableComponent compCopy = comp;

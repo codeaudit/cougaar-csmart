@@ -414,7 +414,7 @@ public class CSMARTConsole extends JFrame {
     nodeMenu.add(legendAction);
 
     // create tabbed panes for configuration information (not editable)
-    hostConfiguration = new HostConfigurationBuilder(experiment, csmart);
+    hostConfiguration = new HostConfigurationBuilder(experiment, null);
     hostConfiguration.update(); // set host configuration to display 1st trial
     hostConfiguration.addHostTreeSelectionListener(myTreeListener);
     JInternalFrame jif = new JInternalFrame("Configuration",

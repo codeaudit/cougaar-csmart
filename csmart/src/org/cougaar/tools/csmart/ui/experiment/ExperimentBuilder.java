@@ -21,13 +21,16 @@
 
 package org.cougaar.tools.csmart.ui.experiment;
 
+import java.awt.Component;
+import java.awt.event.*;
+import java.net.URL;
 import javax.swing.*;
 import javax.swing.event.*;
-import java.awt.event.*;
+import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.tools.csmart.ui.console.ExperimentDB;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.net.URL;
-import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 
 public class ExperimentBuilder extends JFrame {
   private static final String FILE_MENU = "File";
@@ -39,6 +42,7 @@ public class ExperimentBuilder extends JFrame {
   protected static final String ABOUT_DOC = "/org/cougaar/tools/csmart/ui/help/about-csmart.html";
   protected static final String HELP_MENU_ITEM = "About Experiment Builder";
   private Experiment experiment;
+  private CSMART csmart;
   private boolean isEditable;
   private boolean isRunnable;
   private JTabbedPane tabbedPane;
@@ -46,6 +50,7 @@ public class ExperimentBuilder extends JFrame {
   private HostConfigurationBuilder hostConfigurationBuilder;
   private TrialBuilder trialBuilder;
   private ThreadBuilder threadBuilder;
+  private boolean modified = false;
 
   private Action helpAction = new AbstractAction(HELP_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
@@ -64,7 +69,7 @@ public class ExperimentBuilder extends JFrame {
   private Action[] fileActions = {
     new AbstractAction(SAVE_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
-        hostConfigurationBuilder.save();
+        save();
       }
     },
     new AbstractAction(EXIT_MENU_ITEM) {
@@ -82,6 +87,7 @@ public class ExperimentBuilder extends JFrame {
   };
 
   public ExperimentBuilder(CSMART csmart, Experiment experiment) {
+    this.csmart = csmart;
     this.experiment = experiment;
     isEditable = experiment.isEditable();
     isRunnable = experiment.isRunnable();
@@ -100,10 +106,10 @@ public class ExperimentBuilder extends JFrame {
     setJMenuBar(menuBar);
 
     tabbedPane = new JTabbedPane();
-    propertyBuilder = new UnboundPropertyBuilder(experiment);
+    propertyBuilder = new UnboundPropertyBuilder(experiment, this);
     tabbedPane.add("Properties", propertyBuilder);
     hostConfigurationBuilder = 
-      new HostConfigurationBuilder(experiment, csmart);
+      new HostConfigurationBuilder(experiment, this);
     tabbedPane.add("Configurations", hostConfigurationBuilder);
     // only display trial builder for non-database experiments
     if (experiment.isInDatabase()) {
@@ -129,6 +135,7 @@ public class ExperimentBuilder extends JFrame {
   }
 
   private void exit() {
+    saveSilently(); // if experiment from database was modified, save it
     // before exiting, restore experiment's and society's editability
     // FIXME Restore on society!!!!
     if (isEditable) 
@@ -138,17 +145,17 @@ public class ExperimentBuilder extends JFrame {
     // If the experiment now has a society and is otherwise runnable, say so
     if (experiment.getSocietyComponentCount() > 0)
       experiment.setRunnable(true);
-    // optionally save host-configuration-agent mapping if it was modified
-    hostConfigurationBuilder.exit();
   }
 
   /**
    * Set experiment to edit; used to re-use a running editor
    * to edit a different experiment.  Set the new experiment in all
    * the user interfaces (tabbed panes).
+   * Silently save the previous experiment if necessary.
    */
 
   public void reinit(Experiment newExperiment) {
+    saveSilently();
     // restore editable flag on previous experiment
     if (isEditable) 
       experiment.setEditable(isEditable);
@@ -184,6 +191,75 @@ public class ExperimentBuilder extends JFrame {
     }
     experiment.setEditable(false);
     experiment.setRunnable(false);
+  }
+
+  /**
+   * Called by HostConfigurationBuilder or UnboundPropertyBuilder
+   * if they modify an experiment.
+   */
+
+  public void setModified(boolean modified) {
+    this.modified = modified;
+  }
+
+  /**
+   * If the experiment was from the database and 
+   * components were either added or removed or
+   * the host-node-agent mapping was modified, then save it,
+   * otherwise display a dialog indicating that no modifications were made.
+   */
+
+  private void save() {
+    if (!experiment.isInDatabase())
+      return;
+    if (modified)
+      saveHelper();
+    else
+      JOptionPane.showMessageDialog(this, "No modifications were made.");
+  }
+
+  /**
+   * Silently save experiment from database if modified.
+   */
+
+  private void saveSilently() {
+    if (modified && experiment.isInDatabase())
+      saveHelper();
+  }
+
+  private void saveHelper() {
+    modified = false;
+    final Component c = this;
+    GUIUtils.timeConsumingTaskStart(c);
+    GUIUtils.timeConsumingTaskStart(csmart);
+    try {
+      new Thread("Save") {
+        public void run() {
+          doSave();
+          GUIUtils.timeConsumingTaskEnd(c);
+          GUIUtils.timeConsumingTaskEnd(csmart);
+        }
+      }.start();
+    } catch (RuntimeException re) {
+      System.out.println("Error saving experiment: " + re);
+      GUIUtils.timeConsumingTaskEnd(c);
+    }
+  }
+
+  private void doSave() {
+    if (experiment.isCloned()) {
+      experiment.saveToDb();
+      return;
+    }
+    // get unique name in both database and CSMART
+    if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
+      String name = csmart.getUniqueExperimentName(experiment.getShortName());
+      if (name == null)
+        return;
+      experiment.setName(name);
+    }
+    experiment.saveToDb();
+    experiment.setCloned(true);
   }
 
 }
