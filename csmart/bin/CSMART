@@ -25,7 +25,7 @@
     
 # Next section lists Jar files required for CSMART. Note that by default CSMART uses the Cougaar
 # Bootstrapper, which should find the jar files automatically (searching CIP/lib, plugins, sys, etc).
-# One need only include the core jar file
+# One need only include the bootstrap jar file
 
 # COUGAAR bootstrapping classpath will be:
 #  $COUGAAR_INSTALL_PATH/lib/core.jar
@@ -55,7 +55,7 @@ set MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/co
 
 #set MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;$COUGAAR_INSTALL_PATH/configs/\;$COUGAAR_INSTALL_PATH/configs/config-test/minitestconfig/\;"
 
-set MYCLASSPATH = "${COUGAAR_INSTALL_PATH}/lib/core.jar:${COUGAAR_INSTALL_PATH}/lib/util.jar:${COUGAAR_INSTALL_PATH}/lib/bootstrap.jar"
+set MYCLASSPATH = "${COUGAAR_INSTALL_PATH}/lib/bootstrap.jar"
 
 if ($?COUGAAR_DEV_PATH) then
     set MYCLASSPATH = "${COUGAAR_DEV_PATH}:${MYCLASSPATH}"

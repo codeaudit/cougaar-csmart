@@ -29,7 +29,7 @@ if [ $os = "Linux" -o $os = "SunOS" ]; then SEP=":"; fi
 
 # Next section lists Jar files required for CSMART. Note that by default CSMART uses the Cougaar
 # Bootstrapper, which should find the jar files automatically (searching CIP/lib, plugins, sys, etc).
-# One need only include the core jar file
+# One need only include the bootstrap jar file
 
 # COUGAAR bootstrapping classpath will be:
 #  $COUGAAR_INSTALL_PATH/lib/core.jar
@@ -47,7 +47,7 @@ if [ $os = "Linux" -o $os = "SunOS" ]; then SEP=":"; fi
     
 # To run without the Bootstrapper, set org.cougaar.useBootstrapper=false
 
-MYCLASSPATH="${COUGAAR_INSTALL_PATH}/lib/core.jar:{$COUGAAR_INSTALL_PATH}/lib/util.jar:{$COUGAAR_INSTALL_PATH}/lib/bootstrap.jar"
+MYCLASSPATH="${COUGAAR_INSTALL_PATH}/lib/bootstrap.jar"
 
 DEVPATH=""
 if [ "$COUGAAR_DEV_PATH" != "" ] ; then

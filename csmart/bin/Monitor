@@ -22,7 +22,7 @@
 
 # Run the CSMART Society Monitor in standalone mode
     
-set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
+set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/bootstrap.jar
 
 # Use the Bootstrapper to find Jar files.
 # All of the peculiarly Society Monitor required Jars are listed here for convenience

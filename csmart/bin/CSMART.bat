@@ -47,11 +47,11 @@ SET DEVPATH=
 IF NOT "%COUGAAR_DEV_PATH%" == "" SET DEVPATH=-Dorg.cougaar.class.path=%COUGAAR_DEV_PATH%
 
 REM Start CSMART using Bootstrapper
-SET MYCLASSPATH=%COUGAAR_INSTALL_PATH%\lib\core.jar:%COUGAAR_INSTALL_PATH%\lib\util.jar:%COUGAAR_INSTALL_PATH%\lib\bootstrap.jar
+SET MYCLASSPATH=%COUGAAR_INSTALL_PATH%\lib\bootstrap.jar
 
 SET MYMEMORY=-Xms100m -Xmx300m
 SET MYPROPERTIES=-Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH%
-SET MYCONFIGPATH=-Dorg.cougaar.config.path="%COUGAAR_INSTALL_PATH%/csmart/data/common/\;"
+SET MYCONFIGPATH=-Dorg.cougaar.config.path="%COUGAAR_INSTALL_PATH%/csmart/data/common/\;%COUGAAR_INSTALL_PATH%/configs/minitestconfig/\;"
 
 REM Edit the following line to reflect your local installation
 REM This is used by the Performance Analyzer
