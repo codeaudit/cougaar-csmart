@@ -32,7 +32,7 @@ very similar for WinNT) and a MYSQL database.
 <font size=+2><b>Contents and Overview:</b></font>
 <ol>
   <li><a href="#machineReqs">Machine Requirements</a>.<br>
-    Covers basic requirements, such as JDK 1.3.1 and JSSE.</li><p>
+    Covers basic requirements, such as JDK 1.4.</li><p>
 
   <li><a href="#dbInst">Database Installation</a>.<br>
     Covers installation and configuration of a 
@@ -96,14 +96,14 @@ very similar for WinNT) and a MYSQL database.
   <p>
   <ol>
   <p>
-  <li>Make sure that JDK 1.3.1 is installed.  This can be done using:
+  <li>Make sure that JDK 1.4 is installed.  You must upgrade from
+  JDK1.3.1, if that is what you have installed.  This can be done using:
       <pre>
        java -version
       </pre>
     If the JDK is not installed, or you have an older version, then
     you must download a new release from:
-       <a href="http://java.sun.com/j2se/1.3"
-       >http://java.sun.com/j2se/1.3</a>.
+       <a href="http://java.sun.com/j2se/1.4">http://java.sun.com/j2se/1.4</a>.
     On some Linux machines this may require an upgrade of "glibc".<br><br></li>
 
   <li>Make sure you have the JSSE 1.0.2 (Java Secure Sockets Extension) jars
@@ -141,7 +141,10 @@ very similar for WinNT) and a MYSQL database.
     machines that will create UI popups (No core plugins pop-up UI windows), 
     then you will need to install an "X-Server" such as
     <a href="http://www.hummingbird.com/products/nc/exceed/">Exceed</a>
-     or <a href="http://xfree86.cygwin.com">XFree (install on cygwin, free)</a>.
+     or <a href="http://xfree86.cygwin.com">XFree (install on cygwin,
+     free)</a>. In addition, there are several utility scripts
+     provided to export CSMART experiments or dump CSMART data
+     files. These scripts require either a Unix variant of Cygwin (on Windows).
     </li><p>
   </ol>
 </li><p>
@@ -230,7 +233,7 @@ very similar for WinNT) and a MYSQL database.
     <br><br>The CSMART configuration database tables are loaded from '.csv' 
     files provided in "$CIP/csmart/data/database/csv" directory.
     To load the database from these files, run the script 
-    "$CIP/csmart/data/database/scripts/mysql/load_1ad_mysql.sh".This will drop 
+    "$CIP/csmart/data/database/scripts/mysql/load_1ad_mysql.sh[bat]".This will drop 
     the old tables in the database first and load 
     the new tables from the .csv files.
 
@@ -269,8 +272,8 @@ very similar for WinNT) and a MYSQL database.
   <li>Create a user for accessing the database. Here we create a user
   <i>myname</i> with password <i>mypass</i> who can only access the database
   locally (and therefore not useful for running a distributed Cougaar
-  society). Note that the user must have select, insert, update, create,
-  delete, and drop priviledges on the configuration database.
+  society). Note that the user must have at least select, insert, update, create,
+  delete, drop, and file priviledges on the configuration database.
        <pre>
        $ mysql -u root -p
 	[supply root password set during installation]
@@ -282,7 +285,7 @@ very similar for WinNT) and a MYSQL database.
       doing: <pre><i>myname</i>@"%.foo.com"</pre>
   <br></li><p>
 
-  <li>Once you have imported the CMT MySQL datafile, be sure to follow
+  <li>Once you have imported the CSMART configuration data files, be sure to follow
   the same steps to import the Cougaar domain plugin MySQL database:
   <pre><a href="#cougaarEnv">$CIP</a>/dbms/data/mysql/mysqldump.9.2.txt</pre> 
   You may load this data into
@@ -294,7 +297,9 @@ very similar for WinNT) and a MYSQL database.
   <pre><a href="#cougaarEnv">$CIP</a>/dbms/data/mysql/army.txt</pre>created by unzipping <pre><a href="#cougaarEnv">$CIP</a>/dbms/data/mysql/army_spares.zip</pre>
    Then you <em>must</em> also create indexes for that data, by loading (from the same directory):
   <pre>spares_index.txt</pre>
-  Load all such files following the same instructions as above.<br><br></li><p>
+  Other files in the dbms/data directory are not currently
+  required. Load all such files following the same instructions as
+  above.<br><br></li><p>
       
   <li>The database is now ready.  You must now create a 
     <a href="../../doc/details/DataAccess.html">cougaar.rc</a>
@@ -524,7 +529,14 @@ installation using
 
 <a name="httpVisuals">
 <li><font size=+1><b>To use an HTTP browser to view the society:</b></font></a>
-  <p>Cougaar includes the <a href="http://jakarta.apache.org/tomcat/">Apache Tomcat</a> servlet server by default. It usually runs on port 8800. For details, see the <a href="../../doc/details/Servlet.html">core documentation</a>. There are a number of servlets loaded by default, and others included in most societies (including the above <a href="#minitest">minitestconfig</a>). To use these:<br><br>
+  <p>Cougaar includes the <a
+  href="http://jakarta.apache.org/tomcat/">Apache Tomcat</a> servlet
+  server by default. It usually runs on port 8800. For details, see
+  the <a href="../../doc/details/Servlet.html">core
+  documentation</a>. Note that no additional installation is required
+  to use Tomcat. There are a number of servlets loaded by default, and
+  others included in most societies (including the above <a
+  href="#minitest">minitestconfig</a>). To use these:<br><br>
   <ol>
   <li>Open any HTTP browser, such as 
     <a href="http://www.netscape.com">Netscape</a>.</li><p>
@@ -684,9 +696,9 @@ installation using
     xhosts.txt file (see your server documentation).</li><p>
 
   <li>CSMART allows users to create Recipes, whose functionality is
-  driven by database queries. These user-defined queries can be copied
-  from those in "CIP/configs/common/PopulateDb.q". However, they
-  should be copied into a new user-local file, called
+  driven by database queries. These user-defined queries can be based on
+  those in "CIP/configs/common/PopulateDb.q". However, they
+  should be placed in a new user-local file, called
   "recipeQueries.q". This file can be placed anywhere on the Cougaar
   Configuration path. Typically, users put this in the same place as
   their cougaar.rc file, CIP/configs/common.</li><p>
@@ -717,6 +729,8 @@ installation using
        desired package name and debug level to the debug.properties file.
     </li>
   </ol>
+  Developers may find it useful to monitor logging output by using a
+  tool such as <a href="http://traxel.com/lumbermill">Lumbermill</a>.
   </li><br>
 
   <li>CSMART is now ready to run by using:
@@ -738,8 +752,7 @@ installation using
   <p>
 
   <li>Follow the above 
-    <a href="http://www.cougaar.org">Cougaar</a>
-    , AppServer, and CSMART installation
+    <a href="http://www.cougaar.org">Cougaar</a>, AppServer, and CSMART installation
     steps.</li><p>
 
   <li>Start CSMART as noted above.  The main CSMART UI will popup (see section 2 of the User's Guide).</li><p>
@@ -751,7 +764,7 @@ installation using
     <ol>
     <li>Select "Default Workspace". This is where experiments and societies are stored.</li><p>
 
-    <li>Right-click, select "New Experiment".</li><p>
+    <li>Right-click, select "New Experiment", and then, "From File".</li><p>
 
     <li>Select an experiment, "TINY-1AD-TRANS" is a simple place to start.   Then a UI to select "Threads &amp; Groups" will popup.</li><p>
 
@@ -763,9 +776,16 @@ installation using
 
     <li>Give the experiment a name, such as "My Test", then click "Yes" to save
       your modified name.  Your experiment name, "My Test", is added
-      to the list in the "Default Workspace".  A recipe, Default Servlets is also
+      to the list in the "Default Workspace".  A recipe, "Default Servlets" is also
       added to the workspace.  This recipe defines the servlets that are a default
-      part of this experiment.</li><p>
+      part of this experiment. Note that your society (Agents +
+      Plugins), plus this Recipe (and any others you add) are
+      displayed twice. Once, within the Experiment to which you have
+      added them. Operations on these items (rename, delete, edit)
+      only effect the copy on that Experiment. These same societies &
+      recipes will appear a second time at the top-level of the
+      workspace. Changes here (rename, delete, edit) effect all copies
+      of this society or recipe.</li><p>
     </ol>
   </li><p>
 
