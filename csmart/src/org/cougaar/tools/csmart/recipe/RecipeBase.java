@@ -283,6 +283,7 @@ public abstract class RecipeBase
     ois.defaultReadObject();
     createLogger();
     installListeners();
+    saveInProgress = false;
   }
 
 }// RecipeBase
