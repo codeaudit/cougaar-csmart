@@ -790,8 +790,6 @@ public class PopulateDb extends PDbBase {
       log.debug("Deleting assemblies using substitutions: " + substitutions);
     }
 
-    if (! partial)
-      executeUpdate(dbp.getQuery("cleanASBAssembly", substitutions));
     executeUpdate(dbp.getQuery("cleanASBComponentArg", substitutions));
     executeUpdate(dbp.getQuery("cleanASBComponentHierarchy", substitutions));
     
@@ -807,6 +805,9 @@ public class PopulateDb extends PDbBase {
     // Community tables too
     executeUpdate(dbp.getQuery("cleanASBComm", substitutions));
     executeUpdate(dbp.getQuery("cleanASBCommEntity", substitutions));
+
+    if (! partial)
+      executeUpdate(dbp.getQuery("cleanASBAssembly", substitutions));
   }
 
   // Find all the unused CSMI and CSHNA assemblies and completely delete them

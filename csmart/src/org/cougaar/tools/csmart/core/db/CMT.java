@@ -190,8 +190,8 @@ public class CMT {
     DBUtils.deleteItems(asbPrefix+"asb_assembly", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);    
 
     // Added community tables to those that get cleaned out
-    DBUtils.deleteItems("community_attribute", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);    
     DBUtils.deleteItems("community_entity_attribute", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);    
+    DBUtils.deleteItems("community_attribute", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);    
 
   }
 
