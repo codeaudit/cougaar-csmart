@@ -6,7 +6,16 @@
 (load "build/compile.scm")
 (import "java.util.Date")
 
-(set! cfw-prefix "V5_")
+
+;; for changing between the CFW_ORG_GROUP table and the LIB_ORG_GROUP
+;;(set! cog-type "CFW_")
+;;(set! cfw-prefix "V5_")
+;;(set! cfw_group_id "SMALL-3ID-CFW-GRP")
+(set! cog-type "LIB_")
+(set! cfw-prefix "V6_")
+(set! cfw_group_id "SMALL-3ID-TRANS-STUB-CFW-GRP")
+
+
 (set! asb-prefix "V4_")
 (set! refDBConnection #null)
 
@@ -18,10 +27,10 @@
 
  ;; temporary hack for testing
 ;;(set! cfw_group_id "3ID-CFW-GRP-A")
-(set! cfw_group_id "SMALL-3ID-CFW-GRP")
+
 (set! assembly_description "small-3ID,all threads, no clones")
-;;(set! threads all-threads)
-(set! threads 3thread)
+(set! threads all-threads)
+;;(set! threads 3thread)
 (set! version "-8")
 (set! clones ())
 
@@ -42,6 +51,10 @@
   (if (eq? refDBConnection #null)
       (set! refDBConnection (DriverManager.getConnection refDBConnURL refDBUser refDBPasswd))
   #t))
+
+(define (setDBConnection conn)
+      (set! refDBConnection conn)
+)
 
 (define (createStatement conn)
   (tryCatch
@@ -482,7 +495,9 @@
 		 "update " asb-prefix "asb_assembly set assembly_id = assembly_id where assembly_id = "
 		 (sqlQuote assembly_id))))
       (dbu (string-append
-	    "insert into " asb-prefix "asb_assembly values ("
+	    "insert into " asb-prefix "asb_assembly "
+	    "(ASSEMBLY_ID,ASSEMBLY_TYPE,DESCRIPTION)"
+	    "values ("
 	    (sqlQuote assembly_id)","
 	    "'CMT',"
 	    (sqlQuote assembly_description)")"))
@@ -549,6 +564,7 @@
   (dbu 
    (string-append
     "insert into " asb-prefix "asb_agent "
+    "(ASSEMBLY_ID, COMPONENT_ALIB_ID, COMPONENT_LIB_ID, CLONE_SET_ID, COMPONENT_NAME)"
     "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
     "go.org_id as COMPONENT_ALIB_ID,"
     "go.org_id as COMPONENT_LIB_ID,"
@@ -569,6 +585,7 @@
 	  (dbu
 	   (string-append
 	    "insert into " asb-prefix "asb_agent "
+	    "(ASSEMBLY_ID, COMPONENT_ALIB_ID, COMPONENT_LIB_ID, CLONE_SET_ID, COMPONENT_NAME)"
 	    "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
 	    "(cs.clone_set_id || '-' || ogom.org_id) as COMPONENT_ALIB_ID,"
 	    "ogom.org_id as COMPONENT_LIB_ID,"
@@ -620,6 +637,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "alib_component "
+    "(COMPONENT_ALIB_ID, COMPONENT_NAME , COMPONENT_LIB_ID, COMPONENT_TYPE , CLONE_SET_ID)"
     (get-base-agent-alib-component-sql cfw_group_id threads))))
 
 
@@ -643,6 +661,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "alib_component "
+    "(COMPONENT_ALIB_ID, COMPONENT_NAME , COMPONENT_LIB_ID, COMPONENT_TYPE , CLONE_SET_ID)"
     (get-cloned-agent-alib-component-sql org_group_id n threads))))
 
 (define (get-plugin-alib-component-sql cfw_group_id assembly_id threads)
@@ -679,6 +698,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "alib_component "
+    "(COMPONENT_ALIB_ID, COMPONENT_NAME , COMPONENT_LIB_ID, COMPONENT_TYPE , CLONE_SET_ID)"
     (get-plugin-alib-component-sql cfw_group_id assembly_id threads))))
 
 
@@ -705,7 +725,7 @@
    (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
    "(aa.component_alib_id || '|' ||  pl.plugin_class) as COMPONENT_ALIB_ID,"
    "aa.component_alib_id as PARENT_COMPONENT_ALIB_ID,"
-   "(pl.plugin_class_order+(5* pg.plugin_group_order)) as INSERTION_ORDER"
+   "(pl.plugin_class_order+(1000* pg.plugin_group_order)) as INSERTION_ORDER"
 
    " from " asb-prefix "ASB_AGENT aa,"
    cfw-prefix "cfw_group_member gm,"
@@ -724,6 +744,7 @@
    "   and pg.plugin_group_id = pl.plugin_group_id"
    "   and pg.plugin_group_id = opg.plugin_group_id"
    "   and gm.cfw_id=opg.cfw_id"
+   "   and gm.cfw_id=pl.cfw_id"
    ;; safety "   and ('plugin'  || '|' || pl.plugin_class) in (select component_lib_id from " asb-prefix "lib_component)"
    "   and pth.plugin_class=pl.plugin_class"
    "   and pth.thread_id in " threads
@@ -740,6 +761,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_component_hierarchy "
+    "(ASSEMBLY_ID, COMPONENT_ALIB_ID, PARENT_COMPONENT_ALIB_ID, INSERTION_ORDER)"
     (get-plugin-asb-component-hierarchy-sql assembly_id cfw_group_id threads))))
 
 (define (get-asb-agent-pg-attr-sql assembly_id cfw_group_id threads)
@@ -779,6 +801,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_agent_pg_attr "
+    "(ASSEMBLY_ID, COMPONENT_ALIB_ID, PG_ATTRIBUTE_LIB_ID, ATTRIBUTE_VALUE, ATTRIBUTE_ORDER, START_DATE, END_DATE)"
     (get-asb-agent-pg-attr-sql assembly_id cfw_group_id threads))))
 
 (define (get-asb-agent-relation-to-cloneset-sql assembly_id cfw_group_id threads)
@@ -822,6 +845,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_agent_relation "
+    "(ASSEMBLY_ID, ROLE, SUPPORTING_COMPONENT_ALIB_ID, SUPPORTED_COMPONENT_ALIB_ID, START_DATE, END_DATE)"
     (get-asb-agent-relation-to-cloneset-sql assembly_id cfw_group_id threads))))
 
 (define (get-asb-agent-relation-to-base-sql assembly_id cfw_group_id threads)
@@ -865,6 +889,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_agent_relation "
+    "(ASSEMBLY_ID, ROLE, SUPPORTING_COMPONENT_ALIB_ID, SUPPORTED_COMPONENT_ALIB_ID, START_DATE, END_DATE)"
     (get-asb-agent-relation-to-base-sql assembly_id cfw_group_id threads))))
 
 (define (add-all-asb-agent-relations assembly_id cfw_group_id threads)
@@ -911,6 +936,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_agent_relation "
+    "(ASSEMBLY_ID, ROLE, SUPPORTING_COMPONENT_ALIB_ID, SUPPORTED_COMPONENT_ALIB_ID, START_DATE, END_DATE)"
     (get-asb-agent-hierarchy-relation-to-cloneset-sql assembly_id cfw_group_id threads))))
 
 (define (get-asb-agent-hierarchy-relation-to-base-sql assembly_id cfw_group_id threads)
@@ -950,6 +976,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_agent_relation "
+    "(ASSEMBLY_ID, ROLE, SUPPORTING_COMPONENT_ALIB_ID, SUPPORTED_COMPONENT_ALIB_ID, START_DATE, END_DATE)"
     (get-asb-agent-hierarchy-relation-to-base-sql assembly_id cfw_group_id threads))))
 
 
@@ -998,6 +1025,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_agent_relation "
+    "(ASSEMBLY_ID, ROLE, SUPPORTING_COMPONENT_ALIB_ID, SUPPORTED_COMPONENT_ALIB_ID, START_DATE, END_DATE)"
     (get-asb-agent-hierarchy-relation-sql assembly_id cfw_group_id threads))))
 
 
@@ -1044,6 +1072,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_component_arg "
+    "(ASSEMBLY_ID, COMPONENT_ALIB_ID, ARGUMENT, ARGUMENT_ORDER)"
     (get-agent-name-component-arg-sql assembly_id cfw_group_id threads))))
 
 
@@ -1091,6 +1120,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_component_arg "
+    "(ASSEMBLY_ID, COMPONENT_ALIB_ID, ARGUMENT, ARGUMENT_ORDER)"
     (get-plugin-agent-asb-component-arg-sql assembly_id cfw_group_id threads))))
 
 
@@ -1141,6 +1171,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_component_arg "
+    "(ASSEMBLY_ID, COMPONENT_ALIB_ID, ARGUMENT, ARGUMENT_ORDER)"
     (get-plugin-orgtype-asb-component-arg-sql assembly_id cfw_group_id threads))))
 
 (define (get-plugin-all-asb-component-arg-sql assembly_id cfw_group_id threads)
@@ -1186,6 +1217,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_component_arg "
+    "(ASSEMBLY_ID, COMPONENT_ALIB_ID, ARGUMENT, ARGUMENT_ORDER)"
     (get-plugin-all-asb-component-arg-sql assembly_id cfw_group_id threads))))
 
 
@@ -1235,6 +1267,7 @@
   (dbu
    (string-append
     "insert into " asb-prefix "asb_oplan"
+    "(ASSEMBLY_ID, OPLAN_ID, OPERATION_NAME , PRIORITY, C0_DATE)"
     " select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
     "op.oplan_id as OPLAN_ID,"
     "op.operation_name as OPERATION_NAME,"
@@ -1256,6 +1289,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_oplan_agent_attr "
+    "(ASSEMBLY_ID, OPLAN_ID, COMPONENT_ALIB_ID, COMPONENT_ID, START_CDAY, ATTRIBUTE_NAME , END_CDAY, ATTRIBUTE_VALUE)"
     (get-asb-oplan-agent-attr-sql assembly_id cfw_group_id threads oplan_ids))))
 
 
@@ -1286,7 +1320,6 @@
    " order by 'plugin'  || '|' || pl.plugin_class"
    )
   )
-
 
 
 
@@ -1327,7 +1360,7 @@
    "select distinct " (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
    "go.org_id || '|' ||  pl.plugin_class AS COMPONENT_ALIB_ID,"
    "go.org_id as PARENT_COMPONENT_ALIB_ID,"
-   "(pl.plugin_class_order+(5* pg.plugin_group_order)) as INSERTION_ORDER"
+   "(pl.plugin_class_order+(1000* pg.plugin_group_order)) as INSERTION_ORDER"
 
    " from " cfw-prefix "cfw_group_org go,"
    cfw-prefix "cfw_org_orgtype ot,"
@@ -1343,6 +1376,7 @@
 
    "   and ot.orgtype_id=opg.orgtype_id"
    "   and gm.cfw_id=opg.cfw_id"
+   "   and gm.cfw_id=pl.cfw_id"
 
    "   and pg.plugin_group_id = pl.plugin_group_id"
    "   and pg.plugin_group_id = opg.plugin_group_id"
@@ -1420,7 +1454,9 @@
 		 (sqlQuote trial_id))))
       (dbu (string-append 
 	    "insert into " asb-prefix
-	    "EXPT_TRIAL values (" (sqlQuote trial_id)","(sqlQuote experiment_id)","(sqlQuote trial_name)","(sqlQuote trial_name)")"))))
+	    "EXPT_TRIAL "
+	    "(TRIAL_ID, EXPT_ID, DESCRIPTION, NAME)"
+	    "values (" (sqlQuote trial_id)","(sqlQuote experiment_id)","(sqlQuote trial_name)","(sqlQuote trial_name)")"))))
     trial_id))
 
 
@@ -1434,12 +1470,20 @@
 ;; DESCRIPTION				  VARCHAR2(200)
 ;;
 
+(define (createCSMARTExperiment expt_id cfw_group_id assembly_id)
+  (createExperiment expt_id cfw_group_id)
+  (set! trial (addTrialName expt_id "TRIAL"))
+  (addAssembly expt_id "TRIAL" assembly_id))
+
+
+
 (define (addAssembly experiment_id trial_name assembly_id)
   (let
       ((trial_id (addTrialName experiment_id trial_name)))
     (dbu (string-append 
 	  "insert into " asb-prefix "EXPT_TRIAL_ASSEMBLY "
-	  "values ("(sqlQuote experiment_id)"," (sqlQuote trial_id)","(sqlQuote assembly_id)","(sqlQuote trial_name)")"))
+	  "(EXPT_ID,TRIAL_ID,ASSEMBLY_ID,DESCRIPTION)"
+	  "   values ("(sqlQuote experiment_id)"," (sqlQuote trial_id)","(sqlQuote assembly_id)","(sqlQuote trial_name)")"))
     trial_id))
 
 (define (getSocietyTemplateForExperiment experiment_id)
@@ -1474,7 +1518,9 @@
 		 (sqlQuote experiment_id))))
       (dbu (string-append 
 	    "insert into " asb-prefix
-	    "EXPT_EXPERIMENT values ("
+	    "EXPT_EXPERIMENT "
+	    "(EXPT_ID, DESCRIPTION, NAME, CFW_GROUP_ID)"
+	    "   values ("
 	    (sqlQuote experiment_id)","
 	    (sqlQuote experiment_id)","
 	    (sqlQuote experiment_id)","
@@ -1482,6 +1528,7 @@
       ))
   experiment_id
   )
+
 
 
 (define (getSocietyTemplates)
@@ -1512,7 +1559,7 @@
 		      "select distinct ogom.ORG_GROUP_ID, og.DESCRIPTION from " 
 		      asb-prefix "EXPT_EXPERIMENT exp,"
 		      cfw-prefix "CFW_GROUP_MEMBER gm,"
-		      cfw-prefix "CFW_ORG_GROUP og,"
+		      cfw-prefix cog-type"ORG_GROUP og,"
 		      cfw-prefix "CFW_ORG_GROUP_ORG_MEMBER ogom"
 		      "   where exp.expt_id="(sqlQuote experiment_id)
 		      "   and exp.cfw_group_id =gm.cfw_group_id"
@@ -1609,6 +1656,7 @@
 		 )))
       (dbu (string-append 
 	    "insert into " asb-prefix "EXPT_TRIAL_THREAD"
+	    "(EXPT_ID,TRIAL_ID, THREAD_ID)"
 	    "    select expt_id, trial_id, " (sqlQuote thread_id)
 	    "    from V4_EXPT_TRIAL where trial_id = " (sqlQuote trial_id)
 	    ))))))
@@ -1665,7 +1713,7 @@
     "   " asb-prefix "EXPT_EXPERIMENT exp,"
     "   " asb-prefix "EXPT_TRIAL et,"
     "   " cfw-prefix "CFW_GROUP_MEMBER gm,"
-    "   " cfw-prefix "CFW_ORG_GROUP og,"
+    "   " cfw-prefix cog-type "ORG_GROUP og,"
     "   " cfw-prefix "CFW_ORG_GROUP_ORG_MEMBER ogom"
     "   where et.trial_id="(sqlQuote trial_id)
     "   and exp.expt_id=et.expt_id"
@@ -1691,6 +1739,7 @@
      (selected
       (dbu (string-append
 	    "insert into " asb-prefix "EXPT_TRIAL_ORG_MULT"
+	    "(TRIAL_ID, CFW_ID , ORG_GROUP_ID, EXPT_ID, MULTIPLIER, DESCRIPTION)"
 	    "   select distinct "
 	    "   et.expt_id,"
 	    "   et.trial_id,"
@@ -1702,7 +1751,7 @@
 	    asb-prefix "EXPT_EXPERIMENT exp,"
 	    asb-prefix "EXPT_TRIAL et,"
 	    cfw-prefix "CFW_GROUP_MEMBER gm,"
-	    cfw-prefix "CFW_ORG_GROUP og"
+	    cfw-prefix cog-type "ORG_GROUP og"
 	    "   where et.trial_id="(sqlQuote trial_id)
 	    "   and exp.expt_id=et.expt_id"
 	    "   and exp.cfw_group_id =gm.cfw_group_id"
@@ -1750,7 +1799,9 @@
 		 (sqlQuote experiment_id))))
       (dbu (string-append 
 	    "insert into " asb-prefix
-	    "EXPT_EXPERIMENT values ("
+	    "EXPT_EXPERIMENT "
+	    "(EXPT_ID, DESCRIPTION, NAME, CFW_GROUP_ID)"
+	    "values ("
 	    (sqlQuote experiment_id)","
 	    (sqlQuote experiment_id)","
 	    (sqlQuote experiment_id)","
@@ -1800,6 +1851,7 @@
 		       ")")))
 	    (dbu (string-append 
 		  "insert into " asb-prefix "ASB_COMPONENT_HIERARCHY"
+		  "(ASSEMBLY_ID, COMPONENT_ALIB_ID, PARENT_COMPONENT_ALIB_ID, INSERTION_ORDER)"
 		  "   select distinct " (sqlQuote assembly_id) ",agent.component_alib_id,node.component_alib_id,0"
 		  "   from "
 		  "   " asb-prefix "ALIB_COMPONENT node,"
@@ -1844,6 +1896,7 @@
 		       ")")))
 	    (dbu (string-append 
 		  "insert into " asb-prefix "ASB_COMPONENT_HIERARCHY"
+		  "(ASSEMBLY_ID, COMPONENT_ALIB_ID, PARENT_COMPONENT_ALIB_ID, INSERTION_ORDER)"
 		  "   select distinct " (sqlQuote assembly_id) ",node.component_alib_id,machine.component_alib_id,0"
 		  "   from "
 		  "   " asb-prefix "ALIB_COMPONENT machine,"
@@ -1865,7 +1918,9 @@
 	       "update " asb-prefix "asb_assembly set assembly_id = assembly_id where assembly_id = "
 	       (sqlQuote assembly_id))))
     (dbu (string-append
-	  "insert into " asb-prefix "asb_assembly values ("
+	  "insert into " asb-prefix "asb_assembly"
+	  "(ASSEMBLY_ID, ASSEMBLY_TYPE, DESCRIPTION)"
+	  "values ("
 	  (sqlQuote assembly_id)","
 	  "'CSMART',"
 	  (sqlQuote assembly_description)")"))
@@ -1909,12 +1964,14 @@
        )
     (dbu (string-append
 	  "insert into " asb-prefix "expt_experiment"
+	  "(EXPT_ID, DESCRIPTION, NAME, CFW_GROUP_ID)"
 	  "   select " (sqlQuote new_expt_id) ","
 	  "   " (sqlQuote new_name) ","
 	  "   " (sqlQuote new_name) ","
 	  "   cfw_group_id from " asb-prefix "expt_experiment where expt_id=" (sqlQuote experiment_id)))
     (dbu (string-append
 	  "insert into " asb-prefix "expt_trial"
+	  "(TRIAL_ID, EXPT_ID, DESCRIPTION, NAME)"
 	  "   select " 
 	  "   " (sqlQuote (string-append new_expt_id ".TRIAL")) ","
 	  "   " (sqlQuote new_expt_id) ","
@@ -1934,6 +1991,7 @@
 
     (dbu (string-append
 	  "insert into " asb-prefix "expt_trial_thread"
+	  "(TRIAL_ID, THREAD_ID, EXPT_ID)"
 	  "   select " 
 	  "   " (sqlQuote new_expt_id) ","
 	  "   " (sqlQuote (string-append new_expt_id ".TRIAL")) ","
@@ -1954,6 +2012,7 @@
 
     (dbu (string-append
 	  "insert into " asb-prefix "expt_trial_org_mult"
+	  "(TRIAL_ID, CFW_ID , ORG_GROUP_ID, EXPT_ID, MULTIPLIER, DESCRIPTION)"
 	  "   select " 
 	  "   " (sqlQuote new_expt_id) ","
 	  "   " (sqlQuote (string-append new_expt_id ".TRIAL")) ","
@@ -1965,6 +2024,7 @@
 	  "   "	  asb-prefix "expt_trial_org_mult where expt_id=" (sqlQuote experiment_id)))
     (dbu (string-append
 	  "insert into " asb-prefix "expt_trial_assembly"
+	  "(EXPT_ID,TRIAL_ID,ASSEMBLY_ID,DESCRIPTION)"
 	  "   select " 
 	  "   " (sqlQuote new_expt_id) ","
 	  "   " (sqlQuote (string-append new_expt_id ".TRIAL")) ","
