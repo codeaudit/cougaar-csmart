@@ -34,6 +34,8 @@ import java.net.URL;
 import java.util.List;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import java.util.HashSet;
+import org.cougaar.tools.csmart.core.property.range.StringRange;
 
 
 /**
@@ -49,6 +51,9 @@ public abstract class RecipeBase
 
   protected boolean editable = true;
   protected String name = null;
+
+  protected static final String TRUE = "True";
+  protected static final String FALSE = "False";
 
   public RecipeBase (String name){
     super(name);
@@ -115,6 +120,15 @@ public abstract class RecipeBase
   public String getRecipeName()
   {    
     return this.name;
+  }
+
+  public Property addBooleanProperty(String name, String dflt) {
+    Property tmp = addProperty(name, dflt);
+    HashSet boolSet = new HashSet();
+    boolSet.add(new StringRange(TRUE));
+    boolSet.add(new StringRange(FALSE));
+    tmp.setAllowedValues(boolSet);
+    return tmp;
   }
 
   /**
