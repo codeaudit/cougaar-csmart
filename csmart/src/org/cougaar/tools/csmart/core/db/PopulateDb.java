@@ -885,6 +885,16 @@ public class PopulateDb extends PDbBase {
                   
 	  PGPropData prop = props[j];
 	  PropertyInfo propInfo = getPropertyInfo(pgName, prop.getName());
+          if(propInfo == null) {
+            // This is a new PG, and must be stored in the db.
+            setPropertyInfo(pgName, prop.getName(), prop.getType(), prop.getSubType());
+            propInfo = getPropertyInfo(pgName, prop.getName());
+            if(log.isErrorEnabled() && propInfo == null) {
+              log.error("Error: Cannot obtain property info for: " + 
+                        pgName + ", " + prop.getName());
+            }
+          }
+
 	  substitutions.put(":component_alib_id:", sqlQuote(getComponentAlibId(data)));
 	  substitutions.put(":pg_attribute_lib_id:", sqlQuote(propInfo.getAttributeLibId()));
 	  // Are these defaults?
@@ -983,6 +993,26 @@ public class PopulateDb extends PDbBase {
     rs.close();
     stmt.close();
     return (String[][]) rows.toArray(new String[rows.size()][]);
+  }
+
+  private void setPropertyInfo(String pgName, String propName,
+                               String propType, String propSubtype) throws SQLException {
+    if(log.isDebugEnabled()) {
+      log.debug("setPropertyInfo("+pgName+", "+propName+", "+
+                propType+", "+propSubtype+")");
+    }
+
+    Statement stmt = dbConnection.createStatement();
+    substitutions.put(":attribute_lib_id:", sqlQuote(pgName + "|" + propName));
+    substitutions.put(":pg_name:", pgName);
+    substitutions.put(":attribute_name:", propName);
+    substitutions.put(":attribute_type:", propSubtype);
+    if(propType.equalsIgnoreCase("Collection")) {
+      substitutions.put(":aggregate_type:", "COLLECTION");
+    } else {
+      substitutions.put(":aggregate_type:", "SINGLE");
+    }
+    executeUpdate(dbp.getQuery("insertLibPGAttribute", substitutions));
   }
 
   /**
