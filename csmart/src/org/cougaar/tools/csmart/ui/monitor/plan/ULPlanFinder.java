@@ -19,13 +19,6 @@
  * </copyright>
  */
 
-// MEK - TODO
-// disposition is success only
-// find should be reactivated and find next deactivated when a loaded panel
-// changes
-// should we add things to the selection that were filtered out?
-// add in time stuff
-
 package org.cougaar.tools.csmart.ui.monitor.plan;
 
 import java.awt.*;
@@ -47,7 +40,7 @@ import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph;
  */
 
 public class ULPlanFinder extends JDialog {
-  private static final String ALL = "all";
+  private static final String ALL = "All";
   private CSMARTGraph graph;
   private CSMARTFrame frame;
   private JPanel findPanel;
@@ -57,10 +50,8 @@ public class ULPlanFinder extends JDialog {
   private int selectedIndex;
   private int maxSelectedIndex;
   private JButton findNextButton;
-  //  private final JButton findButton;
   private Vector selectedObjects;
   private Hashtable communityToAgents;
-  // mek
   Box box = new Box(BoxLayout.Y_AXIS);
   JPanel loadedPanel =  null;
   private boolean allTimeFilter;
@@ -75,12 +66,15 @@ public class ULPlanFinder extends JDialog {
   private JPanel assetPanel;
   private JComboBox nameCB;
   private JPanel timePanel;
-  ActionListener disableFindNext;
-
-
-//    public ULPlanFinder(String[] communityNames,
-//  		      Hashtable communityToAgents,
-//  		      String[] planObjectTypes) {
+  private ActionListener disableFindNext;
+  private JCheckBox successCBox;
+  private ButtonGroup statusButtonGroup;
+  private String status;
+  private JRadioButton estimatedButton;
+  private JRadioButton reportedButton;
+  private JRadioButton observedButton;
+  private JLabel fromLabel;
+  private JLabel toLabel;
 
   public ULPlanFinder(CSMARTFrame frame, 
                       CSMARTGraph graph, 
@@ -153,6 +147,7 @@ public class ULPlanFinder extends JDialog {
     JLabel planObjectTypeLabel = new JLabel("PlanObject Types: ");
 
     planObjectTypeCB = new JComboBox();
+    planObjectTypeCB.addItem("Select One");
     planObjects = graph.getValuesOfAttribute(PropertyNames.OBJECT_TYPE);
     planElements = graph.getValuesOfAttribute(PropertyNames.PLAN_ELEMENT_TYPE);
     for (int i = 0; i < planObjects.size(); i++ ) {
@@ -193,7 +188,6 @@ public class ULPlanFinder extends JDialog {
 
     JPanel buttonPanel = new JPanel();
     final JButton findButton = new JButton("Find");
-    //    JButton findButton = new JButton("Find");
     findButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	find();
@@ -274,10 +268,10 @@ public class ULPlanFinder extends JDialog {
     Object selection = cb.getSelectedItem();
     if (((String)selection).equals("Select One"))
       return; // do nothing
-    // MEK - why can't it be a string [] ???
-//      String[] agentNames = 
-//        (String[])communityToAgents.get(cb.getSelectedItem());
-    agentCB.addItem(ALL);
+
+    //agentCB.addItem(ALL);  
+    // MEK - ALL is not working yet so we'll use select one
+    agentCB.addItem("Select One");
     Vector agentNames = ((Vector)communityToAgents.get(cb.getSelectedItem()));
       for (int i = 0; i < agentNames.size(); i++)
         agentCB.addItem(agentNames.elementAt(i));
@@ -290,6 +284,9 @@ public class ULPlanFinder extends JDialog {
   private void planObjectTypeActionPerformed(ActionEvent e) {
     JComboBox cb = (JComboBox)e.getSource();
     String s = (String)cb.getSelectedItem();
+    if (s.equals("Select One"))
+      return; // do nothing
+
     if (s.equals("Task")) {
       if (loadedPanel != null) 
         box.remove(loadedPanel);
@@ -300,11 +297,7 @@ public class ULPlanFinder extends JDialog {
       verbCB = new JComboBox(graph.getValuesOfAttribute(PropertyNames.TASK_VERB));
       JLabel verbLabel = new JLabel ("Verb");
       verbCB.addActionListener(disableFindNext);
-//        public void actionPerformed(ActionEvent e) {
-//  	findNextButton.setEnabled(false);
-//  	findButton.setEnabled(true);
-//        }
-//        });
+
 
       JComboBox prepCB = new JComboBox(graph.getValuesOfAttribute(PropertyNames.TASK_PREP_PHRASE));
       JLabel prepLabel = new JLabel ("Preposition");
@@ -353,24 +346,49 @@ public class ULPlanFinder extends JDialog {
       pack();
       loadedPanel = taskPanel;
 
-      // workflow and disposition currently do nothing
-//      }else if ((s.equals("Workflow")) || (s.equals("Disposition")) || (s.equals("All"))) {
-//        if (loadedPanel != null) 
-//          box.remove(loadedPanel);
-//        pack();
-    }else if ((s.equals("Allocation")) || (s.equals("Aggregation")) || (s.equals("Expansion"))) {
+    }else if ((s.equals("Allocation")) || (s.equals("Aggregation")) || (s.equals("Expansion")) || (s.equals("Disposition"))) {
       if (loadedPanel != null) 
         box.remove(loadedPanel);
       timePanel = new JPanel();
       timePanel.setLayout(new GridBagLayout());
       TitledBorder timeTitledBorder = new TitledBorder("Time");
-      //timeTitledBorder.setTitleFont(titleFont);
       timePanel.setBorder(timeTitledBorder);
-      JCheckBox successCBox = new JCheckBox("Success");
-      JRadioButton estimatedButton = new JRadioButton("Estimated");
-      JRadioButton reportedButton = new JRadioButton("Reported");
-      JRadioButton observedButton = new JRadioButton("Observed");
-      ButtonGroup statusButtonGroup = new ButtonGroup();
+      successCBox = new JCheckBox("Success");
+      successCBox.addActionListener(disableFindNext);
+      estimatedButton = new JRadioButton("Estimated");
+      estimatedButton.addActionListener(disableFindNext);
+      estimatedButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allTimeFilter = false;
+          fromLabel.setEnabled(true);
+          startTimeField.setEnabled(true);
+          toLabel.setEnabled(true);
+          endTimeField.setEnabled(true);
+        }
+      });
+      reportedButton = new JRadioButton("Reported");
+      reportedButton.addActionListener(disableFindNext);
+      reportedButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allTimeFilter = false;
+          fromLabel.setEnabled(true);
+          startTimeField.setEnabled(true);
+          toLabel.setEnabled(true);
+          endTimeField.setEnabled(true);
+        }
+      });
+      observedButton = new JRadioButton("Observed");
+      observedButton.addActionListener(disableFindNext);
+      observedButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+          allTimeFilter = false;
+          fromLabel.setEnabled(true);
+          startTimeField.setEnabled(true);
+          toLabel.setEnabled(true);
+          endTimeField.setEnabled(true);
+        }
+      });
+      statusButtonGroup = new ButtonGroup();
       statusButtonGroup.add(estimatedButton);
       statusButtonGroup.add(reportedButton);
       statusButtonGroup.add(observedButton);
@@ -378,8 +396,11 @@ public class ULPlanFinder extends JDialog {
       allTimeFilter = true;
       allTimeButton.setFocusPainted(false);
       allTimeButton.setSelected(true);
-      final JLabel fromLabel = new JLabel("From: ");
-      final JLabel toLabel = new JLabel("To: ");
+      //      final JLabel fromLabel = new JLabel("From: ");
+      //      final JLabel toLabel = new JLabel("To: ");
+      fromLabel = new JLabel("From: ");
+      toLabel = new JLabel("To: ");
+      allTimeButton.addActionListener(disableFindNext);
       allTimeButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
           allTimeFilter = true;
@@ -387,10 +408,15 @@ public class ULPlanFinder extends JDialog {
           startTimeField.setEnabled(false);
           toLabel.setEnabled(false);
           endTimeField.setEnabled(false);
+          estimatedButton.setSelected(false);
+          System.out.println("in all action listener");
+          reportedButton.setSelected(false);
+          observedButton.setSelected(false);
         }
       });
       JRadioButton specificTimesButton = new JRadioButton();
       specificTimesButton.setFocusPainted(false);
+      specificTimesButton.addActionListener(disableFindNext);
       specificTimesButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
           allTimeFilter = false;
@@ -413,6 +439,16 @@ public class ULPlanFinder extends JDialog {
       endTimeField.setEnabled(false);
       int x = 0;
       int y = 0;
+      // only add succces if it's a disposition
+      if (s.equals("Disposition")) {
+        timePanel.add(successCBox,
+                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
+                                             GridBagConstraints.WEST,
+                                             GridBagConstraints.HORIZONTAL,
+                                             new Insets(0, 0, 0, 0), 0, 0));
+        y = 1;
+        x = 0;
+      }
       timePanel.add(estimatedButton,
                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
                                            GridBagConstraints.WEST,
@@ -428,15 +464,9 @@ public class ULPlanFinder extends JDialog {
                                            GridBagConstraints.WEST,
                                            GridBagConstraints.HORIZONTAL,
                                            new Insets(0, 0, 0, 0), 0, 0));
-      y = 1;
-      x = 0;
-      timePanel.add(successCBox,
-                    new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
-                                           GridBagConstraints.WEST,
-                                           GridBagConstraints.HORIZONTAL,
-                                           new Insets(0, 0, 0, 0), 0, 0));
       y = 2;
       x = 0;
+
       timePanel.add(allTimeButton,
                     new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
                                            GridBagConstraints.WEST,
@@ -489,7 +519,7 @@ public class ULPlanFinder extends JDialog {
       propertyGroupCB.setEnabled(false);
       JLabel nameLabel = new JLabel("Name");
       nameCB = new JComboBox(graph.getValuesOfAttribute(PropertyNames.ASSET_NAME));
-      //      nameCB.addActionListener(disableFindNext);
+      nameCB.addActionListener(disableFindNext);
       int x = 0;
       int y = 0;
       assetPanel.add(typeIDLabel,
@@ -573,74 +603,91 @@ public class ULPlanFinder extends JDialog {
    */
 
   private Vector getSelectedObjects() {
+    status = null;
     String communitySelected = (String)communityCB.getSelectedItem();
     String agentSelected = (String)agentCB.getSelectedItem();
     String planObjectTypeSelected = (String)planObjectTypeCB.getSelectedItem();
  
-
     Vector selectedNodes = graph.vectorOfElements(GrappaConstants.NODE);
-    selectedNodes = getNodesWithStringAttribute(selectedNodes,
+
+//      if (agentSelected.equals("All")) {
+//        // if "All"  selected then select all for communitySelected
+//        selectedNodes = getNodesWithStringAttribute(selectedNodes,
+//                                                    PropertyNames.PLAN_OBJECT_COMMUNITY_NAME,
+//                                                    communitySelected);
+//      } else {
+      // in not "ALL" selected based on agent selected
+      selectedNodes = getNodesWithStringAttribute(selectedNodes,
                                                 PropertyNames.AGENT_ATTR,
                                                 agentSelected);
-    // go through the planElements vector and see if the selected
-    // plan object type is in there
-    for (int i = 0; i < planElements.size(); i++) {
-      if (planObjectTypeSelected.equals(planElements.elementAt(i))) {
+//      }
+    // first select by object name
+    String objectName = null;
+    // if object selected is a plan element, then get plan objects first
+    if (planElements.contains(planObjectTypeSelected)) 
+      objectName = PropertyNames.PLAN_ELEMENT_OBJECT;
+    else
+      objectName = planObjectTypeSelected;
+    selectedNodes = getNodesWithStringAttribute(selectedNodes, 
+						PropertyNames.OBJECT_TYPE,
+						objectName);
+    // get specific plan element objects
+    if (planElements.contains(planObjectTypeSelected))
+      selectedNodes = getNodesWithStringAttribute(selectedNodes,
+						  PropertyNames.PLAN_ELEMENT_TYPE,
+						  planObjectTypeSelected);
+
+    // now refine the selected nodes based on what type of object we have
+    if (planObjectTypeSelected.equals(PropertyNames.TASK_OBJECT)) {
+      String verbSelected = (String)verbCB.getSelectedItem();
+      selectedNodes = getNodesWithStringAttribute(selectedNodes,
+						  PropertyNames.TASK_VERB,
+						  verbSelected);
+    } else if (planObjectTypeSelected.equals(PropertyNames.ASSET_OBJECT)) {
+      String nameSelected = (String)nameCB.getSelectedItem();
+      selectedNodes = getNodesWithStringAttribute(selectedNodes,
+						  PropertyNames.ASSET_NAME,
+						  nameSelected);
+    } else if (planElements.contains(planObjectTypeSelected)) {
+      // get info from time panels or any controls that are common to plan elements
+      if (successCBox.isSelected()) {
         selectedNodes = getNodesWithStringAttribute(selectedNodes,
-                                                    PropertyNames.PLAN_ELEMENT_TYPE,
-                                                    planObjectTypeSelected);
-
-        // now check the loadedPanel for the selections
-        // MEK - can we do this a better way??
-        if (loadedPanel == taskPanel) {
-          String verbSelected = (String)verbCB.getSelectedItem();
-          selectedNodes = getNodesWithStringAttribute(selectedNodes,
-                                                      PropertyNames.TASK_VERB,
-                                                      verbSelected);
-        } else if (loadedPanel == assetPanel) {
-          String nameSelected = (String)nameCB.getSelectedItem();
-          selectedNodes = getNodesWithStringAttribute(selectedNodes,
-                                                      PropertyNames.ASSET_NAME,
-                                                      nameSelected);
-        } else if (loadedPanel == timePanel) {
-//      if (!allTimeFilter) {
-//        String s = startTimeField.getText();
-//        startTime = getLongValue(s,
-//  			       "Invalid start time: " + s + " using 0.",
-//  			       0L);
-//        s = endTimeField.getText();
-//        endTime = getLongValue(s,
-//  			     "Invalid end time: " + s + " using max value.",
-//  			     Long.MAX_VALUE);
-//      } 
-
-        } 
+                                                    PropertyNames.DISPOSITION_SUCCESS,
+                                                    "true");
       }
+      if (!allTimeFilter) {
+        String s = startTimeField.getText();
+        startTime = getLongValue(s,
+                                 "Invalid start time: " + s + " using 0.",
+                                 0L);
+        s = endTimeField.getText();
+        endTime = getLongValue(s,
+                               "Invalid end time: " + s + " using max value.",
+                               Long.MAX_VALUE);
 
-      for (int j = 0; j < planObjects.size(); j++) {
-        if (planObjectTypeSelected.equals(planObjects.elementAt(j))) {
-          selectedNodes = getNodesWithStringAttribute(selectedNodes, 
-                                                    PropertyNames.OBJECT_TYPE,
-                                                    planObjectTypeSelected);
-          // now check the loadedPanel for the selections
-          // MEK - can we do this a better way??
-          if (loadedPanel == taskPanel) {
-            String verbSelected = (String)verbCB.getSelectedItem();
-            selectedNodes = getNodesWithStringAttribute(selectedNodes,
-                                                      PropertyNames.TASK_VERB,
-                                                      verbSelected);
-          } else if (loadedPanel == assetPanel) {
-            String nameSelected = (String)nameCB.getSelectedItem();
-            selectedNodes = getNodesWithStringAttribute(selectedNodes,
-                                                      PropertyNames.ASSET_NAME,
-                                                      nameSelected);
-          }
-          
+        if (estimatedButton.isSelected()) {
+          status = "PropertyNames.ESTIMATED_ALLOCATION_RESULT_ENDTIME";
+          System.out.println("Estimated selected");
         }
-      }
+        if (reportedButton.isSelected()) {
+          status = "PropertyNames.REPORTED_ALLOCATION_RESULT_ENDTIME";
+          System.out.println("Reported selected");
+        }
+        if (observedButton.isSelected()) {
+          status = "PropertyNames.OBSERVED_ALLOCATION_RESULT_ENDTIME";
+          System.out.println("Observed selected");
+        }
+        selectedNodes = getNodesInLongRange(selectedNodes, 
+                                            status,
+                                            startTime,
+                                            endTime);
+        System.out.println("Looking for " + status + " between " + startTime + " and " + endTime);
+      } 
     }
-    return selectedNodes; // should return selected nodes from graph
+    return selectedNodes;
   }
+
+
 
 
   /**
