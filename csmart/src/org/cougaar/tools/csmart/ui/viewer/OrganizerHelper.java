@@ -176,9 +176,29 @@ public class OrganizerHelper {
     try {
       if (!ExperimentDB.isExperimentNameInDatabase(experimentName))
 	experiment.saveToDb(saveToDbConflictHandler);
+      else {
+	// Add the recipes to the expt_trial_mod_recipe table
+	PopulateDb pdb = null;
+	try {
+	  pdb = new PopulateDb(experiment.getExperimentID(), experiment.getTrialID());
+	  List rcs = new ArrayList();
+	  for (int i = 0; i < experiment.getRecipeComponentCount(); i++) {
+	    rcs.add(experiment.getRecipeComponent(i));
+	  }
+	  pdb.setModRecipes(rcs);
+	} catch (Exception e) {
+	  if (log.isErrorEnabled()) {
+	    log.error("Problem saving recipes on experiment " + experiment.getExperimentID(), e);
+	  }
+	} finally {
+	  try {
+	    pdb.close();
+	  } catch (Exception e) {}
+	}
+      }
     } catch (RuntimeException e) {
       if(log.isErrorEnabled()) {
-        log.error("RuntimeException", e);
+        log.error("RuntimeException saving experiment " + experimentName, e);
       }
     }
     //    soc.resetModified();
