@@ -112,6 +112,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   }
 
   private void exit() {
+    propertyEditor.stopEditing(); // accept any edit in progress
     saveToDatabase(true); // silently save
   }
 

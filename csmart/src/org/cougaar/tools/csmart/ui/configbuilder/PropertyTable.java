@@ -143,8 +143,9 @@ public class PropertyTable extends JTable {
     if (column == model.VALUE_COL) {
       Property prop = model.getProperty(row);
       Class propClass = prop.getPropertyClass();
-      if (propClass.equals(Boolean.class))
+      if (propClass.equals(Boolean.class)) {
         return new DefaultCellEditor(new JCheckBox());
+      }
       Set allowedValues = prop.getAllowedValues();
       if (allowedValues != null) {
         JComboBox comboBox = null;
@@ -162,7 +163,9 @@ public class PropertyTable extends JTable {
             break;
           }
         }
-        if (comboBox != null) return new DefaultCellEditor(comboBox);
+        if (comboBox != null) {
+          return new DefaultCellEditor(comboBox);
+        }
       }
     }
     return super.getCellEditor(row, column);
@@ -215,4 +218,5 @@ public class PropertyTable extends JTable {
   public void removeAll() {
     model.clear();
   }
+
 }
