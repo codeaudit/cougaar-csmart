@@ -28,10 +28,10 @@ package org.cougaar.tools.csmart.core.property.range;
 public class IntegerRange extends RangeBase implements Range {
   static final long serialVersionUID = 6546059774126493583L;
 
-  int minValue;
-  int maxValue;
-  Integer minValueObject;
-  Integer maxValueObject;
+  private int minValue;
+  private int maxValue;
+  private Integer minValueObject;
+  private Integer maxValueObject;
 
   public IntegerRange(int minValue, int maxValue) {
     this.minValue = minValue;

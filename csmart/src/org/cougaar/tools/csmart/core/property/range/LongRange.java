@@ -27,10 +27,10 @@ package org.cougaar.tools.csmart.core.property.range;
 
 public class LongRange extends RangeBase implements Range {
 
-  long minValue;
-  long maxValue;
-  Long minValueObject;
-  Long maxValueObject;
+  private long minValue;
+  private long maxValue;
+  private Long minValueObject;
+  private Long maxValueObject;
 
   public LongRange(long minValue, long maxValue) {
     this.minValue = minValue;

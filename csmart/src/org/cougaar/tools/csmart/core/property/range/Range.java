@@ -24,7 +24,6 @@ package org.cougaar.tools.csmart.core.property.range;
 import java.io.Serializable;
 /**
  * The interface for values that can be get/set on a configurable component.
- * There are implementations of this for Integer and String.
  */
 
 public interface Range extends Serializable, Comparable {

@@ -27,10 +27,10 @@ package org.cougaar.tools.csmart.core.property.range;
 
 public class DoubleRange extends RangeBase implements Range {
 
-  double minValue;
-  double maxValue;
-  Double minValueObject;
-  Double maxValueObject;
+  private double minValue;
+  private double maxValue;
+  private Double minValueObject;
+  private Double maxValueObject;
 
   public DoubleRange(double minValue, double maxValue) {
     this.minValue = minValue;

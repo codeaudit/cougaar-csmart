@@ -29,7 +29,7 @@ package org.cougaar.tools.csmart.core.property.range;
 public class StringRange extends RangeBase implements Range {
   static final long serialVersionUID = -7351616054609766392L;
 
-  String value;
+  private String value;
 
   public StringRange(String value) {
     this.value = value;

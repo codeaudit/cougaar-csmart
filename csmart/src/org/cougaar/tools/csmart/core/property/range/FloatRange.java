@@ -27,10 +27,10 @@ package org.cougaar.tools.csmart.core.property.range;
 
 public class FloatRange extends RangeBase implements Range {
 
-  float minValue;
-  float maxValue;
-  Float minValueObject;
-  Float maxValueObject;
+  private float minValue;
+  private float maxValue;
+  private Float minValueObject;
+  private Float maxValueObject;
 
   public FloatRange(float minValue, float maxValue) {
     this.minValue = minValue;
