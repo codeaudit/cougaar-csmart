@@ -346,9 +346,9 @@ public class ConsoleNodeListener implements NodeEventListener {
   private void updateStatus(NodeEvent nodeEvent) {
     int nodeEventType = nodeEvent.getType();
       if (nodeEventType == NodeEvent.NODE_CREATED) 
-        statusButton.setStatus(NodeStatusButton.STATUS_IDLE);
+        statusButton.setStatus(NodeStatusButton.STATUS_NODE_CREATED);
       else if (nodeEventType == NodeEvent.NODE_DESTROYED) {
-        statusButton.setStatus(NodeStatusButton.STATUS_ERROR);
+        statusButton.setStatus(NodeStatusButton.STATUS_NODE_DESTROYED);
         console.nodeStopped(nodeComponent);
       } else if (nodeEventType == NodeEvent.STANDARD_ERR) {
         statusButton.setStatus(NodeStatusButton.STATUS_STD_ERROR);

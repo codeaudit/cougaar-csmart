@@ -22,6 +22,7 @@
 package org.cougaar.tools.csmart.ui.console;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.util.Collections;
 import java.util.Map;
 import javax.swing.Icon;
@@ -31,6 +32,7 @@ import javax.swing.Icon;
  */
 
 public class ColoredCircle implements Icon {
+  Image img;
   Color color;
   int width;
   static final Map hints =
@@ -44,9 +46,10 @@ public class ColoredCircle implements Icon {
    * @param width the width
    */
 
-  public ColoredCircle(Color c, int width) {
+  public ColoredCircle(Color c, int width, Image img) {
     this.color = c;
     this.width = width;
+    this.img = img;
   }
 
   public void paintIcon(Component c, Graphics g, int x, int y) {
@@ -58,6 +61,9 @@ public class ColoredCircle implements Icon {
     //    ((Graphics2D)g).setStroke(wideStroke);
     //    g.drawOval(x+2,y+2,width-4,width-4);
     g.fillOval(x, y, width, width);
+    // offset is circle width - icon width (16) divided by 2 (to align centers)
+    if (img != null)
+      ((Graphics2D)g).drawImage(img, new AffineTransform(1f,0f,0f,1f,x+2,y+2), null);
     g.setColor(oldColor);
     ((Graphics2D)g).setRenderingHints(oldHints);
     //    ((Graphics2D)g).setStroke(oldStroke);

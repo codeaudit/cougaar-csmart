@@ -22,26 +22,29 @@
 package org.cougaar.tools.csmart.ui.console;
 
 import java.awt.Color;
+import java.awt.Image;
 import java.net.URL;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JRadioButton;
 
 public class NodeStatusButton extends JRadioButton {
-  boolean error;
   int status = STATUS_UNKNOWN;
+  Image img = null; // error image
+  
   public static int STATUS_BUSY = 0;
   public static int STATUS_HIGH_BUSY = 1;
   public static int STATUS_MEDIUM_HIGH_BUSY = 2;
   public static int STATUS_MEDIUM_BUSY = 3;
   public static int STATUS_MEDIUM_LOW_BUSY = 4;
   public static int STATUS_LOW_BUSY = 5;
-  public static int STATUS_IDLE = 6;
-  public static int STATUS_ERROR = 7;
+  public static int STATUS_NODE_CREATED = 6;
+  public static int STATUS_NODE_DESTROYED = 7;
   public static int STATUS_NO_ANSWER = 8;
   public static int STATUS_UNKNOWN = 9;
   public static int STATUS_STD_ERROR = 10;
   public static int STATUS_NOTIFY = 11;
+  public static int STATUS_MAX = 11;
 
   // status button colors
   public static Color busyStatus = new Color(230, 255, 230); // shades of green
@@ -50,12 +53,10 @@ public class NodeStatusButton extends JRadioButton {
   public static Color mediumBusyStatus = new Color(0, 235, 0);
   public static Color mediumLowBusyStatus = new Color(0, 215, 0);
   public static Color lowBusyStatus = new Color(0, 195, 0);
-  public static Color idleStatus = new Color(0, 175, 0);
-  public static Color errorStatus = new Color(215, 0, 0); // red
+  public static Color nodeCreatedStatus = new Color(0, 175, 0);
+  public static Color nodeDestroyedStatus = new Color(215, 0, 0); // red
   public static Color noAnswerStatus = new Color(245, 245, 0); // yellow
   public static Color unknownStatus = new Color(180, 180, 180); //gray
-  public static Color stdErrStatus = new Color(215, 145, 0); //orange
-  public static Color notifyStatus = Color.blue;
   public static Color[] statusColors = {
     busyStatus,
     highBusyStatus,
@@ -63,12 +64,10 @@ public class NodeStatusButton extends JRadioButton {
     mediumBusyStatus,
     mediumLowBusyStatus,
     lowBusyStatus,
-    idleStatus,
-    errorStatus,
+    nodeCreatedStatus,
+    nodeDestroyedStatus,
     noAnswerStatus,
     unknownStatus,
-    stdErrStatus,
-    notifyStatus
   };
   private static String[] descriptions = {
     "extremely busy",
@@ -81,8 +80,6 @@ public class NodeStatusButton extends JRadioButton {
     "node destroyed",
     "no answer",
     "unknown",
-    "error",
-    "notify"
   };
 
   public NodeStatusButton(Icon icon) {
@@ -91,28 +88,24 @@ public class NodeStatusButton extends JRadioButton {
 
   /**
    * Set the status for a node.  
-   * Status setting is ignored if an error condition exists.
    */
 
-  public void setStatus(int status) {
-    if (error)
-      return;
-    if (status < 0 || status > (statusColors.length-1))
+  public void setStatus(int newStatus) {
+    if (newStatus < 0 || newStatus > STATUS_MAX)
       return; // invalid status
-    this.status = status;
-    if (status == STATUS_NOTIFY || status == STATUS_STD_ERROR) {
-      error = true;
+    // if there's an error, add the warning icon
+    if (newStatus == STATUS_NOTIFY || newStatus == STATUS_STD_ERROR) {
       URL iconURL = getClass().getResource("Bang.gif");
       if (iconURL != null) {
         ImageIcon icon = new ImageIcon(iconURL);
-        setIcon(icon);
-        setSelectedIcon(new SelectedErrorIcon(icon.getImage(), 20));
+        img = icon.getImage();
       }
     } else {
-      Color statusColor = statusColors[status];
-      setIcon(new ColoredCircle(statusColor, 20));
-      setSelectedIcon(new SelectedColoredCircle(statusColor, 20));
+      status = newStatus;
     }
+    Color statusColor = statusColors[status];
+    setIcon(new ColoredCircle(statusColor, 20, img));
+    setSelectedIcon(new SelectedColoredCircle(statusColor, 20, img));
     String s = getToolTipText((java.awt.event.MouseEvent)null);
     if (s == null)
       return;
@@ -128,11 +121,13 @@ public class NodeStatusButton extends JRadioButton {
   }
 
   /**
-   * Clear error flag, so that status is again updated dynamically.
+   * Remove error icon.
    */
 
   public void clearError() {
-    error = false;
+    img = null;
+    setIcon(new ColoredCircle(statusColors[status], 20, null));
+    setSelectedIcon(new SelectedColoredCircle(statusColors[status], 20, null));
   }
 
   public static String[] getStatusDescriptions() {

@@ -93,15 +93,22 @@ public class CSMARTConsole extends JFrame {
   private static Dimension VGAP30 = new Dimension(1,30);
 
   // top level menus and menu items
-  private static final String FILE_MENU = "File";
-  private static final String HELP_MENU = "Help";
+//    private static final String FILE_MENU = "File";
+//    private static final String VIEW_MENU = "View";
+//    private static final String SHOW_ENTIRE_LOG_MENU_ITEM = "Show Entire Log";
+//    private static final String SET_VIEW_SIZE_MENU_ITEM = "Set View Size";
+//    private static final String FILTER_MENU_ITEM = "Filter...";
+//    private static final String FORMAT_MENU_ITEM = "Format...";
+
   private static final String NOTIFY_MENU = "Notify";
-  private static final String NOTIFY_MENU_ITEM = "Notify When...";
+  private static final String HELP_MENU_ITEM = "Help";
+  private static final String FILE_MENU = "File";
   private static final String EXIT_MENU_ITEM = "Exit";
+  private static final String HELP_MENU = "Help";
+  private static final String NOTIFY_MENU_ITEM = "Notify When...";
   private static final String HELP_DOC = "help.html";
   private static final String ABOUT_CSMART_ITEM = "About CSMART";
   private static final String ABOUT_DOC = "../help/about-csmart.html";
-  private static final String HELP_MENU_ITEM = "Help";
   private static final String LEGEND_MENU_ITEM = "Legend";
   private static final String STATUS_MENU = "Status";
   private static final String RESET_STATUS_MENU_ITEM = "Reset";
@@ -435,8 +442,8 @@ public class CSMARTConsole extends JFrame {
    */
   private NodeStatusButton createStatusButton(String nodeName, String hostName) {
     NodeStatusButton button =
-      new NodeStatusButton(new ColoredCircle(NodeStatusButton.unknownStatus, 20));
-    button.setSelectedIcon(new SelectedColoredCircle(NodeStatusButton.unknownStatus, 20));
+      new NodeStatusButton(new ColoredCircle(NodeStatusButton.unknownStatus, 20, null));
+    button.setSelectedIcon(new SelectedColoredCircle(NodeStatusButton.unknownStatus, 20, null));
     button.setToolTipText(nodeName + ":" + hostName + ":unknown");
     button.setActionCommand(nodeName);
     button.setFocusPainted(false);
