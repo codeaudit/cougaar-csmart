@@ -113,7 +113,8 @@ public class CSMARTDomain extends DomainAdapter {
     // that (actually, the only one anywhere), is the LogPlan. So cast it.
     LogPlan logPlan = (LogPlan) getXPlan();
 
-    addLogicProvider(new ImpactsLP(logPlan, cluster));;
+    // Until ABC Impacts re-enabled, don't bother with this....
+    //    addLogicProvider(new ImpactsLP(logPlan, cluster));;
   }
 
 } // end of CSMARTDomain.java
