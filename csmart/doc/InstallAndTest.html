@@ -327,6 +327,32 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
 
 <p>
       
+<li><a name="refconfigdb">
+Since Cougaar 10.2, it is possible to run Cougaar societies from
+XML</a>. To do so, you will need any required application /
+domain database, and a new "refconfig" database. (This
+is used in place of the CSMART configuration database at runtime.)
+This database contains the OPLAN and the entity or organization
+OrgAsset definitions.
+<p>
+To install this database, you should:
+<ul>
+  <li>Create a new database for this data, using the procedures
+  outlined above.</li>
+  <li>Create a new entry for this database in your cougaar.rc
+  file. Refer to this database as
+  <i>org.cougaar.refconfig.database</i> (with .user and .password
+  entries as well).</li>
+  <li>Load this database, using the supplied script "csmart/data/database/scripts/mysql/load_1ad_ref.sh":
+     <pre>
+        $./load_ref_data.sh [db username] [db password] [refconfig database name]       
+     </pre>
+  </li>
+</ul>
+</li>
+
+<p>
+
   <li>The database is now ready.  You must now create a 
     <a href="../../doc/details/DataAccess.html">cougaar.rc</a>
     for the database users, which is used to store the database location and
