@@ -1,16 +1,8 @@
 CSMART contains a few known issues:
 
-* Loading components at variable Priority (new in Cougaar for 9.2.1)
-  is not yet supported from CSMART. All components will receive
-  Standard Priority.
-
 * Society Monitor will warn about an inability to contact Agents in
   which no CSMART Servlets are running. This will usually include all
   Node Agents. While not a bug, it is annoying. See bug # 1241
-
-* Experiment and recipe export scripts may no longer work. 
-  As a workaround, try using the complete DB export scripts in
-  csmart/data/database/scripts/mysql/dump_1ad_mysql.sh  See bug # 1231 
 
 * An experiment removed from the database may still show up in your
   CSMART workspace.
@@ -25,8 +17,10 @@ CSMART contains a few known issues:
   the directory containing those files on the org.cougaar.config.path
   for CSMART.
 
-* Some Windows users corrupted data loading the CSMART
-  database. This has not been reliably reproduced. See bug #1321.
+* Some Windows users report corrupted data loading the CSMART
+  database when getting data files from CVS or after editing the
+  files. If you need to edit the DB or get your CSMART db data files
+  from CVS, try using Cygwin. See bug #1321.
 
 * MySQL cannot load data across network drives, causing errors
   creating the database in some circumstances. See bug# 1257.

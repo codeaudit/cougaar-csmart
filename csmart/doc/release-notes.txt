@@ -1,7 +1,21 @@
 CSMART Release Notes
 
-Release 9.3:
-- Solved bug 1304 & related 1279.
+Release 9.2.2:
+- Solved bug 1304 & related 1279. Note that now that this is solved, we 
+  have reverted the default for doWorkspace! By default, the workspace
+  is no re-enabled. As before, the startup scripts indicate how to
+  disable this.
+- Added support for specifying component load priority (bug 1310).
+- Added new Topology view in Society Monitor for viewing mobile Agents.
+- Fixed bug 1323 (no prompt to name recipes)
+- Add icons for recipes, societies, and experiments in Organizer!
+- Unique names are now created with a number in square-brackets, not
+  just by appending a number.
+- Fix some bugs with Property iterators, etc.
+- Fix bugs allowing user to make edits during a save (bugs 1339,1078)
+- Mostly fixed export scripts (bug 1231)
+- Better error messages on failure to reach servlets (bug 1302)
+- Fix bug in modification recognition (bug 1335)
 
 Release 9.2.1:
 - Multiple bug fixes
