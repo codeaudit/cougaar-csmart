@@ -607,6 +607,17 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
   }
 
+  public String getTrialID() {
+    if (CSMART.inDBMode()) {
+      // FIXME:
+      // This should save unsaved pieces of the configuration to the database,
+      // create the appropriate trials/experiments, then return the ID
+      return trialID;
+    } else {
+      return null;
+    }
+  }
+
   /**
    * An Experiment now has a ConfigurationWriter -
    * one which lets all the components write themselves out
