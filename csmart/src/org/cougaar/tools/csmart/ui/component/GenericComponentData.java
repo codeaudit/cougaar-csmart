@@ -42,6 +42,7 @@ public class GenericComponentData implements ComponentData, Serializable {
   private ArrayList leafComponents = null;
   private ArrayList timePhasedData = null;
   private AgentAssetData assetData = null;
+  private String aLibID = null;
 
   public GenericComponentData() {
     children = new ArrayList();
@@ -210,6 +211,14 @@ public class GenericComponentData implements ComponentData, Serializable {
 
   public int timePhasedCount() {
     return timePhasedData.size();
+  }
+
+  public void setAlibID(String alibID) {
+    this.alibID = alibID;
+  }
+
+  public String getAlibID() {
+    return alibID();
   }
 
 }

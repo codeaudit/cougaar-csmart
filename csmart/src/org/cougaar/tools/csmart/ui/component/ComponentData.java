@@ -298,6 +298,22 @@ public interface ComponentData extends Serializable {
    */
   int timePhasedCount();
 
+  /**
+   * Gets the ALIB_ID for this Component.
+   *
+   * @return ALIB_ID or null if none exist
+   */
+  String getAlibID();
+
+  /**
+   * Sets the ALIB_ID value for this Component Property
+   * This is for Database Experiments, all others
+   * should set this to null.
+   *
+   * @param alibID a <code>String</code> value
+   */
+  void setAlibID(String alibID);
+
 } // end of ComponentData.java
 
 
