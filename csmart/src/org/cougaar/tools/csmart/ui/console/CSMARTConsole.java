@@ -366,6 +366,7 @@ public class CSMARTConsole extends JFrame {
     // TODO: enable this when attaching is implemented
     attachButton.setEnabled(false);
     descriptionPanel.add(attachButton);
+    descriptionPanel.add(Box.createRigidArea(HGAP5));
     runButton = new JToggleButton("Run");
     runButton.setToolTipText("Start running experiment");
     runButton.addActionListener(new ActionListener() {
@@ -1081,28 +1082,52 @@ public class CSMARTConsole extends JFrame {
     // we don't get error messages
     if (glsClient != null) 
       glsClient.stop();
+
+    // destroy the nodes by creating a thread to destroy each one
+    // and then waiting for all those threads to finish
+    ArrayList destroyerThreads = new ArrayList();
+    while (nodeNames.hasMoreElements()) {
+      final String nodeName = (String)nodeNames.nextElement();
+      Thread nodeDestroyer = new Thread("DestroyNode " + nodeName) {
+        public void run() {
+          RemoteProcess remoteNode;
+          synchronized (runningNodesLock) {
+            remoteNode = (RemoteProcess)runningNodes.get(nodeName);
+          } // end synchronized
+          if (remoteNode == null) {
+            if(log.isErrorEnabled()) {
+              log.error("Unknown node name: " + nodeName);
+            }
+            return;
+          }
+          try {
+            remoteNode.getRemoteListenable().flushOutput();
+            remoteNode.destroy();
+          } catch (Exception ex) {
+            if(log.isErrorEnabled()) {
+              log.error("Unable to destroy node, assuming it's dead: ", ex);
+            }
+          }
+        }
+      }; // end nodeDestroyer thread
+      destroyerThreads.add(nodeDestroyer);
+      nodeDestroyer.start();
+    }
+    for (int i = 0; i < destroyerThreads.size(); i++) {
+      try {
+        Thread destroyer = (Thread)destroyerThreads.get(i);
+        destroyer.join(); // wait for node destruction to complete
+      } catch (Exception e) {
+        if(log.isErrorEnabled()) {
+          log.error("Exception", e);
+        }
+      }
+    }
+    // update the gui
     while (nodeNames.hasMoreElements()) {
       String nodeName = (String)nodeNames.nextElement();
-      RemoteProcess remoteNode;
-      synchronized (runningNodesLock) {
-        remoteNode = (RemoteProcess)runningNodes.get(nodeName);
-      } // end synchronized
-      if (remoteNode == null) {
-        if(log.isErrorEnabled()) {
-          log.error("Unknown node name: " + nodeName);
-        }
-        continue;
-      }
-      try {
-        remoteNode.getRemoteListenable().flushOutput();
-        remoteNode.destroy();
-      } catch (Exception ex) {
-        if(log.isErrorEnabled()) {
-          log.error("Unable to destroy node, assuming it's dead: ", ex);
-        }
-        nodeStopped(nodeName);
-        getNodeStatusButton(nodeName).setStatus(NodeStatusButton.STATUS_NO_ANSWER);
-      }
+      nodeStopped(nodeName);
+      getNodeStatusButton(nodeName).setStatus(NodeStatusButton.STATUS_NO_ANSWER);
     }
   }
 
@@ -2228,6 +2253,13 @@ public class CSMARTConsole extends JFrame {
     experiment = null; // pretend we don't know about any experiment
     runButton_actionPerformed();
   }
+
+  // TODO: add menu items to list and define Application Servers
+  // list Application Servers lists all servers entered by the user or 
+  // found in the experiment
+  // add Application Server queries the user for a host name and port
+  // and tries to find an appserver there
+  // delete Application Server allows the user to delete one
 
   /**
    * Used by ConsoleInternalFrame to get values from experiment
