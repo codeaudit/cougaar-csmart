@@ -49,6 +49,7 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.AssetComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PluginBase;
+import org.cougaar.tools.csmart.society.ComponentBase;
 import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.society.AgentBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -165,6 +166,7 @@ public class AgentDBComponent
 
     addBinders();
     addPlugins();
+    addComponents();
     addAssetData();
   }
 
@@ -224,7 +226,7 @@ public class AgentDBComponent
     try {
       Connection conn = DBUtils.getConnection();
       String query = "";
-      substitutions.put(":comp_type:", ComponentData.PLUGIN);
+      substitutions.put(":comp_type:", "= '" + ComponentData.PLUGIN + "'");
       try {
         Statement stmt = conn.createStatement();	
         query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
@@ -284,7 +286,7 @@ public class AgentDBComponent
     try {
       Connection conn = DBUtils.getConnection();
       String query = "";
-      substitutions.put(":comp_type:", ComponentData.AGENTBINDER);
+      substitutions.put(":comp_type:", "= '" + ComponentData.AGENTBINDER + "'");
       try {
         Statement stmt = conn.createStatement();	
         query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
@@ -299,6 +301,81 @@ public class AgentDBComponent
           BinderBase binder = new BinderBase(binderName, binderClassName);
           binder.initProperties();
 	  //binder.setBinderType(ComponentData.AGENTBINDER);
+          String alibId =rs.getString(2);
+          // does this need to be preserved in the binder?
+          // binder.setAlibID(alibId);
+          substitutions.put(":comp_alib_id", alibId);
+          substitutions.put(":comp_id", rs.getString(3));
+          Statement stmt2 = conn.createStatement();
+          String query2 = dbp.getQuery(QUERY_PLUGIN_ARGS, substitutions);
+          ResultSet rs2 = stmt2.executeQuery(query2);
+          while (rs2.next()) {
+            String arg = rs2.getString(1);
+            binder.addParameter(arg);
+          }
+          rs2.close();
+          stmt2.close();
+          container.addChild(binder);
+        } // end of loop over binders to add
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("Exception", e);
+      }
+      throw new RuntimeException("Error" + e);
+    }
+  }
+
+  protected void addComponents() {
+    ContainerBase container = new ContainerBase("Other Components");
+    container.initProperties();
+    addChild(container);
+
+    // Grab all non-CMT assemblies. Why?
+    //    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
+    String assemblyMatch = DBUtils.getListMatch(assemblyID);
+    if (assemblyMatch != null) {
+      substitutions.put(":assemblyMatch", assemblyMatch);
+      substitutions.put(":agent_name", name);
+    }
+
+    // Get Binder Names, class names, and parameters
+    try {
+      Connection conn = DBUtils.getConnection();
+      String query = "";
+
+      // FIXME!!!
+      List types = new ArrayList();
+      types.add(ComponentData.SOCIETY);
+      types.add(ComponentData.NODE);
+      types.add(ComponentData.HOST);
+      types.add(ComponentData.NODEBINDER);
+      types.add(ComponentData.NODEAGENT);
+      types.add(ComponentData.AGENTBINDER);
+      types.add(ComponentData.AGENT);
+      types.add(ComponentData.PLUGIN);
+      String ctypematch = "NOT " + DBUtils.getListMatch(types);
+      substitutions.put(":comp_type:", ctypematch);
+
+      try {
+        Statement stmt = conn.createStatement();	
+        query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
+//         if(log.isDebugEnabled()) {
+//           log.debug("Query: " + query);
+//         }
+
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          String binderClassName = rs.getString(1);
+          String binderName = rs.getString(4);
+
+          ComponentBase binder = new ComponentBase(binderName, binderClassName);
+          binder.initProperties();
+	  binder.setComponentType(rs.getString(5));
           String alibId =rs.getString(2);
           // does this need to be preserved in the binder?
           // binder.setAlibID(alibId);
