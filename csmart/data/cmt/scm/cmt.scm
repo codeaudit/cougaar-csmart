@@ -1,3 +1,5 @@
+;;(create-cmt-asb assembly_description cfw_group_id threads version clones)
+
 (import "java.sql.DriverManager")
 (load "elf/jdbc.scm")
 (load "elf/basic.scm")
@@ -324,6 +326,9 @@
 
 (define (clear-cmt-assembly cfw_g_id threads version)
   (set! assembly_id (get-assembly-id cfw_g_id threads version))
+  (clear-cmt-asb  assembly_id))
+
+(define (clear-cmt-asb  assembly_id)
   (print (list (string-append "delete from " asb-prefix "asb_component_hierarchy where assembly_id = " (sqlQuote assembly_id))
 	       (dbu (string-append "delete from " asb-prefix "asb_component_hierarchy where assembly_id = " (sqlQuote assembly_id)))))
   (print (list (string-append "delete from " asb-prefix "asb_agent where assembly_id = " (sqlQuote assembly_id))
@@ -335,9 +340,12 @@
   (print (list (string-append "delete from " asb-prefix "asb_component_arg where assembly_id = " (sqlQuote assembly_id))
 	       (dbu (string-append "delete from " asb-prefix "asb_component_arg where assembly_id = " (sqlQuote assembly_id)))))
   ;;(dbu (string-append "delete from " asb-prefix "alib_component"))
-  (print (list (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id))
-	       (dbu (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id)))))
+;;  (print (list (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id))
+;;	       (dbu (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id)))))
   )
+
+
+
 
 (define (use-threads tlist)
   (let
@@ -630,38 +638,6 @@
    )
 )
 
-;;  (string-append 
-;;   "select distinct " (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
-;;   "go.org_id || '|' ||  pl.plugin_class AS COMPONENT_ALIB_ID,"
-;;   "go.org_id as PARENT_COMPONENT_ALIB_ID,"
-;;   "(pl.plugin_class_order+(5* pg.plugin_group_order)) as INSERTION_ORDER"
-;;
-;;   " from " cfw-prefix "cfw_group_org go,"
-;;   cfw-prefix "cfw_org_orgtype ot,"
-;;   cfw-prefix "cfw_group_member gm,"
-;;   cfw-prefix "cfw_orgtype_plugin_grp opg,"
-;;   cfw-prefix "lib_plugin_group pg,"
-;;   cfw-prefix "cfw_plugin_group_member pl,"
-;;   cfw-prefix "lib_plugin_thread pth"
-;;   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
-;;   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
-;;   
-;;   "   and go.org_id =ot.org_id"
-;;   "   and gm.cfw_id=ot.cfw_id"
-;;
-;;   "   and ot.orgtype_id=opg.orgtype_id"
-;;   "   and gm.cfw_id=opg.cfw_id"
-;;
-;;   "   and pg.plugin_group_id = pl.plugin_group_id"
-;;   "   and pg.plugin_group_id = opg.plugin_group_id"
-;;   "   and ('plugin'  || '|' || pl.plugin_class) in (select component_lib_id from " asb-prefix "lib_component)"
-;;   "   and pth.plugin_class=pl.plugin_class"
-;;   "   and pth.thread_id in " threads
-;;   ;;"   order by go.org_id,(pl.plugin_class_order+(5 * pg.plugin_group_order))"
-;;   )
-;;  )
-
-  
 
 (define (add-plugin-asb-component-hierarchy assembly_id cfw_group_id threads)
   (dbu
@@ -731,7 +707,10 @@
    "   and ogom.org_group_id = orgrel.org_group_id"
    "   and supported_org.component_lib_id=ogom.org_id"
    "   and supporting_org.clone_set_id=supported_org.clone_set_id"
-
+   ;; no SELF-SUPPORT RELATIONS ALLOWED
+   "   and supporting_org.component_alib_id<>supported_org.component_alib_id"
+   "   and orgrel.role <> 'Subordinate'"
+   "   and orgrel.role <> 'Superior'"
    "   and not exists "
    "   (select assembly_id from " asb-prefix "asb_agent_relation ar"
    "     where ar.assembly_id="(sqlQuote assembly_id)
@@ -771,7 +750,10 @@
    "   and ogom.org_group_id = orgrel.org_group_id"
    "   and supported_org.component_lib_id=ogom.org_id"
    "   and supporting_org.clone_set_id=0"
-
+   ;; no SELF-SUPPORT RELATIONS ALLOWED
+   "   and supporting_org.component_alib_id<>supported_org.component_alib_id"
+   "   and orgrel.role <> 'Subordinate'"
+   "   and orgrel.role <> 'Superior'"
    "   and not exists "
    "   (select assembly_id from " asb-prefix "asb_agent_relation ar"
    "     where ar.assembly_id="(sqlQuote assembly_id)
@@ -1207,11 +1189,13 @@
 
 
  ;; temporary hack for testing
-(set! cfw_group_id "3ID-CFW-GRP-A")
-(set! assembly_id "ASB1")
-(set! assembly_description "test assembly 1")
-(set! threads all-threads)
-(set! version "-5")
+;;(set! cfw_group_id "3ID-CFW-GRP-A")
+(set! cfw_group_id "SMALL-3ID-CFW-GRP")
+(set! assembly_description "small-3ID,all threads, no clones")
+;;(set! threads all-threads)
+(set! threads 3thread)
+(set! version "-8")
+(set! clones ())
 
 (define (voc)
   (let
@@ -1272,3 +1256,217 @@
    ;;"   order by go.org_id,(pl.plugin_class_order+(5 * pg.plugin_group_order))"
    )
   )
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;  CSMART INTERFACE ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(define (getExperimentNames)
+  (let
+      ((ht (Hashtable.)))
+    (define (do-entry rs)
+      (cond
+       ((.next rs)
+	(.put ht (.getString rs "DESCRIPTION")(.getString rs "EXPT_ID"))
+	(do-entry rs))))
+    (with-query-jdbc (string-append
+		      "select  expt_id,description from " asb-prefix "EXPT_EXPERIMENT")
+		     do-entry)
+    ht))
+
+
+(define (getTrialNames experiment_id)
+  (let
+      ((ht (Hashtable.)))
+    (define (do-entry rs)
+      (cond
+       ((.next rs)
+	(.put ht (.getString rs "DESCRIPTION")(.getString rs "TRIAL_ID"))
+	(do-entry rs))))
+    (with-query-jdbc (string-append 
+		      "select  trial_id,description from " asb-prefix "EXPT_TRIAL where expt_id=" (sqlQuote experiment_id))
+		     do-entry
+		     )
+    ht))
+;;describe V4_EXPT_TRIAL
+;;
+;; Name				 Null?	  Type
+;; ------------------------------- -------- ----
+;; TRIAL_ID			 NOT NULL VARCHAR2(50)
+;; EXPT_ID				  VARCHAR2(50)
+;; DESCRIPTION				  VARCHAR2(100)
+;; NAME					  VARCHAR2(50)
+
+
+(define (addTrialName experiment_id trial_name)
+  (let
+      ((trial_id (string-append experiment_id "." trial_name)))
+    (cond
+     ;; don't insert twice
+     ((= 0 (dbu (string-append
+		 "update " asb-prefix "EXPT_TRIAL set expt_id = expt_id  where trial_id = "
+		 (sqlQuote trial_id))))
+      (dbu (string-append 
+	    "insert into " asb-prefix
+	    "EXPT_TRIAL values (" (sqlQuote trial_id)","(sqlQuote experiment_id)","(sqlQuote trial_name)","(sqlQuote trial_name)")"))))
+    trial_id))
+
+
+;;describe V4_EXPT_TRIAL_ASSEMBLY
+;;
+;; Name				 Null?	  Type
+;; ------------------------------- -------- ----
+;; EXPT_ID			 NOT NULL VARCHAR2(50)
+;; TRIAL_ID			 NOT NULL VARCHAR2(50)
+;; ASSEMBLY_ID			 NOT NULL VARCHAR2(50)
+;; DESCRIPTION				  VARCHAR2(200)
+;;
+
+(define (addAssembly experiment_id trial_name assembly_id)
+  (let
+      ((trial_id (addTrialName experiment_id trial_name)))
+    (dbu (string-append 
+	  "insert into " asb-prefix "EXPT_TRIAL_ASSEMBLY "
+	  "values ("(sqlQuote experiment_id)"," (sqlQuote trial_id)","(sqlQuote assembly_id)","(sqlQuote trial_name)")"))
+    trial_id))
+
+(define (getSocietyTemplateForExperiment experiment_id)
+  (let
+      ((st #null))
+    (define (do-entry rs)
+      (cond
+       ((.next rs)
+	(set! st (.getString rs "CFW_GROUP_ID"))
+	)))
+    (with-query-jdbc (string-append 
+		      "select  CFW_GROUP_ID from " asb-prefix "EXPT_EXPERIMENT where expt_id=" (sqlQuote experiment_id))
+		     do-entry
+		     )
+    st)
+  )
+
+;;describe V4_EXPT_EXPERIMENT
+;; Name				 Null?	  Type
+;; ------------------------------- -------- ----
+;; EXPT_ID			 NOT NULL VARCHAR2(50)
+;; DESCRIPTION				  VARCHAR2(200)
+;; NAME					  VARCHAR2(50)
+;; CFW_GROUP_ID				  VARCHAR2(50)
+;;
+
+(define (createExperiment experiment_id cfw_group_id)
+  (cond
+     ;; don't insert twice
+     ((= 0 (dbu (string-append
+		 "update " asb-prefix "EXPT_EXPERIMENT set expt_id = expt_id  where EXPT_ID = "
+		 (sqlQuote experiment_id))))
+      (dbu (string-append 
+	    "insert into " asb-prefix
+	    "EXPT_EXPERIMENT values ("
+	    (sqlQuote experiment_id)","
+	    (sqlQuote experiment_id)","
+	    (sqlQuote experiment_id)","
+	    (sqlQuote cfw_group_id)")"))
+      ))
+  experiment_id
+  )
+
+
+(define (getSocietyTemplates)
+  (let
+      ((ht (Hashtable.)))
+    (define (do-entry rs)
+      (cond
+       ((.next rs)
+	(.put ht (.getString rs "DESCRIPTION")(.getString rs "CFW_GROUP_ID"))
+	(do-entry rs))))
+    (with-query-jdbc (string-append 
+		      "select  DESCRIPTION,CFW_GROUP_ID from " cfw_prefix "CFW_GROUP")
+		     do-entry
+		     )
+    ht))
+
+
+(define (getOrganizationGroups experiment_id)
+  String[] names = {
+      "Third Infantry Division",
+      "2nd Brigade"
+    };
+    return names;
+
+  (let
+      ((st #null))
+    (define (do-entry rs)
+      (cond
+       ((.next rs)
+	(set! st (.getString rs "CFW_GROUP_ID"))
+	)))
+;;    (with-query-jdbc (string-append 
+;;		      "select CFW_GROUP_ID from " 
+;;		      asb_prefix "EXPT_EXPERIMENT exp,"
+;;		      cfw-prefix "CFW_GROUP_MEMBER gm,"
+;;		      cfw-prefix "CFW_ORG_GROUP og"
+;;		      "   where exp.experiment_id="(sqlQuote experiment_id)
+;;		      "   and exp.cfw_group_id =gm.cfw_group_id"
+;;		      "   and og.cfw_id=gm.cfw_id")
+;;		     do-entry
+;;		     )
+    (.put ht "Third Infantry Division" "Third Infantry Division")
+    (.put ht "2nd Brigade" "2nd Brigade")
+    ht)
+  )
+
+(define (isULThreadSelected trial_id thread_id)
+  (let
+      ((threadSelected #f))
+    (define (do-entry rs)
+      (cond
+       ((.next rs)
+	(set! threadSelected #t)
+	)))
+;;    (with-query-jdbc (string-append 
+;;		      "select THREAD_ID from " 
+;;		      asb_prefix "trial_thread tt"
+;;		      "   where tt.trial_id"(sqlQuote trial_id)
+;;		      "   and tt.thread_id="(sqlQuote thread_id)
+;;		      )
+;;		     do-entry
+;;		     )
+    #f
+    ))
+
+(define (setULThreadSelected  trial_id,thread_name, selected) 
+  (if
+   selected
+   (string-append 
+    "select THREAD_ID from " 
+    asb_prefix "trial_thread tt"
+    "   where tt.trial_id"(sqlQuote trial_id)
+    "   and tt.thread_id="(sqlQuote thread_id)
+    )))
+
+
+;;  public static boolean isGroupSelected(String trialId, String groupName) {
+;;    return false;
+;;  }
+
+(define (isGroupSelected trial_id group_name)
+  #f
+)
+
+(define (setGroupSelected trial_id group_name selected)
+  ()
+)
+
+(define (getMultiplier trial_id group_name)
+  1
+)
+
+(define (setMultiplier trial_id group_name value)
+  ()
+)
+
+
+
+
+
