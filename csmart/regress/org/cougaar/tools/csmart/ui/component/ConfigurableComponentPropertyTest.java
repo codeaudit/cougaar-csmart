@@ -11,6 +11,7 @@ package org.cougaar.tools.csmart.ui.component;
 
 import junit.framework.*;
 import java.util.HashSet;
+import java.util.ArrayList;
 import java.net.URL;
 
 /**
@@ -60,10 +61,10 @@ public class ConfigurableComponentPropertyTest extends TestCase {
   }
 
   public void testExperimentValues() {
-    HashSet hs = new HashSet();
-    hs.add(new Integer(1));
-    ccp.setExperimentValues(hs);
-    assertEquals("Test getExperimentValues()", hs, ccp.getExperimentValues());
+    ArrayList al = new ArrayList();
+    al.add(new Integer(1));
+    ccp.setExperimentValues(al);
+    assertEquals("Test getExperimentValues()", al, ccp.getExperimentValues());
   }
 
   public void testAllowedValues() {
