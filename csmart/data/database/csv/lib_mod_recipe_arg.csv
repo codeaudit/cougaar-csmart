@@ -16,7 +16,7 @@ MOD_RECIPE_LIB_ID,ARG_NAME,ARG_ORDER,ARG_VALUE,BLANK
 "RECIPE-Default-Servlets","WhitePagesServlet",13.000000000000000000000000000000,"true",
 "RECIPE-Default-Servlets","MobilityServlet",12.000000000000000000000000000000,"true",
 "RECIPE-Default-Servlets","LogisticsInventoryServlet",11.000000000000000000000000000000,"true",
-"RECIPE-Default-Servlets","DataGathererServlet",10.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","DataGathererServlet",10.000000000000000000000000000000,"false",
 "RECIPE-Default-Servlets","CommunityProviderServlet",9.000000000000000000000000000000,"true",
 "RECIPE-Default-Servlets","LoaderServletComponent",8.000000000000000000000000000000,"true",
 "RECIPE-Default-Servlets","HierarchyServlet",7.000000000000000000000000000000,"true",
