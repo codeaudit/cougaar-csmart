@@ -20,89 +20,99 @@
 # </copyright>
 
 
-# Sample script for running the Node Server module, tuned for use with CSMART
-# Be sure to edit the MYPROPFILE property below
-# Note that the server writes configuration files to its working directory.
-
-# Environment variables
-# COUGAAR_INSTALL_PATH = the head of the alp install.
-# COUGAAR3RDPARTY = a directory containing 3rd party jar files
+# Sample script for running the Node Server.
 #
-# COUGAAR bootstrapping classpath will be:
+# Be sure to edit the COUGAAR_INSTALL_PATH and NODE_PROPS_FILE 
+# properties below.
+#
+# Note that CSMART may writes configuration files to the current 
+# working directory.
+
+
+# Set the COUGAAR_INSTALL_PATH, which is the base directory for the
+# COUGAAR installation
+#set COUGAAR_INSTALL_PATH=/opt/alp
+
+# Specify the host-specific properties file, which defines *all*
+# the Node installation-specific properties.
+#
+# The ".props" file must be modified to match your installation.  An
+# example is provided with this release:
+#
+#    ${COUGAAR_INSTALL_PATH}/csmart/data/unix-server-sample.props
+#
+# The above example includes documentation details.
+#
+# Some additional properties are set by CSMART at run time, such 
+# as the Node's name, but otherwise this ".props" file specifies 
+# the full configuration.
+#
+# Note that Server properties are *not* passed to the Node -- 
+# only the properties in the ".props" file are passed.  For
+# example, the classpath for the Node is read from the file.
+#
+# Also see the Server documentation ("server/doc/README") for 
+# further details.
+set NODE_PROPS_FILE = \
+   "server.props"
+
+#
+# The remaining settings should not require modifications
+# unless you are debugging or have a custom COUGAAR installation.
+#
+
+
+# Specify the optional properties for the server itself.
+#
+# All server properties start with "-Dorg.cougaar.tools.server."
+# and only modify the Server's behavior.  See the Server 
+# documentation ("server/doc/README") for details.
+#
+#set SERVERCONFIG = "-Dorg.cougaar.tools.server.verbose=true"
+set SERVERCONFIG = ""
+
+# Specify the classpath for loading the Server.
+#
+# Below we set the AppServer's classpath to:
 #  $COUGAAR_DEV_PATH	if defined
+#  $COUGAAR_INSTALL_PATH/lib/server.jar
 #  $COUGAAR_INSTALL_PATH/lib/core.jar
+#  $COUGAAR_INSTALL_PATH/lib/csmart.jar
 #
-# once running, jar files will be searched for in (in order):
-#  -Dorg.cougaar.class.path 	like classpath
-#  $CLASSPATH		(alp bootstrapping path from above)
-#  $COUGAAR_INSTALL_PATH/lib/*
-#  $COUGAAR_INSTALL_PATH/plugins/*
-#  -Dorg.cougaar.system.path=$COUGAAR3RDPARTY
-#  $COUGAAR_INSTALL_PATH/sys/*
-#
+# This is only useful to altering the Server's codebase,
+# *not* the Node's codebase.  The ".props" file must be
+# modified to alter the Node's configuration.
+set LIBPATHS = \
+  "${COUGAAR_INSTALL_PATH}/lib/server.jar:$COUGAAR_INSTALL_PATH/lib/core.jar:${COUGAAR_INSTALL_PATH}/lib/csmart.jar"
 
-# set COUGAAR_INSTALL_PATH=/alpine/demo98
-if (! $?COUGAAR3RDPARTY) then
-    setenv COUGAAR3RDPARTY /opt/cougaar-jars
-endif
-
-set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
-
-# Add other required jar files not otherwise loaded
-set LIBPATHS="${COUGAAR_INSTALL_PATH}/lib/csmart.jar:${COUGAAR_INSTALL_PATH}/lib/server.jar:${LIBPATHS}"
 if ($?COUGAAR_DEV_PATH) then
     set LIBPATHS = "${COUGAAR_DEV_PATH}:${LIBPATHS}"
 endif
 
-# Can point to remote configurations by setting the property
-# org.cougaar.config.path
-# But be sure that the configuration directory is before any common directories
-# and ends with an escaped semi-colon
-set MYCONFIGS="${COUGAAR_INSTALL_PATH}/csmart/data/common/\;"
-
-# Needed for CSMART logging:    
-# Options in increasing order of verbosity are: SEVERE, PROBLEM, DEBUG, VERBOSE, or VERY_VERBOSE
-# The log file will be COUGAAR_INSTALL_PATH/<date>.log
-# Note that the file COUGAAR_INSTALL_PATH/csmart/data/debug.properties
-# controls which modules will write to the log file
-set MYLOG="DEBUG"
-
-# domains are now usually defined by the config file LDMDomains.ini.
-# But you may still use properties if you wish.
-#set MYDOMAINS="-Dorg.cougaar.domain.alp=org.cougaar.domain.glm.GLMDomain"
-set MYDOMAINS=""
-set MYPROPERTIES="$MYDOMAINS -Dorg.cougaar.system.path=$COUGAAR3RDPARTY -Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Duser.timezone=GMT -Dorg.cougaar.core.cluster.startTime=08/10/2005 -Dorg.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0 -Dorg.cougaar.core.cluster.SharedPlugInManager.watching=false"
-
-# This line for CSMART specific properties
-set MYPROPERTIES="$MYPROPERTIES -Dorg.cougaar.config.path=$MYCONFIGS -Dcsmart.log.severity=$MYLOG"
-
-set MYMEMORY="-Xmx768m -Xms64m -Xmaxf0.9 -Xminf0.1 -Xoss128k"
-
-set osargs=""
-set os=`uname`
-if ("$os" == "Linux") then
-    # No green threads in jdk 1.3.1
-    # set osargs="-green"
+set OS = `uname`
+if ("$OS" == "Linux") then
     # set some system runtime limits
     limit stacksize 16m    #up from 8m
     limit coredumpsize 0   #down from 1g
-    #turn this on to enable inprise JIT
-    #setenv JAVA_COMPILER javacomp
 endif
 
-# Specify the host-specific properties file
-# Use the sample included in the data directory, editing it
-# to reflect your local setting of COUGAAR_INSTALL_PATH, etc
-# the following line to reflect your local installation
-set MYPROPFILE="${COUGAAR_INSTALL_PATH}/csmart/data/unix-server-sample.props"
-
-#set javaargs="$osargs $MYPROPERTIES $MYMEMORY -classpath $LIBPATHS -Dorg.cougaar.message.isLogging=true -Djava.rmi.server.logCalls=true -Dsun.rmi.server.exceptionTrace=true -Dsun.rmi.transport.tcp.readTimeout=150000 "
-set javaargs="$osargs $MYPROPERTIES $MYMEMORY -classpath $LIBPATHS"
+set JAVA_ARGS = \
+  "-classpath $LIBPATHS"
 
 if ($?COUGAAR_DEV_PATH) then
-    echo java $javaargs org.cougaar.tools.server.NodeServer $MYPROPFILE
+    echo \
+    java \
+    $JAVA_ARGS \
+    $SERVERCONFIG \
+    org.cougaar.tools.server.NodeServer \
+    $NODE_PROPS_FILE
 endif
 
-# exec instead of eval
-exec java $javaargs org.cougaar.tools.server.NodeServer $MYPROPFILE
+# start the server
+exec \
+  java \
+  $JAVA_ARGS \
+  $SERVERCONFIG \
+  org.cougaar.tools.server.NodeServer \
+  $NODE_PROPS_FILE
 
