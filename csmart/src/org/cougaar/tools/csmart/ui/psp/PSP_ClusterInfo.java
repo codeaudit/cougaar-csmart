@@ -31,10 +31,15 @@ import org.cougaar.core.society.UID;
 import org.cougaar.core.util.*;
 import org.cougaar.domain.planning.ldm.asset.Asset;
 import org.cougaar.domain.planning.ldm.asset.Entity;
+import org.cougaar.domain.planning.ldm.asset.LocationSchedulePG;
 import org.cougaar.domain.planning.ldm.plan.Role;
 import org.cougaar.domain.planning.ldm.plan.HasRelationships;
+import org.cougaar.domain.planning.ldm.plan.LatLonPoint;
+import org.cougaar.domain.planning.ldm.plan.Location;
+import org.cougaar.domain.planning.ldm.plan.LocationScheduleElement;
 import org.cougaar.domain.planning.ldm.plan.Relationship;
 import org.cougaar.domain.planning.ldm.plan.RelationshipSchedule;
+import org.cougaar.domain.planning.ldm.plan.Schedule;
 import org.cougaar.lib.planserver.*;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.util.*;
@@ -162,6 +167,50 @@ public class PSP_ClusterInfo extends PSP_BaseAdapter implements PlanServiceProvi
 	properties.put(PropertyNames.ORGANIZATION_RELATED_TO + 
 		       "_" + n++ + "_" + rel,
 		       relatedTo);
+      }
+      // add location schedule
+      LocationSchedulePG locSchedPG;
+      Schedule locSched;
+      if (((locSchedPG = asset.getLocationSchedulePG()) != null) &&
+          ((locSched = locSchedPG.getSchedule()) != null) &&
+          (!(locSched.isEmpty()))) {
+        List locPTs = new ArrayList();
+        Enumeration locSchedEn = locSched.getAllScheduleElements();
+        while (locSchedEn.hasMoreElements()) {
+          Object oi = locSchedEn.nextElement();
+          if (!(oi instanceof LocationScheduleElement)) {
+            continue;
+          }
+          LocationScheduleElement lse = (LocationScheduleElement)oi;
+          Location loc = lse.getLocation();
+          if (!(loc instanceof LatLonPoint)) {
+            continue;
+          }
+          LatLonPoint lseLoc = (LatLonPoint)loc;
+          if ((lseLoc.getLatitude() == null) ||
+              (lseLoc.getLongitude() == null)) {
+            continue;
+          }
+          PropertyTree locPT = new PropertyTree();
+          locPT.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_START_TIME,
+                    new Long(lse.getStartTime()));
+          locPT.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_END_TIME,
+                    new Long(lse.getEndTime()));
+          locPT.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_LATITUDE,
+                    new Double(lseLoc.getLatitude().getDegrees()));
+          locPT.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_LONGITUDE,
+                    new Double(lseLoc.getLongitude().getDegrees()));
+          locPT.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_VERBOSE,
+                    lseLoc.toString());
+          locPTs.add(locPT);
+        }
+        if (locPTs.size() > 0) {
+          properties.put(PropertyNames.ORGANIZATION_LOCATION_START_TIME,
+                         new Long(locSched.getStartTime()));
+          properties.put(PropertyNames.ORGANIZATION_LOCATION_END_TIME,
+                         new Long(locSched.getEndTime()));
+          properties.put(PropertyNames.ORGANIZATION_LOCATIONS, locPTs);
+        }
       }
       results.add(properties);
     }

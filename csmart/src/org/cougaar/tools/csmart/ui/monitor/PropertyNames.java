@@ -180,6 +180,16 @@ public class PropertyNames {
   public static final String ORGANIZATION_KEY_NAME = "Organization_Key_Name";
   public static final String ORGANIZATION_RELATED_TO = "Related_To";
   public static final String ORGANIZATION_ROLE = "Role";
+  // Organization locations over time
+  public static final String ORGANIZATION_LOCATION_START_TIME = "Organization_Location_Start_Time";
+  public static final String ORGANIZATION_LOCATION_END_TIME = "Organization_Location_End_Time";
+  public static final String ORGANIZATION_LOCATIONS = "Organization_Locations";
+  // properties in the List of ORGANIZATION_LOCATIONS
+  public static final String ORGANIZATION_LOCATION_ELEMENT_START_TIME = "Organization_Location_Element_Start_Time";
+  public static final String ORGANIZATION_LOCATION_ELEMENT_END_TIME = "Organization_Location_Element_End_Time";
+  public static final String ORGANIZATION_LOCATION_ELEMENT_LATITUDE = "Organization_Location_Element_Latitude";
+  public static final String ORGANIZATION_LOCATION_ELEMENT_LONGITUDE = "Organization_Location_Element_Longitude";
+  public static final String ORGANIZATION_LOCATION_ELEMENT_VERBOSE = "Organization_Location_Element_Verbose";
   // names for Allocation Result properties
   public static final String ESTIMATED_ALLOCATION_RESULT_END_TIME = "Estimated_End_Time";
   public static final String ESTIMATED_ALLOCATION_RESULT_FAILURE_REASON = "Estimated_Failure_Reason";
