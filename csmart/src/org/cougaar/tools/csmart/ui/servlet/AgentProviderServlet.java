@@ -25,9 +25,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpUtils;
 
-import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
 import org.cougaar.planning.ldm.asset.CommunityPG;
@@ -137,19 +135,8 @@ public class AgentProviderServlet
     {
       
       /*this.out = response.getOutputStream();
-      
-      // create a URL parameter visitor
-      ServletUtil.ParamVisitor vis = 
-        new ServletUtil.ParamVisitor() {
-	    public void setParam(String name, String value) {
-	       There is no mode, as it only returns the list of agent
-	       names, so do nothing but set up for parameter parsing.   
-	       	  
-	    }
-	  };
-      
-      // visit the URL parameters
-      ServletUtil.parseParams(vis, request);
+      // There is no mode, as it only returns the list of agent
+      // names, so do nothing but set up for parameter parsing.   
       */
 
       if( request.getQueryString() == null) {
@@ -177,7 +164,7 @@ public class AgentProviderServlet
 	Vector urls = new Vector();
 	Vector names = new Vector();
 
-	StringBuffer buf = HttpUtils.getRequestURL(request);
+	StringBuffer buf = request.getRequestURL();
 	String url = buf.toString();
 	//System.out.println("URL: " + url);
 	

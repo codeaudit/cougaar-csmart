@@ -34,9 +34,7 @@ import java.util.Vector;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpUtils;
 import org.cougaar.core.logging.NullLoggingServiceImpl;
-import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
 import org.cougaar.planning.ldm.plan.AllocationResult;
@@ -157,19 +155,8 @@ public class MetricsServlet
 			HttpServletResponse response) throws IOException
     {
       
-      /* Create a URL parameter visitor 
-      ServletUtil.ParamVisitor vis = 
-        new ServletUtil.ParamVisitor() {
-	    public void setParam(String name, String value) {
-	      // There is no mode, as it only returns the list of agent
-	      // names, so do nothing but set up for parameter parsing.   
-	      //	  
-	      }
-	  };
-      
-      // visit the URL parameters; parse params
-      ServletUtil.parseParams(vis, request);
-      */
+      // There is no mode, as it only returns the list of agent
+      // names, so do nothing but set up for parameter parsing.   
 
       if( request.getQueryString() == null) {
 	response.setStatus(
