@@ -20,6 +20,7 @@
  */
 package org.cougaar.tools.csmart.society.file;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.Iterator;
 import org.cougaar.core.component.ComponentDescription;
@@ -112,8 +113,15 @@ public class SocietyFileComponent
       if(log.isDebugEnabled()) {
         log.debug("Name: " + agentName + " Class: " + desc[i].getClassname());
       }
+      // construct agent filename as:
+      // path of singleFilename + agentName + ".ini"
+      String agentFilename = filename;
+      int index = agentFilename.lastIndexOf(File.separatorChar);
+      if (index != -1)
+        agentFilename = agentFilename.substring(0, index+1);
+      agentFilename = agentFilename + agentName + ".ini";
       AgentComponent agent = 
-        (AgentComponent)new AgentFileComponent(agentName, 
+        (AgentComponent)new AgentFileComponent(agentName, agentFilename,
                                                desc[i].getClassname());
       agent.initProperties();
       addChild(agent);
@@ -125,14 +133,19 @@ public class SocietyFileComponent
       if(log.isDebugEnabled()) {
         log.debug("Parse File: " + filenames[i]);
       }
+      // derive agent name from filename
       String agentName = filenames[i];
       if (agentName.endsWith(".ini"))
         agentName = agentName.substring(0, agentName.length()-4);
+      int index = agentName.lastIndexOf(File.separatorChar);
+      if (index != -1)
+        agentName = agentName.substring(index+1);
 
       // FIXME: I'd like to handle non binders of Agents, etc
 
       AgentComponent agent = 
-        (AgentComponent)new AgentFileComponent(agentName, 
+        (AgentComponent)new AgentFileComponent(agentName,
+                                               filenames[i],
                                                "org.cougaar.core.agent.ClusterImpl");
       agent.initProperties();
       addChild(agent);

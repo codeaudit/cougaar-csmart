@@ -57,14 +57,15 @@ public class AgentFileComponent
   /**
    * Creates a new <code>AgentFileComponent</code> instance.
    *
-   * @param name Name of the new Component, from which the file is derived
+   * @param name name of the agent
+   * @param filename complete pathname of file that defines agent
    * @param classname Classname for the agent
    */
-  public AgentFileComponent(String name, String classname) {
+  public AgentFileComponent(String name, String filename, String classname) {
     super(name);
     this.name = name;
     this.classname = classname;
-    filename = name + ".ini";
+    this.filename = filename;
     createLogger();
     if(log.isDebugEnabled()) {
       log.debug("Creating Agent: " + name);

@@ -442,12 +442,6 @@ public class Organizer extends JScrollPane {
 	return null;
       file = chooser.getSelectedFile();
     }
-    // The file they select needs to be on the config path
-    // or else you get an exception!
-    // Can we fix that by perhaps in SocietyFinder passing
-    // in the full path to the file?
-    // FIXME!!!
-
     // create society from agent files or single node file
     String name = "";
 
@@ -467,18 +461,6 @@ public class Organizer extends JScrollPane {
     if (name == null) return null; 
 
     if (file.isDirectory()) {
-      // If I added this directory to the org.cougaar.config.path
-      // and if I could force a recalc of the static
-      // default config finder, or have other users
-      // recreate the configfinder - do a new, then I'd be OK.
-//       String occp = System.getProperty("org.cougaar.config.path");
-//       log.debug("occp is: " + occp);
-//       if (occp.endsWith("\\;")) {
-// 	  System.setProperty("org.cougaar.config.path", occp + file.getPath() + "\\;");
-//       } else {
-// 	  System.setProperty("org.cougaar.config.path", occp + file.getPath() + ";");
-//       }
-//       log.debug("After mucking occp is: " + System.getProperty("org.cougaar.config.path"));
       String[] filenames =
         SocietyFinder.getInstance().getAgentFilenames(file);
 
@@ -492,7 +474,7 @@ public class Organizer extends JScrollPane {
 
       sc = helper.createSociety(name, filenames, SocietyFileComponent.class);
     } else {
-      sc = helper.createSociety(file.getName(), name, SocietyFileComponent.class);
+      sc = helper.createSociety(file.getPath(), name, SocietyFileComponent.class);
     }
     if (sc == null)
       return null;

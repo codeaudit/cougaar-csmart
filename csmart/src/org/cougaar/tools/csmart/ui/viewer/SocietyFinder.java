@@ -27,6 +27,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 
+import javax.swing.JFileChooser;
+
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.StringUtility;
 import org.cougaar.tools.csmart.util.FileParseUtil;
@@ -177,13 +179,41 @@ public final class SocietyFinder {
     File[] files = directory.listFiles();
     ArrayList agentFilenames = new ArrayList(files.length);
     for (int i = 0; i < files.length; i++) {
-      String name = files[i].getName();
-      if (!name.endsWith(".ini"))
+      String path = files[i].getPath(); // FileParseUtil needs complete path
+      if (!path.endsWith(".ini"))
         continue;
-      if (FileParseUtil.containsPattern(name, "\\[ Cluster \\]"))
-        agentFilenames.add(name);
+      if (FileParseUtil.containsPattern(path, "\\[ Cluster \\]"))
+        agentFilenames.add(path);
     }
     return (String[])agentFilenames.toArray(new String[agentFilenames.size()]);
   }
 
+
+  public static void main(String[] args) {
+    JFileChooser chooser =
+      new JFileChooser(SocietyFinder.getInstance().getPath());
+    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    File file = null;
+    while (file == null) {
+      int result = chooser.showDialog(null, "OK");
+      if (result != JFileChooser.APPROVE_OPTION)
+        return;
+      file = chooser.getSelectedFile();
+    }
+    String name = "";
+    name = file.getName();
+    if (name.endsWith(".ini"))
+      name = name.substring(0, name.length()-4);
+    if (file.isDirectory()) {
+      String[] filenames =
+        SocietyFinder.getInstance().getAgentFilenames(file);
+      if (filenames == null || filenames.length == 0) {
+	// Found no Agents
+        System.out.println("Found no agent in dir " + file.getPath());
+	return;
+      }
+      for (int i = 0; i < filenames.length; i++)
+        System.out.println(filenames[i]);
+    }
+  }
 }
