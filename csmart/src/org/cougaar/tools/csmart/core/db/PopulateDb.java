@@ -153,7 +153,7 @@ public class PopulateDb extends PDbBase {
 
     // Must set the assembly_match variable
     List tmp = new ArrayList();
-    tmp.add(cmtAssemblyId);
+    tmp.add(this.cmtAssemblyId);
     String asbmatch = DBUtils.getAssemblyMatch(tmp);
     substitutions.put(":assembly_match:", asbmatch);
   } // End of constructor for saving just a society
@@ -883,7 +883,7 @@ public class PopulateDb extends PDbBase {
     if (cmtAsbID == null || cmtAsbID.equals("")) {
       substitutions.put(":soc_desc:", societyName);
     } else {
-      cmtAssemblyId = cmtAsbID;
+      // cmtAssemblyId = cmtAsbID;
       substitutions.put(":soc_desc:", societyName + " based on " + cmtAsbID);
       // Came from a CMT assembly. Copy the OPLAN stuff
       copyOPLANData(cmtAsbID, assemblyId);
@@ -1844,7 +1844,8 @@ public class PopulateDb extends PDbBase {
 
       Statement stmt = getStatement();
       ResultSet rs;
-      rs = executeQuery(stmt, dbp.getQuery("queryComponentArgs", substitutions));
+      String query = dbp.getQuery("queryComponentArgs", substitutions);
+      rs = executeQuery(stmt, query);
       oldArgs = new TreeSet();
       while (rs.next()) {
 	oldArgs.add(new Argument(rs.getString(1), rs.getFloat(2)));
