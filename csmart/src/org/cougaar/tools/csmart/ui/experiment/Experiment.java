@@ -59,6 +59,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private boolean runnable = true;
 
   private String expID = null; // An Experiment has a single ExpID
+  private String trialID = null;
   // Soon Experiment's Trials will have TrialIDs
 
   // An Experiment has multiple Configuration pieces, potentially:
@@ -78,9 +79,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     super(name);
   }
 
-  public Experiment(String name, String expID) {
+  public Experiment(String name, String expID, String trialID) {
     super(name);
     this.expID = expID;
+    this.trialID = trialID;
+    System.out.println("Experiment: " + expID + " Trial: " + trialID);
   }
 
   public void setExperimentID(String expID) {
