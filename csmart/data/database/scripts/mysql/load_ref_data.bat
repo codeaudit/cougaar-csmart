@@ -20,7 +20,7 @@ REM " PERFORMANCE OF THE COUGAAR SOFTWARE."
 REM "</copyright>"
 
 
-REM Load the Configuration data contained in csmart/data/database/ref-csv
+REM Load the RefConfiguration data contained in csmart/data/database/ref-csv
 REM This data comes with the distribution.
 REM You may also move the original data aside, and "dump" the data from a database
 REM for sharing, or editing and reloading
@@ -37,7 +37,7 @@ GOTO L_END
 
 REM Check arguments. If got none, display usage
 IF NOT "%3" == "" GOTO L_3
-ECHO Usage: load_ref_data.bat [Config DB Username] [Password] [MySQL Config database name]
+ECHO Usage: load_ref_data.bat [RefConfig DB Username] [Password] [MySQL RefConfig database name]
 GOTO L_END
 
 :L_3
@@ -109,3 +109,4 @@ DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv\*.tmp
 ECHO Done.
 
 :L_END
+

@@ -26,6 +26,7 @@ Sub-directories:
 	Users of CSMART need not edit or use these files.
         These table definitions are used only when running from XML
         files. You must fill in content appropriate to your application.
+	See the load_ref_data script for loading.
 
    csv/:
         Contains a '.csv' file for each table to be created in the 
@@ -145,7 +146,7 @@ Sub-directories:
                                   This script is an easy way to "clean out" your configuration
                                   database.
 
-                load_ref_data.sh - This script loads the contents of the
+                load_ref_data.sh[bat] - This script loads the contents of the
 			ref_csv data files into the refconfig database.
 			It uses the helper SQL file load_ref_data.sql
 
