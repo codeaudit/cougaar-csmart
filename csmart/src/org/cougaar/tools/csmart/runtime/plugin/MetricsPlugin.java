@@ -71,7 +71,7 @@ import java.util.Vector;
  * <code>MetricsInitializerPlugin</code>. <br>
  * Statistics are written to the standard log file, and also written, one line per sample,
  * to a separate statistics results file.<br>
- * The file written is named <ClusterID>_results.txt.<br>
+ * The file written is named <AgentID>_results.txt.<br>
  * If provided, the first parameter indicates the directory
  * in which to write the file. By default, it is written
  * in the working directory.<br>
@@ -152,7 +152,7 @@ public class MetricsPlugin
   private static final String DEFAULT_DIRECTORY = ".";
   private Role MetricsProviderRole = Role_MetricsProvider;
   private Asset dummyAsset;     // We assign the statistics tasks to this asset
-  private MessageAddress ourCluster;
+  private MessageAddress ourAgent;
   private long startTime;
   private long startCPU;
   private int completedPlanElementCount = 0;   // Count of completed plan elements for (manage tasks)
@@ -194,9 +194,9 @@ public class MetricsPlugin
 	if (verb.equals(Verb_Start) || verb.equals(Verb_Finish) || verb.equals(Verb_Sample) || verb.equals(Verb_Ready)) {
 	  Asset directObject = (Asset) task.getDirectObject();
 	  if (directObject.hasClusterPG()) {
-	    MessageAddress theCluster =
+	    MessageAddress theAgent =
 	      directObject.getClusterPG().getMessageAddress();
-	    if (theCluster.equals(ourCluster)) {
+	    if (theAgent.equals(ourAgent)) {
 	      return true;
 	    }
 	  } else {
@@ -254,7 +254,7 @@ public class MetricsPlugin
     dummyAsset = theLDMF.createInstance(prototype);
     publishAdd(dummyAsset);
 
-    ourCluster = getAgentIdentifier();
+    ourAgent = getAgentIdentifier();
 
     // Open up the file for the results
     String path = DEFAULT_DIRECTORY;
@@ -367,14 +367,14 @@ public class MetricsPlugin
     }
 
     if (log.isDebugEnabled()) {
-      log.debug("Writing " + path + ourCluster + RESULTS_FILENAME_SUFFIX);
+      log.debug("Writing " + path + ourAgent + RESULTS_FILENAME_SUFFIX);
     }
 
     try {
-      writer = new PrintWriter(new FileWriter(path + ourCluster + RESULTS_FILENAME_SUFFIX));
+      writer = new PrintWriter(new FileWriter(path + ourAgent + RESULTS_FILENAME_SUFFIX));
     } catch (IOException ioe) {
       if (log.isDebugEnabled()) {
-	log.debug("Fatal IOException opening statistics file: " + path + ourCluster + RESULTS_FILENAME_SUFFIX);
+	log.debug("Fatal IOException opening statistics file: " + path + ourAgent + RESULTS_FILENAME_SUFFIX);
       }
       // should this really exit?
       //System.exit(1);

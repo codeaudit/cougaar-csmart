@@ -229,17 +229,17 @@ public class AssetDBComponent
 	  // Get the Component ALIB ID being supported
           String supported = rs.getString(1);
 
-	  // Using that, look up the ClusterID, TypeID, ItemID
+	  // Using that, look up the AgentID, TypeID, ItemID
 	  // But default back to the ALIB_ID if necessary
 	  // FIXME: Look up these PG IDs
-	  String cID = getPGVal("ClusterPG|MessageAddress", supported);
+	  String aID = getPGVal("ClusterPG|MessageAddress", supported);
 
 	  // HACK for the 10.0 transition from ClusterIdentifier->MA
-	  if (cID == null)
-	    cID = getPGVal("ClusterPG|ClusterIdentifier", supported);
+	  if (aID == null)
+	    aID = getPGVal("ClusterPG|ClusterIdentifier", supported);
 
-	  if (cID == null || cID.equals(""))
-	    cID = supported;
+	  if (aID == null || aID.equals(""))
+	    aID = supported;
 
 	  String typeID = getPGVal("TypeIdentificationPG|TypeIdentification", supported);
 	  if (typeID == null || typeID.equals(""))
@@ -250,7 +250,7 @@ public class AssetDBComponent
 	    itemID = supported;
 
           rd.setItemId(itemID);
-          rd.setSupported(cID);
+          rd.setSupported(aID);
 	  rd.setTypeId(typeID);
 
           String role = rs.getString(2);

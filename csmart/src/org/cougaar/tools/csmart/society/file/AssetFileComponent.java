@@ -71,13 +71,13 @@ public class AssetFileComponent
   private Property propUnitName;
   private Property propUIC;
   private String filename;
-  private String clusterName;
+  private String agentName;
   private int iniFormat;
   
-  public AssetFileComponent(String filename, String clusterName) {
+  public AssetFileComponent(String filename, String agentName) {
     super("AssetData");
     this.filename = filename;
-    this.clusterName = clusterName;
+    this.agentName = agentName;
   }
 
   /**
@@ -103,7 +103,7 @@ public class AssetFileComponent
       if(log.isDebugEnabled()) {
         log.debug("Using newStyle Parser");
       }
-      AssetDataCallbackImpl callback = new AssetDataCallbackImpl(clusterName);
+      AssetDataCallbackImpl callback = new AssetDataCallbackImpl(agentName);
       AssetDataFileReader reader = new AssetDataFileReader();
       // If this filename is a Windows style filename, then absolute paths wont work.
       // Try to let the ConfigFinder find it.
@@ -142,7 +142,7 @@ public class AssetFileComponent
     propUnitName = addProperty(PROP_UNITNAME, unitname);
     propUnitName.setToolTip(PROP_UNITNAME_DESC);
     
-    propUIC = addProperty(PROP_UIC, (aad.getUIC() != null) ? aad.getUIC() : "UIC/" + clusterName);
+    propUIC = addProperty(PROP_UIC, (aad.getUIC() != null) ? aad.getUIC() : "UIC/" + agentName);
     propUIC.setToolTip(PROP_UIC_DESC);
 
     addPropGroups(aad);

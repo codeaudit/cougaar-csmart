@@ -63,7 +63,7 @@ import java.util.Vector;
 public class PrototypeParser {
 
   private Logger log;
-  private String clusterId;
+  private String agentId;
   private DateFormat myDateFormat = DateFormat.getInstance(); 
   private boolean haveItemId = false;
 
@@ -85,7 +85,7 @@ public class PrototypeParser {
   }
 
   public String getFileName() {
-    return clusterId + "-prototype-ini.dat";
+    return agentId + "-prototype-ini.dat";
   }
 
   public long parseDate(String dateString) throws ParseException {
@@ -100,8 +100,8 @@ public class PrototypeParser {
     return TimeSpan.MAX_VALUE;
   }
 
-  public AgentAssetData parsePrototypeFile(String cId) {
-    clusterId = cId;
+  public AgentAssetData parsePrototypeFile(String aId) {
+    agentId = aId;
     String dataItem = "";
     int newVal;
 
@@ -213,7 +213,7 @@ public class PrototypeParser {
       }
     }
     if(haveItemId == false) {
-      String name = clusterId.substring(clusterId.lastIndexOf(File.separatorChar)+1);
+      String name = agentId.substring(agentId.lastIndexOf(File.separatorChar)+1);
       aad.addPropertyGroup(setItemIdentificationPG(name, name, ""));
    }
 
@@ -227,7 +227,7 @@ public class PrototypeParser {
 
   /**
    * Fills in myRelationships with arrays of relationship, 
-   * clusterName and capableroles triples.
+   * agentName and capableroles triples.
    */
   protected int fillRelationships(int newVal, StreamTokenizer tokens,
                                   AgentAssetData aad) throws IOException {
@@ -239,7 +239,7 @@ public class PrototypeParser {
            (!tokens.sval.substring(0,1).equals("["))) {
 
       String type = "";
-      String supportedCluster = "";
+      String supportedAgent = "";
       String role = ""; 
 
       for (int i = 0; i < 3; i++) {
@@ -255,7 +255,7 @@ public class PrototypeParser {
           break;
 
         case 1:
-          supportedCluster = tokens.sval.trim();
+          supportedAgent = tokens.sval.trim();
           break;
 
         case 2:
@@ -272,10 +272,10 @@ public class PrototypeParser {
       rd = new RelationshipData();
       rd.setType(type);
       rd.setRole(role);
-      rd.setSupported(supportedCluster);
+      rd.setSupported(supportedAgent);
       if(log.isDebugEnabled()) {
         log.debug("New Relationship: type: \"" + type + "\" Role: \"" + role +
-                  "\" Supported: \"" + supportedCluster + "\"");
+                  "\" Supported: \"" + supportedAgent + "\"");
       }
       aad.addRelationship(rd);
     } //while

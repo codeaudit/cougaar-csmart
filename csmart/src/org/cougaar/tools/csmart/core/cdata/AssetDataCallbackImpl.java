@@ -60,13 +60,13 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
   private AgentAssetData assetData = null;
   private DateFormat myDateFormat = DateFormat.getInstance();
   private transient Logger log = null;
-  private String clusterName;
+  private String agentName;
   /**
    * Creates a new <code>AssetDataCallbackImpl</code> instance.
    *
    */
-  public AssetDataCallbackImpl (String clusterName){
-    this.clusterName = clusterName;
+  public AssetDataCallbackImpl (String agentName){
+    this.agentName = agentName;
     log = CSMART.createLogger(this.getClass().getName());
   }
   // implementation of org.cougaar.planning.plugin.asset.AssetDataCallback interface
@@ -282,8 +282,8 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     // the ItemIdentification is not always the Agent name.
     // We need to correct this or there will be runtime issues.
     } else if (name.equals("ItemIdentification") &&
-               !arguments[0].equals(clusterName)) {
-      data.setValue(clusterName);
+               !arguments[0].equals(agentName)) {
+      data.setValue(agentName);
     } else {
       if(arguments[0] instanceof Collection) {
         Iterator iter = ((Collection)arguments[0]).iterator();
@@ -351,12 +351,12 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
    *
    * @param typeId Type Id for the new Relationship
    * @param itemId Item Id for the new Relationship
-   * @param supportedCluster Cluster supported in this relationship
+   * @param supportedAgent Agent supported in this relationship
    * @param type Type of Relationship
    * @param start Start time for new Relationship
    * @param end Stop time for new Relationship
    */
-  public void addRelationship(String typeId, String itemId, String supportedCluster, String type, long start, long end) {
+  public void addRelationship(String typeId, String itemId, String supportedAgent, String type, long start, long end) {
 
     RelationshipData rd = new RelationshipData();
     rd.setItemId(itemId);
@@ -364,7 +364,7 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     rd.setType(type);
     rd.setStartTime(start);
     rd.setEndTime(end);
-    rd.setSupported(supportedCluster);
+    rd.setSupported(supportedAgent);
     assetData.addRelationship(rd);
   }
 

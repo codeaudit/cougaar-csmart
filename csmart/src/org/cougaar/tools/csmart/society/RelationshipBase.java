@@ -39,7 +39,7 @@ import java.util.Date;
  *
  * A component Representing a relationship.
  * In a prototype-dat.ini file, a relationship is:
- * <role> <item> <type> <otherCluster> <start time> <stop time>
+ * <role> <item> <type> <otherAgent> <start time> <stop time>
  *
  * Created: Fri Feb 22 12:32:59 2002
  *

@@ -39,10 +39,10 @@ import java.util.List;
  * <li><b>Class:</b> Class of Asset to instantiate.</li>
  * <li><b>Type:</b> Entity, Organization, or Organization with Time-Phased Relationships. This governs what data should be sent to the Agent.</li>
  * <li><b>Agent:</b> The Agent containing this Asset.</li>
- * <li><b>ClusterID:</b> Calculated from the Agent.</li>
+ * <li><b>AgentID:</b> Calculated from the Agent.</li>
  * <li><b>UniqueID:</b> (Orgs only, unused) UTC/RTOrg or UTC/CombatOrg usually</li>
  * <li><b>UnitName:</b> (Orgs only, optional)</li>
- * <li><b>UIC:</b> (Orgs only) Usually UIC/[ClusterID]</li>
+ * <li><b>UIC:</b> (Orgs only) Usually UIC/[AgentID]</li>
  * <li><b>Roles:</b> A collection of String role names.</li>
  * <li><b>Relationships:</b> The relationships this Asset has with others.
  * The format of these differs based on the Asset type.</li>
@@ -93,9 +93,9 @@ public class AgentAssetData implements Serializable {
   private String assetClass = null; // CombatOrganization, Entity, etc
   private String uniqID = null; // For Orgs only, not used, UTC/RTOrg or CombatOrg
   private String unitname = null; // Org only, optional
-  private String uic = null; // Org only, usu UIC/ClusterID
+  private String uic = null; // Org only, usu UIC/AgentID
 
-  // Note: ClusterID is retrieved from the parent
+  // Note: AgentID is retrieved from the parent
   private AgentComponentData agent; // The Agent in which this sits
 
   private List roles; // Strings
@@ -198,12 +198,12 @@ public class AgentAssetData implements Serializable {
   }
 
   /**
-   * Gets the ClusterID for this asset.
+   * Gets the AgentID for this asset.
    * This field is auto-calculated from the agent name.
    *
-   * @return a <code>String</code> value of the ClusterID
+   * @return a <code>String</code> value of the AgentID
    */
-  public String getClusterID() {
+  public String getAgentID() {
     if (agent != null) {
       return agent.getName();
     } else {
@@ -311,8 +311,8 @@ public class AgentAssetData implements Serializable {
    * @return a <code>String</code> value of the UIC
    */
   public String getUIC() {
-    return (uic == null ? ((! isEntity()) && (getClusterID() != null)
-			   ? "UIC/" + getClusterID()
+    return (uic == null ? ((! isEntity()) && (getAgentID() != null)
+			   ? "UIC/" + getAgentID()
 			   : null)
 	    : uic);
   }

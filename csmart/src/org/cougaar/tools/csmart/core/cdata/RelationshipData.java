@@ -39,11 +39,11 @@ import java.io.Serializable;
  * There are two type of ini file formats: <br>
  * "Supporting"    "1BDE"   "StrategicTransportProvider" <br>
  * Where the fields are: <br>
- * <Type>   <Supported Cluster>  <Role>
+ * <Type>   <Supported Agent>  <Role>
  * <br>and<br>
  * "StrategicTransportProvider" "UIC/1BDE" "UTC/RTOrg" "1BDE" "" "" <br>
  * Where the fields are: <br>
- * <Type> <ItemId> <TypeId> <Supported Cluster> <Start Time> <Stop Time>
+ * <Type> <ItemId> <TypeId> <Supported Agent> <Start Time> <Stop Time>
  *
  */
 public class RelationshipData implements Serializable {
