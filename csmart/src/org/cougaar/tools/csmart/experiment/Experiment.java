@@ -92,6 +92,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public static final String ENV_DISPLAY = "env.DISPLAY";
 
   public static final String BOOTSTRAP_CLASS = "java.class.name";
+  public static final String NAME_SERVER = "org.cougaar.name.server";
+  public static final String NODE_NAME = "org.cougaar.node.name";
 
   
   // Define some Defaults
@@ -1427,7 +1429,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    **/
   public void updateNameServerHostName() {
     Properties defaultNodeArgs = getDefaultNodeArguments();
-    String oldNameServer = defaultNodeArgs.getProperty("org.cougaar.name.server");
+    String oldNameServer = defaultNodeArgs.getProperty(NAME_SERVER);
     String newNameServer = null;
     String dfltNameServer = null;
     String nameServerHost = null;
@@ -1466,11 +1468,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       NodeComponent node = nodes[i];
       Properties arguments = node.getArguments();
       // Insure no per-node override exists
-      arguments.remove("org.cougaar.name.server");
+      arguments.remove(NAME_SERVER);
     }
     // Now install experiment-wide setting.
     if (newNameServer != null) {
-      defaultNodeArgs.setProperty("org.cougaar.name.server", newNameServer);
+      defaultNodeArgs.setProperty(NAME_SERVER, newNameServer);
     }
   }
 

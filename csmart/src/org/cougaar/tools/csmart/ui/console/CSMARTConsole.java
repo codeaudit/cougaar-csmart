@@ -1206,7 +1206,7 @@ public class CSMARTConsole extends JFrame {
     if (properties == null)
       return port;
     try {
-      String tmp = properties.getProperty("org.cougaar.control.port");
+      String tmp = properties.getProperty(Experiment.CONTROL_PORT);
       if (tmp != null)
         port = Integer.parseInt(tmp);
     } catch (NumberFormatException nfe) {

@@ -97,14 +97,14 @@ public class ExperimentNode
 
   private void addDefaultArgumentsToNode(String nodeName) {
     arguments =
-      new ReadOnlyProperties(Collections.singleton("org.cougaar.node.name"),
+      new ReadOnlyProperties(Collections.singleton(Experiment.NODE_NAME),
                              experiment.getDefaultNodeArguments());
     createObserver();
-    arguments.setReadOnlyProperty("org.cougaar.node.name", nodeName);
+    arguments.setReadOnlyProperty(Experiment.NODE_NAME, nodeName);
   }
 
   public void rename(String newName) {
-    arguments.setReadOnlyProperty("org.cougaar.node.name", newName);
+    arguments.setReadOnlyProperty(Experiment.NODE_NAME, newName);
     setName(newName); // invokes setName in ConfigurableComponent
   }
 
