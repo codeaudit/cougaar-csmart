@@ -130,10 +130,18 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       if (nodes[i].getType().equals(ComponentData.HOST)) {
 	writeHostFile(configDir, nodes[i]);
 	for (int j = 0; j < nodes[i].childCount(); j++) {
-	  writeNodeFile(configDir, nodes[i].getChildren()[j]);
+          if(nodes[i].getChildren()[j] instanceof AgentComponentData) {
+            writeAgentFile(configDir, (AgentComponentData)nodes[i].getChildren()[j]);
+          } else {
+            writeNodeFile(configDir, nodes[i].getChildren()[j]);
+          }
 	}
       } else {
-	writeNodeFile(configDir, nodes[i]);
+        if(nodes[i] instanceof AgentComponentData) {
+          writeAgentFile(configDir, (AgentComponentData)nodes[i]);
+        } else {
+          writeNodeFile(configDir, nodes[i]);
+        }
       }
     }
   }
@@ -240,76 +248,83 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       // node has no agents or binders. skip it
       return;
     }
-   Object[] parameters = nc.getParameters();
-   String configFileName = nc.getName() + ".ini";
-   if (parameters.length > 0)
-     configFileName = (String)parameters[0];
-   if (! configFileName.endsWith(".ini"))
-     configFileName = configFileName + ".ini";
-   PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, configFileName)));
+    Object[] parameters = nc.getParameters();
+    String configFileName = nc.getName() + ".ini";
+    if (parameters.length > 0)
+      configFileName = (String)parameters[0];
+    if (! configFileName.endsWith(".ini"))
+      configFileName = configFileName + ".ini";
+    PrintWriter writer = 
+      new PrintWriter(new FileWriter(new File(configDir, configFileName)));
+   
     try {
-    // loop over children
-    // if there are binder or such, do those
+      // loop over children
+      // if there are binder or such, do those
       ComponentData[] children = nc.getChildren();
       for (int i = 0; i < nc.childCount(); i++) {
-	if (children[i] instanceof AgentComponentData) {
-	  continue;
-	} else if (children[i].getType().equals(ComponentData.NODE) || 
+        if (children[i] instanceof AgentComponentData) {
+          continue;
+        } else if (children[i].getType().equals(ComponentData.NODE) || 
                    children[i].getType().equals(ComponentData.SOCIETY) || 
                    children[i].getType().equals(ComponentData.AGENT) || 
                    children[i].getType().equals(ComponentData.PLUGIN)) {
           if(log.isErrorEnabled()) {
-            log.error("Got unexpected child of Node type: " + children[i]);
+            log.error("Got unexpected child of Node type: " + children[i].getType());
           }
-	} else {
-	  // What is the prefix line I write here?
-	  if (children[i].getType().equals(ComponentData.NODEBINDER)) {
-	    writer.print("Node.AgentManager.Binder = ");
-	  } else {
-	    // FIXME!!!!!!
-	    // This assumes the name is always the prefix.
-	    writer.print(children[i].getName() + " = ");
-	  }
-	  writeChildLine(writer, children[i]);
-	  // Could one of these guys have children?
-	  writeChildrenOfComp(writer, configDir, children[i]);
-	  // write out any leaf components
-	  writeLeafData(configDir, children[i]);
-	}
+        } else {
+          if(log.isDebugEnabled()) {
+            log.debug("writeNodeFile: [ "+configFileName+
+                      " ] Type is: " + children[i].getType());
+          }
+          // What is the prefix line I write here?
+          if (children[i].getType().equals(ComponentData.NODEBINDER)) {
+            writer.print("Node.AgentManager.Binder = ");
+          } else {
+            // FIXME!!!!!!
+            // This assumes the name is always the prefix.
+            writer.print(children[i].getName() + " = ");
+          }
+          writeChildLine(writer, children[i]);
+          // Could one of these guys have children?
+          writeChildrenOfComp(writer, configDir, children[i]);
+          // write out any leaf components
+          writeLeafData(configDir, children[i]);
+        }
       } // end of loop over children
       writer.println("[ Clusters ]");
       children = nc.getChildren();
 
       // Get the name if the initializer plugin.
       for(int i=0; i < nc.childCount(); i++) {
-	if(children[i] instanceof AgentComponentData) {
-	  AgentComponentData agent = (AgentComponentData)children[i];
-	  ComponentData[] plugins = agent.getChildren();
-	  for(int j=0; j < plugins.length; j++) {
-	    ComponentData aa = plugins[j];
-	    if(aa.getName().equals("org.cougaar.tools.csmart.runtime.plugin.MetricsInitializerPlugin")) {
-	      metricsInitializer = agent.getName().toString();
-	      break;
-	    }
-	  }
-	}
+        if(children[i] instanceof AgentComponentData) {
+          AgentComponentData agent = (AgentComponentData)children[i];
+          ComponentData[] plugins = agent.getChildren();
+          for(int j=0; j < plugins.length; j++) {
+            ComponentData aa = plugins[j];
+            if(aa.getName().equals("org.cougaar.tools.csmart.runtime.plugin.MetricsInitializerPlugin")) {
+              metricsInitializer = agent.getName().toString();
+              break;
+            }
+          }
+        }
       }
 
       for (int i = 0; i < nc.childCount(); i++) {
-	if (children[i] instanceof AgentComponentData) {
-	  writer.print("cluster = ");
-	  writeChildLine(writer, children[i]);
-	  // Write the children of this agent if there are any
-	  // write the leaf components of this agent
-	  writeAgentFile(configDir, (AgentComponentData)children[i]);
-	} else if (children[i].getType().equals(ComponentData.NODEBINDER)) {
-	} else {
-//  	} else if (!children[i].getType().equals(ComponentData.NODEBINDER) 
-//                     || !children[i].getType().equals(ComponentData.AGENTBINDER)) {
+        if (children[i] instanceof AgentComponentData) {
+          writer.print("cluster = ");
+          writeChildLine(writer, children[i]);
+          // Write the children of this agent if there are any
+          // write the leaf components of this agent
+          writeAgentFile(configDir, (AgentComponentData)children[i]);
+        } else if (children[i].getType().equals(ComponentData.NODEBINDER)) {
+        } else {
+          //  	} else if (!children[i].getType().equals(ComponentData.NODEBINDER) 
+          //                     || !children[i].getType().equals(ComponentData.AGENTBINDER)) {
           if(log.isErrorEnabled()) {
-            log.error("Got a child of a Node that wasn't an Agent or Node Binder: " + children[i]);
+            log.error("Got a child of a Node that wasn't an Agent or Node Binder Type: "
+                      + children[i].getType());
           }
-	}
+        }
       }
       writer.println();
       writer.println("[ AlpProcess ]");
