@@ -1689,7 +1689,7 @@ public class AllocatorPlugIn
     deadlineE.setRegarding(alloc);
     deadlineE.setTime(deadlineTime);
     deadlineE.setPublisher(super.toString());
-    deadlineE.setSource(getClusterIdentifier());
+    deadlineE.setSource(getAgentIdentifier());
     publishAddAt(deadlineE, deadlineTime);
 
     // done handling task

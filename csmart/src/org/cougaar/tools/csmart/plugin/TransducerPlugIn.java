@@ -174,7 +174,7 @@ public class TransducerPlugIn extends CSMARTPlugIn {
 	    }
 
 	    // Make sure all the fields are filled in:
-	    ((NewInfrastructureEvent)ie).setSource(getClusterIdentifier());
+	    ((NewInfrastructureEvent)ie).setSource(getAgentIdentifier());
 	    ((NewInfrastructureEvent)ie).setPublisher(this.toString());
 	    // ie.setPlan(???)???
 	    

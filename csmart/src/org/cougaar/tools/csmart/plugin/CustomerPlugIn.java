@@ -566,7 +566,7 @@ public class CustomerPlugIn extends CSMARTPlugIn {
     hce.setCurrentHappiness(newHappiness);
 
     // must fill in the Publisher and Source here
-    hce.setSource(getClusterIdentifier());
+    hce.setSource(getAgentIdentifier());
     hce.setPublisher(this.toString());
     
     if (log.isApplicable(log.DEBUG)) {

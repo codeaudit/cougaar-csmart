@@ -249,7 +249,7 @@ public class MetricsPlugin
     dummyAsset = theLDMF.createInstance(prototype);
     publishAdd(dummyAsset);
 
-    ourCluster = getClusterIdentifier();
+    ourCluster = getAgentIdentifier();
 
     // Open up the file for the results
     String path = DEFAULT_DIRECTORY;
@@ -793,7 +793,7 @@ public class MetricsPlugin
     private int notificationsOut = 0;
         
     public MessageWatcher() {
-      //            me = getClusterIdentifier();
+      //            me = getAgentIdentifier();
       me = getBindingSite().getAgentIdentifier();
     }
         

@@ -130,7 +130,7 @@ public abstract class CSMARTPlugIn
     return getBlackboardService().subscribe(pred);
   }
   
-  protected ClusterIdentifier getClusterIdentifier() {
+  protected ClusterIdentifier getAgentIdentifier() {
     return getBindingSite().getAgentIdentifier();
   }
   
@@ -619,7 +619,7 @@ public abstract class CSMARTPlugIn
       setupSubscriptions();
     } catch (Exception e) {
       synchronized (System.err) {
-        System.err.println(getClusterIdentifier().toString()+"/"+this+" caught "+e);
+        System.err.println(getAgentIdentifier().toString()+"/"+this+" caught "+e);
         e.printStackTrace();
       }
     } finally {
@@ -651,7 +651,7 @@ public abstract class CSMARTPlugIn
         //}
     } catch (Exception e) {
       synchronized (System.err) {
-        System.err.println(getClusterIdentifier().toString()+"/"+this+" caught "+e);
+        System.err.println(getAgentIdentifier().toString()+"/"+this+" caught "+e);
         e.printStackTrace();
       }
       //doExecute = true;

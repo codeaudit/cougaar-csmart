@@ -234,7 +234,7 @@ public class ScriptedEventPlugIn
       }
     }
     // other fields to set???
-    cae.setSource(getClusterIdentifier());
+    cae.setSource(getAgentIdentifier());
     cae.setDestination(transducer);
     cae.setPublisher(this.toString());
     return cae;
@@ -306,7 +306,7 @@ public class ScriptedEventPlugIn
       }
     }
     // other things to set???
-    ske.setSource(getClusterIdentifier());
+    ske.setSource(getAgentIdentifier());
     ske.setDestination(transducer);
     ske.setPublisher(this.toString());
     return ske;

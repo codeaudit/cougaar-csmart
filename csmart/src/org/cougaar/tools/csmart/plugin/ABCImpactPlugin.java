@@ -50,7 +50,7 @@ public class ABCImpactPlugin extends SimplePlugIn {
   private IncrementalSubscription infEventSub;
 
   private UnaryPredicate createInfEventPred() {
-    final ClusterIdentifier myCID = getClusterIdentifier();
+    final ClusterIdentifier myCID = getAgentIdentifier();
     return
       new UnaryPredicate() {
         public boolean execute(Object o) {
