@@ -83,7 +83,7 @@ copy-experiment.sh
 	new name] [DB User Name] [DB Password] [Database name]
 	[Optional: remote host of MySQL DB]
 
-delete-temp-db.sh
+delete-temp-db.[sh/bat]
 	Script to drop the temporary database created above. Use
 	this after copying an experiment using the above script, and
 	exporting it if desired.
@@ -137,7 +137,7 @@ exportExperiment.sh
 	 Usage: exportExperiment.sh [Experiment to export] [DB
 	 Username] [DB Password] [DB name] [Optional: host name]
 
-export-recipe.sh
+export-recipe.[sh/bat]
 [Helper: copyRecipeForExport.sql]
 	 Export the named recipe for use on another database. If a
 	 recipe with the same name exists in the other database, you
