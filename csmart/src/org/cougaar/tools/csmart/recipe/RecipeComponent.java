@@ -24,9 +24,7 @@ package org.cougaar.tools.csmart.recipe;
 import java.net.URL;
 
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
 import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import java.net.URL;
 
 /**
@@ -35,7 +33,7 @@ import java.net.URL;
  * out information in the various Nodes. These interfaces are
  * exposed.
  */
-public interface RecipeComponent extends ModifiableComponent, ComponentProperties {
+public interface RecipeComponent extends ModifiableComponent {
 
   String CLASS_NAME_PROP = "recipe_class_name";
   String RECIPE_QUERY_FILE= "recipeQueries.q";

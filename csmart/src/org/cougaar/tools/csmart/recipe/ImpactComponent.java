@@ -23,8 +23,6 @@ package org.cougaar.tools.csmart.recipe;
 
 import java.net.URL;
 
-import org.cougaar.tools.csmart.ui.viewer.Organizer;
-
 /**
  * Parent interface for all Impacts to a CSMART system. Just extends
  * RecipeComponent with one additional method: getImpactName should

@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.StringTokenizer;
 import java.util.HashSet;
 
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;

@@ -29,7 +29,6 @@ import org.cougaar.tools.csmart.util.ResultsFileFilter;
 
 import org.cougaar.tools.csmart.experiment.Experiment;
 
-import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
