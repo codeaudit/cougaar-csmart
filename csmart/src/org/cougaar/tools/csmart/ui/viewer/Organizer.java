@@ -1182,9 +1182,6 @@ public class Organizer extends JScrollPane {
                                     "Delete Society",
                                     JOptionPane.YES_NO_OPTION);
     if (answer == JOptionPane.YES_OPTION) {
-//       if (log.isWarnEnabled()) {
-// 	log.warn("Organizer: WARNING delete society from database not implemented.");
-//       }
       try {
 	// Will only actually do the delete
 	// if no-one uses it
@@ -1197,8 +1194,6 @@ public class Organizer extends JScrollPane {
     }
     societyNames.remove(society.getSocietyName());
   }
-
-
 
   protected void deleteRecipe() {
     deleteRecipeInNode(getSelectedNode());

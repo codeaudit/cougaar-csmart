@@ -27,22 +27,21 @@ import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.AssetComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.society.AgentBase;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 
 /**
  * Create a ConfigurableComponent which represents an Agent
  * from ComponentData.
  */
-
 public class AgentCDataComponent 
   extends AgentBase
-          implements AgentComponent {
+  implements AgentComponent {
 
   ComponentData cdata;
 
@@ -110,16 +109,15 @@ public class AgentCDataComponent
       }
     }
 
-    // FIXME: Add misc components -- how do I find the type though?
   }
 
-  protected void addAssetData() {
+    // FIXME: Add misc components -- how do I find the type though?
 
+  protected void addAssetData() {
     // add asset data components
     BaseComponent asset = 
       (BaseComponent)new AssetCDataComponent(cdata.getAgentAssetData());
     asset.initProperties();
     addChild(asset);
   }
-
-}
+} // End of AgentCDataComponent

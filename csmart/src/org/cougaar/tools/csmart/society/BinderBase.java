@@ -28,28 +28,29 @@ import org.cougaar.tools.csmart.core.property.PropertyAlias;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
- * BinderBase.java
+ * BinderBase is the basic implementation for editing & configuring
+ * binders. It is particularly suited to Binders of Plugins (that sit
+ * inside Agents). However, it has a slot to allow specicying the type.
  */
 public class BinderBase
   extends ModifiableConfigurableComponent 
   implements BinderComponent {
 
+  /** Binder Classname Property Definition **/
+  public static final String PROP_CLASSNAME = "Binder Class Name";
+  public static final String PROP_CLASSNAME_DESC = "Name of the Binder Class";
+
   // FIXME:
   // Need to specify the insertion point
   // and actual type of this component
 
-  /** Binder Classname Property Definition **/
-
-  public static final String PROP_CLASSNAME = "Binder Class Name";
-  public static final String PROP_CLASSNAME_DESC = "Name of the Binder Class";
-
   public static final String PROP_TYPE = "Binder Type";
   public static final String PROP_TYPE_DESC = "Type of Binder (Agent, Node)";
+  private String type = ComponentData.AGENTBINDER;
 
   public static final String PROP_PARAM = "param-";
   private int nParameters = 0;
   private String classname;
-  private String type = ComponentData.AGENTBINDER;
 
   public BinderBase(String name) {
     super(name);
@@ -59,6 +60,13 @@ public class BinderBase
   public BinderBase(String name, String classname) {
     super(name);
     this.classname = classname;
+    createLogger();
+  }
+
+  public BinderBase(String name, String classname, String type) {
+    super(name);
+    this.classname = classname;
+    this.type = type;
     createLogger();
   }
 
@@ -103,6 +111,7 @@ public class BinderBase
     if (data.getType() == ComponentData.AGENT) {
       self.setType(ComponentData.AGENTBINDER);
     } else {
+      // Nodes could contain Agent Binders or Node Binders
       self.setType(getBinderType());
     }
 
@@ -152,6 +161,11 @@ public class BinderBase
     return null;
   }
 
+  /**
+   * Get the type of this Binder, from the property.
+   *
+   * @return a <code>String</code> type from the constants in ComponentData
+   */
   public String getBinderType() {
     Property p = getProperty(PROP_TYPE);
     if (p != null) {
@@ -162,6 +176,12 @@ public class BinderBase
     return type;
   }
 
+  /**
+   * Allow outside users to set the Binder type to one of the
+   * values in the constants in ComponentData.
+   *
+   * @param type a <code>String</code> binder type
+   */
   public void setBinderType(String type) {
     if (type == null || type.equals("") || type.equals(this.getBinderType()))
       return;
@@ -199,5 +219,4 @@ public class BinderBase
   public Property addParameter(Property prop) {
     return addProperty(new PropertyAlias(this, PROP_PARAM + nParameters++, prop));
   }
-
-}
+} // End of BinderBase

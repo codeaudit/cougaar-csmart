@@ -54,7 +54,6 @@ public abstract class AgentBase
   protected String classname;
 
   /** Agent Classname Property Definitions **/
-
   private static final String DEFAULT_CLASS = "org.cougaar.core.agent.ClusterImpl";
 
   /** Classname Property Definition **/
@@ -171,10 +170,21 @@ public abstract class AgentBase
     return data;
   }
 
+  /**
+   * Add the AssetComponent to hold any Agent asset.
+   */
   protected abstract void addAssetData();
 
+  /**
+   * Add the Plugins Container that contains things that extend or are
+   * PluginBase
+   */
   protected abstract void addPlugins();
 
+  /**
+   * Add the Binders Container that contains things that extend or are
+   * BinderBase
+   */
   protected abstract void addBinders();
 
   /**
@@ -216,5 +226,4 @@ public abstract class AgentBase
     ois.defaultReadObject();
     createLogger();
   }
-
-}
+} // end of AgentBase

@@ -24,7 +24,10 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.Collection;
 import java.util.Iterator;
+
 import org.cougaar.core.component.ComponentDescription;
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.core.cdata.ComponentConnector;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
@@ -39,18 +42,22 @@ import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.society.AgentBase;
 import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.util.log.Logger;
 
+/**
+ * Basic component to hold the definition of a society
+ * read in from Files.
+ */
 public class AgentFileComponent
   extends AgentBase
   implements AgentComponent {
 
   private transient Logger log;
-  private String filename;
+  private String filename; // that defines this agent
+
   /**
    * Creates a new <code>AgentFileComponent</code> instance.
    *
-   * @param name Name of the new Component
+   * @param name Name of the new Component, from which the file is derived
    * @param classname Classname for the agent
    */
   public AgentFileComponent(String name, String classname) {

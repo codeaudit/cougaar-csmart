@@ -39,6 +39,9 @@ import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 
+/**
+ * Basic component for editing and defining Agents from within the UI.
+ */
 public class AgentUIComponent
   extends AgentBase
   implements AgentComponent {
@@ -64,7 +67,23 @@ public class AgentUIComponent
   }
 
   // FIXME: What should these do???
-  protected void addAssetData() {}
-  protected void addPlugins() {}
-  protected void addBinders() {}
-}
+  protected void addAssetData() {
+    // add asset data components
+//     BaseComponent asset = 
+//       (BaseComponent)new AssetUIComponent();
+//     asset.initProperties();
+//     addChild(asset);
+  }
+
+  protected void addPlugins() {
+//     ContainerBase container = new ContainerBase("Binders");
+//     container.initProperties();
+//     addChild(container);
+  }
+
+  protected void addBinders() {
+//     ContainerBase container = new ContainerBase("Binders");
+//     container.initProperties();
+//     addChild(container);
+  }
+} // end of AgentUIComponent

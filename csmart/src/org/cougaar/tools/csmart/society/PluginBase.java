@@ -28,9 +28,8 @@ import org.cougaar.tools.csmart.core.property.PropertyAlias;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
- * PluginBase.java
+ * PluginBase handles basic properties, adding componentData, etc for most Societies.
  */
-
 public class PluginBase
   extends ModifiableConfigurableComponent 
   implements PluginComponent {
@@ -64,10 +63,11 @@ public class PluginBase
   }
 
   /**
-   * Adds this component to the ComponentData structure.
+   * Adds this component to the ComponentData structure. Must hand it
+   * the Node/Agent into which you want to add this Plugin.
    *
-   * @param data 
-   * @return a <code>ComponentData</code> value
+   * @param data to contain this Plugin
+   * @return a <code>ComponentData</code>, now modified
    */
   public ComponentData addComponentData(ComponentData data) {
     // Warning: This assumes it has been handed the component in
@@ -159,5 +159,4 @@ public class PluginBase
   public Property addParameter(Property prop) {
     return addProperty(new PropertyAlias(this, PROP_PARAM + nParameters++, prop));
   }
-
-}
+} // End of PluginBase
