@@ -1041,7 +1041,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     // FIXME: What about if orig Experiment had Agents assigned to a Node
     // that was not assigned to a host - is that mapping lost?
     // I think so. So we need to maybe keep track of which Nodes we updated just now
-    for (int i = 0; i < nnnodes.length; i++) {
+    for (int i = 0; i < nnodes.length; i++) {
       if (! nNodesCopied.contains(nnodes[i])) {
 	// We may need to copy the old node-agent mapping onto this new node
 	if (log.isDebugEnabled()) {

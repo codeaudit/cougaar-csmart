@@ -383,8 +383,8 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.println("cloned = false");
       writer.println();
       writer.println("[ Plugins ]");
-      writer.println("# Note, this society may not run because OrtRTDataPlugin may");
-      writer.println("# have been changed to OrgDataPlugin");
+      writer.println("# Note, this society may not run correctly because OrtRTDataPlugin may");
+      writer.println("# have been changed to OrgDataPlugin on loading from INI files");
       // loop over the children - but what if one is not a PLUGIN?
       // This does no type checking, and writes out all the children here
 //       if(log.isDebugEnabled()) {
