@@ -1166,7 +1166,8 @@ public class OrganizerHelper {
   protected SocietyComponent createSocietyFromFile() {
     // display file chooser to allow user to select file that defines society
     JFileChooser chooser = 
-      new JFileChooser(SocietyFinder.getInstance().getPath());
+      new JFileChooser(System.getProperty("org.cougaar.install.path"));
+    chooser.setDialogTitle("Select directory of Agent INI files or a single Node INI to load");
     chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
     File file = null;
     SocietyComponent sc = null;
@@ -1175,7 +1176,10 @@ public class OrganizerHelper {
       if (result != JFileChooser.APPROVE_OPTION)
 	return null;
       file = chooser.getSelectedFile();
+      if (file != null && ! file.canRead())
+	file = null;
     }
+
     // create society from agent files or single node file
     String name = "";
     name = file.getName();
