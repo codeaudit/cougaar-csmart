@@ -21,6 +21,8 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
@@ -175,6 +177,13 @@ public class CMTDialog extends JDialog {
     panel.add(buttonPanel, BorderLayout.SOUTH);
     getContentPane().add(panel);
     pack();
+    // make dialog display over the middle of the caller's frame
+    Point p = parent.getLocation();
+    Dimension d = parent.getSize();
+    int centerX = p.x + d.width/2;
+    int centerY = p.y + d.height/2;
+    Dimension myD = getSize();
+    setLocation(new Point(centerX - myD.width/2, centerY - myD.height/2));
     setVisible(true);
   }
 
@@ -239,13 +248,13 @@ public class CMTDialog extends JDialog {
 
   private boolean cloneExperiment() {
     // ask user to confirm cloning experiment
-    int result = JOptionPane.showConfirmDialog(this,
-                                               "Modify Experiment",
-                                               "Modify Experiment?",
-                                               JOptionPane.YES_NO_OPTION,
-                                               JOptionPane.QUESTION_MESSAGE);
-    if (result == JOptionPane.NO_OPTION)
-      return false;
+//      int result = JOptionPane.showConfirmDialog(this,
+//                                                 "Modify Experiment",
+//                                                 "Modify Experiment?",
+//                                                 JOptionPane.YES_NO_OPTION,
+//                                                 JOptionPane.QUESTION_MESSAGE);
+//      if (result == JOptionPane.NO_OPTION)
+//        return false;
     // if experiment name is in the database, then ask user for new name
     if (ExperimentDB.isExperimentNameInDatabase(experimentName)) {
       String name = organizer.getUniqueExperimentName(experimentName);

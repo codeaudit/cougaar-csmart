@@ -150,10 +150,6 @@ public class ULPlanFrame extends CSMARTFrame {
       if (!graph.isNodeSelected())
 	return;
       CSMARTGraph newGraph = graph.newGraphFromSelection();
-      // TODO: can't copy filter here; filter is set with
-      // values for the NEXT graph to be created, not with
-      // the values used to create the current graph, which is what you need
-      //
       new ULPlanFrame(NamedFrame.PLAN, newGraph, filter.copy());
       return;
     }
@@ -204,8 +200,13 @@ public class ULPlanFrame extends CSMARTFrame {
     }
 
     // filter menu item is declared in base CSMARTFrame class
+    // by copying the filter here, if the user
+    // creates a new graph from the filter, then the new graph
+    // correctly gets the new filter, and this graph retains
+    // the unaltered filter
     if (command.equals(FILTER_MENU_ITEM)) {
-      filter.postFilter(this, graph);
+      ULPlanFilter filterCopy = filter.copy();
+      filterCopy.postFilter(this, graph);
       return;
     }
 

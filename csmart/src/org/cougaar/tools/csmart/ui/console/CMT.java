@@ -21,13 +21,14 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.HashMap;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -202,11 +203,11 @@ public class CMT {
      * the values are experiment ids (Strings).
      */
 
-    public static Map getExperimentNames() {
+    public static SortedMap getExperimentNames() {
 	return queryHT("getExperimentNames",new HashMap());
     }
 
-    public static Map getTrialNames(String experiment_id) {
+    public static SortedMap getTrialNames(String experiment_id) {
 	return queryHT("getTrialNames",addSubs(new HashMap(),":experiment_id",experiment_id));
     }
 
@@ -318,11 +319,11 @@ public class CMT {
      * Returns Map of all society templates in database.
      */
 
-    public static Map getSocietyTemplates() {
+    public static SortedMap getSocietyTemplates() {
 	return queryHT("getSocietyTemplates",new HashMap());
     }
 
-    public static Map getOrganizationGroups(String experiment_id) {
+    public static SortedMap getOrganizationGroups(String experiment_id) {
 	Map subs = new HashMap();
 	subs.put(":experiment_id",experiment_id);
 	return queryHT("getOrganizationGroups",subs);
@@ -727,12 +728,12 @@ public class CMT {
 
 
 
-    public static Map queryHT(String query, Map substitutions){
+    public static SortedMap queryHT(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-
+        Connection conn = null;
 	Map ht = new TreeMap();
 	try {
-	    Connection conn = getConnection();
+	    conn = getConnection();
 	    try {
 		Statement stmt = conn.createStatement();	
 		ResultSet rs = stmt.executeQuery(dbQuery);
@@ -742,6 +743,7 @@ public class CMT {
 		rs.close();
 		stmt.close();
 	    } finally {
+              if (conn != null)
 		conn.close();
 	    }
 
@@ -750,7 +752,7 @@ public class CMT {
 	    e.printStackTrace();
 	    throw new RuntimeException("Error" + e);
 	}
-	return ht;
+	return (SortedMap)ht;
     }
 
 

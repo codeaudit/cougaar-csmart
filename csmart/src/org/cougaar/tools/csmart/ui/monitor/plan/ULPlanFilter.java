@@ -128,8 +128,10 @@ public class ULPlanFilter {
    */
 
   public ULPlanFilter copy() {
-    return new ULPlanFilter(communityToAgents, showObjectTypes,
-			    hideObjectTypes, ignoreObjectTypes);
+    return new ULPlanFilter(communityToAgents, 
+                            (Vector)showObjectTypes.clone(),
+			    (Vector)hideObjectTypes.clone(), 
+                            (Vector)ignoreObjectTypes.clone());
   }
 
   /**

@@ -52,6 +52,7 @@ import org.cougaar.tools.csmart.ui.component.ComponentProperties;
 import org.cougaar.tools.csmart.ui.component.HostComponent;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.ui.console.ExperimentDB;
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
@@ -576,9 +577,25 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       enableConsoleTool(false);
       return;
     }
+    // don't run the experiment if it's no longer in the database
+    // the editable and runnable flags are "lazily" set
+    // when experiments are deleted from the database, we don't try to
+    // delete them from the workspace
+    String experimentName = experiment.getExperimentName();
+    if (!ExperimentDB.isExperimentNameInDatabase(experimentName)) {
+      experiment.setEditable(false);
+      experiment.setRunnable(false);
+      JOptionPane.showMessageDialog(this,
+                                    "Experiment " + experimentName +
+                      " is not runnable because it is not in the database.",
+                                    "Experiment Not Runnable",
+                                    JOptionPane.WARNING_MESSAGE);
+      enableConsoleTool(false);
+      return;
+    }
     console = (CSMARTConsole)createNewTool("Experiment Controller",
 					   CSMARTConsole.class, 
-					   experiment.getExperimentName(),
+					   experimentName,
 					   experiment, null, null);
   }
 

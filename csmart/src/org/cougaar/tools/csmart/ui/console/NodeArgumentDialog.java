@@ -29,6 +29,9 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Vector;
 
+// TODO: add listeners to the table so that we can detect a change
+// without the user having to enter a carriage-return
+
 public class NodeArgumentDialog extends JDialog {
   JTable argTable;
   NodeArgumentTableModel nodeArgTableModel;
@@ -36,7 +39,7 @@ public class NodeArgumentDialog extends JDialog {
   ArrayList values;
 
   public NodeArgumentDialog() {
-
+    super((Frame)null, true); // display modal dialog
     JPanel nodeArgPanel = new JPanel(new BorderLayout());
     // ok and cancel buttons panel
     JPanel buttonPanel = new JPanel();
@@ -63,7 +66,7 @@ public class NodeArgumentDialog extends JDialog {
     // don't allow user to reorder columns
     argTable.getTableHeader().setReorderingAllowed(false);
     argTable.setColumnSelectionAllowed(false);
-    argTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+    argTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     JScrollPane scrollPane = new JScrollPane(argTable);
     tablePanel.setLayout(new BorderLayout());
     tablePanel.add(scrollPane, BorderLayout.CENTER);

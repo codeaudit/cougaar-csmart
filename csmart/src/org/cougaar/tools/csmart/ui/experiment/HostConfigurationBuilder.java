@@ -657,6 +657,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     //    setRunButtonEnabled();
   }
 
+  // create a new node component in either the host or nodes tree
   private void newNodeInTree(JTree tree) {
     TreePath path = tree.getSelectionPath();
     if (path == null) {
@@ -997,7 +998,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   /**
-   * Helper method to set vaue of property of selected node in specified tree.
+   * Helper method to set value of property of selected node in specified tree.
    */
 
   private void setPropertyOfNode(JTree tree, String name, String value) {
@@ -1082,6 +1083,33 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
     dialog.setArguments(names, values);
     dialog.setVisible(true);
+    ArrayList newNames = dialog.getNodeArgumentNames();
+    ArrayList newValues = dialog.getNodeArgumentValues();
+    i = component.getPropertyNames();
+    while (i.hasNext()) {
+      CompositeName name = (CompositeName)i.next();
+      if (!newNames.contains(name)) {
+        System.out.println("Remove: " + name);
+        // TODO: remove property
+      }
+    }
+    for (int j = 0; j < names.size(); j++) {
+      Object newName = newNames.get(j);
+      if (newName instanceof CompositeName) {
+        System.out.println("Existing name: " + newName);
+        // existing name, check if user changed value
+        Property p = component.getProperty((CompositeName)newName);
+        Object value = p.getValue();
+        Object newValue = newValues.get(j);
+        if (value != newValue) {
+          System.out.println("Setting new value: " + newValue);
+          p.setValue(newValue); 
+        }
+      } else { // newName is a string, it must be a new name
+        System.out.println("Adding new property: " + newName + " " + newValues.get(j));
+        component.addProperty((String)newName, newValues.get(j));
+      }
+    }
   }
 
   /**

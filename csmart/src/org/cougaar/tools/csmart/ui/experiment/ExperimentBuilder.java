@@ -45,6 +45,7 @@ public class ExperimentBuilder extends JFrame {
   private UnboundPropertyBuilder propertyBuilder;
   private HostConfigurationBuilder hostConfigurationBuilder;
   private TrialBuilder trialBuilder;
+  private ThreadBuilder threadBuilder;
 
   private Action helpAction = new AbstractAction(HELP_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
@@ -105,7 +106,10 @@ public class ExperimentBuilder extends JFrame {
       new HostConfigurationBuilder(experiment, csmart);
     tabbedPane.add("Configurations", hostConfigurationBuilder);
     // only display trial builder for non-database experiments
-    if (!experiment.isInDatabase()) {
+    if (experiment.isInDatabase()) {
+      threadBuilder = new ThreadBuilder(experiment);
+      tabbedPane.add("Threads", threadBuilder);
+    } else {
       trialBuilder = new TrialBuilder(experiment);
       tabbedPane.add("Trials", trialBuilder);
     }
@@ -114,7 +118,7 @@ public class ExperimentBuilder extends JFrame {
     experiment.setRunnable(false); // not runnable when editing it
     getContentPane().add(tabbedPane);
     pack();
-    setSize(450, 400);
+    setSize(650, 400);
 
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
@@ -156,16 +160,26 @@ public class ExperimentBuilder extends JFrame {
     propertyBuilder.reinit(experiment);
     hostConfigurationBuilder.reinit(experiment);
     // only display trial builder for non-database experiments
+    // only display thread builder for database experiments
     if (experiment.isInDatabase()) {
       if (trialBuilder != null) {
         tabbedPane.remove(trialBuilder);
         trialBuilder = null;
-      } else {
-        if (trialBuilder == null) {
-          trialBuilder = new TrialBuilder(experiment);
-          tabbedPane.add("Trials", trialBuilder);
-        } else
-          trialBuilder.reinit(experiment);
+      }
+      if (threadBuilder == null) {
+        threadBuilder = new ThreadBuilder(experiment);
+        tabbedPane.add("Threads", threadBuilder);
+      } else
+        threadBuilder.reinit(experiment);
+    } else {
+      if (trialBuilder == null) {
+        trialBuilder = new TrialBuilder(experiment);
+        tabbedPane.add("Trials", trialBuilder);
+      } else
+        trialBuilder.reinit(experiment);
+      if (threadBuilder != null) {
+        tabbedPane.remove(threadBuilder);
+        threadBuilder = null;
       }
     }
     experiment.setEditable(false);

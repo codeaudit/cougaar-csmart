@@ -104,8 +104,6 @@ public class Organizer extends JScrollPane {
   private JPopupMenu experimentMenu = new JPopupMenu();
   private JPopupMenu treeMenu = new JPopupMenu();
   private JPopupMenu rootMenu = new JPopupMenu();
-  private Map experimentNamesHT = null;
-  private Object sharedObject = new Object();
   
   // Define actions for use on menus
   private Action[] rootAction = {
@@ -129,6 +127,23 @@ public class Organizer extends JScrollPane {
 	  renameWorkspace();
 	}
       },
+    new AbstractAction("Delete Experiment From Database") {
+      public void actionPerformed(ActionEvent e) {
+        GUIUtils.timeConsumingTaskStart(organizer);
+        try {
+          new Thread("DeleteExperiment") {
+            public void run() {
+              deleteExperimentFromDatabase();
+              GUIUtils.timeConsumingTaskEnd(organizer);
+            }
+          }.start();
+        } catch (RuntimeException re) {
+          System.out.println("Runtime exception deleting experiment: " + re);
+          re.printStackTrace();
+          GUIUtils.timeConsumingTaskEnd(organizer);
+        }
+      }
+    }
   };
   private Action[] newExperimentActions = {
     new AbstractAction("From Database") {
@@ -491,7 +506,7 @@ public class Organizer extends JScrollPane {
   public RecipeComponent[] getSelectedRecipes() {
     return (RecipeComponent[]) getSelectedLeaves(RecipeComponent.class);
   }
- 
+    
   public Experiment[] getSelectedExperiments() {
     return (Experiment[]) getSelectedLeaves(Experiment.class);
   }
@@ -849,35 +864,6 @@ public class Organizer extends JScrollPane {
   }
 
   /**
-   * Return names of experiment from database.
-   */
-
-//    private Collection getExperimentNamesFromDB() {
-//      ArrayList tmpNames = new ArrayList(10);
-//      Map substitutions = new HashMap();
-
-//      try {
-//        substitutions.put(":assembly_type", "CMT");
-//        Connection conn = DBUtils.getConnection();
-//        Statement stmt = conn.createStatement();
-//        String query = DBUtils.getQuery(EXPT_DESC_QUERY, substitutions);
-//        ResultSet rs = stmt.executeQuery(query);
-//        while(rs.next()) {
-//          String exptID = rs.getString(1);
-//          String description = rs.getString(2);
-//          if(description != null && exptID != null) {
-//            dbExptMap.put(description, exptID);
-//            tmpNames.add(description);
-//          }
-//        }
-//        rs.close();
-//        stmt.close();
-//        conn.close();
-//      } catch (SQLException se) {}   
-//      return tmpNames;
-//    }
-
-  /**
    * Create a new society.
    */
 
@@ -1103,7 +1089,7 @@ public class Organizer extends JScrollPane {
       componentNames.remove(component.getShortName());
     }
   }
-  
+
   private void newRecipe(DefaultMutableTreeNode node) {
     Object[] values = metComboItems;
     Object answer =
@@ -1320,14 +1306,9 @@ public class Organizer extends JScrollPane {
 
   // CAUTION: this runs in a non-swing thread
   private void selectExperimentFromDatabase(DefaultMutableTreeNode node) {
-    experimentNamesHT = ExperimentDB.getExperimentNames();
-    if (experimentNamesHT == null) {
-      return;
-    }
-    Set dbExperimentNames = experimentNamesHT.keySet();
-    if (dbExperimentNames == null)
-      return;
-    JComboBox cb = new JComboBox(dbExperimentNames.toArray());
+    Map experimentNamesMap = ExperimentDB.getExperimentNames();
+    Set keys = experimentNamesMap.keySet();
+    JComboBox cb = new JComboBox(keys.toArray(new String[keys.size()]));
     cb.setEditable(false);
     JPanel panel = new JPanel();
     panel.add(new JLabel("Select Experiment:"));
@@ -1339,7 +1320,7 @@ public class Organizer extends JScrollPane {
     if (result != JOptionPane.OK_OPTION)
       return;
     String experimentName = (String)cb.getSelectedItem();
-    String experimentId = (String)experimentNamesHT.get(experimentName);
+    String experimentId = (String)experimentNamesMap.get(experimentName);
     // produce an unique name for CSMART if necessary
     if (experimentNames.contains(experimentName)) {
       experimentName = 
@@ -1357,6 +1338,26 @@ public class Organizer extends JScrollPane {
       return;
     createCMTExperiment(node, dialog.getExperimentName(),
                         dialog.getExperimentId(), trialId, dialog.isCloned());
+  }
+
+  // CAUTION: this runs in a non-swing thread
+  private void deleteExperimentFromDatabase() {
+    Map experimentNamesMap = ExperimentDB.getExperimentNames();
+    Set keys = experimentNamesMap.keySet();
+    JComboBox cb = new JComboBox(keys.toArray(new String[keys.size()]));
+    cb.setEditable(false);
+    JPanel panel = new JPanel();
+    panel.add(new JLabel("Delete Experiment:"));
+    panel.add(cb);
+    int result = 
+      JOptionPane.showConfirmDialog(null, panel, "Delete Experiment",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.PLAIN_MESSAGE);
+    if (result != JOptionPane.OK_OPTION)
+      return;
+    String experimentName = (String)cb.getSelectedItem();
+    String experimentId = (String)experimentNamesMap.get(experimentName);
+    ExperimentDB.deleteExperiment(experimentId);
   }
 
   /**
@@ -1547,7 +1548,6 @@ public class Organizer extends JScrollPane {
 
   private List checkForRecipes(String trialId, String exptId) {
     List recipeList = new ArrayList();
-
     try {
       Connection conn = DBUtils.getConnection();
       Map substitutions = new HashMap();
@@ -1850,8 +1850,23 @@ public class Organizer extends JScrollPane {
                                       "Delete Experiment From Database",
                                       JOptionPane.YES_NO_OPTION,
                                       JOptionPane.WARNING_MESSAGE);
-      if (result == JOptionPane.YES_OPTION)
-        ExperimentDB.deleteExperiment(experiment.getExperimentID());
+      if (result != JOptionPane.YES_OPTION)
+        return;
+
+      final String id = experiment.getExperimentID();
+      GUIUtils.timeConsumingTaskStart(organizer);
+      try {
+        new Thread("DeleteExperiment") {
+          public void run() {
+            ExperimentDB.deleteExperiment(id);
+            GUIUtils.timeConsumingTaskEnd(organizer);
+          }
+        }.start();
+      } catch (RuntimeException re) {
+        System.out.println("Runtime exception deleting experiment: " + re);
+        re.printStackTrace();
+        GUIUtils.timeConsumingTaskEnd(organizer);
+      }
     }
   }
   
@@ -2159,7 +2174,26 @@ public class Organizer extends JScrollPane {
     // context is the tree node of the folder containing the experiment
     // Fixme: if make Experiment hold everything in properties, then can
     // use the Component copy method
-    Experiment experimentCopy = experiment.copy(this, context);
+    final Experiment experimentCopy = experiment.copy(this, context);
+    // if the experiment was from a database, then save copy in the database
+    // if the copy isn't modified, this is the only place it's put in the
+    // database and hence made runnable
+    if (experiment.isInDatabase()) {
+      experimentCopy.setCloned(false);
+      GUIUtils.timeConsumingTaskStart(organizer);
+      try {
+        new Thread("DuplicateExperiment") {
+            public void run() {
+              experimentCopy.saveToDb();
+              GUIUtils.timeConsumingTaskEnd(organizer);
+            }
+          }.start();
+      } catch (RuntimeException re) {
+        System.out.println("Runtime exception duplicating experiment: " + re);
+        re.printStackTrace();
+        GUIUtils.timeConsumingTaskEnd(organizer);
+      }
+    }
     if (context == null)
       // add copy as sibling of original
       workspace.setSelection(addExperimentToWorkspace(experimentCopy,
