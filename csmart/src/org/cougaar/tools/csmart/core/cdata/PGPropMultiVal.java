@@ -40,7 +40,7 @@ public class PGPropMultiVal implements Serializable {
    *
    */
   public PGPropMultiVal() {
-    values = new ArrayList();
+    this.values = new ArrayList();
   }
 
   /**
@@ -49,11 +49,11 @@ public class PGPropMultiVal implements Serializable {
    * @param Object[] array of values
    */
   public void setValues(Object[] newValues) {
-    values.clear();
+    this.values.clear();
     for(int i=0; i < newValues.length; i++) {
       // check that newValues[i] one of String or ArgValue??
       // FIXME!!
-      values.add(newValues[i]);
+      this.values.add(newValues[i]);
     }
   }
 
