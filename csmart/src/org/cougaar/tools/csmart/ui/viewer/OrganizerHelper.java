@@ -45,6 +45,8 @@ import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.recipe.ComplexRecipeBase;
+import org.cougaar.tools.csmart.recipe.ComplexRecipeComponent;
+import org.cougaar.tools.csmart.recipe.ComponentCollectionRecipe;
 import org.cougaar.tools.csmart.recipe.RecipeBase;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
@@ -830,7 +832,7 @@ public class OrganizerHelper {
         query = DBUtils.getQuery("queryRecipe", substitutions);
         ResultSet rs = stmt.executeQuery(query);
         if (rs.next()) {
-          if(isComplexRecipe(conn, substitutions)) {
+          if(isComplexRecipe(rs.getString(4))) {
             if(log.isDebugEnabled()) {
               log.debug("Creating Complex Recipe from Database");
             }
@@ -863,7 +865,6 @@ public class OrganizerHelper {
               }
               return null;
             }
-//             new ComplexRecipeBase(rs.getString(2), getRecipeAssembly(conn, substitutions));
             rc.initProperties();
             return rc;
           } else {
@@ -904,33 +905,13 @@ public class OrganizerHelper {
     return rc;
   }
 
-  private boolean isComplexRecipe(Connection conn, Map substitutions) {
+  private boolean isComplexRecipe(String desc) {
     boolean retVal = false;
-    try {
-      Statement stmt = conn.createStatement();
-      try {
-        String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
-        ResultSet rs = stmt.executeQuery(query);
-        
-        // Relys on the fact that a complex recipe will only have 1 parameter
-        // in the Recipe Args table.
-        if(rs.next()) {
-          if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
-            retVal = true;
-          }
-        }
-          rs.close();
-          stmt.close();
-      } catch(SQLException sqle) {
-        if(log.isErrorEnabled()) {
-          log.error("SQLException checking recipe type", sqle);
-        }
-      }
-    } catch (SQLException sqe) {
-      if(log.isErrorEnabled()) {
-        log.error("SQLException checking recipe type", sqe);
-      }
+
+    if(desc.equals(PDbBase.COMPLEX_RECIPE_DESC)) {
+      retVal = true;
     }
+
     return retVal;
   }
 
@@ -943,12 +924,10 @@ public class OrganizerHelper {
         String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
         ResultSet rs = stmt.executeQuery(query);
         
-        // Relys on the fact that a complex recipe will only have 1 parameter
-        // in the Recipe Args table.
-        if(rs.next()) {
-      if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
-        assemblyId = rs.getString(2);
-      }
+        while(rs.next()) {
+          if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
+            assemblyId = rs.getString(2);
+          }
         }
         rs.close();
       } catch(SQLException sqle) {
