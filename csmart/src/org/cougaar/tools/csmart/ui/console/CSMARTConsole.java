@@ -386,7 +386,10 @@ public class CSMARTConsole extends JFrame {
     buttonPanel.add(new JLabel("Node Status"));
     buttonPanel.add(Box.createRigidArea(HGAP10));
     buttonPanel.add(Box.createRigidArea(VGAP30));
-    panel.add(buttonPanel,
+    JScrollPane jsp = new JScrollPane(buttonPanel);
+    // ensure the layout leaves space for the scrollbar
+    jsp.setMinimumSize(new Dimension(100, 50));
+    panel.add(jsp,
 	      new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
 				     GridBagConstraints.WEST,
 				     GridBagConstraints.HORIZONTAL,
@@ -1168,7 +1171,7 @@ public class CSMARTConsole extends JFrame {
        e.printStackTrace();
        return false;
     }
-    
+
     // only add gui controls if successfully created node
     addStatusButton(statusButton);
     desktop.addNodeFrame(nodeComponent, 
