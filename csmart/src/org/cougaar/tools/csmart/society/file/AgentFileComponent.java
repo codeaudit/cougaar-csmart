@@ -44,6 +44,7 @@ import org.cougaar.tools.csmart.society.AgentBase;
 import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.society.ComponentBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
 
 /**
  * Basic component to hold the definition of a society
@@ -78,8 +79,11 @@ public class AgentFileComponent
   protected void addAssetData() {
     String assetFile = filename.substring(0, filename.indexOf('.'));
     assetFile = assetFile + "-prototype-ini.dat";
+    if (log.isDebugEnabled()) {
+      log.debug("Trying asset file " + assetFile);
+    }
     // Check to see if the file exists before we do anything!
-    if(ConfigFinder.getInstance().locateFile(assetFile) != null) {
+    if(SocietyFinder.getInstance().locateFile(assetFile) != null) {
       BaseComponent asset = 
         (BaseComponent)new AssetFileComponent(filename, getShortName());
       asset.initProperties();
@@ -103,9 +107,9 @@ public class AgentFileComponent
     for (int i=0; i < desc.length; i++) {
       String name = desc[i].getName();
       String insertionPoint = desc[i].getInsertionPoint();
-      if(log.isDebugEnabled()) {
-        log.debug("Insertion Point: " + insertionPoint);
-      }
+//       if(log.isDebugEnabled()) {
+//         log.debug("Insertion Point: " + insertionPoint);
+//       }
 
       if(insertionPoint.endsWith("Plugin")) {
         if(log.isDebugEnabled()) {
@@ -141,9 +145,9 @@ public class AgentFileComponent
     for (int i=0; i < desc.length; i++) {
       String name = desc[i].getName();
       String insertionPoint = desc[i].getInsertionPoint();
-      if(log.isDebugEnabled()) {
-        log.debug("Insertion Point: " + insertionPoint);
-      }
+//       if(log.isDebugEnabled()) {
+//         log.debug("Insertion Point: " + insertionPoint);
+//       }
 
       if(insertionPoint.endsWith("Binder")) {
         if(log.isDebugEnabled()) {
@@ -181,9 +185,9 @@ public class AgentFileComponent
     for (int i=0; i < desc.length; i++) {
       String name = desc[i].getName();
       String insertionPoint = desc[i].getInsertionPoint();
-      if(log.isDebugEnabled()) {
-        log.debug("Insertion Point: " + insertionPoint);
-      }
+//       if(log.isDebugEnabled()) {
+//         log.debug("Insertion Point: " + insertionPoint);
+//       }
 
       if(! insertionPoint.endsWith(".Binder") && ! insertionPoint.endsWith(".Plugin")) {
         if(log.isDebugEnabled()) {
