@@ -57,7 +57,7 @@ public class PropertyAlias extends PropertyBase implements Property, PropertyLis
   }
 
   public void setLabel(String label) {
-    setLabel(label);
+    prop.setLabel(label);
   }
 
   public void setDefaultValue(Object defaultValue) {
