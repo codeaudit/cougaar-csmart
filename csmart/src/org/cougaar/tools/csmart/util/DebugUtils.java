@@ -51,18 +51,16 @@ public class DebugUtils {
   private static String createDump() {
     StackTraceElement[] ste = new Throwable().getStackTrace();
     StringBuffer msg = new StringBuffer();
-    synchronized(msg) {
-      msg.append("Stack Trace: \n");
-      for(int i=2; i < ste.length; i++) {
-        msg.append("  " + ste[i].getClassName());
-        msg.append(".");
-        msg.append(ste[i].getMethodName());
+    msg.append("Stack Trace: \n");
+    for(int i=2; i < ste.length; i++) {
+      msg.append("  " + ste[i].getClassName());
+      msg.append(".");
+      msg.append(ste[i].getMethodName());
         msg.append("(");
         msg.append(ste[i].getLineNumber());
         msg.append(")\n");
-      }
     }
-    
+
     return msg.substring(0);
   }
 
