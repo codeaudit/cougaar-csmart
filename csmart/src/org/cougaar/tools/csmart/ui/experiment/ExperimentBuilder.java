@@ -45,8 +45,6 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   protected static final String HELP_MENU_ITEM = "About Experiment Builder";
   private Experiment experiment;
   private CSMART csmart;
-  private boolean isEditable;
-  private boolean isRunnable;
   private JTabbedPane tabbedPane;
   private UnboundPropertyBuilder propertyBuilder;
   private HostConfigurationBuilder hostConfigurationBuilder;
@@ -91,8 +89,6 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   public ExperimentBuilder(CSMART csmart, Experiment experiment) {
     this.csmart = csmart;
     setExperiment(experiment);
-    isEditable = experiment.isEditable();
-    isRunnable = experiment.isRunnable();
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
     JMenu fileMenu = new JMenu(FILE_MENU);
@@ -122,8 +118,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
       tabbedPane.add("Trials", trialBuilder);
     }
     // after starting all the editors, set experiment editability to false
-    experiment.setEditable(false);
-    experiment.setRunnable(false); // not runnable when editing it
+    experiment.setEditInProgress(true);
     getContentPane().add(tabbedPane);
     pack();
     setSize(650, 400);
@@ -154,10 +149,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     saveSilently(); // if experiment from database was modified, save it
     // before exiting, restore experiment's and society's editability
     // FIXME Restore on society!!!!
-    if (isEditable) 
-      experiment.setEditable(isEditable);
-    if (isRunnable)
-      experiment.setRunnable(isRunnable);
+    experiment.setEditInProgress(false);
     // If the experiment now has a society and is otherwise runnable, say so
     if (experiment.getSocietyComponentCount() > 0)
       experiment.setRunnable(true);
@@ -173,13 +165,8 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   public void reinit(Experiment newExperiment) {
     saveSilently();
     // restore editable flag on previous experiment
-    if (isEditable) 
-      experiment.setEditable(isEditable);
-    if (isRunnable)
-      experiment.setRunnable(isRunnable);
+    experiment.setEditInProgress(false);
     experiment = newExperiment;
-    isEditable = newExperiment.isEditable();
-    isRunnable = newExperiment.isRunnable();
     propertyBuilder.reinit(experiment);
     hostConfigurationBuilder.reinit(experiment);
     // only display trial builder for non-database experiments
@@ -205,8 +192,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
         threadBuilder = null;
       }
     }
-    experiment.setEditable(false);
-    experiment.setRunnable(false);
+    experiment.setEditInProgress(true);
   }
 
   /**

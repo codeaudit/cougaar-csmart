@@ -1,3 +1,24 @@
+2001-11-20  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ExperimentBuilder.java:
+	Don't manipulate the editable and runnable flags of an experiment;
+	that constitutes a change of the experiment and merely starting to
+	edit the the experiment shouldn't be a change per se. Instead, set
+	the "editInProgress" flag of the experiment to suppress attempts
+	to run the experiment or edit it a second time.
+
+	* Experiment.java:
+	Add "editInProgress" variable so that editability and runnablility
+	can be suppressed without actually setting the runnable or
+	editable flags. Also, fireModification() when changing the
+	editable and runnable flags so the changes get written to the
+	workspace file.
+
+	* HostConfigurationBuilder.java:
+	Detect changes to node args and set modified accordingly. Handle
+	restoration of default value by removing node-specific value.
+	Disallow empty string argument name.
+
 2001-11-19  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* HostConfigurationBuilder.java:

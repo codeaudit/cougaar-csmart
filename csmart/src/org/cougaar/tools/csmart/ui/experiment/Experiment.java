@@ -64,6 +64,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private boolean editable = true;
   private boolean runnable = true;
   private boolean cloned = false;
+  private transient boolean editInProgress = false;
 
   private String expID = null; // An Experiment has a single ExpID
   private String trialID = null;
@@ -223,6 +224,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return getShortName();
   }
 
+  public void setEditInProgress(boolean newEditInProgress) {
+    editInProgress = newEditInProgress;
+  }
+
   /**
    * Returns true if experiment is editable: 
    * it is not being edited, 
@@ -233,7 +238,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @return true if experiement is editable, false otherwise
    */
   public boolean isEditable() {
-    if (editable) {
+    if (editable && !editInProgress) {
       // make sure that societies are editable too
       // FIXME: Really? What if one component is never editable?
 //        for (int i = 0; i < getComponentCount(); i++)
@@ -249,9 +254,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @param editable true if experiment is editable and false otherwise
    */
   public void setEditable(boolean editable) {
+    if (editable == this.editable) return;
     this.editable = editable;
+    System.err.println("new editable " + editable);
+    Thread.dumpStack();
     for (int i = 0; i < getComponentCount(); i++)
       getComponent(i).setEditable(editable);
+    fireModification();
   }
 
   /**
@@ -269,7 +278,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       return false;
     }
     //System.err.println("Experiment.isRunnable returning: " + runnable);
-    return runnable;
+    return runnable && !editInProgress;
   }
 
   /**
@@ -278,7 +287,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @param runnable whether or not an experiment is runnable
    */
   public void setRunnable(boolean runnable) {
+    if (runnable == this.runnable) return;
     this.runnable = runnable;
+    fireModification();
   }
 
   /**
@@ -437,6 +448,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   public void modified(ModificationEvent e) {
     fireModification();
+  }
+
+  protected void fireModification() {
+    Thread.dumpStack();
+    super.fireModification();
   }
 
   public HostComponent addHost(String name) {
