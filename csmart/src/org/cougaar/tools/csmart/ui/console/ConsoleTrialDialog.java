@@ -34,6 +34,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 
 public class ConsoleTrialDialog extends JDialog {
+  // thread names displayed for user
   private static final String[] ULThreads = {
     "Subsistence (Class 1)",
     "Fuel (Class 3)",
@@ -41,72 +42,104 @@ public class ConsoleTrialDialog extends JDialog {
     "Ammunition (Class 5)",
     "Spare Parts (Class 9)"
   };
+  // thread names passed to database
+  private static final String[] ULDBThreads = {
+    "CLASS-1", "CLASS-3", "CLASS-4", "CLASS-5", "CLASS-9"
+  };
   private String experimentId;
-  private ArrayList trialNames;
+  //  private ArrayList trialNames;
   private String[] groupNames;
   private ArrayList groupCheckBoxes = new ArrayList();
   private ArrayList ULThreadCheckBoxes = new ArrayList();
   private ArrayList multiplierFields = new ArrayList();
-  private JRadioButton trialSelectionButton;
-  private JRadioButton trialCreationButton;
-  private JComboBox trialComboBox;
-  private JTextField newTrialField;
+  //  private JRadioButton trialSelectionButton;
+  //  private JRadioButton trialCreationButton;
+  //  private JComboBox trialComboBox;
+  //  private JTextField newTrialField;
   private String trialName;
+  private String trialId;
+  private ArrayList originalThreadSelected = new ArrayList();
+  private ArrayList originalGroupSelected = new ArrayList();
+  private ArrayList originalGroupMultiplier = new ArrayList();
 
-  public ConsoleTrialDialog(String experimentId, ArrayList trialNames) {
-    super((java.awt.Frame)null, "Trial", true); // modal dialog
+  public ConsoleTrialDialog(JFrame parent, String experimentId) {
+    super(parent, "Threads and Groups", true); // modal dialog
+    // for debugging
+    Hashtable dbExperimentNames = ExperimentDB.getExperimentNames();
+    Set expKeys = dbExperimentNames.keySet();
+    Object[] dbExpKeys = expKeys.toArray();
+    for (int i = 0; i < dbExpKeys.length; i++) 
+      System.out.println("Experiment Name: " + dbExpKeys[i] + 
+                         " Experiment id: " + dbExperimentNames.get(dbExpKeys[i]));
+    Hashtable dbTNames = ExperimentDB.getTrialNames(experimentId);
+    Set TKeys = dbTNames.keySet();
+    Object[] dbTKeys = TKeys.toArray();
+    for (int i = 0; i < dbTKeys.length; i++) 
+      System.out.println("Trial Name: " + dbTKeys[i] + 
+                         " trial id: " + dbTNames.get(dbTKeys[i]));
+    // end for debugging
+
+    // get trial id for experiment id
+    Hashtable dbTrialNames = ExperimentDB.getTrialNames(experimentId);
+    Set trialNamesSet = dbTrialNames.keySet();
+    Object[] trialNames = trialNamesSet.toArray();
+    for (int i = 0; i < trialNames.length; i++)
+      System.out.println(trialNames[i]);
+    trialName = (String)trialNames[0];
+    trialId = (String)dbTrialNames.get(trialName);
     this.experimentId = experimentId;
-    this.trialNames = trialNames;
+    //    this.trialNames = trialNames;
     JPanel panel = new JPanel(new BorderLayout());
-    JPanel topPanel = new JPanel(new GridBagLayout());
-    topPanel.setBorder(LineBorder.createGrayLineBorder());
+    //    JPanel topPanel = new JPanel(new GridBagLayout());
+    //    topPanel.setBorder(LineBorder.createGrayLineBorder());
     JPanel bottomPanel = new JPanel(new GridBagLayout());
     bottomPanel.setBorder(LineBorder.createGrayLineBorder());
     int x = 0;
     int y = 0;
-    int leftIndent = 5;
+    int leftIndent = 0;
+    //    int leftIndent = 5;
     // insets are top, left, bottom, right
-    ButtonGroup buttonGroup = new ButtonGroup();
-    trialSelectionButton = new JRadioButton("Select Trial");
-    buttonGroup.add(trialSelectionButton);
-    trialSelectionButton.setSelected(true);
-    topPanel.add(trialSelectionButton,
-              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.NONE,
-                                     new Insets(10, leftIndent, 5, 5),
-                                     0, 0));
-    trialComboBox = new JComboBox(trialNames.toArray());
-    topPanel.add(trialComboBox,
-              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-                                          GridBagConstraints.WEST,
-                                          GridBagConstraints.HORIZONTAL,
-                                          new Insets(10, 0, 5, 5),
-                                          0, 0));
-    x = 0;
-    trialCreationButton = new JRadioButton("Create Trial");
-    buttonGroup.add(trialCreationButton);
-    bottomPanel.add(trialCreationButton,
-              new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.NONE,
-                                     new Insets(10, leftIndent, 5, 0),
-                                     0, 0));
-    leftIndent = leftIndent + 5;
-    bottomPanel.add(new JLabel("Trial Name:"),
-                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                           GridBagConstraints.WEST,
-                                           GridBagConstraints.NONE,
-                                           new Insets(0, leftIndent, 5, 5),
-                                           0, 0));
-    newTrialField = new JTextField(20);
-    bottomPanel.add(newTrialField,
-                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-                                           GridBagConstraints.WEST,
-                                           GridBagConstraints.HORIZONTAL,
-                                           new Insets(0, 0, 5, 5),
-                                           0, 0));
-    x = 0;
+//      ButtonGroup buttonGroup = new ButtonGroup();
+//      trialSelectionButton = new JRadioButton("Select Threads and Groups");
+//      buttonGroup.add(trialSelectionButton);
+//      trialSelectionButton.setSelected(true);
+//      topPanel.add(trialSelectionButton,
+//                new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+//                                       GridBagConstraints.WEST,
+//                                       GridBagConstraints.NONE,
+//                                       new Insets(10, leftIndent, 5, 5),
+//                                       0, 0));
+//      trialComboBox = new JComboBox(trialNames.toArray());
+//      topPanel.add(trialComboBox,
+//                new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+//                                            GridBagConstraints.WEST,
+//                                            GridBagConstraints.HORIZONTAL,
+//                                            new Insets(10, 0, 5, 5),
+//                                            0, 0));
+//      x = 0;
+//        trialCreationButton = new JRadioButton("Create Threads and Groups");
+//        buttonGroup.add(trialCreationButton);
+//        bottomPanel.add(trialCreationButton,
+//                  new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+//                                         GridBagConstraints.WEST,
+//                                         GridBagConstraints.NONE,
+//                                         new Insets(10, leftIndent, 5, 0),
+//                                        0, 0));
+//        leftIndent = leftIndent + 5;
+//        bottomPanel.add(new JLabel("New Experiment Name:"),
+//                        new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+//                                              GridBagConstraints.WEST,
+//                                               GridBagConstraints.NONE,
+//                                              new Insets(0, leftIndent, 5, 5),
+//                                              0, 0));
+//        newTrialField = new JTextField(20);
+//        bottomPanel.add(newTrialField,
+//                        new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+//                                               GridBagConstraints.WEST,
+//                                               GridBagConstraints.HORIZONTAL,
+//                                               new Insets(0, 0, 5, 5),
+//                                               0, 0));
+//        x = 0;
     bottomPanel.add(new JLabel("Select Threads:"),
               new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
                                      GridBagConstraints.WEST,
@@ -117,7 +150,12 @@ public class ConsoleTrialDialog extends JDialog {
     for (int i = 0; i < ULThreads.length; i++) {
       JCheckBox cb = new JCheckBox(ULThreads[i]);
       ULThreadCheckBoxes.add(cb);
-      cb.setSelected(false);
+      //      cb.setSelected(false);
+      System.out.println("get thread selected: " + trialId + " " +
+                         ULDBThreads[i]);
+      boolean sel = ExperimentDB.isULThreadSelected(trialId, ULDBThreads[i]);
+      cb.setSelected(sel);
+      originalThreadSelected.add(new Boolean(sel));
       if (i == (ULThreads.length-1))
         cb.setEnabled(false); // spare parts
       bottomPanel.add(cb,
@@ -142,7 +180,9 @@ public class ConsoleTrialDialog extends JDialog {
     for (int i = 0; i < nGroupNames; i++) {
       String groupName = (String)groupNames[i];
       JCheckBox groupCB = new JCheckBox(groupName);
+      boolean sel = ExperimentDB.isGroupSelected(trialId, groupName);
       groupCheckBoxes.add(groupCB);
+      originalGroupSelected.add(new Boolean(sel));
       groupCB.setSelected(false);
       bottomPanel.add(groupCB,
                 new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
@@ -150,7 +190,7 @@ public class ConsoleTrialDialog extends JDialog {
                                        GridBagConstraints.NONE,
                                        new Insets(0, leftIndent, 5, 0),
                                        0, 0));
-      bottomPanel.add(new JLabel("Multiplier:"),
+      bottomPanel.add(new JLabel("Number of Copies:"),
                 new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                        GridBagConstraints.WEST,
                                        GridBagConstraints.NONE,
@@ -158,7 +198,9 @@ public class ConsoleTrialDialog extends JDialog {
                                        0, 0));
       JTextField multiplierField = new JTextField(4);
       multiplierFields.add(multiplierField);
-      multiplierField.setText("1");
+      int multiplier = ExperimentDB.getMultiplier(trialId, groupName);
+      multiplierField.setText(String.valueOf(multiplier));
+      originalGroupMultiplier.add(new Integer(multiplier));
       bottomPanel.add(multiplierField,
                 new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                        GridBagConstraints.WEST,
@@ -199,40 +241,63 @@ public class ConsoleTrialDialog extends JDialog {
     });
     buttonPanel.add(okButton);
     buttonPanel.add(cancelButton);
-    panel.add(topPanel, BorderLayout.NORTH);
+    //    panel.add(topPanel, BorderLayout.NORTH);
     panel.add(bottomPanel, BorderLayout.CENTER);
     panel.add(buttonPanel, BorderLayout.SOUTH);
     getContentPane().add(panel);
     pack();
   }
 
+  /**
+   * If threads, groups or multipliers have been modified, then
+   * create a new trial.
+   */
+
   private void ok_actionPerformed() {
     setVisible(false);
-    if (trialSelectionButton.isSelected()) {
-      System.out.println("Trial Selected: " + 
-                         trialComboBox.getSelectedItem());
-      trialName = (String)trialComboBox.getSelectedItem();
-      return;
-    }
-    trialName = newTrialField.getText();
-    String trialId = ExperimentDB.addTrialName(experimentId, trialName);
+    boolean modified = false;
+    //    if (trialSelectionButton.isSelected()) {
+    //      System.out.println("Trial Selected: " + 
+    //                         trialComboBox.getSelectedItem());
+    //      trialName = (String)trialComboBox.getSelectedItem();
+    //      return;
+    //    }
+    //    trialName = newTrialField.getText();
+    //    String trialId = ExperimentDB.addTrialName(experimentId, trialName);
     int n = ULThreads.length;
     for (int i = 0; i < n; i++) {
       JCheckBox cb = (JCheckBox)ULThreadCheckBoxes.get(i);
-      String threadName = ULThreads[i];
-      ExperimentDB.setULThreadSelected(trialId, threadName, cb.isSelected());
+      Boolean b = (Boolean)originalThreadSelected.get(i);
+      if (b.booleanValue() == cb.isSelected())
+        continue;
+      ExperimentDB.setULThreadSelected(trialId, ULDBThreads[i], 
+                                       cb.isSelected());
+      modified = true;
     }
     n = groupCheckBoxes.size();
     for (int i = 0; i < n; i++) {
       String groupName = groupNames[i];
       JCheckBox cb = (JCheckBox)groupCheckBoxes.get(i);
-      ExperimentDB.setGroupSelected(trialId, groupName, cb.isSelected());
+      Boolean b = (Boolean)originalGroupSelected.get(i);
+      if (b.booleanValue() != cb.isSelected()) {
+        ExperimentDB.setGroupSelected(trialId, groupName, cb.isSelected());
+        modified = true;
+      }
       JTextField multiplierField = (JTextField)multiplierFields.get(i);
+      int multiplier = ((Integer)originalGroupMultiplier.get(i)).intValue();
       try {
-        ExperimentDB.setMultiplier(trialId, groupName, 
-                          Integer.parseInt(multiplierField.getText()));
+        int newMultiplier = Integer.parseInt(multiplierField.getText());
+        if (multiplier == newMultiplier)
+          continue;
+        ExperimentDB.setMultiplier(trialId, groupName, newMultiplier);
+        modified = true;
       } catch (NumberFormatException e) {
       }
+    }
+    if (modified) {
+      // TODO: clone experiment and add new assembly for groups and threads
+      // this process takes several minutes
+      System.out.println("MODIFIED");
     }
   }
 
@@ -246,10 +311,8 @@ public class ConsoleTrialDialog extends JDialog {
 
   public static void main(String[] args) {
     ArrayList trialNames = new ArrayList();
-    trialNames.add("Trial1");
-    trialNames.add("Trial2");
-    trialNames.add("Trial3");
-    ConsoleTrialDialog d = new ConsoleTrialDialog("ExperimentID", trialNames);
+    ConsoleTrialDialog d = 
+      new ConsoleTrialDialog(null, "ExperimentID");
     d.setVisible(true);
   }
 }

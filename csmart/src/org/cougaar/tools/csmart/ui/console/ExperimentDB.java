@@ -81,6 +81,12 @@ public class ExperimentDB {
       return (String)call("addTrialName",experimentId,name);
   }
 
+  public static String addAssembly(String experimentId,
+                                   String assemblyId,
+                                   String trialId) {
+      return (String)call("addAssembly",experimentId,assemblyId,trialId);
+  }
+
   /*
    * Returns society templates for an experiment.
    * Returns hashtable where human readable names are keys
@@ -159,6 +165,22 @@ public class ExperimentDB {
     System.out.println("Group: " + groupName + " value: " + value);
   }
 
+  /**
+   * Clone specified experimentId with the specified human readable name.
+   * Returns new experiment id.
+   * Creates new trial id for new experiment id.
+   */
+
+  public static String cloneExperiment(String experimentId, String newName) {
+  }
+
+  /**
+   * This MUST be called after calling setGroups, setThreads, or setMultipliers
+   * to actually update the experiment.
+   */
+
+  public static void updateCMTAssembly(String experimentId) {
+  }
 
     /**Silk utility functions
      **/
