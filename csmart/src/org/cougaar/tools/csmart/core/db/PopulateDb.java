@@ -221,6 +221,7 @@ public class PopulateDb extends PDbBase {
       // in preparation for saving this definition?
       // Or will the over-write work OK?
       substitutions.put(":assembly_id:", sqlQuote(assemblyId));
+      cmtAssemblyId = assemblyId;
       //      executeUpdate(dbp.getQuery("deleteAssembly"), substitutions);
       //      executeUpdate(dbp.getQuery("cleanASBAssembly", substitutions));
       // must set :assemblies_to_clean:
@@ -232,7 +233,11 @@ public class PopulateDb extends PDbBase {
       // Create new CSA assembly to hold the data, copying OPLAN info if any
       // Also set the csaAssemblyId and cmtAssemblyId parameters
       try {
+	// Save this ID someplace? The creator stuffs
+	// it in the CSA slot
         assemblyId = createCSAAssembly(cmtAsbID, societyName);
+	cmtAssemblyId = assemblyId;
+	csaAssemblyId = null;
       } catch( SQLException se ) {
         if(log.isErrorEnabled()) {
           log.error("createCSAAssembly error: ", se);
@@ -242,6 +247,12 @@ public class PopulateDb extends PDbBase {
 
     // OK, at this point we're ready to save out the society: asb_component_arg,
     // asb_component_hierarchy, and the asb_agent tables
+
+    // Must set the assembly_match variable
+    List tmp = new ArrayList();
+    tmp.add(cmtAssemblyId);
+    String asbmatch = DBUtils.getAssemblyMatch(tmp);
+    substitutions.put(":assembly_match:", asbmatch);
 
   }
 
@@ -285,7 +296,10 @@ public class PopulateDb extends PDbBase {
 	// So if the society is a CMT society, call cleanTrial
 	cleanTrial(cmtType, hnaType, csmiType, trialId);
       
+      // Putting the society ID in the cmt slot
+      // Even though it may really be a CSA assembly
       cmtAssemblyId = societyId;
+
       substitutions.put(":cmt_type:", cmtType);
       substitutions.put(":csa_type:", csaType);
 
@@ -394,8 +408,6 @@ public class PopulateDb extends PDbBase {
 
   // Grab all the RUNTIME assemblies in the experiment
   // and set up the :assembly_match: substition with them
-  // FIXME: Does this substitution ever get used where
-  // config time is more appropriate?
   private void setAssemblyMatch() throws SQLException {
     ResultSet rs = executeQuery(stmt, dbp.getQuery("queryTrialAssemblies", substitutions));
     StringBuffer q = new StringBuffer();
@@ -1069,7 +1081,31 @@ public class PopulateDb extends PDbBase {
     // 5: Ensure run-time only has a CSMI if run-time has a CMT or run-time
     // has same CSA as in config-time
     // 6: Ensure config-time has no CSMI
+
+
+    // Do some cleanup: Use this opportunity to remove any orphaned
+    // assemblies
+    removeOrphanNonSocietyAssemblies();
+
     return true;
+  }
+
+  // FIXME: Add new helper function that removes orphan CSMI/CSHNA assemblies
+  public void removeOrphanNonSocietyAssemblies() throws SQLException {
+    // Do a query for assemblyIDs in asb_assembly, where it is not
+    // of type cmtType or csaType
+    substitutions.put(":cmt_type:", cmtType);
+    substitutions.put(":csa_type:", csaType);
+    ResultSet rs = executeQuery(stmt, dbp.getQuery("queryNonSocietyAssemblies", substitutions));
+    String assid = null;
+
+    while (rs.next()) {
+      assid = rs.getString(1);
+      // for each such assembly
+      if (! isAssemblyUsed(assid)) 
+	cleanAssembly(assid);
+    }
+    rs.close();
   }
 
   /**
@@ -1143,21 +1179,38 @@ public class PopulateDb extends PDbBase {
     // If this is saving an Experiment, we create a CSA assembly:
     if (exptId != null && trialId != null) {
       // Create a new CSA based on what was in cmtAssemblyID
-      cmtAssemblyId = createCSAAssembly(cmtAssemblyId, getAssemblyDesc(cmtAssemblyId));
+      csaAssemblyId = createCSAAssembly(cmtAssemblyId, getAssemblyDesc(cmtAssemblyId));
       
       // Delete any existing CSA / CMT in runtime for this experiment, completely if necc
       cleanOldRuntimeSocietyAssemblies();
+
+      // Must also delete any CSMI assembly that exists so far. We won't be using one.
+      if (csmiAssemblyId != null) {
+	removeRuntimeAssembly(csmiAssemblyId);
+	if (! isAssemblyUsed(csmiAssemblyId))
+	  cleanAssembly(csmiAssemblyId);
+
+	// FIXME: Do I need to create a new one?
+	csmiAssemblyId = null;
+      }
+
+      // FIXME: What if a recipe modified the Agents in use? Must I
+      // remove the CSHNA assembly as well?
       
       // Add this new assembly to the runtime assemblies for this experiment
       substitutions.put(":assembly_type:", csaType);
-      addAssemblyToRuntime(cmtAssemblyId);
-    }
+      addAssemblyToRuntime(csaAssemblyId);
+
+      setAssemblyMatch();
+    } // End of case where this is an Experiment
 
     if (log.isDebugEnabled()) {
       log.debug("populateCSA saving into " + cmtAssemblyId);
     }
+
     // 
     componentArgs.clear();
+
     //Save the full given tree into a CSA assembly, which should already
     // exist. Someone else must put the entry for this assembly
     // in the runtime or config time places, as necessary
@@ -1208,6 +1261,7 @@ public class PopulateDb extends PDbBase {
     SortedSet oldArgs = (SortedSet) componentArgs.get(id);
     if (oldArgs == null) {  // Don't know what the current args are
       insureAlib();       // Insure that the alib and lib components are defined
+
       ResultSet rs;
       rs = executeQuery(stmt, dbp.getQuery("queryComponentArgs", substitutions));
       oldArgs = new TreeSet();
@@ -1216,6 +1270,14 @@ public class PopulateDb extends PDbBase {
       }
       rs.close();
       if (parent != null) {
+
+	// FIXME: When saving a society, this uses trial and so
+	// will always return false.
+	// It should use assembly_match, but then I must
+	// be careful that assembly_match does not have both
+	// a CMT and a CSA assembly - only the ones in the runtime
+	// FIXME!!!
+
 	// Is given component in runtime hierarchy?
 	String cchq = dbp.getQuery("checkComponentHierarchy", substitutions);
 	if (log.isDebugEnabled()) {
@@ -1646,8 +1708,15 @@ public class PopulateDb extends PDbBase {
 
       // Fix these: are they filled in? 
       // FIXME: this may not be right yet.
-      substitutions.put(":start_date:", Long.toString(r.getStartTime()));
-      substitutions.put(":end_date:", (r.getEndTime() != 0l ? Long.toString(r.getEndTime()) : null));
+      // NOTE - this PreparedStatement thing is trying to set
+      // the timestamps itself
+//       substitutions.put(":start_date:", Long.toString(r.getStartTime()));
+//       substitutions.put(":end_date:", (r.getEndTime() != 0l ? Long.toString(r.getEndTime()) : ""));
+
+      // These appear to be magic with the preparedStatement below....
+      substitutions.put(":start_date:", "?");
+      substitutions.put(":end_date:", "?");
+      
       String query = dbp.getQuery("checkRelationship", substitutions);
       PreparedStatement pstmt = dbConnection.prepareStatement(query);
       pstmt.setTimestamp(1, new Timestamp(startTime));
