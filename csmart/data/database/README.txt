@@ -16,26 +16,16 @@ the csv files in ./csv
 
 csmart/data/database directory description:
 
-This directory contains several subdirectories as well as a zip file.
-
-Zip files:
-
-refconfigdb.zip:
-   This is a dump that includes all of the data in the above data dump,
-   PLUS reference OPLAN and Military Organization data for the UltraLog 1AD
-   societies. This should define a new "refconfig" database, if you want
-   to run a 1AD society strictly from XML files + reference data.
+This directory contains several subdirectories.
 
 Sub-directories:
 
-   new/:
-	Contains table definitions, structure, loading scripts to define
+   ref-csv/:
+	Contains source files to define
 	the new "refconfig" database OPLAN and Organizations tables.
-	Users of the 1AD society need not edit or use these files.
-	However, if you want to use the same query files and tables,
-	you may use the contents of this directory to add to or edit
-	the contents of these tables. Sub-directories mirror fairly 
-	closely the structure of the directories below....
+	Users of CSMART need not edit or use these files.
+        These table definitions are used only when running from XML
+        files. You must fill in content appropriate to your application.
 
    csv/:
         Contains a '.csv' file for each table to be created in the 
@@ -154,6 +144,10 @@ Sub-directories:
                                     drop_v4_v6.sql
                                   This script is an easy way to "clean out" your configuration
                                   database.
+
+                load_ref_data.sh - This script loads the contents of the
+			ref_csv data files into the refconfig database.
+			It uses the helper SQL file load_ref_data.sql
 
                 sedscr.sh - This script is called by load_1ad_mysql.sh in order to handle 
                             conversion between unix style line endings that may be present
