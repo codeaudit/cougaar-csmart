@@ -167,9 +167,9 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
    these notes detail how to create your own database and <a href="../../doc/details/DataAccess.html">cougaar.rc</a>
    password file.
    <p>
-   See <a href="../../doc/ReleaseNotes/common/HeterogeneousDatabase.html">the database writeup</a> for detailed 
+   See the database writeup and Cougaar install docs at <a href="http://www.cougaar.org">http://www.cougaar.org</a> for detailed 
    documentation on database installation.  You may want to read
-   that file before continuing with the example MySQL installation
+   that before continuing with the example MySQL installation
    below.
    <p>
    <a name="mysqlWarning"></a>
@@ -184,10 +184,9 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
      export scripts in csmart/bin (export-recipe.[sh/bat] and exportExperiment.[sh/bat]. Run with
      no arguments for usage.)</li>
      <li>From the CSMART Experiment Builder's "Configure" menu, export
-     the host-node-agent (HNA) mapping for your 1AD-based experiments, if
+     the host-node-agent (HNA) mapping for your complex experiments, if
      you want to save the work of re-assigning Agents to Nodes and
-     Nodes to Hosts. With the new database, the Plugins used in the 1AD-based
-     societies have changed.</li>
+     Nodes to Hosts. </li>
      <li>Re-load, in their entirety, both the CSMART database and the
      Cougaar domain database, using the below instructions.</li>
      <li>Run the script v4_v6_conversions.[bat/sh] on each of your
@@ -196,7 +195,7 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
      <li>Import your converted recipe or experiment exports into your new database,
      following the instructions that were given when you created the
      exports.</li>
-     <li>From CSMART, reconstruct your 1AD-based experiments, if
+     <li>From CSMART, reconstruct your experiments, if
      any. In the Experiment Builder, use the "Configure" menu to
      import your saved host-node-agent (HNA) mappings.</li>
   </ol>
@@ -232,11 +231,12 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
   tables like GEOLOC are claimed to be missing, this is a likely
   culprit.</li><br><br><p>
 
-  <li>There are two MySQL database snapshots available. One to support
-  the military logistics domain plugins, and one for the CSMART
+  <li>You may need two or more databases for your society. That is,
+  your application may have its own runtime database, in addition to
+  the one for the CSMART
   configuration database. These instructions will help with both, but
-  for further details on the plugin database, see the release <a
-  href="../../doc/index.html">documentation</a>.  <br>
+  see any application specific documentation for further details on
+  the runtime database.  <br>
 <ul><li>For the 
   CSMART configuration database, first create the database (if necessary).  
   For later reference when
@@ -283,22 +283,6 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
 
   </li>
 
-  <li>The CSMART configuration database and the domain database can 
-  be loaded in either a single step or in two separate steps.  To load both databases in a single 
-  step, run the script "$CIP/csmart/data/database/scripts/mysql/load_1ad_all.sh[bat]" as follows: 
-      <pre>
-        $./load_1ad_all.sh [db username] [db password] [domain database name] [config database name]       
-      </pre>
-    The tables may be loaded into the same database but you must give both parameters.  This script 
-    performs a load of the configuration database files from "$CIP/csmart/data/database/csv" directory
-    as well as all domain files as referred to in Step 4 below.  If you choose to load everything with
-    one script, you may proceed directly to Step 5 below.
-    <br><br>
-    <b>Note: </b>For instructions on separately loading the CSMART configuration database and the 
-    domain database, continue on with the remainder of this step (Step 3) and Step 4.
-
-</li><br><p>
-
     <li>The CSMART configuration database tables are loaded from '.csv' 
     files provided in "$CIP/csmart/data/database/csv" directory.
     To load the database from these files, run the script 
@@ -341,47 +325,14 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
      files currently in this directory to save the original table data
      definitions.</li></ul></li><p>
 
-  <li>Once you have imported the CSMART configuration data files, be sure to follow
-  the same steps to import the Cougaar domain plugin MySQL database:
-     <pre>
-           $ cd <a href="#cougaarEnv">$CIP</a>/dbms/data/mysql
-
-           $ unzip 1ADDomainData.zip
-           (this produces the following file...)
-
-           $ mysql -u [db user, eg myname] -p mycoug &lt; 1ADDomainData.sql
-	    [supply users password, eg mypass]
-     </pre>
-
-  (Note that the file 1ADDomainData.sql used to be
-  called mysqldump.txt or something similar).   
-  You may load this data into
-  the same database as the CSMART data, or a different one, as you
-  prefer. Just be sure to build your <a href="../../doc/details/DataAccess.html">cougaar.rc</a> file appropriately.<br><br>
-  Importing this database requires loading separate files
-  for the "class 9" data. You should also load the data in
-  <i>army_spares.ZIP</i> and <i>spares_index.txt</i>:
-
-  <pre>
-          [picking up from above, in the directory $CIP/dbms/data/mysql]
-
-          $ unzip army_spares.ZIP
-      
-          $ mysql -u [db user, eg myname] -p mycoug &lt; army.txt
-	    [supply users password, eg mypass]
-
-          $ mysql -u [db user, eg myname] -p mycoug &lt; spares_index.txt
-	    [supply users password, eg mypass]
-   </pre>
-</li><p>
+<p>
       
   <li>The database is now ready.  You must now create a 
     <a href="../../doc/details/DataAccess.html">cougaar.rc</a>
-    for the database users (<a href="http://www.cougaar.org">Cougaar</a>
-    and CSMART), which is used to store the database location and
+    for the database users, which is used to store the database location and
     username/password information.  See	
     <a href="../../doc/details/DataAccess.html">DataAccess</a> 
-    and <a href="../../doc/ReleaseNotes/common/HeterogeneousDatabase.html">the database writeup</a> 
+    and documention on the Cougaar website the database writeup 
     for detailed information.
     <br><br></li><p>
 
@@ -401,8 +352,9 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
   <p>
   These are notes for the installation of 
   <a href="http://www.cougaar.org">Cougaar</a>,
-  CSMART, and the AppServer.  Also see the 
-  <a href="../../doc/ReleaseNotes/common/SocStartup-Config.html">Cougaar install notes</a> for similar
+  CSMART, and the AppServer.  Also see the <a
+  href="http://www.cougaar.org">Cougaar website at
+  http://www.cougaar.org</a> for similar
   installation notes and an explanation of the contents of a Cougaar installation.
   <p>
   <ol>
@@ -563,8 +515,9 @@ installation using
    <a href="http://www.cougaar.org">Cougaar</a>
    was installed.  This
    does not test CSMART, the AppServer, or your database, and only tests a 
-   localhost four-Agent configuration.  See the "minitestconfig" 
-   <a href="../../doc/ReleaseNotes/common/MiniTestConfig.html">documentation</a> in "../../doc/ReleaseNotes/common/MiniTestConfig.html" for additional details.
+   localhost four-Agent configuration.  See the Cougaar documenation
+   at <a href="http://www.cougaar.org">http://www.cougaar.org</a> for
+   additional details.
   <p>
   <ol> 
   <p>
@@ -584,7 +537,8 @@ installation using
     the "Send GLS Root" button.  You should see a bunch of "++--.." messages
     sent to the console output (indicating message flow between agents).  In the window titled
     "AllocationAssessorPlugin for 3-69-ARBN" you should see "20 successful
-    allocations".  See "../../doc/ReleaseNotes/common/MiniTestConfig.html" for further details.</li><p>
+    allocations".  See documentation on the Cougaar website for
+    further details.</li><p>
 
   <li>(Optionally) test the <a href="#httpVisuals">HTTP visualizations</a> and 
     <a href="#socMonitor">CSMART "Society Monitor" visualizations</a>.</li><p>
@@ -630,8 +584,8 @@ installation using
   <li>Additionally there are several Java applications that use HTTP
     to communicate with the society.  See the 
     <a href="http://www.cougaar.org/documents/pdg.html">Cougaar Developers Guide</a>
-    for notes on the "Inventory Manager" and "TPFDD" viewers.  See
-    "configs/examples/small-135/small-135.readme.html" for details.</li><p>
+    for notes on the "Inventory Manager" and "TPFDD" viewers.  
+    </li><p>
   </ol>
 </li><p>
 
@@ -828,7 +782,7 @@ installation using
 <li><font size=+1><b>Example run of CSMART:</b></font></a>
   <p>
   These notes detail how to configure and run the standard two-Node 
-  "TINY-1AD + TRANSPORTATION" society on a single machine.  It is assumed in
+  "MiniTestConfig" society on a single machine using CSMART.  It is assumed in
   these notes that only one society will be run on the machines at a time.
   <p>
   <ol>
@@ -849,13 +803,7 @@ installation using
 
     <li>Right-click, select "New Experiment", and then, "From Database".</li><p>
 
-    <li>Select an experiment, "TINY-1AD-TRANS" is a simple place to start.   Then a UI to select "Threads &amp; Groups" will popup.</li><p>
-
-    <li>Configure the "Threads &amp; Groups".  In this screen, you may
-    modify the set of threads (military classes of supply) which the
-    society will process.  Note however, that you <em>must</em> select
-    at least one thread.  For a simple test, select "Class 1"
-    (food).</li><p>
+    <li>Select an experiment, "Experiment for Minitestconfig" is a simple place to start. </li><p>
 
     <li>Give the experiment a name, such as "My Test", then click "Yes" to save
       your modified name.  Your experiment name, "My Test", is added
@@ -919,28 +867,21 @@ installation using
       window to make it larger, which will facilitate the following
       steps.</li><p>
 
-    <li>Select "GLM_TRANS" from the middle ("Nodes") panel.</li><p>
+    <li>Select "MiniNodeA" from the middle ("Nodes") panel (or any
+    node name you like).</li><p>
 
-    <li>Select the following seven Agents from the right ("Agents") panel.
-      Use the control-key to select multiple Agents:
-      <ul>
-          <li>CONUSGround</li>
-          <li>GlobalAir</li>
-          <li>GlobalSea</li>
-          <li>PlanePacker</li>
-          <li>ShipPacker</li>
-          <li>TRANSCOM</li>
-          <li>TheaterGround</li>
-      </ul></li><p>
+    <li>Select the first 2 Agents from the right ("Agents") panel.
+      Use the control-key to select multiple Agents.</li><p>
 
-    <li>Drag these selected Agent names to the "TRANSCOM_NODE" of the
+    <li>Drag these selected Agent names to the selected Node in the
       middle ("Nodes") panel.</li><p>
 
-    <li>Select "1AD-Tiny" of the middle ("Nodes") panel.</li><p>
+    <li>Select another Node in the middle ("Nodes") panel (or right
+    click on the word "Nodes" to create a new one).</li><p>
 
     <li>Select the remaining Agents and drag them onto
-      "1AD-Tiny".  Use the shift-key to select a range of
-      names.</li><p>
+      the selected node in the middle pane.  Use the shift-key to
+      select a range of names.</li><p>
 
     <li>Select your machine's name from the left ("Hosts") panel.  If
       your machine's name is not present then right-click in the left
@@ -948,7 +889,7 @@ installation using
       full host name or the IP address -- sometimes the DNS lookup
       causes problems. Do _not_ use "localhost".</li><p>
 
-    <li>Drag both "GLM_TRANS" and "1AD-TINY" onto your host
+    <li>Drag both the Nodes you have used from the middle pane onto your host
       entry of the left ("Hosts") panel.  If you were testing a
       multi-machine configuration then you would drag the Nodes onto
       multiple hosts.</li><p>
@@ -995,7 +936,7 @@ installation using
       debugging message.  This output can be ignored.</li><p>
 
     <li>Several minimized icons are created in the "Experiment Controller"
-      window; one for each host and one for the GLS Servlet control interface.  Double Click on both 
+      window; one for each host and one for the configuration of your experiment.  Double Click on both 
       Node Windows to see the Node output.  These output panels can be streched 
       wider to
       make viewing easier.  Log files of the output are written to
@@ -1014,7 +955,8 @@ installation using
       debug the configuration by cutting &amp; pasting the command line into a
       console window.  Double-check your "server/bin/server.props".</li><p>
 
-    <li>Double Click on the GLS Window in the Experiment Controller.
+    <li>You should now have Minitestconfig running as above, with lots
+    of pop-up windows. To continue:
       <pre>
         - click on "Connect"
         - click on "Publish OPlan"
