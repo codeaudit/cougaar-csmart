@@ -77,7 +77,7 @@ public class OrganizerHelper {
 
     // get assembly ids for trial
     ArrayList assemblyIds = getTrialAssemblyIds(experimentId, trialId);
-    String assemblyMatch = getAssemblyMatch(assemblyIds);
+    String assemblyMatch = DBUtils.getAssemblyMatch(assemblyIds);
     // get nodes for trial
     ArrayList nodes = getNodes(trialId, assemblyMatch);
     ArrayList hosts = getHosts(trialId, assemblyMatch);
@@ -113,7 +113,11 @@ public class OrganizerHelper {
     List defaultRecipes = checkForRecipes(origTrialId, origExperimentId);
   
     List recipes = checkForRecipes(trialId, experimentId);
-    recipes.addAll(defaultRecipes);
+
+    // When creating an experiment from one of the base experiments
+    // copy over the recipes that came with the base
+    if (! origExperimentId.startsWith("EXPT-"))
+      recipes.addAll(defaultRecipes);
 
     if (recipes.size() != 0) {
       Iterator metIter = recipes.iterator();
@@ -191,33 +195,6 @@ public class OrganizerHelper {
       }
     }
     return assemblyIds;
-  }
-
-  private String getAssemblyMatch(ArrayList assemblyIDs) {
-    StringBuffer assemblyMatch = new StringBuffer();
-    assemblyMatch.append("in (");
-    Iterator iter = assemblyIDs.iterator();
-    boolean first = true;
-    while (iter.hasNext()) {
-      String val = (String)iter.next();
-      if (first) {
-        first = false;
-      } else {
-        assemblyMatch.append(", ");
-      }
-      assemblyMatch.append("'");
-      assemblyMatch.append(val);
-      assemblyMatch.append("'");
-    }
-    // Avoid ugly exceptions if got no assemblies:
-    if (assemblyIDs.size() < 1) {
-      if(log.isWarnEnabled()) {
-        log.warn("Got no assemblies!");
-      }
-      assemblyMatch.append("''");
-    }
-    assemblyMatch.append(")");
-    return assemblyMatch.toString();
   }
 
   /**
