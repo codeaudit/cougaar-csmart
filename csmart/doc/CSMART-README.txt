@@ -1,6 +1,6 @@
 csmart/doc/CSMART-README.txt
 
-This is the Cougaar Society Monitoring, Analysis and Reporting Tool (CSMART), v0.4
+This is the Cougaar Society Monitoring, Analysis and Reporting Tool (CSMART), v0.4.1
 
 Please send comments to cougaar-developers@cougaar.org, or enter bugs on the Cougaar Bugzilla site: http://www.cougaar.org/bugs/
 

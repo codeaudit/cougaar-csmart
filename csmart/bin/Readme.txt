@@ -11,8 +11,8 @@ COUGAAR_INSTALL_PATH has been set appropriately, as in:
      (where this directory is D:\Cougaar\csmart\bin)
 
 A platform-specific version of "dot.exe" from AT&T is required for
-graph layout. New installations (post v0.3) come with both the Win and Linux/Solaris 
-versions of this file.
+graph layout. New installations (post v0.3) come with both the Win and
+Linux/Solaris versions of this file.
 
 All files named CSMARTNode, CSMARTsetlibpath.bat and
 CSMARTsetarguments.bat are to be copied into COUGAAR_INSTALL_PATH/bin

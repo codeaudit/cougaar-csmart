@@ -48,6 +48,5 @@ This directory contains several configuration sub-directories:
 
     threeCluster/
 	A slightly richer 3 Agent society, with two different task types, illustrating some of the 
-	capabilities of the ABC PlugIns.
-
-     
+	capabilities of the ABC PlugIns
+	
