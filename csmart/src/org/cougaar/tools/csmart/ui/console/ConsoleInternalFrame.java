@@ -28,6 +28,8 @@ import java.awt.event.KeyEvent;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -48,15 +50,20 @@ import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
+import org.cougaar.util.log.Logger;
+import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.tools.server.RemoteProcess;
 import org.cougaar.tools.server.system.ProcessStatus;
 
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.ObjectInputStream;
-import java.io.IOException;
 
+/**
+ * A Frame holding information for a single Node and its output in the Console.
+ * It includes menus for getting information about the Node and controlling its
+ * operation.
+ *
+ */
 public class ConsoleInternalFrame extends JInternalFrame {
   private static final String NODE_MENU = "Node";
   private static final String INFO_ACTION = "Info";
@@ -360,10 +367,16 @@ public class ConsoleInternalFrame extends JInternalFrame {
   /**
    * Display information about node in pop-up dialog.
    */
-
   public void displayAbout() {
-    final ArrayList agentNames = 
+    ArrayList agentNames = 
       (ArrayList)getPropertyValue(node, "AgentNames");
+
+    if (agentNames == null)
+      agentNames = new ArrayList();
+
+    // Add the NodeAgent as the first Agent in the list
+    agentNames.add(0, node.getShortName());
+
     JPanel aboutPanel = new JPanel();
     aboutPanel.setLayout(new GridBagLayout());
     int x = 0;
@@ -583,6 +596,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     });
     JScrollPane jspAgents = new JScrollPane(agentsList);
     jspAgents.setMinimumSize(new Dimension(50, 50));
+    // FIXME: Put in horizontal scrollbar maybe?
     aboutPanel.add(jspAgents,
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 1.0,
                                           GridBagConstraints.WEST,
@@ -876,11 +890,17 @@ public class ConsoleInternalFrame extends JInternalFrame {
       return;
     ComponentData[] agents = nodeComponentData.getChildren();
     ComponentData agentComponentData = null;
-    for (int i = 0; i < agents.length; i++) {
-      if (agents[i] instanceof AgentComponentData &&
-          agents[i].getName().equals(agentName)) {
-        agentComponentData = agents[i];
-        break;
+    // The "agent" might be a NodeAgent, in which case this is the right spot.
+    if (agentName.equals(nodeComponentData.getName())) {
+      agentComponentData = nodeComponentData;
+    } else {
+      // OK. Find the sub-Agent with the right name
+      for (int i = 0; i < agents.length; i++) {
+	if (agents[i] instanceof AgentComponentData &&
+	    agents[i].getName().equals(agentName)) {
+	  agentComponentData = agents[i];
+	  break;
+	}
       }
     }
     if (agentComponentData == null)
@@ -890,8 +910,23 @@ public class ConsoleInternalFrame extends JInternalFrame {
     for (int i = 0; i < agentChildren.length; i++) {
 //       if (!agentChildren[i].getType().equals(ComponentData.PLUGIN))
 //         continue;
+
+      // If this Agent is a NodeAgent, ignore its Agent children.
+      if (agentChildren[i].getType().equals(ComponentData.AGENT))
+	continue;
+
       StringBuffer sb = new StringBuffer();
-      sb.append(agentChildren[i].getType());
+      if (agentChildren[i].getType().equals(ComponentData.AGENTBINDER)) {
+	sb.append("Node.AgentManager.Agent.PluginManager.Binder");
+      } else if (agentChildren[i].getType().equals(ComponentData.NODEBINDER)) {
+	sb.append("Node.AgentManager.Binder");
+      } else {
+	sb.append(agentChildren[i].getType());
+      }
+      if(ComponentDescription.parsePriority(agentChildren[i].getPriority()) != 
+	 ComponentDescription.PRIORITY_COMPONENT) {
+	sb.append("(" + agentChildren[i].getPriority() + ")");
+      }
       sb.append(" = ");
       sb.append(agentChildren[i].getClassName());
       if (agentChildren[i].parameterCount() != 0) {
@@ -909,6 +944,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
     JList plugInsList = new JList(entries.toArray());
     JScrollPane jsp = new JScrollPane(plugInsList);
     jsp.setMinimumSize(new Dimension(50, 50));
+    // FIXME: Don't force entire content to fit horizontally
+    // And add a horizontal scroll-bar if necessary
+    // Bug 1525
     JPanel agentInfoPanel = new JPanel();
     agentInfoPanel.setLayout(new GridBagLayout());
     plugInsList.setBackground(agentInfoPanel.getBackground());
@@ -940,7 +978,3 @@ public class ConsoleInternalFrame extends JInternalFrame {
   }
 
 }
-
-
-
-
