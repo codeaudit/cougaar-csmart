@@ -146,6 +146,11 @@ public class OrganizerHelper {
         DbRecipe dbRecipe = (DbRecipe) metIter.next();
         RecipeComponent mc = createRecipe(dbRecipe.name, dbRecipe.cls);
         setRecipeComponentProperties(dbRecipe, mc);
+	((RecipeBase)mc).resetModified();
+
+	// FIXME! Needed?
+	((RecipeBase)mc).installListeners();
+
         AgentComponent[] recagents = mc.getAgents(); 
         if (recagents != null && recagents.length > 0) {
           agents.addAll(Arrays.asList(recagents));
