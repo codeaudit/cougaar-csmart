@@ -19,8 +19,10 @@ import java.awt.dnd.*;
 import java.awt.datatransfer.*;
 import org.cougaar.tools.csmart.ui.builder.TreeBuilder;
 import org.cougaar.tools.csmart.ui.component.*;
-import org.cougaar.tools.csmart.ui.viewer.OrganizerTree;
 import org.cougaar.tools.csmart.ui.console.*;
+import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
+import org.cougaar.tools.csmart.ui.tree.DNDTree;
+import org.cougaar.tools.csmart.ui.viewer.OrganizerTree;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 
 public class ExperimentTree extends DNDTree {

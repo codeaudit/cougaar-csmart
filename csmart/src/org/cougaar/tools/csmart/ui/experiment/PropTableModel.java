@@ -28,7 +28,11 @@ public class PropTableModel extends PropTableModelBase {
     }
 
     public void addProperty(Property prop) {
-        bindings.put(prop.getName(), prop.getDefaultValue());
+      if (prop.getExperimentValues() == null)
+	bindings.put(prop.getName(), prop.getDefaultValue());
+      else
+	bindings.put(prop.getName(), prop.getExperimentValues());
+      //        bindings.put(prop.getName(), prop.getDefaultValue());
         super.addProperty(prop);
     }
 
@@ -67,5 +71,9 @@ public class PropTableModel extends PropTableModelBase {
         }
         System.out.println("newValue " + newValue);
         bindings.put(prop.getName(), newValue);
+	// set new values as experiment values in property
+	prop.setExperimentValues(Arrays.asList((Object [])newValue));
+	// notify table model listeners
+	fireTableCellUpdated(getRowForProperty(prop), 1);
     }
 }
