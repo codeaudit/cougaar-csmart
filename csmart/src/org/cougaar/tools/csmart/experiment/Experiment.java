@@ -74,6 +74,10 @@ import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 /**
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
  * Computes the trials, and the configuration data for running a trial.
+ * @property org.cougaar.tools.csmart.allowComplexRecipeQueries 
+ *    (default false): If true, save changes after every recipe 
+ *    application, to permit recipe target queries to see the effect 
+ *    of the previous recipe.
  */
 public class Experiment extends ModifiableConfigurableComponent implements java.io.Serializable {
 
@@ -1759,6 +1763,12 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public void saveToDb(DBConflictHandler ch) {
     PopulateDb pdb = null;
 
+    // To debug slow saves, bug 2002.
+    // Added per bug 2015
+    long saveStartTime = Calendar.getInstance().getTimeInMillis();
+    if (log.isShoutEnabled())
+      log.shout("saveToDb starting save");
+
     // Make sure we have the Community Assembly stored locally
     if (commAsb == null) {
       if (log.isDebugEnabled()) {
@@ -1916,12 +1926,42 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
           pdb.populateCSA(completeSociety);
         }
 
+	// If we are allowing complex recipe target queries, then
+	// we must save each recipes changes to the DB in turn, so that 
+	// later recipes can look at these changes to decide what to do.
+	// If not though, and we're only looking at HNA data and perhaps
+	// CMT data, plus COMM data, then these extra saves are not necessary
+	if (System.getProperty("org.cougaar.tools.csmart.allowComplexRecipeQueries", "false").equalsIgnoreCase("true")) {  
+	  try {
+	    // Incrementally save
+	    // so that later recipes have the benefit
+	    // of the earlier modifications
+	    if (log.isDebugEnabled()) {
+	      log.debug("About to save CSMI data, having just done mod in " + soc.getShortName());
+	    }
+	    pdb.populateCSMI(completeSociety);
+	  } catch (IllegalArgumentException iae) {
+	    if (log.isInfoEnabled()) {
+	      log.info("Caught iae " + iae.toString() + " while saving modifications. Must redo as a CSA");
+	    }
+	    pdb.populateCSA(completeSociety);
+	  }
+	} else {
+	  if (log.isWarnEnabled())
+	    log.warn("saveToDb not allowing complex recipe queries. Only queries based on Agent names, Node names, Host names, and community information, and non-recipe component information will work.");
+	}
+      } // end of loop over components to do mod
+
+      // If we did not iteratively save above, must do a save here
+      if (! System.getProperty("org.cougaar.tools.csmart.allowComplexRecipeQueries", "false").equalsIgnoreCase("true")) {
+	if (log.isWarnEnabled()) 
+	  log.warn("saveToDb now save all modifications");
 	try {
 	  // Incrementally save
 	  // so that later recipes have the benefit
 	  // of the earlier modifications
 	  if (log.isDebugEnabled()) {
-	    log.debug("About to save CSMI data, having just done mod in " + soc.getShortName());
+	    log.debug("About to save CSMI data, having done all mods");
 	  }
 	  pdb.populateCSMI(completeSociety);
 	} catch (IllegalArgumentException iae) {
@@ -1930,7 +1970,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	  }
 	  pdb.populateCSA(completeSociety);
 	}
-      } // end of loop over components to do mod
+      }
 
       // Save the inclusion of these recipes in the experiment
       // without re-saving the recipes
@@ -1954,6 +1994,12 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	log.error("Error saving experiment to database: ", sqle);
       return;
     } finally {
+      long saveStopTime = Calendar.getInstance().getTimeInMillis();
+      // To debug slow saves, bug 2002.
+      // Added per bug 2015
+      if (log.isShoutEnabled())
+	log.shout("saveToDb done. Experiment Save Time in Seconds: " + (saveStopTime - saveStartTime) / 1000l);
+
       if (pdb != null) {
 	try {
 	  pdb.close();
