@@ -26,6 +26,11 @@ import javax.swing.JOptionPane;
 
 import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 
+/**
+ * Create a <code>JOptionPane</code> to prompt the user to handle
+ * any conflicts in saving to the database. 
+ * Created from <code>GUIUtils</code>.
+ */
 public class GUIDBConflictHandler implements DBConflictHandler {
   Component parent;
 

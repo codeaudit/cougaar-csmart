@@ -34,8 +34,8 @@ import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 /**
  * Methods to put up a wait cursor and consume mouse events while
  * a time consuming task is being done in the background.
+ * Also a method to create a UI based <code>DBConflictHandler</code>
  */
-
 public class GUIUtils {
 
   static final Cursor waitCursor    =
@@ -95,6 +95,13 @@ public class GUIUtils {
     }
   }
 
+  /**
+   * Create a new window to prompt the user to handle conflicts in 
+   * saving to the database.
+   *
+   * @param parent a <code>Component</code> frame to base this one on, may be null
+   * @return a <code>DBConflictHandler</code> to show
+   */
   public static DBConflictHandler createSaveToDbConflictHandler(final Component parent) {
     return new GUIDBConflictHandler(parent);
   }
