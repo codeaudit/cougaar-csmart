@@ -20,7 +20,7 @@
  */
 package org.cougaar.tools.csmart.runtime.ldm.event;
 
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 
 /**
  * Create a new <code>CyberAttackEvent</code>.
@@ -34,11 +34,11 @@ import org.cougaar.core.agent.ClusterIdentifier;
 public interface NewCyberAttackEvent extends CyberAttackEvent, NewRealWorldEvent {
 
   /**
-   * Set the Agent to attack, specifying the <code>ClusterIdentifier</code>.
+   * Set the Agent to attack, specifying the <code>MessageAddress</code>.
    *
-   * @param agent a <code>ClusterIdentifier</code> Agent to attack
+   * @param agent a <code>MessageAddress</code> Agent to attack
    */
-  void setTarget(ClusterIdentifier agent);
+  void setTarget(MessageAddress agent);
 
   /**
    * Set the peak intensity of this attack, as a value from 0 to 1.

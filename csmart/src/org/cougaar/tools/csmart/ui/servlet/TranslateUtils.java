@@ -35,7 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.mts.Message;
 import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.util.UID;
@@ -90,7 +90,7 @@ public final class TranslateUtils {
    * Simply uses <tt>toPropertyTree(Object)</tt>.
    *
    * @param fromL a List of Objects
-   * @param agent the name of the Agent (ClusterIdentifier) for these Objects; i.e. the name of the agent in which this code is executing
+   * @param agent the name of the Agent (MessageAddress) for these Objects; i.e. the name of the agent in which this code is executing
    *
    * @return a List of non-null PropertyTrees; list may be empty, but is not null
    */
@@ -115,7 +115,7 @@ public final class TranslateUtils {
    * org.cougaar.core.util.UniqueObject or this will return null.
    *
    * @param o an Object to convert into a PropertyTree
-   * @param agent the name of the Agent (ClusterIdentifier) for this Object
+   * @param agent the name of the Agent (MessageAddress) for this Object
    *
    * @return a PropertyTree, or null if an error occurred
    */
@@ -161,7 +161,7 @@ public final class TranslateUtils {
     // EVENT_PUBLISHER String getPublisher()
     pt.put(PropertyNames.EVENT_PUBLISHER, hce.getPublisher());
 
-    // EVENT_SOURCE ClusterIdentifier getSource()
+    // EVENT_SOURCE MessageAddress getSource()
     pt.put(PropertyNames.EVENT_SOURCE, trimAngles(hce.getSource().toString()));
 
     // EVENT_DESCRIPTION String getDescription()
@@ -455,7 +455,7 @@ public final class TranslateUtils {
    * The agent in the property tree returned is always the agent in which
    * this code is executing.
    * Assets with clusterPG also return an ASSET_CLUSTER
-   * which is the cluster ID in asset.getClusterPG().getClusterIdentifier
+   * which is the cluster ID in asset.getClusterPG().getMessageAddress
    */
 
   public static PropertyTree toPropertyTree(Asset asset, String agent) {
@@ -466,7 +466,7 @@ public final class TranslateUtils {
     pt.put(PropertyNames.ASSET_KEY, trimAngles(asset.getKey().toString()));
     if (asset.hasClusterPG())
       pt.put(PropertyNames.ASSET_CLUSTER,
-	     trimAngles(asset.getClusterPG().getClusterIdentifier().toString()));
+	     trimAngles(asset.getClusterPG().getMessageAddress().toString()));
 
     String className = asset.getClass().getName();
     int index = className.lastIndexOf('.');
@@ -575,7 +575,7 @@ public final class TranslateUtils {
       return getScheduleDescription((Schedule)indirectObject);
     }
     // CLUSTERIDENTIFIER
-    if (indirectObject instanceof ClusterIdentifier) {
+    if (indirectObject instanceof MessageAddress) {
       return trimAngles(indirectObject.toString());
     }
     // ASSETTRANSFER

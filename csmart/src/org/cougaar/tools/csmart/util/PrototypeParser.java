@@ -45,7 +45,7 @@ import org.cougaar.util.Reflect;
 import org.cougaar.util.TimeSpan;
 import org.cougaar.util.log.Logger;
 
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
@@ -432,8 +432,8 @@ public class PrototypeParser {
 
     PropGroupData pgData = new PropGroupData(PropGroupData.CLUSTER);
     PGPropData propData = new PGPropData();
-    propData.setName("ClusterIdentifier");
-    propData.setType("ClusterIdentifier");
+    propData.setName("MessageAddress");
+    propData.setType("MessageAddress");
     propData.setValue(name);
     pgData.addProperty(propData);
 

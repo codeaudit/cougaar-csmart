@@ -21,7 +21,7 @@
 package org.cougaar.tools.csmart.runtime.ldm.event;
 
 import org.cougaar.planning.ldm.plan.PlanElement;
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 
 /**
  * Create a new <code>HappinessChangeEvent</code> to indicate the
@@ -46,8 +46,8 @@ public interface NewHappinessChangeEvent extends HappinessChangeEvent {
   void setPublisher(String publisher);
 
   /**
-   * Set the <code>ClusterIdentifier</code> "source" publisher of 
+   * Set the <code>MessageAddress</code> "source" publisher of 
    * this <code>Event</code>.
    */
-  void setSource(ClusterIdentifier source);
+  void setSource(MessageAddress source);
 }

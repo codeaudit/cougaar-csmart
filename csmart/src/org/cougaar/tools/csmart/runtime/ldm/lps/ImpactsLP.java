@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.cougaar.core.agent.ClusterServesLogicProvider;
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.blackboard.EnvelopeTuple;
 import org.cougaar.core.blackboard.LogPlanServesLogicProvider;
 import org.cougaar.core.blackboard.SubscriberException;
@@ -66,10 +66,10 @@ public class ImpactsLP extends LogPlanLogicProvider implements MessageLogicProvi
     if (! (obj instanceof RealWorldEvent || obj instanceof InfrastructureEvent)) return;
     Directive dir = (Directive)obj;
     // get the destination
-    ClusterIdentifier destination = dir.getDestination();
+    MessageAddress destination = dir.getDestination();
     if (destination == null) return;
     // Ensure that the destination is not the local cluster
-    if (destination.equals(cluster.getClusterIdentifier())) return;
+    if (destination.equals(cluster.getMessageAddress())) return;
     logplan.sendDirective(dir, changes);
   }
   

@@ -25,7 +25,7 @@ import java.io.Serializable;
 import org.cougaar.planning.ldm.plan.PlanElement;
 import org.cougaar.core.util.UniqueObject;
 import org.cougaar.core.blackboard.Publishable;
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 
 /**
  * An object whose appearance indicates that a response was expected
@@ -48,10 +48,10 @@ public interface DeadlineTimerEvent extends Serializable, UniqueObject, Publisha
   String getPublisher();
 
   /**
-   * Get the <code>ClusterIdentifier</code> "source" publisher of 
+   * Get the <code>MessageAddress</code> "source" publisher of 
    * this <code>Event</code>.
    */
-  ClusterIdentifier getSource();
+  MessageAddress getSource();
 
 
   // Publishable gives us boolean isPersistable(), for which for now we can say no

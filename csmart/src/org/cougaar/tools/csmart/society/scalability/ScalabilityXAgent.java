@@ -484,7 +484,7 @@ public class ScalabilityXAgent
 //       writer.println("Nomenclature String \"" + getFullName() + "\"");
 //       writer.println();
 //       writer.println("[ClusterPG]");
-//       writer.println("ClusterIdentifier ClusterIdentifier \"" + getFullName() + "\"");
+//       writer.println("MessageAddress MessageAddress \"" + getFullName() + "\"");
 //       writer.println();
 //       writer.println("[OrganizationPG]");
 //       writer.println("Roles Collection<Role> \"ScalabilityProvider, ScalabilityControlProvider, ScalabilityStatisticsProvider\"");
@@ -518,8 +518,8 @@ public class ScalabilityXAgent
 
     PropGroupData pgData = new PropGroupData(PropGroupData.CLUSTER);
     PGPropData propData = new PGPropData();
-    propData.setName("ClusterIdentifier");
-    propData.setType("ClusterIdentifier");
+    propData.setName("MessageAddress");
+    propData.setType("MessageAddress");
     propData.setValue(getFullName().toString());
     pgData.addProperty(propData);
 

@@ -228,7 +228,7 @@ public class AssetDBComponent
 	  // Using that, look up the ClusterID, TypeID, ItemID
 	  // But default back to the ALIB_ID if necessary
 	  // FIXME: Look up these PG IDs
-	  String cID = getPGVal("ClusterPG|ClusterIdentifier", supported);
+	  String cID = getPGVal("ClusterPG|MessageAddress", supported);
 	  if (cID == null || cID.equals(""))
 	    cID = supported;
 
@@ -400,7 +400,7 @@ public class AssetDBComponent
           substitutions.put(":pgAttrLibId", pgAttrLibId);
           PGAttr pgAttr = (PGAttr)pgAttributes.get(pgAttrLibId);
 	  // FIXME: Why is attrType unused here? ATTRIBUTE_TYPE col from lib_pg_attr
-	  // It is String, ClusterIdentifier, etc
+	  // It is String, MessageAddress, etc
 	  //          String attrType = pgAttr.getAttrType();
 	  String aggregateType = "SINGLE";
 	  if (pgAttr == null) {

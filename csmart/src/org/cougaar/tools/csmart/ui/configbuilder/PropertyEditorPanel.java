@@ -1032,7 +1032,7 @@ public class PropertyEditorPanel extends JPanel
       break;
     case CLUSTER:
       // type is enclosed in parens and appended to name
-      pg.addProperty("ClusterIdentifier (ClusterIdentifier)", "");
+      pg.addProperty("MessageAddress (MessageAddress)", "");
       break;
     case ENTITY:
       break;

@@ -21,7 +21,7 @@
 package org.cougaar.tools.csmart.runtime.ldm.event;
 
 import org.cougaar.core.util.UID;
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 
 import org.cougaar.planning.ldm.plan.Aggregation;
 import org.cougaar.planning.ldm.plan.Allocation;
@@ -51,7 +51,7 @@ public class DeadlineTimerEventImpl implements NewDeadlineTimerEvent {
   private UID id;
 
   protected String publisher;
-  protected ClusterIdentifier source;
+  protected MessageAddress source;
 
   public DeadlineTimerEventImpl(UID uid) {
     this.id = uid;
@@ -81,11 +81,11 @@ public class DeadlineTimerEventImpl implements NewDeadlineTimerEvent {
   }
   
   // origCluster
-  public ClusterIdentifier getSource() {
+  public MessageAddress getSource() {
     return source;
   }
   
-  public void setSource(ClusterIdentifier source) {
+  public void setSource(MessageAddress source) {
     if (this.source != null) {
       throw new IllegalArgumentException("Source already set");
     }

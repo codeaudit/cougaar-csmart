@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 
 import org.cougaar.tools.csmart.util.LatLonPoint;
 import org.cougaar.tools.csmart.util.NamedLocation;
@@ -110,25 +110,25 @@ public class Society {
   /**
    * Does an <code>Agent</code> with the given id exist?
    *
-   * @param agcid an <code>Agent</code>'s <code>ClusterIdentifier</code> 
+   * @param agcid an <code>Agent</code>'s <code>MessageAddress</code> 
    * @return a <code>boolean</code>
    */
-  public boolean existsAgent(ClusterIdentifier agcid) {
-    // Agents are the same if their ClusterIdentifiers are the same
+  public boolean existsAgent(MessageAddress agcid) {
+    // Agents are the same if their MessageAddresss are the same
     //return (getAgent(agcid) != null);
     return agents.contains(new Agent(agcid));
   }
 
   /**
-   * Get the <code>Agent</code> with the given <code>ClusterIdentifier</code>
+   * Get the <code>Agent</code> with the given <code>MessageAddress</code>
    *
-   * @param cid a <code>ClusterIdentifier</code> <code>Agent</code> cluster id
+   * @param cid a <code>MessageAddress</code> <code>Agent</code> cluster id
    * @return an <code>Agent</code> with that Cluster ID, <code>null</code> if none exists
    */
-  public Agent getAgent(ClusterIdentifier cid) {
+  public Agent getAgent(MessageAddress cid) {
     for (Iterator iAgt = agents.iterator(); iAgt.hasNext(); ) {
       Agent curr = (Agent)iAgt.next();
-      if (curr.getClusterIdentifier().equals(cid)) {
+      if (curr.getMessageAddress().equals(cid)) {
 	return curr;
       }
     }

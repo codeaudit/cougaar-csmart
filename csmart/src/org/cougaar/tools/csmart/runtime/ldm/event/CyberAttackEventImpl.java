@@ -27,7 +27,7 @@ import java.util.Iterator;
 import org.cougaar.util.EmptyIterator;
 
 import org.cougaar.core.util.UID;
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 
 import org.cougaar.tools.csmart.util.ArgValue;
 import org.cougaar.tools.csmart.Constants;
@@ -48,7 +48,7 @@ public class CyberAttackEventImpl extends RealWorldEventImpl
   
   private double intensity = 0.0d;
   
-  private ClusterIdentifier targetAgentCID = null;
+  private MessageAddress targetAgentCID = null;
   
   private class ImpMod implements ImpactModel {
     
@@ -139,14 +139,14 @@ public class CyberAttackEventImpl extends RealWorldEventImpl
     return intensity;
   }
   
-  public void setTarget(ClusterIdentifier targetAgentCID) {
+  public void setTarget(MessageAddress targetAgentCID) {
     if (targetAgentCID == null) {
       throw new IllegalArgumentException("targetAgentCID must not be null");
     }
     this.targetAgentCID = targetAgentCID;
   }
   
-  public ClusterIdentifier getTarget() {
+  public MessageAddress getTarget() {
     return this.targetAgentCID;
   }
 

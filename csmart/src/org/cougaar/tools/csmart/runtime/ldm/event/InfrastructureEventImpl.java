@@ -24,7 +24,7 @@ package org.cougaar.tools.csmart.runtime.ldm.event;
 import java.util.Iterator;
 
 import org.cougaar.planning.ldm.plan.DirectiveImpl;
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.util.UID;
 
 import org.cougaar.tools.csmart.util.EarthConstants;
@@ -51,7 +51,7 @@ public class InfrastructureEventImpl
   private long time = 0l; // in milliseconds
   private String publisher;
   private RealWorldEvent parent = null;
-  public ClusterIdentifier getOwner() { return source; }
+  public MessageAddress getOwner() { return source; }
   public UID getUID() { return uid; }
   public void setUID(UID uid) {
     if (this.uid != null) throw new IllegalArgumentException("UID already set");
@@ -73,7 +73,7 @@ public class InfrastructureEventImpl
 
   public InfrastructureEventImpl(
       UID uid,
-      ClusterIdentifier destination,
+      MessageAddress destination,
       String type,
       long duration,
       double intensity) {
@@ -222,8 +222,8 @@ public class InfrastructureEventImpl
     return getUID().hashCode();
   }
 
-  public void setSource(ClusterIdentifier asource) {
-    ClusterIdentifier old = getSource();
+  public void setSource(MessageAddress asource) {
+    MessageAddress old = getSource();
     if (old != null) {
       if (! asource.equals(old)) {
         if(log.isErrorEnabled()) {
@@ -235,12 +235,12 @@ public class InfrastructureEventImpl
     }
   }
 
-  public void setDestination(ClusterIdentifier dest) {
+  public void setDestination(MessageAddress dest) {
     super.setDestination(dest);
   }
   
   // Private setter without destination check
-  public void privately_setDestination(ClusterIdentifier dest) {
+  public void privately_setDestination(MessageAddress dest) {
     super.setDestination(dest);
   }
 

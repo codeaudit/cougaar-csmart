@@ -23,7 +23,7 @@ package org.cougaar.tools.csmart.runtime.plugin;
 import java.util.*;
 
 import org.cougaar.core.component.ServiceBroker;
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.blackboard.Subscription;
 import org.cougaar.core.blackboard.IncrementalSubscription;
 import org.cougaar.core.plugin.SimplePlugin;
@@ -51,7 +51,7 @@ public class ABCImpactPlugin extends SimplePlugin {
   private IncrementalSubscription infEventSub;
 
   private UnaryPredicate createInfEventPred() {
-    final ClusterIdentifier myCID = getAgentIdentifier();
+    final MessageAddress myCID = getAgentIdentifier();
     return
       new UnaryPredicate() {
         public boolean execute(Object o) {

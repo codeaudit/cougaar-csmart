@@ -41,7 +41,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
@@ -277,8 +277,8 @@ public class SearchServlet
 	l = null;
       }
       
-      /* Obtain <code>ClusterIdentifier</code> */
-      ClusterIdentifier cid = support.getAgentIdentifier();
+      /* Obtain <code>MessageAddress</code> */
+      MessageAddress cid = support.getAgentIdentifier();
       
       // send back the results
       try {
@@ -308,12 +308,12 @@ public class SearchServlet
     /**
      * Reply with a serialized List of PropertyTrees.
      * @param out OutputStream
-     * @param cid ClusterIdentifier
+     * @param cid MessageAddress
      * @param l List of UIDs 
      */
     private static void replyWithData(
 				      OutputStream out, 
-				      ClusterIdentifier cid,
+				      MessageAddress cid,
 				      List l) throws IOException {
       
       // convert to PropertyTrees, all tagged with this agent's name
@@ -335,14 +335,14 @@ public class SearchServlet
     /**
      * Reply with an HTML document.
      * @param out PrintWriter out
-     * @param cid ClusterIdentifier
+     * @param cid MessageAddress
      * @param startUIDs starting set of UIDs
      * @param isDown search guidlines
      * @param l List of UIDs
      */
     private static void replyWithHTML(
 				      PrintWriter out, 
-				      ClusterIdentifier cid,
+				      MessageAddress cid,
 				      Set startUIDs,
 				      boolean isDown,
 				      List l) {
@@ -680,7 +680,7 @@ public class SearchServlet
 				 int limit) {
     
       // get this Agent's identifier
-      ClusterIdentifier localCID =
+      MessageAddress localCID =
 	support.getAgentIdentifier();
     
       if (VERBOSE) {
@@ -735,7 +735,7 @@ public class SearchServlet
 	    } else {
 	      Task t = (Task)uo;
 	      // only have a UID for the parent
-	      ClusterIdentifier tCID = t.getSource();
+	      MessageAddress tCID = t.getSource();
 	      if ((tCID == null) ||
 		  (localCID.equals(tCID))) {
 		// local Task, must search by UID

@@ -31,7 +31,7 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
 
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.util.UID;
 import org.cougaar.util.UnaryPredicate;
 
@@ -63,7 +63,7 @@ public class ScriptedEventPlugin
     extends CSMARTPlugin {
 
   /** ClusterID of Agent containing the Transducer Plugin **/
-  private ClusterIdentifier transducer;
+  private MessageAddress transducer;
 
   /**
    * Lets face it, this plugin just blindly publishes events, it doesn't
@@ -89,7 +89,7 @@ public class ScriptedEventPlugin
     if (transducerName == null || transducerName.equals("")) {
       throw new RuntimeException("ScriptedEventPlugin expected param[1] to be the name of the Transducer Agent");
     }
-    transducer = new ClusterIdentifier(transducerName);
+    transducer = MessageAddress.getMessageAddress(transducerName);
     
     publishEvents(eventFileName);
   }
@@ -190,7 +190,7 @@ public class ScriptedEventPlugin
     Hashtable params = getParams(node);
     
     NewCyberAttackEvent cae = theCSMARTF.newCyberAttackEvent();
-    cae.setTarget(new ClusterIdentifier(target));
+    cae.setTarget(MessageAddress.getMessageAddress(target));
     cae.setType(type);
     // Time is delta from now, in millis
     cae.setTime(time + currentTimeMillis());

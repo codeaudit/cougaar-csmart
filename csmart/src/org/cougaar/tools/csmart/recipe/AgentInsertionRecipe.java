@@ -389,8 +389,8 @@ public class AgentInsertionRecipe extends RecipeBase
     }
     
     PGPropData pgData = new PGPropData();
-    pgData.setName("ClusterIdentifier");
-    pgData.setType("ClusterIdentifier");
+    pgData.setName("MessageAddress");
+    pgData.setType("MessageAddress");
     pgData.setValue(propName.getValue().toString());
     pgd.addProperty(pgData);
 

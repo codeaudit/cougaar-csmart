@@ -27,7 +27,7 @@ import org.cougaar.core.util.UID;
 import org.cougaar.core.util.UniqueObject;
 
 import org.cougaar.core.blackboard.Publishable;
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.planning.ldm.plan.PlanElement;
 
 /**
@@ -87,8 +87,8 @@ public interface HappinessChangeEvent extends Serializable, Publishable, UniqueO
   String getPublisher();
 
   /**
-   * Get the <code>ClusterIdentifier</code> "source" publisher of 
+   * Get the <code>MessageAddress</code> "source" publisher of 
    * this <code>Event</code>.
    */
-  ClusterIdentifier getSource();
+  MessageAddress getSource();
 }

@@ -119,7 +119,7 @@ public class AssetUIComponent
       }
     }
 
-    // FIXME: Perhaps check that ClusterPG (ClusterIdentifier),
+    // FIXME: Perhaps check that ClusterPG (MessageAddress),
     // ItemIdentificationPG (ItemIdentifiation), TypeIdentificationPG (TypeIdentification)
     // are, at a minimum, among those filled in?
     // What would I do though if they're not?

@@ -442,8 +442,8 @@ public class ABCAgent
 
     PropGroupData pgData = new PropGroupData(PropGroupData.CLUSTER);
     PGPropData propData = new PGPropData();
-    propData.setName("ClusterIdentifier");
-    propData.setType("ClusterIdentifier");
+    propData.setName("MessageAddress");
+    propData.setType("MessageAddress");
     propData.setValue(getFullName().toString());
     pgData.addProperty(propData);
 

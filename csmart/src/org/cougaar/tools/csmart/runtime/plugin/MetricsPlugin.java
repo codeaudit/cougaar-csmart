@@ -22,7 +22,7 @@ package org.cougaar.tools.csmart.runtime.plugin;
 
 import org.cougaar.core.service.BlackboardMetricsService;
 import org.cougaar.core.blackboard.IncrementalSubscription;
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.blackboard.DirectiveMessage;
 import org.cougaar.core.component.ServiceRevokedListener;
 import org.cougaar.core.component.ServiceRevokedEvent;
@@ -149,7 +149,7 @@ public class MetricsPlugin
   private static final String DEFAULT_DIRECTORY = ".";
   private Role MetricsProviderRole = Role_MetricsProvider;
   private Asset dummyAsset;     // We assign the statistics tasks to this asset
-  private ClusterIdentifier ourCluster;
+  private MessageAddress ourCluster;
   private long startTime;
   private long startCPU;
   private int completedPlanElementCount = 0;   // Count of completed plan elements for (manage tasks)
@@ -191,8 +191,8 @@ public class MetricsPlugin
 	if (verb.equals(Verb_Start) || verb.equals(Verb_Finish) || verb.equals(Verb_Sample) || verb.equals(Verb_Ready)) {
 	  Asset directObject = (Asset) task.getDirectObject();
 	  if (directObject.hasClusterPG()) {
-	    ClusterIdentifier theCluster =
-	      directObject.getClusterPG().getClusterIdentifier();
+	    MessageAddress theCluster =
+	      directObject.getClusterPG().getMessageAddress();
 	    if (theCluster.equals(ourCluster)) {
 	      return true;
 	    }

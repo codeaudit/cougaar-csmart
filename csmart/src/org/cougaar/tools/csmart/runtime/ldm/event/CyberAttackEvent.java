@@ -19,7 +19,7 @@
  * </copyright>
  */
 package org.cougaar.tools.csmart.runtime.ldm.event;
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 
 /**
  * Event modelling attacks to the information infrastructure of a system.
@@ -37,9 +37,9 @@ public interface CyberAttackEvent extends RealWorldEvent {
   /**
    * Get the Agent or Node to Attack.
    *
-   * @return a <code>ClusterIdentifier</code> Agent to attack
+   * @return a <code>MessageAddress</code> Agent to attack
    */
-  ClusterIdentifier getTarget();
+  MessageAddress getTarget();
 
   /**
    * Get the peak intensity of the attack.

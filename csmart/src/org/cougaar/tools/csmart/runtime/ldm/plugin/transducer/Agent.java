@@ -20,38 +20,38 @@
  */
 package org.cougaar.tools.csmart.runtime.ldm.plugin.transducer;
 
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 
 import org.cougaar.tools.csmart.util.*;
 
 /**
  * Represent an Agent in the simulated society.  
  * For use by the Transducer.<br>
- * This adds a <code>ClusterIdentifier</code> version of the name.
+ * This adds a <code>MessageAddress</code> version of the name.
  *
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  * @see NamedLocationImpl
  */
 public class Agent extends NamedLocationImpl {
-  private ClusterIdentifier cid = null;
-  public Agent (ClusterIdentifier cid) {
+  private MessageAddress cid = null;
+  public Agent (MessageAddress cid) {
     super(cid.toString());
     this.cid = cid;
   }
-  public Agent (ClusterIdentifier cid, float lat, float lon) {
+  public Agent (MessageAddress cid, float lat, float lon) {
     super(cid.toString(), lat, lon);
     this.cid = cid;
   }
   public Agent (String name) {
     super(name);
-    this.cid = new ClusterIdentifier(name);
+    this.cid = MessageAddress.getMessageAddress(name);
   }
   public Agent (String name, float lat, float lon) {
     super(name, lat, lon);
-    this.cid = new ClusterIdentifier(name);
+    this.cid = MessageAddress.getMessageAddress(name);
   }
 
-  public ClusterIdentifier getClusterIdentifier() {
+  public MessageAddress getMessageAddress() {
     return this.cid;
   }
 } // Agent.java

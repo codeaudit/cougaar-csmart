@@ -22,7 +22,7 @@ package org.cougaar.tools.csmart.runtime.ldm.event;
 
 import org.cougaar.planning.ldm.plan.PlanElement;
 import org.cougaar.core.util.UID;
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 
 /**
  * Indicates the change in customer satisfaction due to the linked
@@ -50,7 +50,7 @@ public class HappinessChangeEventImpl implements NewHappinessChangeEvent {
   private double currentHappiness;
 
   protected String publisher;
-  protected ClusterIdentifier source;
+  protected MessageAddress source;
 
   public HappinessChangeEventImpl(UID uid) {
     this.id = uid;
@@ -157,11 +157,11 @@ public class HappinessChangeEventImpl implements NewHappinessChangeEvent {
   }
   
   // origCluster
-  public ClusterIdentifier getSource() {
+  public MessageAddress getSource() {
     return source;
   }
   
-  public void setSource(ClusterIdentifier source) {
+  public void setSource(MessageAddress source) {
     if (this.source != null) {
       throw new IllegalArgumentException("Source already set");
     }

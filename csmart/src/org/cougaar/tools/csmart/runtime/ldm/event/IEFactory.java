@@ -20,7 +20,7 @@
  */
 package org.cougaar.tools.csmart.runtime.ldm.event;
 
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.domain.Factory;
 
 import org.cougaar.tools.csmart.runtime.ldm.CSMARTFactory;
@@ -53,13 +53,13 @@ public class IEFactory implements Factory {
   /**
    * Create a new InfrastructureEvent with the given values
    *
-   * @param dest a <code>ClusterIdentifier</code> Agent to impact
+   * @param dest a <code>MessageAddress</code> Agent to impact
    * @param type a <code>String</code> constant from <code>org.cougaar.tools.csmart.Constants.InfEventType</code>
    * @param duration a <code>long</code> impact duration
    * @param intensity a <code>double</code> magnitude from 0 to 1
    * @return a <code>NewInfrastructureEvent</code>
    */
-  public NewInfrastructureEvent newInfrastructureEvent(ClusterIdentifier dest,
+  public NewInfrastructureEvent newInfrastructureEvent(MessageAddress dest,
 						       String type,
 						       long duration,
 						       double intensity) {

@@ -118,7 +118,7 @@ public class SimpleKEventImpl extends KineticEventImpl
 	
 	if (wireDownTime > 0L) {	  
 	  NewInfrastructureEvent wireDownIE = theIEF.newInfrastructureEvent(
-									    agent.getClusterIdentifier(),
+									    agent.getMessageAddress(),
 									    Constants.InfEventType.WIRE_DOWN,
 									    wireDownTime,
 									    getIntensity());
@@ -129,7 +129,7 @@ public class SimpleKEventImpl extends KineticEventImpl
 	
 	if (nodeDownTime > 0L) {	  
 	  NewInfrastructureEvent nodeDownIE = theIEF.newInfrastructureEvent(
-									    agent.getClusterIdentifier(),
+									    agent.getMessageAddress(),
 									    Constants.InfEventType.NODE_DOWN,
 									    nodeDownTime,
 									    getIntensity());

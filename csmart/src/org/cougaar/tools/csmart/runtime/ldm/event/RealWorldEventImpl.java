@@ -23,7 +23,7 @@ package org.cougaar.tools.csmart.runtime.ldm.event;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.util.UID;
 import org.cougaar.planning.ldm.plan.DirectiveImpl;
 
@@ -52,7 +52,7 @@ public abstract class RealWorldEventImpl extends DirectiveImpl
   private String myType = null;
   private transient Logger log;
 
-  public ClusterIdentifier getOwner() {
+  public MessageAddress getOwner() {
     return source;
   }
   
@@ -124,8 +124,8 @@ public abstract class RealWorldEventImpl extends DirectiveImpl
     return list;
   }
   
-  public void setSource(ClusterIdentifier asource) {
-    ClusterIdentifier old = getSource();
+  public void setSource(MessageAddress asource) {
+    MessageAddress old = getSource();
     if (old != null) {
       if (! asource.equals(old)) {
         if(log.isErrorEnabled()) {
