@@ -1,0 +1,157 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Generator" content="Microsoft Word 97">
+   <meta name="Version" content="8.0.3410">
+   <meta name="Date" content="10/11/96">
+   <meta name="Template" content="C:\APPS\MSOffice\Office\HTML.DOT">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (WinNT; U) [Netscape]">
+   <title>Scalability Society Help</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+<b><font face="Arial">Scalability Society Configuration</font></b>
+<p><a href="#agentbytes">Agent Bytes Per Task</a>
+<br><a href="#agentcount">Agent Count by Level</a>
+<br><a href="#assetcount">Asset Count by Level</a>
+<br><a href="#cpu">CPU Per Task</a>
+<br><a href="#expansion">Expansion</a>
+<br><a href="#leafallocators">Leaf Allocator Count</a>
+<br><a href="#levelcount">Level Count</a>
+<br><a href="#msgbytes">Message Bytes Per Task</a>
+<br><a href="#orgallocators">Org Allocator Count</a>
+<br><a href="#queuetasks">Queue Tasks</a>
+<br><a href="#rescindlevel">Rescind Level</a>
+<br><a href="#roottasks">Root Tasks</a>
+<br><a href="#samplelevel">Sample Interval</a>
+<br><a href="#subscriptioncount">Subscription Count</a>
+<br><a href="#taskrate">Task Rate</a>
+<p>The Scalability Society in CSMART is the scalability module used at
+the last ALP workshop to measure the scalability of the Cougaar architecture.
+It allows you to create societies of a rigidly controlled structure, and
+collect run-time statistics on the running of the society. The specific
+collected metrics are detailed elsewhere. For details on the purpose of
+the scalability society, see <a href="http://www.cougaar.org/projects/scalability.html">http://www.cougaar.org/projects/scalability.html</a>.
+Here, we provide an overview on how to construct a scalability society.
+<p>The scalability society consists of a number of different levels. There
+are a number of agents at each level. Levels are numbered from 0 up. Tasks
+originate at level 0 and flow to the next higher level. At each level,
+the incoming Tasks are expanded into a number of <a href="#subtask">subtasks</a>.
+The subtasks are “processed” by a consumption Plugin that consumes CPU
+and memory resources for each Task. The consumption Plugin then expands
+the Task into a <a href="#consumed">consumed subtask</a>. This consumed
+subtask is then allocated to either a local Asset or to one of the agents
+at the next higher level.
+<p>All properties are either single integers or arrays of integers. For
+properties that have array values, each element of the array corresponds
+to the value use for the corresponding level: the 0<sup>th</sup> element
+for level zero, the 1<sup>st</sup> element for level one and so on. Extra
+elements are ignored. When an array is shorter than the number of levels,
+its final element is duplicated as needed. In some cases, the first or
+last element is ignored to insure the correctness of the society. For example,
+there must be no org allocators at the last level because there are no
+levels beyond the last.
+<p>A number of properties control the structure of the society:
+<ul>
+<li>
+<a NAME="agentbytes"></a>Agent Bytes Per Task (array) -- specifies the
+size (in bytes) of a block of memory that is allocated for each task. The
+memory is held in the agent for as long as the task exists. It is discarded
+when the task is removed.</li>
+
+<li>
+<a NAME="agentcount"></a>Agent Count by Level (array) -- specifies the
+number of total Agents in each level of your society. The Agent count for
+level 0 should always be 1.</li>
+
+<li>
+<a NAME="assetcount"></a>Asset Count by Level (array) -- specifies the
+number of total Assets in each level of your society. Used to stress the
+load of the system.</li>
+
+<li>
+<a NAME="cpu"></a>CPU Per Task (array) -- the number of times a loop that
+does an integer divide should be performed. The value is expressed in tens
+of thousands of iterations.</li>
+
+<li>
+<a NAME="expansion"></a>Expansion (array) -- an array of integers specifying
+the number of <a href="#subtask">subtasks</a> created for each incoming
+task.</li>
+
+<li>
+<a NAME="leafallocators"></a>Leaf Allocator Count (array) -- specifies
+the number of leaf allocators in an agent. Each leaf allocator allocates
+<a href="#consumed">consumed
+subtasks</a> to local assets. A given allocator handles every nth task
+where "n" is the total number of allocators (both leaf allocators and org
+allocators). Usually the last level should have at least one Leaf Allocator,
+to ensure that all Tasks are handled.</li>
+
+<li>
+<a NAME="levelcount"></a>Level Count (int) -- an integer that specifies
+the number of levels</li>
+
+<li>
+<a NAME="msgbytes"></a>Message Bytes Per Task (array) -- specifies the
+additional memory added to every task in an agent. This memory is not cumulative.
+Every subtask created in an agent is encumbered with a block of memory
+of the specified size. This memory consumes memory resources, but is intended
+to consume communication bandwidth.</li>
+
+<li>
+<a NAME="orgallocators"></a>Org Allocator Count (array) -- specifies the
+number of org allocators in an agent. Each Org Allocator allocates consumed
+subtasks to all of the agents at the next level. Again, a given allocator
+handles every nth task where "n" is the total number of allocators (both
+leaf allocators and org allocators). The plugin allocates to the agents
+at the next level in round robin fashion. Usually, each level in your society
+should have at least one Org Allocator, to ensure that Tasks are propagated
+to the next level. The last level should not have an Org Allocator, as
+there is no next level.</li>
+
+<li>
+<a NAME="subscriptioncount"></a>Subscription Count (array) -- specifies
+the total subscriptions in an agent. A dummy plugin is added to create
+additional subscriptions depending on the number of subscriptions needed
+by the rest of the plugins in the agent.</li>
+</ul>
+Other properties control the size of the experiment and other aspects of
+the load imposed by the problem:
+<ul>
+<li>
+<a NAME="roottasks"></a>Root Tasks -- specifies how many tasks are created
+to start things off. Each of these root tasks is expanded and allocated
+as described above. The trial ends when all root tasks have been created
+and completely expanded and allocated.</li>
+
+<li>
+<a NAME="queuetasks"></a>Queue Tasks -- specifies how many root tasks are
+created at a time. Initially, a number of root tasks is created as specified
+by this value. As expansion and allocation of these tasks completes, additional
+root tasks are created to maintain a level of unfinished tasks at the specified
+level. A value of zero means to create all the root tasks at once.</li>
+
+<li>
+<a NAME="rescindlevel"></a>Rescind Level -- specifies how many completed
+root tasks are retained. Zero means retain all root tasks. Otherwise, root
+tasks are rescinded to maintain the number of completed tasks at the specified
+level.</li>
+
+<li>
+<a NAME="taskrate"></a>Task Rate -- specifies the interval (in tasks per
+minute) between the creation of root tasks.</li>
+
+<li>
+<a NAME="samplelevel"></a>Sample Interval -- specifies how long (in seconds)
+to wait between samples. Zero means to only take a sample at the end of
+the trial.</li>
+</ul>
+<font face="Arial">Glossary</font>
+<p><a NAME="subtask"></a>Subtask -- in this context, an unqualified "subtask"
+is a task created by the ScalabilityExpanderPlugIn when it expands a root
+task or a task received from another agent.
+<p><a NAME="consumed"></a>Consumed Subtask -- The ConsumerPlugIn expands
+a subtask into a consumed subtask after consuming the specified resources.
+</body>
+</html>

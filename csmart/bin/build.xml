@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+
+<!-- =======================================================================-->
+<!-- CSMART Build File				                            -->
+<!--									    -->
+<!-- This build file was created to simplify the build process of CSMART    -->
+<!-- =======================================================================-->
+
+<project name="CSMART" default="compile" basedir="../">
+
+	<property file="${user.home}/.ant.properties" />
+
+	<!-- Set some global properties -->
+	<property name="lib" value="../lib" />
+
+	<!-- Third party jar files go in CIP/sys -->
+	<property name="sys" value="../sys" />
+
+	<property name="src" value="./src" />
+	<property name="testsrc" value="./regress" />
+	<property name="testbuild" value="./tmpdir/regress" />
+	<property name="build" value="./tmpdir" />
+
+	<property name="build.javadocs" value="./doc/javadoc" />
+
+	<property name="packages" value="org.cougaar.tools.csmart.*" />
+
+	<property name="build.compiler" value="classic"/>
+
+	<path id="csmart.classpath">
+           <pathelement location="${lib}/core.jar" />
+	   <pathelement location="${lib}/planserver.jar" />
+	   <pathelement location="${lib}/glm.jar" />
+	   <pathelement location="${lib}/scalability.jar" />
+	   <pathelement location="${lib}/server.jar" />
+	   <pathelement location="${sys}/grappa1_2_bbn.jar" />
+	   <pathelement location="${sys}/xerces.jar" />
+	   <pathelement location="${sys}/jcchart451K.jar" />
+	</path>
+
+	<target name="junit">
+	  <available property="junit.present" classname="junit.framework.TestCase" />
+	</target>
+
+	<!-- ============================================================= -->
+	<!-- Prepares all the build directories		               	   -->
+	<!-- ============================================================= -->
+
+	<target name="prepare">
+		<!-- Create the timestamp -->
+		<tstamp/>			
+	</target>
+
+	<!-- ========================================================== -->
+	<!-- Compiles the CSMART Code			                -->
+	<!-- ========================================================== -->	
+	<target name="compile" depends="prepare" description="Compiles the Code">
+		<mkdir dir="${build}" />
+		<javac srcdir="${src}" destdir="${build}" 
+		       includeAntRuntime="no" deprecation="no">
+ 	             	<classpath>
+        	          <path refid="csmart.classpath" />
+              		</classpath>
+		</javac>
+		<!-- Copy any gifs over as well -->
+		<copy todir="${build}" >
+		  <fileset dir="${src}" includes="**/*.gif"/>
+		  <fileset dir="${src}" includes="**/*.html"/>
+		  <fileset dir="${src}" includes="**/*.htm"/>
+		  <fileset dir="${src}" includes="**/*.jpg"/>
+		  <fileset dir="${src}" includes="**/*.bmp"/>
+		  <fileset dir="${src}" includes="**/*.png"/>
+		</copy>
+	</target>
+
+	<!-- ========================================================== -->
+	<!-- Compile EVERYTHING			                -->
+	<!-- ========================================================== -->	
+	<target name="compile-all" depends="compile, compile-tests" description="Compile all CSMART code plus unit testing code" />
+
+	<!-- ========================================================== -->
+	<!-- Clean up all built code                    	-->
+	<!-- ========================================================== -->
+	<target name="clean" description="Delete compiled code">
+	       <delete dir="${build}" />
+	       <delete>
+	              <fileset dir="${lib}" includes="**/csmart.jar" />
+	       </delete>
+	</target>
+
+	<!-- ====================================================================== -->
+	<!-- Compile regression test code     				          -->
+	<!-- ====================================================================== -->	
+	<target name="compile-tests" depends="prepare, junit" description="Compile unit tests" if="junit.present">
+	     <mkdir dir="${testbuild}" />
+	     <javac srcdir="${testsrc}" destdir="${testbuild}" >
+	            <classpath>
+		          <path refid="csmart.classpath"/>
+		    </classpath>
+	     </javac>
+	</target>
+
+	<!-- ====================================================================== -->
+	<!-- Clean up built regress test code     				    -->
+	<!-- ====================================================================== -->	
+	<target name="clean-tests" description="Delete compiled junit code">
+	       <delete dir="${testbuild}" />
+	</target>
+
+	<!-- ====================================================================== -->
+	<!-- Run the regression tests     				          -->
+	<!-- ====================================================================== -->
+	<target name="test-csmart" depends="compile-all" if="junit.present">
+		<junit printsummary="yes" fork="yes" dir="">
+			<classpath>
+				<pathelement location="${testbuild}" />
+			  <pathelement path="${java.class.path}" />
+			</classpath>
+
+		 <formatter type="plain" />
+
+			<batchtest>				
+				<fileset dir="${testbuild}">
+      				<include name="**/*Test*.class" />
+				</fileset>  				
+			</batchtest>
+									
+		</junit>
+	</target>
+	
+	<!-- ====================================================================== -->
+	<!-- Create a Jar for csmart     				          -->
+	<!-- ====================================================================== -->	
+	<target name="dist-csmart" depends="compile, clean-tests" description="Jars the CSMART module">
+	     <jar jarfile="${lib}/csmart-${DSTAMP}.jar" basedir="${build}" />
+             <exec dir="${lib}" executable="ln" os="Linux">
+		<arg line=" -s csmart-${DSTAMP}.jar csmart.jar" />
+	     </exec>
+	</target>
+
+	<!-- ====================================================================== -->
+	<!-- Generates the JavaDocs				          -->
+	<!-- ====================================================================== -->	
+	<target name="javadocs" depends="prepare">
+	       <delete dir="${build.javadocs}" />
+		<mkdir dir="${build.javadocs}"/>
+		<javadoc packagenames="${packages}"
+		         sourcepath="${src}"
+				 destdir="${build.javadocs}"
+				 author="true"
+				 version="true"
+				 windowtitle="CSMART API"
+				 doctitle="CSMART API"
+				 bottom="Copyright &#169; 2001 by BBNT Solutions LLC, all rights reserved.">
+
+			<classpath refid="csmart.classpath" />
+
+		</javadoc>
+	</target>			     
+
+</project>

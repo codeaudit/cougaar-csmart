@@ -1,0 +1,38 @@
+#!/bin/csh -f
+
+# Main script to run CSMART on Unix
+# Note that CSMART writes some files to its working directory.
+    
+set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
+
+# Next section lists Jar files required for CSMART. Note that by default CSMART uses the Cougaar
+# Bootstrapper, which should find the jar files automatically (searching CIP/lib, plugins, sys, etc).
+# One need only include the CSMART and core jar files
+# To run without the Bootstrapper, set org.cougaar.useBootstrapper=false
+# The Jars peculiar to CSMART and their usual locations are listed here as a convenience
+    
+# Must add other Jars which the Bootstrapper gives you when you run Node
+set LIBPATHS = "${COUGAAR_INSTALL_PATH}/lib/csmart.jar:${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/server.jar"
+
+# Third party jars are in CIP/sys
+# set LIBPATHS = "$LIBPATHS:${COUGAAR_INSTALL_PATH}/sys/xerces.jar:${COUGAAR_INSTALL_PATH}/sys/grappa1_2_bbn.jar:${COUGAAR_INSTALL_PATH}/sys/jcchart451K.jar"
+    
+if ($?COUGAAR_DEV_PATH) then
+    set LIBPATHS = "${COUGAAR_DEV_PATH}:$LIBPATHS"
+endif
+    
+set MYMEMORY="-Xms100m -Xmx300m"
+set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH"
+
+# Set the config path to include the basic CSMART config files first
+set MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
+
+set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -classpath $LIBPATHS"
+
+if ($?COUGAAR_DEV_PATH) then
+   echo java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART
+endif
+
+exec java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART
+
+

@@ -1,0 +1,129 @@
+/*
+ * <copyright>
+ * This software is to be used only in accordance with the COUGAAR license
+ * agreement. The license agreement and other information can be found at
+ * http://www.cougaar.org
+ *
+ * © Copyright 2000, 2001 BBNT Solutions LLC
+ * </copyright>
+ */
+
+package org.cougaar.tools.csmart.ui.console;
+
+import java.util.Date;
+import javax.swing.*;
+import com.klg.jclass.chart.JCChart;
+import com.klg.jclass.chart.JCAxis;
+import com.klg.jclass.chart.ChartDataViewSeries;
+import com.klg.jclass.chart.data.JCDefaultDataSource;
+import com.klg.jclass.chart.ChartDataEvent;
+
+/**
+ * StripChartSource is a Chart Data Source that 
+ * gets the values from a NodeEvent and updates arrays of values 
+ * that are charted.
+ */
+
+public class StripChartSource extends JCDefaultDataSource implements Runnable {
+  // number of points by which to scroll
+  private int scrollBack = 10;
+  // number of points displayed at once
+  private int numberOfPoints = 30;
+  // number of points to scroll at a time
+  private int scrollBackPoints = 1;
+  // marks current position in value arrays
+  private int currentLastIndex = 0;
+  // time at which the graph starts displaying
+  long startTime;
+  // label
+  final String[] labels = { "Idle Time" };
+  private JCChart chart;
+
+  /**
+   * Constructor.
+   * @param c the chart this data source is a part of.
+   */
+
+  public StripChartSource(JCChart c) {
+    super(null, null, null, null, "Strip Chart");
+    chart = c;
+    init();
+  }
+
+
+  /**
+   * Init the data source.  Create the x and y value arrays,
+   * and set the axis min and max according to the number of
+   * points we're using.
+   */
+
+  private void init() {
+    xvalues = new double[1][numberOfPoints];
+    yvalues = new double[1][numberOfPoints];
+    //    pointLabels = new String[numberOfPoints];
+    //    seriesLabels = labels;
+    currentLastIndex = 0;
+    for (int i = 0; i < numberOfPoints; i++) {
+      xvalues[0][i] = System.currentTimeMillis() / 1000;
+      yvalues[0][i] = Double.MAX_VALUE;
+    }
+    chart.setBatched(true);
+    chart.setBatched(false);
+  }
+
+  /**
+   * Add a new point. Scroll the chart if necessary.
+   * Only the y value is specified because it's a time based graph
+   * so the x value is the current time in seconds.
+   * @param value the y value to add
+   */
+
+  public void addValue(double value, long timestamp) {
+    addNewPoint(value, timestamp);
+    fireChartDataEvent(ChartDataEvent.RESET, 0, 0);
+
+    if (currentLastIndex == numberOfPoints) {
+      double xMinValue = xvalues[0][scrollBackPoints];
+      System.arraycopy(xvalues[0], scrollBackPoints, xvalues[0], 0, 
+		       numberOfPoints - scrollBackPoints);
+      System.arraycopy(yvalues[0], scrollBackPoints, yvalues[0], 0, 
+		       numberOfPoints - scrollBackPoints);
+      currentLastIndex = currentLastIndex - scrollBackPoints;
+      chart.setBatched(true);
+      JCAxis xaxis = chart.getDataView(0).getXAxis();
+      xaxis.setMin(xMinValue);
+      chart.setBatched(false);
+      fireChartDataEvent(ChartDataEvent.RESET, 0, 0);
+    }
+  }
+
+
+  /**
+   * Add new point.
+   */
+
+  private void addNewPoint(double yValue, long timestamp) {
+    // time based x-axis defaults to seconds
+    xvalues[0][currentLastIndex] = timestamp / 1000;
+    yvalues[0][currentLastIndex] = yValue;
+    currentLastIndex++;
+  }
+
+  // sample updating thread for debugging
+
+  public void run() {
+    System.out.println("Running....");
+    while (true) {
+      try {
+	Thread.sleep(1000);
+	addValue((System.currentTimeMillis() % 100)*.01,
+		 System.currentTimeMillis());
+      } catch (Exception e) {
+	System.out.println("StripChartSource: " + e);
+      }
+    }
+  }
+
+}
+
+

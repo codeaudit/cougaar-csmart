@@ -1,0 +1,45 @@
+;!generate: org.cougaar.tools.build.PGWriter
+
+;
+; <copyright>
+;  Copyright 1997-2000 Defense Advanced Research Projects
+;  Agency (DARPA) and ALPINE (a BBN Technologies (BBN) and
+;  Raytheon Systems Company (RSC) Consortium).
+;  This software to be used only in accordance with the
+;  COUGAAR licence agreement.
+; </copyright>
+;
+
+package=org.cougaar.tools.csmart.ldm.asset
+
+factoryExtends=org.cougaar.domain.planning.ldm.asset.PropertyGroupFactory
+
+[RolesPG]
+doc=a list of roles for LocalAssets to specify their capabilities
+slots=List<Role> roles
+roles.init=ArrayList
+
+[HappinessPG]
+doc=wrapper for HappinessBG
+delegates=HappinessBG hBG
+hBG.delegate=long getStartTime();\
+	long getEndTime();\
+	double getHappinessAt(long time);\
+	void setHappinessAt(long time, double happiness);\
+	double[] toArray(long startTime, long endTime, long timeIncrement);\
+	double[] toArray(double[] toA, long startTime, long endTime, long timeIncrement);\
+        String toString();\
+        String toString(boolean verbose);
+hBG.auto=true
+
+[SimpleInventoryPG]
+delegates=SimpleInventoryBG invBG
+invBG.delegate=long consume(long time);\
+        long getStartTime();\
+	long getEndTime();\
+	double getInventoryLevelAt(long time);\
+	void setInventoryLevelAt(long time, double level);\
+	double[] toArray(long startTime, long endTime, long timeIncrement);\
+	double[] toArray(double[] toA, long startTime, long endTime, long timeIncrement);\
+        String toString();\
+        String toString(boolean verbose);

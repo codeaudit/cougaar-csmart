@@ -1,0 +1,136 @@
+csmart/doc/CSMART-Install.txt
+
+These instructions for installing CSMART assume some familiarity with
+Cougaar and how to install Cougaar.
+
+A standard installation will begin from the following files:
+1) csmart.zip -- a Cougaar module to be installed within your Cougaar
+   installation directory.
+   Contains startup scripts, data files, and built CSMART code.
+   Unzip in your Cougaar install directory.
+2) csmart-3rdparty.zip -- Third party components required for
+   CSMART. Unzip in your Cougaar install directory.  Jar files may
+   already be present for base Cougaar. Executables may need to be
+   renamed on Unix systems. See below for details.
+3) csmart-api.zip -- Javadocs for CSMART. Unzip in your Cougaar
+   install directory.
+4) csmart-dev.zip -- Source code for CSMART. Unzip in your Cougaar
+   installation directory.
+
+
+
+Dependencies:
+Cougaar required version of JDK -- 1.3
+Latest Cougaar - 8.3 
+      core, planserver, contract, server, scalability, and glm modules
+      Note: If you experience RMI Exceptions running Nodes from the
+      CSMART Console, be sure you are using the official 8.3 release,
+      or else re-build csmart.jar using your current Cougaar release.
+Latest Cougaar required versions of jcchart (451) and xerces
+grappa1_2_bbn.jar -
+    AT&T GraphViz Grappa package version 1.2 for graph rendering,
+    including some BBN modifications for performance
+    enhancements. Available in the csamrt-3rdparty.zip file. See the
+    GraphViz site for more information.
+  
+dot.exe:
+    AT&T GraphViz from http://www.research.att.com/sw/tools/graphviz/
+    or http://ABCTestbed.bbn.com.
+    Also available in the csmart-3rdparty.zip file
+
+Optional: JUnit, Jikes and Ant
+
+Some notes:
+-- CSMART adds some required run-time properties - so has a separate
+setarguments.bat
+-- CSMART requires the GLM domain, plus its own CSMART domain (and hence
+has its own LDMDomains.ini)
+-- CSMART adds a number of PSPs - listed and documented in
+data/common/default.psps.xml
+-- CSMART relies on COUGAAR_INSTALL_PATH, PATH, etc.
+-- Included scripts expect that the csmart module will be installed as a
+sub-directory of COUGAAR_INSTALL_PATH
+
+
+Installation Instructions:
+To set up your environment to run CSMART (note: this must be done on
+every machine where you want to run a Cougaar node from CSMART):
+0) JDK1.3 is required.  (Ensure a good installation of JUnit and ANT
+   and Jikes if you wish to use those.)
+1) Install 8.3 version of Cougaar as usual
+-- Install core, contract, planserver, glm, server and other modules
+-- Set the environment variable COUGAAR_INSTALL_PATH (CIP)
+-- Put CIP/bin on your PATH, - followed immediately by CIP/csmart/bin!!
+2) Install CSMART Cougaar module as a sub-directory to CIP (by unzipping
+csmart.zip into CIP or from CVS)
+3) Install third party tools, by unzipping csmart-3rdparty.zip in CIP.
+-- dot.exe and dot-L386 go in CIP/csmart/bin. On Unix machines, rename
+   dot-L386 to dot.exe
+-- AT&T GraphViz jar with BBN mods, grappa1_2_bbn.jar goes in CIP/sys
+-- Standard Cougaar 3rd party jars xerces.jar and jcchart451K.jar go in
+   CIP/sys
+Note that the included Society Monitor startup scripts require the use
+   of CIP/sys for these third party jar files.
+All other required Cougaar jar files should already be present,
+   including core, glm, planserver, server, scalability, and contract
+-- Mylib.dll (Win machines) / libmylib.so (i386 Linux) shared library
+   should go in your path (like CIP/csmart/bin - which must be on your
+   path, per Step 1, above), or in the appropriate library loading
+   directory for the JRE: jre/bin on Win platforms, jre/lib/i386 on Linux
+   i386 systems. This library measures CPU load for metrics collection,
+   and is not required.
+4)  Modify the Node startup scripts: CSMART has its own required
+   arguments, and some additional jar file.
+       (For CSMART there are several additional properties to include.
+    Additionally, we want to ensure the COUGAAR_DEV_PATH is searched
+    for developers.  Finally, we want to set org.cougaar.config.path,
+    in particular to ensure that csmart/data/common is available for
+    its LDMDomains.ini)
+
+    The scripts CIP/bin/setlibpath.bat, CIP/bin/setarguments.bat
+and CIP/bin/Node will need to be modified to include the necessary
+parameters (CIP/bin/Node.bat does not need to be modified, and
+setlibpath.bat is modified just for cleanliness). There are sample
+scripts in csmart/bin with the details, named: CSMARTNode,
+CSMARTsetlibpath.bat, and CSMARTsetarguments.bat. Use these as
+examples. Novice Cougaar developers should replace the existing files
+in CIP/bin with those included in csmart/bin (changing the file names
+by removing the "CSMART" prefix).
+
+5) Edit CIP/bin/setarguments.bat or Node (the new ones) to set your
+   logging level and config path, as you prefer. Also set the location
+   of Excel in CSMART.bat
+
+At this point, as a simple test, you should be able to run any of the
+pre-built Nodes included in csmart/data. Run these as you would any
+Cougaar Node: From the appropriate configuration directory, type: Node
+<NodeName: SingleCluster, TwoCluster, ThreeCluster, etc>
+You should be able to view the contents of the Blackboard for these
+Societies, using the CSMART Society Monitor in its stand-alone form
+(use the provided Monitor scripts in csmart/bin).
+If you have problems, see the trouble-shooting section.
+   
+6) Configure site-specific server properties files. There are samples
+   included in csmart/data which set properties required to run
+   CSMART. Edit the included csmart/bin/Server scripts to point to your
+   site-specific Server properties file and the location of that file on
+   your system.
+      -- Note that the server must have the csmart.jar file on its LIBPATHS
+
+At this point, all required steps to run CSMART are complete.
+Test your server installation first: Run the server, using one of the
+supplied Server startup scripts. You should see some progress lines to
+STDOUT, followed by "Server Running".
+
+Then, you may start CSMART, using one of the supplied CSMART scripts
+in csmart/bin. See the CSMART user's documentation for running
+instructions.
+
+If you have problems, see the trouble-shooting guide.
+
+For developers:
+7) Optional: Install csmart source (csmart-dev.zip) and javadocs
+   (csmart-api.zip)
+8) If you have the source and want to develop it, set COUGAAR_DEV_PATH
+   to CIP/csmart/tmpdir
+   

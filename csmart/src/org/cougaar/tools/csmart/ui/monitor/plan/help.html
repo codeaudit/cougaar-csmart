@@ -1,0 +1,122 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (WinNT; U) [Netscape]">
+   <title>Help for CSMART</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h2>
+Cougaar Society Management, Analysis, and Reporting Tool</h2>
+
+<h3>
+Society Monitor Plan and Thread View</h3>
+The Society Monitor Plan View and Thread View display the contents of the
+Blackboard in a running Cougaar society. This document describes functionality
+specific to the Plan and Thread display; these displays are the same except
+for the manner in which they are launched. The Plan View displays all plan
+objects in a society while the Thread View displays plan objects that are
+related to a specific plan object. For additional information, common to
+all Society Monitor views, select the Help item on the Help menu of the
+Society Monitor window.
+<p>The Plan View is the most detailed monitoring tool available. It will
+potentially return every object in the distributed Cougaar blackboard,
+and show you the relationships among each and every such object. For developers,
+and for truly understanding a particular interaction or result, this is
+the most powerful view.
+<p>The Thread View is a filtered version of the Plan View. By selecting
+a particular node (usually from a Plan View), you may query up (“Ancestor”)
+or down (“Descendant”) its causal chain. This produces a new plan graph,
+with only the requested objects.
+<br>When viewing an ancestor thread, only parent Tasks are displayed. When
+viewing a descendant thread, all objects that can be reached by following
+links are displayed.
+<p>The Thread view can be used to answer the following questions:
+<ul>
+<li>
+How was this Task satisfied?</li>
+
+<li>
+Who participated in the solution for this Task?</li>
+
+<li>
+What are the requirements associated with this Task?</li>
+
+<li>
+Who generated the requirements for this Task?</li>
+</ul>
+
+<p><br><b>Legend</b>
+<br>Nodes in the plan view are color coded, according to the agent from
+which they were retrieved. Although this means that colors may be re-used,
+it does allow the user to quickly identify when processing moves from one
+agent to another. For details on which color indicates which agent, view
+the legend (from the “View” menu).
+<br>Nodes are also different shapes, to indicate different object types.
+Again, look at the legend for details.
+<br>Note that the plan view is laid out left to right, following the arrows
+from Tasks to Plan Elements and on down. These links are solely causal,
+and are drawn to minimize link length and crossing, and do not take into
+account time or any other factor.
+<p>Once the Plan is displayed, you may use it to produce a sub-graph. You
+may do this through selection, possibly further filtering your results,
+or by producing a Thread Graph from a selected Node, as described above.
+<br>In future, this view will support much more complex methods for filtering
+and finding, with complex pattern matching and graph abstraction techniques.
+Cougaar developers with suggested algorithms are encouraged to submit feedback
+on this known-hard problem.
+<p>The nodes drawn each represent a different object in the distributed
+blackboard of the running society. Objects are color-coded by their source
+Agent.
+<br>Nodes are linked by edges that represent the flow through the society.
+For example, Tasks point to the PlanElement by which they are handled.
+See the Legend view to see which shapes indicate which object types.
+<p><b>Examine Agent Attributes</b>
+<br>For each node in one of the graph views, double-clicking on the node
+retrieves a set of attributes for that object. These are a sub-set of the
+attributes available from the Blackboard. In future, this set will be tunable.
+Currently however, users are requested to submit feedback on desired attributes
+to display here. Note that the “Find” button on this window will scroll
+the main graph to the appropriate node.
+<p><b>Plan View Menus</b>
+<br>These are menus specific to the Plan View. For information on menus
+and functionality common to all Society Monitor graphs, see the Society
+Monitor Help menu.
+<ul>
+<li>
+Select: Filter...See the <a href="#filter">Plan View Filter</a> description
+below.</li>
+
+<li>
+Show: Parents: Highlight parents (ancestors) of the selected Task nodes
+in blue.</li>
+
+<li>
+Show: Children: Highlight children (descendants) of the selected Task nodes
+in yellow.</li>
+
+<li>
+View: Ancestor Thread: Display the ancestors of the selected node in a
+new window. Only Task ancestors are displayed.</li>
+
+<li>
+View: Descendant Thread: Display the descendants of the selected node in
+a new window.</li>
+</ul>
+<b>Plan View Filter</b>
+<br>The&nbsp;<a NAME="filter"></a>Plan View Filter allows the user to filter
+out unwanted plan objects. The filter dialog is automatically displayed
+when a new Plan View is created. In addition, the Select-Filter menu item
+can be used to filter out objects from an existing plan view and create
+a new plan view in a new window. Plan Objects can be filtered by Community
+(not yet implemented) or by Plan Object Type (Plan Element, Direct Object,
+or Workflow). The number of Plan Objects graphed can also be limited.
+<p>The Filter implements two concepts of filtering out objects: hiding
+objects and ignoring objects. If objects are hidden, the objects are not
+graphed, but the transitive closure of the objects' links are graphed;
+transitive closures are drawn with bold lines to distinguish them from
+normal links. If objects are ignored, neither the objects or their links
+are drawn.
+</body>
+</html>

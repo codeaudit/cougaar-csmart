@@ -1,0 +1,51 @@
+#Properties file for controlling the COUGAAR Node Server.
+# This sample written for an NT machine
+# Edit the Claspath, Install path and Config Path to reflect your local installation
+
+#Property files should usually end with a ".props" extension.  The
+#syntax is trivial and is defined by the JDK Properties.load() method.
+
+# when true, the server will report on various activities
+org.cougaar.tools.server.verbose=false
+
+# some standard memory settings
+org.cougaar.tools.server.vm.memory=-Xms100m -Xmx300m
+
+# The classpath to use to run nodes - defaults to the classpath of the 
+# server environment. Note that only core.jar needs to be in here.
+# Note that backslashes, colons, and semi-colons must all be backslash-escaped
+java.class.path=d\:\\CSMART\\Cougaar\\csmart\\tmpdir\;d\:\\CSMART\\Cougaar\\lib\\csmart.jar\;d\:\\CSMART\\Cougaar\\lib\\core.jar
+
+# where cougaar is installed - no default
+# This should be set to the value of $COUGAAR_INSTALL_PATH
+# Note that backslashes, colons, and semi-colons must all be backslash-escaped
+org.cougaar.install.path=D\:\\CSMART\\Cougaar
+
+# may specify additional -D arguments
+org.cougaar.vm.arguments=-Duser.timezone=GMT -Dcsmart.log.severity=PROBLEM -Dorg.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0
+
+#In addition, the console will send the following properties to the
+#server in order to start the Node 
+
+# which config directory to use, e.g. integ-config
+# no default, required.
+# Note that backslashes, colons, and semi-colons must all be backslash-escaped
+#org.cougaar.config=
+org.cougaar.config.path=D\:\\CSMART\\Cougaar\\csmart\\data\\common\;
+
+# additional arguments to Node
+# no default, optional
+org.cougaar.node.arguments= -c
+
+# Communications server and ports.
+# Defines where the nameserver will run and which port the
+# PSP webserver will run on.
+# format is "hostname:nameserverport:PSPport"
+# example: "alp42:9999:6666"
+# The port numbers should be > 1000 and must not conflict with any
+# other nodes running on the same set of computers.
+# The standard alpserver clients provide this value automatically.
+# if no value is passed, the nodes started will fall back to 
+# using the alpreg.ini config file.
+#org.cougaar.name.server=hotcocoa:8000:5555
+

@@ -1,0 +1,238 @@
+/*
+ * <copyright>
+ * This software is to be used only in accordance with the COUGAAR license
+ * agreement. The license agreement and other information can be found at
+ * http://www.cougaar.org
+ *
+ * © Copyright 2000, 2001 BBNT Solutions LLC
+ * </copyright>
+ */
+
+package org.cougaar.tools.csmart.ui.monitor.metrics;
+
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.table.*;
+
+import com.klg.jclass.chart.*;
+import com.klg.jclass.util.legend.JCLegend;
+import com.klg.jclass.chart.data.*;
+import com.klg.jclass.util.swing.JCExitFrame;
+
+import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
+import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
+
+import java.util.Vector;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.*;
+import java.io.*;
+
+public class CSMARTMetrics extends JPanel {
+
+  String[] seriesLabels = {"Completed Tasks", "Unallocated", "Low Confidence Result"};
+
+  private static final String PSP_METRICS = "PSP_Metrics.PSP";
+
+  Color seriesColors[] = {
+    new Color(0x0a, 0x64, 0x0a), // Dark Green
+    new Color(0xff, 0x7f, 0x50), // Coral
+    new Color(0x32, 0xc3, 0x32), // Lime Green
+    new Color(0xd2, 0xb4, 0x8c), // Tan 
+  };
+
+  protected JCChart chart;
+  protected JTable dataTable;
+  protected TableModel chartDataTableModel;
+  protected String[] namearray = null;
+  protected File inputFile;
+
+  public CSMARTMetrics() {
+    this(null, null);
+  }
+
+  public CSMARTMetrics(File f) {
+    try {
+      ObjectInputStream ois = 
+	new ObjectInputStream(new FileInputStream(f));
+      chartDataTableModel = (TableModel)ois.readObject();
+      namearray = (String[])ois.readObject();
+    } catch( Exception e) {
+      System.err.println("Object read exception: " + e);
+      System.err.print("CSMARTMetrics: Could not read the file.");
+    }
+
+    init();
+  }
+
+  public CSMARTMetrics(ArrayList names, ArrayList data ) {
+    createTableModel(names, data);
+    init();
+  }
+
+  private void init() {
+    setLayout(new BorderLayout());
+    setPreferredSize(new Dimension(600, 400));
+
+    chart = new JCChart(JCChart.STACKING_BAR);
+
+    add("Center", chart);
+
+    // set bar data source from table model
+    ChartDataView barDV = chart.getDataView(0);
+    JCChartSwingDataSource csDataSource = 
+      new JCChartSwingDataSource(chartDataTableModel, 
+				 namearray, "CSMART Metric Data");
+    barDV.setDataSource(csDataSource);
+
+    // Grid lines on the Y axis
+    barDV.getYAxis().setGridVisible(true);
+
+    // Position X Axis at the bottom
+    barDV.getXAxis().setPlacement(JCAxis.MIN);
+
+    // Invert the chart; x-axis is drawn vertical.
+    barDV.setInverted(true);
+
+    List barSeriesList = barDV.getSeries();
+    Iterator barIter = barSeriesList.iterator();
+    for (int i = 0; barIter.hasNext(); i++) {
+      ChartDataViewSeries thisSeries = (ChartDataViewSeries) barIter.next();
+      thisSeries.getStyle().setFillColor(seriesColors[i]);
+    }
+    
+    chart.getLegend().setVisible(true);
+  }
+
+  /**
+   * Creates the Data Model used for the graph.
+   */
+  private void createTableModel(ArrayList names, ArrayList data) {
+
+    namearray = new String[names.size()];
+    for(int i=0; i < names.size(); i++) {
+      namearray[i] = (String)names.get(i);
+    }
+
+    // data is:
+    //  -0- # of Tasks at all
+    //  -1- # of those that are Unallocated Tasks
+    //  -2- # of those allocated that have Low Confidence Results
+
+    Vector metricData = new Vector();
+    for(int i=0; i < data.size(); i ++) {
+      Vector rowV = new Vector();
+      Integer[] d = (Integer[])data.get(i);
+      // Completed Tasks = Tasks - (Unalloced + Low Confidence)
+      int tasks = ((Integer)d[0]).intValue();
+      int unalloc = ((Integer)d[1]).intValue();
+      int low = ((Integer)d[2]).intValue();
+      rowV.addElement(new Integer(tasks - (unalloc + low)));
+      rowV.addElement(d[1]);
+      rowV.addElement(d[2]);
+      metricData.addElement(rowV);
+    }
+
+    Vector agentNames = new Vector();
+    for (int i = 0; i < seriesLabels.length; i++) {
+      agentNames.addElement(seriesLabels[i]);
+    }
+
+    chartDataTableModel = new DefaultTableModel(metricData, agentNames);
+
+  }
+
+  private void saveMetrics(File outputFile) {
+    if( outputFile == null ) {
+      return;
+    }
+    String pathname = outputFile.getPath();
+    String extension = "";
+    int i = pathname.lastIndexOf('.');
+    if(i > 0 && i < pathname.length()-1) {
+      extension = pathname.substring(i+1).toLowerCase();
+    }
+
+    if(extension.length() == 0 || !extension.equals("mtr")) {
+      pathname = pathname + ".mtr";
+      outputFile = new File(pathname);
+    }
+
+    try {
+    ObjectOutputStream oos = 
+      new ObjectOutputStream(new FileOutputStream(outputFile));
+    oos.writeObject(chartDataTableModel);
+    oos.writeObject(namearray);
+    oos.flush();
+    oos.close();
+    } catch(Exception e) {
+      System.out.println("Exception: " + e);
+    }
+
+    inputFile = outputFile;
+  }
+
+  public void saveMetrics() {
+    if(inputFile != null) {
+      saveMetrics(inputFile);
+    } else {
+      saveAsMetrics();
+    }
+  }
+
+  public void saveAsMetrics() {
+    JFileChooser jfc = 
+      new JFileChooser(System.getProperty("org.cougaar.install.path"));
+    ExtensionFileFilter filter;
+    String[] filters = { "mtr" };
+    filter = new ExtensionFileFilter(filters, "Tasks Metric files");
+    jfc.addChoosableFileFilter(filter);
+    if(jfc.showSaveDialog(null) == JFileChooser.CANCEL_OPTION) {
+      return;
+    }
+    File file = jfc.getSelectedFile();
+    if(file != null) {
+      saveMetrics(file);
+    }
+  }
+
+  public void refresh() {
+    Collection objectsFromPSP = CSMARTUL.getObjectsFromPSP(PSP_METRICS);
+    if (objectsFromPSP == null)
+      return;
+    System.out.println("Received metrics: " + objectsFromPSP.size());
+
+    ArrayList names = new ArrayList();
+    ArrayList data = new ArrayList();
+
+    Iterator iter = objectsFromPSP.iterator();
+    while(iter.hasNext()) {
+      Object obj = iter.next();
+      if(obj instanceof String) {
+	names.add(obj);
+      }	else if (obj instanceof Integer[]) { 
+	data.add(obj);
+      }
+    }
+
+    createTableModel(names, data);
+
+    // set bar data source from table model
+    ChartDataView barDV = chart.getDataView(0);
+    JCChartSwingDataSource csDataSource = 
+      new JCChartSwingDataSource(chartDataTableModel, 
+				 namearray, "CSMART Metric Data");
+    barDV.setDataSource(csDataSource);
+
+    chart.update();
+  }
+
+  public static void main(String args[]) {
+    JCExitFrame f = new JCExitFrame("Testing");
+    CSMARTMetrics b = new CSMARTMetrics();
+    f.getContentPane().add(b);
+    f.pack();
+    f.setVisible(true);
+  }
+}

@@ -1,0 +1,126 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (WinNT; U) [Netscape]">
+   <title>Help for CSMART</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h2>
+Cougaar Society Management, Analysis, and Reporting Tool</h2>
+Thank you for evaluating this prototype!
+<h3>
+Experiment Controller</h3>
+The Experiment Controller is used to assign resources (machines) to an
+experiment and to control running an experiment. The Experiment Controller
+is enabled only when an experiment that contains a society is selected
+in the workspace. The Experiment Controller displays three trees of information:
+Hosts, Unassigned Nodes, and Unassigned Agents. The Hosts tree is initialized
+from the hosts.txt file, retrieved from org.cougaar.config.path, and typically
+in the directory from which CSMART is launched; hosts can be added to the
+Hosts tree as described below.
+<p>Note that you must separately launch the Server on each host used in
+the experiment. See the installation instructions for running the Server.
+<p><b>Configuring the Experiment</b>
+<ol>
+<li>
+In the Hosts tree, create an entry for each host to be used in the experiment.
+An entry for a host can be created:</li>
+
+<ul>
+<li>
+By adding the host name to the hosts.txt file in the directory from which
+CSMART is launched, or</li>
+
+<li>
+By clicking the right mouse button over the "Hosts" folder in the Experiment
+Controller. A pop-up menu is displayed; select "New Host" from this menu.
+A pop-up dialog is displayed in which to enter the name of the host.</li>
+
+<li>
+Note that hosts named "localhost", or host names that do not include the
+full domain name (ie cougaar.org), sometimes fail (due to an RMI bug).
+If you see:</li>
+
+<pre>!Waiting for //127.0.0.1:8888/NameService!.!.!.</pre>
+this usually indicates a problem. Try using an IP address or fully qualified
+host name.</ul>
+
+<li>
+Create a node or nodes for each host to be used in the experiment. Click
+the right mouse button over the host folder in the "Hosts" tree, and select
+"New Node" from the menu. A pop-up dialog is displayed in which to enter
+the name of the node.</li>
+
+<li>
+Assign agents to nodes. Drag and drop agents from the "Unassigned Agents"
+tree to the nodes created in the previous step. To select a group of agents,
+left click on the first agent to select, and shift left click on the last
+agent.</li>
+</ol>
+<b>Controlling the Experiment</b>
+<ul>
+<li>
+Select the "Run" button to run an experiment.</li>
+
+<li>
+Select the "Stop" button to stop the experiment. If the Society Monitor
+tool is monitoring the experiment, you will be asked to confirm the Stop
+action.</li>
+
+<li>
+Select the "Abort" button to abort the experiment.</li>
+</ul>
+<b>Information from a Running Experiment</b>
+<br>The following information is displayed from a running experiment:
+<ul>
+<li>
+The standard output and standard error channels from each node in the experiment
+are displayed in a tabbed pane on the right side of the Experiment Controller.
+Output is displayed in black, and errors are displayed in red.</li>
+
+<li>
+A colored circle following the “Node Status” label near the top right of
+the Experiment Controller illustrates the node status. The status of the
+currently selected node is displayed as a filled circle; the statuses of
+unselected nodes are displayed as hollow circles. The node color indicates
+the node status: red for error (as when the Node has been killed), gray
+for unknown, and green for busy status (lighter green implies busier).</li>
+
+<li>
+Selecting the Node-Utilization History menu item, or clicking on the Node
+Status icon for that Node displays the Utilization History, a graph of
+“Load vs. Time”.</li>
+</ul>
+<b>Additional Functionality</b>
+<p>The configuration of Hosts, Unassigned Nodes, and Unassigned Agents
+can be modified using pop-up menus or by drag-and-drop. Agents can be dropped
+on nodes; nodes can be dropped on hosts. Create, delete, and rename hosts
+and nodes by right clicking on a host or node to display a pop-up menu
+with these options. Agents are created by Societies and cannot be created,
+deleted or renamed in the Experiment Controller. Unassigned Agents are
+agents not assigned to a node.
+<br>The information about a node in a running experiment can be displayed
+by selecting the node in the Hosts tree, by selecting the Node’s tab in
+the tabbed panels, or by selecting that Node’s “Node Status” button. Selecting
+a node brings all the information for that node to the foreground.
+<h3>
+Notes:</h3>
+If either of these error messages is displayed
+<blockquote>Cannot write configuration on hostname; check that server is
+running
+<br>Cannot create node on hostname; check that server is running</blockquote>
+then ensure that all hosts are referenced by full IP address or fully qualified
+machine name. Also, in some cases, it appears that Solaris machines fail
+to contact the NameService on Win32 machines.
+<p>Also, if you get an error in your server console window, saying something
+like: "RMI Exception: Class not found", or "RMI Exception: no RMI class
+loader", this is usually a classpath problem. Be sure that both server.jar
+and csmart.jar are on the classpath used to run the server, the classpath
+defined in your server properties file, and in the classpath for running
+CSMART. In addition, ensure that all your jar files (CSMART and other Cougaar
+jar files) are from the same build; rebuild the CSMART jar file against
+the Cougaar jars you are using if necessary.
+</body>
+</html>

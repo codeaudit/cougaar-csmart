@@ -1,0 +1,49 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (WinNT; U) [Netscape]">
+   <title>Help for CSMART</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h2>
+Cougaar Society Management, Analysis, and Reporting Tool</h2>
+Thank you for evaluating this prototype!
+<h3>
+Performance Analyzer</h3>
+The Performance Analyzer retrieves Metrics files created by agents during
+an experiment and displays those files using data analysis tools (currently,
+Microsoft Excel). In future versions, some common analyses may be pre-defined
+for the user (perhaps using Excel templates). Once a user has retrieved
+metrics results, they are associated with the experiment trial for later
+review and comparison (functionality coming).
+<p>If Excel does not launch, be sure you have specified the location of
+the Excel application in the startup script, (i.e. for Windows, CSMART.bat):
+<pre>-Dexcel="C:\Program Files\Microsoft Office\Office\excel.exe"</pre>
+The Performance Analyzer tool is enabled whenenver an experiment is selected
+in the Workspace.
+<p><b>Retrieving Metrics Files</b>
+<br>To retrieve metrics files, select the menu item, File->Retrieve Metrics
+Files.... This displays a file chooser for specifying the directory on
+the local host in which to store the retrieved files. The Performance Analyzer
+retrieves the metrics files from the servers on the hosts listed in the
+selected experiment. (The name of the selected experiment is displayed
+in the Performance Analyzer window title.) If either of these error messages
+is displayed:
+<pre>No response from host: hostname; check that server is running.</pre>
+
+<pre>Unknown host: hostname</pre>
+ensure that a server is running on each host in the experiment and that
+the full host names are correctly entered in the experiment (see the Experiment
+Controller help information and the Server installation instructions for
+details).
+<p><b>Displaying Metrics Files</b>
+<br>Use the File–>Open... menu item or click on the “Excel” button to display
+a metrics file. If the error message:
+<pre>No Metrics Directory for Experiment</pre>
+is displayed, first retrieve the metrics files as described above. Note
+that the metrics files to be retrieved are defined by the society in the
+experiment.
+</body>
+</html>

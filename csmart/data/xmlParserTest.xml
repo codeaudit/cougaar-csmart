@@ -1,0 +1,33 @@
+<CommunityConfig>
+  <Community name="Comm 1" template="Four Agent">
+    <Demand>10</Demand>
+    <Production>5</Production>
+    <Supports/>
+    <Geography>
+      <Latitude>25</Latitude>
+      <Longitude>52</Longitude>
+    </Geography>
+  </Community>
+  <Community name="Comm 2" template="Four Agent">
+    <Demand>23</Demand>
+    <Production>13</Production>
+    <Supports>
+      <SupportedCommunity>Comm 1</SupportedCommunity>
+    </Supports>
+    <Geography>
+      <Latitude>45</Latitude>
+      <Longitude>75</Longitude>
+    </Geography>
+  </Community>
+  <Community name="Comm 3" template="Four Agent">
+    <Demand>3</Demand>
+    <Production>43</Production>
+    <Supports>
+      <SupportedCommunity>Comm 2</SupportedCommunity>
+    </Supports>
+    <Geography>
+      <Latitude>145</Latitude>
+      <Longitude>175</Longitude>
+    </Geography>
+  </Community>
+</CommunityConfig>

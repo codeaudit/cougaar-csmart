@@ -1,0 +1,14 @@
+# Sample site-specific properties file for NodeServer
+# This sample for a Unx machine
+# Edit the Install path, classpath and config path to reflect your
+# local installation
+# Also, edit the CSMART log level for your preference
+
+# Note that colons must be backslash escaped
+java.class.path=/home/ahelsing/Cougaar/csmart/tmpdir\:/home/ahelsing/Cougaar/lib/csmart.jar\:/home/ahelsing/Cougaar/lib/core.jar
+org.cougaar.install.path=/home/ahelsing/Cougaar
+org.cougaar.tools.server.verbose=false
+# Note the trailing escaped semi-colon
+org.cougaar.config.path=/home/ahelsing/Cougaar/csmart/data/common/\;
+org.cougaar.vm.arguments=-Duser.timezone=GMT -Dcsmart.log.severity=PROBLEM -Dorg.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0
+org.cougaar.node.arguments= -c

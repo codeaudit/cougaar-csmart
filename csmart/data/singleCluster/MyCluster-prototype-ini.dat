@@ -1,0 +1,21 @@
+[Prototype]
+Entity
+        
+[Relationship]
+"MetricsControlProvider"  "MyCluster" "MyCluster" "MyCluster" "03/25/1959 12:00 am" "08/30/2001 2:00 pm" 
+
+[ItemIdentificationPG]
+ItemIdentification String "MyCluster"
+Nomenclature String "MyCluster"
+AlternateItemIdentification String "MyCluster"
+
+[TypeIdentificationPG]                      
+TypeIdentification          String  "MyCluster"
+Nomenclature                String  "MyCluster"
+AlternateTypeIdentification String  "MyCluster"
+
+[ClusterPG]
+ClusterIdentifier	ClusterIdentifier "MyCluster"
+
+[EntityPG]
+Roles                Collection<Role>   "

@@ -1,0 +1,33 @@
+#!/bin/csh -f
+
+# Run the CSMART Society Monitor in standalone mode
+    
+set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
+
+# Due to some static members, the Society Monitor cannot rely on the Bootstrapper to find all jars
+# All of the peculiarly Society Monitor required Jars are listed here for convenience
+    
+# Must add other Jars which the Bootstrapper gives you when you run Node
+set LIBPATHS = "${COUGAAR_INSTALL_PATH}/lib/csmart.jar:${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/server.jar"
+
+# Third party jars are in CIP/sys - Grappa and Xerces are required on CLASSPATH due to static members
+set LIBPATHS = "$LIBPATHS:${COUGAAR_INSTALL_PATH}/sys/xerces.jar:${COUGAAR_INSTALL_PATH}/sys/grappa1_2_bbn.jar:${COUGAAR_INSTALL_PATH}/sys/jcchart451K.jar"
+
+if ($?COUGAAR_DEV_PATH) then
+    set LIBPATHS = "${COUGAAR_DEV_PATH}:$LIBPATHS"
+endif
+    
+set MYMEMORY="-Xms100m -Xmx300m"
+set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH"
+set MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
+
+
+set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -classpath $LIBPATHS"
+
+if ($?COUGAAR_DEV_PATH) then
+   echo java $javaargs org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
+endif
+
+exec java $javaargs org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
+
+

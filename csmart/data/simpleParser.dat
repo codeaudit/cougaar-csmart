@@ -1,0 +1,5 @@
+# This is a test script used by JUnit to test the Simple Parser
+# 
+# ***********  DO NOT MODIFY!!!!!  Modifying will break the regression testing.
+
+Asset One, 1, 2, 3, 4, 5, 6, AA, BB, CC, DD

@@ -1,0 +1,143 @@
+/*
+ * <copyright>
+ * This software is to be used only in accordance with the COUGAAR license
+ * agreement. The license agreement and other information can be found at
+ * http://www.cougaar.org
+ *
+ * © Copyright 2000, 2001 BBNT Solutions LLC
+ * </copyright>
+ */
+
+package org.cougaar.tools.csmart.ui.monitor.generic;
+
+import java.awt.print.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import javax.swing.JComponent;
+
+/**
+ * Borrowed from Cove.
+ */
+
+public class ComponentPrinter implements Printable, Pageable {
+    private JComponent component;
+    private PageFormat format;
+    private PrinterJob job;
+    private Dimension dimension;
+    private Dimension pageDimension;
+    private boolean debug = false;
+    private boolean disableDoubleBuffering = true;
+    private double scale;
+
+    // Sadly, required for dealing with margins in NT
+    private static final int x_margin_fudge_factor = 2;
+
+
+    public ComponentPrinter(JComponent component, String jobName) {
+	this.component = component;
+	job = PrinterJob.getPrinterJob();
+	if (job == null) {
+	    System.err.println("Couldn't find a printer!");
+	} else {
+	    java.awt.Toolkit tk = java.awt.Toolkit.getDefaultToolkit();
+	    scale = 72.0/tk.getScreenResolution();
+	    job.setJobName(jobName);
+	    format = job.pageDialog(job.defaultPage());
+	    Dimension size = component.getSize();
+	    double frameHeight = size.height * scale;
+	    double frameWidth = size.width * scale;
+	    double pageHeight = format.getImageableHeight();
+	    double pageWidth = format.getImageableWidth();
+	    pageDimension = new Dimension((int) pageWidth, (int) pageHeight);
+	    dimension = new Dimension();
+	    dimension.width = (int) (frameWidth/pageWidth);
+	    if (frameWidth%pageWidth != 0) dimension.width++;
+	    dimension.height = (int) (frameHeight/pageHeight);
+	    if (frameHeight%pageHeight != 0) dimension.height++;
+	    if (debug) 
+		System.out.println("Page layout: " + 
+				   dimension.width + "," + dimension.height);
+	    job.setPageable(this);
+	}
+    }
+
+
+    public void disableDoubleBuffering(boolean flag) {
+      disableDoubleBuffering = flag;
+    }
+
+    public void setDebug(boolean flag) {
+	debug = flag;
+    }
+
+    public boolean isReady() {
+	return job != null;
+    }
+
+    public void printPages() {
+	if (job == null) return;
+	try {
+	    job.print();
+	} catch (PrinterException e) {
+	    System.err.println("Print job failed: " + e);
+	}
+    }
+
+    // Printable
+
+    public int print(Graphics g, PageFormat format, int page) {
+	if (debug) System.out.print("Printing page " + page + "...");
+	int x = page%dimension.width;
+	int y = page/dimension.width;
+	int xTrans = -x*pageDimension.width;
+	int yTrans = -y*pageDimension.height;
+
+	// Account for imaging margins.
+	// Is this dependent on orientation?
+	xTrans += x_margin_fudge_factor*format.getImageableX();
+	yTrans += format.getImageableY();
+
+	if (debug) System.out.println("Translation: " + xTrans + "," + yTrans);
+
+	Graphics2D g2d = (Graphics2D) g;
+	g2d.scale(scale, scale);
+	g2d.translate(xTrans, yTrans);
+	
+	if (disableDoubleBuffering) component.setDoubleBuffered(false);
+	component.print(g2d);
+	if (disableDoubleBuffering) component.setDoubleBuffered(true);
+
+	if (debug) System.out.println("done");
+	return Printable.PAGE_EXISTS;
+    }
+
+
+  // This global double-buffer hack doesn't work properly with JTables.
+  /*
+    private void doubleBuffering(boolean flag) {
+	RepaintManager currentManager = 
+	    RepaintManager.currentManager(component);
+	currentManager.setDoubleBufferingEnabled(flag);
+    }
+  */
+
+
+
+    // Pageable
+
+    public int getNumberOfPages() {
+	return dimension.width*dimension.height;
+    }
+
+    public PageFormat getPageFormat(int page) {
+	return format;
+    }
+
+    public Printable getPrintable(int page) {
+	return this;
+    }
+
+
+}
+

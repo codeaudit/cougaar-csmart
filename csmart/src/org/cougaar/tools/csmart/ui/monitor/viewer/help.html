@@ -1,0 +1,270 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (WinNT; U) [Netscape]">
+   <title>Help for CSMART</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h2>
+Cougaar Society Management, Analysis, and Reporting Tool</h2>
+Thank you for evaluating this prototype!
+<h3>
+Society Monitor</h3>
+The Society Monitor displays the activities and data associated with a
+distributed running Cougaar society. This data is obtained by collecting
+information from the contents of each agent’s Blackboard, or from the results
+of specific metrics collection Plugins (or by loading saved graph or metrics
+data). This tool allows users to monitor any currently running Cougaar
+society.
+<p>Views within this tool communicate via the standard PSP interface with
+a running society. When running under CSMART, the Society Monitor is enabled
+only when an experiment is running, and automatically contacts the society
+in the running experiment. When running standalone, the user is prompted
+for a URL in the running society. To run the Society Monitor in stand-alone
+mode, ensure that the CSMART PSPs are included in your default.psps.xml
+and loaded in each agent of your society. Then use one of the included
+Monitor scripts to start the Society Monitor. This is also the easiest
+way to open saved graphs. Note that the Society Monitor uses the AT&amp;T
+GraphViz package for graph layout &amp; rendering. This package minimizes
+distance between linked nodes, and minimizes link overlap. It does not
+include any other factors in graph layout.
+<p>The Society Monitor provides the following displays:
+<ul>
+<li>
+<b>Community: </b>The communities in the society. Not available yet.</li>
+
+<li>
+<b>Agents: </b>The agents in the society and their relationships to each
+other.</li>
+
+<li>
+<b>Plan: </b>The plan objects in the society, including Assets, Workflows,
+Tasks, Allocations, Dispositions, Asset Transfers, Aggregations, and Expansions.</li>
+
+<li>
+<b>Thread: </b>Drill down on the whole plan, and display only objects related
+to a single plan object.</li>
+
+<li>
+<b>Metrics</b>: Show one (potentially many) calculated graph of society
+activity.</li>
+
+<br>&nbsp;</ul>
+When first launching a tool, if not running from CSMART, you are prompted
+for the URL of the society to contact. Supply the appropriate host and
+port number, just as you would for any PSP (see the settings in your alpreg.ini
+file). You may launch as many different views as you wish. In future, you
+will be able to use the selection in one tool to drive your view in another.
+When launching the plan view, you are prompted to filter your query.
+<p><b>Society Monitor Menus</b>
+<br>From the Society Monitor main display, you may launch one of the views,
+or load a saved data set, using the following menu items.
+<ul>
+<li>
+File: Create new graphs, save graphs, and exit.</li>
+
+<ul>
+<li>
+New: Create a new Agents, Plan or Thread graph. This duplicates the functionality
+available on the tool bar buttons.</li>
+
+<li>
+Open: Read and display a previously saved graph.</li>
+
+<li>
+Exit: Exit the Society Monitor.</li>
+</ul>
+
+<li>
+Window: Bring a window that displays a graph to the foreground.</li>
+
+<li>
+Help: Display help information in a browser.</li>
+</ul>
+All graphs provide the following functionality:
+<ul>
+<li>
+Display Attributes: Double click on a node to display its attributes (this
+is the same as selecting the node and then selecting the View-Attributes
+menu item). This shows some attributes of the plan object, community, or
+agent. The set of attributes displayed is a sub-set of all those possible.
+This set may in future be tunable. Feedback on useful current attributes
+to show is appreciated.</li>
+
+<li>
+Selection: Left click on a node or edge (link between nodes) to select
+it. Left hold and drag to select all nodes and edges in an area. Control-left
+click to add or remove a node or edge from the selected nodes. Selecting
+items in the Overview window causes the main window to scroll to display
+the selection. By selecting items in a graph, you may then create a new
+graph with that selection, or access certain other relative views.</li>
+
+<li>
+Find Node: The Find button in the Attributes table window scrolls the graph
+so that the node whose attributes are displayed, is visible.</li>
+
+<li>
+Overview: Show an overview of the entire graph. By clicking on the graph,
+the main graph window is scrolled to that area.</li>
+
+<li>
+Legend: Show a key of the meaning of the different colors and shapes of
+the nodes on the graph. See the User's Guide.</li>
+
+<li>
+Find: Find a particular node by some criteria. Currently this is very simple,
+but will be expanded.</li>
+
+<li>
+Filter: Filter the graph to show a sub-graph, using some criteria. Currently
+the filtering possibilities are limited. See below, under the Plan View,
+for details on how the filtering works.</li>
+
+<li>
+Zoom: Zoom in or out on the graph as displayed.</li>
+
+<li>
+Save: Any graph or metric may be saved for future analysis.</li>
+</ul>
+
+<p><br><b>Graph Menus</b>
+<br>These are menus common to all the graph displays:
+<ul>
+<li>
+File:</li>
+
+<ul>
+<li>
+New With Selection: Create a new graph containing the selected nodes and
+their edges.</li>
+
+<li>
+Save: Save the graph in the current file.</li>
+
+<li>
+Save As...: Save the graph in a new file. A file chooser dialog is displayed
+to allow the user to specify the file.</li>
+
+<li>
+Print...: Print the visible portion of the graph.</li>
+
+<li>
+Close: Destroy the view.</li>
+</ul>
+
+<li>
+Select:</li>
+
+<ul>
+<li>
+Find...: Select a node by its UID from a list in a pop-up dialog. Highlight
+the node and scroll the graph so that the node is displayed. In future
+this search capability will be expanded.</li>
+
+<li>
+Filter...: Filter plan objects by community and type. Implemented only
+for plan object graphs.</li>
+
+<li>
+Select All: Select (highlight) all the nodes and links.</li>
+
+<li>
+Clear: Clear the selection.</li>
+</ul>
+
+<li>
+Show:</li>
+
+<ul>
+<li>
+Show information specific to the nodes selected. Show menus are specific
+to the type of graph displayed; see the help information for a specific
+graph.</li>
+</ul>
+
+<li>
+View:</li>
+
+<ul>
+<li>
+Overview: Display a "bird's eye view" of the graph. Displays the graph
+in a new window, scaled so that all the nodes are visible.</li>
+
+<li>
+Attributes: Display the attributes of the selected node in a table in a
+new window.</li>
+
+<li>
+Legend: Display a legend which describes the colors and shapes used in
+the graph.</li>
+
+<li>
+Zoom In: Zoom in to show more detail.</li>
+
+<li>
+Zoom Out: Zoom out to show less detail.</li>
+
+<li>
+Zoom Reset: Reset the zoom level to display the original graph.</li>
+
+<li>
+Scroll to Selection: Scroll the graph so that the selected nodes are visible.</li>
+</ul>
+
+<li>
+Help:</li>
+
+<ul>
+<li>
+Display this document.</li>
+</ul>
+</ul>
+<b>Additional Functionality</b>
+<br>In addition to the functionality provided by the menus described above,
+all graphs provide the following functionality.
+<ul>
+<li>
+Display Attributes: Double click on a node to display its attributes (this
+is the same as selecting the node and then selecting the View-Attributes
+menu item).</li>
+
+<li>
+Selection: Left click on a node or edge (link between nodes) to select
+it. Left hold and drag to select all nodes and edges in an area. Control-left
+click to add or remove a node or edge from the selected nodes. Selecting
+items in the Overview window causes the main window to scroll to display
+the selection.</li>
+
+<li>
+Find Node: The Find button in the Attributes table window scrolls the graph
+so that the node whose attributes are displayed, is visible.</li>
+</ul>
+
+<h2>
+Notes:</h2>
+If the Society Monitor is unable to contact a running society, confirm
+that these CSMART PSPs are loaded:
+<ul>
+<li>
+csmart/monitor/CLUSTER_URLS.PSP: org.cougaar.tools.csmart.ui.psp.PSP_ClusterProvider</li>
+
+<li>
+csmart/monitor/PSP_Plan.PSP: org.cougaar.tools.csmart.ui.psp.PSP_Plan</li>
+
+<li>
+csmart/monitor/PSP_ClusterInfo.PSP: org.cougaar.tools.csmart.ui.psp.PSP_ClusterInfo</li>
+
+<li>
+csmart/monitor/THREADS.PSP: org.cougaar.tools.csmart.ui.psp.PSP_Search</li>
+
+<li>
+csmart/monitor/PSP_CommunityProvider.PSP: org.cougaar.tools.csmart.ui.psp.PSP_CommunityProvider</li>
+
+<li>
+csmart/monitor/PSP_Metrics.PSP: org.cougaar.tools.csmart.ui.psp.PSP_Metrics</li>
+</ul>
+
+</body>
+</html>

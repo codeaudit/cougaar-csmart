@@ -1,0 +1,111 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.76 [en] (WinNT; U) [Netscape]">
+   <title>Help for CSMART</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h1>
+Help for the Cougaar Society Management, Analysis, and Reporting Tool</h1>
+
+<h2>
+Experiment Builder</h2>
+Use this tool to create an Experiment from a pre-built Society. An Experiment
+consists of one or more trials over that Society. By placing a Society
+in the Society folder, and selecting it, you should see all of the unbound
+properties in the properties panel on the right. You will then be able
+to specify a set of experimental trials varying the values of those properties.
+(Functionality coming.) You may also add External Impacts to subject the
+running society to, or Experimental Metrics to collect. To add an external
+impact or metric to your experiment, create one in your workspace organizer,
+and drag it into the appropriate folder here. Note however that currently
+all societies use the same hard-wired set of metrics. To tune how those
+metrics are collected, use the society-specific parameters. Additionally,
+the only choice for an Impact with any functionality is the “ABC Impact”
+type. This impact only works in part, and cannot effect a society. This
+will be possible with the next patch release of Cougaar core, which will
+have the necessary Binder support. This impact must be configured by writing
+an appropriate format XML file. Note that all changes to your experiment
+are saved automatically in your workspace.
+<br>&nbsp;
+<h3>
+Societies</h3>
+An experiment might potentially include more than one society, if the purpose
+is to compare two very different societies in similar settings. Most often
+however, a single experiment will include exactly one society. However,
+that society may then be varied across one or more dimensions.
+<h3>
+Trials</h3>
+Each variation on a society to be run as part of an experiment is a trial.
+A trial represents a full specification of one run in an experiment. Thus
+it includes a society, specific values for some otherwise un-specified
+parameters, the set of impacts and metrics to be collected, and the specific
+hardware to be used. Associated with a trial may also be some metrics results.
+<h3>
+Impacts</h3>
+Use the Experiment Builder to include a set of simulated external impacts
+in your experiment. To do so, create a new ABC Impact in the workspace
+organizer, and drag it into the Impacts folder. The details of what this
+impact will do are specified in the XML file, which the user creates.
+<br>For details on the ABC Impact external impacts, and creating your own
+external impacts, see the Users' Guide.
+<h3>
+Metrics</h3>
+Using the Experiment Builder, CSMART users will be able to specify the
+exact set of run-time performance measurements which they wish to collect
+during their experiment, when to collect them, and from which points in
+their society. By metrics, we mean such performance-related statistics
+as CPU usage, memory utilization, bandwidth usage, Tasks propagated, etc.
+Typically, these statistics come from the core Metrics Service. In future,
+they will also come from the QuO run-time kernel service, or other user-specified
+sources.
+<br>As the society runs, these metrics are typically recorded in results
+files (one per agent). Use the Performance Analyzer to retrieve these results
+files for client-side analysis.
+<br>For this release, the societies specify the metrics, which come primarily
+from the Metrics Service. Use the Configuration Builder to tune the frequency
+of collection. The set of metrics collected is currently identical in each
+society, and not yet tunable. As the society runs, periodic statistic snapshots
+are collected, and written to a tab separated value text file (one file
+per agent). The specific metrics collected are:
+<ol>
+<li>
+Running time of this snapshot (in seconds)</li>
+
+<li>
+CPU cycles used by the Node during this snapshot (in seconds). Note that
+this metric relies upon the Mylib shared library. If you do not have this
+library on your path, it will not be calculated.</li>
+
+<li>
+Memory in use by the Node (in megabytes)</li>
+
+<li>
+Total memory allocated to the Node (in megabytes)</li>
+
+<li>
+Average length of the message queue. Note that this metric, along with
+the next two message-transport-related metrics, is currently disabled by
+the Message Transport mechanism, pending replacement by more accurate QuO
+metrics.</li>
+
+<li>
+Message bytes sent during sample.</li>
+
+<li>
+Messages sent during sample.</li>
+
+<li>
+Tasks completed during this cycle (allocated with a high-confidence AllocationResult).
+Note that this does not count metrics-related Tasks.</li>
+</ol>
+Additional Impacts and Metrics will be available in a future release.
+<br>Future releases will support specifying which metrics should be collected
+for a given experiment. Currently, all societies record the same metrics.
+The details of when the societies record those numbers are controlled from
+the Configuration Builder tool.
+<br>&nbsp;
+</body>
+</html>
