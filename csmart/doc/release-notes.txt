@@ -1,6 +1,17 @@
 CSMART Release Notes
 
 Release 9.4:
+This release constitues the last major Cougaar release for this
+calendar year.  This release includes some database schema changes,
+and a new communities editing tool. It also includes numerous
+usability improvements, and incorporates all of the changes made after
+the official 9.2.2 patch release along that branch. In particular,
+this includes the new ability to export to XML the host-node-agent
+(HNA) mapping for an experiment, for preservation when upgrading or
+re-loading a CSMART database for example, and then re-importing
+(without having to explicitly re-assign Agents to Nodes, etc).
+
+In detail:
 - Domain database has been updated. To get the latest data, reload the
   mysqldump.9.2.txt file (found in dbmsq/data/mysql), using a command like:
 mysql -f -u [user] -p[pw] [db] < mysqldump.9.2.txt
