@@ -902,7 +902,7 @@ public class CSMART extends JFrame {
     validate();
   }
 
-  private String getResultDirName() {
+  private static String getResultDirName() {
     String resultDirName = ".";
     try {
       resultDirName = System.getProperty("org.cougaar.install.path");
@@ -913,7 +913,7 @@ public class CSMART extends JFrame {
     return resultDirName;
   }
 
-  private File initResultDir() {
+  private static File initResultDir() {
     return new File(getResultDirName() + File.separatorChar + "results");
   }
 
@@ -957,6 +957,9 @@ public class CSMART extends JFrame {
    * @return the directory
    */
   public static File getResultDir() {
+    if(resultDir == null) {
+      resultDir = initResultDir();
+    }
     return resultDir;
   }
 
