@@ -15,13 +15,13 @@ information from the contents of each agent's Blackboard, or from the results
 of specific metrics collection Plugins (or by loading saved graph or metrics
 data). This tool allows users to monitor any currently running Cougaar
 society.
-<p>Views within this tool communicate via the standard PSP interface with
+<p>Views within this tool communicate via the standard Servlet interface with
 a running society. When running under CSMART, the Society Monitor is enabled
 only when an experiment is running, and automatically contacts the society
 in the running experiment. When running standalone, the user is prompted
 for a URL in the running society. To run the Society Monitor in stand-alone
-mode, ensure that the CSMART PSPs are included in your default.psps.xml
-and loaded in each agent of your society. Then use one of the included
+mode, ensure that the CSMART Servlets are included in your Agent's INI files
+in each agent of your society. Then use one of the included
 Monitor scripts to start the Society Monitor. This is also the easiest
 way to open saved graphs. Note that the Society Monitor uses the AT&amp;T
 GraphViz package for graph layout &amp; rendering. This package minimizes
@@ -51,7 +51,7 @@ activity.</li>
 <br>&nbsp;</ul>
 When first launching a tool, if not running from CSMART, you are prompted
 for the URL of the society to contact. Supply the appropriate host and
-port number, just as you would for any PSP (see the settings in your alpreg.ini
+port number, just as you would for any Servlet (see the settings in your alpreg.ini
 file). You may launch as many different views as you wish. In future, you
 will be able to use the selection in one tool to drive your view in another.
 When launching the plan view, you are prompted to filter your query.
@@ -303,25 +303,22 @@ For each node in one of the graph views, double-clicking on the node retrieves a
 <h2>
 Notes:</h2>
 If the Society Monitor is unable to contact a running society, confirm
-that these CSMART PSPs are loaded:
+that these CSMART Servlets are loaded:
 <ul>
-<li>
-csmart/monitor/CLUSTER_URLS.PSP: org.cougaar.tools.csmart.ui.psp.PSP_ClusterProvider</li>
-
-<li>
-csmart/monitor/PSP_Plan.PSP: org.cougaar.tools.csmart.ui.psp.PSP_Plan</li>
-
-<li>
-csmart/monitor/PSP_ClusterInfo.PSP: org.cougaar.tools.csmart.ui.psp.PSP_ClusterInfo</li>
-
-<li>
-csmart/monitor/THREADS.PSP: org.cougaar.tools.csmart.ui.psp.PSP_Search</li>
-
-<li>
-csmart/monitor/PSP_CommunityProvider.PSP: org.cougaar.tools.csmart.ui.psp.PSP_CommunityProvider</li>
-
-<li>
-csmart/monitor/PSP_Metrics.PSP: org.cougaar.tools.csmart.ui.psp.PSP_Metrics</li>
+<li>plugin =
+org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.PlanServlet,
+/CSMART_PlanServlet)</li>
+<li>plugin =
+org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.AgentProviderServlet,
+/CSMART_AgentProviderServlet)</li>
+<li>plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.CommunityProviderServlet, /CSMART_CommunityProviderServlet)
+</li>
+<li>plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.AgentInfoServlet, /CSMART_AgentInfoServlet)
+</li>
+<li>plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.MetricsServlet, /CSMART_MetricsServlet)
+</li>
+<li>plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.SearchServlet, /CSMART_SearchServlet)
+</li>
 </ul>
 
 <br><br>
