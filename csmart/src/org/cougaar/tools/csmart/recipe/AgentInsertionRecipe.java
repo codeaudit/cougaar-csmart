@@ -176,11 +176,11 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
     } // end of if ()
         
     removeAllChildren();
-    System.out.println("Length = " + agents.length);
+    //System.out.println("Length = " + agents.length);
     for(int i=0; i < agents.length; i++) {
       InsertAgentComponent iAgent = new InsertAgentComponent(agents[i]);
       iAgent.initProperties(propRelations, propRoles);
-      System.out.println("AddChild: " + agents[i]);
+      //System.out.println("AddChild: " + agents[i]);
       addChild(iAgent);
     }
   }
