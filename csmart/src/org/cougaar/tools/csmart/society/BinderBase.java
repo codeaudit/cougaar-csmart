@@ -126,7 +126,7 @@ public class BinderBase
 
     if (alreadyAdded(data, self)) {
       if (log.isDebugEnabled()) {
-	log.debug(data + " already has plugin " + self);
+	log.debug(data + " already has binder " + self);
       }
       return data;
     }
