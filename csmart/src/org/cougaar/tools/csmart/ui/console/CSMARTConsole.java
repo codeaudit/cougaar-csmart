@@ -666,6 +666,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   public void abortButton_actionPerformed(ActionEvent e) {
     stopAllNodes();
     abortButton.setSelected(false);
+    experimentTimer.stop();
   }
 
   /**
