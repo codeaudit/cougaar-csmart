@@ -565,6 +565,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
       GUIUtils.timeConsumingTaskStart(this);
 
       XMLExperiment exp = new XMLExperiment(chooser.getSelectedFile());
+      model.setXMLFile(chooser.getSelectedFile());
       model.setExperiment(exp);
       GUIUtils.timeConsumingTaskEnd(this);
 
