@@ -51,10 +51,10 @@ public class SocietyFileComponent
   }
 
   /**
-   * Construct a society from files, each of which defines
-   * an agent in the society.
-   * @param name the name of the society
-   * @param filenames the names of the files that define the agents
+   * Construct a <code>SocietyFileComponent</code> from files, 
+   * each of which defines an agent in the society.
+   * @param name Name of the society
+   * @param filenames Names of the files that define the agents
    */
 
   public SocietyFileComponent(String name, String[] filenames) {
@@ -62,6 +62,10 @@ public class SocietyFileComponent
     this.filenames = filenames;
   }
 
+  /**
+   * Initialize all local properties
+   *
+   */
   public void initProperties() {
     if (filenames == null)
       initFromSingleFile();
@@ -106,6 +110,11 @@ public class SocietyFileComponent
     }
   }
 
+  /**
+   * Copies this component.
+   * @param name Name to use in the copy
+   * @return a <code>ModifiableComponent</code> which is a copy of this object
+   */
   public ModifiableComponent copy(String name) {
     ModifiableComponent societyCopy = 
       new SocietyFileComponent(name, filenames);
