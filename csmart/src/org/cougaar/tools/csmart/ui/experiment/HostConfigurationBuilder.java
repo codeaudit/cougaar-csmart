@@ -366,7 +366,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	if (ihost == null) {
 	  break;
 	}
-	hosts.add(ihost);
+	ihost = ihost.trim();
+	// Do other checking for reasonable host names here...
+	if (! ihost.equals("") && ihost != null)
+	  hosts.add(ihost);
       }
       hostFile.close();
     } catch (IOException e) {
