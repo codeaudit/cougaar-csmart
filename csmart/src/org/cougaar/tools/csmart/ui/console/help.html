@@ -11,24 +11,17 @@
 The Experiment Controller is used to control running an experiment. 
 The Experiment Controller is enabled only when an experiment 
 is selected in the workspace.
-The Experiment Controller allows the user to run through all Trials
-automatically, to stop after a Trial completes, or to abort a Trial.
-Trials are defined in the Experiment Builder.
-A Trial is one "run" of a Society with all Unbound Properties bound
-to one set of values as specified in the Experiment Builder.<br>  
-<i>Note: Experiments from the database do not use Societies with Unbound Properties; these experiments 
-have one trial, and the user interface is simplified accordingly.</i>
-<p>The Experiment Controller also collects and displays all output from the nodes in the experiment, and provides several facilities for automatically and manually searching this ouput, and notifying the user of error conditions.
+<p>The Experiment Controller collects and displays all output from the nodes in the experiment, and provides several facilities for automatically and manually searching this ouput, and notifying the user of error conditions.
 <p>Note that you must separately launch the AppServer on each host used in
 the experiment. See the installation instructions for running the Server.
 <br>
 <br>
 A typical usage would be to <ol>
 <li>Start the AppServers.</li>
-<li>Set the Node output <a href="#FILTER">filters</a>, <a href="#VSIZE">view buffer size</a>, and
+<li>Set the node output <a href="#FILTER">filters</a>, <a href="#VSIZE">view buffer size</a>, and
 <a href="#Notify">notifications</a>.</li>
-<li>Start the Experiment</li>
-<li>Monitor the Node's output</li>
+<li>Start the experiment</li>
+<li>Monitor the node's output</li>
 <li><a href="#GLS">Publish</a> the OPLAN and send GLS Root</li>
 <li>Launch the Society Monitor</li>
 </ol>
@@ -38,25 +31,24 @@ A typical usage would be to <ol>
 <li>
 Select the "Run" button to run an experiment.</li>
 <li>
-Select the "Stop" button to stop a trial in an experiment.
-If the Society in the Experiment is configured to stop automatically
-at the end of each trial, then this merely stops the experiment
-at the end of the current trial.
-If the Society is not configured to stop automatically, as in the
-supplied database societies, 
-then this stops the current trial immediately.
+Select the "Stop" button to stop the experiment.
+If the Society in the experiment is configured to stop automatically,
+then this merely stops the experiment when the society stops (no societies
+currently stop automatically).
+If the society is not configured to stop automatically, 
+then this stops the experiment immediately (i.e. it acts the same as "Abort").
 </li>
 <li>
-Select the "Abort" button to abort the trial, ending it immediately.</li>
+Select the "Abort" button to abort the experiment, ending it immediately.</li>
 </ul>
 <p>
 <b>Information from a Running Experiment</b>
 <br>When you start an experiment, a window is created to capture the
-output of each Node.  
-The Node's window displays information about a node in a running experiment; a brief description of the Node's status can also be displayed by selecting that Node's &quot;Node Status&quot; button.
+output of each node.  
+The node's window displays information about a node in a running experiment; a brief description of the node's status can also be displayed by selecting that node's &quot;Node Status&quot; button.
 <ul>
 <li>
-The Node's window displays the standard output and standard error channels from each node in the experiment, together with some additional specific event information (Node created, Node destroyed, Agent added).
+The node's window displays the standard output and standard error channels from each node in the experiment, together with some additional specific event information (Node created, Node destroyed).
 Output is displayed in black, and errors are displayed in red.  This
 output can be filtered using the <a href="#FILTER">global
 filters</a>.  The full output of the node is captured in a per-node
@@ -66,50 +58,40 @@ filters</a>.  The full output of the node is captured in a per-node
 the Experiment Controller) illustrates the node status. The color
 of the circle indicates the relative load on the node (how busy or idle it is);
 an exclamation mark in the circle indicates an error condition.
-The circle corresponding to the currently selected Node is outlined in black.
-Clicking the right mouse button over the Node Status button displays a menu with the following options:
+The circle corresponding to the currently selected node is outlined in black.
+Clicking the right mouse button over the node status button displays a menu with the following options:
 <ul>
 <li>
 Information: Information about the node and the host on which it is running.
 </li>
 <li>
-Reset: Reset (remove) the error mark on the button.  Continue scanning the output from the Node for new error conditions.
+Reset: Reset (remove) the error mark on the button.  Continue scanning the output from the node for new error conditions.
 </li>
 <li>
-Legend: A legend explaining the colors of the Node Status button.
+Legend: A legend explaining the colors of the node status button.
 </li>
 </ul>
 </ul>
-In addition, the Configuration and "Trial Values" windows
-present non-editable views of information about the Trial.  The Configuration
+In addition, the "Configuration" 
 window displays the Host-Node-Agent configuration which was specified in
-the Experiment Builder.  The "Trial Values" window displays all the values being
-used in the current Trial; this is a combination of the properties specified
-in the Configuration Builder and the Trial values specified in the Experiment
-Builder.  This window is not displayed if there were no Unbound Properties specified in the Experiment.
+the Experiment Builder.
 <p>
-The progress bar indicates the number of trials that have been run, as
-a percentage of the number of trials defined for the experiment in the
-Experiment Builder.
-The Trial time indicates the time that the Trial has been running.
-The Experiment time indicates the total time that the Experiment has
+The experiment time indicates the total time that the experiment has
 been running.
-The progress bar and trial time are not displayed for experiments with one
-trial.
 <h3>Saving Experiment Results</h3>
-The Experiment Controller saves the Node output into per-node log
+The Experiment Controller saves the node output into per-node log
 files, and retrieves any generated results from all the hosts used in the
-Experiment and stores these by default in the COUGAAR_INSTALL_PATH/results folder.
+experiment and stores these by default in the COUGAAR_INSTALL_PATH/results folder.
 To change the location for storing results, use the CSMART File menu, "Save New Results in..." menu item.
 For a description
-of the Experiment results hierarchy, see the Help information for the
+of the experiment results hierarchy, see the Help information for the
 Performance Analyzer.
 <h3>Experiment Controller Menus</h3>
 The Experiment Controller menus are as follows:
 <ul>
 <li>File</li>
 <ul>
-<li>Exit: Close the Experiment Controller.</li>
+<li>Close: Close the Experiment Controller.</li>
 </ul>
 <li><a NAME=View>View</a></li>
 <ul>
@@ -133,9 +115,7 @@ Windows menu.</li> The types of messages that can be displayed are:
 </li>
 <li>Node Destroyed: The node process was killed.
 </li>
-<li>Agent Added: An agent was added to the Node.
-</li>
-<li>Idle: Controls the color of the Node Status button and provides data for the Utilization History graph (which can be displayed from the Node Window Menu).
+<li>Idle: Controls the color of the node status button and provides data for the Utilization History graph (which can be displayed from the Node Window Menu).
 </li>
 <li>Heartbeat: An "@" written periodically to indicate that the Node is running.
 </li>
@@ -147,20 +127,20 @@ In future, you may also be able to filter by Log4J logging level.<br>
 automatically scans all output from all nodes searching for the notify
 conditions set by the user.  If a notification condition is detected,
 an exclamation mark is displayed in the <a
-href="#NodeStatusButton">Node's status button</a>.  Output is scanned
+href="#NodeStatusButton">node's status button</a>.  Output is scanned
 starting at the time that the notification is set.    Notify
 conditions can be either a specified string, or any output on Standard
 Error.  Note that notification strings are case <i>in</i>sensitive.
 Thus, for example, the user could ask for a notification, if
-the Node writes the string "not found". Notifications set here can be
+the node writes the string "not found". Notifications set here can be
 overridden by specific notifications set in each node's window.
 Initially, the notification string is set to "exception" so that any
-exceptions caught at a Node will trigger a notification.</li>
+exceptions caught at a node will trigger a notification.</li>
 <ul>
 <li>Set Notification: Set the string on which to be notified; optionally ask to be notified for all output on Standard Error.</li>
 <li>View Notification: View the current notify string.</li>
 <li>Remove All Notifications: Remove all notify conditions.</li>
-<li>Reset All Notifications: Reset the error marks in the Node Status
+<li>Reset All Notifications: Reset the error marks in the node status
 buttons, and continue to search for notify conditions, starting with
 any <i>new</i> output from the nodes.</li>
 </ul>
@@ -168,7 +148,7 @@ any <i>new</i> output from the nodes.</li>
 <ul>
 <li>About Experiment Controller: Display this document.</li>
 <li>About CSMART: Display an overview of CSMART.</li>
-<li>Legend: Display a legend showing the colors used in the <a href=#NodeStatusButton>Node Status buttons</a>.
+<li>Legend: Display a legend showing the colors used in the <a href=#NodeStatusButton>node status buttons</a>.
 </ul>
 </ul>
 <h3>Node Window Menus</h3>
@@ -205,8 +185,8 @@ Builder. Also shows the command line arguments and agents configured to run on t
 <li>Stack Trace: Causes the node to print a stack trace; this is
 displayed in the standard output in the node window.  (This is not
 supported for Windows machines.)</li>
-<li>Kill: Kill the selected Node.</li>
-<li>Restart: Restart the Node, if it has died.  If you have persistence turned on, the Node will start where it left off.</li>
+<li>Kill: Kill the selected node.</li>
+<li>Restart: Restart the node, if it has died.  If you have persistence turned on, the node will start where it left off.</li>
 </ul>
 <li>Notify: These menu items are the same as in the Experiment Controller menus, but set notifications for the specific node.  See <a href=#Notify>Notify menu.</a></li>
 <ul>
@@ -217,7 +197,7 @@ supported for Windows machines.)</li>
 </ul>
 </ul>
 <h3><a NAME="GLS">GLS and OPLAN UI</h3>
-In related societies, a window will pop up in the CSMART Console for
+In societies which use an Oplan, a window will pop up in the CSMART Console for
 publishing an Oplan, and sending or rescinding the GLS Root task. This
 interface uses a servlet to communicate with the command node (usually
 NCA). To use this interface:
@@ -250,12 +230,10 @@ reverse nslookup each machine name.</li>
 <li>AppServer not running, or Node machine has wrong version of
 Cougaar.</li>
 <li>Node machine has incorrect cougaar.rc or other data file</li>
-<li>Experiment changes made in CSMART were not saved to the
-database.</li>
 </ul>
 <br><br>
 <!-- hhmts start -->
-Last modified: Wed Feb 13 14:53:47 EST 2002
+Last modified: Tue Apr 30 14:53:47 EST 2002
 <!-- hhmts end -->
 </body>
 </html>

@@ -7,46 +7,38 @@
 <body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
 
 <h2>Experiment Builder</h2>
-Use this tool to build an Experiment from a pre-defined Experiment in
-a database, and zero or more Recipes. In particular, use this tool to
-allocate Agents across available Hosts, and set run-time command line
+Use this tool to build an experiment,
+in particular, to add recipes to an experiment, and to 
+allocate agents across nodes and hosts, and set run-time command line
 arguments.<br><br>
-This tool may be opened in View only mode. In this case
-the user may not modify the current experiment configuration, but may
-view the current settings. Menus that support modifying the experiment will be greyed out.<br><br>
-Recipes modify the behavior of the Society in the Experiment in various ways (collect run-time statistics, add simulated behaviors, etc).  
-To add a Recipe to your Experiment, create the Recipe in your workspace organizer,
+Recipes modify the behavior of the society in the experiment in various ways (collect run-time statistics, add simulated behaviors, etc.).  
+To add a recipe to your experiment, create the recipe in your workspace,
 and drag it into the Recipes folder in the Experiment Builder. 
 Note that all 
 changes to your experiment are saved automatically in your workspace
 and in the database. Since experiment definitions are saved in the
 database, they may be easily re-used later from other client
-machines.<br><br>
-Note that when you exit the Experiment Builder, your changes to the
-experiment are saved to the database. Societies are run from the
-database only. Therefore, you must save all your changes to the
-database before running the society for them to have any
-effect. Therefore, editing an Experiment that is currently running has
-no effect on the running society.
-<h2>Recipes</h2>
+machines.
+Experiments which have not been saved (particularly, experiments that contain
+societies or recipes that have been changed in the Configuration Builder)
+are displayed in the workspace in red.  Unsaved experiments cannot be run.
+<br><br>
+This tool may be opened in view-only mode. In this case,
+the user may not modify the current experiment configuration, but may
+view the current settings. Menus that support modifying the experiment will be greyed out.<br><br>
+<h3>Recipes</h3>
 An experiment can contain any number of recipes.  Recipes are defined modifications
 to a society, and will be applied in the order in which they
-are listed under the Recipes folder. (You may re-order them.) By default, a recipe to include
+are listed under the Recipes folder. (You may re-order them by dragging and dropping.) By default, a recipe to include
 all basic servlets is included in experiments from the database, but
 users may remove this recipe and include any other they prefer.  Note however, that some servlets support the Society Monitor; removing these servlets will make it impossible for the Society Monitor to collect information from the society blackboard.
 
-<h3>Component Recipes</h3>
+<h4>Component Recipes</h4>
 Component Recipes provide the ability to add a new component to a specific set
 of agents within a society.  For more information on Component Recipes,
 see the documentation for a specific Component Recipe (Specific Insertion, Agent Insertion, Servlet Group Insertion, etc.).
-<h3>Impact Recipes</h3>
-Use the Experiment Builder to include a set of simulated external impacts
-in your experiment. To do so, create a new ABC Impact in the workspace
-organizer, and drag it into the Recipes folder. 
-For details on the ABC Impact external impacts, and creating your own
-external impacts, see the Users' Guide.
-<h3>Metrics Recipes</h3>
-Using the Experiment Builder, CSMART users will be able to specify the
+<h4>Metrics Recipes</h4>
+Using the Experiment Builder, users can specify the
 exact set of run-time performance measurements which they wish to collect
 during their experiment, when to collect them, and from which points in
 their society. By metrics, we mean such performance-related statistics
@@ -63,17 +55,24 @@ per agent). See <a href="../../societies/abcsociety/basic-metric-help.html">Basi
 <h3>Using the Experiment Builder</h3>
 The following explains the usage of each of the tabbed panes:
 <h4>Properties</h4>
-To include a Recipe in your Experiment, create a Recipe in your 
-workspace organizer and drag it into the Recipes folder in the tree.
-To delete an item in the tree, position the mouse over the item and click the
-right mouse button; a pop-up window will be displayed allowing you to delete
-the item, or, for a folder, to delete all the items in the folder. Drag and drop recipes within the Recipes folder to change the order in which they are applied.
+To include a society or recipe in your experiment, create a society or 
+recipe in your 
+workspace and drag it into the Society or Recipes folder in the tree.
+(Note that societies are automatically created in the workspace when
+you load an experiment from the database.)
+To remove the society from the experiment, position the mouse over the Society folder in the tree,
+and click the right mouse button; a pop-up window will be displayed allowing you
+to remove the society.
+To remove a recipe from the experiment, position the mouse over the recipe in the tree and click the
+right mouse button; a pop-up window will be displayed allowing you to remove
+the recipe. To remove all recipes, use the pop-up menu on the Recipes folder.
+To change the order in which recipes are applied, drag and drop recipes within the Recipes folder.
 <h4>Configurations</h4>
 The configuration of Hosts, Unassigned Nodes, and Unassigned Agents
 can be modified using File menu items, pop-up menus or by drag-and-drop. Agents can be dropped
 on nodes; nodes can be dropped on hosts. Create, delete, and rename hosts
 and nodes by using the appropriate File menu option, or right clicking on a host or node to display a pop-up menu
-with these options. Agents are created by Societies or Recipes and cannot be created,
+with these options. Agents are created by societies or recipes and cannot be created,
 deleted or renamed in the Experiment Builder. Unassigned Agents are
 agents not yet assigned to a node.
 
@@ -102,7 +101,7 @@ usually indicates a problem in specifying the host name. Try using an IP address
 host name.</li></ul></li>
 
 <li>
-Create a node or nodes for each host to be used in the experiment. The full set of Node names defined in the Experiment is displayed in the unassigned window by default.  You may use one of these, or create a new one.  For a new Node name, use the File menu item, or click
+Create a node or nodes for each host to be used in the experiment. The full set of node names defined in the Experiment is displayed in the unassigned window by default.  You may use one of these, or create a new one.  For a new node name, use the File menu item, or click
 the right mouse button over the host folder in the "Hosts" tree, and select
 "New Node" from the menu. A pop-up dialog is displayed in which to enter
 the name of the node.</li>
@@ -118,7 +117,7 @@ agent.</li>
  host and node. This information includes: Host Description, Host
  Type, Host Location, Node Description, Global Command Line Arguments,
  and Command Line Arguments. This information can be displayed using
- the Info menu item on the Node menu in the Node window in the
+ the Info menu item on the Node menu in the node window in the
  Experiment Controller.
 </p>
 <p>
@@ -144,7 +143,7 @@ debugging the configuration of your experiment, you may use the
 debugging File menu option to generate "ini" style configuration
 files. This option generates a complete society specification in old
 style configuration files. All information written here reflects what
-will be run when the Nodes are created from the database. However
+will be run when the nodes are created from the database. However
 these files are not supported for running a society.<br>
 <h4>Threads</h4>
 <p>
@@ -153,8 +152,7 @@ Experiment.  These were set in an earler dialog when the Experiment
 was created, and cannot be edited here.
 
 </p>
-<!-- hhmts start --> Last modified: Wed Feb 13
-15:21:44 EST 2002 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Tue Apr 30 15:21:44 EST 2002 <!-- hhmts end -->
 
 </body>
 </html>
