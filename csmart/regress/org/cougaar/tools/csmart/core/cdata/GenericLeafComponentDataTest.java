@@ -51,6 +51,27 @@ public class GenericLeafComponentDataTest extends TestCase {
     assertEquals("Test Value", new String("Value"), (String)data.getValue());
   }
 
+  public void testEquals() {
+    GenericLeafComponentData c1 = new GenericLeafComponentData();
+    GenericLeafComponentData c2 = new GenericLeafComponentData();
+    GenericLeafComponentData c3 = new GenericLeafComponentData();
+
+    c1.setType("My Type");
+    c2.setType("My Type");
+
+    c1.setName("Name");
+    c2.setName("Name");
+    c3.setName("Name");
+
+    c1.setValue(new Integer(1));
+    c2.setValue(new Integer(1));
+    c3.setValue(new Integer(1));
+
+    assertEquals("Test Equals Operator", true, c1.equals(c2));
+    assertEquals("Test Equals Operator", false, c1.equals(c3));
+
+  }
+
   public static Test suite() {
     return new TestSuite(GenericLeafComponentDataTest.class);
   }

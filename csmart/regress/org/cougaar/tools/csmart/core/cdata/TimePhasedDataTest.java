@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.core.cdata;
 
 import junit.framework.*;
 import java.util.Iterator;
+import java.text.ParseException;
 
 public class TimePhasedDataTest extends TestCase {
 
@@ -38,14 +39,46 @@ public class TimePhasedDataTest extends TestCase {
 
   public void testStartTime() {
     String start = "03/25/1959 12:00 am";
-    data.setStartTime(start);
-    assertEquals("Test start time", start, data.getStartTime());
+    try {
+      data.setStartTime(start);
+      assertEquals("Test start time", start, data.getStartTime());
+    } catch(ParseException pe) {
+      fail("Caught unexpected exception");
+    }
+
+    try {
+      data.setStartTime("Monday, 6 pm");
+      fail("Expected ParseException");
+    } catch(ParseException pe) {}
+
+    try {
+      data.setStartTime("");
+      assertEquals("Test empty start time", "", data.getStartTime());
+    } catch(ParseException pe) {
+      fail("Caught unexpected exception");
+    }
   }
 
   public void testStopTime() {
     String stop = "03/25/1959 12:00 pm";
-    data.setStopTime(stop);
-    assertEquals("Test stop time", stop, data.getStopTime());
+    try {
+      data.setStopTime(stop);
+      assertEquals("Test stop time", stop, data.getStopTime());
+    } catch(ParseException pe) {
+      fail("Caught unexpected exception");
+    }
+
+    try {
+      data.setStopTime("Monday, 6 pm");
+      fail("Expected ParseException");
+    } catch(ParseException pe) {}
+
+    try {
+      data.setStopTime("");
+      assertEquals("Test empty stop time", "", data.getStopTime());
+    } catch(ParseException pe) {
+      fail("Caught unexpected exception");
+    }
   }
 
   public static Test suite() {

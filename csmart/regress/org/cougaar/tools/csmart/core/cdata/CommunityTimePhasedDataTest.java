@@ -27,32 +27,52 @@ import java.util.Iterator;
 public class CommunityTimePhasedDataTest extends TestCase {
 
   private CommunityTimePhasedData ctpd = null;
+  private String[] comms = {"Comm1", "Commm2", "Comm3", "Comm4"};
 
   public CommunityTimePhasedDataTest(String name) {
     super(name);
   }
 
   protected void setUp() {
+
     ctpd = new CommunityTimePhasedData();
+    ctpd.setCommunities(comms);
   }
 
-  public void testCommunities() {
-    String[] comms = {"Comm1", "Commm2", "Comm3", "Comm4"};
-
-    ctpd.setCommunities(comms);
+  public void testGetCommunityIterator() {
     assertEquals("Test Size", 4, ctpd.size());
     Iterator iter = ctpd.getCommunityIterator();
-    String nc = (String)iter.next();
-    assertEquals("Test getCommunityIterator()", "Comm1", nc);
-    String[] ca = ctpd.getCommunities();
-    assertEquals("Test getCommunities()", comms[0], ca[0]);
-    assertEquals("Test getCommunities()", comms[3], ca[3]);
+    for(int i=0; iter.hasNext(); i++) {
+      String nc = (String)iter.next();
+      assertEquals("Test getCommunityIterator()", comms[i], nc);
+    }
+  }
 
+  public void testGetCommunities() {
+    String[] ca = ctpd.getCommunities();
+    for(int i=0; i < ctpd.size(); i++) {
+      assertEquals("Test getCommunities()", comms[i], ca[i]);
+      assertEquals("Test getCommunities()", comms[i], ca[i]);
+    }
+  }
+   
+  public void testAddSetAndGetCommunity() {
     ctpd = new CommunityTimePhasedData();
     ctpd.addCommunity("Test1");
     assertEquals("Test Add Community", "Test1", ctpd.getCommunity(0));
     ctpd.setCommunity(0, "NewTest");
-    assertEquals("Test addCommunity(int, String)", "NewTest", ctpd.getCommunity(0));
+    assertEquals("Test setCommunity(int, String)", "NewTest", ctpd.getCommunity(0));
+
+    try {
+      ctpd.setCommunity(-1, "Should Fail");
+      fail("IndexOutOfBoundsException expected.");
+    } catch(IndexOutOfBoundsException e) {}
+
+    try {
+      ctpd.setCommunity(4, "Should Fail");
+      fail("IndexOutOfBoundsException expected.");
+    } catch(IndexOutOfBoundsException e) {}
+
   }
 
   public static Test suite() {
