@@ -33,13 +33,27 @@ import org.cougaar.tools.csmart.society.SocietyComponent;
  */
 public class ActionUtil {
 
+  /** Configuration String **/
   public static String CONFIGURE_ACTION = "Configure";
+
+  /** Build String **/
   public static String BUILD_ACTION = "Build";
+
+  /** Run String **/
   public static String RUN_ACTION = "Run";
+
+  /** Duplicate String **/
   public static String DUPLICATE_ACTION = "Duplicate";
+
+  /** Delete String **/
   public static String DELETE_ACTION = "Delete";
+
+  /** Rename String **/
   public static String RENAME_ACTION = "Rename";
+
+  /** New Experiment String **/
   public static String NEW_EXPERIMENT_ACTION = "New Experiment";
+
   public static String NEW_EXPERIMENT_FROM_DB_ACTION = "From Database";
   public static String NEW_EXPERIMENT_FROM_FILE_ACTION = "From File";
   public static String NEW_EXPERIMENT_FROM_UI_ACTION = "From User";
