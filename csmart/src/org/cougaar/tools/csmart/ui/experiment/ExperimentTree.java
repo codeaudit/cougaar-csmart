@@ -176,9 +176,9 @@ public class ExperimentTree extends DNDTree {
                 if (before != null) {
                     ix = model.getIndexOfChild(target, before);
                 }
-                System.out.println("Insert into " + target
-                                   + " at " + ix
-                                   + " before " + before);
+//                  System.out.println("Insert into " + target
+//                                     + " at " + ix
+//                                     + " before " + before);
                 model.insertNodeInto(node, target, ix);
                 selectNode(node);
                 return action;
