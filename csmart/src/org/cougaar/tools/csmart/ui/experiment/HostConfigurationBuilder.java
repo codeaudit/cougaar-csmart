@@ -398,7 +398,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * Add unassigned nodes from experiment to unassigned nodes tree.
    */
-
   private void addUnassignedNodesFromExperiment() {
     Set unassignedNodes = new TreeSet(configurableComponentComparator);
     HostComponent[] hosts = experiment.getHosts();
@@ -428,10 +427,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
   }
 
-  /**
-   * Add unassigned agents to unassigned agents tree.
-   */
-
   private static Comparator configurableComponentComparator = new Comparator() {
     public int compare(Object o1, Object o2) {
       ConfigurableComponent c1 = (ConfigurableComponent) o1;
@@ -440,6 +435,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
   };
 
+  /**
+   * Add unassigned agents to unassigned agents tree.
+   */
   private void addUnassignedAgentsFromExperiment() {
     Set unassignedAgents = new TreeSet(configurableComponentComparator);
     AgentComponent[] agents = experiment.getAgents();
