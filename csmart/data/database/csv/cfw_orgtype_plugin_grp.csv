@@ -72,6 +72,7 @@ CFW_ID,ORGTYPE_ID,PLUGIN_GROUP_ID,BLANK
 "1AD-CFW","AWR","UI"
 "1AD-CFW","AWR","Community"
 "1AD-CFW","AWR","UniversalAllocator"
+"1AD-CFW","AWR","GLS"
 "1AD-CFW","BDE-HQ","AntsAssets"
 "1AD-CFW","BDE-HQ","GLS"
 "1AD-CFW","BDE-HQ","GenericTableAllocator"
