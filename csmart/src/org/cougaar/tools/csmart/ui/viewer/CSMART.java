@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -74,13 +74,13 @@ import java.util.Properties;
  * Allows user to: build, test, control, monitor and analyze a society. For installation and
  * basic usage, see csmart/doc/InstallAndTest.html.<br>
  * @property org.cougaar.tools.csmart.doWorkspace if false do NOT read/write from Default Worksapce file.
- * @property org.cougaar.configuration.database should be specified in 
+ * @property org.cougaar.configuration.database should be specified in
  *   cougaar.rc as the URL to find the CSMART database. See CSMART InstallAndTest.html
  * @property csmart.PopulateDb.log.enable if true enables the logging
  *   of some executed database queries to a file named PopulateDb<datetime>.log.
- * @property org.cougaar.install.path Used to default results directory, 
+ * @property org.cougaar.install.path Used to default results directory,
  *     find workspace file, saved graphs, etc
- * @property org.cougaar.config.path has standard meaning, and is used to 
+ * @property org.cougaar.config.path has standard meaning, and is used to
  *      find some CSMART UI properties among other things.
  * @property org.cougaar.useBootstrapper has meaning specified by Bootstrapper
  *
@@ -327,14 +327,14 @@ public class CSMART extends JFrame {
     windowMenu.setToolTipText("Display selected window.");
 
     JMenu helpMenu = new JMenu(HELP_MENU);
-    for (int i = 0; i < helpActions.length; i++) 
+    for (int i = 0; i < helpActions.length; i++)
       helpMenu.add(new JMenuItem(helpActions[i]));
 
     menuBar.add(fileMenu);
     menuBar.add(editMenu);
     menuBar.add(windowMenu);
     menuBar.add(helpMenu);
-    
+
     if (toolBar != null)
       getContentPane().remove(toolBar); // get rid of old tool bar if any
     toolBar = new JToolBar();
@@ -350,7 +350,7 @@ public class CSMART extends JFrame {
 
     Action societyAction = new AbstractAction() {
         public void actionPerformed(ActionEvent e) {
-          JFrame societyMonitorFrame = 
+          JFrame societyMonitorFrame =
             NamedFrame.getNamedFrame().getToolFrame(SOCIETY_MONITOR);
           if (societyMonitorFrame == null)
             runMonitor();
@@ -379,7 +379,7 @@ public class CSMART extends JFrame {
     };
 
     for (int i = 0; i < views.length; i++) {
-      JButton button = makeButton(views[i], iconFilenames[i], 
+      JButton button = makeButton(views[i], iconFilenames[i],
                                   actions[i]);
       button.setHorizontalTextPosition(JButton.CENTER);
       button.setVerticalTextPosition(JButton.BOTTOM);
@@ -513,7 +513,7 @@ public class CSMART extends JFrame {
     }
   }
 
-  private JButton makeButton(String label, String iconFilename, 
+  private JButton makeButton(String label, String iconFilename,
                              Action action) {
     // replace spaces in label with <br> so that labels fit on buttons
     int index = label.indexOf(' ');
@@ -537,7 +537,7 @@ public class CSMART extends JFrame {
   Observer myFrameObserver = new Observer() {
       ActionListener myActionListener = new ActionListener() {
 	  public void actionPerformed(ActionEvent e) {
-	    String s = 
+	    String s =
 	      ((AbstractButton)e.getSource()).getActionCommand();
 	    JFrame f = NamedFrame.getNamedFrame().getFrame(s);
 	    if (f != null) {
@@ -546,7 +546,7 @@ public class CSMART extends JFrame {
 	    }
 	  }
         };
-      
+
       /**
        * Window management for windows launched by CSMART.
        * Updates which tools are enabled and updates the Window menu.
@@ -606,13 +606,13 @@ public class CSMART extends JFrame {
   /**
    * Run configuration builder.
    * If this is called on an experiment, copy the experiment,
-   * create a new society (SocietyCDataComponent), 
+   * create a new society (SocietyCDataComponent),
    * remove the society and any recipes from the experiment copy,
    * and put the new society in the experiment.
    * @param cc the component to configure
    * @param alwaysNew if true create a new configuration builder, otherwise re-use existing one
    */
-  protected void runBuilder(ModifiableComponent cc, 
+  protected void runBuilder(ModifiableComponent cc,
                             boolean alwaysNew) {
     // note that cc is guaranteed non-null when this is called
     if (cc instanceof Experiment) {
@@ -623,12 +623,12 @@ public class CSMART extends JFrame {
     ModifiableComponent originalComponent = null;
     Experiment experiment = null;
     DefaultMutableTreeNode selectedNode = organizer.getSelectedNode();
-    DefaultMutableTreeNode parentNode = 
+    DefaultMutableTreeNode parentNode =
       (DefaultMutableTreeNode)selectedNode.getParent();
     if (parentNode.getUserObject() != null &&
         parentNode.getUserObject() instanceof Experiment) {
       experiment = (Experiment)parentNode.getUserObject();
-      // if configuring a component in an experiment, 
+      // if configuring a component in an experiment,
       // copy the component, so it's modified only in the experiment
       if (cc instanceof SocietyComponent) {
         SocietyComponent society = (SocietyComponent)cc;
@@ -654,7 +654,7 @@ public class CSMART extends JFrame {
     cc.setEditable(false);
     if (originalComponent != null)
       originalComponent.setEditable(false);
-    JFrame tool = 
+    JFrame tool =
       (JFrame)new PropertyBuilder(this, cc, originalComponent, experiment);
     addTool(CONFIGURATION_BUILDER, cc.getShortName(), tool);
   }
@@ -662,7 +662,7 @@ public class CSMART extends JFrame {
   private void runBuilderOnExperiment(Experiment experiment) {
     Thread configureThread = null;
     experimentToEdit = null;
-    configureThread = 
+    configureThread =
       new ConfigureThread("ConfigureExperiment", experiment);
     // TODO: this isn't blocking mouse events on the toolbar; it's deferring them
     GUIUtils.timeConsumingTaskStart(csmart);
@@ -686,19 +686,19 @@ public class CSMART extends JFrame {
         return;
       organizer.addExperimentAndComponentsToWorkspace(experimentToEdit,
              (DefaultMutableTreeNode)organizer.getSelectedNode().getParent());
-      SocietyComponent originalSociety = 
+      SocietyComponent originalSociety =
         experimentToEdit.getSocietyComponent();
-      String copyName = 
+      String copyName =
         organizer.generateSocietyName(originalSociety.getSocietyName(), false);
       if (copyName == null) {
         GUIUtils.timeConsumingTaskEnd(csmart);
         return;
       }
-      SocietyComponent societyCopy = 
+      SocietyComponent societyCopy =
         (SocietyComponent)originalSociety.copy(copyName);
       societyCopy.setEditable(false);
       originalSociety.setEditable(false);
-      JFrame tool = 
+      JFrame tool =
         (JFrame)new PropertyBuilder(csmart, societyCopy, originalSociety,
                                     experimentToEdit);
       addTool(CONFIGURATION_BUILDER, societyCopy.getShortName(), tool);
@@ -711,7 +711,7 @@ public class CSMART extends JFrame {
    * @param experiment the experiment to edit
    * @param alwaysNew true to create a new <code>ExperimentBuilder</code>; false to re-use an existing one
    */
-  protected void runExperimentBuilder(Experiment experiment, 
+  protected void runExperimentBuilder(Experiment experiment,
                                       boolean alwaysNew) {
 //      // if this experiment is being edited, then don't edit again
 //      if (isExperimentInEditor(experiment))
@@ -733,9 +733,9 @@ public class CSMART extends JFrame {
 
 //    private Experiment queryUser(Experiment experiment,
 //                                 Object[] options) {
-//      int result = 
+//      int result =
 //          JOptionPane.showOptionDialog(this,
-//                                       experiment.getShortName() + 
+//                                       experiment.getShortName() +
 //                                       " is not editable",
 //                                       "Experiment Not Editable",
 //                                       JOptionPane.DEFAULT_OPTION,
@@ -754,7 +754,7 @@ public class CSMART extends JFrame {
 //        return null;
 //      return experiment;
 //    }
-   
+
   /**
    * Run the specified experiment.  The experiment must be runnable.
    * @param experiment the experiment to run
@@ -804,7 +804,7 @@ public class CSMART extends JFrame {
     NamedFrame.getNamedFrame().addFrame(toolName + ((docName != null && ! docName.trim().equals("")) ? (": " + docName) : ""), tool);
     final boolean isConsole = (toolName == EXPERIMENT_CONTROLLER);
     tool.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    
+
     tool.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
 	JFrame frameArg = (JFrame)e.getWindow();
@@ -840,7 +840,7 @@ public class CSMART extends JFrame {
     else
       return false;
   }
-    
+
   /**
    * Determine if an experiment is in the Console.
    * @param String the experiment name
@@ -853,7 +853,7 @@ public class CSMART extends JFrame {
     else
       return false;
   }
-    
+
   /**
    * Determine if a recipe is being edited in the ConfigurationBuilder.
    * @param recipe the recipe
@@ -866,7 +866,7 @@ public class CSMART extends JFrame {
     else
       return false;
   }
-    
+
   /**
    * Determine if a society is being edited in the ConfigurationBuilder.
    * @param society the society
@@ -882,15 +882,15 @@ public class CSMART extends JFrame {
 
   private void newWorkspace() {
     if (workspaceFileChooser == null) {
-      workspaceFileChooser = 
+      workspaceFileChooser =
 	new JFileChooser(System.getProperty("org.cougaar.install.path"));
       workspaceFileChooser.setDialogTitle("Select workspace file");
       String[] filters = { "bin" };
-      ExtensionFileFilter filter = 
+      ExtensionFileFilter filter =
 	new ExtensionFileFilter(filters, "workspace file");
       workspaceFileChooser.addChoosableFileFilter(filter);
     }
-    if (workspaceFileChooser.showOpenDialog(this) != 
+    if (workspaceFileChooser.showOpenDialog(this) !=
 	JFileChooser.APPROVE_OPTION)
       return;
     File file = workspaceFileChooser.getSelectedFile();
@@ -959,7 +959,7 @@ public class CSMART extends JFrame {
    * Return directory in which to store results.
    * @return the directory
    */
-  public File getResultDir() {
+  public static File getResultDir() {
     return resultDir;
   }
 
@@ -971,9 +971,9 @@ public class CSMART extends JFrame {
 
   /**
    * Start up CSMART main UI. <br>
-   * If <code>org.cougaar.useBootstrapper</code> is set false, 
+   * If <code>org.cougaar.useBootstrapper</code> is set false,
    * use CLASSPATH to find classes as normal.<br>
-   * Otherwise, use the Cougaar Bootstrapper to search the 
+   * Otherwise, use the Cougaar Bootstrapper to search the
    * Classpath + CIP/lib, /plugins, /sys, etc.
    **/
   public static void main(String[] args) {
@@ -1023,12 +1023,12 @@ public class CSMART extends JFrame {
       result.append(version+" built on "+((buildtime > 0) ? (new Date(buildtime)).toString() : "(unknown time)") + "\n");
       // add repositoryTag, repositoryModified, repositoryTime?
       result.append("Repository: "+
-          ((repositoryTag != null) ? 
-           (repositoryTag + 
+          ((repositoryTag != null) ?
+           (repositoryTag +
             (repositoryModified ? " (modified)" : "")) :
            "(unknown tag)")+
           " on "+
-          ((repositoryTime > 0) ? 
+          ((repositoryTime > 0) ?
            ((new Date(repositoryTime)).toString()) :
            "(unknown time)") + "\n");
     }
@@ -1055,16 +1055,16 @@ public class CSMART extends JFrame {
       result.append(version+" built on "+((buildtime > 0) ? (new Date(buildtime)).toString() : "(unknown time)") + "\n");
       // add repositoryTag, repositoryModified, repositoryTime?
       result.append("Repository: "+
-          ((repositoryTag != null) ? 
-           (repositoryTag + 
+          ((repositoryTag != null) ?
+           (repositoryTag +
             (repositoryModified ? " (modified)" : "")) :
            "(unknown tag)")+
           " on "+
-          ((repositoryTime > 0) ? 
+          ((repositoryTime > 0) ?
            ((new Date(repositoryTime)).toString()) :
            "(unknown time)") + "\n");
     }
-    
+
     String vminfo = System.getProperty("java.vm.info");
     String vmv = System.getProperty("java.vm.version");
     result.append("VM: JDK "+vmv+" ("+vminfo+")\n");
@@ -1093,7 +1093,7 @@ public class CSMART extends JFrame {
 
     return result.toString();
   }
-  
+
   // Logging Methods
 
   private static LoggerFactory lf;
@@ -1105,9 +1105,9 @@ public class CSMART extends JFrame {
     defaults.setProperty("log4j.appender.A1",
                          "org.apache.log4j.ConsoleAppender");
     defaults.setProperty("log4j.appender.A1.Target", "System.out");
-    defaults.setProperty("log4j.appender.A1.layout", 
+    defaults.setProperty("log4j.appender.A1.layout",
                          "org.apache.log4j.PatternLayout");
-    defaults.setProperty("log4j.appender.A1.layout.ConversionPattern", 
+    defaults.setProperty("log4j.appender.A1.layout.ConversionPattern",
                          "%d{ABSOLUTE} %-5p [ %t] - %m%n");
 
     Properties props = new Properties(defaults);
@@ -1128,7 +1128,7 @@ public class CSMART extends JFrame {
   /**
    * Used to grab an instance of the Logger
    *
-   * @param requestor 
+   * @param requestor
    * @return a <code>Logger</code> value
    */
   public static Logger createLogger(String name) {
@@ -1164,7 +1164,7 @@ public class CSMART extends JFrame {
 
     public void run() {
       // copy the original experiment and put the copy in the workspace
-      String newName = 
+      String newName =
         organizer.generateExperimentName(experiment.getExperimentName());
       experimentToEdit = (Experiment)experiment.copy(newName);
       if (experimentToEdit == null) {
@@ -1182,7 +1182,7 @@ public class CSMART extends JFrame {
       ComponentData cdata = experiment.getSocietyComponentData();
       newName = organizer.generateSocietyName(cdata.getName());
       cdata.setName(newName);
-      SocietyComponent newSociety = 
+      SocietyComponent newSociety =
         new SocietyCDataComponent(cdata,
          ((SocietyComponent)experiment.getSocietyComponent()).getAssemblyId());
       newSociety.initProperties();
