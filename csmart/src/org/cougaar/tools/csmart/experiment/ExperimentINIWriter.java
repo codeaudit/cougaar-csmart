@@ -445,9 +445,9 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	RelationshipData rel = (RelationshipData)iter.next();
 
 	if (assetData.isEntity()) {	  
-	  writer.print(quote(rel.getRole()) + "  ");
+	  writer.print(rel.getRole() + "  ");
 	  writer.print(quote(rel.getItem()) + "  ");
-	  writer.print(quote(rel.getType()) + "  ");
+	  writer.print(quote(rel.getTypeId()) + "  ");
 	  writer.print(quote(rel.getSupported()) + "  ");
           long startTime = rel.getStartTime();
           long endTime = rel.getEndTime();
