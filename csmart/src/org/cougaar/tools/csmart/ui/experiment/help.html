@@ -8,9 +8,9 @@
 
 <h2>Experiment Builder</h2>
 Use this tool to build an experiment,
-in particular, to add recipes to an experiment, and to 
-allocate agents across nodes and hosts, and set run-time command line
-arguments.<br><br>
+in particular, to add recipes to an experiment, to 
+allocate agents across nodes, hosts, and communities, and
+to set run-time command line arguments.<br><br>
 Recipes modify the behavior of the society in the experiment in various ways (collect run-time statistics, add simulated behaviors, etc.).  
 To add a recipe to your experiment, create the recipe in your workspace,
 and drag it into the Recipes folder in the Experiment Builder. 
@@ -23,9 +23,6 @@ Experiments which have not been saved (particularly, experiments that contain
 societies or recipes that have been changed in the Configuration Builder)
 are displayed in the workspace in red.  Unsaved experiments cannot be run.
 <br><br>
-This tool may be opened in view-only mode. In this case,
-the user may not modify the current experiment configuration, but may
-view the current settings. Menus that support modifying the experiment will be greyed out.<br><br>
 <h3>Recipes</h3>
 An experiment can contain any number of recipes.  Recipes are defined modifications
 to a society, and will be applied in the order in which they
@@ -128,28 +125,28 @@ assigned to it. This is useful for, among other things, Agent Mobiility.</li>
  Experiment Controller.
 </p>
 <p>
-<b>Importing / Exporting HNA Mapping's</b>
-The experiment builder provides the ability to import and export Host Node
-Agent Mappings.  This allows the preservation of large mappings across
+<p><b>Importing / Exporting Host, Node, Agent Mappings</b></p>
+<p>The experiment builder provides the ability to import and export Host, Node, and
+Agent (HNA) Mappings.  This allows the preservation of large mappings across
 multiple versions of CSMART and databases.  When an HNA Map is exported,
-it is stored in an XML file that can then be imported (even edited by
-hand first) into new / future experiments.  <br>
+it is stored in an XML file that can then be imported into new or future
+experiments.  The XML file can also be edited by hand, before re-importing it.
+</p>
+<p>
 To use this feature, create an experiment, as explained in this help file.
-Once the desired mappings are configured, with all hosts, nodes and agents
-assigned.  Select "Export HNA" on the "File" menu.  This saves the HNA mapping
-to a file located off the results directory, or in a directory starting with
-the current experiment name, in "csmart/bin/".  <br>
-To use a previously exported mapping, load the desired experiment from the
+After the desired mappings are configured, with all hosts, nodes and agents
+assigned, select "Export HNA" on the "File" menu.  This saves the HNA mapping
+to a file located beneath the results directory, or in a directory starting with
+the current experiment name, in "csmart/bin/".</p>
+<p>To use a previously exported mapping, load the desired experiment from the
 database.  Once loaded, open the experiment builder and select "Import HNA" 
 from the "File" menu.  This will re-create all the mappings stored in the
 file.  If the stored file contains agents that are not part of the new 
 experiment, the agent in the file is ignored.  
 </p>
 <p>
-<b>Setting Command Line Arguments</b>
- Some of this information is for the convenience of the user; it does
- not affect running the experiment. The command line arguments,
- however, are passed as -D options and command line arguments to the
+<p><b>Setting Command Line Arguments</b></p>
+ The command line arguments are passed as -D options and command line arguments to the
  node when it is run and so directly affect how the nodes of the
  society are run. CSMART sets a number of such arguments by default.
  See the Cougaar documentation for an explanation of these values, and
@@ -161,22 +158,26 @@ The global command line and command line values both
  ones. Note that you cannot delete a global argument for only a single
  Node. To remove a global argument from a single Node, specify an
  empty value, or delete it from the Global arguments, and then add it
- to the nodes where you do want that value.<br>
+ to the nodes where you do want that value.<br><br>
 You may also load a file of command line arguments, using the "Read
  from File" button in the "Command Line Arguments" dialog box. This
- file should be in standard Java Properties file format, and the
- values loaded here will over-ride any previous values specified in
- this window. <br>
-Command line arguments set here will over-ride or augment any
+ file should be in standard Java Properties file format; the
+ values loaded from the file will override any previous values specified in
+ this window. <br><br>
+Command line arguments set here will override or augment any
  values specified in the AppServer properties files (server.props).
  A few -D arguments are not editable. 
-To set an environment variable, make the name "env.&lt;name&gt;".
-To specify a JVM property, ie one that will be passed like
+<ul>
+<li>
+To set an environment variable, make the name "env.&lt;name&gt;".</li>
+<li>To specify a JVM property, ie one that will be passed like
  "-&lt;name&gt;", set the name here to be "java.&lt;name&gt;", for
- instance, a name of "java.foo" will turn into "-foo".
-All other names will become -D arguments.
-If you want a -D argument named "java.something", name it here
- "java.java.something". For further details, see the file "server/doc/README".<br>
+ instance, a name of "java.foo" will turn into "-foo".</li>
+<li>All other names will become -D arguments.</li>
+<li>If you want a -D argument named "java.something", name it here
+ "java.java.something".</li>
+</ul>
+For further details, see the file "server/doc/README".<br><br>
 Of particular note: the -D argument <code>java.class.name</code> indicates the
  class that will be executed by the AppServer. For standard Cougaar
  societies, this should be the Bootstrapper, and the default uses the
@@ -186,14 +187,17 @@ Of particular note: the -D argument <code>java.class.name</code> indicates the
  the first argument to the running process must be the name of the
  class to run - <code>org.cougaar.core.node.Node</code> for standard
  Cougaar societies. This argument is specified in the first line of
- the non -D argument text box.<br> 
+ the non -D argument text box.<br><br>
 As of 9.2.1, you may include the
  string $HOST in a command line argument, and CSMART will substitute
  at runtime the name of the Host on which that Node is running (using
- the form of the name you specified within CSMART).<br>
+ the form of the name you specified within CSMART).<br><br>
 When specifying program Arguments in the free text box at the bottom
  of the dialog, be sure to include each argument on a separate line.<br>
 </p>
+Some File menu options support adding information to Hosts and Nodes,
+purely for the user's benefit; these do not affect running the nodes.  These
+options are: Describe Host, Describe Node, Type and Location.<br><br>
 There are a number of other File menu options for further configuring
 your Experiment. In particular, note the "Save" and "Save As" options
 for ensuring your experiment changes are saved to the database. For
@@ -205,6 +209,51 @@ will be run when the Nodes are created from the database. However
 these files are not supported for running a society. In particular,
 many database derived societies will reference OPLAN information that
 remains solely in the CSMART database.<br>
+<h4>Communities</h4>
+This tab supports editing and viewing communities, their members, and
+their attributes.  In general, the user should configure the
+Host, Node, Agent (HNA) mappings and then use the Communities tab to assign
+agents to communities.  The Communities display always shows the most
+recent HNA mappings in the bottom right portion of the display.
+HNA mappings cannot be modified in the Communities display.<br><br>
+<b>Displaying a Community</b>
+Use the Display Community command on the File menu to display a previously
+defined community.<br><br>
+<b>Creating a Community</b>
+To create a community, 
+right click on the root of the community tree or on a community within
+the tree and select New Community from the pop-up menu, or
+use the New Community command on the File menu.
+Assign agents to the community by dragging hosts, nodes or agents from
+the Host-Node-Agent portion of the display on to the new communities.
+When a host is dragged on to a community, all its nodes and agents are
+added to the community.  When a node is dragged on to a community, it
+is added to the community as an agent, and all its agents are added to
+the community.  To remove a host, node or agent from a community, click
+the right mouse button over its name in the community tree, and select
+Delete from the pop-up menu.  Note that this simply removes the agent
+or agents from the community; it does not delete the agent or agents
+from the experiment, or affect the HNA mapping.<br><br>
+<b>Community Table Display</b>
+The table displays attribute ids and values
+for the entity selected in the community tree.  For agents, the
+agent's attribute ids and values are displayed.  For nodes, the
+attribute ids and values of all its agents are displayed.  For hosts, 
+the attribute ids and values of all its node agents are displayed.
+To display all information for a community, right click on the community
+name in the community tree, and select Show All Parameters.<br><br>
+<b>Modifying Community and Agent Attributes</b>
+<ul>
+<li>To add a parameter, right click over the community or agent to which
+to add the parameter in the community tree, and select Add Parameter from
+the pop-up menu.  A new empty attribute id and value will be displayed in
+the table and can be filled in the same as for modifying a parameter.</li>
+<li>To modify a parameter, click in the table cell to be edited, and a list of
+entries currently in that field will be displayed; either select from the list
+or enter a new value.</li>
+<li>To delete a parameter, right click over the entry in the
+table and select Delete from the pop-up menu.</li>
+</ul>
 <h4>Threads</h4>
 <p>
 This tab displays the settings for Threads and Groups in this
@@ -212,7 +261,7 @@ Experiment, if applicable.  These were set in an earler dialog when the Experime
 was created, and cannot be edited here.
 
 </p>
-<!-- hhmts start --> Last modified: Tue Apr 30 15:21:44 EST 2002 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed Jun 12 15:21:44 EST 2002 <!-- hhmts end -->
 
 </body>
 </html>
