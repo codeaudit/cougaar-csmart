@@ -893,12 +893,16 @@ public class NodeView extends JInternalFrame implements Observer {
     if (state.startsWith("NODE_STATE")) {
       if (state.equals(model.STATE_RUNNING)) {
         stopAction.setEnabled(true);
-      } else
+        traceAction.setEnabled(true);
+      } else {
         stopAction.setEnabled(false);
-      if (state.equals(NodeModel.STATE_STOPPED))
+      }
+      if (state.equals(NodeModel.STATE_STOPPED)) {
         startAction.setEnabled(true);
-      else
+        traceAction.setEnabled(false);
+      } else {
         startAction.setEnabled(false);
+      }
     }
   }
 
