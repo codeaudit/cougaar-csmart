@@ -78,7 +78,7 @@ public class FileParseUtil {
       length = (int)channel.size();
     } catch(IOException e) {
       if(log.isErrorEnabled()) {
-        log.error("Expception getting channel size", e);
+        log.error("Exception getting channel size", e);
       }
     }
     MappedByteBuffer buffer = null;
