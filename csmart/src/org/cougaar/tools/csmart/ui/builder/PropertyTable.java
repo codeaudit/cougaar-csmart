@@ -26,7 +26,9 @@ import java.awt.event.*;
 import java.net.URL;
 import java.lang.reflect.Array;
 import java.util.SortedSet;
+import java.util.Iterator;
 import java.util.TreeSet;
+import java.util.Set;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.EtchedBorder;
@@ -125,6 +127,37 @@ public class PropertyTable extends JTable {
         }
       }
     });
+  }
+
+  /**
+   * Override to supply a combobox editor when the property being
+   * edited makes this appropriate. There must be allowed values where
+   * every range has exactly one allowed value (minimum equals
+   * maximum).
+   **/
+  public TableCellEditor getCellEditor(int row, int column) {
+    if (column == model.VALUE_COL) {
+      Property prop = model.getProperty(row);
+      Set allowedValues = prop.getAllowedValues();
+      if (allowedValues != null) {
+        JComboBox comboBox = null;
+        for (Iterator i = allowedValues.iterator(); i.hasNext(); ) {
+          Range allowedRange = (Range) i.next();
+          Object min = allowedRange.getMinimumValue();
+          if (min.equals(allowedRange.getMaximumValue())) {
+            if (comboBox == null) {
+              comboBox = new JComboBox();
+            }
+            comboBox.addItem(min);
+          } else {
+            comboBox = null;
+            break;
+          }
+        }
+        if (comboBox != null) return new DefaultCellEditor(comboBox);
+      }
+    }
+    return super.getCellEditor(row, column);
   }
 
   public void addProperty(Property prop) {
