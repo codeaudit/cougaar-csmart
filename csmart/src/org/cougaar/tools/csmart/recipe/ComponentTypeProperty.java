@@ -57,6 +57,7 @@ public class ComponentTypeProperty extends ConfigurableComponentProperty {
     allComponents.add(new StringRange(ComponentData.AGENTBINDER));
     allComponents.add(new StringRange(ComponentData.SERVICE));
     setAllowedValues(allComponents);
+    setPropertyClass(StringRange.class);
   }
 
 }// ComponentTypeProperty

@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001,2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -43,6 +43,7 @@ import org.cougaar.util.DBProperties;
 public class RecipeQueryProperty extends ConfigurableComponentProperty {
   public RecipeQueryProperty(ConfigurableComponent c, String name, Object value) {
     super(c, name, value);
+    setPropertyClass(StringRange.class);
   }
 
   public Set getAllowedValues() {
