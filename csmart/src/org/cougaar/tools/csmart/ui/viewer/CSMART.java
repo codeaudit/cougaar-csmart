@@ -86,6 +86,8 @@ import org.cougaar.util.log.LoggerFactory;
  * Allows user to:
  * build, test, control, monitor and analyze
  * a society.
+ * @property org.cougaar.tools.csmart.doWorkspace if false do NOT read/write from Default Worksapce file.
+ *
  */
 public class CSMART extends JFrame {
   private static Organizer organizer;
