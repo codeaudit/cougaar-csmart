@@ -102,6 +102,14 @@ public interface ComponentData {
   void addChild(ComponentData child);
   
   /**
+   * Adds a child component at the given index.
+   * all following children are shifted right.
+   * @param int Index to add now child
+   * @param ComponentData child component.
+   */
+  void addChild(int index, ComponentData child);
+
+  /**
    * Sets a child component at the specified index, replacing the current value.
    *
    * @param index position to add new child component.
