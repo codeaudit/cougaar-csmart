@@ -638,7 +638,7 @@ public class Organizer extends JScrollPane {
       xmlFile = chooser.getSelectedFile();
     }
 
-//     if (xmlFile != null && !CommWriter.importCommunityXML(xmlFile, experiment.getCommAsbID())) {
+//     if (xmlFile != null && !ConfigDbUtils.importCommunityXML(xmlFile, experiment.getCommAsbID())) {
 //       // There may have been none, so don't complain too loudly.
 //       if (log.isInfoEnabled()) {
 // 	log.info("crtExpFromFile got no Community XML data out of " + xmlFile.getFullPath());
