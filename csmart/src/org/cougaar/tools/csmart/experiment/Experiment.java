@@ -20,8 +20,6 @@
  */
 package org.cougaar.tools.csmart.experiment;
 
-
-
 import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
@@ -35,8 +33,12 @@ import java.sql.SQLException;
 import java.util.*;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+
 import org.cougaar.core.agent.ClusterImpl;
 import org.cougaar.core.node.Node;
+import org.cougaar.util.Parameters;
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
@@ -66,8 +68,6 @@ import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
-import org.cougaar.util.Parameters;
-import org.cougaar.util.log.Logger;
 
 /**
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
@@ -2229,15 +2229,13 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
         }
         if(!foundInHost) {
           // See if in Exp.
-          NodeComponent node = null;
           if(foundInSociety) {
-            node = host.addNode(expNode);
+            expNode = host.addNode(expNode);
           } else {
-            node = host.addNode(addNode(child.getName()));
+            expNode = host.addNode(addNode(child.getName()));
           }
-
-          addNodeChildren(child.getChildren(), node);
         }
+	addNodeChildren(child.getChildren(), expNode);
       } else {
         if(log.isWarnEnabled()) {
           log.warn("Unknown child of host: " + child.getName());
