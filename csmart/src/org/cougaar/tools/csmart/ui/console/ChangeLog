@@ -1,3 +1,21 @@
+2001-11-19  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ConsoleDesktop.java:
+	Fix bug 790.
+	Force internal frames of experiment controller desktop to be at
+	least partially within the desktop. Initial position forces as
+	much of the frame to be visible as possible. Repositioning the
+	frame or resizing the desktop moves the internal frames to leave
+	at least enough of the frame visible that it can be dragged back
+	onto the desktop.
+
+2001-11-16  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ConsoleDesktop.java:
+	Force top-left corner of internal frames to be within the desktop
+	by at least 20 pixels. This insures they can be seen and
+	manipulated.
+
 2001-11-08  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* SelectedColoredCircle.java:

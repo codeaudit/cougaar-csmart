@@ -29,6 +29,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.Insets;
 import javax.swing.*;
 import javax.swing.event.InternalFrameListener;
@@ -41,10 +42,10 @@ public class ConsoleDesktop extends JDesktopPane {
   Hashtable myFrames = new Hashtable();
   ComponentListener myComponentListener = new ComponentAdapter() {
     public void componentMoved(ComponentEvent e) {
-      ConsoleDesktop.this.componentMoved(e.getComponent());
+      ConsoleDesktop.this.componentMoved(e.getComponent(), true);
     }
     public void componentShown(ComponentEvent e) {
-      ConsoleDesktop.this.componentMoved(e.getComponent());
+      ConsoleDesktop.this.componentMoved(e.getComponent(), true);
     }
     public void componentResized(ComponentEvent e) {
       ConsoleDesktop.this.componentResized(e.getComponent());
@@ -81,28 +82,29 @@ public class ConsoleDesktop extends JDesktopPane {
   }
 
   protected void addImpl(Component c, Object constraints, int index) {
-    componentMoved(c);
+    componentMoved(c, false);
     super.addImpl(c, constraints, index);
     c.addComponentListener(myComponentListener);
   }
 
-  private void componentMoved(Component c) {
+  private void componentMoved(Component c, boolean peek) {
     if (c == this) return;      // Don't care about this
-    Point loc = c.getLocation();
+    Rectangle bb = c.getBounds();
     Insets insets = this.getInsets();
-    int x = Math.max(0, Math.min(loc.x, this.getWidth() - insets.left - insets.right - M));
-    int y = Math.max(0, Math.min(loc.y, this.getHeight() - insets.top - insets.bottom - M));
-    if (loc.x > x || loc.y > y) {
+    int mx = peek ? M : bb.width;
+    int my = peek ? M : bb.height;
+    int x = Math.max(0, Math.min(bb.x, this.getWidth() - insets.left - insets.right - mx));
+    int y = Math.max(0, Math.min(bb.y, this.getHeight() - insets.top - insets.bottom - my));
+    if (bb.x > x || bb.y > y) {
       c.setLocation(x, y);
     }
   }
 
   private void componentResized(Component c) {
-    System.out.println("resized " + c);
     if (c != this) return;      // Don't care about these
     JInternalFrame[] frames = getAllFrames();
     for (int i = 0; i < frames.length; i++) {
-      componentMoved(frames[i]);
+      componentMoved(frames[i], true);
     }
   }
 
