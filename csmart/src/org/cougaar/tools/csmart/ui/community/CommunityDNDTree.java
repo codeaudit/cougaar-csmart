@@ -269,9 +269,9 @@ public class CommunityDNDTree extends DNDTree {
     int ix = target.getChildCount();
     if (before != null)
       ix = model.getIndexOfChild(target, before);
+    CommunityTreeObject cto = (CommunityTreeObject)source.getUserObject();
     DefaultMutableTreeNode newNode =
-      new DefaultMutableTreeNode(source.getUserObject(), 
-                !((CommunityTreeObject)source.getUserObject()).isAgent());
+      new DefaultMutableTreeNode(cto, cto.allowsChildren());
     model.insertNodeInto(newNode, target, ix);
     // copy the source node's descendants, recursively
     copyChildren(source, newNode);
@@ -291,7 +291,7 @@ public class CommunityDNDTree extends DNDTree {
       CommunityTreeObject cto = 
         (CommunityTreeObject)oldChildNode.getUserObject();
       DefaultMutableTreeNode newChildNode =
-        new DefaultMutableTreeNode(cto, !cto.isAgent());
+        new DefaultMutableTreeNode(cto, cto.allowsChildren());
       model.insertNodeInto(newChildNode, newNode, i);
       copyChildren(oldChildNode, newChildNode);
     }

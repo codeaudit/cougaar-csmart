@@ -42,7 +42,7 @@ public class CommunityTreeObject {
   private boolean isHost = false;
   private boolean isNode = false;
   private boolean isAgent = false;
-  private Class allowedClass = null;
+  private boolean allowsChildren = true;
   private transient Logger log;
 
   /**
@@ -50,12 +50,10 @@ public class CommunityTreeObject {
    * @param the label for the root node
    * @param allowed class of the children
    */
-
-  public CommunityTreeObject(String label, Class allowedClass) {
+  public CommunityTreeObject(String label) {
     this(null, label, "Root");
-    this.allowedClass = allowedClass;
   }
-
+                                          
   public CommunityTreeObject(String label, String type) {
     this(null, label, type);
   }
@@ -70,9 +68,11 @@ public class CommunityTreeObject {
       if (component instanceof HostComponent)
         isHost = true;
       else if (component instanceof NodeComponent)
-        isNode = true;
-      else if (component instanceof AgentComponent)
         isAgent = true;
+      else if (component instanceof AgentComponent) {
+        isAgent = true;
+        allowsChildren = false;
+      }
     } else {
       if (type.equals("Root"))
         isRoot = true;
@@ -80,11 +80,15 @@ public class CommunityTreeObject {
         isCommunity = true;
       else if (type.equals("Host"))
         isHost = true;
-      else if (type.equals("Node"))
-        isNode = true;
-      else if (type.equals("Agent"))
+      else if (type.equals("Node")) {
+        if (log.isDebugEnabled()) {
+          log.debug("WARNING: tried to create Node object");
+        }
+        isAgent = true; // treat nodes as agents
+      } else if (type.equals("Agent")) {
         isAgent = true;
-      else
+        allowsChildren = false;
+      } else
         System.out.println("CommunityTreeObject created with unknown type: " +
                            type);
     }
@@ -146,6 +150,10 @@ public class CommunityTreeObject {
       return "Root";
     else
       return "Unkown";
+  }
+
+  protected boolean allowsChildren() {
+    return allowsChildren;
   }
 
   protected static boolean flavorEquals(CSMARTDataFlavor flavor1,

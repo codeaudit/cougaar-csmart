@@ -174,8 +174,7 @@ public class CommunityFrame extends JFrame {
 
   private JSplitPane createTreeDisplay(Experiment experiment) {
     DefaultMutableTreeNode root = 
-      new DefaultMutableTreeNode(new CommunityTreeObject("Community", 
-                                 CommunityTreeObject.class), true);
+      new DefaultMutableTreeNode(new CommunityTreeObject("Community"));
     DefaultTreeModel treeModel = new DefaultTreeModel(root, true) {
       public void valueForPathChanged(TreePath path, Object newValue) {
         if (newValue == null || newValue.toString().equals("")) return;
@@ -219,27 +218,21 @@ public class CommunityFrame extends JFrame {
     entityMenu.add(new JMenuItem(addParameterAction));
     entityMenu.add(new JMenuItem(deleteAction));
     DefaultMutableTreeNode hostRoot = 
-      new DefaultMutableTreeNode(new CommunityTreeObject("Hosts", 
-                    org.cougaar.tools.csmart.experiment.HostComponent.class),
-                                 true);
+      new DefaultMutableTreeNode(new CommunityTreeObject("Hosts"));
     JTree hostTree = 
       new EntityDNDTree(new DefaultTreeModel(hostRoot, true));
     hostTree.setExpandsSelectedPaths(true);
     hostTree.setCellEditor(noEdit);
     JScrollPane hostScrollPane = new JScrollPane(hostTree);
     DefaultMutableTreeNode nodeRoot = 
-      new DefaultMutableTreeNode(new CommunityTreeObject("Nodes (unassigned)", 
-                    org.cougaar.tools.csmart.experiment.NodeComponent.class),
-                                 true);
+      new DefaultMutableTreeNode(new CommunityTreeObject("Nodes (unassigned)"));    
     JTree nodeTree = 
       new EntityDNDTree(new DefaultTreeModel(nodeRoot, true));
     nodeTree.setExpandsSelectedPaths(true);
     nodeTree.setCellEditor(noEdit);
     JScrollPane nodeScrollPane = new JScrollPane(nodeTree);
     DefaultMutableTreeNode agentRoot = 
-      new DefaultMutableTreeNode(new CommunityTreeObject("Agents (unassigned)", 
-                    org.cougaar.tools.csmart.society.AgentComponent.class),
-                                 true);
+      new DefaultMutableTreeNode(new CommunityTreeObject("Agents (unassigned)"));
     JTree agentTree = 
       new EntityDNDTree(new DefaultTreeModel(agentRoot, true));
     agentTree.setExpandsSelectedPaths(true);
@@ -341,7 +334,7 @@ public class CommunityFrame extends JFrame {
     DefaultTreeModel model = (DefaultTreeModel)communityTree.getModel();
     CommunityTreeObject cto = 
       new CommunityTreeObject(communityName, "Community");
-    DefaultMutableTreeNode node = new DefaultMutableTreeNode(cto);
+    DefaultMutableTreeNode node = new DefaultMutableTreeNode(cto, true);
     TreePath selectedPath = communityTree.getSelectionPath();
     if (selectedPath == null) {
       DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
