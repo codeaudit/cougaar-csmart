@@ -121,11 +121,15 @@ switchPlugin-class.sh
 
 exportExperiment.sh
 [Helper: copyForExport.sql]
-	 Export the named experiment, for use on another database. You
-	 MUST run the above copy-experiment first. This will copy all
+	 Export the named experiment, for use on another database. 
+	 Uses the above copy-experiment. Note that it relies on a
+	 complete Cougaar install, including cougaar.rc, CSMART.q,
+	 csmart.jar, bootstrap.jar, and util.jar
+	 This script will copy all
 	 included recipes as well, but you must be sure that the
-	 needed recipe Queries are moved over as well. Also, if the
-	 other database contains recipes with the same name, you will
+	 needed recipe Queries are moved over as well. Also, in
+	 some circumstances, if the other database has an imported
+	 experiment with the same name for example, you will
 	 get errors. The temporary
 	 database created by the above copy script, and used here, is
 	 deleted when this script completes. Be sure to quote the

@@ -64,11 +64,27 @@ REM munge export script - replace INSERT with REPLACE
 REM Do I need to do more than these tables?
 call %COUGAAR_INSTALL_PATH%\\csmart\\data\\database\\scripts\\sed.exe s/'INSERT INTO lib_mod_recipe'/'REPLACE INTO lib_mod_recipe'/ rt-exprt.sql > r-export.sql
 if exist rt-exprt.sql del rt-exprt.sql
+if exist r-export.sql move r-export.sql rt-exprt.sql
+
+call %COUGAAR_INSTALL_PATH%\\csmart\\data\\database\\scripts\\sed.exe s/'INSERT INTO lib_component'/'REPLACE INTO lib_component'/ rt-exprt.sql > r-export.sql
+if exist rt-exprt.sql del rt-exprt.sql
+if exist r-export.sql move r-export.sql rt-exprt.sql
+
+call %COUGAAR_INSTALL_PATH%\\csmart\\data\\database\\scripts\\sed.exe s/'INSERT INTO lib_pg_attribute'/'REPLACE INTO lib_pg_attribute'/ rt-exprt.sql > r-export.sql
+if exist rt-exprt.sql del rt-exprt.sql
+if exist r-export.sql move r-export.sql rt-exprt.sql
+
+call %COUGAAR_INSTALL_PATH%\\csmart\\data\\database\\scripts\\sed.exe s/'INSERT INTO lib_agent_org'/'REPLACE INTO lib_agent_org'/ rt-exprt.sql > r-export.sql
+if exist rt-exprt.sql del rt-exprt.sql
+if exist r-export.sql move r-export.sql rt-exprt.sql
+
+call %COUGAAR_INSTALL_PATH%\\csmart\\data\\database\\scripts\\sed.exe s/'INSERT INTO alib_component'/'REPLACE INTO alib_component'/ rt-exprt.sql > r-export.sql
+if exist rt-exprt.sql del rt-exprt.sql
 if exist ".\%1-export.sql" del ".\%1-export.sql"
-if exist r-export.sql move r-export.sql ".\%1-export.sql"
+if exist .\%1-export.sql del .\%1-export.sql
+if exist r-export.sql move r-export.sql .\%1-export.sql
 
 REM tell user name of export file, to load with -f option
-echo
 echo Recipe has been exported to %1-export.sql. Load into new database with command: mysql -f -u [user] -p[password] [db] %1-export.sql
 echo Note the use of the -f option, to ignore errors about duplicate rows.
 
@@ -81,7 +97,6 @@ if [%5] == [] (
    mysql -s -e "select distinct arg_value from tempcopy.lib_mod_recipe_arg where arg_value like 'recipeQuery%%';" -u %2 -p%3 -h %5 %4
 )
 
-echo
 REM delete the temp db
 call %COUGAAR_INSTALL_PATH%\\csmart\\bin\\delete-temp-db.bat %2 %3 %4 %5
 

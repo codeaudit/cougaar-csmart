@@ -21,18 +21,19 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.awt.Color;
-import javax.swing.*;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.*;
 import javax.swing.border.*;
-import javax.swing.JColorChooser;
 
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.ObjectInputStream;
-import java.io.IOException;
 
+/**
+ * Allow users to select fonts for use in Console
+ **/
 public class ConsoleFontChooser extends JDialog {
   private JComboBox msgTypesCB;
   private JComboBox fontSizeCB;

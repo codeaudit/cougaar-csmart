@@ -27,21 +27,20 @@
 package org.cougaar.tools.csmart.ui.community;
 
 import java.util.*;
-
-import javax.swing.table.TableModel;
-import javax.swing.event.TableModelEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.InputEvent;
 import javax.swing.JTable;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableColumnModel;
 import javax.swing.table.*; 
 import javax.swing.event.TableModelListener; 
 import javax.swing.event.TableModelEvent; 
+
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
+/**
+ * Table model to allow easy sorting of communities
+ **/
 public class TableSorter extends AbstractTableModel implements TableModelListener, CommunityTableUtils {
   private TableModel model; 
   private int indexes[];

@@ -11,9 +11,11 @@ An Adaptivity Support Recipe allows the insertion of all pieces required
 for adaptivity support.  The target component query comes from the file PopulateDb.q
 or the user created file recipeQueries.q
 
-The <pre>PlaybookManager</pre> plugin requires a file, located on the config path
-of: <pre><i>AgentName</i>-plays.txt</pre>  for each agent into which adaptivity support
-is added.
+The <code>PlaybookManager</code> plugin requires a file, located on the
+config path, which defines the plays it will use. By default, that
+file will be: <code><i>AgentName</i>-plays.txt</code> for each agent into which adaptivity support
+is added. You may specify another plays file name, in which case all
+Agents will use the same plays file.
 <br>
 For more information see: <a href="adaptivity-support-help.html">Help</a>
 </body>

@@ -24,8 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cougaar.core.mts.*;
-import org.cougaar.core.mts.Message;
-import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.service.MessageTransportService;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -108,7 +106,11 @@ public class SlowMessageTransportServiceProxy
     if (client == this.mtc)
       mt.unregisterClient(wrappedClient);
   }
-  
+
+  public AgentState getAgentState() {
+    return mt.getAgentState();
+  }
+
   public ArrayList flushMessages() {
     // FIXME!!!!
     return mt.flushMessages();

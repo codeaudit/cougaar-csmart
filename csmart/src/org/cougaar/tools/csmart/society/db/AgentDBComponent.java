@@ -80,8 +80,6 @@ public class AgentDBComponent
   private static final String QUERY_AGENT_DATA = "queryAgentData";
   private static final String QUERY_PLUGIN_NAME = "queryPluginNames";
   private static final String QUERY_PLUGIN_ARGS = "queryComponentArgs";
-  private static final String QUERY_AGENT_RELATIONS = "queryAgentRelationships";
-  private static final String QUERY_AGENT_ASSET_CLASS = "queryAgentAssetClass";
 
   private transient Logger log;
 
@@ -90,7 +88,6 @@ public class AgentDBComponent
   private Property propName;
 //   private Property propComponentID;
 
-  private String name;
   private String assemblyID;
 
   private transient DBProperties dbp;
@@ -111,7 +108,6 @@ public class AgentDBComponent
    */
   public AgentDBComponent(String name) {
     super(name);
-    this.name = name;
     this.assemblyID = null;
     createLogger();
   }
@@ -126,7 +122,6 @@ public class AgentDBComponent
    */
   public AgentDBComponent(String name, String assemblyID) {
     super(name);
-    this.name = name;
     this.assemblyID = assemblyID;
     createLogger();
   }
@@ -143,15 +138,25 @@ public class AgentDBComponent
     super.initProperties();
 //     String componentID = name;
 //     String componentCategory = "agent";
-    propName = addProperty(PROP_AGENT_NAME, name,
+    propName = addProperty(PROP_AGENT_NAME, getShortName(),
 			   new ConfigurableComponentPropertyAdapter() {
-			     public void PropertyValueChanged(PropertyEvent e) {
+			     public void propertyValueChanged(PropertyEvent e) {
+			       String old = (String)e.getPreviousValue();
+			       String newVal = (String)e.getProperty().getValue();
+			       if (log.isDebugEnabled())
+				 log.debug("Agent name changed. old = " + old + ", new = " + newVal);
+			       if (newVal == null || newVal.trim().equals(""))
+				 propName.setValue(old);
+			       else if (! newVal.equals(old)) {
+				 AgentDBComponent.this.setName(newVal);
+				 fireModification();
+			       }
 			     }
 			   });
 
 //     propComponentID = addProperty(PROP_COMPONENT_ID, componentID,
 // 			   new ConfigurableComponentPropertyAdapter() {
-// 			     public void PropertyValueChanged(PropertyEvent e) {
+// 			     public void propertyValueChanged(PropertyEvent e) {
 // 			     }
 // 			   });
 
@@ -159,17 +164,18 @@ public class AgentDBComponent
       initDBProperties();
     } catch (IOException ioe) {
       if(log.isErrorEnabled()) {
-        log.error("Exception", ioe);
+        log.error("Exception initializing from db " + getShortName() + ": ", ioe);
       }
     }
 
-    // FIXME: What about the Agent class?
+    // Get the Agent class from the DB
+    initAgentClass();
 
     addBinders();
     addPlugins();
     addComponents();
     
-    if(DBUtils.agentHasAssetData(name, assemblyID)) {
+    if(DBUtils.agentHasAssetData(getShortName(), assemblyID)) {
       addAssetData();
     }
   }
@@ -178,17 +184,20 @@ public class AgentDBComponent
     dbp = DBProperties.readQueryFile(DBUtils.QUERY_FILE);
   }
 
-  private String queryOrgClass() {
-    String orgClass = null;
-    substitutions.put(":agent_name", name);
+  // Get the class (ie, ClusterImpl) for the Agent from the DB
+  private void initAgentClass() {
+    String aClass = null;
+    // queryAgentClass - takes :assembly_id: and :agent_name, gives just class
+    substitutions.put(":agent_name", getShortName());
+    substitutions.put(":assembly_id:", assemblyID);
     try {
       Connection conn = DBUtils.getConnection();
       try {
 	Statement stmt = conn.createStatement();	
-	String query = DBUtils.getQuery(QUERY_AGENT_ASSET_CLASS, substitutions);
+	String query = DBUtils.getQuery("queryAgentClass", substitutions);
 	ResultSet rs = stmt.executeQuery(query);
-	while (rs.next()) {
-	  orgClass = rs.getString(1);	  
+	if (rs.next()) {
+	  aClass = rs.getString(1);
 	}
 	rs.close();
 	stmt.close();
@@ -198,11 +207,12 @@ public class AgentDBComponent
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Exception", e);
+        log.error("Exception getting ag class for ag " + getShortName(), e);
       }
-      throw new RuntimeException("Error" + e);
     }
-    return orgClass;
+
+    if (aClass != null && ! aClass.trim().equals(""))
+      setAgentClassName(aClass);
   }
 
   private void readObject(ObjectInputStream ois)
@@ -223,7 +233,7 @@ public class AgentDBComponent
     String assemblyMatch = DBUtils.getListMatch(assemblyID);
     if (assemblyMatch != null) {
       substitutions.put(":assemblyMatch", assemblyMatch);
-      substitutions.put(":agent_name", name);
+      substitutions.put(":agent_name", getShortName());
     }
 
     // Get Plugin Names, class names, and parameters
@@ -239,7 +249,7 @@ public class AgentDBComponent
           String pluginClassName = rs.getString(1);
           String pluginName = rs.getString(4);
           String priority = rs.getString(6).intern();
-          PluginBase plugin = new PluginBase(pluginName, pluginClassName, priority);
+          PluginBase plugin = new PluginBase(pluginName, pluginClassName, priority, ComponentData.PLUGIN);
           plugin.initProperties();
           String alibId = rs.getString(2);
           String libId = rs.getString(3);
@@ -281,7 +291,7 @@ public class AgentDBComponent
     String assemblyMatch = DBUtils.getListMatch(assemblyID);
     if (assemblyMatch != null) {
       substitutions.put(":assemblyMatch", assemblyMatch);
-      substitutions.put(":agent_name", name);
+      substitutions.put(":agent_name", getShortName());
     }
 
     // Get Binder Names, class names, and parameters
@@ -301,7 +311,7 @@ public class AgentDBComponent
           String binderClassName = rs.getString(1);
           String binderName = rs.getString(4);
           String priority = rs.getString(6).intern();
-          BinderBase binder = new BinderBase(binderName, binderClassName, priority);
+          BinderBase binder = new BinderBase(binderName, binderClassName, priority, ComponentData.AGENTBINDER);
           binder.initProperties();
 	  //binder.setBinderType(ComponentData.AGENTBINDER);
           String alibId = rs.getString(2);
@@ -329,9 +339,9 @@ public class AgentDBComponent
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Exception", e);
+        log.error("Exception: ", e);
       }
-      throw new RuntimeException("Error" + e);
+      throw new RuntimeException("Error:" + e);
     }
   }
 
@@ -345,7 +355,7 @@ public class AgentDBComponent
     String assemblyMatch = DBUtils.getListMatch(assemblyID);
     if (assemblyMatch != null) {
       substitutions.put(":assemblyMatch", assemblyMatch);
-      substitutions.put(":agent_name", name);
+      substitutions.put(":agent_name", getShortName());
     }
 
     // Get Binder Names, class names, and parameters
@@ -363,6 +373,7 @@ public class AgentDBComponent
       types.add(ComponentData.AGENTBINDER);
       types.add(ComponentData.AGENT);
       types.add(ComponentData.PLUGIN);
+      types.add(ComponentData.RECIPE);
       String ctypematch = "NOT " + DBUtils.getListMatch(types);
       substitutions.put(":comp_type:", ctypematch);
 
@@ -378,9 +389,10 @@ public class AgentDBComponent
           String binderClassName = rs.getString(1);
           String binderName = rs.getString(4);
           String priority = rs.getString(6).intern();
-          ComponentBase binder = new ComponentBase(binderName, binderClassName, priority);
+	  String type = rs.getString(5);
+          ComponentBase binder = new ComponentBase(binderName, binderClassName, priority, type);
           binder.initProperties();
-	  binder.setComponentType(rs.getString(5));
+	  //	  binder.setComponentType(rs.getString(5));
           String alibId = rs.getString(2);
           String libId = rs.getString(3);
           binder.setAlibID(alibId);
@@ -406,15 +418,15 @@ public class AgentDBComponent
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Exception", e);
+        log.error("Exception: ", e);
       }
-      throw new RuntimeException("Error" + e);
+      throw new RuntimeException("Error: " + e);
     }
   }
 
   protected void addAssetData() {
     BaseComponent asset = 
-      (BaseComponent)new AssetDBComponent(name, assemblyID);
+      (BaseComponent)new AssetDBComponent(getShortName(), assemblyID);
     asset.initProperties();
     addChild(asset);
   }

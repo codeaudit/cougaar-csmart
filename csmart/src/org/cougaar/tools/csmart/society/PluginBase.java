@@ -39,26 +39,17 @@ public class PluginBase
   public static final String PROP_CLASSNAME = "Plugin Class Name";
   public static final String PROP_CLASSNAME_DESC = "Name of the Plugin Class";
 
-  protected String type = ComponentData.PLUGIN;
-
   public static final String PROP_PARAM = "param-";
 
-  protected String folderLable = "Plugins";
+  protected String folderLabel = "Plugins";
 
   public PluginBase(String name, String classname, String priority) {
-    super(name);
-    this.classname = classname;
-    if(priority != null)
-      this.priority = priority;
+    super(name, classname, priority, ComponentData.PLUGIN);
     createLogger();
   }
 
   public PluginBase(String name, String classname, String priority, String type) {
-    super(name);
-    this.classname = classname;
-    this.type = getCanonicalType(type);
-    if(priority != null)
-      this.priority = priority;
+    super(name, classname, priority, type);
     createLogger();
   }
 

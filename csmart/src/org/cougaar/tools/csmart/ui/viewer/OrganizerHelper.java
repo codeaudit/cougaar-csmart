@@ -209,6 +209,8 @@ public class OrganizerHelper {
 
 
       // Now community stuff
+      // FIXME: I think the old COMM ASB is in the config
+      // table here already at this point, which I don't really want
       PopulateDb pdbc = null;
       String commAsb = null;
       try {
@@ -316,20 +318,19 @@ public class OrganizerHelper {
       Iterator metIter = recipes.iterator();
       while (metIter.hasNext()) {
         DbRecipe dbRecipe = (DbRecipe) metIter.next();
-        RecipeComponent mc = organizer.getRecipe(dbRecipe.name);
-        if (mc == null) {
-          mc = createRecipe(dbRecipe.name, dbRecipe.cls);
-          setRecipeComponentProperties(dbRecipe, mc);
-          mc.saveToDatabase();
-        }
-        AgentComponent[] recagents = mc.getAgents(); 
-        if (recagents != null && recagents.length > 0) {
-          agents.addAll(Arrays.asList(recagents));
-        }
-	if (log.isDebugEnabled()) {
-	  log.debug("Adding recipe to experiment " + experiment.getExperimentName() + ": " + mc.getRecipeName());
+	// If recipe is in organizer, use that
+	// Else, create from db
+	RecipeComponent mc = getDatabaseRecipe(dbRecipe);
+	if (mc != null) {
+	  AgentComponent[] recagents = mc.getAgents(); 
+	  if (recagents != null && recagents.length > 0) {
+	    agents.addAll(Arrays.asList(recagents));
+	  }
+	  if (log.isDebugEnabled()) {
+	    log.debug("Adding recipe to experiment " + experiment.getExperimentName() + ": " + mc.getRecipeName());
+	  }
+	  experiment.addRecipeComponent(mc);
 	}
-        experiment.addRecipeComponent(mc);
       }
     }
 
@@ -380,6 +381,8 @@ public class OrganizerHelper {
 	  log.debug("Setting recipes on experiment " + experiment.getExperimentID() + " in DB");
 	}
 
+	// Save the recipes on the experiment
+	// Note that the recipe are not re-saved here
 	PopulateDb pdb = null;
 	try {
 	  pdb = new PopulateDb(experiment.getExperimentID(), experiment.getTrialID());
@@ -714,6 +717,7 @@ public class OrganizerHelper {
     }
   }
 
+  // Get a list of DBRecipe objects for the recipes in an Experiment/Trial
   private List checkForRecipes(String trialId, String exptId) {
     List recipeList = new ArrayList();
     String query = null;
@@ -731,6 +735,7 @@ public class OrganizerHelper {
             DbRecipe dbRecipe = 
               new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
             String recipeId = rs.getString(1);
+	    dbRecipe.id = recipeId;
             substitutions.put(":recipe_id", recipeId);
             getRecipeProperties(dbRecipe, conn, substitutions);
             recipeList.add(dbRecipe);
@@ -807,22 +812,48 @@ public class OrganizerHelper {
     ResultSet rs = stmt.executeQuery(query);
 
     while(rs.next()) {
-      if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
+      String rs1 = rs.getString(1);
+      if(rs1.equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
 	// Query the Assembly Table for the correct data.
-	break;
+	continue;
       } else {
-	dbRecipe.props.put(rs.getString(1), rs.getString(2));
+	String rs2 = rs.getString(2);
+	// FIXME: This loses the ordering of the recipe properties!
+	dbRecipe.props.put(rs1, rs2);
       }
     }
     rs.close();
   }
 
+  // Get a recipe whose ID and name are as specified in the enclosed
+  // object, using following method
+  protected RecipeComponent getDatabaseRecipe(DbRecipe dbr) {
+    if (dbr == null)
+      return null;
+    if (dbr.id == null)
+      return null;
+    if (dbr.name == null)
+      return null;
+    return getDatabaseRecipe(dbr.id, dbr.name);
+  }
+
+  // If we have a recipe by this name in the workspace, return it
+  // Otherwise, get it from the DB
+  // The ID is one that exists in the DB, and the name
+  // is the new one we want, possibly same as the one in the DB
   protected RecipeComponent getDatabaseRecipe(String recipeId,
                                               String recipeName) {
     createLogger();
     
     String query = null;
     RecipeComponent rc = null;
+
+    // Right up here, try to get the recipe from the workspace,
+    // and return it if its there
+    rc = organizer.getRecipe(recipeName);
+    if (rc != null)
+      return rc;
+    
     try {
       Connection conn = DBUtils.getConnection();
       try {
@@ -831,68 +862,79 @@ public class OrganizerHelper {
         Statement stmt = conn.createStatement();
         query = DBUtils.getQuery("queryRecipe", substitutions);
         ResultSet rs = stmt.executeQuery(query);
+	String name = null; // the original recipe name
+	String className = null;
         if (rs.next()) {
+	  name = rs.getString(2);
+	  className = rs.getString(3);
+	}
+
+	// Done with these DB resources - close them up
+	try {
+	  rs.close();
+	  stmt.close();
+	} catch (SQLException sqe) {
+	}
+
+	// If we found the recipe in the DB
+	if (name != null) {
+	  // get the Class
+	  Class recipeClass = null;
+	  if (className != null) {
+	    try {
+	      recipeClass = Class.forName(className);
+	    } catch (ClassNotFoundException cnfe) {
+	      if (log.isErrorEnabled())
+		log.error("Creating recipe from " + recipeId, cnfe);
+	    }
+	  }
+
+	  // Is it complex?
           if(isComplexRecipe(conn, substitutions)) {
             if(log.isDebugEnabled()) {
               log.debug("Creating Complex Recipe from Database");
             }
             String assemblyId = getRecipeAssembly(conn, substitutions);
+
             if(assemblyId == null) {
               if(log.isErrorEnabled()) {
-                log.error("Cannot locate proper assemblyId loading Recipe.  Load Failed");
+                log.error("Cannot locate proper assemblyId loading RecipeID " + recipeId + ".  Load Failed");
               }
-              return null;
+	      rc = null;
             }
 
-            Constructor con = null;
-            try {
-              Class cls = Class.forName(rs.getString(3));
-              con = cls.getConstructor(new Class[] {String.class, String.class, String.class});
-              
-            } catch(Exception e) {
-              if(log.isErrorEnabled()) {
-                log.error("Error constructing recipe from database.  Load Failed.", e);
-              }
-              return null;
-            }
-            
-            try {
-              rc = (RecipeComponent) con.newInstance(new Object[] {rs.getString(2), getRecipeAssembly(conn, substitutions), recipeId});
-            } catch(Exception ee) {
-              if(log.isErrorEnabled()) {
-                log.error("Error creating recipe instance", ee);
-              }
-              return null;
-            }
-            rc.initProperties();
-            return rc;
+	    // FIXME: Save it before returning it?
+	    // FIXME: Use name (original) or recipeName (new)??
+	    // if dont use orig, cant correctly load comps
+	    // if dont use new then we're getting potentially 2nd
+	    // copy of existing recipe
+	    if (recipeName.equals(name)) {
+	      rc = createRecipeUsingCon(new String[] {recipeName, assemblyId, recipeId}, recipeClass, threeStringConstructor);
+	    } else {
+	      rc = createRecipeUsingCon(new String[] {recipeName, assemblyId, recipeId, name}, recipeClass, fourStringConstructor);
+	      if (rc != null)
+		rc.saveToDatabase();
+	    }
+
           } else {
             if(log.isDebugEnabled()) {
-              log.debug("Creating Simple Recipe from Database");
+              log.debug("Creating Simple Recipe " + recipeName + " from ID " + recipeId + " from Database");
             }
-            try {
-              DbRecipe dbRecipe = new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
-              getRecipeProperties(dbRecipe, conn, substitutions);
-              dbRecipe.name = recipeName;
-              rc = organizer.getRecipe(dbRecipe.name);
-              if (rc == null) {
-                rc = createRecipe(dbRecipe.name, dbRecipe.cls);
-                setRecipeComponentProperties(dbRecipe, rc);
-                rc.saveToDatabase();
-              }
-              return rc;
-            } catch (ClassNotFoundException cnfe) {
-              if(log.isErrorEnabled()) {
-                log.error("for recipe", cnfe);
-              }
-            }
-          }
-        }
+	    // Start with the old name for getting the recipe props
+	    DbRecipe dbRecipe = new DbRecipe(name, recipeClass);
+	    dbRecipe.id = recipeId;
+	    getRecipeProperties(dbRecipe, conn, substitutions);
+	    // Now set the new name
+	    dbRecipe.name = recipeName;
+	    rc = createRecipe(dbRecipe.name, dbRecipe.cls);
+	    setRecipeComponentProperties(dbRecipe, rc);
+	    rc.saveToDatabase();
+          } // end of SimpleRecipe handling
+        } // end of block for found the recipe
+
         if(rc == null && log.isErrorEnabled()) {
           log.error("Recipe not found: " + recipeId);
         }
-        rs.close();
-        stmt.close();
       } finally {
         conn.close();
       }
@@ -973,22 +1015,43 @@ public class OrganizerHelper {
 
   private static Class[] twoStringConstructor = {String.class, String.class};
 
+  private static Class[] threeStringConstructor = {String.class, String.class, String.class};
+
+  private static Class[] fourStringConstructor = {String.class, String.class, String.class, String.class};
+
   private static Class[] multiConstructor = {String.class, String[].class};
   
+  // Warning: only use this for _simple_ recipes or for
+  // and empty Complex recipe
   protected RecipeComponent createRecipe(String name, Class cls) {
+    return createRecipeUsingCon(new String[] {name}, cls, singleStringConstructor);
+  }
+
+  // Generic method to create a recipe. Takes an array of strings
+  // suitable for passing to the given constructor
+  protected RecipeComponent createRecipeUsingCon(String[] names, Class cls, Class[] con) {
+    if (cls == null)
+      return null;
+
+    if (names == null || names.length == 0 || names[0] == null)
+      return null;
+
+    if (con == null)
+      return null;
+
     createLogger();
     
     try {
-      Constructor constructor = cls.getConstructor(singleStringConstructor);
+      Constructor constructor = cls.getConstructor(con);
       RecipeComponent recipe =
-  	(RecipeComponent) constructor.newInstance(new String[] {name});
+  	(RecipeComponent) constructor.newInstance(names);
       recipe.initProperties();
       ((RecipeBase)recipe).resetModified();
       ((RecipeBase)recipe).installListeners();
       return recipe;
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
-	log.error("Exception creating recipe " + name + " of class " + cls.toString(), e);
+	log.error("Exception creating recipe " + names[0] + " of class " + cls.getName(), e);
       }
       return null;
     }
@@ -999,13 +1062,53 @@ public class OrganizerHelper {
    * @param name the name of the recipe to delete
    */
   public void deleteRecipe(String name) throws Exception {
+    // First, get any recipe assembly ID for the Recipe
+    Map names = getRecipeNamesFromDatabase();
+    String recipeId = (String)names.get(name);
+    String asb = null;
+    if (recipeId != null && ! recipeId.trim().equals("")) {
+      try {
+	Connection conn = DBUtils.getConnection();
+	try {
+	  Map subs = new HashMap();
+	  subs.put(":recipe_id", recipeId);
+	  asb = getRecipeAssembly(conn, subs);
+	} catch (Exception sqe) {
+	  if (log.isWarnEnabled()) {
+	    log.warn("deleteRecipe failed getting recipe assemblyID for recipe " + name, sqe);
+	  }
+	} finally {
+	  conn.close();
+	}
+      } catch (SQLException sqe) {
+	if (log.isInfoEnabled()) {
+	  log.info("Error getting connection in deleteRecipe", sqe);
+	}
+      }
+    }
+      
+    // Now delete the basic definition of the recipe.
     PDbBase pdb = new PDbBase();
     try {
       pdb.removeLibRecipeNamed(name);
     } finally {
       pdb.close();
     }
-  }
+
+    // Finally, delete the assembly portion of the recipe
+    // (now that the assembly is not used anymore)
+    if (asb != null) {
+      try {
+	PopulateDb.deleteSociety(asb);
+      } catch (SQLException sqe) {
+	if (log.isWarnEnabled())
+	  log.warn("deleteSoc failed removing asb " + asb + " for recipe " + name, sqe);
+      } catch (IOException ioe) {
+	if (log.isWarnEnabled())
+	  log.warn("deleteSoc failed removing asb " + asb + " for recipe " + name, ioe);
+      }
+    }
+  } // end of deleteRecipe
 
   /**
    * Create a new society from a node file which enumerates
@@ -1143,6 +1246,7 @@ public class OrganizerHelper {
 
   private static class DbRecipe extends NameClassItem {
     public Map props = new TreeMap();
+    public String id = null;
     public DbRecipe(String name, Class cls) {
       super(name, cls);
     }

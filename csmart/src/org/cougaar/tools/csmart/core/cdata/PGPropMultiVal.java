@@ -20,12 +20,11 @@
  */
 package org.cougaar.tools.csmart.core.cdata;
 
-import java.lang.IndexOutOfBoundsException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.cougaar.tools.csmart.util.ArgValue;
-import java.io.Serializable;
 
 /**
  * Holds a single set of values. These values might be

@@ -69,7 +69,6 @@ public abstract class ConfigurableComponent
   private transient Collection myPropertyEntries = null;
   private transient ComposableComponent parent; // Our parent, if any
   private transient List children = null; // Our children, if any
-  private Set blockedProperties = new HashSet();
   private static int nameCount = 0;
   private ComponentName myName;
   private boolean nameChangeMark = false;
@@ -202,6 +201,8 @@ public abstract class ConfigurableComponent
       names.add(i.next());
     }
 
+    // Note therefore that for recipes, Arg Order doesnt matter - just
+    // the alphabetical order of the argument names
     Collections.sort(names);
 
     Iterator i = names.iterator();
@@ -213,8 +214,10 @@ public abstract class ConfigurableComponent
         Property prop = getProperty(propName);
         if (prop == null) {
           if(log.isErrorEnabled()) {
-            log.error("Unknown property: " + propName + "=" + propValue + " in component " + this.toString());
+            log.error("Unknown property: " + propName + "=" + propValue + " in component " + this.toString() + ". Will add it.");
           }
+	  // FIXME: This wont get the class right potentially
+	  prop = addProperty(propName, propValue);
         } else {
           Class propClass = prop.getPropertyClass();
 	  if (log.isDebugEnabled() && propClass == null) {
@@ -223,10 +226,10 @@ public abstract class ConfigurableComponent
           Constructor constructor = 
             propClass.getConstructor(new Class[] {String.class});
           Object value = constructor.newInstance(new Object[] {propValue});
-          prop.setValue(value);
 	  if (log.isDebugEnabled()) {
-	    log.debug("Setting value for property " + prop.getName().toString() + " with label " + prop.getLabel() + " and value: " + prop.getValue());
+	    log.debug("Setting value for property " + prop.getName().toString() + " with label " + prop.getLabel() + " and old value: " + prop.getValue() + " to new val " + value);
 	  }
+          prop.setValue(value);
         }
       } catch (Exception e) {
 	if (log.isErrorEnabled()) {
@@ -338,6 +341,10 @@ public abstract class ConfigurableComponent
   public int addChild(ComposableComponent c) {
     if (children == null) children = new ArrayList();
     ((ConfigurableComponent)c).addPropertiesListener(myPropertiesListener);
+    if (getChild(((ConfigurableComponent)c).getFullName()) != null) {
+      // Name is not unqiue, make it so.
+      ((ConfigurableComponent)c).setName(((ConfigurableComponent)c).getFullName().toString() + String.valueOf(getChildCount()));
+    }
     children.add(c);
     c.setParent(this);
     for (Iterator i = ((ConfigurableComponent)c).getProperties(); i.hasNext(); ) {

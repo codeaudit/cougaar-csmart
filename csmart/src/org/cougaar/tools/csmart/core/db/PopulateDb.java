@@ -52,6 +52,7 @@ import org.cougaar.util.log.Logger;
 
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.cdata.*;
+import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
@@ -131,7 +132,7 @@ public class PopulateDb extends PDbBase {
     this.exptId = null;
     this.trialId = null;
     substitutions.put(":cmt_type:", cmtType);
-    if (assemblyId != null) {
+    if (assemblyId != null && ! assemblyId.trim().equals("")) {
       // Society already in DB.
       // check by looking it up?
 
@@ -966,7 +967,9 @@ public class PopulateDb extends PDbBase {
     stmt.close();
 
     substitutions.put(":expt_type:", idType);
-    substitutions.put(":expt_name:", experimentName);
+    // FIXME: If the experiment name begins and ends with a single quote,
+    // single quotes in the middle will not get quoted.
+    substitutions.put(":expt_name:", sqlQuote(experimentName));
     substitutions.put(":description:", description);
     exptId = getNextId("queryMaxExptId", exptIdPrefix);
     if(log.isDebugEnabled()) {
@@ -1585,14 +1588,6 @@ public class PopulateDb extends PDbBase {
 	}
 	// FIXME: Do I expect this ID to be in object? Put it there?
 
-	// A couple options: This might be an old one
-	// that needs to be removed?
-	// Or maybe we already saved it
-	// then put it in runtime too
-	// Make sure it is in runtime too?
-	if (! assemblyInRuntime(assid))
-	  addAssemblyToRuntime(assid);
-
 	// but also want to see if
 	// the assid we found is also the on in the variable
 	if (commAssemblyId != null) {
@@ -1601,6 +1596,15 @@ public class PopulateDb extends PDbBase {
 	    if (log.isDebugEnabled()) {
 	      log.debug("fixAsb: found comm asb in config same as local var");
 	    }
+
+	    // A couple options: This might be an old one
+	    // that needs to be removed?
+	    // Or maybe we already saved it
+	    // then put it in runtime too
+	    // Make sure it is in runtime too?
+	    if (! assemblyInRuntime(assid))
+	      addAssemblyToRuntime(assid);
+	    
 	  } else {
 	    if (log.isDebugEnabled()) {
 	      log.debug("fixAsb: found comm asb in config not same as that in local var. delete from tables");
@@ -1621,6 +1625,15 @@ public class PopulateDb extends PDbBase {
 	  // Shouldnt I have one in local var?
 	  // if not I guess set it
 	  commAssemblyId = assid;
+
+	  // A couple options: This might be an old one
+	  // that needs to be removed?
+	  // Or maybe we already saved it
+	  // then put it in runtime too
+	  // Make sure it is in runtime too?
+	  if (! assemblyInRuntime(assid))
+	    addAssemblyToRuntime(assid);
+	  
 	}
 
       } else {
@@ -1957,16 +1970,17 @@ public class PopulateDb extends PDbBase {
 	// This might be an old one to remove, or the one in the local
 	// var to leave there
 	
-	// Make sure it is in config too?
-	if (! assemblyInConfig(assid))
-	  addAssemblyToConfig(assid);
-	
 	if (commAssemblyId != null) {
 	  if (assid.equals(commAssemblyId)) {
 	    // found local var comm in runtime
 	    if (log.isDebugEnabled()) {
 	      log.debug("fixAsb: found comm asb in runtime same as local var");
 	    }
+
+	    // Make sure it is in config too?
+	    if (! assemblyInConfig(assid))
+	      addAssemblyToConfig(assid);
+	
 	  } else {
 	    if (log.isDebugEnabled()) {
 	      log.debug("fixAsb: found comm asb in runtime not same as that in local var. delete from tables");
@@ -1987,6 +2001,11 @@ public class PopulateDb extends PDbBase {
 	  // Shouldnt I have one in local var?
 	  // if not I guess set it
 	  commAssemblyId = assid;
+
+	  // Make sure it is in config too?
+	  if (! assemblyInConfig(assid))
+	    addAssemblyToConfig(assid);
+	  
 	}
 	
       } else {
@@ -2063,6 +2082,7 @@ public class PopulateDb extends PDbBase {
 
   /**
    * Add the given Recipe to the trial in the database at the given spot.
+   * Note that the recipe will not be saved or resaved even if necc.
    *
    * @param rc a <code>RecipeComponent</code> to add
    * @param recipeOrder an <code>int</code> spot to add it
@@ -2071,7 +2091,7 @@ public class PopulateDb extends PDbBase {
   public void addTrialRecipe(RecipeComponent rc, int recipeOrder)
     throws SQLException
   {
-    String recipeId = insureLibRecipe(rc);
+    String recipeId = getLibRecipeId(rc);
     substitutions.put(":recipe_id:", recipeId);
     substitutions.put(":recipe_order:", String.valueOf(recipeOrder));
     // FIXME: Test that the recipe isnt already there.
@@ -2095,7 +2115,7 @@ public class PopulateDb extends PDbBase {
     boolean added = false;
 
     // Null Assembly ID is really bad
-    if (hnaAssemblyId == null) {
+    if (hnaAssemblyId == null || hnaAssemblyId.trim().equals("")) {
       if (log.isErrorEnabled()) {
 	log.error("popHNA: null HNA assembly ID? Can't save", new Throwable());
       }
@@ -2147,7 +2167,7 @@ public class PopulateDb extends PDbBase {
 
     // A null Assembly at this point is a bad thing.
     // Dont try to save into it.
-    if (csmiAssemblyId == null) {
+    if (csmiAssemblyId == null || csmiAssemblyId.trim().equals("")) {
       if (log.isErrorEnabled()) {
 	log.error("popCSMI had null CSMI assembly ID. Will not save.", new Throwable());
       }
@@ -2174,7 +2194,7 @@ public class PopulateDb extends PDbBase {
     // For storing the old cmtAssid if we have to change it
     String oldid = null;
 
-    if (cmtAssemblyId == null) {
+    if (cmtAssemblyId == null || cmtAssemblyId.trim().equals("")) {
       if (log.isErrorEnabled()) {
 	log.error("popCSA: Null CMT AssemblyID? Cant do much.", new Throwable());
       }
@@ -2244,9 +2264,9 @@ public class PopulateDb extends PDbBase {
     throws SQLException  {
 
     // FIXME: This needs cleaning up:
-    // a) set cmtAssemblyID
-    // b) delete un-used code
 
+    // oldid is not used - should it be?
+    // what is the new rcpAssemblyId I'm creating here, and why?
     // For storing the old cmtAssid if we have to change it
     String oldid = null;
 
@@ -2256,28 +2276,8 @@ public class PopulateDb extends PDbBase {
     // Create a new RCP based on what was in cmtAssemblyID
     String rcpAssemblyId = createCSAAssembly(null, "", RCPTYPE);
     
-    // Delete any existing CSA / CMT in runtime for this experiment, completely if necc
-    //cleanOldRuntimeSocietyAssemblies();
-
-    // Must also delete any CSMI assembly that exists so far. 
-    // Although I suppose we _might_ end up using one -- if we got called here
-    // earlier due to some bug, whatever is there is suspect
-    // Only partially clean it out (not out of asb_assembly)
-    if (csmiAssemblyId != null) {
-      cleanAssembly(csmiAssemblyId, true);
-      
-    }
-
-    // FIXME: What if a recipe modified the Agents in use? Must I
-    // remove the CSHNA assembly as well?
-    
     // Add this new assembly to the runtime assemblies for this experiment
     substitutions.put(":assembly_type:", RCPTYPE);
-//     addAssemblyToRuntime(csaAssemblyId);
-    
-    // For purposes of populate, this is the society definition
-//     cmtAssemblyId = csaAssemblyId;
-    
     setAssemblyMatch();
 
     if (log.isDebugEnabled()) {
@@ -2340,8 +2340,13 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":assembly_id:", sqlQuote(assemblyId));
     substitutions.put(":insertion_order:", String.valueOf(insertionOrder));
     SortedSet oldArgs = (SortedSet) componentArgs.get(id);
+
+    // Bug 1810: Do this always, to be safe
+    id = insureAlib(data);       // Insure that the alib and lib components are defined
+    // Note that the above call may have update the ComponentData object,
+    // and some substitutions
+
     if (oldArgs == null) {  // Don't know what the current args are
-      insureAlib();       // Insure that the alib and lib components are defined
 
       Statement stmt = getStatement();
       ResultSet rs;
@@ -2408,7 +2413,10 @@ public class PopulateDb extends PDbBase {
     SortedSet newArgs = new TreeSet();
     Object[] params = data.getParameters();
     for (int i = 0; i < params.length; i++) {
-      newArgs.add(new Argument(params[i].toString(), i));
+      if (params[i] instanceof Property)
+	newArgs.add(new Argument(((Property)params[i]).getValue().toString(), i));
+      else
+	newArgs.add(new Argument(params[i].toString(), i));
     }
     
     // For debugging, dump out the old & new arguments now:
@@ -2598,21 +2606,30 @@ public class PopulateDb extends PDbBase {
       PropGroupData[] pgs = assetData.getPropGroups();
       for (int i = 0; i < pgs.length; i++) {
 	PropGroupData pg = pgs[i];
+	if (pg == null)
+	  continue;
 	String pgName = pg.getName();
+	if (pgName == null || pgName.equals(""))
+	  continue;
 	PGPropData[] props = pg.getProperties();
 
 	// For each property in the property group
 	for (int j = 0; j < props.length; j++) {
 	  PGPropData prop = props[j];
+	  if (prop == null)
+	    continue;
 	  PropertyInfo propInfo = getPropertyInfo(pgName, prop.getName());
           if(propInfo == null) {
             // This is a new PG, and must be stored in the db.
             setPropertyInfo(pgName, prop.getName(), prop.getType(), prop.getSubType());
             propInfo = getPropertyInfo(pgName, prop.getName());
-            if(log.isErrorEnabled() && propInfo == null) {
-              log.error("Error: Cannot obtain property info for: " + 
+	    if (propInfo == null) {
+	      if(log.isErrorEnabled()) {
+		log.error("Error: Cannot obtain property info for: " + 
                         pgName + ", " + prop.getName());
-            }
+	      }
+	      continue;
+	    }
           }
 // 	  if (log.isDebugEnabled()) {
 // 	    log.debug("Pag for " + data.getName() + " at PropGroupData " + i + " with name " + pgName + " has " + props.length + " props, of which #" + j + " is " + propInfo.toString());
@@ -2784,14 +2801,17 @@ public class PopulateDb extends PDbBase {
       log.debug("setPropertyInfo("+pgName+", "+propName+", "+
                 propType+", "+propSubtype+")");
     }
+    
+    if (pgName == null || pgName.equals("") || propName == null || propName.equals(""))
+      return;
 
     substitutions.put(":attribute_lib_id:", sqlQuote(pgName + "|" + propName));
     substitutions.put(":pg_name:", sqlQuote(pgName));
     substitutions.put(":attribute_name:", sqlQuote(propName));
     // FIXME:  Below is a hack, as an attempt to run past this point.
     // Really should figure out why propSubtype is sometimes null.
-    if(propSubtype == null && log.isWarnEnabled()) {
-      log.warn("PropSubtype is NULL for: " + propName + "(type)" + propType);
+    if(propSubtype == null && log.isInfoEnabled()) {
+      log.info("PropSubtype is NULL for: " + propName + ", type: " + propType);
     }
 
     if(propType.equalsIgnoreCase("Collection")) {
@@ -2819,6 +2839,10 @@ public class PopulateDb extends PDbBase {
     if(log.isDebugEnabled()) {
       log.debug("getPropertyInfo("+pgName+", "+propName+")");
     }
+
+    if (pgName == null || pgName.equals("") || propName == null || propName.equals(""))
+      return null;
+
     PropertyKey key = new PropertyKey(pgName, propName);
     PropertyInfo result = (PropertyInfo) propertyInfos.get(key);
     if (result == null) {
@@ -2829,6 +2853,8 @@ public class PopulateDb extends PDbBase {
       while (rs.next()) {
 	String s1 = rs.getString(1);
 	String s2 = rs.getString(2);
+	if (s1 == null || s1.equals("") || s2 == null || s2.equals(""))
+	  continue;
 	PropertyKey key1 = new PropertyKey(s1, s2);
 	PropertyInfo info = new PropertyInfo(key1,
 					     rs.getString(3),
@@ -2969,11 +2995,13 @@ public class PopulateDb extends PDbBase {
    * if DB has an entry already that differs. This also makes sure the lib table
    * is appropriately filled in.
    *
+   * @param ComponentData being saved
    * @exception SQLException if an error occurs
+   * @return new ALIB ID
    */
-  private void insureAlib() throws SQLException {
+  private String insureAlib(ComponentData data) throws SQLException {
     String id = (String) substitutions.get(":component_alib_id:");
-    if (alibComponents.contains(id)) return; // Already present
+    if (alibComponents.contains(id)) return id; // Already present
     // may need to be added
     insureLib();
     String query1 = dbp.getQuery("checkAlibComponent", substitutions);
@@ -2988,34 +3016,61 @@ public class PopulateDb extends PDbBase {
       }
       executeUpdate(dbp.getQuery("insertAlibComponent", substitutions));
     } else {
-      String[] subvars = {
-	":component_name:",
-	":component_lib_id:",
-	":component_category:",
-	":clone_set_id:"
-      };
-  // FIXME!!!
-  // If it looks like this Lib ID is different, offer the option that this is really
-  // a new LIB ID!!!
 
-      StringBuffer diff = compareQueryResults(rs, subvars);
-      if (diff == null) {
-	// Value is ok
-      } else if (conflictHandler != null) {
-	Object[] msg = {
-	  "You are attempting to redefine alib component: " + id,
-	  diff,
-	  "Do you want to overwrite the definition?"
-	};
-	if (isOverwrite(msg)) {
-	  String query = dbp.getQuery("updateAlibComponent", substitutions);
-	  executeUpdate(query);
+      // Bug 1810: If the component_name has changed
+      // and what differs is the part before a vertical bar,
+      // consider a new ALIB ID.
+      // Look at col 1: If it differs from what's in subst, but rest are same,
+      // then I want to reset the ALIB ID (data.setAlibID(null)) and re-save
+      // -- call getComponentDataSubstitutions
+      // but note interaction with where this is called from Populate
+      String dbname = rs.getString(1);
+      String mapName = data.getName();
+      String dblibid = rs.getString(2);
+      String mapLib = data.getLibID();
+      String mapType = data.getType();
+      String dbtype = rs.getString(3);
+      if (dbname != null && ! dbname.equals(mapName) && dblibid != null && dblibid.equals(mapLib) && dbtype != null && dbtype.equals(mapType)) {
+	if (log.isInfoEnabled()) {
+	  log.info("insureAlib: Bug 1810: For ALIB ID " + id + " have old name " + dbname + " and new: " + mapName);
+	  log.info(".. and Lib ID and type both same. LibID: " + dblibid);
 	}
-      }
-    }
+	// Get a new ALIB ID and save that to the DB
+	// and mark it on the ComponentData somehow
+	data.setAlibID(null);
+	id = getComponentAlibId(data);
+	substitutions.put(":component_alib_id:", sqlQuote(id));
+	if (log.isInfoEnabled())
+	  log.info("Adding new ALIB ID " + id);
+	executeUpdate(dbp.getQuery("insertAlibComponent", substitutions));
+      } else {
+	// Something else is different. Ask user what to do
+	String[] subvars = {
+	  ":component_name:",
+	  ":component_lib_id:",
+	  ":component_category:",
+	  ":clone_set_id:"
+	};
+	StringBuffer diff = compareQueryResults(rs, subvars);
+	if (diff == null) {
+	  // Value is ok
+	} else if (conflictHandler != null) {
+	  Object[] msg = {
+	    "You are attempting to redefine alib component: " + id,
+	    diff,
+	    "Do you want to overwrite the definition?"
+	  };
+	  if (isOverwrite(msg)) {
+	    String query = dbp.getQuery("updateAlibComponent", substitutions);
+	    executeUpdate(query);
+	  }
+	}
+      } // find differences to handle conflicts
+    } // it was there but different
     alibComponents.add(id); // Avoid re-querying later
     rs.close();
     stmt.close();
+    return id;
   }
 
   /**

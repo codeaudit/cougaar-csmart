@@ -20,9 +20,6 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-
-
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.URL;
@@ -30,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
@@ -69,7 +67,7 @@ public abstract class RecipeBase
   public static final int RECIPE_SAVED = 3;
 
   // used to block modify notifications while saving
-  private transient boolean saveInProgress = false; 
+  protected transient boolean saveInProgress = false; 
 
   public RecipeBase (String name){
     super(name);
@@ -141,6 +139,7 @@ public abstract class RecipeBase
     Property addedProperty = e.getProperty();
     Property myProperty = getProperty(addedProperty.getName().last().toString());
     if (myProperty != null) {
+      // set property visible?
       addedProperty.addPropertyListener(myPropertyListener);
       fireModification();
     }
@@ -238,14 +237,23 @@ public abstract class RecipeBase
 
   PropertyListener myPropertyListener =
     new PropertyListener() {
-        public void propertyValueChanged(PropertyEvent e) {
-          fireModification();
-        }
-
-        public void propertyOtherChanged(PropertyEvent e) {
-          fireModification();
-        }
-      };
+      public void propertyValueChanged(PropertyEvent e) {
+	if (e == null || e.getProperty() == null)
+	  return;
+	if (e.getProperty().getValue() == null) {
+	  if (e.getPreviousValue() == null)
+	    return;
+	  else
+	    fireModification();
+	} else if (! e.getProperty().getValue().toString().trim().equals(e.getPreviousValue().toString())) {
+	  fireModification();
+	}
+      }
+      
+      public void propertyOtherChanged(PropertyEvent e) {
+	fireModification();
+      }
+    };
 
 
   ModificationListener myModificationListener = new MyModificationListener();

@@ -32,7 +32,6 @@ import java.awt.dnd.*;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
 import java.io.*;
-import java.io.IOException;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;

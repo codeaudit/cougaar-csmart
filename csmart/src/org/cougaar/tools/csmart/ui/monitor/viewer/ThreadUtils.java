@@ -23,7 +23,6 @@ package org.cougaar.tools.csmart.ui.monitor.viewer;
 
 
 import java.io.*;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;

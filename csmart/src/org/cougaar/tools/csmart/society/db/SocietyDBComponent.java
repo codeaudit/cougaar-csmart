@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- * Copyright 2001 BBNT Solutions, LLC
+ * Copyright 2001,2002 BBNT Solutions, LLC
  * under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
 
  * This program is free software; you can redistribute it and/or modify
@@ -56,7 +56,6 @@ public class SocietyDBComponent
   protected static final String BACKUP_DESCRIPTION =
     "A Society created from the database: Agents, Binders, Plugins, etc.";
 
-  private boolean isRunning = false;
   private static final String QUERY_AGENT_NAMES = "queryAgentNames";
 
   private Map substitutions;

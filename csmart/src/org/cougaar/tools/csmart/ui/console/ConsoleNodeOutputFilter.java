@@ -28,6 +28,9 @@ import javax.swing.border.*;
 
 import org.cougaar.tools.server.NodeEvent;
 
+/**
+ * Dialog for selecting what Node output to filter
+ **/
 public class ConsoleNodeOutputFilter extends JDialog {
   private static final String ALL = "All";
   private static final String STANDARDOUT = "Standard Output";
@@ -35,13 +38,8 @@ public class ConsoleNodeOutputFilter extends JDialog {
   private static final String NODECREATION = "Node Created";
   private static final String NODEDESTROYED = "Node Destroyed";
   private static final String IDLENESS = "Idle";
-  private final String OFF = "Off";
-  private final String ON = "On";
   Box box = new Box(BoxLayout.Y_AXIS);
   private JPanel filterPanel;
-  private JRadioButton allButton;
-  private JRadioButton sizeButton;
-  private JTextField sizeTF;
   private JCheckBox allCB;
   private JCheckBox standardCB;
   private JCheckBox errorCB;
@@ -167,7 +165,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
   /**
    * Return whether or not the event should be displayed in the console.
    */
-
   public boolean includeEventInDisplay(NodeEvent event) {
     if (allSelected)
       return true;
@@ -179,7 +176,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
    * Return whether or not the event type should be displayed in the
    * console.  Event types are defined in NodeEvent.
    */
-
   public boolean includeEventTypeInDisplay(int eventType) {
     if (allSelected)
       return true;
@@ -190,7 +186,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
   /**
    * Return whether or not the event should be written in the log file.
    */
-
   public boolean includeEventInLogFile(NodeEvent event) {
     return true;
   }
@@ -221,6 +216,11 @@ public class ConsoleNodeOutputFilter extends JDialog {
   public boolean isAllSelected() {
     return allSelected;
   }
+
+
+  // FIXME: Remove WindowListener on close?
+  // note that the "parent" slot points to CSMART, but I see no way to 
+  // get rid of that
 
   public static void main(String[] args) {
     ConsoleNodeOutputFilter filter = 

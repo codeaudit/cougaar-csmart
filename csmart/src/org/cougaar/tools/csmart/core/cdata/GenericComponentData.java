@@ -74,6 +74,11 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void setType(String type) {
+    if (type == null || type.trim().equals("")) {
+      if (log.isDebugEnabled())
+	log.debug("setType got empty type in " + this, new Throwable());
+      return;
+    }
     this.type = type;
   }
 
@@ -552,6 +557,15 @@ public class GenericComponentData implements ComponentData, Serializable {
     Logger log = CSMART.createLogger(GenericComponentData.class.getName());
     if (self == null || parent == null)
       return true;
+
+
+    if (parent.getType().equals(ComponentData.RECIPE)) {
+      if (log.isDebugEnabled()) {
+        log.debug("Ignore checking for duplicates, we are saving a recipe");
+      }
+      return false;
+    }
+
     ComponentData[] children = parent.getChildren();
     if (children == null)
       return false;

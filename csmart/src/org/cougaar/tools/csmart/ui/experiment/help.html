@@ -29,14 +29,13 @@ modifications to a society, and will be applied in the order in which they
 are listed under the Recipes folder. (You may re-order them by
 dragging and dropping. Drop a recipe on the folder and it is added
 last. Drop a recipe on another recipe and it is inserted before that
-other recipe.) By default, a recipe to include
-all basic servlets is included in experiments from the database, but
-users may remove this recipe and include any other they prefer.  Note
+other recipe.) By default, 1AD experiments from the database include several recipes  to support
+Agent mobility, communities, and to include
+all basic servlets, but
+users may remove these recipes and include any other they prefer.  Note
 however, that some servlets support the Society Monitor; removing
 these servlets will make it impossible for the Society Monitor to
-collect information from the society blackboard.  In addition, two
-other recipes are included to support Agent Mobility. If your society
-will not be moving Agents around you may remove these recipes.
+collect information from the society blackboard.  
 
 <h4>Component Recipes</h4>
 Component Recipes provide the ability to add a new component to a specific set
@@ -68,12 +67,14 @@ The following explains the usage of each of the tabbed panes:
 <h4>Properties</h4>
 To include a society or recipe in your experiment, create a society or 
 recipe in your 
-workspace and drag it into the Society or Recipes folder in the tree.
+workspace and drag it into the Society or Recipes folder in the
+tree. You may also drag multiple recipes into your experiment at once,
+by ctrl- or shift-click selecting them in your workspace.
 (Note that societies are automatically created in the workspace when
-you load an experiment from the database.)
-To remove the society from the experiment, position the mouse over the Society folder in the tree,
-and click the right mouse button; a pop-up window will be displayed allowing you
-to remove the society.
+you load an experiment from the database.) Note that you cannot add
+the same recipe to an experiment twice. You also cannot have two
+Agents (including Node Agents, so therefore Nodes) with the same name
+in any configuration, so some recipe additions will be rejected. <br><br>
 To remove a recipe from the experiment, position the mouse over the recipe in the tree and click the
 right mouse button; a pop-up window will be displayed allowing you to remove
 the recipe. To remove all recipes, use the pop-up menu on the Recipes folder.
@@ -87,7 +88,9 @@ on nodes; nodes can be dropped on hosts. Create, delete, and rename hosts
 and nodes by using the appropriate Configure menu option, or right clicking on a host or node to display a pop-up menu
 with these options. Agents are created by societies or recipes and cannot be created,
 deleted or renamed in the Experiment Builder. Unassigned Agents are
-agents not yet assigned to a node.
+agents not yet assigned to a node.  You may also view the complete
+contents of a Node (and its Node Agent) or an Agent, by selecting the
+"Show Components" item from the pop-up menu on that object.
 
 <ol>
 <li>
@@ -252,7 +255,7 @@ This tab supports editing and viewing communities, their members, and
 their attributes.  In general, the user should configure the
 Host, Node, Agent (HNA) mappings and then use the Communities tab to assign
 agents to communities.  The Communities display always shows the most
-recent HNA mappings in the bottom right portion of the display.
+recent HNA mappings in the bottom right portion of the display. 
 HNA mappings cannot be modified in the Communities display.<br><br>
 <b>Displaying a Community</b>
 Use the Display Community command on the Community menu to display a previously
@@ -274,7 +277,8 @@ or agents from the community; it does not delete the agent or agents
 from the experiment, or affect the HNA mapping.<br>
 You may also jump-start your community definitions by importing a
 communities.xml file, by selecting the Import option from the root
-"Community" node pop-up menu.<br><br>
+"Community" node pop-up menu. See the community module for
+documentation and a sample XML file. <br><br>
 <b>Community Table Display</b>
 The table displays attribute ids and values
 for the entity selected in the community tree.  For agents, the

@@ -66,7 +66,6 @@ public class AgentFileComponent
    */
   public AgentFileComponent(String name, String filename, String classname) {
     super(name);
-    this.name = name;
     this.classname = classname;
     this.filename = filename;
     createLogger();

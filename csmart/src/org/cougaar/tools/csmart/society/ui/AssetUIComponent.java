@@ -56,9 +56,9 @@ public class AssetUIComponent
   public void initProperties() {
     //    propAssetType = addProperty(AssetComponent.PROP_TYPE, new Integer(0));
     //    propAssetType.setToolTip(PROP_TYPE_DESC);
-    propAssetClass = addProperty(AssetComponent.PROP_CLASS, "");
+    propAssetClass = addProperty(AssetComponent.PROP_CLASS, "MilitaryOrganization");
     propAssetClass.setToolTip(PROP_CLASS_DESC);
-    propUniqueID = addProperty(AssetComponent.PROP_UID, "");
+    propUniqueID = addProperty(AssetComponent.PROP_UID, "UTC/RTOrg");
     propUniqueID.setToolTip(PROP_UID_DESC);
     propUnitName = addProperty(AssetComponent.PROP_UNITNAME, "");
     propUnitName.setToolTip(PROP_UNITNAME_DESC);
@@ -70,9 +70,16 @@ public class AssetUIComponent
    * Add component data for asset properties, relationships,
    * and property groups.
    */
-
   public ComponentData addComponentData(ComponentData data) {
     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
+
+    // String agent = data.getName();
+
+    // FIXME: IF asset class is null or empty, perhaps abort? Or
+    // fill in the agent name inside these?
+    // Of course, doing it in the addComponentData is bad,
+    // cause it modifies the Component
+
     //    assetData.setType(((Integer)propAssetType.getValue()).intValue());
     assetData.setAssetClass((String)propAssetClass.getValue());
     assetData.setUniqueID((String)propUniqueID.getValue());
@@ -111,6 +118,11 @@ public class AssetUIComponent
         }
       }
     }
+
+    // FIXME: Perhaps check that ClusterPG (ClusterIdentifier),
+    // ItemIdentificationPG (ItemIdentifiation), TypeIdentificationPG (TypeIdentification)
+    // are, at a minimum, among those filled in?
+    // What would I do though if they're not?
 
     // Add Property Groups.
     iter = 

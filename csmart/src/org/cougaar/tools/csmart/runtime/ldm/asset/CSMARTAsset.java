@@ -21,15 +21,6 @@
 
 package org.cougaar.tools.csmart.runtime.ldm.asset;
 
-import java.util.Vector;
-import java.util.Enumeration;
-import java.io.Serializable;
-import org.cougaar.planning.ldm.asset.*;
-import org.cougaar.planning.ldm.plan.*;
-import java.util.*;
-import java.beans.PropertyDescriptor;
-import java.beans.IndexedPropertyDescriptor;
-
 public class CSMARTAsset
   extends org.cougaar.tools.csmart.runtime.ldm.asset.AssetSkeleton 
 {

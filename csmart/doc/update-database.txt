@@ -1,7 +1,7 @@
 Instructions for updating a CSMART database	April, 2002
 
 These are instructions for updating an older CSMART MySQL
-database with a 9.2 or better CSMART MySQL database. 
+database with a 9.4.1 or better CSMART MySQL database. 
 
 If you do not have any complicated experiments or recipes to preserve,
 simply follow the instructions in the Installation guide.
@@ -9,7 +9,7 @@ simply follow the instructions in the Installation guide.
 However, if you have one or more Experiments which you wish to save,
 these instructions will walk you through doing that.
 
-1) Export the experiments you wish to save
+1) Export the experiments or recipes you wish to save
 Use the scripts provided in csmart/bin, running from a machine with
 MySQL and Linux or Cygwin installed. 
 ./exportExperiment.sh [Experiment name to save] [user] [pw] [db name]
@@ -24,16 +24,24 @@ above experiments.)
 2) Load the new database, following the instructions in the Install
 guide. 
 
-3) Import your experiment export into the new database. Something
+3) Table names have changed. You must now run the conversion script in 
+csmart/bin/v4_v6_conversions.[bat/sh] on your exports created above.
+
+4) Import your experiment export into the new database. Something
    like:
 mysql -f -u [user] -p[pw] [csmart db name] < MyExperiment-export.sql
 
-4) Run CSMART. If the old experiment is listed in your workspace,
+5) Run CSMART. If the old experiment is listed in your workspace,
    delete it from your workspace _only_. Then, load the experiment
    from the database. 
-If your experiment was created pre-Version 9.0, then the Plugin
-names have all changed.
-So, when you get the dialog box showing all
+   If your experiment was created pre-Version 9.4.1, then the Plugin
+   names have all changed.
+
+   For a pre 9.2 experiment upgrade, you should certainly upgrade to
+   the new Plugins. If however you have a 9.2 through 9.4 experiment
+   and for some reason want to preserve which Plugins you use, you
+   may skip the next step.
+   Otherwise, when you get the dialog box showing all
    the threads selected in the experiment, Select the "Force
    Recompute" box. Click OK.
 
@@ -52,8 +60,7 @@ Deleting CMT assembly: CMT-TINY-1AD-TRANS-STUB-CFW-GRP{ST1} for experiment: EXPT
 new CMTasb is: CMT-TINY-1AD-TRANS-STUB-CFW-GRP{ST1}
 org.cougaar.name.server=null
 
-5) If you had previously run the switchPlugin-class or otherwise
+6) If you had previously run the switchPlugin-class or otherwise
    edited the database, your changes have been lost. You must re-apply
-   these changes. (For example, run switchPlugin-class to get the SRA
-   plugins.)
+   these changes.
    

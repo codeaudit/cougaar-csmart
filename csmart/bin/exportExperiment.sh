@@ -24,6 +24,10 @@
 # from recipeQueries.q
 # Run this only _after_ running copy-experiment
 # Note that multi-word experiment names must be in double quotes
+# Also note that this depends on a valid CSMART install, including
+# setting COUGAAR_INSTALL_PATH to an install that includes
+# util.jar, bootstrap.jar, csmart.jar, and configs/common/CSMART.q
+# and a valid cougaar.rc file
 
 if [ "x$4" = "x" ]; then
   echo "Usage: exportExperiment.sh [Experiment to export] [DB Username] [DB Password] [DB name] [Optional: host name]"
@@ -34,20 +38,20 @@ fi
 # check that its a copy (does not have a base assembly)
 
 if [ "x$5" = "x" ]; then
-    ${COUGAAR_INSTALL_PATH}/csmart/bin/copy-experiment.sh $1 "exprt" $2 $3 $4 export
+    ${COUGAAR_INSTALL_PATH}/csmart/bin/copy-experiment.sh "$1" "export" $2 $3 $4 export
 else
-    ${COUGAAR_INSTALL_PATH}/csmart/bin/copy-experiment.sh $1 "exprt" $2 $3 $4 export $5
+    ${COUGAAR_INSTALL_PATH}/csmart/bin/copy-experiment.sh "$1" "export" $2 $3 $4 export $5
 fi
 
 # Check that named experiment exists
 # if this fails, something went wrong in copy
 if [ "x$5" = "x" ]; then
-  EID=`mysql -s -e "select distinct name from expt_experiment where name = '$1-exprt'" -u $2 -p$3 tempcopy`
+  EID=`mysql -s -e "select distinct name from expt_experiment where name = '$1-export'" -u $2 -p$3 tempcopy`
 else
-  EID=`mysql -s -e "select distinct name from expt_experiment where name = '$1-exprt'" -u $2 -p$3 -h $5 tempcopy`
+  EID=`mysql -s -e "select distinct name from expt_experiment where name = '$1-export'" -u $2 -p$3 -h $5 tempcopy`
 fi
 
-if [ -z $EID ]; then
+if [ "x$EID" = "x" ]; then
  echo $EID
  echo ""
  echo "Problem reading copied experiment.  Exiting."
@@ -72,6 +76,30 @@ fi
 
 rm copyFE-fixed.sql
 
+##############
+# Now invoke Java to update ALIB IDs
+os=`uname`
+SEP=";"
+if [ $os = "Linux" -o $os = "SunOS" ]; then SEP=":"; fi
+MYCLASSPATH="${COUGAAR_INSTALL_PATH}/lib/bootstrap.jar"
+
+DEVPATH=""
+if [ "$COUGAAR_DEV_PATH" != "" ] ; then
+    #MYCLASSPATH="${COUGAAR_DEV_PATH}${SEP}${MYCLASSPATH}"
+    DEVPATH="-Dorg.cougaar.class.path=${COUGAAR_DEV_PATH}"
+fi
+MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $DEVPATH"
+javaargs="$MYPROPERTIES -cp $MYCLASSPATH"
+
+echo "Updating ALIB IDs."
+echo ""
+echo "Running java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.util.ExportExperimentHelper $1"
+
+`java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.util.ExportExperimentHelper $1`
+echo ""
+# Done with Java
+###############
+
 # do the dump
 echo "Exporting experiment $1...."
 if [ "x$5" = "x" ]; then
@@ -82,13 +110,14 @@ fi
 
 # Munge the dump file to replace INSERT with REPLACE for the tables
 # lib_component and alib_component
-sed s/'INSERT INTO lib_component'/'REPLACE INTO lib_component'/ "$1-export.sql" | sed s/'INSERT INTO alib_component'/'REPLACE INTO alib_component'/ > exp-export.sql
+sed s/'INSERT INTO lib_component'/'REPLACE INTO lib_component'/ "$1-export.sql" | sed s/'INSERT INTO alib_component'/'REPLACE INTO alib_component'/ | sed s/'INSERT INTO lib_pg_attribute'/'REPLACE INTO lib_pg_attribute'/ | sed s/'INSERT INTO lib_agent_org'/'REPLACE INTO lib_agent_org'/ > exp-export.sql
 mv exp-export.sql "$1-export.sql"
 
+echo ""
+
 # tell the user the name of the export file
-# tell the user the name of the export file
-echo "Experiment has been exported to $1-export.sql. Load into new database with command: mysql -f -u <user> -p<password> <db> < $1-export.sql"
-echo "Note the use of the -f option, to ignore errors about duplicate rows"
+echo "Experiment has been exported to $1-export.sql, along with all of its recipes. Load into new database with command: mysql -f -u <user> -p<password> <db> < $1-export.sql"
+echo "Note the use of the -f option, to avoid errors about duplicate rows, including missing recipes in the resulting experiment."
 
 # get names of recipes to copy, tell user
 echo "You must be sure to separately copy the following queries as well:"
@@ -98,6 +127,7 @@ else
   echo "select distinct arg_value from tempcopy.lib_mod_recipe_arg where arg_value like 'recipeQuery%'" | mysql -s -u $2 -p$3 -h $5 $4
 fi
 
+echo ""
 # delete the temp db
 ${COUGAAR_INSTALL_PATH}/csmart/bin/delete-temp-db.sh $2 $3 $4 $5
 

@@ -20,9 +20,6 @@
  */ 
 package org.cougaar.tools.csmart.recipe;
 
-
-
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
@@ -35,7 +32,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+
 import org.cougaar.core.agent.ClusterImpl;
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -61,7 +61,6 @@ import org.cougaar.tools.csmart.society.ComponentBase;
 import org.cougaar.tools.csmart.society.PluginComponent;
 import org.cougaar.tools.csmart.society.PropGroupComponent;
 import org.cougaar.tools.csmart.society.RelationshipComponent;
-import org.cougaar.util.log.Logger;
 
 /**
  * Recipe to add a complete Agent to the society.  This agent
@@ -70,7 +69,7 @@ import org.cougaar.util.log.Logger;
 public class ComponentCollectionRecipe extends ComplexRecipeBase
   implements Serializable
 {
-  private static final String DESCRIPTION_RESOURCE_NAME = 
+  protected static final String DESCRIPTION_RESOURCE_NAME = 
     "collection-recipe-description.html";
 
   private Property propTargetComponent;
@@ -100,6 +99,10 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
     super(name, assemblyId, recipeId);
   }
 
+  public ComponentCollectionRecipe(String name, String assemblyId, String recipeId, String initName) {
+    super(name, assemblyId, recipeId, initName);
+  }
+
   public ComponentCollectionRecipe(ComponentData cdata, String assemblyId) {
     super(cdata, assemblyId);
   }
@@ -109,12 +112,14 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
    *
    */
   public void initProperties() {
-    super.initProperties();
-
     propTargetComponent =
       addRecipeQueryProperty(PROP_TARGET_COMPONENT_QUERY,
                              PROP_TARGET_COMPONENT_QUERY_DFLT);
     propTargetComponent.setToolTip(PROP_TARGET_COMPONENT_QUERY_DESC);
+
+    super.initProperties();
+
+    // The super will set the parent target query
 
     modified = false;
     fireModification(new ModificationEvent(this, RECIPE_SAVED));
@@ -130,28 +135,6 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
     return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
   }
 
-
-  /**
-   * Get the name of this Recipe.
-   *
-   * @return a Recipe Name as a <code>String</code> value
-   */
-  public String getRecipeName() {
-    return getShortName();
-  }
-
-  /**
-   * Gets an array of all agents created by this recipe.
-   *
-   * @see AgentComponent
-   * @return an <code>AgentComponent[]</code> array of all agents
-   */
-  public AgentComponent[] getAgents() {
-//     initAgents();
-    Collection agents = getDescendentsOfClass(AgentComponent.class);    
-    return (AgentComponent[]) agents.toArray(new AgentComponent[agents.size()]);
-  }
-
   /**
    * Adds any new data to the global <code>ComponentData</code> tree.
    * No existing data is modified in this method.
@@ -163,6 +146,8 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
    */
   public ComponentData addComponentData(ComponentData data) {
     ComponentData[] children = data.getChildren();
+    if (children == null)
+      return data;
     for(int i=0; i < children.length; i++) {
       ComponentData child = children[i];
       // for each child component data, if it's an agent's component data
@@ -178,32 +163,37 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
             if (child.getName().equals(agent.getShortName().toString())) {
               // then set me as the owner of the component data
               child.setOwner(this);
+
+	      if (log.isDebugEnabled())
+		log.debug("addCData about to call it on agent " + child.getName());
               // and add the component data
               agent.addComponentData(child);
             }
           }
 	}		
-      } else if (child.getType() == ComponentData.PLUGIN || 
-                 child.getType() == ComponentData.AGENTBINDER ||
-                 child.getType() == ComponentData.NODEBINDER ) {
-          // get all top level Plugins
-          Iterator iter = ((Collection)getDescendentsOfClass(BaseComponent.class)).iterator();
-          while(iter.hasNext()) {
-            BaseComponent comp = (BaseComponent)iter.next();
-            // if the component data name matches the agent name
-            if (child.getName().equals(comp.getShortName().toString())) {
-              // then set me as the owner of the component data
-              child.setOwner(this);
-              // and add the component data
-              comp.addComponentData(child);
-            }
-          }
-      } else {
+      } else if (child.getType() == ComponentData.SOCIETY || 
+                 child.getType() == ComponentData.HOST ||
+		 child.getType() == ComponentData.RECIPE ||
+                 child.getType() == ComponentData.NODE ) {
+	// some container -- recurse down
         addComponentData(child);
+      } else {
+	// get all top level Components
+	Iterator iter = ((Collection)getDescendentsOfClass(BaseComponent.class)).iterator();
+	while(iter.hasNext()) {
+	  BaseComponent comp = (BaseComponent)iter.next();
+	  // if the component data name matches the agent name
+	  if (child.getName().equals(comp.getShortName().toString())) {
+	    // then set me as the owner of the component data
+	    child.setOwner(this);
+	    // and add the component data
+	    comp.addComponentData(child);
+	  }
+	}
       }
-
+      
     }
-
+    
     return data;
   }
 
@@ -277,15 +267,16 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
         AgentComponentData ac = new AgentComponentData();
         ac.setName(cc.getShortName());
         ac.setClassName(ClusterImpl.class.getName());
-        ac.addParameter(cc.getShortName()); // Agents have one parameter, the agent name
+        ac.addParameter(cc.getShortName().toString()); // Agents have one parameter, the agent name
         ac.setOwner(cc);
         ac.setParent(cd);
-        // Add any new Parameters...
-        Iterator iter = getLocalProperties();
-        while(iter.hasNext()) {
-          Property p = (Property)iter.next();
-          ac.addParameter(p);
-        }
+//         // Add any new Parameters...
+//         Iterator iter = cc.getLocalProperties();
+//         while(iter.hasNext()) {
+//           Property p = (Property)iter.next();
+// 	  if (p != null)
+// 	    ac.addParameter(p.getValue().toString());
+//         }
         
         cd.addChild(cc.addComponentData(ac));
 
@@ -324,13 +315,13 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
       ConfigurableComponent child = (ConfigurableComponent)getChild(i);
       Property prop = child.getProperty(PROP_TARGET_COMPONENT_QUERY);
       if(prop != null) {
-        String propName = prop.getName().toString();
+        String cname = child.getFullName().get(0).toString();
         for(int j=0; j < component.getChildCount(); j++) {
           ConfigurableComponent newChild = (ConfigurableComponent)component.getChild(j);
-          if(newChild.getShortName().equals(child.getShortName()))
+          if(newChild.getShortName().equals(child.getShortName()) ||
+             newChild.getShortName().equals(cname + "|"+ ((ComponentBase)child).getComponentClassName()))
             newChild.addProperty(prop.getName().last().toString(), prop.getValue());
         }
-
       }
     }
 
@@ -344,9 +335,10 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
 
     Map targets = new HashMap();
     for(int i=0; i < getChildCount(); i ++) {
-      ComponentBase child = (ComponentBase)getChild(i);
+//       ComponentBase child = (ComponentBase)getChild(i);
+      ConfigurableComponent child = (ConfigurableComponent)getChild(i);
       if(child.getProperty(PROP_TARGET_COMPONENT_QUERY) != null) {
-        targets.put(("$$CP=" + child.getComponentClassName() + "-" + i), child.getProperty(PROP_TARGET_COMPONENT_QUERY).getValue());
+        targets.put(("$$CP=" + ((ComponentBase)child).getComponentClassName() + "-" + i), child.getProperty(PROP_TARGET_COMPONENT_QUERY).getValue());
       }
     }
 

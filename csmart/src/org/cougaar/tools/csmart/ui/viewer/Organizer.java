@@ -132,7 +132,6 @@ public class Organizer extends JScrollPane {
   // define helper class
   private OrganizerHelper helper;
 
-  private ArrayList societies = new ArrayList();
   private ArrayList recipes = new ArrayList();
 
   // Define actions for use on menus
@@ -502,7 +501,6 @@ public class Organizer extends JScrollPane {
    * 2) the user has selected a society and this method creates an experiment
    * 3) the user has not selected an experiment and plans to attach to running nodes
    */
-
   protected void startConsole() {
     DefaultMutableTreeNode node = getSelectedNode();
     if (node == null) {
@@ -1541,7 +1539,6 @@ public class Organizer extends JScrollPane {
    * Don't allow deleting an experiment that's in the console,
    * because that would make it unrunnable.
    */
-
   protected void deleteExperimentFromDatabase() {
     Map experimentNamesMap = ExperimentDB.getExperimentNames();
     Set keys = experimentNamesMap.keySet();

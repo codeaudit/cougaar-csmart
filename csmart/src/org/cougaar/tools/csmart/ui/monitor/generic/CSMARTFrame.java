@@ -135,7 +135,6 @@ public class CSMARTFrame extends JFrame implements ActionListener
   private JMenuItem attributesMenuItem;
   private JMenuItem scrollToSelectedMenuItem;
   private JMenuItem selectClearMenuItem;
-  private JMenuItem causalMenuItem;
 
   private Hashtable nodeToAttributeFrame; // keep track of attribute frames being shown
 

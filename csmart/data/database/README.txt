@@ -146,6 +146,35 @@ Sub-directories:
                             will convert all csv to a standard line ending format to match the
                             load script's requirements.
 
+                load_communities.sh - This script loads community csv files to the database
+                                      (community_attribute.csv, community_entity_attribute.csv).
+                                      The script only works for community csv files that do not have
+                                      an ASSEMBLY_ID column - (i.e. original 9.2 format). 
+
+                                      Script usage is:
+                                      ./load_communities.sh [db user] [db passwd] [db name] [assembly id]
+
+                                      All rows for the given ASSEMBLY_ID are deleted from the existing 
+                                      community tables, then the script loads the supplied csv files 
+                                      into the 2 respective community tables under the given ASSEMBLY_ID.
+ 
+                                      If no assembly id is provided the script will default to using
+                                      COMM-DEFAULT_CONFIG.  In this case, only newly created experiments
+                                      will get this community information. 
+ 
+                                      To change an existing experiment, or to avoid making this the 
+                                      default for all future experiments, locate the ASSEMBLY_ID in the
+                                      expt_trial_assembly table for your experiment whose ID begins with
+                                      "COMM-" and give that ASSEMBLY_ID as the argument to this script.
+
+                 load_comm.sql - SQL script called by load_communities.sh to load data from csv files.
+                                 Should not be called directly by the user.
+
+                 update_comm.sql - SQL script called by load_communities.sh to delete existing rows
+                                   under the provided ASSEMBLY_ID and associate the provided ASSEMBLY_ID
+                                   with the data loaded from the csv file.  Should not be called directly
+                                   by the user.
+
       
 
 

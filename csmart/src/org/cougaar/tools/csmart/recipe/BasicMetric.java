@@ -74,11 +74,11 @@ public class BasicMetric extends RecipeBase
 
   // Properties to define parameters to MetricsPlugin
   // Directory to saveresults files in - default "."
-  public static final String PROP_RESULTSDIR = "Metrics results directory";
+  //  public static final String PROP_RESULTSDIR = "Metrics results directory";
   public static final String PROP_RESULTSDIR_DFLT = ".";
   // FIXME: Should use org.cougaar.workspace -- see bug 1668
-  public static final String PROP_RESULTSDIR_DESC = "Relative path in which to save results files";
-  private Property propResultsDir;
+  //  public static final String PROP_RESULTSDIR_DESC = "Relative path in which to save results files";
+  //  private Property propResultsDir;
   
   // Verb to search for - default null
   public static final String PROP_TVERB = "Task Verb";

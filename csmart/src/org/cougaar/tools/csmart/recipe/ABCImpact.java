@@ -58,8 +58,8 @@ public class ABCImpact
   implements Serializable, ImpactComponent {
 
   // These should be removed when we switch to ComponentData method
-  private String xmlFileContents;
-  private String societyFileContents;
+  //  private String xmlFileContents;
+  //  private String societyFileContents;
   private String rweFile;
   private String societyFile;
 

@@ -20,12 +20,8 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import java.lang.ArrayIndexOutOfBoundsException;
-
 
 /**
- * RecipeList.java
- *
  * Simple Class used by the UI to obtain all the Recipe Names and classes.
  * Whenever a new recipe is added, its name and class must be added here
  * or it will not appear in the UI.
@@ -33,7 +29,6 @@ import java.lang.ArrayIndexOutOfBoundsException;
  * Created: Wed Mar 27 10:37:01 2002
  *
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
 public class RecipeList {
 

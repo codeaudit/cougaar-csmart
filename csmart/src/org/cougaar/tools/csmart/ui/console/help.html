@@ -8,10 +8,18 @@
 <body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
 
 <h2>Experiment Controller</h2>
-The Experiment Controller is used to control running an experiment. 
-The Experiment Controller is enabled only when an experiment 
-is selected in the workspace.
-<p>The Experiment Controller collects and displays all output from the nodes in the experiment, and provides several facilities for automatically and manually searching this ouput, and notifying the user of error conditions.<br>
+The Experiment Controller (or Console) is used to control a
+running experiment. This experiment may be one started from the
+console, or one that was already running, and to which the console is
+"attached".
+<p>The Experiment Controller collects and displays all output from the
+nodes in the experiment, and provides several facilities for
+automatically and manually searching this ouput, and notifying the
+user of error conditions.<br>
+The console keeps a list of active Application Servers (usually
+defined by the hosts in the selected experiment), which you can add or
+remove from. These servers are regularly polled for new Nodes to which
+you can "attach".<br>
 The Experiment Controller also allows the user to run through all Trials
 automatically, to stop after a Trial completes, or to abort a Trial.
 Trials are defined in the Experiment Builder.
@@ -48,6 +56,14 @@ then this stops the experiment immediately (i.e. it acts the same as "Abort").
 <li>
 Select the "Abort" button to abort the experiment, ending it immediately.</li>
 </ul>
+<li>If CSMART was killed unexpectedly, or another CSMART user started
+the experiment, you may instead select "Attach" to attach to nodes
+that may be available on the selected Application Servers. Once you
+have attached to nodes, all functionality is exactly as if you had
+originally started the Nodes via the "Run" button.</li>
+<li>When you exit the Console, if there are Nodes still running, you
+will be prompted to Kill the Nodes, or simply "detach" from the Nodes,
+leaving them running.</li>
 <p>
 <b>Information from a Running Experiment</b>
 <br>When you start an experiment, a window is created to capture the
@@ -81,7 +97,7 @@ Legend: A legend explaining the colors of the node status button.
 </ul>
 In addition, the "Configuration" 
 window displays the Host-Node-Agent configuration which was specified in
-the Experiment Builder. To see the current dynamic configuration, use
+the Experiment Builder (if you started the experiment from this Console). To see the current dynamic configuration, use
 the Topology view in the Society Monitor.
 <p>
 The experiment time indicates the total time that the experiment has
@@ -150,6 +166,50 @@ exceptions caught at a node will trigger a notification.</li>
 buttons, and continue to search for notify conditions, starting with
 any <i>new</i> output from the nodes.</li>
 </ul>
+</li>
+<li>Application Server
+<br>
+This menu controls how CSMART monitors available Application
+Servers. CSMART will watch a list of Application Servers to see which
+ones are running, and whether any have Nodes running, or have new
+Nodes start on them. For example, if part of your society dynamically starts a
+new Node, a dialog box will appear to notify you.<br>
+The list of Servers which CSMART monitors is usually set by the list
+of Hosts in your experiment (the port is defined by the
+<code>org.cougaar.control.port</code> parameter on your Nodes, which
+defaults to 8484). You
+may View, Add to, or Delete from the servers in this list using menu
+items here. By default, CSMART will poll these host/port combinations
+every 30 seconds (this interval can be modified using the "Set Poll
+Interval" menu item, or disabled by setting it to 0. If disabled, use
+"Refresh" to manually poll the servers). When there are new Nodes running, the Attach button
+will be enabled. By selecting one or more Nodes to attach to, you get
+a Node output window, exactly as if you had started that Node using
+the Run button. You can then individually kill and restart that Node,
+as usual. At that point, hitting "Stop" will stop all the Nodes which
+you are monitoring -- both those started from a local experiment, and 
+those to which you attached.<br>
+<ul>
+<li>View: View a list of the Application Servers being monitored.</li>
+<li>Add...: Add a new host/port combination to monitor.</li>
+<li>Delete....: Remove an Application server from the list to monitor.</li>
+<li>Attach...: (Same as hitting the Attach Button): Attach to Nodes
+not yet attached. You will get a window listing Nodes to attach to,
+from which you can select one or more.</li>
+<li>Kill Any Nodes: Kill any running Nodes on any of the monitored
+AppServers. Warning: This will kill <i>all</i> nodes on those servers,
+so be sure you do not kill someone else's society. This would usually
+be used to clean up before doing a fresh run.</li>
+<li>Refresh: Manually refresh the list of running AppServers (by
+polling all the host/ports in the "View" list), and the list of Nodes
+running on those servers.</li>
+<li>Set Poll Interval: Set the interval (in milliseconds) betwen
+polling the list of App Servers for new Nodes. The default is 30,000
+(30 seconds). Set it to 0 to disable polling.</li>
+<li>Add GLS Client: When attaching to a running experiment, used to
+create a new GLS Client for publishing the OPLAN in this experiment,
+and sending GLS root.</li>
+</ul></li>
 <li>Help</li>
 <ul>
 <li>About Experiment Controller: Display this document.</li>
@@ -168,8 +228,10 @@ file, which can be easily cut and pasted into a text editor.  Displays
 the host location and description and the node description; this
 information can be added to the host and node in the Experiment
 Builder. Also shows the command line arguments and agents as
-originally configured to run on the Node. If you click on the Agent
-name, you can see the components configured to run in that Agent.</li>
+originally configured to run on the Node (if the Node was started from
+this Console). If you click on the Agent
+name, you can see the components configured to run in that Agent (only
+available for Nodes started from this CSMART).</li>
 <li>Machine CPU Usage: Displays CPU usage for all processes on the machine on which the node is running.  (This information is not supported for Windows machines.)</li>
 <li>Node CPU Usage: Displays CPU usage for the Node's processes and child processes.  (This information is not displayed for Windows machines.)</li>
 <li>Utilization History: Displays a graph of the relative load at the node, over time.</li>

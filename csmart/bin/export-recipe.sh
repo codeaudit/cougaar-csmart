@@ -57,9 +57,18 @@ fi
 # Do I need to do more than these tables?
 sed s/'INSERT INTO lib_mod_recipe'/'REPLACE INTO lib_mod_recipe'/ "$1-export.sql" > r-export.sql
 mv r-export.sql "$1-export.sql"
+sed s/'INSERT INTO alib_component'/'REPLACE INTO alib_component'/ "$1-export.sql" > r-export.sql
+mv r-export.sql "$1-export.sql"
+sed s/'INSERT INTO lib_component'/'REPLACE INTO lib_component'/ "$1-export.sql" > r-export.sql
+mv r-export.sql "$1-export.sql"
+sed s/'INSERT INTO lib_pg_attribute'/'REPLACE INTO lib_pg_attribute'/ "$1-export.sql" > r-export.sql
+mv r-export.sql "$1-export.sql"
+
+sed s/'INSERT INTO lib_agent_org'/'REPLACE INTO lib_agent_org'/ "$1-export.sql" > r-export.sql
+mv r-export.sql "$1-export.sql"
 
 # tell user name of export file, to load with -f option
-echo "Recipe has been exported to $1-export.sql. Load into new database with command: mysql -f -u <user> -p<password> <db> $1-export.sql"
+echo "Recipe has been exported to $1-export.sql. Load into new database with command: mysql -f -u <user> -p<password> <db> < $1-export.sql"
 echo "Note the use of the -f option, to ignore errors about duplicate rows"
 
 # get the names of the queries to copy

@@ -13,11 +13,12 @@ In particular, it adds the following plugins:<br>
 <code>org.cougaar.core.adaptivity.ConditionServiceProvider</code>
 <code>org.cougaar.core.adaptivity.OperatingModeServiceProvider</code>
 <code>org.cougaar.core.adaptivity.OperatingModePolicyManager</code>
-<code>org.cougaar.core.adaptivity.PlaybookManager(&lt;agent
-name&gt;-plays.txt)</code><br>
+<code>org.cougaar.core.adaptivity.PlaybookManager(&lt;plays file&gt;)</code><br>
 - where you must have put the Plays file with that name on all
-relevant machines, in a location on the <code>org.cougaar.config.path</code><br>
-And finally, it can optionally include the <code>AEViewerServlet</code>, using the
+relevant machines, in a location on the
+<code>org.cougaar.config.path</code>. See below for details.<br>
+<br>
+And finally, this recipe can optionally include the <code>AEViewerServlet</code>, using the
 parameter described below.
 Note that this recipe does not add the <code>PolicyInjectorPlugin</code>.<br><br>
 
@@ -33,6 +34,11 @@ An Adaptivity Support Recipe contains the following parameters:<br>
 	  <td><a href="#TARGET_QUERY">Target Component Selection Query</a></td>
 	  <td>String</td>
 	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#PLAYS">Playbook File</a></td>
+	  <td>String</td>
+	  <td>Name of file of plays to provide to Playbook Manager</td>
 	</tr>
 	<tr>
 	  <td><a href="#SERVLET">AEViewerServlet</a></td>
@@ -56,6 +62,19 @@ Users should create their own queries in a file called
 Config Path: in the directory from which you run CSMART, or in
 CIP/configs/common, for example.<br>
 <em>IMPORTANT: All recipes query names must begin with "recipeQuery"!</em><br>
+
+<a name="PLAYS"><h3>Playbook File</h3></a>
+This property specifies the file that will contain plays for the
+Adaptivity Engine. 
+The named file must be on all relevant machines, in a location on the
+<code>org.cougaar.config.path</code>. The name of the plays file is as
+specified in the Property. However, if the name you specify (as in the
+default) includes the special string "&lt;agent&gt;", then each Agent
+will use a different playbook file, whose name contains the Agent
+name. For example, if this recipe were added to the NCA agent with the
+default value for the Plays file name, the entry for the playbook
+manager in that agent would be:
+<code>org.cougaar.core.adaptivity.PlaybookManager(NCA-plays.txt)</code>.<br>
 
 <a name="SERVLET"><h3>AEViewerServlet</h3></a>
 The AEViewerServlet is used for debugging the Adaptivity Support within an

@@ -28,10 +28,12 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Iterator;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
@@ -52,6 +54,9 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 import org.cougaar.util.TimeSpan;
 
+/**
+ * An AssetData loaded from the database
+ **/
 public class AssetDBComponent
   extends ModifiableConfigurableComponent
   implements AssetComponent {
@@ -360,7 +365,14 @@ public class AssetDBComponent
         String query = DBUtils.getQuery(QUERY_PG_ID, substitutions);
         ResultSet rs = stmt.executeQuery(query);
         while (rs.next()) {
-          pgAttrLibIds.add(rs.getString(1));
+	  String res = rs.getString(1);
+	  if(res == null || res.equals("")) {
+	    if (log.isWarnEnabled()) {
+	      log.warn("addPropGroups for " + agentName + " got empty PG ID using subs: " + substitutions);
+	    }
+	    continue;
+	  }
+          pgAttrLibIds.add(res);
         }
 
         // get pg name and attribute names and types for each property group
@@ -390,7 +402,14 @@ public class AssetDBComponent
 	  // FIXME: Why is attrType unused here? ATTRIBUTE_TYPE col from lib_pg_attr
 	  // It is String, ClusterIdentifier, etc
 	  //          String attrType = pgAttr.getAttrType();
-          String aggregateType = pgAttr.getAggregateType();
+	  String aggregateType = "SINGLE";
+	  if (pgAttr == null) {
+	    if (log.isWarnEnabled()) {
+	      log.warn("addPropGroups for " + agentName + " got null PGAttr for ID " + pgAttrLibId + " using subs: " + substitutions);
+	    }
+	  } else {
+	    aggregateType = pgAttr.getAggregateType();
+	  }
           query = DBUtils.getQuery(QUERY_PG_VALUES, substitutions);
           rs = stmt.executeQuery(query);
           while (rs.next()) {
@@ -420,9 +439,9 @@ public class AssetDBComponent
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Exception", e);
+        log.error("Exception adding PropGroups for " + agentName + ": ", e);
       }
-      throw new RuntimeException("Error" + e);
+      throw new RuntimeException("Error adding PropGroups for " + agentName + ": " + e);
     }
     // after creating all the property group data
     // create the property groups, initialize them and add them as children
@@ -443,7 +462,6 @@ public class AssetDBComponent
    * for each property group and attribute respectively.
    * TODO: save start and end dates?
    */
-
   private void addPGAttributeData(String attrLibId, Object value,
                                   Timestamp startDate, Timestamp endDate) {
     PGAttr pgAttr = (PGAttr)pgAttributes.get(attrLibId);
@@ -463,6 +481,7 @@ public class AssetDBComponent
     pgd.addProperty(pgPropData);
   }
 
+  // Get the Asset class (ie MilitaryOrganization, which is the default)
   private String queryOrgClass() {
     String orgClass = null;
     substitutions.put(":agent_name", agentName);
@@ -472,7 +491,7 @@ public class AssetDBComponent
 	Statement stmt = conn.createStatement();	
 	String query = DBUtils.getQuery(QUERY_AGENT_ASSET_CLASS, substitutions);
 	ResultSet rs = stmt.executeQuery(query);
-	while (rs.next()) {
+	if (rs.next()) {
 	  orgClass = rs.getString(1);	  
 	}
 	rs.close();
@@ -483,11 +502,16 @@ public class AssetDBComponent
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Exception", e);
+        log.error("queryOrgClass: exception getting asset class: ", e);
       }
-      throw new RuntimeException("Error" + e);
     }
-    return orgClass;
+    if (orgClass != null)
+      return orgClass;
+    else {
+      if (log.isWarnEnabled())
+	log.warn("Found no asset class for " + agentName + ". Default is MilitaryOrganization");
+      return "MilitaryOrganization";
+    }
   }
 
   /**

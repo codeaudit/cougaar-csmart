@@ -119,7 +119,7 @@ public class AgentCDataComponent
         ComponentBase plugin = new ComponentBase(childCData[i].getName(),
                                            childCData[i].getClassName(), childCData[i].getPriority(), childCData[i].getType());
         plugin.initProperties();
-	plugin.setComponentType(childCData[i].getType());
+	//	plugin.setComponentType(childCData[i].getType());
         Object[] parameters = childCData[i].getParameters();
         for (int j = 0; j < parameters.length; j++) 
 	  //          plugin.addProperty(ComponentBase.PROP_PARAM + j, parameters[j]);

@@ -39,7 +39,6 @@ import org.cougaar.tools.csmart.ui.monitor.generic.UIProperties;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 
-import att.grappa.Node;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 

@@ -36,19 +36,13 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.InternalFrameListener;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DefaultEditorKit;
 
 import com.klg.jclass.chart.JCChart;
 
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
-import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.core.property.Property;
-
-import org.cougaar.tools.csmart.experiment.HostComponent;
-import org.cougaar.tools.csmart.experiment.Experiment;
-import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 import org.cougaar.util.log.Logger;
@@ -116,7 +110,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private ConsoleNodeOutputFilter filter;
   private RemoteProcess remoteNode;
   private CSMARTConsole console;
-  private Experiment experiment;
 
   private transient Logger log;
 
@@ -379,7 +372,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
    * ctrl-n notify
    * ctrl-o notify next
    */
-
   private void initKeyMap(ConsoleTextPane pane) {
     InputMap im = pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
     ActionMap am = pane.getActionMap();
@@ -404,7 +396,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
    */
   public void displayAbout() {
 
-    // clone the agent names so we don't modify them when we add the NodeAgent
     ArrayList agentNames = 
       (ArrayList)console.getNodePropertyValue(nodeName, "AgentNames");
 
@@ -413,6 +404,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     // so we won't display that portion of 
     // the info window
     if (agentNames != null) {
+      // clone the agent names so we don't modify them when we add the NodeAgent
       agentNames = (ArrayList)agentNames.clone();
       agentNames.add(0, nodeName);
     }
@@ -939,6 +931,51 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                   "Information: " + agentName,
                                   JOptionPane.PLAIN_MESSAGE);
 
+  }
+
+  /**
+   * Over-ride standard dispose to ensure everything cleaned up. 
+   * In particular, clean up the ConsoleNodeListener,
+   * and recurse to the TextPane and from there to the document
+   **/
+  public void dispose() {
+    // FIXME: Do this first? Will it complain if called twice?
+    super.dispose();
+    // Clean up the listener (and log file)
+    // before the text pane (which handles the document)
+    if (listener != null) {
+      // FIXME: Do this?
+//       if (log.isDebugEnabled())
+// 	log.debug("CInternal.dipose had non-null listener to cleanUp");
+      listener.cleanUp();
+      listener = null;
+    }
+    if (consoleTextPane != null) {
+//       if (log.isDebugEnabled()) 
+// 	log.debug("CInternal had non-null pane to dispose");
+      // recurse to the text pane
+      // this also recurses to the document
+      // which means the ConsoleNodeListener should be gone too
+      // but rely on someone else to do this?
+      consoleTextPane.cleanUp();
+      consoleTextPane = null;
+    }
+    filter = null;
+    remoteNode = null;
+    console = null;
+
+    // Remove listeners
+    InternalFrameListener[] lists = getInternalFrameListeners();
+    for (int i = 0; i < lists.length; i++)
+      removeInternalFrameListener(lists[i]);
+
+    // FIXME
+    // Ancestor listener? ContainerListener? FocusListener? ComponentListener?
+
+    removeAll();
+//     if (log.isDebugEnabled()) {
+//       log.debug("In CInternal.dispose");
+//     }
   }
 
   private void readObject(ObjectInputStream ois)

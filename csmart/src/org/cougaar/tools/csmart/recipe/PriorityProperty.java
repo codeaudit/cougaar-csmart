@@ -20,7 +20,6 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import java.lang.IllegalArgumentException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,15 +31,13 @@ import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
- * PriorityProperty.java
+ * PriorityProperty: Legitimate ComponentPrioritys come from <code>ComponentDescription</code>
  *
  *
  * Created: Wed May 15 14:17:33 2002
  *
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
-
 public class PriorityProperty extends ConfigurableComponentProperty {
   public PriorityProperty (ConfigurableComponent c, String name, Object value){
     super(c, name, value);
@@ -82,7 +79,7 @@ public class PriorityProperty extends ConfigurableComponentProperty {
 
       } catch(IllegalArgumentException e) {
         if(log.isErrorEnabled()) {
-          log.error("Unknown Priority Level", e);
+          log.error("Unknown Priority Level: ", e);
         }
         availableProperties = Collections.EMPTY_SET;
       }

@@ -248,7 +248,6 @@ public class PropertyTable extends JTable {
    * Pops up a menu with Help and Delete actions
    * for the property in the row in which the mouse is located.
    */
-
   public class MyMouseAdapter extends MouseAdapter {
     JTable table;
     JPopupMenu menu;
@@ -270,7 +269,6 @@ public class PropertyTable extends JTable {
      * Listeners on the configurable components,
      * in PropertyEditorPanel actually update the UI.
      */
-
     private AbstractAction deleteAction =
       new AbstractAction("Delete") {
           public void actionPerformed(ActionEvent e) {

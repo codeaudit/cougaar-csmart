@@ -57,8 +57,6 @@ public class ParameterInsertionRecipe extends RecipeBase
   private Property propPluginName;
   private Property propParameter;
 
-  private boolean editable = true;
-
   public ParameterInsertionRecipe() {
     super("Parameter Insertion Recipe");
   }

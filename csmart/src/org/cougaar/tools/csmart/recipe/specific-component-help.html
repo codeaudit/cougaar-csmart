@@ -46,7 +46,7 @@ A Specific Component Recipe contains the following parameters:
 	<tr>
 	  <td><a href="#TYPE">Type of Insertion</a></td>
 	  <td>String</td>
-	  <td>One of: "plugin", "node binder", or "agent binder"</td>
+	  <td>Any valid insertion point</td>
 	</tr>
     </table>  
     <br><br>
@@ -95,7 +95,8 @@ CIP/configs/common, for example.<br>
 <em>IMPORTANT: All recipes query names must begin with "recipeQuery"!</em><br>
 
 <a name="TYPE"><h3>Type Of Insertion</h3></a>
-Specifies the type of component: "plugin", "agent binder", or "node binder".
+Specifies the type of component: "plugin", "agent binder", or "node
+binder", or any valid insertion point (Node and Agent disallowed).
 
 <a name="VALUE"><h3>Value <i>X</i></h3></a>
 There will be one value parameter for every Argument added with the

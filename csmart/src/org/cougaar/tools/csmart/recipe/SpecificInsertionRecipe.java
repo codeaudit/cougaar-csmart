@@ -109,6 +109,7 @@ public class SpecificInsertionRecipe extends RecipeBase
     propArgs = addProperty(PROP_ARGS, PROP_ARGS_DFLT);
     propArgs.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
         public void propertyValueChanged(PropertyEvent e) {
+	  //	  log.debug("propArgs listener fired with old val " + e.getPreviousValue().toString() + " and new: " + e.getProperty().getValue().toString() + " for Property " + e.getProperty().getName().toString(), new Throwable());
           updatePropCount((Integer)e.getProperty().getValue());
         }
       });
@@ -154,22 +155,61 @@ public class SpecificInsertionRecipe extends RecipeBase
   private void updatePropCount(Integer newCount) {
     int count = newCount.intValue();
 
-    // For now delete all props and start fresh.
-    // Annoying for the user, but it works.
-    if( variableProps != null && count != variableProps.length ) {
-      for(int i=0; i < variableProps.length; i++) {
-        removeProperty(variableProps[i]);
+    if (count < 0)
+      count = 0;
+
+    if (variableProps != null && count == variableProps.length)
+      return;
+    if (variableProps == null || variableProps.length == 0)
+      variableProps = null;
+
+    // If the user reduced the desired number
+    if( variableProps != null && count < variableProps.length ) {
+      if (log.isDebugEnabled())
+	log.debug("removing extra properties: " + (variableProps.length - count));
+      // First, remove all the excess properties
+      for(int i=variableProps.length; i > count; i--) {
+        removeProperty(variableProps[i - 1]);
       }
+
+      // If they set the number to 0, we're done
+      if (count == 0) {
+	variableProps = null;
+	return;
+      }
+
+      // Otherwise, copy the properties into a new, smaller array
+      Property[] newVariableProps = new Property[count];
+      System.arraycopy(variableProps, 0, newVariableProps, 0, count);
+      variableProps = newVariableProps;
+      return;
+    } else if (variableProps != null && count > variableProps.length) {
+      // User is adding properties
+      if (log.isDebugEnabled())
+	log.debug("adding additional properties  " + (count - variableProps.length));
+      // Move old ones to the bigger array
+      Property[] newVariableProps = new Property[count];
+      System.arraycopy(variableProps, 0, newVariableProps, 0, variableProps.length);
+      // Then create the new ones
+      for (int i = variableProps.length; i < count; i++) {
+	newVariableProps[i] = addProperty("Value " + (i+1), "");
+	((Property)newVariableProps[i]).setToolTip("Value for Argument " + (i+1));
+      }
+      variableProps = newVariableProps;
+      return;
+    } else {
+      // Didnt have any before - create all new from scratch
+      if (log.isDebugEnabled())
+	log.debug("Had no variableProps. Adding " + count);
+      variableProps = new Property[count];
+
+      // Note: If you feel you want to change the name of these
+      // properties, see the "Hack Note" above.
+      for(int i=0; i < count; i++) {
+	variableProps[i] = addProperty("Value " + (i+1), "");
+	((Property)variableProps[i]).setToolTip("Value for Argument " + (i+1));
+      } 
     }
-
-    variableProps = new Property[count];
-
-    // Note: If you feel you want to change the name of these
-    // properties, see the "Hack Note" above.
-    for(int i=0; i < count; i++) {
-      variableProps[i] = addProperty("Value " + (i+1), "");
-      ((Property)variableProps[i]).setToolTip("Value for Argument " + (i+1));
-    }      
   }
 
   public ComponentData modifyComponentData(ComponentData data, PopulateDb pdb) {

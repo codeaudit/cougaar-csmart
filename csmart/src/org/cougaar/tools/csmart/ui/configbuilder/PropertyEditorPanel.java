@@ -130,11 +130,11 @@ public class PropertyEditorPanel extends JPanel
     PropGroupData.ITEM_IDENTIFICATION,
     PropGroupData.TYPE_IDENTIFICATION,
     PropGroupData.CLUSTER,
+    PropGroupData.ORGANIZATION,
+    PropGroupData.MILITARYORG,
     PropGroupData.ENTITY,
     PropGroupData.COMMUNITY,
-    PropGroupData.MILITARYORG,
     PropGroupData.ASSIGNMENT,
-    PropGroupData.ORGANIZATION,
     PropGroupData.MAINTENANCE,
     PropGroupData.CSSCAPABILITY
   };
@@ -232,7 +232,8 @@ public class PropertyEditorPanel extends JPanel
   private Object[] componentCollectionRecipeMenuItems = {
     addAgentAction,
 //     addBinderAction,
-    addPluginAction,
+    addPluginAction
+    // FIXME: Maybe do addComponent here?
 //     addRelationshipAction,
 //     addPropertyGroupAction
   };
@@ -777,6 +778,10 @@ public class PropertyEditorPanel extends JPanel
       if (o instanceof BinderComponent) {
         BinderComponent binder = (BinderComponent)o;
         String name = ((BaseComponent)binder).getShortName();
+	if (name == null)
+	  continue;
+	if (name.trim().equals(""))
+	  continue;
         // if name is prefixed with an agentname|, strip it off
         int index = name.indexOf('|');
         if (index != -1)
@@ -792,34 +797,20 @@ public class PropertyEditorPanel extends JPanel
     for (Iterator i = dbBinderClasses.iterator(); i.hasNext(); ) {
       String dbBinderClass = (String)i.next();
       if (!binderClasses.contains(dbBinderClass)) {
-        binderNames.add(dbBinderClass); // binder names & classes are the same
         binderClasses.add(dbBinderClass);
       }
     }
-    ArrayList sortedNames = (ArrayList)binderNames.clone();
-    Collections.sort(sortedNames);
-    String name = 
-      (String)ComboDialog.showDialog(this, "Select Binder or Enter New Name", new Vector(sortedNames));
-    if (name == null)
+
+    ArrayList sortedClasses = (ArrayList)binderClasses.clone();
+    Collections.sort(sortedClasses);
+    String className = 
+      (String)ComboDialog.showDialog(this, "Select Binder or Enter New Class", new Vector(sortedClasses));
+    if (className == null)
       return;
-    name = name.trim();
-    if (name.length() == 0)
+    className = className.trim();
+    if (className.length() == 0)
       return;
-    String className = null;
-    int index = binderNames.indexOf(name);
-    if (index > -1 && index < binderNames.size())
-      className = (String)binderClasses.get(index);
-    else {
-      className = 
-      (String)JOptionPane.showInputDialog(this, "Enter Binder Full Class",
-                                          "Binder Class",
-                                          JOptionPane.QUESTION_MESSAGE,
-                                          null, null, className);
-      if (className == null) return;
-      className = className.trim(); // trim white space
-      if (className.length() == 0) return;
-    }
-    BinderComponent binder = new BinderBase(name, className, null);
+    BinderComponent binder = new BinderBase(className, className, null);
     addBaseComponent(binder);
     binder.setComponentType(ComponentData.AGENTBINDER);
   }
@@ -866,6 +857,11 @@ public class PropertyEditorPanel extends JPanel
       if (o instanceof PluginComponent) {
         PluginComponent plugin = (PluginComponent)o;
         String name = ((BaseComponent)plugin).getShortName();
+	if (name == null)
+	  continue;
+	name = name.trim();
+	if (name.equals(""))
+	  continue;
         // if name is prefixed with an agentname|, strip it off
         int index = name.indexOf('|');
         if (index != -1)
@@ -881,35 +877,22 @@ public class PropertyEditorPanel extends JPanel
     for (Iterator i = dbPluginClasses.iterator(); i.hasNext(); ) {
       String dbPluginClass = (String)i.next();
       if (!pluginClasses.contains(dbPluginClass)) {
-        pluginNames.add(dbPluginClass); // name and class are the same
         pluginClasses.add(dbPluginClass);
       }
     }
-    ArrayList sortedNames = (ArrayList)pluginNames.clone();
-    Collections.sort(sortedNames);
-    String name = 
-      (String)ComboDialog.showDialog(this, "Select Plugin or Enter New Name", new Vector(sortedNames));
-    if (name == null)
+
+    ArrayList sortedClasses = (ArrayList)pluginClasses.clone();
+    Collections.sort(sortedClasses);
+    String className =
+      (String)ComboDialog.showDialog(this, "Select Plugin or Enter New Class", new Vector(sortedClasses));
+    if (className == null)
       return;
-    name = name.trim();
-    if (name.length() == 0)
+    className = className.trim();
+    if (className.length() == 0)
       return;
-    String className = null;
-    int index = pluginNames.indexOf(name);
-    if (index > -1 && index < pluginNames.size())
-      className = (String)pluginClasses.get(index);
-    else {
-      className =
-        (String)JOptionPane.showInputDialog(this, "Enter Plugin Full Class",
-                                            "Plugin Class",
-                                            JOptionPane.QUESTION_MESSAGE,
-                                            null, null, className);
-      if (className == null) return;
-      className = className.trim(); // trim white space
-      if (className.length() == 0) return;
-    }
+    
     PluginComponent plugin = 
-      (PluginComponent)new PluginBase(name, className, null);
+      (PluginComponent)new PluginBase(className, className, null);
     addBaseComponent(plugin);
   }
 
@@ -922,7 +905,17 @@ public class PropertyEditorPanel extends JPanel
     DefaultMutableTreeNode selNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     BaseComponent parentBC = (BaseComponent)nodeToComponent.get(selNode);
+    if (parentBC.getChild(bc.getFullName()) != null) {
+      if (log.isDebugEnabled()) {
+        log.debug("Duplicate Names, adjusting....");
+      }
+      bc.setName(bc.getFullName() + String.valueOf(parentBC.getChildCount()));
+    } 
+
     parentBC.addChild(bc);
+    if (log.isDebugEnabled()) {
+      log.debug("Adding Child: " + bc.getFullName());
+    }
     DefaultMutableTreeNode newNode = createTreeNode(bc, selNode);
     bc.initProperties();
     tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(newNode));
@@ -1003,7 +996,6 @@ public class PropertyEditorPanel extends JPanel
   /**
    * Add parameters for well know properties.
    */
-
   private void setParameters(ModifiableComponent pg, int pgIndex) {
     switch (pgIndex) {
     case ITEM_IDENTIFICATION:
@@ -1021,14 +1013,20 @@ public class PropertyEditorPanel extends JPanel
     case ENTITY:
       break;
     case COMMUNITY:
-      pg.addProperty("TimeSpan (TimeSpan)", "");
-      pg.addProperty("Communities (??)", "");
+//       pg.addProperty("TimeSpan (TimeSpan)", "");
+//       pg.addProperty("Communities (??)", "");
       break;
     case MILITARYORG:
       break;
     case ASSIGNMENT:
       break;
     case ORGANIZATION:
+      // Service (Service)
+      pg.addProperty("Service (Service)", "");
+      // Agency (Agency)
+      pg.addProperty("Agency (Agency)", "");
+      // Roles (Collection<Role>)
+      pg.addProperty("Roles (Role)", "");
       break;
     case MAINTENANCE:
       break;
@@ -1082,6 +1080,7 @@ public class PropertyEditorPanel extends JPanel
                                             null, null, "String");
       type = type.trim();
       name = name + " (" + type + ")";
+      // FIXME: How do we handle getting a PG MultiVal?
     }
 
     String value =
@@ -1093,10 +1092,21 @@ public class PropertyEditorPanel extends JPanel
     value = value.trim(); // trim white space
     if (value.length() == 0) return;
 
-    if (getName) {
-      cc.addProperty(name, value);
+    // Allow lists
+    Object realValue = null;
+    if (value.startsWith("[") && value.endsWith("]")) {
+      realValue = PropertyHelper.convertStringToArrayList(value);
+    } else if (value.startsWith("{") && value.endsWith("}")) {
+      realValue = PropertyHelper.convertStringToArray(value);
     } else {
-      cc.addProperty(generateName((ConfigurableComponent)cc), value);
+      realValue = value;
+    }
+
+    if (getName) {
+      // FIXME: See if the name is unique. If not, then what?
+      cc.addProperty(name, realValue);
+    } else {
+      cc.addProperty(generateName((ConfigurableComponent)cc), realValue);
     }
   }
 
@@ -1144,10 +1154,20 @@ public class PropertyEditorPanel extends JPanel
     value = value.trim(); // trim white space
     if (value.length() == 0) return;
 
-    if (getName) {
-      cc.addProperty(name, value);
+    // Allow lists
+    Object realValue = null;
+    if (value.startsWith("[") && value.endsWith("]")) {
+      realValue = PropertyHelper.convertStringToArrayList(value);
+    } else if (value.startsWith("{") && value.endsWith("}")) {
+      realValue = PropertyHelper.convertStringToArray(value);
     } else {
-      cc.addProperty(generateName((ConfigurableComponent)cc), value);
+      realValue = value;
+    }
+
+    if (getName) {
+      cc.addProperty(name, realValue);
+    } else {
+      cc.addProperty(generateName((ConfigurableComponent)cc), realValue);
     }
   }
 
@@ -1195,7 +1215,6 @@ public class PropertyEditorPanel extends JPanel
    * matching tree nodes to components.
    * Return the new tree node.
    */
-
   private PropertyTreeNode createTreeNode(BaseComponent component,
                                           DefaultMutableTreeNode parentNode) {
     PropertyTreeNode newNode = new PropertyTreeNode(component.getFullName());

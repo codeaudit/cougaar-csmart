@@ -25,7 +25,6 @@ import java.net.URL;
 
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
-import java.net.URL;
 
 /**
  * Parent interface for all Recipes to a CSMART system.

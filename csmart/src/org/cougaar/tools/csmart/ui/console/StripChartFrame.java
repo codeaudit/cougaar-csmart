@@ -34,8 +34,6 @@ import javax.swing.event.*;
 
 public class StripChartFrame extends JInternalFrame {
   JCChart chart;
-  private StripChartSource data;
-  private JCAxis xaxis;
 
   public StripChartFrame(JCChart chart, String title) {
     super(title + ":Load",   // title

@@ -22,7 +22,6 @@
 package org.cougaar.tools.csmart.util;
 
 import java.io.Serializable;
-import java.lang.IllegalArgumentException;
 
 /**
  * An argument name (a String), and its value, an arbitrary object (possibly null).

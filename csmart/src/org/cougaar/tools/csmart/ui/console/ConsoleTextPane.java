@@ -28,20 +28,22 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.CaretListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Position;
+
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+
 import org.cougaar.util.log.Logger;
 
 /**
  * A text pane that contains a ConsoleStyledDocument and supports
  * searching and highlighting that document.
  */
-
 public class ConsoleTextPane extends JTextPane {
   ConsoleStyledDocument doc;
   String searchString;
@@ -127,7 +129,6 @@ public class ConsoleTextPane extends JTextPane {
    * the highlighting is automatically applied to any new text added,
    * how to avoid this?
    */
-
   private boolean worker(String s, Position startPosition, boolean search) {
     s = s.toLowerCase();
     int startOffset = startPosition.getOffset();
@@ -165,7 +166,6 @@ public class ConsoleTextPane extends JTextPane {
    * Search is case insensitive.
    * @param s string to watch for in node output
    */
-
   public void setNotifyCondition(String s) {
     clearNotify();
     if (s == null) {
@@ -184,7 +184,6 @@ public class ConsoleTextPane extends JTextPane {
   /**
    * Return notify condition in use.
    */
-
   public String getNotifyCondition() {
     return notifyCondition;
   }
@@ -194,7 +193,6 @@ public class ConsoleTextPane extends JTextPane {
    * notify conditions with new text appended after this method is called.
    * Reset the count.
    */
-
   public void clearNotify() {
     notifyPosition = null;
     if (notifyHighlightReference != null)
@@ -207,7 +205,6 @@ public class ConsoleTextPane extends JTextPane {
    * node.  This number is reset when a new notify string is specified
    * or when the node status is reset (via clearNotify).
    */
-
   public int getNotifyCount() {
     return notifyCount;
   }
@@ -220,7 +217,6 @@ public class ConsoleTextPane extends JTextPane {
    * Search is case insensitive.
    * @return true if notify string is found and false otherwise
    */
-
   public boolean notifyNext() {
     if (notifyCondition != null && notifyPosition != null)
       return worker(notifyCondition, notifyPosition, false);
@@ -235,7 +231,6 @@ public class ConsoleTextPane extends JTextPane {
    * @param s string to search for
    * @return true if string found and false otherwise
    */
-
   public boolean search(String s) {
     searchString = s;
     if (searchPosition == null)
@@ -315,7 +310,6 @@ public class ConsoleTextPane extends JTextPane {
    * Listen for text added to the displayed document, and highlight
    * any text matching the notify condition.
    */
-
   class MyDocumentListener implements DocumentListener {
 
     public void insertUpdate(DocumentEvent e) {
@@ -339,7 +333,7 @@ public class ConsoleTextPane extends JTextPane {
         }
       } catch (BadLocationException ble) {
         if(log.isErrorEnabled()) {
-          log.error("Exception", ble);
+          log.error("DocumentListener got Exception", ble);
         }
       }
     }
@@ -349,6 +343,38 @@ public class ConsoleTextPane extends JTextPane {
 
     public void removeUpdate(DocumentEvent e) {
     }
+
+  }
+
+  /**
+   * When you're done with this component, call this to free
+   * up resources. This recurses down to the document itself.
+   **/
+  public void cleanUp() {
+    if (log.isDebugEnabled())
+      log.debug("TextPane.cleanUp");
+    clearNotify();
+    searchHighlight = null;
+    notifyHighlight = null;
+    if (doc != null) {
+//       if (log.isDebugEnabled())
+// 	log.debug(".. had a doc");
+      if (docListener != null) {
+// 	if (log.isDebugEnabled())
+// 	  log.debug(".. had a doc listener to remove");
+	doc.removeDocumentListener(docListener);
+	docListener = null;
+      }
+      // Recurse to document? Only if not re-using...
+      doc.cleanUp();
+      doc = null;
+    }
+    statusButton = null;
+    CaretListener[] lists = getCaretListeners();
+    for (int i = 0; i < lists.length; i++)
+      removeCaretListener(lists[i]);
+    removeNotify();
+    removeAll();
 
   }
 

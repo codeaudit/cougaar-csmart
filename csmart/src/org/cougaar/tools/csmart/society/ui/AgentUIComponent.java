@@ -56,7 +56,6 @@ public class AgentUIComponent
    */
   public AgentUIComponent(String name) {
     super(name);
-    this.name = name;
     createLogger();
     if(log.isDebugEnabled()) {
       log.debug("Creating Agent: " + name);

@@ -1,24 +1,52 @@
 <HTML><HEAD><TITLE>Component Collection Recipe</TITLE></HEAD>
 <BODY><H1>Component Collection Recipe</H1>
-<h2><font color="red">Documentation in progress.....</font></h2>
 <p>With this recipe, you may build up an arbitrary collection of 
-Agents and Plugins to add to a society. Agents will be available for 
+Components to add to a society. Agent Components will be available for 
 assignment to Nodes as normal. Other Components will be inserted in
-the Agents or NodeAgents you specify using the target query. Each
+the Agents or NodeAgents you specify using the target query. <br>
+Off the top-level Node, you can specify the general target for all
+non-Agent components you add with this recipe (default is to add them
+nowhere). Later, when you add other non-Agent components, they will be
+added to all locations specified by this query.  Each
 component can have its own Target Query, by selecting the "Override
-Parent Target" menu option. Target queries are SQL queries defined in
+Parent Target" popup menu option off of that component in the Tree on
+the left. In this case, the component will be added only where this
+override target query specifies. Target queries are SQL queries defined in
 CIP/configs/common/PopulateDb.q for the built-in queries, or in the
 user-created file "recipeQueries.q" which should go in a similar
-location. 
-Note that Agents created with this recipe
-will not have any Oplan related information in the database, if that
-is important.
-<p>To add an Agent, use the pop-up menu on the root folder.
+location. Note that Agents are assigned using the Experiment Builder
+as normal. <br>
+<p>When adding a Component at the top level, to be added where your
+target query specifies, although the menu item says "Add Plugin", you
+can in fact add any arbitrary (non-Agent) component you like.<br>
+<br>
+<i>Note: The agents do not contain an OrgAsset by default.  This will
+result in the agent not being visible from the Society Monitor.  If
+an OrgAsset is added, be sure to add the OrgData
+(<code>org.cougaar.mlm.plugin.organization.OrgDataPlugin</code>) and
+OrgReport
+(<code>org.cougaar.mlm.plugin.organization.OrgReportPlugin</code>)
+plugins, and include a ClusterPG, ItemIdentificationPG, and
+TypeIdentificationPG on your Asset. See below.</i>
+<br>
+<p>Within an Agent, there are 4 Categories in which you may add
+components: Plugins, Binders (of Plugins), Other Components (whose
+insertion point falls within the Agent), and Asset Data (ie Entity or
+Organization Assets).
+<br>
+<p>To add an Agent, use the pop-up menu on the top-level folder.
 <p>To remove an Agent, use the pop-up menu on the Agent folder.
-<p>To add a Plugin, or Other Component, use the pop-up menu on
-the root folder or the Agent folder, depending on where you want to
-add it. The drop-down lists of components are editable, and are
+<p>To add a Plugin, Binder, or Other Component, use the pop-up menu on
+that folder to add it within an Agent, or off the top-level folder to
+add a Component to be added to other Agents. The drop-down lists of components are editable, and are
 populated from the list of Plugins / Binders currently known in the database.
+<p>Components within agents now have a <tt>Priority</tt> field.  The priority
+indicates the load priority of the component in it's container relative to
+other children components loaded at the same time at the same containment point.
+
+The default component priority is: <tt>COMPONENT</tt>, and for Binders
+it should usually be <tt>BINDER</tt>.<br>
+
 <p>To edit a parameter in your Asset, edit the values in the right pane.
 Within an Asset, you may add Relationships or
 PropertyGroups. For each case, to add another one, use the
@@ -28,19 +56,11 @@ Component, use the pop-up menu on that component. When adding
 parameters to these components, parameters are automatically named so
 that they will be added at runtime in the order in which you add them
 here, named "param-0", "param-1", etc.
-<p>When adding parameters to PropertyGroups,
-you will be asked for a parameter name. Note that the names of
-parameters of Property Groups include the type of Object used to fill
-in that value. For example, OrganizationPG has one Parameter, whose name is:<br>
-Roles (Role)<br>
-and whose value is a list, something like "TransportationProvider, StrategicTransportationProvider". This means that the slot in
-the PropertyGroup is called "Roles", and the Java Class of each object
-is "Role". In this case, there are many values, so the slot contains a
-Collection.<br>
-The "INI" equivalent lines would be something like:<br>
-<pre>[OrganizationPG]
-Roles                    Collection&lt;Role&gt;       "TransportationProvider, StrategicTransportationProvider"
-</pre><br>
+<br>
+<b>General Editing</b>
+<i>To specify multiple values for a parameter, you
+<b>must</b> enclose the list of comma-separated values in curly-braces
+or square brackets.</i><br>
 <b>Spelling errors, referring to a non-existent field
 or Property Group, or other errors will not be noticed until runtime.</b>
 <p>To remove a parameter, use the pop-up menu on that parameter. Note
@@ -48,10 +68,62 @@ that the remaining parameters will continue to be added according to
 the numbers given in their names.
 <p>Times should be specified in a standard Java parsable format, eg:
 MM/DD/YY HH:MI AM.
-<p>Elements in a collection should be separated by a comma and a space.
-<p>Components within agents now have a <tt>Priority</tt> field.  The priority
-indicates the load priority of the component in it's container relative to
-other children components loaded at the same time at the same containment point.
+<p>Elements in a collection should be separated by a comma and a
+space, and the entire list enclosed by curly-braces or square brackets.
+<br><br>
 
-The default component priority is: <tt>COMPONENT</tt>
+<b>AssetData</b>
+<p>When adding parameters to PropertyGroups,
+you will be asked for a parameter name and a type (Java class). Note that the names of
+parameters of Property Groups, once displayed, include the type of Object used to fill
+in that value. For example, OrganizationPG has one Parameter, whose name is:<br>
+Roles (Role)<br>
+and whose value is a list, something like "{TransportationProvider, StrategicTransportationProvider}". This means that the slot in
+the PropertyGroup is called "Roles", and the Java Class of each object
+is "Role". In this case, there are many values enclosed in curly
+braces or square brackets, so the slot contains a
+Collection. 
+The "INI" equivalent lines would be something like:<br>
+<pre>[OrganizationPG]
+Roles                    Collection&lt;Role&gt;       "TransportationProvider, StrategicTransportationProvider"
+</pre><br>
+
+<h2>Adding an Agent Asset</h2>
+<br>
+To have a working organization when doing an agent asset addition, you must include the following: 
+
+<h3>Asset Class</h3>
+Something like "Military Organization". Be sure the default asset class is correct, edit as needed.
+
+<h3>Unique Id</h3>
+Be sure the Unique Id is correct, edit as needed.
+
+<h3> Property Groups: </h3>
+The following must be added:<br>
+
+<b>TypeIdentificationPG</b>
+<br>with the following parameters:</br>
+* <b>TypeIdentification String <i>(value usually the UTC of the agent)</i></b><br>
+* <b>Nomenclature String <i>(optional)</i></b><br>
+* <b>AlternateTypeIdentification String <i>(optional)</i></b>
+
+<br><br>
+<b>ClusterPG</b>
+<br> with the following parameters:</br>
+* <b>ClusterIdentifier ClusterIdentifier <i>AgentName</i></b>
+
+<br><br>
+<b>ItemIdentificationPG</b>
+<br>with the following parameters:</br>
+* <b>ItemIdentification String <i>AgentName</i></b><br>
+* <b>Nomenclature String <i>(optional)</i></b>
+
+<br><br>
+<b>Org related Plugins</b><br>
+You must also include the 2 org-related Plugins for your OrgAsset
+(Asset Data) to be loaded at runtime.
+These are the OrgData (<code>org.cougaar.mlm.plugin.organization.OrgDataPlugin</code>) and
+OrgReport
+(<code>org.cougaar.mlm.plugin.organization.OrgReportPlugin</code>)
+Plugins (which take no arguments).<br>
 </BODY></HTML>

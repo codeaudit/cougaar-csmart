@@ -9,7 +9,8 @@ the UL Adaptive Logistics Plugins. You should reload your database (entirely).
 
 
 Database changes:
-- Renamed mysqldump.9.2.txt to mysqldump.txt. Also added new tables to
+- Renamed mysqldump.9.2.txt to 1ADDomainData.sql and zipped it up (you
+  must unzip it to use it). Also added new tables to
   this dump that are required by new adaptive logistics Plugins.
 - Database table names have been shorted, removing extraneous v4 and
   v6 prefixes. Recipe or experiment exports MUST be processed to
@@ -32,6 +33,14 @@ Database changes:
 - MySQL load scripts now work on networked drives if you have MySQL
   server 3.23.49 or better and use the new "local" option to the .sh
   script. (bug 1257)
+- Multiple fixes to recipe and experiment export scripts to support
+  new recipe types.
+- A load_communities.sh script has been provided in csmart/data/database/scripts/mysql 
+  to load community tables from csv files that are in the original 9.2 format 
+  (i.e. no ASSEMBLY_ID column). (bug 1799) The script loads community_attribute.csv and 
+  community_entity_attribute.csv tables only and will not work on csv files that
+  contain an ASSEMBLY_ID column.
+  See csmart/data/database/README.txt for usage and instructions.
 
 Other setup changes:
 - Upgraded to latest version of JCChart library (renaming jar file to
@@ -81,11 +90,13 @@ Recipe changes
   one. That "name" is also interpreted as a "Class" or as a "Name"
   (these two slots are usually the same, and only differ if you have
   two components of the same class in the same Agent).
+- The Adaptivity Support recipe now allows specifying nearly arbitrary
+  plays file names, including using a single file for all Agents. (Bug 1687)
 
 Console and AppServer changes:
 - There have been extensive changes to the Application Server, and to
-the CSMART Console (aka Experiment Controller) to take advantage of
-these. For most users, these changes need not change how your society runs.
+  the CSMART Console (aka Experiment Controller) to take advantage of
+  these. For most users, these changes need not change how your society runs.
 - Console (aka Experiment Controller) has new menu items and
   functionality, to support "discovery" of new Nodes that are created
   on an AppServer by a process other than CSMART. By selecting
@@ -99,7 +110,14 @@ these. For most users, these changes need not change how your society runs.
       org.cougaar.tools.server.swallowOutputConnectionException=true
   Once CSMART has died, you can restart it and re-connect to the Nodes
   if you like. Or you may kill them (from the Application Server menu
-  item). 
+  item). Note the new terminology: you "attach" to an already running
+  Node, if you want a Node output window for it, and the ability to
+  kill and restart it. Killing a node means actually killing the
+  process. You can also kill a "listener", which means that you
+  "detach" your existing Node output window, without affecting the
+  running Node. When closing the CSMART console, you will be given the
+  option of killing your society (the old behavior), or just detaching
+  from it, leaving the society running.
 
   The console keeps a list of Application Servers that it will monitor
   for new Nodes. This list is usually the set of servers defined in
@@ -176,6 +194,19 @@ Other Bug fixes:
 - If Topology servlet not loaded, show only one error dialog (not one
   per Agent). Bug 1585.
 - Extra checks to avoid disturbing base assemblies (bug 1554)
+- Support new PGs having multiple-values for a single slot. Just be
+  sure the new value is curly-brace or square-bracket enclosed. Bug
+  1780.
+- Fixed bug where non-ClusterImpl Agent classes were ignored.
+- Fixed problem with experiment names that contained quotes (Bug
+  1790).
+- Add some defaults, improved help in editing societies.
+- Multiple additional error checks (bug 1748).
+- Bug 1764: Try extra hard when finding unknown properties on load
+  from DB.
+- Bug 1726: Make sure child names of components are unique.
+- Fixed bug where changing value of Agent Name property had no effect
+  (bug 1809).
 
 Release 9.4:
 This release constitutes the last major Cougaar release for this

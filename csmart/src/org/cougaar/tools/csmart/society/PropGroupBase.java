@@ -106,52 +106,55 @@ public class PropGroupBase
     return null;
   }
 
+  // For constructing component data
   public PropGroupData getPropGroupData() {
-        PropGroupData pgData = new PropGroupData(this.getShortName());
-
-        Iterator props = getSortedLocalPropertyNames();
-        while (props.hasNext()) {
-          Property prop;
-          CompositeName pname = (CompositeName)props.next();
-          if (pname != null)
-            prop = getProperty(pname);
-          else
-            continue;
-          PGPropData oldPG = getProp(getName(prop));
-          PGPropData pg = new PGPropData();
-          if(oldPG != null) {
-            pg.setName(oldPG.getName());
-            pg.setType(oldPG.getType());
-            pg.setSubType(oldPG.getSubType());
-          } else {
-            pg.setName(getName(prop));
-            String type = getType(prop);
-            // if the value for this property is a list, then this type
-            // is really the subtype
-            // do a prop.getPropertyClass()?
-            // This doesnt appear usually set, cant depend on it
-            // So what, get the value?
-            if ((prop.getValue() != null) && 
-                (prop.getValue().getClass().isArray() ||
-                 Collection.class.isAssignableFrom(prop.getValue().getClass()))) {
-              pg.setSubType(type);
-              pg.setType("Collection");
-            } else {
-              // otherwise, set this as the type
-              pg.setType(type);
-            }
-          }
-
-	  if (pg.isListType()) {
-	    pg.setValue(new PGPropMultiVal(prop.getValue()));
-	  } else {
-	    pg.setValue(prop.getValue());
-	  }	    
-
-          pgData.addProperty(pg);
-        }
+    PropGroupData pgData = new PropGroupData(this.getShortName());
+    
+    Iterator props = getSortedLocalPropertyNames();
+    while (props.hasNext()) {
+      Property prop;
+      CompositeName pname = (CompositeName)props.next();
+      if (pname != null)
+	prop = getProperty(pname);
+      else
+	continue;
+      PGPropData oldPG = getProp(getName(prop));
+      PGPropData pg = new PGPropData();
+      if(oldPG != null) {
+	pg.setName(oldPG.getName());
+	pg.setType(oldPG.getType());
+	pg.setSubType(oldPG.getSubType());
+      } else {
+	pg.setName(getName(prop));
+	String type = getType(prop);
+	// if the value for this property is a list, then this type
+	// is really the subtype
+	// do a prop.getPropertyClass()?
+	// This doesnt appear usually set, cant depend on it
+	// So what, get the value?
+	if ((prop.getValue() != null) && 
+	    (prop.getValue().getClass().isArray() ||
+	     Collection.class.isAssignableFrom(prop.getValue().getClass()))) {
+	  pg.setSubType(type);
+	  pg.setType("Collection");
+	} else {
+	  // otherwise, set this as the type
+	  pg.setType(type);
+	  // Note you'll get a warning about a null subtype
+	  // when saving to DB
+	}
+      }
+      
+      if (pg.isListType()) {
+	pg.setValue(new PGPropMultiVal(prop.getValue()));
+      } else {
+	pg.setValue(prop.getValue());
+      }	    
+      
+      pgData.addProperty(pg);
+    }
     
     return pgData;
   }
-
+  
 }

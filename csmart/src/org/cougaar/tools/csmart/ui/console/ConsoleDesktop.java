@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.ui.console;
 
 import java.beans.PropertyVetoException;
 import java.util.Hashtable;
+import java.util.Enumeration;
 import java.awt.event.ComponentListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
@@ -37,6 +38,10 @@ import javax.swing.event.InternalFrameListener;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.server.RemoteProcess;
 
+/**
+ * The internal desktop in the console where the Node output windows appear.
+ * Tracks frame locations to help keep them on the screen.
+ **/
 public class ConsoleDesktop extends JDesktopPane {
   private static final int M = 20;
   private static final int frameXOffset = 20, frameYOffset = 20;
@@ -78,6 +83,44 @@ public class ConsoleDesktop extends JDesktopPane {
   }
 
   /**
+   * When we're done with a Node Frame, remove it, and remove
+   * our listener. Then dispose of the Frame -- which
+   * will recurse to get rid of the ConsoleTextPane, 
+   * ConsoleStyledDocument.
+   **/
+  public void removeNodeFrame(String nodeName) {
+    //    System.out.println("Desktop.removeNodeFrame " + nodeName);
+    JInternalFrame frame = (JInternalFrame)myFrames.remove(nodeName);
+    cleanFrame(frame);
+  }
+
+  public void removeFrame(JInternalFrame frame) {
+    // loop through myFrames to find the one, and remove it
+    Enumeration names = myFrames.keys();
+    while (names.hasMoreElements()) {
+      String title = (String)names.nextElement();
+      JInternalFrame cand = (JInternalFrame)myFrames.get(title);
+      if (cand != null && cand.equals(frame)) {
+	//System.out.println("Found frame to remove: " + title);
+	cleanFrame(cand);
+	myFrames.remove(title);
+	return;
+      }
+    }
+    // If get here it wasnt a node frame. Must remove seperately.
+    cleanFrame(frame);
+  }
+
+  // FIXME: Add a version to remove a frame by the Frame?
+  public void cleanFrame(JInternalFrame frame) {
+    if (frame != null) {
+      //      System.out.println("Desktop.cleanFrame");
+      frame.removeComponentListener(myComponentListener);
+      frame.dispose();
+    }
+  }
+
+  /**
    * Get the frame for this node.
    * @param nodeName the name of the node
    * @return the frame for the node
@@ -116,7 +159,6 @@ public class ConsoleDesktop extends JDesktopPane {
   /**
    * Add an internal frame to the desktop, and optionally iconify it.
    */
-
   public void addFrame(JInternalFrame frame, boolean iconify) {
     frame.setVisible(true);
     add(frame, JLayeredPane.DEFAULT_LAYER);
@@ -126,5 +168,27 @@ public class ConsoleDesktop extends JDesktopPane {
       } catch (PropertyVetoException e) {
       }
     }
+  }
+
+  /**
+   * When done with the desktop, clean up. Remove my ComponentListener
+   * and recurse to call dispose on the InternalFrames, which in turn
+   * kills the documents, etc.
+   **/
+  public void dispose() {
+    //    System.out.println("Desktop.dispose");
+    if (myComponentListener != null) {
+      removeComponentListener(myComponentListener);
+      // loop through frames and remove the listener from them
+      JInternalFrame[] frames = getAllFrames();
+      for (int i = 0; i < frames.length; i++) {
+	frames[i].removeComponentListener(myComponentListener);
+	frames[i].dispose();
+      }
+      myComponentListener = null;
+    }
+    myFrames.clear();
+    myFrames = null;
+    removeAll();
   }
 }

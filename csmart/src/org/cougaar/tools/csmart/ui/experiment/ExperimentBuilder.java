@@ -84,7 +84,7 @@ public class ExperimentBuilder extends JFrame {
   private JTabbedPane tabbedPane;
   private UnboundPropertyBuilder propertyBuilder;
   private HostConfigurationBuilder hcb;
-  private TrialBuilder trialBuilder;
+  //  private TrialBuilder trialBuilder;
   private ThreadBuilder threadBuilder;
   private CommunityPanel communityPanel;
   private JMenu findMenu;

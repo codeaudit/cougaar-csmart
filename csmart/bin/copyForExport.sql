@@ -82,21 +82,87 @@ REPLACE INTO tempcopy.alib_component2
 
  DROP TABLE tempcopy.alib_component2;
 
- -- lib_component
- DROP TABLE IF EXISTS tempcopy.lib_component;
+-- lib_pg_attribute
+DROP TABLE IF EXISTS tempcopy.lib_pg_attribute;
+DROP TABLE IF EXISTS tempcopy.lib_pg_attribute2;
 
- CREATE TABLE tempcopy.lib_component AS
-   SELECT DISTINCT
-     AA.COMPONENT_LIB_ID,
-     AA.COMPONENT_TYPE,
-     AA.COMPONENT_CLASS,
-     AA.INSERTION_POINT,
-     AA.DESCRIPTION
+CREATE TABLE tempcopy.lib_pg_attribute2 AS
+  SELECT DISTINCT 
+    LP.PG_ATTRIBUTE_LIB_ID,
+    LP.PG_NAME,
+    LP.ATTRIBUTE_NAME,
+    LP.ATTRIBUTE_TYPE,
+    LP.AGGREGATE_TYPE
    FROM
-     lib_component AA,
-     tempcopy.alib_component AC
-   WHERE
-     AA.COMPONENT_LIB_ID = AC.COMPONENT_LIB_ID;
+     lib_pg_attribute LP,
+     asb_agent_pg_attr AP,
+    expt_trial_config_assembly EA,
+    expt_trial ET,
+    expt_experiment E
+  WHERE
+    E.NAME = ':exptName'
+    AND E.EXPT_ID = ET.EXPT_ID
+    AND ET.TRIAL_ID = EA.TRIAL_ID
+    AND EA.ASSEMBLY_ID = AP.ASSEMBLY_ID
+    AND AP.PG_ATTRIBUTE_LIB_ID = LP.PG_ATTRIBUTE_LIB_ID;
+    
+
+REPLACE INTO tempcopy.lib_pg_attribute2
+  (PG_ATTRIBUTE_LIB_ID, PG_NAME, ATTRIBUTE_NAME, ATTRIBUTE_TYPE, AGGREGATE_TYPE) 
+  SELECT DISTINCT 
+    LP.PG_ATTRIBUTE_LIB_ID,
+    LP.PG_NAME,
+    LP.ATTRIBUTE_NAME,
+    LP.ATTRIBUTE_TYPE,
+    LP.AGGREGATE_TYPE
+   FROM
+     lib_pg_attribute LP,
+     asb_agent_pg_attr AP,
+    expt_trial_assembly EA,
+    expt_trial ET,
+    expt_experiment E
+  WHERE
+    E.NAME = ':exptName'
+    AND E.EXPT_ID = ET.EXPT_ID
+    AND ET.TRIAL_ID = EA.TRIAL_ID
+    AND EA.ASSEMBLY_ID = AP.ASSEMBLY_ID
+    AND AP.PG_ATTRIBUTE_LIB_ID = LP.PG_ATTRIBUTE_LIB_ID;
+
+REPLACE INTO tempcopy.lib_pg_attribute2
+  (PG_ATTRIBUTE_LIB_ID, PG_NAME, ATTRIBUTE_NAME, ATTRIBUTE_TYPE, AGGREGATE_TYPE) 
+  SELECT DISTINCT 
+    LP.PG_ATTRIBUTE_LIB_ID,
+    LP.PG_NAME,
+    LP.ATTRIBUTE_NAME,
+    LP.ATTRIBUTE_TYPE,
+    LP.AGGREGATE_TYPE
+   FROM
+     lib_pg_attribute LP,
+     asb_agent_pg_attr AP,
+    expt_trial_mod_recipe EA,
+    lib_mod_recipe_arg LA,
+    expt_trial ET,
+    expt_experiment E
+  WHERE
+    E.NAME = ':exptName'
+    AND E.EXPT_ID = ET.EXPT_ID
+    AND ET.TRIAL_ID = EA.TRIAL_ID
+    AND EA.MOD_RECIPE_LIB_ID = LA.MOD_RECIPE_LIB_ID
+    AND LA.ARG_NAME = "Assembly Id"
+    AND LA.ARG_VALUE = AP.ASSEMBLY_ID
+    AND AP.PG_ATTRIBUTE_LIB_ID = LP.PG_ATTRIBUTE_LIB_ID;
+
+CREATE TABLE tempcopy.lib_pg_attribute AS
+  SELECT DISTINCT 
+    LP.PG_ATTRIBUTE_LIB_ID,
+    LP.PG_NAME,
+    LP.ATTRIBUTE_NAME,
+    LP.ATTRIBUTE_TYPE,
+    LP.AGGREGATE_TYPE
+   FROM
+     tempcopy.lib_pg_attribute2 LP;
+
+DROP TABLE IF EXISTS tempcopy.lib_pg_attribute2;
 
  -- lib_mod_recipe
  DROP TABLE IF EXISTS tempcopy.lib_mod_recipe;
@@ -157,7 +223,7 @@ UPDATE tempcopy.lib_mod_recipe_arg
   SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:exptName'),50) AS ASSEMBLY_ID,
     AB.ASSEMBLY_TYPE AS ASSEMBLY_TYPE, 
-    AB.DESCRIPTION AS DESCRIPTION 
+    CONCAT(AB.DESCRIPTION,'-cpy') AS DESCRIPTION 
   FROM asb_assembly AB, 
      lib_mod_recipe_arg AA,
      expt_trial_mod_recipe ER,
@@ -377,3 +443,38 @@ REPLACE INTO tempcopy.community_entity_attribute
      AND ET.EXPT_ID = E.EXPT_ID
      AND E.NAME = ':exptName';
 
+ -- lib_component
+ DROP TABLE IF EXISTS tempcopy.lib_component;
+
+ CREATE TABLE tempcopy.lib_component AS
+   SELECT DISTINCT
+     AA.COMPONENT_LIB_ID,
+     AA.COMPONENT_TYPE,
+     AA.COMPONENT_CLASS,
+     AA.INSERTION_POINT,
+     AA.DESCRIPTION
+   FROM
+     lib_component AA,
+     tempcopy.alib_component AC
+   WHERE
+     AA.COMPONENT_LIB_ID = AC.COMPONENT_LIB_ID;
+
+
+-- lib_agent_org
+
+DROP TABLE IF EXISTS tempcopy.lib_agent_org;
+
+CREATE TABLE tempcopy.lib_agent_org AS
+  SELECT DISTINCT 
+    L.COMPONENT_LIB_ID,
+    L.AGENT_LIB_NAME,
+    L.AGENT_ORG_CLASS
+   FROM
+    lib_agent_org L,
+    tempcopy.asb_agent A
+   WHERE
+    A.COMPONENT_LIB_ID = L.COMPONENT_LIB_ID;
+
+-- After running this, must update the ALIB IDs on this copy
+-- before doing the export, so that the recipe type ALIB IDs
+-- are updated appropriately (adding -cpy)

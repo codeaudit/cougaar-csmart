@@ -6,3 +6,4 @@ MOD_RECIPE_LIB_ID,NAME,JAVA_CLASS,DESCRIPTION,BLANK
 "RECIPE-CommPin","CommunityPlugin","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","Add Community Plugin to Agents and NodeAgents"
 "RECIPE-Enable47FSBLogging","Enable 47-FSB Logging","org.cougaar.tools.csmart.recipe.ParameterInsertionRecipe","AL servlet-Enable Logging at 47-FSB"
 "RECIPE-FallingBehindConditionServlet","FallingBehindConditionServlet","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","AL servlet"
+"RECIPE-OplanEditServlet","OplanEditServlet","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe",Add Servlet to Edit Oplan"

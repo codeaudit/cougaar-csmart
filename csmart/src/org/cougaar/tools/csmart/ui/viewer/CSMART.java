@@ -87,11 +87,14 @@ import org.cougaar.util.log.LoggerFactory;
  * Allows user to: build, test, control, monitor and analyze a society. For installation and
  * basic usage, see csmart/doc/InstallAndTest.html.<br>
  * @property org.cougaar.tools.csmart.doWorkspace if false do NOT read/write from Default Worksapce file.
- * @property org.cougaar.configuration.database should be specified in cougaar.rc as the URL to find the CSMART database. See CSMART InstallAndTest.html
+ * @property org.cougaar.configuration.database should be specified in 
+ *   cougaar.rc as the URL to find the CSMART database. See CSMART InstallAndTest.html
  * @property csmart.PopulateDb.log.enable if true enables the logging
- * of some executed database queries to a file named PopulateDb<datetime>.log.
- * @property org.cougaar.install.path Used to default results directory, find workspace file, saved graphs, etc
- * @property org.cougaar.config.path has standard meaning, and is used to find some CSMART UI properties among other things.
+ *   of some executed database queries to a file named PopulateDb<datetime>.log.
+ * @property org.cougaar.install.path Used to default results directory, 
+ *     find workspace file, saved graphs, etc
+ * @property org.cougaar.config.path has standard meaning, and is used to 
+ *      find some CSMART UI properties among other things.
  * @property org.cougaar.useBootstrapper has meaning specified by Bootstrapper
  *
  */
@@ -101,7 +104,7 @@ public class CSMART extends JFrame {
   private static ArrayList runningExperiments = new ArrayList();
   private static JToolBar toolBar = null;
   private static JMenu windowMenu;
-  private static CSMARTConsole console;
+  //  private static CSMARTConsole console;
   private static File resultDir;
   private static JMenu fileMenu;
   private static JMenu editMenu;
@@ -802,24 +805,23 @@ public class CSMART extends JFrame {
    */
   private void addTool(String toolName, String docName, JFrame tool) {
     NamedFrame.getNamedFrame().addFrame(toolName + ": " + docName, tool);
-    final JFrame frameArg = tool;
     final boolean isConsole = (toolName == EXPERIMENT_CONTROLLER);
     tool.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-
+    
     tool.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
+	JFrame frameArg = (JFrame)e.getWindow();
         if(!frameArg.getGlassPane().isVisible()) {
-
 	  // If user hit cancel in exit dialog in console,
 	  // then don't close the window
 	  if (isConsole && ((CSMARTConsole)frameArg).dontClose)
 	    return;
-
           NamedFrame.getNamedFrame().removeFrame(frameArg);
 	  // Next line can cause NPE in Container.removeNotify(line 1878)
 	  // Is there some test we can/should do on the JFrame before calling?
 	  try {
 	    frameArg.dispose();
+	    //frameArg = null;
 	  } catch (NullPointerException npe) {
 	    if (log.isWarnEnabled())
 	      log.warn("Bug 1439: Was a drop-down list open? Using: " + writeDebug(), npe);

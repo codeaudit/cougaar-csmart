@@ -140,7 +140,8 @@ public class CSMARTConsole extends JFrame {
   // gui controls
   ButtonGroup statusButtons;
   JToggleButton attachButton;
-  JMenuItem attachMenuItem;
+  JMenuItem attachMenuItem; // same as attachButton
+  JMenuItem addGLSMenuItem; // call addGLSWindow
   JToggleButton runButton;
   JToggleButton stopButton;
   JToggleButton abortButton;
@@ -183,6 +184,7 @@ public class CSMARTConsole extends JFrame {
   private static final String KILL_ALL_PROCS_ITEM = "Kill Any Nodes";
   private static final String REFRESH_APP_SERVER_ITEM = "Refresh";
   private static final String SET_POLL_INTERVAL_ITEM = "Set Poll Interval";
+  private static final String ADD_GLS_ITEM = "Add GLS Client";
   private static final String HELP_MENU = "Help";
   private static final String ABOUT_CONSOLE_ITEM = "About Experiment Controller";
   private static final String ABOUT_CSMART_ITEM = "About CSMART";
@@ -275,11 +277,116 @@ public class CSMARTConsole extends JFrame {
 	    // disable the View and Delete and Kill All menu items
 	    // and the attach Button
 	    updateASControls();
+	    noticeIfServerDead();
 	  }
 	};
       
       asPollTimer = new java.util.Timer();
       asPollTimer.schedule(monitorAppServerTask, new Date(), asPollInterval);
+    }
+  }
+
+  // Go through running nodes. If that Node's AppServer is dead,
+  // then mark it dead
+  private void noticeIfServerDead() {
+    Enumeration nodeNames;
+    synchronized (runningNodesLock) {
+      nodeNames = runningNodes.keys();
+    }
+
+    while (nodeNames.hasMoreElements()) {
+      String nodeName = (String)nodeNames.nextElement();
+      NodeInfo ni = (NodeInfo)nodeToNodeInfo.get(nodeName);
+      if (ni == null)
+	continue;
+      if (ni.appServer == null) {
+	log.warn("Lost contact with AppServer on " + ni.hostName + " for node " + nodeName + " (null RemoteHost in NodeInfo). Assuming it is dead.");
+	markNodeDead(nodeName);
+	continue;
+      }
+      if (!appServerSupport.isValidRemoteHost(ni.appServer)) {
+	if (log.isWarnEnabled())
+	  log.warn("Lost contact with AppServer on " + ni.hostName + " for node " + nodeName + " (Marked as not valid remote host). Assuming it is dead.");
+	// Note - this could be a timeout, so don't do it
+	// so that it's not reversable
+	markNodeDead(nodeName, false);
+	continue;
+      }
+      RemoteProcess rp = null;
+      synchronized (runningNodesLock) {
+	rp = (RemoteProcess)runningNodes.get(nodeName);
+      }
+      if (rp == null) {
+	if (log.isWarnEnabled())
+	  log.warn("Remote process suddenly null for " + nodeName + ". Assuming it is dead.");
+	markNodeDead(nodeName);
+	continue;
+      }
+      try {
+	if (!rp.isAlive()) {
+	  if (log.isWarnEnabled())
+	    log.warn("Remote Process for " + nodeName + " says it is not alive. Marking it dead.");
+	  // FIXME: see if it's now not in runningNodes?
+	  // If so, a timing issue, and someone kill it...
+	  markNodeDead(nodeName);
+	  continue;
+	}
+      } catch (Exception e) {
+	// Todd W says this should never happen
+	if (log.isWarnEnabled())
+	  log.warn("Got exception trying to ask remote process for " + nodeName + " if it is alive. Marking it dead.", e);
+	markNodeDead(nodeName, false);
+	continue;
+      }
+    }
+  }
+
+  // Mark a node as unexpectedly dead
+  private void markNodeDead(String nodeName) {
+    markNodeDead(nodeName, true);
+  }
+
+  private void markNodeDead(String nodeName, boolean completely) {
+    if (log.isDebugEnabled())
+      log.debug("markNodeDead for " + nodeName + " doing it " + (completely ? "completely." : "partially."));
+
+    // if there's a thread still creating nodes, stop it
+    stopNodeCreation = true;
+    // wait for the creating thread to stop
+    if (nodeCreator != null) {
+      try {
+	nodeCreator.join();
+      } catch (InterruptedException ie) {
+	if(log.isErrorEnabled()) {
+	  log.error("Exception waiting for node creation thread to die: ", ie);
+	}
+      }
+    }
+
+    // This is destructive - do carefully
+    if (completely) {
+      RemoteProcess bremoteNode = null;
+      synchronized (runningNodesLock) {
+	bremoteNode = (RemoteProcess)runningNodes.get(nodeName);
+	if (bremoteNode != null) {
+	  oldNodes.add(nodeName);
+	  runningNodes.remove(nodeName);
+	}
+      } // end synchronized
+      
+      nodeStopped(nodeName);
+    }
+
+    NodeStatusButton but = getNodeStatusButton(nodeName);
+    if (but != null)
+      but.setStatus(NodeStatusButton.STATUS_NO_ANSWER);
+
+    ConsoleInternalFrame frame = 
+      desktop.getNodeFrame(nodeName);
+    if (frame != null) {
+      if (log.isDebugEnabled())
+	log.debug("markNodeDead disabling restart for node " + nodeName);
+      frame.enableRestart(false);
     }
   }
 
@@ -337,13 +444,20 @@ public class CSMARTConsole extends JFrame {
 
   private void updateASControls() {
     if (appServerSupport.haveValidAppServers()) {
+
       displayMenuItem.setEnabled(true);
       deleteMenuItem.setEnabled(true);
       if (appServerSupport.thereAreRunningNodes()) {
+	if (glsClient == null)
+	  addGLSMenuItem.setEnabled(true);
+	else
+	  addGLSMenuItem.setEnabled(false);
+
 	killAllMenuItem.setEnabled(true);
 	attachButton.setEnabled(true);
 	attachMenuItem.setEnabled(true);
       } else {
+	addGLSMenuItem.setEnabled(false);
 	attachButton.setEnabled(false);
 	attachMenuItem.setEnabled(false);
 	killAllMenuItem.setEnabled(false);
@@ -354,6 +468,7 @@ public class CSMARTConsole extends JFrame {
       displayMenuItem.setEnabled(false);
       deleteMenuItem.setEnabled(false);
       killAllMenuItem.setEnabled(false);
+      addGLSMenuItem.setEnabled(false);
     }
   }
 
@@ -483,7 +598,6 @@ public class CSMARTConsole extends JFrame {
     addMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           appServerSupport.addAppServer();
-	  appServerSupport.refreshAppServers();
 	  updateASControls();
         }
       });
@@ -535,6 +649,8 @@ public class CSMARTConsole extends JFrame {
         public void actionPerformed(ActionEvent e) {
           appServerSupport.refreshAppServers();
 	  updateASControls();
+	  // test the AS
+	  noticeIfServerDead();
         }
       });
     refreshMenuItem.setToolTipText("Refresh list of Application Servers");
@@ -555,6 +671,16 @@ public class CSMARTConsole extends JFrame {
       });
     pollIntervalMenuItem.setToolTipText("Change Delay Between Checking for New Application Servers");
     appServerMenu.add(pollIntervalMenuItem);
+
+    // Menu item for popping up a new GLS Client
+    addGLSMenuItem = new JMenuItem(ADD_GLS_ITEM);
+    addGLSMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+	  addGLSWindow(findServlet());
+        }
+      });
+    addGLSMenuItem.setToolTipText("Add new GLS Client for sending GLS Init");
+    appServerMenu.add(addGLSMenuItem);
 
     JMenu helpMenu = new JMenu(HELP_MENU);
     JMenuItem helpMenuItem = new JMenuItem(ABOUT_CONSOLE_ITEM);
@@ -902,7 +1028,6 @@ public class CSMARTConsole extends JFrame {
    * Left click opens the node standard out frame,
    * and highlights the node in the configuration tree.
    */
-
   private MouseListener myMouseListener = new MouseAdapter() {
     public void mouseClicked(MouseEvent e) {
       if (e.isPopupTrigger()) 
@@ -932,6 +1057,7 @@ public class CSMARTConsole extends JFrame {
       for (int i = 0; i < hosts.length; i++) {
         NodeComponent[] nodes = hosts[i].getNodes();
         if (nodes != null && nodes.length > 0) {
+	  // Bug 1763: Perhaps allow running a society with just Nodes, no Agents?
           for (int j = 0; j < nodes.length; j++) {
             AgentComponent[] agents = nodes[j].getAgents();
             if (agents != null && agents.length > 0) {
@@ -1112,20 +1238,7 @@ public class CSMARTConsole extends JFrame {
           if(glsAgent != null) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                  JInternalFrame jif = 
-                    new JInternalFrame(glsWindowTitle, true, false, true, true);
-                  glsClient = getGLSClient(glsAgent);
-                  if (glsClient == null)
-                    return;
-                  jif.getContentPane().add(glsClient);
-                  jif.setSize(350, 400);
-                  jif.setLocation(0, 0);
-                  jif.setVisible(true);
-                  desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
-                  try {
-                    jif.setIcon(true);
-                  } catch (PropertyVetoException e) {
-                  }
+		  addGLSWindow(glsAgent);
                 }
               });
           }
@@ -1149,6 +1262,41 @@ public class CSMARTConsole extends JFrame {
 
   /////////////////////////////////////////
   // GLS related methods
+
+  // Add GLS Pane to desktop. Used when starting an experiment.
+  // Can also be used when attaching to a society.
+  private void addGLSWindow(String glsAgent) {
+    if (desktop == null)
+      return;
+
+    //  This indicates we already have a GLS, I believe
+    if (glsClient != null)
+      return;
+
+    // Remove the GLS window if it is there
+    // use desktop.cleanFrame(frame);
+    JInternalFrame[] frames = desktop.getAllFrames();
+    for (int i = 0; i < frames.length; i++) {
+      String s = frames[i].getTitle();
+      if (s.equals(glsWindowTitle))
+	desktop.removeFrame(frames[i]);
+    }
+
+    JInternalFrame jif = 
+      new JInternalFrame(glsWindowTitle, true, false, true, true);
+    glsClient = getGLSClient(glsAgent);
+    if (glsClient == null)
+      return;
+    jif.getContentPane().add(glsClient);
+    jif.setSize(350, 400);
+    jif.setLocation(0, 0);
+    jif.setVisible(true);
+    desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
+    try {
+      jif.setIcon(true);
+    } catch (PropertyVetoException e) {
+    }
+  }
 
   /**
    * Use experiment component data tree to find plugins which are servlets.
@@ -1206,24 +1354,26 @@ public class CSMARTConsole extends JFrame {
    * else use http and the default port number.
    */
   private GLSClient getGLSClient(String agent) {
-    String hostName = ""; // defaults
+    String hostName = "localhost"; // defaults
     String protocol = GLS_PROTOCOL;
     String port = String.valueOf(CSMARTUL.agentPort);
     if (agent == null || agent.equals(""))
       agent = "NCA";
     Properties arguments = null;
-    HostComponent[] hosts = experiment.getHostComponents();
-    for (int i = 0; i < hosts.length; i++) {
-      NodeComponent[] nodes = hosts[i].getNodes();
-      for (int j = 0; j < nodes.length; j++) {
-        AgentComponent[] agents = nodes[j].getAgents();
-        for (int k = 0; k < agents.length; k++) {
-          if (agents[k].getShortName().equals(agent)) {
-            hostName = hosts[i].getShortName();
-            arguments = nodes[j].getArguments();
-            break;
-          }
-        }
+    if (experiment != null) {
+      HostComponent[] hosts = experiment.getHostComponents();
+      for (int i = 0; i < hosts.length; i++) {
+	NodeComponent[] nodes = hosts[i].getNodes();
+	for (int j = 0; j < nodes.length; j++) {
+	  AgentComponent[] agents = nodes[j].getAgents();
+	  for (int k = 0; k < agents.length; k++) {
+	    if (agents[k].getShortName().equals(agent)) {
+	      hostName = hosts[i].getShortName();
+	      arguments = nodes[j].getArguments();
+	      break;
+	    }
+	  }
+	}
       }
     }
 
@@ -1354,8 +1504,10 @@ public class CSMARTConsole extends JFrame {
 
     // before destroying nodes, stop the GLSClient so
     // we don't get error messages
-    if (glsClient != null) 
+    if (glsClient != null) {
       glsClient.stop();
+      glsClient = null;
+    }
 
     if (log.isDebugEnabled()) {
       log.debug("About to kill all Nodes");
@@ -1376,27 +1528,24 @@ public class CSMARTConsole extends JFrame {
             if(log.isErrorEnabled()) {
               log.error("Unknown node name: " + nodeName);
             }
+	    markNodeDead(nodeName);
             return;
           }
 
           try {
             RemoteListenable rl = 
               remoteNode.getRemoteListenable();
-            rl.flushOutput();
-            remoteNode.destroy();
+	    if (rl != null) {
+	      rl.flushOutput();
+	      remoteNode.destroy();
+	    }
           } catch (Exception ex) {
             if(log.isWarnEnabled()) {
               log.warn("Unable to destroy node, assuming it's dead: ", ex);
             }
             // call the method that would have been called
             // had the node been stopped
-
-	    // FIXME: This method is immediately going to try to contact the remote
-	    // process, which will probably cause another exception. Ugly.
-	    // I could add this to oldNodes and remove from runningNodes now,
-	    // then nodeStopped won't try to do anything?
-            nodeStopped(nodeName);
-            getNodeStatusButton(nodeName).setStatus(NodeStatusButton.STATUS_NO_ANSWER);
+	    markNodeDead(nodeName);
           }
         }
       }; // end nodeDestroyer thread
@@ -1426,16 +1575,23 @@ public class CSMARTConsole extends JFrame {
     while (nodeNames.hasNext()) {
       String nodeName = (String)nodeNames.next();
       removeStatusButton(nodeName);
+      nodePanes.remove(nodeName);
+      oldNodes.remove(nodeNames);
     }
-    oldNodes.clear();
-    nodeListeners.clear();
-    nodePanes.clear();
     JInternalFrame[] frames = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
       String s = frames[i].getTitle();
-      if (!s.equals(configWindowTitle) && !s.equals(tValsWindowTitle))
-        frames[i].dispose();
+      if (!s.equals(configWindowTitle) && !s.equals(tValsWindowTitle)) {
+	if (log.isDebugEnabled())
+	  log.debug("destroyOldNodes killing frame " + s);
+	// FIXME: Is the title what it's under in the hash?
+	// Note: this completely kills the frame, listener, textpane,
+	// and document in that order
+	desktop.removeFrame(frames[i]);
+      }
     }
+    cleanListeners(); // mostly just to clear out the array
+    // it will clear out nodeListeners
   }
     
   /**
@@ -1476,8 +1632,11 @@ public class CSMARTConsole extends JFrame {
 // 	log.debug("Considering toggling restart for frame " + s + ". Will tell it: " + !isRunning);
 //       }
       if (!s.equals(configWindowTitle) && !s.equals(tValsWindowTitle) &&
-          !s.equals(glsWindowTitle))
+          !s.equals(glsWindowTitle)) {
+// 	if (log.isDebugEnabled())
+// 	  log.debug("updateControls setting enableRestart to " + !isRunning + " for node " + s);
         ((ConsoleInternalFrame)frames[i]).enableRestart(!isRunning);
+      }
     }
   }
 
@@ -1491,33 +1650,66 @@ public class CSMARTConsole extends JFrame {
    * Update the gui controls.
    */
   public void nodeStopped(String nodeName) {
+    if (log.isDebugEnabled())
+      log.debug("nodeStopped for node " + nodeName);
     RemoteProcess remoteNode = null;
     synchronized (runningNodesLock) {
-      remoteNode = (RemoteProcess)runningNodes.get(nodeName);
-      if (remoteNode != null) {
-        oldNodes.add(nodeName);
-        runningNodes.remove(nodeName);
-      }
+      if (runningNodes != null)
+	remoteNode = (RemoteProcess)runningNodes.remove(nodeName);
+      if (oldNodes != null)
+	oldNodes.add(nodeName);
     } // end synchronized
 
     // remove the node listener
     if (remoteNode != null) {
       try {
         RemoteListenable rl = remoteNode.getRemoteListenable();
-        rl.flushOutput();
-        rl.removeListener(CSMART.getNodeListenerId());
+	if (rl != null) {
+	  rl.flushOutput();
+	  rl.removeListener(CSMART.getNodeListenerId());
+	}
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
-          log.error("Exception removing listener for remote node", e);
+          log.error("Exception removing listener for remote node " + nodeName, e);
         }
+	// FIXME: update AppServer list?
       }
-    }
+    } // end of block to kill remote listener
+
+    ConsoleNodeListener list = null;
+    if (nodeListeners != null)
+      list = (ConsoleNodeListener)nodeListeners.get(nodeName);
+
+    if (list != null) {
+      // do this only if the Node Status Button 
+      // indicates we got the last output, or otherwise
+      // know we got it all?
+      // STATUS_DESTROYED is definitely safe
+      // STATUS_NO_ANSWER shouldn't happen
+      // STATUS_UNKOWN I don't know about
+      // but the problem is that nodeStopped
+      // gets called in general _before_
+      // we set the status to NO_ANSWER if there was an error
+      list.closeLogFile();
+//       if (list.statusButton == null || list.statusButton.status == NodeStatusButton.STATUS_NODE_DESTROYED || list.statusButton.status == NodeStatusButton.STATUS_NO_ANSWER) {
+// 	list.cleanUp();
+//       } else {
+// 	// FIXME: Wait?
+// 	if (log.isDebugEnabled()) {
+// 	  log.debug("nodeStopped for node " + nodeName + " wanted to close log for listener, but status says it might still be busy: " + list.statusButton.getStatusDescription());
+// 	}
+//      }
+    } // end of block to kill Node Listener
 
     // enable restart command on node output window, only if we're not stopping
-    ConsoleInternalFrame frame = 
-      desktop.getNodeFrame(nodeName);
-    if (frame != null && !stopping)
+    ConsoleInternalFrame frame = null;
+    if (desktop != null)
+      frame = desktop.getNodeFrame(nodeName);
+    if (frame != null && !stopping) {
+//       if (log.isDebugEnabled())
+// 	log.debug("nodeStopped enabling restart for node " + nodeName);
       frame.enableRestart(true);
+    }
 
     // ignore condition in which we temporarily have 
     // no running nodes while starting
@@ -1528,10 +1720,15 @@ public class CSMARTConsole extends JFrame {
     // run the next trial and update the gui controls
     boolean finishedTrial = false;
     synchronized (runningNodesLock) {
-      if (runningNodes.isEmpty())
+      if (runningNodes == null || runningNodes.isEmpty())
         finishedTrial = true;
+//       else if (log.isDebugEnabled())
+// 	log.debug("nodeStopped for node " + nodeName + " still have " + runningNodes.size() + " running nodes.");
     } // end synchronized
+
     if (finishedTrial) {
+      if (log.isDebugEnabled())
+	log.debug("nodeStopped: finished trial after killing node " + nodeName);
       stopping = false;
       trialFinished();
       if (haveMoreTrials()) {
@@ -1540,11 +1737,14 @@ public class CSMARTConsole extends JFrame {
 	  destroyOldNodes(); // destroy old guis before starting new ones
 	  runTrial(); // run next trial
 	} else { // user stopped trials, allow them to run the next one
-	  runButton.setSelected(false);
+	  if (runButton != null)
+	    runButton.setSelected(false);
 	}
       } else { // no more trials, experiment is done
 	experimentFinished();
       }
+//     } else if (log.isDebugEnabled()) {
+//       log.debug("nodeStopped says not finished with trial");
     }
   }
 
@@ -1554,11 +1754,39 @@ public class CSMARTConsole extends JFrame {
    */
   private void trialFinished() {
     trialTimer.stop();
-    Collection c = nodeListeners.values();
-    for (Iterator i = c.iterator(); i.hasNext(); )
-      ((ConsoleNodeListener)i.next()).closeLogFile();
     saveResults();
+    // This should not be necessary - done by nodeStopped
+//     Collection c = nodeListeners.values();
+//     for (Iterator i = c.iterator(); i.hasNext(); )
+//       ((ConsoleNodeListener)i.next()).closeLogFile();
+    // Warning - above sets log to null
+
+//     if (userStoppedTrials)
+//       cleanListeners();
     updateControls(false);
+  }
+
+  // Flush and dispose of old node listeners
+  private void cleanListeners() {
+    if (nodeListeners == null || nodeListeners.isEmpty())
+      return;
+    Collection c = nodeListeners.values();
+    for (Iterator i = c.iterator(); i.hasNext(); ) {
+      ConsoleNodeListener listener = (ConsoleNodeListener) i.next();
+      if (listener == null)
+	continue;
+      if (listener.statusButton == null || listener.statusButton.status == NodeStatusButton.STATUS_NODE_DESTROYED || listener.statusButton.status == NodeStatusButton.STATUS_NO_ANSWER) {
+	listener.cleanUp();
+      } else {
+	// FIXME!!
+	// now what?
+	// wait somehow?
+	// what about STATUS_UNKNOWN
+	if (log.isDebugEnabled())
+	  log.debug("cleanListeners found listener for " + listener.nodeName + " possibly not ready (" + listener.statusButton.getStatusDescription() + "), not cleaning.");
+      }
+    }
+    nodeListeners.clear();
   }
 
   /**
@@ -1688,9 +1916,9 @@ public class CSMARTConsole extends JFrame {
       if (stopNodeCreation)
         break;
 
-      final NodeCreationInfo nci = 
+      NodeCreationInfo nci = 
         (NodeCreationInfo)nodeCreationInfoList.get(i);
-      final RemoteProcess remoteNode;
+      RemoteProcess remoteNode;
 
       // Create the process description, then the proccess
       try {
@@ -1734,10 +1962,16 @@ public class CSMARTConsole extends JFrame {
           log.error("CSMARTConsole: cannot create node: " + 
                     nci.nodeName, e);
         }
-        JOptionPane.showMessageDialog(this,
-                                      "Cannot create node " + nci.nodeName + " on: " + 
-                                      nci.hostName +
+	final String node = nci.nodeName;
+	final String host = nci.hostName;
+	SwingUtilities.invokeLater(new Runnable() {
+	    public void run() {
+	      JOptionPane.showMessageDialog(CSMARTConsole.this,
+                                      "Cannot create node " + node + " on: " + 
+                                      host +
                                       "; check that server is running");
+	    }
+	  });
         continue;
       }
 
@@ -1746,27 +1980,41 @@ public class CSMARTConsole extends JFrame {
       } // end synchronized
 
       // Set up the UI for the Node
-      SwingUtilities.invokeLater(new Runnable() {
-          public void run() {
-            // don't create gui controls if node creation has been stopped
-            if (nodeCreator == null) return;
-            addStatusButton(nci.statusButton);
-            ConsoleInternalFrame frame = 
-              new ConsoleInternalFrame(nci.nodeName,
-                                       nci.hostName,
-                                       nci.properties,
-                                       nci.args,
-                                       (ConsoleNodeListener)nci.listener,
-                                       nci.scrollPane,
-                                       nci.statusButton,
-                                       nci.logFileName,
-                                       remoteNode,
-                                       console);
-            frame.addInternalFrameListener(new NodeFrameListener());
-            desktop.addNodeFrame(frame, nci.nodeName);
-            updateControls(true);
-          }
-        });
+      SwingUtilities.invokeLater(new NodeCreateThread(nci, remoteNode));
+    }
+  }
+
+  /**
+   * Class for a thread to create the Nodes in parallel. 
+   * Done as a separate class to avoid declaring things
+   * final.
+   **/
+  class NodeCreateThread implements Runnable {
+    RemoteProcess remoteNode = null;
+    NodeCreationInfo nci = null;
+    public NodeCreateThread (NodeCreationInfo nci, RemoteProcess remoteNode) {
+      this.nci = nci;
+      this.remoteNode = remoteNode;
+    }
+
+    public void run() {
+      // don't create gui controls if node creation has been stopped
+      if (nodeCreator == null) return;
+      addStatusButton(nci.statusButton);
+      ConsoleInternalFrame frame = 
+	new ConsoleInternalFrame(nci.nodeName,
+				 nci.hostName,
+				 nci.properties,
+				 nci.args,
+				 (ConsoleNodeListener)nci.listener,
+				 nci.scrollPane,
+				 nci.statusButton,
+				 nci.logFileName,
+				 remoteNode,
+				 console);
+      frame.addInternalFrameListener(new NodeFrameListener());
+      desktop.addNodeFrame(frame, nci.nodeName);
+      updateControls(true);
     }
   }
 
@@ -1805,11 +2053,7 @@ public class CSMARTConsole extends JFrame {
       }
       // call the method that would have been called when the 
       // ConsoleNodeListener received the node destroyed confirmation
-      // FIXME: As per above, perhaps I should remove from runningNodes / add
-      // to oldNodes myself here so nodeStopped doesn't try to contact
-      // the Node itself?
-      nodeStopped(nodeName);
-      getNodeStatusButton(nodeName).setStatus(NodeStatusButton.STATUS_NO_ANSWER);
+      markNodeDead(nodeName);
     }
   }
 
@@ -1850,15 +2094,54 @@ public class CSMARTConsole extends JFrame {
     if (remoteAppServer == null)
       return null;
 
+    ConsoleStyledDocument doc = null;
     // close the log file and remove the old node event listener
     ConsoleNodeListener listener = 
       (ConsoleNodeListener)nodeListeners.remove(nodeName);
-    listener.closeLogFile();
+    if (listener != null) {
+      // reuse old document
+      doc = listener.getDocument();
+      
+      // Done closing up old one, now start on new one      
+      // FIXME: Wait until we somehow know we got the last
+      // output from the node, perhaps looking at the
+      // NodeStatusButton?
+      // Status STATUS_DESTROYED, STATUS_NO_ANSWER
+      // definitely OK. STATUS_UNKNOWN MAYBE
+      // Of course
+      if (listener.statusButton == null || listener.statusButton.status == NodeStatusButton.STATUS_NODE_DESTROYED || listener.statusButton.status == NodeStatusButton.STATUS_NO_ANSWER) 
+	listener.cleanUp();
+      else
+	listener.closeLogFile();
+    }
 
-    // Done closing up old one, now start on new one
+    if (doc == null) {
+      //  The doc gets killed if the frame was killed
+      // or the textPane was killed
+      // FIXME: Must replace the whole node window
+      // remove old internal frame and add a new one
+//       nodePanes.remove(nodeName);
+//       desktop.removeNodeFrame(nodeName);
+//       doc = new ConsoleStyledDocument();
+//       NodeCreationInfo nci = (NodeCreationInfo)nodeCreationInfoList.get(i);
+//       ConsoleInternalFrame frame = 
+// 	new ConsoleInternalFrame(nci.nodeName,
+// 				 nci.hostName,
+// 				 nci.properties,
+// 				 nci.args,
+// 				 (ConsoleNodeListener)nci.listener,
+// 				 nci.scrollPane,
+// 				 nci.statusButton,
+// 				 nci.logFileName,
+// 				 remoteNode,
+// 				 console);
+//       frame.addInternalFrameListener(new NodeFrameListener());
+//       desktop.addNodeFrame(frame, nci.nodeName);
+      if (log.isWarnEnabled())
+	log.warn("restartNode unable to find document for node " + nodeName + ", not restarting.");
+      return null;
+    }
 
-    // reuse old document
-    ConsoleStyledDocument doc = listener.getDocument();
     // create a node event listener to get events from the node
     String logFileName = getLogFileName(nodeName);
     try {
@@ -1912,14 +2195,20 @@ public class CSMARTConsole extends JFrame {
       if (remoteNode != null) {
         synchronized (runningNodesLock) {
           runningNodes.put(nodeName, remoteNode);
+	  oldNodes.remove(nodeName);
         } // end synchronized
 	// AMH - FIXME
 	//	updateControls(true);
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Exception", e);
+        log.error("Exception restarting node " + nodeName, e);
       }
+      // Failed to create the remove process
+      // so clean up.
+      // call stopNode(nodeName)?
+      markNodeDead(nodeName);
+      return null;
     }
     return remoteNode;
   }
@@ -1936,7 +2225,7 @@ public class CSMARTConsole extends JFrame {
     attachButton.setSelected(false);
     // Before getting this list, make sure our list of possible
     // things to attach to is up-to-date
-    appServerSupport.haveNewNodes();
+    appServerSupport.refreshAppServers();
     ArrayList nodesToAttach = appServerSupport.getNodesToAttach();
     if (nodesToAttach == null) {
       // There were no Nodes to attach to
@@ -1948,6 +2237,7 @@ public class CSMARTConsole extends JFrame {
       return;
     }
 
+    // Loop over nodes to attach to
     for (int i = 0; i < nodesToAttach.size(); i++) {
       NodeInfo nodeInfo = (NodeInfo)nodesToAttach.get(i);
       boolean haveAlready = false;
@@ -1957,6 +2247,8 @@ public class CSMARTConsole extends JFrame {
 	  haveAlready = true;
 	}
       }
+
+      // Are we already atached to a node of that name?
       if (haveAlready) {
 	if (log.isDebugEnabled()) {
 	  log.debug("Already have attached node of name " + nodeInfo.nodeName);
@@ -1981,6 +2273,7 @@ public class CSMARTConsole extends JFrame {
 	  name = name + "-attached";
 	}
       } // end of block to see if this Node already attached
+
       runStart = new Date();
       NodeCreationInfo nci = prepareToCreateNode(nodeInfo.appServer,
                                                  name,
@@ -2006,11 +2299,24 @@ public class CSMARTConsole extends JFrame {
         if (log.isErrorEnabled()) {
           log.error("Exception attaching to: " + nodeInfo.processName, e);
         }
+	NodeInfo invalid = (NodeInfo) nodeToNodeInfo.remove(name);
+	// remove status button
+	// kill doc, textPane, listener
+	// remove from nodeListeners and nodePanes
+	((ConsoleNodeListener)nci.listener).cleanUp();
+	nodeListeners.remove(name);
+	ConsoleTextPane textPane = (ConsoleTextPane)nodePanes.remove(name);
+	if (textPane != null)
+	  textPane.cleanUp();
+	//	removeStatusButton(nci.statusButton);
+
         continue;
       }
+
       synchronized (runningNodesLock) {
         runningNodes.put(name, remoteNode);
       }
+
       addStatusButton(nci.statusButton);
       ConsoleInternalFrame frame = 
         new ConsoleInternalFrame(nci.nodeName,
@@ -2137,21 +2443,35 @@ public class CSMARTConsole extends JFrame {
       }
     }
     Collection values = nodeToNodeInfo.values();
+    java.util.List contactedAS = new ArrayList();
     for (Iterator i = values.iterator(); i.hasNext(); ) {
       NodeInfo ni = (NodeInfo)i.next();
       RemoteHost remoteAppServer = ni.appServer;
-      RemoteFileSystem remoteFS = null;
-      try {
-        remoteFS = remoteAppServer.getRemoteFileSystem();
-      } catch (Exception e) {
-        JOptionPane.showMessageDialog(this,
-            "Cannot save results.  Unable to access filesystem for " + 
-            ni.hostName + ".",
-            "Unable to access file system",
-            JOptionPane.WARNING_MESSAGE);
-        continue;
+      // Ask appServerSupport if this guy is legit?
+      if (remoteAppServer != null && !contactedAS.contains(remoteAppServer) && appServerSupport.isValidRemoteHost(remoteAppServer)) {
+	contactedAS.add(remoteAppServer);
+	RemoteFileSystem remoteFS = null;
+	try {
+	  remoteFS = remoteAppServer.getRemoteFileSystem();
+	} catch (Exception e) {
+	  final String host = ni.hostName;
+	  SwingUtilities.invokeLater(new Runnable() {
+	      public void run() {
+		JOptionPane.showMessageDialog(CSMARTConsole.this,
+		      "Cannot save results.  Unable to access filesystem for " + 
+		      host + ".",
+		      "Unable to access file system",
+		      JOptionPane.WARNING_MESSAGE);
+	      }
+	    });
+	  if (log.isErrorEnabled())
+	    log.error("saveResults failed to get filesystem on " + ni.hostName + ": ", e);
+	  // Tell appServerSupport to see if the host is legit
+	  appServerSupport.haveNewNodes();
+	  continue;
+	}
+	copyResultFiles(remoteFS, dirname);
       }
-      copyResultFiles(remoteFS, dirname);
     }
   }
   
@@ -2163,10 +2483,9 @@ public class CSMARTConsole extends JFrame {
   private String getLogFileName(String nodeName) {
     String filename = nodeName + fileDateFormat.format(runStart) + ".log";
     String dirname = makeResultDirectory();
-    if (dirname == null)
-      return filename;
-    else
-      return dirname + File.separatorChar + filename;
+    if (dirname != null)
+     filename = dirname + File.separatorChar + filename;
+    return filename;
   }
 
   /**
@@ -2219,7 +2538,7 @@ public class CSMARTConsole extends JFrame {
     // If nothing is attached, don't display this dialog
     boolean justExit = false;
     synchronized (runningNodesLock) {
-      if (runningNodes.isEmpty()) 
+      if (runningNodes == null || runningNodes.isEmpty()) 
 	justExit = true;
     } // end synchronized
 
@@ -2276,7 +2595,42 @@ public class CSMARTConsole extends JFrame {
       } else {
 	// this is what this method does now
 	// kill any node output listeners that this instance of CSMART started
+
+	// if there's a thread still creating nodes, stop it
+	stopNodeCreation = true;
+	// wait for the creating thread to stop
+	if (nodeCreator != null) {
+	  try {
+	    nodeCreator.join();
+	  } catch (InterruptedException ie) {
+	    if(log.isErrorEnabled()) {
+	      log.error("Exception waiting for node creation thread to die: ", ie);
+	    }
+	  }
+	  nodeCreator = null;
+	}
+	
+	stopping = true;
+
+	// stop the GLS Client
+	if (glsClient != null) {
+	  glsClient.stop();
+	  glsClient = null;
+	}
+
+	// This flushes the output and disconnects it
 	appServerSupport.killListeners();
+
+	// Maybe grab result files?
+	// This will contact all the AppServers again
+	saveResults();
+
+	// stop the trial timer?
+	if (trialTimer != null)
+	  trialTimer.stop();
+	if (experimentTimer != null)
+	  experimentTimer.stop();
+
 	updateControls(false);
       }
     }
@@ -2289,17 +2643,83 @@ public class CSMARTConsole extends JFrame {
       asPollTimer.cancel();
       // stop monitoring app servers
       monitorAppServerTask.cancel();
+      asPollTimer = null;
+      monitorAppServerTask = null;
     }
 
     // this is set when entering the console and must be cleared on exit
     if (experiment != null)
       experiment.setRunInProgress(false);
     
+    // Garbage collect 
+    // These all for bug 1685: Note however that it doesnt
+    // seem to help much
+    // watch out for listeners that have back pointers
+    // so things dont get GCed
+    // or for threads that hang around with pointers
+
+    destroyOldNodes();
+    oldNodes = null;
+    runningNodes = null;
+
+    // This is the biggy: It handles the internal frames, text panes,
+    // and documents
+    if (desktop != null) {
+      desktop.dispose();
+      desktop = null;
+    }
+    nodePanes = null;
+
+    if (legend != null)
+      legend.dispose();
+    legend = null;
+
+    statusButtons = null;
+    attachButton = null;
+    runButton = null;
+    stopButton = null;
+    abortButton = null;
+    buttonPanel = null;
+    nodeCreator = null;
+    myMouseListener = null;
+
+    nodeListeners = null;
+
+    // Grab all the NodeInfos and do something?
+    nodeToNodeInfo = null;
+
+    displayFilter = null;
+    nodeCreationInfoList = null;
+    appServerSupport = null;
+    trialTimer = null;
+    experimentTimer = null;
+    glsClient = null;
+    experiment = null;
+    csmart = null;
+    if (hostConfiguration != null) {
+      hostConfiguration.removeHostTreeSelectionListener(myTreeListener);
+      myTreeListener = null;
+      hostConfiguration = null;
+    }
+    societyComponent = null;
+    console = null;
+
     // If this was this frame's exit menu item, we have to remove
     // the window from the list
     // if it was a WindowClose, the parent notices this as well
-    if (e instanceof ActionEvent)
+    if (e instanceof ActionEvent) {
       NamedFrame.getNamedFrame().removeFrame(this);
+   } else {
+      if (log.isDebugEnabled()) {
+	log.debug("Not doing a removeFrame: event was " + e);
+      }
+    }
+
+    // remove listeners from this window
+    WindowListener[] lists = getWindowListeners();
+    for (int i = 0; i < lists.length; i++) 
+      removeWindowListener(lists[i]);
+
     dispose();
   }
   
@@ -2606,7 +3026,6 @@ public class CSMARTConsole extends JFrame {
     // this can be removed once the CMT and all "node.props"
     // are sure to have this property.
 
-    // FIXME! We must allow users to specify the bootstrapper class!!
     if (foundclass = false) 
       result.put(
 		 Experiment.BOOTSTRAP_CLASS, 

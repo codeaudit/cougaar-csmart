@@ -52,7 +52,11 @@ Some of these include:
   * Drag and Drop acting funny
 Installing the Linux Blackdown JVM seems to have addressed many of the above
 issues. http://www.blackdown.org
+- If you have errors loading the CSMART database, for example "ERROR
+13" messages, use the "local" option to the MySQL data load
+script. See the description in the CSMART-KnownIssues document.
 - See Linux Issues in Database section
+
 
 Other common setup problems:
 - If on startup you get an error like:

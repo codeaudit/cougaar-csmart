@@ -78,7 +78,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   private Property[] propServlets;
   private Vector servletList = null;
   private Property propTargetAgentQuery;
-  private Property propNewServletCount;
+  //  private Property propNewServletCount;
 //   private Property[] propNewServlets = null; // class of servlet
 //   private Property[] propNewServletNumArgs = null; // how many args it has
 //   private Property[][] propNewServletArgs = null; // args for each new servlet

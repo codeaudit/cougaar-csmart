@@ -21,7 +21,6 @@
 
 package org.cougaar.tools.csmart.core.cdata;
 
-import java.lang.IndexOutOfBoundsException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;

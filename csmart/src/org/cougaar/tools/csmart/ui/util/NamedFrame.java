@@ -98,8 +98,14 @@ public class NamedFrame extends Observable {
    * Returns a title which is unique (by appending a number if necessary).
    * @param title frame title
    * @param frame the frame
+   * @return title of the frame
    */
   public String addFrame(String title, JFrame frame) {
+    if (frame == null)
+      return null;
+    if (title == null)
+      title = "Unknown Frame";
+
     // number commonly used titles
     for (int i = 0; i < titles.length; i++) {
       if (title.equals(titles[i])) {
@@ -163,9 +169,19 @@ public class NamedFrame extends Observable {
   public void removeFrame(JFrame frame) {
     //    String s = removeTitleColon(frame.getTitle());
     String s = frame.getTitle();
-    titleToFrame.remove(s);
-    setChanged();
-    notifyObservers(new Event(frame, s, Event.REMOVED, null));
+    if (log.isDebugEnabled()) {
+      log.debug("Removing frame " + s);
+    }
+
+    if (titleToFrame.remove(s) == null) {
+      if (log.isInfoEnabled()) {
+	log.info("Couldnt find frame " + s);
+      }
+      // Nothing changed so dont tell people it did
+    } else {
+      setChanged();
+      notifyObservers(new Event(frame, s, Event.REMOVED, null));
+    }
   }
 
 //   public static String removeTitleColon(String title) {

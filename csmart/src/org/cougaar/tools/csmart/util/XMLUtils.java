@@ -25,7 +25,6 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.StringBuffer;
 
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Attr;

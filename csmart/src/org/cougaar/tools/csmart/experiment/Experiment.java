@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
-import java.lang.IndexOutOfBoundsException;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -62,6 +61,7 @@ import org.cougaar.tools.csmart.experiment.ExperimentHost;
 import org.cougaar.tools.csmart.recipe.RecipeBase;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.society.AgentBase;
 import org.cougaar.tools.csmart.society.SocietyBase;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
@@ -80,7 +80,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   // Define some Node Args
   public static final String EXPERIMENT_ID = "org.cougaar.experiment.id";
   public static final String PERSISTENCE_ENABLE = "org.cougaar.core.persistence.enable";
-  public static final String PERSIST_CLEAR = "org.cougaar.core.pesistence.clear";
+  public static final String PERSIST_CLEAR = "org.cougaar.core.persistence.clear";
   public static final String TIMEZONE = "user.timezone";
   public static final String AGENT_STARTTIME = "org.cougaar.agent.startTime";
   public static final String COMPLAININGLP_LEVEL = 
@@ -123,7 +123,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   private List nodes = new ArrayList();
   private List recipes = new ArrayList();
   private ReadOnlyProperties defaultNodeArguments;
-  private transient List listeners = null;
   private File resultDirectory; // where to store results
   private int numberOfTrials = 1;
   private List trials = new ArrayList();
@@ -1725,8 +1724,13 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
     AgentComponentData ac = new AgentComponentData();
     ac.setName(agent.getShortName());
+
     // Change AgentComponent to have a getClass?
-    ac.setClassName(ClusterImpl.class.getName());
+    if (agent instanceof AgentBase)
+      ac.setClassName(((AgentBase)agent).getAgentClassName());
+    else
+      ac.setClassName(ClusterImpl.class.getName());
+
     ac.addParameter(agent.getShortName()); // Agents have one parameter, the agent name
     ac.setOwner(owner);
     ac.setParent(parent);
@@ -1831,6 +1835,20 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	}
       }	
 
+      // Check all recipe components to see if modified, if so, save them
+      // Note that below the recipes are added to the experiment's
+      // table
+      // and this must happen after start the expt save
+      RecipeComponent[] rComponents = getRecipeComponents();
+      for(int i=0; i < rComponents.length; i++) {
+        RecipeComponent rc = rComponents[i];
+        if (rc.isModified()) {
+          rc.saveToDatabase();
+        }
+      }
+
+      ///////////
+      // OK: Now go ahead and save the experiment.
       pdb =
 	new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
 		       getExperimentID(), trialID, ch, sc.getAssemblyId());
@@ -1916,6 +1934,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	  pdb.populateCSA(completeSociety);
 	}
       } // end of loop over components to do mod
+
+      // Save the inclusion of these recipes in the experiment
+      // without re-saving the recipes
       pdb.setModRecipes(recipes);
 
       // Now make sure the runtime/ config time assemblies
@@ -2312,7 +2333,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @param parent - Parent GUI Component
    */
   public void importHNA(Component parent) {
-    JFileChooser chooser = new JFileChooser(SocietyFinder.getInstance().getPath());
+    File resultDir = getResultDirectory();
+    String path = ".";
+    if (resultDir != null)
+      path = resultDir.getAbsolutePath();
+    JFileChooser chooser = new JFileChooser(path);
     chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
     chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
 	public boolean accept (File f) {
@@ -2328,6 +2353,13 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
         return;
       file = chooser.getSelectedFile();
     }
+
+    if (log.isInfoEnabled()) {
+      log.info("importing HNA file " + file.getAbsolutePath());
+    }
+
+    // FIXME: Put up a dialog indicating the file being imported?
+    // Bug 1765
 
     ComponentData mapping = null;
     if(file != null) {
@@ -2358,54 +2390,64 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @param children - Child Component to re-map.
    */
   public void addChildren(ComponentData[] children) {
+    if (children == null)
+      return;
     for(int i=0; i < children.length; i++) {
       ComponentData child = children[i];
-        if(child.getType().equals(ComponentData.HOST)) {
-          // Add host.
-          HostComponent host = null;
-          try {
-            host = addHost(child.getName());
-          } catch(IllegalArgumentException e) {
-            // Host already exists.
-            HostComponent[] allHosts = getHostComponents();
-            for(int x=0; x < allHosts.length; x++) {
-              if(allHosts[x].getShortName().equals(child.getName())) {
-                host = allHosts[x];
-                break;
-              }
-            }
-            if(log.isDebugEnabled()) {
-              log.debug("Host already exists: " + child.getName());
-            }
-          }
-          addHostChildren(child.getChildren(), host);
-        } else if(child.getType().equals(ComponentData.NODE)) {
-          // Add node.
-          NodeComponent node = null;
-          try {
-            node = addNode(child.getName());
-          } catch(IllegalArgumentException e) {
-            // Node already exists.
-            NodeComponent[] allNodes = getNodeComponents();
-            for(int x=0; x < allNodes.length; x++) {
-              if(allNodes[x].getShortName().equals(child.getName())) {
-                node = allNodes[x];
-                break;
-              }
-            }
-            if(log.isDebugEnabled()) {
-              log.debug("Node already exists: " + child.getName());
-            }
-          }
-          addNodeChildren(child.getChildren(), node);
-        } else if(child.getType().equals(ComponentData.AGENT)) {
-          // Ignore.
-        } else {
-          if(log.isWarnEnabled()) {
-            log.warn("Unknown Type: " + child.getType());
-          }
-        }
+      if (child == null)
+	continue;
+      if(child.getType().equals(ComponentData.HOST)) {
+	// Add host.
+	HostComponent host = null;
+	try {
+	  host = addHost(child.getName());
+	} catch(IllegalArgumentException e) {
+	  // Host already exists.
+	  HostComponent[] allHosts = getHostComponents();
+	  if (allHosts == null)
+	    continue;
+	  for(int x=0; x < allHosts.length; x++) {
+	    if(allHosts[x].getShortName().equals(child.getName())) {
+	      host = allHosts[x];
+	      break;
+	    }
+	  }
+	  if(log.isDebugEnabled()) {
+	    log.debug("Host already exists: " + child.getName());
+	  }
+	}
+	if (host != null)
+	  addHostChildren(child.getChildren(), host);
+      } else if(child.getType().equals(ComponentData.NODE)) {
+	// Add node.
+	NodeComponent node = null;
+	try {
+	  node = addNode(child.getName());
+	} catch(IllegalArgumentException e) {
+	  // Node already exists.
+	  NodeComponent[] allNodes = getNodeComponents();
+	  if (allNodes == null)
+	    continue;
+	  for(int x=0; x < allNodes.length; x++) {
+	    if(allNodes[x].getShortName().equals(child.getName())) {
+	      node = allNodes[x];
+	      break;
+	    }
+	  }
+	  if(log.isDebugEnabled()) {
+	    log.debug("Node already exists: " + child.getName());
+	  }
+	}
+	if (node != null)
+	  addNodeChildren(child.getChildren(), node);
+      } else if(child.getType().equals(ComponentData.AGENT)) {
+	// Ignore.
+      } else {
+	if(log.isWarnEnabled()) {
+	  log.warn("Unknown Type: " + child.getType());
+	}
       }
+    }
   }
 
   /**
@@ -2415,27 +2457,41 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @param host - HostComponent to add children to.
    */
   public void addHostChildren(ComponentData[] children, HostComponent host) {
+    if (children == null)
+      return;
+    if (host == null)
+      return;
     for(int i=0; i < children.length; i++) {
       boolean foundInHost = false;
       boolean foundInSociety = false;
       ComponentData child = children[i];
+      if (child == null)
+	return;
       NodeComponent expNode = null;
       NodeComponent[] allNodes = getNodeComponents();
       if(child.getType().equals(ComponentData.NODE)) {
-        for(int k=0; k < allNodes.length; k++) {
-          if(child.getName().equals(allNodes[k].getShortName())) {
-            foundInSociety = true;
-            expNode = allNodes[k];
-            break;
-          }
-        }
+	if (allNodes != null) {
+	  for(int k=0; k < allNodes.length; k++) {
+	    if (allNodes[k] == null)
+	      continue;
+	    if(child.getName().equals(allNodes[k].getShortName())) {
+	      foundInSociety = true;
+	      expNode = allNodes[k];
+	      break;
+	    }
+	  }
+	}
         NodeComponent[] crntNodes = host.getNodes();
-        for(int j=0; j < crntNodes.length; j++) {
-          if(child.getName().equals(crntNodes[j].getShortName())) {
-            foundInHost = true;
-            break;
-          }
-        }
+	if (crntNodes != null) {
+	  for(int j=0; j < crntNodes.length; j++) {
+	    if (crntNodes[j] == null)
+	      continue;
+	    if(child.getName().equals(crntNodes[j].getShortName())) {
+	      foundInHost = true;
+	      break;
+	    }
+	  }
+	}
         if(!foundInHost) {
           // See if in Exp.
           if(foundInSociety) {
@@ -2444,7 +2500,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
             expNode = host.addNode(addNode(child.getName()));
           }
         }
-	addNodeChildren(child.getChildren(), expNode);
+	if (expNode != null)
+	  addNodeChildren(child.getChildren(), expNode);
       } else {
         if(log.isWarnEnabled()) {
           log.warn("Unknown child of host: " + child.getName());
@@ -2461,41 +2518,63 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @param node Node to add children to.
    */
   public void addNodeChildren(ComponentData[] children, NodeComponent node) {
+    if (node == null)
+      return;
+    if (children == null)
+      return;
+
     for(int i=0; i < children.length; i++) {
       boolean foundInSociety = false;
       boolean foundInNode = false;
       ComponentData child = children[i];
+      if (child == null)
+	continue;
       AgentComponent[] allAgents = getAgents();
       AgentComponent addAgent = null;
       if(child.getType().equals(ComponentData.AGENT)) {
-        for(int k=0; k < allAgents.length; k++) {
-          if(child.getName().equals(allAgents[k].getShortName())) {
-            foundInSociety = true;
-            addAgent = allAgents[k];
-            break;
-          }
-        }
-
+	if (allAgents != null) {
+	  for(int k=0; k < allAgents.length; k++) {
+	    if (allAgents[k] == null)
+	      continue;
+	    if(child.getName().equals(allAgents[k].getShortName())) {
+	      foundInSociety = true;
+	      addAgent = allAgents[k];
+	      break;
+	    }
+	  }
+	}
+	
         if(foundInSociety) {
           AgentComponent[] crntAgents = node.getAgents();
-          for(int j=0; j < crntAgents.length; j++) {
-            if(child.getName().equals(crntAgents[j].getShortName())) {
-              foundInNode = true;
-              break;
-            }
-          }
+	  if (crntAgents != null) {
+	    for(int j=0; j < crntAgents.length; j++) {
+	      if (crntAgents[j] == null)
+		continue;
+	      if(child.getName().equals(crntAgents[j].getShortName())) {
+		foundInNode = true;
+		break;
+	      }
+	    }
+	  }
           if(!foundInNode) {
-            if(node.getShortName().equalsIgnoreCase(addAgent.getShortName())) {
-              if(log.isWarnEnabled()) {
-                log.warn("Agent name same as node, cannot perform addition");
-              }
-              JOptionPane.showMessageDialog(null, "Cannot Map Agent to Node of Same name, ignoring agent: " + addAgent.getShortName());
-            } else {
-              node.addAgent(addAgent);
-            }
+	    if (addAgent == null) {
+	      // this shouldnt happen
+	    } else {
+	      // FIXME: This test not quite adequate - must
+	      // check that agent name not same as any
+	      // other Node or Agent name
+	      if(node.getShortName().equalsIgnoreCase(addAgent.getShortName())) {
+		if(log.isWarnEnabled()) {
+		  log.warn("Agent name same as node, cannot perform addition");
+		}
+		JOptionPane.showMessageDialog(null, "Cannot Map Agent to Node of Same name, ignoring agent: " + addAgent.getShortName());
+	      } else {
+		node.addAgent(addAgent);
+	      }
+	    }
           }
         } else {
-          JOptionPane.showMessageDialog(null, "Cannot Map Unknown Agent: " + addAgent.getShortName());
+          JOptionPane.showMessageDialog(null, "Cannot Map Unknown Agent: " + child.getName());
           if(log.isWarnEnabled()) {
             log.warn("Agent: " + child.getName() + " not known.  Add aborted");
           }

@@ -53,7 +53,7 @@ CREATE TABLE tempcopy.asb_assembly AS
   SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:recipeName'),50) AS ASSEMBLY_ID,
     AB.ASSEMBLY_TYPE AS ASSEMBLY_TYPE, 
-    AB.DESCRIPTION AS DESCRIPTION 
+    CONCAT(AB.DESCRIPTION,'-cpy') AS DESCRIPTION 
   FROM asb_assembly AB, 
     lib_mod_recipe_arg AA,
     lib_mod_recipe AT
@@ -102,6 +102,21 @@ CREATE TABLE tempcopy.asb_agent AS
     AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
     AND AT.NAME = ':recipeName'
     AND AA.ARG_VALUE = AB.ASSEMBLY_ID;
+
+-- lib_agent_org
+
+DROP TABLE IF EXISTS tempcopy.lib_agent_org;
+
+CREATE TABLE tempcopy.lib_agent_org AS
+  SELECT DISTINCT 
+    L.COMPONENT_LIB_ID,
+    L.AGENT_LIB_NAME,
+    L.AGENT_ORG_CLASS
+   FROM
+    lib_agent_org L,
+    tempcopy.asb_agent A
+   WHERE
+    A.COMPONENT_LIB_ID = L.COMPONENT_LIB_ID;
 
 -- asb_agent_pg_attr
 DROP TABLE IF EXISTS tempcopy.asb_agent_pg_attr;
@@ -241,4 +256,94 @@ CREATE TABLE tempcopy.community_entity_attribute AS
     AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
     AND AT.NAME = ':recipeName'
     AND AA.ARG_VALUE = AB.ASSEMBLY_ID;
+
+-------
+
+-- Add in those from recipe assembly
+-- alib_component
+DROP TABLE IF EXISTS tempcopy.alib_component;
+
+CREATE TABLE tempcopy.alib_component AS
+   SELECT DISTINCT
+     AA.COMPONENT_ALIB_ID,
+     AA.COMPONENT_NAME,
+     AA.COMPONENT_LIB_ID,
+     AA.COMPONENT_TYPE,
+     AA.CLONE_SET_ID
+   FROM
+     alib_component AA,
+     asb_component_hierarchy AH,
+     lib_mod_recipe_arg MA,
+     lib_mod_recipe LM
+   WHERE
+         MA.ARG_NAME = 'Assembly Id'
+     AND MA.MOD_RECIPE_LIB_ID = LM.MOD_RECIPE_LIB_ID
+     AND LM.NAME = ':recipeName'
+     AND MA.ARG_VALUE = AH.ASSEMBLY_ID
+     AND (AH.COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID OR AH.PARENT_COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID);
+
+ -- lib_component
+
+ DROP TABLE IF EXISTS tempcopy.lib_component;
+
+ CREATE TABLE tempcopy.lib_component AS
+   SELECT DISTINCT
+     AA.COMPONENT_LIB_ID,
+     AA.COMPONENT_TYPE,
+     AA.COMPONENT_CLASS,
+     AA.INSERTION_POINT,
+     AA.DESCRIPTION
+   FROM
+     lib_component AA,
+     tempcopy.alib_component AC
+   WHERE
+     AA.COMPONENT_LIB_ID = AC.COMPONENT_LIB_ID;
+
+UPDATE tempcopy.alib_component
+   SET COMPONENT_ALIB_ID = ':recipeName-cpy'
+ WHERE COMPONENT_ALIB_ID = ':recipeName';
+
+UPDATE tempcopy.alib_component
+   SET COMPONENT_NAME = ':recipeName-cpy'
+ WHERE COMPONENT_NAME = ':recipeName';
+
+UPDATE tempcopy.asb_agent
+   SET COMPONENT_ALIB_ID = ':recipeName-cpy'
+ WHERE COMPONENT_ALIB_ID = ':recipeName';
+
+UPDATE tempcopy.asb_component_arg
+   SET COMPONENT_ALIB_ID = ':recipeName-cpy'
+ WHERE COMPONENT_ALIB_ID = ':recipeName';
+
+UPDATE tempcopy.asb_component_hierarchy
+   SET COMPONENT_ALIB_ID = ':recipeName-cpy'
+ WHERE COMPONENT_ALIB_ID = ':recipeName';
+
+UPDATE tempcopy.asb_component_hierarchy
+   SET PARENT_COMPONENT_ALIB_ID = ':recipeName-cpy'
+ WHERE PARENT_COMPONENT_ALIB_ID = ':recipeName';
+
+-- lib_pg_attribute
+DROP TABLE IF EXISTS tempcopy.lib_pg_attribute;
+
+CREATE TABLE tempcopy.lib_pg_attribute AS
+  SELECT DISTINCT 
+    LP.PG_ATTRIBUTE_LIB_ID,
+    LP.PG_NAME,
+    LP.ATTRIBUTE_NAME,
+    LP.ATTRIBUTE_TYPE,
+    LP.AGGREGATE_TYPE
+   FROM
+     lib_pg_attribute LP,
+     tempcopy.asb_agent_pg_attr AP
+   WHERE
+     AP.PG_ATTRIBUTE_LIB_ID = LP.PG_ATTRIBUTE_LIB_ID;
+
+UPDATE tempcopy.asb_agent_pg_attr
+   SET COMPONENT_ALIB_ID = ':recipeName-cpy'
+ WHERE COMPONENT_ALIB_ID = ':recipeName';
+
+UPDATE tempcopy.asb_oplan_agent_attr
+   SET COMPONENT_ALIB_ID = ':recipeName-cpy'
+ WHERE COMPONENT_ALIB_ID = ':recipeName';
 

@@ -91,6 +91,9 @@ public class AppServerSupport {
       // FIXME: Maybe only invoke this in certain circumstances?
       // Like when the user hit "Run" or something?
       // Cause if it's just from the updateAppServers, this may not be right.
+      // In general, if CSMART was connected to this AppServer for a Node,
+      // or the user explicitly tried to add this AppServer to the list, then
+      // we need to give the error. Otherwise, don't bother.
 
       // Use SwingUtils.invokeLater
       // This gets called from within the Timer that does the updates, as well as other
@@ -248,6 +251,15 @@ public class AppServerSupport {
 	      log.debug("Killing node listener: " + s +
 				 " for node: " + name);
 	    }
+
+	    try {
+	      rl.flushOutput();
+	    } catch (Exception e) {
+	      if (log.isErrorEnabled()) {
+		log.error("killListener: Exception flushing output for " + name + ": ", e);
+	      }
+	    }
+	    
 	    try {
 	      rl.removeListener(s);
 	    } catch (Exception e) {
@@ -386,7 +398,7 @@ public class AppServerSupport {
    */
   private boolean updateNodeToAppServerMapping() {
     if (log.isDebugEnabled())
-      log.debug("Updating app servers");
+      log.debug("Updating Node to App servers");
 
     boolean haveNewNodes = false;
     // get process descriptions from all known app servers
@@ -523,7 +535,13 @@ public class AppServerSupport {
     for (int i = 0; i < attachToNodes.length; i++) {
       String processName = attachToNodes[i];
       AppServerDesc desc = (AppServerDesc)nodeToAppServer.get(processName);
+      if (desc == null)
+	continue;
       RemoteHost appServer = desc.appServer;
+      if (appServer == null) {
+	nodeToAppServer.remove(processName);
+	continue;
+      }
       ProcessDescription pd = null;
       try {
         pd = appServer.getProcessDescription(processName);
@@ -535,6 +553,8 @@ public class AppServerSupport {
 	nodeToAppServer.remove(processName);
         continue;
       }
+      if (pd == null)
+	continue;
       Properties properties = (Properties)pd.getJavaProperties();
       String nodeName = (String)properties.get(Experiment.NODE_NAME);
       String hostName = (String)properties.get(Experiment.NAME_SERVER);
@@ -549,7 +569,7 @@ public class AppServerSupport {
       results.add(new NodeInfo(appServer, nodeName, hostName,
                                processName,
                                properties, args));
-    }
+    } // loop over nodes to attach to
     return results;
   }
 
@@ -584,7 +604,6 @@ public class AppServerSupport {
    * <code>true</code> if we do
    */
   public boolean haveValidAppServers() {
-    refreshAppServers();
     return checkASListWorker();
   }
 
@@ -596,12 +615,28 @@ public class AppServerSupport {
   }
 
   /**
+   * See if this AppServer (<code>RemoteHost</code>) is
+   * still listed as a valid one.
+   **/
+  public boolean isValidRemoteHost(RemoteHost rh) {
+    if (rh == null)
+      return false;
+    try {
+      rh.ping();
+      return true;
+    } catch (Exception e) {
+      if (log.isWarnEnabled())
+	log.warn("isValidRemoteHost: Ping failed on remoteHost");
+      return false;
+    }
+  }
+
+  /**
    * Used to see if we know of any running processes out there,
    * regardless of whether we might now be attached to them. Return
    * <code>true</code> if we do.
    */
   public boolean thereAreRunningNodes() {
-    refreshAppServers();
     return checkRunningNodesWorker();
   }
 

@@ -22,16 +22,21 @@ package org.cougaar.tools.csmart.recipe;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import org.cougaar.core.agent.ClusterImpl;
+import org.cougaar.util.DBProperties;
+
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
@@ -51,7 +56,6 @@ import org.cougaar.tools.csmart.society.cdata.AgentCDataComponent;
 import org.cougaar.tools.csmart.society.cdata.BaseCDataComponent;
 import org.cougaar.tools.csmart.society.db.AgentDBComponent;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
-import org.cougaar.util.DBProperties;
 
 /**
  * ComplexRecipeBase.java
@@ -59,7 +63,7 @@ import org.cougaar.util.DBProperties;
  * Base component for a ComplexRecipe.  A ComplexRecipe is a recipe that requires
  * storage in both the recipe tables and an assembly in the asb table.
  * The primary key is an assembly Id which is a hidden property of the recipe.
- * This key is stored as the only argument in the recipe args table.
+ * This key is stored as the primary argument in the recipe args table.
  * On load, the assembly Id is used to obtain all recipe related data from the
  * assembly tables.
  *
@@ -68,9 +72,10 @@ import org.cougaar.util.DBProperties;
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  * @version 1.0
  */
-
 public class ComplexRecipeBase extends RecipeBase 
   implements ComplexRecipeComponent, Serializable {
+
+  protected static String DESCRIPTION_RESOURCE_NAME = "";
 
   /** Identifier String for the hidden Assembly Id Property **/
   public static final String ASSEMBLY_PROP = "Assembly Id";
@@ -88,29 +93,35 @@ public class ComplexRecipeBase extends RecipeBase
   protected String recipeId = null;
   protected String assemblyId = null;
   protected String oldAssemblyId = null;
-  private boolean saveInProgress = false;
   protected ComponentData cdata = null;
   private Property propAssemblyId;
-  private String name = null;
+  private String initName = null;
   private Map substitutions = new HashMap();
   private transient DBProperties dbp;
 
 
   public ComplexRecipeBase (String name){
     super(name);
-    this.name = name;
+    this.initName = name;
   }
   
   public ComplexRecipeBase (String name, String assemblyId){
     super(name);
     this.assemblyId = assemblyId;
-    this.name = name;
+    this.initName = name;
   }
 
   public ComplexRecipeBase (String name, String assemblyId, String recipeId){
     super(name);
     this.assemblyId = assemblyId;
-    this.name = name;
+    this.initName = name;
+    this.recipeId = recipeId;
+  }
+
+  public ComplexRecipeBase (String name, String assemblyId, String recipeId, String initName){
+    super(name);
+    this.assemblyId = assemblyId;
+    this.initName = initName;
     this.recipeId = recipeId;
   }
 
@@ -118,6 +129,16 @@ public class ComplexRecipeBase extends RecipeBase
     super(cdata.getName());
     this.cdata = cdata;
     this.assemblyId = assemblyId;
+  }
+
+  /**
+   * Returns the description of this society
+   *
+   * @return an <code>URL</code> value
+   */
+  public URL getDescription() {
+    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
+
   }
 
   /**
@@ -142,16 +163,9 @@ public class ComplexRecipeBase extends RecipeBase
     
     String oldCMTAsbid = oldAssemblyId;
     String currAssID = getAssemblyId();
-    String name = getRecipeName();
-
-    if (currAssID != null && currAssID.startsWith("CMT")) {
-      if (log.isDebugEnabled()) {
-	log.debug("saveToDB not saving CMT society (" + getRecipeName() + ") with id " + currAssID + " and old ID " + oldCMTAsbid + " into same ID. Will create new one and new name -- like a copy, except done in place");
-      }
-      oldCMTAsbid = currAssID;
+    if (currAssID == null || currAssID.trim().equals(""))
       currAssID = null;
-      name = name + " edited";
-    }
+    String name = getRecipeName();
 
     // And what is my current assemblyID?
     // How do I know if it is different?
@@ -205,28 +219,34 @@ public class ComplexRecipeBase extends RecipeBase
 
 
   /**
-   * Initializes the hidden assembly id property.
+   * Initializes the hidden assembly id property, or CDATA
    *
    */
   public void initProperties() {
+    if (cdata != null) {
+      initFromCData();
+      assemblyId = null;
+    } else if (assemblyId != null) {
+      initFromDatabase();
+    }
+
     propAssemblyId = addProperty(ASSEMBLY_PROP, ((assemblyId != null) ? assemblyId : ""));
     propAssemblyId.setVisible(false);
 
-    if(assemblyId != null) {
-      if(cdata != null)
-        initFromCData();
-      else 
-        initFromDatabase();
-    } else if (cdata != null) {
-      initFromCData();
+    if (initName != getRecipeName()) {
+      // A recipe copy - mark it as modified
+      oldAssemblyId = assemblyId;
+      assemblyId = "";
+      propAssemblyId.setValue("");
+      modified = true;
+    } else {
+      // After reading from the DB, it is not modified.
+      modified = false;
+      fireModification(new ModificationEvent(this, RECIPE_SAVED));
     }
-
-    // After reading from the DB, it is not modified.
-    modified = false;
-    fireModification(new ModificationEvent(this, RECIPE_SAVED));
-
   }
 
+  // Initialize recipe details from the DB, from an RCP assembly
   private void initFromDatabase() {
     if(assemblyId != null) {
       try {
@@ -237,13 +257,13 @@ public class ComplexRecipeBase extends RecipeBase
         }
       }
 
-      initAgentsFromDb();
-      initPluginsFromDb();
-      initBindersFromDb();
-      initTargetsFromDb();
+      initAgentsFromDb(); // Get the Agents
+      initCompsFromDb(); // Get the other components
+      initTargetsFromDb(); // Get the target query over-rides for the other comps
     }
   }
 
+  // Get the Agent components to be added from the DB
   private void initAgentsFromDb() {
     Map substitutions = new HashMap();
     if (assemblyId != null) {
@@ -258,6 +278,8 @@ public class ComplexRecipeBase extends RecipeBase
 	  ResultSet rs = stmt.executeQuery(query);
 	  while (rs.next()) {
 	    String agentName = DBUtils.getNonNullString(rs, 1, query);
+	    if (log.isDebugEnabled())
+	      log.debug("initAgsFromDb adding " + agentName);
 	    AgentDBComponent agent = 
               new AgentDBComponent(agentName, assemblyId);
 	    agent.initProperties();
@@ -277,32 +299,53 @@ public class ComplexRecipeBase extends RecipeBase
     }    
   }
 
-  private void initPluginsFromDb() {
+  // Initialize non-Agent sub-components from DB
+  private void initCompsFromDb() {
     String assemblyMatch = DBUtils.getListMatch(assemblyId);
     if (assemblyMatch != null) {
       substitutions.put(":assemblyMatch", assemblyMatch);
-      substitutions.put(":agent_name", name);
+      substitutions.put(":agent_name", initName);
     }
 
+    List types = new ArrayList();
+    types.add(ComponentData.SOCIETY);
+    types.add(ComponentData.NODE);
+    types.add(ComponentData.HOST);
+    types.add(ComponentData.NODEAGENT);
+    types.add(ComponentData.AGENT);
+    types.add(ComponentData.RECIPE);
+    String ctypematch = "NOT " + DBUtils.getListMatch(types);
+    substitutions.put(":comp_type:", ctypematch);
+    
     // Get Plugin Names, class names, and parameters
     try {
       Connection conn = DBUtils.getConnection();
       String query = "";
-      substitutions.put(":comp_type:", "= '" + ComponentData.PLUGIN + "'");
       try {
         Statement stmt = conn.createStatement();	
         query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
+
+	if (log.isDebugEnabled())
+	  log.debug("initCompsFromDb doing query " + query);
+
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
           String pluginClassName = rs.getString(1);
+
+	  if (log.isDebugEnabled())
+	    log.debug("initFromDb loading " + pluginClassName);
+
           String pluginName = rs.getString(4);
+	  String pluginType = rs.getString(5).trim().intern();
           String priority = rs.getString(6).intern();
-          PluginBase plugin = new PluginBase(pluginName, pluginClassName, priority);
+          ComponentBase plugin = new ComponentBase(pluginName, pluginClassName, priority);
           plugin.initProperties();
           String alibId = rs.getString(2);
           String libId = rs.getString(3);
           plugin.setAlibID(alibId);
           plugin.setLibID(libId);
+	  plugin.setComponentType(pluginType);
+	  // set the type too
           substitutions.put(":comp_alib_id", alibId);
           substitutions.put(":comp_id", rs.getString(3));
           Statement stmt2 = conn.createStatement();
@@ -323,64 +366,12 @@ public class ComplexRecipeBase extends RecipeBase
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Exception", e);
+        log.error("initCompsFromDb Exception: ", e);
       }
-      throw new RuntimeException("Error" + e);
     }
   }
 
-  private void initBindersFromDb() {
-//     String assemblyMatch = DBUtils.getListMatch(assemblyId);
-//     if (assemblyMatch != null) {
-//       substitutions.put(":assemblyMatch", assemblyMatch);
-//       substitutions.put(":agent_name", name);
-//     }
-
-//     // Get Plugin Names, class names, and parameters
-//     try {
-//       Connection conn = DBUtils.getConnection();
-//       String query = "";
-//       substitutions.put(":comp_type:", "in ( '" + ComponentData.NODEBINDER + "', " + ComponentData.AGENTBINDER + "')");
-//       try {
-//         Statement stmt = conn.createStatement();	
-//         query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
-//         ResultSet rs = stmt.executeQuery(query);
-//         while(rs.next()) {
-//           String pluginClassName = rs.getString(1);
-//           String pluginName = rs.getString(4);
-//           String priority = rs.getString(6).intern();
-//           PluginBase plugin = new PluginBase(pluginName, pluginClassName, priority);
-//           plugin.initProperties();
-//           String alibId = rs.getString(2);
-//           String libId = rs.getString(3);
-//           plugin.setAlibID(alibId);
-//           plugin.setLibID(libId);
-//           substitutions.put(":comp_alib_id", alibId);
-//           substitutions.put(":comp_id", rs.getString(3));
-//           Statement stmt2 = conn.createStatement();
-//           String query2 = dbp.getQuery(QUERY_PLUGIN_ARGS, substitutions);
-//           ResultSet rs2 = stmt2.executeQuery(query2);
-//           while (rs2.next()) {
-//             String arg = rs2.getString(1);
-//             plugin.addParameter(arg);
-//           }
-//           rs2.close();
-//           stmt2.close();
-//           addChild(plugin);
-//         } // end of loop over plugins to add
-//         rs.close();
-//         stmt.close();
-//       } finally {
-//         conn.close();
-//       }
-//     } catch (Exception e) {
-//       if(log.isErrorEnabled()) {
-//         log.error("Exception", e);
-//       }
-//       throw new RuntimeException("Error" + e);
-//     }
-  }
-
+  // Initialize target query over-rides from DB
   private void initTargetsFromDb() {
     if(log.isDebugEnabled()) {
       log.debug("In initTargetsFromDb");
@@ -396,35 +387,59 @@ public class ComplexRecipeBase extends RecipeBase
 	  Statement stmt = conn.createStatement();
 	  String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
           if(log.isDebugEnabled()) {
-            log.debug("Run query: " + query);
+            log.debug("initTargetsFromDb: Run query: " + query);
           }
 
 	  ResultSet rs = stmt.executeQuery(query);
 	  while (rs.next()) {
-            String name = rs.getString(1);
-            if(name.startsWith("$$CP=")) {
-              int start = name.indexOf("=");
-              String component = name.substring(start+1);
+            String propName = rs.getString(1);
+            if(propName.startsWith("$$CP=")) {
+              int start = propName.indexOf("=");
+              String component = propName.substring(start+1);
 
               // Find the Component and add the Property
               if(log.isDebugEnabled()) {
-                log.debug("Looking for: " + component);
+                log.debug("Looking for: " + component + " out of " + getChildCount() + " children");
               }
               for(int i=0; i < getChildCount(); i++) {
-                ComponentBase cc = (ComponentBase)getChild(i);
-                String tag = cc.getComponentClassName() + "-" + i;
-                if(log.isDebugEnabled()) {
-                  log.debug("Compare with: " + tag);
-                }
-                if(tag.equals(component)) {
+                ConfigurableComponent cc = (ConfigurableComponent)getChild(i);
+//                 ComponentBase cc = (ComponentBase)getChild(i);
+		if (log.isDebugEnabled())
+		  log.debug("Considering child " + i + ": " + cc.getShortName());
+
+                if (cc instanceof ComponentBase) {
+                  String tag = ((ComponentBase)cc).getComponentClassName() + "-" + i;
                   if(log.isDebugEnabled()) {
-                    log.debug("Found Desired Parent: " + tag + " adding parameter");
+                    log.debug("Compare with: " + tag);
                   }
-                  cc.addProperty(PROP_TARGET_COMPONENT_QUERY, rs.getString(2));
-                }
-              }
-            }
-	  }
+                  if(tag.equals(component)) {
+                    if(log.isDebugEnabled()) {
+                      log.debug("Found Desired Parent: " + tag + " adding parameter");
+                    }
+                    cc.addProperty(PROP_TARGET_COMPONENT_QUERY, rs.getString(2));
+		    break;
+                  }
+                } else {
+		  // What kind of component is this?
+		  if (cc instanceof AgentComponent) {
+		    log.debug("not right - it's an Agent");
+		  }
+		}
+              } // loop over children
+            } else if (! propName.equals(ASSEMBLY_PROP)) {
+	      // Non child component property
+	      Property prop = getProperty(propName);
+	      if (prop != null) {
+		if (log.isDebugEnabled())
+		  log.debug("setting local prop " + propName + " to " + rs.getString(2));
+		prop.setValue(rs.getString(2));
+	      } else {
+		if (log.isDebugEnabled())
+		  log.debug("Adding new local prop " + propName + " with val " + rs.getString(2));
+		addProperty(propName, rs.getString(2));
+	      }
+	    }
+	  } // end of loop over props from db
 	  rs.close();
 	  stmt.close();
 	} finally {
@@ -432,9 +447,8 @@ public class ComplexRecipeBase extends RecipeBase
 	}
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error("Exception", e);
+          log.error("Exception getting target properties for recipe " + getRecipeName(), e);
         }
-	throw new RuntimeException("Error" + e);
       }
     }    
   }
@@ -448,21 +462,20 @@ public class ComplexRecipeBase extends RecipeBase
     if (cdata != null)
       alldata.add(cdata);
     
-    // FIXME: It'd be nice to deal with binders of Agents in here!!!
-    
     // Find all the data.
     for (int i = 0; i < alldata.size(); i++) {
       ComponentData someData = (ComponentData)alldata.get(i);
-      if (someData.getType().equals(ComponentData.AGENT)) {
+      String type = someData.getType();
+      if (type.equals(ComponentData.AGENT)) {
         agentData.add(someData);
-      } else if (someData.getType().equals(ComponentData.PLUGIN) ||
-                 someData.getType().equals(ComponentData.NODEBINDER) ||
-                 someData.getType().equals(ComponentData.AGENTBINDER)){
-        componentData.add(someData);
-      } else {
+      } else if (type.equals(ComponentData.SOCIETY) || type.equals(ComponentData.HOST) || type.equals(ComponentData.NODE) || type.equals(ComponentData.RECIPE)) {
+	// It's not something I know - some sort of container
         ComponentData[] moreData = someData.getChildren();
         for (int j = 0; j < moreData.length; j++) 
           alldata.add(moreData[j]);
+      } else {
+	// Add it directly
+        componentData.add(someData);
       }
     }
     
@@ -474,6 +487,7 @@ public class ComplexRecipeBase extends RecipeBase
       addChild(agentComponent);
     }
       
+    // Add my immediate children
     for (int j=0; j < componentData.size(); j++) {
       BaseComponent baseComponent = 
         new BaseCDataComponent((ComponentData)componentData.get(j));
@@ -520,6 +534,8 @@ public class ComplexRecipeBase extends RecipeBase
    */
   public ComponentData addComponentData(ComponentData data) {
     ComponentData[] children = data.getChildren();
+    if (children == null)
+      return data;
     for(int i=0; i < children.length; i++) {
       ComponentData child = children[i];
       // for each child component data, if it's an agent's component data
@@ -553,7 +569,7 @@ public class ComplexRecipeBase extends RecipeBase
     AgentComponentData ac = new AgentComponentData();
     ac.setName(agent.getShortName());
     ac.setClassName(ClusterImpl.class.getName());
-    ac.addParameter(agent.getShortName()); // Agents have one parameter, the agent name
+    ac.addParameter(agent.getShortName().toString()); // Agents have one parameter, the agent name
     ac.setOwner(owner);
     ac.setParent(parent);
     parent.addChild((ComponentData)ac);

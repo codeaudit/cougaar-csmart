@@ -23,8 +23,6 @@ package org.cougaar.tools.csmart.ui.viewer;
 
 import java.io.*;
 import java.net.*;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.*;
 
 import javax.swing.JFileChooser;

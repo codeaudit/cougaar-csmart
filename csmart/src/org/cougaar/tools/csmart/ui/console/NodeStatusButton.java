@@ -29,7 +29,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JRadioButton;
 
 public class NodeStatusButton extends JRadioButton {
-  private int status = STATUS_UNKNOWN;
+  public int status = STATUS_UNKNOWN;
   private Image img = null; // error image
   private boolean notifyOnStandardError = false;
 

@@ -57,9 +57,6 @@ public class SwitchPluginRecipe extends RecipeBase
   private Property propNewPluginClass;
   private Property propCompType;
 
-  // FIXME: Make t
-  private String compType = ComponentData.PLUGIN;
-
   private static final String DESCRIPTION_RESOURCE_NAME = 
     "switch-plugin-recipe-description.html";
 

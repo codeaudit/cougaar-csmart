@@ -41,21 +41,20 @@ import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
- * Listener for "pushed" Node activities.
+ * Listener for "pushed" Node activities. Handles NodeStatus button color
+ * changes, writing content to log file, measuring Node "idleness".
+ * This is object called from the AppServer.
  */
-
 public class ConsoleNodeListener implements OutputListener {
   private CSMARTConsole console;
-  private String nodeName;
+  public String nodeName;
   private String logFileName;
   private Writer logFile;
   private SimpleAttributeSet[] atts;
-  private StripChartFrame chartFrame;
   private JCChart chart;
   private StripChartSource idleTimeDataModel;
-  private NodeStatusButton statusButton;
+  public NodeStatusButton statusButton;
   private long firsttime = 0l;
-  private String notifyCondition = null;
   private boolean haveError = false;
   private ConsoleStyledDocument doc;
   private ConsoleNodeOutputFilter filter = null;
@@ -80,7 +79,9 @@ public class ConsoleNodeListener implements OutputListener {
 			       
     // wrap and capture to a log
     this.logFileName = logFileName;
-    this.logFile = new BufferedWriter(new FileWriter(logFileName));
+    // Create new log file, always appending to the end - so a Node restart
+    // can write to the end of the file, not losing data
+    this.logFile = new BufferedWriter(new FileWriter(logFileName, true));
 
     // save the document that contains node output
     this.doc = doc;
@@ -127,7 +128,6 @@ public class ConsoleNodeListener implements OutputListener {
    * @param nodemsg a <code>String</code> NodeEvent message to parse
    * @return a <code>double</code> idleness number, 0 on error
    */
-
   private double getIdleness(String nodemsg) {
     // node message is idletime:time of snapshot
     // where idletime is (actual time diff) - (expected time diff) / (expected time diff)
@@ -192,8 +192,8 @@ public class ConsoleNodeListener implements OutputListener {
    * Handle the specified list of node events (List of NodeEvent)
    * from a node. Same as handle, but for a list of events.
    */
-  private void handleAll(final java.util.List nodeEvents) {
-    final int n = nodeEvents.size();
+  private void handleAll(java.util.List nodeEvents) {
+    int n = nodeEvents.size();
     if (n <= 0) {
       return;
     }
@@ -204,10 +204,12 @@ public class ConsoleNodeListener implements OutputListener {
         int i = 0;
         do {
           NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
-          logFile.write(getNodeEventDescription(nodeEvent));
+	  if (logFile != null)
+	    logFile.write(getNodeEventDescription(nodeEvent));
           nLogEvents++;
           if (nLogEvents > 100) {
-            logFile.flush();
+	    if (logFile != null)
+	      logFile.flush();
             nLogEvents = 0;
           }
         } while (++i < n);
@@ -222,62 +224,81 @@ public class ConsoleNodeListener implements OutputListener {
     // collects descriptions of the same type and batch writes them to display
     // handles idle updates separately
     try {
-      SwingUtilities.invokeLater(new Runnable() {
-	public void run() {
-	  int prevType = -1;
-	  String prevDescription = "";
-	  int nextEventIndex = -1;
-	  // get the first description which is not an idle update
-	  for (int i = 0; i < n; i++) {
-	    NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
-	    int nodeEventType = nodeEvent.getType();
-	    if (nodeEventType == NodeEvent.IDLE_UPDATE) {
-	      String s = nodeEvent.getMessage();
-	      handleIdleUpdate(getIdleness(s), getTimestamp(s));
-            } else {
-	      updateStatus(nodeEvent);
-              if (filter != null && !filter.includeEventInDisplay(nodeEvent))
-                continue; // don't append events user isn't interested in
-	      prevType = nodeEventType;
-	      prevDescription = getNodeEventDescription(nodeEvent);
-	      nextEventIndex = i+1;
-	      break;
-	    }
-	  }
-	  if (nextEventIndex == -1)
-	    return; // all the events were idle updates or ignored
-	  // start batching descriptions
-	  for (int j = nextEventIndex; j < n; j++) {
-	    NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(j);
-	    int nodeEventType = nodeEvent.getType();
-	    String description = getNodeEventDescription(nodeEvent);
-	    updateStatus(nodeEvent);
-	    if (nodeEventType == NodeEvent.IDLE_UPDATE) {
-	      String s = nodeEvent.getMessage();
-	      handleIdleUpdate(getIdleness(s), getTimestamp(s));
-	    } else if (nodeEventType == prevType) {
-	      prevDescription += description;
-	    } else {
-              if (filter == null || filter.includeEventTypeInDisplay(prevType))
-                doc.appendString(prevDescription, 
-                                 getNodeEventStyle(prevType));
-	      prevDescription = description;
-	      prevType = nodeEventType;
-	    }
-	  }
-          if (filter == null || filter.includeEventTypeInDisplay(prevType))
-            doc.appendString(prevDescription,
-                             getNodeEventStyle(prevType));
-	}
-      });
+      SwingUtilities.invokeLater(new NodeEventHandler(nodeEvents));
     } catch (RuntimeException e) {
+    }
+  }
+
+  /**
+   * Thread for handling incoming NodeEvents. Trying to avoid
+   * declaring anything final.
+   **/
+  class NodeEventHandler implements Runnable {
+    java.util.List nodeEvents = null;
+    int n = 0;
+      
+    public NodeEventHandler(java.util.List nodeEvents) {
+      // nodeEvents
+      this.nodeEvents = nodeEvents;
+      this.n = nodeEvents.size();
+    }
+
+    public void run() {
+      int prevType = -1;
+      String prevDescription = "";
+      int nextEventIndex = -1;
+      // get the first description which is not an idle update
+      for (int i = 0; i < n; i++) {
+	NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
+	int nodeEventType = nodeEvent.getType();
+	if (nodeEventType == NodeEvent.IDLE_UPDATE) {
+	  String s = nodeEvent.getMessage();
+	  handleIdleUpdate(getIdleness(s), getTimestamp(s));
+	} else {
+	  updateStatus(nodeEvent);
+	  if (filter != null && !filter.includeEventInDisplay(nodeEvent))
+	    continue; // don't append events user isn't interested in
+	  prevType = nodeEventType;
+	  prevDescription = getNodeEventDescription(nodeEvent);
+	  nextEventIndex = i+1;
+	  break;
+	}
+      }
+
+      if (nextEventIndex == -1)
+	return; // all the events were idle updates or ignored
+      // start batching descriptions
+      for (int j = nextEventIndex; j < n; j++) {
+	NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(j);
+	int nodeEventType = nodeEvent.getType();
+	String description = getNodeEventDescription(nodeEvent);
+	updateStatus(nodeEvent);
+	if (nodeEventType == NodeEvent.IDLE_UPDATE) {
+	  String s = nodeEvent.getMessage();
+	  handleIdleUpdate(getIdleness(s), getTimestamp(s));
+	} else if (nodeEventType == prevType) {
+	  prevDescription += description;
+	} else {
+	  if (filter == null || filter.includeEventTypeInDisplay(prevType)) {
+	    if (doc != null)
+	      doc.appendString(prevDescription, 
+			     getNodeEventStyle(prevType));
+	  }
+	  prevDescription = description;
+	  prevType = nodeEventType;
+	}
+      }
+      if (filter == null || filter.includeEventTypeInDisplay(prevType)) {
+	if (doc != null)
+	  doc.appendString(prevDescription,
+			 getNodeEventStyle(prevType));
+      }
     }
   }
 
   /**
    * Get Node Event description.
    */
-
   private final String getNodeEventDescription(final NodeEvent nodeEvent) {
     switch (nodeEvent.getType()) {
     case NodeEvent.STANDARD_OUT:
@@ -292,7 +313,6 @@ public class ConsoleNodeListener implements OutputListener {
    * Returns attribute set for a style of output: 
    * stdout, stderr, heartbeat, or default.
    */
-
   private final SimpleAttributeSet getNodeEventStyle(final int type) {
     switch (type) {
     case NodeEvent.STANDARD_OUT:
@@ -307,18 +327,20 @@ public class ConsoleNodeListener implements OutputListener {
   private void handleIdleUpdate(double idleTime, long timestamp) {
     double result = 1/Math.log(idleTime);
     result = (result + 1)*50; // in range 0 to 100
-    if (result <= 16)
-      statusButton.setStatus(NodeStatusButton.STATUS_LOW_BUSY);
-    else if (result > 16 && result <= 33)
-      statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_LOW_BUSY);
-    else if (result > 33 && result <= 50)
-      statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_BUSY);
-    else if (result > 50 && result <= 67)
-      statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_HIGH_BUSY);
-    else if (result > 67 && result <= 83)
-      statusButton.setStatus(NodeStatusButton.STATUS_HIGH_BUSY);
-    else if (result > 83)
-      statusButton.setStatus(NodeStatusButton.STATUS_BUSY);
+    if (statusButton != null) {
+      if (result <= 16)
+	statusButton.setStatus(NodeStatusButton.STATUS_LOW_BUSY);
+      else if (result > 16 && result <= 33)
+	statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_LOW_BUSY);
+      else if (result > 33 && result <= 50)
+	statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_BUSY);
+      else if (result > 50 && result <= 67)
+	statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_HIGH_BUSY);
+      else if (result > 67 && result <= 83)
+	statusButton.setStatus(NodeStatusButton.STATUS_HIGH_BUSY);
+      else if (result > 83)
+	statusButton.setStatus(NodeStatusButton.STATUS_BUSY);
+    }
 
     // reset times to 0. Maybe this looks better?
     if (firsttime > 0) {
@@ -332,14 +354,20 @@ public class ConsoleNodeListener implements OutputListener {
 
   private void updateStatus(NodeEvent nodeEvent) {
     int nodeEventType = nodeEvent.getType();
-      if (nodeEventType == NodeEvent.PROCESS_CREATED) 
-        statusButton.setStatus(NodeStatusButton.STATUS_NODE_CREATED);
-      else if (nodeEventType == NodeEvent.PROCESS_DESTROYED) {
-        statusButton.setStatus(NodeStatusButton.STATUS_NODE_DESTROYED);
-        console.nodeStopped(nodeName);
-      } else if (nodeEventType == NodeEvent.STANDARD_ERR) {
-        statusButton.setStatus(NodeStatusButton.STATUS_STD_ERROR);
-      }
+    if (nodeEventType == NodeEvent.PROCESS_CREATED) {
+      if (statusButton != null)
+	statusButton.setStatus(NodeStatusButton.STATUS_NODE_CREATED);
+    } else if (nodeEventType == NodeEvent.PROCESS_DESTROYED) {
+//       if (log.isDebugEnabled())
+// 	log.debug("updateStatus with event type PROC_DESTROYED. statButton null? " + (statusButton == null) + ", console null? " + (console == null));
+      if (statusButton != null)
+	statusButton.setStatus(NodeStatusButton.STATUS_NODE_DESTROYED);
+      if (console != null)
+	console.nodeStopped(nodeName);
+    } else if (nodeEventType == NodeEvent.STANDARD_ERR) {
+      if (statusButton != null)
+	statusButton.setStatus(NodeStatusButton.STATUS_STD_ERROR);
+    }
   }
 
   /**
@@ -347,7 +375,6 @@ public class ConsoleNodeListener implements OutputListener {
    * condition or output on the standard error channel, then resume updating
    * the status button using messages from the node.
    */
-
   public void clearError() {
     haveError = false;
   }
@@ -355,11 +382,13 @@ public class ConsoleNodeListener implements OutputListener {
   /**
    * Flush and close the log file.
    */
-
   public void closeLogFile() {
     synchronized (logFileLock) {
       try {
-        logFile.close();
+	if (logFile != null) {
+	  logFile.close();
+	  logFile = null;
+	}
         logFlushTask.cancel();
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
@@ -374,7 +403,6 @@ public class ConsoleNodeListener implements OutputListener {
    * and re-open the log file for appending.
    * TODO: update the log file timer task as well
    */
-
   public void fillFromLogFile() {
     synchronized (logFileLock) {
       try {
@@ -392,7 +420,6 @@ public class ConsoleNodeListener implements OutputListener {
   /**
    * Set the console node output filter used to filter events displayed.
    */
-
   public void setFilter(ConsoleNodeOutputFilter filter) {
     this.filter = filter;
   }
@@ -400,7 +427,6 @@ public class ConsoleNodeListener implements OutputListener {
   /**
    * Get the console node output filter used to filter events displayed.
    */
-
   public ConsoleNodeOutputFilter getFilter() {
     return filter;
   }
@@ -408,9 +434,29 @@ public class ConsoleNodeListener implements OutputListener {
   /**
    * Return the document being filled by this listener.
    */
-
   public ConsoleStyledDocument getDocument() {
     return doc;
+  }
+
+  /**
+   * When completely done with this guy, close out the log file,
+   * and set my pointers to null for gc.
+   **/
+  public void cleanUp() {
+    if (log.isDebugEnabled())
+      log.debug("Listener.cleanup");
+    closeLogFile();
+    // Don't kill the document cause we call this
+    // when the Node has stopped
+    doc = null;
+    filter = null;
+    synchronized(logFileLock) {
+      logFile = null;
+    }
+    console = null;
+    chart = null;
+    statusButton = null;
+    idleTimeDataModel = null;
   }
 
   private void readObject(ObjectInputStream ois)

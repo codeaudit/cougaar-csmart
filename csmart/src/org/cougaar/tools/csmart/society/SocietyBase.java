@@ -38,15 +38,13 @@ import org.cougaar.tools.csmart.core.property.ComposableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentListener;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
-import org.cougaar.tools.csmart.core.property.PropertyEvent;
-import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.PropertyListener;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.experiment.HostComponent;
@@ -55,14 +53,10 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 
 /**
- * SocietyBase.java
- *
- * Implements generic classes required by all societies.
+ * Implements generic methods required by all societies.
  *
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
-
 public abstract class SocietyBase 
   extends ModifiableConfigurableComponent
   implements SocietyComponent, PropertiesListener {
@@ -444,15 +438,23 @@ public abstract class SocietyBase
 
   PropertyListener myPropertyListener =
     new PropertyListener() {
-        public void propertyValueChanged(PropertyEvent e) {
-          fireModification();
-        }
-
-        public void propertyOtherChanged(PropertyEvent e) {
-          fireModification();
-        }
-      };
-
+      public void propertyValueChanged(PropertyEvent e) {
+	if (e == null || e.getProperty() == null)
+	  return;
+	if (e.getProperty().getValue() == null) {
+	  if (e.getPreviousValue() == null)
+	    return;
+	  else
+	    fireModification();
+	} else if (! e.getProperty().getValue().toString().trim().equals(e.getPreviousValue().toString()))
+	  fireModification();
+      }
+      
+      public void propertyOtherChanged(PropertyEvent e) {
+	fireModification();
+      }
+    };
+  
   ModificationListener myModificationListener = new MyModificationListener();
 
   public int addChild(ComposableComponent c) {

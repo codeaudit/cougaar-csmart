@@ -60,7 +60,7 @@ public class UIProperties {
 
   private transient Logger log;
 
-  private String[] clusterNames = { "Attacker", "Firewall", "Victim" };
+  //  private String[] clusterNames = { "Attacker", "Firewall", "Victim" };
   private int nextColor = 1;
   private Properties properties;
   private int maxColor = DEFAULT_MAX_COLOR; // read from ui.properties file

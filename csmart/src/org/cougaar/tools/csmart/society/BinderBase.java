@@ -41,28 +41,20 @@ public class BinderBase
   public static final String PROP_CLASSNAME = "Binder Class Name";
   public static final String PROP_CLASSNAME_DESC = "Name of the Binder Class";
 
-  // FIXME:
-  // Need to specify the insertion point
-  // and actual type of this component
-
   protected String folderLabel = "Binders";
 
   public static final String PROP_TYPE = "Binder Type";
   public static final String PROP_TYPE_DESC = "Type of Binder (Agent, Node)";
-  protected String type = ComponentData.AGENTBINDER;
   public static final String PROP_PARAM = "param-";
 
   public BinderBase(String name) {
-    super(name);
+    super(name, "", ComponentDescription.priorityToString(ComponentDescription.PRIORITY_BINDER), ComponentData.AGENTBINDER);
     createLogger();
   }
 
   public BinderBase(String name, String classname, String priority) {
-    super(name);
-    this.classname = classname;
-    if(priority != null) {
-      this.priority = priority;
-    } else {
+    super(name, classname, priority, ComponentData.AGENTBINDER);
+    if(priority == null || priority.trim().equals("")) {
       this.priority = 
         ComponentDescription.priorityToString(ComponentDescription.PRIORITY_BINDER);
     }
@@ -70,15 +62,13 @@ public class BinderBase
   }
 
   public BinderBase(String name, String classname, String priority, String type) {
-    super(name);
-    this.classname = classname;
-    if(priority != null) {
-      this.priority = priority;
-    } else {
+    super(name, classname, priority, type);
+    if(priority == null || priority.trim().equals("")) {
       this.priority = 
         ComponentDescription.priorityToString(ComponentDescription.PRIORITY_BINDER);
     }
-    this.type = getCanonicalType(type);
+    if (type == null || type.trim().equals(""))
+      this.type = ComponentData.AGENTBINDER;
     createLogger();
   }
 

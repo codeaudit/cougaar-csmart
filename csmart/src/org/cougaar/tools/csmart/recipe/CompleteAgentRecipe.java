@@ -43,6 +43,7 @@ import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
@@ -59,7 +60,7 @@ import org.cougaar.util.log.Logger;
 public class CompleteAgentRecipe extends ComplexRecipeBase
   implements Serializable
 {
-  private static final String DESCRIPTION_RESOURCE_NAME = 
+  protected static final String DESCRIPTION_RESOURCE_NAME = 
     "complete-agent-recipe-description.html";
 
   /**
@@ -90,12 +91,15 @@ public class CompleteAgentRecipe extends ComplexRecipeBase
     // so OrganizerHelper can find the class correctly using reflection.
   }
 
-  /**
-   * Initialize any local Properties
-   *
-   */
-  public void initProperties() {
-    super.initProperties();
+  public CompleteAgentRecipe(String name, String assemblyId, String recipeId, String initName) {
+    super(name, assemblyId, recipeId, initName);
+
+    // recipeId is not needed for this recipe, however the method sig is needed
+    // so OrganizerHelper can find the class correctly using reflection.
+  }
+
+  public CompleteAgentRecipe(ComponentData cdata, String assemblyId) {
+    super(cdata, assemblyId);
   }
 
   /**
@@ -105,27 +109,6 @@ public class CompleteAgentRecipe extends ComplexRecipeBase
    */
   public URL getDescription() {
     return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
-  }
-
-  /**
-   * Get the name of this Recipe.
-   *
-   * @return a Recipe Name as a <code>String</code> value
-   */
-  public String getRecipeName() {
-    return getShortName();
-  }
-
-  /**
-   * Gets an array of all agents created by this recipe.
-   *
-   * @see AgentComponent
-   * @return an <code>AgentComponent[]</code> array of all agents
-   */
-  public AgentComponent[] getAgents() {
-//     initAgents();
-    Collection agents = getDescendentsOfClass(AgentComponent.class);    
-    return (AgentComponent[]) agents.toArray(new AgentComponent[agents.size()]);
   }
 
   /**
@@ -214,4 +197,13 @@ public class CompleteAgentRecipe extends ComplexRecipeBase
     parent.addChild((ComponentData)ac);
   }
 
+  public ModifiableComponent copy(String name) {
+    ComponentData cdata = getComponentData();
+    cdata.setName(name);
+    CompleteAgentRecipe comp = new CompleteAgentRecipe(cdata, null);
+    comp.initProperties();
+    comp.modified = this.modified;
+    comp.oldAssemblyId = getAssemblyId();
+    return comp;
+  }
 }

@@ -22,7 +22,6 @@ package org.cougaar.tools.csmart.core.cdata;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.io.Serializable;
 
 /**
  * Represents a Relationship for an asset.

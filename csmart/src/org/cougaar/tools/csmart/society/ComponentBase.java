@@ -25,11 +25,14 @@ import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyAlias;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.recipe.PriorityProperty;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * ComponentBase is the basic implementation for editing & configuring
@@ -37,7 +40,7 @@ import org.cougaar.tools.csmart.recipe.PriorityProperty;
  */
 public class ComponentBase
   extends ModifiableConfigurableComponent 
-  implements MiscComponent {
+  implements MiscComponent, PropertiesListener {
 
   /** Component Classname Property Definition **/
   public static final String PROP_CLASSNAME = "Component Class Name";
@@ -57,6 +60,7 @@ public class ComponentBase
   protected String type = ComponentData.PLUGIN;
 
   protected String folderLabel = "Other Components";
+  protected boolean modified = true;
 
   private String alibID = null;
   private String libID = null;
@@ -67,25 +71,26 @@ public class ComponentBase
   protected String priority = ComponentDescription.priorityToString(ComponentDescription.PRIORITY_STANDARD);
 
   public ComponentBase(String name) {
-    super(name);
-    createLogger();
+    this(name, "", ComponentDescription.priorityToString(ComponentDescription.PRIORITY_STANDARD));
   }
 
   public ComponentBase(String name, String classname, String priority) {
-    super(name);
-    this.classname = classname;
-    if(priority != null)
-      this.priority = priority;
-    createLogger();
+    this(name, classname, priority, ComponentData.PLUGIN);
   }
 
   public ComponentBase(String name, String classname, String priority, String type) {
     super(name);
     this.classname = classname;
-    this.type = getCanonicalType(type);
-    if(priority != null)
+    if (type != null && !type.trim().equals(""))
+      this.type = getCanonicalType(type);
+    else {
+      if (log.isDebugEnabled())
+	log.debug("CompBase constructor got empty type for name " + name, new Throwable());
+    }
+    if(priority != null && ! priority.trim().equals(""))
       this.priority = priority;
     createLogger();
+    installListeners();
   }
 
   private void createLogger() {
@@ -100,6 +105,10 @@ public class ComponentBase
     Property prop = addProperty(PROP_CLASSNAME, classname);
     prop.setToolTip(PROP_CLASSNAME_DESC);
 
+    if (log.isDebugEnabled()) {
+      if (type == null || type.trim().equals(""))
+	log.debug("type is null in initProps for " + getFullName().toString());
+    }
     prop = addProperty(PROP_TYPE, type);
     prop.setToolTip(PROP_TYPE_DESC);
 
@@ -200,6 +209,10 @@ public class ComponentBase
     }
         
     data.addChildDefaultLoc(self);
+//     if (log.isDebugEnabled()) {
+//       log.warn("CompBase added comp " + self);
+//       log.warn("CompBase says type is " + getComponentType());
+//     }
     return data;
   }
 
@@ -269,6 +282,11 @@ public class ComponentBase
         
     data.addChildDefaultLoc(self);
 
+//     if (log.isDebugEnabled()) {
+//       log.warn("CompBase moded comp " + self);
+//       log.warn("CompBase says type is " + getComponentType());
+//     }
+
     return data;
   }
 
@@ -309,8 +327,13 @@ public class ComponentBase
 
   // Turn random strings into the constants wherever possible
   protected String getCanonicalType(String type) {
-    if (type == null || type.equals(""))
+    if (type == null || type.equals("")) {
+      if (log.isDebugEnabled()) {
+	log.debug("getCanonType got empty type in " + getFullName().toString() + "!", new Throwable());
+      }
       return "";
+    }
+
     if (type.equalsIgnoreCase("Node.AgentManager.Agent"))
       type = ComponentData.AGENT;
     else if (type.equalsIgnoreCase("Node.AgentManager.Binder"))
@@ -348,7 +371,13 @@ public class ComponentBase
    * @param type a <code>String</code> binder type
    */
   public void setComponentType(String type) {
-    if (type == null || type.equals("") || type.equals(this.getComponentType()))
+    if (type == null || type.equals("")) {
+      if (log.isDebugEnabled())
+	log.debug("setCompType got empty type where was " + getComponentType() + " for " + getFullName().toString(), new Throwable());
+      return;
+    }
+
+    if (type.equals(this.getComponentType()))
       return;
 
     type = getCanonicalType(type);
@@ -364,8 +393,11 @@ public class ComponentBase
     Property p = getProperty(PROP_PRIORITY);
     if(p != null) {
       Object o = p.getValue();
-      if( o != null)
-        return o.toString();
+      if( o != null) {
+	String ret = o.toString();
+	if (ret != null && ! ret.trim().equals("") && ! ret.equals("<not set>"))
+	  return ret;
+      }
     }
     return ComponentDescription.priorityToString(ComponentDescription.PRIORITY_COMPONENT);
   }
@@ -414,5 +446,55 @@ public class ComponentBase
     return this.libID;
   }
 
+
+  /**
+   * Has this Component been modified, such that a save would do something.
+   *
+   * @return a <code>boolean</code>, false if no save necessary
+   */
+  public boolean isModified() {
+    return modified;
+  }
+
+  /**
+   * Set the internal modified flag (returned by isModified)
+   * and fire a modification event.
+   */
+
+  public void fireModification() {
+    modified = true;
+    super.fireModification();
+  }
+
+  private void installListeners() {
+    addPropertiesListener(this);
+    for (Iterator i = getPropertyNames(); i.hasNext(); ) {
+      Property p = getProperty((CompositeName)i.next());
+      p.addPropertyListener(myPropertyListener);
+    }
+  }
+
+  public void propertyAdded(PropertyEvent e) {
+    Property addedProperty = e.getProperty();
+    setPropertyVisible(addedProperty, true);
+    addedProperty.addPropertyListener(myPropertyListener);
+    fireModification();
+  }
+
+  public void propertyRemoved(PropertyEvent e) {
+    e.getProperty().removePropertyListener(myPropertyListener);
+    fireModification();
+  }
+
+  PropertyListener myPropertyListener =
+    new PropertyListener() {
+        public void propertyValueChanged(PropertyEvent e) {
+          fireModification();
+        }
+
+        public void propertyOtherChanged(PropertyEvent e) {
+          fireModification();
+        }
+      };
 
 } // End of ComponentBase

@@ -54,7 +54,7 @@ stand-alone for use with non-CSMART Cougaar societies. See the User's Guide.</li
 in progress, or a completed experiment.</li>
 
 <br>&nbsp;</ul>
-Be sure to separately run the Node Server on each host where you want to
+Be sure to separately run the Application (App) Server on each host where you want to
 run a node, using one of the supplied Server startup scripts.
 <br>To quit CSMART, select File->Exit from the main window, and kill each
 of the Servers.<br><br>
@@ -77,7 +77,8 @@ defined and saved experiment):</b>
 Click the right mouse button on the "Default Workspace" to display a
 pop-up menu, or use the Edit menu.  Select "New Experiment -&gt; From
 Database" to display a list of experiments defined in the database.
-Select the desired experiment from the database.</li>
+Select the desired experiment from the database. CSMART comes with 6
+military logistics based experiments (using 1AD).</li>
 <li>If prompted, select the threads and groups for the experiment from the dialog
 displayed. You must select at least one thread (or class of supply).</li>
 <li>Enter a unique name for your experiment.  
@@ -86,7 +87,7 @@ When you exit the dialog, any modified information is written to the database.</
 or recipes in the experiment, select the component you want to edit in
 the workspace, and then select the Configuration Builder. When you exit this tool, any modified information is written to the database.</li>
 <li>Select the Experiment Builder and assign agents to nodes and nodes
-to hosts.  Also use this tool to specify node arguments.  When you exit this tool, any modified information is written to the database.</li>
+to hosts.  Also use this tool to specify node arguments and communities.  When you exit this tool, any modified information is written to the database.</li>
 <li>Select the Experiment Controller and select the "Run" button near the top of its window.</li>
 </ol>
 <p><b>To create an experiment from (INI) files:</b>
@@ -100,10 +101,14 @@ their sub-components will be loaded. These will be used to define a
 new Society. Any NodeAgent components or Node Binders will not be
 loaded. In addition, <i>any extra files (ie OPLAN files) must still be
 available on the CONFIG_PATH on all Hosts where you will run the
-society.</i></b> Your new Experiment and Society will be named based on
+society.</i> Also note that Agent INI files are those which contain
+"[Cluster]", per the original INI file format.</b> Your new Experiment and Society will be named based on
 the file or directory you select. </li>
 <li>You will then be asked to supply a communities.xml file which
-contains Community definitions for your society. If you have none, hit "Cancel".</li>
+contains Community definitions for your society. If you have none, hit
+"Cancel". For a sample such file, look in
+CIP/community/data. Communities documentation is available in the
+community module.</li>
 <li>Your new experiment will be marked modified (red), until you save it in
 the Experiment Builder.</li>
 <li>You may now edit the new society in the Configuration Builder, and
@@ -185,9 +190,10 @@ tool is selected, a separate Experiment Builder is launched for each selected
 experiment. In some situations, the user is prompted to edit, copy, or view the selected experiment. In View mode, the experiment is not modifiable, but the user may view the current configuration.</li>
 
 <li>
-<b>Experiment Controller: </b>Activated if an experiment is selected and
-is runnable (in particular, the agent, node, and host configuration
-must have been set up in the Experiment Builder).</li>
+<b>Experiment Controller: </b>Always available. May be opened on an
+Experiment (which, if it has Agents assigned to Hosts, may be run), or
+without. When not running an Experiment, the Controller (aka Console)
+may be used to connect to a running experiment.</li>
 
 <li>
 <b>Society Monitor: </b>Always activated. It can be used to view
@@ -203,7 +209,7 @@ directory. To retrieve previously saved work, Select File-> Open Workspace
 from the main CSMART window. Look for the file named according to your
 workspace name.<b></b>
 <p><b>Workspace</b>
-<p>The large lower panel displays the Workspace. The Workspace is used
+<p>The large lower panel displays the Workspace (aka Organizer). The Workspace is used
 to create, edit, rename or delete folders, experiments, societies, and recipes. This is how you organize your work. Note that your work is
 automatically saved in the current working directory, under the name you
 give your workspace. To open a previously saved workspace, use the File
@@ -216,10 +222,10 @@ Note that society, recipes, and experiments are each displayed with a
 different icon for easy identification.  Entries in the workspace that are displayed in red have been modified
 since they were read from the database (or have not been entered in
 the database).  Save societies or recipes in the database by invoking
-the Configuration Builder on them; on exit from the Configuration
+the Configuration Builder on them (or from the Edit menu); on exit from the Configuration
 Builder, the societies or recipes being configured will be saved in
 the database.  Similarly, save experiments in the database by invoking
-the Experiment Builder on them; on exit from the Experiment Builder,
+the Experiment Builder on them (or from the Edit menu in the Organizer); on exit from the Experiment Builder,
 the experiment being built will be saved in the database.  Entries in
 the workspace that are displayed in gray cannot be edited; entries are
 typically grayed out temporarily when editing other related
@@ -275,7 +281,9 @@ Workspace" pop-up menu. Then select "From Template" or "From Database". You
 will get a list of the available recipes of each type. Once you have
 loaded the recipe, you may configure it by selecting "Configure" from
 the pop-up menu on the recipe or from the Edit menu, or by selecting the
-Configuration Builder from the toolbar.
+Configuration Builder from the toolbar.  Note that you can retrieve
+multiple recipes from the database at once by shift- or control-click
+selecting them. 
 <br><br>To add a recipe to an Experiment, drag it onto the "Recipes"
 folder in the Experiment Builder. Recipes can also be duplicated,
 deleted, or renamed by using the pop-up menu or Edit menu options.

@@ -54,11 +54,17 @@ public class AdaptivitySupportRecipe extends RecipeBase implements Serializable 
   private static final String PROP_TARGET_AGENT_QUERY_DESC = 
     "The query name for selecting agents to which to add adaptivity support.";
 
+  private static final String PROP_PLAYS_FILE = "Playbook File";
+  private static final String PROP_PLAYS_FILE_DESC = "Name of single file of AE plays, default for per-Agent";
+  private static final String AGENT_VAR = "<agent>";
+  private static final String PROP_PLAYS_FILE_DFLT = AGENT_VAR + "-plays.txt";
+
   private static final String PROP_VIEWER_SERVLET = "AEViewerServlet";
   private static final boolean PROP_VIEWER_SERVLET_DFLT = true;
   private static final String PROP_VIEWER_SERVLET_DESC = "Include the AEViewerServlet in the target agent(s)";
 
   private Property propViewerServlet;
+  private Property propPlaysFile;
   private Property propTargetAgentQuery;
 
   public AdaptivitySupportRecipe (){
@@ -73,6 +79,9 @@ public class AdaptivitySupportRecipe extends RecipeBase implements Serializable 
     
     propViewerServlet = addBooleanProperty(PROP_VIEWER_SERVLET, PROP_VIEWER_SERVLET_DFLT);
     propViewerServlet.setToolTip(PROP_VIEWER_SERVLET_DESC);
+
+    propPlaysFile = addProperty(PROP_PLAYS_FILE, PROP_PLAYS_FILE_DFLT);
+    propPlaysFile.setToolTip(PROP_PLAYS_FILE_DESC);
 
     propTargetAgentQuery =
       addRecipeQueryProperty(PROP_TARGET_AGENT_QUERY,
@@ -144,7 +153,24 @@ public class AdaptivitySupportRecipe extends RecipeBase implements Serializable 
       plugin.setClassName("org.cougaar.core.adaptivity.PlaybookManager");
       plugin.setOwner(this);
       plugin.setParent(data);
-      plugin.addParameter(agent + "-plays.txt");
+      
+      // Add the plays file parameter
+      String playsFile = null;
+      if (propPlaysFile == null || propPlaysFile.getValue() == null || propPlaysFile.getValue().equals("")) {
+	playsFile = PROP_PLAYS_FILE_DFLT;
+      } else {
+	playsFile = (String)propPlaysFile.getValue();
+      }
+
+      int index = playsFile.indexOf(AGENT_VAR);
+      String param = playsFile;
+      if (index != -1)
+	param = playsFile.substring(0, index) + agent + 
+	  playsFile.substring(index+AGENT_VAR.length());
+
+      plugin.addParameter(param);
+	//	plugin.addParameter(agent + "-plays.txt");
+
       if( GenericComponentData.alreadyAdded(data, plugin)) {
         if(log.isDebugEnabled()) {
           log.debug("Not re-adding PlaybookManager");

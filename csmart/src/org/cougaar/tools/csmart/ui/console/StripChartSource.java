@@ -38,8 +38,6 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  */
 
 public class StripChartSource extends JCDefaultDataSource implements Runnable {
-  // number of points by which to scroll
-  private int scrollBack = 10;
   // number of points displayed at once
   private int numberOfPoints = 30;
   // number of points to scroll at a time

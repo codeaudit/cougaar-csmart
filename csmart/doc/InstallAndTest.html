@@ -168,7 +168,7 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
    these notes detail how to create your own database and <a href="../../doc/details/DataAccess.html">cougaar.rc</a>
    password file.
    <p>
-   See <a href="../../doc/details/HeterogeneousDatabase.html">the database writeup</a> for detailed 
+   See <a href="../../doc/ReleaseNotes/common/HeterogeneousDatabase.html">the database writeup</a> for detailed 
    documentation on database installation.  You may want to read
    that file before continuing with the example MySQL installation
    below.
@@ -202,6 +202,7 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
      import your saved host-node-agent (HNA) mappings.</li>
   </ol>
   <br>
+  <b>Doing your database install</b>
   <ol>
   <p>
 
@@ -236,38 +237,64 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
   the military logistics domain plugins, and one for the CSMART
   configuration database. These instructions will help with both, but
   for further details on the plugin database, see the release <a
-  href="../../doc/index.html">documentation</a>.  For the 
+  href="../../doc/index.html">documentation</a>.  <br>
+<ul><li>For the 
   CSMART configuration database, first create the database (if necessary).  
   For later reference when
     creating your <a href="../../doc/details/DataAccess.html">cougaar.rc</a>, 
     suppose the database will be on host 
     "myhost".  Be sure you have started the database, using the
     appropriate "mysqld" executable. Here we name
-    the database "mycoug":
+    the database "mycoug". Note that for creating the database and the
+  user, you will usually need root. Once you create the user that
+  Cougaar will use to contact the database, root should not be
+  required or used.
       <pre>
         $ mysql -u root -p
 	[supply root password set during installation]
         mysql&gt; create database mycoug;
         mysql&gt; exit;
-      </pre>
-
-    Then load the  <a href="http://www.cougaar.org">Cougaar</a>
-    MySQL domain database tables from the file 
-    "$CIP/csmart/data/database/Domain-MySQL.ZIP" (after unzipping it).  
-
-      <pre>
-        $ mysql -u root -p mycoug &lt; [CMT MySQL domain data dump, eg 1ad_domain_data_dump.sql]
-	[supply root password set during installation]
-      </pre>
-
-      <b>Note</b> If
+      </pre>        
+        <b>Note</b> If
 	you have a previous database you wish to replace, the command
 	to drop the old database first is "drop database
 	mycoug;". However, most scripts will drop the old tables
 	before loading the new, so this is not strictly
-	necessary. 
+	necessary. </li><br><p>
 
-    <br><br>The CSMART configuration database tables are loaded from '.csv' 
+  <li>Create a user for accessing the database. Here we create a user
+  <i>myname</i> with password <i>mypass</i> who can only access the database
+  locally (and therefore not useful for running a distributed Cougaar
+  society). Note that the user must have at least select, insert, update, create,
+  delete, drop, and file priviledges on the configuration
+  database. See the MySQL documentation for details on setting permissions.
+       <pre>
+       $ mysql -u root -p
+	[supply root password set during installation]
+       mysql&gt; grant all on mycoug.* to <i>myname</i>@"localhost" identified by '<i>mypass</i>';
+       mysql&gt; exit;
+      </pre>
+      You could instead create this user such that any machine in your
+      domain can access it (but then users on other hosts in your
+      domain theoretically have access to your data), by
+      doing: <pre><i>myname</i>@"%.foo.com"</pre>
+  <br></li><p>
+
+    <li>Then load the  <a href="http://www.cougaar.org">Cougaar</a>
+    MySQL domain database tables from the file 
+    "$CIP/csmart/data/database/Domain-MySQL.ZIP" (after unzipping
+    it). (Note the convention that CIP stands for
+    <a href="#cougaarEnv">COUGAAR_INSTALL_PATH</a>, the environment variable set below, but
+    which refers to the directory in which you installed Cougaar.)  
+
+      <pre>
+        $ mysql -u [db user, eg myname] -p mycoug &lt; [CMT MySQL domain data dump, eg 1ad_domain_data_dump.sql]
+	[supply users password, eg mypass]
+      </pre>
+
+</li>
+
+    <li>The CSMART configuration database tables are loaded from '.csv' 
     files provided in "$CIP/csmart/data/database/csv" directory.
     To load the database from these files, run the script 
     "$CIP/csmart/data/database/scripts/mysql/load_1ad_mysql.sh[bat]". This will drop 
@@ -307,39 +334,41 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
     <br><br><b>Note</b> Before dumping a current snapshot of the database, you must ensure that
      this directory is empty.  You should usually rename or move the
      files currently in this directory to save the original table data
-     definitions.<br><br></li><p>
-
-  <li>Create a user for accessing the database. Here we create a user
-  <i>myname</i> with password <i>mypass</i> who can only access the database
-  locally (and therefore not useful for running a distributed Cougaar
-  society). Note that the user must have at least select, insert, update, create,
-  delete, drop, and file priviledges on the configuration database.
-       <pre>
-       $ mysql -u root -p
-	[supply root password set during installation]
-       mysql&gt; grant all on mycoug.* to <i>myname</i>@"localhost" identified by '<i>mypass</i>';
-       mysql&gt; exit;
-      </pre>
-      You could instead create this user such that any machine in your
-      domain can access it (with the security risks that entails), by
-      doing: <pre><i>myname</i>@"%.foo.com"</pre>
-  <br></li><p>
+     definitions.</li></ul></li><p>
 
   <li>Once you have imported the CSMART configuration data files, be sure to follow
   the same steps to import the Cougaar domain plugin MySQL database:
-  <pre><a href="#cougaarEnv">$CIP</a>/dbms/data/mysql/mysqldump.txt</pre> 
+     <pre>
+           $ cd <a href="#cougaarEnv">$CIP</a>/dbms/data/mysql
+
+           $ unzip 1ADDomainData.zip
+           (this produces the following file...)
+
+           $ mysql -u [db user, eg myname] -p mycoug &lt; 1ADDomainData.sql
+	    [supply users password, eg mypass]
+     </pre>
+
+  (Note that the file 1ADDomainData.sql used to be
+  called mysqldump.txt or something similar).   
   You may load this data into
   the same database as the CSMART data, or a different one, as you
-  prefer. Just be sure to build your <a href="../../doc/details/DataAccess.html">cougaar.rc</a> file appropriately.
-  Note that importing this database requires loading 2 files at least,
-  with separate files for the "class 9" data. A recommended minimum is
-  to also load:
-  <pre><a href="#cougaarEnv">$CIP</a>/dbms/data/mysql/army.txt</pre>created by unzipping <pre><a href="#cougaarEnv">$CIP</a>/dbms/data/mysql/army_spares.zip</pre>
-   Then you <em>must</em> also create indexes for that data, by loading (from the same directory):
-  <pre>spares_index.txt</pre>
-  Other files in the dbms/data directory are not currently
-  required. Load all such files following the same instructions as
-  above.<br><br></li><p>
+  prefer. Just be sure to build your <a href="../../doc/details/DataAccess.html">cougaar.rc</a> file appropriately.<br><br>
+  Importing this database requires loading separate files
+  for the "class 9" data. You should also load the data in
+  <i>army_spares.ZIP</i> and <i>spares_index.txt</i>:
+
+  <pre>
+          [picking up from above, in the directory $CIP/dbms/data/mysql]
+
+          $ unzip army_spares.ZIP
+      
+          $ mysql -u [db user, eg myname] -p mycoug &lt; army.txt
+	    [supply users password, eg mypass]
+
+          $ mysql -u [db user, eg myname] -p mycoug &lt; spares_index.txt
+	    [supply users password, eg mypass]
+   </pre>
+</li><p>
       
   <li>The database is now ready.  You must now create a 
     <a href="../../doc/details/DataAccess.html">cougaar.rc</a>
@@ -347,7 +376,7 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
     and CSMART), which is used to store the database location and
     username/password information.  See	
     <a href="../../doc/details/DataAccess.html">DataAccess</a> 
-    and <a href="../../doc/details/HeterogeneousDatabase.html">the database writeup</a> 
+    and <a href="../../doc/ReleaseNotes/common/HeterogeneousDatabase.html">the database writeup</a> 
     for detailed information.
     <br><br></li><p>
 
@@ -368,7 +397,7 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
   These are notes for the installation
   <a href="http://www.cougaar.org">Cougaar</a>,
   CSMART, and the AppServer.  Also see the 
-  <a href="../../doc/SocStartup-Config.html">Cougaar install notes</a> for similar
+  <a href="../../doc/ReleaseNotes/common/SocStartup-Config.html">Cougaar install notes</a> for similar
   installation notes and an explanation of the contents of a Cougaar installation.
   <p>
   <ol>
@@ -423,7 +452,7 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
        unzip cougaar-support.zip
        unzip cougaar.zip
        </pre>
-    Ignore any "overwriting file 'version.txt'" warnings.  Once
+    Once
     unpacked you can (optionally) remove both ".zip" files:
        <pre>
        rm cougaar-support.zip cougaar.zip
@@ -465,7 +494,8 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
     contain incorrect database information.  Alternately you can keep
     your <a href="../../doc/details/DataAccess.html">cougaar.rc</a> only in your home directory -- just make sure that 
     <a href="http://www.cougaar.org">Cougaar</a>
-    finds the appropriate file.</li><p>
+    finds the appropriate file. Note that the home directory is
+    preferred, for easy upgrade to newer Cougaar versions.</li><p>
 
   <li>If you plan to run CSMART with metrics (BasicMetric CSMART recipe),
     which is common, you must modify "configs/common/LDMDomains.ini"
@@ -538,7 +568,7 @@ installation using
    was installed.  This
    does not test CSMART, the AppServer, or your database, and only tests a 
    localhost four-Agent configuration.  See the "minitestconfig" 
-   <a href="../../doc/MiniTestConfig.html">documentation</a> in "../../doc/MiniTestConfig.html" for additional details.
+   <a href="../../doc/ReleaseNotes/common/MiniTestConfig.html">documentation</a> in "../../doc/ReleaseNotes/common/MiniTestConfig.html" for additional details.
   <p>
   <ol> 
   <p>
@@ -558,7 +588,7 @@ installation using
     the "Send GLS Root" button.  You should see a bunch of "++--.." messages
     sent to the console output (indicating message flow between agents).  In the window titled
     "AllocationAssessorPlugin for 3-69-ARBN" you should see "21 successful
-    allocations".  See "../../doc/MiniTestConfig.html" for further details.</li><p>
+    allocations".  See "../../doc/ReleaseNotes/common/MiniTestConfig.html" for further details.</li><p>
 
   <li>(Optionally) test the <a href="#httpVisuals">HTTP visualizations</a> and 
     <a href="#socMonitor">CSMART "Society Monitor" visualizations</a>.</li><p>

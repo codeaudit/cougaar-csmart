@@ -32,6 +32,7 @@ import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ComposableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModificationListener;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
@@ -39,11 +40,13 @@ import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.AssetComponent;
+import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PluginBase;
-import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.core.property.ModificationEvent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentListener;
 
 /**
  * Abstract base-class for Agents
@@ -55,7 +58,6 @@ public abstract class AgentBase
   implements AgentComponent, PropertiesListener {
 
   private transient Logger log;
-  protected String name;
   protected String classname;
   protected boolean modified = true;
 
@@ -76,7 +78,6 @@ public abstract class AgentBase
    */
   public AgentBase(String name, String classname) {
     super(name);
-    this.name = name;
     this.classname = classname;
     createLogger();
     if(log.isDebugEnabled()) {
@@ -122,9 +123,9 @@ public abstract class AgentBase
 
     // When this was created we did agent.getShortName().
     // Is name the same thing?
-    if (! data.getName().equals(name)) {
+    if (! data.getName().equals(this.getShortName())) {
       if (log.isErrorEnabled()) {
-	log.error("Got an agent with wrong name to be self: " + data + ". My name is " + name);
+	log.error("Got an agent with wrong name to be self: " + data + ". My name is " + this.getShortName());
       }      
       // FIXME: Try to recover??
       return data;
@@ -162,7 +163,7 @@ public abstract class AgentBase
   }
 
   /**
-   * Gets the classname for this binder
+   * Gets the classname for this agent
    *
    * @return a <code>String</code> value
    */
@@ -174,6 +175,27 @@ public abstract class AgentBase
         return o.toString();
     }
     return DEFAULT_CLASS;
+  }
+
+  /**
+   * Sets the classname for this agent
+   *
+   * @param new agent class
+   */
+  public void setAgentClassName(String aClass) {
+    if (aClass == null)
+      return;
+    aClass = aClass.trim();
+    Property p = getProperty(PROP_CLASSNAME);
+    if (p != null) {
+      Object o = p.getValue();
+      if (o != null && o.equals(aClass))
+	return;
+      else
+	p.setValue(aClass);
+    } else {
+      addProperty(PROP_CLASSNAME, aClass);
+    }
   }
 
 
@@ -247,12 +269,16 @@ public abstract class AgentBase
         }
       };
 
+  ModificationListener myModificationListener = new MyModificationListener();
+
   public int addChild(ComposableComponent c) {
+    ((ModifiableConfigurableComponent)c).addModificationListener(myModificationListener);
     fireModification();
     return super.addChild(c);
   }
 
   public void removeChild(ComposableComponent c) {
+    ((ModifiableConfigurableComponent)c).removeModificationListener(myModificationListener);
     fireModification();
     super.removeChild(c);
   }
@@ -265,4 +291,12 @@ public abstract class AgentBase
     modified = false;
     installListeners();
   }
+
+  class MyModificationListener implements ModificationListener, ConfigurableComponentListener {
+    public void modified(ModificationEvent e) {
+        fireModification();
+    }
+  }
+
+  
 } // end of AgentBase

@@ -1,4 +1,5 @@
 PG_ATTRIBUTE_LIB_ID,PG_NAME,ATTRIBUTE_NAME,ATTRIBUTE_TYPE,AGGREGATE_TYPE,BLANK
+"ItemIdentificationPG|AlternateItemIdentification","ItemIdentificationPG","AlternateItemIdentification","String","SINGLE"
 "ItemIdentificationPG|ItemIdentification","ItemIdentificationPG","ItemIdentification","String","SINGLE"
 "ItemIdentificationPG|Nomenclature","ItemIdentificationPG","Nomenclature","String","SINGLE"
 "TypeIdentificationPG|TypeIdentification","TypeIdentificationPG","TypeIdentification","String","SINGLE"

@@ -308,6 +308,21 @@ public class PDbBase {
   }
 
   /**
+   * Get the ID for the given Recipe, if it is in the DB. To be used
+   * when a save is not desired or possible. 
+   * @param rc the Recipe whose ID to get
+   * @return the ID of the recipe, <code>null</code> if not in DB.
+   * @exception SQLException on error
+   **/
+  public String getLibRecipeId(RecipeComponent rc) throws SQLException {
+    String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
+    if (recipeIdAndClass != null) {
+      return recipeIdAndClass[0];
+    } else
+      return null;
+  }
+
+  /**
    * Insures that the given recipe is in the database.
    * If the recipe is not in the database, it writes it to the database
    * with a new id.  If the recipe is in the database, it updates
@@ -510,13 +525,36 @@ public class PDbBase {
     substitutions.put(":recipe_id:", recipeIdAndClass[0]);
     Statement stmt = getStatement();
 
+    // Get the current count of arguments, to set the arg_order correctly
+    ResultSet rs = null;
+    int index = 2; // HACK: ComponentCollectionRecipes in parent have 2 ARGS
+    int nind = 0;
+    try {
+      rs = executeQuery(stmt, 
+                        dbp.getQuery("queryLibRecipeProps", substitutions));
+      while (rs.next()) 
+	nind++;
+    } catch (SQLException sqe) {
+    } finally {
+      if (rs != null) {
+	try {
+	  rs.close();
+	} catch (SQLException sqe) {}
+      }
+    }
+
+    if (log.isDebugEnabled()) {
+      log.debug("saveTargets: recipe " + recipeIdAndClass[0] + " had " + nind + " args already in DB");
+    }
+    index = nind;
+
     Iterator keys = targets.keySet().iterator();
-    int index = 0;
     while(keys.hasNext()) {
       Object key = keys.next();
       Object value = (Object)targets.get(key);
       substitutions.put(":arg_name:", (String)key);
       substitutions.put(":arg_value:", (String)value);
+      // FIXME: Bug 1748 -- arg_order must start with <cur max> + 1
       substitutions.put(":arg_order:", String.valueOf(index++));
       executeUpdate(dbp.getQuery("insertLibRecipeProp", substitutions));
     }

@@ -21,7 +21,8 @@
 
 package org.cougaar.tools.csmart.experiment;
 
-import java.util.*;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,8 +32,6 @@ import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
-import java.io.ObjectInputStream;
-import java.io.IOException;
 
 /**
  * Maintains information about a host and generates the
