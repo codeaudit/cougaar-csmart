@@ -1136,10 +1136,10 @@ public class CSMARTConsole extends JFrame {
         if (appServer == null)
           continue;
 
-        nodeToNodeInfo.put(nodeName,
-                           new NodeInfo(appServer,
-                                        nodeName, hostName, "",
-                                        properties, args));
+        //        nodeToNodeInfo.put(nodeName,
+        //                           new NodeInfo(appServer,
+        //                                        nodeName, hostName, "",
+        //                                        properties, args));
         // if not running from database, need to write config files
         // writeConfigFiles()
       }
@@ -1905,17 +1905,18 @@ public class CSMARTConsole extends JFrame {
 
       // Create the process description, then the proccess
       try {
-        String procName =
-            appServerSupport.getProcessName(experimentName, nci.nodeName);
+        //        String procName =
+        //            appServerSupport.getProcessName(experimentName, nci.nodeName);
+        String procName = null;
 
         // Check that a process with description desc is not
         // already running, modify the process name if so
-        while (appServerSupport.isProcessNameUsed(procName)) {
-          if (log.isDebugEnabled()) {
-            log.debug("ctNodes: process with name " + procName + " already running");
-          }
-          procName = procName + "1";
-        }
+        //        while (appServerSupport.isProcessNameUsed(procName)) {
+        //          if (log.isDebugEnabled()) {
+        //            log.debug("ctNodes: process with name " + procName + " already running");
+        //          }
+        //          procName = procName + "1";
+        //        }
 
         String groupName = "csmart";
         ProcessDescription desc =
@@ -2097,8 +2098,9 @@ public class CSMARTConsole extends JFrame {
 
     int remotePort = appServerSupport.getAppServerPort(properties);
     // Next line may do RMI -- do in non-AWT thread?
-    RemoteHost remoteAppServer =
-        appServerSupport.getAppServer(hostName, remotePort);
+    //    RemoteHost remoteAppServer =
+    //        appServerSupport.getAppServer(hostName, remotePort);
+    RemoteHost remoteAppServer = null;
     if (remoteAppServer == null)
       return null;
 
@@ -2174,17 +2176,18 @@ public class CSMARTConsole extends JFrame {
       String experimentName = "Experiment";
       if (experiment != null && usingExperiment)
         experimentName = experiment.getExperimentName();
-      String procName = appServerSupport.getProcessName(experimentName, nodeName);
+      //      String procName = appServerSupport.getProcessName(experimentName, nodeName);
+      String procName = null;
 
       // Next method does RMI, could block
       // Check that a process with description desc is not
       // already running, modify the process name if so
-      while (appServerSupport.isProcessNameUsed(procName)) {
-        if (log.isDebugEnabled()) {
-          log.debug("ctNodes: process with name " + procName + " already running");
-        }
-        procName = procName + "1";
-      }
+      //      while (appServerSupport.isProcessNameUsed(procName)) {
+      //        if (log.isDebugEnabled()) {
+      //          log.debug("ctNodes: process with name " + procName + " already running");
+      //        }
+      //        procName = procName + "1";
+      //      }
 
       String groupName = "csmart";
       ProcessDescription desc =
@@ -2239,7 +2242,8 @@ public class CSMARTConsole extends JFrame {
     // Before getting this list, make sure our list of possible
     // things to attach to is up-to-date
     //    appServerSupport.refreshAppServers();
-    ArrayList nodesToAttach = appServerSupport.getNodesToAttach();
+    //    ArrayList nodesToAttach = appServerSupport.getNodesToAttach();
+    ArrayList nodesToAttach = null;
         if (nodesToAttach == null) {
       // There were no Nodes to attach to
           JOptionPane.showMessageDialog(this, "No new Nodes to Attach to.",
@@ -2268,23 +2272,23 @@ public class CSMARTConsole extends JFrame {
         }
         // So how do I get the old process name?
         NodeInfo old = (NodeInfo) nodeToNodeInfo.get(nodeInfo.getNodeName());
-        if (old.getProcessName().equals(nodeInfo.getProcessName())) {
-          if (log.isDebugEnabled()) {
-            log.debug("They have the same process name: " + nodeInfo.getProcessName());
-          }
+        //        if (old.getProcessName().equals(nodeInfo.getProcessName())) {
+        //          if (log.isDebugEnabled()) {
+        //            log.debug("They have the same process name: " + nodeInfo.getProcessName());
+        //          }
           // FIXME: Maybe compare nodeInfo.properties too?
-          if (log.isDebugEnabled()) {
-            log.debug("Asked to attach to already attached node " + nodeInfo.getNodeName());
-          }
-          continue;
-        } else {
+        //          if (log.isDebugEnabled()) {
+        //            log.debug("Asked to attach to already attached node " + nodeInfo.getNodeName());
+        //          }
+        //          continue;
+        //        } else {
           // Going to allow attaching
           // But need to pretend it has a different name or else
           // I'll have trouble stopping it and whatnot
 
           // Must effectively reset nodeInfo.nodeName
-          name = name + "-attached";
-        }
+        //          name = name + "-attached";
+        //        }
       } // end of block to see if this Node already attached
 
       runStart = new Date();
@@ -2298,27 +2302,29 @@ public class CSMARTConsole extends JFrame {
       // add listener to node
       try {
         // FIXME: Next few lines do RMI, could block. Avoid doing it in AWT thread?
-        remoteNode =
-            nodeInfo.getAppServer().getRemoteProcess(nodeInfo.getProcessName());
+        //        remoteNode =
+        //            nodeInfo.getAppServer().getRemoteProcess(nodeInfo.getProcessName());
+        remoteNode = null;
         if (remoteNode != null) {
           RemoteListenable rl =
               remoteNode.getRemoteListenable();
           if (log.isDebugEnabled())
-            log.debug("Adding listener: " +
-                      CSMART.getNodeListenerId() +
-                      " for: " +
-                      nodeInfo.getProcessName());
+            //            log.debug("Adding listener: " +
+            //                      CSMART.getNodeListenerId() +
+            //                      " for: " +
+            //                      nodeInfo.getProcessName());
           rl.addListener(nci.listener,
                          CSMART.getNodeListenerId());
         } else {
           if (log.isWarnEnabled())
             log.warn("Got null process from AppServer for node to attach to: " + name);
-          throw new Exception("Null RemoteProcess for " + nodeInfo.getProcessName());
+          //          throw new Exception("Null RemoteProcess for " + nodeInfo.getProcessName());
+          throw new Exception("Null Remote Process");
         }
       } catch (Exception e) {
-        if (log.isErrorEnabled()) {
-          log.error("Exception attaching to: " + nodeInfo.getProcessName(), e);
-        }
+        //        if (log.isErrorEnabled()) {
+        //          log.error("Exception attaching to: " + nodeInfo.getProcessName(), e);
+        //        }
         NodeInfo invalid = (NodeInfo) nodeToNodeInfo.remove(name);
         // remove status button
         // kill doc, textPane, listener

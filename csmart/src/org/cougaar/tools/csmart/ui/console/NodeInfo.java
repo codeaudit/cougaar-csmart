@@ -36,17 +36,15 @@ public final class NodeInfo {
   private final RemoteHost appServer;
   private final String nodeName;
   private final String hostName;
-  private final String processName;
   private final Properties properties;
   private final List args;
 
   public NodeInfo(RemoteHost appServer,
-                  String nodeName, String hostName, String processName,
+                  String nodeName, String hostName, 
                   Properties properties, List args) {
     this.appServer = appServer;
     this.nodeName = nodeName;
     this.hostName = hostName;
-    this.processName = processName;
     this.properties = properties;
     this.args = args;
   }
@@ -61,10 +59,6 @@ public final class NodeInfo {
 
   public String getHostName() {
     return hostName;
-  }
-
-  public String getProcessName() {
-    return processName;
   }
 
   public Properties getProperties() {

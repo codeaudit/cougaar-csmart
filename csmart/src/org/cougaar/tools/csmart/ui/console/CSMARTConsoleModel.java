@@ -250,7 +250,8 @@ public class CSMARTConsoleModel extends Observable {
             continue;
           }
 
-          NodeInfo info = new NodeInfo(appServer, nodeName, hostName, "", properties, args);
+          NodeInfo info = new NodeInfo(appServer, nodeName, hostName, 
+                                       properties, args);
           this.nodeModels.put(nodeName, new NodeModel(info, this));
         }
       }
@@ -980,18 +981,13 @@ public class CSMARTConsoleModel extends Observable {
    */
   public void attachToNode(String name) {
     RemoteHost appServer = getAppServer(name).appServer;
-    // TODO: I think the only reason to have a processName
-    // (which is the ExperimentName + Node Name)
-    // is to handle multiple experiments
-    // is this needed?
-    String processName = name;
     // if you're attaching to a node discovered through its app server,
     // then you know nothing about these
     String hostName = "";
     Properties properties = null;
     List args = null;
     NodeInfo ni =
-      new NodeInfo(appServer, name, hostName, processName, properties, args);
+      new NodeInfo(appServer, name, hostName, properties, args);
     NodeModel nodeModel = new NodeModel(ni, this);
     // what detects the new node model and contacts it and adds its views?
     nodeModels.put(name, nodeModel);

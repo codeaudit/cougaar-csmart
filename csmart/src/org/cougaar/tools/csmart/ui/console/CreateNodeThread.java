@@ -68,16 +68,19 @@ public class CreateNodeThread extends SwingWorker {
 
     // Create the process description, then the proccess
     try {
-      String procName = appServerSupport.getProcessName(experimentName, model.getInfo().getNodeName());
+      // VMT:if CSMART is already listening on the node, then we shouldn't get here
+      // we can't attach to a node to which we're already listening
+      // is there any other way we can get here?
+      //      String procName = appServerSupport.getProcessName(experimentName, model.getInfo().getNodeName());
 
       // Check that a process with description desc is not already running, else modify process name
-      while (appServerSupport.isProcessNameUsed(procName)) {
-        if (log.isDebugEnabled()) {
-          log.debug("ctNodes: process with name " + procName + " already running");
-        }
-        procName = procName + "1";
-      }
-
+      //      while (appServerSupport.isProcessNameUsed(procName)) {
+      //        if (log.isDebugEnabled()) {
+      //          log.debug("ctNodes: process with name " + procName + " already running");
+      //        }
+      //        procName = procName + "1";
+      //      }
+      String procName = model.getInfo().getNodeName();
       ProcessDescription desc = new ProcessDescription(procName, "csmart",
                                  model.getInfo().getProperties(),
                                  model.getInfo().getArgs());
