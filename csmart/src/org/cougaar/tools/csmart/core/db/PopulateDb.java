@@ -1262,7 +1262,7 @@ public class PopulateDb extends PDbBase {
   private void addAssemblyToConfig(String assembly_id) throws SQLException {
     if (assembly_id == null || assembly_id.equals("")) {
       if (log.isWarnEnabled()) {
-	log.warn("assAsbToConfig got empty assembly " + assembly_id + " for trial trialId");
+	log.warn("addAsbToConfig got empty assembly " + assembly_id + " for trial " + trialId);
       }
       return;
     }
@@ -1270,6 +1270,14 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":trial_id:", trialId);
     substitutions.put(":expt_id:", exptId);
     substitutions.put(":assembly_type:", getAssemblyType(assembly_id));
+
+    if (assemblyInConfig(assembly_id)) {
+      if (log.isInfoEnabled()) {
+	log.info("addAsbToConfig already have ID " + assembly_id + " in config for trial " + trialId);
+      }
+      return;
+    }
+
     if (log.isDebugEnabled()) {
       log.debug("Adding assembly to config for trial " + trialId + ": " + assembly_id);
     }
@@ -1283,10 +1291,24 @@ public class PopulateDb extends PDbBase {
    * @exception SQLException if an error occurs
    */
   private void addAssemblyToRuntime(String assembly_id) throws SQLException {
+    if (assembly_id == null || assembly_id.equals("")) {
+      if (log.isWarnEnabled()) {
+	log.warn("addAsbToRuntime got empty assembly " + assembly_id + " for trial " + trialId);
+      }
+      return;
+    }
     substitutions.put(":assembly_id:", sqlQuote(assembly_id));
     substitutions.put(":trial_id:", trialId);
     substitutions.put(":expt_id:", exptId);
     substitutions.put(":assembly_type:", getAssemblyType(assembly_id));
+
+    if (assemblyInRuntime(assembly_id)) {
+      if (log.isInfoEnabled()) {
+	log.info("addAsbToRuntime already have ID " + assembly_id + " in runtime for trial " + trialId);
+      }
+      return;
+    }
+
     if (log.isDebugEnabled()) {
       log.debug("Adding assembly to runtime for trial " + trialId + ": " + assembly_id);
     }
