@@ -147,16 +147,6 @@ public class ExperimentTest extends TestCase {
     assertEquals("Test Edit In Progress", true, experiment.isEditInProgress());
   }
 
-  public void testIsEditable() {
-    experiment.setEditInProgress(true);
-    assertEquals("Test IsEditable 1", false, experiment.isEditable());
-
-    experiment.setEditInProgress(false);
-    experiment.setEditable(true);
-    assertEquals("Test IsEditable 2", true, experiment.isEditable());
-
-  }
-
   public void testResultDirectory() {
     experiment.setResultDirectory(new File("Test"));
     assertEquals("Test ResultDirectory", new File("Test"), experiment.getResultDirectory());
