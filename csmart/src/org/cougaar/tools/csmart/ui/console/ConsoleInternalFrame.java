@@ -917,7 +917,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
       new JScrollPane(plugInsList, 
                       ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                       ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-    jsp.setPreferredSize(new Dimension(400, 100));
+    jsp.setPreferredSize(new Dimension(550, 200));
     JPanel agentInfoPanel = new JPanel();
     agentInfoPanel.setLayout(new GridBagLayout());
     plugInsList.setBackground(agentInfoPanel.getBackground());

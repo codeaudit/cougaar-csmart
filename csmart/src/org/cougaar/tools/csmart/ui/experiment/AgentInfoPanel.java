@@ -160,7 +160,7 @@ public class AgentInfoPanel extends JPanel {
     }
     JList plugInsList = new JList(entries.toArray());
     JScrollPane jsp = new JScrollPane(plugInsList);
-    jsp.setPreferredSize(new Dimension(400, 100));
+    jsp.setPreferredSize(new Dimension(550, 200));
     setLayout(new GridBagLayout());
     plugInsList.setBackground(getBackground());
     int x = 0;
