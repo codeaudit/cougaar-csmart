@@ -71,7 +71,7 @@ public class ConsoleFontChooser extends JDialog {
       public void actionPerformed(ActionEvent e) {
         int index = msgTypesCB.getSelectedIndex()-1;
         if (index <0) return;
-        System.out.println("index is - " + index + "and font style is " + fontStyleCB.getSelectedItem());
+        //        System.out.println("index is - " + index + "and font style is " + fontStyleCB.getSelectedItem());
         fontSizes[index]=new Integer((String)fontSizeCB.getSelectedItem()).intValue();
         fontTypes[index]=(String)fontStyleCB.getSelectedItem();
         fontColors[index]=selectedColor;
@@ -96,8 +96,8 @@ public class ConsoleFontChooser extends JDialog {
     selectTitledBorder.setTitleFont(selecttitleFont);
     selectPanel.setBorder(selectTitledBorder);
 
+    JLabel msgTypesLabel = new JLabel("Message Type");
     msgTypesCB = new JComboBox();
-    // MEK - easier way to do this?
     msgTypesCB.addItem(SELECTONE);
     msgTypesCB.addItem(STANDARDOUT);
     msgTypesCB.addItem(ERRORMSGS);
@@ -109,13 +109,16 @@ public class ConsoleFontChooser extends JDialog {
     msgTypesCB.addItem(SEARCH);
     msgTypesCB.addItem(NOTIFY);
 
+    JLabel fontSizeLabel = new JLabel("Font Size");
     fontSizeCB = new JComboBox(FONTSIZE);
     fontSizeCB.setSelectedIndex(4);
 
+    JLabel fontStyleLabel = new JLabel("Font Style");
     fontStyleCB = new JComboBox(FONTS);
 
     // Color choser
-    colorButton = new JButton("Font Color");
+    JLabel colorLabel = new JLabel("Font Color");
+    colorButton = new JButton();
     colorButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
       selectedColor = JColorChooser.showDialog(null, "Please Chose a Font Color", null);
@@ -124,26 +127,49 @@ public class ConsoleFontChooser extends JDialog {
     });
     int x = 0;
     int y = 0;
+    selectPanel.add(msgTypesLabel,
+		   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+					  GridBagConstraints.WEST,
+					  GridBagConstraints.HORIZONTAL,
+					  new Insets(10, 5, 5, 5), 0, 0));
     selectPanel.add(msgTypesCB,
 		   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
 					  GridBagConstraints.WEST,
 					  GridBagConstraints.HORIZONTAL,
-					  new Insets(0, 0, 0, 0), 0, 0));
+					  new Insets(10, 0, 5, 5), 0, 0));
+    x=0;
+    selectPanel.add(fontSizeLabel,
+		   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+					  GridBagConstraints.WEST,
+					  GridBagConstraints.HORIZONTAL,
+					  new Insets(10, 5, 5, 5), 0, 0));
     selectPanel.add(fontSizeCB,
 		   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
 					  GridBagConstraints.WEST,
 					  GridBagConstraints.HORIZONTAL,
-					  new Insets(0, 0, 0, 0), 0, 0));
+					  new Insets(10, 0, 5, 5), 0, 0));
+    x=0;
+    selectPanel.add(fontStyleLabel,
+		   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+					  GridBagConstraints.WEST,
+					  GridBagConstraints.HORIZONTAL,
+					  new Insets(10, 5, 5, 5), 0, 0));
     selectPanel.add(fontStyleCB,
 		   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
 					  GridBagConstraints.WEST,
 					  GridBagConstraints.HORIZONTAL,
-					  new Insets(0, 0, 0, 0), 0, 0));
+					  new Insets(10, 0, 5, 5), 0, 0));
+    x=0;
+    selectPanel.add(colorLabel,
+		   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+					  GridBagConstraints.WEST,
+					  GridBagConstraints.HORIZONTAL,
+					  new Insets(10, 5, 5, 5), 0, 0));
     selectPanel.add(colorButton,
 		   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
 					  GridBagConstraints.WEST,
 					  GridBagConstraints.HORIZONTAL,
-					  new Insets(0, 0, 0, 0), 0, 0));
+					  new Insets(10, 0, 5, 5), 0, 0));
 
     panel.add(buttonPanel, BorderLayout.SOUTH);
     panel.add(selectPanel, BorderLayout.CENTER);

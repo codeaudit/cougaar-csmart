@@ -41,11 +41,11 @@ public class NodeArgumentTableModel extends AbstractTableModel {
   }
 
   /**
-   * Cells aren't editable, maybe they should be.
+   * Cells are editable.
    */
 
   public boolean isCellEditable(int row, int col) {
-    return false;
+    return true;
   }
 
   public int getRowCount() {
@@ -68,6 +68,17 @@ public class NodeArgumentTableModel extends AbstractTableModel {
       return null;
   }
 
+  public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+    if (columnIndex == 0) { // it's a name
+      names.set(rowIndex, aValue);
+
+    }
+    if (columnIndex == 1) { // it's a value
+      values.set(rowIndex, aValue);
+    }
+    fireTableCellUpdated(rowIndex, columnIndex);
+  }
+
   public String getColumnName(int column) {
     if (column == 0)
       return "Name";
@@ -75,6 +86,14 @@ public class NodeArgumentTableModel extends AbstractTableModel {
       return "Value";
     else
       return null; // invalidate column index
+  }
+
+  public ArrayList getNodeArgumentNames() {
+    return names;
+  }
+  
+  public ArrayList getNodeArgumentValues() {
+    return values;
   }
 }
 

@@ -81,6 +81,16 @@ public class NodeArgumentDialog extends JDialog {
     nodeArgTableModel = new NodeArgumentTableModel(names, values);
     argTable.setModel(nodeArgTableModel);
   }
+  
+  public ArrayList getNodeArgumentNames() {
+    nodeArgTableModel.getNodeArgumentNames();
+    return names;
+  }
+
+  public ArrayList getNodeArgumentValues() {
+    nodeArgTableModel.getNodeArgumentValues();
+    return values;
+  }
     
   public static void main(String[] args) {
     NodeArgumentDialog nad = new NodeArgumentDialog();
