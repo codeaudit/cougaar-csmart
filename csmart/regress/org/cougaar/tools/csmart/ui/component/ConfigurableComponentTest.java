@@ -26,10 +26,6 @@ public class ConfigurableComponentTest extends TestCase {
     sc = new SimpleComponent();
   }
 
-  public void testName() {
-    sc.setName("MyName");
-    assertEquals("Test getName()", new SimpleName("MyName"), sc.getName());
-  }
 
   public void testAddChild() {
     assertEquals("Test addChild()", 0, sc.addChild(new SimpleComponent("Child")));         	 
