@@ -22,13 +22,19 @@
 package org.cougaar.tools.csmart.experiment;
 
 import java.io.File;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.*;
+import javax.swing.JOptionPane;
 
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.tools.csmart.core.db.DBUtils;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
@@ -43,30 +49,23 @@ import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 
-import org.cougaar.tools.csmart.core.db.DBUtils;
-
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 
-import org.cougaar.tools.csmart.core.db.PopulateDb;
-import org.cougaar.tools.csmart.core.db.DBConflictHandler;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
+
 import org.cougaar.tools.server.ConfigurationWriter;
 import org.cougaar.core.node.Node;
 import org.cougaar.core.agent.ClusterImpl;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.ObjectInputStream;
-import java.io.IOException;
 
 /**
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
  * Computes the trials, and the configuration data for running a trial.
- *
- * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  */
 public class Experiment extends ModifiableConfigurableComponent implements ModificationListener, java.io.Serializable {
   // org.cougaar.control.port; port for contacting applications server
@@ -74,7 +73,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public static final String NAME_SERVER_PORTS = "8888:5555";
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
   public static final String PROP_PREFIX = "PROP$";
-  private List societies = new ArrayList();
+  private SocietyComponent society = null;
   private List hosts = new ArrayList();
   private List nodes = new ArrayList();
   private List recipes = new ArrayList();
@@ -105,18 +104,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   // Host/Node, Node/Agent would be 2, for example
   private List configAssemblyIDs = new ArrayList();
 
-  private boolean inDatabase = false;
-
   private ComponentData theWholeSoc = null;
 
   private transient Logger log;
 
-  public Experiment(String name, SocietyComponent[] societyComponents,
+  public Experiment(String name, SocietyComponent societyComponent,
 		    RecipeComponent[] recipes)
   {
     this(name);
     createLogger();
-    setSocietyComponents(societyComponents);
+    setSocietyComponent(societyComponent);
     setRecipes(recipes);
     setDefaultNodeArguments();
   }
@@ -133,7 +130,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     createLogger();
     this.expID = expID;
     this.trialID = trialID;
-    inDatabase = true;
     setDefaultNodeArguments();
     if(log.isDebugEnabled()) {
       log.debug("Experiment: " + expID + " Trial: " + trialID);
@@ -158,13 +154,15 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
                              NAME_SERVER_PORTS);
     defaultNodeArguments.put("org.cougaar.control.port", 
                              Integer.toString(APP_SERVER_DEFAULT_PORT));
-    defaultNodeArguments.put("org.cougaar.configuration.database", 
-                             Parameters.findParameter(DBUtils.DATABASE));
-    defaultNodeArguments.put("org.cougaar.configuration.user", 
-                             Parameters.findParameter(DBUtils.USER));
-    defaultNodeArguments.put("org.cougaar.configuration.password", 
-                             Parameters.findParameter(DBUtils.PASSWORD));
-    defaultNodeArguments.setReadOnlyProperty("org.cougaar.experiment.id", getTrialID());
+    if (DBUtils.dbMode) {
+      defaultNodeArguments.put("org.cougaar.configuration.database", 
+			       Parameters.findParameter(DBUtils.DATABASE));
+      defaultNodeArguments.put("org.cougaar.configuration.user", 
+			       Parameters.findParameter(DBUtils.USER));
+      defaultNodeArguments.put("org.cougaar.configuration.password", 
+			       Parameters.findParameter(DBUtils.PASSWORD));
+      defaultNodeArguments.setReadOnlyProperty("org.cougaar.experiment.id", getTrialID());
+    }
     try {
       defaultNodeArguments
         .put("env.DISPLAY", InetAddress.getLocalHost().getHostName() +
@@ -187,20 +185,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     defaultNodeArguments.setReadOnlyProperty("org.cougaar.experiment.id", trialID);
   }
 
-  // This method should get called by Organizer
-  // When user tries to load a previously saved Experiment
-  public static Experiment loadCMTExperiment (String expID) {
-    Experiment ret = new Experiment(expID);
-    ret.setExperimentID(expID);
-    
-    // FIXME:
-    // Retrieve the experiment with this ID from the database:
-    // Get the Assembly's that are societies, and add them to the Experiment
-    // Get the Assembly's that are configurations and fill in the H/N/A stuff,
-    // but store where we got this info
-    return ret;
-  }
-  
   public void setName(String newName) {
     super.setName(newName);
     fireModification();
@@ -208,16 +192,19 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public String getExperimentName() {
     return getShortName();
   }
-  public void setSocietyComponents(SocietyComponent[] ary) {
-    societies.clear();
-    societies.addAll(Arrays.asList(ary));
+  public void setSocietyComponent(SocietyComponent soc) {
+    society = soc;
   }
   public void setRecipes(RecipeComponent[] ary) {
     recipes.clear();
     recipes.addAll(Arrays.asList(ary));
   }
   public void addSocietyComponent(SocietyComponent sc) {
-    if (!societies.contains(sc)) societies.add(sc);
+    if (society == null) {
+      setSocietyComponent (sc);
+    } else {
+      throw new IllegalArgumentException("Already have a society in experiment " + this);
+    }
   }
   public void addRecipe(RecipeComponent recipe) {
     if (!recipes.contains(recipe)) recipes.add(recipe);
@@ -230,7 +217,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       addRecipe((RecipeComponent)comp);
   }
   public void removeSociety(SocietyComponent sc) {
-    societies.remove(sc);
+    society = null;
   }
   public void removeRecipe(RecipeComponent recipe) {
     recipes.remove(recipe);
@@ -243,17 +230,26 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     // Must handle random components!!!
   }
   public int getSocietyComponentCount() {
-    return societies.size();
+    return (society == null ? 0 : 1);
   }
   public int getComponentCount() {
-    return societies.size() + recipes.size();
+    return getSocietyComponentCount() + recipes.size();
   }
   public int getRecipeCount() {
     return recipes.size();
   }
+
   public SocietyComponent getSocietyComponent(int i) {
-    return (SocietyComponent) societies.get(i);
+    if (i != 0) {
+      throw new IllegalArgumentException("Asked for society " + i + " when only 1, index 0, allowed");
+    }
+    return society;
   }
+
+  public SocietyComponent getSocietyComponent() {
+    return society;
+  }
+
   public RecipeComponent getRecipe(int i) {
     return (RecipeComponent) recipes.get(i);
   }
@@ -263,7 +259,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private ModifiableComponent getComponent(int i) {
     // What a hack!!!
     if (i < getSocietyComponentCount())
-      return (ModifiableComponent)getSocietyComponent(i);
+      return (ModifiableComponent)getSocietyComponent();
     else if (i < getComponentCount()) 
       return (ModifiableComponent)(getRecipe(i - (getSocietyComponentCount())));
     else
@@ -280,7 +276,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * setting the editability flag, which indicates whether the experiment
    * can ever be edited.
    */
-
   public void setEditInProgress(boolean newEditInProgress) {
     editInProgress = newEditInProgress;
   }
@@ -291,7 +286,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * setting the runnability flag, which indicates whether the experiment
    * can ever be run.
    */
-
   public void setRunInProgress(boolean newRunInProgress) {
     runInProgress = newRunInProgress;
   }
@@ -302,7 +296,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * even if this flag is not set.
    * @return boolean whether or not experiment is being edited
    */
-
   public boolean isEditInProgress() {
     return editInProgress;
   }
@@ -311,7 +304,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * Return whether or not experiment is being run.
    * @return boolean whether or not experiment is being run
    */
-
   public boolean isRunInProgress() {
     return runInProgress;
   }
@@ -409,20 +401,19 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       }
     }
     // Tell the Societies in the experiment they are no longer running?
-    for (int i = 0; i < societies.size(); i++) {
-      ((SocietyComponent)societies.get(i)).setRunning(false);
-    }
+    if (society != null)
+      society.setRunning(false);
   }
 
   /**
    * Return a deep copy of the experiment.
    * Called when an experiment is selected in the organizer.
-   * Add experiments and societies to workspace.
+   * Add experiments and society to workspace.
    * @return the copy of the experiment.
    */
   public ModifiableComponent copy(String uniqueName) {
     Experiment experimentCopy = null;
-    if (inDatabase) 
+    if (DBUtils.dbMode) 
       experimentCopy = new Experiment(uniqueName, expID, trialID);
     else
       experimentCopy = new Experiment(uniqueName);
@@ -621,8 +612,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (newNameServer != null) {
       defaultNodeArgs.setProperty("org.cougaar.name.server", newNameServer);
     }
-    if(log.isDebugEnabled()) {
-      log.debug("org.cougaar.name.server=" + newNameServer);
+    if(log.isWarnEnabled()) {
+      log.warn("org.cougaar.name.server=" + newNameServer);
     }
   }
 
@@ -651,7 +642,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   public void renameNode(NodeComponent nc, String name) {
-    // FIXME! This allows 2 Hosts with the same name!
+    // FIXME! This allows 2 Nodes with the same name!
     nodes.remove(nc);
     nc.setName(name);
     //fireModification();
@@ -678,12 +669,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
   
   /**
-   * Get the agents from the societies in the experiment.
+   * Get the agents from the society in the experiment.
    */
-  private List getAgentsInSocieties() {
+  private List getAgentsInSociety() {
     List agents = new ArrayList();
-    for (int i = 0; i < societies.size(); i++) {
-      SocietyComponent society = (SocietyComponent)societies.get(i);
+    if (society != null) {
       AgentComponent[] sags = society.getAgents();
       if (sags != null && sags.length > 0)
 	agents.addAll(Arrays.asList(sags));
@@ -693,7 +683,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   private List getAgentsInComponents() {
     List agents = new ArrayList();
-    List nags = getAgentsInSocieties();
+    List nags = getAgentsInSociety();
     if (nags != null && (! nags.isEmpty()))
       agents.addAll(nags);
     nags = getAgentsInRecipes();
@@ -714,7 +704,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   public List getAgentsList() {
-    List agents = getAgentsInSocieties();
+    List agents = getAgentsInSociety();
     if (agents == null)
       agents = new ArrayList();
     List other = getAgentsInRecipes();
@@ -729,7 +719,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   /**
-   * Reconcile agents in nodes with agents in societies,
+   * Reconcile agents in nodes with agents in society,
    * so that if a society has been reconfigured such that
    * it no longer contains some agents, those agents are also
    * removed from the nodes.
@@ -775,7 +765,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 //    }
 
   public String getExperimentID() {
-    if (inDatabase) {
+    if (DBUtils.dbMode) {
       return expID;
     } else {
       return null;
@@ -783,7 +773,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   public String getTrialID() {
-    if (inDatabase) {
+    if (DBUtils.dbMode) {
       return trialID;
     } else {
       return null;
@@ -800,7 +790,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes) {
     // The given set of nodes is potentially fewer than the full set in the society
     // Note the ugly this parameter...
-    if (inDatabase) {
+    if (DBUtils.dbMode) {
       // Send a config writer that only writes LeafComponentData
       try {
         return new LeafOnlyConfigWriter(getComponents(), nodes, this);
@@ -899,16 +889,30 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   // the local results directory for that trial
   public void dumpINIFiles() {
     ExperimentINIWriter cw = null;
-    if (inDatabase) {
+    if (DBUtils.dbMode) {
       if (theWholeSoc == null) {
 	// write it to the db
+	saveToDb(new DBConflictHandler() {
+	    public int handleConflict(Object msg, Object[] choices, 
+                            Object defaultChoice) {
+	      return JOptionPane.showOptionDialog(null,
+						  msg,
+						  "Database Conflict",
+						  JOptionPane.WARNING_MESSAGE,
+						  JOptionPane.DEFAULT_OPTION,
+						  null,
+						  choices,
+						  defaultChoice);
+	    }
+	  });
 	// FIXME!!
-        if(log.isDebugEnabled()) {
-          log.error("Save experiment first.");
-        }
-	return;
-      } 
-      cw = new ExperimentINIWriter(theWholeSoc);
+//          if(log.isDebugEnabled()) {
+//            log.error("Save experiment first.");
+//          }
+//  	return;
+      }
+      if (theWholeSoc != null)
+	cw = new ExperimentINIWriter(theWholeSoc);
     } else {
       cw = new ExperimentINIWriter(getComponents(), getNodes(), this);
     }
@@ -930,13 +934,15 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       if (!f.exists() && !f.mkdirs() && !f.exists()) 
 	f = new File(".");
     } catch (Exception e) {
+      JOptionPane.showMessageDialog(null, "Couldn't create results directory: " + e, "Can't create directory", JOptionPane.ERROR_MESSAGE);
       if(log.isDebugEnabled()) {
         log.error("Couldn't create results directory: " + e);
       }
     }
     if (f != null) {
       try {
-	System.out.println("Writing ini files to " + f.getAbsolutePath() + "...");
+	JOptionPane.showMessageDialog(null, "Writing ini file to " + f.getAbsolutePath() + "...");
+	//	System.out.println("Writing ini files to " + f.getAbsolutePath() + "...");
 	cw.writeConfigFiles(f);
       } catch (Exception e) {
         if(log.isDebugEnabled()) {
@@ -1126,13 +1132,15 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     NodeComponent node = null;
 
     // BIG HACK IN HERE!!!!!!
-    SocietyComponent soc = getSocietyComponent(0);
-    if (soc != null && soc.getSocietyName().equals("3ID-135-CMT")) {
-      node = addNode("SMALL-135-TRANS-NODE");
-      expID = "SMALL-135-TRANS";
-    } else
-      node = addNode("Node0");
-    
+    SocietyComponent soc = getSocietyComponent();
+    node = addNode("Node0");
+    if (expID == null) {
+      if (soc != null) 
+	expID = soc.getShortName() + "-basic-expt-id";
+      else
+	expID = "Basic-expt-id";
+    }
+      
     // Put all the agents in this Node
     // Skip agents already assigned to Nodes?
     AgentComponent[] agents = getAgents();
@@ -1351,7 +1359,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   // writers and in the saveToDb method above
   // saveToDb creates host component data; the config writers and this do not
   public ComponentData getSocietyComponentData() {
-    if (inDatabase)
+    if (DBUtils.dbMode)
       return theWholeSoc;
     theWholeSoc = new GenericComponentData();
     theWholeSoc.setType(ComponentData.SOCIETY);
@@ -1386,7 +1394,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       ComponentData nc = new GenericComponentData();
       nc.setType(ComponentData.NODE);
       nc.setName(nodesToWrite[i].getShortName());
-      nc.setClassName(""); // leave this out?? FIXME
+      nc.setClassName("org.cougaar.core.node.Node"); // leave this out?? FIXME
       nc.setOwner(this);
       nc.setParent(theWholeSoc);
       ComponentName name = 

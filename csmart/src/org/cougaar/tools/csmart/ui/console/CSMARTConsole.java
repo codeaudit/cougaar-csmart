@@ -816,7 +816,7 @@ public class CSMARTConsole extends JFrame {
 
   /**
    * Stop all nodes.
-   * If all societies in the experiment are self terminating, 
+   * If the society in the experiment is self terminating, 
    * just stop after the current trial (don't start next trial).
    * If any society is not self terminating, determine if the experiment
    * is being monitored, and if so, ask the user to confirm the stop. 
@@ -824,22 +824,18 @@ public class CSMARTConsole extends JFrame {
   private void stopButton_actionPerformed(ActionEvent e) {
     stopButton.setSelected(true); // indicate stopping
     stopButton.setEnabled(false); // disable until experiment stops
-    int nSocieties = experiment.getSocietyComponentCount();
     boolean isSelfTerminating = true;
-    for (int i = 0; i < nSocieties; i++) {
-      SocietyComponent society = experiment.getSocietyComponent(i);
-      if (!society.isSelfTerminating()) {
-	isSelfTerminating = false;
-	break;
-      }
+    SocietyComponent society = experiment.getSocietyComponent();
+    if (society != null && !society.isSelfTerminating()) {
+      isSelfTerminating = false;
     }
-    // societies in experiment will self terminate
+    // society in experiment will self terminate
     if (isSelfTerminating) {
       userStoppedTrials = true;
       return;
     }
-    // need to manually stop some societies
-    // if societies are being monitored, ask user to confirm stop
+    // need to manually stop society
+    // if society is being monitored, ask user to confirm stop
     if (experiment.isMonitored()) {
       int response = 
 	JOptionPane.showConfirmDialog(this,
@@ -955,10 +951,8 @@ public class CSMARTConsole extends JFrame {
       csmart.setRunningExperiment(null);
     } else
       csmart.setRunningExperiment(experiment);
-    // update societies
-    int nSocieties = experiment.getSocietyComponentCount();
-    for (int i = 0; i < nSocieties; i++)
-      experiment.getSocietyComponent(i).setRunning(isRunning);
+    // update society
+    experiment.getSocietyComponent().setRunning(isRunning);
 
     // if not running, enable the run button, and don't select it
     // if running, disable the run button and select it
@@ -1428,7 +1422,7 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * This checks all the societies and metric recipes in the experiment to determine if
+   * This checks the society and recipes in the experiment to determine if
    * any of them generated this metrics file.
    * Creating a new File from the filename works because acceptFile
    * just looks at the filename.
@@ -1436,13 +1430,10 @@ public class CSMARTConsole extends JFrame {
   private boolean isResultFile(String filename) {
     File thisFile = new java.io.File(filename);
 
-    int n = experiment.getSocietyComponentCount();
-    for (int i = 0; i < n; i++) {
-      SocietyComponent societyComponent = experiment.getSocietyComponent(i);
+    SocietyComponent societyComponent = experiment.getSocietyComponent();
+    if (societyComponent != null) {
       java.io.FileFilter fileFilter = societyComponent.getResultFileFilter();
-      if (fileFilter == null)
-	continue;
-      if(fileFilter.accept(thisFile))
+      if(fileFilter != null && fileFilter.accept(thisFile))
 	return true;
     }
     int nrecipes = experiment.getRecipeCount();

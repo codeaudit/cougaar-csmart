@@ -27,8 +27,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -56,6 +58,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import org.cougaar.Version;
 import org.cougaar.core.node.Bootstrapper;
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.log.Logger;
@@ -126,6 +129,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   private static final String HELP_MENU = "Help";
 
   protected static final String HELP_DOC = "help.html";
+  protected static final String VERSION_ITEM = "Show CSMART Version";
   protected static final String ABOUT_CSMART_ITEM = "About CSMART";
   protected static final String ABOUT_DOC = "/org/cougaar/tools/csmart/ui/help/about-csmart.html";
   protected static final String HELP_MENU_ITEM = "About Launcher";
@@ -133,9 +137,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   private transient Logger log;
 
   private String[] helpMenuItems = {
-    HELP_MENU_ITEM, ABOUT_CSMART_ITEM
+    HELP_MENU_ITEM, VERSION_ITEM, ABOUT_CSMART_ITEM
   };
-
+  
   private static final String PRE="<html><center><b><font face=\"sans-serif\">";
   private static final String POST="</font></b></center></html>";
   // tool names
@@ -202,8 +206,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     createLog();
 
     // Write initial CSMART info to the log file
-    if (log.isInfoEnabled()) {
-      log.info(writeDebug());
+    if (log.isFatalEnabled()) {
+      log.fatal(writeDebug());
     }
 
     resultDir = initResultDir();
@@ -806,6 +810,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       URL help = (URL)getClass().getResource(HELP_DOC);
       if (help != null)
 	Browser.setPage(help);
+    } else if (s.equals(VERSION_ITEM)) {
+      String txt = writeDebug();
+      if (txt != null)
+	Browser.setPage(txt);
     } else if (s.equals(ABOUT_CSMART_ITEM)) {
       URL about = (URL)getClass().getResource(ABOUT_DOC);
       if (about != null)
@@ -982,13 +990,39 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    */
   public String writeDebug() {
     // Cougaar version, build info
-    return "This is CSMART";
-    // Some properties valus: OS, install.path, config.path,
+    StringBuffer result = new StringBuffer();
+    String version = null;
+    long buildtime = 0;
+    try {
+      Class vc = Class.forName("org.cougaar.Version");
+      Field vf = vc.getField("version");
+      Field bf = vc.getField("buildTime");
+      version = (String) vf.get(null);
+      buildtime = bf.getLong(null);
+    } catch (Exception e) {}
+
+    result.append("CSMART ");
+    if (version == null) {
+      result.append("(unknown version)\n");
+    } else {
+      result.append(version+" built on "+(new Date(buildtime)) + "\n");
+    }
+    
+    String vminfo = System.getProperty("java.vm.info");
+    String vmv = System.getProperty("java.vm.version");
+    result.append("VM: JDK "+vmv+" ("+vminfo+")\n");
+    String os = System.getProperty("os.name");
+    String osv = System.getProperty("os.version");
+    result.append("OS: "+os+" ("+osv+")\n");
+
+    // Some properties valus: install.path, config.path,
     // dbMode, isMySQL
     // What tools are open
     // whats loaded in the workspace
     // results directory setting
     // but probably not the cougaar.rc contents
+
+    return result.toString();
   }
   
   // Logging Methods

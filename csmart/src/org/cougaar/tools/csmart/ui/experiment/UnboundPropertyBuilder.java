@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001,2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -37,6 +37,11 @@ import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 
+/**
+ * Properties panel in experiment builder.<br>
+ * Use this panel to add a society or recipes to your experiment.
+ * This class manages the manipulation of these components.
+ */
 public class UnboundPropertyBuilder extends JPanel {
   private static final String REMOVE_MENU_ITEM = "Remove";
   private ExperimentBuilder experimentBuilder;
@@ -72,7 +77,7 @@ public class UnboundPropertyBuilder extends JPanel {
   };
   
   private Action[] societiesActions = {
-    new AbstractAction(REMOVE_MENU_ITEM + " All Societies") {
+    new AbstractAction(REMOVE_MENU_ITEM + " Society") {
       public void actionPerformed(ActionEvent e) {
         removeAllChildren(societies);
       }
@@ -262,8 +267,9 @@ public class UnboundPropertyBuilder extends JPanel {
     }
     tree.setCellRenderer(renderer);
     tree.setEditable(isEditable);
-    for (int i = 0, n = experiment.getSocietyComponentCount(); i < n; i++) {
-      addSocietyComponent(experiment.getSocietyComponent(i));
+    SocietyComponent society = experiment.getSocietyComponent();
+    if (society != null) {
+      addSocietyComponent(society);
     }
     for (int i = 0, n = experiment.getRecipeCount(); i < n; i++) {
       addRecipe(experiment.getRecipe(i));
@@ -288,18 +294,19 @@ public class UnboundPropertyBuilder extends JPanel {
   }
 
   /**
-   * Update societies and recipes in the experiment when the user
+   * Update society and recipes in the experiment when the user
    * modifies the tree.
    */
   private void reconcileExperimentNodes() {
     int nSocieties = societies.getChildCount();
-    SocietyComponent[] societyComponentsAry = new SocietyComponent[nSocieties];
-    for (int i = 0; i < nSocieties; i++) {
-      SocietyComponent society = (SocietyComponent) ((DefaultMutableTreeNode) societies.getChildAt(i)).getUserObject();
-      societyComponentsAry[i] = society;
+    if (nSocieties > 1) {
+      // Only 1 society should be allowed!
+      System.err.println("Only 1 society in an experiment!");
+    } else if (nSocieties == 1) {
+      SocietyComponent society = (SocietyComponent) ((DefaultMutableTreeNode) societies.getChildAt(0)).getUserObject();
       //      society.setEditable(false); // so society editability tracks experiment editability
+      experiment.setSocietyComponent(society);
     }
-    experiment.setSocietyComponents(societyComponentsAry);
     int nRecipes = recipes.getChildCount();
     RecipeComponent[] recipeAry = new RecipeComponent[nRecipes];
     for (int i = 0; i < nRecipes; i++) {
@@ -313,9 +320,9 @@ public class UnboundPropertyBuilder extends JPanel {
 
   /**
    * Display the correct popup menu.
-   * Don't display popup for Societies folder or for individual
-   * societies.  The only option on these popup folders is to delete
-   * the societies, and that is not allowed.
+   * Don't display popup for Societies folder or for the individual
+   * society.  The only option on these popup folders is to delete
+   * the society, and that is not allowed.
    */
   private void doPopup(MouseEvent e) {
     TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
@@ -383,8 +390,12 @@ public class UnboundPropertyBuilder extends JPanel {
   /**
    * Add society component to tree.
    */
-
   private void addSocietyComponent(SocietyComponent sc) {
+    if (societies.getChildCount() != 0) {
+      // Only 1 society supposed to be allowed
+      System.err.println("attempt to add second society to an experiment");
+      return;
+    }
     DefaultMutableTreeNode node = new DefaultMutableTreeNode(sc, false);
     model.insertNodeInto(node, societies, societies.getChildCount());
   }

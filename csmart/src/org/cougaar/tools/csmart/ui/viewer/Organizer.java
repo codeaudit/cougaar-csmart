@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -269,13 +269,13 @@ public class Organizer extends JScrollPane {
         SocietyComponent sc = (SocietyComponent) o;
         String name = "Experiment for " + sc.getSocietyName();
         experiment = new Experiment(experimentNames.generateName(name),
-                                    new SocietyComponent[] {sc},
+                                    sc,
                                     new RecipeComponent[0]);
       } else if (o instanceof RecipeComponent) {
         RecipeComponent recipe = (RecipeComponent) o;
         String name = "Experiment for " + recipe.getRecipeName();
         experiment = new Experiment(experimentNames.generateName(name),
-                                    new SocietyComponent[0],
+                                    null,
                                     new RecipeComponent[] {recipe});
       }
       DefaultMutableTreeNode newNode =
@@ -308,7 +308,7 @@ public class Organizer extends JScrollPane {
       String name = "Temp Experiment for " + sc.getSocietyName();
       name = experimentNames.generateName(name);
       experiment = new Experiment(name,
-				  new SocietyComponent[] {sc},
+				  sc,
 				  new RecipeComponent[0]);
       DefaultMutableTreeNode parent = 
 	(DefaultMutableTreeNode) node.getParent();

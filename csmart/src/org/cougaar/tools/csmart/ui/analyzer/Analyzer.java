@@ -218,18 +218,15 @@ public class Analyzer extends JFrame implements ActionListener {
     }
 
     /**
-     * Accept any file accepted by any society in this experiment.
+     * Accept any file accepted by a society in this experiment.
      */
     public boolean accept(File f) {
       if (f.isDirectory())
 	return true; // allow user to go up/down through directory tree
-      int n = experiment.getSocietyComponentCount();
-      for (int i = 0; i < n; i++) {
-	SocietyComponent societyComponent = experiment.getSocietyComponent(i);
+      SocietyComponent societyComponent = experiment.getSocietyComponent();
+      if (societyComponent != null) {
 	java.io.FileFilter fileFilter = societyComponent.getResultFileFilter();
-	if (fileFilter == null)
-	  continue;
-	if (fileFilter.accept(f))
+	if (fileFilter != null && fileFilter.accept(f))
 	  return true;
       }
       int m = experiment.getRecipeCount();

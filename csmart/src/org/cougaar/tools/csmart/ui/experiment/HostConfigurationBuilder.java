@@ -450,12 +450,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Bring the display up-to-date by re-reading host/node/agent information
    * from the experiment.
    */
-
   public void update() {
-    if (experiment.getSocietyComponentCount() != 0)
-      societyComponent = experiment.getSocietyComponent(0);
-    else
-      societyComponent = null;
+    societyComponent = experiment.getSocietyComponent(); // may return null
     hostTree.getModel().removeTreeModelListener(this);
     nodeTree.getModel().removeTreeModelListener(this);
     agentTree.getModel().removeTreeModelListener(this);
