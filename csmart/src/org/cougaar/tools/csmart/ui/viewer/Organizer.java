@@ -897,7 +897,7 @@ public class Organizer extends JScrollPane {
 
 
     if(log.isDebugEnabled()) {
-      log.debug("Experiment Id: " + experimentId);
+      log.debug("selectExperimentFromDB: Experiment Id: " + experimentId + " name: " + originalExperimentName + " will now get name " + experimentName);
     }
 
     // Does the experiment have a CMT configuration assembly
@@ -915,7 +915,11 @@ public class Organizer extends JScrollPane {
       if (cmtDialog.wasCancelled())
         return;
     }
+
     if(haveCMTAssembly) {
+      if (log.isDebugEnabled()) {
+	log.debug("selectExptFromDB about to do cmtDialog.processResults");
+      }
       GUIUtils.timeConsumingTaskStart(organizer);
       try {
         new Thread("SelectExperiment") {
@@ -923,6 +927,9 @@ public class Organizer extends JScrollPane {
             // a potentially long process
             if (cmtDialog.processResults()) {
               final String trialId = cmtDialog.getTrialId();
+	      if (log.isDebugEnabled()) {
+		log.debug("selectExptFromDB after cmtDialog.processResults with new name/id: " + cmtDialog.getExperimentName() + "/" + cmtDialog.getExperimentId() + " trialID: " + trialId + " and orig name: " + originalExperimentName);
+	      }
               if (trialId != null) {
                 Experiment experiment =
                   helper.createExperiment(originalExperimentName,
@@ -948,6 +955,9 @@ public class Organizer extends JScrollPane {
       final String trialId = ExperimentDB.getTrialId(experimentId);
       final String expName = experimentName;
       final String expId = experimentId;
+      if (log.isDebugEnabled()) {
+	log.debug("selectExptFromDB got nonCMT expt to load. About to call helper to do load with origName: " + originalExperimentName + ", new name: " + expName + ", new ID: " + expId + ", and trialID: " + trialId);
+      }
       if (trialId != null) {
 	GUIUtils.timeConsumingTaskStart(organizer);
 	try {
