@@ -101,6 +101,9 @@ public class SocietyFileComponent
     if(log.isDebugEnabled()) {
       log.debug("Parse File: " + filename);
     }
+
+    // FIXME: Must handle getting non-Agents in the file
+
     desc = ComponentConnector.parseFile(filename);
     if (desc == null)
       return;
@@ -125,6 +128,9 @@ public class SocietyFileComponent
       String agentName = filenames[i];
       if (agentName.endsWith(".ini"))
         agentName = agentName.substring(0, agentName.length()-4);
+
+      // FIXME: I'd like to handle non binders of Agents, etc
+
       AgentComponent agent = 
         (AgentComponent)new AgentFileComponent(agentName, 
                                                "org.cougaar.core.agent.ClusterImpl");
@@ -141,6 +147,7 @@ public class SocietyFileComponent
   public ModifiableComponent copy(String name) {
     ModifiableComponent societyCopy = 
       new SocietyFileComponent(name, filenames);
+
     //societyCopy.initProperties();
     for(int i=0; i < this.getChildCount(); i++) {
       societyCopy.addChild(this.getChild(i));
