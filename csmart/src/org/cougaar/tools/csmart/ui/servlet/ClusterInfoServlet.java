@@ -82,7 +82,7 @@ public class ClusterInfoServlet
     ci.execute(request, response);  
   }
   
-  public void doPost(
+  public void doPut(
 		     HttpServletRequest request,
 		     HttpServletResponse response) throws IOException, ServletException
   {
