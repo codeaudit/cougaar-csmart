@@ -29,10 +29,10 @@ import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.util.log.Logger;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.border.LineBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
@@ -41,13 +41,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.beans.PropertyVetoException;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -55,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
+import java.io.File;
 
 /**
  * org.cougaar.tools.csmart.ui.console
@@ -559,15 +554,22 @@ public class CSMARTConsoleView extends JFrame implements Observer {
   }
 
   private void openMenuItem_actionPerformed(ActionEvent e) {
-    JFileChooser chooser = new JFileChooser();
-    int option = chooser.showOpenDialog(this);
-    if (option == JFileChooser.APPROVE_OPTION) {
-      GUIUtils.timeConsumingTaskStart(this);
+      final SwingWorker worker = new SwingWorker() {
+        public Object construct() {
+          return new CreateExperiment();
+        }
+//        public void finished() {
+//          model.setExperiment(exp);
+//        }
+      };
+      worker.start();
 
-      XMLExperiment exp = new XMLExperiment(chooser.getSelectedFile());
-      model.setXMLFile(chooser.getSelectedFile());
-      model.setExperiment(exp);
-      GUIUtils.timeConsumingTaskEnd(this);
+//      XMLExperiment exp = new XMLExperiment(chooser.getSelectedFile(), this);
+//      exp.doParse();
+//      model.setXMLFile(chooser.getSelectedFile());
+//      model.setExperiment(exp);
+//
+//      model.setXMLFile(file);
 
 //      Document doc = ComponentDataXML.createXMLDocument(exp.getExperiment());
 //      try {
@@ -575,7 +577,6 @@ public class CSMARTConsoleView extends JFrame implements Observer {
 //      } catch (IOException e1) {
 //        e1.printStackTrace();
 //      }
-    }
   }
 
   /**
@@ -1346,4 +1347,59 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     return sb.toString();
   }
 
+  class CreateExperiment {
+    CreateExperiment() {
+      JFileChooser chooser = new JFileChooser();
+      chooser.addChoosableFileFilter(new MyFileFilter("xml", "Configuration files (*.xml)")); {
+        int option = chooser.showOpenDialog(CSMARTConsoleView.this);
+        if (option == JFileChooser.APPROVE_OPTION) {
+          XMLExperiment exp = new XMLExperiment(chooser.getSelectedFile(), CSMARTConsoleView.this);
+
+          try {
+            exp.doParse();
+            model.setXMLFile(chooser.getSelectedFile());
+            model.setExperiment(exp);
+
+          } catch(Exception e) {
+            JOptionPane.showMessageDialog(CSMARTConsoleView.this, "Parse Failed, or cancel was pushed. " +
+                "See logs for details", "Failure", JOptionPane.ERROR_MESSAGE);
+          }
+        }
+      }
+    }
+  }
+
+  class MyFileFilter extends FileFilter {
+    String [] extensions;
+    String description;
+
+    public MyFileFilter(String ext, String desc) {
+      this (new String[] {ext}, desc);
+    }
+
+    public MyFileFilter(String[] exts, String desc) {
+      extensions = new String[exts.length];
+      for(int i= exts.length -1; i >= 0; i--) {
+        extensions[i] = exts[i].toLowerCase();
+      }
+      description = (desc == null ? exts[0] + " files" : desc);
+    }
+
+    public boolean accept(File f) {
+      if(f.isDirectory()) { return true; }
+
+      String name = f.getName().toLowerCase();
+      for(int i = extensions.length-1; i >=0; i--) {
+        if(name.endsWith(extensions[i])) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+  }
 }
+
