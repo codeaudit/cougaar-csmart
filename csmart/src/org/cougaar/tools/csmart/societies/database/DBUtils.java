@@ -35,8 +35,8 @@ import org.cougaar.util.DBConnectionPool;
 public class DBUtils {
 
   public static final String DATABASE = "org.cougaar.configuration.database";
-  public static final String QUERY_FILE = "DBInitializer_V3.q";
-  public static final String SOCIETY_QUERY = "querySocieties";
+  public static final String QUERY_FILE = "CSMART.q";
+  public static final String ASSEMBLYID_QUERY = "queryAssemblyID";
 
   public DBUtils() {
   }
@@ -72,7 +72,7 @@ public class DBUtils {
    * Tests database connection to ensure it is valid.
    * This is done by running a simple query on the database.
    *
-   * This test requires a <code>DBInitializer_V3.q</code> and
+   * This test requires a <code>CSMART.q</code> and
    * the querySocieties Statment within that file.
    *
    * The Query run is:
@@ -106,7 +106,7 @@ public class DBUtils {
 	    Connection conn = DBUtils.getConnection();
 	    try {
 	      Statement stmt = conn.createStatement();
-	      String query = dbProps.getQuery(SOCIETY_QUERY, substitutions);
+	      String query = dbProps.getQuery(ASSEMBLYID_QUERY, substitutions);
 	      ResultSet rs = stmt.executeQuery(query);
 	      String assemblyId;
 	      String description;
@@ -130,7 +130,7 @@ public class DBUtils {
   /**
    * Gets a connection from the Connection Pool.
    * Connection is established to the database
-   * defined in the <code>DBInitializer_V3.q</code> file.
+   * defined in the <code>CSMART.q</code> file.
    *
    * @return valid db connection
    */
@@ -142,17 +142,39 @@ public class DBUtils {
     Connection conn = null;
 
     if(isValidRCFile()) {
-      try {
+      try {	
 	dbProps = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
 	database = dbProps.getProperty("database");
 	username = dbProps.getProperty("username");
 	password = dbProps.getProperty("password");
+	String dbtype = dbProps.getDBType();
+	String driverParam = "driver." + dbtype;
+	String driverClass = Parameters.findParameter(driverParam);
+	if(driverClass == null) 
+	  throw new SQLException("Unknown driver " + driverParam);
+	Class.forName(driverClass);
 	conn = DBConnectionPool.getConnection(database, username, password);
       } catch(IOException e) {
+	// Need to log something here.
+      } catch(ClassNotFoundException ce) {
+	// Need to log something here.
       }
     }    
 
     return conn;
   }
 
+  public static String getQuery(String query, Map substitutions) {
+    DBProperties dbProps;
+    String result = null;
+
+    if(isValidRCFile()) {
+      try {
+	dbProps = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
+	result = dbProps.getQuery(query, substitutions);
+      } catch(IOException e) {}      
+    }
+      
+    return result;
+  }
 }
