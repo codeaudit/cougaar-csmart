@@ -91,12 +91,15 @@ public class UnboundPropertyBuilder extends JPanel {
    */
   private MouseListener mouseListener = new MouseAdapter() {
     public void mouseClicked(MouseEvent e) {
+      if (!isEditable) return;
       if (e.isPopupTrigger()) doPopup(e);
     }
     public void mousePressed(MouseEvent e) {
+      if (!isEditable) return;
       if (e.isPopupTrigger()) doPopup(e);
     }
     public void mouseReleased(MouseEvent e) {
+      if (!isEditable) return;
       if (e.isPopupTrigger()) doPopup(e);
     }
   };

@@ -128,6 +128,8 @@ public class ExperimentTree extends DNDTree {
     public int isDroppable(DataFlavor[] possibleFlavors,
                            DefaultMutableTreeNode target)
     {
+        if (!isEditable())
+          return DnDConstants.ACTION_NONE;
         Object userObject = target.getUserObject();
         if (userObject instanceof String) {
             if (userObject.equals(SOCIETIES)) {
