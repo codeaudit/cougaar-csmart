@@ -1399,11 +1399,13 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/tpfdd.csv.tmp'
 
 DROP TABLE IF EXISTS community_entity_attribute;
 CREATE TABLE community_entity_attribute (
+  ASSEMBLY_ID varchar(50) binary NOT NULL default '',
   COMMUNITY_ID varchar(100) binary NOT NULL default '',
   ENTITY_ID varchar(100) binary NOT NULL default '',
   ATTRIBUTE_ID varchar(100) binary NOT NULL default '',
   ATTRIBUTE_VALUE varchar(100) binary NOT NULL default '',
-  PRIMARY KEY (COMMUNITY_ID,ENTITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE),
+  PRIMARY KEY (ASSEMBLY_ID,COMMUNITY_ID,ENTITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE),
+  KEY ASSEMBLY_ID (ASSEMBLY_ID),
   KEY COMMUNITY_ID (COMMUNITY_ID),
   KEY ENTITY_ID (ENTITY_ID),
   KEY ATTRIBUTE_ID (ATTRIBUTE_ID),
@@ -1417,7 +1419,7 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/community_entity_attribute.csv.t
         OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
-    (COMMUNITY_ID,ENTITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE);
+    (ASSEMBLY_ID,COMMUNITY_ID,ENTITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE);
 
 #
 # Table structure for table 'community_attribute'
@@ -1425,10 +1427,12 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/community_entity_attribute.csv.t
 
 DROP TABLE IF EXISTS community_attribute;
 CREATE TABLE community_attribute (
+  ASSEMBLY_ID varchar(50) binary NOT NULL default '',
   COMMUNITY_ID varchar(100) binary NOT NULL default '',
   ATTRIBUTE_ID varchar(100) binary NOT NULL default '',
   ATTRIBUTE_VALUE varchar(100) binary NOT NULL default '',
-  PRIMARY KEY (COMMUNITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE),
+  PRIMARY KEY (ASSEMBLY_ID,COMMUNITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE),
+  KEY ASSEMBLY_ID (ASSEMBLY_ID),
   KEY COMMUNITY_ID (COMMUNITY_ID),
   KEY ATTRIBUTE_ID (ATTRIBUTE_ID),
   KEY ATTRIBUTE_VALUE (ATTRIBUTE_VALUE)
@@ -1440,4 +1444,4 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/community_attribute.csv.tmp'
     OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
-    (COMMUNITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE);
+    (ASSEMBLY_ID,COMMUNITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE);
