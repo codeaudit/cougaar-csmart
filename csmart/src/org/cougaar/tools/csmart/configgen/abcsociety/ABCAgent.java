@@ -90,18 +90,10 @@ public class ABCAgent
     "org.cougaar.lib.planserver.PlanServerPlugIn";
   private static final String AssetBuilderPlugIn_name =
     "org.cougaar.tools.csmart.plugin.LocalAssetBuilder";
-  private static final String MetricsPlugIn_name =
-    "org.cougaar.tools.csmart.plugin.MetricsPlugin";
-  private static final String MetricsInitializerPlugIn_name =
-    "org.cougaar.tools.csmart.plugin.MetricsInitializerPlugin";
   private static final String AssetDataPlugIn_name =
     "org.cougaar.domain.planning.plugin.AssetDataPlugIn";
   private static final String AssetReportPlugIn_name =
     "org.cougaar.domain.planning.plugin.AssetReportPlugIn";
-  // HACK: Always include this PlugIn for ABCImpacts, even though
-  // only need it if using such an impact in our experiment
-//   private static final String ABCImpactPlugIn_name =
-//     "org.cougaar.tools.csmart.plugin.ABCImpactPlugin";
 
   private Property propDistance;
   private Property propDirection;
@@ -278,10 +270,6 @@ public class ABCAgent
    */
   private void addStandardPlugIns() {
     ABCPlugIn plugin;
-
-    plugin = new ABCPlugIn("Metrics", MetricsPlugIn_name);
-    addChild(plugin);
-    plugin.initProperties();
 
     plugin = new ABCPlugIn("Allocator", AllocatorPlugIn_name);
     addChild(plugin);

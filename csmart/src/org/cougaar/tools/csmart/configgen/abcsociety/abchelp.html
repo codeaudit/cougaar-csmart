@@ -42,9 +42,6 @@ in this Agent.</li>
 The society level consists of the following properties:<ul>
 <li>Community Count        [Integer, (Level Count) - MAX]</li>
 <li>Level Count                  [Integer, 1 - MAX]</li>
-<li>Max number of metric samples     [Integer, 0 - MAX]</li>
-<li>Metric sample interval           [Integer, seconds, 0 - 60]</li>
-<li>Metric start delay               [ Integer, seconds, 0 -  MAX]</li>
 <li>Start Time (relative)            [ Long, milliseconds, 0 - MAX]</li>
 <li>Stop Time (relative)             [ Long, milliseconds, 0 - MAX]</li>
 <li>Task Verb                   [ String ]</li>
@@ -61,16 +58,9 @@ There must always be at least as many communities as levels.
 <br>
 There are two types of agents within a society.  Customer agents and Provider 
 agents.  Customer agents produce tasks and provider agents contain the assets 
-to satisfy the task request.  Currently we only support one 'Task Verb' which 
-is defined in the Society level.  Multiple Task verbs will be supported in
-a future interim release.  Tasks are submitted between 'Start 
+to satisfy the task request.  Tasks are submitted between 'Start 
 Time' and 'Stop Time'  Tasks start getting generated at 'Start Time' + the 
 current time and continue until 'Stop Time' + current time.  <br>
-Throughout task production, metrics are collected for each agent.  Once the 
-agent is started, it will start producing metrics at 'Metrics: Start Delay' + 
-current time.  The agent will then continue to report its metrics at every 
-interval 'Metrics: Sample Interval' (seconds) until the requested number of metrics samples
-'Metrics: Maximum Number of Samples' are collected.<br>
 
 <a NAME="commlevel"><h2>Community Level</h2></a>
 

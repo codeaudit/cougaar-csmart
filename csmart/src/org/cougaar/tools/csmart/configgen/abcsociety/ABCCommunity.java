@@ -69,10 +69,6 @@ public class ABCCommunity
   public static final String PROP_LEVEL = "Level";
   public static final String PROP_LEVEL_DESC = "Which Level this community is on";
 
-  /** Definitions for the First Agent Property **/
-  public static final String PROP_FIRSTAGENT = "First Agent";
-  public static final String PROP_FIRSTAGENT_DESC = "The First Agent in a community";
-
   /** Properties used here but defined elsewhere **/
   public static final String PROP_TASKVERB = ABCTask.PROP_TASKVERB;
   public static final String PROP_TASKVERB_DESC = ABCTask.PROP_TASKVERB_DESC;
@@ -88,15 +84,6 @@ public class ABCCommunity
 
   public static final String PROP_STARTTIME = ABCAgent.PROP_STARTTIME;
   public static final String PROP_STOPTIME = ABCAgent.PROP_STOPTIME;
-
-//   // Stuff for metrics:
-//   public static final String PROP_NUMBPROVIDERS = ABCAgent.PROP_NUMBPROVIDERS;
-//   public static final String PROP_SAMPLEINTERVAL = ABCAgent.PROP_SAMPLEINTERVAL;
-//   public static final String PROP_STARTDELAY = ABCAgent.PROP_STARTDELAY;
-//   public static final String PROP_MAXNUMBSAMPLES = ABCAgent.PROP_MAXNUMBSAMPLES;
-//   public static final String PROP_INITIALIZER = ABCAgent.PROP_INITIALIZER;
-//   // End of stuff for metrics
-  
 
   /** Name of the Customer Agent **/
   public static final String DEFAULT_CUSTOMER_NAME = "Customer";
@@ -175,8 +162,6 @@ public class ABCCommunity
   private Property propLatitude;
   private Property propLongitude;
   private Property propLevel;
-  // Prop for metrics:
-  private Property propFirstAgent;
 
   private int level;
   private int community;
@@ -216,9 +201,6 @@ public class ABCCommunity
     propLongitude = addProperty(PROP_LONGITUDE, PROP_LONGITUDE_DFLT);
     propLongitude.setToolTip(PROP_LONGITUDE_DESC);
     propLongitude.setAllowedValues(Collections.singleton(new FloatRange(-180.0F, 180.0F)));
-
-//     // Prop for metrics:
-//     propFirstAgent = addProperty(PROP_FIRSTAGENT, new String(""));
   }
 
   /**
@@ -268,9 +250,6 @@ public class ABCCommunity
     String c1 = addCustomerAgent(DEFAULT_CUSTOMER_NAME, 1, C1_DFLT_FACTOR, 
 				 C1_DFLT_DURATION, C1_DFLT_VITAL, C1_DFLT_CHAOS,
 				 C1_DFLT_DISTANCE, C1_DFLT_DIRECTION, roles);
-    
-//     // This next line is specific to metrics
-//     propFirstAgent.setValue(c1);
     
     String c2 = addCustomerAgent(DEFAULT_CUSTOMER_NAME, 2, C2_DFLT_FACTOR,
 				 C2_DFLT_DURATION, C2_DFLT_VITAL, C2_DFLT_CHAOS,
@@ -444,13 +423,6 @@ public class ABCCommunity
     addPropertyAlias(agent, getProperty(PROP_STARTTIME), PROP_STARTTIME);
     addPropertyAlias(agent, getProperty(PROP_STOPTIME), PROP_STOPTIME);
 
-//     // These are for metrics:
-//     addPropertyAlias(agent, getProperty(PROP_SAMPLEINTERVAL), PROP_SAMPLEINTERVAL);
-//     addPropertyAlias(agent, getProperty(PROP_MAXNUMBSAMPLES), PROP_MAXNUMBSAMPLES);
-//     addPropertyAlias(agent, getProperty(PROP_STARTDELAY), PROP_STARTDELAY);
-//     addPropertyAlias(agent, getProperty(PROP_NUMBPROVIDERS), PROP_NUMBPROVIDERS);
-//     // End of stuff for metrics
-
     agent.initProperties();
     agent.getProperty(PROP_DISTANCE).setValue(new Integer(distance));
     agent.getProperty(PROP_DIRECTION).setValue(new Integer(direction));
@@ -467,36 +439,11 @@ public class ABCCommunity
     return addProperty(new PropertyAlias(this, name, prop));
   }
 
-//   // This is for metrics!!!
-//   /**
-//    * Adds a property alias for the Metric Initializer
-//    *
-//    * @param Metric Initializer property
-//    */
-//   public void addAliasInitializer(Property prop) {
-//     Property myProp = addAliasProperty(prop, PROP_INITIALIZER);
-//     for(int i=0; i < getChildCount(); i++) {
-//       ABCAgent agent = (ABCAgent)getChild(i);
-//       addPropertyAlias(agent, myProp, PROP_INITIALIZER);
-//     }
-//     setPropertyVisible(myProp, false);
-//   }
-
-
   /**
    * Generates all ini files for agents
    *
    * @param File Directory to write files to
    */
   public void generateIniFiles(File configDir) {
-
-//     for(int i=0; i < getChildCount(); i++) {
-//       ABCAgent aa = (ABCAgent) getChild(i);
-//       try {
-// 	//aa.writeIniFile(configDir);
-//       } catch(IOException e) {
-// 	// Need to do something with exceptions here.
-//       }
-//     }
   }
 }
