@@ -86,11 +86,32 @@ public class CSMARTGraph extends Graph
    */
   public CSMARTGraph() {
     super("CSMART", true, true);
+    initGraph();
     markedElements = new Vector();
     customizeGraph();
     setColors();
     setupDotPath();
+  }
+
+  /**
+   * Changes needed for newer version of Grappa.
+   */
+
+  private void initGraph() {
+    // create logger here so it's done for all the constructors
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+    Grappa.usePrintList = true; // limit the number of attributes written
+    // the hashtable has to contain the attributes that will be written
+    // but the associated values in the hashtable aren't used
+    Hashtable printAttributes = new Hashtable(6);
+    printAttributes.put(GrappaConstants.LABEL_ATTR, "");
+    printAttributes.put(GrappaConstants.SHAPE_ATTR, "");
+    printAttributes.put(GrappaConstants.SIDES_ATTR, "");
+    printAttributes.put(GrappaConstants.DISTORTION_ATTR, "");
+    printAttributes.put(GrappaConstants.ORIENTATION_ATTR, "");
+    printAttributes.put(GrappaConstants.DIR_ATTR, "");
+    setEdgeAttribute(GrappaConstants.PRINTLIST_ATTR, printAttributes);
+    setNodeAttribute(GrappaConstants.PRINTLIST_ATTR, printAttributes);
   }
 
   /**
@@ -102,7 +123,7 @@ public class CSMARTGraph extends Graph
    */
   public CSMARTGraph(Collection objectsToGraph, String graphType) {
     super("CSMART", true, true);
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+    initGraph();
     markedElements = new Vector();
     setColors();
     if (objectsToGraph == null)
@@ -343,6 +364,7 @@ public class CSMARTGraph extends Graph
 
   public CSMARTGraph(CSMARTGraph graphToCopy, String name) {
     super(name, true, true);
+    initGraph();
     setupDotPath();
     markedElements = new Vector();
     GraphEnumeration ge = graphToCopy.elements(GrappaConstants.NODE);
@@ -399,6 +421,7 @@ public class CSMARTGraph extends Graph
   public CSMARTGraph(CSMARTGraph graphToCopy, String name, 
 		     boolean selectedElementsOnly) {
     super(name, true, true);
+    initGraph();
     markedElements = new Vector();
     Vector selectedElements = null;
     if (selectedElementsOnly)
@@ -407,9 +430,9 @@ public class CSMARTGraph extends Graph
       selectedElements = graphToCopy.vectorOfElements(GrappaConstants.NODE+
 						      GrappaConstants.EDGE);
     Hashtable newNodes = new Hashtable();
-      if(log.isDebugEnabled()) {
-        log.debug("Graph to copy: " + graphToCopy);
-      }
+    if(log.isDebugEnabled()) {
+      log.debug("Graph to copy: " + graphToCopy);
+    }
     // create copies of nodes
     for (int i = 0; i < selectedElements.size(); i++) {
       Element e = (Element)selectedElements.elementAt(i);
@@ -607,7 +630,7 @@ public class CSMARTGraph extends Graph
         } catch (ClassCastException e) {
           if(log.isDebugEnabled()) {
             log.error("CSMARTGraph: exception setting attribute with name: " +
-                             name + " " + e);
+                      name + " " + e);
           }
         }
       }
@@ -840,7 +863,7 @@ public class CSMARTGraph extends Graph
       Attribute a = (Attribute)e.nextElement();
       if(log.isDebugEnabled()) {
         log.debug("Graph attribute: " + 
-                           a.getName() + " " + a.getValue());
+                  a.getName() + " " + a.getValue());
       }
     }
   }
@@ -1648,7 +1671,7 @@ public class CSMARTGraph extends Graph
                       lastNode + " " +
                       node + " " + e);
           }
-	    continue;
+          continue;
 	}
  	edge.setAttribute(INVISIBLE_ATTRIBUTE, "true");
 	edge.visible = false;
@@ -1693,9 +1716,9 @@ public class CSMARTGraph extends Graph
    */
 
   public void doLayout() {
-      if(log.isDebugEnabled()) {
-        log.info("CSMARTGraph: Starting layout...");
-      }
+    if(log.isDebugEnabled()) {
+      log.info("CSMARTGraph: Starting layout...");
+    }
 
     // if we have a mapping of UIDs to nodes then we can minimize the
     // information sent to the layout engine
@@ -1742,12 +1765,12 @@ public class CSMARTGraph extends Graph
     try {
       fos = new FileOutputStream(dotFile); //AMH - use the File handle
       PrintWriter pw = new PrintWriter(fos);
-      // only write attributes required for layout
-      if (minimizeGraph)
-	Grappa.elementPrintLayoutAttributesOnly = true;
+      // default is to only write attributes required for layout
+      if (!minimizeGraph)
+	Grappa.usePrintList = false;
       printGraph(pw);
-      if (minimizeGraph)
-	Grappa.elementPrintLayoutAttributesOnly = false;
+      if (!minimizeGraph)
+	Grappa.usePrintList = true; // reset
       pw.close(); // AMH - close it to flush the data, garbage collect
     } catch (FileNotFoundException e) {
       if(log.isDebugEnabled()) {
@@ -1762,10 +1785,10 @@ public class CSMARTGraph extends Graph
         log.error("CSMARTGraph: Could not write to file:" + dotPathname + " I/O exception: " + ie);
       }
     }
-      if(log.isDebugEnabled()) {
-        log.debug("Finished writing: " + dotPathname + 
-                  " at: " + System.currentTimeMillis()/1000);
-      }
+    if(log.isDebugEnabled()) {
+      log.debug("Finished writing: " + dotPathname + 
+                " at: " + System.currentTimeMillis()/1000);
+    }
 
     // Now run dot.exe on the dot file
     // Take the output of dot.exe, and run it through the parser
@@ -1782,6 +1805,8 @@ public class CSMARTGraph extends Graph
    * calls this method after layout;
    * if the INVISIBLE attribute is present and set to "true",
    * then element.visible is set false
+   * Note that we don't make use of grappa's ability to not print
+   * invisible elements, because we want the ability to make them visible again
    */
 
   private void hideInvisibleElements() {
@@ -1934,6 +1959,7 @@ public class CSMARTGraph extends Graph
       extension = "dot";
     }
     FileOutputStream fos = null;
+    Grappa.usePrintList = false;
     try {
       fos = new FileOutputStream(outputFile);
       PrintWriter pw = new PrintWriter(fos);
@@ -1945,11 +1971,15 @@ public class CSMARTGraph extends Graph
         log.error("CSMARTGraph: Could not write to file:" + e);
       }
     }
+    Grappa.usePrintList = true;
   }
 
   /**
    * Override grappa printGraph method to quote all attributes
    * whose attribute type is String.
+   * Must set Grappa.usePrintList appropriately before writing;
+   * if this is true, a limited set of attributes is written 
+   * (appropriate for doing layout only).
    */
 
   public void printGraph(PrintWriter pw) {
@@ -2055,10 +2085,8 @@ public class CSMARTGraph extends Graph
    * Create a graph from a dot file.
    * Merges results of layout with current graph.
    * Invokes dot.exe on the file.
-   * The hashtable is used to merge the results of the layout
-   * into the current nodes.
    * @param dotPathname path name of dot file
-   * @param the hashtable mapping UID to node in the current graph
+   * @param flag indicating whether to merge the layout with the existing graph
    */
   private void layoutDotFile(String dotPathname, boolean minimizeGraph) {
     // Create a file handle for the dot file
@@ -2157,9 +2185,9 @@ public class CSMARTGraph extends Graph
         ex.printStackTrace();
       }
     }
-      if(log.isDebugEnabled()) {
-        log.debug("Parser finished at: " + System.currentTimeMillis()/1000);
-      }
+    if(log.isDebugEnabled()) {
+      log.debug("Parser finished at: " + System.currentTimeMillis()/1000);
+    }
     // AMH: Close our special Buffered Reader
     try {
       fromFilter.close();
@@ -2173,8 +2201,6 @@ public class CSMARTGraph extends Graph
       buildShapes();
       return;
     }
-
-
     // copy the results of the layout into this graph
     // get position and size information for nodes
     Vector newNodes = newGraph.vectorOfElements(GrappaConstants.NODE);
@@ -2200,19 +2226,19 @@ public class CSMARTGraph extends Graph
       Edge newEdge = (Edge)newEdges.elementAt(i);
       String name = newEdge.getTail().getName() + newEdge.getHead().getName();
       Edge edge = (Edge)UIDToEdge.get(name);
-      if (edge == null)
-      if(log.isDebugEnabled()) {
-	log.warn("CSMARTGraph: WARNING: edge not found: " + name);
-      }
-      else
-	edge.setAttribute(GrappaConstants.POS_ATTR,
-			  newEdge.getAttributeValue(GrappaConstants.POS_ATTR));
+      if (edge == null) {
+        if(log.isDebugEnabled()) {
+          log.warn("CSMARTGraph: WARNING: edge not found: " + name);
+        }
+      } else
+        edge.setAttribute(GrappaConstants.POS_ATTR,
+                          newEdge.getAttributeValue(GrappaConstants.POS_ATTR));
     }
     // and build the resultant graph
     buildShapes();
-      if(log.isDebugEnabled()) {
-        log.debug("Finished building grappa nodes at: " + System.currentTimeMillis()/1000);
-      }
+    if(log.isDebugEnabled()) {
+      log.debug("Finished building grappa nodes at: " + System.currentTimeMillis()/1000);
+    }
   } // end of layoutDotFile
 
 } // end of CSMARTGraph.java
