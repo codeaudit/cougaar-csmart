@@ -103,6 +103,8 @@ public class AssetCDataComponent
     //    propAssetType = addProperty(PROP_TYPE, 
     //                                new Integer(createdFromData.getType()));
     //    propAssetType.setToolTip(PROP_TYPE_DESC);
+    if (createdFromData == null)
+      return;
     propAssetClass = addProperty(PROP_CLASS, createdFromData.getAssetClass());
     propAssetClass.setToolTip(PROP_CLASS_DESC);
     if (createdFromData.getUniqueID() != null) {
