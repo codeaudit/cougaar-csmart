@@ -21,6 +21,8 @@ import org.cougaar.tools.csmart.ui.builder.TreeBuilder;
 import org.cougaar.tools.csmart.ui.experiment.*;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.console.*;
+import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
+import org.cougaar.tools.csmart.ui.tree.DNDTree;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 
 public class OrganizerTree extends DNDTree {
