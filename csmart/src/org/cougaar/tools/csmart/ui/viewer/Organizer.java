@@ -1253,7 +1253,11 @@ public class Organizer extends JScrollPane {
                                           "Delete Recipe",
                                           JOptionPane.YES_NO_OPTION);
           if (answer == JOptionPane.YES_OPTION) {
-            pdb.removeLibRecipe(recipe);
+	    // Even if the user wanted it removed, only remove
+	    // it if it is not in use, including any experiments
+	    // currently in the workspace
+	    if (! pdb.isRecipeUsed(recipe))
+	      pdb.removeLibRecipe(recipe);
           }
         }
       } finally {
@@ -1264,6 +1268,9 @@ public class Organizer extends JScrollPane {
                                     "An exception occurred deleting the recipe from the database",
                                     "Error Writing Database",
                                     JOptionPane.ERROR_MESSAGE);
+      if (log.isErrorEnabled()) {
+	log.error("Error removing recipe from DB", e);
+      }
     }
     recipeNames.remove(recipe.getRecipeName());
   }
