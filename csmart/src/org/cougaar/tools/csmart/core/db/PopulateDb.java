@@ -840,10 +840,10 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":assembly_id:", assemblyId);
     executeUpdate(dbp.getQuery("insertAssemblyId", substitutions));
     if (cmtAsbID == null || cmtAsbID.equals("")) {
-      substitutions.put(":soc_desc:", csaType + " Assembly defining society " + societyName);
+      substitutions.put(":soc_desc:", societyName);
     } else {
       cmtAssemblyId = cmtAsbID;
-      substitutions.put(":soc_desc:", csaType + " Assembly defining society " + societyName + " based on assembly " + cmtAsbID);
+      substitutions.put(":soc_desc:", societyName + " based on " + cmtAsbID);
       // Came from a CMT assembly. Copy the OPLAN stuff
       copyOPLANData(cmtAsbID, assemblyId);
     }
