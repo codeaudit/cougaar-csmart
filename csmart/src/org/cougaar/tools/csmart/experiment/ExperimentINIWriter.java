@@ -232,7 +232,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 
     writer.println(")");
     if (isGLS && trialID != null)
-      writer.println("# To make INI files MAYBE runnable, add the following parameter to the GLSInitServlet: exptid=," + trialID);
+      writer.println("# To make INI files MAYBE runnable, add the following parameter to the GLSInitServlet: exptid=" + trialID);
     return;
   }
 
