@@ -67,30 +67,4 @@ public class AgentUIComponent
     log = CSMART.createLogger(this.getClass().getName());
   }
 
-  // FIXME: What should these do???
-  protected void addAssetData() {
-    // add asset data components
-//     BaseComponent asset = 
-//       (BaseComponent)new AssetUIComponent();
-//     asset.initProperties();
-//     addChild(asset);
-  }
-
-  protected void addPlugins() {
-//     ContainerBase container = new ContainerBase("Binders");
-//     container.initProperties();
-//     addChild(container);
-  }
-
-  protected void addBinders() {
-//     ContainerBase container = new ContainerBase("Binders");
-//     container.initProperties();
-//     addChild(container);
-  }
-
-  protected void addComponents() {
-//     ContainerBase container = new ContainerBase("Other Components");
-//     container.initProperties();
-//     addChild(container);
-  }
 } // end of AgentUIComponent
