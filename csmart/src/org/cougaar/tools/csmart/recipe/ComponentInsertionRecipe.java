@@ -128,7 +128,6 @@ public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
   {
     if (targets.contains(pdb.getComponentAlibId(data))) {
       // do insertion
-      System.out.println("Inserting components into " + data.getName());
       String[][] rowData = pdb.executeQueryForComponent(propInsertionComponentQuery.getValue().toString(), data);
       for (int j = 0; j < rowData.length; j++) {
         String[] vals = rowData[j];

@@ -1,4 +1,33 @@
+2001-11-07  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java:
+	Compute the "assemblyMatch" predicate so queries can readily test
+	if an assembly_id belongs to the current trial or not.
+
+	* ConfigurableComponent.java:
+	Add hasUnboundProperties() method so we can easily test if it's ok
+	to use share a component. Components with unbound properties can't
+	generally be shared because binding the properties in one context
+	would invalidate it in other contexts.
+
+	* ComponentProperties.java:
+	Add hasUnboundProperties() method to sense whether a Component has
+	any unbound properties.
+
 2001-11-06  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java:
+	Add methods to give access to database for use by
+	ComponentInsertionRecipe.
+
+	* ConfigurableComponent.java:
+	Implement two argument variant of modifyComponentData by calling
+	the single argument variant.
+
+	* ComponentProperties.java:
+	Add variant of modifyComponentData accepting a PopulateDb to pass
+	in context to recipes. The default implementation just calls the
+	single argument variant so existing classes are not changed.
 
 	* PopulateDb.java (Repository):
 	Now extends PDbBase.

@@ -647,6 +647,14 @@ public abstract class ConfigurableComponent
     return modifyComponentData(data);
   }
 
+  public boolean hasUnboundProperties() {
+    for (Iterator i = getPropertyNames(); i.hasNext(); ) {
+      Property prop = (Property) getProperty((CompositeName) i.next());
+      if (!prop.isValueSet()) return true;
+    }
+    return false;
+  }
+
   private void setSerializableListeners(List l) {
     EventListenerList ll = getEventListenerList();
     for (Iterator i = l.iterator(); i.hasNext(); ) {

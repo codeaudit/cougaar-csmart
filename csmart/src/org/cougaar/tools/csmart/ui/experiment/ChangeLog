@@ -1,3 +1,15 @@
+2001-11-07  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ExperimentTree.java:
+	Fix is droppable test to allow dropping if _either_ the component
+	is editable or if it has no unbound properties. Components without
+	unbound properties can be safely shared.
+
+2001-11-06  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* Experiment.java:
+	Pass pdb to modifyComponentData in case it's needed.
+
 2001-10-29  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* ExpConfigWriterNew.java (Repository):

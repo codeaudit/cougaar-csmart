@@ -176,11 +176,25 @@ public class PopulateDb extends PDbBase {
         setAssemblyMatch();
     }
 
-    private void setAssemblyMatch() {
-        substitutions.put(":assembly_match:",
-                          "in (select assembly_id from v4_expt_trial_assembly where trial_id = '"
-                          + trialId
-                          + "')");
+    private void setAssemblyMatch() throws SQLException {
+        ResultSet rs = executeQuery(stmt, dbp.getQuery("queryTrialAssemblies", substitutions));
+        StringBuffer q = new StringBuffer();
+        boolean first = true;
+        q.append("in (");
+        while (rs.next()) {
+            if (first) {
+                first = false;
+            } else {
+                q.append(", ");
+            }
+            q.append("'").append(rs.getString(1)).append("'");
+        }
+        q.append(')');
+        if (first) {            // No matches
+            substitutions.put(":assembly_match:", "is null");
+        } else {
+            substitutions.put(":assembly_match:", q.toString());
+        }
     }
 
     public String getExperimentId() {
@@ -294,7 +308,6 @@ public class PopulateDb extends PDbBase {
     private void copyCMTThreads(String oldTrialId, String newTrialId)
         throws SQLException
     {
-        dbp.setDebug(true);
         substitutions.put(":old_trial_id:", oldTrialId);
         substitutions.put(":new_trial_id:", newTrialId);
         String qs = dbp.getQuery("copyCMTThreadsQueryNames", substitutions);
@@ -328,8 +341,7 @@ public class PopulateDb extends PDbBase {
         int order = 0;
         for (Iterator i = recipes.iterator(); i.hasNext(); ) {
             RecipeComponent rc = (RecipeComponent) i.next();
-            addTrialRecipe(rc, order);
-            order++;
+            addTrialRecipe(rc, order++);
         }
     }
 

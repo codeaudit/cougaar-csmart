@@ -183,10 +183,12 @@ public class ExperimentTree extends DNDTree {
                     }
                 }
                 Object userData = t.getTransferData(flavor);
-//                 if ((userData instanceof ModifiableConfigurableComponent) &&
-//                     !((ModifiableC1onfigurableComponent)userData).isEditable()) {
-//                   return DnDConstants.ACTION_NONE;
-//                 }
+                if (userData instanceof ModifiableConfigurableComponent) {
+                    ModifiableConfigurableComponent mcc =
+                        (ModifiableConfigurableComponent) userData;
+                    if (!mcc.isEditable() && mcc.hasUnboundProperties())
+                        return DnDConstants.ACTION_NONE;
+                }
                 DefaultMutableTreeNode node =
                     new DefaultMutableTreeNode(userData, false);
                 int ix = target.getChildCount();

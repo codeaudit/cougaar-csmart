@@ -61,4 +61,11 @@ public interface ComponentProperties extends Serializable {
   ComponentData modifyComponentData(ComponentData data, PopulateDb pdb);
 
   ComponentProperties copy(ComponentProperties result);
+
+  /**
+   * Test if this has any unbound properties (properties for which
+   * isValueSet() return false)
+   * @return true if there are one or more unbound properties
+   **/
+  boolean hasUnboundProperties();
 }
