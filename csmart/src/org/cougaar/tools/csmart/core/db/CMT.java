@@ -72,7 +72,6 @@ public class CMT {
     DBUtils.deleteItems(asbPrefix+"asb_component_arg","assembly_id","assembly_id", QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_oplan_agent_attr", "assembly_id", "assembly_id", QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_oplan", "assembly_id", "assembly_id", QUERY_FILE);
-    DBUtils.deleteItems(asbPrefix+"asb_thread", "assembly_id", "assembly_id", QUERY_FILE);
     
     //DBUtils.deleteItems(asbPrefix+"alib_component","assembly_id","assembly_id", QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_assembly","assembly_id","assembly_id", QUERY_FILE);
@@ -168,7 +167,6 @@ public class CMT {
     DBUtils.deleteItems(asbPrefix+"asb_component_arg", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_oplan_agent_attr", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_oplan", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
-    DBUtils.deleteItems(asbPrefix+"asb_thread", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_assembly", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);    
   }
 
@@ -761,8 +759,6 @@ public class CMT {
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_config_assembly", "expt_id", expt_id));
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_thread", "expt_id", expt_id));
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_org_mult", "expt_id", expt_id));
-    queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_metric_prop", "trial_id", trial_id));
-    queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_metric", "trial_id", trial_id));
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_mod_recipe", "trial_id", trial_id));
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial", "expt_id", expt_id));
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_experiment", "expt_id", expt_id));
