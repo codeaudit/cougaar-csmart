@@ -3,12 +3,11 @@
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
    <meta name="GENERATOR" content="Mozilla/4.76 [en] (WinNT; U) [Netscape]">
-   <title>Help for CSMART</title>
+   <title>CSMART Society Monitor Help</title>
 </head>
 <body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
 
-<h2>Cougaar Society Management, Analysis, and Reporting Tool</h2>
-<h3>Society Monitor</h3>
+<h2>Society Monitor</h2>
 The Society Monitor displays the activities and data associated with a
 distributed running Cougaar society. This data is obtained by collecting
 information from the contents of each agent's Blackboard, or from the results
@@ -20,7 +19,8 @@ a running society. When running under CSMART, the Society Monitor is enabled
 only when an experiment is running, and automatically contacts the society
 in the running experiment. When running standalone, the user is prompted
 for a URL in the running society. To run the Society Monitor in stand-alone
-mode, ensure that the CSMART Servlets are included in your Agent's INI files
+mode, ensure that the CSMART Servlets are included in your Agent's
+configuration (database or INI files)
 in each agent of your society. Then use one of the included
 Monitor scripts to start the Society Monitor. This is also the easiest
 way to open saved graphs. Note that the Society Monitor uses the AT&amp;T
@@ -51,7 +51,8 @@ activity.</li>
 <br>&nbsp;</ul>
 When first launching a tool, if not running from CSMART, you are prompted
 for the URL of the society to contact. Supply the appropriate host and
-port number, just as you would for any Servlet (see the settings in your alpreg.ini
+port number, just as you would for any Servlet (see the settings in
+your Server properties or alpreg.ini
 file). You may launch as many different views as you wish. In future, you
 will be able to use the selection in one tool to drive your view in another.
 When launching the plan view, you are prompted to filter your query.
@@ -308,9 +309,6 @@ that these CSMART Servlets are loaded:
 <li>plugin =
 org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.PlanServlet,
 /CSMART_PlanServlet)</li>
-<li>plugin =
-org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.AgentProviderServlet,
-/CSMART_AgentProviderServlet)</li>
 <li>plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.CommunityProviderServlet, /CSMART_CommunityProviderServlet)
 </li>
 <li>plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.AgentInfoServlet, /CSMART_AgentInfoServlet)

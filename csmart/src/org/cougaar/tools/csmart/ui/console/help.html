@@ -3,12 +3,11 @@
 <head>
    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
    <meta name="GENERATOR" content="Mozilla/4.76 [en] (WinNT; U) [Netscape]">
-   <title>Help for CSMART</title>
+   <title>CSMART Console Help</title>
 </head>
 <body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
 
-<h2>Cougaar Society Management, Analysis, and Reporting Tool</h2>
-<h3>Experiment Controller</h3>
+<h2>Experiment Controller</h2>
 The Experiment Controller is used to control running an experiment. 
 The Experiment Controller is enabled only when an experiment 
 is selected in the workspace.
@@ -20,9 +19,18 @@ to one set of values as specified in the Experiment Builder.<br>
 <i>Note: Some experiments do not use Societies with Unbound Properties; these experiments 
 have one trial, and the user interface is simplified accordingly.</i>
 <p>The Experiment Controller also collects and displays all output from the nodes in the experiment, and provides several facilities for automatically and manually searching this ouput, and notifying the user of error conditions.
-<p>Note that you must separately launch the Server on each host used in
+<p>Note that you must separately launch the AppServer on each host used in
 the experiment. See the installation instructions for running the Server.
 <br>
+A typical usage would be to <ol>
+<li>Start the AppServers.</li>
+<li>Set the Node output <a href="#FILTER">filters</a>, <a href="#VSIZE">view buffer size</a>, and
+<a href="#Notify">notifications</a>.</li>
+<li>Start the Experiment</li>
+<li>Monitor the Node's output</li>
+<li>Publish the OPLAN and send GLS Root</li>
+<li>Launch the Society Monitor</li>
+</ol>
 <p>
 <b>Controlling the Experiment</b>
 <ul>
@@ -33,7 +41,8 @@ Select the "Stop" button to stop a trial in an experiment.
 If the Society in the Experiment is configured to stop automatically
 at the end of each trial, then this merely stops the experiment
 at the end of the current trial.
-If the Society is not configured to stop automatically,
+If the Society is not configured to stop automatically, as in the
+supplied database societies, 
 then this stops the current trial immediately.
 In the latter case, if the Society Monitor tool is monitoring the experiment, 
 you will be asked to confirm the Stop action.</li>
@@ -42,11 +51,16 @@ Select the "Abort" button to abort the trial, ending it immediately.</li>
 </ul>
 <p>
 <b>Information from a Running Experiment</b>
-<br>The Node's window displays information about a node in a running experiment; a brief description of the Node's status can also be displayed by selecting that Node's &quot;Node Status&quot; button.
+<br>When you start an experiment, a window is created to capture the
+output of each Node.  
+The Node's window displays information about a node in a running experiment; a brief description of the Node's status can also be displayed by selecting that Node's &quot;Node Status&quot; button.
 <ul>
 <li>
 The Node's window displays the standard output and standard error channels from each node in the experiment, together with some additional specific event information (Node created, Node destroyed, Agent added).
-Output is displayed in black, and errors are displayed in red.</li>
+Output is displayed in black, and errors are displayed in red.  This
+output can be filtered using the <a href="#FILTER">global
+filters</a>.  The full output of the node is captured in a per-node
+<a href="#Info">log file</a>.</li>
 <li>
 <a NAME="NodeStatusButton">The Node Status button</a> (a colored circle following the &quot;Node Status&quot; label near the top of
 the Experiment Controller) illustrates the node status. The color
@@ -83,7 +97,8 @@ been running.
 The progress bar and trial time are not displayed for experiments with one
 trial.
 <h3>Saving Experiment Results</h3>
-The Experiment Controller retrieves results from all the hosts used in the
+The Experiment Controller saves the Node output into per-node log
+files, and retrieves any generated results from all the hosts used in the
 Experiment and stores these by default in the COUGAAR_INSTALL_PATH/results folder.
 To change the location for storing results, use the CSMART File menu, "Save New Results in..." menu item.
 For a description
@@ -98,8 +113,17 @@ The Experiment Controller menus are as follows:
 </ul>
 <li><a NAME=View>View</a></li>
 <ul>
-<li>Set View Size: Set the number of characters displayed in each node's window, or select "all" to display all the output from the node.  For efficiency, select a reasonable number of characters to display.  The entire output from each node is always available in the log file. (See Log File Reference.)</li>
-<li>Filter: Select the types of messages that are written in the node's window.  For efficiency, select only the messages that are important.  The entire output from each node is always available in the log file. The name of the log file is displayed using the <a href=#Info>Node Info</a> menu in the Node Windows menu.</li>The types of messages that can be displayed are:
+<li><a NAME="VSIZE">Set View Size</a>: Set the number of characters
+displayed in each node's window, or select "all" to display all the
+output from the node.  For efficiency, select a reasonable number of
+characters to display.  The entire output from each node is always
+available in the <a href="#Info">log file</a>.</li>
+<li><a NAME="FILTER">Filter</a>: Select the types of messages that are
+written in the node's window.  For efficiency, select only the
+messages that are important.  The entire output from each node is
+always available in the log file. The full path of the log file is
+displayed using the <a href="#Info">Node Info</a> menu in the Node
+Windows menu.</li> The types of messages that can be displayed are:
 <ul>
 <li>Standard Output: Output written on the standard output stream.
 </li>
@@ -117,13 +141,27 @@ The Experiment Controller menus are as follows:
 </li>
 </ul>
 </ul>
-<li><a NAME=Notify>Notify</a>
-<br>This menu allows users to set up "Notifications".  CSMART automatically scans all output from all nodes searching for the notify conditions set by the user.  If a notification condition is detected, an exclamation mark is displayed in the <a href=#NodeStatusButton>Node's status button</a>.  Output is scanned starting at the time that the notification is set.    Notify conditions can be either a specified string, or any output on Standard Error.  Thus, for example, the user could ask for a notification, if the Node writes the string "not found". Notifications set here can be overridden by specific notifications set in each node's window.  Initially, the notification string is set to "exception" so that any exceptions caught at a Node will trigger a notification.</li>
+In future, you may also be able to filter by Log4J logging level.<br>
+<li><a NAME="Notify">Notify</a>
+<br>This menu allows users to set up "Notifications".  CSMART
+automatically scans all output from all nodes searching for the notify
+conditions set by the user.  If a notification condition is detected,
+an exclamation mark is displayed in the <a
+href="#NodeStatusButton">Node's status button</a>.  Output is scanned
+starting at the time that the notification is set.    Notify
+conditions can be either a specified string, or any output on Standard
+Error.  Thus, for example, the user could ask for a notification, if
+the Node writes the string "not found". Notifications set here can be
+overridden by specific notifications set in each node's window.
+Initially, the notification string is set to "exception" so that any
+exceptions caught at a Node will trigger a notification.</li>
 <ul>
 <li>Set Notification: Set the string on which to be notified; optionally ask to be notified for all output on Standard Error.</li>
 <li>View Notification: View the current notify string.</li>
 <li>Remove All Notifications: Remove all notify conditions.</li>
-<li>Reset All Notifications: Reset the error marks in the Node Status buttons, and continue to search for notify conditions, starting with any <i>new</i> output from the nodes.</li>
+<li>Reset All Notifications: Reset the error marks in the Node Status
+buttons, and continue to search for notify conditions, starting with
+any <i>new</i> output from the nodes.</li>
 </ul>
 <li>Help</li>
 <ul>
@@ -137,7 +175,12 @@ The Node Window menus are as follows:
 <ul>
 <li>Node</li>
 <ul>
-<li><a NAME=Info>Info</a>: Displays information about the node and the machine on which it is running.  Displays the name of the log file, which can be easily cut and pasted into a text editor.  Displays the host location and description and the node description; this information can be added to the host and node in the Experiment Builder.</li>
+<li><a NAME="Info">Info</a>: Displays information about the node and
+the machine on which it is running.  Displays the name of the log
+file, which can be easily cut and pasted into a text editor.  Displays
+the host location and description and the node description; this
+information can be added to the host and node in the Experiment
+Builder.</li>
 <li>Machine CPU Usage: Displays CPU usage for all processes on the machine on which the node is running.  (This information is not supported for Windows machines.)</li>
 <li>Node CPU Usage: Displays CPU usage for the Node's processes and child processes.  (This information is not displayed for Windows machines.)</li>
 <li>Utilization History: Displays a graph of the relative load at the node, over time.</li>
