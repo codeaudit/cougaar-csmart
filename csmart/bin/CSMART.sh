@@ -88,7 +88,10 @@ MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY
 # Set the config path to include the basic CSMART config files first
 MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
 
-javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -Dorg.cougaar.class.path=$LIBPATHS -classpath $LIBPATHS"
+# Set the CLASSPATH ENV Variable
+CLASSPATH="${LIBPATHS}:${CLASSPATH}"
+
+javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -Dorg.cougaar.class.path=$LIBPATHS"
 
 if [ "$COUGAAR_DEV_PATH" != "" ]; then
    echo java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART

@@ -71,7 +71,8 @@ endif
 
 # The performance analyzer uses Excel. To use it or an equivalent,
 # edit the following property:
-set MYEXCEL="-Dorg.cougaar.tools.csmart.excelpath=C:/Program Files/Microsoft Office/Office/excel.exe"
+#set MYEXCEL="-Dorg.cougaar.tools.csmart.excelpath=C:/Program Files/Microsoft Office/Office/excel.exe"
+set MYEXCEL=""
 # The delay between starting nodes, in milliseconds
 set MYDELAY="-Dorg.cougaar.tools.csmart.startdelay=10000"
 
@@ -81,12 +82,17 @@ set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYD
 # Set the config path to include the basic CSMART config files first
 set MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
 
-set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -Dorg.cougaar.class.path=$LIBPATHS -classpath $LIBPATHS"
+# Set the CLASSPATH ENV Variable to prevent "Word too Long" error.
+setenv CLASSPATH="${LIBPATHS}"
+
+set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -Dorg.cougaar.class.path=$LIBPATHS"
 
 if ($?COUGAAR_DEV_PATH) then
    echo java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART
 endif
 
+echo "Cmd"
+echo java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART
 exec java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART
 
 
