@@ -976,7 +976,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   private void makeSocietyGraph() {
     Collection objectsFromServlet = 
-      getObjectsFromServlet(ClientServletUtil.CLUSTER_SERVLET);
+      getObjectsFromServlet(ClientServletUtil.AGENT_INFO_SERVLET);
     if (objectsFromServlet == null)
       return;
     Vector nodeObjects = new Vector(objectsFromServlet.size());
