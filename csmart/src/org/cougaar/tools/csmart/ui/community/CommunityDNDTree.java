@@ -55,11 +55,6 @@ public class CommunityDNDTree extends DNDTree {
                          AgentComponent.class,
                          CommunityDNDTree.class,
                          "CSMART Agent");
-  protected static CSMARTDataFlavor nodeFlavor =
-    new CSMARTDataFlavor(DefaultMutableTreeNode.class,
-                         NodeComponent.class,
-                         CommunityDNDTree.class,
-                         "CSMART Node");
   protected static CSMARTDataFlavor hostFlavor =
     new CSMARTDataFlavor(DefaultMutableTreeNode.class,
                          HostComponent.class,
@@ -75,11 +70,6 @@ public class CommunityDNDTree extends DNDTree {
                          AgentComponent.class,
                          CommunityDNDTree.class,
                          "CSMART Agent");
-  protected static CSMARTDataFlavor nodeArrayFlavor =
-    new CSMARTDataFlavor(DMTNArray.class,
-                         NodeComponent.class,
-                         CommunityDNDTree.class,
-                         "CSMART Node");
   protected static CSMARTDataFlavor hostArrayFlavor =
     new CSMARTDataFlavor(DMTNArray.class,
                          HostComponent.class,
@@ -170,8 +160,6 @@ public class CommunityDNDTree extends DNDTree {
         theFlavors = new CSMARTDataFlavor[] { communityArrayFlavor };
       else if (userObject.isHost())
         theFlavors = new CSMARTDataFlavor[] { hostArrayFlavor };
-      //      else if (userObject.isNode())
-      //        theFlavors = new CSMARTDataFlavor[] { nodeArrayFlavor };
       else if (userObject.isAgent())
         theFlavors = new CSMARTDataFlavor[] { agentArrayFlavor };
       return new CommunityArrayTransferable(nodeArray, theFlavors);
@@ -333,7 +321,8 @@ public class CommunityDNDTree extends DNDTree {
   }
 
   /**
-   * Return true if the given node is already in the community;
+   * Return true if the given node is already in the community to which
+   * it is being dragged;
    * community is determined by tracing up the tree from the parent
    * until the community is found.
    */

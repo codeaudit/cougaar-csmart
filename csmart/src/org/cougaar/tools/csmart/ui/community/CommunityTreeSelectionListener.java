@@ -60,15 +60,7 @@ public class CommunityTreeSelectionListener implements TreeSelectionListener {
       return;
     } 
     // get community that node is in
-    String communityName = "";
-    DefaultMutableTreeNode tmpNode = (DefaultMutableTreeNode)node.getParent();
-    while (tmpNode != null) {
-      if (((CommunityTreeObject)tmpNode.getUserObject()).isCommunity()) {
-        communityName = tmpNode.toString();
-        break;
-      } else
-        tmpNode = (DefaultMutableTreeNode)tmpNode.getParent();
-    }
+    String communityName = cto.getCommunityName();
     displayEntityInfo(communityName, node);
   }
 

@@ -386,18 +386,8 @@ public class CommunityPanel extends JPanel {
       // populate table by retrieving new info from database
       communityTableUtils.getCommunityInfo(communityName);
     } else {
-      String communityName = null;
+      String communityName = cto.getCommunityName();
       String entityName = cto.toString();
-      DefaultMutableTreeNode parent = 
-        (DefaultMutableTreeNode)selectedNode.getParent();
-      while (parent != null) {
-        CommunityTreeObject o = (CommunityTreeObject)parent.getUserObject();
-        if (o.isCommunity()) {
-          communityName = o.toString();
-          break;
-        }
-        parent = (DefaultMutableTreeNode)parent.getParent();
-      }
       if (communityName == null)
         return;
       CommunityDBUtils.insertEntityAttribute(communityName, entityName);
@@ -563,8 +553,6 @@ public class CommunityPanel extends JPanel {
       String entityType = CommunityDBUtils.getMemberType(entityName);
       DefaultMutableTreeNode newNode = 
         communityTree.addNode(node, entityName, entityType, communityName);
-      // tell our tree model listener to simply add the node to its hashtable
-      treeModelListener.addNode(newNode, communityName);
       if (entityType.equals("Community"))
         addToTree(newNode, entityName);
     }

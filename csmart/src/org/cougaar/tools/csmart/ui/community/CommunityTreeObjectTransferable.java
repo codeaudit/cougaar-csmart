@@ -39,7 +39,6 @@ public class CommunityTreeObjectTransferable implements Transferable {
     CommunityTreeObject cto = (CommunityTreeObject) treeNode.getUserObject();
     if (cto == null) throw new IllegalArgumentException("null userObject");
     if (cto.isAgent()) theFlavors = new CSMARTDataFlavor[] {CommunityDNDTree.agentFlavor};
-    //    if (cto.isNode()) theFlavors = new CSMARTDataFlavor[] {CommunityDNDTree.nodeFlavor};
     if (cto.isHost()) theFlavors = new CSMARTDataFlavor[] {CommunityDNDTree.hostFlavor};
     if (cto.isCommunity()) theFlavors = new CSMARTDataFlavor[] {CommunityDNDTree.communityFlavor};
     if (theFlavors == null) throw new IllegalArgumentException("Unknown CommunityTreeOObject");

@@ -167,12 +167,11 @@ public class CommunityTreeObject implements Cloneable {
     if (flavor instanceof CSMARTDataFlavor) {
       CSMARTDataFlavor cflavor = (CSMARTDataFlavor) flavor;
       // allow dropping hosts, nodes and agents and communities on communities
+      // nodes are actually agents
       if ((flavorEquals(cflavor, CommunityDNDTree.communityFlavor) ||
            flavorEquals(cflavor, CommunityDNDTree.communityArrayFlavor) ||
            flavorEquals(cflavor, CommunityDNDTree.hostFlavor) ||
            flavorEquals(cflavor, CommunityDNDTree.hostArrayFlavor) ||
-           flavorEquals(cflavor, CommunityDNDTree.nodeFlavor) ||
-           flavorEquals(cflavor, CommunityDNDTree.nodeArrayFlavor) ||
            flavorEquals(cflavor, CommunityDNDTree.agentFlavor) ||
            flavorEquals(cflavor, CommunityDNDTree.agentArrayFlavor)) &&
           isCommunity())

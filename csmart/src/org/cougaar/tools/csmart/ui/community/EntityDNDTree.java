@@ -55,11 +55,6 @@ public class EntityDNDTree extends DNDTree {
                          AgentComponent.class,
                          EntityDNDTree.class,
                          "CSMART Agent");
-  protected static CSMARTDataFlavor nodeFlavor =
-    new CSMARTDataFlavor(DefaultMutableTreeNode.class,
-                         NodeComponent.class,
-                         EntityDNDTree.class,
-                         "CSMART Node");
   protected static CSMARTDataFlavor hostFlavor =
     new CSMARTDataFlavor(DefaultMutableTreeNode.class,
                          HostComponent.class,
@@ -70,11 +65,6 @@ public class EntityDNDTree extends DNDTree {
                          AgentComponent.class,
                          EntityDNDTree.class,
                          "CSMART Agent");
-  protected static CSMARTDataFlavor nodeArrayFlavor =
-    new CSMARTDataFlavor(DMTNArray.class,
-                         NodeComponent.class,
-                         EntityDNDTree.class,
-                         "CSMART Node");
   protected static CSMARTDataFlavor hostArrayFlavor =
     new CSMARTDataFlavor(DMTNArray.class,
                          HostComponent.class,
@@ -133,8 +123,6 @@ public class EntityDNDTree extends DNDTree {
       CSMARTDataFlavor[] theFlavors = null;
       if (userObject.isAgent())
         theFlavors = new CSMARTDataFlavor[] { agentArrayFlavor };
-      //      else if (userObject.isNode())
-      //        theFlavors = new CSMARTDataFlavor[] { nodeArrayFlavor };
       else if (userObject.isHost())
         theFlavors = new CSMARTDataFlavor[] { hostArrayFlavor };
       return new CommunityArrayTransferable(nodeArray, theFlavors);

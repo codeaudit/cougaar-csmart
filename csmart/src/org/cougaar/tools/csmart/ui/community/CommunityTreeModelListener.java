@@ -31,9 +31,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Update the database when user modifies the community tree.
- * This maintains a hashtable of names of nodes in the tree
- * and their community (don't use the actual nodes, as they change),
- * so that treeNodesInserted can both handle the insertion of a node,
+ * Note that treeNodesInserted handles both the insertion of a node,
  * and its removal from its previous community, then treeNodesRemoved does
  * nothing.  This approach is taken because the listener can be messaged
  * with treeNodesInserted, before treeNodesRemoved.
@@ -41,20 +39,11 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class CommunityTreeModelListener implements TreeModelListener {
   private CommunityTableUtils communityTableUtils;
-  private Hashtable communities = new Hashtable();
   private transient Logger log;
 
   public CommunityTreeModelListener(CommunityTableUtils communityTableUtils) {
     this.communityTableUtils = communityTableUtils;
     log = CSMART.createLogger(this.getClass().getName());
-  }
-
-  /**
-   * Just update the hashtable of nodes and communities.
-   */
-  public void addNode(DefaultMutableTreeNode node, String communityName) {
-    CommunityTreeObject cto = (CommunityTreeObject)node.getUserObject();
-    communities.put(cto.toString(), communityName);
   }
 
   public void treeNodesChanged(TreeModelEvent e) {
@@ -71,15 +60,12 @@ public class CommunityTreeModelListener implements TreeModelListener {
    * create a new entry in the community_entity_attribute table
    * 3) the user dragged an entity or community from one community to another
    * create a new entry in the community_entity_attribute table
-   * The user object contains the name of the community that the node was in;
-   * this method sets the new community name.
+   * On input, the user object contains the name of the community
+   * that the node was in; this method sets the new community name.
    */
   public void treeNodesInserted(TreeModelEvent e) {
     Object[] addedNodes = e.getChildren();
-    // first, take remove action, 
-    // but only if the node was dragged from a community tree
-    // TODO: determine how to remember that the node was dragged from
-    // a community tree; encode community in user object?
+    // first, take remove action
     for (int i = 0; i < addedNodes.length; i++)
       removeNode((DefaultMutableTreeNode)addedNodes[i]);
     // get parent of added nodes
@@ -118,7 +104,6 @@ public class CommunityTreeModelListener implements TreeModelListener {
         CommunityDBUtils.insertEntityInfo(communityName, entityName,
                                           "Role", "Member");
       }
-      addNode(node, communityName);
     }
   }
 
@@ -130,8 +115,7 @@ public class CommunityTreeModelListener implements TreeModelListener {
   }
 
   /**
-   * Remove the node from the hashtable of nodes and communities
-   * and update the database table.
+   * Remove the node from the previous community if any.
    * Invoked when inserting a node which may have
    * been moved from some other community, or when deleting nodes.
    */
@@ -139,10 +123,8 @@ public class CommunityTreeModelListener implements TreeModelListener {
     // remove from previous community, if any
     CommunityTreeObject deletedObject =
       (CommunityTreeObject)node.getUserObject();
-    if (deletedObject.getCommunityName() == null)
-      return;
     String entityName = deletedObject.toString();
-    String communityName = (String)communities.remove(entityName);
+    String communityName = deletedObject.getCommunityName();
     if (communityName == null)
       return;
     if (!deletedObject.isHost()) 
