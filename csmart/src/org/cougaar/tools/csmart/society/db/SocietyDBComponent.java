@@ -52,11 +52,12 @@ public class SocietyDBComponent
   extends SocietyBase
   implements PropertiesListener, Serializable, ModificationListener 
 {
+  protected static final String DESCRIPTION_RESOURCE_NAME = "/org/cougaar/tools/csmart/society/society-base-description.html";
+  protected static final String BACKUP_DESCRIPTION =
+    "A Society created from the database: Agents, Binders, Plugins, etc.";
+
   private boolean isRunning = false;
   private boolean editable = true;
-  private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
-  private static final String BACKUP_DESCRIPTION =
-  "Society description not available";
   private static final String QUERY_AGENT_NAMES = "queryAgentNames";
 
   private Map substitutions;
@@ -109,6 +110,8 @@ public class SocietyDBComponent
         }
 	throw new RuntimeException("Error" + e);
       }
+      // After reading the soc from the DB, it is not modified.
+      modified = false;
     }    
   }
 
