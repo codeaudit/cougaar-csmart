@@ -539,7 +539,8 @@ public class Organizer extends JScrollPane {
 	if (ok != JOptionPane.OK_OPTION) return;
       }
       RecipeComponent recipe = helper.createRecipe(name, item.cls);
-      workspace.setSelection(addRecipeToWorkspace(recipe));
+      if (recipe != null)
+	workspace.setSelection(addRecipeToWorkspace(recipe));
     }
   } // end of newRecipe
 
@@ -1325,7 +1326,7 @@ public class Organizer extends JScrollPane {
 //          } catch (IOException ioe) {
 	} catch (Exception e) {
           if(log.isErrorEnabled()) {
-            log.error("Organizer: can't read file: " + f, e);
+            log.error("Organizer: can't read file: " + f + " got exception: " + e);
           }
 	} finally {
 	  ois.close();
