@@ -207,13 +207,15 @@ public final class TranslateUtils {
     Asset asset = alloc.getAsset();
     if (asset.hasClusterPG()) {
       if (alloc instanceof AllocationforCollections) {
-        AllocationforCollections ac = (AllocationforCollections)alloc;
-        Task at = (Task)ac.getAllocationTask();
-        if (at != null) {
+        AllocationforCollections ac = (AllocationforCollections) alloc;
+        UID uid = ac.getAllocationTaskUID();
+        if (uid != null) {
+          ClusterPG cpg = asset.getClusterPG();
+          MessageAddress destination = cpg.getMessageAddress();
           pt.put(PropertyNames.ALLOCATION_TO_AGENT,
-		 trimAngles(at.getDestination().toString()));
+		 trimAngles(destination.toString()));
           pt.put(PropertyNames.ALLOCATION_TASK_UID,
-		 at.getUID().toString());
+		 uid.toString());
         }
 	// Need to add pointer to Asset representing remote 
 	pt.put(PropertyNames.ALLOCATION_ASSET_UID, 
