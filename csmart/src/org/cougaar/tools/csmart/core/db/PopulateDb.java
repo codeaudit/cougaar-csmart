@@ -44,13 +44,14 @@ import java.io.PrintWriter;
 import java.io.FileWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
+
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.DBConnectionPool;
+import org.cougaar.util.log.Logger;
 
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.cdata.*;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
@@ -74,6 +75,12 @@ public class PopulateDb extends PDbBase {
   private Map propertyInfos = new HashMap();
   private Set alibComponents = new HashSet();
   private Map componentArgs = new HashMap();
+
+  // Track what Agents got added to the experiment
+  // If an Agent is in here, then when we're not
+  // doing an HNA assembly, we'll save the OrgAsset data
+  // This is a list of component ALIB IDs
+  private List addedAgents = new ArrayList();
 
   // Unused flag to decide if the whole society
   // must be written out, or only the additions
@@ -336,6 +343,31 @@ public class PopulateDb extends PDbBase {
     }
     // Make sure all the necessary assembly IDs are created, saved
     setNewAssemblyIds();
+  }
+
+  /**
+   * A trivial constructor for use basically only when you want
+   * to run some queries based on what is in your experiment. 
+   * Used when dumping INI files.
+   *
+   * @param exptId a <code>String</code> ID for the experiment
+   * @param trialId a <code>String</code> Trial ID
+   * @exception SQLException if an error occurs
+   * @exception IOException if an error occurs
+   */
+  public PopulateDb(String exptId, String trialId) 
+    throws SQLException, IOException {
+    super();
+    createLogger();
+    if (exptId != null) {
+      this.exptId = exptId;
+      substitutions.put(":expt_id:", exptId);
+    }
+    if (trialId != null) {
+      this.trialId = trialId;
+      substitutions.put(":trial_id:", trialId);
+    }
+    setAssemblyMatch();
   }
 
   private void createLogger() {
@@ -642,6 +674,9 @@ public class PopulateDb extends PDbBase {
     assemblyId = getNextId("queryMaxAssemblyId", assemblyIdPrefix);
     substitutions.put(":assembly_id:", assemblyId);
     substitutions.put(":trial_id:", trialId);
+    // This appears to cause an SQLE sometimes with a double open and close-quote
+    // on the assembly_id
+    // One to many calls to sqlQuote I think.
     executeUpdate(dbp.getQuery("insertAssemblyId", substitutions));
     executeUpdate(dbp.getQuery("insertTrialAssembly", substitutions));
     return assemblyId;
@@ -1036,7 +1071,6 @@ public class PopulateDb extends PDbBase {
     boolean result = false;
     ComponentData parent = data.getParent();
     String id = getComponentAlibId(data);
-    boolean isAdded = false;
     addComponentDataSubstitutions(data);
     substitutions.put(":assembly_id:", sqlQuote(assemblyId));
     substitutions.put(":insertion_order:", String.valueOf(insertionOrder));
@@ -1058,7 +1092,8 @@ public class PopulateDb extends PDbBase {
 	if (!rs.next()) {
 	  executeUpdate(dbp.getQuery("insertComponentHierarchy",
 				     substitutions));
-	  isAdded = true;
+	  // Added this Agent. Add it to the list
+	  addedAgents.add(id);
 	  result = true; // Modified the experiment in the database 
 	}
 	rs.close();
@@ -1164,11 +1199,18 @@ public class PopulateDb extends PDbBase {
     // And this populateAgent is probably doing similar.
     // What I need is more complex....
 
+    //FIXME: If the user added a new agent
+    // then isAdded is only true for the HNA assembly
+    // so populateAgent will not save all the data!
+    // I want to not save this under the HNA assembly if I can though
     if (data.getType().equals(ComponentData.AGENT)) {
       if (!assemblyId.equals(hnaAssemblyId)) {
 	// isAdded: was this agent just added to the hierarchy
-	populateAgent(data, true);
-	result = true;
+	if (addedAgents.contains(id)) {
+	  populateAgent(data, true);
+	  addedAgents.remove(id);
+	  result = true;
+	}
       } else {
 	// If this is an Agent and we're in the CSHNA assembly,
 	// don't save the plugins, etc now. Just return.
