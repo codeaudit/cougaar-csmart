@@ -42,7 +42,10 @@ while (<ALL_DDL_IN>) {
 			$sql_mode = $CInd;
 			print "sql_mode: ",$sql_mode,"\n";
 		}
-		else {printf (CREATE_TABLES_OUT $input_line)}
+		else {
+			$input_line_2 = FIX_PK_INPUT_LINE($input_line,$index_prefix);
+			printf (CREATE_TABLES_OUT $input_line_2)
+			}
     }
     if ($sql_mode eq $CInd) { # Create Index Mode
         if(substr($input_line,0,11) eq "ALTER TABLE") {
@@ -116,3 +119,23 @@ close (DROP_INDEXES_OUT);
 close (DROP_FKEYS_OUT);
 
 exit();
+
+# FIX_PK_INPUT_LINE(input_line,index_prefix)
+sub FIX_PK_INPUT_LINE {
+	local($input_line)=@_[0];
+	local($index_prefix)=@_[1];
+
+	if (substr($input_line,0,18) eq "    CONSTRAINT PK_") {
+		$length = length($input_line);
+		$remainder = substr($input_line,18,$length-18);
+		($table_name, $etc) = split(' ',$remainder,2);
+		$input_line_1 = "    CONSTRAINT PK_".$index_prefix.$table_name." ".$etc;
+#		print "input_line:   ",$input_line,"\n";
+#		print "input_line_1: ",$input_line_1,"\n";
+	}
+	else {
+		$input_line_1 = $input_line;
+	}
+
+	return $input_line_1;
+}
