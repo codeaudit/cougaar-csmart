@@ -19,7 +19,6 @@ This directory contains several configuration sub-directories:
      examples in setting up your own machine to run the server.
  
  simpleParser.dat
- testScript.ini
  xmlParserTest.xml - Test scripts used for development
 
   rwe-scripts/
