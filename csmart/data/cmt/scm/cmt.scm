@@ -378,6 +378,9 @@
 	       (dbu (string-append "delete from " asb-prefix "asb_agent_relation where assembly_id = " (sqlQuote assembly_id)))))
   (print (list (string-append "delete from " asb-prefix "asb_component_arg where assembly_id = " (sqlQuote assembly_id))
 	       (dbu (string-append "delete from " asb-prefix "asb_component_arg where assembly_id = " (sqlQuote assembly_id)))))
+  (print (list (string-append "delete from " asb-prefix "asb_oplan_agent_attr where assembly_id = " (sqlQuote assembly_id))
+	       (dbu (string-append "delete from " asb-prefix "asb_oplan_agent_attr where assembly_id = " (sqlQuote assembly_id)))))
+
   ;;(dbu (string-append "delete from " asb-prefix "alib_component"))
 ;;  (print (list (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id))
 ;;	       (dbu (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id)))))
@@ -491,6 +494,11 @@
   (add-all-asb-agent-hierarchy-relations assembly_id cfw_group_id threads)
   (print "add-all-asb-agent-hierarchy-relations completed")
   (add-plugin-args assembly_id cfw_group_id threads)
+  (newline)
+  (print "add-asb-oplan-agent-attr started")
+  (add-asb-oplan-agent-attr assembly_id cfw_group_id threads "('093FF')")
+  (print "add-asb-oplan-agent-attr completed")
+  (newline)
   "done"
   )
 
@@ -1150,7 +1158,7 @@
    "ooa.attribute_value as ATTRIBUTE_VALUE"
 
    "   from"
-   "   " asb-prefix "asb_agetn aa,"
+   "   " asb-prefix "asb_agent aa,"
    "   " cfw-prefix "cfw_group_member gm,"
    "   " cfw-prefix "cfw_oplan_og_attr ooa,"
    "   " cfw-prefix "cfw_org_group_org_member ogom"
@@ -1176,11 +1184,13 @@
    )
   )
 
+
+
 (define (add-asb-oplans assembly_id cfw_group_id threads oplan_ids)
   (dbu
    (string-append
     "insert into " asb-prefix "asb_oplan"
-    " select " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
+    " select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
     "op.oplan_id as OPLAN_ID,"
     "op.operation_name as OPERATION_NAME,"
     "op.priority as PRIORITY,"
@@ -1192,7 +1202,8 @@
     "   and not exists "
     "   (select oplan_id from " asb-prefix "asb_oplan"
     "     where assembly_id="(sqlQuote assembly_id)
-    "      and oplan_id in "  oplan_ids)))
+    "      and oplan_id in "  oplan_ids
+    ")")))
 
 
 (define (add-asb-oplan-agent-attr assembly_id cfw_group_id threads oplan_ids)
@@ -1200,7 +1211,7 @@
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_oplan_agent_attr "
-    (get-asb-oplan-agent-attr-sql assembly_id cfw_group_id threads))))
+    (get-asb-oplan-agent-attr-sql assembly_id cfw_group_id threads oplan_ids))))
 
 
 ;; testing code
@@ -1882,6 +1893,14 @@
 (define (deleteExperiment experiment_id)
   (dbu (string-append
 	"delete from " asb-prefix "expt_trial_assembly"
+	"   where expt_id=" (sqlQuote experiment_id)
+	))
+  (dbu (string-append
+	"delete from " asb-prefix "expt_trial_thread"
+	"   where expt_id=" (sqlQuote experiment_id)
+	))
+  (dbu (string-append
+	"delete from " asb-prefix "expt_trial_org_mult"
 	"   where expt_id=" (sqlQuote experiment_id)
 	))
   (dbu (string-append
