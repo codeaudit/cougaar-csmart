@@ -34,7 +34,6 @@ import java.io.*;
 import java.lang.reflect.Constructor;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.experiment.ABCImpact;
-//import org.cougaar.tools.csmart.ui.experiment.Metric;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.configgen.abcsociety.ABCSociety;
 import org.cougaar.tools.csmart.ui.experiment.*;
@@ -842,17 +841,43 @@ public class Organizer extends JScrollPane {
     }
     return true;
   }
-  
+
+  /**
+   * Return names of society from database.
+   */
+
+  private Collection getSocietyNamesFromDB() {
+    ArrayList tmpNames = new ArrayList(10);
+    tmpNames.add("small-135");
+    return tmpNames;
+  }
+
+  /**
+   * Create a new society from either a ComboItem (for Scalability and
+   * ABC societies) or from a string (society name) obtained from a database.
+   */
+
   private DefaultMutableTreeNode newSociety(DefaultMutableTreeNode node) {
-    Object[] values = socComboItems;
+    ArrayList values = new ArrayList(10);
+    // add in ComboItems for societies such as scalability and abc
+    for (int i = 0; i < socComboItems.length; i++)
+      values.add(socComboItems[i]);
+    // add in society names from database
+    try {
+      values.addAll(getSocietyNamesFromDB());
+    } catch (IndexOutOfBoundsException e) {
+      System.out.println("Organizer: Exception: " + e);
+    }
     Object answer =
       JOptionPane.showInputDialog(this, "Select Society Type",
 				  "Select Society",
 				  JOptionPane.QUESTION_MESSAGE,
 				  null,
-				  values,
+				  values.toArray(),
 				  "ScalabilityX");
+    SocietyComponent sc = null;
     if (answer instanceof ComboItem) {
+      // create a scalability or abc society
       ComboItem item = (ComboItem) answer;
       String name = societyNames.generateName(item.name);
       while (true) {
@@ -869,16 +894,18 @@ public class Organizer extends JScrollPane {
 					       JOptionPane.OK_CANCEL_OPTION,
 					       JOptionPane.ERROR_MESSAGE);
 	if (ok != JOptionPane.OK_OPTION) return null;
+        sc = createSoc(name, item.cls);
       }
-      SocietyComponent sc = createSoc(name, item.cls);
-      if (sc == null)
-	return null;
-      DefaultMutableTreeNode newNode =
-	addSocietyToWorkspace(sc, node);
-      workspace.setSelection(newNode);
-      return newNode;
+    } else {
+      // create a society from a database
+      // answer is the society name obtained from the database
+      //      sc = SocietyComponent.createFromDatabase(answer);
     }
-    return null;
+    if (sc == null)
+      return null;
+    DefaultMutableTreeNode newNode = addSocietyToWorkspace(sc, node);
+    workspace.setSelection(newNode);
+    return newNode;
   }
 
   private SocietyComponent createSoc(String name, Class cls) {
