@@ -313,7 +313,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       new JMenuItem(ActionUtil.SAVE_TO_DATABASE_ACTION);
     saveToDatabaseMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          organizer.saveRecipe();
+          organizer.saveComponent(); // save experiment or recipe
         }
       });
     fileMenu.add(saveToDatabaseMenuItem);

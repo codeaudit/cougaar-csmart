@@ -170,7 +170,8 @@ public class ActionUtil {
 
     if (selectedObject instanceof Experiment) {
       Experiment experiment = (Experiment)selectedObject;
-      if (action.equals(DUPLICATE_ACTION)) {
+      if (action.equals(DUPLICATE_ACTION) ||
+          action.equals(SAVE_TO_DATABASE_ACTION)) {
         return true;
       } else if (action.equals(BUILD_ACTION)) {
         return !CSMART.isExperimentInEditor(experiment);

@@ -465,6 +465,44 @@ public class Organizer extends JScrollPane {
     return (Experiment[])experiments.toArray(new Experiment[experiments.size()]);
   }
 
+  /**
+   * Save selected component (recipe or experiment) to database.
+   */
+
+  public void saveComponent() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node == null) return;
+    Object o = node.getUserObject();
+    if (o instanceof RecipeComponent)
+      saveRecipe((RecipeComponent)o);
+    else if (o instanceof Experiment)
+      saveExperiment((Experiment)o);
+  }
+
+  public void saveExperiment() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node == null) return;
+    saveExperiment((Experiment)node.getUserObject());
+  }
+
+  private void saveExperiment(Experiment experiment) {
+    final Experiment exp = experiment;
+    GUIUtils.timeConsumingTaskStart(organizer);
+    try {
+      new Thread("SaveExperiment") {
+          public void run() {
+            exp.saveToDb(saveToDbConflictHandler); // save under new name
+            GUIUtils.timeConsumingTaskEnd(organizer);
+          }
+        }.start();
+    } catch (RuntimeException re) {
+      if(log.isErrorEnabled()) {
+        log.error("Runtime exception saving experiment", re);
+      }
+      GUIUtils.timeConsumingTaskEnd(organizer);
+    }
+  }
+
   ///////////////////////////////////
   // New Societies
   //////////////////////////////////

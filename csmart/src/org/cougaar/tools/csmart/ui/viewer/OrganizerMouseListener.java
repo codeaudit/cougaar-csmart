@@ -113,6 +113,13 @@ public class OrganizerMouseListener extends MouseAdapter {
 	}
       };
 
+  private AbstractAction saveExperimentAction =
+    new AbstractAction(ActionUtil.SAVE_TO_DATABASE_ACTION) {
+        public void actionPerformed(ActionEvent e) {
+          organizer.saveExperiment();
+        }
+      };
+
   private AbstractAction deleteExperimentAction =
     new AbstractAction(ActionUtil.DELETE_ACTION) {
 	public void actionPerformed(ActionEvent e) {
@@ -202,7 +209,8 @@ public class OrganizerMouseListener extends MouseAdapter {
     runExperimentAction,
     duplicateAction,
     deleteExperimentAction,
-    renameExperimentAction
+    renameExperimentAction,
+    saveExperimentAction
   };
 
   private Object[] recipeMenuItems = {
