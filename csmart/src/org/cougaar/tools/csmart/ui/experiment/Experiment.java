@@ -662,7 +662,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       theSoc.setOwner(this); // the experiment
       theSoc.setParent(null);
       PopulateDb pdb =
-        new PopulateDb("CMT", "CSMART", "CSM", getExperimentName(),
+        new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
                        getExperimentID(), trialID, !isCloned());
       setExperimentID(pdb.getExperimentId());
       trialID = pdb.getTrialId();
