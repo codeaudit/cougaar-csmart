@@ -27,35 +27,5 @@ import org.cougaar.tools.csmart.core.property.Property;
  * A simple interface implemented by configurable components 
  * that represent plugins. <br>
  */
-public interface PluginComponent extends ModifiableComponent {
-
-  /**
-   * Gets the classname for this plugin
-   *
-   * @return a <code>String</code> value
-   */
-  String getPluginClassName();
-
-  /**
-   * Adds a Parameter to this component.
-   *
-   * @param param Unique Integer for this parameter
-   * @return a <code>Property</code> value
-   */
-  Property addParameter(int param);
-
-  /**
-   * Adds a Parameter to this component
-   *
-   * @param param Unique string for this parameter
-   * @return a <code>Property</code> value
-   */
-  Property addParameter(String param);
-
-  /**
-   * Add a parameter that is based on some other property (typically a
-   * property of our parent).
-   **/
-  Property addParameter(Property prop);
-
+public interface PluginComponent extends MiscComponent {
 }

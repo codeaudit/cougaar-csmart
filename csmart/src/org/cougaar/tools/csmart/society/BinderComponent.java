@@ -24,7 +24,7 @@ import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 
 /**
  * A simple interface implemented by configurable components 
- * that represent binders. <br>
+ * that represent binder components. <br>
  */
-public interface BinderComponent extends ModifiableComponent {
+public interface BinderComponent extends MiscComponent {
 }
