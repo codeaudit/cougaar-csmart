@@ -41,8 +41,6 @@ import javax.swing.*;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -89,14 +87,15 @@ public class XMLExperiment extends ExperimentBase {
     return experiment;
   }
 
-  public void doParse() throws Exception {
+  public void doParse(boolean validate) throws Exception {
     MyHandler handler = new MyHandler();
     SAXParserFactory factory = SAXParserFactory.newInstance();
-    //factory.setValidating(true);
+    factory.setValidating(validate);
     factory.setNamespaceAware(true);
     SAXParser saxParser = factory.newSAXParser();
 
-    monitor = new ProgressMonitorInputStream(parent, "Parsing " + file.getName(), new FileInputStream(file));
+    String text = ((factory.isValidating()) ? "Parsing and Validating " : "Parsing ");
+    monitor = new ProgressMonitorInputStream(parent, text + file.getName(), new FileInputStream(file));
     InputStream in = new BufferedInputStream(monitor);
     if (in != null) {
       saxParser.parse(in, handler);
