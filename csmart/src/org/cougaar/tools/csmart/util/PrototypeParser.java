@@ -304,13 +304,7 @@ public class PrototypeParser {
           if(subType != null) {
             propData.setSubType(subType);
           }
-          String val = (String)getValue(parseArgs(dataType, tokens.sval));
-          System.out.println("Value: " + val);
-          if(propData.getName().equals("HomeLocation")) {
-            propData.setValue(parseHomeLocation(val));
-          } else {
-            propData.setValue(val);
-          }
+          propData.setValue(getValue(parseArgs(dataType, tokens.sval)));
 
           newVal = tokens.nextToken();
           member = tokens.sval;
