@@ -33,6 +33,8 @@ import org.cougaar.tools.csmart.core.property.ConfigurableComponentProperty;
 import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.util.DBProperties;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Extends ConfigurableComponentProperty in order to override the
@@ -53,6 +55,7 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
   private static Set availableQueries = null;
 
   private static Set getAvailableQueries() {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.recipe.RecipeQueryProperty");
     if (availableQueries == null) {
       try {
         availableQueries = new HashSet();
@@ -77,7 +80,9 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
         }
                 
       } catch (IOException ioe) {
-        ioe.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Exception", ioe);
+        }
         availableQueries = Collections.EMPTY_SET;
       }
     }

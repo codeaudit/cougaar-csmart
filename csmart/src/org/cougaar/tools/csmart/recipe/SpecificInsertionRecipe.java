@@ -159,7 +159,9 @@ public class SpecificInsertionRecipe extends RecipeBase
       Set targets = pdb.executeQuery(propTargetComponentQuery.getValue().toString());
       modifyComponentData(data, pdb, targets);
     } catch (SQLException sqle) {
-      sqle.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception", sqle);
+      }
     }
     return data;
   }
@@ -183,7 +185,7 @@ public class SpecificInsertionRecipe extends RecipeBase
       comp.setParent(data);
       comp.setOwner(this);
       data.addChildDefaultLoc(comp);
-      if(log.isDebugEnabled()) {
+      if(log.isInfoEnabled()) {
         log.info("Inserted " + comp + " into " + data.getName());
       }
     }

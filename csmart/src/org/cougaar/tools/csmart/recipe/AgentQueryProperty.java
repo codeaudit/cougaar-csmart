@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- *  Copyright 2001,2002 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -82,9 +82,8 @@ public class AgentQueryProperty extends ConfigurableComponentProperty {
           conn.close();
         }
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Query: " + query, e);
-          e.printStackTrace();
         }
         throw new RuntimeException("Error" + e);
       }
