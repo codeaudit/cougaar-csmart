@@ -40,6 +40,7 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.experiment.HostComponent;
+import org.cougaar.tools.csmart.society.cdata.SocietyCDataComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 
@@ -336,7 +337,11 @@ public abstract class SocietyBase
     if (log.isDebugEnabled()) {
       log.debug("Copying society " + this.getSocietyName() + " with assembly " + getAssemblyId() + " into new name " + name);
     }
-    ModifiableComponent component = super.copy(name);
+    //    ModifiableComponent component = super.copy(name);
+    ComponentData cdata = SocietyComponentCreator.getComponentData(this);
+    cdata.setName(name);
+    SocietyComponent component = new SocietyCDataComponent(cdata);
+    component.initProperties();
     ((SocietyBase)component).modified = this.modified;
 
     // copy the assembly ID - the one under which this societies'
