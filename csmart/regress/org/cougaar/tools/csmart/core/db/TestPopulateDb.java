@@ -35,12 +35,9 @@ import java.util.Set;
 import java.util.Vector;
 import junit.framework.*;
 import org.cougaar.core.agent.ClusterImpl;
-import org.cougaar.core.component.ComponentDescription;
-import org.cougaar.core.component.ServiceProvider;
-import org.cougaar.core.node.DBInitializerServiceProvider;
-import org.cougaar.core.node.InitializerService;
-import org.cougaar.core.node.InitializerServiceException;
-import org.cougaar.core.node.Node;
+import org.cougaar.core.component.*;
+import org.cougaar.core.node.*;
+import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.util.DBConnectionPool;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.Parameters;
@@ -183,8 +180,7 @@ public class TestPopulateDb extends TestCase {
     private String cmtAssemblyId;
     private String exptId;
     private String trialId;
-    private ServiceProvider initializerServiceProvider;
-    private InitializerService initializerService;
+    private ComponentInitializerService componentInitializerService;
     Map substitutions = new HashMap();
 
     public TestPopulateDb(String name) {
@@ -249,37 +245,60 @@ public class TestPopulateDb extends TestCase {
     }
 
     public void setUp() throws SQLException, IOException, ClassNotFoundException {
+      // fill database
       myCon = new Container();
-        Map substitutions = new HashMap();
-        dbp = getDBProperties();
-//          dbp.setDebug(true);
-        Connection dbConnection = openConnection();
-        try {
-            insertLib(dbConnection);
-            insertExpt(dbConnection);
-            insertTrial(dbConnection);
-            cmtAssemblyId = insertAssembly(dbConnection, CMT_TYPE);
-            dbConnection.commit();
-        } finally {
-            dbConnection.close();
-        }
-        initializerServiceProvider = new DBInitializerServiceProvider(trialId);
-        initializerService = (InitializerService)
-            initializerServiceProvider.getService(null, this, InitializerService.class);
+      Map substitutions = new HashMap();
+      dbp = getDBProperties();
+      //          dbp.setDebug(true);
+      Connection dbConnection = openConnection();
+      try {
+        insertLib(dbConnection);
+        insertExpt(dbConnection);
+        insertTrial(dbConnection);
+        cmtAssemblyId = insertAssembly(dbConnection, CMT_TYPE);
+        //dbConnection.commit();
+      } finally {
+        dbConnection.close();
+      }
+
+      // create db reader
+      String nodeName = nodeData[0].name;
+      if (nodeData.length > 1) {
+        System.err.println(
+            "Warning: more than one node,"+
+            " only testing node[0]="+nodeName);
+      }
+      System.setProperty("org.cougaar.experiment.id", trialId);
+      //System.setProperty("org.cougaar.filename", null);
+      final ServiceBroker sb = new ServiceBrokerSupport();
+      MessageAddress nodeId =
+        MessageAddress.getMessageAddress(nodeName);
+      NodeIdentificationServiceProvider nodeIdSP =
+        new NodeIdentificationServiceProvider(nodeId);
+      sb.addService(NodeIdentificationService.class, nodeIdSP);
+      BindingSite bs = new BindingSite(){
+        public ServiceBroker getServiceBroker() { return sb; }
+        public void requestStop() { }
+      };
+      DBInitializerServiceComponent dbisc = 
+        new DBInitializerServiceComponent();
+      BindingUtility.activate(dbisc, bs, sb);
+      ComponentInitializerServiceComponent cisc =
+        new ComponentInitializerServiceComponent();
+      BindingUtility.activate(cisc, bs, sb);
+      componentInitializerService = (ComponentInitializerService)
+        sb.getService(this, ComponentInitializerService.class, null);
     }
 
     public void tearDown() throws SQLException, ClassNotFoundException {
-//          Connection dbConnection = openConnection();
-//          removeAll(dbConnection);
-//          dbConnection.close();
-        initializerServiceProvider.releaseService(null,
-                                                  this,
-                                                  InitializerService.class,
-                                                  initializerService);
-	myCon.removeAll();
-	myCon.invalidate();
-        dbp = null;
-        substitutions = null;
+      // release db reader, unload components
+      // (not implemented, current impls do nothing)
+
+      // clear db
+      myCon.removeAll();
+      myCon.invalidate();
+      dbp = null;
+      substitutions = null;
     }
 
     /**
@@ -469,6 +488,8 @@ public class TestPopulateDb extends TestCase {
                 stmt.close();
             }
         } catch (Exception e) {
+            System.out.println(
+                "Failed getNextId("+dbConnection+", "+queryName+", "+format+")");
             e.printStackTrace();
             // Ignore exceptions and use default
         }
@@ -514,10 +535,14 @@ public class TestPopulateDb extends TestCase {
         pdb.close();
     }
 
-    private void checkCMT() throws SQLException, IOException, InitializerServiceException {
+    private void checkCMT()
+      throws SQLException,
+             IOException, 
+             ComponentInitializerService.InitializerException {
         for (int k = 0; k < nodeData.length; k++) {
             ComponentDescription[] agents =
-                initializerService.getComponentDescriptions(nodeData[k].name, AGENT_INSERTION_POINT);
+                componentInitializerService.getComponentDescriptions(
+                    nodeData[k].name, AGENT_INSERTION_POINT);
             assertEquals("Wrong number of agents", nodeData[k].agentData.length, agents.length);
             for (int i = 0; i < agents.length; i++) {
                 String agentName = agents[i].getName();
@@ -526,7 +551,8 @@ public class TestPopulateDb extends TestCase {
                 assertEquals("Wrong agent name", agentData.name, agentName);
                 assertEquals("Wrong agent class ", agentData.className, className);
                 ComponentDescription[] plugins =
-                    initializerService.getComponentDescriptions(agentData.name, PLUGIN_INSERTION_POINT);
+                    componentInitializerService.getComponentDescriptions(
+                        agentData.name, PLUGIN_INSERTION_POINT);
                 assertEquals("Wrong number of plugins", agentData.pluginData.length, plugins.length);
                 for (int j = 0; j < plugins.length; j++) {
                     String pluginName = plugins[j].getName();
@@ -548,7 +574,10 @@ public class TestPopulateDb extends TestCase {
     /**
      *
      **/
-    public void test() throws SQLException, IOException, InitializerServiceException {
+    public void test()
+      throws SQLException,
+             IOException,
+             ComponentInitializerService.InitializerException {
 //          populateCMT();
 //          checkCMT();
     }

@@ -1,3 +1,9 @@
+2002-12-02  Todd Wright  <twright@bbn.com>
+
+	* TestPopulateDb.java, TestPopulateDb.q
+        Updated to use new core initializer services.
+        Test itself ("checkCMT") is still commented out.
+
 2001-10-15  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* TestPopulateDb.java (Repository):
