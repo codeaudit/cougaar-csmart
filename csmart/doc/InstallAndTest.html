@@ -182,8 +182,13 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
 
   <li>Download and install MySQL from 
     <a href="http://www.mysql.com/">http://www.mysql.com/</a>.
-    Version "3.23" will work.<br><br>
-    <b>Linux Note:</b> <i>Be sure to use 3.23.45 or better.  Earlier versions contain a bug with table name cases.</i><br><br> 
+    The latest stable release of version "3.23" will work, but it
+    should be 3.23.40 or better.<br><br>
+    <b>Linux Note:</b> <i>Be sure to use 3.23.45 or better.  Earlier versions contain a bug with table name cases.</i><br>
+    <b>Windows Note:</b> Older releases do not support the "-r"
+    argument for mysqldump, which is required if you will be using the
+    experiment and recipe export scripts. Check your release by doing
+    "mysqldump -?" and looking for the "-r" option.<br><br> 
     For security reasons, be sure to change the default users' passwords.<br><br></li><p>
 
   <li>You should set a MySQL variable to force table names to be
