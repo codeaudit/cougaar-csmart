@@ -77,7 +77,7 @@ public class ActionUtil {
           RecipeComponent[] recipes = organizer.getSelectedRecipes();
           if (recipes != null) {
             for (int i = 0; i < recipes.length; i++) 
-              if (recipes[i].isEditable())
+              if (!CSMART.isRecipeInEditor(recipes[i]))
                 return true;
           }
           return false;
@@ -131,7 +131,7 @@ public class ActionUtil {
           RecipeComponent[] recipes = organizer.getSelectedRecipes();
           if (recipes != null) {
             for (int i = 0; i < recipes.length; i++) 
-              if (recipes[i].isEditable())
+              if (!CSMART.isRecipeInEditor(recipes[i]))
                 return true;
           }
           return false;
@@ -182,7 +182,7 @@ public class ActionUtil {
       else if (action.equals(DELETE_ACTION) ||
                action.equals(RENAME_ACTION) ||
                action.equals(CONFIGURE_ACTION))
-        return recipe.isEditable();
+        return (!CSMART.isRecipeInEditor(recipe));
       else
         return false;
     } // end if selected object is recipe
