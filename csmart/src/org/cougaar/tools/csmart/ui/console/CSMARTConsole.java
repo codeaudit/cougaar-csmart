@@ -684,7 +684,7 @@ public class CSMARTConsole extends JFrame {
 
     // this state should be detected earlier and the run button disabled
     if (!haveMoreTrials()) {
-      if(log.isDebugEnabled()) {
+      if(log.isWarnEnabled()) {
         log.warn("CSMARTConsole: WARNING: no more trials to run");
       }
       runButton.setSelected(false);
@@ -767,7 +767,7 @@ public class CSMARTConsole extends JFrame {
                 try {
                   port = Integer.parseInt(s);
                 } catch (Exception e) {
-                  if (log.isDebugEnabled())
+                  if (log.isErrorEnabled())
                     log.error("Exception parsing " + CSMARTUL.AGENT_PORT + " : " + e);
                 }
               }
@@ -922,7 +922,7 @@ public class CSMARTConsole extends JFrame {
       try {
         nodeCreator.join();
       } catch (InterruptedException ie) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Exception waiting for node creation thread to die: " + ie);
         }
       }
@@ -949,7 +949,7 @@ public class CSMARTConsole extends JFrame {
       } // end synchronized
       String nodeName = nodeComponent.getShortName();
       if (nsc == null) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Unknown node name: " + nodeName);
         }
         continue;
@@ -958,7 +958,7 @@ public class CSMARTConsole extends JFrame {
         nsc.flushNodeEvents();
         nsc.destroy();
       } catch (Exception ex) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Unable to destroy node, assuming it's dead: " + ex);
         }
         nodeStopped(nodeComponent);
@@ -1224,7 +1224,7 @@ public class CSMARTConsole extends JFrame {
                                            statusButton,
                                            doc);
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Unable to create output for: " + nodeName);
         }
         continue;
@@ -1249,7 +1249,7 @@ public class CSMARTConsole extends JFrame {
       try {
         hsc = communitySupport.getHost(hostName, getAppServerPort(properties));
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("CSMARTConsole: cannot create node: " + nodeName);
         }
 
@@ -1282,7 +1282,7 @@ public class CSMARTConsole extends JFrame {
 
       NodeCreationInfo nci =
         new NodeCreationInfo(hsc, uniqueNodeName, properties, args,
-                             listener, filter, null, 
+                             listener, filter, 
                              nodeName, hostName,
                              nodeComponent, scrollPane, statusButton,
                              logFileName);
@@ -1321,7 +1321,7 @@ public class CSMARTConsole extends JFrame {
                                  nci.args,
                                  nci.listener, 
                                  nci.filter, 
-                                 nci.configWriter);
+                                 null);
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
           log.error("CSMARTConsole: cannot create node: " + 
@@ -1382,7 +1382,7 @@ public class CSMARTConsole extends JFrame {
       nsc.flushNodeEvents();
       nsc.destroy();
     } catch (Exception ex) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Unable to destroy node, assuming it's dead: " + ex);
       }
       // call the method that would have been called when the 
@@ -1430,7 +1430,7 @@ public class CSMARTConsole extends JFrame {
       hostServer = 
         communitySupport.getHost(hostName, getAppServerPort(properties));
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error(e.toString());
       }
       return null;
@@ -1451,9 +1451,8 @@ public class CSMARTConsole extends JFrame {
 					 getNodeStatusButton(nodeName),
                                          doc);
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error("Unable to create output for: " + nodeName);
-        e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Unable to create output for: " + nodeName, e);
       }
       return null;
     }
@@ -1473,7 +1472,7 @@ public class CSMARTConsole extends JFrame {
         } // end synchronized
       }
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error(e.toString());
       }
     }
@@ -1543,9 +1542,8 @@ public class CSMARTConsole extends JFrame {
 	writer.close();
       }
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error("Analyzer: copyResultFiles: " + e);
-        e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Analyzer: copyResultFiles: ", e);
       }
     }
   }
@@ -1574,7 +1572,7 @@ public class CSMARTConsole extends JFrame {
       File f = new File(dirname);
       // guarantee that directories exist
       if (!f.exists() && !f.mkdirs() && !f.exists()) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("CSMARTConsole: Could not save results in: " +
 			   dirname);
         }
@@ -1584,9 +1582,8 @@ public class CSMARTConsole extends JFrame {
       URL url = new URL("file", myHostName, dirname);
       trial.addTrialResult(new TrialResult(runStart, url));
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error("Exception creating trial results URL: " + e);
-        e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception creating trial results URL: ", e);
       }
     }
     HostComponent[] hosts = experiment.getHosts();
@@ -1650,7 +1647,7 @@ public class CSMARTConsole extends JFrame {
       if (!f.exists() && !f.mkdirs() && !f.exists()) 
 	return filename;
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Couldn't create results directory: " + e);
       }
       return filename;
@@ -1718,7 +1715,7 @@ public class CSMARTConsole extends JFrame {
       try {
         newViewSize = Integer.parseInt(sizeTF.getText());
       } catch (NumberFormatException e) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error(e.toString());
         }
         return currentViewSize;
@@ -1766,7 +1763,7 @@ public class CSMARTConsole extends JFrame {
   private void formatMenuItem_actionPerformed() {
     ConsoleFontChooser cfc = new ConsoleFontChooser();
     cfc.setVisible(true);
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Font Chooser not implemented yet");
       }
   }
@@ -1991,7 +1988,6 @@ public class CSMARTConsole extends JFrame {
     String[] args;
     NodeEventListener listener;
     NodeEventFilter filter;
-    ConfigurationWriter configWriter;
     String nodeName;
     String hostName;
     NodeComponent nodeComponent;
@@ -2005,7 +2001,6 @@ public class CSMARTConsole extends JFrame {
                             String[] args,
                             NodeEventListener listener,
                             NodeEventFilter filter,
-                            ConfigurationWriter configWriter,
                             String nodeName,
                             String hostName,
                             NodeComponent nodeComponent,
@@ -2018,7 +2013,6 @@ public class CSMARTConsole extends JFrame {
       this.args = args;
       this.listener = listener;
       this.filter = filter;
-      this.configWriter = configWriter;
       this.nodeName = nodeName;
       this.hostName = hostName;
       this.nodeComponent = nodeComponent;
