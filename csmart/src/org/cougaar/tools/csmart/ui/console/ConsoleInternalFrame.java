@@ -580,7 +580,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     JScrollPane jsp = new JScrollPane(table);
     table.setPreferredScrollableViewportSize(new Dimension(400, 100));
     JOptionPane.showConfirmDialog(this, jsp, "Process Status", 
-                                  JOptionPane.OK_OPTION);
+                                  JOptionPane.PLAIN_MESSAGE);
   }
 
   /**
