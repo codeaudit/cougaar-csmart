@@ -282,7 +282,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     descriptionPanel.add(abortButton);
 
     // create progress panel for progress bar and trial and experiment times
-    trialProgressBar = new JProgressBar(0, experiment.getTrialCount());
+    trialProgressBar = new JProgressBar(0, experiment.getTrialCount() + 1);
     trialProgressBar.setValue(0);
     trialProgressBar.setStringPainted(true);
     JPanel progressPanel = new JPanel(new GridBagLayout());
@@ -655,6 +655,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	stopAllNodes();
     } else
       stopAllNodes();
+    // Tell the societies that they are no longer running
+    // Tell the experiment it is no longer running
     saveResults();
   }
 
@@ -817,6 +819,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    */
 
   private void experimentFinished() {
+    trialProgressBar.setValue(experiment.getTrialCount() + 1);
+    updateExperimentControls(experiment, false);
     runButton.setEnabled(false);
     runButton.setSelected(false);
     experimentTimer.stop();
@@ -1274,6 +1278,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   public void exitMenuItem_actionPerformed(AWTEvent e) {
     updateExperimentEditability();
     stopExperiments();
+    updateExperimentControls(experiment, false);
     // If this was this frame's exit menu item, we have to remove
     // the window from the list
     // if it was a WindowClose, the parent notices this as well
