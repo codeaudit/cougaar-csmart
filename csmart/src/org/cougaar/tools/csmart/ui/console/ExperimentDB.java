@@ -100,6 +100,15 @@ public class ExperimentDB {
     return (String)call("createExperiment",experimentName,societyTemplate);
   }
 
+  public static String addNodeAssignments(Hashtable nodeTable ,String assemblyName) {
+    return (String)call("addNodeAssignments",nodeTable,assemblyName);
+  }
+
+  public static String addMachineAssignments(Hashtable machineTable ,String assemblyName) {
+    return (String)call("addMachineAssignments",machineTable,assemblyName);
+  }
+
+
   /**
    * Returns hashtable of all society templates in database.
    */
