@@ -167,7 +167,7 @@ select
     org.cfw_id as cfw_id
 ,   org.org_id as org_id
 ,   'OrganizationPG|Service' as pg_attribute_lib_id
-,   'JOINT' as attribute_value
+,   'Joint' as attribute_value
 ,   0 as attribute_order
 ,   '2000-01-01 00:00:00' as start_date
 from
