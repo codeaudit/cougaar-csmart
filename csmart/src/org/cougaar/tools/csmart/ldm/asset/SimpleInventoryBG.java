@@ -41,8 +41,7 @@ public interface SimpleInventoryBG {
 
   SimpleInventoryBG copy(SimpleInventoryPG hapPG);
 
-  public String toString();
+  String toString();
 
-  public String toString(boolean verbose);
-  
+  String toString(boolean verbose);
 }
