@@ -11,22 +11,17 @@ User's Guide for usage.
 This directory contains several configuration sub-directories:
 
   common/:
-	LDMDomains and default.psps.xml for use with CSMART.  Also
-	a properties file for use with the CSMART UI.  Finally,
+	LDMDomains and servlets.txt for use with CSMART.  Also
+	a logging properties file for use with the CSMART UI.  Finally,
 	copies of various config files necessary to run Cougaar nodes.
 	
 	Note that CSMART loads its own domain plus GLM. Most users should copy the version here into CIP/configs/common.
-	Also, default.psps.xml contains the PSPs to copy for using the
-	CSMART Society Monitor standalone. These PSPs are also included 
-	in the standard default.psps.xml included in the base module.
 
- debug.properties - contains one line per package, where "true"
-    specifies that debug statements from this package will be logged.
+ debug.properties - contains information for customizing
+    the use of the Core logging service, via log4j statements
 
   packages.txt - A simple description of the different Java packages
         which make up the CSMART code.
-
-  [Sample AppServer properties files are now located in the AppServer module.]
 
   rwe-scripts/
 		This includes several XML files specifying RealWorldEvents for
