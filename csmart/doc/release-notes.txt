@@ -2,7 +2,11 @@ CSMART Release Notes
 
 Release 10.4:
 This release includes a major reworking on the Console.
-
+- Broke up the Console into Model and View.  
+- Seperated out the knowledge of Nodes into their own classes,
+  also Model and View.
+- Fixed buttons to prevent unknown button states.
+- The complete refactoring fixed bugs: 1946, 2640, 1626, 1639, 2321, 1637.
 
 Release 10.3:
 This patch release includes updates to various 1AD configurations, and
