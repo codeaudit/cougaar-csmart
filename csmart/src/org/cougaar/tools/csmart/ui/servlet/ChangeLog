@@ -1,3 +1,9 @@
+2003-02-07  Todd Wright  <twright@bbn.com>
+
+        * AgentProviderServlet.java
+        Removed this servlet; the built-in "/agents" servlet has
+        been used by CSMART since Cougaar 9.4+.  See bug #2564
+
 2002-03-08  Brian Krisler  <bkrisler@bbn.com>
 
 	* CommunityProviderServlet.java, MetricsServlet.java, PlanServlet.java, SearchServlet.java:
