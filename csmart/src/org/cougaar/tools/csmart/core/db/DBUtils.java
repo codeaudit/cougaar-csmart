@@ -351,6 +351,18 @@ public class DBUtils {
     }
   }
 
+  public static String getListMatch(String oneitem) {
+    List ol = new ArrayList(1);
+    ol.add(oneitem);
+    return DBUtils.getListMatch(ol, null);
+  }
+
+  public static String getListMatch(String oneitem, String badStartPattern) {
+    List ol = new ArrayList(1);
+    ol.add(oneitem);
+    return DBUtils.getListMatch(ol, badStartPattern);
+  }
+
   /**
    * Build up a string for substituting in queries
    * to match a list of items. IE given a list of Assembly IDs, this
@@ -868,30 +880,29 @@ public class DBUtils {
     return "'" + s + "'";
   }  
 
- /**
-   * Get a set of experiment names that say they have the
-   * named society.
+  /**
+   * Get a set of experiment names that say they have the 
+   * named recipe.
    *
-   * @param societyName a <code>String</code> society name to look for
-   * @return a <code>Set</code> of experiment names that include that society
+   * @param recipeName a <code>String</code> recipe name to look for
+   * @return a <code>Set</code> of experiment names that include that recipe
    */
-  public static Set dbGetExperimentsWithSociety(String societyName) {
+  public static Set dbGetExperimentsWithRecipe(String recipeName) {
     Map substitutions = new HashMap();
-    substitutions.put(":societyName", societyName);
-    String dbQuery = DBUtils.getQuery(EXPERIMENT_SOCIETY_QUERY, substitutions);
-    Logger log =
-      CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
+    substitutions.put(":recipeName", recipeName);
+    String dbQuery = DBUtils.getQuery(EXPERIMENT_QUERY, substitutions);
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     Set s = new HashSet();
     try {
       Connection conn = DBUtils.getConnection();
       try {
-        Statement stmt = conn.createStatement();
-        ResultSet rs = stmt.executeQuery(dbQuery);
-        while (rs.next()) {s.add(rs.getString(1));}
-        rs.close();
-        stmt.close();
+	Statement stmt = conn.createStatement();	
+	ResultSet rs = stmt.executeQuery(dbQuery);
+	while (rs.next()) {s.add(rs.getString(1));}
+	rs.close();
+	stmt.close();
       } finally {
-        conn.close();
+	conn.close();
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
@@ -902,9 +913,16 @@ public class DBUtils {
     return s;
   }
 
-  public static Set dbGetExperimentsWithRecipe(String recipeName) {
+  /**
+   * Get a set of experiment names that say they have the 
+   * named society.
+   *
+   * @param societyName a <code>String</code> society name to look for
+   * @return a <code>Set</code> of experiment names that include that society
+   */
+  public static Set dbGetExperimentsWithSociety(String societyName) {
     Map substitutions = new HashMap();
-    substitutions.put(":recipeName", recipeName);
+    substitutions.put(":societyName", societyName);
     String dbQuery = DBUtils.getQuery(EXPERIMENT_QUERY, substitutions);
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     Set s = new HashSet();
