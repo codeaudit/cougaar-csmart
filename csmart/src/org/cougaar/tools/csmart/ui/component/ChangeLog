@@ -1,3 +1,16 @@
+2001-11-30  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java:
+	Fix bug 858
+	Check existing lib and alib components by reading back the current
+	definition and comparing in java.
+	Remove useless args in populate*() methods.
+
+	* PDbBase.java:
+	Fix bug 858
+	Add utility methods for executing prepared statements. This enables
+	logging of such queries plus uniform error reporting.
+
 2001-11-29  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* PopulateDb.java:

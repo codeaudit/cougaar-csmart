@@ -67,7 +67,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   DNDTree hostTree;
   DNDTree nodeTree;
   DNDTree agentTree;
-  String nameServerHostName = "";
+
   // menu items for popup menu in hostTree
   private static final String NEW_HOST_MENU_ITEM = "New Host";
   private static final String NEW_NODE_MENU_ITEM = "New Node";
@@ -1393,12 +1393,33 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostTree.removeTreeSelectionListener(listener);
   }
 
-  // find first server host and use that as name server
-  // note that if the user changed the name server host name, that this
-  // will overwrite it
+  /**
+   * Insure that we have a valid nameserver specification. There are
+   * several possibilities: If the default node nameserver argument
+   * has been set, try to make that be the name server. Parse out the
+   * host name part. Then scan all the hosts of nodes having agents
+   * and check to see if any such host matches that specified by the
+   * default node nameserver argument. If it does, keep that
+   * nameserver. If it doesn't (or if there was no default node
+   * nameserver argument) then use the first host as the nameserver.
+   **/
   private void setNameServerHostName() {
-    String newNameServerHostName = "";
+    Properties defaultNodeArgs = experiment.getDefaultNodeArguments();
+    String oldNameServer = defaultNodeArgs.getProperty("org.cougaar.name.server");
+    String newNameServer = null;
+    String dfltNameServer = null;
+    String nameServerHost = null;
+    if (oldNameServer != null) {
+      int colon = oldNameServer.indexOf(':');
+      if (colon >= 0) {
+        nameServerHost = oldNameServer.substring(0, colon);
+      } else {
+        nameServerHost = oldNameServer;
+      }
+    }
+
     HostComponent[] hosts = experiment.getHosts();
+  hostLoop:
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
       for (int j = 0; j < nodes.length; j++) {
@@ -1406,12 +1427,21 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	// skip nodes that have no agents
 	if (agents == null || agents.length == 0)
 	  continue;
-        newNameServerHostName = hosts[i].getShortName();
-        break;
+        String thisHost = hosts[i].getShortName();
+        if (thisHost.equals(nameServerHost)) {
+          break hostLoop;       // Use existing nameserver definition
+        }
+        if (dfltNameServer == null) { // First host is default
+          dfltNameServer = thisHost + ":" + CSMARTConsole.NAME_SERVER_PORTS;
+          if (oldNameServer == null) {
+            break hostLoop;     // Use dfltNameServer
+          }
+        }
       }
     }
-    // set new server host name in all nodes
-    nameServerHostName = newNameServerHostName;
+    if (newNameServer == null) newNameServer = dfltNameServer;
+
+    // set new server in all nodes
     NodeComponent[] nodes = experiment.getNodes();
     for (int i = 0; i < nodes.length; i++) {
       NodeComponent node = nodes[i];
@@ -1420,9 +1450,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       arguments.remove("org.cougaar.name.server");
     }
     // Now install experiment-wide setting.
-    experiment.getDefaultNodeArguments().put("org.cougaar.name.server",
-                                             nameServerHostName + ":" +
-                                             CSMARTConsole.NAME_SERVER_PORTS);
+    if (newNameServer != null) {
+      System.out.println("org.cougaar.name.server=" + newNameServer);
+      defaultNodeArgs.setProperty("org.cougaar.name.server", newNameServer);
+    }
   }
 
   private DefaultTreeModel createModel(final Experiment experiment, DefaultMutableTreeNode node, boolean askKids) {

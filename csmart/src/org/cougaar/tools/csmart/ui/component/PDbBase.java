@@ -295,6 +295,60 @@ public class PDbBase {
     }
 
     /**
+     * Utility method to perform an executeUpdate statement. Also
+     * additional code to be added for each executeUpdate for
+     * debugging purposes.
+     **/
+    protected ResultSet executeQuery(PreparedStatement pstmt, String query) throws SQLException {
+        if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
+        try {
+            long startTime = 0;
+            if (log != null)
+                startTime = System.currentTimeMillis();
+            ResultSet result = pstmt.executeQuery();
+            if (log != null) {
+                long endTime = System.currentTimeMillis();
+                log.println((endTime - startTime) + " " + query);
+            }
+            return result;
+        } catch (SQLException sqle) {
+            System.err.println("SQLException query: " + query);
+            if (log != null) {
+                log.println("SQLException query: " + query);
+                log.flush();
+            }
+            throw sqle;
+        }
+    }
+
+    /**
+     * Utility method to perform an executeUpdate statement. Also
+     * additional code to be added for each executeUpdate for
+     * debugging purposes.
+     **/
+    protected int executeUpdate(PreparedStatement pstmt, String query) throws SQLException {
+        if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
+        try {
+            long startTime = 0;
+            if (log != null)
+                startTime = System.currentTimeMillis();
+            int result = pstmt.executeUpdate();
+            if (log != null) {
+                long endTime = System.currentTimeMillis();
+                log.println((endTime - startTime) + " " + query);
+            }
+            return result;
+        } catch (SQLException sqle) {
+            System.err.println("SQLException query: " + query);
+            if (log != null) {
+                log.println("SQLException query: " + query);
+                log.flush();
+            }
+            throw sqle;
+        }
+    }
+
+    /**
      * Utility method to perform an executeQuery statement. Also
      * additional code to be added for each executeQuery for
      * debugging purposes.

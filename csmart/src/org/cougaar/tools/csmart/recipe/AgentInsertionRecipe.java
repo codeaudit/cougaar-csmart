@@ -57,21 +57,21 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   private static final String PROP_ROLE_DFLT = "";
   private static final String PROP_ROLE_DESC = "Agent Role";
 
-//   private static final String PROP_UIC = "UIC";
-//   private static final String PROP_UIC_DFLT = "";
-//   private static final String PROP_UIC_DESC = "Unique Identifier Code";
-
   private static final String PROP_TYPE = "Type Identification";
   private static final String PROP_TYPE_DFLT = "UTC/RTOrg";
   private static final String PROP_TYPE_DESC = "Type Identification";
 
   private static final String PROP_NOMENCLATURE = "Nomenclature";
-  private static final String PROP_NOMENCLATURE_DFLT = "";
+  private static final String PROP_NOMENCLATURE_DFLT = "UTC/RTOrg";
   private static final String PROP_NOMENCLATURE_DESC = "Nomenclature";
 
   private static final String PROP_ALTTYPEID = "Alternate Type Identification";
   private static final String PROP_ALTTYPEID_DFLT = "";
   private static final String PROP_ALTTYPEID_DESC = "Alternate Type Identification";
+
+  private static final String PROP_ASSETCLASS = "Asset Class";
+  private static final String PROP_ASSETCLASS_DFLT = "MilitaryOrganization";
+  private static final String PROP_ASSETCLASS_DESC = "Asset class for this organization";
 
   private Property propName;
   private Property propClassName;
@@ -82,6 +82,7 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   private Property propType;
   private Property propNomenclature;
   private Property propAltTypeId;
+  private Property propAssetClass;
 
   private boolean editable = true;
 
@@ -100,9 +101,6 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
     propClassName = addProperty(PROP_CLASSNAME, PROP_CLASSNAME_DFLT);
     propClassName.setToolTip(PROP_CLASSNAME_DESC);
 
-//     propUIC = addProperty(PROP_UIC, PROP_UIC_DFLT);
-//     propUIC.setToolTip(PROP_UIC_DESC);
-
     propType = addProperty(PROP_TYPE, PROP_TYPE_DFLT);
     propType.setToolTip(PROP_TYPE_DESC);
 
@@ -111,6 +109,9 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
 
     propAltTypeId = addProperty(PROP_ALTTYPEID, PROP_ALTTYPEID_DFLT);
     propAltTypeId.setToolTip(PROP_ALTTYPEID_DESC);
+
+    propAssetClass = addProperty(PROP_ASSETCLASS, PROP_ASSETCLASS_DFLT);
+    propAssetClass.setToolTip(PROP_ASSETCLASS_DESC);
 
     propRelationCount = addProperty(PROP_RELATIONCOUNT, PROP_RELATIONCOUNT_DFLT);
     propRelationCount.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
@@ -325,8 +326,26 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
         plugin.setOwner(this);
         data.addChild(plugin);
       
+        // Add the OrgRTData plugin.
+        plugin = new GenericComponentData();
+        plugin.setType(ComponentData.PLUGIN);
+        plugin.setName("org.cougaar.domain.mlm.plugin.organization.OrgDataPlugIn");
+        plugin.setParent(data);
+        plugin.setClassName("org.cougaar.domain.mlm.plugin.organization.OrgDataPlugIn");
+        plugin.setOwner(this);
+        data.addChild(plugin);
+
+        // Add the OrgReport plugin.
+        plugin = new GenericComponentData();
+        plugin.setType(ComponentData.PLUGIN);
+        plugin.setName("org.cougaar.domain.mlm.plugin.organization.OrgReportPlugIn");
+        plugin.setParent(data);
+        plugin.setClassName("org.cougaar.domain.mlm.plugin.organization.OrgReportPlugIn");
+        plugin.setOwner(this);
+        data.addChild(plugin);
+
         data = addAssetData(data);
-        System.out.println("Inserted " + plugin + " into " + data.getName());
+//         System.out.println("Inserted " + plugin + " into " + data.getName());
       }
       else if (data.childCount() > 0) {
         // for each child, call this same method.
@@ -346,7 +365,7 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
       AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
 
       assetData.setType(AgentAssetData.ORG);
-      assetData.setAssetClass("Org");
+      assetData.setAssetClass(propAssetClass.getValue().toString());
       assetData.setUniqueID("UTC/RTOrg");
       if(propRelations != null ) {
         for(int i=0; i < propRelations.length; i++) {        
@@ -363,10 +382,24 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
 
       // Add Property Group to the asset.
       assetData.addPropertyGroup(createTypeIdentificationPG());
+      assetData.addPropertyGroup(createClusterPG());
+      assetData.addPropertyGroup(createItemIdentificationPG());
 
       data.addAgentAssetData(assetData);
 
       return data;
+    }
+
+    private PropGroupData createClusterPG() {
+      PropGroupData pgd = new PropGroupData(PropGroupData.CLUSTER);
+
+      PGPropData pgData = new PGPropData();
+      pgData.setName("ClusterIdentifier");
+      pgData.setType("String");
+      pgData.setValue(getShortName());
+      pgd.addProperty(pgData);
+
+      return pgd;
     }
 
     private PropGroupData createTypeIdentificationPG() {
@@ -391,6 +424,24 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
       pgData.setName("AlternateTypeIdentification");
       pgData.setType("String");
       pgData.setValue(propAltTypeId.getValue().toString());
+      pgd.addProperty(pgData);
+
+      return pgd;
+    }
+
+    private PropGroupData createItemIdentificationPG() {
+      PropGroupData pgd = new PropGroupData(PropGroupData.ITEM_IDENTIFICATION);
+
+      PGPropData pgData = new PGPropData();
+      pgData.setName("ItemIdentification");
+      pgData.setType("String");
+      pgData.setValue(getShortName());
+      pgd.addProperty(pgData);
+
+      pgData = new PGPropData();
+      pgData.setName("Nomenclature");
+      pgData.setType("String");
+      pgData.setValue(getShortName());
       pgd.addProperty(pgData);
 
       return pgd;

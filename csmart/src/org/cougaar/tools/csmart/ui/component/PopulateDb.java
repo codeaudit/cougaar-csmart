@@ -119,7 +119,7 @@ public class PopulateDb extends PDbBase {
             if (!(o instanceof PropertyKey)) return false;
             PropertyKey that = (PropertyKey) o;
             return this.pgName.equals(that.pgName) &&
-                that.propName.equals(that.propName);
+                this.propName.equals(that.propName);
         }
 
         /**
@@ -380,10 +380,10 @@ public class PopulateDb extends PDbBase {
      * @param insertionOrder the position among siblings that the
      * component should occupy.
      **/
-    public boolean populateHNA(ComponentData data, float insertionOrder)
+    public boolean populateHNA(ComponentData data)
         throws SQLException
     {
-        return populate(data, insertionOrder, hnaAssemblyId);
+        return populate(data, 1f, hnaAssemblyId);
     }
 
     /**
@@ -394,10 +394,25 @@ public class PopulateDb extends PDbBase {
      * @param insertionOrder the position among siblings that the
      * component should occupy.
      **/
-    public boolean populateCSMI(ComponentData data, float insertionOrder)
+    public boolean populateCSMI(ComponentData data)
         throws SQLException
     {
-        return populate(data, insertionOrder, csmiAssemblyId);
+        return populate(data, 1f, csmiAssemblyId);
+    }
+
+    /**
+     * Populate the HNA assembly for a particular item. Children are
+     * populated recursively. Agent components get additional
+     * processing related to the organization they represent.
+     * @param data the ComponentData of the starting point
+     * @param insertionOrder the position among siblings that the
+     * component should occupy.
+     **/
+    public boolean repopulateCMT(ComponentData data)
+        throws SQLException
+    {
+        cleanTrial("", "", "", trialId);
+        return populate(data, 1f, hnaAssemblyId);
     }
 
     /**
@@ -545,22 +560,64 @@ public class PopulateDb extends PDbBase {
         ResultSet rs = executeQuery(stmt, dbp.getQuery("checkLibComponent", substitutions));
         if (!rs.next()) {
             executeUpdate(dbp.getQuery("insertLibComponent", substitutions));
-        } else if (rs.getBoolean(1)) {
-            // Value is ok
-        } else if (conflictHandler != null) {
-            String id = (String) substitutions.get(":component_lib_id:");
-            String query = dbp.getQuery("updateLibComponent", substitutions);
-            String[] msg = {
-                "You are attempting to redefine lib component: " + id,
-                "using query:",
-                query,
-                "Do you want to overwrite the definition?"
+        } else {
+            String[] subvars = {
+                ":component_category:",
+                ":component_class:",
+                ":insertion_point:"
             };
-            if (isOverwrite(msg)) {
-                executeUpdate(query);
+            StringBuffer diff = compareQueryResults(rs, subvars);
+            if (diff == null) {
+                // Value is ok
+            } else if (conflictHandler != null) {
+                String id = (String) substitutions.get(":component_lib_id:");
+                String query = dbp.getQuery("updateLibComponent", substitutions);
+                Object[] msg = {
+                    "You are attempting to redefine lib component: " + id,
+                    diff,
+                    "Do you want to overwrite the definition?"
+                };
+                if (isOverwrite(msg)) {
+                    executeUpdate(query);
+                }
             }
         }
         rs.close();
+    }
+
+    private static Class[] sac = {String.class};
+
+    private StringBuffer compareQueryResults(ResultSet rs, String[] keys) throws SQLException {
+        StringBuffer diff = null;
+        for (int i = 0; i < keys.length; i++) {
+            Object oldValue = rs.getObject(i + 1);
+            boolean isEqual;
+            if (oldValue instanceof byte[]) { // MySQL crock returns byte array instead of strings
+                oldValue = rs.getString(i + 1);
+            }
+            String newString = (String) substitutions.get(keys[i]);
+            Object[] sas = {newString.substring(1, newString.length() - 1)};
+            Object newValue = newString;
+            try {
+                newValue = oldValue.getClass().getConstructor(sac).newInstance(sas);
+            } catch (Exception nsme) {
+            }
+            if (oldValue instanceof Comparable && oldValue.getClass() == newValue.getClass()) {
+                isEqual = ((Comparable) newValue).compareTo(oldValue) == 0;
+            } else {
+                isEqual = newValue.equals(oldValue);
+            }
+            if (!isEqual) {
+                if (diff == null) diff = new StringBuffer();
+                diff.append(keys[i].substring(1))
+                    .append(" changing ")
+                    .append(oldValue)
+                    .append(" to ")
+                    .append(newValue)
+                    .append("\n");
+            }
+        }
+        return diff;
     }
 
     private void insureAlib() throws SQLException {
@@ -571,18 +628,26 @@ public class PopulateDb extends PDbBase {
         ResultSet rs = executeQuery(stmt, dbp.getQuery("checkAlibComponent", substitutions));
         if (!rs.next()) {
             executeUpdate(dbp.getQuery("insertAlibComponent", substitutions));
-        } else if (rs.getBoolean(1)) {
-            // Value is ok
-        } else if (conflictHandler != null) {
-            String query = dbp.getQuery("updateAlibComponent", substitutions);
-            String[] msg = {
-                "You are attempting to redefine alib component: " + id,
-                "using query:",
-                query,
-                "Do you want to overwrite the definition?"
+        } else {
+            String[] subvars = {
+                ":component_name:",
+                ":component_lib_id:",
+                ":component_category:",
+                ":clone_set_id:"
             };
-            if (isOverwrite(msg)) {
-                executeUpdate(query);
+            StringBuffer diff = compareQueryResults(rs, subvars);
+            if (diff == null) {
+                // Value is ok
+            } else if (conflictHandler != null) {
+                Object[] msg = {
+                    "You are attempting to redefine alib component: " + id,
+                    diff,
+                    "Do you want to overwrite the definition?"
+                };
+                if (isOverwrite(msg)) {
+                    String query = dbp.getQuery("updateAlibComponent", substitutions);
+                    executeUpdate(query);
+                }
             }
         }
         alibComponents.add(id); // Avoid re-querying later
@@ -596,6 +661,7 @@ public class PopulateDb extends PDbBase {
         substitutions.put(":component_category:", getComponentCategory(data));
         substitutions.put(":component_class:", sqlQuote(data.getClassName()));
         substitutions.put(":insertion_point:", getComponentInsertionPoint(data));
+        substitutions.put(":clone_set_id:", getComponentCloneSetId(data));
         substitutions.put(":description:", sqlQuote("Added " + data.getType()));
         ComponentData parent = data.getParent();
         if (parent != null) {
@@ -612,15 +678,22 @@ public class PopulateDb extends PDbBase {
      * The substitutions Map already has most of the needed substitutions
      **/
     private void populateAgent(ComponentData data, boolean isAdded) throws SQLException {
+      
         AgentAssetData assetData = data.getAgentAssetData();
         if (assetData == null) return;
         substitutions.put(":agent_org_class:", sqlQuote(assetData.getAssetClass()));
         substitutions.put(":agent_lib_name:", sqlQuote(data.getName()));
+        substitutions.put(":component_name:", sqlQuote(data.getName()));
         if (isAdded) {
             // finish populating a new agent
             ResultSet rs = executeQuery(stmt, dbp.getQuery("checkAgentOrg", substitutions));
             if (!rs.next()) {
                 executeUpdate(dbp.getQuery("insertAgentOrg", substitutions));
+            }
+            rs.close();
+            rs = executeQuery(stmt, dbp.getQuery("checkAsbAgent", substitutions));
+            if (!rs.next()) {
+              executeUpdate(dbp.getQuery("insertAsbAgent", substitutions));
             }
             rs.close();
             PropGroupData[] pgs = assetData.getPropGroups();
@@ -629,10 +702,11 @@ public class PopulateDb extends PDbBase {
                 String pgName = pg.getName();
                 PGPropData[] props = pg.getProperties();
                 for (int j = 0; j < props.length; j++) {
-                    PGPropData prop = props[i];
+                  
+                    PGPropData prop = props[j];
                     PropertyInfo propInfo = getPropertyInfo(pgName, prop.getName());
                     substitutions.put(":component_alib_id:", sqlQuote(getComponentAlibId(data)));
-                    substitutions.put(":pg_attribute_lib_id:", propInfo.getAttributeLibId());
+                    substitutions.put(":pg_attribute_lib_id:", sqlQuote(propInfo.getAttributeLibId()));
                     substitutions.put(":start_date:", sqlQuote("2000-01-01 00:00:00"));
                     substitutions.put(":end_date:", sqlQuote(null));
                     if (propInfo.isCollection()) {
@@ -646,6 +720,7 @@ public class PopulateDb extends PDbBase {
                             executeUpdate(dbp.getQuery("insertAttribute", substitutions));
                         }
                     } else {
+
                         if (prop.isListType())
                             throw new RuntimeException("Property is not a single value: "
                                                        + propInfo.toString());
@@ -669,8 +744,8 @@ public class PopulateDb extends PDbBase {
             substitutions.put(":end_date:", "?");
             String query = dbp.getQuery("checkRelationship", substitutions);
             PreparedStatement pstmt = dbConnection.prepareStatement(query);
-            pstmt.setTimestamp(1, new Timestamp(r.getStartTime()));
-            ResultSet rs = pstmt.executeQuery();
+            pstmt.setTimestamp(1, new Timestamp(startTime));
+            ResultSet rs = executeQuery(pstmt, query);
             if (!rs.next()) {
                 query = dbp.getQuery("insertRelationship", substitutions);
                 PreparedStatement pstmt2 = dbConnection.prepareStatement(query);
@@ -680,8 +755,14 @@ public class PopulateDb extends PDbBase {
                 } else {
                     pstmt2.setNull(2, Types.TIMESTAMP);
                 }
-                pstmt2.executeUpdate();
-                pstmt2.close();
+                try {
+                    executeUpdate(pstmt2, query);
+                } catch (SQLException e) {
+                    System.err.println("SQLException query: " + query);
+                    throw e;
+                } finally {
+                    pstmt2.close();
+                }
             }
             pstmt.close();
         }
@@ -736,8 +817,12 @@ public class PopulateDb extends PDbBase {
                                                      rs.getString(3),
                                                      rs.getString(4),
                                                      rs.getString(5));
+                
                 propertyInfos.put(key1, info);
-                if (key1.equals(key)) result = info;
+                if (key1.equals(key)) {
+                  result = info;
+                }
+
             }
             rs.close();
             stmt.close();
@@ -813,6 +898,15 @@ public class PopulateDb extends PDbBase {
             return sqlQuote("Society");
         }
         return sqlQuote(null);
+    }
+
+    /**
+     * Get the component clone set id for the component described
+     * by the specified ComponentData.
+     **/
+    private String getComponentCloneSetId(ComponentData data) {
+        if (data == null) return sqlQuote(null);
+        return sqlQuote("0");
     }
 
     /**

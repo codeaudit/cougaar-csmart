@@ -1,3 +1,9 @@
+2001-11-30  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* Experiment.java:
+	Remove useless args in populate*() methods.
+
+
 2001-11-29  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* ExperimentBuilder.java:

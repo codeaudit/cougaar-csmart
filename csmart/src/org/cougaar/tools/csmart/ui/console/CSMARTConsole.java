@@ -63,7 +63,6 @@ public class CSMARTConsole extends JFrame {
   CSMART csmart; // top level viewer, gives access to save method, etc.
   HostConfigurationBuilder hostConfiguration;
   CommunityServesClient communitySupport;
-  String nameServerHostName;
   SocietyComponent societyComponent;
   Experiment experiment;
   boolean isEditable;
@@ -665,7 +664,6 @@ public class CSMARTConsole extends JFrame {
     userStoppedTrials = false;
     ArrayList nodesToUse = new ArrayList();
     hostsToUse = new ArrayList(); // hosts that nodes are on
-    nameServerHostName = null;
     HostComponent[] hosts = experiment.getHosts();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
@@ -683,8 +681,6 @@ public class CSMARTConsole extends JFrame {
       (NodeComponent[])nodesToUse.toArray(new NodeComponent[nodesToUse.size()]);
     hostsToRunOn = 
       (String[])hostsToUse.toArray(new String[hostsToUse.size()]);
-    if (hostsToRunOn.length > 0) 
-      nameServerHostName = hostsToRunOn[0];
 
     // this state should be detected earlier and the run button disabled
     if (!haveMoreTrials()) {
@@ -1113,7 +1109,6 @@ public class CSMARTConsole extends JFrame {
     String[] result = new String[tokens.countTokens()];
     for (int i = 0; i < result.length; i++) {
       result[i] = tokens.nextToken();
-      System.out.println("arg=" + result[i]);
     }
     return result;
   }

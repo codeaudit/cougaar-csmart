@@ -453,7 +453,7 @@ public abstract class ConfigurableComponent
 
 
   public void removeProperty(Property prop) {
-    System.out.println("Removing Property: " + prop.getName());
+//     System.out.println("Removing Property: " + prop.getName());
     setPropertyVisible(prop, false);
     //    getMyProperties().put(p.getName(), p);
     firePropertyRemoved(prop);

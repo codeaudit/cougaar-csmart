@@ -1399,13 +1399,14 @@ public class Organizer extends JScrollPane {
 
   private ArrayList getTrialAssemblyIds(String experimentId, String trialId) {
     ArrayList assemblyIds = new ArrayList();
+    String query = null;
     try {
       Connection conn = DBUtils.getConnection();
       Map substitutions = new HashMap();
       substitutions.put(":expt_id", experimentId);
       substitutions.put(":trial_id", trialId);
       Statement stmt = conn.createStatement();
-      String query = DBUtils.getQuery(EXPT_ASSEM_QUERY, substitutions);
+      query = DBUtils.getQuery(EXPT_ASSEM_QUERY, substitutions);
       //      System.out.println("Organizer: getTrialAssemblyIds: " + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
@@ -1416,7 +1417,7 @@ public class Organizer extends JScrollPane {
       rs.close();
       stmt.close();
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception getting Trial pieces: " + query + ": " + se);
       se.printStackTrace();
     }
     return assemblyIds;
@@ -1438,6 +1439,11 @@ public class Organizer extends JScrollPane {
       assemblyMatch.append(val);
       assemblyMatch.append("'");
     }
+    // Avoid ugly exceptions if got no assemblies:
+    if (assemblyIDs.size() < 1) {
+      System.out.println("Got no assemblies!");
+      assemblyMatch.append("''");
+    }
     assemblyMatch.append(")");
     return assemblyMatch.toString();
   }
@@ -1448,13 +1454,14 @@ public class Organizer extends JScrollPane {
 
   private ArrayList getNodes(String trialId, String assemblyMatch) {
     ArrayList nodes = new ArrayList();
+    String query = null;
     try {
       Connection conn = DBUtils.getConnection();
       Map substitutions = new HashMap();
       substitutions.put(":trial_id", trialId);
       substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
-      String query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
+      query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
       //      System.out.println("Organizer: Nodes query: " + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
@@ -1464,7 +1471,7 @@ public class Organizer extends JScrollPane {
       stmt.close();
       conn.close();
     } catch (SQLException se) {      
-      System.err.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception getting Nodes " + query + ": " + se);
       se.printStackTrace();
     }
     return nodes;
@@ -1474,12 +1481,13 @@ public class Organizer extends JScrollPane {
   // this to change very soon.
   private ArrayList getHosts(String trialId, String assemblyMatch) {
     ArrayList hosts = new ArrayList();
+    String query = null;
     try {
       Connection conn = DBUtils.getConnection();
       Map substitutions = new HashMap();
       substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
-      String query = DBUtils.getQuery(EXPT_HOST_QUERY, substitutions);
+      query = DBUtils.getQuery(EXPT_HOST_QUERY, substitutions);
       //      System.out.println("Organizer: Get hosts query: " + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
@@ -1489,7 +1497,7 @@ public class Organizer extends JScrollPane {
       stmt.close();
       conn.close();
     } catch (SQLException se) {      
-      System.err.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception getting hosts: " + query + ": " + se);
       se.printStackTrace();
     }
     return hosts;
@@ -1500,13 +1508,13 @@ public class Organizer extends JScrollPane {
 
     NodeComponent[] nodeComponents = experiment.getNodes();
     HostComponent[] hostComponents = experiment.getHosts();
-
+    String query = null;
     try {
       Connection conn = DBUtils.getConnection();
       Map substitutions = new HashMap();
       substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
-      String query = DBUtils.getQuery("queryHostNodes", substitutions);
+      query = DBUtils.getQuery("queryHostNodes", substitutions);
       //      System.out.println(query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
@@ -1531,7 +1539,7 @@ public class Organizer extends JScrollPane {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception getting HN map " + query + ": " + se);
       se.printStackTrace();
     }
   }
@@ -1541,6 +1549,7 @@ public class Organizer extends JScrollPane {
                          AgentComponent[] agents,
                          String trialId, String assemblyMatch) {
     Iterator iter = nodes.iterator();
+    String query = null;
     try {
       Connection conn = DBUtils.getConnection();
       Map substitutions = new HashMap();
@@ -1550,7 +1559,7 @@ public class Organizer extends JScrollPane {
       Statement stmt = conn.createStatement();
       NodeComponent nodeComponent = null;
       while(iter.hasNext()) {
-        String query;
+        query = null;
         ResultSet rs;
         String nodeName = (String)iter.next();
         nodeComponent = experiment.addNode(nodeName);
@@ -1581,7 +1590,7 @@ public class Organizer extends JScrollPane {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception getting agents " + query + ": " + se);
       se.printStackTrace();
     }
   }
@@ -1607,13 +1616,14 @@ public class Organizer extends JScrollPane {
 
   private List checkForRecipes(String trialId, String exptId) {
     List recipeList = new ArrayList();
+    String query = null;
     try {
       Connection conn = DBUtils.getConnection();
       Map substitutions = new HashMap();
       substitutions.put(":trial_id", trialId);
       substitutions.put(":expt_id", exptId);
       Statement stmt = conn.createStatement();
-      String query = DBUtils.getQuery("queryRecipes", substitutions);
+      query = DBUtils.getQuery("queryRecipes", substitutions);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         try {
@@ -1630,7 +1640,7 @@ public class Organizer extends JScrollPane {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception getting recipes " + query + ": " + se);
       se.printStackTrace();
     }    
     
@@ -1639,12 +1649,12 @@ public class Organizer extends JScrollPane {
 
   private Map getRecipeNamesFromDatabase() {
     Map recipes = new TreeMap();
-
+    String query = null;
     try {
       Connection conn = DBUtils.getConnection();
       Statement stmt = conn.createStatement();
       Map substitutions = new HashMap();
-      String query = DBUtils.getQuery("queryLibRecipes", substitutions);
+      query = DBUtils.getQuery("queryLibRecipes", substitutions);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         recipes.put(rs.getString(2), rs.getString(1));
@@ -1653,7 +1663,7 @@ public class Organizer extends JScrollPane {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception getting recipe names " + query + ": " + se);
       se.printStackTrace();
     }    
     
@@ -1673,13 +1683,14 @@ public class Organizer extends JScrollPane {
   }
 
   private DbRecipe getDatabaseRecipe(String recipeId) {
+    String query = null;
     try {
       Connection conn = DBUtils.getConnection();
       try {
         Map substitutions = new HashMap();
         substitutions.put(":recipe_id", recipeId);
         Statement stmt = conn.createStatement();
-        String query = DBUtils.getQuery("queryRecipe", substitutions);
+        query = DBUtils.getQuery("queryRecipe", substitutions);
         ResultSet rs = stmt.executeQuery(query);
         if (rs.next()) {
           try {
@@ -1697,7 +1708,7 @@ public class Organizer extends JScrollPane {
         conn.close();
       }
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception gettin DBRecipe " + query + ": " + se);
       se.printStackTrace();
     }    
     return null;
@@ -1807,13 +1818,14 @@ public class Organizer extends JScrollPane {
                                       String comp_alib_id,
                                       String assemblyMatch)
   {
+    String query = null;
     try {
       Connection conn = DBUtils.getConnection();
       Map substitutions = new HashMap();
       substitutions.put(":assemblyMatch", assemblyMatch);
       substitutions.put(":comp_alib_id", comp_alib_id);
       Statement stmt = conn.createStatement();
-      String query = DBUtils.getQuery(COMPONENT_ARGS_QUERY, substitutions);
+      query = DBUtils.getQuery(COMPONENT_ARGS_QUERY, substitutions);
       //      System.out.println("Organizer " + COMPONENT_ARGS_QUERY + ": "  + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
@@ -1837,7 +1849,7 @@ public class Organizer extends JScrollPane {
       stmt.close();
       conn.close();
     } catch (SQLException se) {      
-      System.err.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception gettin compArgs " + query + ": " + se);
       se.printStackTrace();
     }
   }
@@ -1860,7 +1872,7 @@ public class Organizer extends JScrollPane {
         conn.close();
       }
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception setting NodeArgs: " + se);
       se.printStackTrace();
     }
   }

@@ -726,13 +726,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         soc.addComponentData(theSoc);
       }
 
-      if (pdb.populateHNA(theSoc, 1)) setCloned(true);
+      if (pdb.populateHNA(theSoc)) setCloned(true);
 
       // then give everyone a chance to modify what they've collectively produced
       for (int i = 0, n = components.size(); i < n; i++) {
         ComponentProperties soc = (ComponentProperties) components.get(i);
         soc.modifyComponentData(theSoc, pdb);
-        if (pdb.populateCSMI(theSoc, 1)) setCloned(true);
+        if (pdb.populateCSMI(theSoc)) setCloned(true);
       }
       pdb.setModRecipes(recipes);
       pdb.close();

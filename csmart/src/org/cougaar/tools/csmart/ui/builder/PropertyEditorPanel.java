@@ -314,7 +314,7 @@ public class PropertyEditorPanel extends JPanel
       if (path == null) return;
       PropertyTreeNode node = (PropertyTreeNode)path.getLastPathComponent();
       if (name.getPrefix().equals(node.getName())) {
-        System.out.println("PropertyBuilder: Property removed: " + prop.getName());
+//         System.out.println("PropertyBuilder: Property removed: " + prop.getName());
         removeComponentForProperty(prop);
       }
     }
