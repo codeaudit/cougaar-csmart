@@ -67,10 +67,6 @@ public class ParameterInsertionRecipe extends RecipeBase
     super(name);
   }
 
-  public String getRecipeName() {
-    return this.name;
-  }
-
   public void initProperties() {
     propQuery = addRecipeQueryProperty(PROP_QUERY, PROP_QUERY_DFLT);
     propQuery.setToolTip(PROP_QUERY_DESC);

@@ -38,8 +38,6 @@ public interface RecipeComponent extends ModifiableComponent {
   String CLASS_NAME_PROP = "recipe_class_name";
   String RECIPE_QUERY_FILE= "recipeQueries.q";
 
-  void setName(String newName);
-
   String getRecipeName();
 
   /**

@@ -112,12 +112,7 @@ public class ABCImpact
 
   public ABCImpact (String name) {
     super(name);
-    this.name = name;
     agentNames = new ArrayList();
-  }
-
-  public String getRecipeName() {
-    return this.name;
   }
 
   public void initProperties() {
@@ -208,7 +203,7 @@ public class ABCImpact
   }
 
   public String getImpactName() {
-    return name;
+    return getShortName();
   }
   
   /**

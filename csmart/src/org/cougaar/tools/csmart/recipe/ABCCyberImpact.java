@@ -68,10 +68,6 @@ public class ABCCyberImpact
     super(name);
   }
 
-  public String getRecipeName() {
-    return this.name;
-  }
-
   public void initProperties() {
     propTarget = addProperty(PROP_TARGET, PROP_TARGET_DFLT, 
 			       new ConfigurableComponentPropertyAdapter() {

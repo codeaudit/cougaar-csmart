@@ -88,10 +88,6 @@ public class SpecificInsertionRecipe extends RecipeBase
     super(name);
   }
 
-  public String getRecipeName() {
-    return this.name;
-  }
-
   public void initProperties() {
     propName = addProperty(PROP_NAME, PROP_NAME_DFLT);
     propName.setToolTip(PROP_NAME_DESC);

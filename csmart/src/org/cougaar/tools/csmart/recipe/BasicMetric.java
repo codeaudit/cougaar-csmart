@@ -129,10 +129,6 @@ public class BasicMetric extends RecipeBase
     super(name);
   }
 
-  public String getRecipeName() {
-    return this.name;
-  }
-
   public void initProperties() {
     
     propSampleInterval = addProperty(PROP_SAMPLEINTERVAL, PROP_SAMPLEINTERVAL_DFLT);

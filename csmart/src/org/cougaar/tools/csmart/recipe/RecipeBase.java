@@ -50,13 +50,16 @@ public abstract class RecipeBase
   implements RecipeComponent, PropertiesListener  {
 
   protected boolean editable = true;
-  protected String name = null;
 
   protected static final String TRUE = "True";
   protected static final String FALSE = "False";
 
   public RecipeBase (String name){
     super(name);
+  }
+
+  public String getRecipeName() {
+    return getShortName();
   }
 
   /**
@@ -96,21 +99,12 @@ public abstract class RecipeBase
   }
 
   /**
-   *
-   * @param param1 <description>
+   * Set whether or not this recipe can be edited.
+   * @param editable true if recipe can be edited, else false
    */
-  public void setEditable(boolean param1)
+  public void setEditable(boolean editable)
   {
     this.editable = editable;
-  }
-
-  /**
-   *
-   * @param name Name of this component.
-   */
-  public void setName(String name)
-  {
-    this.name = name;
   }
 
   public Property addBooleanProperty(String name, String dflt) {
