@@ -214,11 +214,11 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void setAlibID(String alibID) {
-    this.alibID = alibID;
+    this.aLibID = alibID;
   }
 
   public String getAlibID() {
-    return alibID();
+    return aLibID;
   }
 
 }
