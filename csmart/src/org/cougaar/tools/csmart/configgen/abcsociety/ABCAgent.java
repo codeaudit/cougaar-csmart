@@ -289,7 +289,7 @@ public class ABCAgent
 //     File taskFile = new File(configDir, getFullName().toString() + "-prototype-ini.dat");
 //     PrintWriter writer = new PrintWriter(new FileWriter(taskFile));
   
-  public void writePrototypeIniFile(PrintWriter writer) {
+  public void writePrototypeIniFile(PrintWriter writer, String initializer) {
 
     try {
       writer.println("[Prototype] Entity");
@@ -308,9 +308,9 @@ public class ABCAgent
 
 // 	// Add MetricPlugin Role.
 // 	String initializer = (String)getProperty(PROP_INITIALIZER).getValue();
-// 	writer.println("\"MetricsControlProvider\"  \"" + initializer +
-// 		       "\"  \"" + initializer.substring(initializer.lastIndexOf(".")+1) + 
-// 		       "\"  \"" + initializer + "\"  \"\"  \"\"");
+	writer.println("\"MetricsControlProvider\"  \"" + initializer +
+		       "\"  \"" + initializer.substring(initializer.lastIndexOf(".")+1) + 
+		       "\"  \"" + initializer + "\"  \"\"  \"\"");
       }
       writer.println();
       writer.println("[ItemIdentificationPG]");
