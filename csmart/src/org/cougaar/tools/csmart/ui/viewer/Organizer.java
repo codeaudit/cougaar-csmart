@@ -281,6 +281,11 @@ public class Organizer extends JScrollPane {
 	public void actionPerformed(ActionEvent e) {
 	  deleteMetric(popupNode);
 	}
+      },
+    new AbstractAction("Copy") {
+	public void actionPerformed(ActionEvent e) {
+	  copyMetricInNode(popupNode);
+	}
       }
   };
   private Action[] treeAction = {
@@ -1696,6 +1701,10 @@ public class Organizer extends JScrollPane {
   
   private void copyImpactInNode(DefaultMutableTreeNode node) {
     copyImpact((ImpactComponent)node.getUserObject(), node.getParent());
+  }
+  
+  private void copyMetricInNode(DefaultMutableTreeNode node) {
+    copyMetric((MetricComponent)node.getUserObject(), node.getParent());
   }
   
   public ImpactComponent copyImpact(ImpactComponent impact, Object context) {
