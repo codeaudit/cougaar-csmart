@@ -51,7 +51,7 @@ UPDATE tempcopy.v4_asb_component_hierarchy
 
 INSERT INTO  v4_asb_component_hierarchy 
    (ASSEMBLY_ID, COMPONENT_ALIB_ID, PARENT_COMPONENT_ALIB_ID, INSERTION_ORDER) 
-SELECT * FROM tempcopy.v4_asb_component_hierarchy;
+SELECT DISTINCT * FROM tempcopy.v4_asb_component_hierarchy;
 
 -- v4_asb_agent
 DROP TABLE IF EXISTS tempcopy.v4_asb_agent;
@@ -95,7 +95,7 @@ REPLACE INTO  tempcopy.v4_asb_agent
 
 INSERT INTO  v4_asb_agent 
    (ASSEMBLY_ID, COMPONENT_ALIB_ID, COMPONENT_LIB_ID, CLONE_SET_ID, COMPONENT_NAME) 
-SELECT * FROM tempcopy.v4_asb_agent;
+SELECT DISTINCT * FROM tempcopy.v4_asb_agent;
 
 -- v4_asb_agent_pg_attr
 DROP TABLE IF EXISTS tempcopy.v4_asb_agent_pg_attr;
@@ -141,7 +141,7 @@ REPLACE INTO tempcopy.v4_asb_agent_pg_attr
 
 INSERT INTO v4_asb_agent_pg_attr 
    (ASSEMBLY_ID, COMPONENT_ALIB_ID, PG_ATTRIBUTE_LIB_ID, ATTRIBUTE_VALUE, ATTRIBUTE_ORDER, START_DATE, END_DATE) 
-SELECT * FROM tempcopy.v4_asb_agent_pg_attr;
+SELECT DISTINCT * FROM tempcopy.v4_asb_agent_pg_attr;
 
 -- v4_asb_agent_relation
 DROP TABLE IF EXISTS tempcopy.v4_asb_agent_relation;
@@ -185,7 +185,7 @@ REPLACE INTO tempcopy.v4_asb_agent_relation
 
 INSERT INTO v4_asb_agent_relation 
     (ASSEMBLY_ID, ROLE, SUPPORTING_COMPONENT_ALIB_ID, SUPPORTED_COMPONENT_ALIB_ID, START_DATE, END_DATE) 
-SELECT * FROM tempcopy.v4_asb_agent_relation;
+SELECT DISTINCT * FROM tempcopy.v4_asb_agent_relation;
 
 -- v4_asb_component_arg
 DROP TABLE IF EXISTS tempcopy.v4_asb_component_arg;
@@ -234,7 +234,7 @@ UPDATE tempcopy.v4_asb_component_arg
 
 INSERT INTO v4_asb_component_arg 
    (ASSEMBLY_ID, COMPONENT_ALIB_ID, ARGUMENT, ARGUMENT_ORDER)
-SELECT * FROM tempcopy.v4_asb_component_arg;
+SELECT DISTINCT * FROM tempcopy.v4_asb_component_arg;
 
 -- v4_asb_oplan_agent_attr
 DROP TABLE IF EXISTS tempcopy.v4_asb_oplan_agent_attr;
@@ -282,7 +282,7 @@ FROM v4_asb_oplan_agent_attr AA,
 
 INSERT INTO v4_asb_oplan_agent_attr 
     (ASSEMBLY_ID, OPLAN_ID, COMPONENT_ALIB_ID, COMPONENT_ID, START_CDAY, ATTRIBUTE_NAME , END_CDAY, ATTRIBUTE_VALUE)
-SELECT * FROM tempcopy.v4_asb_oplan_agent_attr;
+SELECT DISTINCT * FROM tempcopy.v4_asb_oplan_agent_attr;
 
 -- v4_asb_oplan
 DROP TABLE IF EXISTS tempcopy.v4_asb_oplan;
@@ -324,7 +324,7 @@ FROM v4_asb_oplan AA,
 
 INSERT INTO v4_asb_oplan 
    (ASSEMBLY_ID, OPLAN_ID, OPERATION_NAME , PRIORITY, C0_DATE) 
-SELECT * FROM tempcopy.v4_asb_oplan;
+SELECT DISTINCT * FROM tempcopy.v4_asb_oplan;
 
 -- v4_asb_assembly
 DROP TABLE IF EXISTS tempcopy.v4_asb_assembly;
@@ -362,7 +362,7 @@ FROM v4_asb_assembly AA,
 
 INSERT INTO v4_asb_assembly 
    (ASSEMBLY_ID,ASSEMBLY_TYPE,DESCRIPTION)
-SELECT * FROM tempcopy.v4_asb_assembly;
+SELECT DISTINCT * FROM tempcopy.v4_asb_assembly;
 
 -- v4_trial_mod_recipe
 DROP TABLE IF EXISTS tempcopy.v4_expt_trial_mod_recipe;

@@ -1,9 +1,10 @@
 -- COPY REFERENCE STUFF USED BY AN EXPERIMENT FOR EXPORT
 
 -- v4_alib_component
+DROP TABLE IF EXISTS tempcopy.v4_alib_component2;
 DROP TABLE IF EXISTS tempcopy.v4_alib_component;
 
-CREATE TABLE tempcopy.v4_alib_component AS
+CREATE TABLE tempcopy.v4_alib_component2 AS
   SELECT DISTINCT
     AA.COMPONENT_ALIB_ID,
     AA.COMPONENT_NAME,
@@ -23,7 +24,7 @@ CREATE TABLE tempcopy.v4_alib_component AS
     AND EA.ASSEMBLY_ID = AH.ASSEMBLY_ID
     AND (AH.COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID OR AH.PARENT_COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID);
 
-REPLACE INTO tempcopy.v4_alib_component
+REPLACE INTO tempcopy.v4_alib_component2
   (COMPONENT_ALIB_ID, COMPONENT_NAME, COMPONENT_LIB_ID, COMPONENT_TYPE, CLONE_SET_ID) 
   SELECT DISTINCT
     AA.COMPONENT_ALIB_ID,
@@ -44,6 +45,17 @@ REPLACE INTO tempcopy.v4_alib_component
     AND EA.ASSEMBLY_ID = AH.ASSEMBLY_ID
     AND (AH.COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID OR AH.PARENT_COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID);
 
+CREATE TABLE tempcopy.v4_alib_component AS
+  SELECT DISTINCT
+    COMPONENT_ALIB_ID,
+    COMPONENT_NAME,
+    COMPONENT_LIB_ID,
+    COMPONENT_TYPE,
+    CLONE_SET_ID
+  FROM
+    tempcopy.v4_alib_component2;
+
+DROP TABLE tempcopy.v4_alib_component2;
 
 -- v4_lib_component
 DROP TABLE IF EXISTS tempcopy.v4_lib_component;
