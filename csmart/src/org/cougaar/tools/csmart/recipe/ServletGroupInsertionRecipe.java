@@ -351,6 +351,9 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 	// If the child is a plugins or AgentBinder, no need to look at it
 	if (children[i].getType().equals(ComponentData.PLUGIN) || children[i].getType().equals(ComponentData.AGENTBINDER))
 	  continue;
+// 	if (log.isDebugEnabled()) {
+// 	  log.debug("modify recursing into " + children[i]);
+// 	}
 	modifyComponentData(children[i], pdb, targets);
       }
     }

@@ -2365,6 +2365,9 @@ public class PopulateDb extends PDbBase {
 
   public Set executeQuery(String queryName) throws SQLException {
     Statement stmt = dbConnection.createStatement();
+//     if (log.isDebugEnabled()) {
+//       log.debug("About to do query with name " + queryName + " using subs: " + substitutions + " for expt/trial: " + exptId + "\\" + trialId);
+//     }
     ResultSet rs = executeQuery(stmt, dbp.getQuery(queryName, substitutions));
     Set results = new HashSet();
     while (rs.next()) {
