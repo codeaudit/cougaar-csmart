@@ -16,9 +16,12 @@ csmart.log.severity=PROBLEM
 org.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0
 org.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
 
-# support localhost popups
+# Default to localhost popups, which also requires that localhost
+#   have "xhost +localhost" for local X authorization.
 #
-# instead of "env.XAUTHORITY=.." one can use 
-#   "xhost +localhost" OUTSIDE this file (i.e. in your xterm!)
+# In general, the CSMART UI will be on host "csmarthost" with multiple
+#   server hosts, "serverhost[1-N]".  For the display to work (AWT, 
+#   Swing, etc) each "serverhost[1-N]" needs "env.DISPLAY=csmarthost:0.0" 
+#   and the CSMART UI host needs "xhost +serverhost1 .. +serverhostN" 
+#   (or just "xhost +").
 env.DISPLAY=localhost:0.0
-env.XAUTHORITY=/home/ahelsing/.Xauthority
