@@ -130,6 +130,14 @@ public class AgentFileComponent
           className.delete(start, start+2);
         }
 
+	// HACK!
+	// When dumping INIs we add an extra parameter to the GLSInitServlet,
+	// so strip it off here
+	boolean isGLS = false;
+	if (className.indexOf("GLSInitServlet") != -1) {
+	  isGLS = true;
+	}
+
         int index = name.lastIndexOf(".");
         if (index != -1)
           name.delete(0,index+1);
@@ -137,8 +145,16 @@ public class AgentFileComponent
           new PluginBase(name.substring(0), className.substring(0), priority);
         plugin.initProperties();
         Iterator iter = ComponentConnector.getPluginProps(desc[i]);
-        while(iter.hasNext()) 
-          plugin.addParameter((String)iter.next());
+        while(iter.hasNext()) {
+	  if (isGLS) {
+	    String param = (String)iter.next();
+	    if (param.startsWith("exptid="))
+	      continue;
+	    else
+	      plugin.addParameter(param);
+	  } else
+	    plugin.addParameter((String)iter.next());
+	}
         container.addChild(plugin);
       }
     }
