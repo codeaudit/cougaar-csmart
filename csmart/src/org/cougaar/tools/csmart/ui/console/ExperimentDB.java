@@ -189,8 +189,8 @@ public class ExperimentDB {
      * to actually update the experiment.
      */
 
-    public static void updateCMTAssembly(String experimentId) {
-	CMT.updateCMTAssembly(experimentId);
+    public static String updateCMTAssembly(String experimentId) {
+	return CMT.updateCMTAssembly(experimentId);
     }
 
 //   public static String getAssemblyId(String experimentId) {
@@ -198,6 +198,8 @@ public class ExperimentDB {
 //   }
 
   public static void deleteCMTAssembly(String experimentId) {
-    CMT.reallyClearCMTasb(CMT.getAssemblyId(experimentId));
+      String cmtASB = CMT.getAssemblyId(experimentId);
+      System.out.println("Deleting CMT assembly: "+cmtASB+" for experiment: " +experimentId );
+      CMT.reallyClearCMTasb(cmtASB);
   }
 }

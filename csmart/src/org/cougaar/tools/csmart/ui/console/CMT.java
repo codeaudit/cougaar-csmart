@@ -70,10 +70,20 @@ public class CMT {
     //NEW CODE
     public static void clearAllCMTAssemblies(){
 	deleteItems(asbPrefix+"asb_component_hierarchy","assembly_id","assembly_id");
+	// The following line was on the branch but not the head
+	deleteItems(asbPrefix+"asb_agent", "assembly_id", "assembly_id");
 	deleteItems(asbPrefix+"asb_agent_pg_attr","assembly_id","assembly_id");
 	deleteItems(asbPrefix+"asb_agent_relation","assembly_id","assembly_id");
 	deleteItems(asbPrefix+"asb_component_arg","assembly_id","assembly_id");
-	deleteItems(asbPrefix+"alib_component","assembly_id","assembly_id");
+	// The following line was on the branch but not the head
+	deleteItems(asbPrefix+"asb_oplan_agent_attr", "assembly_id", "assembly_id");
+	// The following line was on the branch but not the head
+	deleteItems(asbPrefix+"asb_oplan", "assembly_id", "assembly_id");
+	// The following line was on the branch but not the head
+	deleteItems(asbPrefix+"asb_thread", "assembly_id", "assembly_id");
+
+	// This next line is not on the branch....!!!!
+	//deleteItems(asbPrefix+"alib_component","assembly_id","assembly_id");
 	deleteItems(asbPrefix+"asb_assembly","assembly_id","assembly_id");
     }
 
@@ -127,6 +137,8 @@ public class CMT {
 	deleteItems(asbPrefix+"asb_component_arg", "assembly_id", sqlQuote(assembly_id));
 	deleteItems(asbPrefix+"asb_oplan_agent_attr", "assembly_id", sqlQuote(assembly_id));
 	deleteItems(asbPrefix+"asb_oplan", "assembly_id", sqlQuote(assembly_id));
+	// The following line was on the branch but not the head
+	deleteItems(asbPrefix+"asb_thread", "assembly_id", sqlQuote(assembly_id));
 	deleteItems(asbPrefix+"asb_assembly", "assembly_id", sqlQuote(assembly_id));
 
     }
@@ -222,6 +234,8 @@ public class CMT {
 	allThreads.add("CLASS-3");
 	allThreads.add("CLASS-4");
 	allThreads.add("CLASS-5");
+	// The following line was on the branch but not the head
+	allThreads.add("CLASS-8");
 	allThreads.add("CLASS-9");
 	return orderThreads(allThreads);
     }
@@ -617,12 +631,16 @@ public class CMT {
     public static String[] orderThreads(Set set){
 	String[] threads = new String[set.size()];
 	int i=0;
+	// The following line was on the base but not the HEAD
+	if ( set.contains("BASE")) {threads[i]="BASE"; i++;}
 	if ( set.contains("STRATEGIC-TRANS")) {threads[i]="STRATEGIC-TRANS"; i++;}
 	if ( set.contains("THEATER-TRANS")) {threads[i]="THEATER-TRANS"; i++;}
 	if ( set.contains("CLASS-1")) {threads[i]="CLASS-1"; i++;}
 	if ( set.contains("CLASS-3")){threads[i]= "CLASS-3"; i++;}
 	if ( set.contains("CLASS-4")){threads[i]= "CLASS-4"; i++;}
 	if ( set.contains("CLASS-5")){threads[i]= "CLASS-5"; i++;}
+	// The following line was on the branch but not the head
+	if ( set.contains("CLASS-8")){threads[i]= "CLASS-8"; i++;}
 	if ( set.contains("CLASS-9")){threads[i]= "CLASS-9"; i++;}
 	return threads;
     }
@@ -630,7 +648,8 @@ public class CMT {
   public static String getAssemblyId(String experimentId) {
     Map subs = new HashMap();
     subs.put(":experiment_id", experimentId);
-    subs.put(":match_pattern", "%}");
+    // The following line is commented out on the branch
+    //subs.put(":match_pattern", "%}");
     return query1String("getAssemblyIDOnExpt", subs);
   }
 
@@ -641,7 +660,8 @@ public class CMT {
      * to actually update the experiment.
      */
 
-    public static void updateCMTAssembly(String experiment_id) {
+    public static String updateCMTAssembly(String experiment_id) {
+      // Note that the branch makes this function return String
 	Map subs = new HashMap();
 	subs.put(":experiment_id",experiment_id);
 	Set threads = querySet("updateCMTAssemblyThreadID",subs);
@@ -656,6 +676,9 @@ public class CMT {
 	subs.put(":assembly_id",assembly_id);
 	// this query is legal in both Oracle and mySQL
 	dbUpdate("updateCMTAssembly",subs);
+	// The following 2 lines are added on the branch
+	dbUpdate("updateAssemblyIDOnExpt",subs);
+	return assembly_id;
     }
 
     /*
@@ -665,9 +688,10 @@ public class CMT {
      */
     public static void deleteExperiment(String experiment_id, String experiment_name) {
 	boolean doIt = true;
-	
+
+	// On the branch the following loop is commented out.
 	// HACK: Avoid deleting base experiments
-	String[] baseExpts = new String[] {"EXPT_TRANS","TINY_1AD_TRANS_STUB","FULL-1AD-TRANS","TINY-1AD-TRANS","SMALL_1AD_TRANS","FULL-1AD-TRANS-STUB"};
+	String[] baseExpts = new String[] {"EXPT_TRANS","TINY_1AD-TRANS-STUB","FULL-1AD-TRANS","TINY-1AD-TRANS","SMALL-1AD-TRANS","SMALL-1AD-TRANS-STUB","FULL-1AD-TRANS-STUB"};
 	for (int i = 0; i < baseExpts.length; i++) {
 	  if (experiment_id.equals(baseExpts[i])) {
 	    doIt = false;
