@@ -2077,27 +2077,7 @@
 
 
 (define (deleteExperiment experiment_id)
-  (dbu (string-append
-	"delete from " asb-prefix "expt_trial_assembly"
-	"   where expt_id=" (sqlQuote experiment_id)
-	))
-  (dbu (string-append
-	"delete from " asb-prefix "expt_trial_thread"
-	"   where expt_id=" (sqlQuote experiment_id)
-	))
-  (dbu (string-append
-	"delete from " asb-prefix "expt_trial_org_mult"
-	"   where expt_id=" (sqlQuote experiment_id)
-	))
-  (dbu (string-append
-	"delete from "
-	"   "	  asb-prefix "expt_trial"
-	"   where expt_id=" (sqlQuote experiment_id)))
-  (dbu (string-append
-	"delete from "
-	asb-prefix "expt_experiment"
-	"   where expt_id=" (sqlQuote experiment_id)))
-  (clear-unused-cmt-assemblies)
+  (CMT.deleteExperiment experiment_id)
   )
 
 (define (query-set query col)
