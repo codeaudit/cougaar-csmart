@@ -37,7 +37,9 @@ import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.cdata.*;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.core.agent.AgentManager;
 import org.cougaar.core.component.ComponentDescription;
+import org.cougaar.core.plugin.PluginManager;
 import org.cougaar.util.log.Logger;
 
 // Create a society ComponentData
@@ -310,9 +312,9 @@ public class ExperimentINIWriter implements ConfigurationWriter {
           }
           // What is the prefix line I write here?
           if (children[i].getType().equals(ComponentData.NODEBINDER)) {
-            writer.print("Node.AgentManager.Binder");
+            writer.print(AgentManager.INSERTION_POINT + ".Binder");
 	  } else if (children[i].getType().equals(ComponentData.AGENTBINDER)) {
-	    writer.print("Node.AgentManager.Agent.PluginManager.Binder");
+	    writer.print(PluginManager.INSERTION_POINT + ".Binder");
 	  } else {
 	    if (log.isDebugEnabled()) {
 	      log.debug("writeNodeFile writing component of type: " + children[i].getType() + ", and name " + children[i].getName());
@@ -393,9 +395,9 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     for (int i = 0; i < children.length; i++) {
       if (writer != null) {
 	if (children[i].getType().equals(ComponentData.AGENTBINDER)) {
-	  writer.print("Node.AgentManager.Agent.PluginManager.Binder");
+	  writer.print(PluginManager.INSERTION_POINT + ".Binder");
 	} else if (children[i].getType().equals(ComponentData.NODEBINDER)) {
-	  writer.print("Node.AgentManager.Binder");
+	  writer.print(AgentManager.INSERTION_POINT + ".Binder");
 	} else {
 	  writer.print(children[i].getType());
 	}
@@ -559,8 +561,8 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	while(iter2.hasNext()) {
 	  PGPropData propData = (PGPropData)iter2.next();
           if(propData.getName().equals("HomeLocation")) {
-            writer.println("# To correctly store in the database on read");
-            writer.println("# the parser removed data from this field that");
+	    writer.println("# If this society was read from INI files,");
+            writer.println("# the parser may have removed data from this field that");
             writer.println("# will prevent running from this INI file.");
             writer.println("# Refer to an older ini file for the missing info.");
           }
