@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import javax.swing.event.EventListenerList;
+import java.lang.reflect.Array;
+import java.util.Arrays;
 
 import org.cougaar.util.FilteredIterator;
 import org.cougaar.util.UnaryPredicate;
@@ -506,6 +508,53 @@ public abstract class ConfigurableComponent
       props.add(name);
     }
     return props;
+  }
+
+
+  public ConfigurableComponent copy(ConfigurableComponent result) {
+
+    Iterator iter = getLocalPropertyNames();
+    while(iter.hasNext()) {
+      CompositeName name = (CompositeName)iter.next();
+      Property myProp = getProperty(name);
+      // compose the correct name for the property
+      // name must be prepended by new society name
+      String s = name.last().toString();
+      ComponentName hisPropName = new ComponentName(result, s);
+      Property hisProp = result.getProperty(hisPropName);
+      try {
+	// if have experimental values, then copy those
+	// else copy the property value
+	if (myProp.getExperimentValues() != null) {
+	  List experimentValues = myProp.getExperimentValues();
+	  Object newValue = Array.newInstance(myProp.getPropertyClass(),
+					      experimentValues.size());
+	  for (int j = 0; j < experimentValues.size(); j++)
+	    Array.set(newValue, j,
+		      PropertyHelper.validateValue(myProp, 
+						   experimentValues.get(j)));
+	  hisProp.setExperimentValues(Arrays.asList((Object[])newValue));
+	  hisProp.setValue(null); // no specific value
+	} else {
+	  Object o = PropertyHelper.validateValue(myProp, myProp.getValue());
+	  if (o != null)
+	    hisProp.setValue(o);
+	}
+      } catch (InvalidPropertyValueException e) {
+	System.out.println(getClass().getName() + e);
+      }
+    }
+
+    // Now, clone my children
+    for(int i=0; i < getChildCount(); i++) {
+      ConfigurableComponent cc = getChild(i);
+      ConfigurableComponent co = result.getChild(cc.getFullName().last());
+      if(co != null) {
+	cc.copy(co);
+      }
+    }
+
+    return result;
   }
 
   private void writeObject(ObjectOutputStream stream)
