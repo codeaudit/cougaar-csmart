@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -34,6 +35,12 @@ import org.cougaar.util.Parameters;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.DBConnectionPool;
 
+/**
+ * Static methods for accessing the CSMART configuration database
+ * and manipulating the results.
+ *
+ * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
+ */
 public class DBUtils {
 
   // The following three variables are all implied by QUERY_FILE and not be needed
@@ -188,10 +195,25 @@ public class DBUtils {
     return conn;
   }
 
+  /**
+   * Retrive the named query from the default query file
+   *
+   * @param query a <code>String</code> query name to retrieve
+   * @param substitutions a <code>Map</code> of substitutions to make in the query
+   * @return a <code>String</code> for the resultant complete query
+   */
   public static String getQuery(String query, Map substitutions) {
     return DBUtils.getQuery(query, substitutions, QUERY_FILE);
   }
 
+  /**
+   * Retrive the named query from the named query file
+   *
+   * @param query a <code>String</code> query name to retrieve
+   * @param substitutions a <code>Map</code> of substitutions to make in the query
+   * @param qFile a <code>String</code> query file name to look in
+   * @return a <code>String</code> for the resultant complete query
+   */
   public static String getQuery(String query, Map substitutions, String qFile) {
     DBProperties dbProps;
     String result = null;
@@ -204,26 +226,6 @@ public class DBUtils {
     }
       
     return result;
-  }
-
-  public static String getAssemblyMatch(ArrayList assemblyIDs) {
-    StringBuffer assemblyMatch = new StringBuffer();
-    assemblyMatch.append("in (");
-    Iterator iter = assemblyIDs.iterator();
-    boolean first = true;
-    while (iter.hasNext()) {
-      String val = (String)iter.next();
-      if (first) {
-        first = false;
-      } else {
-        assemblyMatch.append(", ");
-      }
-      assemblyMatch.append("'");
-      assemblyMatch.append(val);
-      assemblyMatch.append("'");
-    }
-    assemblyMatch.append(")");
-    return assemblyMatch.toString();
   }
 
   public static final boolean isMySQL() {
@@ -240,5 +242,84 @@ public class DBUtils {
     return false;
   }
 
+  /**
+   * Global flag indicating if CSMART is working with a valid
+   * CSMART configuration database.
+   */
   public static boolean dbMode = DBUtils.isValidDBConnection();
+
+  /**
+   * Build up a string for substituting in queries
+   * to match a list of items. IE given a list of Assembly IDs, this
+   * constructs the string <code>in ('id1','id2')</code> or <code>in ('id1')</code> or <code>is null</code>.<br>
+   * Optionally ignore items in the list that start with the given pattern.
+   *
+   * @param listItems a <code>List</code> of items to match
+   * @param badStartPattern a <code>String</code> start to entries to ignore. IE ignore entries that start with 'CMT'
+   * @return a <code>String</code> to substitue in a query
+   */
+  public static String getListMatch(List listItems, String badStartPattern) {
+    StringBuffer assemblyMatch = null;
+    
+    if (listItems != null && listItems.size() != 0) {
+      assemblyMatch = new StringBuffer();
+      assemblyMatch.append("in (");
+      Iterator iter = listItems.iterator();
+      boolean first = true;
+      while (iter.hasNext()) {
+	String val = (String)iter.next();
+	// Ignore entries that start with the given pattern
+	if (badStartPattern != null && ! val.startsWith(badStartPattern))
+	  continue;
+	if (first) {
+	  first = false;
+	} else {
+	  assemblyMatch.append(", ");
+	}
+	assemblyMatch.append("'");
+	assemblyMatch.append(val);
+	assemblyMatch.append("'");
+      }
+      assemblyMatch.append(")");
+      return assemblyMatch.toString();
+    } else {
+      return "is null";
+    }
+  }
+
+  /**
+   * Build up a string for substituting in queries
+   * to match a list of items. IE given a list of Assembly IDs, this
+   * constructs the string <code>in ('id1','id2')</code> or <code>in ('id1')</code> or <code>is null</code>
+   *
+   * @param listItems a <code>List</code> of items to match
+   * @return a <code>String</code> to substitue in a query
+   */
+  public static String getListMatch(List listItems) {
+    return DBUtils.getListMatch(listItems, null);
+  }
+  
+  public static String getAssemblyMatch(ArrayList assemblyIDs) {
+    return DBUtils.getListMatch(assemblyIDs);
+  }
+
+  /**
+   * Ensure the returned column in the result is not null. Throw a RuntimeException if it is null.
+   *
+   * @param rs a <code>ResultSet</code> to get the data from
+   * @param ix an <code>int</code> column index to retrieve from
+   * @param query a <code>String</code> for the query that was executed
+   * @return a <code>String</code> result string, never null
+   * @exception SQLException if an error occurs
+   */
+  public static String getNonNullString(ResultSet rs, int ix, String query)
+    throws SQLException
+  {
+    String result = rs.getString(ix);
+    if (result == null)
+      throw new RuntimeException("Null in DB ix=" + ix + " query=" + query);
+    return result;
+  }
+
 }
+
