@@ -79,7 +79,7 @@ public class ExperimentBuilder extends JFrame {
     tabbedPane.add("Properties", propertyBuilder);
     hostConfigurationBuilder = new HostConfigurationBuilder(experiment);
     tabbedPane.add("Configurations", hostConfigurationBuilder);
-    trialBuilder = new TrialBuilder(experiment, propertyBuilder);
+    trialBuilder = new TrialBuilder(experiment);
     tabbedPane.add("Trials", trialBuilder);
     
     getContentPane().add(tabbedPane);

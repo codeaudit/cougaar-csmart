@@ -17,7 +17,6 @@ import javax.swing.*;
 
 public class TrialBuilder extends JPanel {
   private static final String DELETE_MENU_ITEM = "Delete Trial";
-  PropertyBuilder propertyBuilder;
   JTable trialTable;
   TrialTableModel trialTableModel;
   JPopupMenu trialMenu;
@@ -25,10 +24,14 @@ public class TrialBuilder extends JPanel {
   Experiment experiment;
   boolean needUpdate = true; // need to update display
 
-  public TrialBuilder(Experiment experiment, PropertyBuilder propertyBuilder) {
-    this.propertyBuilder = propertyBuilder;
+  public TrialBuilder(Experiment experiment) {
+    this(experiment, true);
+  }
+
+  public TrialBuilder(Experiment experiment, boolean editable) {
     trialTable = new JTable();
-    trialTable.addMouseListener(mouseListener);
+    if (editable)
+      trialTable.addMouseListener(mouseListener);
     trialTable.setColumnSelectionAllowed(false);
     trialTable.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     JScrollPane scrollPane = new JScrollPane(trialTable);

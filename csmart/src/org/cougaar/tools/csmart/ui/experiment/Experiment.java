@@ -26,7 +26,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private List metrics = new ArrayList();
   private transient List listeners = null;
   private File metricsDirectory; // where to store metrics
-  private int numberOfTrials = 0;
+  private int numberOfTrials = 1;
   private List trials = new ArrayList();
   private boolean hasValidTrials = false;
   // schemes for varying experimental data
@@ -469,9 +469,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     int nProperties = properties.size();
     if (nProperties == 0) {
       hasValidTrials = true;
-      numberOfTrials = 0; 
-      trials = new ArrayList(0);
-      return new Trial[0];      // no properties to vary
+      numberOfTrials = 1;
+      Trial trial = new Trial("Trial 1");
+      trials = new ArrayList(1);
+      trials.add(trial);
+      return (Trial[])trials.toArray(new Trial[trials.size()]);
     }
 
     if (variationScheme.equals(VARY_ONE_DIMENSION)) {
@@ -513,6 +515,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void removeTrial(int trialIndex) {
     trials.remove(trialIndex);
     numberOfTrials--;
+    if (numberOfTrials == 0)
+      numberOfTrials = 1;
   }
 
   /**
@@ -523,7 +527,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public int getTrialCount() {
     if (hasValidTrials)
       return numberOfTrials;
-    numberOfTrials = 0;
     ArrayList experimentValueCounts = new ArrayList(100);
     int n = getSocietyComponentCount();
     for (int i = 0; i < n; i++) {
@@ -539,6 +542,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     // one dimension: sum the counts of experiment values
     // but only count nominal value the first time
     if (variationScheme.equals(VARY_ONE_DIMENSION)) {
+      numberOfTrials = 0;
       for (int i = 0; i < experimentValueCounts.size(); i++)
 	numberOfTrials = numberOfTrials + 
 	  ((Integer)experimentValueCounts.get(i)).intValue() - 1;
@@ -558,3 +562,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return numberOfTrials;
   }
 }
+
+
+
+
+

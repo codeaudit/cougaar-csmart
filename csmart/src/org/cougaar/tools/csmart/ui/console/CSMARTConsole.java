@@ -29,6 +29,8 @@ import com.klg.jclass.chart.JCChart;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
+import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
+import org.cougaar.tools.csmart.ui.experiment.TrialBuilder;
 import org.cougaar.tools.csmart.ui.experiment.Trial;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -327,10 +329,22 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
     statusButtons = new ButtonGroup();
 
-    // create tabbed panes, tabs are added dynamically
+    // create tabbed panes for configuration information (not editable)
+    JTabbedPane configTabbedPane = new JTabbedPane();
+    configTabbedPane.add("Configuration", 
+			 new HostConfigurationBuilder(experiment, false));
+    configTabbedPane.add("Trial Values", new TrialBuilder(experiment, false));
+
+    // create tabbed panes for running nodes, tabs are added dynamically
     tabbedPane = new JTabbedPane();
     tabbedPane.addChangeListener(this);
-    panel.add(tabbedPane,
+
+    // create split pane to hold config panes on left and output panes on right
+    JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    splitPane.setLeftComponent(configTabbedPane);
+    splitPane.setRightComponent(tabbedPane);
+
+    panel.add(splitPane,
 	      new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
 				     GridBagConstraints.WEST,
 				     GridBagConstraints.BOTH,
@@ -357,6 +371,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
     pack();
     setSize(600, 600);
+    splitPane.setDividerLocation(200);
     setVisible(true);
   }
 

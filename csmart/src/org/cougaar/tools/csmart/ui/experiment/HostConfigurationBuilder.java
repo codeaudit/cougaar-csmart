@@ -50,11 +50,15 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   //  private static final String DESCRIBE_MENU_ITEM = "Describe";
 
   public HostConfigurationBuilder(Experiment experiment) {
-    initDisplay();
+    this(experiment, true);
+  }
+
+  public HostConfigurationBuilder(Experiment experiment, boolean editable) {
+    initDisplay(editable);
     setExperiment(experiment);
   }
 
-  private void initDisplay() {
+  private void initDisplay(boolean editable) {
     // host split pane contains host tree and 
     // the bottom split pane which contains the node and agent trees
     JSplitPane hostPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
@@ -195,9 +199,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     bottomPane.setBottomComponent(agentTreeScrollPane);
     hostPane.setBottomComponent(bottomPane);
 
-    hostTree.setEditable(true);
-    nodeTree.setEditable(true);
-    agentTree.setEditable(true);
+    hostTree.setEditable(editable);
+    nodeTree.setEditable(editable);
+    agentTree.setEditable(editable);
 
     // fully expand trees
     //    expandTree(hostTree);
