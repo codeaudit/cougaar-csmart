@@ -25,6 +25,11 @@ REM Script to run the CSMART Society Monitor as a standalone
 REM calls setlibpath.bat which sets the path to the required jar files.
 CALL %COUGAAR_INSTALL_PATH%\bin\setlibpath.bat
 
+REM You may use the optional environment variable COUGAAR_DEV_PATH
+REM to point to custom developed code that is not in COUGAR_INSTALL_PATH/lib
+REM or CIP/sys. This can be one or many semicolon separated 
+REM directories/jars/zips, or left undefined
+
 REM start the classpath with the optional COUGAAR_DEV_PATH
 SET DEVPATH=
 IF NOT "%COUGAAR_DEV_PATH%" == "" SET DEVPATH=-Dorg.cougaar.class.path=%COUGAAR_DEV_PATH%

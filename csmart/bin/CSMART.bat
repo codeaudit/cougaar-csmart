@@ -42,6 +42,11 @@ SET COUGAAR3RDPARTY=%COUGAAR_INSTALL_PATH%\sys
 REM The following line is optional. Some output files are written to the working directory.
 REM CD %TEMP%
 
+REM You may use the optional environment variable COUGAAR_DEV_PATH
+REM to point to custom developed code that is not in COUGAR_INSTALL_PATH/lib
+REM or CIP/sys. This can be one or many semicolon separated 
+REM directories/jars/zips, or left undefined
+
 REM start the classpath with the optional COUGAAR_DEV_PATH
 SET DEVPATH=
 IF NOT "%COUGAAR_DEV_PATH%" == "" SET DEVPATH=-Dorg.cougaar.class.path=%COUGAAR_DEV_PATH%
