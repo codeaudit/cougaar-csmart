@@ -132,18 +132,18 @@ assigned to it. This is useful for, among other things, Agent Mobiility.</li>
 The experiment builder provides the ability to import and export Host Node
 Agent Mappings.  This allows the preservation of large mappings across
 multiple versions of CSMART and databases.  When an HNA Map is exported,
-it is stored in an XML file that can the be imported into new / future
-experiments.  <br>
+it is stored in an XML file that can then be imported (even edited by
+hand first) into new / future experiments.  <br>
 To use this feature, create an experiment, as explained in this help file.
-Once the desired mappings are configured, with all hosts / nodes and agents
+Once the desired mappings are configured, with all hosts, nodes and agents
 assigned.  Select "Export HNA" on the "File" menu.  This saves the HNA mapping
 to a file located off the results directory, or in a directory starting with
 the current experiment name, in "csmart/bin/".  <br>
 To use a previously exported mapping, load the desired experiment from the
-database.  Once loaded, open the configuration builder and select "Import HNA" 
+database.  Once loaded, open the experiment builder and select "Import HNA" 
 from the "File" menu.  This will re-create all the mappings stored in the
-file.  If the stored file contains agents that are not part of the new experiment,
-the agent in the file is ignored.  
+file.  If the stored file contains agents that are not part of the new 
+experiment, the agent in the file is ignored.  
 </p>
 <p>
 <b>Setting Command Line Arguments</b>
