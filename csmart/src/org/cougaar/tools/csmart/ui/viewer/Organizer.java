@@ -92,7 +92,13 @@ public class Organizer extends JScrollPane {
       return name;
     }
   }
-  
+
+  // The societies which can be created in CSMART
+  private Object[] socComboItems = {
+    new ComboItem("Scalability", ScalabilityXSociety.class),
+    new ComboItem("ABC", ABCSociety.class)
+  };
+
   // Define Unique Name sets
   private UniqueNameSet societyNames = new UniqueNameSet("Society");
   private UniqueNameSet experimentNames = new UniqueNameSet("Experiment");
@@ -774,10 +780,7 @@ public class Organizer extends JScrollPane {
   }
   
   private DefaultMutableTreeNode newSociety(DefaultMutableTreeNode node) {
-    Object[] values = {
-      new ComboItem("Scalability", ScalabilityXSociety.class),
-      new ComboItem("ABC", ABCSociety.class)
-    };
+    Object[] values = socComboItems;
     Object answer =
       JOptionPane.showInputDialog(this, "Select Society Type",
 				  "Select Society",
@@ -803,20 +806,27 @@ public class Organizer extends JScrollPane {
 					       JOptionPane.ERROR_MESSAGE);
 	if (ok != JOptionPane.OK_OPTION) return null;
       }
+      SocietyComponent sc = createSoc(name, item.cls);
+      if (sc == null)
+	return null;
+      DefaultMutableTreeNode newNode =
+	addSocietyToWorkspace(sc, node);
+      workspace.setSelection(newNode);
+      return newNode;
+    }
+    return null;
+  }
+
+  private SocietyComponent createSoc(String name, Class cls) {
       try {
-	Constructor constructor = item.cls.getConstructor(constructorArgTypes);
+	Constructor constructor = cls.getConstructor(constructorArgTypes);
 	SocietyComponent sc = (SocietyComponent) constructor.newInstance(new String[] {name});
 	sc.initProperties();
-	DefaultMutableTreeNode newNode =
-	  addSocietyToWorkspace(sc, node);
-	workspace.setSelection(newNode);
-	return newNode;
+	return sc;
       } catch (Exception e) {
 	e.printStackTrace();
 	return null;
       }
-    }
-    return null;
   }
   
   private DefaultMutableTreeNode addSocietyToWorkspace(SocietyComponent sc,
@@ -1653,7 +1663,12 @@ public class Organizer extends JScrollPane {
   
   public SocietyComponent copySociety(SocietyComponent society, 
 				      Object context) {
-    SocietyComponent societyCopy = society.copy(this, context);
+    //    SocietyComponent societyCopy = society.copy(this, context);
+    // Create a new society whose name is based on the old one
+    SocietyComponent societyCopy = createSoc(generateSocietyName(society.getSocietyName()), society.getClass());
+    
+    // use the base copy method in ComponentProperties
+    society.copy(societyCopy);
     if (context == null)
       // add copy as sibling of original
       workspace.setSelection(addSocietyToWorkspace(societyCopy, 
