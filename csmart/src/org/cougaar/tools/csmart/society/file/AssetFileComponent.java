@@ -142,7 +142,13 @@ public class AssetFileComponent
           RelationshipBase rel = (RelationshipBase) container.getChild(i);
           RelationshipData rData = new RelationshipData();
           rData.setType((String)rel.getProperty(RelationshipBase.PROP_TYPE).getValue());
-          rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
+          if(this.iniFormat == AgentAssetData.NEW_FORMAT) {
+            // Since role is stored in type in the new format, we must adjust.
+            rData.setRole((String)rel.getProperty(RelationshipBase.PROP_TYPE).getValue());
+          } else {
+            rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
+          }
+
           rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
           rData.setTypeId((String)rel.getProperty(RelationshipBase.PROP_TYPEID).getValue());
           rData.setSupported((String)rel.getProperty(RelationshipBase.PROP_SUPPORTED).getValue());
