@@ -47,7 +47,7 @@ public class GenericComponentData implements ComponentData, Serializable {
   private ArrayList children = null;
   private ArrayList parameters = null;
   private ComponentData parent = null;
-  transient private ConfigurableComponent owner = null;
+  private transient ConfigurableComponent owner = null;
   private ArrayList leafComponents = null;
   private ArrayList timePhasedData = null;
   private AgentAssetData assetData = null;

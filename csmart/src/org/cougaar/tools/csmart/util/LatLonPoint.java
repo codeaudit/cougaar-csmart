@@ -47,10 +47,10 @@ public class LatLonPoint
         implements Location, Cloneable, Serializable {
     // SOUTH_POLE <= phi <= NORTH_POLE
     // -DATELINE <= lambda <= DATELINE
-    public final static float NORTH_POLE = 90.0f;
-    public final static float SOUTH_POLE = -NORTH_POLE;
-    public final static float DATELINE = 180.0f;
-    public final static float LON_RANGE = 360.0f;
+    public static final float NORTH_POLE = 90.0f;
+    public static final float SOUTH_POLE = -NORTH_POLE;
+    public static final float DATELINE = 180.0f;
+    public static final float LON_RANGE = 360.0f;
     // initialize to something sane
     protected float lat_ = 0.0f;
     protected float lon_ = 0.0f;
@@ -306,7 +306,7 @@ public class LatLonPoint
      * @return float normalized latitude in decimal degrees
      * (-90&deg; &lt;= &phi; &lt;= 90&deg;)
      */
-    final public static float normalize_latitude (float lat) {
+    public static final float normalize_latitude (float lat) {
         if (lat > NORTH_POLE) {
             lat = NORTH_POLE;
         }
@@ -322,7 +322,7 @@ public class LatLonPoint
      * @return float wrapped longitude in decimal degrees
      * (-180&deg; &lt;= &lambda; &lt;= 180&deg;)
      */
-    final public static float wrap_longitude (float lon) {
+    public static final float wrap_longitude (float lon) {
         if ((lon < -DATELINE) || (lon > DATELINE)) {
             //System.out.print("LatLonPoint: wrapping longitude " + lon);
             lon += DATELINE;

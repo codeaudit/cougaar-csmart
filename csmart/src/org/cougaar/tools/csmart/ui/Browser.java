@@ -119,11 +119,11 @@ public class Browser extends JFrame implements HyperlinkListener {
     }
   }
 
-  private synchronized static void clearSingleton() {
+  private static synchronized void clearSingleton() {
     singleton = null;
   }
 
-  public synchronized static void setPage(URL url) {
+  public static synchronized void setPage(URL url) {
     if (singleton == null) {
       singleton = new Browser();
     } else {
@@ -132,7 +132,7 @@ public class Browser extends JFrame implements HyperlinkListener {
     singleton.setURL(url);
   }
 
-  public synchronized static void setPage(String text) {
+  public static synchronized void setPage(String text) {
     if (singleton == null) {
       singleton = new Browser();
     } else {

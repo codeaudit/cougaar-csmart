@@ -108,9 +108,9 @@ public abstract class DNDTree
     expandPath(path);
   }
 
-  abstract protected int isDroppable(DataFlavor[] o, DefaultMutableTreeNode target);
+  protected abstract int isDroppable(DataFlavor[] o, DefaultMutableTreeNode target);
 
-  abstract protected int addElement(Transferable o,
+  protected abstract int addElement(Transferable o,
                                     DefaultMutableTreeNode target,
                                     DefaultMutableTreeNode after);
 
@@ -297,7 +297,7 @@ public abstract class DNDTree
     return false;
   }
 
-  abstract public boolean isDraggable(Object selected);
+  public abstract boolean isDraggable(Object selected);
 
   /**
    * DragSourceListener and DropTargetListener interface.
@@ -450,7 +450,7 @@ public abstract class DNDTree
    * A drag gesture has been initiated.
    */
   
-  abstract public Transferable makeDraggableObject(Object selected);
+  public abstract Transferable makeDraggableObject(Object selected);
 
 
 }

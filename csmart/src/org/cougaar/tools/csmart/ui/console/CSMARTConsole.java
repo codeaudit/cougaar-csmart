@@ -204,7 +204,7 @@ public class CSMARTConsole extends JFrame {
   // Note that the currently selected value stays constant
   // For a given invocation of CSMART
   private static int asPollInterval = 30000;
-  private volatile transient java.util.Timer asPollTimer = null;
+  private transient volatile java.util.Timer asPollTimer = null;
 
   /**
    * Create and show console GUI.

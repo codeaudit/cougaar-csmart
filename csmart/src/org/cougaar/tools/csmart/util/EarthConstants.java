@@ -38,13 +38,13 @@ package org.cougaar.tools.csmart.util;
  */
 public final class EarthConstants {
   // From com.bbn.openmap.proj.MoreMath
-  public final static float TWO_PI = (float)Math.PI*2.0f;
+  public static final float TWO_PI = (float)Math.PI*2.0f;
 
   // From com.bbn.openmap.proj.Planet
   // WGS84 / GRS80 datums
-  public final static transient float polarRadiusMeters = 6356752.3142f;
-  public final static transient float equatorialRadiusMeters = 6378137.0f;
-  public final static transient float equatorialCircumferenceMeters = EarthConstants.TWO_PI * EarthConstants.equatorialRadiusMeters;
+  public static final transient float polarRadiusMeters = 6356752.3142f;
+  public static final transient float equatorialRadiusMeters = 6378137.0f;
+  public static final transient float equatorialCircumferenceMeters = EarthConstants.TWO_PI * EarthConstants.equatorialRadiusMeters;
   
   // from org.cougaar.glm.util, by Ken A:
   // Modified to remove reliance on other Cougaar classes
@@ -133,7 +133,7 @@ public final class EarthConstants {
    * @param lambda longitude in radians of end point
    * @return float arc distance `c' in radians
    */
-  final public static float spherical_distance (float phi1,
+  public static final float spherical_distance (float phi1,
 						float lambda0,
 						float phi,
 						float lambda)
@@ -156,7 +156,7 @@ public final class EarthConstants {
    * @param p2 <code>LatLonPoint</code> of second point
    * @return float arc distance `c' in radians
    */
-  public final static float spherical_distance (LatLonPoint p1, LatLonPoint p2) {
+  public static final float spherical_distance (LatLonPoint p1, LatLonPoint p2) {
     return spherical_distance(p1.radlat_, p1.radlon_, p2.radlat_, p2.radlon_);
   }
 
@@ -172,7 +172,7 @@ public final class EarthConstants {
    * @param lon2 longitude in degrees of end point
    * @return float arc distance `c' in radians
    */
-  public final static float spherical_distance_deg (float lat1, float lon1,
+  public static final float spherical_distance_deg (float lat1, float lon1,
 						    float lat2, float lon2) {
     return spherical_distance(EarthConstants.degToRad(lat1),
 			      EarthConstants.degToRad(lon1),
@@ -192,7 +192,7 @@ public final class EarthConstants {
    * @param Az azimuth (direction) east of north (-PI &lt;= Az &lt; PI)
    * @return LatLonPoint
    */
-  public final static LatLonPoint spherical_between(float phi1,
+  public static final LatLonPoint spherical_between(float phi1,
 						    float lambda0,
 						    float c,
 						    float Az)
@@ -224,7 +224,7 @@ public final class EarthConstants {
    * @param Az azimuth (direction) east of north (-PI &lt;= Az &lt; PI) in radians
    * @return LatLonPoint
    */
-  public final static LatLonPoint spherical_between(LatLonPoint point, float c, float Az) {
+  public static final LatLonPoint spherical_between(LatLonPoint point, float c, float Az) {
     return spherical_between(point.radlat_, point.radlon_, c, Az);
   }
 
@@ -240,7 +240,7 @@ public final class EarthConstants {
    * @param Az azimuth (direction) east of north (-PI &lt;= Az &lt; PI)
    * @return LatLonPoint
    */
-  public final static LatLonPoint spherical_between_degs(float lat, float lon,
+  public static final LatLonPoint spherical_between_degs(float lat, float lon,
 							 float c, float Az) {
     return spherical_between(EarthConstants.degToRad(lat),
 			     EarthConstants.degToRad(lon), c, Az);
@@ -252,7 +252,7 @@ public final class EarthConstants {
    * @param rad radians
    * @return double decimal degrees
    */
-  public final static double radToDeg (double rad) {
+  public static final double radToDeg (double rad) {
     return (rad * (180.0d / Math.PI));
   }  
   
@@ -261,7 +261,7 @@ public final class EarthConstants {
    * @param rad radians
    * @return float decimal degrees
    */
-  public final static float radToDeg (float rad) {
+  public static final float radToDeg (float rad) {
     return (rad * (180.0f / (float)Math.PI));
   }  
   
@@ -270,7 +270,7 @@ public final class EarthConstants {
    * @param deg degrees
    * @return double radians
    */
-  public final static double degToRad (double deg) {
+  public static final double degToRad (double deg) {
     return (deg * (Math.PI / 180.0d));
   }  
   
@@ -279,7 +279,7 @@ public final class EarthConstants {
    * @param deg degrees
    * @return float radians
    */
-  public final static float degToRad (float deg) {
+  public static final float degToRad (float deg) {
     return (deg * ((float)Math.PI / 180.0f));
   }  
 
@@ -288,7 +288,7 @@ public final class EarthConstants {
    * @param meters distance, should be <= the Earth's Circumference.
    * @return float radians arc radius (0 &lt; ret &lt;= PI)
    */
-  public final static float arcRadius(float meters) {
+  public static final float arcRadius(float meters) {
     float arc = meters / EarthConstants.equatorialRadiusMeters;
 
     if(arc > Math.PI) {
@@ -304,7 +304,7 @@ public final class EarthConstants {
    * @param lon longitude
    * @return int hashcode
    */
-  public final static int hashLatLon (float lat, float lon) {
+  public static final int hashLatLon (float lat, float lon) {
     if (lat == -0f) lat = 0f;//handle negative zero (anything else?)
     if (lon == -0f) lon = 0f;
     int tmp = Float.floatToIntBits(lat);
@@ -336,7 +336,7 @@ public final class EarthConstants {
    * @param epsilon the allowable error
    * @return boolean
    */
-  public final static boolean approximately_equal(float a, float b, float epsilon) {
+  public static final boolean approximately_equal(float a, float b, float epsilon) {
     return (Math.abs(a-b) <= epsilon);
   }
 } // EarthConstants.java
