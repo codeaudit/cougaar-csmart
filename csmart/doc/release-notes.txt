@@ -11,6 +11,11 @@ save behavior (bug 2002).
 - Bug 1988: This is a change to the CSMART included 1AD society
   definitions. You must re-run csmart/data/database/scripts/mysql/load_1ad_mysql.[sh/bat]
 
+- Bug 2087: Another change to the database. Remove the
+  UniversalAllocator from the OSC agent. Add 2 new recipes: One to add
+  the UniversalAllocator back, and one included by default, to add
+  instead the Ammo Packer to the OSC Agent.
+
 - Bug 2002: Saving experiments is incredibly slow. This is a partial
   fix, which changes some existing functionality. Recipe target
   queries (in recipeQueries.q) look in the database to decide where to
