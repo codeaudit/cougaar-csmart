@@ -23,8 +23,6 @@
 # Main script to run CSMART on Unix
 # Note that CSMART writes some files to its working directory.
 
-setenv COUGAAR_INSTALL_PATH /usr/local/home/travers/IdeaProjects/cougaar
-       
 if (! $?COUGAAR_INSTALL_PATH) then
     echo "COUGAAR_INSTALL_PATH not set!"
     exit
