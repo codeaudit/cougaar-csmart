@@ -137,9 +137,7 @@ public class OrganizerHelper {
 
     // The following is ugly  
     setDefaultNodeArguments(experiment, assemblyMatch,
-                            ComponentData.SOCIETY
-                            + "|"
-                            + originalExperimentName);
+			    PopulateDb.getSocietyAlibId(originalExperimentName));
     //    experiment.setCloned(isCloned);
 
     //to hold all potential agents
@@ -243,6 +241,32 @@ public class OrganizerHelper {
       if (log.isDebugEnabled()) {
 	log.debug("createExpt got comm asb for expt " + experimentId + " of " + commAsb);
       }
+    } else if (origExperimentId == null) {
+      if (log.isDebugEnabled()) {
+	log.debug("createExpt got null orig ExptId when loading expt " + experimentId);
+      }
+
+      // just re-loading an experiment
+      // get its comm ASB
+      PopulateDb pdbc = null;
+      String commAsb = null;
+      try {
+	pdbc = new PopulateDb(experimentId, trialId);
+	commAsb = pdbc.getCommAsbForExpt(experimentId, trialId);
+      } catch (SQLException sqle) {
+	log.error("createExperiment couldnt get commAsb for expt " + experimentId, sqle);
+      } catch (IOException ioe) {
+	log.error("createExperiment couldnt get commAsb for expt " + experimentId, ioe);
+      } finally {
+	try {
+	  if (pdbc != null)
+	    pdbc.close();
+	} catch (SQLException se) {}
+      }
+      experiment.setCommAsbID(commAsb);
+      if (log.isDebugEnabled()) {
+	log.debug("createExpt got comm asb for expt " + experimentId + " of " + commAsb);
+      }
     }
 
     // If somehow still have no comm ASB, create a new one
@@ -298,7 +322,7 @@ public class OrganizerHelper {
     if (socagents!= null && socagents.length > 0) {
       for (int i = 0; i < socagents.length; i++) {
         AgentComponent ac = socagents[i];
-        setComponentProperties(ac, ac.getShortName(), assemblyMatch);
+        setComponentProperties(ac, PopulateDb.getAgentAlibId(ac.getShortName()), assemblyMatch);
       }
       agents.addAll(Arrays.asList(socagents));
     }
@@ -319,7 +343,7 @@ public class OrganizerHelper {
     while (hostIter.hasNext()) {
       String hostName = (String) hostIter.next();
       HostComponent hc = experiment.addHost(hostName);
-      setComponentProperties(hc, hostName, assemblyMatch);
+      setComponentProperties(hc, PopulateDb.getHostAlibId(hostName), assemblyMatch);
     }
     mapNodesToHosts(experiment, assemblyMatch);
 
@@ -436,8 +460,6 @@ public class OrganizerHelper {
     return nodes;
   }
 
-  // Currently the passed in args are not used however I expect
-  // this to change very soon.
   private ArrayList getHosts(String trialId, String assemblyMatch) {
     ArrayList hosts = new ArrayList();
     String query = null;
@@ -562,9 +584,9 @@ public class OrganizerHelper {
 // 	  if (log.isDebugEnabled()) {
 // 	    log.debug("Adding node " + nodeName + " to experiment");
 // 	  }
-          setComponentProperties(nodeComponent, nodeName, assemblyMatch);
+          setComponentProperties(nodeComponent, PopulateDb.getNodeAlibId(nodeName), assemblyMatch);
           substitutions.put(":parent_name", nodeName);
-          substitutions.put(":comp_alib_id", nodeName);
+          substitutions.put(":comp_alib_id", PopulateDb.getNodeAlibId(nodeName));
           // Get args of the node
           Properties nodeProps = nodeComponent.getArguments();
           getComponentArguments(stmt, substitutions, nodeProps);
