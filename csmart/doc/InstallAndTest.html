@@ -105,7 +105,24 @@ very similar for WinNT) and a MYSQL database.
     If the JDK is not installed, or you have an older version, then
     you must download a new release from:
        <a href="http://java.sun.com/j2se/1.4">http://java.sun.com/j2se/1.4</a>.
-    On some Linux machines this may require an upgrade of "glibc".<br><br></li>
+    On some Linux machines this may require an upgrade of
+    "glibc".<br><br></li>
+
+    <li>Make sure that the JDK version of the java executable is found
+    first on your path, and <i>not</i> the JRE executable. On Windows
+    this usually requires editing your System PATH environment
+    variable to put $JAVA_HOME/bin on your path before
+    SYSTEMROOT/system32.  To confirm your PATH is correct, try:
+        <pre>
+	java -server -version
+	</pre>
+    You should see: 
+        <pre>
+java version "1.4.0"
+Java(TM) 2 Runtime Environment, Standard Edition (build 1.4.0-b92)
+Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
+        </pre>
+    If not, edit your PATH as described above.<br><br></li>
 
   <li>Make sure you have the JSSE 1.0.2 (Java Secure Sockets Extension) jars
     in your JDK's path:
