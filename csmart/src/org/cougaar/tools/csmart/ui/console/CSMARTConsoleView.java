@@ -26,13 +26,13 @@ import org.cougaar.tools.csmart.experiment.XMLExperiment;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
 import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
+import org.cougaar.tools.csmart.ui.util.ChooserUtils;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.border.LineBorder;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
@@ -49,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Observable;
 import java.util.Observer;
-import java.io.File;
 
 /**
  * org.cougaar.tools.csmart.ui.console
@@ -1348,57 +1347,39 @@ public class CSMARTConsoleView extends JFrame implements Observer {
   }
 
   class CreateExperiment {
+
+    boolean isValidating = false;
+    JCheckBox validate = null;
     CreateExperiment() {
       JFileChooser chooser = new JFileChooser();
-      chooser.addChoosableFileFilter(new MyFileFilter("xml", "Configuration files (*.xml)")); {
-        int option = chooser.showOpenDialog(CSMARTConsoleView.this);
-        if (option == JFileChooser.APPROVE_OPTION) {
-          XMLExperiment exp = new XMLExperiment(chooser.getSelectedFile(), CSMARTConsoleView.this);
+      validate = new JCheckBox("Validate with Schema");
+      validate.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          toggleValidate();
+        }
+      });
 
-          try {
-            exp.doParse();
-            model.setXMLFile(chooser.getSelectedFile());
-            model.setExperiment(exp);
+      ChooserUtils utils = new ChooserUtils();
+      chooser.setAccessory(validate);
+      chooser.addChoosableFileFilter(utils.getFileFilter("xml", "Configuration files (*.xml)"));
+      int option = chooser.showOpenDialog(CSMARTConsoleView.this);
+      if (option == JFileChooser.APPROVE_OPTION) {
+        XMLExperiment exp = new XMLExperiment(chooser.getSelectedFile(), CSMARTConsoleView.this);
 
-          } catch(Exception e) {
-            JOptionPane.showMessageDialog(CSMARTConsoleView.this, "Parse Failed, or cancel was pushed. " +
-                "See logs for details", "Failure", JOptionPane.ERROR_MESSAGE);
-          }
+        try {
+          exp.doParse(isValidating);
+          model.setXMLFile(chooser.getSelectedFile());
+          model.setExperiment(exp);
+
+        } catch(Exception e) {
+          JOptionPane.showMessageDialog(CSMARTConsoleView.this, "Parse Failed, or cancel was pushed. " +
+              "See logs for details", "Failure", JOptionPane.ERROR_MESSAGE);
         }
       }
     }
-  }
 
-  class MyFileFilter extends FileFilter {
-    String [] extensions;
-    String description;
-
-    public MyFileFilter(String ext, String desc) {
-      this (new String[] {ext}, desc);
-    }
-
-    public MyFileFilter(String[] exts, String desc) {
-      extensions = new String[exts.length];
-      for(int i= exts.length -1; i >= 0; i--) {
-        extensions[i] = exts[i].toLowerCase();
-      }
-      description = (desc == null ? exts[0] + " files" : desc);
-    }
-
-    public boolean accept(File f) {
-      if(f.isDirectory()) { return true; }
-
-      String name = f.getName().toLowerCase();
-      for(int i = extensions.length-1; i >=0; i--) {
-        if(name.endsWith(extensions[i])) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    public String getDescription() {
-      return description;
+    private void toggleValidate() {
+      isValidating = validate.isSelected();
     }
   }
 }
