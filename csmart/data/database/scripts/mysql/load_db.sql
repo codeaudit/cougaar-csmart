@@ -1,3 +1,10 @@
+DROP TABLE IF EXISTS v4_asb_thread;
+DROP TABLE IF EXISTS v4_expt_trial_metric;
+DROP TABLE IF EXISTS v4_expt_trial_metric_prop;
+DROP TABLE IF EXISTS v4_lib_machine;
+DROP TABLE IF EXISTS v4_lib_oplan_agent_attr_ref;
+DROP TABLE IF EXISTS v4_lib_optempo_ref;
+DROP TABLE IF EXISTS v6_cfw_org_group_og_member;
 
 ################################################################
 
@@ -272,28 +279,6 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_oplan_agent_attr.csv'
     (ASSEMBLY_ID,OPLAN_ID,COMPONENT_ALIB_ID,COMPONENT_ID,START_CDAY,ATTRIBUTE_NAME,END_CDAY,ATTRIBUTE_VALUE);
 
 #
-# Table structure for table 'v4_asb_thread'
-#
-
-DROP TABLE IF EXISTS v4_asb_thread;
-CREATE TABLE v4_asb_thread (
-  ASSEMBLY_ID varchar(50) binary NOT NULL default '',
-  THREAD_ID varchar(50) binary NOT NULL default '',
-  PRIMARY KEY  (ASSEMBLY_ID,THREAD_ID),
-  KEY ASSEMBLY_ID (ASSEMBLY_ID)
-) TYPE=MyISAM;
-
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_thread.csv'
-    INTO TABLE v4_asb_thread
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (ASSEMBLY_ID,THREAD_ID);
-
-#
 # Table structure for table 'v4_expt_experiment'
 #
 
@@ -392,49 +377,6 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_config_assembly.csv'
     IGNORE 1 LINES
     (TRIAL_ID,ASSEMBLY_ID,EXPT_ID,DESCRIPTION);
 
-#
-# Table structure for table 'v4_expt_trial_metric'
-#
-
-DROP TABLE IF EXISTS v4_expt_trial_metric;
-CREATE TABLE v4_expt_trial_metric (
-  TRIAL_ID varchar(50) binary NOT NULL default '',
-  METRIC_ID varchar(50) binary NOT NULL default '',
-  EXPT_ID varchar(50) binary default NULL,
-  PRIMARY KEY  (TRIAL_ID,METRIC_ID)
-) TYPE=MyISAM;
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_metric.csv'
-    INTO TABLE v4_expt_trial_metric
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (TRIAL_ID,METRIC_ID,EXPT_ID);
-
-#
-# Table structure for table 'v4_expt_trial_metric_prop'
-#
-
-DROP TABLE IF EXISTS v4_expt_trial_metric_prop;
-CREATE TABLE v4_expt_trial_metric_prop (
-  TRIAL_ID varchar(50) binary NOT NULL default '',
-  METRIC_ID varchar(50) binary NOT NULL default '',
-  PROP_NAME varchar(100) binary NOT NULL default '',
-  PROP_VALUE varchar(100) binary default NULL,
-  PRIMARY KEY  (TRIAL_ID,METRIC_ID,PROP_NAME)
-) TYPE=MyISAM;
-
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_metric_prop.csv'
-    INTO TABLE v4_expt_trial_metric_prop
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (TRIAL_ID,METRIC_ID,PROP_NAME,PROP_VALUE);
 
 #
 # Table structure for table 'v4_expt_trial_mod_recipe'
@@ -624,31 +566,6 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_component_arg.csv'
     (COMPONENT_LIB_ID,ARGUMENT);
 
 #
-# Table structure for table 'v4_lib_machine'
-#
-
-DROP TABLE IF EXISTS v4_lib_machine;
-CREATE TABLE v4_lib_machine (
-  COMPONENT_ALIB_ID varchar(150) binary NOT NULL default '',
-  MACHINE_NAME varchar(50) binary default NULL,
-  IP_ADDRESS varchar(50) binary default NULL,
-  OPERATING_SYSTEM varchar(50) binary default NULL,
-  DESCRIPTION varchar(100) binary default NULL,
-  UNIQUE KEY PK_V4_LIB_MACHINE (COMPONENT_ALIB_ID),
-  KEY COMPONENT_ALIB_ID (COMPONENT_ALIB_ID)
-) TYPE=MyISAM;
-
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_machine.csv'
-    INTO TABLE v4_lib_machine
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (COMPONENT_ALIB_ID,MACHINE_NAME,IP_ADDRESS,OPERATING_SYSTEM,DESCRIPTION);
-
-#
 # Table structure for table 'v4_lib_mod_recipe'
 #
 
@@ -696,47 +613,6 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_mod_recipe_arg.csv'
     IGNORE 1 LINES
     (MOD_RECIPE_LIB_ID,ARG_NAME,ARG_ORDER,ARG_VALUE);
 
-#
-# Table structure for table 'v4_lib_oplan_agent_attr_ref'
-#
-
-DROP TABLE IF EXISTS v4_lib_oplan_agent_attr_ref;
-CREATE TABLE v4_lib_oplan_agent_attr_ref (
-  ATTRIBUTE_NAME varchar(50) binary NOT NULL default '',
-  DESCRIPTION varchar(50) binary default NULL,
-  UNIQUE KEY PK_V4_LIB_OPLAN_AGENT_ATTR_REF (ATTRIBUTE_NAME)
-) TYPE=MyISAM;
-
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_oplan_agent_attr_ref.csv'
-    INTO TABLE v4_lib_oplan_agent_attr_ref
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (ATTRIBUTE_NAME,DESCRIPTION);
-
-#
-# Table structure for table 'v4_lib_optempo_ref'
-#
-
-DROP TABLE IF EXISTS v4_lib_optempo_ref;
-CREATE TABLE v4_lib_optempo_ref (
-  OPTEMPO varchar(50) binary NOT NULL default '',
-  DESCRIPTION varchar(50) binary default NULL,
-  UNIQUE KEY PK_V4_LIB_OPTEMPO_REF (OPTEMPO)
-) TYPE=MyISAM;
-
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_optempo_ref.csv'
-    INTO TABLE v4_lib_optempo_ref
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (OPTEMPO,DESCRIPTION);
 
 #
 # Table structure for table 'v4_lib_pg_attribute'
@@ -1002,29 +878,6 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan_og_attr.csv'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
     (CFW_ID,OPLAN_ID,ORG_GROUP_ID,START_CDAY,ATTRIBUTE_NAME,END_CDAY,ATTRIBUTE_VALUE);
-
-#
-# Table structure for table 'v6_cfw_org_group_og_member'
-#
-
-DROP TABLE IF EXISTS v6_cfw_org_group_og_member;
-CREATE TABLE v6_cfw_org_group_og_member (
-  CFW_ID varchar(50) binary NOT NULL default '',
-  ORG_GROUP_ID varchar(50) binary NOT NULL default '',
-  MEMBER_ORG_GROUP_ID varchar(50) binary NOT NULL default '',
-  PRIMARY KEY  (CFW_ID,ORG_GROUP_ID,MEMBER_ORG_GROUP_ID),
-  KEY ORG_GROUP_ID (ORG_GROUP_ID),
-  KEY CFW_ID (CFW_ID)
-) TYPE=MyISAM;
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_group_og_member.csv'
-    INTO TABLE v6_cfw_org_group_og_member
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (CFW_ID,ORG_GROUP_ID,MEMBER_ORG_GROUP_ID);
 
 #
 # Table structure for table 'v6_cfw_org_group_org_member'

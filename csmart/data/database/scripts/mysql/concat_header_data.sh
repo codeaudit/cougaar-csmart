@@ -1,4 +1,3 @@
-
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/alib_component_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/alib_component_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/alib_component.csv
 
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/asb_agent_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/asb_agent_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/asb_agent.csv
@@ -12,13 +11,10 @@ cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/asb_component_arg_heade
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/asb_component_hierarchy_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/asb_component_hierarchy_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/asb_component_hierarchy.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/asb_oplan_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/asb_oplan_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/asb_oplan.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/asb_oplan_agent_attr_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/asb_oplan_agent_attr_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/asb_oplan_agent_attr.csv
-cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/asb_thread_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/asb_thread_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/asb_thread.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/expt_experiment_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/expt_experiment_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/expt_experiment.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/expt_trial_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/expt_trial_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/expt_trial.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/expt_trial_assembly_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/expt_trial_assembly_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/expt_trial_assembly.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/expt_trial_config_assembly_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/expt_trial_config_assembly_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/expt_trial_config_assembly.csv
-cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/expt_trial_metric_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/expt_trial_metric_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/expt_trial_metric.csv
-cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/expt_trial_metric_prop_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/expt_trial_metric_prop_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/expt_trial_metric_prop.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/expt_trial_mod_recipe_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/expt_trial_mod_recipe_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/expt_trial_mod_recipe.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/expt_trial_org_mult_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/expt_trial_org_mult_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/expt_trial_org_mult.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/expt_trial_thread_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/expt_trial_thread_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/expt_trial_thread.csv
@@ -27,11 +23,8 @@ cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/lib_agent_org_header.cs
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/lib_clone_set_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/lib_clone_set_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/lib_clone_set.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/lib_component_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/lib_component_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/lib_component.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/lib_component_arg_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/lib_component_arg_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/lib_component_arg.csv
-cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/lib_machine_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/lib_machine_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/lib_machine.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/lib_mod_recipe_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/lib_mod_recipe_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/lib_mod_recipe.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/lib_mod_recipe_arg_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/lib_mod_recipe_arg_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/lib_mod_recipe_arg.csv
-cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/lib_oplan_agent_attr_ref_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/lib_oplan_agent_attr_ref_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/lib_oplan_agent_attr_ref.csv
-cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/lib_optempo_ref_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/lib_optempo_ref_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/lib_optempo_ref.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/lib_pg_attribute_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/lib_pg_attribute_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/lib_pg_attribute.csv
 
 
@@ -45,7 +38,6 @@ cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/cfw_oplan_header.csv ${
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/cfw_oplan_activity_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/cfw_oplan_activity_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/cfw_oplan_activity.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/cfw_oplan_loc_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/cfw_oplan_loc_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/cfw_oplan_loc.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/cfw_oplan_og_attr_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/cfw_oplan_og_attr_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/cfw_oplan_og_attr.csv
-cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/cfw_org_group_og_member_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/cfw_org_group_og_member_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/cfw_org_group_og_member.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/cfw_org_group_org_member_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/cfw_org_group_org_member_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/cfw_org_group_org_member.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/cfw_org_hierarchy_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/cfw_org_hierarchy_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/cfw_org_hierarchy.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/cfw_org_list_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/cfw_org_list_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/cfw_org_list.csv

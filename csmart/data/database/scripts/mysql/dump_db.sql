@@ -60,12 +60,6 @@ FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY "\n" FROM v4_asb_oplan_agent_attr;
 
-SELECT ASSEMBLY_ID,THREAD_ID 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/asb_thread_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY "\n" FROM v4_asb_thread;
-
 SELECT EXPT_ID,DESCRIPTION,NAME,CFW_GROUP_ID  
 INTO OUTFILE ":cip/csmart/data/database/raw_data/expt_experiment_data.csv" 
 FIELDS TERMINATED BY ',' 
@@ -89,18 +83,6 @@ INTO OUTFILE ":cip/csmart/data/database/raw_data/expt_trial_config_assembly_data
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY "\n" FROM v4_expt_trial_config_assembly;
-
-SELECT TRIAL_ID,METRIC_ID,EXPT_ID 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/expt_trial_metric_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY "\n" FROM v4_expt_trial_metric;
-
-SELECT TRIAL_ID,METRIC_ID,PROP_NAME,PROP_VALUE  
-INTO OUTFILE ":cip/csmart/data/database/raw_data/expt_trial_metric_prop_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY "\n" FROM v4_expt_trial_metric_prop;
 
 SELECT TRIAL_ID,MOD_RECIPE_LIB_ID,RECIPE_ORDER,EXPT_ID 
 INTO OUTFILE ":cip/csmart/data/database/raw_data/expt_trial_mod_recipe_data.csv" 
@@ -150,12 +132,6 @@ FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY "\n" FROM v4_lib_component_arg;
 
-SELECT COMPONENT_ALIB_ID,MACHINE_NAME,IP_ADDRESS,OPERATING_SYSTEM,DESCRIPTION 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/lib_machine_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY "\n" FROM v4_lib_machine;
-
 SELECT MOD_RECIPE_LIB_ID,NAME,JAVA_CLASS,DESCRIPTION  
 INTO OUTFILE ":cip/csmart/data/database/raw_data/lib_mod_recipe_data.csv" 
 FIELDS TERMINATED BY ',' 
@@ -167,18 +143,6 @@ INTO OUTFILE ":cip/csmart/data/database/raw_data/lib_mod_recipe_arg_data.csv"
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY "\n" FROM v4_lib_mod_recipe_arg;
-
-SELECT ATTRIBUTE_NAME,DESCRIPTION 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/lib_oplan_agent_attr_ref_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY "\n" FROM v4_lib_oplan_agent_attr_ref;
-
-SELECT OPTEMPO,DESCRIPTION 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/lib_optempo_ref_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY "\n" FROM v4_lib_optempo_ref;
 
 SELECT PG_ATTRIBUTE_LIB_ID,PG_NAME,ATTRIBUTE_NAME,ATTRIBUTE_TYPE,AGGREGATE_TYPE 
 INTO OUTFILE ":cip/csmart/data/database/raw_data/lib_pg_attribute_data.csv" 
@@ -250,12 +214,6 @@ INTO OUTFILE ":cip/csmart/data/database/raw_data/cfw_oplan_og_attr_data.csv"
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY "\n" FROM v6_cfw_oplan_og_attr;
-
-SELECT CFW_ID,ORG_GROUP_ID,MEMBER_ORG_GROUP_ID 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/cfw_org_group_og_member_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY "\n" FROM v6_cfw_org_group_og_member;
 
 SELECT CFW_ID,ORG_GROUP_ID,ORG_ID 
 INTO OUTFILE ":cip/csmart/data/database/raw_data/cfw_org_group_org_member_data.csv" 
