@@ -21,12 +21,16 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.lang.reflect.Constructor;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.util.*;
+
+import org.cougaar.util.log.Logger;
 
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.DBUtils;
@@ -44,10 +48,7 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 //import org.cougaar.tools.csmart.society.cmt.CMTSociety;
 import org.cougaar.tools.csmart.society.db.SocietyDBComponent;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 
 /**
  * Helper functions for manipulating objects in the Organizer
@@ -314,7 +315,7 @@ public class OrganizerHelper {
       Statement stmt = conn.createStatement();
       query = DBUtils.getQuery("queryHostNodes", substitutions);
       if(log.isDebugEnabled()) {
-        log.debug(query);
+        log.debug("mapNodesToHosts: " + query);
       }
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
@@ -373,9 +374,9 @@ public class OrganizerHelper {
         // Query All Agents for each node.
         // Loop Query for every node.
         query = DBUtils.getQuery("queryComponents", substitutions);
-        if(log.isDebugEnabled()) {
-          log.debug("Organizer: Get agents: " + query);
-        }
+//         if(log.isDebugEnabled()) {
+//           log.debug("Organizer: Get agents: " + query);
+//         }
         rs = stmt.executeQuery(query);
         while(rs.next()) {
           // Find AgentComponent.
@@ -452,14 +453,14 @@ public class OrganizerHelper {
           String pvalue = param.substring(ix2 + 1);
           Property prop = cc.getProperty(pname);
           if (prop == null) {
-            if(log.isDebugEnabled()) {
-              log.debug("adding " + pname + "=" + pvalue);
-            }
+//             if(log.isDebugEnabled()) {
+//               log.debug("adding " + pname + "=" + pvalue);
+//             }
             cc.addProperty(pname, pvalue);
           } else {
-            if(log.isDebugEnabled()) {
-              log.debug("setting " + pname + "=" + pvalue);
-            }
+//             if(log.isDebugEnabled()) {
+//               log.debug("setting " + pname + "=" + pvalue);
+//             }
             prop.setValue(pvalue);
           }
         }
