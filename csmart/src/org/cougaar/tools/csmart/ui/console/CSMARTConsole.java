@@ -26,6 +26,7 @@ import java.awt.event.*;
 import java.beans.PropertyVetoException;
 import java.io.*;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -80,6 +81,7 @@ public class CSMARTConsole extends JFrame {
   Hashtable nodeListeners; // ConsoleNodeListener referenced by node name
   Hashtable nodePanes;     // ConsoleTextPane referenced by node name
   String notifyCondition; // if this appears in node stdout, notify user
+  boolean notifyOnStandardError = false; // if stderr appears, notify user
   int viewSize = DEFAULT_VIEW_SIZE; // number of characters in node view
   ConsoleNodeOutputFilter displayFilter;
 
@@ -98,7 +100,7 @@ public class CSMARTConsole extends JFrame {
 
   // top level menus and menu items
   private static final String FILE_MENU = "File";
-  private static final String EXIT_MENU_ITEM = "Exit";
+  private static final String EXIT_MENU_ITEM = "Close";
   private static final String VIEW_MENU = "View";
   private static final String SHOW_LOG_MENU_ITEM = "Show Entire Log";
   private static final String SET_VIEW_SIZE_MENU_ITEM = "Set View Size...";
@@ -203,6 +205,7 @@ public class CSMARTConsole extends JFrame {
         formatMenuItem_actionPerformed();
       }
     });
+    formatMenuItem.setEnabled(false);
     viewMenu.add(formatMenuItem);
 
     JMenu notifyMenu = new JMenu(NOTIFY_MENU);
@@ -324,12 +327,6 @@ public class CSMARTConsole extends JFrame {
     trialProgressBar.setValue(0);
     trialProgressBar.setStringPainted(true);
     JPanel progressPanel = new JPanel(new GridBagLayout());
-    progressPanel.add(trialProgressBar,
-		      new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
-					     GridBagConstraints.WEST,
-					     GridBagConstraints.HORIZONTAL,
-                                             new Insets(5, 0, 0, 0),
-					     0, 0));
     final JLabel trialTimeLabel = new JLabel("Trial: 00:00:00");
     final JLabel experimentTimeLabel = new JLabel("Experiment: 00:00:00");
     myNumberFormat = new DecimalFormat("00");
@@ -339,6 +336,12 @@ public class CSMARTConsole extends JFrame {
     if (!experiment.isInDatabase()) {
       trialProgressPanel.add(trialTimeLabel);
       trialProgressPanel.add(Box.createRigidArea(HGAP10));
+      progressPanel.add(trialProgressBar,
+		      new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
+					     GridBagConstraints.WEST,
+					     GridBagConstraints.HORIZONTAL,
+                                             new Insets(5, 0, 0, 0),
+					     0, 0));
     }
     trialProgressPanel.add(experimentTimeLabel);
     progressPanel.add(trialProgressPanel,
@@ -852,6 +855,8 @@ public class CSMARTConsole extends JFrame {
       removeStatusButton(nodeName);
       oldNodes.remove(nodeComponent);
     }
+    nodeListeners.clear();
+    nodePanes.clear();
     JInternalFrame[] frames = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
       String s = frames[i].getTitle();
@@ -945,8 +950,8 @@ public class CSMARTConsole extends JFrame {
     for (Iterator i = c.iterator(); i.hasNext(); )
       ((ConsoleNodeListener)i.next()).closeLogFile();
     saveResults();
-    nodeListeners.clear();
-    nodePanes.clear();
+    //    nodeListeners.clear();
+    //    nodePanes.clear();
     updateExperimentControls(experiment, false);
   }
 
@@ -1040,6 +1045,8 @@ public class CSMARTConsole extends JFrame {
     if (notifyCondition != null)
       textPane.setNotifyCondition(notifyCondition);
     ((ConsoleStyledDocument)textPane.getStyledDocument()).setBufferSize(viewSize);
+    if (notifyOnStandardError)
+      statusButton.setNotifyOnStandardError(true);
     if (displayFilter != null)
       ((ConsoleNodeListener)listener).setFilter(displayFilter);
     nodeListeners.put(nodeName, listener);
@@ -1068,6 +1075,12 @@ public class CSMARTConsole extends JFrame {
       properties.put("org.cougaar.configuration.password", 
                      CSMART.getDatabaseUserPassword());
       properties.put("org.cougaar.experiment.id", experiment.getTrialID());
+    }
+    try {
+      properties.put("env.DISPLAY", InetAddress.getLocalHost().getHostName() +
+                     ":0.0");
+    } catch (UnknownHostException uhe) {
+      System.out.println(uhe);
     }
     // set configuration file names in nodesToRun
     for (int i = 0; i < nodesToRun.length; i++) 
@@ -1420,17 +1433,60 @@ public class CSMARTConsole extends JFrame {
    */
 
   private void setNotifyMenuItem_actionPerformed() {
-    String s = 
-      (String)JOptionPane.showInputDialog(this,
-                                          "Search string:",
-                                          "Notification",
-                                          JOptionPane.QUESTION_MESSAGE,
-                                          null, null, notifyCondition);
+//      String s = 
+//        (String)JOptionPane.showInputDialog(this,
+//                                            "Search string:",
+//                                            "Notification",
+//                                            JOptionPane.QUESTION_MESSAGE,
+//                                            null, null, notifyCondition);
+//      if (s == null || s.length() == 0)
+//        notifyCondition = null;
+//      else
+//        notifyCondition = s;
+    JPanel notifyPanel = new JPanel(new GridBagLayout());
+    int x = 0;
+    int y = 0;
+    notifyPanel.add(new JLabel("Search string:"),
+                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.NONE,
+                                           new Insets(10, 0, 5, 5),
+                                           0, 0));
+    JTextField notifyField = 
+      new JTextField(20);
+    notifyField.setText(notifyCondition);
+    notifyPanel.add(notifyField,
+                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(10, 0, 5, 0),
+                                           0, 0));
+    x = 0;
+    JCheckBox stdErrorCB = 
+      new JCheckBox("Notify on Standard Error", notifyOnStandardError);
+    notifyPanel.add(stdErrorCB,
+                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.NONE,
+                                           new Insets(10, 0, 5, 5),
+                                           0, 0));
+    int result = JOptionPane.showConfirmDialog(this, notifyPanel, 
+                                               "Notification",
+                                               JOptionPane.OK_CANCEL_OPTION);
+    if (result == JOptionPane.CANCEL_OPTION)
+      return;
+    String s = notifyField.getText();
     if (s == null || s.length() == 0)
       notifyCondition = null;
     else
       notifyCondition = s;
     setNotification();
+    notifyOnStandardError = stdErrorCB.isSelected();
+    Enumeration buttons = statusButtons.getElements();
+    while (buttons.hasMoreElements()) {
+      NodeStatusButton button = (NodeStatusButton)buttons.nextElement();
+      button.setNotifyOnStandardError(notifyOnStandardError);
+    }
   }
 
   /**

@@ -420,8 +420,6 @@ public class ConsoleNodeListener implements NodeEventListener {
   public ConsoleNodeOutputFilter getFilter() {
     return filter;
   }
-
-
 }
 
 

@@ -73,7 +73,7 @@ public class Organizer extends JScrollPane {
   private DefaultMutableTreeNode root;
   DefaultTreeModel model;
   private OrganizerTree workspace;
-
+  private Organizer organizer;
   private Map dbExptMap = new HashMap();
   private Map dbTrialMap = new HashMap();
 
@@ -144,8 +144,20 @@ public class Organizer extends JScrollPane {
   private Action[] newExperimentActions = {
     new AbstractAction("From Database") {
 	public void actionPerformed(ActionEvent e) {
-	  selectExperimentFromDatabase(popupNode);
-	}
+          GUIUtils.timeConsumingTaskStart(organizer);
+          try {
+            new Thread("") {
+              public void run() {
+                selectExperimentFromDatabase(popupNode);
+                GUIUtils.timeConsumingTaskEnd(organizer);
+              }
+            }.start();
+          } catch (RuntimeException re) {
+            System.out.println("Runtime exception creating experiment: " + re);
+            re.printStackTrace();
+            GUIUtils.timeConsumingTaskEnd(organizer);
+          }
+  	}
     },
     new AbstractAction("Built In") {
 	public void actionPerformed(ActionEvent e) {
@@ -384,6 +396,7 @@ public class Organizer extends JScrollPane {
   // Constructors
   public Organizer(CSMART csmart) {
     this(csmart, null);
+    organizer = this;
   }
   
   public Organizer(CSMART csmart, String workspaceFileName) {
@@ -862,9 +875,30 @@ public class Organizer extends JScrollPane {
 	update();
       }
     };
-  
+
+  /**
+   * Call update if anything changed.
+   * Also handle experiment name having been changed:
+   *   update the name of the experiment in the tree
+   *   update the name of the experiment in the set of experiment names
+   *    (currently done by re-initting the experiment names)
+   */
+
   ModificationListener myModificationListener = new ModificationListener() {
       public void modified(ModificationEvent event) {
+        if (event.getSource() instanceof Experiment) {
+          model.nodeChanged(findNode(event.getSource()));
+          try {
+            Class[] noTypes = new Class[0];
+            experimentNames.clear();
+            experimentNames.init(getLeaves(Experiment.class, root),
+                Experiment.class.getMethod("getExperimentName", noTypes));
+          } catch (NoSuchMethodException nsme) {
+            nsme.printStackTrace();
+          } catch (SecurityException se) {
+            se.printStackTrace();
+          }
+        }
 	update();
       }
     };
@@ -1335,38 +1369,8 @@ public class Organizer extends JScrollPane {
     metricNames.remove(((MetricComponent) node.getUserObject()).getMetricName());
   }
 
+  // CAUTION: this runs in a non-swing thread
   private void selectExperimentFromDatabase(DefaultMutableTreeNode node) {
-    // TODO: put up wait cursor while accessing database
-    // the following does NOT work as the display is not updated
-    // when the wait cursor is put up
-//      final java.awt.Component c = this;
-//      // put up wait cursor and block input
-//      System.out.println("PUTTING UP WAIT CURSOR");
-//      GUIUtils.timeConsumingTaskStart(this);
-//      try {
-//        new Thread("") {
-//          public void run() {
-//            // select experiment from database
-//            synchronized (sharedObject) {
-//            experimentNamesHT = ExperimentDB.getExperimentNames();
-//            System.out.println("Experiment names: " + experimentNamesHT.keySet().size());
-//            System.out.println("TAKING DOWN WAIT CURSOR");
-//            GUIUtils.timeConsumingTaskEnd(c);
-//            sharedObject.notifyAll();
-//            }
-//          }
-//        }.start();
-//      } catch (RuntimeException e) {
-//        System.out.println("Runtime exception creating experiment: " + e);
-//        e.printStackTrace();
-//      }
-//      try {
-//        synchronized (sharedObject) {
-//          sharedObject.wait();
-//        }
-//      } catch (InterruptedException ie) {
-//        System.out.println(ie);
-//      }
     experimentNamesHT = ExperimentDB.getExperimentNames();
     if (experimentNamesHT == null) {
       System.out.println("no experiment names");
@@ -1403,48 +1407,33 @@ public class Organizer extends JScrollPane {
         return;
     }
 
-    // if defining new experiment, select society template next
-//      if (!((ArrayList)experimentNames).contains(experimentName)) {
-//        societyTemplates = ExperimentDB.getSocietyTemplates();
-//        Set societyNames = societyTemplates.keySet();
-//        JComboBox societyCB = new JComboBox(societyNames.toArray());
-//        societyCB.setEditable(false);
-//        JPanel societyPanel = new JPanel();
-//        societyPanel.add(new JLabel("Select Society Template:"));
-//        societyPanel.add(societyCB);
-//        result = 
-//          JOptionPane.showConfirmDialog(null, societyPanel, "Society Template",
-//                                        JOptionPane.OK_CANCEL_OPTION,
-//                                        JOptionPane.PLAIN_MESSAGE);
-//        if (result != JOptionPane.OK_OPTION)
-//          return null;
-//        societyTemplateName = societyCB.getSelectedItem();
-//      }
-
     // get threads and groups information
     CMTDialog dialog = 
       new CMTDialog(csmart, this, experimentName, experimentId);
+    dialog.processResults(); // a potentially long process
     final String trialId = dialog.getTrialId();
     if (trialId == null)
       return;
     // final arguments needed to run in separate thread
-    final DefaultMutableTreeNode parentNode = node;
-    final String newExperimentName = dialog.getExperimentName();
-    final String newExperimentId = dialog.getExperimentId();
-    final boolean isCloned = dialog.isCloned();
+//      final DefaultMutableTreeNode parentNode = node;
+//      final String newExperimentName = dialog.getExperimentName();
+//      final String newExperimentId = dialog.getExperimentId();
+//      final boolean isCloned = dialog.isCloned();
     // put up wait cursor and block input
-    GUIUtils.timeConsumingTaskStart(this);
-    try {
-      new Thread("") {
-        public void run() {
-          createCMTExperiment(parentNode, newExperimentName, newExperimentId, 
-                              trialId, isCloned);
-        }
-      }.start();
-    } catch (RuntimeException e) {
-      System.err.println("Runtime exception creating experiment: " + e);
-      e.printStackTrace();
-    }
+//      GUIUtils.timeConsumingTaskStart(this);
+//      try {
+//        new Thread("") {
+//          public void run() {
+//            createCMTExperiment(parentNode, newExperimentName, newExperimentId,
+//                                trialId, isCloned);
+//          }
+//        }.start();
+//      } catch (RuntimeException e) {
+//        System.err.println("Runtime exception creating experiment: " + e);
+//        e.printStackTrace();
+//      }
+    createCMTExperiment(node, dialog.getExperimentName(),
+                        dialog.getExperimentId(), trialId, dialog.isCloned());
   }
 
   /**
@@ -1675,25 +1664,23 @@ public class Organizer extends JScrollPane {
       experiment.addHost((String)hostIter.next());
     }
     mapNodesToHosts(experiment, assemblyMatch);
-    final DefaultMutableTreeNode experimentNode = node;
-    final Experiment newExperiment = experiment;
-    final java.awt.Component glass = 
-      ((JFrame)SwingUtilities.getRoot(this)).getGlassPane();
-    final java.awt.Component c = this;
-    try {
-      SwingUtilities.invokeLater(new Runnable() {
-        public void run() {
-          DefaultMutableTreeNode newNode =
-            addExperimentToWorkspace(newExperiment, experimentNode);
-          workspace.setSelection(newNode);
-          // restore default cursor and allow input
-          GUIUtils.timeConsumingTaskEnd(c);
-        }
-      });
-    } catch (RuntimeException e) {
-      System.err.println(e);
-      e.printStackTrace();
-    }
+    workspace.setSelection(addExperimentToWorkspace(experiment, node));
+//      final DefaultMutableTreeNode experimentNode = node;
+//      final Experiment newExperiment = experiment;
+//      try {
+//        SwingUtilities.invokeLater(new Runnable() {
+//          public void run() {
+//            DefaultMutableTreeNode newNode =
+//              addExperimentToWorkspace(newExperiment, experimentNode);
+//            workspace.setSelection(newNode);
+//            // restore default cursor and allow input
+//            GUIUtils.timeConsumingTaskEnd(organizer);
+//          }
+//        });
+//      } catch (RuntimeException e) {
+//        System.err.println(e);
+//        e.printStackTrace();
+//      }
   }
 
   /**

@@ -134,6 +134,8 @@ public class ExperimentBuilder extends JFrame {
     // If the experiment now has a society and is otherwise runnable, say so
     if (experiment.getSocietyComponentCount() > 0)
       experiment.setRunnable(true);
+    // optionally save host-configuration-agent mapping if it was modified
+    hostConfigurationBuilder.save();
   }
 
   /**

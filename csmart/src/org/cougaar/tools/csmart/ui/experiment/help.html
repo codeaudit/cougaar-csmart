@@ -147,10 +147,10 @@ A pop-up dialog is displayed in which to enter the name of the host.</li>
 <li>
 Note that hosts named "localhost", or host names that do not include the
 full domain name (ie cougaar.org), sometimes fail (due to an RMI bug).
-If you see:<br>
+The error message:<br>
 
 <pre>!Waiting for //127.0.0.1:8888/NameService!.!.!.</pre>
-this usually indicates a problem. Try using an IP address or fully qualified
+usually indicates a problem in specifying the host name. Try using an IP address or fully qualified
 host name.</li></ul></li>
 
 <li>
@@ -165,6 +165,7 @@ tree to the nodes created in the previous step. To select a group of agents,
 left click on the first agent to select, and shift left click on the last
 agent.</li>
 </ol>
+Using the pop-up menus, additional information can be added to the host and node.  This information includes: Host Description, Host Type, Host Location, and Node Description.  This information is for the convenience of the user; it does not affect running the experiment.  This information can be displayed using the Info menu item on the Node menu in the Node window in the Experiment Controller.
 <h4>Trials</h4>
 This table displays the values that will be used for each of the Unbound 
 Properties for each trial.  To delete a Trial, right click on the Trial row;

@@ -57,7 +57,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String CUT_ACTION = "Cut";
   private static final String COPY_ACTION = "Copy";
   private static final String PASTE_ACTION = "Paste";
-  private static final String CLEAR_ACTION = "Clear";
   private static final String SELECT_ALL_ACTION = "Select All";
   private static final String FIND_ACTION = "Find...";
   private static final String FIND_NEXT_ACTION = "Find Next";
@@ -191,13 +190,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
     mi = editMenu.add(pasteAction);
     mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
                                              Event.CTRL_MASK));
-    Action clearAction = new AbstractAction(CLEAR_ACTION) {
-      public void actionPerformed(ActionEvent e) {
-        clear_actionPerformed();
-      }
-    };
-    clearAction.setEnabled(false);
-    editMenu.add(clearAction);
     editMenu.addSeparator();
     Action selectAllAction = new AbstractAction(SELECT_ALL_ACTION) {
       public void actionPerformed(ActionEvent e) {
@@ -281,8 +273,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
       }
     };
     mi = notifyMenu.add(notifyAction);
-    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
-                                             Event.CTRL_MASK));
     Action removeNotifyAction = new AbstractAction(REMOVE_NOTIFY_ACTION) {
       public void actionPerformed(ActionEvent e) {
 	removeNotify_actionPerformed();
@@ -295,7 +285,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
       }
     };
     mi = notifyMenu.add(notifyNextAction);
-    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
+    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
                                              Event.CTRL_MASK));
     Action resetNotifyAction = new AbstractAction(RESET_NOTIFY_ACTION) {
       public void actionPerformed(ActionEvent e) {
@@ -336,9 +326,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
            FIND_NEXT_ACTION);
     am.put(FIND_NEXT_ACTION, findNextAction);
     im.put(KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK), 
-           SET_NOTIFY_ACTION);
-    am.put(SET_NOTIFY_ACTION, notifyAction);
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK), 
            NOTIFY_NEXT_ACTION);
     am.put(NOTIFY_NEXT_ACTION, notifyNextAction);
   }
@@ -630,9 +617,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
     consoleTextPane.paste();
   }
 
-  private void clear_actionPerformed() {
-  }
-
   /**
    * Select everything in the node's output pane.
    * Note that the focus must be requested before the select action will work.
@@ -689,24 +673,53 @@ public class ConsoleInternalFrame extends JInternalFrame {
    */
 
   private void notify_actionPerformed() {
-    String s = 
-      (String)JOptionPane.showInputDialog(this,
-                                          "Search string:",
-                                          "Notification",
-                                          JOptionPane.QUESTION_MESSAGE,
-                                          null, null, 
-                                          consoleTextPane.getNotifyCondition());
-    setNotification(s);
+    JPanel notifyPanel = new JPanel(new GridBagLayout());
+    int x = 0;
+    int y = 0;
+    notifyPanel.add(new JLabel("Search string:"),
+                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.NONE,
+                                           new Insets(10, 0, 5, 5),
+                                           0, 0));
+    JTextField notifyField = 
+      new JTextField(20);
+    notifyField.setText(consoleTextPane.getNotifyCondition());
+    notifyPanel.add(notifyField,
+                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.HORIZONTAL,
+                                           new Insets(10, 0, 5, 0),
+                                           0, 0));
+    x = 0;
+    JCheckBox stdErrorCB = 
+      new JCheckBox("Notify on Standard Error", 
+             ((NodeStatusButton)statusButton).getNotifyOnStandardError());
+    notifyPanel.add(stdErrorCB,
+                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                           GridBagConstraints.WEST,
+                                           GridBagConstraints.NONE,
+                                           new Insets(10, 0, 5, 5),
+                                           0, 0));
+//      String s = 
+//        (String)JOptionPane.showInputDialog(this,
+//                                            "Search string:",
+//                                            "Notification",
+//                                            JOptionPane.QUESTION_MESSAGE,
+//                                            null, null, 
+//                                          consoleTextPane.getNotifyCondition());
+//    setNotification(s);
+    int result = JOptionPane.showConfirmDialog(this, notifyPanel, 
+                                               "Notification",
+                                               JOptionPane.OK_CANCEL_OPTION);
+    if (result == JOptionPane.CANCEL_OPTION)
+      return;
+    setNotification(notifyField.getText());
+    ((NodeStatusButton)statusButton).setNotifyOnStandardError(stdErrorCB.isSelected());
   }
 
   private void setNotification(String s) {
     String notifyCondition = null;
-    //    if (s == null || s.length() == 0) {
-      //      notifyNextAction.setEnabled(false);
-    //    } else {
-    //      notifyCondition = s;
-      //      notifyNextAction.setEnabled(true);
-    //    }
     if (s != null && s.length() != 0)
       notifyCondition = s;
     consoleTextPane.setNotifyCondition(notifyCondition);
@@ -715,6 +728,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   private void removeNotify_actionPerformed() {
     setNotification(null);
+    ((NodeStatusButton)statusButton).setNotifyOnStandardError(false);
     ((NodeStatusButton)statusButton).clearError();
   }
 

@@ -18,6 +18,7 @@ Trials are defined in the Experiment Builder.
 A Trial is one "run" of a Society with all Unbound Properties bound
 to one set of values as specified in the Experiment Builder.  Note that some experiments do not use Societies with Unbound Properties; these experiments
 have one trial, and the user interface is simplified accordingly.
+<p>The Experiment Controller also collects and displays all output from the nodes in the experiment, and provides several facilities for automatically and manually searching this ouput, and notifying the user of error conditions.
 <p>Note that you must separately launch the Server on each host used in
 the experiment. See the installation instructions for running the Server.
 <br>
@@ -46,8 +47,8 @@ Select the "Abort" button to abort the trial, ending it immediately.</li>
 The Node's window displays the standard output and standard error channels from each node in the experiment, together with some additional specific event information (Node created, Node destroyed, Cluster added).
 Output is displayed in black, and errors are displayed in red.</li>
 <li>
-A colored circle following the &quot;Node Status&quot; label near the top right of
-the Experiment Controller illustrates the node status. The color
+<a NAME="NodeStatusButton">The Node Status button</a> (a colored circle following the &quot;Node Status&quot; label near the top of
+the Experiment Controller) illustrates the node status. The color
 of the circle indicates the relative load on the node (how busy or idle it is);
 an exclamation mark in the circle indicates an error condition.
 The circle corresponding to the currently selected Node is outlined in black.
@@ -70,7 +71,7 @@ window displays the Host-Node-Agent configuration which was specified in
 the Experiment Builder.  The "Trial Values" window displays all the values being
 used in the current Trial; this is a combination of the properties specified
 in the Configuration Builder and the Trial values specified in the Experiment
-Builder.
+Builder.  This window is not displayed if there were no Unbound Properties specified in the Experiment.
 <p>
 The progress bar indicates the number of trials that have been run, as
 a percentage of the number of trials defined for the experiment in the
@@ -85,19 +86,79 @@ The Experiment Controller retrieves results from all the hosts used in the
 Experiment and stores these in the indicated location.  For a description
 of the Experiment results hierarchy, see the Help information for the
 Performance Analyzer.
+<h3>Experiment Controller Menus</h3>
+The Experiment Controller menus are as follows:
+<ul>
+<li>File</li>
+<ul>
+<li>Exit: Close the Experiment Controller.</li>
+</ul>
+<li><a NAME=View>View</a></li>
+<ul>
+<li>Set View Size: Set the number of characters displayed in each node's window, or select "all" to display all the output from the node.  For efficiency, select a reasonable number of characters to display.  The entire output from each node is always available in the log file. (See Log File Reference.)</li>
+<li>Filter: Filter the types of messages that are written in the node's window.  For efficiency, select only the messages that are important.  The entire output from each node is always available in the log file. The name of the log file is displayed using the <a href=#Info>Node Info</a> menu in the Node Windows menu.</li>
+</ul>
+<li><a NAME=Notify>Notify</a>
+<br>This menu allows users to set up "Notifications".  CSMART automatically scans all output from all nodes searching for the notify conditions set by the user.  If a notification condition is detected, an exclamation mark is displayed in the <a href=#NodeStatusButton>Node's status button</a>.  Output is scanned starting at the time that the notification is set.    Notify conditions can be either a specified string, or any output on Standard Error.  Thus, for example, the user could ask for a notification, if the Node writes the string "Exception". Notifications set here can be overridden by specific notifications set in each node's window.</li>
+<ul>
+<li>Set Notification: Set the string on which to be notified; optionally ask to be notified for all output on Standard Error.</li>
+<li>View Notification: View the current notify string.</li>
+<li>Remove All Notifications: Remove all notify conditions.</li>
+<li>Reset All Notifications: Reset the error marks in the Node Status buttons, and continue to search for notify conditions, starting with any <i>new</i> output from the nodes.</li>
+</ul>
+<li>Help</li>
+<ul>
+<li>About Experiment Controller: Display this document.</li>
+<li>About CSMART: Display an overview of CSMART.</li>
+<li>Legend: Display a legend showing the colors used in the <a href=#NodeStatusButton>Node Status buttons</a>.
+</ul>
+</ul>
+<h3>Node Window Menus</h3>
+The Node Window menus are as follows:
+<ul>
+<li>Node</li>
+<ul>
+<li><a NAME=Info>Info</a>: Displays information about the node and the machine on which it is running.  Displays the name of the log file, which can be easily cut and pasted into a text editor.  Displays the host location and description and the node description; this information can be added to the host and node in the Experiment Builder.</li>
+<li>Machine CPU Usage: Displays CPU usage for all processes on the machine on which the node is running.  (This information is not supported for Windows machines.)</li>
+<li>Node CPU Usage: Displays CPU usage for the Node's processes and child processes.  (This information is not displayed for Windows machines.)</li>
+<li>Utilization History: Displays a graph of the relative load at the node, over time.</li>
+</ul>
+<li>Edit: Edit the text in the node window.</li>
+<ul>
+<li>Cut: Remove selected text and put it on the system clipboard.</li>
+<li>Copy: Copy the selected text to the system clipboard.</li>
+<li>Paste: Paste text from the system clipboard, at the cursor location.</li>
+<li>Select All: Select all the text in the node window.</li>
+<li>Find: Find the specified string in the node window; sets the cursor at the end of the string and highlights the string.</li>
+<li>Find Next: Find the next instance of the string specified in "Find".</li>
+</ul>
+<li>View: These menu items are the same as in the Experiment Controller menus, but control the view for the specific node.  See <a href=#View>View menu.</a></li>
+<ul>
+<li>Set View Size</li>
+<li>Filter</li>
+</ul>
+<li>Control</li>
+<ul>
+<li>Stack Trace: Causes the node to print a stack trace; this is displayed in the standard output in the node window.  (This is not supported for Windows machines.)</li>
+</ul>
+<li>Notify: These menu items are the same as in the Experiment Controller menus, but set notifications for the specific node.  See <a href=#Notify>Notify menu.</a></li>
+<ul>
+<li>Set Notification</li>
+<li>Remove Notification</li>
+<li>Find Next Notification</li>
+<li>Reset Notification</li>
+</ul>
+</ul>
 <h3>Notes:</h3>
 If this error message is displayed:
-<br>Cannot create node on hostname; check that server is running</blockquote>
+<pre>Cannot create node on hostname; check that server is running</pre>
 then ensure that all hosts are referenced by full IP address or fully qualified
 machine name. Also, in some cases, it appears that Solaris machines fail
 to contact the NameService on Win32 machines.
-<p>Also, if you get an error in your server console window, saying something
-like: "RMI Exception: Class not found", or "RMI Exception: no RMI class
-loader", this is usually a classpath problem. Be sure that both server.jar
+<p>Also, errors in the <i>server</i> server console window, such as: "RMI Exception: Class not found", or "RMI Exception: no RMI class
+loader", usually indicate a classpath problem. Be sure that both server.jar
 and csmart.jar are on the classpath used to run the server, the classpath
-defined in your server properties file, and in the classpath for running
-CSMART. In addition, ensure that all your jar files (CSMART and other Cougaar
-jar files) are from the same build; rebuild the CSMART jar file against
-the Cougaar jars you are using if necessary.<br>
+defined in the server properties file, and in the classpath for running
+CSMART.<br>
 </body>
 </html>

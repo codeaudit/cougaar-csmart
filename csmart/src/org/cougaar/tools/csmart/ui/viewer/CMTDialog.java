@@ -185,6 +185,9 @@ public class CMTDialog extends JDialog {
 
   private void ok_actionPerformed() {
     setVisible(false);
+  }
+
+  public void processResults() {
     boolean modified = false;
     int n = ULThreads.length;
     for (int i = 0; i < n; i++) {

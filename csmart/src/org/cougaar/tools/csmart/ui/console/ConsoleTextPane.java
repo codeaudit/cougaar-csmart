@@ -215,7 +215,8 @@ public class ConsoleTextPane extends JTextPane {
   }
         
   /**
-   * Search for the string starting at the beginning of the document, and
+   * Search for the string starting at the current search position or
+   * at the beginning of the document, and
    * highlight it if found. 
    * Search is case insensitive.
    * @param s string to search for
@@ -224,7 +225,10 @@ public class ConsoleTextPane extends JTextPane {
 
   public boolean search(String s) {
     searchString = s;
-    return worker(s, doc.getStartPosition(), true);
+    if (searchPosition == null)
+      return worker(s, doc.getStartPosition(), true);
+    else
+      return worker(s, searchPosition, true);
   }
 
   public String getSearchString() {

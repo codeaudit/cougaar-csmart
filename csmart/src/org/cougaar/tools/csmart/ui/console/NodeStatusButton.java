@@ -29,9 +29,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JRadioButton;
 
 public class NodeStatusButton extends JRadioButton {
-  int status = STATUS_UNKNOWN;
-  Image img = null; // error image
-  
+  private int status = STATUS_UNKNOWN;
+  private Image img = null; // error image
+  private boolean notifyOnStandardError = false;
+
   public static int STATUS_BUSY = 0;
   public static int STATUS_HIGH_BUSY = 1;
   public static int STATUS_MEDIUM_HIGH_BUSY = 2;
@@ -94,13 +95,14 @@ public class NodeStatusButton extends JRadioButton {
     if (newStatus < 0 || newStatus > STATUS_MAX)
       return; // invalid status
     // if there's an error, add the warning icon
-    if (newStatus == STATUS_NOTIFY || newStatus == STATUS_STD_ERROR) {
+    if (newStatus == STATUS_NOTIFY || 
+        (newStatus == STATUS_STD_ERROR && notifyOnStandardError)) {
       URL iconURL = getClass().getResource("Bang.gif");
       if (iconURL != null) {
         ImageIcon icon = new ImageIcon(iconURL);
         img = icon.getImage();
       }
-    } else {
+    } else if (newStatus != STATUS_STD_ERROR) {
       status = newStatus;
     }
     Color statusColor = statusColors[status];
@@ -138,4 +140,17 @@ public class NodeStatusButton extends JRadioButton {
     return statusColors;
   }
 
+
+  /**
+   * Set whether to display warning icon when output is received on
+   * standard error.
+   */
+
+  public void setNotifyOnStandardError(boolean notifyOnStandardError) {
+    this.notifyOnStandardError = notifyOnStandardError;
+  }
+
+  public boolean getNotifyOnStandardError() {
+    return notifyOnStandardError;
+  }
 }
