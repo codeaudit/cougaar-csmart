@@ -205,6 +205,9 @@ public class PopulateDb extends PDbBase {
 
     // Society was previously saved.
     if (societyId != null) {
+      if (log.isDebugEnabled()) {
+	log.debug("Had a societyId: " + societyId);
+      }
       // is it already in the config DB and runtime DB? If not, add it
       if (! assemblyInConfig(societyId)) {
 	if (log.isDebugEnabled()) {
@@ -215,7 +218,7 @@ public class PopulateDb extends PDbBase {
 
 	// then add it to config
 	addAssemblyToConfig(societyId);
-      }
+      } // end of check if soc is in config
 
       // I can't think of an easy solution. You just
       // have to delete the old CSMI, CSHNA assemblies
@@ -223,6 +226,8 @@ public class PopulateDb extends PDbBase {
       // a chance. So this method should remove the current
       // CSHNA (both tables), CSMI, and, if societyId is not in the runtime
       // but is in the config, then any CSA is in the runtime as well.
+      // FIXME!! This _needs_ to delete the old
+      // CSMI assembly before setNewAsssemblyIds is called
       cleanTrial(getAssemblyType(societyId), hnaType, csmiType, trialId);
 	
       if (! assemblyInRuntime(societyId)) {
@@ -357,6 +362,9 @@ public class PopulateDb extends PDbBase {
    * @exception SQLException if an error occurs
    */
   private void cleanOldConfigSocietyAssemblies() throws SQLException {
+    if (log.isDebugEnabled()) {
+      log.debug("cleanOldConfigSoc with subs " + substitutions);
+    }
     ResultSet rs =
       executeQuery(stmt, dbp.getQuery("queryOldSocietyConfigAssembliesToClean", substitutions));
     while (rs.next()) {
@@ -398,6 +406,10 @@ public class PopulateDb extends PDbBase {
       if (log.isDebugEnabled()) {
 	log.debug("Cleaning asb from runtime: " + asb);
       }
+      if (asb.equals("CSMI-0001") && log.isErrorEnabled()) {
+	log.error("clnOldRuntime wants to delete CSMI-0001! Sub: " + substitutions, new Throwable("Who is the culprit?"));
+      }
+		  
       executeUpdate(dbp.getQuery("cleanTrialAssembly", substitutions));
 
       // So we've just removed the assembly from the config time.
@@ -446,62 +458,73 @@ public class PopulateDb extends PDbBase {
     // do what I need already? No: It removes from the config/runtime table
     // _all_ CSA & CMT assemblies. I could do that after most of this,
     // and then re-insert the real society into the runtime, I suppose.
-    ResultSet rs =
+    ResultSet rs =      
       executeQuery(stmt, dbp.getQuery("queryAssembliesToClean", substitutions));
-    if (rs.next()) {
-      boolean first = true;
-      StringBuffer assembliesToDelete = new StringBuffer();
-      assembliesToDelete.append("(");
-      StringBuffer assembliesToReallyDelete = new StringBuffer();
-      assembliesToReallyDelete.append("(");
-      boolean rfirst = true;
-      String asb = null;
-      do {
-	if (first) {
-	  first = false;
-	} else {
-	  assembliesToDelete.append(", ");
-	}
-	asb = rs.getString(1);
+    boolean first = true;
+    StringBuffer assembliesToDelete = new StringBuffer();
+    assembliesToDelete.append("(");
+    StringBuffer assembliesToReallyDelete = new StringBuffer();
+    assembliesToReallyDelete.append("(");
+    boolean rfirst = true;
+    String asb = null;
 
-	// if asb not used other than the current trial
-	if (! isAssemblyUsed(asb)) {
-	  if (log.isDebugEnabled()) {
-	    log.debug("assembly " + asb + " not used, except in trial " + trialId + " which we are deleting");
-	  }
-	  if (rfirst) {
-	    rfirst = false;
-	  } else {
-	    assembliesToReallyDelete.append(", ");
-	  }
-	  assembliesToReallyDelete.append(sqlQuote(asb));
-	} else if (log.isDebugEnabled()) {
-	  log.debug("cleanTrial not deleting asb " + asb + " cause its still in use outside trial " + trialId);
+    while (rs.next()) {
+      if (first) {
+	first = false;
+      } else {
+	assembliesToDelete.append(", ");
+      }
+      asb = rs.getString(1);
+      assembliesToDelete.append(sqlQuote(asb));
+
+      // if asb not used other than the current trial
+      if (log.isDebugEnabled()) {
+	log.debug("cleanTrial looking at asb " + asb);
+      }
+      if (! isAssemblyUsed(asb)) {
+	if (log.isDebugEnabled()) {
+	  log.debug("assembly " + asb + " not used, except in trial " + trialId + " which we are deleting");
 	}
-	assembliesToDelete.append(sqlQuote(asb));
-      } while (rs.next());
-      assembliesToDelete.append(")");
-      assembliesToReallyDelete.append(")");
+	if (rfirst) {
+	  rfirst = false;
+	} else {
+	  assembliesToReallyDelete.append(", ");
+	}
+	assembliesToReallyDelete.append(sqlQuote(asb));
+      } else if (log.isDebugEnabled()) {
+	log.debug("cleanTrial not deleting asb " + asb + " cause its still in use outside trial " + trialId);
+      }
+      if (asb.equals("CSMI-0001") && log.isErrorEnabled()) {
+	log.error("CleanTrial adding CSMI0001 to list of assemblies to remove from runtime. Subs: " + substitutions, new Throwable("Who did it?"));
+      }
+    } // done with loop over assemblies to clean up
+    rs.close();
+
+    if(log.isDebugEnabled()) {
+      log.debug("cleanTrial Substitutions: " + substitutions);
+    }
+
+    assembliesToDelete.append(")");
+    assembliesToReallyDelete.append(")");
+
+    if (! first) {
       substitutions.put(":assemblies_to_clean:", assembliesToDelete.toString());
       if (log.isDebugEnabled()) {
 	log.debug("Assemblies to delete from trial " + trialId + ": " + assembliesToDelete);
       }
       // This deletes the references in the runtime table
       executeUpdate(dbp.getQuery("cleanTrialAssembly", substitutions));
-
+      
       // Add delete from config table. Must get rid of the HNA from there
       executeUpdate(dbp.getQuery("cleanTrialConfigAssembly", substitutions));
-
-      // now really delete those that are unused.
-      // where if this is true there were none
-      if (! rfirst) {
-	substitutions.put(":assemblies_to_clean:", assembliesToReallyDelete.toString());
-	cleanAssemblies(false);
-      }
     }
-    rs.close();
-    if(log.isDebugEnabled()) {
-      log.debug("cleanTrial Substitutions: " + substitutions);
+    
+    // now really delete those that are unused.
+    // where if this is true there were none
+    if (! rfirst) {
+      substitutions.put(":assemblies_to_clean:", assembliesToReallyDelete.toString());
+      log.debug("Assemblies to completely delete: " + assembliesToReallyDelete);
+      cleanAssemblies(false);
     }
 
     // OK, now if the incoming cmtType is really a CSA, and cmtAssemblyId not in
@@ -512,7 +535,7 @@ public class PopulateDb extends PDbBase {
     // Delete all recipes out of this Trial - why would I do this?
     // Cause I re-add them when I finish saving the experiment
     executeUpdate(dbp.getQuery("cleanTrialRecipe", substitutions));
-  }
+  } // end of cleanTrial
 
   /**
    * Delete the given assembly ID from this Trials config time list
@@ -542,6 +565,9 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
     if (log.isDebugEnabled()) {
       log.debug("Removing assembly from runtime: " + assembly_id);
+    }
+    if (log.isErrorEnabled() && assembly_id.equals("CSMI-0001")) {
+      log.error("Who is deleting CSMI-0001 from runtime?", new Throwable("Who is the culprit?"));
     }
     executeUpdate(dbp.getQuery("cleanTrialAssembly", substitutions));
   }
@@ -579,6 +605,9 @@ public class PopulateDb extends PDbBase {
   private void cleanAssembly(String assembly_id, boolean partial) throws SQLException {
     if (assembly_id == null || assembly_id.equals(""))
       return;
+    if (assembly_id.equals("CSMI-0001") && log.isErrorEnabled()) {
+      log.error("clnAsb for CSMI0001! Sub: " + substitutions, new Throwable("Who called cleanAssemblyFor csmi-0001"));
+    }
     substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
     cleanAssemblies(partial);
   }
@@ -590,6 +619,9 @@ public class PopulateDb extends PDbBase {
     if (assembly_id == null || assembly_id.equals(""))
       return;
     substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
+    if (assembly_id.equals("CSMI-0001") && log.isErrorEnabled()) {
+      log.error("clnAsb for CSMI0001! Sub: " + substitutions, new Throwable("Who called cleanAssemblyFor csmi-0001"));
+    }
     cleanAssemblies(false);
   }
 
@@ -906,6 +938,9 @@ public class PopulateDb extends PDbBase {
   private void cloneTrial(String oldTrialId, String experimentName, String description)
     throws SQLException
   {
+    if (log.isDebugEnabled()) {
+      log.debug("Cloning trial " + oldTrialId);
+    }
     // Create new experiment in DB with given name,
     // set global expt_id variable
     newExperiment("EXPT", experimentName, description);
@@ -1866,13 +1901,16 @@ public class PopulateDb extends PDbBase {
 	executeUpdate(dbp.getQuery("insertAsbAgent", substitutions));
       }
       rs.close();
+
+      // Now the Property Groups
       PropGroupData[] pgs = assetData.getPropGroups();
       for (int i = 0; i < pgs.length; i++) {
 	PropGroupData pg = pgs[i];
 	String pgName = pg.getName();
 	PGPropData[] props = pg.getProperties();
+
+	// For each property in the property group
 	for (int j = 0; j < props.length; j++) {
-                  
 	  PGPropData prop = props[j];
 	  PropertyInfo propInfo = getPropertyInfo(pgName, prop.getName());
           if(propInfo == null) {
@@ -1884,43 +1922,68 @@ public class PopulateDb extends PDbBase {
                         pgName + ", " + prop.getName());
             }
           }
-
+	  if (log.isDebugEnabled()) {
+	    log.debug("Pag for " + data.getName() + " at PropGroupData " + i + " with name " + pgName + " has " + props.length + " props, of which #" + j + " is " + propInfo.toString());
+	  }
 	  substitutions.put(":component_alib_id:", sqlQuote(getComponentAlibId(data)));
 	  substitutions.put(":pg_attribute_lib_id:", sqlQuote(propInfo.getAttributeLibId()));
+
+	  // FIXME: Are we trying to support time-phase PGs?
 	  // Are these defaults?
 	  substitutions.put(":start_date:", sqlQuote("2000-01-01 00:00:00"));
 	  substitutions.put(":end_date:", sqlQuote(null));
+
+	  // If there are multiple values for this property
 	  if (propInfo.isCollection()) {
 	    if (!prop.isListType())
 	      throw new RuntimeException("Property is not a collection: "
 					 + propInfo.toString());
+
+	    // For each value of this multiple valued property
 	    String[] values = ((PGPropMultiVal) prop.getValue()).getValuesStringArray();
+	    if (log.isDebugEnabled()) {
+	      log.debug("pag for agent " + data.getName() + " and alibid " + propInfo.getAttributeLibId() + " has " + values.length + " values");
+	      for (int k = 0; k < values.length; k++) {
+		log.debug("Value " + k + " = " + values[k]);
+	      }
+	    }
 	    for (int k = 0; k < values.length; k++) {
-
-
-	      /////////////////
-	      // FIXME: CMT assemblies have all multi-valed PGAttr use attribute_order
-	      // of 0, while we give them a real order.
-	      // As a result, we end up adding extra, for example, Roles
-
-
-
 	      substitutions.put(":attribute_value:", sqlQuote(values[k]));
 	      substitutions.put(":attribute_order:", String.valueOf(k));
-	      // if val not already there for this runtime
+
+	      // if val not already there for this runtime configuration
 	      ResultSet rschck = executeQuery(stmt, dbp.getQuery("checkAttribute", substitutions));
 	      if (! rschck.next()) {
-
-		// FIXME: Add a query: Get # of entries for this PG/slot
-		// with attribute_order of 0. If its > 1, then,
-		// maybe doesnt a checkAttribute variant that doesn't
-		// check order. IF it matches, don't do an insert
-
-		if (log.isDebugEnabled()) {
-		  log.debug("pagent " + data.getName() + " inserting pgval under pgattid " + propInfo.getAttributeLibId() + ", val " + values[k] + " into assembly " + substitutions.get(":assembly_id:"));
+		// Query the values for this PG slot that have order of 0
+		// If there is more than one,
+		// and one of the values is this one,
+		// then dont insert it again - CMT asbs do this
+		ResultSet rschck2 = executeQuery(stmt, dbp.getQuery("queryAttributeValueZeroOrder", substitutions));
+		int count = 0; // Number of values at order 0
+		boolean hasval = false; // this value already in DB
+		while (rschck2.next()) {
+		  count++;
+		  if (values[k].equals(rschck2.getString(1)))
+		    hasval = true; // the value we were inserting is there
 		}
-		executeUpdate(dbp.getQuery("insertAttribute", substitutions));
-	      }
+		rschck2.close();
+
+		// If the only value is already there,
+		// or if there are multiple values
+		// all at order 0, including this one, dont add it again
+		if ((count > 1 && hasval) || (count == 1 && values.length == 1 && hasval)) {
+		  // Dont bother inserting again
+		  if (log.isDebugEnabled()) {
+		    log.debug("PopAgent not inserting PG multival " + values[k] + " for pagent " + data.getName() + " under attlibid " + propInfo.getAttributeLibId() + ", cause already have " + count + " values all with order 0, including this one.");
+		  }
+		} else {
+		  
+		  if (log.isDebugEnabled()) {
+		    log.debug("pagent " + data.getName() + " inserting pgval under pgattid " + propInfo.getAttributeLibId() + ", val " + values[k] + " into assembly " + substitutions.get(":assembly_id:"));
+		  }
+		  executeUpdate(dbp.getQuery("insertAttribute", substitutions));
+		} // end of block to really insert multival again
+	      } // end of loop where this multival not there yet
 	      rschck.close();
 	    }
 	  } else {
