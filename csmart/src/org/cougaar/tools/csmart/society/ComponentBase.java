@@ -118,16 +118,15 @@ public class ComponentBase
 
     // If the user specified the long version of common insertion points,
     // translate to the short version for consistency
-    if (getComponentType().equalsIgnoreCase("Node.AgentManager.Binder")) {
+    self.setType(getComponentType());
+    if (self.getType().equalsIgnoreCase("Node.AgentManager.Binder")) {
       self.setType(ComponentData.NODEBINDER);
-    } else if (getComponentType().equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Binder")) {
+    } else if (self.getType().equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Binder")) {
       self.setType(ComponentData.AGENTBINDER);
-    } else if (getComponentType().equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Plugin")) {
+    } else if (self.getType().equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Plugin")) {
       self.setType(ComponentData.PLUGIN);
-    } else if (getComponentType().equalsIgnoreCase("Node.AgentManager.Agent")) {
+    } else if (self.getType().equalsIgnoreCase("Node.AgentManager.Agent")) {
       self.setType(ComponentData.AGENT);
-    } else {
-      self.setType(getComponentType());
     }
 
     self.setOwner(this);
@@ -183,10 +182,28 @@ public class ComponentBase
   // Helper method: Does the given parent already contain a component
   // with the same class, type, and parameters
   // Does not check its children or leaf data
-  protected boolean alreadyAdded(ComponentData parent, ComponentData self) {
-    if (self == null)
+
+
+  /**
+   * Look for the given ComponentData in the given parent, using its class, type, and parameters.
+   * Do not consider the name of the child, or any AssetData or children it might have.
+   * That is, if any existing child of the given parent has the same type, class, and parameter list
+   * of the given candidate child, return true. Also return true if the parent or child is null. Return
+   * false if the parent has no children.
+   *
+   * @param parent a <code>ComponentData</code> that may already contain the component
+   * @param self a <code>ComponentData</code> a component to look for
+   * @return a <code>boolean</code>, true if a component with the same type, class, and parameters is already present
+   */
+  protected boolean alreadyAdded(final ComponentData parent, final ComponentData self) {
+    if (self == null || parent == null)
       return true;
     ComponentData[] children = parent.getChildren();
+    if (children == null)
+      return false;
+    if (log.isDebugEnabled() && children.length != parent.childCount()) {
+      log.debug(parent + " says childCount is " + parent.childCount() + " but returned array of children was of length " + children.length);
+    }
     for (int i = 0; i < children.length; i++) {
       boolean isdiff = false;
       ComponentData kid = children[i];
@@ -196,9 +213,7 @@ public class ComponentBase
 	}
 	// FIXME: Maybe do a parent.setChildren with a new list that doesn't include
 	// the null?
-	continue;
-      }
-      if (kid.getClassName().equals(self.getClassName())) {
+      } else if (kid.getClassName().equals(self.getClassName())) {
 	if (kid.getType().equals(self.getType())) {
 	  if (kid.parameterCount() == self.parameterCount()) {
 	    // Then we better compare the parameters in turn.
@@ -297,10 +312,10 @@ public class ComponentBase
   /**
    * Adds a Parameter to this component
    *
-   * @param param Unique string for this parameter
+   * @param param Unique Object for this parameter's value
    * @return a <code>Property</code> value
    */
-  public Property addParameter(String param) {
+  public Property addParameter(Object param) {
     return addProperty(PROP_PARAM + nParameters++, param);
   }
 
