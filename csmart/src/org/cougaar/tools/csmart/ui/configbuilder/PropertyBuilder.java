@@ -185,7 +185,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
 	      if (!success && propertyBuilder.log.isWarnEnabled()) {
 		propertyBuilder.log.warn("Failed to save society " + configComponent.getShortName());
 	      } else if (propertyBuilder.log.isDebugEnabled()) {
-		propetyBuilder.log.debug("Saved society " + configComponent.getShortName());
+		propertyBuilder.log.debug("Saved society " + configComponent.getShortName());
 	      }
 	    }
 	  }.start();
