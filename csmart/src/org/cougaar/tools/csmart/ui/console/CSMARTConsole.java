@@ -2429,6 +2429,8 @@ public class CSMARTConsole extends JFrame {
         String myHostName = InetAddress.getLocalHost().getHostName();
         URL url = new URL("file", myHostName, dirname);
 	Trial trial = experiment.getTrial();
+	// FIXME: No one uses these Trial results anywhere!
+	// So why bother doing this?
 	if (trial != null)
 	  trial.addTrialResult(new TrialResult(runStart, url));
       } catch (Exception e) {
