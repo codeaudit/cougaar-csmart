@@ -445,6 +445,22 @@ public class Organizer extends JScrollPane {
 
     // create society from agent files or single node file
     String name = "";
+
+    name = file.getName();
+    if (name.endsWith(".ini"))
+      name = name.substring(0, name.length()-4);
+    
+    // if name is not unique, then get an unique name for the society
+    while (societyNames.contains(name)) {
+      name = societyNames.generateName(name);
+      name = 
+	(String)JOptionPane.showInputDialog(this, "Enter Society Name",
+					    "Society Name Not Unique",
+					    JOptionPane.QUESTION_MESSAGE,
+					    null, null, name);
+    }
+    if (name == null) return null; 
+
     if (file.isDirectory()) {
       // If I added this directory to the org.cougaar.config.path
       // and if I could force a recalc of the static
@@ -468,31 +484,13 @@ public class Organizer extends JScrollPane {
 	}
 	return null;
       }
-      name =
-        (String)JOptionPane.showInputDialog(this, "Enter Society Name",
-                                            "Society Name",
-                                            JOptionPane.QUESTION_MESSAGE,
-                                            null, null, name);
-      if (name == null) return null; 
+
       sc = helper.createSociety(name, filenames, SocietyFileComponent.class);
     } else {
-      sc = helper.createSociety(file.getName(), SocietyFileComponent.class);
-      name = file.getName();
-      if (name.endsWith(".ini"))
-        name = name.substring(0, name.length()-4);
+      sc = helper.createSociety(file.getName(), name, SocietyFileComponent.class);
     }
     if (sc == null)
       return null;
-    // if name is not unique, then get an unique name for the society
-    while (societyNames.contains(name)) {
-      name = societyNames.generateName(name);
-      name = 
-        (String)JOptionPane.showInputDialog(this, "Enter Society Name",
-                                            "Society Name Not Unique",
-                                            JOptionPane.QUESTION_MESSAGE,
-                                            null, null, name);
-      if (name == null) return null; // TODO: delete society to clean up
-    }
     societyNames.add(name);
     sc.setName(name); 
     return sc;
