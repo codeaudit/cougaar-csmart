@@ -171,6 +171,7 @@ public class PDbBase {
   protected Statement getStatement() throws SQLException {
     return dbConnection.createStatement();
   }
+
   /**
    * Check the status of a recipe in the database.
    * @param rc the RecipeComponent to check
@@ -179,7 +180,6 @@ public class PDbBase {
    * value<br> RECIPE_STATUS_DIFFERS -- Recipe already in database
    * with different value
    **/
-
   public int recipeExists(RecipeComponent rc) {
     String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
     if (recipeIdAndClass == null)
@@ -199,7 +199,6 @@ public class PDbBase {
    * @param rc the recipe component to compare against
    * @return true if recipe class, properties, and values are the same
    **/
-
   private boolean isRecipeEqual(String[] recipeIdAndClass, 
                                 RecipeComponent rc) {
     if (!recipeIdAndClass[1].equals(rc.getClass().getName()))
@@ -281,7 +280,6 @@ public class PDbBase {
    * @param rc the recipe to save in the database
    * @return the id of the recipe in the database
    */
-
   public String insureLibRecipe(RecipeComponent rc) throws SQLException {
     String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
     if (recipeIdAndClass != null) {
