@@ -26,6 +26,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import org.cougaar.tools.server.ProcessDescription;
 import org.cougaar.tools.server.RemoteHost;
@@ -86,10 +87,28 @@ public class AppServerSupport {
         log.error("Unable to contact app-server on " + 
                   hostName + ":" + port + ". Error: " + e);
       }
-      JOptionPane.showMessageDialog(null,
-                                    "Unable to contact app-server on " +
-                                    hostName + ":" + port +
-                                    "; check that server is running");
+
+      // FIXME: Maybe only invoke this in certain circumstances?
+      // Like when the user hit "Run" or something?
+      // Cause if it's just from the updateAppServers, this may not be right.
+
+      // Use SwingUtils.invokeLater
+      // This gets called from within the Timer that does the updates, as well as other
+      // places
+      final String myHost = hostName;
+      final int myPort = port;
+      SwingUtilities.invokeLater(new Runnable() {
+	  public void run() {
+	    JOptionPane.showMessageDialog(null,
+					  "Unable to contact app-server on " +
+					  myHost + ":" + myPort +
+					  "; check that server is running");
+	  }
+	});
+
+      // Note: Caller should remove it from nodeToAppServer and possibly appServers
+      // and in CSMARTConsole, probably the node from runningNodes
+
       return null;
     }
     return remoteAppServer;
@@ -184,7 +203,7 @@ public class AppServerSupport {
 	  node.getRemoteListenable().flushOutput();
 	} catch (Exception e) {
 	  if (log.isWarnEnabled()) {
-	    log.warn("Exeption flushing output for " + name, e);
+	    log.warn("killAllProceses: Exception flushing output for " + name, e);
 	  }
 	}
 	if (log.isDebugEnabled()) {
@@ -229,13 +248,20 @@ public class AppServerSupport {
 	      log.debug("Killing node listener: " + s +
 				 " for node: " + name);
 	    }
-            rl.removeListener(s);
+	    try {
+	      rl.removeListener(s);
+	    } catch (Exception e) {
+	      if (log.isErrorEnabled()) {
+		log.error("killListener: Exception killing listener for " + name + ": ", e);
+	      }
+	    }
           }
         }
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
-          log.error("Exception killing listener for " + name + ": ", e);
+          log.error("killListener: Exception getting listener for " + name + ": ", e);
         }
+	// FIXME: Update the list of appservers here? -- but avoid sync problems
       }
     }
   }
@@ -374,7 +400,7 @@ public class AppServerSupport {
         someNodes = appServer.listProcessDescriptions();
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
-          log.error("Exception getting info from app server: ", e);
+          log.error("Exception getting info from app server. Will remove it from active list: ", e);
         }
       }
       if (someNodes != null) {
@@ -421,8 +447,9 @@ public class AppServerSupport {
       }
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
-        log.error("Exception searching for listeners on process " + name, e);
+        log.error("Exception searching for CSMART listeners on process " + name, e);
       }
+      // FIXME: Really should remove this from the active appSever list
     }
     return false;
   }
@@ -504,6 +531,8 @@ public class AppServerSupport {
         if (log.isErrorEnabled()) {
           log.error("Exception attaching to: " + processName, e);
         }
+	// Remove this from nodeToAppServer since we can't access it
+	nodeToAppServer.remove(processName);
         continue;
       }
       Properties properties = (Properties)pd.getJavaProperties();
