@@ -1313,6 +1313,7 @@ public class Organizer extends JScrollPane {
   private DefaultMutableTreeNode newExperimentFromDatabase(DefaultMutableTreeNode node) {
     Collection experimentNames = null;
     Map substitutions = new HashMap();
+    Map agentsNodes = new HashMap();
     Collection trialNames = new ArrayList();
     ArrayList assemblyIDs = new ArrayList();
     ArrayList nodes = new ArrayList();
@@ -1398,42 +1399,13 @@ public class Organizer extends JScrollPane {
 
 	  stmt = conn.createStatement();
 	  query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
+	  
 	  rs = stmt.executeQuery(query);
 	  while(rs.next()) {
 	    nodes.add(rs.getString(1));
 	  }
 	  rs.close();
-	  stmt.close();
-
-// 	  // Query for all Agent-Node Mappings.
-// 	  StringBuffer assemblyMatch = new StringBuffer();
-// 	  assemblyMatch.append("in (");
-// 	  Iterator iter = assemblyIDs.iterator();
-// 	  boolean first = true;
-// 	  while (iter.hasNext()) {
-// 	    String val = (String)iter.next();
-// 	    if (first) {
-// 	      first = false;
-// 	    } else {
-// 	      assemblyMatch.append(", ");
-// 	    }
-// 	    assemblyMatch.append("'");
-// 	    assemblyMatch.append(val);
-// 	    assemblyMatch.append("'");
-// 	  }
-// 	  assemblyMatch.append(")");
-      
-// 	  substitutions.put(":assemblyMatch", assemblyMatch.toString());
-
-// 	  stmt = conn.createStatement();
-// 	  query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
-// 	  rs = stmt.executeQuery(query);
-// 	  while(rs.next()) {
-// 	    nodes.add(rs.getString(1));
-// 	  }
-// 	  rs.close();
-// 	  stmt.close();
-	  
+	  stmt.close();	  
 	  conn.close();
       } catch (SQLException se) {      
 	System.out.println("Caught SQL exception: " + se);
@@ -1443,21 +1415,75 @@ public class Organizer extends JScrollPane {
 
     CMTSociety soc = new CMTSociety(assemblyIDs);
     soc.initProperties();
-    Experiment experiment = new Experiment((String)answer, (String)dbExptMap.get(answer), (String)dbTrialMap.get(trial));
+    Experiment experiment = 
+      new Experiment((String)answer, (String)dbExptMap.get(answer), (String)dbTrialMap.get(trial));
     DefaultMutableTreeNode newNode =
       addExperimentToWorkspace(experiment, node);
     experiment.addSocietyComponent((SocietyComponent)soc);
 
     // Add all Nodes.
     Iterator iter = nodes.iterator();
-    while(iter.hasNext()) {
-      experiment.addNode((String)iter.next());
-    }
+    NodeComponent nodeComponent = null;
 
+    StringBuffer assemblyMatch = new StringBuffer();
+    assemblyMatch.append("in (");
+    Iterator iter2 = assemblyIDs.iterator();
+    boolean first = true;
+    while (iter2.hasNext()) {
+      String val = (String)iter2.next();
+      if (first) {
+	first = false;
+      } else {
+	assemblyMatch.append(", ");
+      }
+      assemblyMatch.append("'");
+      assemblyMatch.append(val);
+      assemblyMatch.append("'");
+    }
+    assemblyMatch.append(")");
+      
+    substitutions.put(":assemblyMatch", assemblyMatch.toString());
+    substitutions.put(":insertion_point", "Node.AgentManager.Agent");	  
+
+    AgentComponent[] agents = soc.getAgents();
+    
+    try {
+      conn = DBUtils.getConnection();
+      Statement stmt = conn.createStatement();
+
+      while(iter.hasNext()) {
+	String nodeName = (String)iter.next();
+	nodeComponent = experiment.addNode(nodeName);
+
+	// Query All Agents for each node.
+	// Loop Query for every node.
+	substitutions.put(":parent_name", nodeName);
+	String query = DBUtils.getQuery("queryComponents", substitutions);
+	ResultSet rs = stmt.executeQuery(query);
+	while(rs.next()) {
+	  // Find AgentComponent.
+	  String aName = rs.getString(1);
+	  for (int i=0; i < agents.length; i++) {
+	    AgentComponent ac = agents[i];
+	    if (ac.getShortName().equals(aName)) {
+	      nodeComponent.addAgent(ac);
+	      break;
+	    }	    
+	  } 	  
+	}
+	rs.close();
+      }
+      stmt.close();
+       
+    } catch (SQLException e) {
+      
+    }
+    
     workspace.setSelection(newNode);
     return newNode;
 
   }
+
 
   private DefaultMutableTreeNode newExperiment(DefaultMutableTreeNode node) {
     if (CSMART.inDBMode()) 
