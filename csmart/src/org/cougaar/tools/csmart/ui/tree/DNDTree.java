@@ -261,15 +261,32 @@ public abstract class DNDTree
 //       if(log.isDebugEnabled()) {
 //        log.debug("Multi-drag " + dragSourceNodes.length + " nodes");
 //       }
-      Transferable draggableObject =
-        makeDraggableObject(new DMTNArray(dragSourceNodes));
+      Transferable draggableObject = null;
+      try {
+        draggableObject = makeDraggableObject(new DMTNArray(dragSourceNodes));
+      } catch (IllegalArgumentException iae) {
+        if (log.isErrorEnabled()) {
+          log.error("Illegal argument exception: " + iae);
+        }
+      }
+      if (draggableObject == null)
+        return; // if couldn't make draggable object, then return
       dragSource.startDrag(event, DragSource.DefaultMoveDrop, 
                            draggableObject, this);
     } else {
       selectNode(target);
       if (isDraggable(target)) {
         dragSourceNodes = new DefaultMutableTreeNode[] {target};
-        Transferable draggableObject = makeDraggableObject(target);
+        Transferable draggableObject = null;
+        try {
+          draggableObject = makeDraggableObject(target);
+        } catch (IllegalArgumentException iae) {
+          if (log.isErrorEnabled()) {
+            log.error("Illegal argument exception: " + iae);
+          }
+        }
+        if (draggableObject == null)
+          return; // if couldn't make draggable object, then return
         dragSource.startDrag(event, DragSource.DefaultMoveDrop, 
                              draggableObject, this);
       }

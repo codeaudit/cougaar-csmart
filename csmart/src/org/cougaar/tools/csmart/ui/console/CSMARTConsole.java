@@ -474,7 +474,7 @@ public class CSMARTConsole extends JFrame {
     JInternalFrame jif = new JInternalFrame("Configuration",
                                             true, false, true, true);
     jif.getContentPane().add(hostConfiguration);
-    jif.setSize(300, 300);
+    jif.setSize(660, 400);
     jif.setLocation(0, 0);
     jif.setVisible(true);
     desktop.add(jif, JLayeredPane.DEFAULT_LAYER);

@@ -50,7 +50,6 @@ public class NamedFrame extends Observable {
   public static final String INV_LEVEL = "Inventory";
   public static final String METRICS = "Metrics";
   public static final String TOPOLOGY = "Topology";
-  public static final String COMMUNITY_EDITOR = "Community Editor";
 
   private static Hashtable titleToFrame = new Hashtable();
   private static String titles[] = {
@@ -64,10 +63,9 @@ public class NamedFrame extends Observable {
     ALLOC_FAILURE,
     INV_LEVEL,
     METRICS,
-    TOPOLOGY,
-    COMMUNITY_EDITOR
+    TOPOLOGY
   };
-  private static int index[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }; // used for common titles
+  private static int index[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }; // used for common titles
 
   private static NamedFrame singleton = null;
 

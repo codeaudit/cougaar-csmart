@@ -36,6 +36,7 @@ import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 import org.cougaar.tools.csmart.experiment.Experiment;
 
 import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.tools.csmart.ui.community.CommunityPanel;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
@@ -68,9 +69,12 @@ public class ExperimentBuilder extends JFrame {
   private HostConfigurationBuilder hcb;
   private TrialBuilder trialBuilder;
   private ThreadBuilder threadBuilder;
+  private CommunityPanel communityPanel;
   private JMenu findMenu;
   private DBConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(this);
+  private JMenuItem newCommunityMenuItem;
+  private JMenuItem viewCommunityMenuItem;
   // items in file menu specific to selected node in HostConfigurationBuilder
   private JMenuItem globalCommandLineMenuItem;
   private JMenuItem newHostMenuItem;
@@ -175,7 +179,13 @@ public class ExperimentBuilder extends JFrame {
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
     JMenu fileMenu = new JMenu(FILE_MENU);
-    fileMenu.setToolTipText("Configure hosts and nodes, save, or quit");
+    fileMenu.setToolTipText("Configure communities, hosts and nodes, save, or quit");
+
+    communityPanel = new CommunityPanel(experiment);
+    newCommunityMenuItem = new JMenuItem(communityPanel.newCommunityAction);
+    fileMenu.add(newCommunityMenuItem);
+    viewCommunityMenuItem = new JMenuItem(communityPanel.viewCommunityAction);
+    fileMenu.add(viewCommunityMenuItem);
     globalCommandLineMenuItem = 
       new JMenuItem(HostConfigurationBuilder.GLOBAL_COMMAND_LINE_MENU_ITEM);
     globalCommandLineMenuItem.addActionListener(new ActionListener() {
@@ -279,6 +289,7 @@ public class ExperimentBuilder extends JFrame {
     for (int i = 0; i < findActions.length; i++) {
       findMenu.add(findActions[i]);
     }
+    
     JMenu helpMenu = new JMenu(HELP_MENU);
     helpMenu.setToolTipText("Display documentation.");
     for (int i = 0; i < helpActions.length; i++) {
@@ -304,6 +315,8 @@ public class ExperimentBuilder extends JFrame {
       new HostConfigurationBuilder(experiment, this);
     tabbedPane.add("Configurations", hcb);
 
+    tabbedPane.add("Communities", communityPanel);
+
     // Only need to add the ThreadBuilder if there are threads
     if (DBUtils.containsCMTAssembly(experiment.getExperimentID())) {
       threadBuilder = new ThreadBuilder(experiment);
@@ -319,7 +332,7 @@ public class ExperimentBuilder extends JFrame {
     experiment.setEditInProgress(true);
     getContentPane().add(tabbedPane);
     pack();
-    setSize(650, 400);
+    setSize(660, 600);
 
     setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     addWindowListener(new WindowAdapter() {
@@ -362,10 +375,11 @@ public class ExperimentBuilder extends JFrame {
     experiment = newExperiment;
     propertyBuilder.reinit(experiment);
     hcb.reinit(experiment);
+    communityPanel.reinit(experiment);
     // only display trial builder for non-database experiments
+    // trialBuilder.reinit(experiment);
     // only display thread builder for database experiments
     threadBuilder.reinit(experiment);
-    // trialBuilder.reinit(experiment);
     experiment.setEditInProgress(true);
   }
 
@@ -459,21 +473,24 @@ public class ExperimentBuilder extends JFrame {
       public void menuDeselected(MenuEvent e) {
       }
       public void menuSelected(MenuEvent e) {
-        // if host configuration builder not selected
-        // disable all the menu commands for it
-        if (!tabbedPane.getSelectedComponent().equals(hcb)) {
-          globalCommandLineMenuItem.setEnabled(false);
-          newHostMenuItem.setEnabled(false);
-          newNodeMenu.setEnabled(false);
-          commandLineMenuItem.setEnabled(false);
-          describeHostMenuItem.setEnabled(false);
-          describeNodeMenuItem.setEnabled(false);
-          hostTypeMenuItem.setEnabled(false);
-          hostLocationMenuItem.setEnabled(false);
-          deleteHostMenuItem.setEnabled(false);
-          deleteNodeMenuItem.setEnabled(false);
+        Component selectedComponent = tabbedPane.getSelectedComponent();
+        boolean communityEnabled = selectedComponent.equals(communityPanel);
+        newCommunityMenuItem.setEnabled(communityEnabled);
+        viewCommunityMenuItem.setEnabled(communityEnabled);
+        boolean hcbEnabled = selectedComponent.equals(hcb);
+        globalCommandLineMenuItem.setEnabled(hcbEnabled);
+        newHostMenuItem.setEnabled(hcbEnabled);
+        newNodeMenu.setEnabled(hcbEnabled);
+        commandLineMenuItem.setEnabled(hcbEnabled);
+        describeHostMenuItem.setEnabled(hcbEnabled);
+        describeNodeMenuItem.setEnabled(hcbEnabled);
+        hostTypeMenuItem.setEnabled(hcbEnabled);
+        hostLocationMenuItem.setEnabled(hcbEnabled);
+        deleteHostMenuItem.setEnabled(hcbEnabled);
+        deleteNodeMenuItem.setEnabled(hcbEnabled);
+        if (!hcbEnabled)
           return;
-        }
+        // configure menu items for host configuration builder
         // enable "global command line" command 
         // if either root, or any set of hosts or nodes is selected
         DefaultMutableTreeNode[] hostsInHostTree = 

@@ -178,14 +178,6 @@ public class Organizer extends JScrollPane {
       }
     };
 
-  protected AbstractAction buildCommunityAction =
-    new AbstractAction(ActionUtil.BUILD_COMMUNITY_ACTION, 
-                       new ImageIcon(getClass().getResource("Experiment16t.gif"))) {
-	public void actionPerformed(ActionEvent e) {
-	  organizer.startCommunityBuilder();
-	}
-      };
-
   protected AbstractAction buildExperimentAction =
     new AbstractAction(ActionUtil.BUILD_ACTION, 
                        new ImageIcon(getClass().getResource("Experiment16t.gif"))) {
@@ -457,13 +449,6 @@ public class Organizer extends JScrollPane {
     return new Experiment(name,
                           null,
                           new RecipeComponent[] {recipe});
-  }
-
-  protected void startCommunityBuilder() {
-    DefaultMutableTreeNode node = getSelectedNode();
-    Object o = node.getUserObject();
-    if (o instanceof Experiment)
-      csmart.runCommunityBuilder((Experiment)o);
   }
 
   /**

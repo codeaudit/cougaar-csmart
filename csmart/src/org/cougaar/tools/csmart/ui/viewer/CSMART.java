@@ -69,7 +69,6 @@ import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.cdata.SocietyCDataComponent;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.analyzer.Analyzer;
-import org.cougaar.tools.csmart.ui.community.CommunityFrame;
 import org.cougaar.tools.csmart.ui.configbuilder.PropertyBuilder;
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.experiment.ExperimentBuilder;
@@ -145,14 +144,12 @@ public class CSMART extends JFrame {
   private static final String EXPERIMENT_CONTROLLER = "Experiment Controller";
   private static final String SOCIETY_MONITOR = "Society Monitor";
   private static final String PERFORMANCE_ANALYZER = "Performance Analyzer";
-  private static final String COMMUNITY_BUILDER = "Community Builder";
   private static final String[] views = {
     CONFIGURATION_BUILDER,
     EXPERIMENT_BUILDER,
     EXPERIMENT_CONTROLLER,
     SOCIETY_MONITOR,
-    PERFORMANCE_ANALYZER,
-    COMMUNITY_BUILDER
+    PERFORMANCE_ANALYZER
   };
 
   private static final String[] tooltips = {
@@ -160,8 +157,7 @@ public class CSMART extends JFrame {
     "Configure an experiment.",
     "Start, stop and abort experiments.",
     "Monitor a running society.",
-    "Analyze results of running an experiment.",
-    "Configure community"
+    "Analyze results of running an experiment."
   };
 
   private static final String[] iconFilenames = {
@@ -169,8 +165,7 @@ public class CSMART extends JFrame {
     "Experiment48t.gif",
     "EC.gif",
     "SM.gif",
-    "PA.gif",
-    "SB.gif"
+    "PA.gif"
   };
 
   private CSMART csmart;
@@ -298,8 +293,7 @@ public class CSMART extends JFrame {
       organizer.buildExperimentAction,
       organizer.runExperimentAction,
       societyAction,
-      analyzerAction,
-      organizer.buildCommunityAction
+      analyzerAction
     };
 
     for (int i = 0; i < views.length; i++) {
@@ -615,11 +609,6 @@ public class CSMART extends JFrame {
       addTool(CONFIGURATION_BUILDER, societyCopy.getShortName(), tool);
       GUIUtils.timeConsumingTaskEnd(csmart);
     }
-  }
-
-  protected void runCommunityBuilder(Experiment experiment) {
-    JFrame tool = (JFrame)new CommunityFrame(experiment);
-    addTool(COMMUNITY_BUILDER, experiment.getExperimentName(), tool);
   }
 
   /**

@@ -113,7 +113,7 @@ public class ConsoleDNDTree extends DNDTree {
     } else if (o instanceof DMTNArray) {
       return new CTOArrayTransferable((DMTNArray) o);
     }
-    return null;
+    throw new IllegalArgumentException("Not a DefaultMutableTreeNode or DMTNArray");
   }
 
   /**

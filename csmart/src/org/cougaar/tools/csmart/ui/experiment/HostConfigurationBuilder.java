@@ -75,19 +75,19 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   // menu items for popup menu in hostTree and for 
   // File menu in ExperimentBuilder
-  public static final String NEW_HOST_MENU_ITEM = "New Host";
-  public static final String NEW_NODE_MENU_ITEM = "New Node";
+  public static final String NEW_HOST_MENU_ITEM = "New Host...";
+  public static final String NEW_NODE_MENU_ITEM = "New Node...";
   public static final String DELETE_MENU_ITEM = "Delete";
   public static final String DELETE_HOST_MENU_ITEM = "Delete Host";
   public static final String DELETE_NODE_MENU_ITEM = "Delete Node";
-  public static final String DESCRIBE_MENU_ITEM = "Describe";
-  public static final String DESCRIBE_HOST_MENU_ITEM = "Describe Host";
-  public static final String DESCRIBE_NODE_MENU_ITEM = "Describe Node";
-  public static final String NODE_COMMAND_LINE_MENU_ITEM = "Command Line Arguments";
+  public static final String DESCRIBE_MENU_ITEM = "Describe...";
+  public static final String DESCRIBE_HOST_MENU_ITEM = "Describe Host...";
+  public static final String DESCRIBE_NODE_MENU_ITEM = "Describe Node...";
+  public static final String NODE_COMMAND_LINE_MENU_ITEM = "Command Line Arguments...";
   public static final String GLOBAL_COMMAND_LINE_MENU_ITEM =
-    "Global Command Line Arguments";
-  public static final String HOST_TYPE_MENU_ITEM = "Type";
-  public static final String HOST_LOCATION_MENU_ITEM = "Location";
+    "Global Command Line Arguments...";
+  public static final String HOST_TYPE_MENU_ITEM = "Type...";
+  public static final String HOST_LOCATION_MENU_ITEM = "Location...";
   public static final String DISPLAY_ARGS_ACTION = "Display Command Line Arguments";
   private JPanel hostConfigurationBuilder;
   // map agent component to node component
@@ -115,7 +115,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private void initDisplay() {
     // host split pane contains host tree and 
     // the bottom split pane which contains the node and agent trees
-    JSplitPane hostPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+    JSplitPane hostPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
     // tree of hosts and assigned nodes and agents
     DefaultMutableTreeNode root = 
@@ -305,7 +305,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostTree.addMouseListener(hostTreeMouseListener);
 
     // bottom split pane contains the node and agent trees
-    JSplitPane bottomPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+    JSplitPane bottomPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     // tree of unassigned nodes
     ConsoleTreeObject cto = new ConsoleTreeObject("Nodes (unassigned)", 
                  "org.cougaar.tools.csmart.experiment.NodeComponent");
@@ -429,8 +429,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostPane.setBottomComponent(bottomPane);
     setLayout(new BorderLayout());
     add(hostPane, BorderLayout.CENTER);
-    hostPane.setDividerLocation(100);
-    bottomPane.setDividerLocation(100);
+    hostPane.setDividerLocation(220);
+    bottomPane.setDividerLocation(220);
   }
 
   /**

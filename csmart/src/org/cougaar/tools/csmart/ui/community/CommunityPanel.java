@@ -40,35 +40,14 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 
-public class CommunityFrame extends JFrame {
-  // database queries
-//    private static final String GET_COMMUNITIES_QUERY = "Select community_id from community_entity_attribute";
-//    private static final String GET_ENTITIES_QUERY = "Select entity_id from community_entity_attribute where community_entity_attribute.community_id ='";
-//    private static final String GET_MEMBER_TYPE_QUERY = "Select attribute_value from community_entity_attribute where community_entity_attribute.entity_id = '";
-//    private static final String GET_ALL_COMMUNITY_INFO_QUERY = "Select community_entity_attribute.community_id, community_entity_attribute.entity_id, community_entity_attribute.attribute_id, community_entity_attribute.attribute_value, community_attribute.attribute_id, community_attribute.attribute_value from community_entity_attribute, community_attribute where community_attribute.community_id=community_entity_attribute.community_id and community_attribute.community_id='";
-//    public static final String GET_COMMUNITY_INFO_QUERY = "Select * from community_attribute where community_attribute.community_id='";
-//    public static final String GET_ENTITY_INFO_QUERY = "Select entity_id, attribute_id, attribute_value from community_entity_attribute where community_entity_attribute.community_id = '";
-//    public static final String INSERT_COMMUNITY_INFO_QUERY = "Insert into community_attribute values ('";
-//    public static final String INSERT_ENTITY_INFO_QUERY = "Insert into community_entity_attribute values ('";
-//    public static final String DELETE_COMMUNITY_INFO_QUERY = "Delete from community_attribute where community_id = '";
-//    public static final String DELETE_ENTITY_INFO_QUERY = "Delete from community_entity_attribute where community_id = '";
-//    public static final String IS_COMMUNITY_IN_USE_QUERY = "Select entity_id from community_entity_attribute where community_id = '";
-//    public static final String IS_IN_COMMUNITY_QUERY =  "Select entity_id from community_entity_attribute where community_id = '";
-
-  private static final String FILE_MENU = "File";
-  private static final String CLOSE_ACTION = "Close";
-  private static final String VIEW_MENU = "View";
-  private static final String VIEW_COMMUNITY_ACTION = "Community";
-  private static final String HELP_MENU = "Help";
-  private static final String HELP_DOC = "help.html";
-  private static final String HELP_ACTION = "Help";
-  private static final String ABOUT_ACTION = "About CSMART";
-  private static final String ABOUT_DOC = "../../help/about-csmart.html";
-  private static final String NEW_COMMUNITY_ACTION = "New Community";
+public class CommunityPanel extends JPanel {
+  private static final String VIEW_COMMUNITY_ACTION = "Display Community...";
+  private static final String NEW_COMMUNITY_ACTION = "New Community...";
   private static final String VIEW_COMMUNITY_INFO_ACTION = "Show All Parameters";
   private static final String ADD_PARAMETER_ACTION = "Add Parameter";
   private static final String DELETE_ACTION = "Delete";
-
+  private JSplitPane splitPane;
+  private JSplitPane treePane;
   private CommunityDNDTree communityTree;
   private CommunityTreeModelListener treeModelListener;
   private JTable communityTable;
@@ -78,36 +57,14 @@ public class CommunityFrame extends JFrame {
   private JPopupMenu parentEntityMenu;
   private JPopupMenu entityMenu;
 
-  private Action closeAction = new AbstractAction(CLOSE_ACTION) {
-      public void actionPerformed(ActionEvent e) {
-        close();
-      }
-    };
-
-  private Action viewCommunityAction = new AbstractAction(VIEW_COMMUNITY_ACTION) {
+  public Action viewCommunityAction = new AbstractAction(VIEW_COMMUNITY_ACTION) {
       public void actionPerformed(ActionEvent e) {
         displayCommunityInformation();
       }
     };
 
-  private Action helpAction = new AbstractAction(HELP_ACTION) {
-      public void actionPerformed(ActionEvent e) {
-        URL help = (URL)CommunityFrame.class.getResource(HELP_DOC);
-        if(help != null)
-          Browser.setPage(help);
-      }
-    };
-
-  private Action aboutAction = new AbstractAction(ABOUT_ACTION) {
-      public void actionPerformed(ActionEvent e) {
-        URL help = (URL)CommunityFrame.class.getResource(ABOUT_DOC);
-        if(help != null)
-          Browser.setPage(help);
-      }
-    };
-
   // actions on pop-up menus
-  private AbstractAction newCommunityAction = new AbstractAction(NEW_COMMUNITY_ACTION) {
+  public AbstractAction newCommunityAction = new AbstractAction(NEW_COMMUNITY_ACTION) {
       public void actionPerformed(ActionEvent e) {
         createCommunity();
       }
@@ -131,42 +88,25 @@ public class CommunityFrame extends JFrame {
       }
     };
 
-  public CommunityFrame(Experiment experiment) {
-    JMenuBar menuBar = new JMenuBar();
-    getRootPane().setJMenuBar(menuBar);
-    JMenu fileMenu = new JMenu(FILE_MENU);
-    fileMenu.add(new JMenuItem(closeAction));
-    menuBar.add(fileMenu);
-    JMenu viewMenu = new JMenu(VIEW_MENU);
-    viewMenu.add(new JMenuItem(viewCommunityAction));
-    menuBar.add(viewMenu);
-    JMenu helpMenu = new JMenu(HELP_MENU);
-    helpMenu.add(new JMenuItem(helpAction));
-    helpMenu.add(new JMenuItem(aboutAction));
-    menuBar.add(helpMenu);
-    getRootPane().setJMenuBar(menuBar);
-
+  public CommunityPanel(Experiment experiment) {
     communityTable = createTable();
-    JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     splitPane.setLeftComponent(new JScrollPane(communityTable));
-    JSplitPane treePane = createTreeDisplay(experiment);
+    treePane = createTreeDisplay(experiment);
     splitPane.setRightComponent(treePane);
-    splitPane.setDividerLocation(300);
+    splitPane.setDividerLocation(400);
     splitPane.validate();
-    getContentPane().setLayout(new BorderLayout());
-    getContentPane().add("Center", splitPane);
+    setLayout(new BorderLayout());
+    add("Center", splitPane);
     JPanel topPanel = new JPanel();
     topPanel.add(new JLabel("Community Editor", SwingConstants.CENTER));
-    getContentPane().add("North", topPanel);
-    pack();
-    setVisible(true);
-    // for debugging
-    //    displayQueryFrame();
+    add("North", topPanel);
   }
 
-  private void close() {
-    NamedFrame.getNamedFrame().removeFrame(CommunityFrame.this);
-    dispose();
+  public void reinit(Experiment experiment) {
+    splitPane.remove(treePane);
+    treePane = createTreeDisplay(experiment);
+    splitPane.setRightComponent(treePane);
   }
 
   private JTable createTable() {
@@ -252,9 +192,9 @@ public class CommunityFrame extends JFrame {
     paneTwo.setBottomComponent(paneThree);
     paneOne.setTopComponent(communityScrollPane);
     paneOne.setBottomComponent(paneTwo);
-    paneOne.setDividerLocation(150);
-    paneTwo.setDividerLocation(150);
-    paneThree.setDividerLocation(150);
+    paneOne.setDividerLocation(100);
+    paneTwo.setDividerLocation(100);
+    paneThree.setDividerLocation(100);
     addHostsFromExperiment(hostTree, experiment);
     addUnassignedNodesFromExperiment(nodeTree, experiment);
     addUnassignedAgentsFromExperiment(agentTree, experiment);
