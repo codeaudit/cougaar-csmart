@@ -41,11 +41,11 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 public class StripChart extends JCChart {
   Color tan = new Color(0xe2,0xc4,0x9c);
   Color lightTan = new Color(0xff,0xe2,0xba);
-  Logger log;
+  Logger log = null;
 
   public StripChart() {
     super(JCChart.PLOT);
-    Logger log = CSMART.createLogger(this.getClass().getName());
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void init(ChartDataModel data) {
