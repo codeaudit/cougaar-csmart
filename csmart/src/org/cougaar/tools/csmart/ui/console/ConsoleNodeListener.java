@@ -46,7 +46,8 @@ public class ConsoleNodeListener implements NodeEventListener {
   private NodeComponent nodeComponent;
   private String nodeName;
   private Writer logFile;
-  private StyledDocument userDisplay;
+  //  private StyledDocument userDisplay;
+  private RollingStyledDocument userDisplay;
   private SimpleAttributeSet[] atts;
   private StripChartFrame chartFrame;
   private JCChart chart;
@@ -57,7 +58,7 @@ public class ConsoleNodeListener implements NodeEventListener {
   public ConsoleNodeListener(CSMARTConsole console,
 			     NodeComponent nodeComponent,
 			     String logFileName, 
-			     StyledDocument userDisplay,
+			     RollingStyledDocument userDisplay,
 			     JRadioButton statusButton) throws IOException {
 
     this.console = console;
@@ -173,6 +174,8 @@ public class ConsoleNodeListener implements NodeEventListener {
     } catch (Exception e) {
     }
 
+    //    System.out.println("CNL: " + nodeName + ": " + nodeEventDescription);
+
     // must use swing "invokeLater" to be thread-safe
     try {
       SwingUtilities.invokeLater(new Runnable() {
@@ -182,8 +185,9 @@ public class ConsoleNodeListener implements NodeEventListener {
 	      handleIdleUpdate(idleTime, timestamp);
 	    else {
 	      updateStatus(nodeEventType);
-	      userDisplay.insertString(userDisplay.getLength(), 
-				       nodeEventDescription, style);
+	      //	      userDisplay.insertString(userDisplay.getLength(), 
+	      //				       nodeEventDescription, style);
+	      userDisplay.appendString(nodeEventDescription, style);
 	    } 
 	  } catch (Exception e) {
 	  }
@@ -211,6 +215,7 @@ public class ConsoleNodeListener implements NodeEventListener {
       do {
 	NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
 	logFile.write(getNodeEventDescription(nodeEvent));
+	//	System.out.println("CNL: " + nodeName + ": " + getNodeEventDescription(nodeEvent));
       } while (++i < n);
     } catch (Exception e) {
       System.out.println("Exception writing to log file: " + e);
@@ -259,8 +264,10 @@ public class ConsoleNodeListener implements NodeEventListener {
 	      prevDescription += description;
 	    } else {
 	      try {
-		userDisplay.insertString(userDisplay.getLength(), 
-					 prevDescription,
+//  		userDisplay.insertString(userDisplay.getLength(), 
+//  					 prevDescription,
+//  					 getNodeEventStyle(prevType));
+		userDisplay.appendString(prevDescription, 
 					 getNodeEventStyle(prevType));
 	      } catch (Exception e) {
 		break;
@@ -271,8 +278,10 @@ public class ConsoleNodeListener implements NodeEventListener {
 	  }
 	  // write the last batch of descriptions
 	  try {
-	    userDisplay.insertString(userDisplay.getLength(), 
-				     prevDescription, 
+//  	    userDisplay.insertString(userDisplay.getLength(), 
+//  				     prevDescription, 
+//  				     getNodeEventStyle(prevType));
+	    userDisplay.appendString(prevDescription,
 				     getNodeEventStyle(prevType));
 	  } catch (Exception e) {
 	  }

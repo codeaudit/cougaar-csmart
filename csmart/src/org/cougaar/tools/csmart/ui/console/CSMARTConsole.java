@@ -62,6 +62,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   public static final String DEFAULT_SERVER_NAME = "ServerHook";
 
   JFrame consoleFrame;
+  HostConfigurationBuilder hostConfiguration;
   CommunityServesClient communitySupport;
   String nameServerHostName;
   SocietyComponent societyComponent;
@@ -74,6 +75,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   javax.swing.Timer trialTimer;
   javax.swing.Timer experimentTimer;
   boolean userStoppedTrials = false;
+  boolean stopping = false;
+  boolean aborting = false;
   Hashtable runningNodes; // maps NodeComponents to NodeServesClient
   Hashtable oldNodes; // store old charts till next experiment is started
   Hashtable charts; // maps node name to idle time chart
@@ -352,12 +355,10 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
     // create tabbed panes for configuration information (not editable)
     JTabbedPane configTabbedPane = new JTabbedPane();
-    configTabbedPane.add("Configuration", 
-			 new HostConfigurationBuilder(experiment));
-    // TODO: society component should be non-editable at this point
+    hostConfiguration = new HostConfigurationBuilder(experiment);
+    configTabbedPane.add("Configuration", hostConfiguration);
     configTabbedPane.add("Trial Values", 
 			 new PropertyEditorPanel(experiment.getComponentsAsArray()));
-    //			 new PropertyEditorPanel((ModifiableConfigurableComponent)societyComponent));
 
     // create tabbed panes for running nodes, tabs are added dynamically
     tabbedPane = new JTabbedPane();
@@ -505,6 +506,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * and create a status button and
    * tabbed pane for it.
    */
+
   public void runButton_actionPerformed(ActionEvent e) {
     destroyOldNodes(); // Get rid of any old stuff before creating the new
     userStoppedTrials = false;
@@ -539,16 +541,19 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       return; // nothing to run
     }
 
+    // query user for results directory before running the first time
+    getResultDir(); 
+    if (nodesToRun.length != 0) 
+      runTrial();
+  }
+
+  private void runTrial() {
     setTrialValues();
-    if (nodesToRun.length != 0) {
-      // query user for results directory before running the first time
-      getResultDir(); 
-      createNodes();
-      // select tabbed pane and status button for first node
-      String firstNodeName = nodesToRun[0].getShortName();
-      selectTabbedPane(firstNodeName);
-      selectStatusButton(firstNodeName);
-    }
+    createNodes();
+    // select tabbed pane and status button for first node
+    String firstNodeName = nodesToRun[0].getShortName();
+    selectTabbedPane(firstNodeName);
+    selectStatusButton(firstNodeName);
   }
 
   /**
@@ -557,15 +562,12 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    */
 
   private void createNodes() {
-    ConfigurationWriter configWriter = 
-      experiment.getConfigurationWriter(nodesToRun);
     boolean haveRunningNode = false;
     runStart = new Date();
     for (int i = 0; i < nodesToRun.length; i++) {
       NodeComponent nodeComponent = nodesToRun[i];
-      if (createNode(nodeComponent, nodeComponent.toString(), 
-		     hostsToRunOn[i],
-		     configWriter))
+      if (createNode(nodeComponent, nodeComponent.getShortName(), 
+		     hostsToRunOn[i]))
 	haveRunningNode = true;
     }
     if (!haveRunningNode) {
@@ -583,6 +585,9 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * Set the trial values in the corresponding properties,
    * and update the trial guis.
+   * Check if there are any new unassigned agents and assign them.
+   * Remove any agents that no longer exist.
+   * Update the configuration view.
    */
 
   private void setTrialValues() {
@@ -596,6 +601,10 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     Object[] values = trial.getValues();
     for (int i = 0; i < properties.length; i++) 
       properties[i].setValue(values[i]);
+    // assign any unassigned agents 
+    assignUnassignedAgents();
+    // update host-node-agent panel
+    hostConfiguration.update();
   }
 
   /**
@@ -610,6 +619,39 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     Property[] properties = trial.getParameters();
     for (int i = 0; i < properties.length; i++) 
       properties[i].setValue(null);
+  }
+
+  /**
+   * Assign any unassigned agents before each trial.
+   */
+
+  private void assignUnassignedAgents() {
+    // get the nodes in the experiment
+    // note that this reconciles node agents to society agents,
+    // removing any agents that no longer exist
+    NodeComponent[] nodes = experiment.getNodes();
+    if (nodes.length == 0)
+      return; // no nodes to use
+    // get all assigned agents
+    ArrayList assignedAgents = new ArrayList();
+    HostComponent[] hosts = experiment.getHosts();
+    for (int i = 0; i < hosts.length; i++) {
+      NodeComponent[] nodesInHost = hosts[i].getNodes();
+      for (int j = 0; j < nodesInHost.length; j++) { 
+	assignedAgents.addAll(Arrays.asList(nodesInHost[j].getAgents()));
+      }
+    }
+    // assign all unassigned agents to nodes    
+    int nextNode = 0;
+    int nNodes = nodes.length;
+    AgentComponent[] agents = experiment.getAgents();
+    for (int i = 0; i < agents.length; i++) {
+      if (!assignedAgents.contains(agents[i])) {
+	nodes[nextNode++].addAgent(agents[i]);
+	if (nextNode == nNodes)
+	  nextNode = 0;
+      }
+    }
   }
 
   /**
@@ -655,15 +697,15 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * returned by createNode).
    */
   public void abortButton_actionPerformed(ActionEvent e) {
+    aborting = true;
     stopAllNodes();
-    abortButton.setSelected(false);
-    experimentTimer.stop();
   }
 
   /**
    * Stop all experiments.  Called before exiting CSMART.
    */
   public void stopExperiments() {
+    // TODO: kill the Console Node Listeners?
     stopAllNodes(); // stop the nodes
     destroyOldNodes(); // kill all their outputs
     unsetTrialValues(); // unset values from last trial
@@ -675,12 +717,14 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * and used to abort trials.
    */
   private void stopAllNodes() {
+    // set a flag indicating that we're stopping the trial
+    stopping = true;
     Enumeration nodeComponents = runningNodes.keys();
     while (nodeComponents.hasMoreElements()) {
       NodeComponent nodeComponent = 
 	(NodeComponent)nodeComponents.nextElement();
       NodeServesClient nsc = (NodeServesClient)runningNodes.get(nodeComponent);
-      String nodeName = nodeComponent.toString();
+      String nodeName = nodeComponent.getShortName();
       if (nsc == null) {
         System.err.println("Unknown node name: " + nodeName);
 	continue;
@@ -688,18 +732,12 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       try {
         nsc.flushNodeEvents();
         nsc.destroy();
+	System.out.println("NODE DESTROYED: " + nodeName);
       } catch (Exception ex) {
         System.err.println("Unable to destroy node: " + ex);
 	continue;
       }
-      // Don't get rid of the old tabbed panes - good for debugging
-      oldNodes.put(nodeComponent, nsc);
-      runningNodes.remove(nodeComponent);
     }
-    trialFinished();
-    // experiment is stopped
-    if (!haveMoreTrials()) 
-      experimentFinished();
   }
 
   // Kill any existing tabbed panes or history charts
@@ -708,7 +746,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     while (nodeComponents.hasMoreElements()) {
       NodeComponent nodeComponent = 
 	(NodeComponent)nodeComponents.nextElement();
-      String nodeName = nodeComponent.toString();
+      String nodeName = nodeComponent.getShortName();
       removeTabbedPane(nodeName);
       removeStatusButton(nodeName);
       oldNodes.remove(nodeComponent);
@@ -736,16 +774,23 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     int nSocieties = experiment.getSocietyComponentCount();
     for (int i = 0; i < nSocieties; i++)
       experiment.getSocietyComponent(i).setRunning(isRunning);
-    // update trees, buttons, menu items
-    //    hostTree.setEditable(!isRunning);
-    //    nodeTree.setEditable(!isRunning);
-    //    agentTree.setEditable(!isRunning);
+
+    // if aborting, disable and unselect all controls
+    if (aborting) {
+      runButton.setEnabled(false);
+      runButton.setSelected(false);
+      stopButton.setEnabled(false);
+      stopButton.setSelected(false);
+      abortButton.setEnabled(false);
+      abortButton.setSelected(false);
+      historyMenuItem.setEnabled(false);
+      return;
+    }
 
     // if not running, enable the run button, and don't select it
     // if running, disable the run button and select it
     runButton.setEnabled(!isRunning && haveMoreTrials());
     runButton.setSelected(isRunning);
-    //    runButton.setEnabled(true);
 
     // if running, enable the stop button and don't select it
     // if not running, disable the stop button and don't select it
@@ -758,32 +803,36 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * Called by ConsoleNodeListener when node has stopped.
    * If all nodes are stopped, then trial is stopped.
+   * Wait for this method to be called on each node before 
+   * starting the next trial
    * Run the next trial.
    * Update the gui controls.
    */
   public void nodeStopped(NodeComponent nodeComponent) {
     oldNodes.put(nodeComponent, runningNodes.get(nodeComponent));
     runningNodes.remove(nodeComponent);
-    //    String nodeName = nodeComponent.toString();
-    //removeTabbedPane(nodeName);
-    //removeStatusButton(nodeName);
+    System.out.println("NODE STOPPED: " + nodeComponent.getShortName());
 
+    // when any node has stopped, kill the rest of the nodes
+    // unless we're already killing the other nodes
+    if (!stopping) 
+      stopAllNodes();
     // when all nodes have stopped, save results
     // run the next trial and update the gui controls
     if (runningNodes.isEmpty()) {
+      stopping = false;
       trialFinished();
-      if (haveMoreTrials()) {
+      if (aborting) {
+	experimentFinished();
+	aborting = false;
+      } else if (haveMoreTrials()) {
 	if (!userStoppedTrials) {
 	  destroyOldNodes(); // destroy old guis before starting new ones
-	  setTrialValues();
-	  createNodes();
-	  String firstNodeName = nodesToRun[0].getShortName();
-	  selectTabbedPane(firstNodeName);
-	  selectStatusButton(firstNodeName);
+	  runTrial(); // run next trial
 	} else { // user stopped trials, allow them to run the next one
 	  runButton.setSelected(false);
 	}
-      } else { // experiment is done
+      } else { // no more trials, experiment is done
 	experimentFinished();
       }
     }
@@ -983,9 +1032,11 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * Returns true if successful and false otherwise.
    */
   private boolean createNode(NodeComponent nodeComponent,
-			     String nodeName, String hostName,
-			     ConfigurationWriter configWriter) {
-    DefaultStyledDocument doc = new DefaultStyledDocument();
+			     String nodeName, String hostName) {
+    // create an unique node name to circumvent server problems
+    String uniqueNodeName = nodeName + currentTrial;
+    //    DefaultStyledDocument doc = new DefaultStyledDocument();
+    RollingStyledDocument doc = new RollingStyledDocument();
     JTextPane pane = new JTextPane(doc);
     JScrollPane stdoutPane = new JScrollPane(pane);
 
@@ -1017,7 +1068,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     // so that idle display is "smooth"
     NodeEventFilter filter = new NodeEventFilter();
     Properties properties = new Properties();
-    properties.put("org.cougaar.node.name", nodeName);
+    properties.put("org.cougaar.node.name", uniqueNodeName);
     String nameServerPorts = "8888:5555";
     properties.put("org.cougaar.tools.server.nameserver.ports", nameServerPorts);
     properties.put("org.cougaar.name.server", 
@@ -1027,7 +1078,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     int port = 8484;
     String[] args = new String[4];
     args[0] = "-f";
-    args[1] = nodeName + ".ini";
+    args[1] = uniqueNodeName + ".ini";
     args[2] = "-controlPort";
     args[3] = Integer.toString(port);
 //     System.out.println("CSMARTConsole: creating node with:" + 
@@ -1045,7 +1096,13 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 //     System.out.println(" Properties: ");
 //     properties.list(System.out);
 
-    // write the node component properties
+    // set configuration file names in nodesToRun
+    for (int i = 0; i < nodesToRun.length; i++) 
+      ((ConfigurableComponent)nodesToRun[i]).addProperty("ConfigurationFileName", 
+				nodesToRun[i].getShortName() + currentTrial);
+    // write the configuration files
+    ConfigurationWriter configWriter = 
+      experiment.getConfigurationWriter(nodesToRun);
     try {
       configWriter.writeConfigFiles(new File("."));
     } catch (Exception e) {
@@ -1060,10 +1117,11 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     // create the node
     try {
       HostServesClient hsc = communitySupport.getHost(hostName, port);
-      NodeServesClient nsc = hsc.createNode(nodeName, properties, args, 
+      NodeServesClient nsc = hsc.createNode(uniqueNodeName, properties, args, 
       					    listener, filter, configWriter);
       if (nsc != null)
 	runningNodes.put(nodeComponent, nsc);
+      System.out.println("CREATED NODE: " + nodeName);
     } catch (Exception e) {
        System.out.println("CSMARTConsole: cannot create node: " + nodeName);
        JOptionPane.showMessageDialog(this,
@@ -1163,11 +1221,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     File resultDir = experiment.getResultDirectory();
     if (resultDir != null)
       return resultDir;
-
-    // FIXME: 
-    // Don't make the user pick one if this gets called
-    // when the console is not visible & the analyzer is not visible
-    
     String resultDirName = ".";
     try {
       resultDirName = System.getProperty("org.cougaar.install.path");
