@@ -39,6 +39,8 @@ import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
@@ -64,13 +66,12 @@ import org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.AgentInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.ParameterInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe;
+import org.cougaar.tools.csmart.recipe.RecipeList;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.tools.csmart.society.ui.SocietyUIComponent;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.tools.csmart.recipe.RecipeList;
 
 /**
  * The Organizer holds all the component a user creates
