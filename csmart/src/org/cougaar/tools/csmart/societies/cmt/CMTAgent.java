@@ -22,6 +22,7 @@ package org.cougaar.tools.csmart.societies.cmt;
 
 import java.io.Serializable;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.*;
 import java.sql.SQLException;
 import java.sql.Connection;
@@ -56,10 +57,7 @@ public class CMTAgent
   private String name;
   private List assemblyID;
 
-  private String database;
-  private String username;
-  private String password;
-  private DBProperties dbp;
+  private transient DBProperties dbp;
   private Map substitutions = new HashMap();
 
   public CMTAgent() {
@@ -77,10 +75,7 @@ public class CMTAgent
     StringBuffer assemblyMatch = null;
 
     try {
-      dbp = DBProperties.readQueryFile(DBUtils.DATABASE, DBUtils.QUERY_FILE);
-      database = dbp.getProperty("database");
-      username = dbp.getProperty("username");
-      password = dbp.getProperty("password");
+      initDBProperties();
       assemblyMatch = new StringBuffer();
       assemblyMatch.append("in (");
       Iterator iter = assemblyID.iterator();
@@ -105,7 +100,7 @@ public class CMTAgent
     }
 
     try {
-      Connection conn = DBConnectionPool.getConnection(database, username, password);
+      Connection conn = DBUtils.getConnection();
       try {
 	Statement stmt = conn.createStatement();
 	String query = dbp.getQuery(QUERY_AGENT_DATA, substitutions);
@@ -143,6 +138,11 @@ public class CMTAgent
 
   }
 
+  private void initDBProperties() throws IOException {
+    dbp = DBProperties.readQueryFile(DBUtils.DATABASE, DBUtils.QUERY_FILE);
+    dbp.setDebug(true);
+  }
+
   private static String getNonNullString(ResultSet rs, int ix, String query)
     throws SQLException
   {
@@ -157,48 +157,29 @@ public class CMTAgent
     System.out.println("Agent: " + data.getName());
     StringBuffer assemblyMatch = null;
 
-    try {
-      dbp = DBProperties.readQueryFile(DBUtils.DATABASE, DBUtils.QUERY_FILE);
-      //      dbp.setDebug(true);
-      database = dbp.getProperty("database");
-      username = dbp.getProperty("username");
-      password = dbp.getProperty("password");
-      assemblyMatch = new StringBuffer();
-      assemblyMatch.append("in (");
-      Iterator iter = assemblyID.iterator();
-      boolean first = true;
-      while (iter.hasNext()) {
-	String val = (String)iter.next();
-	if (first) {
-	  first = false;
-	} else {
-	  assemblyMatch.append(", ");
-	}
-	assemblyMatch.append("'");
-	assemblyMatch.append(val);
-	assemblyMatch.append("'");
-      }
-      assemblyMatch.append(")");
-
-      substitutions.put(":assemblyMatch", assemblyMatch.toString());
-      substitutions.put(":agent_name", name);
-    } catch(IOException e) {
-      throw new RuntimeException("Error: " + e);
+    String name = data.getName();
+    int dotPos = name.lastIndexOf('.');
+    if (dotPos >= 0) {
+      name = name.substring(dotPos + 1);
     }
+    substitutions.put(":agent_name", name);
 
     // Get Plugin Names
     try {
-      Connection conn = DBConnectionPool.getConnection(database, username, password);
+      Connection conn = DBUtils.getConnection();
       try {
 	Statement stmt = conn.createStatement();	
+        dbp.setDebug(true);
 	String query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
 	ResultSet rs = stmt.executeQuery(query);
 	while(rs.next()) {
 	  GenericComponentData plugin = new GenericComponentData();
+          String pluginClassName = rs.getString(1);
 	  plugin.setType(ComponentData.PLUGIN);
+          plugin.setClassName(pluginClassName);
 	  plugin.setParent(data);
 	  plugin.setOwner(this);
-	  plugin.setName(rs.getString(1));
+	  plugin.setName(pluginClassName);
 	  data.addChild(plugin);
 	}
 
@@ -212,6 +193,13 @@ public class CMTAgent
 
     System.out.println("Done");
     return data;
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    initDBProperties();
   }
   
 } // end of CMTAgent.java
