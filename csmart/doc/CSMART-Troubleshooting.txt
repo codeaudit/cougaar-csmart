@@ -257,8 +257,6 @@ display value.
 You need to run 'xhost +' in the X Server on the machine running CSMART.
 
 Viewing Metrics Results
-- The Scalability society may not write any metrics until it has
-completed running.
 - Set the Sample Interval to non-zero (but small) to force the
 scalability society to take some intermediate samples
 - Be sure that on Windows you edited the command-line parameter
