@@ -129,14 +129,18 @@ public class PSP_CommunityProvider extends PSP_BaseAdapter implements PlanServic
       String name = psc.getServerPlugInSupport().getClusterIDAsString();
       properties.put(PropertyNames.AGENT_NAME, name);
       CommunityPG communityPG = asset.getCommunityPG(new Date().getTime());
-      Collection communities = communityPG.getCommunities();
-      if (communities.size() > 1) 
-	System.out.println("PSP_CommunityProvider: WARNING: handling agents in multiple communities is not implemented.");
-      Iterator i = communities.iterator();
       String communityName = null;
-      while (i.hasNext()) {
-	communityName = (String)i.next();
-	break;
+      if (communityPG != null) {
+	Collection communities = communityPG.getCommunities();
+	if (communities.size() > 1) 
+	  System.out.println("PSP_CommunityProvider: WARNING: handling agents in multiple communities is not implemented.");
+	Iterator i = communities.iterator();
+	while (i.hasNext()) {
+	  communityName = (String)i.next();
+	  break;
+	}
+      } else {
+	communityName = "COUGAAR";
       }
       if (communityName != null)
 	properties.put(PropertyNames.AGENT_COMMUNITY_NAME, communityName);
