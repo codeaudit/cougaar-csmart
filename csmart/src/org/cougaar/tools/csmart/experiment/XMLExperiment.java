@@ -33,19 +33,17 @@ import org.cougaar.tools.csmart.society.cdata.SocietyCDataComponent;
 import org.cougaar.tools.csmart.ui.console.CSMARTConsoleModel;
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import javax.xml.parsers.ParserConfigurationException;
+import javax.swing.*;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
-import java.io.CharArrayWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -59,17 +57,15 @@ public class XMLExperiment extends ExperimentBase {
 
   private ComponentData experiment;
   private String societyFileName;
+  private Component parent;
+  private ProgressMonitorInputStream monitor = null;
 
-  public XMLExperiment(File file) {
+  public XMLExperiment(File file, Component parent) {
     super(file.getName());
     this.file = file;
+    this.parent = parent;
     createLogger();
     setDefaultNodeArguments();
-    try {
-      parseFile();
-    } catch (Exception e) {
-      log.error("Exception reading society XML file " + file.getName(), e);
-    }
   }
 
   public ComponentData getSocietyComponentData() {
@@ -93,29 +89,26 @@ public class XMLExperiment extends ExperimentBase {
     return experiment;
   }
 
-  private void parseFile()
-      throws
-      FileNotFoundException,
-      IOException,
-      SAXException,
-      ParserConfigurationException {
-
+  public void doParse() throws Exception {
     MyHandler handler = new MyHandler();
     SAXParserFactory factory = SAXParserFactory.newInstance();
-    factory.setValidating(true);
+    //factory.setValidating(true);
     factory.setNamespaceAware(true);
     SAXParser saxParser = factory.newSAXParser();
 
-    InputSource is = new InputSource(new FileInputStream(file));
-    if (is != null) {
-      saxParser.parse(is, handler);
+    monitor = new ProgressMonitorInputStream(parent, "Parsing " + file.getName(), new FileInputStream(file));
+    InputStream in = new BufferedInputStream(monitor);
+    if (in != null) {
+      saxParser.parse(in, handler);
     } else {
       log.error("Unable to open " + file.getName() + " for XML initialization");
+      throw new IOException("Upable to open stream for " + file.getName());
     }
 
     SocietyComponent soc = new SocietyCDataComponent(experiment, null);
     soc.initProperties();
-    this.setSocietyComponent(soc);
+    setSocietyComponent(soc);
+    System.out.println("Here.");
   }
 
   protected void setDefaultNodeArguments() {
