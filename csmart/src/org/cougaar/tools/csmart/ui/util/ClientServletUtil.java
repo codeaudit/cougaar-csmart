@@ -60,22 +60,22 @@ public class ClientServletUtil {
    * @return Vector list of strings returned
    */
 
-  public static Vector getDataFromURL(String URLString) throws Exception {
-    URL url = new URL(URLString);
-    URLConnection connection = url.openConnection();
-    connection.setDoInput(true);
-    connection.setDoOutput(true);
-    InputStream is = connection.getInputStream();
-    BufferedReader r =
-      new BufferedReader(new InputStreamReader(is));
-    Vector data = new Vector();
-    String s = r.readLine();
-    while (s != null) {
-      data.add(s);
-      s = r.readLine();
-    }
-    return data;
-  }
+//    public static Vector getDataFromURL(String URLString) throws Exception {
+//      URL url = new URL(URLString);
+//      URLConnection connection = url.openConnection();
+//      connection.setDoInput(true);
+//      connection.setDoOutput(true);
+//      InputStream is = connection.getInputStream();
+//      BufferedReader r =
+//        new BufferedReader(new InputStreamReader(is));
+//      Vector data = new Vector();
+//      String s = r.readLine();
+//      while (s != null) {
+//        data.add(s);
+//        s = r.readLine();
+//      }
+//      return data;
+//    }
 
   /**
    * Contact the agent provider servlet at the specified URL,
@@ -134,22 +134,17 @@ public class ClientServletUtil {
 
     for (int i = 0; i < nAgentURLs; i++) {
       String url = (String)agentURLs.elementAt(i);
-      Collection col = 
-        getCollectionFromAgent(url, servletId, parameterNames,
-                               parameterValues, null, remainingLimit);
-
-      // if (col == null)
-      // don't add it, and maybe do some error checking?
-
-      result.addCollection(col);
+      ServletResponse response = 
+        getCollectionFromAgent(url, servletId, 
+                               parameterNames, parameterValues, 
+                               null, remainingLimit);
+      result.addServletResponse(response);
       // check limit, and set flag in result if its exceeded
       if (hasLimit) {
-        if (col != null) {
-          remainingLimit = remainingLimit - col.size();
-          if (remainingLimit < 0) {
-            result.setLimitExceeded(true);
-            break;
-          }
+        remainingLimit = remainingLimit - response.getCollection().size();
+        if (remainingLimit < 0) {
+          result.setLimitExceeded(true);
+          break;
         }
       }
     }
@@ -165,7 +160,7 @@ public class ClientServletUtil {
    * @param limit     max. number of objects to return, or -1 if no limit
    * @return          the collection from the servlet or null
    */
-  public static Collection getCollectionFromAgent(String agentURL,
+  public static ServletResponse getCollectionFromAgent(String agentURL,
                                                   String servletId,
                                                   ArrayList parameterNames,
                                                   ArrayList parameterValues,
@@ -178,6 +173,7 @@ public class ClientServletUtil {
     if (limit >= 0)
       URLSpec.addArg("limit", limit);
     String urlSpec = URLSpec.getResult();
+    String errorMessage = null;
     Collection results = null;
     HttpURLConnection connection = null;
     try {
@@ -197,8 +193,9 @@ public class ClientServletUtil {
       } catch (IOException ioe) {
 	if (log.isErrorEnabled()) {
 	  log.error("Got IOE talking to " + urlSpec, ioe);
-	}
-	return null;
+	} 
+        return new ServletResponse(urlSpec, null, 
+                                   "Error contacting servlet.");
       }
 
       // If we have any data to send to the client, do it now.
@@ -209,31 +206,22 @@ public class ClientServletUtil {
         oos.close();
       }
 
-      // Try to get the response code for this connection.
-      // If it is 404, that means that the servlet was not installed on that Agent
-      // We should, ideally, be able to do something reasonable....
+      // get the response from the client
       try {
 	int resp = ((HttpURLConnection)connection).getResponseCode();
 	if (resp != HttpURLConnection.HTTP_OK) {
-	  // Huh?
-	  if (resp == 404) {
-	    // If we had an experiment we could check
-	    // and see if we thought this guy was there.
-	    // This response is when there is no such servlet. IE you forgot
-	    // to load the CSMART Servlets here, or this is a NodeAgent where you
-	    // didn't load the CSMART Servlets
-	    if (log.isWarnEnabled()) {
-	      log.warn("Got 404 - file not found - trying to reach: " + urlSpec);
-	    }
-	    // FIXME! Handle this one better somehow?
-	  } else {
-	    if (log.isErrorEnabled()) {
-	      log.error("Exception contacting: " + urlSpec + ". Got HTTP Response " + resp);
-	    }
+          String cougaarError = 
+            ((HttpURLConnection)connection).getHeaderField("Cougaar-error");
+          if (cougaarError.equals("agent"))
+            errorMessage = "No such agent.";
+          else if (cougaarError.equals("path"))
+            errorMessage = "No such servlet.";
+          else
+            errorMessage = "Unknown error.";
+          if (log.isWarnEnabled()) {
+            log.warn("Got 404 - file not found - trying to reach: " + urlSpec);
 	  }
-	  // close the connection
-	  connection.disconnect();
-	  return null;
+	  return new ServletResponse(urlSpec, null, errorMessage);
 	} else {
 	  if (log.isInfoEnabled()) {
 	    log.info("Got OK connection: " + resp + " talking to " + urlSpec);
@@ -241,8 +229,11 @@ public class ClientServletUtil {
 	}
       } catch (SocketException e) {
 	if (log.isErrorEnabled()) {
-	  log.error("Exception contacting: " + urlSpec + ". Got SocketException ", e);
-	}
+	  log.error("Exception contacting: " + urlSpec + 
+                    ". Got SocketException ", e);
+	} 
+        return new ServletResponse(urlSpec, null, 
+                                   "Error getting servlet response.");
       }
 
       InputStream is = connection.getInputStream();
@@ -254,8 +245,9 @@ public class ClientServletUtil {
 	if (log.isInfoEnabled()) {
 	  log.info("Got null input stream talking to " + urlSpec);
 	}
+        return new ServletResponse(urlSpec, null, 
+                                   "Error reading servlet response.");
       }
-
     } catch (Exception e){
       if (log.isErrorEnabled())
         log.error("Exception contacting: " + urlSpec, e);
@@ -263,7 +255,7 @@ public class ClientServletUtil {
       // close the connection
       connection.disconnect();
     }
-    return results;
+    return new ServletResponse(urlSpec, results, errorMessage);
   }
 
   /**

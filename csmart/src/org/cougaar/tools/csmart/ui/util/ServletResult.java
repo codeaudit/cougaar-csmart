@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class ServletResult {
-  ArrayList results;
+  ArrayList responses;
   boolean limitExceeded;
 
   /**
@@ -33,7 +33,7 @@ public class ServletResult {
    */
 
   public ServletResult() {
-    results = new ArrayList();
+    responses = new ArrayList();
     limitExceeded = false;
   }
 
@@ -58,23 +58,38 @@ public class ServletResult {
     return limitExceeded;
   }
 
-  /**
-   * Add the collection received from an agent; the collection may be null.
-   * @param c collection of objects received from an agent
-   */
-  public void addCollection(Collection c) {
-    results.add(c);
+//    /**
+//     * Add the collection received from an agent; the collection may be null.
+//     * @param c collection of objects received from an agent
+//     */
+//    public void addCollection(Collection c) {
+//      results.add(c);
+//    }
+
+//    /**
+//     * Return the collections received from all agents;
+//     * there is one collection for each agent contacted;
+//     * the collection may be null.
+//     * @return array list of Collection
+//     */
+//    public ArrayList getCollections() {
+//      return results;
+//    }
+   
+
+  public void addServletResponse(ServletResponse response) {
+    responses.add(response);
   }
 
-  /**
-   * Return the collections received from all agents;
-   * there is one collection for each agent contacted;
-   * the collection may be null.
-   * @return array list of Collection
-   */
-  public ArrayList getCollections() {
-    return results;
+  public ServletResponse getServletResponse(int index) {
+    if (index < 0 || index >= responses.size())
+      return null;
+    return (ServletResponse)responses.get(index);
   }
-   
+
+  public int getNumberOfResponses() {
+    return responses.size();
+  }
+
 }
 
