@@ -56,7 +56,7 @@ import org.cougaar.planning.ldm.plan.Expansion;
 
 import org.cougaar.tools.csmart.runtime.ldm.event.HappinessChangeEvent;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
-import org.cougaar.tools.csmart.ui.psp.TranslateUtils;
+import org.cougaar.tools.csmart.ui.servlet.TranslateUtils;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
@@ -64,16 +64,16 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  * <p>
  * This Servlet traverses Tasks and related objects (plan elements, assets,
  * workflows) and HappinessChangeEvents and returns information on them.
- * The information is encoded in name/value pairs stored in PropertyTree. <ul>
+ * The information is encoded in name/value pairs stored in PropertyTree. <br>
  *
  * <p>
- * Can be loaded manually by including this line in an agent's .ini configuration file: <ul>
+ * Can be loaded manually by including this line in an agent's .ini configuration file: <pre/>
  *   plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.PlanServlet, 
  *   /CSMART_PlanServlet)
- * <ul>
+ * </pre>
  * 
  * <p>
- * Is loaded from a URL on a CSMART machine, on agent 'Agent': <ul>
+ * Is loaded from a URL on a CSMART machine, on agent 'Agent':
  *   http://localhost:port/$Agent/CSMART_PlanServlet objects which are serialized to the client.
  */
 public class PlanServlet 
