@@ -52,6 +52,8 @@ public class ULSocietyTableModel extends AbstractTableModel {
     addAttribute(PropertyNames.ORGANIZATION_NAME);
     // TODO: for debugging, probably don't really want to show this
     addAttribute(PropertyNames.ORGANIZATION_KEY_NAME);
+    addAttribute(PropertyNames.ORGANIZATION_LOCATION_START_TIME);
+    addAttribute(PropertyNames.ORGANIZATION_LOCATION_END_TIME);
     Enumeration keys = node.getLocalAttributeKeys();
     Vector orderedKeys = new Vector();
     while (keys.hasMoreElements())
@@ -62,6 +64,9 @@ public class ULSocietyTableModel extends AbstractTableModel {
       String key = (String)orderedKeys.elementAt(i);
       if (key.startsWith(PropertyNames.ORGANIZATION_RELATED_TO)) {
 	names.addElement(key.substring(key.lastIndexOf('_')+1));
+	values.addElement(node.getLocalAttribute(key).getValue());
+      } else if (key.startsWith(PropertyNames.ORGANIZATION_LOCATION_ELEMENT)) {
+        names.addElement(key);
 	values.addElement(node.getLocalAttribute(key).getValue());
       }
     }
@@ -107,8 +112,8 @@ public class ULSocietyTableModel extends AbstractTableModel {
   private void addAttribute(String name) {
     Attribute a = node.getLocalAttribute(name);
     if (a == null) {
-      System.out.println("ULSocietyTableModel: attribute not found: " +
-			 name);
+      //      System.out.println("ULSocietyTableModel: attribute not found: " +
+      //			 name);
       return;
     }
     names.addElement(name);

@@ -186,6 +186,8 @@ public class PropertyNames {
   public static final String ORGANIZATION_LOCATIONS = "Organization_Locations";
   // properties in the List of ORGANIZATION_LOCATIONS
   public static final String ORGANIZATION_LOCATION_ELEMENT_START_TIME = "Organization_Location_Element_Start_Time";
+  // only used as prefix
+  public static final String ORGANIZATION_LOCATION_ELEMENT = "Organization_Location_Element";
   public static final String ORGANIZATION_LOCATION_ELEMENT_END_TIME = "Organization_Location_Element_End_Time";
   public static final String ORGANIZATION_LOCATION_ELEMENT_LATITUDE = "Organization_Location_Element_Latitude";
   public static final String ORGANIZATION_LOCATION_ELEMENT_LONGITUDE = "Organization_Location_Element_Longitude";

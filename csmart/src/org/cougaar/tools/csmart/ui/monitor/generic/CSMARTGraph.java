@@ -549,18 +549,29 @@ public class CSMARTGraph extends Graph
       Object o = properties.get(name);
       if (o instanceof String)
 	node.setAttribute(name, (String)o);
+      else if (o instanceof Double)
+        node.setAttribute(name, ((Double)o).toString());
+      else if (o instanceof Long)
+        node.setAttribute(name, ((Long)o).toString());
       else if (o instanceof Vector) {
 	Vector values = (Vector)o;
 	for (int i = 0; i < values.size(); i++)
 	  node.setAttribute(name + "_" + i, (String)values.elementAt(i));
       } else if (o instanceof ArrayList) {
-	ArrayList values = (ArrayList)o;
-	for (int i = 0; i < values.size(); i++)
-	  node.setAttribute(name + "_" + i, (String)values.get(i));
+        ArrayList values = (ArrayList)o;
+        // try/catch block in case someone passes in an array list of values
+        // that can't be cast to strings; this prints an error and ignores them
+        try {
+          for (int i = 0; i < values.size(); i++)
+            node.setAttribute(name + "_" + i, (String)values.get(i));
+        } catch (ClassCastException e) {
+          System.out.println("CSMARTGraph: exception setting attribute with name: " +
+                             name + " " + e);
+        }
       }
       // for debugging
-      //      else
-      //	System.out.println("Property: " + name + " of class: " + o.getClass() + " not copied to grappa node");
+      else
+	System.out.println("CSMARTGraph: WARNING: Displaying property: " + name + " of class: " + o.getClass() + " not supported");
     }
     // get UIDs at the incoming (tail) end of a link
     Vector incomingLinks = obj.getIncomingLinks();

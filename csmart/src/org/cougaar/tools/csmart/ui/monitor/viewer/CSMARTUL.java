@@ -274,6 +274,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   /**
    * Sets monitor host to first host in running experiment.
+   * TODO: Host may not actually be in use in the experiment;
+   * this should be the first host in use.
    */
   private void setHostToMonitor(Experiment experiment) {
     HostComponent[] hosts = experiment.getHosts();

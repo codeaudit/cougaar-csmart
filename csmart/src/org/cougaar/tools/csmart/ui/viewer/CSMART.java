@@ -86,7 +86,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   protected static final String HELP_DOC = "help.html";
   protected static final String ABOUT_CSMART_ITEM = "About CSMART";
-  protected static final String ABOUT_DOC = "../help/about-csmart.html";
+  //  protected static final String ABOUT_DOC = "../help/about-csmart.html";
+  protected static final String ABOUT_DOC = "/org/cougaar/tools/csmart/ui/help/about-csmart.html";
   protected static final String HELP_MENU_ITEM = "About Launcher";
 
   //  private static boolean dbMode = false;

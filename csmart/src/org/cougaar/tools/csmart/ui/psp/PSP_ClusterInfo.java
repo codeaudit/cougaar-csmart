@@ -176,6 +176,8 @@ public class PSP_ClusterInfo extends PSP_BaseAdapter implements PlanServiceProvi
           (!(locSched.isEmpty()))) {
         List locPTs = new ArrayList();
         Enumeration locSchedEn = locSched.getAllScheduleElements();
+        boolean includeStartEndTime = false;
+        int locNumber = 0;
         while (locSchedEn.hasMoreElements()) {
           Object oi = locSchedEn.nextElement();
           if (!(oi instanceof LocationScheduleElement)) {
@@ -191,27 +193,28 @@ public class PSP_ClusterInfo extends PSP_BaseAdapter implements PlanServiceProvi
               (lseLoc.getLongitude() == null)) {
             continue;
           }
-          PropertyTree locPT = new PropertyTree();
-          locPT.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_START_TIME,
-                    new Long(lse.getStartTime()));
-          locPT.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_END_TIME,
-                    new Long(lse.getEndTime()));
-          locPT.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_LATITUDE,
-                    new Double(lseLoc.getLatitude().getDegrees()));
-          locPT.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_LONGITUDE,
-                    new Double(lseLoc.getLongitude().getDegrees()));
-          locPT.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_VERBOSE,
-                    lseLoc.toString());
-          locPTs.add(locPT);
+          properties.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_START_TIME + "_" + locNumber,
+                         new Long(lse.getStartTime()));
+          properties.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_END_TIME + "_" + locNumber,
+                         new Long(lse.getEndTime()));
+          properties.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_LATITUDE + "_" + locNumber,
+                         new Double(lseLoc.getLatitude().getDegrees()));
+          properties.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_LONGITUDE + "_" + locNumber,
+                         new Double(lseLoc.getLongitude().getDegrees()));
+          properties.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_VERBOSE + "_" + locNumber,
+                         lseLoc.toString());
+          includeStartEndTime = true;
+          locNumber++;
         }
-        if (locPTs.size() > 0) {
+        if (includeStartEndTime) {
           properties.put(PropertyNames.ORGANIZATION_LOCATION_START_TIME,
                          new Long(locSched.getStartTime()));
           properties.put(PropertyNames.ORGANIZATION_LOCATION_END_TIME,
                          new Long(locSched.getEndTime()));
-          properties.put(PropertyNames.ORGANIZATION_LOCATIONS, locPTs);
+          includeStartEndTime = false;
         }
       }
+      int nProperties = properties.size();
       results.add(properties);
     }
     return results;
