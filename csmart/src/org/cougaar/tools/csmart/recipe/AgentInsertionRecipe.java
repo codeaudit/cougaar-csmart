@@ -259,6 +259,7 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
             nchild.setOwner(this);            
             nchild.addParameter(agent.getShortName().toString());
 	    nchild.setAlibID(child.getAlibID());
+	    nchild.setParent(child.getParent());
 
 	    // FIXME: what about the alib ids for the plugins?
 	    // Is it OK to try to over-write?
