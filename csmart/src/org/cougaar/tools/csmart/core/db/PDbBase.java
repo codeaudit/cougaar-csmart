@@ -329,6 +329,7 @@ public class PDbBase {
   public void removeLibRecipe(RecipeComponent rc) throws SQLException {
     String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
     if (recipeIdAndClass != null) {
+      deleteRecipeAssemblies(recipeIdAndClass[0]);
       substitutions.put(":recipe_id:", recipeIdAndClass[0]);
       executeUpdate(dbp.getQuery("deleteLibRecipeArgs", substitutions));
       executeUpdate(dbp.getQuery("deleteLibRecipe", substitutions));
@@ -338,10 +339,37 @@ public class PDbBase {
   public void removeLibRecipeNamed(String recipeName) throws SQLException {
     String[] recipeIdAndClass = getRecipeIdAndClass(recipeName);
     if (recipeIdAndClass != null) {
+      deleteRecipeAssemblies(recipeIdAndClass[0]);
       substitutions.put(":recipe_id:", recipeIdAndClass[0]);
       executeUpdate(dbp.getQuery("deleteLibRecipeArgs", substitutions));
       executeUpdate(dbp.getQuery("deleteLibRecipe", substitutions));
     }
+  }
+
+  private void deleteRecipeAssemblies(String recipeId) {
+    // Get the Recipe Assembly Id.
+    try {
+      Statement stmt = getStatement();
+      ResultSet rs = executeQuery(stmt, dbp.getQuery("queryRecipeAssemblyId", substitutions));
+      if (rs.next()) {
+        try {
+          PopulateDb.deleteSociety(rs.getString(1));
+        } catch (IOException ioe) {
+          if(log.isErrorEnabled()) {
+            log.error("Error deleting recipe assembly: " + rs.getString(1) + " for recipe: " + recipeId);
+          }
+        }
+      }
+      
+      rs.close();
+      stmt.close();
+
+    } catch (SQLException sqle) {
+      if(log.isErrorEnabled()) {
+        log.error("Error deleting assembly for recipe: " + recipeId);
+      }
+    }
+    
   }
 
   /**
