@@ -22,8 +22,23 @@ REM "</copyright>"
 
 REM Script to run the CSMART Society Monitor as a standalone
 
-REM calls setlibpath.bat which sets the path to the required jar files.
-CALL %COUGAAR_INSTALL_PATH%\bin\setlibpath.bat
+REM Make sure that COUGAAR_INSTALL_PATH is specified
+IF NOT "%COUGAAR_INSTALL_PATH%" == "" GOTO L_2
+REM Unable to find cougaar-install-path
+ECHO COUGAAR_INSTALL_PATH not set!
+GOTO L_END
+:L_2
+
+REM Make sure that COUGAAR3RDPARTY is specified
+IF NOT "%COUGAAR3RDPARTY%" == "" GOTO L_3
+REM Unable to find "sys" path for 3rd-party jars
+REM This is usually COUGAAR_INSTALL_PATH/sys
+ECHO COUGAAR3RDPARTY not set! Defaulting to CIP\sys
+SET COUGAAR3RDPARTY=%COUGAAR_INSTALL_PATH%\sys
+:L_3
+
+REM Start CSMART using Bootstrapper
+SET LIBPATHS=%COUGAAR_INSTALL_PATH%\lib\bootstrap.jar
 
 REM You may use the optional environment variable COUGAAR_DEV_PATH
 REM to point to custom developed code that is not in COUGAR_INSTALL_PATH/lib
@@ -43,3 +58,4 @@ SET MYCONFIGPATH=-Dorg.cougaar.config.path="%COUGAAR_INSTALL_PATH%/csmart/data/c
 
 java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %DEVPATH% -classpath %LIBPATHS% org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
 
+:L_END
