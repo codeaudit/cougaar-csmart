@@ -479,7 +479,7 @@ public class TestPopulateDb extends TestCase {
                     plugin.setParent(agent);
                     agent.addChild(plugin);
                 }
-                pdb.populate(agent, 1f);
+                pdb.populateCSMI(agent, 1f);
             }
         }
         pdb.close();
