@@ -195,18 +195,19 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":cmt_type:", cmtType);
     substitutions.put(":csa_type:", csaType);
     substitutions.put(":expt_id:", exptId);
-    String oldExperimentName = getOldExperimentName();
+    substitutions.put(":trial_id:", trialId); 
+
     // If the experiment name was changed, get a new ID with 
     // all the old assemblies, threads
+    String oldExperimentName = getOldExperimentName();
     if (!experimentName.equals(oldExperimentName)) {
       cloneTrial(trialId, experimentName, "Modified " + oldExperimentName);
     }
-    substitutions.put(":trial_id:", trialId); 
 
     // Society was previously saved.
     if (societyId != null) {
       if (log.isDebugEnabled()) {
-	log.debug("Preparing to save experiment " + exptId + " with society: " + societyId);
+	log.debug("Preparing to save experiment " + this.exptId + " with society: " + societyId);
       }
       // is it already in the config DB and runtime DB? If not, add it
       if (! assemblyInConfig(societyId)) {
@@ -228,7 +229,7 @@ public class PopulateDb extends PDbBase {
       // but is in the config, then any CSA is in the runtime as well.
       // FIXME!! This _needs_ to delete the old
       // CSMI assembly before setNewAsssemblyIds is called
-      cleanTrial(getAssemblyType(societyId), hnaType, csmiType, trialId);
+      cleanTrial(getAssemblyType(societyId), hnaType, csmiType, this.trialId);
 	
       if (! assemblyInRuntime(societyId)) {
 	if (log.isDebugEnabled()) {
@@ -601,6 +602,45 @@ public class PopulateDb extends PDbBase {
       pdb.log.info("deleteSociety not deleting asb " + assembly_id + " cause its still in use");
     }
     pdb.close();
+  }
+
+  /**
+   * Change the name in the DB for an experiment, without a complete resave.
+   * Used from Experiment.setName()
+   *
+   * @param exptId a <code>String</code> Experiment ID to change
+   * @param newName a <code>String</code> new name for the experiment
+   * @exception SQLException if an error occurs
+   * @exception IOException if an error occurs
+   */
+  public static void changeExptName(String exptId, String newName) throws SQLException, IOException {
+    if (exptId == null || exptId.equals("") || newName == null || newName.equals(""))
+      return;
+    PopulateDb pdb = new PopulateDb(exptId, null);
+    if (newName.equals(pdb.getOldExperimentName())) {
+      if (pdb.log.isDebugEnabled()) {
+	pdb.log.debug("changeExptName: new name (" + newName + ") same as old for expt " + exptId);
+      }
+      pdb.close();
+      return;
+    }
+
+    // OK. Really do the update.
+    pdb.reallyChangeExptName(newName);
+    pdb.close();
+  }
+  
+  /**
+   * Used by the above static method to do the update.
+   *
+   * @param newName a <code>String</code> name for the experiment
+   * @exception SQLException if an error occurs
+   */
+  public void reallyChangeExptName(String newName) throws SQLException {
+    if (newName == null || newName.equals(""))
+      return;
+    substitutions.put(":expt_name:", newName);
+    executeUpdate(dbp.getQuery("updateExptName", substitutions));
   }
 
   // Delete complete definition of a single assembly
@@ -1007,7 +1047,10 @@ public class PopulateDb extends PDbBase {
     // set global expt_id variable
     newExperiment("EXPT", experimentName, description);
     // greate trial with given name, set global variable
-    newTrial(exptId + ".TRIAL", experimentName, description); // Trial and experiment have same name
+    trialId = newTrial(exptId + ".TRIAL", experimentName, description); // Trial and experiment have same name
+
+    // FIXME: Copy things in config table too?
+    // copy CSA and CMT assemblies! Or all?
     // copy assemblies of type cmt_type in RUNTIME table under old ID to new
     copyCMTAssemblies(oldTrialId, trialId);
     // Copy stuff in expt_trial_thread from old trial id to new
@@ -2510,7 +2553,8 @@ public class PopulateDb extends PDbBase {
       return sqlQuote(componentType + "|" + societyName);
     }
     //ComponentData parent = data.getParent();
-    return sqlQuote(componentType + "|" + getFullName(data));
+    //    return sqlQuote(componentType + "|" + getFullName(data));
+    return sqlQuote(componentType + "|" + data.getClassName());
   }
 
   /**
