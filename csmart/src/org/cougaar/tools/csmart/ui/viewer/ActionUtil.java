@@ -62,8 +62,15 @@ public class ActionUtil {
   public static boolean isActionAllowed(String action,
                                         Organizer organizer,
                                         boolean doPopup) {
-    if (organizer.getSelectedNode() == null)
-      return false;
+    // If nothing is selected, some things are still legitimate
+    if (organizer.getSelectedNode() == null) {
+      if (action.equals(DELETE_EXPERIMENT_FROM_DATABASE_ACTION) ||
+          action.equals(DELETE_RECIPE_FROM_DATABASE_ACTION)) {
+        return true;
+      } else {
+	return false;
+      }
+    }
 
     if (organizer.getSelectedNode().isRoot()) {
       if (action.equals(NEW_EXPERIMENT_ACTION) ||
