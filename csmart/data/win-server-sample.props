@@ -1,49 +1,40 @@
-#Properties file for controlling the COUGAAR Node Server.
-# This sample written for an NT machine
-# Edit the Claspath, Install path and Config Path to reflect your local installation
+# Sample Windows[NT] configuration file for the AppServer
+#
+# Edit the claspath, install-path and config-path to reflect your 
+#   local installation.  See "java.util.Properties" for syntax details.
+#
+# CSMART will add some properties to this list, such as the 
+#   "org.cougaar.node.name=..", but otherwise this is the *complete*
+#   list of properties.
+#
+# One can use just this ".props" file and ignore the AppServer's
+#   "Warning: couldn't load properties from: 'Common.props'."
+#   and similar "Windows[_NT].props" warnings.
+#
+# Note that some symbols, such as "\", must be encoded ("\\")
 
-#Property files should usually end with a ".props" extension.  The
-#syntax is trivial and is defined by the JDK Properties.load() method.
+# Set the cougaag install path
+org.cougaar.install.path=D\:\\opt\\alp
 
-# some standard memory settings
-java.Xms100m 
-java.Xmx300m
+# Set the classpath for starting the Node, which uses ";" separators.
+#
+# Typically only core.jar needs to be in here.
+java.class.path=D\:\\opt\\alp\\csmart\\tmpdir\;D\:\\opt\\alp\\lib\\csmart.jar\;D\:\\opt\\alp\\lib\\core.jar
 
-# The classpath to use to run nodes - defaults to the classpath of the 
-# server environment. Note that only core.jar needs to be in here.
-# Note that backslashes, colons, and semi-colons must all be backslash-escaped
-java.class.path=d\:\\CSMART\\Cougaar\\csmart\\tmpdir\;d\:\\CSMART\\Cougaar\\lib\\csmart.jar\;d\:\\CSMART\\Cougaar\\lib\\core.jar
+# Set the config path, which uses ";" separators
+org.cougaar.config.path=D\:\\opt\\alp\\csmart\\data\\common\;D\:\\opt\\alp\\configs\\common
 
-# where cougaar is installed - no default
-# This should be set to the value of $COUGAAR_INSTALL_PATH
-# Note that backslashes, colons, and semi-colons must all be backslash-escaped
-org.cougaar.install.path=D\:\\CSMART\\Cougaar
-
-# may specify additional -D arguments
-# Note that the Statistics arg is for RMI message transport statistics
+# Set a couple other standard properties
 user.timezone=GMT 
 csmart.log.severity=PROBLEM 
 org.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0 
 org.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
 
-#In addition, the console will send the following properties to the
-#server in order to start the Node 
+# Set some standard memory settings
+java.Xms100m 
+java.Xmx300m
 
-# which config directory to use, e.g. integ-config
-# no default, required.
-# Note that backslashes, colons, and semi-colons must all be backslash-escaped
-#org.cougaar.config=
-org.cougaar.config.path=D\:\\CSMART\\Cougaar\\csmart\\data\\common\;
-
-# Communications server and ports.
-# Defines where the nameserver will run and which port the
-# PSP webserver will run on.
-# format is "hostname:nameserverport:PSPport"
-# example: "alp42:9999:6666"
-# The port numbers should be > 1000 and must not conflict with any
-# other nodes running on the same set of computers.
-# The standard alpserver clients provide this value automatically.
-# if no value is passed, the nodes started will fall back to 
-# using the alpreg.ini config file.
-#org.cougaar.name.server=hotcocoa:8000:5555
+# On Windows machines the Oracle driver needs the "%SYSTEMROOT%" set
+#   to the windows install directory
+env.SYSTEMROOT=C\:\\WINNT
 
