@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.ui.experiment;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -48,6 +49,7 @@ import org.cougaar.tools.csmart.ui.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 
 public class HostConfigurationBuilder extends JPanel implements TreeModelListener {
   Experiment experiment;
@@ -1147,11 +1149,46 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
   }
 
+  /**
+   * If host-node-agent mapping was modified, then save it,
+   * otherwise display a dialog indicating that no modifications were made.
+   */
+
   public void save() {
-    if (!modified) {
+    if (modified)
+      saveHelper();
+    else
       JOptionPane.showMessageDialog(this, "No modifications were made.");
-      return;
+  }
+
+  /**
+   * Silently save the host-node-agent mapping if it was modified.
+   */
+
+  public void exit() {
+    if (modified)
+      saveHelper();
+  }
+
+  private void saveHelper() {
+    final Component c = this;
+    GUIUtils.timeConsumingTaskStart(c);
+    GUIUtils.timeConsumingTaskStart(csmart);
+    try {
+      new Thread("Save") {
+        public void run() {
+          doSave();
+          GUIUtils.timeConsumingTaskEnd(c);
+          GUIUtils.timeConsumingTaskEnd(csmart);
+        }
+      }.start();
+    } catch (RuntimeException re) {
+      System.out.println("Error saving experiment: " + re);
+      GUIUtils.timeConsumingTaskEnd(c);
     }
+  }
+
+  private void doSave() {
     modified = false;
     if (experiment.isCloned()) {
       experiment.saveToDb();

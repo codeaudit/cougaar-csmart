@@ -146,7 +146,7 @@ public class Organizer extends JScrollPane {
 	public void actionPerformed(ActionEvent e) {
           GUIUtils.timeConsumingTaskStart(organizer);
           try {
-            new Thread("") {
+            new Thread("SelectExperiment") {
               public void run() {
                 selectExperimentFromDatabase(popupNode);
                 GUIUtils.timeConsumingTaskEnd(organizer);
@@ -1373,19 +1373,11 @@ public class Organizer extends JScrollPane {
   private void selectExperimentFromDatabase(DefaultMutableTreeNode node) {
     experimentNamesHT = ExperimentDB.getExperimentNames();
     if (experimentNamesHT == null) {
-      System.out.println("no experiment names");
       return;
     }
-    System.out.println("Experiment names ht: " + experimentNamesHT);
     Set dbExperimentNames = experimentNamesHT.keySet();
     if (dbExperimentNames == null)
       return;
-    // for debugging, print experiment names and ids
-    Object[] tmp = dbExperimentNames.toArray();
-    for (int i = 0; i < tmp.length; i++) 
-      System.out.println("Experiment name: " + tmp[i] +
-                         " Experiment id: " + experimentNamesHT.get(tmp[i]));
-    // end for debugging
     JComboBox cb = new JComboBox(dbExperimentNames.toArray());
     cb.setEditable(false);
     JPanel panel = new JPanel();
@@ -1414,24 +1406,6 @@ public class Organizer extends JScrollPane {
     final String trialId = dialog.getTrialId();
     if (trialId == null)
       return;
-    // final arguments needed to run in separate thread
-//      final DefaultMutableTreeNode parentNode = node;
-//      final String newExperimentName = dialog.getExperimentName();
-//      final String newExperimentId = dialog.getExperimentId();
-//      final boolean isCloned = dialog.isCloned();
-    // put up wait cursor and block input
-//      GUIUtils.timeConsumingTaskStart(this);
-//      try {
-//        new Thread("") {
-//          public void run() {
-//            createCMTExperiment(parentNode, newExperimentName, newExperimentId,
-//                                trialId, isCloned);
-//          }
-//        }.start();
-//      } catch (RuntimeException e) {
-//        System.err.println("Runtime exception creating experiment: " + e);
-//        e.printStackTrace();
-//      }
     createCMTExperiment(node, dialog.getExperimentName(),
                         dialog.getExperimentId(), trialId, dialog.isCloned());
   }
@@ -1665,22 +1639,6 @@ public class Organizer extends JScrollPane {
     }
     mapNodesToHosts(experiment, assemblyMatch);
     workspace.setSelection(addExperimentToWorkspace(experiment, node));
-//      final DefaultMutableTreeNode experimentNode = node;
-//      final Experiment newExperiment = experiment;
-//      try {
-//        SwingUtilities.invokeLater(new Runnable() {
-//          public void run() {
-//            DefaultMutableTreeNode newNode =
-//              addExperimentToWorkspace(newExperiment, experimentNode);
-//            workspace.setSelection(newNode);
-//            // restore default cursor and allow input
-//            GUIUtils.timeConsumingTaskEnd(organizer);
-//          }
-//        });
-//      } catch (RuntimeException e) {
-//        System.err.println(e);
-//        e.printStackTrace();
-//      }
   }
 
   /**

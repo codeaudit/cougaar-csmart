@@ -651,7 +651,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   public void saveToDb() {
-    System.out.println("saveToDb: " + getExperimentName());
     try {
       Set writtenNodes = new HashSet();
       List components = getComponents();
