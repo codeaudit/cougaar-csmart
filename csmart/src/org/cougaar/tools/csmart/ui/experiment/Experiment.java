@@ -78,6 +78,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     super(name);
   }
 
+  public Experiment(String name, String expID) {
+    super(name);
+    this.expID = expID;
+  }
+
   public void setExperimentID(String expID) {
     this.expID = expID;
   }
