@@ -333,25 +333,25 @@ public class CSMARTConsole extends JFrame {
       try {
 	if (!rp.isAlive()) {
 	  // FIXME: see if it's now not in runningNodes?
-	  // If so, a timing issue, and someone kill it...
- 	  RemoteProcess rp2 = null;
- 	  synchronized (runningNodesLock) {
- 	    rp2 = (RemoteProcess)runningNodes.get(nodeName);
- 	  }
- 
- 	  // FIXME: This doesnt seem to help.
- 	  // Need to be able to look up which Nodes
- 	  // are in process of being stopped,
- 	  // and skip those?
- 
- 	  // OK: We'll check the stopping flag: If set,
- 	  // we're in the process of stopping the Nodes,
- 	  // so it's OK if the Node claims to not be Alive.
- 
- 	  if (rp2 == null || stopping) {
- 	    if (log.isInfoEnabled())
- 	      log.info("Remote Process must have just been killed by someone else, so it's OK - no need to mark it dead.");
- 	  } else {
+	  // If so, a timing issue, and someone killed it...
+	  RemoteProcess rp2 = null;
+	  synchronized (runningNodesLock) {
+	    rp2 = (RemoteProcess)runningNodes.get(nodeName);
+	  }
+
+	  // FIXME: This doesnt seem to help.
+	  // Need to be able to look up which Nodes
+	  // are in process of being stopped,
+	  // and skip those?
+
+	  // OK: We'll check the stopping flag: If set,
+	  // we're in the process of stopping the Nodes,
+	  // so it's OK if the Node claims to not be Alive.
+
+	  if (rp2 == null || stopping) {
+	    if (log.isInfoEnabled())
+	      log.info("Remote Process must have just been killed by someone else, so it's OK - no need to mark it dead.");
+	  } else {
 	    if (log.isWarnEnabled())
 	      log.warn("Remote Process for " + nodeName + " says it is not alive. Marking it dead.");
 	    markNodeDead(nodeName);
@@ -1578,7 +1578,7 @@ public class CSMARTConsole extends JFrame {
 	    markNodeDead(nodeName);
             return;
           }
-	  
+
 	  // Try to kill the node. Try up to 5 times for now.
 	  RemoteListenable rl = null;
 	  for (int retries = 5; retries > 0; retries--) {
@@ -2138,7 +2138,7 @@ public class CSMARTConsole extends JFrame {
       if(log.isErrorEnabled()) {
         log.error("Unable to destroy node, assuming it's dead: ", ex);
       }
-      
+
       // FIXME: May get ConnectException or ConnectIOException
       //  getting the remote
       // listenable if the remote machines / network are busy
@@ -2147,7 +2147,7 @@ public class CSMARTConsole extends JFrame {
       // But of course we should probably limit the number of times we 
       // re-try. 
       // To fix this, copy code from above in stopAllNodes
-      
+
       // call the method that would have been called when the 
       // ConsoleNodeListener received the node destroyed confirmation
       markNodeDead(nodeName);
