@@ -34,6 +34,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class CommunityDBUtils {
   private static final String GET_COMMUNITIES_QUERY = "queryCommunities";
+  private static final String GET_MY_COMMUNITIES_QUERY = "queryMyCommunities";
   private static final String GET_ENTITIES_QUERY = "queryEntities";
   private static final String GET_ENTITY_TYPE_QUERY = "queryEntityType";
   private static final String INSERT_COMMUNITY_INFO_QUERY = 
@@ -95,6 +96,16 @@ public class CommunityDBUtils {
    **/
   public static ArrayList getCommunities() {
     ArrayList communityIds = doQuery(GET_COMMUNITIES_QUERY, new HashMap());
+    Collections.sort(communityIds);
+    return communityIds;
+  }
+
+  /**
+   * Get all community IDs for this experiment
+   **/
+  public static ArrayList getCommunitiesForExperiment(String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
+    ArrayList communityIds = doQuery(GET_MY_COMMUNITIES_QUERY, substitutions);
     Collections.sort(communityIds);
     return communityIds;
   }
