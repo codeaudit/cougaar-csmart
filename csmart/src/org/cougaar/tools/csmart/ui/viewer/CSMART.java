@@ -927,6 +927,7 @@ public class CSMART extends JFrame {
     result.append("org.cougaar.tools.csmart.doWorkspace=" + System.getProperty("org.cougaar.tools.csmart.doWorkspace") + "\n");
     result.append("org.cougaar.config.path=" + System.getProperty("org.cougaar.config.path") + "\n");
     result.append("org.cougaar.install.path=" + System.getProperty("org.cougaar.install.path") + "\n");
+    result.append("CSMART configuration DB (org.cougaar.configuration.database)=" + System.getProperty("org.cougaar.configuration.database") + "\n");
     // dbMode, isMySQL
     // What tools are open
     // whats loaded in the workspace
