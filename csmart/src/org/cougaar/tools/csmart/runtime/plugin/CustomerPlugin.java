@@ -261,9 +261,9 @@ public class CustomerPlugin extends CSMARTPlugin {
     // Define the END_TIME Preference.
     ScoringFunction scorefcn =
       ScoringFunction.createStrictlyBetweenWithBestValues
-      (new AspectValue(AspectType.START_TIME, pubTime),
-       new AspectValue(AspectType.END_TIME, task.getDuration() + pubTime),
-       new AspectValue(AspectType.END_TIME, (task.getDuration() + pubTime)));
+      (AspectValue.newAspectValue(AspectType.START_TIME, pubTime),
+       AspectValue.newAspectValue(AspectType.END_TIME, task.getDuration() + pubTime),
+       AspectValue.newAspectValue(AspectType.END_TIME, (task.getDuration() + pubTime)));
 
     nTask.setPreference(theLDMF.newPreference(AspectType.END_TIME, scorefcn));
 
