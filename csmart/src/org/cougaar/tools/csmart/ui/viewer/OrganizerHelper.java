@@ -159,7 +159,15 @@ public class OrganizerHelper {
 
     Map experimentNamesMap = ExperimentDB.getExperimentNames();
     String origExperimentId = (String)experimentNamesMap.get(originalExperimentName);
-    String origTrialId = ExperimentDB.getTrialId(origExperimentId);
+    String origTrialId = null;
+    if (origExperimentId == null) {
+      if (log.isErrorEnabled()) {
+	log.error("Found no experiment ID for name " + originalExperimentName);
+	log.error("Will have null trialID, and therefore will lose the recipes that were in this experiment!");
+      }      
+    } else {
+      origTrialId = ExperimentDB.getTrialId(origExperimentId);
+    }
     
     // This gets all the recipes for the experiment from which this was created
     List defaultRecipes = checkForRecipes(origTrialId, origExperimentId);
@@ -723,6 +731,11 @@ public class OrganizerHelper {
   // Get a list of DBRecipe objects for the recipes in an Experiment/Trial
   private List checkForRecipes(String trialId, String exptId) {
     List recipeList = new ArrayList();
+    if (trialId == null || exptId == null) {
+      if (log.isWarnEnabled())
+	log.warn("Null trialId or ExptId when looking for recipes. Returning none.");
+      return recipeList;
+    }
     String query = null;
     try {
       Connection conn = DBUtils.getConnection();
