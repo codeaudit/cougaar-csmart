@@ -24,7 +24,8 @@ package org.cougaar.tools.csmart.ui.console;
 import java.io.File;
 import java.io.FileReader;
 import java.util.HashSet;
-import java.util.Hashtable;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.Set;
 import org.cougaar.tools.csmart.societies.database.DBUtils;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -38,12 +39,12 @@ import org.cougaar.util.DBProperties;
 public class ExperimentDB {
 
     /*
-     * Returns hashtable where the keys are human readable names (Strings) and
+     * Returns Map where the keys are human readable names (Strings) and
      * the values are experiment ids (Strings).
      */
 
-    public static Hashtable getExperimentNames() {
-	return (Hashtable)CMT.getExperimentNames();
+    public static Map getExperimentNames() {
+	return (Map) CMT.getExperimentNames();
     }
 
 
@@ -64,7 +65,7 @@ public class ExperimentDB {
      */
 
     public static boolean isExperimentNameInDatabase(String experimentName) {
-	Hashtable experimentNamesHT = getExperimentNames();
+	Map experimentNamesHT = getExperimentNames();
 	Set namesInDB = experimentNamesHT.keySet();
 	if (namesInDB != null && namesInDB.contains(experimentName))
 	    return true;
@@ -76,8 +77,8 @@ public class ExperimentDB {
      * the values are trial ids (Strings).
      */
 
-    public static Hashtable getTrialNames(String experimentId) {
-	return (Hashtable)CMT.getTrialNames(experimentId);
+    public static Map getTrialNames(String experimentId) {
+	return CMT.getTrialNames(experimentId);
     }
 
 
@@ -119,11 +120,11 @@ public class ExperimentDB {
 	return (String)CMT.createExperiment(experimentName,societyTemplate);
     }
 
-    public static String addNodeAssignments(Hashtable nodeTable ,String assemblyName) {
+    public static String addNodeAssignments(Map nodeTable ,String assemblyName) {
 	return (String)CMT.addNodeAssignments(nodeTable,assemblyName);
     }
 
-    public static String addMachineAssignments(Hashtable machineTable ,String assemblyName) {
+    public static String addMachineAssignments(Map machineTable ,String assemblyName) {
 	return (String)CMT.addMachineAssignments(machineTable,assemblyName);
     }
 
@@ -132,17 +133,17 @@ public class ExperimentDB {
      * Returns hashtable of all society templates in database.
      */
 
-    public static Hashtable getSocietyTemplates() {
-	return (Hashtable)CMT.getSocietyTemplates();
+    public static Map getSocietyTemplates() {
+	return CMT.getSocietyTemplates();
 
     }
 
-    public static Hashtable getOrganizationGroups(String experimentId) {
-	return (Hashtable)CMT.getOrganizationGroups(experimentId);
+    public static Map getOrganizationGroups(String experimentId) {
+	return CMT.getOrganizationGroups(experimentId);
     }
 
-    public static HashSet getOrganizationsInGroup(String experimentId, String groupId){
-	return (HashSet)CMT.getOrganizationsInGroup(experimentId,groupId);
+    public static Set getOrganizationsInGroup(String experimentId, String groupId){
+	return CMT.getOrganizationsInGroup(experimentId,groupId);
     }
 
     public static boolean isULThreadSelected(String trialId, String threadName) {

@@ -22,8 +22,8 @@
 package org.cougaar.tools.csmart.ui.console;
 
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.ArrayList;
@@ -197,15 +197,15 @@ public class CMT {
     }
 
     /*
-     * Returns hashtable where the keys are human readable names (Strings) and
+     * Returns Map where the keys are human readable names (Strings) and
      * the values are experiment ids (Strings).
      */
 
-    public static Hashtable getExperimentNames() {
+    public static Map getExperimentNames() {
 	return queryHT("getExperimentNames",new HashMap());
     }
 
-    public static Hashtable getTrialNames(String experiment_id) {
+    public static Map getTrialNames(String experiment_id) {
 	return queryHT("getTrialNames",addSubs(new HashMap(),":experiment_id",experiment_id));
     }
 
@@ -241,7 +241,7 @@ public class CMT {
     
     /*
      * Returns society templates for an experiment.
-     * Returns hashtable where human readable names are keys
+     * Returns Map where human readable names are keys
      * and ids are values.
      */
 
@@ -273,7 +273,7 @@ public class CMT {
 	}
     }
 
-    public static String addNodeAssignments(Hashtable nodeTable ,String assemblyName) {
+    public static String addNodeAssignments(Map nodeTable ,String assemblyName) {
 	addCSMARTAssembly(assemblyName,assemblyName);
 	Map subs = new HashMap();
 	subs.put(":assembly_id",assemblyName);
@@ -294,7 +294,7 @@ public class CMT {
     }
 
 
-    public static String addMachineAssignments(Hashtable machineTable ,String assemblyName) {
+    public static String addMachineAssignments(Map machineTable ,String assemblyName) {
 	Iterator mt = machineTable.keySet().iterator();
 	while(mt.hasNext()){
 	    String machinename = (String)mt.next();
@@ -314,14 +314,14 @@ public class CMT {
 
 
     /**
-     * Returns hashtable of all society templates in database.
+     * Returns Map of all society templates in database.
      */
 
-    public static Hashtable getSocietyTemplates() {
+    public static Map getSocietyTemplates() {
 	return queryHT("getSocietyTemplates",new HashMap());
     }
 
-    public static Hashtable getOrganizationGroups(String experiment_id) {
+    public static Map getOrganizationGroups(String experiment_id) {
 	Map subs = new HashMap();
 	subs.put(":experiment_id",experiment_id);
 	return queryHT("getOrganizationGroups",subs);
@@ -479,7 +479,7 @@ public class CMT {
 	threads.add("STRATEGIC-TRANS");
 	threads.add("THEATER-TRANS");
 	String cfw_group_id = query1String("updateCMTAssemblyCFW_GROUP_ID",subs);
-	Hashtable clones = queryHT("updateCMTAssemblyClones",subs);
+	Map clones = queryHT("updateCMTAssemblyClones",subs);
 	String assembly_description = "assembly for: "+experiment_id;
 
 	String assembly_id = createCMTasb(assembly_description,cfw_group_id,orderThreads(threads), clones);
@@ -711,10 +711,10 @@ public class CMT {
 
 
 
-    public static Hashtable queryHT(String query, Map substitutions){
+    public static Map queryHT(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
 
-	Hashtable ht = new Hashtable();
+	Map ht = new TreeMap();
 	try {
 	    Connection conn = getConnection();
 	    try {

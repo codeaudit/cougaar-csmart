@@ -104,7 +104,7 @@ public class Organizer extends JScrollPane {
   private JPopupMenu experimentMenu = new JPopupMenu();
   private JPopupMenu treeMenu = new JPopupMenu();
   private JPopupMenu rootMenu = new JPopupMenu();
-  private Hashtable experimentNamesHT = null;
+  private Map experimentNamesHT = null;
   private Object sharedObject = new Object();
   
   // Define actions for use on menus
