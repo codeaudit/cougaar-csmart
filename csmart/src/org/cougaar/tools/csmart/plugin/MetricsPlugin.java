@@ -55,6 +55,12 @@ import org.cougaar.tools.scalability.performance.jni.CpuClock;
  * Statistics include counts of <code>PlanElement</code>s with high confidence
  * results associated with<code>Task</code>s of the given scalability verb.<br>
  * See the code for a complete set of collected statistics.<br>
+ * <br>
+ * New optional argument, statistics: If a second optional parameter is given, the
+ * plugin will count the tasks with the given Verb that go by.<br>
+ * It will also count the time since the first task with that Verb went by.<br>
+ * For example, use this to count the Transport tasks, or to see how long
+ * after a DetermineRequirements Task things get busy.<br>
  * @see CSMARTPlugIn
  * @see MetricsConstants
  */
@@ -81,6 +87,11 @@ public class MetricsPlugin
   static NumberFormat timeFormat = new DecimalFormat("0.000 seconds");
   static NumberFormat memoryFormat = new DecimalFormat("0.000 MBi");
 
+  private int countMyTasks = 0;
+  private int countMyTasksThisInterval = 0;
+  private long timeFirstMyTask = 0l;
+  private String searchVerb = null;
+
   // This plugin only wants the statistics gathering tasks.
   private IncrementalSubscription myTasks;
   public UnaryPredicate myTasksPredicate = new UnaryPredicate() {
@@ -104,6 +115,22 @@ public class MetricsPlugin
       return false;
     }
   };
+
+  private IncrementalSubscription myTaskSearch = null;
+  private UnaryPredicate taskSearchPred;
+  private UnaryPredicate createTSPred(final String sverb) {
+    return new UnaryPredicate() {
+	public boolean execute(Object o) { 
+	  if (o instanceof Task) {
+	    Task task = (Task) o;
+	    Verb verb = task.getVerb();
+	    if (verb.equals(sverb))
+	      return true;
+	  }
+	  return false;
+	}
+      };
+  }
 
   // Predicate looks for manage plan elements
   private IncrementalSubscription managePlanElements;
@@ -143,6 +170,11 @@ public class MetricsPlugin
     if (params != null && ! params.isEmpty()) {
       path = ((! (params.elementAt(0) instanceof String)) ? path : (String)params.elementAt(0));
       // could do File.isDirectory() and File.canWrite() on this
+
+      // Optional second argument - verb for which tasks are searched for
+      if (params.size() > 1) {
+	searchVerb = (String)params.elementAt(1);
+      }
     }
     // If the path doesn't end in the separator character, add one
     if (path.lastIndexOf(File.separatorChar) != path.length() - 1) {
@@ -170,6 +202,11 @@ public class MetricsPlugin
     managePlanElements = (IncrementalSubscription) subscribe(managePlanElementsPredicate);
     myTasks = (IncrementalSubscription) subscribe(myTasksPredicate);
 
+    // Subscribe to tasks with the given verb
+    if (searchVerb != null) {
+      myTaskSearch = (IncrementalSubscription) subscribe(createTSPred(searchVerb));
+    }
+
     //        startStatistics();
     messageStatsService = (MessageStatisticsService)
         getBindingSite().getServiceBroker().getService(this, MessageStatisticsService.class, 
@@ -193,6 +230,10 @@ public class MetricsPlugin
       // remove from our cache of PEs any removed PEs
       removePlanElements(managePlanElements.getRemovedList());
     }
+
+    // Count up the tasks I see with my verb
+    if (myTaskSearch != null && myTaskSearch.hasChanged())
+      processMyTasks(myTaskSearch.getAddedList());
     
     // If we have any control tasks to handle, do so
     if (myTasks.hasChanged()) {
@@ -202,6 +243,16 @@ public class MetricsPlugin
     //   finishStatistics();
   }
 
+  private void processMyTasks(Enumeration e) {
+    while (e.hasMoreElements()) {
+      if (timeFirstMyTask == 0)
+	timeFirstMyTask = System.currentTimeMillis();
+      countMyTasks++;
+      countMyTasksThisInterval++;
+      e.nextElement();
+    }
+  }
+  
   // remove removed PEs from our collection
   private void removePlanElements(Enumeration e) {
     while (e.hasMoreElements()) {
@@ -300,9 +351,16 @@ public class MetricsPlugin
     writer.print("Msg Q Length\t");
     writer.print("Msg Bytes Sent\t");
     writer.print("Msgs Sent\t");
-    writer.println("Tasks Done During Sample");
+    writer.print("Tasks Done During Sample");
+    
+    if (myTaskSearch != null) {
+      // Print headers for optional results
+      writer.print("\tTime since first Task with verb " + searchVerb + "\t");
+      writer.print("Num Tasks this Interval with verb " + searchVerb + "\t");
+      writer.print("Total tasks seen with verb " + searchVerb);
+    }
+    writer.println();
   }
-
   /**
    * Close the statistics output stream
    *
@@ -415,6 +473,13 @@ public class MetricsPlugin
 
     writer.print("\t");
     writer.print(deltaPlanElementCount);
+    
+    if (myTaskSearch != null) {
+      writer.print("\t" + ((System.currentTimeMillis() - timeFirstMyTask) / 1000.0) + "\t");
+      writer.print(countMyTasksThisInterval + "\t");
+      writer.print(countMyTasks);
+    }
+    
     writer.println();
     if (log.isApplicable(log.DEBUG)) {
       log.log(this, log.DEBUG, "Duration     : " + timeFormat.format(elapsedTime/1000.0) + "\n" + 
@@ -434,7 +499,16 @@ public class MetricsPlugin
       }
       log.log(this, log.DEBUG, 
 	      "Tasks Done   : " + deltaPlanElementCount);
+      if (myTaskSearch != null) {
+	log.log(this, log.DEBUG, "Time (sec) since first task of verb " + searchVerb + ": " + ((System.currentTimeMillis() - timeFirstMyTask) / 1000.0) + "\n");
+	log.log(this, log.DEBUG, "Num tasks this interval of verb " + searchVerb + ": " + countMyTasksThisInterval + "\n");
+	log.log(this, log.DEBUG, "Total tasks seen with verb " + searchVerb + ": " + countMyTasks + "\n");
+      }
     }
+    
+    // reset task count variable
+    countMyTasksThisInterval = 0;
+    
     // Flush the writer?
     writer.flush();
   }
