@@ -21,8 +21,6 @@
 
 package org.cougaar.tools.csmart.ui.monitor.viewer;
 
-//import att.grappa.GrappaConstants;
-
 import org.cougaar.tools.csmart.ui.Browser;
 
 import org.cougaar.tools.csmart.society.SocietyComponent;
@@ -75,19 +73,13 @@ import javax.swing.*;
  */
 
 public class CSMARTUL extends JFrame implements ActionListener, Observer {
-  // names of PSPs used by this client
-  //  private static final String PSP_COMMUNITY = "PSP_CommunityProvider.PSP";
-  //  private static final String PSP_CLUSTER = "PSP_ClusterInfo.PSP";
-  //  private static final String PSP_PLAN = "PSP_Plan.PSP";
-  //  private static final String PSP_METRICS = "PSP_Metrics.PSP";
-
   // names of servlets used by this client
-  private static final String PSP_COMMUNITY = 
+  private static final String COMMUNITY_SERVLET = 
     "CSMART_CommunityProviderServlet";
-  private static final String PSP_CLUSTER = 
+  private static final String CLUSTER_SERVLET = 
     "CSMART_ClusterInfoServlet";
-  private static final String PSP_PLAN = "CSMART_PlanServlet";
-  private static final String PSP_METRICS = "CSMART_MetricsServlet";
+  private static final String PLAN_SERVLET = "CSMART_PlanServlet";
+  private static final String METRICS_SERVLET = "CSMART_MetricsServlet";
 
   private static final String FILE_MENU = "File";
   private static final String NEW_MENU_ITEM = "New";
@@ -645,31 +637,31 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   }
 
   /**
-   * Query PSP_CommunityProvider.PSP to get community <-> agent mapping.
+   * Query servlet to get community <-> agent mapping.
    */
 
   private static void getCommunities() {
     if (communityToAgents != null)
       return; // only do this once
     // get agent and community names
-    Collection objectsFromPSP = getObjectsFromServlet(PSP_COMMUNITY);
-    if (objectsFromPSP == null) 
+    Collection orgAssets = getObjectsFromServlet(COMMUNITY_SERVLET);
+    if (orgAssets == null) 
       return;
-    if (objectsFromPSP.size() == 0)
+    if (orgAssets.size() == 0)
       JOptionPane.showMessageDialog(null,
  				    "No information received from agents.");
-    processOrganizationAssets(objectsFromPSP);
+    processOrganizationAssets(orgAssets);
   }
 
   /**
    * Create community<->agents mapping.
    */
 
-  private static void processOrganizationAssets(Collection objectsFromPSP) {
+  private static void processOrganizationAssets(Collection orgAssets) {
     communityToAgents = new Hashtable();
     agentToCommunity = new Hashtable();
     agentToURL = new Hashtable();
-    for (Iterator i = objectsFromPSP.iterator(); i.hasNext(); ) {
+    for (Iterator i = orgAssets.iterator(); i.hasNext(); ) {
       Object o = i.next();
       if (!(o instanceof PropertyTree)) {
 	System.out.println("CSMARTUL: expected PropertyTree, got: " + 
@@ -691,7 +683,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       } else
 	agents.addElement(agentName);
       String url = (String)properties.get(PropertyNames.AGENT_URL);
-      url = url.substring(0, url.indexOf(PSP_COMMUNITY));
+      url = url.substring(0, url.indexOf(COMMUNITY_SERVLET));
       agentToURL.put(agentName, url);
     }
   }
@@ -702,18 +694,18 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   private void makeCommunityGraph() {
     // get agent and community names
-    Collection objectsFromPSP = getObjectsFromServlet(PSP_COMMUNITY);
-    if (objectsFromPSP == null) 
+    Collection objectsFromServlet = getObjectsFromServlet(COMMUNITY_SERVLET);
+    if (objectsFromServlet == null) 
       return;
-    int n = objectsFromPSP.size();
+    int n = objectsFromServlet.size();
     if (n == 0)
       JOptionPane.showMessageDialog(null,
  				    "No information received from agents.");
     // set up agent<->community mappings in hashtables
-    processOrganizationAssets(objectsFromPSP);
+    processOrganizationAssets(objectsFromServlet);
     Vector nodeObjects = new Vector(n);
     Hashtable nameToNodeObject = new Hashtable(n);
-    for (Iterator i = objectsFromPSP.iterator(); i.hasNext(); ) {
+    for (Iterator i = objectsFromServlet.iterator(); i.hasNext(); ) {
       PropertyTree properties = (PropertyTree)i.next();
       String communityName = 
 	(String)properties.get(PropertyNames.AGENT_COMMUNITY_NAME);
@@ -767,7 +759,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     	agentURLs.add(URL);
     }
 
-    String servletId = PSP_PLAN;
+    String servletId = PLAN_SERVLET;
     int limit  = filter.getNumberOfObjects();
     ArrayList parameterNames = new ArrayList(1);
     ArrayList parameterValues = new ArrayList(1);
@@ -886,21 +878,21 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   public static void makeThreadGraph(String UID, String agentName,
 				     boolean isDown, int limit) {
     getCommunities();
-    List objectsFromPSP = ThreadUtils.getFullThread(agentMap, isDown, limit, 
+    List objectsFromServlet = ThreadUtils.getFullThread(agentMap, isDown, limit, 
 						    agentName, UID);
-    if (objectsFromPSP == null || objectsFromPSP.size() == 0) {
+    if (objectsFromServlet == null || objectsFromServlet.size() == 0) {
       JOptionPane.showMessageDialog(null,
 	    "Cannot obtain thread information for specified plan object.");
       return;
     }
     if ((limit >= 0) &&
-        (objectsFromPSP.size() > limit)) {
+        (objectsFromServlet.size() > limit)) {
       JOptionPane.showMessageDialog(null,
 	    "Exceeded limit of "+limit+" objects; creating a trimmed graph.");
     }
-    Vector nodeObjects = new Vector(objectsFromPSP.size());
+    Vector nodeObjects = new Vector(objectsFromServlet.size());
     Vector assetPropertyTrees = new Vector();
-    for (Iterator i = objectsFromPSP.iterator(); i.hasNext(); ) {
+    for (Iterator i = objectsFromServlet.iterator(); i.hasNext(); ) {
       PropertyTree properties = (PropertyTree)i.next();
       // pick off the assets and process after we have them all
       String objectType = (String)properties.get(PropertyNames.OBJECT_TYPE);
@@ -966,13 +958,12 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private void makeSocietyGraph() {
-    Collection objectsFromPSP = getObjectsFromServlet(PSP_CLUSTER);
-    if (objectsFromPSP == null)
+    Collection objectsFromServlet = getObjectsFromServlet(CLUSTER_SERVLET);
+    if (objectsFromServlet == null)
       return;
-    Vector nodeObjects = new Vector(objectsFromPSP.size());
-    //    System.out.println("Received plan objects: " + objectsFromPSP.size());
+    Vector nodeObjects = new Vector(objectsFromServlet.size());
     Hashtable nameToUID = new Hashtable();
-    for (Iterator i = objectsFromPSP.iterator(); i.hasNext(); ) {
+    for (Iterator i = objectsFromServlet.iterator(); i.hasNext(); ) {
       Object o = i.next();
       if (!(o instanceof PropertyTree)) {
 	System.out.println("CSMARTUL: expected PropertyTree, got: " + 
@@ -1024,15 +1015,15 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   }
 
   public void makeMetricsGraph() {
-    Collection objectsFromPSP = getObjectsFromServlet(PSP_METRICS);
-    if (objectsFromPSP == null)
+    Collection objectsFromServlet = getObjectsFromServlet(METRICS_SERVLET);
+    if (objectsFromServlet == null)
       return;
-    System.out.println("Received metrics: " + objectsFromPSP.size());
+    System.out.println("Received metrics: " + objectsFromServlet.size());
 
     ArrayList names = new ArrayList();
     ArrayList data = new ArrayList();
 
-    Iterator iter = objectsFromPSP.iterator();
+    Iterator iter = objectsFromServlet.iterator();
     while(iter.hasNext()) {
       Object obj = iter.next();
       if(obj instanceof String) {
