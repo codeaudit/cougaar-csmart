@@ -927,8 +927,10 @@ public class OrganizerHelper {
 	    // Now set the new name
 	    dbRecipe.name = recipeName;
 	    rc = createRecipe(dbRecipe.name, dbRecipe.cls);
-	    setRecipeComponentProperties(dbRecipe, rc);
-	    rc.saveToDatabase();
+	    if (rc != null) {
+	      setRecipeComponentProperties(dbRecipe, rc);
+	      rc.saveToDatabase();
+	    }
           } // end of SimpleRecipe handling
         } // end of block for found the recipe
 
