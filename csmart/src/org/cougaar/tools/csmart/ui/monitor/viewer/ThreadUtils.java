@@ -29,14 +29,16 @@ import java.net.URLEncoder;
 
 import org.cougaar.util.PropertyTree;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
+import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
+import org.cougaar.tools.csmart.ui.util.ServletResult;
 
 /**
  * Utility <tt>getFullThread(..)<tt> methods for multi-agent interaction
- * and aggregation with the <b>THREADS.PSP</b> (<code>PSP_Search</code>).
+ * and aggregation with the "Threads" servlet.
  * <p>
- * The "getFullThread(..)" method makes multiple calls to the THREADS.PSP
- * on different Agents to create a cross-agent "thread" of the separate
- * Agent Blackboard Objects.
+ * The "getFullThread(..)" method makes multiple calls to the "Threads" 
+ * servlets on different Agents to create a cross-agent "thread" of the 
+ * separate Agent Blackboard Objects.
  * <p>
  * Note that the name "thread" here refers to chains of Objects, not
  * to <code>java.lang.thread</code>!
@@ -44,17 +46,7 @@ import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 public final class ThreadUtils {
 
   private ThreadUtils() {
-    // just static utilities!  
-    //
-    // could easily be repackaged as an object-orientated interface,
-    //   but for now this is primarily a set of re-entrant functions
   }
-
-  /**
-   * Name of the <code>PSP_Search</code> on all agents.
-   */
-  //  public static final String SEARCH_PSP_NAME = "/csmart/monitor/THREADS.PSP";
-  public static final String SEARCH_PSP_NAME = "/CSMART_SearchServlet";
 
   /**
    * Enable/disable debug messages.
@@ -124,8 +116,8 @@ public final class ThreadUtils {
    * keep the UID prefix of their source Agent, not their destination,
    * and there are other special-cases like this.
    * <p>
-   * The <code>AgentMapping</code> is used to find the PSP-server host and 
-   * port for each agent PSP query.
+   * The <code>AgentMapping</code> is used to find the host and 
+   * port for each agent query.
    * <p>
    * "isDown" specifies the direction for the search.  If <tt>true</tt>
    * then serialize-order links are traversed, plus links from an
@@ -154,7 +146,7 @@ public final class ThreadUtils {
    * Objects matching these starting points are also returned in the
    * results.
    *
-   * @param am maps an agent name to its PSP host and port
+   * @param am maps an agent name to its host and port
    * @param isDown specifies the search direction
    * @param limit maximum number of PropertyTrees to gather (see above notes)
    * @param agentToUIDs a Map of (String agentName, List of String UIDs) for 
@@ -193,7 +185,7 @@ public final class ThreadUtils {
       String findAgentName = (String)workMap.keySet().iterator().next();
       List findUIDs = (List)workMap.remove(findAgentName);
 
-      // query the PSP
+      // query the servlet
       if (VERBOSE) {
         System.out.println(
             "--query "+findAgentName+" ["+findUIDs.size()+"]--");
@@ -300,61 +292,68 @@ public final class ThreadUtils {
    * @return List of PropertyTrees, or null if an error occurred
    */
 
-  // TODO: make this method use the utilities in ui.util
-  // so that we don't have to debug problems connecting to servlets
-  // in two different places
   private static List getLocalThread(
       AgentMapping am,
       boolean isDown,
       String agentName, 
       List uids,
       int limit) {
-    try {
-      // get host and port
-      String host = am.getHost(agentName);
-      int port = am.getPort(agentName);
-      // create URL
+    String agentURL = ClientServletUtil.makeURL(am.getHost(agentName),
+                                                am.getPort(agentName));
+    agentURL = agentURL + "$" + URLEncoder.encode(agentName) + "/";
+    ArrayList parameterNames = new ArrayList(2);
+    ArrayList parameterValues = new ArrayList(2);
+    parameterNames.add("format");
+    parameterValues.add("data");
+    parameterNames.add("find");
+    if (isDown)
+      parameterValues.add("down");
+    else
+      parameterValues.add("up");
+    Collection c = 
+      ClientServletUtil.getCollectionFromAgent(agentURL,
+                     ClientServletUtil.SEARCH_SERVLET,
+                     parameterNames, parameterValues, uids, limit);
+    return (List)c;
+  }
+
+//      try {
+//        // get host and port
+//        String host = am.getHost(agentName);
+//        int port = am.getPort(agentName);
+//        // create URL
 //        String surl = 
 //          "http://"+host+":"+port+
 //          "/$"+
 //          URLEncoder.encode(agentName)+
 //          SEARCH_PSP_NAME+
 //          "?format=data"+
-//          "?find="+
+//          "&find="+
 //          (isDown ? "down" : "up") +
-//          ((limit >= 0) ? ("?limit="+limit) : "");
-      String surl = 
-        "http://"+host+":"+port+
-        "/$"+
-        URLEncoder.encode(agentName)+
-        SEARCH_PSP_NAME+
-        "?format=data"+
-        "&find="+
-        (isDown ? "down" : "up") +
-        ((limit >= 0) ? ("&limit="+limit) : "");
-      // connect, upload List of Strings
-      //      System.out.println("ThreadUtils: connecting to: " + surl);
-      URL url = new URL(surl);
-      URLConnection conn = url.openConnection();
-      conn.setDoOutput(true);
-      OutputStream os = conn.getOutputStream();
-      ObjectOutputStream oos = new ObjectOutputStream(os);
-      oos.writeObject(uids);
-      oos.close();
-      // receive result List of PropertyTrees
-      InputStream is = conn.getInputStream();
-      ObjectInputStream ois = new ObjectInputStream(is);
-      Object inObj = ois.readObject();
-      ois.close();
-      // return result
-      return (List)inObj;
-    } catch (Exception e) {
-      System.err.println("Query agent "+agentName+" failed:");
-      System.err.println(e);
-      //      e.printStackTrace();
-      return null;
-    }
-  }
+//          ((limit >= 0) ? ("&limit="+limit) : "");
+//        // connect, upload List of Strings
+//        //      System.out.println("ThreadUtils: connecting to: " + surl);
+//        URL url = new URL(surl);
+//        URLConnection conn = url.openConnection();
+//        conn.setDoOutput(true);
+//        OutputStream os = conn.getOutputStream();
+//        ObjectOutputStream oos = new ObjectOutputStream(os);
+//        oos.writeObject(uids);
+//        oos.close();
+//        // receive result List of PropertyTrees
+//        InputStream is = conn.getInputStream();
+//        ObjectInputStream ois = new ObjectInputStream(is);
+//        Object inObj = ois.readObject();
+//        ois.close();
+//        // return result
+//        return (List)inObj;
+//      } catch (Exception e) {
+//        System.err.println("Query agent "+agentName+" failed:");
+//        System.err.println(e);
+//        //      e.printStackTrace();
+//        return null;
+//      }
+  //  }
 
 
   /** testing utility */

@@ -73,14 +73,6 @@ import javax.swing.*;
  */
 
 public class CSMARTUL extends JFrame implements ActionListener, Observer {
-  // names of servlets used by this client
-  private static final String COMMUNITY_SERVLET = 
-    "CSMART_CommunityProviderServlet";
-  private static final String CLUSTER_SERVLET = 
-    "CSMART_ClusterInfoServlet";
-  private static final String PLAN_SERVLET = "CSMART_PlanServlet";
-  private static final String METRICS_SERVLET = "CSMART_MetricsServlet";
-
   private static final String FILE_MENU = "File";
   private static final String NEW_MENU_ITEM = "New";
   private static final String OPEN_MENU_ITEM = "Open";
@@ -104,11 +96,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private JMenu windowMenu;
   private static String agentURL = null; // agent to contact initially
   private static String agentHost = "localhost";
-  //  private static int agentPort = 5555;
   private static int agentPort = 8800;
-  private static String agentPortString = "8800";
   // maps host to port, but port used is currently hardcoded
-  // TODO: how should this work?
   private static CSMARTAgentMap agentMap;
   // these mappings are determined once,
   private static Hashtable communityToAgents = null;
@@ -183,13 +172,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   public CSMARTUL(CSMART csmart) {
     this.csmart = csmart;
     refreshAgents();
-//      if (csmart != null) {
-//        experiment = csmart.getRunningExperiment();
-//        setHostToMonitor(experiment);
-//        listener = new MyExperimentListener(this);
-//        experiment.addExperimentListener(listener);
-//      }
-
     // create one version of properties for all objects
     // and set them in CSMARTGraph because it can't address CSMARTUL
     // TODO: better handling of properties
@@ -302,7 +284,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
         break;
       }
     }
-    agentURL = "http://" + agentHost + ":" + agentPortString + "/"; 
+    agentURL = ClientServletUtil.makeURL(agentHost, agentPort);
     agentMap = new CSMARTAgentMap(agentHost, agentPort);
   }
 
@@ -491,8 +473,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private static void getAgentURL() {
     if (agentURL != null)
       return; // only ask user for agent locations once
-    JTextField tf = new JTextField("http://localhost:" +
-                                   agentPortString + "/");
+    JTextField tf = 
+      new JTextField(ClientServletUtil.makeURL("localhost", agentPort));
+
     JPanel panel = new JPanel();
     panel.add(new JLabel("Agent URL:"));
     panel.add(tf);
@@ -605,7 +588,11 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     int nAgents = 0;
     StringBuffer buf = new StringBuffer(100);
     Collection objectsFromServlet = null;
-    for (int i = 0; i < agentURLs.size(); i++) {
+    // there is a collection for each agent contacted
+    // if there was an error contacting the agent, then the collection is null
+    // if the limit was exceeded, the number of collections is less
+    // than the number of agents
+    for (int i = 0; i < collections.size(); i++) {
       Collection col = (Collection)collections.get(i);
       if (col != null) {
         nAgents++;
@@ -623,11 +610,10 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
         buf.append(agentURLs.get(i));
       }
     }
-    
-// TODO: is there a way to distinguish we couldn't contact vs. we didn't try (because of exceeded limits?)
     if (servletResult.isLimitExceeded())
       JOptionPane.showMessageDialog(null,
-             "Exceeded limit, producing a trimmed graph from: " + nAgents);
+             "Exceeded limit, producing a trimmed graph from " + nAgents +
+                                    " agents.");
     else if (buf.length() != 0) 
       JOptionPane.showMessageDialog(null,
                                     "Failed to contact servlet: " +
@@ -644,7 +630,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     if (communityToAgents != null)
       return; // only do this once
     // get agent and community names
-    Collection orgAssets = getObjectsFromServlet(COMMUNITY_SERVLET);
+    Collection orgAssets = 
+      getObjectsFromServlet(ClientServletUtil.COMMUNITY_SERVLET);
     if (orgAssets == null) 
       return;
     if (orgAssets.size() == 0)
@@ -683,7 +670,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       } else
 	agents.addElement(agentName);
       String url = (String)properties.get(PropertyNames.AGENT_URL);
-      url = url.substring(0, url.indexOf(COMMUNITY_SERVLET));
+      url = url.substring(0, url.indexOf(ClientServletUtil.COMMUNITY_SERVLET));
       agentToURL.put(agentName, url);
     }
   }
@@ -694,7 +681,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   private void makeCommunityGraph() {
     // get agent and community names
-    Collection objectsFromServlet = getObjectsFromServlet(COMMUNITY_SERVLET);
+    Collection objectsFromServlet = 
+      getObjectsFromServlet(ClientServletUtil.COMMUNITY_SERVLET);
     if (objectsFromServlet == null) 
       return;
     int n = objectsFromServlet.size();
@@ -759,7 +747,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     	agentURLs.add(URL);
     }
 
-    String servletId = PLAN_SERVLET;
+    String servletId = ClientServletUtil.PLAN_SERVLET;
     int limit  = filter.getNumberOfObjects();
     ArrayList parameterNames = new ArrayList(1);
     ArrayList parameterValues = new ArrayList(1);
@@ -870,7 +858,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   }
 
   /**
-   * Make a thread graph using the plan object threads psp.
+   * Make a thread graph using the plan object threads servlet.
    * Called to make a thread graph when the user has selected
    * an object in the plan graph.
    */
@@ -958,7 +946,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private void makeSocietyGraph() {
-    Collection objectsFromServlet = getObjectsFromServlet(CLUSTER_SERVLET);
+    Collection objectsFromServlet = 
+      getObjectsFromServlet(ClientServletUtil.CLUSTER_SERVLET);
     if (objectsFromServlet == null)
       return;
     Vector nodeObjects = new Vector(objectsFromServlet.size());
@@ -1015,7 +1004,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   }
 
   public void makeMetricsGraph() {
-    Collection objectsFromServlet = getObjectsFromServlet(METRICS_SERVLET);
+    Collection objectsFromServlet = 
+      getObjectsFromServlet(ClientServletUtil.METRICS_SERVLET);
     if (objectsFromServlet == null)
       return;
     System.out.println("Received metrics: " + objectsFromServlet.size());
