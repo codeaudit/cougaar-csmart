@@ -39,7 +39,14 @@ import javax.swing.event.*;
 
 import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.mlm.ui.glsinit.GLSClient;
-import org.cougaar.tools.server.*;
+import org.cougaar.tools.server.OutputListener;
+import org.cougaar.tools.server.OutputPolicy;
+import org.cougaar.tools.server.ProcessDescription;
+import org.cougaar.tools.server.RemoteFileSystem;
+import org.cougaar.tools.server.RemoteHost;
+import org.cougaar.tools.server.RemoteListenable;
+import org.cougaar.tools.server.RemoteListenableConfig;
+import org.cougaar.tools.server.RemoteProcess;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.log.Logger;
 
@@ -89,7 +96,6 @@ public class CSMARTConsole extends JFrame {
   private static final String GLS_SERVLET = "org.cougaar.mlm.plugin.organization.GLSInitServlet";
   private CSMART csmart;
   private HostConfigurationBuilder hostConfiguration = null;
-  private RemoteHostRegistry remoteHostRegistry;
   private SocietyComponent societyComponent;
   private Experiment experiment;
   private int currentTrial; // index of currently running trial in experiment
@@ -116,8 +122,9 @@ public class CSMARTConsole extends JFrame {
   private Legend legend; // the node status lamp legend
   private CSMARTConsole console;
   private GLSClient glsClient = null;
-  private AppServerList appServers; // array of AppServerDescription
   private transient Logger log;
+  private AppServerSupport appServerSupport;
+  private TimerTask monitorAppServerTask;
 
   // gui controls
   ButtonGroup statusButtons;
@@ -187,16 +194,24 @@ public class CSMARTConsole extends JFrame {
     createLogger();
     console = this;
     currentTrial = -1;
-    remoteHostRegistry = RemoteHostRegistry.getInstance();
     runningNodes = new Hashtable();
     oldNodes = new ArrayList();
     nodeListeners = new Hashtable();
     nodePanes = new Hashtable();
     nodeToNodeInfo = new Hashtable();
-    appServers = new AppServerList();
+    appServerSupport = new AppServerSupport();
     if (experiment != null)
       getAppServersFromExperiment();
     initGui();
+    // contact known app servers periodically to get lists of their nodes
+    // display dialog when new nodes are first detected
+    monitorAppServerTask = new TimerTask() {
+        public void run() {
+          if (appServerSupport.haveNewNodes())
+            JOptionPane.showMessageDialog(null, "There are new nodes");
+        }
+      };
+    new java.util.Timer().schedule(monitorAppServerTask, new Date(), 30000);
   }
 
   private void createLogger() {
@@ -318,7 +333,7 @@ public class CSMARTConsole extends JFrame {
     JMenuItem displayMenuItem = new JMenuItem(VIEW_APP_SERVER_ITEM);
     displayMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          displayAppServers();
+          appServerSupport.displayAppServers();
         }
       });
     displayMenuItem.setToolTipText("Display list of Application Servers.");
@@ -326,7 +341,7 @@ public class CSMARTConsole extends JFrame {
     JMenuItem addMenuItem = new JMenuItem(ADD_APP_SERVER_ITEM);
     addMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          addAppServer();
+          appServerSupport.addAppServer();
         }
       });
     addMenuItem.setToolTipText("Add an Application Server.");
@@ -334,7 +349,7 @@ public class CSMARTConsole extends JFrame {
     JMenuItem deleteMenuItem = new JMenuItem(DELETE_APP_SERVER_ITEM);
     deleteMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          deleteAppServers();
+          appServerSupport.deleteAppServers();
         }
       });
     deleteMenuItem.setToolTipText("Ignore Application Servers.");
@@ -342,7 +357,7 @@ public class CSMARTConsole extends JFrame {
     JMenuItem refreshMenuItem = new JMenuItem(REFRESH_APP_SERVER_ITEM);
     refreshMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          refreshAppServers();
+          appServerSupport.refreshAppServers();
         }
       });
     refreshMenuItem.setToolTipText("Refresh list of Application Servers");
@@ -409,8 +424,7 @@ public class CSMARTConsole extends JFrame {
       }
     });
     attachButton.setFocusPainted(false);
-    // TODO: enable this when attaching is implemented
-    attachButton.setEnabled(false);
+    attachButton.setEnabled(true);
     descriptionPanel.add(attachButton);
     descriptionPanel.add(Box.createRigidArea(HGAP5));
     runButton = new JToggleButton("Run");
@@ -606,7 +620,6 @@ public class CSMARTConsole extends JFrame {
     return p;
   }
 
-
   /**
    * Create a button representing a node.
    */
@@ -781,13 +794,15 @@ public class CSMARTConsole extends JFrame {
 	else {
 	  log.error("Null trial ID for experiment!");
 	}
-        int remotePort = getAppServerPort(properties);
-        RemoteHost appServer = getAppServer(hostName, remotePort);
+        // get the app server to use
+        RemoteHost appServer =
+          appServerSupport.addAppServerForExperiment(hostName, properties);
         if (appServer == null)
           continue;
         nodeToNodeInfo.put(nodeName, 
                            new NodeInfo(appServer,
-                                        nodeName, hostName, properties, args));
+                                        nodeName, hostName, "",
+                                        properties, args));
         // if not running from database, need to write config files
         // writeConfigFiles()
       }
@@ -844,6 +859,8 @@ public class CSMARTConsole extends JFrame {
   /**
    * Run nodes using info in nodeToNodeInfo hashtable,
    * which maps node names to NodeInfo objects.
+   * This is called both when running an experiment and when
+   * restarting nodes that were attached to.
    */
   private void runTrial() {
     if (log.isDebugEnabled()) {
@@ -856,8 +873,11 @@ public class CSMARTConsole extends JFrame {
     Collection values = nodeToNodeInfo.values();
     for (Iterator i = values.iterator(); i.hasNext(); ) {
       NodeInfo ni = (NodeInfo)i.next();
-      prepareToCreateNode(ni.appServer, ni.nodeName, ni.hostName,
-                          ni.properties, ni.args);
+      NodeCreationInfo nci = prepareToCreateNode(ni.appServer, 
+                                                 ni.nodeName, ni.hostName,
+                                                 ni.properties, ni.args);
+      if (nci != null)
+        nodeCreationInfoList.add(nci);
     }
     stopNodeCreation = false;
     startTimers();
@@ -1046,9 +1066,6 @@ public class CSMARTConsole extends JFrame {
   /**
    * Set the trial values in the corresponding properties,
    * and update the trial guis.
-   * Check if there are any new unassigned agents and assign them.
-   * Remove any agents that no longer exist.
-   * Update the configuration view.
    */
   private void setTrialValues() {
     if (currentTrial >= 0)
@@ -1088,6 +1105,8 @@ public class CSMARTConsole extends JFrame {
    * If the society in the experiment is self terminating, 
    * just stop after the current trial (don't start next trial),
    * otherwise stop immediately (same as abort).
+   * Because no society is self terminating, 
+   * the stop and abort buttons currently do the same thing.
    */
   private void stopButton_actionPerformed(ActionEvent e) {
     stopButton.setSelected(true); // indicate stopping
@@ -1100,8 +1119,7 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * Abort all nodes, (using the RemoteProcesses interface which is
-   * returned by the app-server's "createRemoteProcess(..)").
+   * Abort all nodes.
    */
   private void abortButton_actionPerformed() {
     userStoppedTrials = true;
@@ -1109,19 +1127,7 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * Stop all experiments.  Called before exiting CSMART.
-   */
-  public void stopExperiments() {
-    stopAllNodes(); // stop the nodes
-    destroyOldNodes(); // kill all their outputs
-    unsetTrialValues(); // unset values from last trial
-  }
-
-  /**
-   * Stop the nodes, but don't kill the node frames.
-   * Dispose of the GLSClient frame if it exists.
-   * Used to stop trials in societies that aren't self terminating
-   * and used to abort trials.
+   * Stop the nodes; called by both stop and abort.
    */
   private void stopAllNodes() {
     // if there's a thread still creating nodes, stop it
@@ -1172,12 +1178,18 @@ public class CSMARTConsole extends JFrame {
             return;
           }
           try {
-            remoteNode.getRemoteListenable().flushOutput();
+            RemoteListenable rl = 
+              remoteNode.getRemoteListenable();
+            rl.flushOutput();
             remoteNode.destroy();
           } catch (Exception ex) {
             if(log.isErrorEnabled()) {
               log.error("Unable to destroy node, assuming it's dead: ", ex);
             }
+            // call the method that would have been called
+            // had the node been stopped
+            nodeStopped(nodeName);
+            getNodeStatusButton(nodeName).setStatus(NodeStatusButton.STATUS_NO_ANSWER);
           }
         }
       }; // end nodeDestroyer thread
@@ -1193,12 +1205,6 @@ public class CSMARTConsole extends JFrame {
           log.error("Exception", e);
         }
       }
-    }
-    // update the gui
-    while (nodeNames.hasMoreElements()) {
-      String nodeName = (String)nodeNames.nextElement();
-      nodeStopped(nodeName);
-      getNodeStatusButton(nodeName).setStatus(NodeStatusButton.STATUS_NO_ANSWER);
     }
   }
 
@@ -1220,6 +1226,10 @@ public class CSMARTConsole extends JFrame {
     }
   }
     
+  /**
+   * Update the gui controls when experiments (or attached nodes)
+   * are started or stopped.
+   */
   private void updateControls(boolean isRunning) {
     if (experiment != null) {
       if (!isRunning) {
@@ -1264,13 +1274,26 @@ public class CSMARTConsole extends JFrame {
    */
 
   public void nodeStopped(String nodeName) {
+    RemoteProcess remoteNode = null;
     synchronized (runningNodesLock) {
-      if (runningNodes.get(nodeName) != null) {
+      remoteNode = (RemoteProcess)runningNodes.get(nodeName);
+      if (remoteNode != null) {
         oldNodes.add(nodeName);
         runningNodes.remove(nodeName);
       }
     } // end synchronized
-
+    // remove the node listener
+    if (remoteNode != null) {
+      try {
+        RemoteListenable rl = remoteNode.getRemoteListenable();
+        rl.flushOutput();
+        rl.removeListener(CSMART.getNodeListenerId());
+      } catch (Exception e) {
+        if (log.isErrorEnabled()) {
+          log.error("Exception removing listener for remote node", e);
+        }
+      }
+    }
     // enable restart command on node output window, only if we're not stopping
     ConsoleInternalFrame frame = 
       desktop.getNodeFrame(nodeName);
@@ -1357,20 +1380,6 @@ public class CSMARTConsole extends JFrame {
     }
   }
 
-  public static int getAppServerPort(Properties properties) {
-    int port = Experiment.APP_SERVER_DEFAULT_PORT;
-    if (properties == null)
-      return port;
-    try {
-      String tmp = properties.getProperty(Experiment.CONTROL_PORT);
-      if (tmp != null)
-        port = Integer.parseInt(tmp);
-    } catch (NumberFormatException nfe) {
-      // use default port
-    }
-    return port;
-  }
-
   /**
    * Get node -d arguments.
    * Substitute host name for $HOST value if it occurs.
@@ -1430,11 +1439,18 @@ public class CSMARTConsole extends JFrame {
     return l;
   }
 
-  private void prepareToCreateNode(RemoteHost appServer,
-                                   String nodeName,
-                                   String hostName,
-                                   Properties properties,
-                                   java.util.List args) {
+  /**
+   * Called when the user runs an experiment or 
+   * attaches to running nodes.
+   * Creates the node listener and the output pane for the node.
+   * Returns all the information needed to actually run the node
+   * encapsulated in a single object.
+   */
+  private NodeCreationInfo prepareToCreateNode(RemoteHost appServer,
+                                               String nodeName,
+                                               String hostName,
+                                               Properties properties,
+                                               java.util.List args) {
     NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
     ConsoleTextPane textPane = new ConsoleTextPane(doc, statusButton);
@@ -1453,7 +1469,7 @@ public class CSMARTConsole extends JFrame {
       if(log.isErrorEnabled()) {
         log.error("Unable to create output for: " + nodeName, e);
       }
-      return;
+      return null;
     }
 
     if (notifyCondition != null)
@@ -1465,19 +1481,21 @@ public class CSMARTConsole extends JFrame {
       ((ConsoleNodeListener)listener).setFilter(displayFilter);
     nodeListeners.put(nodeName, listener);
     nodePanes.put(nodeName, textPane);
-
     OutputPolicy outputPolicy = new OutputPolicy(10);
-    NodeCreationInfo nci =
-      new NodeCreationInfo(appServer, 
-                           properties, args,
-                           listener, outputPolicy, 
-                           nodeName, hostName,
-                           scrollPane, statusButton,
-                           logFileName);
-    nodeCreationInfoList.add(nci);
+    return new NodeCreationInfo(appServer, 
+                                properties, args,
+                                listener, outputPolicy, 
+                                nodeName, hostName,
+                                scrollPane, statusButton,
+                                logFileName);
   }
 
-  // runs in a separate thread
+  /**
+   * Runs in a separate thread, creates the nodes by calling the
+   * appserver.  
+   * Uses the NodeCreationInfo object returned by prepareToCreateNodes
+   * to get all the information needed to actually create the node.
+   */
   private void createNodes() {
     int delay = 1;
     // get inter-node start delay
@@ -1490,7 +1508,9 @@ public class CSMARTConsole extends JFrame {
       }
     }
     final int interNodeStartDelay = delay;
-
+    String experimentName = "Experiment";
+    if (experiment != null)
+      experimentName = experiment.getExperimentName();
     for (int i = 0; i < nodeCreationInfoList.size(); i++) {
       try {
         Thread.sleep(interNodeStartDelay);
@@ -1502,10 +1522,8 @@ public class CSMARTConsole extends JFrame {
         (NodeCreationInfo)nodeCreationInfoList.get(i);
       final RemoteProcess remoteNode;
       try {
-        String experimentName = "";
-        if (experiment != null)
-          experimentName = experiment.getExperimentName();
-        String procName = experimentName + "-" + nci.nodeName;
+        String procName = 
+          appServerSupport.getProcessName(experimentName, nci.nodeName);
         String groupName = "csmart";
         ProcessDescription desc =
           new ProcessDescription(procName,
@@ -1515,8 +1533,14 @@ public class CSMARTConsole extends JFrame {
         RemoteListenableConfig conf =
           new RemoteListenableConfig(nci.listener, 
                                      nci.outputPolicy);
+        // register listener
         remoteNode = 
           nci.remoteAppServer.createRemoteProcess(desc, conf);
+        RemoteListenable rl = remoteNode.getRemoteListenable();
+        System.out.println("Adding listener: " +
+                           CSMART.getNodeListenerId() +
+                           " for: " + procName);
+        rl.addListener(nci.listener, CSMART.getNodeListenerId());
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
           log.error("CSMARTConsole: cannot create node: " + 
@@ -1613,8 +1637,9 @@ public class CSMARTConsole extends JFrame {
       return null; // return null, caller (ConsoleInternalFrame) is going away
     }
     properties.remove(Experiment.PERSIST_CLEAR);
-    int remotePort = getAppServerPort(properties);
-    RemoteHost remoteAppServer = getAppServer(hostName, remotePort);
+    int remotePort = appServerSupport.getAppServerPort(properties);
+    RemoteHost remoteAppServer = 
+      appServerSupport.getAppServer(hostName, remotePort);
     if (remoteAppServer == null)
       return null;
     // close the log file and remove the old node event listener
@@ -1658,6 +1683,11 @@ public class CSMARTConsole extends JFrame {
                                    new OutputPolicy(10));
       remoteNode = 
         remoteAppServer.createRemoteProcess(desc, conf);
+      RemoteListenable rl = remoteNode.getRemoteListenable();
+      System.out.println("Adding listener: " +
+                         CSMART.getNodeListenerId() +
+                         " for: " + procName);
+      rl.addListener(listener, CSMART.getNodeListenerId());
       if (remoteNode != null) {
         synchronized (runningNodesLock) {
           runningNodes.put(nodeName, remoteNode);
@@ -1841,7 +1871,12 @@ public class CSMARTConsole extends JFrame {
    */
   
   private void exitMenuItem_actionPerformed(AWTEvent e) {
-    stopExperiments();
+    // don't stop experiments when exiting the console
+    //    stopExperiments();
+    // kill any node output listeners that this instance of CSMART started
+    appServerSupport.killListeners();
+    // stop monitoring app servers
+    monitorAppServerTask.cancel();
     updateControls(false);
     if (experiment != null)
       experiment.setRunInProgress(false);
@@ -2124,96 +2159,10 @@ public class CSMARTConsole extends JFrame {
     hostConfiguration.addHostTreeSelectionListener(myTreeListener);
   }
 
-  private RemoteHost getAppServer(String hostName, int port) {
-    RemoteHost remoteAppServer = null;
-    try {
-      remoteAppServer = 
-        remoteHostRegistry.lookupRemoteHost(hostName, port, true);
-    } catch (Exception e) {
-      if(log.isErrorEnabled()) {
-        log.error("CSMARTConsole: unable to contact app-server on " + 
-                  hostName + " : " + port, e);
-      }
-      JOptionPane.showMessageDialog(this,
-                                    "Unable to contact app-server on " +
-                                    hostName + " : " + port +
-                                    "; check that server is running");
-      return null;
-    }
-    return remoteAppServer;
-  }
-
   /**
-   * Called from menu to display known app servers.
+   * Add any app servers on the hosts and ports that the experiment
+   * will use to the list of app servers we're monitoring.
    */
-  private void displayAppServers() {
-    Util.showObjectsInList(this, appServers, "Application Servers", 
-                           "Application Servers");
-  }
-
-  /**
-   * Called from menu to recontact known app servers;
-   * app servers that don't respond are automatically removed from the list.
-   */
-  private void refreshAppServers() {
-    for (int i = 0; i < appServers.size(); i++) {
-      AppServerDescription asd = (AppServerDescription)appServers.get(i);
-      RemoteHost rh = getAppServer(asd.hostName, asd.remotePort);
-      if (rh == null) {
-        appServers.remove(asd);
-        i--;
-      }
-    }
-  }
-
-  /**
-   * Called from menu to delete app servers from the list of known servers.
-   */
-  private void deleteAppServers() {
-    Object[] appServersToDelete =
-      Util.getObjectsFromList(this, appServers, "Application Servers",
-                              "Select Application Servers To Ignore:");
-    if (appServersToDelete == null) return;
-    for (int i = 0; i < appServersToDelete.length; i++)
-      appServers.remove(appServersToDelete[i]);
-  }
-
-  /**
-   * Called from menu to query user for a hostname and port
-   * for a new app server.
-   * If create AppServer successfully, then add it to the list of appServers.
-   */
-  private void addAppServer() {
-    JTextField tf = new JTextField("", 20);
-    JPanel panel = new JPanel();
-    panel.add(new JLabel("Enter HostName:Port:"));
-    panel.add(tf);
-    int result = 
-      JOptionPane.showOptionDialog(null, panel, "Add Application Server",
-				   JOptionPane.OK_CANCEL_OPTION,
-				   JOptionPane.PLAIN_MESSAGE,
-				   null, null, null);
-    if (result != JOptionPane.OK_OPTION)
-      return;
-    String s = tf.getText();
-    int index = s.indexOf(':');
-    if (index == -1)
-      return;
-    String hostName = s.substring(0, index);
-    hostName = hostName.trim();
-    String port = s.substring(index+1);
-    port = port.trim();
-    int remotePort = 0;
-    try {
-      remotePort = Integer.parseInt(port);
-    } catch (Exception e) {
-      return;
-    }
-    RemoteHost appServer = getAppServer(hostName, remotePort);
-    if (appServer != null)
-      appServers.add(new AppServerDescription(appServer, hostName, remotePort));
-  }
-
   private void getAppServersFromExperiment() {
     HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
@@ -2222,100 +2171,71 @@ public class CSMARTConsole extends JFrame {
       for (int j = 0; j < nodes.length; j++) {
         NodeComponent nodeComponent = nodes[j];
         Properties properties = getNodeMinusD(nodeComponent, hostName);
-        int remotePort = getAppServerPort(properties);
-        RemoteHost appServer = getAppServer(hostName, remotePort);
-        if (appServer != null)
-          appServers.add(new AppServerDescription(appServer, 
-                                                  hostName, remotePort));
+        appServerSupport.addAppServerForExperiment(hostName, properties);
       }
     }
-  }
-
-  /**
-   * Return map of ProcessDescription to RemoteHost (appserver).
-   */
-  private Hashtable getProcessDescriptions() {
-    Hashtable nodeToAppServer = new Hashtable();
-    for (int i = 0; i < appServers.size(); i++) {
-      AppServerDescription desc = (AppServerDescription)appServers.get(i);
-      RemoteHost appServer = desc.appServer;
-      java.util.List someNodes = null;
-      try {
-        someNodes = appServer.listProcessDescriptions();
-      } catch (Exception e) {
-        if (log.isErrorEnabled()) {
-          log.error("Exception getting info from app server: " + e);
-        }
-      }
-      if (someNodes != null)
-        for (Iterator j = someNodes.iterator(); j.hasNext(); )
-          nodeToAppServer.put(j.next(), appServer);
-    }
-    return nodeToAppServer;
-  }
-
-  /**
-   * Display all process descriptions from app servers and return the process
-   * descriptions that the user selects.
-   */
-
-  private ProcessDescription[] getNodesToAttach(ArrayList nodes) {
-    Object[] selected = 
-      Util.getObjectsFromList(this, nodes, "Attach to Nodes", "Select Nodes:");
-    if (selected != null) {
-      ArrayList sel = new ArrayList(selected.length);
-      for (int i = 0; i < selected.length; i++)
-        sel.add(selected[i]);
-      return (ProcessDescription[])sel.toArray(new ProcessDescription[selected.length]);
-    } else
-      return null;
   }
 
   /**
    * Get all known app servers from the experiment or from the user.
    * Display a list of the nodes that the app servers know about.
    * Allow the user to select the nodes to which to attach (or all).
-   * Add the nodes to which the user attaches to the runningNodes list.
+   * Add listeners to the running nodes, and set up the guis for it.
+   * This enters information about the node in the nodeToNodeInfo map
+   * from which nodes can be restarted.
    */
   private void attachButton_actionPerformed() {
     attachButton.setSelected(false);
-    if (appServers.size() == 0)
+    ArrayList nodesToAttach = appServerSupport.getNodesToAttach();
+    if (nodesToAttach == null)
       return;
-    Hashtable nodeToAppServer = getProcessDescriptions();
-    Set pds = nodeToAppServer.keySet();
-    if (pds.size() == 0)
-      return;
-    ProcessDescription[] attachToNodes = getNodesToAttach(new ArrayList(pds));
-    //    printInfoFromAppServer(attachToNodes);
-    nodeToNodeInfo.clear(); // clear all previous info on nodes
-    for (int i = 0; i < attachToNodes.length; i++) {
-      ProcessDescription pd = attachToNodes[i];
-      Map map = pd.getJavaProperties();
-      // workaround to immutable map problem
-      Properties properties = new Properties();
-      Set keys = map.keySet();
-      for (Iterator k = keys.iterator(); k.hasNext(); ) {
-        Object key = k.next();
-        Object value = map.get(key);
-        properties.put(key, value);
+    for (int i = 0; i < nodesToAttach.size(); i++) {
+      NodeInfo nodeInfo = (NodeInfo)nodesToAttach.get(i);
+      runStart = new Date();
+      NodeCreationInfo nci = prepareToCreateNode(nodeInfo.appServer,
+                                                 nodeInfo.nodeName,
+                                                 nodeInfo.hostName,
+                                                 nodeInfo.properties,
+                                                 nodeInfo.args);
+      nodeToNodeInfo.put(nodeInfo.nodeName, nodeInfo);
+      RemoteProcess remoteNode = null;
+      // add listener to node
+      try {
+        remoteNode =
+          nodeInfo.appServer.getRemoteProcess(nodeInfo.processName);
+        RemoteListenable rl =
+          remoteNode.getRemoteListenable();
+        System.out.println("Adding listener: " +
+                           CSMART.getNodeListenerId() +
+                           " for: " +
+                           nodeInfo.processName);
+        rl.addListener(nci.listener, 
+                       CSMART.getNodeListenerId());
+      } catch (Exception e) {
+        if (log.isErrorEnabled()) {
+          log.error("Exception attaching to: " + nodeInfo.processName, e);
+        }
+        continue;
       }
-      // end workaround
-      String nodeName = (String)properties.get("org.cougaar.node.name");
-      String hostName = (String)properties.get("org.cougaar.name.server");
-      java.util.List args = pd.getCommandLineArguments();
-      RemoteHost appServer = (RemoteHost)nodeToAppServer.get(pd);
-      nodeToNodeInfo.put(nodeName, 
-                         new NodeInfo(appServer, nodeName, hostName, 
-                                      properties, args));
- 
+      synchronized (runningNodesLock) {
+        runningNodes.put(nodeInfo.nodeName, remoteNode);
+      }
+      addStatusButton(nci.statusButton);
+      ConsoleInternalFrame frame = 
+        new ConsoleInternalFrame(nci.nodeName,
+                                 nci.hostName,
+                                 nci.properties,
+                                 nci.args,
+                                 (ConsoleNodeListener)nci.listener,
+                                 nci.scrollPane,
+                                 nci.statusButton,
+                                 nci.logFileName,
+                                 remoteNode,
+                                 console);
+      frame.addInternalFrameListener(new NodeFrameListener());
+      desktop.addNodeFrame(frame, nci.nodeName);
     }
-    // TODO: finish this when the attach functionality is working
-    // FOR DEBUGGING: because we can't attach to running nodes yet
-    // abort and then run the new nodes; note this doesn't clean up
-    // the gui properly, but will be ok when attach does the right thing
-    abortButton_actionPerformed();
-    experiment = null; // pretend we don't know about any experiment
-    runButton_actionPerformed();
+    updateControls(true);
   }
 
   /**
@@ -2451,24 +2371,6 @@ public class CSMARTConsole extends JFrame {
     return entries;
   }
 
-  // for debugging
-  private void printInfoFromAppServer(ProcessDescription[] attachToNodes) {
-    for (int i = 0; i < attachToNodes.length; i++) {
-      System.out.println("Name: " + attachToNodes[i].getName());
-      System.out.println("Group: " + attachToNodes[i].getGroup());
-      Map properties = attachToNodes[i].getJavaProperties();
-      Set keys = properties.keySet();
-      for (Iterator j = keys.iterator(); j.hasNext(); ) {
-        Object key = j.next();
-        System.out.println("Property: " + key + ", " + properties.get(key));
-      }
-      java.util.List args = attachToNodes[i].getCommandLineArguments();
-      for (Iterator j = args.iterator(); j.hasNext(); ) {
-        System.out.println("Arg: " + j.next());
-      }
-    }
-  }
-
   public static void main(String[] args) {
     CSMARTConsole console = new CSMARTConsole(null, null);
   }
@@ -2544,69 +2446,6 @@ public class CSMARTConsole extends JFrame {
     }
   }
 
-  /**
-   * This contains all the information needed to start or restart a node.
-   */
-
-  class NodeInfo {
-    RemoteHost appServer;
-    String nodeName;
-    String hostName;
-    Properties properties;
-    java.util.List args;
-
-    public NodeInfo(RemoteHost appServer,
-                    String nodeName, String hostName,
-                    Properties properties, java.util.List args) {
-      this.appServer = appServer;
-      this.nodeName = nodeName;
-      this.hostName = hostName;
-      this.properties = properties;
-      this.args = args;
-    }
-  }
-
-  /**
-   * This contains the information about an application server,
-   * needed to "display app servers" for the user.
-   */
-
-  class AppServerDescription {
-    RemoteHost appServer;
-    String hostName;
-    int remotePort;
-
-    public AppServerDescription(RemoteHost appServer, String hostName,
-                                int remotePort) {
-      this.appServer = appServer;
-      this.hostName = hostName;
-      this.remotePort = remotePort;
-    }
-
-    public String toString() {
-      return hostName + ":" + remotePort;
-    }
-  }
-
-  /**
-   * This ignores app servers found on the same host and port
-   * as an existing app server.
-   * TODO: need to worry about app server(s) that are restarted?
-   */
-  class AppServerList extends ArrayList {
-    public void add(AppServerDescription desc) {
-      if (desc == null) return;
-      for (int i = 0; i < AppServerList.this.size(); i++) {
-        AppServerDescription asd = (AppServerDescription)get(i);
-        if (desc.hostName.equals(asd.hostName) &&
-            desc.remotePort == asd.remotePort) {
-          return;
-        }
-      }
-      super.add(desc);
-    }
-  }
-  
   private void readObject(ObjectInputStream ois)
     throws IOException, ClassNotFoundException
   {

@@ -230,8 +230,6 @@ public class ConsoleNodeListener implements OutputListener {
 	  // get the first description which is not an idle update
 	  for (int i = 0; i < n; i++) {
 	    NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
-            //            if (filter != null && !filter.includeEventInDisplay(nodeEvent))
-            //              continue; // skip events user isn't interested in
 	    int nodeEventType = nodeEvent.getType();
 	    if (nodeEventType == NodeEvent.IDLE_UPDATE) {
 	      String s = nodeEvent.getMessage();
@@ -251,8 +249,6 @@ public class ConsoleNodeListener implements OutputListener {
 	  // start batching descriptions
 	  for (int j = nextEventIndex; j < n; j++) {
 	    NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(j);
-            //            if (filter != null && !filter.includeEventInDisplay(nodeEvent))
-            //              continue; // skip events user isn't interested in
 	    int nodeEventType = nodeEvent.getType();
 	    String description = getNodeEventDescription(nodeEvent);
 	    updateStatus(nodeEvent);
