@@ -101,13 +101,14 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   }
 
   private void exit() {
+    saveToDatabase(true); // silently save
   }
 
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     String s = ((AbstractButton)source).getActionCommand();
     if (s.equals(SAVE_DB_MENU_ITEM)) {
-      saveToDatabase();
+      saveToDatabase(false);
     } else if (s.equals(EXIT_MENU_ITEM)) {
       exit();
       // notify top-level viewer that user quit the builder
@@ -124,55 +125,15 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     }	       
   }
 
-  private void saveToDatabase() {
+  private void saveToDatabase(boolean silently) {
     if (configComponent instanceof RecipeComponent) {
-//       try {
-//         RecipeComponent rc = (RecipeComponent) configComponent;
-//         PDbBase pdb = new PDbBase();
-//         switch (pdb.recipeExists(rc)) {
-//         case PDbBase.RECIPE_STATUS_EXISTS:
-//           JOptionPane.showMessageDialog(this,
-//                                         "The recipe is already in the database with the same values.",
-//                                         "Write Not Needed",
-//                                         JOptionPane.INFORMATION_MESSAGE);
-//           return;
-//         case PDbBase.RECIPE_STATUS_DIFFERS:
-//           int answer =
-//             JOptionPane.showConfirmDialog(this,
-//                                           "Recipe "
-//                                           + rc.getRecipeName()
-//                                           + " already in database. Overwrite?",
-//                                           "Recipe Exists",
-//                                           JOptionPane.OK_CANCEL_OPTION,
-//                                           JOptionPane.WARNING_MESSAGE);
-//           if (answer != JOptionPane.OK_OPTION) return;
-//           break;
-//         case PDbBase.RECIPE_STATUS_ABSENT:
-//           break;                // Just write it
-//         }
-//         pdb.replaceLibRecipe(rc);
-//         JOptionPane.showMessageDialog(this,
-//                                       "Recipe written successfully.",
-//                                       "Recipe Written",
-//                                       JOptionPane.INFORMATION_MESSAGE);
-//       } catch (Exception sqle) {
-//         if(log.isErrorEnabled()) {
-//           log.error("Exception", sqle);
-//         }
-//         JOptionPane.showMessageDialog(this,
-//                                       "An exception occurred writing the recipe to the database",
-//                                       "Error Writing Database",
-//                                       JOptionPane.ERROR_MESSAGE);
-//       }
-//     }
-
-
-
       try {
         RecipeComponent rc = (RecipeComponent) configComponent;
         PDbBase pdb = new PDbBase();
         switch (pdb.recipeExists(rc)) {
         case PDbBase.RECIPE_STATUS_EXISTS:
+          if (silently)
+            return; // don't need to save, don't say anything
           JOptionPane.showMessageDialog(this,
                                         "The recipe is already in the database with the same values.",
                                         "Write Not Needed",
