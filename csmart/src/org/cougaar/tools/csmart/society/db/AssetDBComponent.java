@@ -265,6 +265,7 @@ public class AssetDBComponent
         while (rs.next()) {
           pgAttrLibIds.add(rs.getString(1));
         }
+
         // get pg name and attribute names and types for each property group
         for (int i = 0; i < pgAttrLibIds.size(); i++) {
           substitutions.put(":pgAttrLibId", (String)pgAttrLibIds.get(i));
@@ -275,11 +276,14 @@ public class AssetDBComponent
             pgAttrName = rs.getString(2);
             pgAttrType = rs.getString(3);
             pgAggregateType = rs.getString(4);
+	    // AMH: Moved this put inside the while loop,
+	    // otherwise apparently only the last value get stored
+	    pgAttributes.put((String)pgAttrLibIds.get(i),
+			     new PGAttr(pgName, pgAttrName, 
+					pgAttrType, pgAggregateType));
           }
-          pgAttributes.put((String)pgAttrLibIds.get(i),
-                           new PGAttr(pgName, pgAttrName, 
-                                      pgAttrType, pgAggregateType));
-        }
+        } // loop over pg_attr_lib_ids to get lib definition
+
         // get values for each attribute in each property group
         PGPropMultiVal multiValueData = null;
         for (int i = 0; i < pgAttrLibIds.size(); i++) {
@@ -309,7 +313,7 @@ public class AssetDBComponent
             addPGAttributeData(pgAttrLibId, multiValueData, null, null);
             multiValueData = null;
           }
-        }
+        } // loop over PG Attr Lib Ids (PG property / slots)
         rs.close();
         stmt.close();
       } finally {
