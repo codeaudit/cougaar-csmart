@@ -308,6 +308,7 @@ public class CSMARTGraph extends Graph
 
   public CSMARTGraph(CSMARTGraph graphToCopy, String name) {
     super(name, true, true);
+    setupDotPath();
     markedElements = new Vector();
     GraphEnumeration ge = graphToCopy.elements(GrappaConstants.NODE);
     Hashtable newNodes = new Hashtable();

@@ -24,7 +24,6 @@ import org.cougaar.util.PropertyTree;
  */
 
 public class ULCommunityNode implements NodeObject {
-  public static final String MEMBERS = "Members";
   boolean visible = true;
   String UID; // use the UID of the asset that's used to create this
   String label;
@@ -34,7 +33,6 @@ public class ULCommunityNode implements NodeObject {
   String sides = "0";
   String distortion = "0";
   String orientation = "0";
-  Vector members; // cluster names
   Vector outgoingLinks;
   PropertyTree properties;
 
@@ -45,12 +43,12 @@ public class ULCommunityNode implements NodeObject {
 
   public ULCommunityNode(PropertyTree properties) {
     UID = (String)properties.get(PropertyNames.UID_ATTR);
-    label = (String)properties.get(PropertyNames.AGENT_LABEL);
     // use community name as color map
+    //    label = (String)properties.get(PropertyNames.AGENT_LABEL);
+    label = (String)properties.get(PropertyNames.AGENT_COMMUNITY_NAME);
     color = (String)properties.get(PropertyNames.AGENT_COMMUNITY_NAME);
     properties.put(PropertyNames.TABLE_TITLE,
 		   "Community <" + label + ">");
-    members = new Vector();
     outgoingLinks = new Vector();
     this.properties = properties;
   }
@@ -96,18 +94,6 @@ public class ULCommunityNode implements NodeObject {
   }
 
   public PropertyTree getProperties() {
-    String memberList = (String)properties.get(MEMBERS);
-    if (memberList == null) {
-      StringBuffer buffer = new StringBuffer(200);
-      Iterator e = members.iterator();
-      int maxIndex = members.size() - 1;
-      for (int i = 0; i <= maxIndex; i++) {
-	buffer.append(String.valueOf(e.next()));
-	if (i < maxIndex)
-	  buffer.append(", ");
-      }
-      properties.put(MEMBERS, buffer.toString());
-    }
     return properties;
   }
 
@@ -146,7 +132,17 @@ public class ULCommunityNode implements NodeObject {
    */
 
   public void addMembers(Vector agentNames) {
-    members.addAll(agentNames);
+    String s = (String)properties.get(PropertyNames.COMMUNITY_MEMBERS);
+    if (s == null) {
+      StringBuffer buffer = new StringBuffer(200);
+      int maxIndex = agentNames.size() - 1;
+      for (int i = 0; i <= maxIndex; i++) {
+	buffer.append((String)agentNames.get(i));
+	if (i < maxIndex)
+	  buffer.append(", ");
+      }
+      properties.put(PropertyNames.COMMUNITY_MEMBERS, buffer.toString());
+    }
   }
 
   public void addOutgoingLink(String UID) {

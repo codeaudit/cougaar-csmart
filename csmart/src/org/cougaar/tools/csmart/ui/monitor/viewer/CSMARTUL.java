@@ -204,11 +204,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       toolBar.add(button);
       JMenuItem menuItem = new JMenuItem(views[i]);
       menuItem.addActionListener(this);
-      // disable community menu item in New menu and tool bar button
-      if (i == 0) {
-	button.setEnabled(false);
-	menuItem.setEnabled(false);
-      }
       newMenu.add(menuItem);
     }
 
@@ -550,6 +545,41 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private void makeCommunityGraph() {
+    // get agent and community names
+    Collection objectsFromPSP = getObjectsFromPSP(PSP_COMMUNITY);
+    if (objectsFromPSP == null) 
+      return;
+    int n = objectsFromPSP.size();
+    if (n == 0)
+      JOptionPane.showMessageDialog(null,
+ 				    "No information received from agents.");
+    // set up agent<->community mappings in hashtables
+    processOrganizationAssets(objectsFromPSP);
+    Vector nodeObjects = new Vector(n);
+    Hashtable nameToNodeObject = new Hashtable(n);
+    for (Iterator i = objectsFromPSP.iterator(); i.hasNext(); ) {
+      PropertyTree properties = (PropertyTree)i.next();
+      String communityName = 
+	(String)properties.get(PropertyNames.AGENT_COMMUNITY_NAME);
+      if (nameToNodeObject.get(communityName) == null) { // filter duplicates
+	nameToNodeObject.put(communityName, new ULCommunityNode(properties));
+	nodeObjects.add(new ULCommunityNode(properties));
+      }
+    }
+    // add member names to community nodes
+    Enumeration communityNames = communityToAgents.keys();
+    while (communityNames.hasMoreElements()) {
+      String name = (String)communityNames.nextElement();
+      ULCommunityNode node = (ULCommunityNode)nameToNodeObject.get(name);
+      node.addMembers((Vector)communityToAgents.get(name));
+    }
+    if (nodeObjects.size() != 0) {
+      Window w = 
+	(Window)new ULCommunityFrame(NamedFrame.COMMUNITY,
+				     new CSMARTGraph(nodeObjects,
+						     CSMARTGraph.GRAPH_TYPE_COMMUNITY));
+      myWindows.add(w);
+    }
   }
 
   /**
@@ -558,25 +588,18 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   private void makePlanGraph() {
     Vector agentURLs = new Vector();
-    //    getCommunities(); // get community<->agent mapping
-    // for debugging
-    communityToAgents = new Hashtable();
-    agentURLs = getAgents();
-    if (agentURLs == null)
-      return; // no information to graph
-    communityToAgents.put("CommunityOne", agentURLs);
-    // end for debugging
+    getCommunities(); // get community<->agent mapping
     ULPlanFilter filter = new ULPlanFilter(communityToAgents);
     if (!filter.preFilter())
       return; // user cancelled filter
     // new code
-//     Vector agentsToContact = filter.getAgentsSelected();
-//     for (int i = 0; i < agentsToContact.size(); i++) {
-//       String URL = 
-//  	(String)agentToURL.get((String)agentsToContact.elementAt(i));
-//       if (URL != null)
-//  	agentURLs.add(URL);
-//     }
+    Vector agentsToContact = filter.getAgentsSelected();
+    for (int i = 0; i < agentsToContact.size(); i++) {
+      String URL = 
+  	(String)agentToURL.get((String)agentsToContact.elementAt(i));
+      if (URL != null)
+  	agentURLs.add(URL);
+    }
     // end new code
     String PSPId = PSP_PLAN;
     String filterValue = filter.getIgnoreObjectTypes();
@@ -621,7 +644,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     if (filterValue == null ||
 	filterValue.indexOf(PropertyNames.DIRECT_OBJECT) == -1)
       nodeObjects = processDirectObjects(nodeObjects);
-    //    System.out.println("Processing node objects: " + nodeObjects.size());
     if (nodeObjects.size() != 0) {
       Window w = 
 	(Window)new ULPlanFrame(NamedFrame.PLAN, 
@@ -907,16 +929,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       nodeObjects.add(node);
       String name = (String)properties.get(PropertyNames.ORGANIZATION_KEY_NAME);
       String UID = node.getUID();
-      //      System.out.println("CSMARTUL: " + name + " " + UID);
       nameToUID.put(name, UID);
-      // for debugging
-//       Set keys = properties.keySet();
-//       System.out.println("Property names/values........");
-//       for (Iterator j = keys.iterator(); j.hasNext(); ) {
-// 	String s = (String)j.next();
-// 	System.out.println(s + "," + properties.get(s));
-//       }
-      // end for debugging
     }
     // organizations refer to each other by name, 
     // hence after creating nodes for all organizations, 

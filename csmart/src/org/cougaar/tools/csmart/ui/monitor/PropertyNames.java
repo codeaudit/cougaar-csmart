@@ -178,6 +178,8 @@ public class PropertyNames {
   public static final String OBSERVED_ALLOCATION_RESULT_FAILURE_REASON = "Observed_Failure_Reason";
   // argument to plan object filter URL
   public static final String PLAN_OBJECTS_TO_IGNORE = "planObjectsToIgnore";
+  // for communities
+  public static final String COMMUNITY_MEMBERS = "Members";
 }
 
 
