@@ -920,8 +920,14 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
   }
 
-  // Dump out the INI files for the first trial to
-  // the local results directory for that trial
+  /** 
+   * Dump out the INI files for the first trial to
+   * the local results directory for that trial.
+   * This saves the experiment to the database.
+   * The caller is responsible for not unnecessarily
+   * saving the experiment to the database.
+   */
+
   public void dumpINIFiles() {
     ExperimentINIWriter cw = null;
     theWholeSoc = null;
@@ -941,10 +947,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 						  defaultChoice);
 	    }
 	  });
-	// FIXME!!!
-	// Must set ExperimentBuilder.modified=false,
-	// otherwise it'll risk saving twice when
-	// thats not needed
       }
       if (theWholeSoc != null)
 	cw = new ExperimentINIWriter(theWholeSoc);
