@@ -3,6 +3,8 @@ ARBN,Armored BN, ,5
 AVN-RGT,Aviation Regiment, ,1
 AVNBDE,Aviation Brigade, ,2
 AVNBN,Aviation Battalion, ,2
+AVNBN-ATTACK,Aviation Attack Battalion, ,1
+AVNBN-TRANSPORT,Aviation Transport Battalion, ,1
 AWR,Army War Reserves, ,1
 BDE-HQ,Brigade HQ, ,3
 CAVSQDN,Cavalry Squadron, ,1
@@ -76,6 +78,6 @@ AVNBDE-1-AD-OGT,AVNBDE-1-AD Org Group Type, ,
 7-CSG-OGT,7-CSG Org Group Type, ,
 5-CORPS-REAR-OGT,5-CORPS-REAR Org Group Type, ,
 5-CORPS-ARTY-OGT,5-CORPS-ARTY Org Group Type, ,
-21-TSC-OGT,21-TSC Org Group Type, ,
-29-SPTGP-OGT,29-SPTGP Org Group Type, ,
+21-TSC-OGT,21-TSC Org Group Type, 
+29-SPTGP-OGT,29-SPTGP Org Group Type, 
 37-TRANSGP-OGT,37-TRANSGP Org Group Type, 
