@@ -32,17 +32,17 @@ import java.util.List;
  * This is usually an Organization or Entity, such as would be described
  * in a prototype-ini.dat file.<br>
  * Elements:<ul>
- * <li>Class: Class of Asset to instantiate.</li>
- * <li>Type: Entity, Organization, or Organization with Time-Phased Relationships. This governs what data should be sent to the Agent.</li>
- * <li>Agent: The Agent containing this Asset.</li>
- * <li>ClusterID: (Calculated from the Agent.</li>
- * <li>UniqueID: (Orgs only, unused) UTC/RTOrg or UTC/CombatOrg usually</li>
- * <li>UnitName: (Orgs only, optional)</li>
- * <li>UIC: (Orgs only) Usually UIC/[ClusterID]</li>
- * <li>Roles: A collection of String role names.</li>
- * <li>Relationships: The relationships this Asset has with others.
+ * <li><b>Class:</b> Class of Asset to instantiate.</li>
+ * <li><b>Type:</b> Entity, Organization, or Organization with Time-Phased Relationships. This governs what data should be sent to the Agent.</li>
+ * <li><b>Agent:</b> The Agent containing this Asset.</li>
+ * <li><b>ClusterID:</b> Calculated from the Agent.</li>
+ * <li><b>UniqueID:</b> (Orgs only, unused) UTC/RTOrg or UTC/CombatOrg usually</li>
+ * <li><b>UnitName:</b> (Orgs only, optional)</li>
+ * <li><b>UIC:</b> (Orgs only) Usually UIC/[ClusterID]</li>
+ * <li><b>Roles:</b> A collection of String role names.</li>
+ * <li><b>Relationships:</b> The relationships this Asset has with others.
  * The format of these differs based on the Asset type.</li>
- * <li>PropertyGroups: The remainder of the data is a set of PropertyGroups.<br>
+ * <li><b>PropertyGroups:</b> The remainder of the data is a set of PropertyGroups.<br>
  * These PGs have a name, and then a collection of properties.
  * They always include a ClusterPG, and often include a TypeIdentificationPG
  * (Entities only), ItemIdentificationPG (Entities only), OrganizationPG
@@ -55,17 +55,17 @@ public class AgentAssetData implements Serializable {
 
   /** All Possible Entity Types **/
 
-  /** Asset of type Entity**/
   // Item & type should be specified explicitly
   // EntityPG not OrgPG will be included
   // UniqueID, UnitName & UIC will be excluded
   // Relationships will include type, item, start, & end
+  /** Asset of type Entity**/
   public static final int ENTITY = 0;
 
-  /** Asset of type Org **/
+  /** Asset of type Organization **/
   public static final int ORG = 1;
 
-  /** Asset of type Org with Time-Phased Relationships **/
+  /** Asset of type Organization with Time-Phased Relationships **/
   // The -relationships.ini file will be written out
   public static final int TPORG = 2; 
   
@@ -94,8 +94,10 @@ public class AgentAssetData implements Serializable {
 
   /**
    * Creates a new <code>AgentAssetData</code> instance.
+   * Assigned to a specific agent.
    *
    * @param parent an <code>AgentComponentData</code> value
+   * indicating the agent that owns this asset data.
    */
   public AgentAssetData(AgentComponentData parent) {
     roles = new ArrayList();
@@ -106,7 +108,7 @@ public class AgentAssetData implements Serializable {
 
   /**
    * Returns the parent of this asset.
-   * (This is the same value as <code>getAgent</code>
+   * (This is the same value as {@link #getAgent})
    *
    * @return an <code>AgentComponentData</code> value
    * for the parent of this asset.
@@ -117,7 +119,7 @@ public class AgentAssetData implements Serializable {
 
   /**
    * Returns the agent associated with this asset.
-   * (This is the same value as <code>getParent</code>
+   * (This is the same value as {@link #getParent})
    *
    * @return an <code>AgentComponentData</code> for the
    * agent of this asset.
@@ -127,7 +129,13 @@ public class AgentAssetData implements Serializable {
   }
 
   /**
-   * Returns the type of asset.
+   * Returns the type of asset.  Currently, there are
+   * three possible agent types:
+   * <ul>
+   *   <li>{@link #ORG} - Organization</li>
+   *   <li>{@link #ENTITY} - Entity</li>
+   *   <li>{@link #TPORG} - Time Phased Organization</li>
+   * </ul>
    *
    * @return an <code>int</code> value
    * Representating the type of this asset.
@@ -139,6 +147,7 @@ public class AgentAssetData implements Serializable {
   /**
    * Sets the type of this asset.
    *
+   * @see #getType for possible types.
    * @param type an <code>int</code> value
    * representating the type of this asset.
    */
@@ -175,9 +184,9 @@ public class AgentAssetData implements Serializable {
 
   /**
    * Gets the ClusterID for this asset.
-   * This field is auto-calculated from the agent.
+   * This field is auto-calculated from the agent name.
    *
-   * @return a <code>String</code> value
+   * @return a <code>String</code> value of the ClusterID
    */
   public String getClusterID() {
     if (agent != null) {
@@ -190,7 +199,7 @@ public class AgentAssetData implements Serializable {
   /**
    * Gets the Asset Class for this asset.
    *
-   * @return a <code>String</code> value
+   * @return a <code>String</code> value of the Asset Class
    */
   public String getAssetClass() {
     return assetClass;
@@ -199,7 +208,7 @@ public class AgentAssetData implements Serializable {
   /**
    * Sets the asset class for this asset.
    *
-   * @param clss a <code>String</code> value
+   * @param clss a <code>String</code> value of the Asset Class
    */
   public void setAssetClass(String clss) {
     assetClass = clss;
@@ -208,9 +217,9 @@ public class AgentAssetData implements Serializable {
   /**
    * Gets the UniqueID for this asset.
    * This field is only in Org Assets and
-   * it is REQUIRED.
+   * it is <b>REQUIRED</b>.
    *
-   * @return a <code>String</code> value
+   * @return a <code>String</code> value of the UniqueID
    */
   public String getUniqueID() {
     return uniqID;
@@ -219,9 +228,9 @@ public class AgentAssetData implements Serializable {
   /**
    * Sets the UniqueID for this asset.
    * This field is only in Org Assets and
-   * it is REQUIRED.
+   * it is <b>REQUIRED</b>.
    *
-   * @param uid a <code>String</code> value
+   * @param uid a <code>String</code> value of the UniqueID
    */
   public void setUniqueID(String uid) {
     uniqID = uid;
@@ -232,7 +241,7 @@ public class AgentAssetData implements Serializable {
    * This field is only on Org assets, and it
    * is optional.
    *
-   * @return a <code>String</code> value
+   * @return a <code>String</code> value of the Unit Name
    */
   public String getUnitName() {
     return unitname;
@@ -243,7 +252,7 @@ public class AgentAssetData implements Serializable {
    * This field is only on Org assets, and it
    * is optional.
    *
-   * @param unit a <code>String</code> value
+   * @param unit a <code>String</code> value of the Unit Name
    */
   public void setUnitName(String unit) {
     unitname = unit;
@@ -253,7 +262,7 @@ public class AgentAssetData implements Serializable {
    * Gets the UIC for this asset.
    * Only Org assets have a UIC.
    *
-   * @return a <code>String</code> value
+   * @return a <code>String</code> value of the UIC
    */
   public String getUIC() {
     return (uic == null ? ((! isEntity()) && (getClusterID() != null)
@@ -266,7 +275,7 @@ public class AgentAssetData implements Serializable {
    * Sets the UIC for this asset.
    * Only Org assets have a UIC.
    *
-   * @param uic a <code>String</code> value
+   * @param uic a <code>String</code> value of the UIC
    */
   public void setUIC(String uic) {
     this.uic = uic;
@@ -277,8 +286,11 @@ public class AgentAssetData implements Serializable {
   // Add convenience methods to get/set values in the common PGs
   
   /**
-   * Sets all property groups for this Agent
+   * Sets all property groups for this Agent.  Any
+   * previous property groups are removed before this
+   * set takes place.
    *
+   * @see PropGroupData
    * @param PropGroupData[] array of property groups
    */
   public void setPropGroups(PropGroupData[] newPropgroups) {
@@ -289,7 +301,9 @@ public class AgentAssetData implements Serializable {
   }
 
   /**
-   * Adds a property group for this Agent
+   * Adds a property group for this Agent.  The
+   * new property group is added to the end of
+   * the list.
    *
    * @param PropGroupData property group
    */
@@ -298,10 +312,11 @@ public class AgentAssetData implements Serializable {
   }
 
   /**
-   * Sets a property group for this Agent, replacing the previous PG at this index
+   * Sets a property group for this Agent, 
+   * replacing the previous PG at the specified index
    *
-   * @param int index for role
-   * @param PropGroupData PG to replace with
+   * @param int index for the Property Group
+   * @param PropGroupData new Property Group for the specified index
    */
   public void setPropertyGroup(int index, PropGroupData propgroup) 
                               throws IndexOutOfBoundsException{
@@ -309,27 +324,28 @@ public class AgentAssetData implements Serializable {
   }
 
   /**
-   * Returns an array of property groups for this agent.
+   * Returns an array of all property groups for this agent.
    *
-   * @return property groups
+   * @see PropGroupData
+   * @return all property groups
    */
   public PropGroupData[] getPropGroups() {
     return (PropGroupData[]) propGroups.toArray(new PropGroupData[propGroups.size()]);
   }
 
   /**
-   * Returns an iterator of propgroups for this agent.
+   * Returns an <code>Iterator</code> of all property groups for this agent.
    *
-   * @return iterator
+   * @return <code>Iterator</code> of all property groups
    */
   public Iterator getPropGroupsIterator() {
     return propGroups.iterator();
   }
 
   /**
-   * Returns a count of all propgroups for this agent.
+   * Returns a count of all property groups for this agent.
    *
-   * @return count
+   * @return number of property groups
    */
   public int getPGCount() {
     return propGroups.size();
@@ -338,7 +354,7 @@ public class AgentAssetData implements Serializable {
   ////////////////////////////
   
   /**
-   * Sets all roles for this Agent
+   * Sets all roles for this Agent.  Any previous roles are deleted.
    *
    * @param String[] array of roles
    */
@@ -352,7 +368,7 @@ public class AgentAssetData implements Serializable {
   /**
    * Adds a role for this Agent
    *
-   * @param String role
+   * @param String new role
    */
   public void addRole(String role) {
     this.roles.add(role);
@@ -370,18 +386,18 @@ public class AgentAssetData implements Serializable {
   }
 
   /**
-   * Returns an array of roles for this agent.
+   * Returns an array of all roles for this agent.
    *
-   * @return roles
+   * @return all roles for this agent
    */
   public String[] getRoles() {
     return (String[])roles.toArray(new String[roles.size()]);
   }
 
   /**
-   * Returns an iterator of roles for this agent.
+   * Returns an <code>Iterator</code> of all roles for this agent.
    *
-   * @return iterator
+   * @return </code>Iterator</code> of all roles
    */
   public Iterator getRolesIterator() {
     return roles.iterator();
@@ -390,7 +406,7 @@ public class AgentAssetData implements Serializable {
   /**
    * Returns a count of all roles for this agent.
    *
-   * @return count
+   * @return number of roles in this agent
    */
   public int getRoleCount() {
     return roles.size();
@@ -399,6 +415,7 @@ public class AgentAssetData implements Serializable {
   /**
    * Sets the Relationship information for this agent.
    *
+   * @see RelationshipData
    * @param RelationshipData[] array of relationship objects.
    */
   public void setRelationshipData(RelationshipData[] relationships) {
@@ -411,7 +428,8 @@ public class AgentAssetData implements Serializable {
   /**
    * Adds a relationship for this Agent
    *
-   * @param RelationshipData relationship
+   * @see RelationshipData
+   * @param RelationshipData new relationship for this agent
    */
   public void addRelationship(RelationshipData relationship) {
     this.relats.add(relationship);
@@ -421,14 +439,22 @@ public class AgentAssetData implements Serializable {
    * Sets a relationship for this Agent, replacing the previous relationship
    * at this index.
    *
-   * @param int index for relationship
-   * @param RelationshipData  relationship
+   * @see RelationshipData
+   * @param int index for new relationship
+   * @param RelationshipData  new relationship
    */
   public void setRelationship(int index, RelationshipData relationship) 
                         throws IndexOutOfBoundsException {
     this.relats.set(index, relationship);
   }
 
+  /**
+   * Gets a specific Relationship, based on an index, for this agent.
+   *
+   * @see RelationshipData
+   * @param index Index of the relationship.
+   * @return <code>RelationshipData</code> value from the given index
+   */
   public RelationshipData getRelationship(int index) {
     return (RelationshipData) relats.get(index);
   }
@@ -436,25 +462,26 @@ public class AgentAssetData implements Serializable {
   /**
    * Returns a count of all relationships for this agent.
    *
-   * @return count
+   * @return number of relationships for this agent
    */
   public int getRelationshipCount() {
     return relats.size();
   }
 
   /**
-   * Returns an Iterator of all relationships for this agent.
+   * Returns an <code>Iterator</code> of all relationships for this agent.
    *
-   * @return iterator
+   * @return <code>Iterator</code> of all relationships
    */
   public Iterator getRelationshipIterator() {
     return relats.iterator();
   }
 
   /**
-   * Returns an array of relationship data for this agent.
+   * Returns an array of <code>RelationshipData</code> for this agent.
    *
-   * @return RelationshipData
+   * @see RelationshipData
+   * @return <code>RelationshipData</code> array containing all relationships.
    */
   public RelationshipData[] getRelationshipData() {
     return (RelationshipData[])relats.toArray(new RelationshipData[relats.size()]);
