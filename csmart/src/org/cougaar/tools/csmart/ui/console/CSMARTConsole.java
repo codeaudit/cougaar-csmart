@@ -2108,7 +2108,7 @@ public class CSMARTConsole extends JFrame {
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Analyzer: copyResultFiles: ", e);
+        log.error("CSMARTConsole: copyResultFiles failed: ", e);
       }
     }
   }
