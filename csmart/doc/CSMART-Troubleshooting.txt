@@ -147,8 +147,7 @@ of Agents, you should first make sure that the required
 CSMART_Servlets are included in your Agent definition. Then see bug #1241.
 
 Running the Society Monitor Standalone
-- Ensure that the grappa, JCChart, servlet, and csmart jars are all
-in the classpath for the Society Monitor
+- Be sure to use one of the supplied Monitor start-up scripts which set up the CLASSPATH correctly.
 - Ensure that you have included all of the CSMART servlets from
 csmart/data/common/servlets.txt in your agent configurations
 
@@ -242,6 +241,7 @@ completed running.
 scalability society to take some intermediate samples
 - Be sure that on Windows you edited the command-line parameter
 specifying the location of Excel
+- Results files are not automatically retrieved until you "stop" the society.
 
 Compiling CSMART
 - Compiling CSMART with Jikes 1.15 will result in VerifyErrors in a few classes.  To
@@ -279,4 +279,3 @@ tmp_v4_alib_component_"
 this probably indicates a corrupted database due to
 carriage-return/newline issues on loading the CSMART configuration
 database. Try editing the file and removing excess ^Ms. See bug# 1321.
-

@@ -65,8 +65,7 @@ very similar for WinNT) and a MYSQL database.
     create graphical views of a running society.</li><p>
 
   <li><a href="#appServer">AppServer Configuration</a>.<br>
-    Covers the installation of the AppServer, including the required
-    modifications to the "Server" startup script and creating a "server.props" properties file.
+    Covers the installation of the AppServer, including creating a "server.props" properties file.
     </li><p>
 
   <li><a href="#csmartConfig">CSMART Configuration</a>.<br>
@@ -127,9 +126,7 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
 <br>
        <b>Windows Note:</b> <i>Windows often installs JRE in 2 places: under JDK, and also 
        in C:\Program Files\JavaSoft\JRE, and both places need JSSE installed.</i><br><br>
-    You may also need to modify the default JSSE security file (in
-    JRE/lib/security/java.security), by adding the line:
-    <pre>security.provider.3=com.sun.net.ssl.internal.ssl.Provider</pre><br></li>
+</li>
 
   <li>If you require a local database (Oracle or MySQL) then you must
     install this database.  Currently CSMART has been fully tested on a MySQL database. See <a href="#dbInst">below</a> for instructions.
@@ -895,6 +892,10 @@ installation using
     can add.<br><br>
     <b>Note:</b> Be careful of editing the existing arguments unless
     you know what you are doing.</li><p>  
+
+    <li>· You could also edit the Community definitions for this
+    experiment, using the "Communities" tab. We will not do so in this
+    example.</li><p>    
 
     <li>On the top menu, select "File", then "Save".  The configuration
       is saved to the database under the experiment name you provided,
