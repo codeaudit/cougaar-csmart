@@ -111,7 +111,11 @@ public class PSP_CommunityProvider extends PSP_BaseAdapter implements PlanServic
       Asset asset = (Asset)iter.next();
       PropertyTree properties = new PropertyTree();
       properties.put(PropertyNames.UID_ATTR, getUIDAsString(asset.getUID()));
-      String name = asset.getItemIdentificationPG().getNomenclature();
+      //      String name = asset.getItemIdentificationPG().getNomenclature();
+      // THIS METHOD OF ACCESSING AGENT NAME MUST MATCH HOW OTHER PSPS
+      // (ESPECIALLY PSP_PLAN) ACCESS THE AGENT NAME SO COMPARISONS
+      // CAN BE MADE AT THE CLIENT
+      String name = psc.getServerPlugInSupport().getClusterIDAsString();
       properties.put(PropertyNames.AGENT_NAME, name);
       CommunityPG communityPG = asset.getCommunityPG(new Date().getTime());
       Collection communities = communityPG.getCommunities();
