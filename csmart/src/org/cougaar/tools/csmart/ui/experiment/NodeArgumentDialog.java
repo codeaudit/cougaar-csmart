@@ -26,6 +26,8 @@ import java.awt.event.*;
 import java.io.FileInputStream;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.util.*;
 
@@ -39,6 +41,7 @@ public class NodeArgumentDialog extends JDialog {
   NodeArgumentTableModel model;
   JTextArea args;
   int returnValue;
+  JButton deleteButton;
   private transient Logger log;
   
   public NodeArgumentDialog(String title, Properties props, 
@@ -52,17 +55,41 @@ public class NodeArgumentDialog extends JDialog {
     // create JTable
     if (isEditable) 
       argTable = new JTable();
-    else
+    else {
       argTable = new JTable() {
           public boolean isCellEditable(int row, int column) {
             return false;
           }
         };
+    }
     // don't allow user to reorder columns
     argTable.getTableHeader().setReorderingAllowed(false);
     argTable.setColumnSelectionAllowed(false);
     argTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     JScrollPane scrollPane = new JScrollPane(argTable);
+
+    // listen for table selections in local argument table
+    // and disable Delete button if the argument is global
+    if (isLocal && isEditable) {
+      ListSelectionModel lsm = argTable.getSelectionModel();
+      lsm.addListSelectionListener(new ListSelectionListener() {
+          public void valueChanged(ListSelectionEvent e) {
+            //Ignore extra messages.
+            if (e.getValueIsAdjusting()) return;
+                    
+            ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+            if (!lsm.isSelectionEmpty()) {
+              int selectedRow = lsm.getMinSelectionIndex();
+              Object o = argTable.getModel().getValueAt(selectedRow, 2);
+              if (o.equals("*"))
+                deleteButton.setEnabled(false);
+              else
+                deleteButton.setEnabled(true);
+            }
+          }
+        });
+    }
+
     JPanel tablePanel = new JPanel(new BorderLayout());
     tablePanel.setBorder(BorderFactory.createTitledBorder("-D Options"));
     tablePanel.add(scrollPane);
@@ -140,7 +167,7 @@ public class NodeArgumentDialog extends JDialog {
       }
     });
     tableButtonPanel.add(addButton);
-    JButton deleteButton = new JButton("Delete Property");
+    deleteButton = new JButton("Delete Property");
     deleteButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         int i = argTable.getSelectedRow();

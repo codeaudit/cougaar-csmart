@@ -111,14 +111,18 @@ public class NodeArgumentTableModel extends AbstractTableModel {
     if (rowIndex < 0 || rowIndex >= getRowCount() ||
 	columnIndex < 0 || columnIndex >= getColumnCount())
       return; // index out of range
+    // changing the name or value makes it local
     if (columnIndex == 0) { // it's a name
       names.set(rowIndex, aValue);
-    }
-    if (columnIndex == 1) { // it's a value
+    } else if (columnIndex == 1) { // it's a value
       values.set(rowIndex, aValue);
     } else if (columnIndex == 2)
       return; // global flag is not editable
     fireTableCellUpdated(rowIndex, columnIndex);
+    if (isLocal) {
+      globalFlags.set(rowIndex, "");
+      fireTableCellUpdated(rowIndex, 2);
+    }
   }
 
   public String getColumnName(int column) {
