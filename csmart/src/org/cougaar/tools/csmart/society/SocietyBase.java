@@ -248,6 +248,7 @@ public abstract class SocietyBase
 	  }
 	}		
       } else {
+	// FIXME!! Will we support other top-level components?
 	// Process children of component data
 	addComponentData(child);
       }      
@@ -271,7 +272,7 @@ public abstract class SocietyBase
    */
   public boolean saveToDatabase() {
     if(log.isInfoEnabled()) {
-      log.info("saveToDatabase");
+      log.info("saveToDatabase society (" + getSocietyName() + " with asb: " + getAssemblyId());
     }
 
     // TODO:
@@ -311,6 +312,9 @@ public abstract class SocietyBase
   
   // Save the copy in the database before returning
   public ModifiableComponent copy(String name) {
+    if (log.isDebugEnabled()) {
+      log.debug("Copying society " + this.getSocietyName() + " with assembly " + getAssemblyId() + " into new name " + name);
+    }
     ModifiableComponent component = super.copy(name);
 
     // copy the assembly ID - the one under which this societies'
