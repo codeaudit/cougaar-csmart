@@ -21,28 +21,36 @@
 
 package org.cougaar.tools.csmart.ui.component;
 
+import java.io.Serializable;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
-import java.io.Serializable;
 
 /**
  * The interface that every configurable component must implement.
  * The gui uses this interface to get and set properties.
  */
-
 public interface ComponentProperties extends Serializable {
   String getShortName();
   CompositeName getFullName();
-    /**
-     * Initialize the properties of a new instance. All components
-     * implementing this interface should delay the initialization of
-     * their properties until this method is called;
-     **/
-    void initProperties();
-    Property getProperty(CompositeName name);
-    Iterator getPropertyNames();
-    List getPropertyNamesList();
-    void addPropertiesListener(PropertiesListener l);
-    void removePropertiesListener(PropertiesListener l);
-}
 
+  /**
+   * Initialize the properties of a new instance. All components
+   * implementing this interface should delay the initialization of
+   * their properties until this method is called;
+   **/
+  void initProperties();
+  
+  /**
+   * Get a <code>URL</code> for a description of the component. May return <code>null</code>.
+   *
+   * @return an <code>URL</code> describing this component.
+   */
+  URL getDescription();
+  
+  Property getProperty(CompositeName name);
+  Iterator getPropertyNames();
+  List getPropertyNamesList();
+  void addPropertiesListener(PropertiesListener l);
+  void removePropertiesListener(PropertiesListener l);
+}
