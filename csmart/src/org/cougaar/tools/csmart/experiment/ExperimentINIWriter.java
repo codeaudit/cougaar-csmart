@@ -423,6 +423,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 
     PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, agent.getName() + "-prototype-ini.dat")));
     try {
+      writer.print("# Asset Class may have been modified on parse!");
       writer.print("[Prototype] ");
       writer.println(assetData.getAssetClass());
       writer.println();

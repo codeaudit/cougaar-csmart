@@ -149,14 +149,16 @@ public class PrototypeParser {
         dataItem = tokens.sval;
         if (dataItem.equals("[Prototype]")) {
           newVal = tokens.nextToken();
-          String assetClassName = tokens.sval;
-          aad.setAssetClass(assetClassName);
-          if(log.isDebugEnabled()) {
-            log.debug("AgentAssetData Class: " + aad.getAssetClass());
+          //          String assetClassName = tokens.sval;
+//           aad.setAssetClass(assetClassName);
+          aad.setAssetClass("Organization");
+          if(log.isInfoEnabled()) {
+            log.info("Switching AgentAssetData Class from: " + tokens.sval +
+                     " to: " + aad.getAssetClass());
           }
-          if(assetClassName.equals("Entity")) {
-            aad.setType(AgentAssetData.ENTITY);
-          }
+//           if(assetClassName.equals("Entity")) {
+//             aad.setType(AgentAssetData.ENTITY);
+//           }
           newVal = tokens.nextToken();
           continue;
         }
