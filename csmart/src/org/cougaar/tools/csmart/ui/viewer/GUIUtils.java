@@ -29,7 +29,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
-import org.cougaar.tools.csmart.ui.component.PopulateDb;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
 
 /**
  * Methods to put up a wait cursor and consume mouse events while

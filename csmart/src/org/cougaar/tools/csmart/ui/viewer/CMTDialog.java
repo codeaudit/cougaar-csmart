@@ -33,8 +33,8 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 
-import org.cougaar.tools.csmart.ui.console.ExperimentDB;
-import org.cougaar.tools.csmart.societies.database.DBUtils;
+import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.tools.csmart.core.db.DBUtils;
 
 public class CMTDialog extends JDialog {
   // thread names displayed for user

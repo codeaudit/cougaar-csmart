@@ -38,30 +38,30 @@ import javax.swing.tree.TreePath;
 import org.cougaar.core.node.Bootstrapper;
 import org.cougaar.util.Parameters;
 
-import org.cougaar.tools.csmart.societies.database.DBUtils;
+import org.cougaar.tools.csmart.core.db.DBUtils;
 
 // tools created by this user interface
 
 import org.cougaar.tools.csmart.ui.analyzer.Analyzer;
-import org.cougaar.tools.csmart.ui.builder.PropertyBuilder;
+import org.cougaar.tools.csmart.ui.configbuilder.PropertyBuilder;
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.experiment.*;
 
 import org.cougaar.tools.csmart.ui.Browser;
-import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
-import org.cougaar.tools.csmart.ui.component.ComponentProperties;
-import org.cougaar.tools.csmart.ui.component.HostComponent;
-import org.cougaar.tools.csmart.ui.component.RecipeComponent;
-import org.cougaar.tools.csmart.ui.component.SocietyComponent;
-import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.ui.console.ExperimentDB;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.experiment.HostComponent;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
 
-import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
-import org.cougaar.tools.csmart.societies.database.DBUtils;
+import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
+import org.cougaar.tools.csmart.core.db.DBUtils;
 
 /**
  * Top level CSMART user interface.
