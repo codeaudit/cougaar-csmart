@@ -166,12 +166,13 @@ public class DBUtils {
 	Class.forName(driverClass);
 	conn = DBConnectionPool.getConnection(database, username, password);
       } catch(IOException e) {
-	// Need to log something here.
+	throw new SQLException(e.toString());
       } catch(ClassNotFoundException ce) {
-	// Need to log something here.
+	throw new SQLException(ce.toString());
       }
-    }    
-
+    } else {
+      throw new SQLException("Invalid cougaar rc file");
+    }
     return conn;
   }
 
