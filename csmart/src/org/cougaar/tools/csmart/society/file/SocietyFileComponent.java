@@ -36,6 +36,7 @@ public class SocietyFileComponent
   private String name;
   private ComponentDescription[] desc;
   private String[] filenames = null;
+  private boolean filesParsed = false;
 
   /**
    * Construct a society from a single file which
@@ -67,6 +68,13 @@ public class SocietyFileComponent
    *
    */
   public void initProperties() {
+    if(!filesParsed) {
+      filesParsed = true;
+      initFromFiles();
+    }
+  }
+
+  private void initFromFiles() {
     if (filenames == null)
       initFromSingleFile();
     else
@@ -118,7 +126,11 @@ public class SocietyFileComponent
   public ModifiableComponent copy(String name) {
     ModifiableComponent societyCopy = 
       new SocietyFileComponent(name, filenames);
-    societyCopy.initProperties();
+    //societyCopy.initProperties();
+    for(int i=0; i < this.getChildCount(); i++) {
+      societyCopy.addChild(this.getChild(i));
+    }
+
     return societyCopy;
   }
 
