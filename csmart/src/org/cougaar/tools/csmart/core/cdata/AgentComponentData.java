@@ -42,7 +42,7 @@ public class AgentComponentData extends GenericComponentData {
    *
    * @return a <code>String[]</code> value
    */
-  String[] getPluginNames() {
+  public String[] getPluginNames() {
     ArrayList names = new ArrayList();
     ComponentData[] plugins = getChildren();
     
