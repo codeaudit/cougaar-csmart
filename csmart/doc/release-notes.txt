@@ -15,6 +15,9 @@ related changes to database table definitions.
   as well as the configuration database.  This script takes an
   additional parameter which is the name of the domain database
   to be loaded.
+- New oplan propagation mechanism.  Each agent reads the database
+  for the oplan and its org activities. GetOplanPlugin replaced by
+  OplanReaderPlugin.  
 
 Release 10.2:
 This is a minor patch release, preparing for future work.
