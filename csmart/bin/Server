@@ -31,14 +31,14 @@ set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
 # Add other required jar files not otherwise loaded
 set LIBPATHS="${COUGAAR_INSTALL_PATH}/lib/csmart.jar:${COUGAAR_INSTALL_PATH}/lib/server.jar:${LIBPATHS}"
 if ($?COUGAAR_DEV_PATH) then
-    set LIBPATHS = "${COUGAAR_DEV_PATH}:$LIBPATHS"
+    set LIBPATHS = "${COUGAAR_DEV_PATH}:${LIBPATHS}"
 endif
 
 # Can point to remote configurations by setting the property
 # org.cougaar.config.path
 # But be sure that the configuration directory is before any common directories
 # and ends with an escaped semi-colon
-set MYCONFIGS="$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
+set MYCONFIGS="${COUGAAR_INSTALL_PATH}/csmart/data/common/\;"
 
 # Needed for CSMART logging:    
 # Options in increasing order of verbosity are: SEVERE, PROBLEM, DEBUG, VERBOSE, or VERY_VERBOSE

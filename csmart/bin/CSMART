@@ -15,10 +15,10 @@ set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
 set LIBPATHS = "${COUGAAR_INSTALL_PATH}/lib/csmart.jar:${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/server.jar"
 
 # Third party jars are in CIP/sys
-# set LIBPATHS = "$LIBPATHS:${COUGAAR_INSTALL_PATH}/sys/xerces.jar:${COUGAAR_INSTALL_PATH}/sys/grappa1_2_bbn.jar:${COUGAAR_INSTALL_PATH}/sys/jcchart451K.jar"
+# set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/sys/xerces.jar:${COUGAAR_INSTALL_PATH}/sys/grappa1_2_bbn.jar:${COUGAAR_INSTALL_PATH}/sys/jcchart451K.jar"
     
 if ($?COUGAAR_DEV_PATH) then
-    set LIBPATHS = "${COUGAAR_DEV_PATH}:$LIBPATHS"
+    set LIBPATHS = "${COUGAAR_DEV_PATH}:${LIBPATHS}"
 endif
     
 set MYMEMORY="-Xms100m -Xmx300m"
