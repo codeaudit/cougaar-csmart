@@ -58,13 +58,9 @@ dot-l386
 	
 CSMARTNode
 CSMARTsetarguments.bat
-CSMARTsetlibpath.bat
         Old startup-scripts for running "ABC Societies" from ".INI" files.
         Most users should not run these files.
 	
-build-all.bat
-        Simple script for compiling CSMART sources on a Windows machine.
-
 build.xml
 	ANT1.4.1 build script. ANT is available at http://jakarta.apache.org/ant
 
