@@ -22,11 +22,18 @@
 package org.cougaar.tools.csmart.ui.configbuilder;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.*;
 import javax.swing.*;
 import java.net.URL;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Vector;
 
+import org.cougaar.tools.csmart.core.db.DBConflictHandler;
+import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
@@ -34,6 +41,7 @@ import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.util.log.Logger;
 
 /**
@@ -154,11 +162,8 @@ public class PropertyBuilder extends JFrame implements ActionListener {
                                         "Recipe written successfully.",
                                         "Recipe Written",
                                         JOptionPane.INFORMATION_MESSAGE);
-        String experimentNames = getExperiments(rc);
-        JOptionPane.showMessageDialog(this,
-                                      "To update recipe in these experiments, save the experiments to the database:\n" + experimentNames,
-                                      "Experiments Using This Recipe",
-                                      JOptionPane.INFORMATION_MESSAGE);
+        displayExperiments(rc);
+        //        updateExperiments(rc);
       } catch (Exception sqle) {
         if(log.isErrorEnabled()) {
           log.error("Exception", sqle);
@@ -171,23 +176,125 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     }
   }
 
-  // get names of all experiments in workspace that contain the recipe
+  // display names of experiments in workspace or database
+  // that contain the indicated recipe
 
-  private String getExperiments(RecipeComponent rc) {
-    StringBuffer sbuf = new StringBuffer();
+  private void displayExperiments(RecipeComponent rc) {
+    ArrayList workspaceExperiments = getExperimentsInWorkspace(rc);
+    ArrayList databaseExperimentNames = getExperimentNamesInDatabase(rc);
+    Vector names = new Vector();
+    for (int i = 0; i < workspaceExperiments.size(); i++) 
+      names.add(((Experiment)workspaceExperiments.get(i)).getExperimentName());
+    names.addAll(databaseExperimentNames);
+    if (names.size() == 0)
+      return; // no experiments were affected
+    final JDialog dialog = 
+      new JDialog(this, "Experiments That Use This Recipe", true);
+    dialog.getContentPane().setLayout(new BorderLayout());
+    JPanel panel = new JPanel();
+    panel.setLayout(new GridBagLayout());
+    int x = 0;
+    int y = 0;
+    JTextArea msg = new JTextArea("The following experiments contain this recipe;\nthey must be saved to the database in order to be updated:", 3, 40);
+    msg.setBackground(panel.getBackground());
+    panel.add(msg,
+              new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+                                     GridBagConstraints.CENTER,
+                                     GridBagConstraints.NONE,
+                                     new Insets(10, 5, 5, 5),
+                                     0, 0));
+    JList namesList = new JList(names);
+    namesList.setBackground(panel.getBackground());
+    JScrollPane jsp = new JScrollPane(namesList);
+    jsp.setMinimumSize(new Dimension(50, 50));
+    panel.add(jsp,
+              new GridBagConstraints(x, y++, 1, 1, 1.0, 1.0,
+                                     GridBagConstraints.CENTER,
+                                     GridBagConstraints.BOTH,
+                                     new Insets(0, 5, 0, 5),
+                                     0, 0));
+    JButton okButton = new JButton("OK");
+    okButton.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          dialog.dispose();
+        }
+      });
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.add(okButton);
+    dialog.getContentPane().add(panel, BorderLayout.CENTER);
+    dialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+    dialog.setSize(400, 200);
+    dialog.setVisible(true);
+  }
+
+  // update experiments in workspace or database
+  // that contain the indicated recipe
+//    private void updateExperiments(RecipeComponent rc) {
+//      JPanel panel = new JPanel();
+//      panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+//      final ArrayList workspaceExperiments = getExperimentsInWorkspace(rc);
+//      ArrayList databaseExperimentNames = getExperimentNamesInDatabase(rc);
+//      final ArrayList names = new ArrayList();
+//      for (int i = 0; i < workspaceExperiments.size(); i++) 
+//        names.add(((Experiment)workspaceExperiments.get(i)).getExperimentName());
+//      names.addAll(databaseExperimentNames);
+//      final JCheckBox[] checkboxes = new JCheckBox[names.size()];
+//      for (int i = 0; i < names.size(); i++) {
+//        checkboxes[i] = new JCheckBox((String)names.get(i), false);
+//        panel.add(checkboxes[i]);
+//      }
+//      final JDialog updateDialog = new JDialog(this, "Update Experiments", true);
+//      updateDialog.getContentPane().setLayout(new BoxLayout(updateDialog.getContentPane(), BoxLayout.Y_AXIS));
+//      updateDialog.getContentPane().add(panel);
+//      JButton okButton = new JButton("OK");
+//      final DBConflictHandler saveToDbConflictHandler =
+//        GUIUtils.createSaveToDbConflictHandler(this);
+//      okButton.addActionListener(new ActionListener() {
+//          public void actionPerformed(ActionEvent e) {
+//            for (int i = 0; i < names.size(); i++) {
+//              if (checkboxes[i].isSelected()) {
+//                if (i < workspaceExperiments.size()) {
+//                  Experiment exp = (Experiment)workspaceExperiments.get(i);
+//                  exp.saveToDb(saveToDbConflictHandler);
+//                  System.out.println("PropertyBuilder: saved: " + exp.getExperimentName());
+//                } else {
+//                  String name = checkboxes[i].getText();
+//                  updateExperimentInDatabase(name);
+//                }
+//              }
+//            }
+//            updateDialog.setVisible(false);
+//          }
+//        });
+//      updateDialog.getContentPane().add(okButton);
+//      updateDialog.setVisible(true);
+//    }
+
+//    private void updateExperimentInDatabase(String experimentName) {
+//      System.out.println("PropertyBuilder: update experiment: " + experimentName);
+//    }
+
+  // get experiments in workspace that contain the recipe
+  private ArrayList getExperimentsInWorkspace(RecipeComponent rc) {
+    ArrayList results = new ArrayList();
     Experiment[] experiments = csmart.getExperimentsInWorkspace();
     for (int i = 0; i < experiments.length; i++) {
       RecipeComponent[] recipes = experiments[i].getRecipes();
       for (int j = 0; j < recipes.length; j++) {
         if (recipes[j].equals(rc)) {
-          if (sbuf.length() != 0)
-            sbuf.append(", ");
-          sbuf.append(experiments[i].getExperimentName());
+          results.add(experiments[i]);
           break;
         }
       }
     }
-    return sbuf.toString();
+    return results;
+  }
+
+  // get names of all experiments in database that contain the recipe
+  private ArrayList getExperimentNamesInDatabase(RecipeComponent rc) {
+    ArrayList experimentNames = new ArrayList();
+    experimentNames.addAll(DBUtils.dbGetExperimentsWithRecipe(rc.getRecipeName()));
+    return experimentNames;
   }
 
   public void reinit(ModifiableComponent newModifiableComponent) {
