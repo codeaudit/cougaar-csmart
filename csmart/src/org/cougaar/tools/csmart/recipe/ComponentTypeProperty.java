@@ -21,11 +21,11 @@
 package org.cougaar.tools.csmart.recipe;
 
 import java.util.Set;
+import java.util.HashSet;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentProperty;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import java.util.HashSet;
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
 
 
 /**
@@ -57,7 +57,10 @@ public class ComponentTypeProperty extends ConfigurableComponentProperty {
     allComponents.add(new StringRange(ComponentData.PLUGIN));
     allComponents.add(new StringRange(ComponentData.NODEBINDER));
     allComponents.add(new StringRange(ComponentData.AGENTBINDER));
-    allComponents.add(new StringRange(ComponentData.SERVICE));
+    //    allComponents.add(new StringRange(ComponentData.SERVICE));
+
+    // FIXME!!! Must allow arbitrary things here!
+
     setAllowedValues(allComponents);
     setPropertyClass(String.class);
   }
