@@ -146,6 +146,13 @@ public class PopulateDb extends PDbBase {
       } 
     }
 
+    if (assemblyId == null) {
+      if (log.isErrorEnabled()) {
+	log.error("No assembly given, unable to create one.");
+      }
+      throw new RuntimeException("Unable to create PopulateDb: No Assembly given or created.");
+    }
+
     substitutions.put(":assembly_id:", sqlQuote(assemblyId));
     this.cmtAssemblyId = assemblyId;
 
@@ -889,7 +896,7 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":assembly_type:", csaType);
     String assemblyId = getNextId("queryMaxAssemblyId", assemblyIdPrefix);
     csaAssemblyId = assemblyId;
-    substitutions.put(":assembly_id:", assemblyId);
+    substitutions.put(":assembly_id:", sqlQuote(assemblyId));
     executeUpdate(dbp.getQuery("insertAssemblyId", substitutions));
 
     if (societyName == null) {
@@ -911,12 +918,12 @@ public class PopulateDb extends PDbBase {
       // Putting the old AssemblyID in the society name is a bit ugly.
       //      substitutions.put(":soc_desc:", societyName + " based on " + cmtAsbID);
 
-      substitutions.put(":assembly_id:", assemblyId);
+      substitutions.put(":assembly_id:", sqlQuote(assemblyId));
       // Came from a CMT assembly. Copy the OPLAN stuff
       copyOPLANData(cmtAsbID, assemblyId);
     }
 
-    substitutions.put(":assembly_id:", assemblyId);
+    substitutions.put(":assembly_id:", sqlQuote(assemblyId));
     executeUpdate(dbp.getQuery("updateAssemblyDesc", substitutions));
 
     return assemblyId;
@@ -945,7 +952,7 @@ public class PopulateDb extends PDbBase {
   }
 
   private void reallyChangeSocietyName(String assemblyID, String newName) throws SQLException, IOException {
-    substitutions.put(":assembly_id:", assemblyID);
+    substitutions.put(":assembly_id:", sqlQuote(assemblyID));
     substitutions.put(":soc_desc:", newName);
     executeUpdate(dbp.getQuery("updateAssemblyDesc", substitutions));
   }
@@ -961,7 +968,7 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":assembly_type:", idType);
     substitutions.put(":assembly_desc:", idType + " assembly");
     assemblyId = getNextId("queryMaxAssemblyId", assemblyIdPrefix);
-    substitutions.put(":assembly_id:", assemblyId);
+    substitutions.put(":assembly_id:", sqlQuote(assemblyId));
     substitutions.put(":trial_id:", trialId);
     executeUpdate(dbp.getQuery("insertAssemblyId", substitutions));
     executeUpdate(dbp.getQuery("insertTrialAssembly", substitutions));
@@ -1045,7 +1052,7 @@ public class PopulateDb extends PDbBase {
    * @exception SQLException if an error occurs
    */
   private void addAssemblyToRuntime(String assembly_id) throws SQLException {
-    substitutions.put(":assembly_id:", assembly_id);
+    substitutions.put(":assembly_id:", sqlQuote(assembly_id));
     substitutions.put(":trial_id:", trialId);
     substitutions.put(":assembly_type:", getAssemblyType(assembly_id));
     if (log.isDebugEnabled()) {
