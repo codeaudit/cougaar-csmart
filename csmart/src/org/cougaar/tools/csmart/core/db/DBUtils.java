@@ -1062,6 +1062,16 @@ public class DBUtils {
     return s;
   }
 
+  /**
+   * Does the given experiment have a CMT assembly
+   * as part of its configuration definition. Used to decide
+   * whether to allow the user to modify the selection when loading
+   * from the database, and when deciding whether to display the 
+   * Threads pane in the Experiment builder.
+   *
+   * @param experimentId a <code>String</code> experiment ID in the database
+   * @return a <code>boolean</code>, true if the experiment uses a CMT society
+   */
   public static final boolean containsCMTAssembly(String experimentId) {
     if (experimentId == null || experimentId.equals(""))
       return false;
