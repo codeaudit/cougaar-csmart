@@ -325,7 +325,7 @@ public abstract class SocietyBase
     boolean ret = true;
     try {
       // FIXME: Is there a non-gui conflict handler I should use?
-      pdb = new PopulateDb(oldCMTAsbid, name, currAssID, GUIUtils.createSaveToDbConflictHandler(null));
+      pdb = new PopulateDb(oldCMTAsbid, name, currAssID, GUIUtils.createSaveToDbConflictHandler(null), false);
       pdb.populateCSA(SocietyComponentCreator.getComponentData(this));
       // Set the new CSA assembly ID on the society - get it from the PDB
       //      setAssemblyId(pdb.getCMTAssemblyId());
