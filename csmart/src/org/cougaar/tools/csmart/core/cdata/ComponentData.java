@@ -373,6 +373,22 @@ public interface ComponentData extends Serializable {
    */
   void setAlibID(String alibID);
 
+  /**
+   * Gets the LIB_ID for this Component.
+   *
+   * @return LIB_ID or null if none exist
+   */
+  String getLibID();
+
+  /**
+   * Sets the LIB_ID value for this Component Property
+   * This is for Database Experiments, all others
+   * should set this to null.
+   *
+   * @param libID a <code>String</code> value
+   */
+  void setLibID(String libID);
+
 } // end of ComponentData.java
 
 
