@@ -126,7 +126,7 @@ public class DatabaseTableModel extends AbstractTableModel {
       ResultSet resultSet = statement.executeQuery(query);
 
       // if it's an update or insert don't change rows, columns or metadata
-      if (!query.startsWith("update") &&
+      if (!query.startsWith("update") && !query.startsWith("UPDATE") && !query.startsWith("INSERT") && 
           !query.startsWith("insert")) {
         metaData = resultSet.getMetaData();
         // get column names
@@ -194,13 +194,13 @@ public class DatabaseTableModel extends AbstractTableModel {
       }
       return;
     }
-    if (tableName.equalsIgnoreCase("community_attribute"))
+    if (tableName.equalsIgnoreCase("community_attribute") || tableName.equalsIgnoreCase("ca"))
       CommunityDBUtils.deleteCommunityAttribute( 
                                dbRepresentation(0, getValueAt(row, 0)),
                                dbRepresentation(1, getValueAt(row, 1)),
                                dbRepresentation(2, getValueAt(row, 2)),
 			       assemblyId);
-    else if (tableName.equalsIgnoreCase("community_entity_attribute"))
+    else if (tableName.equalsIgnoreCase("community_entity_attribute") || tableName.equalsIgnoreCase("cea"))
       CommunityDBUtils.deleteEntityAttribute(communityName,
                                dbRepresentation(0, getValueAt(row, 0)),
                                dbRepresentation(1, getValueAt(row, 1)),
@@ -354,9 +354,9 @@ public class DatabaseTableModel extends AbstractTableModel {
       }
       return;
     }
-    if (tableName.equalsIgnoreCase("community_attribute"))
+    if (tableName.equalsIgnoreCase("community_attribute") || tableName.equalsIgnoreCase("ca"))
       updateCommunityAttributeTable(value, row, column);
-    else if (tableName.equalsIgnoreCase("community_entity_attribute"))
+    else if (tableName.equalsIgnoreCase("community_entity_attribute") || tableName.equalsIgnoreCase("cea"))
       updateCommunityEntityAttributeTable(value, row, column);
     else 
       if(log.isErrorEnabled()) {
@@ -368,12 +368,12 @@ public class DatabaseTableModel extends AbstractTableModel {
     String columnName = getColumnName(column);
     String communityId = (String)getValueAt(row, 0);
     String dbValue = dbRepresentation(column, value);
-    if (columnName.equalsIgnoreCase("ATTRIBUTE_ID")) {
+    if (columnName.equalsIgnoreCase("ATTRIBUTE_ID") || columnName.equalsIgnoreCase("COMMUNITY_ATTRIBUTE_ID")) {
       CommunityDBUtils.setCommunityAttributeId(communityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
                                dbRepresentation(2, getValueAt(row, 2)),
 					       assemblyId);
-    } else if (columnName.equalsIgnoreCase("ATTRIBUTE_VALUE")) {
+    } else if (columnName.equalsIgnoreCase("ATTRIBUTE_VALUE") || columnName.equalsIgnoreCase("COMMUNITY_ATTRIBUTE_VALUE")) {
       CommunityDBUtils.setCommunityAttributeValue(communityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
                                dbRepresentation(2, getValueAt(row, 2)),
@@ -393,12 +393,12 @@ public class DatabaseTableModel extends AbstractTableModel {
     String columnName = getColumnName(column);
     String entityId = (String)getValueAt(row, 0);
     String dbValue = dbRepresentation(column, value);
-    if (columnName.equalsIgnoreCase("ATTRIBUTE_ID")) {
+    if (columnName.equalsIgnoreCase("ATTRIBUTE_ID") || columnName.equalsIgnoreCase("ENTITY_ATTRIBUTE_ID")) {
       CommunityDBUtils.setEntityAttributeId(communityName, entityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
                                dbRepresentation(2, getValueAt(row, 2)),
 					    assemblyId);
-    } else if (columnName.equalsIgnoreCase("ATTRIBUTE_VALUE")) {
+    } else if (columnName.equalsIgnoreCase("ATTRIBUTE_VALUE") || columnName.equalsIgnoreCase("ENTITY_ATTRIBUTE_VALUE")) {
       CommunityDBUtils.setEntityAttributeValue(communityName, entityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
                                dbRepresentation(2, getValueAt(row, 2)),
