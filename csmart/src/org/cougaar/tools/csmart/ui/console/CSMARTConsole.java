@@ -101,14 +101,14 @@ public class CSMARTConsole extends JFrame {
   private static final String EXIT_MENU_ITEM = "Exit";
   private static final String VIEW_MENU = "View";
   private static final String SHOW_LOG_MENU_ITEM = "Show Entire Log";
-  private static final String SET_VIEW_SIZE_MENU_ITEM = "Set View Size";
+  private static final String SET_VIEW_SIZE_MENU_ITEM = "Set View Size...";
   private static final String FILTER_MENU_ITEM = "Filter...";
   private static final String FORMAT_MENU_ITEM = "Format...";
   private static final String NOTIFY_MENU = "Notify";
   private static final String SET_NOTIFY_MENU_ITEM = "Set Notification...";
   private static final String VIEW_NOTIFY_MENU_ITEM = "View Notification";
   private static final String REMOVE_NOTIFY_MENU_ITEM = "Remove All Notifications";
-  private static final String CLEAR_ALERTS_MENU_ITEM = "Clear All Notification Alerts";
+  private static final String RESET_NOTIFY_MENU_ITEM = "Reset All Notifications";
 
   private static final String HELP_MENU = "Help";
   private static final String ABOUT_CONSOLE_ITEM = "About Experiment Controller";
@@ -118,13 +118,9 @@ public class CSMARTConsole extends JFrame {
   private static final String HELP_DOC = "help.html";
   private static final String ABOUT_DOC = "../help/about-csmart.html";
 
-  //  private static final String STATUS_MENU = "Status";
-  //  private static final String RESET_STATUS_MENU_ITEM = "Reset";
- 
   // for pop-up menu on node status buttons
-  private static final String ABOUT_MENU = "About";
-  private static final String ABOUT_ACTION = "About";
-  private static final String RESET_ACTION = "Reset";
+  private static final String ABOUT_ACTION = "Info";
+  private static final String RESET_ACTION = "Reset Notification";
 
   // used for log file name
   private static DateFormat fileDateFormat =
@@ -232,13 +228,13 @@ public class CSMARTConsole extends JFrame {
     });
     notifyMenu.add(removeNotifyMenuItem);
     notifyMenu.addSeparator();
-    JMenuItem clearAlertsMenuItem = new JMenuItem(CLEAR_ALERTS_MENU_ITEM);
-    clearAlertsMenuItem.addActionListener(new ActionListener() {
+    JMenuItem resetNotifyMenuItem = new JMenuItem(RESET_NOTIFY_MENU_ITEM);
+    resetNotifyMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        clearAlertsMenuItem_actionPerformed();
+        resetNotifyMenuItem_actionPerformed();
       }
     });
-    notifyMenu.add(clearAlertsMenuItem);
+    notifyMenu.add(resetNotifyMenuItem);
 
     JMenu helpMenu = new JMenu(HELP_MENU);
     JMenuItem helpMenuItem = new JMenuItem(ABOUT_CONSOLE_ITEM);
@@ -404,7 +400,14 @@ public class CSMARTConsole extends JFrame {
         resetNodeStatus();
       }
     };
+    Action legendAction = new AbstractAction(LEGEND_MENU_ITEM) {
+      public void actionPerformed(ActionEvent e) {
+        legend.setVisible(true);
+      }
+    };
     nodeMenu.add(resetAction);
+    nodeMenu.addSeparator();
+    nodeMenu.add(legendAction);
 
     // create tabbed panes for configuration information (not editable)
     hostConfiguration = new HostConfigurationBuilder(experiment, csmart);
@@ -1036,6 +1039,7 @@ public class CSMARTConsole extends JFrame {
     }
     if (notifyCondition != null)
       textPane.setNotifyCondition(notifyCondition);
+    ((ConsoleStyledDocument)textPane.getStyledDocument()).setBufferSize(viewSize);
     if (displayFilter != null)
       ((ConsoleNodeListener)listener).setFilter(displayFilter);
     nodeListeners.put(nodeName, listener);
@@ -1319,38 +1323,55 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * Set size of screen buffer for node output.
+   * Display dialog to set size of screen buffer for node output.
+   * Return user's response.  An value of -1 means display all.
    */
 
-  private void viewSizeMenuItem_actionPerformed() {
+  static int displayViewSizeDialog(int currentViewSize) {
     JPanel bufferEventsPanel = new JPanel();
     JRadioButton allButton = new JRadioButton("All");
     JRadioButton sizeButton = new JRadioButton("Buffer Size");
-    allButton.setSelected(false);
+    JTextField sizeTF = new JTextField(8);
+    if (currentViewSize == -1) {
+      allButton.setSelected(true);
+      sizeButton.setSelected(false);
+      sizeTF.setText(String.valueOf(DEFAULT_VIEW_SIZE));
+    } else {
+      allButton.setSelected(false);
+      sizeButton.setSelected(true);
+      sizeTF.setText(String.valueOf(currentViewSize));
+    }
     ButtonGroup bufferButtonGroup = new ButtonGroup();
     bufferButtonGroup.add(allButton);
     bufferButtonGroup.add(sizeButton);
-    JTextField sizeTF = new JTextField(String.valueOf(viewSize));
     bufferEventsPanel.add(allButton);
     bufferEventsPanel.add(sizeButton);
     bufferEventsPanel.add(sizeTF);
 
-    int result = JOptionPane.showConfirmDialog(this,
+    int result = JOptionPane.showConfirmDialog(null,
                                     bufferEventsPanel,
                                     "Node View",
                                     JOptionPane.OK_CANCEL_OPTION,
                                     JOptionPane.QUESTION_MESSAGE,
                                     null);
     if (result == JOptionPane.CANCEL_OPTION)
-      return;
+      return currentViewSize; // no change
+    int newViewSize = 0;
     if (allButton.isSelected()) {
-      viewSize = -1;
+      newViewSize = -1;
     } else {
       try {
-        viewSize = Integer.parseInt(sizeTF.getText());
+        newViewSize = Integer.parseInt(sizeTF.getText());
       } catch (NumberFormatException e) {
+        System.out.println(e);
+        return currentViewSize;
       }
     }
+    return newViewSize;
+  }
+
+  private void viewSizeMenuItem_actionPerformed() {
+    viewSize = displayViewSizeDialog(viewSize);
     Enumeration textPanes = nodePanes.elements();
     while (textPanes.hasMoreElements()) {
       JTextPane textPane = (JTextPane)textPanes.nextElement();
@@ -1366,8 +1387,13 @@ public class CSMARTConsole extends JFrame {
    */
 
   private void filterMenuItem_actionPerformed() {
-    displayFilter = new ConsoleNodeOutputFilter();
-    displayFilter.setVisible(true);
+    if (displayFilter == null)
+      displayFilter = 
+        new ConsoleNodeOutputFilter(null, true);
+    else
+      displayFilter =
+        new ConsoleNodeOutputFilter(displayFilter.getValues(),
+                                    displayFilter.isAllSelected());
     Enumeration listeners = nodeListeners.elements();
     while (listeners.hasMoreElements()) {
       ConsoleNodeListener listener = 
@@ -1402,6 +1428,7 @@ public class CSMARTConsole extends JFrame {
       notifyCondition = null;
     else
       notifyCondition = s;
+    setNotification();
   }
 
   /**
@@ -1414,6 +1441,11 @@ public class CSMARTConsole extends JFrame {
     while (textPanes.hasMoreElements()) {
       ConsoleTextPane textPane = (ConsoleTextPane)textPanes.nextElement();
       textPane.setNotifyCondition(notifyCondition);
+    }
+    Enumeration buttons = statusButtons.getElements();
+    while (buttons.hasMoreElements()) {
+      NodeStatusButton button = (NodeStatusButton)buttons.nextElement();
+        button.clearError();
     }
   }
 
@@ -1443,13 +1475,18 @@ public class CSMARTConsole extends JFrame {
   private void removeNotifyMenuItem_actionPerformed() {
     notifyCondition = null;
     setNotification();
+    Enumeration buttons = statusButtons.getElements();
+    while (buttons.hasMoreElements()) {
+      NodeStatusButton button = (NodeStatusButton)buttons.nextElement();
+        button.clearError();
+    }
   }
 
   /**
    * Reset status for all nodes. Resets the "notify" position
    * in the text pane and resets the error flag of the node status button.
    */
-  private void clearAlertsMenuItem_actionPerformed() {
+  private void resetNotifyMenuItem_actionPerformed() {
     Enumeration textPanes = nodePanes.elements();
     while (textPanes.hasMoreElements()) {
       ConsoleTextPane textPane = (ConsoleTextPane)textPanes.nextElement();
@@ -1460,7 +1497,6 @@ public class CSMARTConsole extends JFrame {
       NodeStatusButton button = (NodeStatusButton)buttons.nextElement();
         button.clearError();
     }
-
   }
 
   private String getElapsedTimeLabel(String prefix, long startTime) {

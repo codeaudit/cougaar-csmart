@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Thu Oct 04 10:52:33 EDT 2001 from D:\cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartAssets.def - DO NOT HAND EDIT */
+/* @generated Thu Oct 18 13:27:06 EDT 2001 from D:\cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartAssets.def - DO NOT HAND EDIT */
 package org.cougaar.tools.csmart.ldm.asset;
 import org.cougaar.domain.planning.ldm.asset.EssentialAssetFactory;
 

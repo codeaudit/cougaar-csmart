@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Thu Oct 04 10:52:34 EDT 2001 from D:\cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
+/* @generated Thu Oct 18 13:27:08 EDT 2001 from D:\cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
 /** Additional methods for RolesPG
  * offering mutators (set methods) for the object's owner
  **/

@@ -43,39 +43,49 @@ import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
 
 public class ConsoleInternalFrame extends JInternalFrame {
-  private static final String ABOUT_MENU = "About";
-  private static final String ABOUT_ACTION = "About";
+  private static final String NODE_MENU = "Node";
+  private static final String INFO_ACTION = "Info";
   private static final String CPU_USAGE_ACTION = "CPU Usage";
   private static final String MEMORY_USAGE_ACTION = "Memory Usage";
+  private static final String HISTORY_ACTION = "Utilization History";
+
+  private static final String EDIT_MENU = "Edit";
+  private static final String CUT_ACTION = "Cut";
+  private static final String COPY_ACTION = "Copy";
+  private static final String PASTE_ACTION = "Paste";
+  private static final String CLEAR_ACTION = "Clear";
+  private static final String SELECT_ALL_ACTION = "Select All";
+  private static final String FIND_ACTION = "Find...";
+  private static final String FIND_NEXT_ACTION = "Find Next";
+
+  private static final String VIEW_MENU = "View";
+  private static final String DISPLAY_LOG_ACTION = "Show Entire Log";
+  private static final String SET_VIEW_SIZE_ACTION = "Set View Size...";
+  private static final String FILTER_ACTION = "Filter...";
+
   private static final String CONTROL_MENU = "Control";
   private static final String START_ACTION = "Restart";
-  private static final String STOP_ACTION = "Kill";
   private static final String MOVE_ACTION = "Move";
-  private static final String TRACE_ACTION = "Stack Trace";
-  private static final String SEARCH_MENU = "Search";
-  private static final String SEARCH_ACTION = "Search...";
-  private static final String SEARCH_NEXT_ACTION = "Search Next";
-  private static final String STATUS_MENU = "Status";
-  private static final String HISTORY_ACTION = "Utilization History";
-  private static final String DISPLAY_MENU = "Display";
-  private static final String DISPLAY_LOG_ACTION = "Display Log";
-  private static final String SELECT_ALL_ACTION = "Select All";
-  private static final String FILTER_ACTION = "Filter...";
+  private static final String STOP_ACTION = "Kill";
+  private static final String STACK_TRACE_ACTION = "Stack Trace";
+
   private static final String NOTIFY_MENU = "Notify";
-  private static final String NOTIFY_ACTION = "Notify When...";
-  private static final String NOTIFY_NEXT_ACTION = "Notify Next";
+  private static final String SET_NOTIFY_ACTION = "Set Notification...";
+  private static final String REMOVE_NOTIFY_ACTION = "Remove Notification";
+  private static final String NOTIFY_NEXT_ACTION = "Find Next Notification";
+  private static final String RESET_NOTIFY_ACTION = "Reset Notification";
+
   private static int openFrameCount = 0;
   private static final int xOffset = 30, yOffset = 30;
   private NodeComponent node;
   private ConsoleNodeListener listener;
   private ConsoleTextPane consoleTextPane;
-  private Action searchAction;
-  private Action searchNextAction;
+  private Action findAction;
+  private Action findNextAction;
   private Action notifyAction;
   private Action notifyNextAction;
   private HostComponent host;
   private String hostName;
-  private String notifyCondition;
   private JRadioButton statusButton;
   private String logFileName;
   private ConsoleNodeOutputFilter filter;
@@ -112,27 +122,92 @@ public class ConsoleInternalFrame extends JInternalFrame {
         }
       }
     }
-    // title is "node name:host name"
-    setTitle(node.getShortName() + ":" + hostName);
-    // init menu
+    // title is "Node name (host name)"
+    setTitle("Node " + node.getShortName() + " (" + hostName + ")");
+    // init menubar
     JMenuBar menuBar = new JMenuBar();
-    JMenu aboutMenu = new JMenu(ABOUT_MENU);
-    Action aboutAction = new AbstractAction(ABOUT_ACTION) {
+
+    // Node menu
+    JMenu nodeMenu = new JMenu(NODE_MENU);
+    Action infoAction = new AbstractAction(INFO_ACTION) {
       public void actionPerformed(ActionEvent e) {
         displayAbout();
       }
     };
-    aboutMenu.add(aboutAction);
+    nodeMenu.add(infoAction);
     Action cpuUsageAction = new AbstractAction(CPU_USAGE_ACTION) {
       public void actionPerformed(ActionEvent e) {
       }
     };
-    aboutMenu.add(cpuUsageAction);
+    cpuUsageAction.setEnabled(false);
+    nodeMenu.add(cpuUsageAction);
     Action memoryUsageAction = new AbstractAction(MEMORY_USAGE_ACTION) {
       public void actionPerformed(ActionEvent e) {
       }
     };
-    aboutMenu.add(memoryUsageAction);
+    memoryUsageAction.setEnabled(false);
+    nodeMenu.add(memoryUsageAction);
+    Action historyAction = new AbstractAction(HISTORY_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+	history_actionPerformed();
+      }
+    };
+    nodeMenu.add(historyAction);
+
+    // Edit menu
+    JMenu editMenu = new JMenu(EDIT_MENU);
+    Action copyAction = new AbstractAction(SELECT_ALL_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        copy_actionPerformed();
+      }
+    };
+    copyAction.setEnabled(false);
+    editMenu.add(copyAction);
+    editMenu.addSeparator();
+    Action selectAllAction = new AbstractAction(SELECT_ALL_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        selectAll_actionPerformed();
+      }
+    };
+    editMenu.add(selectAllAction);
+    editMenu.addSeparator();
+    findAction = new AbstractAction(FIND_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        find_actionPerformed();
+      }
+    };
+    editMenu.add(findAction);
+    findNextAction = new AbstractAction(FIND_NEXT_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        findNext_actionPerformed();
+      }
+    };
+    editMenu.add(findNextAction);
+
+    // view menu
+    JMenu viewMenu = new JMenu(VIEW_MENU);
+    Action displayLogAction = new AbstractAction(DISPLAY_LOG_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        displayLog_actionPerformed();
+      }
+    };
+    displayLogAction.setEnabled(false);
+    viewMenu.add(displayLogAction);
+    Action setViewSizeAction = new AbstractAction(SET_VIEW_SIZE_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        setViewSize_actionPerformed();
+      }
+    };
+    viewMenu.add(setViewSizeAction);
+    Action filterAction = new AbstractAction(FILTER_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        filter_actionPerformed();
+      }
+    };
+    filterAction.setEnabled(false);
+    viewMenu.add(filterAction);
+
+    // control menu
     JMenu controlMenu = new JMenu(CONTROL_MENU);
     Action startAction = new AbstractAction(START_ACTION) {
       public void actionPerformed(ActionEvent e) {
@@ -140,83 +215,57 @@ public class ConsoleInternalFrame extends JInternalFrame {
     };
     startAction.setEnabled(false);
     controlMenu.add(startAction);
-    Action stopAction = new AbstractAction(STOP_ACTION) {
-      public void actionPerformed(ActionEvent e) {
-      }
-    };
-    stopAction.setEnabled(false);
-    controlMenu.add(stopAction);
     Action moveAction = new AbstractAction(MOVE_ACTION) {
       public void actionPerformed(ActionEvent e) {
       }
     };
     moveAction.setEnabled(false);
     controlMenu.add(moveAction);
-    Action traceAction = new AbstractAction(TRACE_ACTION) {
+    Action stopAction = new AbstractAction(STOP_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+      }
+    };
+    stopAction.setEnabled(false);
+    controlMenu.add(stopAction);
+    Action traceAction = new AbstractAction(STACK_TRACE_ACTION) {
       public void actionPerformed(ActionEvent e) {
       }
     };
     traceAction.setEnabled(false);
     controlMenu.add(traceAction);
-    JMenu displayMenu = new JMenu(DISPLAY_MENU);
-    Action displayLogAction = new AbstractAction(DISPLAY_LOG_ACTION) {
-      public void actionPerformed(ActionEvent e) {
-        displayLog_actionPerformed();
-      }
-    };
-    displayMenu.add(displayLogAction);
-    Action selectAllAction = new AbstractAction(SELECT_ALL_ACTION) {
-      public void actionPerformed(ActionEvent e) {
-        selectAll_actionPerformed();
-      }
-    };
-    displayMenu.add(selectAllAction);
-    Action filterAction = new AbstractAction(FILTER_ACTION) {
-      public void actionPerformed(ActionEvent e) {
-        filter_actionPerformed();
-      }
-    };
-    displayMenu.add(filterAction);
-    filterAction.setEnabled(false);
-    JMenu searchMenu = new JMenu(SEARCH_MENU);
-    searchAction = new AbstractAction(SEARCH_ACTION) {
-      public void actionPerformed(ActionEvent e) {
-        search_actionPerformed();
-      }
-    };
-    searchMenu.add(searchAction);
-    searchNextAction = new AbstractAction(SEARCH_NEXT_ACTION) {
-      public void actionPerformed(ActionEvent e) {
-        searchNext_actionPerformed();
-      }
-    };
-    searchMenu.add(searchNextAction);
+
+    // notify menu
     JMenu notifyMenu = new JMenu(NOTIFY_MENU);
-    notifyAction = new AbstractAction(NOTIFY_ACTION) {
+    notifyAction = new AbstractAction(SET_NOTIFY_ACTION) {
       public void actionPerformed(ActionEvent e) {
 	notify_actionPerformed();
       }
     };
     notifyMenu.add(notifyAction);
-    JMenu notifyNextMenu = new JMenu(NOTIFY_MENU);
+    Action removeNotifyAction = new AbstractAction(REMOVE_NOTIFY_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+	removeNotify_actionPerformed();
+      }
+    };
+    notifyMenu.add(removeNotifyAction);
     notifyNextAction = new AbstractAction(NOTIFY_NEXT_ACTION) {
       public void actionPerformed(ActionEvent e) {
 	notifyNext_actionPerformed();
       }
     };
+    //    notifyNextAction.setEnabled(false);
     notifyMenu.add(notifyNextAction);
-    JMenu statusMenu = new JMenu(STATUS_MENU);
-    Action historyAction = new AbstractAction(HISTORY_ACTION) {
+    Action resetNotifyAction = new AbstractAction(RESET_NOTIFY_ACTION) {
       public void actionPerformed(ActionEvent e) {
-	history_actionPerformed();
+	resetNotifyAction_actionPerformed();
       }
     };
-    statusMenu.add(historyAction);
-    menuBar.add(aboutMenu);
+    notifyMenu.add(resetNotifyAction);
+
+    menuBar.add(nodeMenu);
+    menuBar.add(editMenu);
+    menuBar.add(viewMenu);
     menuBar.add(controlMenu);
-    menuBar.add(displayMenu);
-    menuBar.add(statusMenu);
-    menuBar.add(searchMenu);
     menuBar.add(notifyMenu);
     getRootPane().setJMenuBar(menuBar);
     initKeyMap(consoleTextPane);
@@ -229,8 +278,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   /**
    * Set up a keymap:
-   * ctrl-s search 
-   * ctrl-t search next
+   * ctrl-f find  (find)
+   * ctrl-g find next
    * ctrl-n notify
    * ctrl-o notify next
    */
@@ -238,15 +287,15 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private void initKeyMap(ConsoleTextPane pane) {
     InputMap im = pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
     ActionMap am = pane.getActionMap();
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK), 
-           SEARCH_ACTION);
-    am.put(SEARCH_ACTION, searchAction);
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_T, Event.CTRL_MASK), 
-           SEARCH_NEXT_ACTION);
-    am.put(SEARCH_NEXT_ACTION, searchNextAction);
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK), 
+           FIND_ACTION);
+    am.put(FIND_ACTION, findAction);
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_G, Event.CTRL_MASK), 
+           FIND_NEXT_ACTION);
+    am.put(FIND_NEXT_ACTION, findNextAction);
     im.put(KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK), 
-           NOTIFY_ACTION);
-    am.put(NOTIFY_ACTION, notifyAction);
+           SET_NOTIFY_ACTION);
+    am.put(SET_NOTIFY_ACTION, notifyAction);
     im.put(KeyStroke.getKeyStroke(KeyEvent.VK_O, Event.CTRL_MASK), 
            NOTIFY_NEXT_ACTION);
     am.put(NOTIFY_NEXT_ACTION, notifyNextAction);
@@ -433,24 +482,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
     return prop.getValue();
   }
 
-  private void search_actionPerformed() {
-    // get string to search for
-    String s = JOptionPane.showInputDialog("Search string:");
-    if (s == null || s.length() == 0) {
-      return;
-    }
-    // search and highlight
-    boolean found = consoleTextPane.search(s);
-    searchNextAction.setEnabled(found);
-  }
+  // Implementations for the action items from the menu
 
-  private void searchNext_actionPerformed() {
-    // search and highlight
-    boolean found = consoleTextPane.searchNext();
-    searchNextAction.setEnabled(found);
-    consoleTextPane.revalidate();
-    consoleTextPane.repaint();
-  }
 
   /**
    * Display strip chart for node.
@@ -466,6 +499,39 @@ public class ConsoleInternalFrame extends JInternalFrame {
     desktop.addFrame(chartFrame, false);
   }
 
+  /**
+   * Query user for search string and search for it.
+   */
+
+  private void find_actionPerformed() {
+    // get string to search for
+    String s = JOptionPane.showInputDialog("Find string:");
+    if (s == null || s.length() == 0) {
+      return;
+    }
+    // find and highlight
+    boolean found = consoleTextPane.search(s);
+    findNextAction.setEnabled(found);
+  }
+
+  /**
+   * Search for next instance of string.
+   */
+
+  private void findNext_actionPerformed() {
+    // search and highlight
+    boolean found = consoleTextPane.searchNext();
+    findNextAction.setEnabled(found);
+    consoleTextPane.revalidate();
+    consoleTextPane.repaint();
+  }
+
+  /**
+   * Copy from node output pane.
+   */
+
+  private void copy_actionPerformed() {
+  }
 
   /**
    * Select everything in the node's output pane.
@@ -477,18 +543,20 @@ public class ConsoleInternalFrame extends JInternalFrame {
     consoleTextPane.selectAll();
   }
 
+  private void displayLog_actionPerformed() {
+    listener.fillFromLogFile();
+  }
+
+  private void setViewSize_actionPerformed() {
+    ConsoleStyledDocument doc = 
+      (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
+    int viewSize = CSMARTConsole.displayViewSizeDialog(doc.getBufferSize());
+    doc.setBufferSize(viewSize);
+  }
+
   private void filter_actionPerformed() {
     ConsoleStyledDocument doc = 
       (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
-    filter.setBufferSize(doc.getBufferSize());
-    filter.setVisible(true);
-    int n = filter.getBufferSize();
-    if (n != 0)
-      doc.setBufferSize(n);
-  }
-
-  private void displayLog_actionPerformed() {
-    listener.fillFromLogFile();
   }
 
   /**
@@ -502,23 +570,44 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           "Notify if node writes:",
                                           "Notification",
                                           JOptionPane.QUESTION_MESSAGE,
-                                          null, null, notifyCondition);
-    if (s == null || s.length() == 0)
-      notifyCondition = null;
-    else
+                                          null, null, 
+                                          consoleTextPane.getNotifyCondition());
+    setNotification(s);
+  }
+
+  private void setNotification(String s) {
+    String notifyCondition = null;
+    //    if (s == null || s.length() == 0) {
+      //      notifyNextAction.setEnabled(false);
+    //    } else {
+    //      notifyCondition = s;
+      //      notifyNextAction.setEnabled(true);
+    //    }
+    if (s != null && s.length() != 0)
       notifyCondition = s;
     consoleTextPane.setNotifyCondition(notifyCondition);
-    notifyNextAction.setEnabled(true);
+    ((NodeStatusButton)statusButton).clearError();
+  }
+
+  private void removeNotify_actionPerformed() {
+    setNotification(null);
+    ((NodeStatusButton)statusButton).clearError();
   }
 
   private void notifyNext_actionPerformed() {
     boolean found = consoleTextPane.notifyNext();
-    notifyNextAction.setEnabled(found);
+    //    notifyNextAction.setEnabled(found);
     consoleTextPane.revalidate();
     consoleTextPane.repaint();
   }
 
+  private void resetNotifyAction_actionPerformed() {
+    consoleTextPane.clearNotify();
+    ((NodeStatusButton)statusButton).clearError();
+  }
+
 }
+
 
 
 

@@ -55,7 +55,7 @@ public class ConsoleNodeOutputFilter extends JDialog {
   boolean[] msgArray = { false, false, false, false, false, false, false };
   private boolean allSelected = true;
 
-  public ConsoleNodeOutputFilter() {
+  public ConsoleNodeOutputFilter(boolean[] initialValues, boolean acceptAll) {
     super((java.awt.Frame)null, "Filter", true); // modal dialog
     filterPanel = new JPanel(new BorderLayout());
 
@@ -97,79 +97,24 @@ public class ConsoleNodeOutputFilter extends JDialog {
     msgTypesPanel.setBorder(msgTypesTitledBorder);
 
     allCB = new JCheckBox(ALL);
-    allCB.setSelected(true);
+    allCB.setSelected(acceptAll);
     allCB.addActionListener(allCBSelected);
+    allSelected = acceptAll;
 
     standardCB = new JCheckBox(STANDARDOUT);
     standardCB.addActionListener(unselectAllCB);
-    standardCB.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (standardCB.isSelected())
-          msgArray[NodeEvent.STANDARD_OUT]=true;
-        else
-          msgArray[NodeEvent.STANDARD_OUT]=false;
-      }
-    });
     errorCB = new JCheckBox(ERRORMSGS);
     errorCB.addActionListener(unselectAllCB);
-    errorCB.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (errorCB.isSelected())
-          msgArray[NodeEvent.STANDARD_ERR]=true;
-        else
-          msgArray[NodeEvent.STANDARD_ERR]=false;
-      }
-    });
     createCB = new JCheckBox(NODECREATION);
     createCB.addActionListener(unselectAllCB);
-    createCB.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (createCB.isSelected())
-          msgArray[NodeEvent.NODE_CREATED]=true;
-        else
-          msgArray[NodeEvent.NODE_CREATED]=false;
-      }
-    });
     destroyCB = new JCheckBox(NODEDESTROYED);
     destroyCB.addActionListener(unselectAllCB);
-    destroyCB.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (destroyCB.isSelected())
-          msgArray[NodeEvent.NODE_DESTROYED]=true;
-        else
-          msgArray[NodeEvent.NODE_DESTROYED]=false;
-      }
-    });
     clusterAddCB = new JCheckBox(CLUSTERADD);
     clusterAddCB.addActionListener(unselectAllCB);
-    clusterAddCB.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (clusterAddCB.isSelected())
-          msgArray[NodeEvent.CLUSTER_ADDED]=true;
-        else
-          msgArray[NodeEvent.CLUSTER_ADDED]=false;
-      }
-    });
     idlenessCB = new JCheckBox(IDLENESS);
     idlenessCB.addActionListener(unselectAllCB);
-    idlenessCB.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (idlenessCB.isSelected())
-          msgArray[NodeEvent.IDLE_UPDATE]=true;
-        else
-          msgArray[NodeEvent.IDLE_UPDATE]=false;
-      }
-    });
     heartbeatCB = new JCheckBox(HEARTBEAT);
     heartbeatCB.addActionListener(unselectAllCB);
-    heartbeatCB.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        if (heartbeatCB.isSelected())
-          msgArray[NodeEvent.HEARTBEAT]=true;
-        else
-          msgArray[NodeEvent.HEARTBEAT]=false;
-      }
-    });
     int x = 0;
     int y = 0;
     msgTypesPanel.add(allCB,
@@ -218,7 +163,17 @@ public class ConsoleNodeOutputFilter extends JDialog {
     filterPanel.add(box, BorderLayout.CENTER);
     getContentPane().add(filterPanel);
     pack();
-
+    if (initialValues != null) {
+      msgArray = initialValues;
+      standardCB.setSelected(msgArray[NodeEvent.STANDARD_OUT]);
+      errorCB.setSelected(msgArray[NodeEvent.STANDARD_ERR]);
+      createCB.setSelected(msgArray[NodeEvent.NODE_CREATED]);
+      destroyCB.setSelected(msgArray[NodeEvent.NODE_DESTROYED]);
+      clusterAddCB.setSelected(msgArray[NodeEvent.CLUSTER_ADDED]);
+      idlenessCB.setSelected(msgArray[NodeEvent.IDLE_UPDATE]);
+      heartbeatCB.setSelected(msgArray[NodeEvent.HEARTBEAT]);
+    }
+    setVisible(true);
   }
   
   /**
@@ -238,41 +193,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
 
   public boolean includeEventInLogFile(NodeEvent event) {
     return true;
-  }
-
-  /**
-   * Set buffer size displayed in dialog.
-   */
-
-  public void setBufferSize(int n) {
-    if (n != -1) {
-      sizeTF.setText(Integer.toString(n));
-      sizeButton.setSelected(true);
-    } else {
-      sizeTF.setText("");
-      allButton.setSelected(true);
-    }
-  }
-
-  /**
-   * Return buffer size; -1 implies buffer is unlimited; 0 implies 
-   * error (couldn't parse user input).
-   * @return buffer size; -1 for unlimited; 0 implies error 
-   */
-
-  public int getBufferSize() {
-    if (sizeButton.isSelected()) {
-      String size = sizeTF.getText();
-      System.out.println("text is " + size);
-      try {
-        int bufferSize = Integer.parseInt(size);
-        return bufferSize;
-      }catch (NumberFormatException e) { 
-        System.err.println("Couldn't parse int");
-        return 0;
-      }
-    } else
-      return -1;
   }
 
   ActionListener allCBSelected = new ActionListener() {
@@ -296,8 +216,16 @@ public class ConsoleNodeOutputFilter extends JDialog {
     }
   };
 
+  public boolean[] getValues() {
+    return msgArray;
+  }
+
+  public boolean isAllSelected() {
+    return allSelected;
+  }
+
   public static void main(String[] args) {
-    ConsoleNodeOutputFilter filter = new ConsoleNodeOutputFilter();
+    ConsoleNodeOutputFilter filter = new ConsoleNodeOutputFilter(null, true);
     filter.setVisible(true);
   }
 } 

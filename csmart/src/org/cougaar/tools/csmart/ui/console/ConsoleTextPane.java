@@ -154,13 +154,13 @@ public class ConsoleTextPane extends JTextPane {
    */
 
   public void setNotifyCondition(String s) {
+    clearNotify();
     if (s == null) {
       doc.removeDocumentListener(docListener);
       docListener = null;
       notifyCondition = s;
     } else {
       notifyCondition = s.toLowerCase();
-      notifyCount = 0;
       if (docListener == null) {
         docListener = new MyDocumentListener();
         doc.addDocumentListener(docListener);
@@ -169,8 +169,17 @@ public class ConsoleTextPane extends JTextPane {
   }
 
   /**
+   * Return notify condition in use.
+   */
+
+  public String getNotifyCondition() {
+    return notifyCondition;
+  }
+
+  /**
    * Clear the notify highlighting and position.  Starts searching for
    * notify conditions with new text appended after this method is called.
+   * Reset the count.
    */
 
   public void clearNotify() {
@@ -200,7 +209,7 @@ public class ConsoleTextPane extends JTextPane {
    */
 
   public boolean notifyNext() {
-    if (notifyCondition != null) 
+    if (notifyCondition != null && notifyPosition != null)
       return worker(notifyCondition, notifyPosition, false);
     return false;
   }

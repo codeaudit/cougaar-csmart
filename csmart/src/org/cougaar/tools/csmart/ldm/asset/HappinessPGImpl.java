@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Thu Oct 04 10:52:34 EDT 2001 from D:\cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
+/* @generated Thu Oct 18 13:27:08 EDT 2001 from D:\cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
 /** Implementation of HappinessPG.
  *  @see HappinessPG
  *  @see NewHappinessPG
