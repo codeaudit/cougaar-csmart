@@ -320,6 +320,10 @@ public class AgentAssetData implements Serializable {
     this.relats.set(index, relationship);
   }
 
+  public RelationshipData getRelationship(int index) {
+    return (RelationshipData) relats.get(index);
+  }
+
   /**
    * Returns a count of all relationships for this agent.
    *

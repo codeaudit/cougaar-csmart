@@ -159,6 +159,8 @@ public interface ComponentData extends Serializable {
    */
   void setParameter(int index, Object param);
 
+  Object getParameter(int index);
+
   /**
    * Returns a count of all parameters
    *

@@ -120,6 +120,10 @@ public class GenericComponentData implements ComponentData, Serializable {
     this.parameters.set(index, param);
   }
 
+  public Object getParameter(int index) {
+    return parameters.get(index);
+  }
+
   public int parameterCount() {
     return parameters.size();
   }
