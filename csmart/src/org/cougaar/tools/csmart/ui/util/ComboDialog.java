@@ -30,6 +30,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 public class ComboDialog {
 
@@ -44,7 +45,14 @@ public class ComboDialog {
                                      new Insets(0, 5, 0, 5), 0, 0));
     JComboBox cb = new JComboBox(values);
     cb.setEditable(true);
-    cb.setPreferredSize(new Dimension(200, 
+    int maxWidth = 40; // reasonable default
+    for (int i = 0; i < values.size(); i++)
+      maxWidth = 
+        Math.max(maxWidth,
+                 SwingUtilities.computeStringWidth(cb.getFontMetrics(cb.getFont()),
+                                                   (String)values.get(i)));
+    // add approximate width of scroll bar
+    cb.setPreferredSize(new Dimension(maxWidth + 30,
                                       (int)cb.getPreferredSize().getHeight()));
     panel.add(cb,
               new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,

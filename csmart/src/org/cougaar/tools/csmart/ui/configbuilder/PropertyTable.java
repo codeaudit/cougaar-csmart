@@ -204,7 +204,7 @@ public class PropertyTable extends JTable {
     if (column == model.VALUE_COL) {
       Property prop = model.getProperty(row);
       Class propClass = prop.getPropertyClass();
-      if (propClass.equals(Boolean.class))
+      if (propClass != null && propClass.equals(Boolean.class))
         return new BooleanRenderer();
     }
     return super.getCellRenderer(row, column);

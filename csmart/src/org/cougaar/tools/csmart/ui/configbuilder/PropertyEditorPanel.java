@@ -55,6 +55,8 @@ import org.cougaar.tools.csmart.core.property.PropertyHelper;
 import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.AssetComponent;
+import org.cougaar.tools.csmart.society.BinderBase;
+import org.cougaar.tools.csmart.society.BinderComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.ContainerComponent;
 import org.cougaar.tools.csmart.society.PluginBase;
@@ -81,18 +83,15 @@ import java.io.ObjectInputStream;
 public class PropertyEditorPanel extends JPanel 
   implements PropertiesListener, PropertyListener,
   TreeSelectionListener, HyperlinkListener {
-  JComboBox selectionCB;
   JSplitPane configCompPanel;
   JTree tree;
   JPopupMenu societyMenu;
-  JPopupMenu agentMenu;
+  JPopupMenu bindersMenu;
   JPopupMenu pluginsMenu;
-  JPopupMenu pluginMenu;
   JPopupMenu assetMenu;
   JPopupMenu propertyGroupsMenu;
-  JPopupMenu propertyGroupMenu;
   JPopupMenu relationshipsMenu;
-  JPopupMenu defaultMenu;
+  JPopupMenu baseComponentMenu;
   DefaultMutableTreeNode root;
   PropertyTable propertyTable = null;
   JScrollPane tableScrollPane;
@@ -102,7 +101,6 @@ public class PropertyEditorPanel extends JPanel
   Hashtable propertyToLabel = new Hashtable();
   boolean isEditable;
   ModifiableComponent componentToConfigure = null;
-  PropertyEditorPanel propertyEditorPanelListener;
   private transient Logger log;
   // all property groups, including those created by user
   Vector propertyGroups = null;
@@ -138,6 +136,12 @@ public class PropertyEditorPanel extends JPanel
           addAgent();
         }
       };
+  private AbstractAction addBinderAction =
+    new AbstractAction("Add Binder") {
+        public void actionPerformed(ActionEvent e) {
+          addBinder();
+        }
+      };
   private AbstractAction addPluginAction =
     new AbstractAction("Add Plugin") {
         public void actionPerformed(ActionEvent e) {
@@ -162,65 +166,34 @@ public class PropertyEditorPanel extends JPanel
           addParameter();
         }
       };
-  private AbstractAction removeAgentAction =
+  private AbstractAction deleteAction =
     new AbstractAction("Delete") {
         public void actionPerformed(ActionEvent e) {
-          removeAgent();
+          removeBaseComponent();
         }
       };
-  private AbstractAction removePluginAction =
-    new AbstractAction("Delete") {
-        public void actionPerformed(ActionEvent e) {
-          removePlugin();
-        }
-      };
-  private AbstractAction removePropertyGroupAction =
-    new AbstractAction("Delete") {
-        public void actionPerformed(ActionEvent e) {
-          removePropertyGroup();
-        }
-      };
-
   private Object[] societyMenuItems = {
     addAgentAction
   };
-
-  private Object[] agentMenuItems = {
-    addParameterAction,
-    removeAgentAction
+  private Object[] bindersMenuItems = {
+    addBinderAction
   };
-
   private Object[] pluginsMenuItems = {
     addPluginAction
   };
-
-  private Object[] pluginMenuItems = {
-    addParameterAction,
-    removePluginAction
-  };
-
   private Object[] assetMenuItems = {
     addParameterAction
   };
-
   private Object[] propertyGroupsMenuItems = {
     addPropertyGroupAction
   };
-
   private Object[] relationshipsMenuItems = {
     addRelationshipAction
   };
-
-  private Object[] propertyGroupMenuItems = {
+  private Object[] baseComponentMenuItems = {
     addParameterAction,
-    removePropertyGroupAction
+    deleteAction
   };
-
-  private Object[] defaultMenuItems = {
-    addParameterAction
-  };
-
-
 
   public PropertyEditorPanel(ModifiableComponent c, boolean isEditable) {
     // caller decides if this panel should allow editing
@@ -269,6 +242,12 @@ public class PropertyEditorPanel extends JPanel
     makeTree();
     tree.expandPath(new TreePath(root));
     tree.setEditable(isEditable);
+    // don't allow cell editing
+    tree.setCellEditor(new DefaultCellEditor(new JTextField()) {
+        public boolean isCellEditable(EventObject e) {
+          return false;
+        }
+      });
     tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     tree.addTreeSelectionListener(this);
     MouseListener myMouseListener = new MouseAdapter() {
@@ -284,33 +263,27 @@ public class PropertyEditorPanel extends JPanel
     };
     tree.addMouseListener(myMouseListener);
     // create popup menus to be displayed in tree
-    societyMenu = new JPopupMenu(); // add agent
-    agentMenu = new JPopupMenu();   // delete (agent)
-    pluginsMenu = new JPopupMenu(); // add plugin
-    pluginMenu = new JPopupMenu();  // delete (plugin)
-    assetMenu = new JPopupMenu();   // add property group, add parameter
-    propertyGroupMenu = new JPopupMenu();      // delete (property group)
-    defaultMenu = new JPopupMenu(); // add parameter
-    relationshipsMenu = new JPopupMenu(); // add relationship
-    propertyGroupsMenu = new JPopupMenu(); // add property group
+    societyMenu = new JPopupMenu();
+    baseComponentMenu = new JPopupMenu();
+    bindersMenu = new JPopupMenu();
+    pluginsMenu = new JPopupMenu();
+    assetMenu = new JPopupMenu();
+    propertyGroupsMenu = new JPopupMenu();
+    relationshipsMenu = new JPopupMenu();
     for (int i = 0; i < societyMenuItems.length; i++)
       societyMenu.add((Action)societyMenuItems[i]);
-    for (int i = 0; i < agentMenuItems.length; i++)
-      agentMenu.add((Action)agentMenuItems[i]);
+    for (int i = 0; i < baseComponentMenuItems.length; i++)
+      baseComponentMenu.add((Action)baseComponentMenuItems[i]);
+    for (int i = 0; i < bindersMenuItems.length; i++)
+      bindersMenu.add((Action)bindersMenuItems[i]);
     for (int i = 0; i < pluginsMenuItems.length; i++)
       pluginsMenu.add((Action)pluginsMenuItems[i]);
-    for (int i = 0; i < pluginMenuItems.length; i++)
-      pluginMenu.add((Action)pluginMenuItems[i]);
     for (int i = 0; i < assetMenuItems.length; i++)
       assetMenu.add((Action)assetMenuItems[i]);
-    for (int i = 0; i < relationshipsMenuItems.length; i++)
-      relationshipsMenu.add((Action)relationshipsMenuItems[i]);
     for (int i = 0; i < propertyGroupsMenuItems.length; i++)
       propertyGroupsMenu.add((Action)propertyGroupsMenuItems[i]);
-    for (int i = 0; i < propertyGroupMenuItems.length; i++)
-      propertyGroupMenu.add((Action)propertyGroupMenuItems[i]);
-    for (int i = 0; i < defaultMenuItems.length; i++)
-      defaultMenu.add((Action)defaultMenuItems[i]);
+    for (int i = 0; i < relationshipsMenuItems.length; i++)
+      relationshipsMenu.add((Action)relationshipsMenuItems[i]);
     configCompPanel.setLeftComponent(new JScrollPane(tree));
     propertyTable = new PropertyTable(isEditable);
     // don't allow user to reorder columns
@@ -343,7 +316,6 @@ public class PropertyEditorPanel extends JPanel
     }
     configCompPanel.setRightComponent(rightPanel);
     componentToConfigure.addPropertiesListener(this);
-    propertyEditorPanelListener = this;
     configCompPanel.validate();
     configCompPanel.setDividerLocation(200);
   }
@@ -534,6 +506,7 @@ public class PropertyEditorPanel extends JPanel
     if (path == null) return;
     Object o = path.getLastPathComponent();
     if (o instanceof PropertyTreeNode) {
+      // stop any editing in progress in table and accept the value
       stopEditing();
       propertyTable.removeAll(); // clear what was displayed
       if (event.isAddedPath())   // display parameters for new selection
@@ -561,11 +534,11 @@ public class PropertyEditorPanel extends JPanel
     Object o = nodeToComponent.get(selPath.getLastPathComponent());
     if (o instanceof SocietyComponent)
       societyMenu.show(tree, x, y);
-    else if (o instanceof AgentComponent)
-      agentMenu.show(tree, x, y);
     else if (o instanceof ContainerComponent) {
       String name = ((ModifiableComponent)o).getShortName();
-      if (name.equals("Plugins"))
+      if (name.equals("Binders"))
+        bindersMenu.show(tree, x, y);
+      else if (name.equals("Plugins"))
         pluginsMenu.show(tree, x, y);
       else if (name.equals("Relationships"))
         relationshipsMenu.show(tree, x, y);
@@ -573,12 +546,10 @@ public class PropertyEditorPanel extends JPanel
         propertyGroupsMenu.show(tree, x, y);
     } else if (o instanceof AssetComponent)
       assetMenu.show(tree, x, y);
-    else if (o instanceof PluginComponent)
-      pluginMenu.show(tree, x, y);
-    else if (o instanceof PropGroupComponent)
-      propertyGroupMenu.show(tree, x, y);
-    else
-      defaultMenu.show(tree, x, y); // add parameter
+    else if (o instanceof BaseComponent)
+      baseComponentMenu.show(tree, x, y);
+    else if (log.isErrorEnabled())
+      log.error("No menu for component of class: " + o);
   }
 
   /**
@@ -589,10 +560,11 @@ public class PropertyEditorPanel extends JPanel
    * Query the user for the name of the agent.
    * Create a component for the agent, and a tree node
    * representing the agent, and add it to the society node in the tree.
-   * Create components and add tree nodes for Plugins and AssetData.
+   * Create components and add tree nodes for Binders, Plugins and AssetData
+   * folders.
    */
 
-  public void addAgent() {
+  private void addAgent() {
     String name = 
       (String)JOptionPane.showInputDialog(this, "Enter Agent Name", 
                                           "Agent Name",
@@ -610,32 +582,32 @@ public class PropertyEditorPanel extends JPanel
     PropertyTreeNode agentNode = createTreeNode(agentComponent, selNode);
     agentComponent.initProperties();
     society.addChild(agentComponent);
-
-    ContainerComponent pluginContainer = 
-      (ContainerComponent)new ContainerBase("Plugins");
-    createTreeNode(pluginContainer, agentNode);
-    pluginContainer.initProperties();
-    agentComponent.addChild(pluginContainer);
-
+    tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(agentNode));
+    addContainerComponent(agentComponent, "Binders");
+    addContainerComponent(agentComponent, "Plugins");
     AssetComponent asset = (AssetComponent)new AssetUIComponent();
     PropertyTreeNode assetNode = createTreeNode(asset, agentNode);
     asset.initProperties();
     agentComponent.addChild(asset);
-
-    ContainerComponent pgContainer =
-      (ContainerComponent)new ContainerBase("Property Groups");
-    createTreeNode(pgContainer, assetNode);
-    pgContainer.initProperties();
-    asset.addChild(pgContainer);
-
-    ContainerComponent relContainer =
-      (ContainerComponent)new ContainerBase("Relationships");
-    createTreeNode(relContainer, assetNode);
-    relContainer.initProperties();
-    asset.addChild(relContainer);
+    addContainerComponent(asset, "Property Groups");
+    addContainerComponent(asset, "Relationships");
   }
 
-  public void removeAgent() {
+  private void addContainerComponent(BaseComponent parent, String name) {
+    ContainerComponent containerComponent = 
+      (ContainerComponent)new ContainerBase(name);
+    createTreeNode(containerComponent, 
+       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+    containerComponent.initProperties();
+    parent.addChild(containerComponent);
+  }
+
+  /**
+   * Remove base component from parent
+   * and remove tree branch or node representing that base component.
+   */
+
+  private void removeBaseComponent() {
     DefaultMutableTreeNode selNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     ModifiableComponent cc = 
@@ -646,7 +618,34 @@ public class PropertyEditorPanel extends JPanel
     removeTreeNodes(selNode);
   }
 
-  public void addPlugin() {
+  /**
+   * Query the user for the name of the binder.
+   * Create a component for the binder, and a tree node
+   * representing the binder, and add it to the agent node in the tree.
+   */
+
+  private void addBinder() {
+    String name = 
+      (String)JOptionPane.showInputDialog(this, "Enter Binder Name",
+                                          "Binder Name",
+                                          JOptionPane.QUESTION_MESSAGE,
+                                          null, null, "");
+    if (name == null)
+      return;
+    name = name.trim();
+    if (name.length() == 0)
+      return;
+    BinderComponent binder = new BinderBase(name);
+    addBaseComponent(binder);
+  }
+
+  /**
+   * Query the user for the name of the plugin.
+   * Create a component for the plugin, and a tree node
+   * representing the plugin, and add it to the agent node in the tree.
+   */
+
+  private void addPlugin() {
     // get plugins from all existing agents
     Enumeration components = componentToNode.keys();
     ArrayList pluginNames = new ArrayList();
@@ -656,32 +655,22 @@ public class PropertyEditorPanel extends JPanel
       if (o instanceof PluginComponent) {
         PluginComponent plugin = (PluginComponent)o;
         String name = ((BaseComponent)plugin).getShortName();
+        // if name is prefixed with an agentname|, strip it off
+        int index = name.indexOf('|');
+        if (index != -1)
+          name = name.substring(index+1);
         if (!pluginNames.contains(name)) {
           pluginNames.add(name);
           pluginClasses.add(plugin.getPluginClassName());
         }
       }
     }
-    JPanel panel = new JPanel(new GridBagLayout());
     ArrayList sortedNames = (ArrayList)pluginNames.clone();
     Collections.sort(sortedNames);
-    JComboBox cb = new JComboBox(sortedNames.toArray());
-    cb.setEditable(true);
-    cb.setPreferredSize(new Dimension(200, 
-                                      (int)cb.getPreferredSize().getHeight()));
-    int x = 0;
-    int y = 0;
-    panel.add(cb,
-              new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.HORIZONTAL,
-                                     new Insets(0, 0, 0, 5), 0, 0));
-    int result = JOptionPane.showConfirmDialog(this, panel, "Plugin",
-                                               JOptionPane.OK_CANCEL_OPTION,
-                                               JOptionPane.PLAIN_MESSAGE);
-    if (result != JOptionPane.OK_OPTION)
+    String name = 
+      (String)ComboDialog.showDialog(this, "Plugin", new Vector(sortedNames));
+    if (name == null)
       return;
-    String name = (String)cb.getSelectedItem();
     name = name.trim();
     if (name.length() == 0)
       return;
@@ -694,38 +683,35 @@ public class PropertyEditorPanel extends JPanel
         (String)JOptionPane.showInputDialog(this, "Enter Plugin Class Name",
                                             "Plugin Class Name",
                                             JOptionPane.QUESTION_MESSAGE,
-                                            null, null, "");
+                                            null, null, className);
       if (className == null) return;
       className = className.trim(); // trim white space
       if (className.length() == 0) return;
     }
     PluginComponent plugin = 
       (PluginComponent)new PluginBase(name, className);
-    DefaultMutableTreeNode selNode =
-      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-    DefaultMutableTreeNode pluginNode = createTreeNode(plugin, selNode);
-    plugin.initProperties();
-    ModifiableComponent cc = 
-      (ModifiableComponent)nodeToComponent.get(selNode);
-    cc.addChild(plugin);
-    // select the new node
-    tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(pluginNode));
+    addBaseComponent(plugin);
   }
 
-  public void removePlugin() {
+  /**
+   * Add base component to the component in the selected node.
+   * Init the properties of the base component.
+   * Make the new component be the selected node.
+   */
+  private void addBaseComponent(BaseComponent bc) {
     DefaultMutableTreeNode selNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-    ModifiableComponent cc = 
-      (ModifiableComponent)nodeToComponent.get(selNode);
-    Object parent = cc.getParent();
-    ((ModifiableComponent)parent).removeChild(cc);
-    removeTreeNodes(selNode);
+    DefaultMutableTreeNode newNode = createTreeNode(bc, selNode);
+    bc.initProperties();
+    BaseComponent parentBC = (BaseComponent)nodeToComponent.get(selNode);
+    parentBC.addChild(bc);
+    tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(newNode));
   }
 
   /**
    * Create component and tree node for new property group.
    */
-  public void addPropertyGroup() {
+  private void addPropertyGroup() {
     if (propertyGroups == null) {
       propertyGroups = new Vector(wellKnownPropertyGroups.length);
       for (int i = 0; i < wellKnownPropertyGroups.length; i++)
@@ -741,23 +727,15 @@ public class PropertyEditorPanel extends JPanel
       if (pgName.length() == 0)
         return;
     }
-    DefaultMutableTreeNode selNode =
-      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     PropGroupData pgData = new PropGroupData(pgName);
     PropGroupComponent pg = (PropGroupComponent)new PropGroupBase(pgData);
-    DefaultMutableTreeNode pgNode = createTreeNode(pg, selNode);
-    pg.initProperties();
+    addBaseComponent(pg);
     // for each of the well defined properties
     // add the appropriate parameters
     if (index >= 0 && index < wellKnownPropertyGroups.length)
       setParameters(pg, index);
     else
       propertyGroups.add(pgName); // user defined property group
-    ModifiableComponent cc =
-      (ModifiableComponent)nodeToComponent.get(selNode);
-    cc.addChild(pg);
-    // select the new node
-    tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(pgNode));
   }
 
   /**
@@ -788,13 +766,7 @@ public class PropertyEditorPanel extends JPanel
     relData.setType("");
     relData.setRole("");
     RelationshipComponent relationship = new RelationshipBase(relData);
-    DefaultMutableTreeNode relNode = createTreeNode(relationship, selNode);
-    relationship.initProperties();
-    ModifiableComponent cc =
-      (ModifiableComponent)nodeToComponent.get(selNode);
-    cc.addChild(relationship);
-    // select the new node
-    tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(relNode));
+    addBaseComponent(relationship);
   }
 
   /**
@@ -836,16 +808,6 @@ public class PropertyEditorPanel extends JPanel
     }
   }
 
-  public void removePropertyGroup() {
-    DefaultMutableTreeNode selNode =
-      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-    ModifiableComponent cc = 
-      (ModifiableComponent)nodeToComponent.get(selNode);
-    Object parent = cc.getParent();
-    ((ModifiableComponent)parent).removeChild(cc);
-    removeTreeNodes(selNode);
-  }
-
   /**
    * Add a parameter to a configurable component.  Invoked when the
    * user selects a tree node and invokes the "Add Parameter" option from
@@ -855,7 +817,7 @@ public class PropertyEditorPanel extends JPanel
    * to update the user interface.
    */
 
-  public void addParameter() {
+  private void addParameter() {
     String name =
       (String)JOptionPane.showInputDialog(this, "Enter Parameter Name",
                                           "Parameter Name",
@@ -879,7 +841,7 @@ public class PropertyEditorPanel extends JPanel
    * Return the new tree node.
    */
 
-  private PropertyTreeNode createTreeNode(ModifiableComponent component,
+  private PropertyTreeNode createTreeNode(BaseComponent component,
                                           DefaultMutableTreeNode parentNode) {
     PropertyTreeNode newNode = new PropertyTreeNode(component.getFullName());
     if (component instanceof AssetComponent || 
@@ -912,7 +874,7 @@ public class PropertyEditorPanel extends JPanel
   }
 
   /**
-   * Stop any editing in progress, and accept the value.
+   * Stop editing in table and accept changes.
    */
 
   public void stopEditing() {
@@ -928,53 +890,5 @@ public class PropertyEditorPanel extends JPanel
     ois.defaultReadObject();
     createLogger();
   }
-
-//    public void addParameter() {
-//      DefaultMutableTreeNode selNode =
-//        (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-//      ModifiableComponent cc = 
-//        (ModifiableComponent)nodeToComponent.get(selNode);
-//      JPanel panel = new JPanel(new GridBagLayout());
-//      int x = 0;
-//      int y = 0;
-//      panel.add(new JLabel("Parameter Name:"),
-//                new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-//                                       GridBagConstraints.WEST,
-//                                       GridBagConstraints.NONE,
-//                                       new Insets(0, 5, 0, 5), 0, 0));
-//      JTextField nameField = new JTextField(20);
-//      panel.add(nameField,
-//                new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
-//                                       GridBagConstraints.WEST,
-//                                       GridBagConstraints.HORIZONTAL,
-//                                       new Insets(0, 5, 0, 5), 0, 0));
-//      x = 0;
-//      panel.add(new JLabel("Parameter Type:"),
-//                new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-//                                       GridBagConstraints.WEST,
-//                                       GridBagConstraints.NONE,
-//                                       new Insets(0, 5, 0, 5), 0, 0));
-//      Object[] types = { "Integer", "String" };
-//      JComboBox cb = new JComboBox(types);
-//      panel.add(cb,
-//                new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
-//                                       GridBagConstraints.WEST,
-//                                       GridBagConstraints.HORIZONTAL,
-//                                       new Insets(0, 5, 0, 5), 0, 0));
-//      int result = JOptionPane.showConfirmDialog(this, panel, "New Parameter",
-//                                                 JOptionPane.OK_CANCEL_OPTION,
-//                                                 JOptionPane.PLAIN_MESSAGE);
-//      if (result != JOptionPane.OK_OPTION)
-//        return;
-//      String name = nameField.getText();
-//      name = name.trim(); // trim white space
-//      if (name == null || name.length() == 0) return;
-//      Property p = cc.addProperty(name, "");
-//      String type = (String)cb.getSelectedItem();
-//      if (type.equals("String"))
-//        p.setPropertyClass(String.class);
-//      else if (type.equals("Integer"))
-//        p.setPropertyClass(Integer.class);
-//    }
 
 }
