@@ -296,10 +296,13 @@ public class PDbBase {
 	CompositeName pname = (CompositeName) j.next();
 	Property prop = rc.getProperty(pname);
 	if (prop == null) {
-	  if (log.isErrorEnabled()) {
-	    log.error("Saving recipe " + rc.getRecipeName() + " under ID " + recipeId + " couldn't find property " + pname + ". Will continue.", new Throwable());
-	  }
-	  continue;
+          prop = rc.getInvisibleProperty(pname);
+          if (prop == null) {
+            if (log.isErrorEnabled()) {
+              log.error("Saving recipe " + rc.getRecipeName() + " under ID " + recipeId + " couldn't find property " + pname + ". Will continue.", new Throwable());
+            }
+            continue;
+          }
 	}
 	Object val = prop.getValue();
 	if (val == null) continue; // Don't write null values

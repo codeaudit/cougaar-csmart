@@ -206,6 +206,9 @@ public interface Property extends Serializable {
    */
   Property setHelp(URL url);
 
+  void setVisible(boolean visible);
+  boolean isVisible();
+
   // For debugging
   void printProperty(PrintStream out);
   void printProperty(PrintStream out, String indent);

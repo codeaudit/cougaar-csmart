@@ -109,6 +109,9 @@ public interface BaseComponent extends ComposableComponent, Serializable {
    */
   Property getProperty(String localName);
 
+  Property getInvisibleProperty(CompositeName name);
+  Property getInvisibleProperty(String localName);
+
   /**
    * Add a property with a given value. A new Property is created
    * having the given name and value. In addition the other fields of

@@ -42,6 +42,7 @@ public abstract class PropertyBase implements Property {
   private String tooltip;
   private URL help;
   private transient Logger log;
+  private boolean visible = true;
 
   /**
    * Creates a new <code>PropertyBase</code> instance.
@@ -90,6 +91,14 @@ public abstract class PropertyBase implements Property {
   public Property setHelp(URL url) {
     help = url;
     return this;
+  }
+
+  public void setVisible(boolean visible) {
+    this.visible = visible;
+  }
+
+  public boolean isVisible() {
+    return visible;
   }
 
   public void addPropertyListener(PropertyListener l) {

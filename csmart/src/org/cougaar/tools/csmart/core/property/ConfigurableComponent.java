@@ -73,7 +73,6 @@ public abstract class ConfigurableComponent
   private static int nameCount = 0;
   private ComponentName myName;
   private boolean nameChangeMark = false;
-  private static Object nullProperty = new NullProperty();
 
   private transient EventListenerList listeners = null;
 
@@ -551,6 +550,43 @@ public abstract class ConfigurableComponent
   }
 
   /**
+   * Get an invisible property which is not returned by <code>getProperty</code>.
+   * Use this method only when absolutely necessary.
+   * Returns null if no invisible property exists with the specified name. 
+   *
+   * @param name 
+   * @return a <code>Property</code> value
+   */
+  public Property getInvisibleProperty(CompositeName name) {
+    Property prop = (Property) getMyProperties().get(name);
+    if (prop != null) {
+      if(prop.isVisible()) return null;
+      return prop;
+    }
+
+    for (int i = 0, n = getChildCount(); i < n; i++) {
+      Property result = 
+        ((ConfigurableComponent)getChild(i)).getInvisibleProperty(name);
+      if (result != null) {
+        return result;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Get an invisible property which is not returned by <code>getProperty</code>.
+   * Use this method only when absolutely necessary.
+   * Returns null if no invisible property exists with the specified name. 
+   *
+   * @param localName 
+   * @return a <code>Property</code> value
+   */
+  public Property getInvisibleProperty(String localName){
+    return getProperty(new ComponentName(this, localName));
+  }
+
+  /**
    * Get a property by name.
    *
    * @param name the name of the property.
@@ -768,7 +804,7 @@ public abstract class ConfigurableComponent
               ((ConfigurableComponent)getChild(nextChildIndex++)).getPropertyNames();
           }
           pendingName = (CompositeName) currentIterator.next();
-          if (pendingName != null && getProperty(pendingName) == nullProperty) {
+          if (pendingName != null && !((Property)getProperty(pendingName)).isVisible()) {
             pendingName = null;
           }
         }
@@ -807,12 +843,45 @@ public abstract class ConfigurableComponent
                 ((ConfigurableComponent)getChild(nextChildIndex++)).getProperties();
             }
 	    
-	    Object nprop = currentIterator.next();
-            if (nprop == nullProperty) {
+	    Property nprop = (Property)currentIterator.next();
+            if (!nprop.isVisible()) {
               pendingProp = null;
             } else {
-	      pendingProp = (Property)nprop;
+	      pendingProp = nprop;
 	    }
+          }
+          return true;
+        }
+        
+        public Object next() {
+          if (pendingProp == null && !hasNext())
+            throw new NoSuchElementException();
+          Object result = pendingProp;
+          pendingProp = null;
+          return result;
+        }
+        public void remove() {
+          throw new UnsupportedOperationException();
+        }
+      };
+  }
+
+  public Iterator getAllProperties() {
+    return new Iterator() {
+        Iterator currentIterator = getMyProperties().values().iterator();
+        int nextChildIndex = 0;
+        Property pendingProp = null;
+        public boolean hasNext() {
+          while (pendingProp == null) {
+            while (!currentIterator.hasNext()) {
+              if (nextChildIndex >= getChildCount()) {
+                return false;
+              }
+              currentIterator = 
+                ((ConfigurableComponent)getChild(nextChildIndex++)).getProperties();
+            }
+	    
+	    pendingProp = (Property)currentIterator.next();
           }
           return true;
         }
@@ -837,17 +906,16 @@ public abstract class ConfigurableComponent
    **/
   public void setPropertyVisible(Property prop, boolean newVisible) {
     CompositeName name = prop.getName();
+    Property p = null;
     if (newVisible) {
-      Object np = getMyProperties().get(name);
-      if (nullProperty.equals(np)) {
-        getMyProperties().remove(name);
-        firePropertyAdded(prop);
-      }
+      p = (Property) getMyProperties().get(name);
+      if (!p.isVisible()) firePropertyAdded(prop);
     } else {
-      Object np = getMyProperties().put(name, nullProperty);
-      if (!nullProperty.equals(np))
-        firePropertyRemoved(prop);
+      p = (Property)getMyProperties().get(name);
+      if (p.isVisible()) firePropertyRemoved(prop);
     }
+    p.setVisible(newVisible);
+    getMyProperties().put(name, p);
   }
 
   /**
@@ -859,8 +927,8 @@ public abstract class ConfigurableComponent
    */
 
   public boolean isPropertyVisible(Property prop) {
-    Object np = getMyProperties().get(prop.getName());
-    return !nullProperty.equals(np);
+    Property p = (Property)getMyProperties().get(prop.getName());
+    return p.isVisible();
   }
 
   /**
@@ -894,21 +962,24 @@ public abstract class ConfigurableComponent
       CompositeName name = (CompositeName)iter.next();
       Property myProp = getProperty(name);
       if (myProp == null) {
-	if (log.isErrorEnabled()) {
-	  log.error("Null property " + name.toString() + " copying from " + this.getFullName().toString(), new Throwable());
-	}
-	continue;
+        // Try to get invisible Property.
+        myProp = getInvisibleProperty(name);
+        if (myProp == null) {
+          if (log.isErrorEnabled()) {
+            log.error("Null property " + name.toString() + " copying from " + this.getFullName().toString(), new Throwable());
+          }
+          continue;
+        }
       }
       // compose the correct name for the property
       // name must be prepended by new society name
       String s = name.last().toString();
       ComponentName hisPropName = new ComponentName(result, s);
       Property hisProp = result.getProperty(hisPropName);
-      if (hisProp == null) {
-	if (log.isErrorEnabled()) {
-	  log.error("Report bug 1377: Using " + CSMART.writeDebug() + " couldn't find " + hisPropName.toString() + " in " + result.getFullName().toString() + " copying from " + name.toString() + " in " + this.getFullName().toString(), new Throwable());
-	}
-	// FIXME: Try creating it?
+      if (hisProp == null && ((hisProp = result.getInvisibleProperty(hisPropName)) == null )) {
+        if (log.isErrorEnabled()) {
+          log.error("Report bug 1377: Using " + CSMART.writeDebug() + " couldn't find " + hisPropName.toString() + " in " + result.getFullName().toString() + " copying from " + name.toString() + " in " + this.getFullName().toString(), new Throwable());
+        }
       } else {
 	try {
 	  // if have experimental values, then copy those
