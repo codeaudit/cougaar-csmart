@@ -83,10 +83,6 @@ public class SlowMessageTransportServiceProxy
     mt.registerClient(wrappedClient);
   }
 
-  public void addMessageTransportWatcher(MessageTransportWatcher watcher) {
-    mt.addMessageTransportWatcher(watcher);
-  }
-
   public String getIdentifier() {
     return mt.getIdentifier();
   }
