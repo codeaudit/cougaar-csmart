@@ -1,77 +1,77 @@
 MOD_RECIPE_LIB_ID,ARG_NAME,ARG_ORDER,ARG_VALUE,BLANK
-"RECIPE-CSMART-Servlets","MobilityServlet",13.000000000000000000000000000000,"false"
-"RECIPE-CSMART-Servlets","TopologyServlet",12.000000000000000000000000000000,"true"
-"RECIPE-CSMART-Servlets","LogisticsInventoryServlet",11.000000000000000000000000000000,"false"
-"RECIPE-CSMART-Servlets","DataGathererServlet",10.000000000000000000000000000000,"false"
-"RECIPE-CSMART-Servlets","CommunityProviderServlet",9.000000000000000000000000000000,"true"
-"RECIPE-CSMART-Servlets","LoaderServletComponent",8.000000000000000000000000000000,"false"
-"RECIPE-CSMART-Servlets","HierarchyServlet",7.000000000000000000000000000000,"false"
-"RECIPE-CSMART-Servlets","CompletionServlet",6.000000000000000000000000000000,"false"
-"RECIPE-CSMART-Servlets","SearchServlet",5.000000000000000000000000000000,"true"
-"RECIPE-CSMART-Servlets","AgentInfoServlet",4.000000000000000000000000000000,"true"
-"RECIPE-CSMART-Servlets","PlanViewServlet",3.000000000000000000000000000000,"false"
-"RECIPE-CSMART-Servlets","PlanServlet",2.000000000000000000000000000000,"true"
-"RECIPE-CSMART-Servlets","Target Agent Selection Query",1.000000000000000000000000000000,"recipeQueryAllAgents"
-"RECIPE-CSMART-Servlets","MetricsServlet",0.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","MobilityServlet",13.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","TopologyServlet",12.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","LogisticsInventoryServlet",11.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","DataGathererServlet",10.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","CommunityProviderServlet",9.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","LoaderServletComponent",8.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","HierarchyServlet",7.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","CompletionServlet",6.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","SearchServlet",5.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","AgentInfoServlet",4.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","PlanViewServlet",3.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","PlanServlet",2.000000000000000000000000000000,"true"
-"RECIPE-Default-Servlets","Target Agent Selection Query",1.000000000000000000000000000000,"recipeQueryAllAgents"
-"RECIPE-Default-Servlets","MetricsServlet",0.000000000000000000000000000000,"true"
-"RECIPE-NdMvPin","Class Name",2.000000000000000000000000000000,"org.cougaar.core.mobility.service.RootMobilityPlugin"
-"RECIPE-NdMvPin","Component Name",4.000000000000000000000000000000,"org.cougaar.core.mobility.service.RootMobilityPlugin"
-"RECIPE-NdMvPin","Component Priority",0.000000000000000000000000000000,"COMPONENT"
-"RECIPE-NdMvPin","Number of Arguments",1.000000000000000000000000000000,"0"
-"RECIPE-NdMvPin","Target Component Selection Query",3.000000000000000000000000000000,"recipeQueryAllNodes"
-"RECIPE-NdMvPin","Type of Insertion",5.000000000000000000000000000000,"plugin"
-"RECIPE-AgMvPin","Class Name",2.000000000000000000000000000000,"org.cougaar.core.mobility.service.RedirectMovePlugin"
-"RECIPE-AgMvPin","Component Name",4.000000000000000000000000000000,"org.cougaar.core.mobility.service.RedirectMovePlugin"
-"RECIPE-AgMvPin","Component Priority",0.000000000000000000000000000000,"COMPONENT"
-"RECIPE-AgMvPin","Number of Arguments",1.000000000000000000000000000000,"0"
-"RECIPE-AgMvPin","Target Component Selection Query",3.000000000000000000000000000000,"recipeQueryAllAgents"
-"RECIPE-AgMvPin","Type of Insertion",5.000000000000000000000000000000,"plugin"
-"RECIPE-CommPin","Class Name",2.000000000000000000000000000000,"org.cougaar.community.CommunityPlugin"
-"RECIPE-CommPin","Component Name",4.000000000000000000000000000000,"org.cougaar.community.CommunityPlugin"
-"RECIPE-CommPin","Component Priority",0.000000000000000000000000000000,"COMPONENT"
-"RECIPE-CommPin","Number of Arguments",1.000000000000000000000000000000,"0"
-"RECIPE-CommPin","Target Component Selection Query",3.000000000000000000000000000000,"recipeQueryAllAgentsAndNodeAgents"
-"RECIPE-CommPin","Type of Insertion",5.000000000000000000000000000000,"plugin"
-"RECIPE-Enable47FSBLogging","Agent Query",0.000000000000000000000000000000,"recipeQuery47FSBAgent"
-"RECIPE-Enable47FSBLogging","Parameter",1.000000000000000000000000000000,"ENABLE_CSV_LOGGING=true"
-"RECIPE-Enable47FSBLogging","Plugin Name",2.000000000000000000000000000000,"org.cougaar.logistics.plugin.inventory.InventoryPlugin"
-"RECIPE-FallingBehindConditionServlet","Class Name",0.000000000000000000000000000000,"org.cougaar.logistics.servlet.ConditionComponent"
-"RECIPE-FallingBehindConditionServlet","Component Name",1.000000000000000000000000000000,"FallingBehindConditionServlet"
-"RECIPE-FallingBehindConditionServlet","Component Priority",2.000000000000000000000000000000,"COMPONENT"
-"RECIPE-FallingBehindConditionServlet","Number of Arguments",3.000000000000000000000000000000,"3"
-"RECIPE-FallingBehindConditionServlet","Target Component Selection Query",4.000000000000000000000000000000,"recipeQueryAllAgents"
-"RECIPE-FallingBehindConditionServlet","Type of Insertion",5.000000000000000000000000000000,"plugin"
-"RECIPE-FallingBehindConditionServlet","Value 1",6.000000000000000000000000000000,"org.cougaar.logistics.servlet.ConditionServlet"
-"RECIPE-FallingBehindConditionServlet","Value 2",7.000000000000000000000000000000,"/FallingBehindConditionSettingServlet"
-"RECIPE-FallingBehindConditionServlet","Value 3",8.000000000000000000000000000000,"conditionName=FallingBehind"
-"RECIPE-OplanEditServlet","Class Name",0.000000000000000000000000000000,"org.cougaar.logistics.servlet.OplanEditServlet"
-"RECIPE-OplanEditServlet","Component Name",1.000000000000000000000000000000,"org.cougaar.logistics.servlet.OplanEditServlet"
-"RECIPE-OplanEditServlet","Component Priority",2.000000000000000000000000000000,"COMPONENT"
-"RECIPE-OplanEditServlet","Number of Arguments",3.000000000000000000000000000000,"2"
-"RECIPE-OplanEditServlet","Target Component Selection Query",4.000000000000000000000000000000,"recipeQueryNCAAgent"
-"RECIPE-OplanEditServlet","Type of Insertion",5.000000000000000000000000000000,"plugin"
-"RECIPE-OplanEditServlet","Value 1",6.000000000000000000000000000000,"org.cougaar.logistics.servlet.OplanEditServlet"
-"RECIPE-OplanEditServlet","Value 2",7.000000000000000000000000000000,"/editOplan"
-"RECIPE-OSCUniversalAllocator","Class Name",0.000000000000000000000000000000,"org.cougaar.mlm.plugin.sample.UniversalAllocatorPlugin"
-"RECIPE-OSCUniversalAllocator","Component Name",1.000000000000000000000000000000,"OSCUniversalAllocatorPlugin"
-"RECIPE-OSCUniversalAllocator","Component Priority",2.000000000000000000000000000000,"COMPONENT"
-"RECIPE-OSCUniversalAllocator","Number of Arguments",5.000000000000000000000000000000,"2"
-"RECIPE-OSCUniversalAllocator","Target Component Selection Query",3.000000000000000000000000000000,"recipeQueryOSCAgent"
-"RECIPE-OSCUniversalAllocator","Type of Insertion",4.000000000000000000000000000000,"plugin"
-"RECIPE-OSCUniversalAllocator","Value 1",6.000000000000000000000000000000,"ProjectSupply"
-"RECIPE-OSCUniversalAllocator","Value 2",7.000000000000000000000000000000,"Supply"
-"RECIPE-OSCAmmoPacker","Assembly Id",0.000000000000000000000000000000,"RCP-OSCAmmoPacker"
-"RECIPE-OSCAmmoPacker","Target Component Selection Query",1.000000000000000000000000000000,"recipeQueryOSCAgent"
+"RECIPE-CSMART-Servlets","MobilityServlet",13.000000000000000000000000000000,"false",
+"RECIPE-CSMART-Servlets","TopologyServlet",12.000000000000000000000000000000,"true",
+"RECIPE-CSMART-Servlets","LogisticsInventoryServlet",11.000000000000000000000000000000,"false",
+"RECIPE-CSMART-Servlets","DataGathererServlet",10.000000000000000000000000000000,"false",
+"RECIPE-CSMART-Servlets","CommunityProviderServlet",9.000000000000000000000000000000,"true",
+"RECIPE-CSMART-Servlets","LoaderServletComponent",8.000000000000000000000000000000,"false",
+"RECIPE-CSMART-Servlets","HierarchyServlet",7.000000000000000000000000000000,"false",
+"RECIPE-CSMART-Servlets","CompletionServlet",6.000000000000000000000000000000,"false",
+"RECIPE-CSMART-Servlets","SearchServlet",5.000000000000000000000000000000,"true",
+"RECIPE-CSMART-Servlets","AgentInfoServlet",4.000000000000000000000000000000,"true",
+"RECIPE-CSMART-Servlets","PlanViewServlet",3.000000000000000000000000000000,"false",
+"RECIPE-CSMART-Servlets","PlanServlet",2.000000000000000000000000000000,"true",
+"RECIPE-CSMART-Servlets","Target Agent Selection Query",1.000000000000000000000000000000,"recipeQueryAllAgents",
+"RECIPE-CSMART-Servlets","MetricsServlet",0.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","MobilityServlet",13.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","TopologyServlet",12.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","LogisticsInventoryServlet",11.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","DataGathererServlet",10.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","CommunityProviderServlet",9.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","LoaderServletComponent",8.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","HierarchyServlet",7.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","CompletionServlet",6.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","SearchServlet",5.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","AgentInfoServlet",4.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","PlanViewServlet",3.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","PlanServlet",2.000000000000000000000000000000,"true",
+"RECIPE-Default-Servlets","Target Agent Selection Query",1.000000000000000000000000000000,"recipeQueryAllAgents",
+"RECIPE-Default-Servlets","MetricsServlet",0.000000000000000000000000000000,"true",
+"RECIPE-NdMvPin","Class Name",2.000000000000000000000000000000,"org.cougaar.core.mobility.service.RootMobilityPlugin",
+"RECIPE-NdMvPin","Component Name",4.000000000000000000000000000000,"org.cougaar.core.mobility.service.RootMobilityPlugin",
+"RECIPE-NdMvPin","Component Priority",0.000000000000000000000000000000,"COMPONENT",
+"RECIPE-NdMvPin","Number of Arguments",1.000000000000000000000000000000,"0",
+"RECIPE-NdMvPin","Target Component Selection Query",3.000000000000000000000000000000,"recipeQueryAllNodes",
+"RECIPE-NdMvPin","Type of Insertion",5.000000000000000000000000000000,"plugin",
+"RECIPE-AgMvPin","Class Name",2.000000000000000000000000000000,"org.cougaar.core.mobility.service.RedirectMovePlugin",
+"RECIPE-AgMvPin","Component Name",4.000000000000000000000000000000,"org.cougaar.core.mobility.service.RedirectMovePlugin",
+"RECIPE-AgMvPin","Component Priority",0.000000000000000000000000000000,"COMPONENT",
+"RECIPE-AgMvPin","Number of Arguments",1.000000000000000000000000000000,"0",
+"RECIPE-AgMvPin","Target Component Selection Query",3.000000000000000000000000000000,"recipeQueryAllAgents",
+"RECIPE-AgMvPin","Type of Insertion",5.000000000000000000000000000000,"plugin",
+"RECIPE-CommPin","Class Name",2.000000000000000000000000000000,"org.cougaar.community.CommunityPlugin",
+"RECIPE-CommPin","Component Name",4.000000000000000000000000000000,"org.cougaar.community.CommunityPlugin",
+"RECIPE-CommPin","Component Priority",0.000000000000000000000000000000,"COMPONENT",
+"RECIPE-CommPin","Number of Arguments",1.000000000000000000000000000000,"0",
+"RECIPE-CommPin","Target Component Selection Query",3.000000000000000000000000000000,"recipeQueryAllAgentsAndNodeAgents",
+"RECIPE-CommPin","Type of Insertion",5.000000000000000000000000000000,"plugin",
+"RECIPE-Enable47FSBLogging","Agent Query",0.000000000000000000000000000000,"recipeQuery47FSBAgent",
+"RECIPE-Enable47FSBLogging","Parameter",1.000000000000000000000000000000,"ENABLE_CSV_LOGGING=true",
+"RECIPE-Enable47FSBLogging","Plugin Name",2.000000000000000000000000000000,"org.cougaar.logistics.plugin.inventory.InventoryPlugin",
+"RECIPE-FallingBehindConditionServlet","Class Name",0.000000000000000000000000000000,"org.cougaar.logistics.servlet.ConditionComponent",
+"RECIPE-FallingBehindConditionServlet","Component Name",1.000000000000000000000000000000,"FallingBehindConditionServlet",
+"RECIPE-FallingBehindConditionServlet","Component Priority",2.000000000000000000000000000000,"COMPONENT",
+"RECIPE-FallingBehindConditionServlet","Number of Arguments",3.000000000000000000000000000000,"3",
+"RECIPE-FallingBehindConditionServlet","Target Component Selection Query",4.000000000000000000000000000000,"recipeQueryAllAgents",
+"RECIPE-FallingBehindConditionServlet","Type of Insertion",5.000000000000000000000000000000,"plugin",
+"RECIPE-FallingBehindConditionServlet","Value 1",6.000000000000000000000000000000,"org.cougaar.logistics.servlet.ConditionServlet",
+"RECIPE-FallingBehindConditionServlet","Value 2",7.000000000000000000000000000000,"/FallingBehindConditionSettingServlet",
+"RECIPE-FallingBehindConditionServlet","Value 3",8.000000000000000000000000000000,"conditionName=FallingBehind",
+"RECIPE-OplanEditServlet","Class Name",0.000000000000000000000000000000,"org.cougaar.logistics.servlet.OplanEditServlet",
+"RECIPE-OplanEditServlet","Component Name",1.000000000000000000000000000000,"org.cougaar.logistics.servlet.OplanEditServlet",
+"RECIPE-OplanEditServlet","Component Priority",2.000000000000000000000000000000,"COMPONENT",
+"RECIPE-OplanEditServlet","Number of Arguments",3.000000000000000000000000000000,"2",
+"RECIPE-OplanEditServlet","Target Component Selection Query",4.000000000000000000000000000000,"recipeQueryNCAAgent",
+"RECIPE-OplanEditServlet","Type of Insertion",5.000000000000000000000000000000,"plugin",
+"RECIPE-OplanEditServlet","Value 1",6.000000000000000000000000000000,"org.cougaar.logistics.servlet.OplanEditServlet",
+"RECIPE-OplanEditServlet","Value 2",7.000000000000000000000000000000,"/editOplan",
+"RECIPE-OSCUniversalAllocator","Class Name",0.000000000000000000000000000000,"org.cougaar.mlm.plugin.sample.UniversalAllocatorPlugin",
+"RECIPE-OSCUniversalAllocator","Component Name",1.000000000000000000000000000000,"OSCUniversalAllocatorPlugin",
+"RECIPE-OSCUniversalAllocator","Component Priority",2.000000000000000000000000000000,"COMPONENT",
+"RECIPE-OSCUniversalAllocator","Number of Arguments",5.000000000000000000000000000000,"2",
+"RECIPE-OSCUniversalAllocator","Target Component Selection Query",3.000000000000000000000000000000,"recipeQueryOSCAgent",
+"RECIPE-OSCUniversalAllocator","Type of Insertion",4.000000000000000000000000000000,"plugin",
+"RECIPE-OSCUniversalAllocator","Value 1",6.000000000000000000000000000000,"ProjectSupply",
+"RECIPE-OSCUniversalAllocator","Value 2",7.000000000000000000000000000000,"Supply",
+"RECIPE-OSCAmmoPacker","Assembly Id",0.000000000000000000000000000000,"RCP-OSCAmmoPacker",
+"RECIPE-OSCAmmoPacker","Target Component Selection Query",1.000000000000000000000000000000,"recipeQueryOSCAgent",

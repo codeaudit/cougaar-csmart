@@ -1,2 +1,2 @@
 ASSEMBLY_ID,COMPONENT_ALIB_ID,ARGUMENT,ARGUMENT_ORDER,BLANK
-"RCP-OSCAmmoPacker","OSCAmmoPacker|org.cougaar.mlm.plugin.generic.GenericTablePlugin","IOC_allocation_rules.xml",1
+"RCP-OSCAmmoPacker","OSCAmmoPacker|org.cougaar.mlm.plugin.generic.GenericTablePlugin","IOC_allocation_rules.xml",1,

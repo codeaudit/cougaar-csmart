@@ -1,11 +1,11 @@
 MOD_RECIPE_LIB_ID,NAME,JAVA_CLASS,DESCRIPTION,BLANK
-"RECIPE-CSMART-Servlets","CSMART_Servlets","org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe","Add CSMART Society Monitor Servlets to Agents"
-"RECIPE-Default-Servlets","Default_Servlets","org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe","Add all basic Servlets to Agents"
-"RECIPE-NdMvPin","NodeMobilityPlugin","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","Add Mobility Plugin to Node Agents"
-"RECIPE-AgMvPin","AgentMobilityPlugin","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","Add Mobility Plugin to Agents"
-"RECIPE-CommPin","CommunityPlugin","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","Add Community Plugin to Agents and NodeAgents"
-"RECIPE-Enable47FSBLogging","Enable 47-FSB Logging","org.cougaar.tools.csmart.recipe.ParameterInsertionRecipe","AL servlet-Enable Logging at 47-FSB"
-"RECIPE-FallingBehindConditionServlet","FallingBehindConditionServlet","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","AL servlet"
-"RECIPE-OplanEditServlet","OplanEditServlet","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe",Add Servlet to Edit Oplan"
-"RECIPE-OSCUniversalAllocator","OSCUniversalAllocatorPlugin","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","Add UniversalAllocator to OSC for Ammo"
-"RECIPE-OSCAmmoPacker","OSCAmmoPacker","org.cougaar.tools.csmart.recipe.ComponentCollectionRecipe","Add AmmoPacker to OSC"
+"RECIPE-CSMART-Servlets","CSMART_Servlets","org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe","Add CSMART Society Monitor Servlets to Agents",
+"RECIPE-Default-Servlets","Default_Servlets","org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe","Add all basic Servlets to Agents",
+"RECIPE-NdMvPin","NodeMobilityPlugin","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","Add Mobility Plugin to Node Agents",
+"RECIPE-AgMvPin","AgentMobilityPlugin","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","Add Mobility Plugin to Agents",
+"RECIPE-CommPin","CommunityPlugin","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","Add Community Plugin to Agents and NodeAgents",
+"RECIPE-Enable47FSBLogging","Enable 47-FSB Logging","org.cougaar.tools.csmart.recipe.ParameterInsertionRecipe","AL servlet-Enable Logging at 47-FSB",
+"RECIPE-FallingBehindConditionServlet","FallingBehindConditionServlet","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","AL servlet",
+"RECIPE-OplanEditServlet","OplanEditServlet","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe",Add Servlet to Edit Oplan",
+"RECIPE-OSCUniversalAllocator","OSCUniversalAllocatorPlugin","org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe","Add UniversalAllocator to OSC for Ammo",
+"RECIPE-OSCAmmoPacker","OSCAmmoPacker","org.cougaar.tools.csmart.recipe.ComponentCollectionRecipe","Add AmmoPacker to OSC",
