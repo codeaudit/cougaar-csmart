@@ -57,7 +57,6 @@ public class SocietyDBComponent
     "A Society created from the database: Agents, Binders, Plugins, etc.";
 
   private boolean isRunning = false;
-  private boolean editable = true;
   private static final String QUERY_AGENT_NAMES = "queryAgentNames";
 
   private Map substitutions;
@@ -126,22 +125,6 @@ public class SocietyDBComponent
   public void setName(String newName) {
     super.setName(newName);
     fireModification();
-  }
-
-  /**
-   * Returns whether or not the society can be edited.
-   * @return true if society can be edited and false otherwise
-   */
-  public boolean isEditable() {
-    return editable;
-  }
-
-  /**
-   * Set whether or not the society can be edited.
-   * @param editable true if society is editable and false otherwise
-   */
-  public void setEditable(boolean editable) {
-    this.editable = editable;
   }
 
   /**
