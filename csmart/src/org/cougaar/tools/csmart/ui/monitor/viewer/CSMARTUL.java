@@ -105,8 +105,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   // default agent port
   public static int agentPort = 8800;
   // node component argument that specifies alternate port
-  public static String AGENT_PORT = "org.cougaar.lib.web.http.port";
-  // FIXME: Need also the https version!!!
+  public static String AGENT_HTTP_PORT = "org.cougaar.lib.web.http.port";
+  public static String AGENT_HTTPS_PORT = "org.cougaar.lib.web.https.port";
 
   // maps host to port
   private static CSMARTAgentMap agentMap;
@@ -292,14 +292,14 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
         Properties arguments = nodes[j].getArguments();
         if (arguments == null)
           continue;
-        String port = arguments.getProperty(AGENT_PORT);
+        String port = arguments.getProperty(AGENT_HTTP_PORT);
         if (port != null) {
           try {
             agentPort = Integer.parseInt(port);
             break; // have host and specific port
           } catch (Exception e) {
             if (log.isErrorEnabled())
-              log.error("Exception parsing " + AGENT_PORT + " : ", e);
+              log.error("Exception parsing " + AGENT_HTTP_PORT + " : ", e);
           }
         }
       }

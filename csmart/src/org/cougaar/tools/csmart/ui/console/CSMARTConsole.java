@@ -82,8 +82,8 @@ public class CSMARTConsole extends JFrame {
   // number of characters displayed in the node output window
   private static final int DEFAULT_VIEW_SIZE = 300000; // 60 pages of text or 300K
 
-  // CSMART only knows how to talk http for now
-  private String GLS_PROTOCOL = "http";
+  private String GLS_PROTOCOL = "http"; // default protocol for GLSClient
+  private String GLS_SECURE_PROTOCOL = "https";
 
   // Servlet to look for in initializing GLS window
   private static final String GLS_SERVLET = "org.cougaar.mlm.plugin.organization.GLSInitServlet";
@@ -974,8 +974,7 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * Get the agent URL (http://host:port/$agentname)
-   * for the agent named "NCA" in the experiment.
+   * Get the agent URL for the agent named "NCA" in the experiment.
    */
   private String getOPlanAgentURL(String agent) {
     if (agent == null || agent.equals(""))
@@ -986,29 +985,55 @@ public class CSMARTConsole extends JFrame {
       for (int j = 0; j < nodes.length; j++) {
         AgentComponent[] agents = nodes[j].getAgents();
         for (int k = 0; k < agents.length; k++) {
-          if (agents[k].getShortName().equals(agent)) {
-            int port = CSMARTUL.agentPort;
-            Properties arguments = nodes[j].getArguments();
-            if (arguments != null) {
-              String s = arguments.getProperty(CSMARTUL.AGENT_PORT);
-              if (s != null) {
-                try {
-                  port = Integer.parseInt(s);
-                } catch (Exception e) {
-                  if (log.isErrorEnabled())
-                    log.error("Exception parsing " + CSMARTUL.AGENT_PORT 
-                              + " : ", e);
-                }
-              }
-            }
-	    // FIXME Somebody better set GLS_PROTOCOL to be the right thing, based on 
-	    // whether security is needed
-            return GLS_PROTOCOL + "://" + hosts[i].getShortName() + ":" + port + "/$" + agent;
-          }
+          if (agents[k].getShortName().equals(agent))
+            return getURL(hosts[i].getShortName(), agent, 
+                          nodes[j].getArguments());
         }
       }
     }
     return null;
+  }
+
+  /**
+   * Look for a definition of the https port, and if it exists, 
+   * use https and the port number;
+   * else look for a definition of http port, and if it exists,
+   * use http and the port number;
+   * else use http and the default port number.
+   */
+  private String getURL(String hostName, String agentName,
+                        Properties arguments) {
+    String defaultURL = 
+      GLS_PROTOCOL + "://" + hostName + ":" + CSMARTUL.agentPort + "/$" + agentName;
+    if (arguments == null)
+      return defaultURL;
+    String s = arguments.getProperty(CSMARTUL.AGENT_HTTPS_PORT);
+    int port = 0;
+    if (s != null) {
+      try {
+        port = Integer.parseInt(s);
+      } catch (Exception e) {
+        if (log.isErrorEnabled()) {
+          log.error("Exception parsing " + CSMARTUL.AGENT_HTTPS_PORT 
+                    + " : ", e);
+        }
+        return defaultURL;
+      }
+      return GLS_SECURE_PROTOCOL + "://" + hostName + ":" + port + "/$" + agentName;
+    }
+    s = arguments.getProperty(CSMARTUL.AGENT_HTTP_PORT);
+    if (s != null) {
+      try {
+        port = Integer.parseInt(s);
+      } catch (Exception e) {
+        if (log.isErrorEnabled()) {
+          log.error("Exception parsing " + CSMARTUL.AGENT_HTTP_PORT);
+        }
+        return defaultURL;
+      }
+      return GLS_PROTOCOL + "://" + hostName + ":" + port + "/$" + agentName;
+    }
+    return defaultURL;
   }
 
   private boolean haveMoreTrials() {
