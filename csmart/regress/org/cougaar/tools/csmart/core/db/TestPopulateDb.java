@@ -34,8 +34,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import junit.framework.*;
-import org.cougaar.core.agent.ClusterImpl;
+import org.cougaar.core.agent.Agent;
+import org.cougaar.core.agent.SimpleAgent;
 import org.cougaar.core.component.*;
+import org.cougaar.core.plugin.PluginBase;
 import org.cougaar.core.node.*;
 import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.util.DBConnectionPool;
@@ -52,9 +54,9 @@ import java.awt.Container;
  **/
 
 public class TestPopulateDb extends TestCase {
-    public static final String AGENT_CLASS = ClusterImpl.class.getName();
-    public static final String AGENT_INSERTION_POINT = "Node.AgentManager.Agent";
-    public static final String AGENT_TYPE = "agent";
+    public static final String AGENT_CLASS = SimpleAgent.class.getName();
+    public static final String AGENT_INSERTION_POINT = Agent.INSERTION_POINT;
+    public static final String AGENT_TYPE = ComponentData.AGENT;
     public static final String CMT_TYPE = "REGRESSION-CMT";
     public static final String HNA_TYPE = "REGRESSION-HNA";
     public static final String CSMI_TYPE = "REGRESSION-CSMI";
@@ -78,10 +80,10 @@ public class TestPopulateDb extends TestCase {
     public static final String INSERT_TRIAL_EXPT = "insertTrialExpt";
     public static final String INSERT_TRIAL_TRIAL = "insertTrialTrial";
     public static final String NODE_CLASS = Node.class.getName();
-    public static final String NODE_INSERTION_POINT = "Node";
-    public static final String NODE_TYPE = "node";
-    public static final String PLUGIN_INSERTION_POINT = "Node.AgentManager.Agent.PluginManager.Plugin";
-    public static final String PLUGIN_TYPE = "plugin";
+    public static final String NODE_INSERTION_POINT = Node.INSERTION_POINT;
+    public static final String NODE_TYPE = ComponentData.NODE;
+    public static final String PLUGIN_INSERTION_POINT = PluginBase.INSERTION_POINT;
+    public static final String PLUGIN_TYPE = ComponentData.PLUGIN;
     public static final String QUERY_ALL_TABLE_COLUMNS = "queryAllTableColumns";
     public static final String QUERY_FILE = "TestPopulateDb.q";
     public static final String QUERY_LIB_COMPONENT = "queryLibComponent";
@@ -365,7 +367,7 @@ public class TestPopulateDb extends TestCase {
                 for (int j = 0; j < agentData.pluginData.length; j++) {
                     PluginData pluginData = agentData.pluginData[j];
                     insertLibComponent(dbConnection,
-                                       "plugin|" + pluginData.className,
+                                       PLUGIN_TYPE + "|" + pluginData.className,
                                        PLUGIN_TYPE,
                                        pluginData.className,
                                        PLUGIN_INSERTION_POINT);
