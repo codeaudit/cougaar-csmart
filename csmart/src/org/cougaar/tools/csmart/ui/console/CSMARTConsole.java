@@ -140,6 +140,7 @@ public class CSMARTConsole extends JFrame {
   // gui controls
   ButtonGroup statusButtons;
   JToggleButton attachButton;
+  JMenuItem attachMenuItem;
   JToggleButton runButton;
   JToggleButton stopButton;
   JToggleButton abortButton;
@@ -147,6 +148,12 @@ public class CSMARTConsole extends JFrame {
   JProgressBar trialProgressBar; // indicates how many trials have been run
   JPanel buttonPanel; // contains status buttons
   JPopupMenu nodeMenu; // pop-up menu on node status button
+
+
+  JMenuItem deleteMenuItem;
+  JMenuItem displayMenuItem;
+  JMenuItem killAllMenuItem;
+
   private static Dimension HGAP10 = new Dimension(10,1);
   private static Dimension HGAP5 = new Dimension(5,1);
   private static Dimension VGAP30 = new Dimension(1,30);
@@ -172,6 +179,7 @@ public class CSMARTConsole extends JFrame {
   private static final String VIEW_APP_SERVER_ITEM = "View";
   private static final String ADD_APP_SERVER_ITEM = "Add...";
   private static final String DELETE_APP_SERVER_ITEM = "Delete...";
+  private static final String ATTACH_AS_ITEM = "Attach...";
   private static final String KILL_ALL_PROCS_ITEM = "Kill Any Nodes";
   private static final String REFRESH_APP_SERVER_ITEM = "Refresh";
   private static final String SET_POLL_INTERVAL_ITEM = "Set Poll Interval";
@@ -259,6 +267,10 @@ public class CSMARTConsole extends JFrame {
 	  public void run() {
 	    if (appServerSupport.haveNewNodes())
 	      JOptionPane.showMessageDialog(null, "There are new nodes!");
+	    // If there are no AppServers, 
+	    // disable the View and Delete and Kill All menu items
+	    // and the attach Button
+	    updateASControls();
 	  }
 	};
       
@@ -317,6 +329,28 @@ public class CSMARTConsole extends JFrame {
 
   private void createLogger() {
     log = CSMART.createLogger(this.getClass().getName());
+  }
+
+  private void updateASControls() {
+    if (appServerSupport.haveValidAppServers()) {
+      displayMenuItem.setEnabled(true);
+      deleteMenuItem.setEnabled(true);
+      if (appServerSupport.thereAreRunningNodes()) {
+	killAllMenuItem.setEnabled(true);
+	attachButton.setEnabled(true);
+	attachMenuItem.setEnabled(true);
+      } else {
+	attachButton.setEnabled(false);
+	attachMenuItem.setEnabled(false);
+	killAllMenuItem.setEnabled(false);
+      }
+    } else {
+      attachButton.setEnabled(false);
+      attachMenuItem.setEnabled(false);
+      displayMenuItem.setEnabled(false);
+      deleteMenuItem.setEnabled(false);
+      killAllMenuItem.setEnabled(false);
+    }
   }
 
   private void initGui() {
@@ -431,7 +465,8 @@ public class CSMARTConsole extends JFrame {
 
     JMenu appServerMenu = new JMenu(APP_SERVER_MENU);
     appServerMenu.setToolTipText("Display, add, and delete list of Application Servers.");
-    JMenuItem displayMenuItem = new JMenuItem(VIEW_APP_SERVER_ITEM);
+
+    displayMenuItem = new JMenuItem(VIEW_APP_SERVER_ITEM);
     displayMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           appServerSupport.displayAppServers();
@@ -439,15 +474,19 @@ public class CSMARTConsole extends JFrame {
       });
     displayMenuItem.setToolTipText("Display list of Application Servers.");
     appServerMenu.add(displayMenuItem);
+
     JMenuItem addMenuItem = new JMenuItem(ADD_APP_SERVER_ITEM);
     addMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           appServerSupport.addAppServer();
+	  appServerSupport.refreshAppServers();
+	  updateASControls();
         }
       });
     addMenuItem.setToolTipText("Add an Application Server.");
     appServerMenu.add(addMenuItem);
-    JMenuItem deleteMenuItem = new JMenuItem(DELETE_APP_SERVER_ITEM);
+
+    deleteMenuItem = new JMenuItem(DELETE_APP_SERVER_ITEM);
     deleteMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           appServerSupport.deleteAppServers();
@@ -456,9 +495,27 @@ public class CSMARTConsole extends JFrame {
     deleteMenuItem.setToolTipText("Ignore Application Servers.");
     appServerMenu.add(deleteMenuItem);
 
-    JMenuItem killAllMenuItem = new JMenuItem(KILL_ALL_PROCS_ITEM);
+    attachMenuItem = new JMenuItem(ATTACH_AS_ITEM);
+    attachMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          attachButton_actionPerformed();
+        }
+      });
+    attachMenuItem.setToolTipText("Attach to any new Running Nodes.");
+    appServerMenu.add(attachMenuItem);
+
+    killAllMenuItem = new JMenuItem(KILL_ALL_PROCS_ITEM);
     killAllMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
+	  int result = JOptionPane.showConfirmDialog(CSMARTConsole.this, "Really kill all running Nodes on all known AppServers?", 
+						     "Kill All Nodes",
+						     JOptionPane.OK_CANCEL_OPTION);
+	  if (result == JOptionPane.CANCEL_OPTION)
+	    return;
+
+	  if (log.isDebugEnabled())
+	    log.debug("Killing all Nodes!");
+
 	  // First, kill anything this console knows about
 	  if (abortButton != null && abortButton.isEnabled())
 	    abortButton_actionPerformed();
@@ -473,6 +530,7 @@ public class CSMARTConsole extends JFrame {
     refreshMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           appServerSupport.refreshAppServers();
+	  updateASControls();
         }
       });
     refreshMenuItem.setToolTipText("Refresh list of Application Servers");
@@ -722,6 +780,9 @@ public class CSMARTConsole extends JFrame {
     initRunButton();
     stopButton.setEnabled(false);
     abortButton.setEnabled(false);
+
+
+    updateASControls();
 
     // add a WindowListener: Do an exit to kill the Nodes
     // If this window is closing
@@ -1248,7 +1309,7 @@ public class CSMARTConsole extends JFrame {
 //      if (society != null && !society.isSelfTerminating())
 //        stopAllNodes(); // manually stop society immediately
   }
-
+  
   /**
    * Abort all nodes.
    */
@@ -1385,6 +1446,9 @@ public class CSMARTConsole extends JFrame {
 
     // if not running, enable the run button, and don't select it
     // if running, disable the run button and select it
+    // FIXME: This means the run button will be disabled
+    // if I attach to some nodes but have not started my experiment?
+    // see end of the attach method
     runButton.setEnabled(!isRunning && haveMoreTrials());
     runButton.setSelected(isRunning);
 
@@ -1502,6 +1566,8 @@ public class CSMARTConsole extends JFrame {
     runButton.setEnabled(true);
     currentTrial = -1;
     experimentTimer.stop();
+    // AMH - FIXME
+    //    usingExperiment = false;
   }
 
 
@@ -1759,7 +1825,12 @@ public class CSMARTConsole extends JFrame {
         doRun = true;
     } // end synchronized
 
-    if (doRun) {
+    // If only have one Node, restarting the node is the same as hitting Run
+    // EXCEPT: If we have an Experiment but aren't running it
+    // and had attached to a single Node which we are trying to restart
+    // then don't treat that the same
+    // as hitting Run
+    if ((experiment == null || usingExperiment) && doRun) {
       runButton_actionPerformed();
       return null; // return null, caller (ConsoleInternalFrame) is going away
     }
@@ -1837,6 +1908,8 @@ public class CSMARTConsole extends JFrame {
         synchronized (runningNodesLock) {
           runningNodes.put(nodeName, remoteNode);
         } // end synchronized
+	// AMH - FIXME
+	//	updateControls(true);
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
@@ -1860,8 +1933,12 @@ public class CSMARTConsole extends JFrame {
     // things to attach to is up-to-date
     appServerSupport.haveNewNodes();
     ArrayList nodesToAttach = appServerSupport.getNodesToAttach();
-    if (nodesToAttach == null)
+    if (nodesToAttach == null || nodesToAttach.isEmpty()) {
+      JOptionPane.showMessageDialog(this, "No New Nodes to Attach To.", 
+				    "Attach", JOptionPane.PLAIN_MESSAGE);
       return;
+    }
+
     for (int i = 0; i < nodesToAttach.size(); i++) {
       NodeInfo nodeInfo = (NodeInfo)nodesToAttach.get(i);
       boolean haveAlready = false;
@@ -1941,6 +2018,13 @@ public class CSMARTConsole extends JFrame {
       desktop.addNodeFrame(frame, nci.nodeName);
     }
     updateControls(true);
+
+    // If have an experiment to run
+    // but have not run it yet, make that possible still
+    if (! usingExperiment && experiment != null) {
+      runButton.setEnabled(true);
+      runButton.setSelected(false);
+    }
   }
 
   private void startTimers() {
@@ -2488,6 +2572,7 @@ public class CSMARTConsole extends JFrame {
         appServerSupport.addAppServerForExperiment(hostName, properties);
       }
     }
+    appServerSupport.refreshAppServers();
   }
 
   /**
