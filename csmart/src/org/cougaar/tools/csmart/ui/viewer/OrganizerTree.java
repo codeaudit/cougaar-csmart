@@ -194,7 +194,6 @@ public class OrganizerTree extends DNDTree {
    * @param o the object to drag
    */
   public Transferable makeDraggableObject(Object o) {
-    Transferable tran = null;
     if (o instanceof DefaultMutableTreeNode) {
       DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
       return new MyTransferable(node);

@@ -125,7 +125,6 @@ public class ClientServletUtil {
                                                       ArrayList parameterNames,
                                                       ArrayList parameterValues,
                                                       int limit) {
-    Collection results = null;
     if (agentURLs == null || agentURLs.size() == 0)
       return null;
 

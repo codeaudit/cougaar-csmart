@@ -555,7 +555,7 @@ public class CSMART extends JFrame {
        */
       public void update(Observable o, Object arg) {
         if (o instanceof NamedFrame) {
-          NamedFrame namedFrame = (NamedFrame) o;
+	  //          NamedFrame namedFrame = (NamedFrame) o;
           NamedFrame.Event event = (NamedFrame.Event) arg;
           if (event.eventType == NamedFrame.Event.ADDED) {
             JMenuItem menuItem = new JMenuItem(event.title);

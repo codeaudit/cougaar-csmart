@@ -847,7 +847,6 @@ public class OrganizerHelper {
             Constructor con = null;
             try {
               Class cls = Class.forName(rs.getString(3));
-              Class[] args = {String.class, String.class};
               con = cls.getConstructor(new Class[] {String.class, String.class, String.class});
               
             } catch(Exception e) {

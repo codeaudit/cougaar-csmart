@@ -393,7 +393,6 @@ public class CMTDialog extends JDialog {
   }
 
   public static void main(String[] args) {
-    ArrayList trialNames = new ArrayList();
     CMTDialog d = new CMTDialog(null, null, "ExperimentName", "ExperimentID");
     d.show();
   }

@@ -812,7 +812,7 @@ public class Organizer extends JScrollPane {
     DefaultMutableTreeNode node = getSelectedNode();
     DefaultMutableTreeNode parentNode = 
       (DefaultMutableTreeNode)node.getParent();
-    int index = parentNode.getIndex(node);
+    //    int index = parentNode.getIndex(node);
     SocietyComponent society = (SocietyComponent) node.getUserObject();
     String originalName = society.getSocietyName();
     String newName = getUniqueSocietyName(originalName, true);
@@ -857,7 +857,7 @@ public class Organizer extends JScrollPane {
     DefaultMutableTreeNode node = getSelectedNode();
     DefaultMutableTreeNode parentNode = 
       (DefaultMutableTreeNode)node.getParent();
-    int index = parentNode.getIndex(node);
+    //    int index = parentNode.getIndex(node);
     final RecipeComponent recipe = (RecipeComponent) node.getUserObject();
     String originalName = recipe.getRecipeName();
     String newName = getUniqueRecipeName(originalName, true);
@@ -1097,7 +1097,7 @@ public class Organizer extends JScrollPane {
     DefaultMutableTreeNode expNode = 
       addExperimentToWorkspace(experiment, node);
     SocietyComponent societyComponent = experiment.getSocietyComponent();
-    String societyName = societyComponent.getSocietyName();
+
     if (!isInWorkspace(societyComponent))
       addSocietyToWorkspace(societyComponent, node);
     RecipeComponent[] recipes = experiment.getRecipeComponents();
@@ -2173,7 +2173,6 @@ public class Organizer extends JScrollPane {
   ///////////////////////////////////////
 
   private void restore(String fileName) {
-    PropertyListener l = null;
     try {
       File f = new File(fileName);
       this.workspaceFileName = f.getPath();
@@ -2220,7 +2219,7 @@ public class Organizer extends JScrollPane {
       root.setUserObject(rootName);
       model = new DefaultTreeModel(root);
       //      model = createModel(this, root);
-      Class[] noTypes = new Class[0];
+
       try {
         experimentNames.init(root, Experiment.class, "getExperimentName");
         societyNames.init(root, SocietyComponent.class, "getSocietyName");
