@@ -2,10 +2,76 @@ CSMART Release Notes
 
 Release 9.4.1:
 This release includes bug fixes and feature enhancements to support UL
-fall integration not available in time for the 9.4 release.
+fall integration not available in time for the 9.4 release. In
+particular, this release changes the database table names, and the
+Plugins used in the default society configurations, so that they use
+the UL Adaptive Logistics Plugins. You should reload your database.
 
-- Renamed mysqldump.9.2.txt to mysqldump.txt (the content has not
-  changed).
+- Renamed mysqldump.9.2.txt to mysqldump.txt. Also added new tables to
+  this dump that are required by new adaptive logistics Plugins.
+- Database table names have been shorted, removing extraneous v4 and
+  v6 prefixes. Recipe or experiment exports must be processed to
+  remove the "v4_" from the beginning of table names. Use the script
+  provided in csmart/bin to do so.
+- Removed use of old logistics Plugins in the included 1AD societies,
+  replacing them with the new, adaptive Plugins. After reloading your
+  CSMART database, you must include the new adaptive jar file in your
+  CIP/lib.
+- Adding additional servlets is no longer possible via the Servlet
+  Insertion Recipe. To add additional servlets, use the Specific
+  Insertion Recipe. (Bug 1521)
+- Added a new recipe "Complete Agent" that allows the creation of an Agent
+  including all plugins, relationships and asset data in one GUI
+  configurable recipe.
+- Unsupported feature: INI files dumped from the Experiment Builder
+  now _may_ be runnable, with one small edit. You must edit the Agent
+  INI file that contains the GLSInitServlet, usually named
+  "NCA". Follow the instructions in the comment. Note however that you
+  must have previously saved your Experiment to the database. Again,
+  this functionality is not fully supported.
+- Upgraded to latest version of JCChart library (renaming jar file to
+  jcchart.jar). Be sure you have the latest cougaar-support.zip
+- Note that since, as of 9.4, Agent Insertion Recipes always include
+  an OrgAsset, that if you import such a recipe from a prior release,
+  you will see some errors when you load it from the database:
+11:48:17,870 ERROR [AgentInsertionRecipe] - Unknown property: Include Item
+Identification PG=true in component AGG-Agent
+11:48:17,877 ERROR [AgentInsertionRecipe] - Unknown property: Include Org
+Asset=true in component AGG-Agent
+  You should ignore these errors. But you should then edit your
+  recipe, to fill in all the attributes of the Agent and its new
+  OrgAsset (bug 1594).
+- Added a Community Plugin recipe to base experiments. By including
+  this recipe, all Agents and Node Agents will get the Community
+  Plugin, allowing full Community and ABA support in all Agents and
+  Nodes by default (bug 1587).
+- Console (aka Experiment Controller) has new menu items and
+  functionality, to support "discovery" of new Nodes that are created
+  on an AppServer by a process other than CSMART. By selecting
+  "Attach", users can discover new Nodes (or Nodes that had died
+  / become disconnected, and have re-appeared) and choose to "attach"
+  to them, at which point CSMART will allow monitoring these Nodes as
+  though CSMART had started them originally. Note that if your CSMART
+  process dies, all Nodes will continue to run. You must either
+  restart your AppServers, or use CSMART to connect to the AppServers
+  and kill the Nodes.
+- The menu items in the Organizer and Experiment Builder have been
+  split up, for ease of use. No functionality has changed. (Bug 1581)
+- You may now import a communities.xml file into your experiment (bug
+  1454), augmenting any existing community definition for that
+  experiment. (Courtesy of Mobile Intelligence, Inc).
+- When dumping out INI files, a communities.xml file is also generated
+  (bug 1453, also courtesty of Mobile Intelligence, Inc).
+- Database load scripts are now generated
+  from ER/Studio files, which themselves are available in the
+  csmart/data/database directory. This change is transparent to the
+  user.
+- Bug 1596: OrgAssets created using the AgentInsertionRecipe were
+  missing the ClusterPG and ItemIdentificationPG, resulting in runtime
+  Exceptions.
+- Speed up stopping a run, by talking to each node in parallel (bug
+  1416).
+- Experiment export scripts now export communities correctly (bug 1563).
 - If CSMART crashes, and you were using the workspace file, bring
   components back as fully editable and usable as possible.
 - When renaming a Recipe, change only the name in the database rather
@@ -18,55 +84,6 @@ fall integration not available in time for the 9.4 release.
 - When configuring a Society from scratch in the Configuration
   Builder, give the user an editable drop-down of all known Plugins or
   Binders in the database, not just those in the Society so far (bug 1443).
-- Adding aditional servlets is no longer possible via the Servlet Insertion Recipe.
-  To add additional servlets, use the Specific Insertion Recipe. (Bug
-  1521)
-- Experiment export scripts now export communities correctly (bug 1563).
-- Added a new recipe "Complete Agent" that allows the creation of a Agent(s)
-  including all plugins, relationships and asset data in one GUI
-  configurable recipe.
-- Unsupported feature: INI files dumped from the Experiment Builder
-  now _may_ be runnable, with one small edit. You must edit the Agent
-  INI file that contains the GLSInitServlet, usually named
-  "NCA". Follow the instructions in the comment. Note however that you
-  must have previously saved your Experiment to the database. Again,
-  this functionality is not fully supported.
-- Upgraded to latest version of JCChart library (renaming jar file to
-  jcchart.jar)
-- Note that since, as of 9.4, Agent Insertion Recipes always include
-  an OrgAsset, that if you import such a recipe from a prior release,
-  you will see some errors when you load it from the database:
-11:48:17,870 ERROR [AgentInsertionRecipe] - Unknown property: Include Item
-Identification PG=true in component AGG-Agent
-11:48:17,877 ERROR [AgentInsertionRecipe] - Unknown property: Include Org
-Asset=true in component AGG-Agent
-  You should ignore these errors. But you should then edit your
-  recipe, to fill in all the attributes of the Agent and its new
-  OrgAsset (bug 1594).
-- Bug 1596: OrgAssets created using the AgentInsertionRecipe were
-  missing the ClusterPG and ItemIdentificationPG, resulting in runtime
-  Exceptions.
-- Added a Community Plugin recipe to base experiments. By including
-  this recipe, all Agents and Node Agents will get the Community
-  Plugin, allowing full Community and ABA support in all Agents and
-  Nodes by default (bug 1587).
-- The menu items in the Organizer and Experiment Builder have been
-  split up, for ease of use. No functionality has changed. (Bug 1581)
-- Speed up stopping a run, by talking to each node in parallel (bug
-  1416).
-- Database table names have been shorted, removing extraneous v4 and
-  v6 prefixes. Recipe or experiment exports must be processed to
-  remove the "v4_" from the beginning of table names. Use the script
-  provided in csmart/bin to do so.
-- Database load scripts are now generated
-  from ER/Studio files, which themselves are available in the
-  csmart/data/database directory. This change is transparent to the
-  user.
-- You may now import a communities.xml file into your experiment (bug
-  1454), augmenting any existing community definition for that
-  experiment. (Courtesy of Mobile Intelligence, Inc).
-- When dumping out INI files, a communities.xml file is also generated
-  (bug 1453, also courtesty of Mobile Intelligence, Inc).
 
 Release 9.4:
 This release constitutes the last major Cougaar release for this
