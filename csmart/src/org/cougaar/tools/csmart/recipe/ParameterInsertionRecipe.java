@@ -105,13 +105,35 @@ public class ParameterInsertionRecipe extends ModifiableConfigurableComponent
   {
     String pluginAlib = data.getName() + "|" + propPluginName.getValue().toString();
 
+    // FIXME: Is the slot really NAME or CLASS or must it be the same?!!!
     if (targets.contains(pdb.getComponentAlibId(data))) {
       ComponentData[] children = data.getChildren();
       for (int i=0; i < children.length; i++ ) {        
-        if (children[i].getName().equals(pluginAlib)) {
+	//if (children[i].getName().equals(pluginAlib)) {
+	// Compare the plugins name, not the alib id, right?
+	if (children[i].getAlibID() != null && children[i].getAlibID().equals(pluginAlib)) {
+	  //	  System.out.println("Got match for pluginalibid: " + pluginAlib + " on child " + children[i].toString());
+          children[i].addParameter(propParameter.getValue().toString());
+          break;
+        } else if (children[i].getClassName().equals(propPluginName.getValue().toString())) {
+	  //System.out.println("Got match for plugin class: " + children[i].toString());
+	  // FIXME: If this agent has 2 plugins with the same class,
+	  // which do I do? This currently does the first only
 	  // FIXME: Make sure this parameter isnt already there?
           children[i].addParameter(propParameter.getValue().toString());
           break;
+        } else if (children[i].getName().equals(propPluginName.getValue().toString())) {
+	  //System.out.println("Got match for plugin name: " + children[i].toString());
+	  // FIXME: If this agent has 2 plugins with the same name,
+	  // which do I do? This currently does the first only
+	  // FIXME: Make sure this parameter isnt already there?
+          children[i].addParameter(propParameter.getValue().toString());
+          break;
+	  // Here is the broken original version....
+//  	} else if (children[i].getName().equals(pluginAlib)) {
+//  	  System.out.println("Got match AGAINST NAME(?) for pluginalibid: " + pluginAlib + " on child " + children[i].toString());
+//            children[i].addParameter(propParameter.getValue().toString());
+//            break;
         }        
       }
     }

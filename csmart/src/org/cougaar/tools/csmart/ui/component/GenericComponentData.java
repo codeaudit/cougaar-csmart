@@ -327,6 +327,10 @@ public class GenericComponentData implements ComponentData, Serializable {
   public boolean equals(Object o) {
     if (o instanceof GenericComponentData) {
       GenericComponentData that = (GenericComponentData)o;
+      // FIXME: Compare AlibIDs if they're both not null first?
+//        if (this.getAlibID() != null && that.getAlibID() != null) {
+//  	return (this.getAlibID().equals(that.getAlibID()));
+//        } else
       if (this.getName().equals(that.getName())) {
 	return true;
       }

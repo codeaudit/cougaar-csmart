@@ -958,7 +958,12 @@ public class PopulateDb extends PDbBase {
 		return data.getName();
 	      } else {
                 String agentName = anc.getName();
-                result = agentName + "|" + data.getClassName();
+		// Create the alibID using the component name, not the class
+		// This allows users to insert 2 items of same class at same point
+		// Note that if all the args are the same they really shouldnt
+		// do this.
+                //result = agentName + "|" + data.getClassName();
+                result = agentName + "|" + data.getName();
 	      }
             } else if (componentType.equals(ComponentData.NODEBINDER)) {
 	      ComponentData anc = findAncestorOfType(data, ComponentData.NODE);
@@ -966,7 +971,8 @@ public class PopulateDb extends PDbBase {
 		return data.getName();
 	      } else {
 		String nodeName = anc.getName();
-		result = nodeName + "|" + data.getClassName();
+		result = nodeName + "|" + data.getName();
+		//result = nodeName + "|" + data.getClassName();
 	      }
             } else if (componentType.equals(ComponentData.AGENTBINDER)) {
 	      ComponentData anc = findAncestorOfType(data, ComponentData.AGENT);
@@ -974,7 +980,8 @@ public class PopulateDb extends PDbBase {
 		return data.getName();
 	      } else {
                 String agentName = anc.getName();
-                result = agentName + "|" + data.getClassName();
+                result = agentName + "|" + data.getName();
+                //result = agentName + "|" + data.getClassName();
 	      }
             } else if (componentType.equals(ComponentData.SOCIETY)) {
                 result = ComponentData.SOCIETY + "|" + data.getName();
