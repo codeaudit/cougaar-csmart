@@ -303,6 +303,8 @@ public class AgentInsertionRecipe extends RecipeBase
   /**
    * Adds any new data to the global <code>ComponentData</code> tree.
    * No existing data is modified in this method.
+   * Warning: Assumes it is handed a ComponentData which contains
+   * all Agents below it.
    *
    * @param data Pointer to the Global <code>ComponentData</code> tree
    * @return an updated <code>ComponentData</code> value
