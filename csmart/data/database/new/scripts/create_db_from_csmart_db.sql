@@ -1,0 +1,57 @@
+-- The below commands create each given file with no headings
+
+-- lib_pg_attribute
+SELECT PG_ATTRIBUTE_LIB_ID,PG_NAME,ATTRIBUTE_NAME,ATTRIBUTE_TYPE,AGGREGATE_TYPE 
+INTO OUTFILE ":cip/csmart/data/database/new/raw_data/lib_pg_attribute_data.csv" 
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"' 
+LINES TERMINATED BY ",\n" FROM lib_pg_attribute;
+
+-- lib_organization
+SELECT ORG_ID,ORG_NAME,UIC,LAO.AGENT_ORG_CLASS 
+INTO OUTFILE ":cip/csmart/data/database/new/raw_data/lib_organization_data.csv" 
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"' 
+LINES TERMINATED BY ",\n" 
+FROM lib_organization, lib_agent_org LAO
+WHERE LAO.COMPONENT_LIB_ID = ORG_ID;
+
+-- org_relation
+SELECT ROLE,SUPPORTING_COMPONENT_ALIB_ID,SUPPORTED_COMPONENT_ALIB_ID,START_DATE,END_DATE
+INTO OUTFILE ":cip/csmart/data/database/new/raw_data/org_relation_data.csv" 
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"' 
+LINES TERMINATED BY ",\n"
+ FROM asb_agent_relation
+WHERE ASSEMBLY_ID = 'CMT-1AD-TRANS-CFW-GRP{ST1359}';
+
+-- org_pg_attr
+SELECT DISTINCT ORG_ID,PG_ATTRIBUTE_LIB_ID,ATTRIBUTE_VALUE,ATTRIBUTE_ORDER,START_DATE,END_DATE 
+INTO OUTFILE ":cip/csmart/data/database/new/raw_data/org_pg_attr_data.csv" 
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"' 
+LINES TERMINATED BY ",\n" FROM cfw_org_pg_attr;
+
+-- oplan_agent_attr
+SELECT DISTINCT OPLAN_ID,COMPONENT_ALIB_ID,COMPONENT_ID,START_CDAY,ATTRIBUTE_NAME,END_CDAY,ATTRIBUTE_VALUE
+INTO OUTFILE ":cip/csmart/data/database/new/raw_data/oplan_agent_attr_data.csv" 
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"' 
+LINES TERMINATED BY ",\n" FROM asb_oplan_agent_attr
+WHERE ASSEMBLY_ID = 'CMT-1AD-TRANS-CFW-GRP{ST1359}';
+
+-- oplan
+SELECT DISTINCT OPLAN_ID,OPERATION_NAME,PRIORITY,C0_DATE
+INTO OUTFILE ":cip/csmart/data/database/new/raw_data/oplan_data.csv" 
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"' 
+LINES TERMINATED BY ",\n" FROM asb_oplan
+WHERE ASSEMBLY_ID = 'CMT-1AD-TRANS-CFW-GRP{ST1359}';
+
+-- alploc
+SELECT DISTINCT ALPLOC_CODE,LOCATION_NAME,LATITUDE,LONGITUDE,INSTALLATION_TYPE_CODE
+INTO OUTFILE ":cip/csmart/data/database/new/raw_data/alploc_data.csv" 
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"' 
+LINES TERMINATED BY ",\n" FROM cfw_alploc;
+
