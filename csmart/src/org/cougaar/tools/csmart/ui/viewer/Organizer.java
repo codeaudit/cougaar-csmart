@@ -48,6 +48,7 @@ import org.cougaar.tools.csmart.societies.cmt.CMTSociety;
 import org.cougaar.tools.csmart.societies.database.DBUtils;
 import org.cougaar.tools.csmart.recipe.ComponentInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe;
+import org.cougaar.tools.csmart.recipe.AgentInsertionRecipe;
 
 /**
  * The Organizer holds all the component a user creates
@@ -90,6 +91,7 @@ public class Organizer extends JScrollPane {
     new ComboItem("Basic Metric", BasicMetric.class),
     new ComboItem("Component Insertion", ComponentInsertionRecipe.class),
     new ComboItem("Specific Insertion", SpecificInsertionRecipe.class),
+    new ComboItem("Agent Insertion", AgentInsertionRecipe.class),
     new ComboItem("Empty Metric", EmptyMetric.class),
     new ComboItem("ABCImpact", ABCImpact.class),
   };
@@ -1542,6 +1544,7 @@ public class Organizer extends JScrollPane {
             AgentComponent ac = agents[i];
             if (ac.getShortName().equals(aName)) {
               nodeComponent.addAgent(ac);
+              //System.out.println("Organizer:  Adding agent named:  " + ac.getShortName());
               break;
             }	    
           } 	  
@@ -1684,7 +1687,7 @@ public class Organizer extends JScrollPane {
         Object value = constructor.newInstance(new Object[] {propValue});
         prop.setValue(value);
       } catch (Exception e) {
-        System.err.println("[setRecipeComponentProperties] Caught exception: " + e);
+        System.err.println("Organizer: [setRecipeComponentProperties] Caught exception: " + e);
       }
     }
   }
@@ -1727,6 +1730,10 @@ public class Organizer extends JScrollPane {
                             + "|"
                             + originalExperimentName);
     experiment.setCloned(isCloned);
+
+    //to hold all potential agents
+    List agents = new ArrayList();  
+
     List recipes = checkForRecipes(trialId, experimentId);
     if (recipes.size() != 0) {
       Iterator metIter = recipes.iterator();
@@ -1734,16 +1741,25 @@ public class Organizer extends JScrollPane {
         DbRecipe dbRecipe = (DbRecipe) metIter.next();
         RecipeComponent mc = createRecipeComponent(dbRecipe.name, dbRecipe.cls);
         setRecipeComponentProperties(dbRecipe, mc);
+        AgentComponent[] recagents = mc.getAgents(); 
+        if (recagents != null && recagents.length > 0) {
+          agents.addAll(Arrays.asList(recagents));
+        }      
         experiment.addRecipe(mc);
         if (!recipeNames.contains(mc.getRecipeName())) {
           addRecipeToWorkspace(mc, node);
         }
       }
     }
+    AgentComponent[] socagents = soc.getAgents();
+    if (socagents!= null && socagents.length > 0) {
+      agents.addAll(Arrays.asList(socagents));
+    }
+    AgentComponent[] allagents = (AgentComponent[])agents.toArray(new AgentComponent[agents.size()]); 
 
     experiment.addSocietyComponent((SocietyComponent)soc);
     // Add all Nodes.
-    addAgents(experiment, nodes, soc.getAgents(), trialId, assemblyMatch);
+    addAgents(experiment, nodes, allagents, trialId, assemblyMatch);
     // Add all Hosts.
     Iterator hostIter = hosts.iterator();
     while (hostIter.hasNext()) {
