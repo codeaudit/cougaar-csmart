@@ -118,14 +118,36 @@ public class BinderBase
     self.setOwner(this);
     self.setParent(data);
 
-    data.setClassName(getBinderClassName());
+    self.setClassName(getBinderClassName());
     for(int i=0; i < nParameters; i++) {
-      data.addParameter(getProperty(PROP_PARAM + i).getValue());
+      self.addParameter(getProperty(PROP_PARAM + i).getValue());
     }
 
-    // Figure out the component name, making it unique
-    ComponentData[] children = data.getChildren();
-    String cname = data.getName() + "|" + getBinderClassName();
+
+    if (alreadyAdded(data, self)) {
+      if (log.isDebugEnabled()) {
+	log.debug(data + " already has plugin " + self);
+      }
+      return data;
+    }
+
+    self.setName(uniqueName(data, self));
+
+    data.addChildDefaultLoc(self);
+    return data;
+  }
+
+  // Helper method: Uniquely name a component for inclusion in 
+  // the given parent. Name is <parent name>|<class name>
+  // But if that is taken, try adding the first parameter
+  // If that too is taken, add the current number
+  // of children in the parent, ie the index at which
+  // this will likely be added
+  // Note: This method does not _set_ the name, only
+  // creates and returns it.
+  private String uniqueName(ComponentData parent, ComponentData self) {
+    ComponentData[] children = parent.getChildren();
+    String cname = parent.getName() + "|" + getBinderClassName();
     boolean addedparam = false;
     for (int i = 0; i < children.length; i++) {
       ComponentData kid = children[i];
@@ -140,10 +162,38 @@ public class BinderBase
 	}
       }
     }
-    self.setName(cname);
+    return cname;
+  }
 
-    data.addChildDefaultLoc(self);
-    return data;
+  // Helper method: Does the given parent already contain a component
+  // with the same class, type, and parameters
+  // Does not check its children or leaf data
+  private boolean alreadyAdded(ComponentData parent, ComponentData self) {
+    ComponentData[] children = parent.getChildren();
+    for (int i = 0; i < children.length; i++) {
+      boolean isdiff = false;
+      ComponentData kid = children[i];
+      if (kid.getClassName().equals(self.getClassName())) {
+	if (kid.getType().equals(self.getType())) {
+	  if (kid.parameterCount() == nParameters) {
+	    // Then we better compare the parameters in turn.
+	    // As soon as we find one that differs, were OK.
+	    for (int j = 0; j < nParameters; j++) {
+	      if (! kid.getParameter(j).equals(self.getParameter(j))) {
+		isdiff = true;
+		break;
+	      }
+	    } // loop over params
+	    // If we get here, we compared all the parameters.
+	    if (! isdiff)
+	      return true;
+	  } // check param count
+	} // check comp type
+      } // check comp class
+    } // loop over children
+
+    // If we get here, we did not find any component that is identical
+    return false;
   }
 
   /**
