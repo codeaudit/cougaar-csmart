@@ -2097,13 +2097,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     // BIG HACK IN HERE!!!!!!
     SocietyComponent soc = getSocietyComponent();
     node = addNode("Node0");
-    if (expID == null) {
-      if (soc != null) 
-	expID = soc.getShortName() + "-basic-expt-id";
-      else
-	expID = "Basic-expt-id";
-    }
-      
     // Put all the agents in this Node
     // Skip agents already assigned to Nodes?
     AgentComponent[] agents = getAgents();
@@ -2121,6 +2114,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
     // put the one node on that host
     host.addNode(node);
+    fireModification();
   }
 
   /**
