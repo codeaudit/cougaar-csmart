@@ -40,6 +40,8 @@ import org.cougaar.util.*;
  * are connected to a given <code>Set</code> of <code>UID</code>s.
  * <p>
  * The user specifies:<ul>
+ *   <li>a "?limit=.." is an integer limit for the number of object
+ *       to find.  FIXME over-limit action</li>
  *   <li>a "?format=.." of "html" or "data" (the default is html)</li>
  *   <li>a "?find=.." of "up" or "down" (the default is "down").  "Up" links
  *       are all the "parent" Objects (<i>causes</i>), and "down" links are
@@ -78,6 +80,7 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
     Set startUIDs = null;
     boolean returnAsData = false;
     boolean isDown = true;
+    int limit = Integer.MAX_VALUE;
     try {
       // parse the URL parameters
       MyParameterVisitor myParamVis = 
@@ -85,6 +88,7 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
       queryParameters.visitParameters(myParamVis);
       returnAsData = myParamVis.returnAsData;
       isDown = myParamVis.isDown;
+      limit = myParamVis.limit;
       String optUID = myParamVis.uid;
 
       // read the POSTed UIDs
@@ -120,7 +124,8 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
         search(
             querySupport,
             startUIDs,
-            isDown);
+            isDown,
+            limit);
     } catch (RuntimeException e) {
       System.err.println("Unable to search for data:");
       e.printStackTrace();
@@ -348,11 +353,12 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
   private static List search(
       QuerySupport querySupport, 
       Set startUIDSet,
-      boolean isDown) {
+      boolean isDown,
+      int limit) {
     return
       (isDown ?
-       searchDown(querySupport, startUIDSet) :
-       searchUp(  querySupport, startUIDSet));
+       searchDown(querySupport, startUIDSet, limit) :
+       searchUp(  querySupport, startUIDSet, limit));
   }
 
   /**
@@ -360,7 +366,8 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
    */
   private static List searchDown(
       QuerySupport querySupport, 
-      Set startUIDSet) {
+      Set startUIDSet,
+      int limit) {
 
     if (VERBOSE) {
       System.out.println(
@@ -368,7 +375,8 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
           "\nSEARCH DOWN"+
           "\nStart with ["+
           ((startUIDSet != null) ? startUIDSet.size() : 0)+
-          "]: "+startUIDSet);
+          "]: "+startUIDSet+
+          ((limit >= 0) ? ("\nLimit: "+limit) : "\nNo limit"));
     }
 
     // find the starting objects
@@ -478,6 +486,13 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
             // ignore
             break;
        }
+
+       if (ws.sizePushed() > limit) {
+         // we've exceeded our limit
+         //
+         // FIXME: trim "ws" to just (limit + 1)
+         break;
+       }
      }
 
     if (VERBOSE) {
@@ -496,7 +511,8 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
    */
   private static List searchUp(
       QuerySupport querySupport, 
-      Set startUIDSet) {
+      Set startUIDSet,
+      int limit) {
 
     // get this Cluster's identifier
     ClusterIdentifier localCID =
@@ -505,13 +521,15 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
     if (VERBOSE) {
       System.out.println(
           "\n*****************************************************"+
-          "\nSEARCH UP");
+          "\nSEARCH UP"+
+          ((limit >= 0) ? ("\nLimit: "+limit) : "\nNo limit"));
     }
 
     // make a list of Objs to search
     WorkStack ws = new WorkStack();
     Set findUIDSet = new HashSet(startUIDSet);
 
+search_up_loop:
     while (!(findUIDSet.isEmpty())) {
 
       if (VERBOSE) {
@@ -579,6 +597,13 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
 
         } else {
           // ignore
+        }
+
+        if (ws.sizePushed() > limit) {
+          // we've exceeded our limit
+          //
+          // FIXME: trim "ws" to just (limit + 1)
+          break search_up_loop;
         }
       }
     }
@@ -830,6 +855,7 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
   {
     public boolean isDown = true;
     public boolean returnAsData;
+    public int limit = Integer.MAX_VALUE;
     public String uid;
 
     public void visitParameter(String name, String value) {
@@ -844,6 +870,14 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
           returnAsData = true;
         } else if ("html".equalsIgnoreCase(value)) {
           returnAsData = false;
+        }
+      } else if ("limit".equalsIgnoreCase(name)) {
+        try {
+          limit = Integer.parseInt(value);
+          if (limit < 0) {
+            limit = Integer.MAX_VALUE;
+          }
+        } catch (NumberFormatException nfe) {
         }
       } else if ("uid".equalsIgnoreCase(name)) {
         uid = value;

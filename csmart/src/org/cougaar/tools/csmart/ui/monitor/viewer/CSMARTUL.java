@@ -648,46 +648,82 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private void makePlanGraph() {
-    Vector agentURLs = new Vector();
-    getCommunities(); // get community<->agent mapping
+
+    // get community<->agent mapping
+    getCommunities(); 
+
+    // get filter
     ULPlanFilter filter = new ULPlanFilter(communityToAgents);
     if (!filter.preFilter())
       return; // user cancelled filter
+
+    // get the list of agents
     Vector agentsToContact = filter.getAgentsSelected();
+    Vector agentURLs = new Vector();
     for (int i = 0; i < agentsToContact.size(); i++) {
       String URL = 
   	(String)agentToURL.get((String)agentsToContact.elementAt(i));
       if (URL != null)
   	agentURLs.add(URL);
     }
+
     String PSPId = PSP_PLAN;
     String filterValue = filter.getIgnoreObjectTypes();
+    int filterLimit  = filter.getNumberOfObjects();
+    boolean filteringDirectObjects =
+      ((filterValue != null) &&
+       (filterValue.indexOf(PropertyNames.DIRECT_OBJECT) >= 0));
+    String baseURL =
+      PSPId + "?" +
+      PropertyNames.PLAN_OBJECTS_TO_IGNORE +
+      "=" +
+      filterValue;
+
+    // query
     Collection objectsFromPSP =
       Util.getCollectionFromClusters(agentURLs, 
-				     PSPId + "?" +
-				     PropertyNames.PLAN_OBJECTS_TO_IGNORE +
-				     "=" +
-				     filterValue,
-				     null);
-    if (objectsFromPSP == null)
+				     baseURL,
+				     null,
+				     filterLimit);
+    int nObjs = 
+      ((objectsFromPSP != null) ? 
+       objectsFromPSP.size() : 
+       (0));
+    //    System.out.println("Received plan objects: "+nObjs);
+
+    if (nObjs <= 0) {
+      // no response?
       return;
+    }
+
+    if (nObjs > filterLimit) {
+      // exceeded limit by one.
+      //
+      // Util.getCol.. did the popup warning
+    }
+
+    // a Vector of ULPlanNodes
     Vector nodeObjects = new Vector();
-    //    System.out.println("Received plan objects: " + objectsFromPSP.size());
-    int duplicates = 0;
-    Vector UIDs = new Vector();
-    for (Iterator i = objectsFromPSP.iterator(); i.hasNext(); ) {
-      PropertyTree properties = (PropertyTree)i.next();
+
+    int nDuplicates = 0;
+    Set UIDs = new HashSet();
+    Iterator iter = objectsFromPSP.iterator();
+    for (int i = 0; i < nObjs; i++) {
+      PropertyTree properties = (PropertyTree)iter.next();
+      // get the UID
       String UID = (String)properties.get(PropertyNames.UID_ATTR);
       // filter duplicates by UID
-      if (!UIDs.contains(UID)) {
+      if (!(UIDs.contains(UID))) {
 	String agentName = (String)properties.get(PropertyNames.AGENT_ATTR);
-	String communityName = "";
-	if (agentName != null)
-	  communityName = (String)agentToCommunity.get(agentName);
+	String communityName =
+	  ((agentName != null) ?
+	   ((String)agentToCommunity.get(agentName)) :
+           "");
 	nodeObjects.add(new ULPlanNode(properties, communityName));
 	UIDs.add(UID);
       } else {
-	duplicates++;
+	nDuplicates++;
+      }
       // for debugging
       //      Set keys = properties.keySet();
       //      System.out.println("Property names/values........");
@@ -696,17 +732,16 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       //	System.out.println(s + "," + properties.get(s));
       //      }
       // end for debugging
-      }
-    } // end of for loop over objectsFromPSP
-    //    System.out.println("Duplicates: " + duplicates);
-    // limit number of objects graphed
-    int n  = filter.getNumberOfObjects();
-    if (nodeObjects.size() > n)
-      nodeObjects.setSize(n);
+
+    }
+    //    System.out.println("Duplicates: " + nDuplicates);
+
     // if not filtering out direct objects, then handle their links specially
-    if (filterValue == null ||
-	filterValue.indexOf(PropertyNames.DIRECT_OBJECT) == -1)
+    if (!(filteringDirectObjects)) {
       nodeObjects = processDirectObjects(nodeObjects);
+    }
+
+    // only create popup if objects were found?
     if (nodeObjects.size() != 0) {
       Window w = 
 	(Window)new ULPlanFrame(NamedFrame.PLAN, 
@@ -749,6 +784,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 	String s = 
 	  (String)properties.get(PropertyNames.ASSET_IS_DIRECT_OBJECT);
 	if (s != null && s.equals("true")) {
+          // ACK! N^2 operation!
 	  if (isOrphan(node.getUID(), nodeObjects)) {
 	    try {
 	      nodeObjects.remove(i);
@@ -883,12 +919,45 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private void makeThreadGraph() {
-    String UID = JOptionPane.showInputDialog("Plan Object UID: "); 
-    if (UID != null) {
-      String agentName = JOptionPane.showInputDialog("Agent name: ");
-      if (agentName != null)
-	makeThreadGraph(UID, agentName, true); // default to down
+    // will gather these parameters:
+    String UID;
+    String agentName;
+    int limit;
+    boolean isDown;
+
+    // FIXME: should have a single popup:
+    //    UID=<default to empty>
+    //    AgentName=<default to empty>
+    //    Limit=<default to 200, add "no-limit" checkbox + grey-out>
+    //    Trace=<option box of "children"/"parents", default to children> 
+
+    // awkward popups for now:
+    UID = JOptionPane.showInputDialog("Plan Object UID: "); 
+    if (UID == null) {
+      return;
     }
+    agentName = JOptionPane.showInputDialog("Agent name: ");
+    if (agentName == null) {
+      return;
+    }
+    String sLimit = JOptionPane.showInputDialog("Limit (e.g. 200): ");
+    if (sLimit == null) {
+      return;
+    }
+    try {
+      limit = Integer.parseInt(sLimit);
+    } catch (NumberFormatException nfe) {
+      System.err.println("Illegal number: "+sLimit);
+      return;
+    }
+    String sIsDown = JOptionPane.showInputDialog("TraceChildren (true/false): ");
+    if (sIsDown == null) {
+      return;
+    }
+    isDown = (!("false".equalsIgnoreCase(sIsDown)));
+
+    // create the graph
+    makeThreadGraph(UID, agentName, isDown, limit);
   }
 
   /**
@@ -898,16 +967,19 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   public static void makeThreadGraph(String UID, String agentName,
-				     boolean isDown) {
+				     boolean isDown, int limit) {
     getCommunities();
-    // default is no limit on number of objects returned
-    int limit = Integer.MAX_VALUE;
     List objectsFromPSP = ThreadUtils.getFullThread(agentMap, isDown, limit, 
 						    agentName, UID);
     if (objectsFromPSP == null || objectsFromPSP.size() == 0) {
       JOptionPane.showMessageDialog(null,
 	    "Cannot obtain thread information for specified plan object.");
       return;
+    }
+    if ((limit >= 0) &&
+        (objectsFromPSP.size() > limit)) {
+      JOptionPane.showMessageDialog(null,
+	    "Exceeded limit of "+limit+" objects; creating a trimmed graph.");
     }
     Vector nodeObjects = new Vector(objectsFromPSP.size());
     Vector assetPropertyTrees = new Vector();

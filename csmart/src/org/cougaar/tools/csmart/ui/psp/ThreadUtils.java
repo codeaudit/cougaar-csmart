@@ -135,9 +135,9 @@ public final class ThreadUtils {
    * <pre>
    * How should an exceeded limit be signalled back to the user?
    *   option 1) overflow the first time for a full agent-quantity
-   *             <i>(this is what is done now!)</i>
    *   option 2) overflow to (limit+1) -- the user will get a partial result
    *             for the last agent searched, which might be confusing
+   *             <i>(this is what is done now!)</i>
    *   option 3) never overflow, quietly return less than the limit
    *             (but then how does the user know it overflowed?)
    *   option 4) append a dummy PropertyTree of ("Overflow", "true")
@@ -153,7 +153,7 @@ public final class ThreadUtils {
    * Objects matching these starting points are also returned in the
    * results.
    *
-   * @param am maps an agent name to it's PSP host and port
+   * @param am maps an agent name to its PSP host and port
    * @param isDown specifies the search direction
    * @param limit maximum number of PropertyTrees to gather (see above notes)
    * @param agentToUIDs a Map of (String agentName, List of String UIDs) for 
@@ -166,6 +166,9 @@ public final class ThreadUtils {
       boolean isDown,
       int limit,
       Map agentToUIDs) {
+
+    boolean hasLimit = (limit >= 0);
+    int remainingLimit = limit;
 
     // keep a list of PropertyTrees as our result
     List result = new ArrayList();
@@ -199,7 +202,8 @@ public final class ThreadUtils {
             am,
             isDown, 
             findAgentName,
-            findUIDs);
+            findUIDs,
+            remainingLimit);
       int n = ((l != null) ? l.size() : 0);
       if (VERBOSE) {
         System.out.println("--done["+n+"]--");
@@ -210,18 +214,21 @@ public final class ThreadUtils {
         continue;
       }
 
-      // check limit
-      if ((result.size() + n) > limit) {
-        // would exceed limit!  
-        //
-        // For now we'll accept this overflow and return.
-        break;
-      }
-
       // add these to the results 
       //
       // note that they are already tagged with the AGENT_ATTR
       result.addAll(l);
+
+      // check limit
+      if (hasLimit) {
+        remainingLimit -= n;
+        if (remainingLimit < 0) {
+          // exceed our limit!  
+          //
+          // For now we'll accept this overflow and return.
+          break;
+        }
+      }
 
       // add the "boundary-case" UIDs to the workMap
       for (int i = 0; i < n; i++) {
@@ -280,12 +287,14 @@ public final class ThreadUtils {
   }
 
   /**
-   * Query a single agent for it's "thread" information.
+   * Query a single agent for its "thread" information.
    *
    * @param am AgentMapping, to get the host and port for the agent
    * @param agentName name of the agent
    * @param isDown select direction for the search
    * @param uids List of String UIDs for the search
+   * @param limit integer limit for number of objects, or -1 if there
+   *                is no limit.
    *
    * @return List of PropertyTrees, or null if an error occurred
    */
@@ -293,7 +302,8 @@ public final class ThreadUtils {
       AgentMapping am,
       boolean isDown,
       String agentName, 
-      List uids) {
+      List uids,
+      int limit) {
     try {
       // get host and port
       String host = am.getHost(agentName);
@@ -306,7 +316,8 @@ public final class ThreadUtils {
         SEARCH_PSP_NAME+
         "?format=data"+
         "?find="+
-        (isDown ? "down" : "up");
+        (isDown ? "down" : "up") +
+        ((limit >= 0) ? ("?limit="+limit) : "");
       // connect, upload List of Strings
       System.out.println("ThreadUtils: connecting to: " + surl);
       URL url = new URL(surl);

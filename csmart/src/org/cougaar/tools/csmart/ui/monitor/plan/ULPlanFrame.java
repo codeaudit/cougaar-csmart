@@ -165,20 +165,41 @@ public class ULPlanFrame extends CSMARTFrame {
 
     if (command.equals(THREAD_UP_MENU_ITEM) ||
 	 command.equals(THREAD_DOWN_MENU_ITEM)) {
+      // will gather these parameters:
+      String UID;
+      String agentName;
+      int limit;
+      boolean isDown;
+
+      // get the parameter values
       Vector selected = graph.getSelectedElements();
-      if (selected != null && selected.size() != 0) {
- 	  Element element = (Element)selected.elementAt(0);
-	  if (element.isNode()) {
-	    String UID = element.getName();
-	    String agentName = 
-	      (String)element.getAttributeValue(PropertyNames.AGENT_ATTR);
-	    if (UID != null && agentName != null)
-	      if (command.equals(THREAD_UP_MENU_ITEM))
-		CSMARTUL.makeThreadGraph(UID, agentName, false);
-	      else
-		CSMARTUL.makeThreadGraph(UID, agentName, true);
-	  }
+      if (selected == null || selected.size() == 0) 
+        return;
+      Element element = (Element)selected.elementAt(0);
+      if (!(element.isNode()))
+        return;
+      UID = element.getName();
+      if (UID == null)
+        return;
+      agentName = 
+        (String)element.getAttributeValue(PropertyNames.AGENT_ATTR);
+      if (agentName == null)
+        return;
+      isDown = (command.equals(THREAD_DOWN_MENU_ITEM));
+      // popup for limit
+      String sLimit = JOptionPane.showInputDialog("Trace limit (e.g. 200 objects): ");
+      if (sLimit == null) {
+        return;
       }
+      try {
+        limit = Integer.parseInt(sLimit);
+      } catch (NumberFormatException nfe) {
+        System.err.println("Illegal number: "+sLimit);
+        return;
+      }
+
+      // create the thread graph
+      CSMARTUL.makeThreadGraph(UID, agentName, isDown, limit);
       return;
     }
 

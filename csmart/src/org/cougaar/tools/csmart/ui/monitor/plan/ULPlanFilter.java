@@ -39,7 +39,7 @@ public class ULPlanFilter {
   // maps community names to names of agents in community
   Hashtable communityToAgents; 
   // ask user if should fetch more objects than this
-  private static int DEFAULT_OBJECT_LIMIT = 2000;
+  private static int DEFAULT_OBJECT_LIMIT = 200;
   // order these as they should appear in the filter
   private static final String[] PLAN_OBJECT_TYPES = { 
     PropertyNames.PLAN_ELEMENT_OBJECT,

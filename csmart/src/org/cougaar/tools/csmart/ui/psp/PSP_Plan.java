@@ -45,31 +45,21 @@ import org.cougaar.util.*;
  * The information is encoded in name/value pairs stored in PropertyTree
  * objects which are serialized to the client.
  */
+public class PSP_Plan 
+extends PSP_BaseAdapter 
+implements PlanServiceProvider, UISubscriber {
 
-public class PSP_Plan extends PSP_BaseAdapter implements PlanServiceProvider, UISubscriber {
-  Vector assetUIDs;
-  // flags set by the client to control what objects are returned
-  boolean ignorePlanElements = false;
-  boolean ignoreDirectObjects = false;
-  boolean ignoreWorkflows = false;
-
-  public PSP_Plan() {
-    super();
-  }
-
-  public PSP_Plan( String pkg, String id ) throws RuntimePSPException {
-    setResourceLocation(pkg, id);
-  }
-
+  /**
+   * Our predicate for finding Blackboard objects.
+   */
   private static UnaryPredicate getPred() {
     return new UnaryPredicate() {
       public boolean execute(Object o) {
-	if (o instanceof Task || 
-	    o instanceof HappinessChangeEvent ||
-	    o instanceof Asset ||
-	    o instanceof PlanElement)
-	  return true;
-	return false;
+        return
+          (o instanceof Task || 
+           o instanceof PlanElement ||
+           o instanceof Asset ||
+           o instanceof HappinessChangeEvent);
       }
     };
   }
@@ -82,13 +72,18 @@ public class PSP_Plan extends PSP_BaseAdapter implements PlanServiceProvider, UI
    */
 
   public void execute(PrintStream out,
-		      HttpInput query_parameters,
-		      PlanServiceContext psc,
-		      PlanServiceUtilities psu) throws Exception {
+                      HttpInput query_parameters,
+                      PlanServiceContext psc,
+                      PlanServiceUtilities psu) throws Exception {
     try {
-      parseFilter(query_parameters, psc);
+      PlanPSPState pspState = 
+        new PlanPSPState(this, query_parameters, psc);
+      pspState.configure(query_parameters);
+
+      List ret = getObjects(psc, pspState);
+
       ObjectOutputStream oos = new ObjectOutputStream(out);
-      oos.writeObject(getAllObjects(psc));
+      oos.writeObject(ret);
     } catch (Exception e) {
       System.out.println("PSP_Plan Exception: " + e);
       e.printStackTrace();
@@ -96,117 +91,121 @@ public class PSP_Plan extends PSP_BaseAdapter implements PlanServiceProvider, UI
   }
 
   /**
+   * Returns a vector of PropertyTree for either a Task and
+   * all its related objects (planelements, workflows, assets) or
+   * for a HappinessChangeEvent.
+   * 
+   * @see PlanPSPState see javadocs for "pspState.limit" and 
+   *   "pspState.ignore*" details
+   */
+  private static List getObjects(
+      PlanServiceContext psc,
+      PlanPSPState pspState) {
+
+    // create predicate
+    UnaryPredicate pred = getPred();
+
+    // query
+    Collection col = 
+      psc.getServerPlugInSupport().queryForSubscriber(pred);
+    int colSize = col.size();
+
+    // check limit
+    int maxRetSize;
+    if (pspState.limit < colSize) {
+      maxRetSize = pspState.limit + 1;
+    } else {
+      maxRetSize = colSize;
+    }
+
+    // build result list
+    //
+    // assume maximum List size, since most objects are kept
+    List ret = new ArrayList(maxRetSize);
+    int retSize = 0;
+
+    // keep agent name for later use
+    String agent = 
+      psc.getServerPlugInSupport().getClusterIDAsString();
+
+    // scan query results
+    Iterator iter = col.iterator();
+    for (int i = 0; i < colSize; i++) {
+      Object planObject = iter.next();
+
+      // scan object
+      if (planObject instanceof Asset) {
+        Asset asset = (Asset)planObject;
+        if ((asset.hasClusterPG()) &&
+            (asset instanceof HasRelationships) &&
+            (!((HasRelationships)asset).isLocal())) {
+          // ignore non-local agent assets
+          //
+          // add below back in once Communities are added?
+          //    (asset.hasCommunityPG())
+          continue; 
+        }
+      } else if (
+          (pspState.ignorePlanElements) && 
+          (planObject instanceof PlanElement)) {
+        continue; // optionally ignore plan elements
+      } else if (
+          (!(pspState.ignoreWorkflows)) && 
+          (planObject instanceof Expansion)) { 
+        // optionally include workflows
+        Workflow workflow = ((Expansion)planObject).getWorkflow();
+        Object wObj = TranslateUtils.toPropertyTree(workflow, agent);
+        // TranslateUtils will return null for some objects
+        if (wObj != null) {
+          ret.add(wObj);
+
+          if (++retSize >= maxRetSize) {
+            // reached our limit
+            break;
+          }
+        }
+      }
+
+      // translate to a property-tree
+      Object tmp = TranslateUtils.toPropertyTree(planObject, agent);
+      if (tmp != null) {
+        ret.add(tmp);
+
+        if (++retSize >= maxRetSize) {
+          // reached our limit
+          break;
+        }
+      }
+    }
+
+    return ret;
+  }
+
+  /**
+   * Captures the URL parameters.
+   *
    * If input from the client contains the name/value pair:
-   * planObjectsToIgnore?value
+   *   planObjectsToIgnore?value
    * then extract the value, which is a comma separated list
    * of types of objects to ignore (defined in PropertyNames).
    * Use these object types, to set appropriate flags used
    * in the getter methods.
+   *
+   * If the URL includes "?limit=NUMBER", then a limit is set
+   * for the number of objects to return.  If the limit is
+   * negative then no limit is set, which is the default.  If
+   * the limit is exceeded then (limit+1) objects are returned.
+   * For example, if "?limit=50" and there are 100 matching 
+   * objects, then 51 PropertyTrees are returned.
    */
-
-  private void parseFilter(HttpInput queryParameters,
-			   PlanServiceContext psc) {
-    PlanPSPState pspState = new PlanPSPState(this, queryParameters, psc);
-    pspState.configure(queryParameters);
-    ignorePlanElements = false;
-    ignoreDirectObjects = false;
-    ignoreWorkflows = false;
-    if (pspState.planObjectsToIgnore == null)
-      return;
-    StringTokenizer st = 
-      new StringTokenizer(pspState.planObjectsToIgnore, ",");
-    while (st.hasMoreTokens()) {
-      String s = st.nextToken();
-      if (s.equals(PropertyNames.PLAN_ELEMENT_OBJECT))
-	ignorePlanElements = true;
-      else if (s.equals(PropertyNames.DIRECT_OBJECT))
-	ignoreDirectObjects = true;
-      else if (s.equals(PropertyNames.WORKFLOW_OBJECT))
-	ignoreWorkflows = true;
-    }
-  }
-
-  /**
-   * Returns a vector of PropertyTree for either a Task and
-   * all its related objects (planelements, workflows, assets) or
-   * for a HappinessChangeEvent.
-   */
-
-  private ArrayList getAllObjects(PlanServiceContext psc) {
-    String agent = psc.getServerPlugInSupport().getClusterIDAsString();
-    Collection container = 
-      psc.getServerPlugInSupport().queryForSubscriber(getPred());
-    ArrayList results = new ArrayList(container.size());
-    Iterator iter = container.iterator();
-    while (iter.hasNext()) {
-      Object planObject = iter.next();
-      if (planObject instanceof Asset) {
-	Asset asset = (Asset)planObject;
-	if ((asset instanceof HasRelationships) &&
-	    !((HasRelationships)asset).isLocal() &&
-	    // Add below back in once Communities are added?
-	    //	    (asset.hasCommunityPG(new Date().getTime())) &&
-	    (asset.hasClusterPG()))
-	  continue; // ignore non-local agent assets
-      } else if (ignorePlanElements && planObject instanceof PlanElement) {
-	continue; // optionally ignore plan elements
-      } else if (!ignoreWorkflows && planObject instanceof Expansion) { 
-	// optionally include workflows
-	Workflow workflow = ((Expansion)planObject).getWorkflow();
-	Object tmp = TranslateUtils.toPropertyTree(workflow, agent);
-	// TranslateUtils will return null for some objects
-	if (tmp != null)
-	  results.add(tmp);
-      }
-      Object tmp = TranslateUtils.toPropertyTree(planObject, agent);
-      // TranslateUtils will return null for some objects
-      if (tmp != null)
-	results.add(tmp);
-      //      results.add(TranslateUtils.toPropertyTree(planObject, agent));
-    }
-    return results;
-  }
-
-  /**
-   * Required by PSP interface.
-   */
-
-  public boolean test(HttpInput query_parameters, PlanServiceContext sc)  {
-    super.initializeTest(); // IF subclass off of PSP_BaseAdapter.java
-    return false;  // This PSP is only accessed by direct reference.
-  }
-
-  /**
-   * A PSP can output either HTML or XML (for now).  The server
-   * should be able to ask and find out what type it is.
-   **/
-
-  public boolean returnsXML() {
-    return false;
-  }
-
-  public boolean returnsHTML() {
-    return false;
-  }
-
-  /**  Any PlanServiceProvider must be able to provide DTD of its
-   *  output IFF it is an XML PSP... ie.  returnsXML() == true;
-   *  or return null
-   **/
-
-  public String getDTD()  {
-    return null;
-  }
-
-  /**
-   * Required by UISubscriber interface.
-   */
-
-  public void subscriptionChanged(Subscription subscription) {
-  }
-
   public static class PlanPSPState extends PSPState {
-    public String planObjectsToIgnore;
+    // flags set by the client to control what objects are returned
+    public boolean ignorePlanElements = false;
+    public boolean ignoreDirectObjects = false;
+    public boolean ignoreWorkflows = false;
+
+    // limit on number of PropertyTrees to return; see javadocs above.
+    public int limit = Integer.MAX_VALUE;
 
     public PlanPSPState(
         UISubscriber xsubscriber,
@@ -221,9 +220,60 @@ public class PSP_Plan extends PSP_BaseAdapter implements PlanServiceProvider, UI
      */
 
     public void setParam(String name, String value) {
-      if (name.equals(PropertyNames.PLAN_OBJECTS_TO_IGNORE))
-	planObjectsToIgnore = value;
+      if (name.equals(PropertyNames.PLAN_OBJECTS_TO_IGNORE)) {
+        try {
+          StringTokenizer st = 
+            new StringTokenizer(value, ",");
+          while (st.hasMoreTokens()) {
+            String s = st.nextToken();
+            if (s.equals(PropertyNames.PLAN_ELEMENT_OBJECT)) {
+              ignorePlanElements = true;
+            } else if (s.equals(PropertyNames.DIRECT_OBJECT)) {
+              ignoreDirectObjects = true;
+            } else if (s.equals(PropertyNames.WORKFLOW_OBJECT)) {
+              ignoreWorkflows = true;
+            }
+          }
+        } catch (Exception e) {
+          System.err.println("Illegal parameter: "+name+"="+value);
+        }
+      } else if (name.equals("limit")) {
+        try {
+          limit = Integer.parseInt(value);
+          if (limit < 0) {
+            limit = Integer.MAX_VALUE;
+          }
+        } catch (Exception e) {
+          System.err.println("Illegal parameter: "+name+"="+value);
+        }
+      }
     }
+  }
+
+  //
+  // ancient/boring methods:
+  //
+
+  public PSP_Plan() {
+    super();
+  }
+  public PSP_Plan( String pkg, String id ) throws RuntimePSPException {
+    setResourceLocation(pkg, id);
+  }
+  public boolean test(HttpInput query_parameters, PlanServiceContext sc)  {
+    super.initializeTest();
+    return false;
+  }
+  public boolean returnsXML() {
+    return false;
+  }
+  public boolean returnsHTML() {
+    return false;
+  }
+  public String getDTD()  {
+    return null;
+  }
+  public void subscriptionChanged(Subscription subscription) {
   }
 
 }

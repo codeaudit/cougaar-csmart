@@ -125,6 +125,16 @@ public class Util {
   }
 
   /**
+   * Equivalent to 
+   *  <tt>getCollectionFromClusters(clusterURLs, PSP_id, filter, -1)</tt>.
+   */
+  public static Collection getCollectionFromClusters(Vector clusterURLs,
+						     String PSP_id,
+						     String filter) {
+    return getCollectionFromClusters(clusterURLs, PSP_id, filter, -1);
+  }
+
+  /**
    * Get a filtered collection from specified clusters and PSP.  
    * The PSP must be one that returns a Collection.
    * The filter is an operator predicate which is used by the PSP
@@ -133,30 +143,105 @@ public class Util {
    * @param clusterURLs the clusters to contact; vector of String
    * @param PSP_id      the PSP to contact
    * @param filter      the filter the PSP will use to collect objects
+   * @param limit       the limit for the number of objects to return, or -1 if
+   *                       there is no limit -- the PSP must accept "?limit=N"
    * @return            the collection from the PSP or null
    */
 
-  public static Collection getCollectionFromClusters(Vector clusterURLs,
-						     String PSP_id,
-						     String filter) {
+  public static Collection getCollectionFromClusters(
+      Vector clusterURLs,
+      String PSP_id,
+      String filter,
+      int limit) {
     Collection results = null;
-    for (int i = 0; i < clusterURLs.size(); i++) {
-      Collection tmp = 
-	getCollectionFromCluster((String)clusterURLs.elementAt(i), 
-				 PSP_id, filter);
+    boolean hasLimit = (limit >= 0);
+
+    // limit that is decremented for each call
+    int remainingLimit = (hasLimit ? limit : -1);
+
+    int nClusterURLs = 
+      ((clusterURLs != null)  ?
+       (clusterURLs.size()) :
+       (-1));
+
+    //
+    // Sort clusterURLS by the agent names?  For now we've lost
+    //   the agent name and only have the raw URL...
+    //
+    // This method signature should be fixed to be:
+    //   (InetAddress societyAddress, Set agentNames, String PSP_id, ..)
+    //
+
+    for (int i = 0; i < nClusterURLs; i++) {
+      String urli = (String)clusterURLs.elementAt(i);
+
+      // query
+      Collection coli = 
+	getCollectionFromCluster(
+            urli, PSP_id, filter, remainingLimit);
+
+      int ncoli = ((coli != null) ? coli.size() : -1);
+      if (ncoli <= 0) {
+        // no results
+        //
+        // getCollectionFromCluster(..) did the popup warning
+        //
+        // do we want N popups if every query fails?
+        continue;
+      }
+
+      // append to our results
       if (results == null) {
-	results = tmp;
-      } else if (tmp != null) {
-	try {
-	  results.addAll(tmp);
-	} catch (Exception e) {
-	  System.out.println(e);
-	}
+        results = coli;
+      } else {
+        try {
+          results.addAll(coli);
+        } catch (Exception e) {
+          // shouldn't happen
+          System.out.println(
+              "Unable to add to results: "+e);
+        }
+      }
+
+      // check our limit
+      if (hasLimit) {
+        // decrement remaining limit
+        remainingLimit -= ncoli;
+        if (remainingLimit < 0) {
+          // exceeded the limit by one
+          //
+          // create a popup warning:
+          JOptionPane.showMessageDialog(null,
+              "Exceeded limit of "+limit+
+              " objects; producing a trimmed graph from "+
+              (i+1)+" of "+nClusterURLs+" Agents.");
+          // can add to message the agent names that were:
+          //   - fully-queried agents
+          //   - current partially-queried agent
+          //   - not-queried agents.
+          //
+          // also can consider an option to ask the user if they'd 
+          //   like to increase the limit.  This would require 
+          //   recomputing the current query[i], since it was 
+          //   limited.
+          break;
+        }
       }
     }
+
     return results;
   }
   
+  /**
+   * Equivalent to
+   *  <tt>getCollectionFromCluster(clusterURL, PSP_id, filter, -1)</tt>.
+   */
+  public static Collection getCollectionFromCluster(String clusterURL,
+						    String PSP_id,
+						    String filter) {
+    return getCollectionFromCluster(clusterURL, PSP_id, filter, -1);
+  }
+
   /**
    * Get a filtered collection from a single cluster and PSP.  
    * The PSP must be one that returns a Collection.
@@ -168,17 +253,23 @@ public class Util {
    * @param clusterURL  the cluster to contact
    * @param PSP_id      the PSP to contact
    * @param filter      the filter the PSP will use to collect objects
+   * @param limit       the limit for the number of objects to return, or -1 if
+   *                       there is no limit -- the PSP must accept "?limit=N"
    * @return            the collection from the PSP or null
    */
 
   public static Collection getCollectionFromCluster(String clusterURL,
 						    String PSP_id,
-						    String filter) {
+						    String filter,
+						    int limit) {
     Collection results = null;
     String URLSpec = clusterURL + PSP_PACKAGE + "/" + PSP_id;
     String agent = URLSpec;
     if (filter != null)
-      URLSpec = URLSpec + "?operatorPredicate=" + URLEncoder.encode(filter);
+      URLSpec = "?operatorPredicate=" + URLEncoder.encode(filter);
+    if (limit >= 0) {
+      URLSpec += "?limit=" + limit;
+    }
     //    System.out.println("Util: Connecting to society: " + URLSpec);
     try {
       URL url = new URL(URLSpec);
@@ -192,13 +283,13 @@ public class Util {
       if (results == null || results.isEmpty()) {
 	results = null;
 	JOptionPane.showMessageDialog(null,
-				      agent + " returned null; no information to graph from this agent.");
+            agent + " returned null; no information to graph from this agent.");
       }
     } catch (Exception e) {
       System.out.println("Util: Failed to contact: " + URLSpec + " " + e);
       JOptionPane.showMessageDialog(null,
-				    "Failed to contact: " + agent + 
-				    "; no information to graph from this agent.");
+          "Failed to contact: " + agent + 
+          "; no information to graph from this agent.");
       return null;
     }
     //    System.out.println("Received events: " + results.size() +

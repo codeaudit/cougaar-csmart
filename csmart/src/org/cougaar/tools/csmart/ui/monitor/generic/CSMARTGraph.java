@@ -571,7 +571,10 @@ public class CSMARTGraph extends Graph
       }
       // for debugging
       else
-	System.out.println("CSMARTGraph: WARNING: Displaying property: " + name + " of class: " + o.getClass() + " not supported");
+	System.out.println(
+            "CSMARTGraph: WARNING: Displaying property: " + name +
+            " of class: " + ((o != null) ? o.getClass().getName() : "null") +
+            " not supported");
     }
     // get UIDs at the incoming (tail) end of a link
     Vector incomingLinks = obj.getIncomingLinks();
