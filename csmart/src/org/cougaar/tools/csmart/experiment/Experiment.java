@@ -65,7 +65,7 @@ public interface Experiment extends ModifiableComponent {
   String PERSISTENCE_DFLT = "false";
   String PERSIST_CLEAR_DFLT = "true";
   String TIMEZONE_DFLT = "GMT";
-  String AGENT_STARTTIME_DFLT = "08/10/2005";
+  String AGENT_STARTTIME_DFLT = "07/11/2005";
   String COMPLAININGLP_LEVEL_DFLT = "0";
 
   /** org.cougaar.control.port; port for contacting applications server **/
