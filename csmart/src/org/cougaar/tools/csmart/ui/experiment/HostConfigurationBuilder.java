@@ -70,8 +70,12 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private static final String DELETE_MENU_ITEM = "Delete";
   private static final String DESCRIPTION_MENU_ITEM = "Description";
   private static final String NODE_COMMAND_LINE_MENU_ITEM = "Command Line Arguments";
+  private static final String GLOBAL_COMMAND_LINE_MENU_ITEM =
+    "Global Command Line Arguments";
   private static final String HOST_TYPE_MENU_ITEM = "Type";
   private static final String HOST_LOCATION_MENU_ITEM = "Location";
+
+  public static final String COMMAND_ARGUMENTS = "Command$Arguments";
 
   public HostConfigurationBuilder(Experiment experiment, 
                                   ExperimentBuilder experimentBuilder) {
@@ -122,24 +126,28 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostRootMenu = new JPopupMenu();
     hostHostMenu = new JPopupMenu();
     hostNodeMenu = new JPopupMenu();
+
     JMenuItem newHostMenuItem = new JMenuItem(NEW_HOST_MENU_ITEM);
     newHostMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	newHostMenuItem_actionPerformed(e);
       }
     });
+
     JMenuItem deleteHostMenuItem = new JMenuItem(DELETE_MENU_ITEM);
     deleteHostMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	deleteHostMenuItem_actionPerformed(e);
       }
     });
+
     JMenuItem newNodeInHostMenuItem = new JMenuItem(NEW_NODE_MENU_ITEM);
     newNodeInHostMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	newNodeInHostMenuItem_actionPerformed(e);
       }
     });
+
     JMenuItem hostDescriptionMenuItem = 
       new JMenuItem(DESCRIPTION_MENU_ITEM);
     hostDescriptionMenuItem.addActionListener(new ActionListener() {
@@ -147,18 +155,21 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	hostDescriptionMenuItem_actionPerformed(e);
       }
     });
+
     JMenuItem hostLocationMenuItem = new JMenuItem(HOST_LOCATION_MENU_ITEM);
     hostLocationMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	hostLocationMenuItem_actionPerformed(e);
       }
     });
+
     JMenuItem hostTypeMenuItem = new JMenuItem(HOST_TYPE_MENU_ITEM);
     hostTypeMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	hostTypeMenuItem_actionPerformed(e);
       }
     });
+
     JMenuItem describeNodeInHostMenuItem = 
       new JMenuItem(DESCRIPTION_MENU_ITEM);
     describeNodeInHostMenuItem.addActionListener(new ActionListener() {
@@ -166,6 +177,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         describeNodeMenuItem_actionPerformed(hostTree);
       }
     });
+
     JMenuItem cmdLineNodeInHostMenuItem = 
       new JMenuItem(NODE_COMMAND_LINE_MENU_ITEM);
     cmdLineNodeInHostMenuItem.addActionListener(new ActionListener() {
@@ -174,6 +186,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
     cmdLineNodeInHostMenuItem.setEnabled(true);
+
+    Action globalCmdLineAction = new AbstractAction(GLOBAL_COMMAND_LINE_MENU_ITEM) {
+      public void actionPerformed(ActionEvent e) {
+        globalCmdLineMenuItem_actionPerformed();
+      }
+    };
+
     JMenuItem deleteNodeInHostMenuItem = new JMenuItem(DELETE_MENU_ITEM);
     deleteNodeInHostMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -183,15 +202,18 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
     // init pop-up menus
     hostRootMenu.add(newHostMenuItem);
+    hostRootMenu.add(globalCmdLineAction);
 
     hostHostMenu.add(hostDescriptionMenuItem);
     hostHostMenu.add(hostTypeMenuItem);
     hostHostMenu.add(hostLocationMenuItem);
     hostHostMenu.add(newNodeInHostMenuItem);
+    hostHostMenu.add(globalCmdLineAction);
     hostHostMenu.add(deleteHostMenuItem);
 
     hostNodeMenu.add(describeNodeInHostMenuItem);
     hostNodeMenu.add(cmdLineNodeInHostMenuItem);
+    hostNodeMenu.add(globalCmdLineAction);
     hostNodeMenu.add(deleteNodeInHostMenuItem);
     
     // attach a mouse listener to the host tree to display menu 
@@ -251,6 +273,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
     nodeRootMenu.add(newNodeMenuItem);
+    nodeRootMenu.add(globalCmdLineAction);
     JMenuItem describeNodeMenuItem = new JMenuItem(DESCRIPTION_MENU_ITEM);
     describeNodeMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -264,6 +287,14 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
     cmdLineNodeMenuItem.setEnabled(true);
+    JMenuItem globalCmdLineMenuItem = 
+      new JMenuItem(GLOBAL_COMMAND_LINE_MENU_ITEM);
+    globalCmdLineMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        globalCmdLineMenuItem_actionPerformed();
+      }
+    });
+    globalCmdLineMenuItem.setEnabled(true);
     JMenuItem deleteNodeMenuItem = new JMenuItem(DELETE_MENU_ITEM);
     deleteNodeMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -272,6 +303,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     });
     nodeNodeMenu.add(describeNodeMenuItem);
     nodeNodeMenu.add(cmdLineNodeMenuItem);
+    nodeNodeMenu.add(globalCmdLineAction);
     nodeNodeMenu.add(deleteNodeMenuItem);
 
     // attach a mouse listener to the node tree to display menu 
@@ -1090,7 +1122,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   public void cmdLineNodeMenuItem_actionPerformed(JTree tree) {
     Vector names = new Vector();
     Vector values = new Vector();
-    NodeArgumentDialog dialog = new NodeArgumentDialog();
     DefaultMutableTreeNode selectedNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
@@ -1098,22 +1129,80 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     Vector data = new Vector();
     Properties properties = nodeComponent.getArguments();
     Enumeration propertyNames = properties.propertyNames();
+    NodeArgumentDialog dialog =
+      new NodeArgumentDialog("Node " + nodeComponent.getShortName()
+                             + " Command Line");
+    String arguments = "";
     while (propertyNames.hasMoreElements()) {
-      String name = (String)propertyNames.nextElement();
-      Vector row = new Vector(2);
-      row.add(name);
-      row.add(properties.getProperty(name));
-      data.add(row);
+      String name = (String) propertyNames.nextElement();
+      String value = properties.getProperty(name);
+      if (name.equals(COMMAND_ARGUMENTS)) {
+        arguments = value;
+      } else {
+        Vector row = new Vector(3);
+        row.add(name);
+        row.add(value);
+        row.add(properties.get(name) == null ? "*" : "");
+        data.add(row);
+      }
     }
-    dialog.setData(data);
+    dialog.setData(data, 3);
+    dialog.setArguments(arguments);
     dialog.setVisible(true);
     Vector newData = dialog.getData();
-    Properties newProperties = new Properties();
-    for (int i = 0; i < newData.size(); i++) {
-      Vector row = (Vector)newData.get(i);
-      newProperties.setProperty((String)row.get(0), (String)row.get(1));
+    String newArguments = dialog.getArguments();
+    properties.clear();
+    if (!newArguments.equals(arguments)) {
+      properties.setProperty(COMMAND_ARGUMENTS, newArguments);
     }
-    nodeComponent.setArguments(newProperties);
+    for (int i = 0; i < newData.size(); i++) {
+      Vector row = (Vector) newData.get(i);
+      String name = (String) row.get(0);
+      String newValue = (String) row.get(1);
+      properties.remove(name);
+      String oldValue = properties.getProperty(name);
+      if (!newValue.equals(oldValue)) {
+        properties.setProperty(name, newValue);
+      }
+    }
+  }
+
+  /**
+   * Pop-up input dialog to get global command line arguments from user.
+   * Called with the tree from which this menu item was invoked.
+   */
+
+  public void globalCmdLineMenuItem_actionPerformed() {
+    NodeArgumentDialog dialog = new NodeArgumentDialog("Global Command Line");
+    Vector data = new Vector();
+    Properties properties = experiment.getDefaultNodeArguments();
+    Enumeration propertyNames = properties.propertyNames();
+    String arguments = "";
+    while (propertyNames.hasMoreElements()) {
+      String name = (String) propertyNames.nextElement();
+      String value = properties.getProperty(name);
+      if (name.equals(COMMAND_ARGUMENTS)) {
+        arguments = value;
+      } else {
+        Vector row = new Vector(2);
+        row.add(name);
+        row.add(value);
+        row.add(null);
+        data.add(row);
+      }
+    }
+    dialog.setData(data, 2);
+    dialog.setArguments(arguments);
+    dialog.setVisible(true);
+    Vector newData = dialog.getData();
+    String newArguments = dialog.getArguments();
+    if (!newArguments.equals(arguments)) {
+      properties.setProperty(COMMAND_ARGUMENTS, newArguments);
+    }
+    for (int i = 0; i < newData.size(); i++) {
+      Vector row = (Vector) newData.get(i);
+      properties.setProperty((String) row.get(0), (String) row.get(1));
+    }
   }
 
   /**
@@ -1174,11 +1263,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     for (int i = 0; i < nodes.length; i++) {
       NodeComponent node = nodes[i];
       Properties arguments = node.getArguments();
-      arguments.setProperty("org.cougaar.name.server",
-                            nameServerHostName + ":" +
-                            CSMARTConsole.NAME_SERVER_PORTS);
-      node.setArguments(arguments);
+      // Insure no per-node override exists
+      arguments.remove("org.cougaar.name.server");
     }
+    // Now install experiment-wide setting.
+    experiment.getDefaultNodeArguments().put("org.cougaar.name.server",
+                                             nameServerHostName + ":" +
+                                             CSMARTConsole.NAME_SERVER_PORTS);
   }
 
   private DefaultTreeModel createModel(final Experiment experiment, DefaultMutableTreeNode node, boolean askKids) {
