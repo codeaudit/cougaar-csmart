@@ -79,6 +79,7 @@ public abstract class ConfigurableComponent
 
   private PropertiesListener myPropertiesListener = new MyPropertiesListener();
 
+  /** Handle to the Logger **/
   protected transient Logger log;
 
   private class MyPropertiesListener

@@ -35,6 +35,7 @@ public abstract class ModifiableConfigurableComponent
   implements ModifiableComponent
 {
 
+  /** Indicates if this Component is editable **/
   protected boolean editable = false;
 
   /**
