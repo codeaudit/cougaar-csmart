@@ -80,7 +80,7 @@ public class AssetFileComponent
    */
   public void initProperties() {
     // strip off extension if it exists
-    int index = filename.indexOf('.');
+    int index = filename.lastIndexOf('.');
     if (index != -1) 
       filename = filename.substring(0, index);
     // Since there are two possible types of asset files, we

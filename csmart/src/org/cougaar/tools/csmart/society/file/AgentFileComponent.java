@@ -86,7 +86,7 @@ public class AgentFileComponent
   }
 
   protected void addAssetData() {
-    String assetFile = filename.substring(0, filename.indexOf('.'));
+    String assetFile = filename.substring(0, filename.lastIndexOf('.'));
     assetFile = assetFile + "-prototype-ini.dat";
     if (log.isDebugEnabled()) {
       log.debug("Trying asset file " + assetFile);
