@@ -33,6 +33,8 @@ import silk.U;
 import silk.Pair;
 import silk.Symbol;
 import silk.InputPort;
+import org.cougaar.tools.csmart.societies.database.DBUtils;
+import org.cougaar.util.DBProperties;
 
   /**
    * Interface to the database.
@@ -51,7 +53,17 @@ public class ExperimentDB {
 		e.printStackTrace();
 	    }
 	    cmtLoaded=true;
-	    call("use-eiger","society_config","s0ciety_c0nfig");
+	    try{
+		DBProperties dbProps = DBProperties.readQueryFile("org.cougaar.configuration.database", "CSMART.q");
+		String database = dbProps.getProperty("database");
+		String username = dbProps.getProperty("username");
+		String password = dbProps.getProperty("password");
+		System.out.println("call(use-eiger,"+username+","+password+")");
+		call("use-eiger",username,password);
+	    } catch (java.io.IOException e){
+		e.printStackTrace();
+	    }
+
 	}
     }
 
