@@ -204,6 +204,7 @@ CREATE TABLE v4_asb_component_hierarchy (
   ASSEMBLY_ID varchar(50) binary NOT NULL default '',
   COMPONENT_ALIB_ID varchar(150) binary NOT NULL default '',
   PARENT_COMPONENT_ALIB_ID varchar(150) binary NOT NULL default '',
+  PRIORITY varchar(20) binary NOT NULL default '',	
   INSERTION_ORDER decimal(68,30) default NULL,
   PRIMARY KEY  (ASSEMBLY_ID,COMPONENT_ALIB_ID,PARENT_COMPONENT_ALIB_ID),
   KEY COMPONENT_ALIB_ID (COMPONENT_ALIB_ID),
@@ -220,7 +221,7 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_component_hierarchy.csv'
         OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
-    (ASSEMBLY_ID,COMPONENT_ALIB_ID,PARENT_COMPONENT_ALIB_ID,INSERTION_ORDER);
+    (ASSEMBLY_ID,COMPONENT_ALIB_ID,PARENT_COMPONENT_ALIB_ID,PRIORITY,INSERTION_ORDER);
 
 #
 # Table structure for table 'v4_asb_oplan'
