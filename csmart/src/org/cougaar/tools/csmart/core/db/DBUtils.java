@@ -117,6 +117,7 @@ public class DBUtils {
    * @return boolean indicating valid connection
    */
   public static boolean isValidDBConnection() {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     DBProperties dbProps;
     String database;
     String username;
@@ -152,13 +153,17 @@ public class DBUtils {
 	      conn.close();
 	    }
 	  }
-	} catch (ClassNotFoundException e) {
-          System.err.println("Class not found: " + e);
-	} catch (SQLException se) {
-          System.err.println("Sql exception: " + se);
+	} catch (Exception e) {
+          // Should just do nothing here and assume file mode.
+          if(log.isInfoEnabled()) {
+            log.info("Class not found", e);
+          }
         }
       } catch(IOException e) {
-        System.err.println("IO exception: " + e);
+          // Should just do nothing here and assume file mode.
+        if(log.isInfoEnabled()) {
+          log.info("IO Exception", e);
+        }
       }
     }
     return valid;
