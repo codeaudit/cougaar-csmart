@@ -7,9 +7,11 @@ See csmart/doc/InstallandTest.html or the User's Guide for more information.
 Summary:
 After creating a database per the instructions referenced above, you load
 it with data from files contained here.
-For new databases, load the data in the Domain-MySQL.ZIP file.
-For new databases, those upgraded from 9.0, or those that you want
-to "clean", use ./scripts/mysql/load_1ad_mysql.sh[bat] 
+First, load the data in the Domain-MySQL.ZIP file. (It has recently
+changed, with release 9.4.1.)
+Then, to load the configuration information (necessary to "clean" your
+installation, and when upgrading to the most recent Cougaar version),
+use ./scripts/mysql/load_1ad_mysql.sh[bat] 
 (Run without arguments to see usage.)
 To edit the contents of these tables directly (not recommended), edit
 the csv files in ./csv
@@ -24,7 +26,7 @@ Zip file:
 which is the sql script to be run to load all domain data tables into 
 the CSMART configuration database. If you are upgrading from version
 9.4 or below of Cougaar, you should re-load this data as an additional
-table and new domain data has been added.
+table and new domain data have been added.
 
 Sub-directories:
 
@@ -35,7 +37,7 @@ Sub-directories:
         before loading.
 
    db_src/:
-        Contains the database schema souce files that are produced from ERStudio.
+        Contains the database schema source files that are produced from ERStudio.
         Perl scripts can be run against the csmart-db.sql to generate either 
         oracle or mysql specific versions of sql for database loading.
 
@@ -55,7 +57,7 @@ Sub-directories:
         Contains the perl scripts which are run against the single sql
         file produced from ERStudio to generate either oracle or mysql
         specific sql files as well as to split the original file into components
-        for dropping and creating indexes, foreign keys (oracle) and tables.
+        for dropping and creating indexes, foreign keys (Oracle) and tables.
 
    scripts/:
         Contains Dos-version GNU sed v3.02
@@ -165,7 +167,8 @@ csmart-db.load-mysql-tables.sql
 
 
 If modifying or eliminating columns for a given table,  the user should verify that the 
-respective header file contained in csmart/data/database/headers/ remains valid. Be sure to edit the 
+respective header file contained in csmart/data/database/headers/
+remains valid. Be sure to edit the 
 corresponding .q files in configs/common, and possibly the code that uses them.
 
 
