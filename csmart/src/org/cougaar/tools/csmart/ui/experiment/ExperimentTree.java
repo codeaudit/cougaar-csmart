@@ -39,9 +39,11 @@ public class ExperimentTree extends DNDTree {
     public static final String IMPACTS = "Impacts";
     public static final String METRICS = "Metrics";
     public static final String SOCIETIES = "Societies";
+    public static final String COMPONENTS = "Components";
     public static final CSMARTDataFlavor impactFlavor = OrganizerTree.impactFlavor;
     public static final CSMARTDataFlavor metricFlavor = OrganizerTree.metricFlavor;
     public static final CSMARTDataFlavor societyFlavor = OrganizerTree.societyFlavor;
+    public static final CSMARTDataFlavor componentFlavor = OrganizerTree.componentFlavor;
 
     private DefaultTreeModel model;
 
@@ -52,8 +54,11 @@ public class ExperimentTree extends DNDTree {
             theData = aNode.getUserObject();
             if (theData instanceof ImpactComponent)
                 flavors = new DataFlavor[] {impactFlavor};
+	    //            else if (theData instanceof MetricComponent)
             else if (theData instanceof Metric)
                 flavors = new DataFlavor[] {metricFlavor};
+            else if (theData instanceof ModifiableConfigurableComponent)
+                flavors = new DataFlavor[] {componentFlavor};
             else
                 throw new IllegalArgumentException("Unknown node");
         }
