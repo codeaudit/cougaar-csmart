@@ -6,7 +6,8 @@
 <body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
 
 <h1>Specific Component Recipe</h1>
-
+Specific Component Recipes allow users to insert a specific component
+int any society at the set of places indicated by a database query.<br>
 A Specific Component Recipe contains the following parameters:
     <h2>Component Fields</h2>
     <table width="400">
@@ -54,7 +55,7 @@ Plus zero or more of the following, depending on the Number of Arguments:
     <br><br>
 
 Specific components can be added to a society, such as a plugin in an agent, or
-a new binder.  Creating a Specific Component specifying this new addition is
+a new binder.  Creating a Specific Component is
 an easy way to quickly modify your society configuration.
 <br><br>
 <a name="CLASS_NAME"><h3>Class Name</h3></a>
@@ -63,7 +64,8 @@ Class Name of the Component.<br>
 
 <a name="COMPONENT_NAME"><h3>Component Name</h3></a>
 Complete Name of the Component.<br>
-<i>Usually, this is the same value as Class Name</i>
+<i>Usually, this is the same value as Class Name</i>. If you want to
+insert the same plugin in the same agent twice, pick a unique name.
 
 <a name="NUMB_ARGS"><h3>Number of Arguments</h3></a>
 Specifies the number of arguments required for this component.
@@ -76,18 +78,17 @@ selected the exact components that should be modified with this
 recipe. Base, sample queries are in
 CIP/configs/common/PopulateDb.q<br>
 Users should create their own queries in a file called
-"recipeQueries.q", which should be placed somplace on the Cougaar
+"recipeQueries.q", which should be placed someplace on the Cougaar
 Config Path: in the directory from which you run CSMART, or in
 CIP/configs/common, for example.<br>
 <em>IMPORTANT: All recipes query names must begin with "recipeQuery"!</em><br>
 
 <a name="TYPE"><h3>Type Of Insertion</h3></a>
-Specifies the type of component, for example: "plugin", "agent
-binder", or "node binder"
+Specifies the type of component: "plugin", "agent binder", or "node binder".
 
 <a name="VALUE"><h3>Value <i>X</i></h3></a>
 There will be one value parameter for every Argument added with the
-Number of Arguments paramter.  This value specifies the value
+Number of Arguments parameter.  This value specifies the value
 of the argument required for the component.
 
 </body>
