@@ -190,7 +190,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     fileMenu.add(openMenu);
 
     JMenuItem monitorMenuItem = new JMenuItem(MONITOR_MENU_ITEM);
-    monitorMenuItem.setToolTipText("Monitor an experiment.");
+    monitorMenuItem.setToolTipText("Monitor an experiment or other URL.");
     monitorMenuItem.addActionListener(this);
     fileMenu.add(monitorMenuItem);
 
@@ -271,9 +271,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    * finds a node which has agents, and uses the corresponding host
    * and the default port.
    */
-
   private static void setHostToMonitor() {
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer.CSMARUL");
+    Logger log = CSMART.createLogger(CSMARTUL.class.getName());
     ArrayList potentialHosts = new ArrayList();
     ArrayList potentialNodes = new ArrayList();
     HostComponent[] hosts = experiment.getHostComponents();
@@ -498,7 +497,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private static void getAgentURL() {
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL");
+    Logger log = CSMART.createLogger(CSMARTUL.class.getName());
 
     if (csmart != null) 
       setExperimentToMonitor();
@@ -513,35 +512,37 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private static void setExperimentToMonitor() {
     // ask user to select experiment from running experiments
     Experiment[] exp = CSMART.getRunningExperiments();
-    if (exp.length == 0) {
-      JOptionPane.showMessageDialog(null, "No experiments to monitor.");
-      return;
-    }
 
-    Vector experimentNames = new Vector(exp.length);
+    Vector experimentNames = new Vector(exp.length + 1);
     for (int i = 0; i < exp.length; i++) 
       experimentNames.add(exp[i].getExperimentName());
+    experimentNames.add("No experiment -- custom URL");
     JComboBox cb = new JComboBox(experimentNames);
     JPanel panel = new JPanel();
     panel.add(new JLabel("Experiment to Monitor:"));
     panel.add(cb);
+    panel.add(new JLabel("Select last item to enter custom URL"));
     int result = 
       JOptionPane.showConfirmDialog(null, panel, "Experiment To Monitor",
                                     JOptionPane.OK_CANCEL_OPTION,
                                     JOptionPane.PLAIN_MESSAGE);
     if (result != JOptionPane.OK_OPTION)
       return;
-    experiment = exp[cb.getSelectedIndex()];
-    setHostToMonitor();
+    if (cb.getSelectedIndex() == exp.length) {
+      experiment = null;
+      setURLToMonitor();
+    } else {
+      experiment = exp[cb.getSelectedIndex()];
+      setHostToMonitor();
+    }
   }
 
   /**
    * If not running under csmart, ask user for url (host and port)
    * to monitor.
    */
-
   private static void setURLToMonitor() {
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL");
+    Logger log = CSMART.createLogger(CSMARTUL.class.getName());
     // FIXME: Use secure mode if necessary here!
     // How do I decide?
     // Must I use a different port as well?
