@@ -1,34 +1,27 @@
 package org.cougaar.tools.csmart.ui.console;
 
+import org.cougaar.tools.csmart.recipe.MetricComponent;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.util.FileUtilities;
 import org.cougaar.tools.csmart.util.ResultsFileFilter;
-import org.cougaar.tools.csmart.experiment.Trial;
-import org.cougaar.tools.csmart.experiment.TrialResult;
-import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.recipe.RecipeComponent;
-import org.cougaar.tools.csmart.recipe.MetricComponent;
 import org.cougaar.tools.server.OutputListener;
 import org.cougaar.tools.server.OutputPolicy;
-import org.cougaar.tools.server.RemoteHost;
 import org.cougaar.tools.server.RemoteFileSystem;
+import org.cougaar.tools.server.RemoteHost;
 import org.cougaar.util.log.Logger;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.Observable;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.net.InetAddress;
-import java.net.URL;
-import java.io.File;
-import java.io.InputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 
 /**
  * NodeModel contains all of the data structures required to
@@ -67,6 +60,8 @@ public class NodeModel extends Observable {
     textPane = new ConsoleTextPane(doc, statusButton);
     logFileName = FileUtilities.getLogFileName(info.getNodeName(), new Date());
     this.outputPolicy = new OutputPolicy(10);
+    this.thread = new CreateNodeThread(this);
+
     createListener();
     createFilters();
   }
@@ -79,6 +74,11 @@ public class NodeModel extends Observable {
   private void createListener() {
     try {
       listener = new ConsoleNodeListener(this);
+      if (listener.statusButton == null ||
+          listener.statusButton.getMyModel().getStatus() == NodeStatusButton.STATUS_NODE_DESTROYED ||
+          listener.statusButton.getMyModel().getStatus() == NodeStatusButton.STATUS_NO_ANSWER) {
+        listener.cleanUp();
+      }
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
         log.error("Unable to create output for: " + info.getNodeName(), e);
@@ -100,11 +100,7 @@ public class NodeModel extends Observable {
       listener.setFilter(displayFilter);
     }
 
-//    nodeListeners.put(info.getNodeName(), listener);
-//    nodePanes.put(info.getNodeName(), textPane);
   }
-
-//  return new NodeCreationInfo(info, listener, outputPolicy, scrollPane, statusButton, logFileName);
 
 
   /**
@@ -143,6 +139,7 @@ public class NodeModel extends Observable {
   }
 
   public void setRunning(boolean running) {
+    System.out.println("running = " + running);
     this.running = running;
   }
 
@@ -163,10 +160,14 @@ public class NodeModel extends Observable {
   }
 
   public void start() {
-    thread = new CreateNodeThread(this);
     thread.start();
   }
 
+  public void stop() {
+    System.out.println("I am stopping now.");
+    thread.interrupt();
+    System.out.println("Interrupted? " + thread.isInterrupted());
+  }
 
   /**
    * Create a file for the results of this run.
@@ -191,7 +192,7 @@ public class NodeModel extends Observable {
       remoteFS = appServer.getRemoteFileSystem();
     } catch (Exception e) {
       if (log.isErrorEnabled())
-        log.error("saveResults failed to get filesystem on " + 
+        log.error("saveResults failed to get filesystem on " +
                   getInfo().getHostName() + ": ", e);
       remoteFS = null;
     }
@@ -214,8 +215,7 @@ public class NodeModel extends Observable {
   /**
    * Read remote files and copy to directory specified by experiment.
    */
-  private void copyResultFiles(RemoteFileSystem remoteFS,
-                               String dirname) {
+  private void copyResultFiles(RemoteFileSystem remoteFS, String dirname) {
     char[] cbuf = new char[1000];
     try {
       // FIXME: This reads just from the current directory,
@@ -228,13 +228,10 @@ public class NodeModel extends Observable {
       for (int i = 0; i < filenames.length; i++) {
         if (!isResultFile(filenames[i]))
           continue;
-        File newResultFile =
-            new File(dirname + File.separator + filenames[i]);
+        File newResultFile = new File(dirname + File.separator + filenames[i]);
         InputStream is = remoteFS.read(filenames[i]);
-        BufferedReader reader =
-            new BufferedReader(new InputStreamReader(is), 1000);
-        BufferedWriter writer =
-            new BufferedWriter(new FileWriter(newResultFile));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is), 1000);
+        BufferedWriter writer = new BufferedWriter(new FileWriter(newResultFile));
         int len = 0;
         while ((len = reader.read(cbuf, 0, 1000)) != -1) {
           writer.write(cbuf, 0, len);
@@ -258,24 +255,24 @@ public class NodeModel extends Observable {
   private boolean isResultFile(String filename) {
     File thisFile = new java.io.File(filename);
     // if no experiment, use default filter
-//    if (experiment == null || !usingExperiment)
-//      return new ResultsFileFilter().accept(thisFile);
-//    SocietyComponent societyComponent = experiment.getSocietyComponent();
-//    if (societyComponent != null) {
-//      java.io.FileFilter fileFilter = societyComponent.getResultFileFilter();
-//      if (fileFilter != null && fileFilter.accept(thisFile))
-//        return true;
-//    }
-//    int nrecipes = experiment.getRecipeComponentCount();
-//    for (int i = 0; i < nrecipes; i++) {
-//      RecipeComponent recipeComponent = experiment.getRecipeComponent(i);
-//      if (recipeComponent instanceof MetricComponent) {
-//        MetricComponent metricComponent = (MetricComponent) recipeComponent;
-//        java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
-//        if (fileFilter != null && fileFilter.accept(thisFile))
-//          return true;
-//      }
-//    }
+    if (cmodel.getExperiment() == null)
+      return new ResultsFileFilter().accept(thisFile);
+    SocietyComponent societyComponent = cmodel.getExperiment().getSocietyComponent();
+    if (societyComponent != null) {
+      java.io.FileFilter fileFilter = societyComponent.getResultFileFilter();
+      if (fileFilter != null && fileFilter.accept(thisFile))
+        return true;
+    }
+    int nrecipes = cmodel.getExperiment().getRecipeComponentCount();
+    for (int i = 0; i < nrecipes; i++) {
+      RecipeComponent recipeComponent = cmodel.getExperiment().getRecipeComponent(i);
+      if (recipeComponent instanceof MetricComponent) {
+        MetricComponent metricComponent = (MetricComponent) recipeComponent;
+        java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
+        if (fileFilter != null && fileFilter.accept(thisFile))
+          return true;
+      }
+    }
     return false;
   }
 
