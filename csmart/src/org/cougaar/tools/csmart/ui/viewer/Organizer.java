@@ -381,6 +381,23 @@ public class Organizer extends JScrollPane {
     model.setAsksAllowsChildren(true);
     model.addTreeModelListener(myModelListener);
     workspace = new OrganizerTree(model);
+    DefaultCellEditor myEditor = new DefaultCellEditor(new JTextField()) {
+      public boolean isCellEditable(EventObject e) {
+	if (super.isCellEditable(e) && e instanceof MouseEvent) {
+	  TreePath path = workspace.getPathForLocation(((MouseEvent)e).getX(),
+						       ((MouseEvent)e).getY());
+	  Object o = path.getLastPathComponent();
+	  Object userObject = ((DefaultMutableTreeNode)o).getUserObject();
+	  if (userObject instanceof ModifiableConfigurableComponent)
+	    return ((ModifiableConfigurableComponent)userObject).isEditable();
+	  else
+  	    return true; // renaming workspace or folder is always ok
+	}
+	return false;
+      }
+    };
+    workspace.setCellEditor(myEditor);
+  
     workspace.setExpandsSelectedPaths(true);
     for (int i = 0; i < rootAction.length; i++) {
       rootMenu.add(rootAction[i]);
@@ -582,7 +599,7 @@ public class Organizer extends JScrollPane {
       }
     }
   }
-  
+
   private void configureSocietyMenu(boolean isEditable) {
     if (isEditable) {
       for (int i = 0; i < societyAction.length; i++) {
@@ -662,7 +679,7 @@ public class Organizer extends JScrollPane {
       }
     }
   }
-  
+
   private void startBuilder(DefaultMutableTreeNode node,
 			    boolean openForEditing) {
     csmart.runBuilder((ModifiableConfigurableComponent) node.getUserObject(), false,
