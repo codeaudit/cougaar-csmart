@@ -299,9 +299,9 @@ public class Util {
 
   /**
    * Return a path for the specified filename; the path is determined
-   * using ConfigFinder.
+   * using ConfigFinder.  If there is any error, null is returned.
    * @param filename the filename for which to get the path
-   * @return the pathname
+   * @return the pathname or null if an error
    */
 
   public static String getPath(String filename) {
@@ -311,7 +311,7 @@ public class Util {
     try {
       path = file.getCanonicalPath();
     } catch (Exception e) {
-      System.out.println("Could not find: " + filename);
+      //      System.out.println("Could not find: " + filename);
     }
     return path;
   }
