@@ -197,6 +197,15 @@ public class PDbBase {
         }
     }
 
+    public void removeLibRecipeNamed(String recipeName) throws SQLException {
+        String[] recipeIdAndClass = getRecipeIdAndClass(recipeName);
+        if (recipeIdAndClass != null) {
+            substitutions.put(":recipe_id:", recipeIdAndClass[0]);
+            executeUpdate(dbp.getQuery("deleteLibRecipeArgs", substitutions));
+            executeUpdate(dbp.getQuery("deleteLibRecipe", substitutions));
+        }
+    }
+
     public String insertLibRecipe(RecipeComponent rc) throws SQLException {
         String recipeId = checkRecipeExistence(rc);
         if (recipeId != null) return recipeId;
