@@ -1,13 +1,24 @@
 package org.cougaar.tools.csmart.ui.console;
 
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.util.XMLUtils;
+import org.cougaar.tools.csmart.core.cdata.ComponentDataXML;
+import org.cougaar.tools.csmart.experiment.XMLExperiment;
 import org.cougaar.tools.server.ProcessDescription;
 import org.cougaar.tools.server.RemoteListenable;
 import org.cougaar.tools.server.RemoteListenableConfig;
 import org.cougaar.tools.server.RemoteProcess;
+import org.cougaar.tools.server.RemoteHost;
+import org.cougaar.tools.server.RemoteFileSystem;
 import org.cougaar.util.log.Logger;
+import org.w3c.dom.Document;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.io.File;
+import java.io.BufferedOutputStream;
+import java.io.OutputStream;
+import java.io.FileReader;
 
 /**
  * org.cougaar.tools.csmart.ui.console
@@ -82,6 +93,32 @@ public class CreateNodeThread extends Thread {
       new RemoteListenableConfig(model.getListener(),
                                  CSMART.getNodeListenerId(),
                                  null, model.getOutputPolicy());
+
+
+    if(cmodel.getExperiment() instanceof XMLExperiment) {
+      try {
+        RemoteHost rh = model.getInfo().getAppServer();
+        RemoteFileSystem rfs = rh.getRemoteFileSystem();
+        Document doc = ComponentDataXML.createXMLDocument(((XMLExperiment)cmodel.getExperiment()).getExperiment());
+        String filename = ((XMLExperiment)cmodel.getExperiment()).getSocietyFileName();
+        XMLUtils.writeXMLFile(new File("/tmp/"), doc, filename);
+
+        OutputStream os = rfs.write("./" + filename);
+        BufferedOutputStream bos = new BufferedOutputStream(os);
+        FileReader in = new FileReader("/tmp/" + filename);
+        int c;
+        while((c = in.read()) != -1) {
+          bos.write(c);
+        }
+        in.close();
+        bos.flush();
+        bos.close();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+
+    }
+
     try {
       // Next line does the actual creation -- including RMI stuff that could take a while
       remoteNode = model.getInfo().getAppServer().createRemoteProcess(desc, conf);
