@@ -147,7 +147,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     defaultNodeArguments.put("org.cougaar.core.persistence.enable", "false");
     defaultNodeArguments.put("user.timezone", "GMT");
     defaultNodeArguments.put("org.cougaar.core.agent.startTime", "08/10/2005");
-    defaultNodeArguments.put("csmart.log.severity", "PROBLEM");
     defaultNodeArguments.put("org.cougaar.planning.ldm.lps.ComplainingLP.level",
                              "0");
     defaultNodeArguments.put("org.cougaar.message.transport.aspects",
@@ -916,7 +915,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       pdb.close();
       theWholeSoc = theSoc;
     } catch (Exception sqle) {
-      sqle.printStackTrace();
+      if (log.isErrorEnabled())
+	log.error(sqle.toString());
     }
   }
 
@@ -941,11 +941,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 						  defaultChoice);
 	    }
 	  });
-	// FIXME!!
-//          if(log.isDebugEnabled()) {
-//            log.error("Save experiment first.");
-//          }
-//  	return;
+	// FIXME!!!
+	// Must set ExperimentBuilder.modified=false,
+	// otherwise it'll risk saving twice when
+	// thats not needed
       }
       if (theWholeSoc != null)
 	cw = new ExperimentINIWriter(theWholeSoc);
