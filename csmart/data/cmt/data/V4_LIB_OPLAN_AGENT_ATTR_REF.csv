@@ -1,0 +1,4 @@
+ATTRIBUTE_NAME,DESCRIPTION,BLANK
+ACTIVITY_TYPE,Describes the type activity, 
+OPTEMPO,Specifies the OPTEMPO of the activity, 
+LOCATION,Specifies the geographic location, 
