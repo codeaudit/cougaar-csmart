@@ -413,7 +413,6 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     try {
       new Thread("Save") {
         public void run() {
-          //          doSave();
           experiment.saveToDb(saveToDbConflictHandler);
           GUIUtils.timeConsumingTaskEnd(c);
           GUIUtils.timeConsumingTaskEnd(csmart);

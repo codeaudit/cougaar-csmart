@@ -25,6 +25,7 @@ import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 
+import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.experiment.Experiment;
 
@@ -66,7 +67,8 @@ public class ThreadBuilder extends JPanel {
 
   private void updateDisplay() {
     removeAll(); // remove previous components
-    if (!ExperimentDB.isExperimentNameInDatabase(experiment.getExperimentName())) {
+    if (!DBUtils.dbMode ||
+        !ExperimentDB.isExperimentNameInDatabase(experiment.getExperimentName())) {
       setLayout(new BorderLayout());
       add(new JLabel("Experiment is not in database; no thread information is available.", SwingConstants.CENTER), BorderLayout.CENTER);
         return;
