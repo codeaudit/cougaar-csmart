@@ -31,7 +31,8 @@ public class HighImpact implements Impact {
         return name;
     }
     public Impact copy(Organizer organizer, Object context) {
-      return organizer.copyImpact(new HighImpact(organizer.generateImpactName(name)), context);
+      //      return organizer.copyImpact(new HighImpact(organizer.generateImpactName(name)), context);
+      return new HighImpact(organizer.generateImpactName(name));
     }
 
   public AgentComponent[] getAgents() {

@@ -131,7 +131,8 @@ public class ABCImpact implements Impact {
   }
   
   public Impact copy(Organizer organizer, Object context) {
-    Impact newImpact = organizer.copyImpact(new ABCImpact(organizer.generateImpactName(name)), context);
+    //    Impact newImpact = organizer.copyImpact(new ABCImpact(organizer.generateImpactName(name)), context);
+    Impact newImpact = new ABCImpact(organizer.generateImpactName(name));
     ((ABCImpact)newImpact).setFile(xmlfile);
     return newImpact;
   }

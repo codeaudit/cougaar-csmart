@@ -209,7 +209,12 @@ public class Organizer extends JScrollPane {
             public void actionPerformed(ActionEvent e) {
                 deleteImpact(popupNode);
             }
-        }
+        },
+	new AbstractAction("Copy") {
+	  public void actionPerformed(ActionEvent e) {
+	    copyImpactInNode(popupNode);
+	  }
+	}
     };
     private Action[] metricAction = {
 //          new AbstractAction("Edit", new ImageIcon(getClass().getResource("SB16.gif"))) {
@@ -1208,8 +1213,8 @@ public class Organizer extends JScrollPane {
 	}
         for (int i = 0; i < societyAction.length; i++) {
             societyMenu.add(societyAction[i]);
-	    if (societyAction[i].getValue(Action.NAME).equals("Copy"))
-	      societyAction[i].setEnabled(false);
+	    //	    if (societyAction[i].getValue(Action.NAME).equals("Copy"))
+	    //	      societyAction[i].setEnabled(false);
         }
         for (int i = 0; i < impactAction.length; i++) {
             impactMenu.add(impactAction[i]);
@@ -1312,6 +1317,10 @@ public class Organizer extends JScrollPane {
     SocietyComponent societyCopy = society.copy(this, context);
     addSocietyToWorkspace(societyCopy, (DefaultMutableTreeNode)context);
     return societyCopy;
+  }
+
+  private void copyImpactInNode(DefaultMutableTreeNode node) {
+    copyImpact((Impact)node.getUserObject(), node.getParent());
   }
 
   public Impact copyImpact(Impact impact, Object context) {

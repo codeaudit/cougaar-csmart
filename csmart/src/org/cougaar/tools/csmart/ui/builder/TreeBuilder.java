@@ -290,7 +290,9 @@ public class TreeBuilder
 
   private void addComponentForProperty(Property property) {
     componentPanel.addProperty(property);
-    property.addPropertyListener(this);
+    // don't add yourself as listener until problem with changing propery
+    // values is fixed: see propertyValueChanged
+    //    property.addPropertyListener(this);
   }
 
   /**
@@ -412,6 +414,11 @@ public class TreeBuilder
    * then set the new value in the user inteface (table)
    * or (for aspects of the property other than the value), handle
    * the change (i.e. new label, default value, class or allowed values).
+   * TODO: this is called as the result of the user editing the table,
+   * which sets the value in the property (see GridPanel2 setValue());
+   * if the user enters a null value, this reinserts the default value;
+   * is there any way for the TreeBuilder to distinguish when it should ignore
+   * property value changes?
    */
 
   public void propertyValueChanged(PropertyEvent e) {

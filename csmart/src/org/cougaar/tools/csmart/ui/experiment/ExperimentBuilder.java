@@ -229,6 +229,7 @@ public class ExperimentBuilder extends JFrame {
     if (node == null) return;
     Object o = (node.getUserObject());
     if (o instanceof SocietyComponent) {
+      propModel.clear(); // clear out any previous table entries
       propModel.setComponentProperties((SocietyComponent) o);
       rightPanel.add(propScrollPane, BorderLayout.CENTER);
     }

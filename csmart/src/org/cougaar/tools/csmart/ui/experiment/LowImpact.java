@@ -31,7 +31,8 @@ public class LowImpact implements Impact {
         return name;
     }
     public Impact copy(Organizer organizer, Object context) {
-      return organizer.copyImpact(new LowImpact(organizer.generateImpactName(name)), context);
+      //      return organizer.copyImpact(new LowImpact(organizer.generateImpactName(name)), context);
+      return new LowImpact(organizer.generateImpactName(name));
     }
 
   public AgentComponent[] getAgents() {

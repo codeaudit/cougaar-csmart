@@ -22,8 +22,7 @@ import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 
 /**
- * A JPanel that provides support for adding labels and components
- * using a GridBagLayout.
+ * A JTable that displays property names and values.
  */
 
 public class GridPanel2 extends JTable {
