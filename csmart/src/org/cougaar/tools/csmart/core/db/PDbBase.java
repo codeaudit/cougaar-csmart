@@ -388,6 +388,34 @@ public class PDbBase {
     }
   }
 
+  /**
+   * Change the name of a Recipe
+   *
+   * @param oldName a <code>String</code> name of a recipe to change
+   * @param newName a <code>String</code> new name, not empty
+   * @exception SQLException if an error occurs
+   * @exception IOException if an error occurs
+   */
+  public static void changeRecipeName(String oldName, String newName) throws SQLException, IOException {
+    if (oldName == null || oldName.equals("") || newName == null || newName.equals("") || oldName.equals(newName))
+      return;
+    PDbBase pdb = new PDbBase();
+    try {
+      pdb.reallyChangeRecipeName(oldName, newName);
+    } finally {
+      if (pdb != null) {
+	pdb.close();
+	pdb = null;
+      }
+    }
+  }
+
+  private void reallyChangeRecipeName(String oldName, String newName) throws SQLException, IOException {
+    substitutions.put(":old_name:", oldName);
+    substitutions.put(":new_name:", newName);
+    executeUpdate(dbp.getQuery("updateRecipeName", substitutions));
+  }
+
   protected String getNextId(String queryName, String prefix) {
     DecimalFormat format = new DecimalFormat("0000");
     format.setPositivePrefix(prefix);
