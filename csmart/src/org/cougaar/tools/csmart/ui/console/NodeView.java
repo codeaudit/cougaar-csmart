@@ -577,10 +577,10 @@ public class NodeView extends JInternalFrame implements Observer {
                                             0, 0));
     } // end of block to show configuration info
 
-    JOptionPane.showMessageDialog(this, aboutPanel,
-                                  "Information: " + nodeName +
-                                  " (" + hostName + ")",
-                                  JOptionPane.PLAIN_MESSAGE);
+    JOptionPane pane = new JOptionPane(aboutPanel, JOptionPane.PLAIN_MESSAGE);
+    JInternalFrame infoFrame = pane.createInternalFrame(this, "Information: "  + nodeName + " (" + hostName + ")");
+    infoFrame.setResizable(true);
+    infoFrame.show();
   }
 
   // Implementations for the action items from the menu
