@@ -109,8 +109,10 @@ public class ParameterInsertionRecipe extends RecipeBase
   private void modifyComponentData(ComponentData data, PopulateDb pdb, Set targets)
     throws SQLException
   {
+    // FIXME!!
+    // This should ask PopulateDb to construct the alib id.
+    // Also of course this isn't enough
     String pluginAlib = data.getName() + "|" + propPluginName.getValue().toString();
-
     // FIXME: This code does not check that the newly modified child is not now a duplicate within the Agent!
 
     // FIXME: Is the slot really NAME or CLASS or must it be the same?!!!
@@ -138,6 +140,15 @@ public class ParameterInsertionRecipe extends RecipeBase
         } else if (children[i].getName().equals(propPluginName.getValue().toString())) {
           if(log.isDebugEnabled()) {
             log.debug("Got match for plugin name: " + children[i].toString());
+          }
+	  // FIXME: If this agent has 2 plugins with the same name,
+	  // which do I do? This currently does the first only
+	  // FIXME: Make sure this parameter isnt already there?
+          children[i].addParameter(propParameter.getValue().toString());
+          break;
+        } else if (children[i].getName().equals(data.getName() + "|" + propPluginName.getValue().toString())) {
+          if(log.isDebugEnabled()) {
+            log.debug("Got match for plugin name with parent name in front: " + children[i].toString());
           }
 	  // FIXME: If this agent has 2 plugins with the same name,
 	  // which do I do? This currently does the first only
