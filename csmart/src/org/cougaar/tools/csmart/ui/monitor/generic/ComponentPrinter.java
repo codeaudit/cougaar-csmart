@@ -21,13 +21,16 @@
 
 package org.cougaar.tools.csmart.ui.monitor.generic;
 
-import java.awt.print.*;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import javax.swing.JComponent;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.print.PageFormat;
+import java.awt.print.Pageable;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 
 /**
  * Borrowed from Cove.

@@ -21,16 +21,20 @@
 
 package org.cougaar.tools.csmart.ui.monitor.plan;
 
-import java.text.NumberFormat;
-import java.util.*;
-
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.monitor.generic.NodeObject;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.PropertyTree;
 import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.ObjectInputStream;
+
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 public class ULPlanNode implements NodeObject {
   PropertyTree properties;

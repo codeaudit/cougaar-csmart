@@ -21,15 +21,13 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-import java.awt.Component;
-import java.awt.Cursor;
+import org.cougaar.tools.csmart.core.db.DBConflictHandler;
+
+import javax.swing.*;
+import javax.swing.event.MouseInputAdapter;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.event.MouseInputAdapter;
-import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 
 /**
  * Methods to put up a wait cursor and consume mouse events while

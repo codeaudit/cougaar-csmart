@@ -20,31 +20,21 @@
  */
 package org.cougaar.tools.csmart.society.file;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.cougaar.core.component.ComponentDescription;
-import org.cougaar.util.log.Logger;
-import org.cougaar.util.ConfigFinder;
-
 import org.cougaar.tools.csmart.core.cdata.ComponentConnector;
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.society.AssetComponent;
-import org.cougaar.tools.csmart.society.ContainerBase;
-import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.society.AgentBase;
+import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.society.ComponentBase;
+import org.cougaar.tools.csmart.society.ContainerBase;
+import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
+import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.log.Logger;
+
+import java.util.Iterator;
 
 /**
  * Basic component to hold the definition of a society

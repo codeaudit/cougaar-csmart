@@ -20,25 +20,22 @@
  */
 package org.cougaar.tools.csmart.ui.servlet;
 
+import org.cougaar.core.servlet.SimpleServletSupport;
+import org.cougaar.core.util.UID;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.asset.CommunityPG;
+import org.cougaar.planning.ldm.plan.HasRelationships;
+import org.cougaar.util.UnaryPredicate;
+
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.cougaar.core.servlet.SimpleServletSupport;
-import org.cougaar.core.util.UID;
-import org.cougaar.planning.ldm.asset.CommunityPG;
-import org.cougaar.planning.ldm.asset.Asset;
-import org.cougaar.planning.ldm.plan.HasRelationships;
-
-import org.cougaar.util.UnaryPredicate;
-
-import java.util.Collections;
-import java.util.Vector;
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.Collections;
+import java.util.Vector;
 
 /**
  * This Servlet expects no input, and returns the URLs of all the agents

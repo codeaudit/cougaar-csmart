@@ -21,21 +21,20 @@
 
 package org.cougaar.tools.csmart.ui.tree;
 
-import java.awt.Point;
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
+import org.cougaar.tools.csmart.experiment.HostComponent;
+import org.cougaar.tools.csmart.experiment.NodeComponent;
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-
-import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.experiment.HostComponent;
-import org.cougaar.tools.csmart.experiment.NodeComponent;
-import org.cougaar.tools.csmart.ui.tree.*;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.ObjectInputStream;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 
 /**
  * Provides method definitions for abstract methods in DNDTree.

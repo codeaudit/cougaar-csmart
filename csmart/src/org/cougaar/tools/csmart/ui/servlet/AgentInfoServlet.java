@@ -21,37 +21,28 @@
 
 package org.cougaar.tools.csmart.ui.servlet;
 
-import java.net.URL;
-import java.net.URLConnection;
-
-import java.util.Collection;
-import java.util.Vector;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ArrayList;
+import org.cougaar.core.servlet.SimpleServletSupport;
+import org.cougaar.core.util.UID;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.asset.CommunityPG;
+import org.cougaar.planning.ldm.asset.LocationSchedulePG;
+import org.cougaar.planning.ldm.plan.*;
+import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
+import org.cougaar.util.PropertyTree;
+import org.cougaar.util.UnaryPredicate;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.cougaar.core.servlet.SimpleServletSupport;
-import org.cougaar.core.util.UID;
-import org.cougaar.planning.ldm.asset.CommunityPG;
-import org.cougaar.planning.ldm.asset.Asset;
-import org.cougaar.planning.ldm.asset.LocationSchedulePG;
-
-import org.cougaar.planning.ldm.plan.*;
-
-import org.cougaar.util.UnaryPredicate;
-import org.cougaar.util.PropertyTree;
-
-import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * This Servlet gathers information about agents and their relationships.

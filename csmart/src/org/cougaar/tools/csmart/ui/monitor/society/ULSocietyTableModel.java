@@ -21,15 +21,18 @@
 
 package org.cougaar.tools.csmart.ui.monitor.society;
 
-import java.util.*;
-import javax.swing.table.AbstractTableModel;
 import att.grappa.*;
-
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.ObjectInputStream;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.table.AbstractTableModel;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * Provide the values for the attribute table for the specified node

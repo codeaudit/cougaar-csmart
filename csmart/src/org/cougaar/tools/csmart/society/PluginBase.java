@@ -21,10 +21,6 @@
 package org.cougaar.tools.csmart.society;
 
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.PropertyAlias;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**

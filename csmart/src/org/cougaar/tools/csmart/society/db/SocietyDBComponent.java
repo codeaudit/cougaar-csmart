@@ -20,30 +20,21 @@
  */
 package org.cougaar.tools.csmart.society.db;
 
-import java.io.FileFilter;
-import java.io.Serializable;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.net.URL;
-import java.util.*;
-import java.sql.SQLException;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-
+import org.cougaar.core.agent.Agent;
+import org.cougaar.tools.csmart.core.db.DBUtils;
+import org.cougaar.tools.csmart.core.property.ModificationEvent;
+import org.cougaar.tools.csmart.society.SocietyBase;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 
-import org.cougaar.core.agent.Agent;
-
-import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.society.SocietyBase;
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.tools.csmart.core.property.ModifiableComponent;
-import org.cougaar.tools.csmart.core.property.ModificationListener;
-import org.cougaar.tools.csmart.core.property.ModificationEvent;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A Society created from the CFW portion of the CSMART configuration

@@ -21,37 +21,40 @@
 
 package org.cougaar.tools.csmart.ui.experiment;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.event.*;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.*;
-import javax.swing.tree.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
-import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.core.property.name.SimpleName;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.experiment.Experiment;
-import org.cougaar.tools.csmart.experiment.ExperimentNode;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.tree.ConsoleDNDTree;
 import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.*;
+import java.util.List;
 
 /**
  * Tabbed pane for assigning Hosts to Nodes to Agents

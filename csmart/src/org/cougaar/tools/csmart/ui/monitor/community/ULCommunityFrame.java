@@ -21,19 +21,19 @@
 
 package org.cougaar.tools.csmart.ui.monitor.community;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.border.TitledBorder;
-import javax.swing.table.TableModel;
 import att.grappa.*;
-
 import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTFrame;
 import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph;
 import org.cougaar.tools.csmart.ui.monitor.generic.LegendComboBoxModel;
 import org.cougaar.tools.csmart.ui.monitor.generic.LegendRenderer;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
+
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * A frame to display communities.

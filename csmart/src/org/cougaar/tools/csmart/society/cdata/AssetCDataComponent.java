@@ -21,10 +21,6 @@
 package org.cougaar.tools.csmart.society.cdata;
 
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.Iterator;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -38,7 +34,12 @@ import org.cougaar.tools.csmart.society.PropGroupBase;
 import org.cougaar.tools.csmart.society.RelationshipBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.TimeSpan;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  * ConfigurableComponent that represents an <code>AssetComponentData</code>

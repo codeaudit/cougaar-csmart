@@ -20,17 +20,17 @@
  */
 package org.cougaar.tools.csmart.society;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
 import org.cougaar.tools.csmart.core.cdata.PGPropData;
-import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.PGPropMultiVal;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 
 /**

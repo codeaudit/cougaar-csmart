@@ -21,9 +21,10 @@
 
 package org.cougaar.tools.csmart.ui.monitor.generic;
 
+import att.grappa.*;
+
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
-import att.grappa.*;
 
 /**
  * Panel that contains graph.

@@ -21,14 +21,7 @@
 
 package org.cougaar.tools.csmart.ui.monitor.society;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.table.TableModel;
 import att.grappa.*;
-
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTFrame;
 import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph;
@@ -36,6 +29,16 @@ import org.cougaar.tools.csmart.ui.monitor.generic.LegendComboBoxModel;
 import org.cougaar.tools.csmart.ui.monitor.generic.LegendRenderer;
 import org.cougaar.tools.csmart.ui.monitor.generic.UIProperties;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
+
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Vector;
 
 /**
  * A frame to display agents.

@@ -21,24 +21,10 @@
 
 package org.cougaar.tools.csmart.ui.experiment;
 
-import java.awt.Component;
-import java.awt.event.*;
-import java.io.File;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import java.net.URL;
-import java.net.MalformedURLException;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-
+import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
-import org.cougaar.tools.csmart.core.db.PopulateDb;
-import org.cougaar.tools.csmart.core.db.DBConflictHandler;
-
 import org.cougaar.tools.csmart.experiment.Experiment;
-
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.community.CommunityPanel;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
@@ -46,6 +32,23 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 /**
  * The Experiment Builder is the tool for assigning society Agents to resources,

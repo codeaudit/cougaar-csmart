@@ -21,19 +21,17 @@
 
 package org.cougaar.tools.csmart.ui.experiment;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-
-import org.cougaar.util.log.Logger;
 import org.cougaar.core.agent.AgentManager;
 import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.core.plugin.PluginManager;
-
-import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Window to show the detailed contents of an Agent

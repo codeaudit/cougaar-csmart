@@ -20,21 +20,6 @@
  */
 package org.cougaar.tools.csmart.society.db;
 
-import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -51,8 +36,22 @@ import org.cougaar.tools.csmart.society.PropGroupBase;
 import org.cougaar.tools.csmart.society.PropGroupComponent;
 import org.cougaar.tools.csmart.society.RelationshipBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-
 import org.cougaar.util.TimeSpan;
+
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * An AssetData loaded from the database

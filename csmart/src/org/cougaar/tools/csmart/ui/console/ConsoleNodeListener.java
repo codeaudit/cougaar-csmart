@@ -21,22 +21,24 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.awt.Color;
-import java.io.*;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
-import javax.swing.SwingUtilities;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
-
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.server.NodeEvent;
 import org.cougaar.tools.server.OutputBundle;
 import org.cougaar.tools.server.OutputListener;
-
 import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+
+import javax.swing.*;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import java.awt.*;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Writer;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Listener for "pushed" Node activities. Handles NodeStatus button color

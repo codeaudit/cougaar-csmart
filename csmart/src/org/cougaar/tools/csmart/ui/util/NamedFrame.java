@@ -21,12 +21,15 @@
 
 package org.cougaar.tools.csmart.ui.util;
 
-import java.util.*;
-import javax.swing.JFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
-import java.io.ObjectInputStream;
+
+import javax.swing.*;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Observable;
 
 /**
  * Ensure that window names are unique within the CSMARTUL application.

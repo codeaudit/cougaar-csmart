@@ -20,11 +20,10 @@
  */
 package org.cougaar.tools.csmart.society;
 
-import java.io.File;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+
 import java.io.FileFilter;
 import java.net.URL;
-
-import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 /**
  * The interface for adding and removing nodes from a society.
  */

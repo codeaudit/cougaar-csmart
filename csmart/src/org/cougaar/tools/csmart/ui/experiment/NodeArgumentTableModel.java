@@ -20,13 +20,13 @@
  */
 package org.cougaar.tools.csmart.ui.experiment;
 
-import javax.swing.*;
-import javax.swing.table.*;
-import java.util.*;
-import java.lang.reflect.Array;
-
-import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
+import org.cougaar.tools.csmart.util.ReadOnlyProperties;
+
+import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Properties;
 
 /**
  * Creates a table of Node Arguments;

@@ -21,19 +21,15 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.net.URL;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JTree;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-
 import org.cougaar.tools.csmart.experiment.Experiment;
-import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import java.awt.*;
+import java.net.URL;
 
 public class OrganizerTreeCellRenderer extends DefaultTreeCellRenderer {
   Organizer organizer;

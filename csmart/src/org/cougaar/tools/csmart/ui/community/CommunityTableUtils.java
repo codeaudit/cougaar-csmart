@@ -22,7 +22,6 @@
 package org.cougaar.tools.csmart.ui.community;
 
 import java.util.ArrayList;
-import javax.swing.JTable;
 
 /**
  * Defines methods for interfacing to the table that are

@@ -20,17 +20,21 @@
  */
 package org.cougaar.tools.csmart.ui;
 
-import java.net.URL;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.event.*;
-import java.io.IOException;
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.text.*;
-import javax.swing.text.html.*;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.Document;
+import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTMLDocument;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.URL;
 
 public class Browser extends JFrame implements HyperlinkListener {
   private static final Dimension DEFAULT_SIZE = new Dimension(600, 800);

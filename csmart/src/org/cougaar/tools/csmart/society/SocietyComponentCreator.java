@@ -20,13 +20,7 @@
  */
 package org.cougaar.tools.csmart.society;
 
-import java.io.PrintStream;
-import java.util.Collection;
-import java.util.Iterator;
-
 import org.cougaar.core.agent.SimpleAgent;
-import org.cougaar.util.log.Logger;
-
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -34,9 +28,12 @@ import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.name.ComponentName;
-import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import java.io.PrintStream;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * Get a ComponentData tree for a Society, plus helper methods.

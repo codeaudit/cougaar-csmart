@@ -21,17 +21,7 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.lang.reflect.Constructor;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
-import javax.swing.JFileChooser;
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.core.agent.Agent;
 import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
@@ -43,17 +33,31 @@ import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.recipe.ComplexRecipeBase;
-import org.cougaar.tools.csmart.recipe.ComplexRecipeComponent;
-import org.cougaar.tools.csmart.recipe.ComponentCollectionRecipe;
 import org.cougaar.tools.csmart.recipe.RecipeBase;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.db.SocietyDBComponent;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
-import org.cougaar.core.agent.Agent;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.lang.reflect.Constructor;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
 
 /**
  * Helper functions for manipulating objects in the Organizer

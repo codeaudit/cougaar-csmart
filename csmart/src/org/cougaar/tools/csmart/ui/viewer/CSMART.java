@@ -22,55 +22,10 @@
 package org.cougaar.tools.csmart.ui.viewer;
 
 // tools created by this user interface
-import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.lang.reflect.Field;
-import java.net.InetAddress;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.Properties;
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JToolBar;
-import javax.swing.WindowConstants;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.cougaar.bootstrap.Bootstrapper;
-import org.cougaar.util.ConfigFinder;
-import org.cougaar.util.log.Logger;
-import org.cougaar.util.log.LoggerFactory;
-
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.db.ExperimentDB;
-import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
-import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.cdata.SocietyCDataComponent;
@@ -82,7 +37,36 @@ import org.cougaar.tools.csmart.ui.experiment.ExperimentBuilder;
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
-import org.cougaar.tools.csmart.ui.util.Util;
+import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.log.Logger;
+import org.cougaar.util.log.LoggerFactory;
+
+import javax.swing.*;
+import javax.swing.event.MenuEvent;
+import javax.swing.event.MenuListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.lang.reflect.Field;
+import java.net.InetAddress;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Properties;
 
 
 /**

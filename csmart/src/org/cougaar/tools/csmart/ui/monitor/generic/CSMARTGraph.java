@@ -22,18 +22,25 @@
 package org.cougaar.tools.csmart.ui.monitor.generic;
 
 import att.grappa.*;
-import java.awt.Color;
+import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.PropertyTree;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
-import java.lang.reflect.Constructor;
 import java.net.InetAddress;
 import java.rmi.server.UID;
-import java.util.*;
-import javax.swing.*;
-
-import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
-import org.cougaar.util.PropertyTree;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.util.log.Logger;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 /**
  * Display graph representing arbitrary objects.

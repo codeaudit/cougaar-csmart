@@ -13,7 +13,7 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
 public abstract class SwingWorker {
     private Object value;  // see getValue(), setValue()

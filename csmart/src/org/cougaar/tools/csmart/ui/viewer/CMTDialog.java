@@ -21,24 +21,19 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-import java.awt.Dimension;
-import java.awt.Point;
+import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.border.LineBorder;
-
-import org.cougaar.tools.csmart.core.db.ExperimentDB;
-import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * For loading experiments based on CMT assemblies, select the

@@ -25,27 +25,27 @@ package org.cougaar.tools.csmart.ui.servlet;
 
 
 
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.URL;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.Vector;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
 import org.cougaar.planning.ldm.asset.Asset;
 import org.cougaar.planning.ldm.asset.CommunityPG;
 import org.cougaar.planning.ldm.plan.HasRelationships;
-import org.cougaar.tools.csmart.ui.monitor.PropertyNames; 
+import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.util.PropertyTree;
 import org.cougaar.util.UnaryPredicate;
 import org.cougaar.util.log.Logger;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * Returns agent name and community name from Entity object. <br>

@@ -23,14 +23,19 @@
 
 package org.cougaar.tools.csmart.ui.community;
 
-import java.sql.*;
-import java.util.*;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.event.TableModelEvent;
 import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.table.AbstractTableModel;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DatabaseTableModel extends AbstractTableModel {
   private static final String GET_ALL_COMMUNITY_INFO_QUERY = "queryAllCommunityInfo";

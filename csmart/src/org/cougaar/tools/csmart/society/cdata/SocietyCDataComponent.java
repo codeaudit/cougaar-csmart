@@ -20,11 +20,11 @@
  */
 package org.cougaar.tools.csmart.society.cdata;
 
-import java.util.ArrayList;
-
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyBase;
+
+import java.util.ArrayList;
 
 /**
  * The class for creating a configurable component that represents

@@ -21,12 +21,12 @@
 
 package org.cougaar.tools.csmart.ui.monitor.community;
 
-import java.util.*;
-
 import org.cougaar.core.util.UID;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.monitor.generic.NodeObject;
 import org.cougaar.util.PropertyTree;
+
+import java.util.Vector;
 
 /**
  * Creates a NodeObject, i.e. an object that can be graphed, from

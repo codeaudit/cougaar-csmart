@@ -21,12 +21,15 @@
 
 package org.cougaar.tools.csmart.ui.monitor.topology;
 
-import java.awt.event.MouseEvent;
-import java.util.*;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
 
 /**
  *  A custom JTree that supplies tool tips from the user object.

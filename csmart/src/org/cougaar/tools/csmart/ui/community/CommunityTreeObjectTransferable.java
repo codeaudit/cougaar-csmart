@@ -21,13 +21,11 @@
 
 package org.cougaar.tools.csmart.ui.community;
 
-import java.awt.datatransfer.*;
-import java.io.*;
-import java.util.Arrays;
-import java.util.List;
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 
 public class CommunityTreeObjectTransferable implements Transferable {
   private DefaultMutableTreeNode treeNode;

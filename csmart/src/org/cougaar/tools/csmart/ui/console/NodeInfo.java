@@ -21,9 +21,10 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
+import org.cougaar.tools.server.RemoteHost;
+
 import java.util.List;
 import java.util.Properties;
-import org.cougaar.tools.server.RemoteHost;
 
 /**
  * The information needed to start, stop or attach to a running node.

@@ -21,10 +21,10 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-import java.awt.Component;
-import javax.swing.JOptionPane;
-
 import org.cougaar.tools.csmart.core.db.DBConflictHandler;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Create a <code>JOptionPane</code> to prompt the user to handle

@@ -22,37 +22,29 @@
 package org.cougaar.tools.csmart.ui.monitor.metrics;
 
 import com.klg.jclass.chart.*;
-import com.klg.jclass.util.legend.JCLegend;
 import com.klg.jclass.chart.data.*;
+import com.klg.jclass.util.legend.JCLegend;
 import com.klg.jclass.util.swing.JCExitFrame;
-
-import org.cougaar.util.log.Logger;
-
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
-import org.cougaar.tools.csmart.util.Sorting;
+import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import java.awt.*;
 import java.io.File;
-import java.io.ObjectInputStream;
 import java.io.FileInputStream;
-import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import javax.swing.JFileChooser;
-import javax.swing.JTable;
-import javax.swing.JPanel;
-import javax.swing.table.TableModel;
-import javax.swing.table.DefaultTableModel;
 
 /**
  * Show a rough graph of Task completion

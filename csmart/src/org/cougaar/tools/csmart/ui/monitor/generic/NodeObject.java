@@ -21,9 +21,9 @@
 
 package org.cougaar.tools.csmart.ui.monitor.generic;
 
-import java.util.*;
-
 import org.cougaar.util.PropertyTree;
+
+import java.util.Vector;
 
 /**
  * Interface that must be implemented for an object to be graphed.

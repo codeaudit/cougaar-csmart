@@ -21,36 +21,19 @@
 
 package org.cougaar.tools.csmart.ui.monitor.topology;
 
+import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.tools.csmart.ui.util.NamedFrame;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
-import java.util.*;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.JTree;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
-import javax.swing.event.TableModelEvent;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.table.TableColumnModel;
-
-import org.cougaar.tools.csmart.ui.Browser;
-import org.cougaar.tools.csmart.ui.util.NamedFrame;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class TopologyFrame extends JFrame {
   private static final String FILE_MENU = "File";

@@ -21,11 +21,18 @@
 
 package org.cougaar.tools.csmart.ui.community;
 
-import java.sql.*;
-import java.util.*;
 import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Methods for interfacing to database and supporting community displays.

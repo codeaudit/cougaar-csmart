@@ -21,8 +21,9 @@
 
 package org.cougaar.tools.csmart.ui.monitor.generic;
 
-import java.awt.Color;
 import att.grappa.GrappaColor;
+
+import java.awt.*;
 
 /**
  * For debugging: print the r,g,b value of a specified color

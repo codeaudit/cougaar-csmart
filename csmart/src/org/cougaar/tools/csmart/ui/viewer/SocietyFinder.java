@@ -21,15 +21,22 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-
-import javax.swing.JFileChooser;
-
+import org.cougaar.tools.csmart.util.FileParseUtil;
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.StringUtility;
-import org.cougaar.tools.csmart.util.FileParseUtil;
+
+import javax.swing.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  * Most of this was taken from ConfigFinder.  ConfigFinder is used

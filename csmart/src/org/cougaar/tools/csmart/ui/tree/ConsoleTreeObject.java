@@ -21,18 +21,18 @@
 
 package org.cougaar.tools.csmart.ui.tree;
 
-import java.io.Serializable;
-import java.io.ObjectOutputStream;
-import java.io.IOException;
-import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
-import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
-import java.awt.datatransfer.DataFlavor;
-import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import java.awt.datatransfer.DataFlavor;
+import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 public class ConsoleTreeObject implements Serializable {
   String name;

@@ -22,13 +22,12 @@
 package org.cougaar.tools.csmart.ui.monitor.generic;
 
 import att.grappa.*;
-import java.awt.Rectangle;
-import java.awt.event.*;
-import java.util.Vector;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
-import java.io.ObjectInputStream;
+
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Vector;
 
 /**
  * Adds functionality to GrappaAdapter which is the class that handles

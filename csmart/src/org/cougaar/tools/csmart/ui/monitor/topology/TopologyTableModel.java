@@ -21,8 +21,9 @@
 
 package org.cougaar.tools.csmart.ui.monitor.topology;
 
-import java.util.*;
 import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 /**
  * Supports a table in which the columns are:

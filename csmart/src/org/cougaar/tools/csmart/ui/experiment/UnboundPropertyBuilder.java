@@ -20,26 +20,27 @@
  */
 package org.cougaar.tools.csmart.ui.experiment;
 
-import java.awt.event.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
-
-import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.core.property.ModifiableComponent;
-import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.EventObject;
 
 /**
  * Properties panel in experiment builder.<br>

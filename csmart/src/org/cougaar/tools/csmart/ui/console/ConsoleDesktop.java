@@ -21,22 +21,14 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.beans.PropertyVetoException;
-import java.util.Hashtable;
-import java.util.Enumeration;
-import java.awt.event.ComponentListener;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.Component;
-import java.awt.Point;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Insets;
-import javax.swing.*;
-import javax.swing.event.InternalFrameListener;
-
-import org.cougaar.tools.csmart.experiment.NodeComponent;
-import org.cougaar.tools.server.RemoteProcess;
+import java.awt.event.ComponentListener;
+import java.beans.PropertyVetoException;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * The internal desktop in the console where the Node output windows appear.

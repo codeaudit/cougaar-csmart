@@ -22,7 +22,6 @@
 package org.cougaar.tools.csmart.ui.util;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class ServletResult {
   ArrayList responses;

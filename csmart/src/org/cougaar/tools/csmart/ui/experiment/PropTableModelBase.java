@@ -20,13 +20,17 @@
  */
 package org.cougaar.tools.csmart.ui.experiment;
 
-import javax.swing.*;
-import javax.swing.table.*;
-import java.awt.Component;
-import java.util.*;
-import java.lang.reflect.Array;
-
 import org.cougaar.tools.csmart.core.property.Property;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public abstract class PropTableModelBase extends AbstractTableModel {
     public static final int LABEL_COL = 0;

@@ -21,10 +21,13 @@
 
 package org.cougaar.tools.csmart.ui.configbuilder;
 
-import java.util.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class PropertyTreeNode extends DefaultMutableTreeNode {
   boolean isLeaf = true;

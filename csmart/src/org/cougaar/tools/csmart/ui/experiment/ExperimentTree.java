@@ -21,28 +21,27 @@
 
 package org.cougaar.tools.csmart.ui.experiment;
 
-import javax.swing.*;
-import javax.swing.tree.*;
-import java.awt.event.*;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.dnd.*;
-import java.awt.datatransfer.*;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.ui.console.*;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
 import org.cougaar.tools.csmart.ui.tree.DMTNArray;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-
 import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DnDConstants;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 public class ExperimentTree extends DNDTree {
   private transient Logger log;

@@ -22,12 +22,12 @@
 
 package org.cougaar.tools.csmart.ui.community;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import javax.swing.event.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  * Update the database when user modifies the community tree.

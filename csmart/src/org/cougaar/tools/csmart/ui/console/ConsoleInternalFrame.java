@@ -21,31 +21,27 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.awt.Dimension;
-import java.awt.Event;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.event.InternalFrameListener;
-import javax.swing.event.UndoableEditListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.text.DefaultEditorKit;
-
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.server.RemoteProcess;
 import org.cougaar.tools.server.system.ProcessStatus;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import javax.swing.event.InternalFrameListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.Vector;
 
 
 /**

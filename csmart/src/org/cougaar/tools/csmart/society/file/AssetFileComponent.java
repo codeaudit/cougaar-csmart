@@ -20,12 +20,6 @@
  */
 package org.cougaar.tools.csmart.society.file;
 
-import java.io.File;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
 import org.cougaar.planning.plugin.asset.AssetDataFileReader;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
@@ -43,6 +37,13 @@ import org.cougaar.tools.csmart.society.RelationshipBase;
 import org.cougaar.tools.csmart.util.FileParseUtil;
 import org.cougaar.tools.csmart.util.PrototypeParser;
 import org.cougaar.util.TimeSpan;
+
+import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 
 public class AssetFileComponent
   extends ModifiableConfigurableComponent

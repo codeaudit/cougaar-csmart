@@ -21,13 +21,15 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
+import org.cougaar.tools.csmart.core.db.ExperimentDB;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import javax.swing.JOptionPane;
-import javax.swing.tree.*;
-import java.util.*;
-
-import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 public class OrganizerNameSet extends UniqueNameSet {
   private Class[] noTypes = new Class[0];

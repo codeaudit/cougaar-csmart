@@ -21,54 +21,48 @@
 
 package org.cougaar.tools.csmart.ui.monitor.viewer;
 
-import org.cougaar.tools.csmart.ui.Browser;
-
-import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.society.AgentComponent;
-
+import org.cougaar.bootstrap.Bootstrapper;
+import org.cougaar.core.util.UID;
+import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
-import org.cougaar.tools.csmart.experiment.Experiment;
-
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.monitor.community.ULCommunityFrame;
 import org.cougaar.tools.csmart.ui.monitor.community.ULCommunityNode;
+import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph;
+import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
+import org.cougaar.tools.csmart.ui.monitor.generic.UIProperties;
+import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetricsFrame;
 import org.cougaar.tools.csmart.ui.monitor.plan.ULPlanFilter;
 import org.cougaar.tools.csmart.ui.monitor.plan.ULPlanFrame;
 import org.cougaar.tools.csmart.ui.monitor.plan.ULPlanNode;
 import org.cougaar.tools.csmart.ui.monitor.society.ULSocietyFrame;
 import org.cougaar.tools.csmart.ui.monitor.society.ULSocietyNode;
-import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTFrame;
-import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph;
-import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
-import org.cougaar.tools.csmart.ui.monitor.generic.UIProperties;
-import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetrics;
-import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetricsFrame;
 import org.cougaar.tools.csmart.ui.monitor.topology.TopologyFrame;
-
-import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
+import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.ServletResponse;
 import org.cougaar.tools.csmart.ui.util.ServletResult;
-import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-
-import org.cougaar.util.PropertyTree;
 import org.cougaar.util.ConfigFinder;
-import org.cougaar.core.util.UID;
-import org.cougaar.bootstrap.Bootstrapper;
+import org.cougaar.util.PropertyTree;
+import org.cougaar.util.log.Logger;
 
-import java.awt.event.*;
-import java.awt.Frame;
-import java.awt.GridLayout;
-import java.awt.Window;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.URL;
 import java.util.*;
-import javax.swing.*;
-import org.cougaar.util.log.Logger;
-import java.io.ObjectInputStream;
-import java.io.IOException;
+import java.util.List;
 
 /**
  * The user interface for the CSMART Society.

@@ -23,30 +23,34 @@
 
 package org.cougaar.tools.csmart.ui.community;
 
-import java.awt.BorderLayout;
-import java.awt.event.*;
-import java.net.URL;
-import java.util.*;
-import java.io.File;
-import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.event.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-
-import org.cougaar.util.log.Logger;
-
 import org.cougaar.tools.csmart.core.db.CommunityDbUtils;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.ui.Browser;
-import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.EventObject;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Experiment Builder Tabbed Pane for editing communities

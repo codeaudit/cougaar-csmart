@@ -21,17 +21,18 @@
 
 package org.cougaar.tools.csmart.ui.monitor.metrics;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import javax.swing.*;
-import java.util.*;
-import java.net.URL;
-
-import org.cougaar.tools.csmart.ui.monitor.generic.UIProperties;
-import org.cougaar.tools.csmart.ui.util.NamedFrame;
-import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.tools.csmart.ui.util.NamedFrame;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.net.URL;
+import java.util.ArrayList;
 
 public class CSMARTMetricsFrame extends JFrame implements ActionListener
 {

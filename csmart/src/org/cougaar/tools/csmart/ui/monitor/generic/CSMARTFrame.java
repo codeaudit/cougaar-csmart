@@ -21,28 +21,31 @@
 
 package org.cougaar.tools.csmart.ui.monitor.generic;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.*;
-import java.io.File;
-import java.lang.reflect.Constructor;
-import java.util.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.table.*;
-
 import att.grappa.*;
-
+import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
-import org.cougaar.tools.csmart.ui.Browser;
-import java.net.URL;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.ObjectInputStream;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.geom.AffineTransform;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * Frame for displaying graphs.

@@ -21,14 +21,16 @@
 
 package org.cougaar.tools.csmart.ui.experiment;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-
+import org.cougaar.tools.csmart.core.db.CMT;
 import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
-import org.cougaar.tools.csmart.core.db.CMT;
 import org.cougaar.tools.csmart.experiment.Experiment;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 
 public class ThreadBuilder extends JPanel {
   // thread names displayed for user

@@ -26,14 +26,17 @@
 
 package org.cougaar.tools.csmart.ui.monitor.topology;
 
-import java.util.*;
+import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.InputEvent;
-import javax.swing.JTable;
-import javax.swing.table.*; 
-import javax.swing.event.TableModelListener; 
-import javax.swing.event.TableModelEvent; 
+import java.util.Date;
+import java.util.Vector;
 
 //public class TableSorter extends AbstractTableModel implements TableModelListener {
 public class TableSorter extends AbstractTableModel {

@@ -21,13 +21,18 @@
 
 package org.cougaar.tools.csmart.ui.monitor.generic;
 
-import java.awt.Color;
-import java.io.*;
-import java.util.*;
-
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+
+import java.awt.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 /**
  * Utility class that supports a common set of properties (especially color),

@@ -21,16 +21,16 @@
 
 package org.cougaar.tools.csmart.ui.monitor.plan;
 
-import java.util.*;
-import javax.swing.table.AbstractTableModel;
-
 import att.grappa.Attribute;
 import att.grappa.Node;
-
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.PropertyTree;
 import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+
+import javax.swing.table.AbstractTableModel;
+import java.util.Enumeration;
+import java.util.Vector;
 
 public class ULPlanTableModel extends AbstractTableModel {
   Vector names;

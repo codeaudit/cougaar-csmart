@@ -21,8 +21,8 @@
 
 package org.cougaar.tools.csmart.ui.monitor.generic;
 
+import javax.swing.*;
 import java.awt.*;
-import javax.swing.Icon;
 
 /** Create a colored square icon from the color specified.
  *  Used in legends.

@@ -21,10 +21,8 @@
 
 package org.cougaar.tools.csmart.ui.monitor.generic;
 
-import java.awt.Component;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.ListCellRenderer;
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Used to render legends which contain labels and colored icons.

@@ -22,19 +22,21 @@
 package org.cougaar.tools.csmart.ui.monitor.viewer;
 
 
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.util.*;
-import javax.swing.JOptionPane;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
 import org.cougaar.tools.csmart.ui.util.ServletResponse;
-import org.cougaar.tools.csmart.ui.util.ServletResult;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.PropertyTree;
 import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Utility <tt>getFullThread(..)<tt> methods for multi-agent interaction

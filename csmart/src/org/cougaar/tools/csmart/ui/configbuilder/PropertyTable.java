@@ -21,21 +21,6 @@
 
 package org.cougaar.tools.csmart.ui.configbuilder;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.net.URL;
-import java.lang.reflect.Array;
-import java.util.EventObject;
-import java.util.SortedSet;
-import java.util.Iterator;
-import java.util.TreeSet;
-import java.util.Set;
-import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.*;
-import javax.swing.border.EtchedBorder;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.InvalidPropertyValueException;
 import org.cougaar.tools.csmart.core.property.Property;
@@ -43,6 +28,22 @@ import org.cougaar.tools.csmart.core.property.PropertyHelper;
 import org.cougaar.tools.csmart.core.property.range.Range;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
+
+import javax.swing.*;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.lang.reflect.Array;
+import java.net.URL;
+import java.util.EventObject;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * A JTable that displays property names and values.

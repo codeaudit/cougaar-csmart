@@ -21,14 +21,14 @@
 
 package org.cougaar.tools.csmart.ui.util;
 
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.log.Logger;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
-import javax.swing.*;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Utilities for CSMART GUI.

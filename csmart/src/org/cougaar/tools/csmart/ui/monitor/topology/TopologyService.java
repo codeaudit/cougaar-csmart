@@ -21,11 +21,15 @@
 
 package org.cougaar.tools.csmart.ui.monitor.topology;
 
-import java.util.*;
-import javax.swing.JOptionPane;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
 import org.cougaar.tools.csmart.ui.util.ServletResponse;
+
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Vector;
 
 public class TopologyService {
   ArrayList parameterNames;

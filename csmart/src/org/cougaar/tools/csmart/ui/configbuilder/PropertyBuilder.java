@@ -21,17 +21,6 @@
 
 package org.cougaar.tools.csmart.ui.configbuilder;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.*;
-import javax.swing.*;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Vector;
-
-import org.cougaar.tools.csmart.core.db.DBConflictHandler;
-import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
@@ -41,6 +30,14 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.net.URL;
 
 /**
  * User interface that supports building a configurable component.

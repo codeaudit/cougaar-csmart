@@ -20,19 +20,8 @@
  */
 package org.cougaar.tools.csmart.society.cdata;
 
-import java.net.URL;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.core.property.ComposableComponent;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
-import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.society.ComponentBase;
 
 

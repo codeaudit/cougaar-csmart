@@ -20,14 +20,13 @@
  */
 package org.cougaar.tools.csmart.society;
 
-import java.text.DateFormat;
-import java.util.HashSet;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+
+import java.text.DateFormat;
 import java.util.Date;
 
 /**

@@ -21,8 +21,10 @@
 
 package org.cougaar.tools.csmart.ui.community;
 
-import java.awt.event.*;
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Pops up a menu with the Delete action to delete

@@ -20,15 +20,9 @@
  */
 package org.cougaar.tools.csmart.society.ui;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
@@ -36,8 +30,13 @@ import org.cougaar.tools.csmart.society.AssetComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PropGroupBase;
 import org.cougaar.tools.csmart.society.RelationshipBase;
-import org.cougaar.tools.csmart.util.PrototypeParser;
 import org.cougaar.util.TimeSpan;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 
 public class AssetUIComponent
   extends ModifiableConfigurableComponent

@@ -20,26 +20,24 @@
  */
 package org.cougaar.tools.csmart.ui.viewer;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Map;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.swing.tree.*;
-
+import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.util.XMLUtils;
 import org.cougaar.util.log.Logger;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.util.Enumeration;
+import java.util.Map;
 
 /**
  * Write out to XML enough content to recreate a users workspace. Also used to read it in,

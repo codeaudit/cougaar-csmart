@@ -21,9 +21,8 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.awt.Color;
-import java.awt.Image;
-import javax.swing.Icon;
+import javax.swing.*;
+import java.awt.*;
 
 /** Create a SelectedColored circle icon from the color specified.
  *  Used in legends.

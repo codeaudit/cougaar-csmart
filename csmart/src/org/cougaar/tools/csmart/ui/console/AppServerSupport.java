@@ -21,13 +21,9 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.util.*;
-import javax.swing.JOptionPane;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-
+import org.cougaar.tools.csmart.experiment.Experiment;
+import org.cougaar.tools.csmart.ui.util.Util;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.server.ProcessDescription;
 import org.cougaar.tools.server.RemoteHost;
 import org.cougaar.tools.server.RemoteHostRegistry;
@@ -35,9 +31,14 @@ import org.cougaar.tools.server.RemoteListenable;
 import org.cougaar.tools.server.RemoteProcess;
 import org.cougaar.util.log.Logger;
 
-import org.cougaar.tools.csmart.experiment.Experiment;
-import org.cougaar.tools.csmart.ui.util.Util;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Support for communications with the AppServer (Application Server)

@@ -21,12 +21,9 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.awt.Color;
-import java.awt.Image;
+import javax.swing.*;
+import java.awt.*;
 import java.net.URL;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JRadioButton;
 
 public class NodeStatusButton extends JRadioButton {
   public int status = STATUS_UNKNOWN;

@@ -20,8 +20,7 @@
  */
 package org.cougaar.tools.csmart.society;
 
-import org.cougaar.tools.csmart.core.property.ModifiableComponent;
-import org.cougaar.tools.csmart.core.property.Property;
+
 
 /**
  * A simple interface implemented by configurable components 

@@ -21,24 +21,19 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.CaretListener;
-import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Position;
-
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-
-import org.cougaar.util.log.Logger;
+import java.awt.*;
 
 /**
  * A text pane that contains a ConsoleStyledDocument and supports

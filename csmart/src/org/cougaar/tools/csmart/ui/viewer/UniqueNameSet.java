@@ -21,10 +21,10 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
+import org.cougaar.util.log.Logger;
+
 import java.lang.reflect.Method;
 import java.util.HashSet;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class UniqueNameSet extends HashSet {
   private String prefix;

@@ -21,14 +21,15 @@
 
 package org.cougaar.tools.csmart.ui.monitor.generic;
 
-import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.event.*;
 import att.grappa.*;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /** 
  * Overview (bird's eye view) of graph.

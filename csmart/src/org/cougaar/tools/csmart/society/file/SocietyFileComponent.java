@@ -20,16 +20,12 @@
  */
 package org.cougaar.tools.csmart.society.file;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Iterator;
 import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.tools.csmart.core.cdata.ComponentConnector;
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyBase;
-import org.cougaar.tools.csmart.society.file.AgentFileComponent;
+
+import java.io.File;
 
 public class SocietyFileComponent
   extends SocietyBase {

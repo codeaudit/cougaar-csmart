@@ -21,12 +21,13 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-
 import org.cougaar.tools.server.NodeEvent;
+
+import javax.swing.*;
+import javax.swing.border.TitledBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Dialog for selecting what Node output to filter

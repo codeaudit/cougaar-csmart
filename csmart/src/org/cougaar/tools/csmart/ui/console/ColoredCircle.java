@@ -21,18 +21,11 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics2D;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.RenderingHints;
-import java.awt.Stroke;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.Collections;
 import java.util.Map;
-import javax.swing.Icon;
 
 /** Create a Colored circle icon from the color specified.
  *  Used in legends.

@@ -20,12 +20,10 @@
  */
 package org.cougaar.tools.csmart.society;
 
-import java.util.Iterator;
 import org.cougaar.core.agent.Agent;
 import org.cougaar.core.agent.AgentManager;
-import org.cougaar.core.plugin.PluginManager;
-
 import org.cougaar.core.component.ComponentDescription;
+import org.cougaar.core.plugin.PluginManager;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
@@ -37,6 +35,8 @@ import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.recipe.PriorityProperty;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+
+import java.util.Iterator;
 
 /**
  * ComponentBase is the basic implementation for editing & configuring

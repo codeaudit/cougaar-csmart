@@ -21,12 +21,11 @@
 
 package org.cougaar.tools.csmart.ui.monitor.generic;
 
-import java.awt.Color;
-import javax.swing.AbstractListModel;
-import javax.swing.ComboBoxModel;
-import javax.swing.SwingConstants;
-import javax.swing.JLabel;
-import java.util.*;
+import javax.swing.*;
+import java.awt.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Vector;
 
 /**
  * Used as the model for JComboBoxes in legends.

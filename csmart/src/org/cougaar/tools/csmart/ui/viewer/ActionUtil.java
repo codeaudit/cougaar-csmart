@@ -21,17 +21,14 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-import java.util.Enumeration;
-import javax.swing.Action;
-import javax.swing.tree.DefaultMutableTreeNode;
-
-import org.cougaar.util.log.Logger;
-
-import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.Enumeration;
 
 /**
  * Set of utilities for determining what tools & actions
