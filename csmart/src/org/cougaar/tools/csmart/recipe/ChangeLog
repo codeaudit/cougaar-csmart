@@ -1,3 +1,719 @@
+2002-01-24  travers@dhcp077-232.bbn.com  <travers@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ParameterInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeBase.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/SpecificInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCCyberImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCKineticImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/BasicMetric.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ComponentInsertionRecipe.java:
+	Fixed bug in setEditable method in RecipeBase.
+	Removed RecipeBase.setName so it uses the method defined in ConfigurableComponent.
+	Added RecipeBase.getRecipeName implementation, and removed it from all the classes which extend RecipeBase.
+
+2002-01-18  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCCyberImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCKineticImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/BasicMetric.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ComponentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ParameterInsertionRecipe.java:
+	Added missing method that I removed from the base class yesterday.
+
+2002-01-17  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/SpecificInsertionRecipe.java:
+	Added getRecipeName which got deleted.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeBase.java:
+	Removed method that was in wrong place
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Fixed small bug that occurs when toggling OrgAssets on
+	and off and Relationships were set.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/SpecificInsertionRecipe.java:
+	Changed to use new boolean property
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Fixed typo
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Modifed to use new boolean property
+	Now hides Org related props when include
+	Org is FALSE
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/BasicMetric.java:
+	Modifed to use new boolean property
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ComponentTypeProperty.java:
+	New Property Type for Components.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/basic-metric-help.html:
+	Changed to match current implementation
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeBase.java:
+	Created an addBooleanProperty method.
+
+2002-01-16  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCCyberImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCKineticImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/BasicMetric.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ComponentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ParameterInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeBase.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/SpecificInsertionRecipe.java:
+	Fixed help display problem that was a result of moving 1 to many
+	methods into the base class.
+
+2002-01-14  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeBase.java:
+	Base class for all recipes, removes the need for
+	the "boiler plate" section in previous recipes.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCCyberImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCKineticImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentQueryProperty.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/BasicMetric.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ComponentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/MetricComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ParameterInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeQueryProperty.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/SpecificInsertionRecipe.java:
+	Modifed to implement RecipeBase, removed commented out code.
+	Cleaned up a bit.
+
+2002-01-14  travers@dhcp077-232.bbn.com  <travers@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/BasicMetric.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ImpactComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeComponent.java:
+	Renamed ComponentProperties to BaseComponent.
+	Removed unneeded imports.
+
+2002-01-10  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/empty-metric-description.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/EmptyMetric.java:
+	get rid of useless recipe
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/BasicMetric.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/EmptyMetric.java:
+	Use new ResultsFileFilter
+
+2002-01-09  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/BasicMetric.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCCyberImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCKineticImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ComponentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/SpecificInsertionRecipe.java:
+	More repacking related fixes
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCCyberImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCKineticImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ComponentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/EmptyMetric.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ImpactComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/MetricComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ParameterInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/SpecificInsertionRecipe.java:
+	More repackaging related fixes to imports, etc
+
+2002-01-09  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/BasicMetric.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/MetricComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeComponent.java:
+	Fixed package names and imports
+
+2002-01-09  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/abc-impact-description.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/abc-impact-help.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/cyber-impact-description.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/cyber-impact-help.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/kinetic-impact-description.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/kinetic-impact-help.html:
+	move to recipe package
+
+2002-01-09  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentQueryProperty.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeQueryProperty.java:
+	Modifed for package changes
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/basic-metric-description.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/basic-metric-help.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/empty-metric-description.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCCyberImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ABCKineticImpact.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/BasicMetric.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/EmptyMetric.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ImpactComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/MetricComponent.java:
+	moved from different pacakges
+
+2002-01-04  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ParameterInsertionRecipe.java:
+	Fix for bug 921.
+	Core allows 2 plugins (or binders, etc) of same class in same agent.
+	To allow this in CSMART, construct alib_ids using the component
+	_name_, not the Class. Users must now specify unique names for
+	plugins/binders they add with recipes, in order to add, for example,
+	the Servlet plugin twice to the same agent.
+
+	Note that if the arguments to the plugin are identical, Cougaar may
+	have trouble, but CSMART will currently allow this.
+
+	It is still not possible to modify or delete a binder/plugin/agent
+	using a recipe.
+
+	If you try to add a plugin to an agent twice, using the same component
+	name, you will get an IllegalArgumentException.
+
+	Also:
+	ParameterInsertionRecipe correctly compares Alib_id's with Alib_ids,
+	or classes with classes (and not names with alib ids, which makes no
+	sense).
+
+	Additionally, added a comment of a possible improvement to
+	GenericComponentData
+
+2002-01-02  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	restore repackaging fixes while including tweaks from branch
+
+2002-01-02  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Merge Changes from Branch
+
+2001-12-31  Beth DePass  <bdepass@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/agent-recipe-help.html:
+	Cougaar9.0 repackaging
+
+2001-12-17  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Fixed Bug #952.
+
+	Both ItemIdentification and Nomenclature where
+	being set to the Recipe Name, not the assigned Agent Name.
+
+2001-12-13  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	fix to checkins from yesterday - preserve parent
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Fix to checkins from yesterday - be sure added agents retain their parent.
+
+2001-12-12  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ComponentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ParameterInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/SpecificInsertionRecipe.java:
+	Fixes from branch:
+
+	Multiple changes:
+	1) Fix addition of recipe components to ensure order is as listed in
+	ExperimentBuilder, components arent duplicated, and binders come
+	before other items at same level.
+	Note you cannot have 2 plugins with the same name in an agent, binders
+	always come before _every_ plugin (although the infrastructure would
+	let you do otherwise). Also note that earlier recipes _will_ apply to
+	later recipes: If an earlier recipe adds a plugin to all agents, and a
+	later recipe adds an agent, the new agent _will_ have the new plugin.
+	Also note that if you edit an Agent Recipe that is in an experiment,
+	when you load the experiment back from the database, the recipe
+	appears to have been removed from the experiment.
+
+	2) New debugging tool: All ini files can be dumped to the results
+	   directory. This includes showing the -D arguments for the society,
+	   and the per-node arguments. Note that the prototype-ini files are
+	   not complete for society agents.
+
+
+	Organizer: When creating Experiment from DB, add in agents from
+	society before those from recipes, and only add in the recipe agents
+	if they're not already in the list
+
+	GenericComponentData/LeafComponentData: add a .equals method: 2
+	ComponentData are equals if they're names are equals.
+
+	ComponentData/GenericComponentData: new convenience method to give the
+	index of a child (-1 if not present)
+	-- new convenience method used in adding children: always replace any
+	existing child that is .equals (same name). Binders go before all
+	agents/plugins. Otherwise add new items after others of the same type.
+
+	HostConfigurationBuilder: The ConfigurableComponentComparator should
+	compare the short name, not the full name when comparing nodes and
+	agents with DB societies: It is used for Nodes (names are only short),
+	and Agents (whose names can't be duplicated anyhow). Note the solution
+	in here hard-codes the society prefix of Combo for DB societies - bug 914
+
+	CMTAgent: When grabbing the set of assemblies for constructing
+	ComponentData, only use assemblies that start with CMT - avoids
+	constructing stuff that Recipes should be adding. Also add some
+	comments. Also, add a .equals method: Agents are the same if their
+	short name is the same. Note that this is not strictly true (built in
+	societies' agents need to compare the longer name)
+
+	AgentInsertionRecipe: Most references to InsertAgentComponent need not
+	do so, change them to a generic AgentComponent.
+	- When creating the the AgentComponentData, create it fresh and
+	replace the existing one. This forces it to be all the new stuff. It
+	has the side effect that recipes listed before this one will never
+	effect this agent
+	- Comment out some debug printlns
+	- Change .equals method to allow comparison with any AgentComponent,
+	and
+	- to only compare on the short name. This won't work quite right with
+	built-in societies, which make use of the longer agent name
+
+	ABCImpact & BasicMetric & ComponentInsertionRecipe & SpecificInsertionRecipe: use the new
+	addChildDefaultLoc method for adding children in the correct location.
+
+	ComponentInsertionRecipe: If the type I get from the query is binder,
+	treat it as an agent binder (without this, type of component is wrong)
+
+	PopulateDb.java:
+	When trying to get the componentAlibID for a component, handle the
+	case where it has no ancestor: use the name as a default, but dont set
+	the ID on the ComponentData - let someone else handle that (causes
+	NPEs when adding Agents)
+
+	ExperimentBuilder/Experiment: new File menu item - a debug option to
+	print out all the .ini files locally. Note that the OrgAsset files are
+	not complete. This tries to work for both DB and non-DB
+	experiments. For both, it only writes out the configs for the first
+	trial (untested for non-DB experiments that really vary parameters).
+	- helps address bug 915, 916
+
+	ExpConfigWriterNew: Changes to support writing out debug ini files
+	- New constructor that takes full ComponentData
+	- Build the non-DB component data strictly forward (not reverse for
+	calling modifyComponentData as before)
+	- Catch NPE when the Nodes don't have a ConfigurationFileName property
+	(which they don't for DB experiments)
+	- Handle the possibility that below the top-level society node, there
+	may be host nodes. Write out a file for each host, listing its Nodes +
+	the node-specific arguments. Also write out a society file, listing the global -D arguments
+	- When writing individual lines like plugin = ..., use the ClassName
+	in many circumstances
+	- Print a stacktrace on exceptions
+	- Translate node binder and agent binder into the appropriate
+	insertion point
+	- Dont write the prototype ini file at all if we have no relevant data
+	- Dont write the UniqueID slot in the prototype ini if its null
+	These are bugs 915, 916
+
+	ABCImpact: Change Node Binder insertion point to
+	Node.AgentManager.Binder
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ComponentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ParameterInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/SpecificInsertionRecipe.java:
+	Multiple changes:
+	1) Fix addition of recipe components to ensure order is as listed in
+	ExperimentBuilder, components arent duplicated, and binders come
+	before other items at same level.
+	Note you cannot have 2 plugins with the same name in an agent, binders
+	always come before _every_ plugin (although the infrastructure would
+	let you do otherwise). Also note that earlier recipes _will_ apply to
+	later recipes: If an earlier recipe adds a plugin to all agents, and a
+	later recipe adds an agent, the new agent _will_ have the new plugin.
+	Also note that if you edit an Agent Recipe that is in an experiment,
+	when you load the experiment back from the database, the recipe
+	appears to have been removed from the experiment.
+
+	2) New debugging tool: All ini files can be dumped to the results
+	   directory. This includes showing the -D arguments for the society,
+	   and the per-node arguments. Note that the prototype-ini files are
+	   not complete for society agents.
+
+
+	Organizer: When creating Experiment from DB, add in agents from
+	society before those from recipes, and only add in the recipe agents
+	if they're not already in the list
+
+	GenericComponentData/LeafComponentData: add a .equals method: 2
+	ComponentData are equals if they're names are equals.
+
+	ComponentData/GenericComponentData: new convenience method to give the
+	index of a child (-1 if not present)
+	-- new convenience method used in adding children: always replace any
+	existing child that is .equals (same name). Binders go before all
+	agents/plugins. Otherwise add new items after others of the same type.
+
+	HostConfigurationBuilder: The ConfigurableComponentComparator should
+	compare the short name, not the full name when comparing nodes and
+	agents with DB societies: It is used for Nodes (names are only short),
+	and Agents (whose names can't be duplicated anyhow). Note the solution
+	in here hard-codes the society prefix of Combo for DB societies - bug 914
+
+	CMTAgent: When grabbing the set of assemblies for constructing
+	ComponentData, only use assemblies that start with CMT - avoids
+	constructing stuff that Recipes should be adding. Also add some
+	comments. Also, add a .equals method: Agents are the same if their
+	short name is the same. Note that this is not strictly true (built in
+	societies' agents need to compare the longer name)
+
+	AgentInsertionRecipe: Most references to InsertAgentComponent need not
+	do so, change them to a generic AgentComponent.
+	- When creating the the AgentComponentData, create it fresh and
+	replace the existing one. This forces it to be all the new stuff. It
+	has the side effect that recipes listed before this one will never
+	effect this agent
+	- Comment out some debug printlns
+	- Change .equals method to allow comparison with any AgentComponent,
+	and
+	- to only compare on the short name. This won't work quite right with
+	built-in societies, which make use of the longer agent name
+
+	ABCImpact & BasicMetric & ComponentInsertionRecipe & SpecificInsertionRecipe: use the new
+	addChildDefaultLoc method for adding children in the correct location.
+
+	ComponentInsertionRecipe: If the type I get from the query is binder,
+	treat it as an agent binder (without this, type of component is wrong)
+
+	PopulateDb.java:
+	When trying to get the componentAlibID for a component, handle the
+	case where it has no ancestor: use the name as a default, but dont set
+	the ID on the ComponentData - let someone else handle that (causes
+	NPEs when adding Agents)
+
+	ExperimentBuilder/Experiment: new File menu item - a debug option to
+	print out all the .ini files locally. Note that the OrgAsset files are
+	not complete. This tries to work for both DB and non-DB
+	experiments. For both, it only writes out the configs for the first
+	trial (untested for non-DB experiments that really vary parameters).
+	- helps address bug 915, 916
+
+	ExpConfigWriterNew: Changes to support writing out debug ini files
+	- New constructor that takes full ComponentData
+	- Build the non-DB component data strictly forward (not reverse for
+	calling modifyComponentData as before)
+	- Catch NPE when the Nodes don't have a ConfigurationFileName property
+	(which they don't for DB experiments)
+	- Handle the possibility that below the top-level society node, there
+	may be host nodes. Write out a file for each host, listing its Nodes +
+	the node-specific arguments. Also write out a society file, listing the global -D arguments
+	- When writing individual lines like plugin = ..., use the ClassName
+	in many circumstances
+	- Print a stacktrace on exceptions
+	- Translate node binder and agent binder into the appropriate
+	insertion point
+	- Dont write the prototype ini file at all if we have no relevant data
+	- Dont write the UniqueID slot in the prototype ini if its null
+	These are bugs 915, 916
+
+	ABCImpact: Change Node Binder insertion point to Node.AgentManager.Binder
+
+2001-12-10  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/agent-recipe-help.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentQueryProperty.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ParameterInsertionRecipe.java:
+	Merge changes from 862 branch. See branch comments. Changes include:
+	CSMART Console: Fixed bug 824 -- make "exception" be the default notification string.
+	HostConfigurationBuilder: Ensure that node names and agent names are unique as they occupy the
+	same name space.  Fixes bug 810.
+	ui/console:
+	Fixed bugs 771, 891, 893:
+	Can provide local and global command line arguments from a file (use the
+	"Command Line Arguments" and "Global Command Line Arguments" menu items
+	on the node in ExperimentBuilder -- there's a new button in the pop-up dialog
+	-- "Read From File").
+	Prevent user editing arguments that shouldn't be edited (such as node
+	name).
+
+	* ReadOnlyProperties.java:
+	Fix bug 893
+	Extends java.util.Properties by adding a Set of keys that should
+	be immutable (or mutable only in a controlled way). The put,
+	putAll, remove, and clear methods are overridden to disallow
+	modifications or removal of the read-only keys. Additional methods
+	allow these values to be changed when needed.
+
+	* Experiment.java:
+	Fix bug 893
+	Change defaultNodeArguments to be ReadOnlyProperties. Make the
+	"...experiment.id" property be read-only and set its value
+	whenever the trialId is changed.
+	Simplify the copying of properties when copying the node.
+
+	* ExperimentNode.java:
+	Fix bug 893
+	Change "arguments" to be ReadOnlyProperties. Make the
+	"...node.name" property be readonly and set its value only when
+	renaming the node.
+	Simplify the copying of properties when copying the node.
+
+	* NodeComponent.java:
+	Fix bug 893
+	Remove the setArguments method. It is unnecessary and problematic
+	since it implies that the arguments of a node can be alter in a
+	will-nilly fashion. The only permitted actions are the editing of
+	the Properties returned by getArguments().
+
+	Experiment: Changed default node argument from:
+	org.cougaar.core.cluster.persistence.enabled
+	to
+	org.cougaar.core.cluster.persistence.enable (no final d)
+
+	If user exits Experiment Builder and hasn't modified the experiment,
+	then don't query about saving the experiment.
+	If user selects Save As menu item, then just save the experiment,
+	regardless of whether or not it's been modified.
+	These are additional fixes on bug 883.
+
+	CSMARTConsole: Fixed bug 851 -- if user doesn't specify results (metrics) directory,
+	then don't run the experiment (in ExperimentController).
+
+	CMT.java: Fix bug 885
+	Remove code that tries to remove the society component when
+	deleting an experiment. This violates foreign key constraints
+	against the component_hierarchy and component_arg tables. Let the
+	assembly cleanup code take care of this.
+
+	ui/viewer:
+	Allow re-use of experiment name when configuring an experiment (bug #883).
+	Experiment: Removed isCloned/setCloned methods; no longer used.
+	ExperimentBuilder: Added Save As menu item and method; call SaveAs method when user exits
+	ExperimentBuilder (by closing window or invoking File-Close menu item).
+	CMTDialog: Allow user to save experiment under original name.
+	CSMART: Pass through "allowExistingName" flag to getUniqueExperimentName.
+	Organizer: Added flag to getUniqueExperimentName to allow reuse of existing name.
+	Removed use of Experiment isCloned/setCloned.
+
+	ui/component:
+	* PDbBase.java:
+	* PopulateDb.java:
+	Fix bug 883.
+	Clone the experiment being saved if and only if its name is
+	different from the name in the database for the experiment
+	identified by the experiment id. Ignore arg saying whether to
+	createNew or not. If the name differs, it must be cloned. If the
+	name is the same it cannot be cloned.
+	Set experiment and trial descriptions rationally. Select
+	experiment and trial ids more reasonbably.
+
+	* Organizer.java:
+	Fix bug 882
+	When reading society and node properties replace all default
+	values with values from the database if there are _any_ values in
+	the database.
+
+	* HostConfigurationBuilder.java:
+	* Experiment.java:
+	More Fix bug 853
+	Fix problem in retaining nameserver host property. This
+	computation was done far too often including cases where the
+	complete list of hosts nodes and agents was not available.
+	Move the code to do this computation from builder to Experiment.
+	Do the computation before handing out the experiments list of
+	Nodes. This insures that any code that looks at the nodes'
+	properties will see an up=to=date computation of this property.
+
+
+	* Organizer.java:
+	Fix bug 878
+	Allow deletion if the recipe differs as well as if it exists.
+
+	* Experiment.java:
+	Fix bug 876
+	Save agent properties. This allows recipe added agents to be
+	marked with a property so they can be identified when read from
+	the database. This allows old recipe agents to be removed.
+
+	* PopulateDb.java:
+	Fix bug 876
+	Provide a way to repopulate the CMT part of an experiment. The CMT
+	part is normal read-only, but if a recipe deletes some part of the
+	CMT assembly, the only way to represent that is to replace the old
+	CMT with a new omitting or changing as necessary.
+
+	* PDbBase.java:
+	Fix bug 876
+	Save only local properties for a recipe.
+
+	* GenericComponentData.java:
+	Fix bug 876
+	setChildren must clear old children before setting new ones
+	otherwise they just keep building up.
+
+	* ConfigurableComponent.java:
+	* ComponentProperties.java:
+	Fix bug 876
+	Provide mechanism to indicate removed (renamed) agents.
+
+	* PopulateDb.java:
+	Fix bug 875
+	Improve detection of inserted/replaced arguments to not falsely
+	indicate removal when none has happened.
+
+	* CMTAgent.java:
+	Fix bug 876
+	Allow construction without assemblyId for the case where the agent
+	has not yet been put in the database.
+
+	Fixed Bug: #873
+	Agent Insertion Recipe now provides the ability to
+	toggle the inclusion of OrgAssets and ItemIdentificationPG's.
+	If an OrgAsset is Included, a ClusterPG is created as well.
+	ItemIdentificationPG's are required for all agents except
+	Prototypes.
+
+	Fixed bug #841 -- allow forced editing of a recipe that is included
+	in an experiment that has been run.
+
+2001-12-04  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Fix for bug 873
+
+	Cleaned up to eliminate dependencies for another bug fix
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ParameterInsertionRecipe.java:
+	Fix for Bug 879.
+
+	Created a recipe that will allow the addition of a Parameter to an Agent
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ParameterInsertionRecipe.java:
+	New file.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/agent-recipe-help.html:
+	Bugs: #872, #873
+
+	Updated Online Documentation for fixes in bugs #872 and 873
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Fixed Bug: #873
+
+	Agent Insertion Recipe now provides the ability to
+	toggle the inclusion of OrgAssets and ItemIdentificationPG's.
+
+	If an OrgAsset is Included, a ClusterPG is created as well.
+
+	ItemIdentificationPG's are required for all agents except
+	Prototypes.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Another attempt to Fix  Bug#872.
+
+	Added a Parameter for the PSPPlanServer.
+
+2001-12-04  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentQueryProperty.java:
+	Remove extraneous import of non-existent file
+
+2001-12-03  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentQueryProperty.java:
+	Another attempt to Fix  Bug#871.
+
+	Remove the dropdown list for now and
+	require the user to enter the agents name.
+
+2001-12-01  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Fix jikes compile warnings - qualify method invocations with this.
+
+2001-11-30  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Change from the branch:
+
+	Recipe: Added more required Property Groups, fixed a few bugs. Made
+	asset class a property, defaulted to MilitaryOrginazition. Added Org
+	Plugins.
+
+	PopulateDb.java Fixed Bugs related to populating an agent and its property groups, Fixed bug in populate agent
+	ConfigurableComponent.java Removed some printout chatter
+	PropertyEditorPanel.java Removed some printout chatter
+	Organizer.java: Print out the query when we get an SQLException, for debugging
+	 If we get no assemblies, produce an in string that is not an SQL
+	 Exception, and print a warning message
+
+
+	* HostConfigurationBuilder.java:
+	Fix bug 853
+	Use the default command line properties as the exclusive
+	definition of the nameserver property. Discard redundant (and
+	therefore incorrect) variables purporting to represent the same
+	value. If the setting of the nameserver property is absent or
+	specifies a host having no nodes with one or more agents, then
+	reset the nameserver property to the first host have a node with
+	at least one agent. As long as the nameserver property specifies a
+	host that the experiment controller will actually create a node
+	on, it will not be changed. If, however, the configuration is
+	changed such that the host specified by the nameserver property
+	will not be run for the experiment, the nameserver property is
+	changed to be a host that will be run. This insures that there
+	will be a nameserver, but allows any valid host to be used.
+
+	* CSMARTConsole.java:
+	Fix bug 853
+	Remove dead code involving nameserver settings.
+
+2001-11-30  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Added more required Property Groups, fixed a few bugs.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Made asset class a property, defaulted to MilitaryOrginazition
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Added Org Plugins.
+
+2001-11-29  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeQueryProperty.java:
+	Search the users recipeQueries.q for valid queries too
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/component-insertion-help.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/specific-component-help.html:
+	copied stuff from branch
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/component-insertion-help.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/specific-component-help.html:
+	Warn users that recipe queries must be named recipeQuery<Something>
+	Also, tell users what valid values for the type of a component are in the specific insertion recipe
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/RecipeQueryProperty.java:
+	Allow user to select among their user-defined queries in recipeQueries.q
+
+2001-11-29  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/SpecificInsertionRecipe.java:
+	Fixed Bug #733.
+
+	When the # of args change in the recipe, delete all the args
+	and start fresh.
+
+	Also fixed an typo in fireRemoveProperty that was firing a
+	PropertyAdded event for property Removed.
+
+2001-11-29  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ChangeLog, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ComponentInsertionRecipe.java:
+	Copy Rays changes from the branch, for bug 827, from Wed. See Changelogs for details
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	comment out debug statements
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/specific-component-help.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/specific-insertion-recipe-description.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/component-insertion-help.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/component-insertion-recipe-description.html:
+	mention recipeQueries.q
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	fix jikes compile error
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/agent-insertion-recipe-description.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/agent-recipe-help.html:
+	online help for agent insertion recipe, bug 746
+
+2001-11-28  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/agent-insertion-recipe-description.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/agent-recipe-help.html:
+	Add crude online help for new recipe - needs updating - bug 746
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/agent-insertion-recipe-description.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/agent-recipe-help.html:
+	New file.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Avoid jikes compilation error
+
+2001-11-28  Michelle Kappler  <mkappler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentQueryProperty.java:
+	Adding query file to allow for agents added via recipes. - Bug 746
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentQueryProperty.java:
+	Adding query file to allow for agents added via recipes.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Reference Bug 746 - Added a recipe to allow agents to be added to an experiment.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	New file.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/AgentInsertionRecipe.java:
+	Reference Bug 746 - Added recipe to allow agents to be added to an experiment.
+
+2001-11-28  Ray Tomlinson  <tomlinso@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ChangeLog:
+	Document code changes to fix bug 827
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/recipe/ComponentInsertionRecipe.java:
+	* Experiment.java:
+	Accomodate changes to PopulateDb. Call populate after applying
+	each recipe. Always apply recipes in forward order instead of
+	backward.
+	Add one parameter to all agent component data consisting of the
+	agent name.
+
+	* PopulateDb.java:
+	Substantial rewrite of the saving of component data to the
+	database. Redesigned to permit multiple calls to the populate
+	method where the increment produced between call may be very
+	small.
+	Added paranoia checks for deleting or reordering arguments.
+
+	* AgentAssetData.java:
+	getPropGroups has apparently never been called. It threw a cast
+	class exception trying to case a String[] into a PropGroupData[].
+
+	* ComponentInsertionRecipe.java:
+	Remove debug println.
+
 2001-11-28  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* ComponentInsertionRecipe.java:
