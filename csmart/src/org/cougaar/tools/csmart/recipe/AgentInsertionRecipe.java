@@ -52,8 +52,8 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.util.log.Logger;
 
 /**
- * Recipe to add an empty Agent to the society.
- * User may decide to include an Organization asset.
+ * Recipe to add an empty Agent to the society. 
+ * Use the new Complete Agent Insertion recipe instead.
  */
 public class AgentInsertionRecipe extends RecipeBase
   implements Serializable
@@ -93,16 +93,6 @@ public class AgentInsertionRecipe extends RecipeBase
   private static final String PROP_ALTTYPEID_DFLT = "";
   private static final String PROP_ALTTYPEID_DESC = "Alternate Type Identification";
 
-  private static final String PROP_ORGASSET = "Include Org Asset";
-  private static final boolean PROP_ORGASSET_DFLT = true;
-  private static final String PROP_ORGASSET_DESC = 
-    "Specifies if this agent should contain an Org Asset";
-
-  private static final String PROP_ITEMPG = "Include Item Identification PG";
-  private static final boolean PROP_ITEMPG_DFLT = true;
-  private static final String PROP_ITEMPG_DESC = 
-    "Specifies if this agent should contain an Item Identification PG";
-
   private static final String PROP_ASSETCLASS = "Asset Class";
   private static final String PROP_ASSETCLASS_DFLT = "MilitaryOrganization";
   private static final String PROP_ASSETCLASS_DESC = "Asset class for this organization";
@@ -116,8 +106,6 @@ public class AgentInsertionRecipe extends RecipeBase
   private Property propNomenclature;
   private Property propAltTypeId;
   private Property propAssetClass;
-  private Property propOrgAsset;
-  private Property propItemPG;
 
   /**
    * Creates a new <code>AgentInsertionRecipe</code> instance.
@@ -142,11 +130,6 @@ public class AgentInsertionRecipe extends RecipeBase
    */
   public void initProperties() {
     propName = addProperty(PROP_NAME, PROP_NAME_DFLT);
-    propName.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
-        public void propertyValueChanged(PropertyEvent e) {
-          updateAgent((String)e.getProperty().getValue());
-        }
-      });
     propName.setToolTip(PROP_NAME_DESC);
 
     propClassName = addProperty(PROP_CLASSNAME, PROP_CLASSNAME_DFLT);
@@ -163,18 +146,6 @@ public class AgentInsertionRecipe extends RecipeBase
 
     propAssetClass = addProperty(PROP_ASSETCLASS, PROP_ASSETCLASS_DFLT);
     propAssetClass.setToolTip(PROP_ASSETCLASS_DESC);
-
-//     propOrgAsset = addBooleanProperty(PROP_ORGASSET, PROP_ORGASSET_DFLT);
-//     propOrgAsset.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
-//         public void propertyValueChanged(PropertyEvent e) {
-//           updateOrgParameters((Boolean)e.getProperty().getValue());
-//         }
-//       });
-//     propOrgAsset.setToolTip(PROP_ORGASSET_DESC);
-
-
-//     propItemPG = addBooleanProperty(PROP_ITEMPG, PROP_ITEMPG_DFLT);
-//     propItemPG.setToolTip(PROP_ITEMPG_DESC);
 
     propRelationCount = addProperty(PROP_RELATIONCOUNT, PROP_RELATIONCOUNT_DFLT);
     propRelationCount.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
@@ -200,33 +171,6 @@ public class AgentInsertionRecipe extends RecipeBase
     Property prop = addProperty(new AgentQueryProperty(this, name, dflt));
     prop.setPropertyClass(String.class);
     return prop;
-  }
-
-  private void updateAgent(String name) {
-//     System.out.println("Agent Value Changed!");
-  }
-
-
-  private void updateOrgParameters(Boolean val) {
-    boolean show = val.booleanValue();
-
-    if(log.isDebugEnabled()) {
-      log.debug("updateOrgParameters("+show+")");
-    }
-
-    if(!show && propRelations != null && propRelations.length > 0) {
-      for(int i=0; i < propRelations.length; i++) {
-        removeProperty(propRelations[i]);
-        removeProperty(propRoles[i]);        
-      }
-      propRelationCount.setValue(new Integer(0));
-    }
-    setPropertyVisible(propRelationCount, show);
-    setPropertyVisible(propAssetClass, show);
-    setPropertyVisible(propNomenclature, show);
-    setPropertyVisible(propType, show);
-    setPropertyVisible(propAltTypeId, show);
-
   }
 
   private void updateRelationCount(Integer newCount) {
@@ -390,15 +334,17 @@ public class AgentInsertionRecipe extends RecipeBase
   private ComponentData addAssetData(ComponentData data) {
     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
 
-      if(log.isDebugEnabled()) {
-        log.debug("Adding Asset Data");
-      }
+    if(log.isDebugEnabled()) {
+      log.debug("Adding Asset Data");
+    }
+
     assetData.setType(AgentAssetData.ORG);
     assetData.setAssetClass(propAssetClass.getValue().toString());
     assetData.setUniqueID("UTC/RTOrg");
     if(propRelations != null ) {
       for(int i=0; i < propRelations.length; i++) {        
         RelationshipData rd = new RelationshipData();
+	// supported is ALIB_ID = ClusterID
         String supported = (String)propRelations[i].getValue();
         String role = (String)propRoles[i].getValue();
         rd.setSupported(supported);
@@ -408,18 +354,12 @@ public class AgentInsertionRecipe extends RecipeBase
         assetData.addRelationship(rd);
       }
     }
+
     assetData.addPropertyGroup(createTypeIdentificationPG());
 
     assetData.addPropertyGroup(createClusterPG());
-//     if (((Boolean)propOrgAsset.getValue()).booleanValue()) {
-//       assetData.addPropertyGroup(createClusterPG());
-//     }
 
     assetData.addPropertyGroup(createItemIdentificationPG());
-
-//     if (((Boolean)propItemPG.getValue()).booleanValue()) {
-//       assetData.addPropertyGroup(createItemIdentificationPG());
-//     }
 
     data.addAgentAssetData(assetData);
       
@@ -435,8 +375,8 @@ public class AgentInsertionRecipe extends RecipeBase
     
     PGPropData pgData = new PGPropData();
     pgData.setName("ClusterIdentifier");
-    pgData.setType("String");
-    pgData.setValue(this.getShortName());
+    pgData.setType("ClusterIdentifier");
+    pgData.setValue(propName.getValue().toString());
     pgd.addProperty(pgData);
 
     return pgd;
@@ -453,8 +393,11 @@ public class AgentInsertionRecipe extends RecipeBase
     PGPropData pgData = new PGPropData();
     pgData.setName("TypeIdentification");
     pgData.setType("String");
+
+    // FIXME: This causes the recipe to be modified when you try
+    // to save an experiment or dump INIs
     if(propType.getValue().toString().equals(PROP_TYPE_DFLT)) {
-      propType.setValue("UTC/" + propName.getValue().toString());
+      //      propType.setValue("UTC/" + propName.getValue().toString());
     }
     pgData.setValue(propType.getValue().toString());
     pgd.addProperty(pgData);
@@ -524,28 +467,25 @@ public class AgentInsertionRecipe extends RecipeBase
 
     public ComponentData addComponentData(ComponentData data) {
       if (this.getShortName().equals(data.getName())) {
-
-//         if (((Boolean)propOrgAsset.getValue()).booleanValue()) {
-          // Add the OrgRTData plugin.
-          ComponentData plugin = new GenericComponentData();
-          plugin.setType(ComponentData.PLUGIN);
-          plugin.setName("org.cougaar.mlm.plugin.organization.OrgDataPlugin");
-          plugin.setParent(data);
-          plugin.setClassName("org.cougaar.mlm.plugin.organization.OrgDataPlugin");
-          plugin.setOwner(this);
-          data.addChild(plugin);
-
-          // Add the OrgReport plugin.
-          plugin = new GenericComponentData();
-          plugin.setType(ComponentData.PLUGIN);
-          plugin.setName("org.cougaar.mlm.plugin.organization.OrgReportPlugin");
-          plugin.setParent(data);
-          plugin.setClassName("org.cougaar.mlm.plugin.organization.OrgReportPlugin");
-          plugin.setOwner(this);
-          data.addChild(plugin);
-//         }
-      }
-      else if (data.childCount() > 0) {
+	
+	// Add the OrgData plugin.
+	ComponentData plugin = new GenericComponentData();
+	plugin.setType(ComponentData.PLUGIN);
+	plugin.setName("org.cougaar.mlm.plugin.organization.OrgDataPlugin");
+	plugin.setParent(data);
+	plugin.setClassName("org.cougaar.mlm.plugin.organization.OrgDataPlugin");
+	plugin.setOwner(this);
+	data.addChild(plugin);
+	
+	// Add the OrgReport plugin.
+	plugin = new GenericComponentData();
+	plugin.setType(ComponentData.PLUGIN);
+	plugin.setName("org.cougaar.mlm.plugin.organization.OrgReportPlugin");
+	plugin.setParent(data);
+	plugin.setClassName("org.cougaar.mlm.plugin.organization.OrgReportPlugin");
+	plugin.setOwner(this);
+	data.addChild(plugin);
+      } else if (data.childCount() > 0) {
         // for each child, call this same method.
         ComponentData[] children = data.getChildren();
         for (int i = 0; i < children.length; i++) {
@@ -558,8 +498,7 @@ public class AgentInsertionRecipe extends RecipeBase
     public ComponentData modifyComponentData(ComponentData data) {
       return data;
     }
-
-
+        
     public boolean equals(Object o) {
       if (o instanceof AgentComponent) {
         AgentComponent that = (AgentComponent)o;
@@ -570,6 +509,5 @@ public class AgentInsertionRecipe extends RecipeBase
       }
       return false;
     }
-  }
-
+  }  
 }
