@@ -49,9 +49,6 @@ public class ClientServletUtil {
   public static final String PLAN_SERVLET = "CSMART_PlanServlet";
   public static final String SEARCH_SERVLET = "CSMART_SearchServlet";
   public static final String METRICS_SERVLET = "CSMART_MetricsServlet";
-  // servlet to get the URLs of all agents in the society
-  public static final String AGENT_PROVIDER_SERVLET =
-    "CSMART_AgentProviderServlet";
 
   /**
    * Contact the agent provider servlet at the specified URL,
