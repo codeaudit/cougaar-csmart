@@ -34,13 +34,19 @@ public class Facets {
   ArrayList mechanisms = new ArrayList();        // role mechanism
   ArrayList supportedOrgs = new ArrayList();     // sca_supported_org
   ArrayList supportedEchelons = new ArrayList(); // sca_echelon_of_support
+  String agentName;
 
-  public Facets(ArrayList facetNodes) {
+  public Facets(String agentName, ArrayList facetNodes) {
+    this.agentName = agentName;
     int nFacets = facetNodes.size();
     for (int j = 0; j < nFacets; j++) {
       Node facetNode = (Node)facetNodes.get(j);
       getInfoFromFacetNode(facetNode);
     }
+  }
+
+  public String getAgentName() {
+    return agentName;
   }
 
   private void getInfoFromFacetNode(Node facetNode) {
@@ -104,8 +110,11 @@ public class Facets {
    * Determines echelon needed.  
    * If the agent is not a provider, then the echelon is BRIGADE.
    * If the agent is a provider, then the echelon is one greater than it provides.
+   * Ensure that providers needed are unique.
    */
   private void addProviderNeeded(String providerNeeded) {
+    if (providersNeeded.contains(providerNeeded))
+      return;
     providersNeeded.add(providerNeeded);
     int index = roles.indexOf(providerNeeded);
     String echelonNeeded = "BRIGADE";

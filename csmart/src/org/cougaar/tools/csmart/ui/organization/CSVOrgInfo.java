@@ -30,6 +30,7 @@ import org.w3c.dom.Element;
  */
 
 public class CSVOrgInfo {
+  public String origOrgId;
   public String baseOrgId;
   public String suffix;
   public String superiorBaseOrgId;
@@ -37,9 +38,10 @@ public class CSVOrgInfo {
   public String rollupCode;
   public boolean deleted = false;
 
-  public CSVOrgInfo(String baseOrgId, String suffix,
+  public CSVOrgInfo(String origOrgId, String baseOrgId, String suffix,
                     String superiorBaseOrgId, String superiorSuffix,
                     String rollupCode) {
+    this.origOrgId = origOrgId;
     this.baseOrgId = baseOrgId;
     this.suffix = suffix;
     this.superiorBaseOrgId = superiorBaseOrgId;

@@ -25,27 +25,118 @@ import java.io.*;
 import java.util.*;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import org.cougaar.util.log.Logger;
 
-public class CSVSupport {
-  private static ArrayList csvOrgs = new ArrayList();
-  private static ArrayList csvOrgAttributes = new ArrayList();
-  private static ArrayList csvOrgRoles = new ArrayList();
-  private static ArrayList csvOrgSupports = new ArrayList();
-  private static File baseCSVFile;
-  private static transient Logger log = 
+public class CSVSupport implements SocietySupport {
+  private ArrayList csvOrgs = new ArrayList();
+  private ArrayList csvOrgAttributes = new ArrayList();
+  private ArrayList csvOrgRoles = new ArrayList();
+  private ArrayList csvOrgSupports = new ArrayList();
+  private File baseCSVFile;
+  private String societyName;
+  private Model model;
+  private transient Logger log =
     LoggerSupport.createLogger("org.cougaar.tools.csmart.ui.organization.CSVSupport");
 
+  public CSVSupport(Model model) {
+    this.model = model;
+  }
+
   /**
-   * Read complete society information from a CSV file.
-   * Information is in the form:
-   * base_org_id, suffix, superior_base_org_id, supperior_suffix, rollup_code
-   *
+   * Get the list of undeleted organizations; doesn't actually
+   * change composition of the tree; just indicates which organizations
+   * are not deleted.
+   * First, read the Base CSV file, which is assumed to be in the same folder,
+   * and is named org_hierarchy.csv.
+   * Next read the file with a list of the agents to be included in this society;
+   * file is in the form:
+   * society_id, orig_org_id, base_org_id, suffix
+   * Only the last two fields are used.
    */
-  public static JTree readBaseSociety(Model model, File file) {
+
+  public JTree readFile(String filename) {
+    // read the base CSV file that defines all agents
+    File file = new File(filename);
+    String baseFilename = file.getParent() + File.separatorChar + "org_hierarchy.csv";
+    baseCSVFile = new File(baseFilename);
+    JTree tree = readBaseSociety(model, baseCSVFile);
+
+    // read the CSV file that defines the agents in this society
+    BufferedReader reader = null;
+    try {
+      reader = new BufferedReader(new FileReader(file));
+    } catch (FileNotFoundException e) {
+      if (log.isErrorEnabled()) {
+        log.error("File not found", e);
+      }
+      return tree;
+    }
+    // if we're just reading the base file, then return
+    if (filename.equals(baseFilename)) {
+      societyName = "org_hierarchy";
+      return tree;
+    }
+
+    // this file simply indicates which organizations are not deleted
+    String s;
+    ArrayList bases = new ArrayList();
+    ArrayList suffixes = new ArrayList();
+    try {
+      while ((s = reader.readLine()) != null) {
+        CSVStringTokenizer st = new CSVStringTokenizer(s, ",");
+        societyName = st.nextToken();
+        st.nextToken();    // orig_org_id
+        String baseOrgId = st.nextToken();
+        String suffix = st.nextToken();
+        bases.add(baseOrgId);
+        suffixes.add(suffix);
+      }
+    } catch (IOException ie) {
+      if (log.isErrorEnabled()) {
+        log.error("Error reading from file", ie);
+      }
+    }
+
+    int count = 0;
+    for (int i = 0; i < csvOrgs.size(); i++) {
+      CSVOrgInfo org = (CSVOrgInfo)csvOrgs.get(i);
+      if (bases.contains(org.baseOrgId) &&
+          suffixes.contains(org.suffix)) {
+        org.deleted = false;
+        count++;
+      } else
+        org.deleted = true;
+    }
+    return tree;
+  }
+
+  public String getSocietyName() {
+    return societyName;
+  }
+
+  public int getType() {
+    return Model.SOCIETY_FROM_CSV;
+  }
+
+  public String getFileExtension() {
+    return "csv";
+  }
+
+  public String getFileTitle() {
+    return "CSV";
+  }
+
+  /**
+   * Read complete society information from a CSV file (org_hierarchy.csv).
+   */
+  private JTree readBaseSociety(Model model, File file) {
     BufferedReader reader = null;
     try {
       reader = new BufferedReader(new FileReader(file));
@@ -109,16 +200,16 @@ public class CSVSupport {
    * Extract: 
    * base_org_id, suffix, superior_base_org_id, superior_suffix, rollup_code
    */
-  private static CSVOrgInfo getOrganizationInfoFromCSV(CSVStringTokenizer st) {
+  private CSVOrgInfo getOrganizationInfoFromCSV(CSVStringTokenizer st) {
     String ignore = st.nextToken(); // order
-    ignore = st.nextToken();        // orig_org_id
+    String origOrgId = st.nextToken();        // orig_org_id
     String baseOrgId = st.nextToken();
     String suffix = st.nextToken();
     ignore = st.nextToken();        // superior_org_org_id
     String superiorBaseOrgId = st.nextToken();
     String superiorSuffix = st.nextToken();
     String rollupCode = st.nextToken();
-    return new CSVOrgInfo(baseOrgId, suffix, superiorBaseOrgId,
+    return new CSVOrgInfo(origOrgId, baseOrgId, suffix, superiorBaseOrgId,
                           superiorSuffix, rollupCode);
   }
 
@@ -126,7 +217,7 @@ public class CSVSupport {
    * Populate a tree from information in a CSV file by recursivley adding
    * the entries whose superior is referenced in the parent node.
    */
-  private static void addTreeNodesFromCSV(CSVOrgInfo parentOrg,
+  private void addTreeNodesFromCSV(CSVOrgInfo parentOrg,
                                           DefaultMutableTreeNode parent) {
     for (int i = 0; i < csvOrgs.size(); i++) {
       CSVOrgInfo org = (CSVOrgInfo)csvOrgs.get(i);
@@ -139,52 +230,6 @@ public class CSVSupport {
     }
   }
 
-  /**
-   * Get the list of undeleted organizations; doesn't actually
-   * change composition of the tree; just indicates which organizations
-   * are not deleted.
-   */
-  public static void readCSV(File file) {
-    // read the CSV file
-    BufferedReader reader = null;
-    try {
-      reader = new BufferedReader(new FileReader(file));
-    } catch (FileNotFoundException e) {
-      if (log.isErrorEnabled()) {
-        log.error("File not found", e);
-      }
-      return;
-    }
-
-    // this file simply indicates which organizations are not deleted
-    String s;
-    ArrayList bases = new ArrayList();
-    ArrayList suffixes = new ArrayList();
-    try {
-      while ((s = reader.readLine()) != null) {
-        CSVStringTokenizer st = new CSVStringTokenizer(s, ",");
-        String baseOrgId = st.nextToken();
-        String suffix = st.nextToken();
-        bases.add(baseOrgId);
-        suffixes.add(suffix);
-      }
-    } catch (IOException ie) {
-      if (log.isErrorEnabled()) {
-        log.error("Error reading from file", ie);
-      }
-    }
-
-    int count = 0;
-    for (int i = 0; i < csvOrgs.size(); i++) {
-      CSVOrgInfo org = (CSVOrgInfo)csvOrgs.get(i);
-      if (bases.contains(org.baseOrgId) &&
-          suffixes.contains(org.suffix)) {
-        org.deleted = false;
-        count++;
-      } else
-        org.deleted = true;
-    }
-  }
 
   /**
    * Read society information from a CSV file.
@@ -192,7 +237,7 @@ public class CSVSupport {
    * base_org_id, suffix
    *
    */
-  private static void readCSVAttributes() {
+  private void readCSVAttributes() {
     // get the CSV file to read
     File file = new File(baseCSVFile.getParentFile(), "org_attribute.csv");
     if (file == null)
@@ -234,7 +279,7 @@ public class CSVSupport {
    * is_deployable,has_physical_assets,has_equipment_assets,has_personnel_assets,
    * uic,home_location
    */
-  private static CSVAttributes getAttributesFromCSV(CSVStringTokenizer st) {
+  private CSVAttributes getAttributesFromCSV(CSVStringTokenizer st) {
     String ignore = st.nextToken(); // ignore order
     st.nextToken();                 // ignore orig_ord_id
     String baseOrgId = st.nextToken();
@@ -256,7 +301,7 @@ public class CSVSupport {
                              uic, homeLocation);
   }
 
-  private static boolean getFlag(String s) {
+  private boolean getFlag(String s) {
     if (s.equals("Y") || s.equals("y"))
       return true;
     return false;
@@ -266,7 +311,7 @@ public class CSVSupport {
    * Read roles from a org_role.csv file.
    * Populates the csvOrgRoles array with CSVOrgRole objects.
    */
-  private static void readCSVRoles() {
+  private void readCSVRoles() {
     // get the CSV file to read
     File file = new File(baseCSVFile.getParentFile(), "org_role.csv");
     if (file == null)
@@ -307,7 +352,7 @@ public class CSVSupport {
    * orig_org_id,base_org_id,suffix,role,echelon_of_support,role_mechanism,notes
    * Note that there can be more than one entry per organization.
    */
-  private static CSVRole getRolesFromCSV(CSVStringTokenizer st) {
+  private CSVRole getRolesFromCSV(CSVStringTokenizer st) {
     String ignore = st.nextToken();
     String baseOrgId = st.nextToken();
     String suffix = st.nextToken();
@@ -321,7 +366,7 @@ public class CSVSupport {
   /**
    * Populate an array of CSVSupportOrgs from a file.
    */
-  private static void readCSVSupport() {
+  private void readCSVSupport() {
     // get the CSV file to read
     File file = new File(baseCSVFile.getParentFile(), "org_sca.csv");
     if (file == null)
@@ -363,7 +408,7 @@ public class CSVSupport {
    * Note that there can be more than one entry per organization.
    */
 
-  private static CSVSupportOrg getSupportFromCSV(CSVStringTokenizer st) {
+  private CSVSupportOrg getSupportFromCSV(CSVStringTokenizer st) {
     String ignore = st.nextToken(); // order
     ignore = st.nextToken(); // orig_org_id
     String baseOrgId = st.nextToken();
@@ -377,12 +422,44 @@ public class CSVSupport {
   }
 
   /**
+   * Create an XML document for the society.
+   */
+  public Document getDocument() {
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    Document doc = null;
+    try {
+      DocumentBuilder db = dbf.newDocumentBuilder();
+      doc = db.newDocument();
+      Element xmlRoot = doc.createElement("society");
+      // add standard society attributes
+      xmlRoot.setAttribute("name", societyName);
+      xmlRoot.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+      xmlRoot.setAttribute("xsi:noNamespaceSchemaLocation", "society.xsd");
+      doc.appendChild(xmlRoot);
+      // add localhost xml node
+      Element host = doc.createElement("host");
+      host.setAttribute("name", "localhost");
+      xmlRoot.appendChild(host);
+      // add localnode xml node
+      Element node = doc.createElement("node");
+      node.setAttribute("name", "localnode");
+      host.appendChild(node);
+      saveXMLNodes(doc, node);
+    } catch (ParserConfigurationException e) {
+      if (log.isErrorEnabled()) {
+        log.error("Exception creating DocumentBuilder.", e);
+      }
+      doc = null;
+    }
+    return doc;
+  }
+
+  /**
    * Save the non-deleted tree nodes and leaves as XML agent nodes.
    */
-  public static void saveXMLNodes(JTree tree,
-                                  Document doc, Element xmlNode) {
+  public void saveXMLNodes(Document doc, Element xmlNode) {
     DefaultMutableTreeNode root = 
-      (DefaultMutableTreeNode)tree.getModel().getRoot();
+      (DefaultMutableTreeNode)model.getTree().getModel().getRoot();
     Enumeration treeNodes = root.depthFirstEnumeration();
     while (treeNodes.hasMoreElements()) {
       DefaultMutableTreeNode treeNode = 
@@ -404,7 +481,7 @@ public class CSVSupport {
   /**
    * Get the CSVAttributes object for the specified org.
    */
-  private static CSVAttributes getAttributes(CSVOrgInfo org) {
+  private CSVAttributes getAttributes(CSVOrgInfo org) {
     String name = org.toString();
     for (int i = 0; i < csvOrgAttributes.size(); i++) {
       CSVAttributes attrs = (CSVAttributes)csvOrgAttributes.get(i);
@@ -417,7 +494,7 @@ public class CSVSupport {
   /**
    * Append information about an organization's subordinates to an XML document.
    */
-  private static void appendSubordinates(Document doc, Element element,
+  private void appendSubordinates(Document doc, Element element,
                                          CSVOrgInfo org) {
     String name = org.toString();
     for (int i = 0; i < csvOrgs.size(); i++) {
@@ -435,7 +512,7 @@ public class CSVSupport {
   /**
    * Append information about an organization's roles to an XML document.
    */
-  private static void appendRoles(Document doc, Element element,
+  private void appendRoles(Document doc, Element element,
                                   CSVOrgInfo org) {
     String name = org.toString();
     for (int i = 0; i < csvOrgRoles.size(); i++) {
@@ -448,7 +525,7 @@ public class CSVSupport {
   /**
    * Append information about an organization's support to an XML document.
    */
-  private static void appendSupport(Document doc, Element element,
+  private void appendSupport(Document doc, Element element,
                                     CSVOrgInfo org) {
     String name = org.toString();
     for (int i = 0; i < csvOrgSupports.size(); i++) {
@@ -462,13 +539,13 @@ public class CSVSupport {
    * Save the society to a CSV file; saves information on undeleted organizations.
    * Returns true if successful.
    */
-  public static boolean saveAsCSV(String path) {
+  public boolean saveFile(File file) {
     try {
-      BufferedWriter writer = new BufferedWriter(new FileWriter(path));
+      BufferedWriter writer = new BufferedWriter(new FileWriter(file));
       for (int i = 0; i < csvOrgs.size(); i++) {
         CSVOrgInfo org = (CSVOrgInfo)csvOrgs.get(i);
         if (!org.deleted) {
-          String s = org.baseOrgId + "," + org.suffix + "\n";
+          String s = societyName + "," + org.origOrgId + "," + org.baseOrgId + "," + org.suffix + "\n";
           writer.write(s, 0, s.length());
         }
       } 
@@ -485,7 +562,7 @@ public class CSVSupport {
   /**
    * Return the number of agents (undeleted organizations) in the society.
    */
-  public static int getAgentCount() {
+  public int updateAgentCount() {
     int nAgents = 0;
     for (int i = 0; i < csvOrgs.size(); i++) {
       CSVOrgInfo org = (CSVOrgInfo)csvOrgs.get(i);

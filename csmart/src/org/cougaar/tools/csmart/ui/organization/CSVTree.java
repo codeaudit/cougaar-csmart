@@ -134,7 +134,7 @@ public class CSVTree extends JTree {
         CSVOrgInfo orgInfo = (CSVOrgInfo)descendantNode.getUserObject();
         orgInfo.deleted = delete;
       }
-      model.updateCSVAgentCount();
+      model.updateAgentCount();
     }
   }
 

@@ -67,11 +67,18 @@ public class Validation {
         if (agentChildren.item(j).getNodeName().equals("facet"))
           facetNodes.add(agentChildren.item(j));
       }
-      agentsToFacets.put(agentNode, new Facets(facetNodes));
+      String agentName = agentNode.getAttributes().getNamedItem("name").getNodeValue();
+      agentsToFacets.put(agentNode, new Facets(agentName, facetNodes));
     }
     // search for providers
     Enumeration agents = agentsToFacets.keys();
-    int validationErrors = 0;
+    // for storing results
+    ArrayList errorAgentNames = new ArrayList();
+    ArrayList needProviders = new ArrayList();
+    ArrayList needEchelons = new ArrayList();
+    ArrayList successAgentNames = new ArrayList();
+    ArrayList providerTypes = new ArrayList();
+    ArrayList providers = new ArrayList();
     while (agents.hasMoreElements()) {
       Node agentNode = (Node)agents.nextElement();
       String agentName =
@@ -79,26 +86,31 @@ public class Validation {
       Facets facets = (Facets)agentsToFacets.get(agentNode);
       ArrayList providersNeeded = facets.getProvidersNeeded();
       ArrayList echelonsNeeded = facets.getEchelonsNeeded();
+
       for (int i = 0; i < providersNeeded.size(); i++) {
         String providerNeeded = (String)providersNeeded.get(i);
         String echelonNeeded = (String)echelonsNeeded.get(i);
         if (echelonNeeded.equals("UNDEFINED")) {
-          System.out.println("WARNING: " +
-                             agentName + " needs " + providerNeeded +
-                             " at echelon " + echelonNeeded);
-          validationErrors++;
-        } else if (findProvider(agentNode, providerNeeded, echelonNeeded)) {
-          System.out.println(agentName + " has " + providerNeeded +
-                             " at echelon " + echelonNeeded);
+          errorAgentNames.add(agentName);
+          needProviders.add(providerNeeded);
+          needEchelons.add(echelonNeeded);
         } else {
-          System.out.println("WARNING: " +
-                             agentName + " needs " + providerNeeded +
-                             " at echelon " + echelonNeeded);
-          validationErrors++;
+          String provider = findProvider(agentNode, providerNeeded, echelonNeeded);
+          if (provider != null) {
+            successAgentNames.add(agentName);
+            providerTypes.add(providerNeeded);
+            providers.add(provider);
+          } else {
+            errorAgentNames.add(agentName);
+            needProviders.add(providerNeeded);
+            needEchelons.add(echelonNeeded);
+          }
         }
       }
     }
-    System.out.println("Validation Errors: " + validationErrors);
+    // display results in dialog
+    new ValidateResults(errorAgentNames, needProviders, needEchelons,
+      successAgentNames, providerTypes, providers);
   }
 
   private static Node getSuperior(Node agentNode) {
@@ -132,10 +144,10 @@ public class Validation {
     return null;
   }
 
-  private static boolean findProviderForAgent(Node agentNode,
-                                              String providerNeeded, 
-                                              String echelonNeeded) {
-    boolean found = false;
+  private static String findProviderForAgent(Node agentNode,
+                                             String providerNeeded,
+                                             String echelonNeeded) {
+    String provider = null;
     ArrayList info = new ArrayList(agentsToFacets.values());
     String agentName =
       agentNode.getAttributes().getNamedItem("name").getNodeValue();
@@ -149,13 +161,13 @@ public class Validation {
         continue; // doesn't support this agent
       String supportedEchelon = 
         (String)facets.getSupportedEchelons().get(index);
-      if (MilitaryEchelon.echelonOrder(supportedEchelon) >= 
-          MilitaryEchelon.echelonOrder(echelonNeeded)) {
-        found = true;
+      if (MilitaryEchelon.echelonOrder(supportedEchelon) >=
+        MilitaryEchelon.echelonOrder(echelonNeeded)) {
+        provider = facets.getAgentName();
         break;
       }
     }
-    return found;
+    return provider;
   }
 
   /**
@@ -165,19 +177,21 @@ public class Validation {
    * This just treats a >= match on echelon as a win,
    * cause going up the chain is weighted against us so heavily.
    */
-  private static boolean findProvider(Node agentNode,
+  private static String findProvider(Node agentNode,
                                       String providerNeeded,
                                       String echelonNeeded) {
-    if (findProviderForAgent(agentNode, providerNeeded, echelonNeeded))
-      return true; // exact match on agent
+    String provider = findProviderForAgent(agentNode, providerNeeded, echelonNeeded);
+    if (provider != null)
+      return provider; // exact match on agent
     // go up the chain
     Node superior = getSuperior(agentNode);
     while (superior != null) {
-      if (findProviderForAgent(superior, providerNeeded, echelonNeeded))
-        return true;
+      provider = findProviderForAgent(superior, providerNeeded, echelonNeeded);
+      if (provider != null)
+        return provider;
       superior = getSuperior(superior);
     }
-    return false;
+    return null;
   }
 
 

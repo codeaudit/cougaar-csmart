@@ -67,8 +67,6 @@ public class Viewer extends JFrame implements Observer {
   private JScrollPane treeView;
   private JTextField societyNameField;
   private JTextField agentCountField;
-  private JFileChooser csvFileChooser;
-  private JFileChooser xmlFileChooser;
 
   // menu items that can be enabled/disabled
   private JMenu fileMenu;
@@ -76,7 +74,6 @@ public class Viewer extends JFrame implements Observer {
   private JMenuItem databaseMenuItem;
   private JMenuItem readFromDBMenuItem;
   private JMenuItem readFromCSVMenuItem;
-  private JMenuItem readFromBaseCSVMenuItem;
   private JMenuItem readFromXMLItem;
   private JMenuItem saveMenuItem;
   private JMenuItem saveAsMenuItem;
@@ -121,15 +118,6 @@ public class Viewer extends JFrame implements Observer {
       });
     readFromDBMenuItem.setToolTipText("Read society description from database.");
     fileMenu.add(readFromDBMenuItem);
-
-    readFromBaseCSVMenuItem = new JMenuItem("Read From Base CSV File...");
-    readFromBaseCSVMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          readFromBaseCSV();
-        }
-      });
-    readFromBaseCSVMenuItem.setToolTipText("Read complete society description from CSV file.");
-    fileMenu.add(readFromBaseCSVMenuItem);
 
     readFromCSVMenuItem = new JMenuItem("Read From CSV File...");
     readFromCSVMenuItem.addActionListener(new ActionListener() {
@@ -236,12 +224,12 @@ public class Viewer extends JFrame implements Observer {
     // disable unneeded menus
     viewMenu.setEnabled(false);
     readFromDBMenuItem.setEnabled(false);
-    readFromCSVMenuItem.setEnabled(false);
     saveMenuItem.setEnabled(false);
     saveAsMenuItem.setEnabled(false);
     saveAsXMLMenuItem.setEnabled(false);
     saveAsCSVMenuItem.setEnabled(false);
     deleteMenuItem.setEnabled(false);
+    validateMenuItem.setEnabled(false);
     // end create menu bar
 
     // add panel to display society name and number of agents
@@ -273,6 +261,168 @@ public class Viewer extends JFrame implements Observer {
     setLocation((screenSize.width - w)/2, (screenSize.height - h)/2);
     setVisible(true);
   }
+
+
+  /**
+   * Read information about a particular society (i.e. a subset
+   * of the organizations in the complete society) from a CSV file.
+   */
+  private void readFromCSV() {
+    model.setSocietyType(Model.SOCIETY_FROM_CSV);
+    readFile();
+  }
+
+  /**
+   * Read information about a society from an XML file.
+   */
+  private void readFromXML() {
+    model.setSocietyType(Model.SOCIETY_FROM_XML);
+    readFile();
+  }
+
+  private void readFile() {
+    String filter = model.getFileExtension();
+    String title = model.getFileTitle();
+    JFileChooser chooser = new JFileChooser(System.getProperty("org.cougaar.install.path"));
+    chooser.setDialogTitle("Select " + title + " File");
+    String[] filters = { filter };
+    ExtensionFileFilter extensionFilter = new ExtensionFileFilter(filters, title + " File");
+    chooser.addChoosableFileFilter(extensionFilter);
+    if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
+      return;
+    File file = chooser.getSelectedFile();
+    if (file != null && file.canRead())
+      model.readFile(file.getAbsolutePath());
+  }
+
+  /**
+   * Save the society in same format in which it was read.
+   */
+  private void saveFile() {
+    JFileChooser fileChooser =
+      new JFileChooser(System.getProperty("org.cougaar.install.path"));
+    if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+      return;
+    File file = fileChooser.getSelectedFile();
+    String name = file.getName();
+    String extension = "." + model.getFileExtension();
+    if (name.endsWith(extension))
+      name = name.substring(0, name.length()-4);
+    model.setSocietyName(name);
+    String path = file.getPath();
+    if (!path.endsWith(extension))
+      path = path + extension;
+    model.saveFile(new File(path));
+  }
+
+  /**
+   * Save the society as a CSV file.
+   */
+  private void saveAsCSV() {
+    saveFile();
+  }
+
+  /**
+   * Save the society as an XML file.
+   */
+  private void saveAsXML() {
+    JFileChooser fileChooser = 
+      new JFileChooser(System.getProperty("org.cougaar.install.path"));
+    fileChooser.setDialogTitle("Save As XML File");
+    if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
+      return;
+    File file = fileChooser.getSelectedFile();
+    String name = file.getName();
+    if (name.endsWith(".xml"))
+      name = name.substring(0, name.length()-4);
+    model.setSocietyName(name);
+    model.saveAsXML(file);
+  }
+
+  private void validateSociety() {
+    model.validateSociety();
+  }
+
+  /**
+   * Exit, but if the user has modified the tree, then ask them to
+   * confirm the exit.
+   * Don't offer a save option here as the user could save in several
+   * formats.
+   */
+  private void exit() {
+    if (model.getModified()) {
+      int answer = 
+        JOptionPane.showConfirmDialog(this, "Society is Modified; Discard and Exit?",
+                                      "Society Is Modified",
+                                      JOptionPane.YES_NO_OPTION,
+                                      JOptionPane.QUESTION_MESSAGE);
+      if (answer == JOptionPane.YES_OPTION)
+        System.exit(0);
+      if (answer == JOptionPane.NO_OPTION)
+        return;
+    } else
+      System.exit(0);
+  }
+
+  /**
+   * Replace any existing tree with new tree.
+   */
+  private void updateTree(JTree tree) {
+    if (treeView != null)
+      getContentPane().remove(treeView);
+    treeView = new JScrollPane(tree);
+    getContentPane().add(treeView, BorderLayout.CENTER);
+    validate();
+  }
+
+  /**
+   * Update the number of agents.
+   */
+  private void updateAgentCount(int n) {
+    agentCountField.setText(String.valueOf(n));
+  }
+
+  /**
+   * Called by model when something has changed
+   * that potentially affects the ui.
+   */
+  public void update(Observable o, Object arg) {
+    if (arg instanceof Notification) {
+      Notification n = (Notification)arg;
+      String action = n.action;
+      if (action == model.SOCIETY_CHANGED)
+        societyNameField.setText((String)n.info);
+      else if (action == model.TREE_CHANGED)
+        updateTree((JTree)n.info);
+      else if (action == model.AGENT_COUNT_CHANGED)
+        updateAgentCount(((Integer)n.info).intValue());
+    }
+
+    if (arg == model.DB_SOCIETY_CREATED) {
+      saveMenuItem.setEnabled(true);
+      saveAsMenuItem.setEnabled(true);
+      saveAsXMLMenuItem.setEnabled(true);
+      viewMenu.setEnabled(true);
+      return;
+    } else if (arg == model.CSV_SOCIETY_CREATED) {
+      readFromCSVMenuItem.setEnabled(true);
+      saveAsCSVMenuItem.setEnabled(true);
+      saveAsXMLMenuItem.setEnabled(true);
+      saveMenuItem.setEnabled(false);
+      saveAsMenuItem.setEnabled(false);
+      validateMenuItem.setEnabled(true);
+      viewMenu.setEnabled(true);
+    } else if (arg == model.XML_SOCIETY_CREATED) {
+      saveAsCSVMenuItem.setEnabled(false);
+      saveAsXMLMenuItem.setEnabled(true);
+      validateMenuItem.setEnabled(true);
+      viewMenu.setEnabled(true);
+    }
+  }
+
+  /**
+   * Database methods; unused for now.
+   */
 
   /**
    * Query user for name of database, and user name and password.
@@ -374,7 +524,7 @@ public class Viewer extends JFrame implements Observer {
   private void readFromDB() {
     ArrayList societyNames = model.getSocietyNamesFromDatabase();
     if (societyNames.size() == 0) {
-      JOptionPane.showMessageDialog(this, "No Societies in Database", 
+      JOptionPane.showMessageDialog(this, "No Societies in Database",
                                     "No Societies", JOptionPane.ERROR_MESSAGE);
       return;
     }
@@ -383,7 +533,7 @@ public class Viewer extends JFrame implements Observer {
     JPanel panel = new JPanel();
     panel.add(new JLabel("Select Society:"));
     panel.add(cb);
-    int result = 
+    int result =
       JOptionPane.showConfirmDialog(this, panel, "Read From Database",
 				    JOptionPane.OK_CANCEL_OPTION,
 				    JOptionPane.PLAIN_MESSAGE);
@@ -398,7 +548,7 @@ public class Viewer extends JFrame implements Observer {
   private void deleteSociety() {
     ArrayList societyNames = model.getSocietyNamesFromDatabase();
     if (societyNames == null) {
-      JOptionPane.showMessageDialog(this, "No Societies in Database", 
+      JOptionPane.showMessageDialog(this, "No Societies in Database",
                                     "No Societies", JOptionPane.ERROR_MESSAGE);
       return;
     }
@@ -407,7 +557,7 @@ public class Viewer extends JFrame implements Observer {
     JPanel panel = new JPanel();
     panel.add(new JLabel("Select Society:"));
     panel.add(cb);
-    int result = 
+    int result =
       JOptionPane.showConfirmDialog(this, panel, "Delete Society",
 				    JOptionPane.OK_CANCEL_OPTION,
 				    JOptionPane.PLAIN_MESSAGE);
@@ -432,9 +582,9 @@ public class Viewer extends JFrame implements Observer {
         // check that society name is unique in database
         if (model.isSocietyNameInDatabase(name)) {
           name = null;
-          int answer = 
-            JOptionPane.showConfirmDialog(this, "Name is in database; Override?", 
-                                          "Name Not Unique", 
+          int answer =
+            JOptionPane.showConfirmDialog(this, "Name is in database; Override?",
+                                          "Name Not Unique",
                                           JOptionPane.YES_NO_CANCEL_OPTION,
                                           JOptionPane.ERROR_MESSAGE);
           if (answer == JOptionPane.YES_OPTION)
@@ -471,192 +621,6 @@ public class Viewer extends JFrame implements Observer {
     if (newSocietyName != null) {
       model.setSocietyName(newSocietyName);
       saveSociety();
-    }
-  }
-
-  /**
-   * Read complete society information from a CSV file.
-   */
-  private void readFromBaseCSV() {
-    File file = getCSVFile();
-    if (file != null)
-      model.readFromBaseCSV(file);
-  }
-
-  /**
-   * Read information about a particular society (i.e. a subset
-   * of the organizations in the complete society) from a CSV file.
-   */
-  private void readFromCSV() {
-    File file = getCSVFile();
-    if (file != null)
-      model.readCSV(file);
-  }
-
-  /**
-   * Read information about a society from an XML file.
-   */
-  private void readFromXML() {
-    File file = getXMLFile();
-    if (file != null)
-      model.readXML(file.getAbsolutePath());
-  }
-
-  /**
-   * Get the name of a CSV file to read.
-   */
-  private File getCSVFile() {
-    if (csvFileChooser == null) {
-      csvFileChooser =
-        new JFileChooser(System.getProperty("org.cougaar.install.path"));
-      csvFileChooser.setDialogTitle("Select CSV File");
-      String [] filters  = { "csv" };
-      ExtensionFileFilter filter = 
-        new ExtensionFileFilter(filters, "CSV file");
-      csvFileChooser.addChoosableFileFilter(filter);
-    }
-    if (csvFileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
-      return null;
-    File file = csvFileChooser.getSelectedFile();
-    if (file == null)
-      return null;
-    if (!file.canRead())
-      return null;
-    return file;
-  }
-
-  /**
-   * Get the name of an XML file to read.
-   */
-  private File getXMLFile() {
-    if (xmlFileChooser == null) {
-      xmlFileChooser =
-        new JFileChooser(System.getProperty("org.cougaar.install.path"));
-      xmlFileChooser.setDialogTitle("Select XML File");
-      String [] filters  = { "xml" };
-      ExtensionFileFilter filter =
-        new ExtensionFileFilter(filters, "XML file");
-      xmlFileChooser.addChoosableFileFilter(filter);
-    }
-    if (xmlFileChooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
-      return null;
-    File file = xmlFileChooser.getSelectedFile();
-    if (file == null)
-      return null;
-    if (!file.canRead())
-      return null;
-    return file;
-  }
-
-  /**
-   * Save the society as a CSV file.
-   */
-  private void saveAsCSV() {
-    JFileChooser fileChooser = 
-      new JFileChooser(System.getProperty("org.cougaar.install.path"));
-    fileChooser.setDialogTitle("Save As CSV File");
-    if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
-      return;
-    File file = fileChooser.getSelectedFile();
-    String name = file.getName();
-    if (name.endsWith(".csv"))
-      name = name.substring(0, name.length()-4);
-    model.setSocietyName(name);
-    String path = file.getPath();
-    if (!path.endsWith(".csv"))
-      path = path + ".csv";
-    model.saveAsCSV(path);
-  }
-
-  /**
-   * Save the society as an XML file.
-   */
-  private void saveAsXML() {
-    JFileChooser fileChooser = 
-      new JFileChooser(System.getProperty("org.cougaar.install.path"));
-    fileChooser.setDialogTitle("Save As XML File");
-    if (fileChooser.showSaveDialog(this) != JFileChooser.APPROVE_OPTION)
-      return;
-    File file = fileChooser.getSelectedFile();
-    String name = file.getName();
-    if (name.endsWith(".xml"))
-      name = name.substring(0, name.length()-4);
-    model.setSocietyName(name);
-    model.saveAsXML(file);
-  }
-
-  private void validateSociety() {
-    model.validateSociety();
-  }
-
-  /**
-   * Exit, but if the user has modified the tree, then ask them to
-   * confirm the exit.
-   * Don't offer a save option here as the user could save in several
-   * formats.
-   */
-  private void exit() {
-    if (model.getModified()) {
-      int answer = 
-        JOptionPane.showConfirmDialog(this, "Society is Modified; Discard and Exit?",
-                                      "Society Is Modified",
-                                      JOptionPane.YES_NO_OPTION,
-                                      JOptionPane.QUESTION_MESSAGE);
-      if (answer == JOptionPane.YES_OPTION)
-        System.exit(0);
-      if (answer == JOptionPane.NO_OPTION)
-        return;
-    } else
-      System.exit(0);
-  }
-
-  /**
-   * Replace any existing tree with new tree.
-   */
-  private void updateTree(JTree tree) {
-    if (treeView != null)
-      getContentPane().remove(treeView);
-    treeView = new JScrollPane(tree);
-    getContentPane().add(treeView, BorderLayout.CENTER);
-    validate();
-  }
-
-  /**
-   * Update the number of agents.
-   */
-  private void updateAgentCount(int n) {
-    agentCountField.setText(String.valueOf(n));
-  }
-
-  /**
-   * Called by model when something has changed
-   * that potentially affects the ui.
-   */
-  public void update(Observable o, Object arg) {
-    if (arg instanceof Notification) {
-      Notification n = (Notification)arg;
-      String action = n.action;
-      if (action == model.SOCIETY_CHANGED)
-        societyNameField.setText((String)n.info);
-      else if (action == model.TREE_CHANGED)
-        updateTree((JTree)n.info);
-      else if (action == model.AGENT_COUNT_CHANGED)
-        updateAgentCount(((Integer)n.info).intValue());
-    }
-
-    if (arg == model.DB_SOCIETY_CREATED) {
-      saveMenuItem.setEnabled(true);
-      saveAsMenuItem.setEnabled(true);
-      saveAsXMLMenuItem.setEnabled(true);
-      viewMenu.setEnabled(true);
-      return;
-    } else if (arg == model.CSV_SOCIETY_CREATED) {
-      readFromCSVMenuItem.setEnabled(true);
-      saveAsCSVMenuItem.setEnabled(true);
-      saveAsXMLMenuItem.setEnabled(true);
-      viewMenu.setEnabled(true);
-      saveMenuItem.setEnabled(false);
-      saveAsMenuItem.setEnabled(false);
     }
   }
 

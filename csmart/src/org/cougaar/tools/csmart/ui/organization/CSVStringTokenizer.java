@@ -54,7 +54,7 @@ class CSVStringTokenizer extends StringTokenizer {
       }
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
-        log.error("Error reading CSV file", e);
+        log.error("Error reading CSV file: " + s, e);
       }
       return "";
     }
