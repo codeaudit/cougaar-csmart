@@ -1056,6 +1056,17 @@ public class CSMARTConsole extends JFrame {
     return port;
   }
 
+  private Properties getNodeArguments(NodeComponent nc) {
+    Properties result = new Properties();
+    Properties props = nc.getArguments();
+    for (Enumeration e = props.propertyNames(); e.hasMoreElements(); ) {
+      String pname = (String) e.nextElement();
+      if (pname.equals(HostConfigurationBuilder.COMMAND_ARGUMENTS)) continue;
+      result.put(pname, props.getProperty(pname));
+    }
+    return result;
+  }
+
   /**
    * Create a node and add a tab and status button for it.
    * Create a node event listener and pass it the status button
@@ -1070,7 +1081,7 @@ public class CSMARTConsole extends JFrame {
     // get arguments from NodeComponent and pass them to ApplicationServer
     // note that these properties augment any properties that
     // are passed to the server in a properties file on startup
-    Properties properties = nodeComponent.getArguments();
+    Properties properties = getNodeArguments(nodeComponent);
 
     if (!experiment.isInDatabase()) {
       // Can't change the name of the Nodes when running
@@ -1198,7 +1209,7 @@ public class CSMARTConsole extends JFrame {
     }
     CommunityServesClient communitySupport = new ClientCommunityController();
     HostServesClient hostServer = null;
-    Properties properties = nodeComponent.getArguments();
+    Properties properties = getNodeArguments(nodeComponent);
     // get host component by searching hosts for one with this node.
     String hostName = null;
     HostComponent[] hosts = experiment.getHosts();
@@ -1407,7 +1418,7 @@ public class CSMARTConsole extends JFrame {
       Properties properties = null;
       NodeComponent[] nodes = hosts[i].getNodes();
       if (nodes.length != 0) 
-        properties = nodes[0].getArguments();
+        properties = getNodeArguments(nodes[0]);
       HostServesClient hostInfo = null;
       try {
 	hostInfo = 
