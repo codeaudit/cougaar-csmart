@@ -72,7 +72,7 @@ public class NodeArgumentDialog extends JDialog {
     argumentPanel.setBorder(BorderFactory.createTitledBorder("Arguments"));
     args = new JTextArea(10, 40);
     args.setEditable(isEditable);
-    args.setToolTipText("Enter command line args one per line");
+    args.setToolTipText("Enter command line args one per line. Node class must be first.");
     argumentPanel.add(args);
 
     this.props = props;
