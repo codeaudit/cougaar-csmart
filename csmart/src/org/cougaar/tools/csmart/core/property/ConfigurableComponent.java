@@ -961,6 +961,10 @@ public abstract class ConfigurableComponent
    * @return a <code/>BaseComponent</code> value
    */
   public BaseComponent copy(BaseComponent result) {
+    if (result == null) {
+      log.error("Null target component copying from " + this.getFullName().toString(), new Throwable());
+      return null;
+    }
     // Make sure we're copying apples into apples
     // The result can be a sub-class, but we want it
     // to at least have the same set of properties
