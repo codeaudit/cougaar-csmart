@@ -160,6 +160,7 @@ public class CSMARTConsole extends JFrame {
 
   Legend legend; // the node status lamp legend
   CSMARTConsole console;
+  private GLSClient glsClient = null;
 
   private transient Logger log;
 
@@ -723,7 +724,8 @@ public class CSMARTConsole extends JFrame {
                 public void run() {
                   JInternalFrame jif = 
                     new JInternalFrame("GLS", true, false, true, true);
-                  jif.getContentPane().add(new GLSClient(getOPlanAgentURL(glsAgent)));
+                  glsClient = new GLSClient(getOPlanAgentURL(glsAgent));
+                  jif.getContentPane().add(glsClient);
                   jif.setSize(350, 350);
                   jif.setLocation(0, 0);
                   jif.setVisible(true);
@@ -944,7 +946,8 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * Stop the nodes, but don't kill the tabbed panes.
+   * Stop the nodes, but don't kill the node frames.
+   * Dispose of the GLSClient frame if it exists.
    * Used to stop trials in societies that aren't self terminating
    * and used to abort trials.
    */
@@ -974,6 +977,10 @@ public class CSMARTConsole extends JFrame {
     synchronized (runningNodesLock) {
       nodeComponents = runningNodes.keys();
     } // end synchronized
+    // before destroying nodes, stop the GLSClient so
+    // we don't get error messages
+    if (glsClient != null) 
+      glsClient.stop();
     while (nodeComponents.hasMoreElements()) {
       NodeComponent nodeComponent = 
         (NodeComponent)nodeComponents.nextElement();
