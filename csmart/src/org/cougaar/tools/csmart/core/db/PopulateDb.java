@@ -408,6 +408,10 @@ public class PopulateDb extends PDbBase {
       // delete it if not used
     }
 
+    // FIXME: Maybe look to see if DB has a comm ASB
+    // I don't know about that's different from this one
+    // to ensure I dont end up with 2?
+
     commAssemblyId = id;
 
     // put this id in runtime & config for this expt/trial
@@ -2990,10 +2994,14 @@ public class PopulateDb extends PDbBase {
       String componentType = data.getType();
       if (componentType.equals(ComponentData.SOCIETY)) {
 	result = ComponentData.SOCIETY + "|" + data.getName();
+      } else if (componentType.equals(ComponentData.HOST)) {
+	result = ComponentData.HOST + "|" + data.getName();
       } else if (componentType.equals(ComponentData.AGENT)) {
+	// Note that this & the next block correctly make the
+	// alib_id namespace the same for nodes and Agents, since Nodes have a NodeAgent,
+	// you can't re-use the name
 	result = getAgentAlibId(data.getName());
-      } else if (componentType.equals(ComponentData.HOST) ||
-                 componentType.equals(ComponentData.NODE)) {
+      } else if (componentType.equals(ComponentData.NODE)) {
 	result = data.getName();
       } else {
 	ComponentData anc = data.getParent();
