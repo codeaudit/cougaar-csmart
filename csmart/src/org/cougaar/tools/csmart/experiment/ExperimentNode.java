@@ -36,6 +36,7 @@ import java.io.IOException;
 /**
  * Maintains information about a node and generates the
  * node .ini file.
+ * @property org.cougaar.node.name is the name of the Node as it will be passed to the running process
  **/
 public class ExperimentNode
   extends ModifiableConfigurableComponent
