@@ -318,8 +318,8 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 		log.debug("Not re-adding servlet. " + data.getName() + " already contains " + plugin);
 	      }
 	    } else {
-	      data.addChildDefaultLoc(plugin);
 	      plugin.setName(GenericComponentData.getSubComponentUniqueName(data, plugin));
+	      data.addChildDefaultLoc(plugin);
 	    }
 
           }
