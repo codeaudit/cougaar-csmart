@@ -47,7 +47,7 @@ public class ABCSociety
   public static final String PROP_LEVELCOUNT_DESC = "Number of Levels in the Society";
 
   /** Properties defined in other files **/
-  public static final String PROP_TASKTYPE = ABCTask.PROP_TASKTYPE;
+  public static final String PROP_TASKVERB = ABCTask.PROP_TASKVERB;
   public static final String PROP_STARTTIME = ABCAgent.PROP_STARTTIME;
   public static final String PROP_STOPTIME = ABCAgent.PROP_STOPTIME;
   public static final String PROP_NUMBPROVIDERS = ABCAgent.PROP_NUMBPROVIDERS;
@@ -62,7 +62,7 @@ public class ABCSociety
   private Property propLevelCount;
   private Property propStartTime;
   private Property propStopTime;
-  private Property propTaskType;
+  private Property propTaskVerb;
   private Property propInitializer;
   private Property propSampleInterval;
   private Property propNumbProviders;
@@ -185,8 +185,8 @@ public class ABCSociety
     });
     propNumbProviders.setToolTip(ABCAgent.PROP_NUMBPROVIDERS_DESC);
 
-    propTaskType = addProperty(PROP_TASKTYPE, ABCTask.PROP_TASKTYPE_DFLT);
-    propTaskType.setToolTip(ABCTask.PROP_TASKTYPE_DESC);
+    propTaskVerb = addProperty(PROP_TASKVERB, ABCTask.PROP_TASKVERB_DFLT);
+    propTaskVerb.setToolTip(ABCTask.PROP_TASKVERB_DESC);
 
     buildDefaultCommunity();
 
@@ -328,7 +328,7 @@ public class ABCSociety
 	ABCCommunity child = new ABCCommunity(i, crntCommunity);
 	addChild(child);
 	child.addPropertiesListener(this);
-	addPropertyAlias(child, propTaskType, PROP_TASKTYPE);
+	addPropertyAlias(child, propTaskVerb, PROP_TASKVERB);
 	addPropertyAlias(child, propSampleInterval, PROP_SAMPLEINTERVAL);
 	addPropertyAlias(child, propMaxSamples, PROP_MAXNUMBSAMPLES);
 	addPropertyAlias(child, propStartDelay, PROP_STARTDELAY);
@@ -404,7 +404,7 @@ public class ABCSociety
 	ABCCommunity child = new ABCCommunity(i, crntCommunity);
 	addChild(child);
 	child.addPropertiesListener(this);
-	addPropertyAlias(child, propTaskType, PROP_TASKTYPE);
+	addPropertyAlias(child, propTaskVerb, PROP_TASKVERB);
 	addPropertyAlias(child, propSampleInterval, PROP_SAMPLEINTERVAL); 
 	addPropertyAlias(child, propMaxSamples, PROP_MAXNUMBSAMPLES);
 	addPropertyAlias(child, propStartDelay, PROP_STARTDELAY);

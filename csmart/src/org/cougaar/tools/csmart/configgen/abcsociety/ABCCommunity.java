@@ -63,8 +63,8 @@ public class ABCCommunity
   public static final String PROP_FIRSTAGENT_DESC = "The First Agent in a community";
 
   /** Properties used here but defined elsewhere **/
-  public static final String PROP_TASKTYPE = ABCTask.PROP_TASKTYPE;
-  public static final String PROP_TASKTYPE_DESC = ABCTask.PROP_TASKTYPE_DESC;
+  public static final String PROP_TASKVERB = ABCTask.PROP_TASKVERB;
+  public static final String PROP_TASKVERB_DESC = ABCTask.PROP_TASKVERB_DESC;
 
   public static final String PROP_ROLES = ABCLocalAsset.PROP_ROLES;
   public static final String PROP_ROLES_DESC = ABCLocalAsset.PROP_ROLES_DESC;
@@ -93,7 +93,8 @@ public class ABCCommunity
   /** Name of the Local Asset **/
   public static final String DEFAULT_ASSETNAME = "ClassOneDepot";
 
-  
+  public static final String DEFAULT_TASKVERB = "Supply500MREs";
+
   /** Agent specific defaults **/
 
   /** Customer 1 **/
@@ -342,20 +343,20 @@ public class ABCCommunity
     // Create Allocations
     ABCAllocation alloc = new ABCAllocation();
     alloc.initProperties();
-    //String[] tasks = (String[])getProperty(PROP_TASKTYPE).getValue();
-    String tasktype = (String)getProperty(PROP_TASKTYPE).getValue();
+    String[] tasks = (String[])getProperty(PROP_TASKVERB).getValue();
+    //String taskverb = (String)getProperty(PROP_TASKVERB).getValue();
 
-    //    for(int i=0; i < tasks.length; i++) {
+    for(int i=0; i < tasks.length; i++) {
       ABCAllocationRule rule = new ABCAllocationRule();
       rule.initProperties();
-      Property type = rule.getProperty(PROP_TASKTYPE);
-      type.setValue(tasktype);
-      type.setToolTip(PROP_TASKTYPE_DESC);
+      Property verb = rule.getProperty(PROP_TASKVERB);
+      verb.setValue(tasks[i]);
+      verb.setToolTip(PROP_TASKVERB_DESC);
       Property role = rule.getProperty(PROP_ROLES);
       role.setValue(allocRoles);
       role.setToolTip(PROP_ROLES_DESC);
       alloc.addChild(rule);
-      // }
+    }
     agent.addChild(alloc);
 
     agent.initProperties();
@@ -389,7 +390,8 @@ public class ABCCommunity
    */
   private String addCustomerAgent(String name, int index, int factor, 
 				  int duration, double vital, int chaos,
-				  int distance, int direction, String[] roles, String initializer) {
+				  int distance, int direction, String[] roles, 
+				  String initializer ) {
 
     Property p = null;
 
@@ -398,37 +400,37 @@ public class ABCCommunity
 
     ABCTaskFile taskFile = new ABCTaskFile("Tasks");
     taskFile.initProperties();
-//     String[] tasks = (String[])getProperty(PROP_TASKTYPE).getValue();
-    String tasktype = (String)getProperty(PROP_TASKTYPE).getValue();
+     String[] tasks = (String[])getProperty(PROP_TASKVERB).getValue();
+    //String taskverb = (String)getProperty(PROP_TASKVERB).getValue();
     int count = 0;
-    //    for(int i=0; i < tasks.length; i++) {
-    //String tt = tasks[i];
-      ABCTask task = new ABCTask(tasktype);
+    for(int i=0; i < tasks.length; i++) {
+      String tt = tasks[i];
+      ABCTask task = new ABCTask(tt);
       task.initProperties();
-      task.getProperty(PROP_TASKTYPE).setValue(tasktype);
+      task.getProperty(PROP_TASKVERB).setValue(tt);
       int demand = ((Integer)getProperty(PROP_DEMAND).getValue()).intValue();
       task.getProperty(ABCTask.PROP_RATE).setValue(new Integer(factor * demand));
       task.getProperty(ABCTask.PROP_VITAL).setValue(new Double(vital));
       task.getProperty(ABCTask.PROP_DURATION).setValue(new Integer(duration));
       task.getProperty(ABCTask.PROP_CHAOS).setValue(new Integer(chaos));
       taskFile.addChild(task);
-      //}
+    }
     agent.addChild(taskFile);
 
     // Create Allocations
     ABCAllocation alloc = new ABCAllocation();
     alloc.initProperties();
-    //    for(int i=0; i < tasks.length; i++) {
+    for(int i=0; i < tasks.length; i++) {
       ABCAllocationRule rule = new ABCAllocationRule();
       rule.initProperties();
-      Property type = rule.getProperty(PROP_TASKTYPE);
-      type.setValue(tasktype);
-      type.setToolTip(PROP_TASKTYPE_DESC);
+      Property type = rule.getProperty(PROP_TASKVERB);
+      type.setValue(tasks[i]);
+      type.setToolTip(PROP_TASKVERB_DESC);
       Property role = rule.getProperty(PROP_ROLES);
       role.setValue(roles);
       role.setToolTip(PROP_ROLES_DESC);
       alloc.addChild(rule);
-      // }
+    }
     agent.addChild(alloc);
 
     addPropertyAlias(agent, getProperty(PROP_STARTTIME), PROP_STARTTIME);

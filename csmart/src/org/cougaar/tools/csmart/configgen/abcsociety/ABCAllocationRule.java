@@ -23,16 +23,16 @@ public class ABCAllocationRule
 {
 
   /** Defines a Tasktype Property **/
-  public static final String PROP_TASKTYPE = ABCTask.PROP_TASKTYPE;
-  public static final String PROP_TASKTYPE_DFLT = ABCTask.PROP_TASKTYPE_DFLT;
-  public static final String PROP_TASKTYPE_DESC = ABCTask.PROP_TASKTYPE_DESC;
+  public static final String PROP_TASKVERB = ABCTask.PROP_TASKVERB;
+  public static final String[] PROP_TASKVERB_DFLT = ABCTask.PROP_TASKVERB_DFLT;
+  public static final String PROP_TASKVERB_DESC = ABCTask.PROP_TASKVERB_DESC;
 
   /** Defines a Role Property **/
   public static final String PROP_ROLES = ABCLocalAsset.PROP_ROLES;
   public static final String[] PROP_ROLES_DFLT = ABCLocalAsset.PROP_ROLES_DFLT;
   public static final String PROP_ROLES_DESC = ABCLocalAsset.PROP_ROLES_DESC;
 
-  private Property propTaskType;
+  private Property propTaskVerb;
   private Property propRoles;
 
   ABCAllocationRule() {
@@ -43,8 +43,8 @@ public class ABCAllocationRule
    * Initializes all Properties
    */
   public void initProperties() {
-    propTaskType = addProperty(PROP_TASKTYPE, PROP_TASKTYPE_DFLT);
-    propTaskType.setToolTip(PROP_TASKTYPE_DESC);
+    propTaskVerb = addProperty(PROP_TASKVERB, PROP_TASKVERB_DFLT);
+    propTaskVerb.setToolTip(PROP_TASKVERB_DESC);
 
     propRoles = addProperty(PROP_ROLES, PROP_ROLES_DFLT);
     propRoles.setToolTip(PROP_ROLES_DESC);
@@ -62,7 +62,7 @@ public class ABCAllocationRule
     StringBuffer sb = new StringBuffer(40);
 
     sb.append("rule, ");
-    sb.append((String)propTaskType.getValue());
+    sb.append((String)propTaskVerb.getValue());
 
     String[] roles = (String[])propRoles.getValue();
     for(int i=0; i < roles.length; i++) {

@@ -28,9 +28,10 @@ public class ABCTask
 {
 
   /** Properties associated with a Task **/
-  public static final String PROP_TASKTYPE = "Task Verb";
-  public static final String PROP_TASKTYPE_DFLT = "Supply500MREs";
-  public static final String PROP_TASKTYPE_DESC = "Task Verb used through out the Society";
+  public static final String PROP_TASKVERB = "Task Verb";
+  public static final String[] PROP_TASKVERB_DFLT = {"Supply500MREs", "ObtainATruck"};
+
+  public static final String PROP_TASKVERB_DESC = "Task Verb used through out the Society";
 
   public static final String PROP_WORLDSTATE= "World State";
   public static final String PROP_WORLDSTATE_DFLT = "PEACE";
@@ -52,7 +53,7 @@ public class ABCTask
   public static final Integer PROP_CHAOS_DFLT = new Integer(0);
   public static final String PROP_CHAOS_DESC = "Amount of Chaos to apply to task rate";
 
-  private Property propTaskType;
+  private Property propTaskVerb;
   private Property propWorldState;
   private Property propVital;
   private Property propDuration;
@@ -71,9 +72,9 @@ public class ABCTask
    * Initializes all properties
    */
   public void initProperties() {
-    // Need to init TaskType from Parent.
-    propTaskType = addProperty(PROP_TASKTYPE, PROP_TASKTYPE_DFLT);
-    propTaskType.setToolTip(PROP_TASKTYPE_DESC);
+    // Need to init TaskVerb from Parent.
+    propTaskVerb = addProperty(PROP_TASKVERB, PROP_TASKVERB_DFLT);
+    propTaskVerb.setToolTip(PROP_TASKVERB_DESC);
 
     propWorldState = addProperty(PROP_WORLDSTATE, PROP_WORLDSTATE_DFLT);
     propWorldState.setToolTip(PROP_WORLDSTATE_DESC);
@@ -101,13 +102,13 @@ public class ABCTask
    * Generates a configuration line containing all values required
    * for a Tasks file.  <br>
    * A task file line is in the form of:   <br>
-   * <World State>, <Task Type>, <Rate>, <Chaos>, <Vital>, <Duration>  <br>
+   * <World State>, <Task Verb>, <Rate>, <Chaos>, <Vital>, <Duration>  <br>
    *
    * @return String Configuration Line
    */  
   public String getConfigLine() {
     return (String)propWorldState.getValue() + ", " +
-      (String)propTaskType.getValue() + ", " +
+      (String)propTaskVerb.getValue() + ", " +
       (String)((Integer)propRate.getValue()).toString() + ", " +
       (String)((Integer)propChaos.getValue()).toString() + ", " +
       (String)((Double)propVital.getValue()).toString() + ", " +

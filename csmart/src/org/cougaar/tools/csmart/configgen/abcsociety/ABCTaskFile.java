@@ -18,7 +18,7 @@ import java.io.*;
  *
  * A Task file contains one or more lines of the format: <br><br>
  *
- * <WorldState>, <TaskType>, <Rate>, <Deviation>, <Vitality>, <Duration>
+ * <WorldState>, <TaskVerb>, <Rate>, <Deviation>, <Vitality>, <Duration>
  * <br><br>
  * Each of these lines represents a child <code>ABCTask</code>component.
  *
@@ -51,7 +51,7 @@ public class ABCTaskFile
   /**
    * Writes a Task File to the specified directory. <br>
    * Task file is of the format: <br>
-   * <WorldState>, <TaskType>, <Rate>, <Chaos>, <Vitality>, <Duration>
+   * <WorldState>, <TaskVerb>, <Rate>, <Chaos>, <Vitality>, <Duration>
    * <br><br>
    * @param File directory to place taskfile in.
    * @throws IOException if the file cannot be created.
@@ -61,7 +61,7 @@ public class ABCTaskFile
     File taskFile = new File(configDir, (String)getProperty(PROP_TASKFILENAME).getValue());
     PrintWriter writer = new PrintWriter(new FileWriter(taskFile));
     try {
-      writer.println("# <WorldState>, <TaskType>, <Rate>, <Chaos>, <Vitality>, <Duration>");
+      writer.println("# <WorldState>, <TaskVerb>, <Rate>, <Chaos>, <Vitality>, <Duration>");
       for(int i=0; i < getChildCount(); i++) {
 	writer.println(((ABCTask)getChild(i)).getConfigLine());
       }
