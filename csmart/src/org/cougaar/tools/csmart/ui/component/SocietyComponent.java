@@ -87,12 +87,4 @@ public interface SocietyComponent extends ModifiableComponent, ComponentProperti
    * @see org.cougaar.tools.server.NodeEvent
    */
   boolean isSelfTerminating();
-
-  /**
-   * Get a configuration writer for this society.
-   * @param nodes the <code>NodeComponent[]</code> of the full experiment
-   * @param nodeFileAddition a <code>String</code> to add Services to every Node file
-   * @return a <code>ConfigurationWriter</code> to write out all config data for this society
-   */
-  ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes, String nodeFileAddition);
 }
