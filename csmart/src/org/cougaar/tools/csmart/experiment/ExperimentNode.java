@@ -86,6 +86,8 @@ public class ExperimentNode
       prop = addProperty("AgentNames", new ArrayList());
     ArrayList names = (ArrayList)prop.getValue();
     names.add(agent.getShortName());
+    //    System.out.println("ExperimentNode: " + getShortName() +
+    //                       " added agent: " + agent.getShortName());
     agents.add(agent);
     fireModification();
   }
@@ -102,6 +104,8 @@ public class ExperimentNode
       if (index != -1)
         names.remove(agent.getShortName());
     }
+    //    System.out.println("ExperimentNode: " + getShortName() +
+    //                       " removed agent: " + agent.getShortName());
     agents.remove(agent);
     fireModification();
   }

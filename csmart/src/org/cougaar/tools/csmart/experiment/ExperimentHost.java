@@ -70,6 +70,8 @@ public class ExperimentHost
     ArrayList names = (ArrayList)prop.getValue();
     names.add(node.getShortName());
     ExperimentNode sa = (ExperimentNode) node;
+    //    System.out.println("ExperimentHost: " + getShortName() +
+    //                       " added node: " + node.getShortName());
     nodes.add(sa);
     fireModification();
   }
@@ -86,6 +88,8 @@ public class ExperimentHost
       if (index != -1)
         names.remove(node.getShortName());
     }
+    //    System.out.println("ExperimentHost: " + getShortName() +
+    //                       " removed node: " + node.getShortName());
     nodes.remove(node);
     fireModification();
   }

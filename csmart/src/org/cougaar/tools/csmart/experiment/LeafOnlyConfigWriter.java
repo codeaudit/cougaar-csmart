@@ -132,7 +132,7 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
       ComponentName name = 
 	  new ComponentName((BaseComponent)nodesToWrite[i], 
                             "ConfigurationFileName");
-      nc.addParameter(((BaseComponent)nodesToWrite[i]).getProperty(name).getValue().toString());
+      nc.addParameter(nodesToWrite[i].getProperty(name).getValue().toString());
       theSoc.addChild(nc);
       addAgents(nodesToWrite[i], nc);
     }
