@@ -22,6 +22,14 @@
 package org.cougaar.tools.csmart.core.property.name;
 
 import java.io.Serializable;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+
+import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * An implementation of CompositeName have exactly one element that is
@@ -94,6 +102,10 @@ public class SimpleName implements CompositeName {
    * @param name to be compared with. Must be a CompositeName.
    **/
   public boolean equals(Object o) {
+    // short-circuit some common cases
+    if (this == o) return true;
+    if (o instanceof SimpleName && ((SimpleName)o).name == name) return true;
+
     if (o instanceof CompositeName) {
       return compareTo(o) == 0;
     }
@@ -120,4 +132,44 @@ public class SimpleName implements CompositeName {
   public String toString() {
     return name;
   }
+
+  public void decache() {}      // noop
+
+  // implement a factory
+  private static final HashMap internedNames = new HashMap(97);
+  
+  /**
+   * Get a new <code>SimpleName</code> from an interned list by name
+   **/
+  public static SimpleName getSimpleName(String name) {
+    name = name.intern();
+    synchronized (internedNames) {
+      SimpleName sn = (SimpleName) internedNames.get(name);
+      if (sn == null) {
+        sn = new SimpleName(name);
+        internedNames.put(name,sn);
+      }
+      return sn;
+    }
+  }
+
+  // just do the default for now.
+  private void writeObject(ObjectOutputStream stream)
+     throws IOException
+  {
+    stream.defaultWriteObject();
+  }
+
+  // just do the default for now.
+  private void readObject(ObjectInputStream stream)
+    throws IOException, ClassNotFoundException
+  {
+    stream.defaultReadObject();
+  }
+
+  /** keep the names interned **/
+  private Object readResolve() throws ObjectStreamException {
+    return getSimpleName(name);
+  }
+ 
 }
