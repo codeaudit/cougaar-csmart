@@ -6,6 +6,7 @@ and instructions on how to install and configure CSMART.
 In particular, see "csmart/doc/InstallAndTest.html" for 
 step-by-step instructions.
 
+Be sure to us the v4_v6_conversion script if necessary.
 
 This directory contains scripts for building and running CSMART.
 
@@ -150,6 +151,7 @@ export-recipe.[sh/bat]
 v4_v6_conversion.[sh/bat]
         Removes all occurences of table names in the named file that are 
         prefixed with v4 or v6 and replaces them with non prefixed table 
-        names.
+        names. Used to convert a recipe or experiment export from a 
+	pre-9.4.1 database format to the current format.
 
         Usage: v4_v6_conversion.sh [Filename To Convert]
