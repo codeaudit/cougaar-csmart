@@ -94,26 +94,51 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void setChildren(ComponentData[] child) {
+    if (child == null || child.length == 0 && log.isDebugEnabled()) {
+      log.debug(getName() + ".setChildren called with empty list - will clear children.");
+    }
+
     this.children.clear();
     for(int i=0; i < child.length; i++) {
       if (child[i] != null)
 	this.children.add(child[i]);
+      else if (log.isDebugEnabled()) {
+	log.debug(getName() + ".setChildren got a null child at index " + i);
+      }
     }
   }
 
   public void addChild(ComponentData child) {
     if (child != null)
       this.children.add(child);
+    else {
+      if (log.isDebugEnabled()) 
+	log.debug(getName() + ".addChild got a null child");
+      if (log.isErrorEnabled())
+	log.error("addChild", new Throwable());
+    }
   }
 
   public void addChild(int index, ComponentData child) {
     if (child != null)
       this.children.add(index, child);
+      else {
+	if (log.isDebugEnabled())
+	  log.debug(getName() + ".addChild got a null child to add at index " + index);
+	if (log.isErrorEnabled())
+	  log.error("addChild index, child", new Throwable());
+      }
   }
 
   public void setChild(int index, ComponentData child) {
     if (child != null)
       this.children.set(index, child);
+    else {
+      if (log.isDebugEnabled())
+	log.debug(getName() + ".setChild got a null child to put at index " + index);
+      if (log.isErrorEnabled())
+	log.error("setChild index, child", new Throwable());
+    }
   }
 
   public int childCount() {
@@ -125,8 +150,15 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void addChildDefaultLoc(ComponentData comp) {
-    if (comp == null)
+    if (comp == null) {
+      if (log.isDebugEnabled()) {
+	log.debug(getName() + ".addChildDefaultLoc got null component");
+      }
+      if (log.isErrorEnabled())
+	log.error("addChildDefaultLoc", new Throwable());
       return;
+    }
+
     // Binders will be inserted before other items
     // at the same level.
     // Components that are .equals with other items already
