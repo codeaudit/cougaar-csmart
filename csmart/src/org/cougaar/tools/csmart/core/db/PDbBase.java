@@ -63,82 +63,85 @@ import java.io.ObjectInputStream;
  * of executed queries to a file named PopulateDb<datetime>.log.
  **/
 public class PDbBase {
-    public static final int RECIPE_STATUS_ABSENT = 0;
-    public static final int RECIPE_STATUS_EXISTS = 1;
-    public static final int RECIPE_STATUS_DIFFERS = 2;
+  public static final int RECIPE_STATUS_ABSENT = 0;
+  public static final int RECIPE_STATUS_EXISTS = 1;
+  public static final int RECIPE_STATUS_DIFFERS = 2;
 
-    public static final String QUERY_FILE = "PopulateDb.q";
+  public static final String QUERY_FILE = "PopulateDb.q";
 
-    private static final String PROP_LOG_QUERIES = "csmart.PopulateDb.log.enable";
-    private static final String DFLT_LOG_QUERIES = "false";
-    private static boolean logQueries =
-        System.getProperty(PROP_LOG_QUERIES, DFLT_LOG_QUERIES).equals("true");
+  private static final String PROP_LOG_QUERIES = "csmart.PopulateDb.log.enable";
+  private static final String DFLT_LOG_QUERIES = "false";
+  private static boolean logQueries =
+    System.getProperty(PROP_LOG_QUERIES, DFLT_LOG_QUERIES).equals("true");
 
   private transient Logger log;
 
-    protected Map substitutions = new HashMap() {
-        public Object put(Object key, Object val) {
-            if (val == null) throw new IllegalArgumentException("Null value for " + key);
-            return super.put(key, val);
-        }
+  protected Map substitutions = new HashMap() {
+      public Object put(Object key, Object val) {
+	if (val == null) throw new IllegalArgumentException("Null value for " + key);
+	return super.put(key, val);
+      }
     };
-    protected DBProperties dbp;
+  protected DBProperties dbp;
 
-    protected Connection dbConnection;
-    protected Statement stmt;
-    protected Statement updateStmt;
-    protected boolean debug = false;
-    protected PrintWriter pwlog;
+  protected Connection dbConnection;
+  private Statement stmt;
+  protected Statement updateStmt;
+  protected boolean debug = false;
+  protected PrintWriter pwlog;
 
-    /**
-     * Constructor
-     **/
-    public PDbBase()
-        throws SQLException, IOException
-    {
+  /**
+   * Constructor
+   **/
+  public PDbBase()
+    throws SQLException, IOException
+  {
 
-      createLogger();
-        if (logQueries)
-            pwlog = new PrintWriter(new FileWriter(getLogName()));
-        dbp = DBProperties.readQueryFile(QUERY_FILE);
-        try {
-            dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
-        } catch (FileNotFoundException e) {
-            // This is normal if a user has no separate recipe query file.
-        }
-        //        dbp.setDebug(true);
-        String database = dbp.getProperty("database");
-        String username = dbp.getProperty("username");
-        String password = dbp.getProperty("password");
-        String dbtype = dbp.getDBType();
-        String driverParam = "driver." + dbtype;
-        String driverClass = Parameters.findParameter(driverParam);
-        if (driverClass == null)
-            throw new SQLException("Unknown driver " + driverParam);
-        try {
-            Class.forName(driverClass);
-        } catch (ClassNotFoundException cnfe) {
-            throw new SQLException("Driver class not found: " + driverClass);
-        }
-        dbConnection = DBConnectionPool.getConnection(database, username, password);
-        dbConnection.setAutoCommit(false);
-        stmt = dbConnection.createStatement();
-        updateStmt = dbConnection.createStatement();
+    createLogger();
+    if (logQueries)
+      pwlog = new PrintWriter(new FileWriter(getLogName()));
+    dbp = DBProperties.readQueryFile(QUERY_FILE);
+    try {
+      dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
+    } catch (FileNotFoundException e) {
+      // This is normal if a user has no separate recipe query file.
     }
-
-    DateFormat logDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-    private String getLogName() {
-        return "PopulateDb" + logDateFormat.format(new Date()) + ".log";
+    //        dbp.setDebug(true);
+    String database = dbp.getProperty("database");
+    String username = dbp.getProperty("username");
+    String password = dbp.getProperty("password");
+    String dbtype = dbp.getDBType();
+    String driverParam = "driver." + dbtype;
+    String driverClass = Parameters.findParameter(driverParam);
+    if (driverClass == null)
+      throw new SQLException("Unknown driver " + driverParam);
+    try {
+      Class.forName(driverClass);
+    } catch (ClassNotFoundException cnfe) {
+      throw new SQLException("Driver class not found: " + driverClass);
     }
+    dbConnection = DBConnectionPool.getConnection(database, username, password);
+    dbConnection.setAutoCommit(false);
+    stmt = dbConnection.createStatement();
+    updateStmt = dbConnection.createStatement();
+  }
 
-    /**
-     * Check the status of a recipe in the database.
-     * @param rc the RecipeComponent to check
-     * @return RECIPE_STATUS_ABSENT -- Recipe not in database<br>
-     * RECIPE_STATUS_EXISTS -- Recipe already in database with same
-     * value<br> RECIPE_STATUS_DIFFERS -- Recipe already in database
-     * with different value
-     **/
+  DateFormat logDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+  private String getLogName() {
+    return "PopulateDb" + logDateFormat.format(new Date()) + ".log";
+  }
+
+  protected Statement getStatement() throws SQLException {
+    return dbConnection.createStatement();
+  }
+  /**
+   * Check the status of a recipe in the database.
+   * @param rc the RecipeComponent to check
+   * @return RECIPE_STATUS_ABSENT -- Recipe not in database<br>
+   * RECIPE_STATUS_EXISTS -- Recipe already in database with same
+   * value<br> RECIPE_STATUS_DIFFERS -- Recipe already in database
+   * with different value
+   **/
 
   public int recipeExists(RecipeComponent rc) {
     String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
@@ -214,34 +217,34 @@ public class PDbBase {
    * @return the id of the recipe in the database
    */
 
-    public String insureLibRecipe(RecipeComponent rc) throws SQLException {
-      String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
-      if (recipeIdAndClass != null) {
-        if (isRecipeEqual(recipeIdAndClass, rc))
-          return recipeIdAndClass[0];
-        else
-          return insertLibRecipe(rc, recipeIdAndClass[0]);
-      } else
-        return insertLibRecipe(rc, null);
-    }
+  public String insureLibRecipe(RecipeComponent rc) throws SQLException {
+    String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
+    if (recipeIdAndClass != null) {
+      if (isRecipeEqual(recipeIdAndClass, rc))
+	return recipeIdAndClass[0];
+      else
+	return insertLibRecipe(rc, recipeIdAndClass[0]);
+    } else
+      return insertLibRecipe(rc, null);
+  }
 
-    public void removeLibRecipe(RecipeComponent rc) throws SQLException {
-        String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
-        if (recipeIdAndClass != null) {
-            substitutions.put(":recipe_id:", recipeIdAndClass[0]);
-            executeUpdate(dbp.getQuery("deleteLibRecipeArgs", substitutions));
-            executeUpdate(dbp.getQuery("deleteLibRecipe", substitutions));
-        }
+  public void removeLibRecipe(RecipeComponent rc) throws SQLException {
+    String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
+    if (recipeIdAndClass != null) {
+      substitutions.put(":recipe_id:", recipeIdAndClass[0]);
+      executeUpdate(dbp.getQuery("deleteLibRecipeArgs", substitutions));
+      executeUpdate(dbp.getQuery("deleteLibRecipe", substitutions));
     }
+  }
 
-    public void removeLibRecipeNamed(String recipeName) throws SQLException {
-        String[] recipeIdAndClass = getRecipeIdAndClass(recipeName);
-        if (recipeIdAndClass != null) {
-            substitutions.put(":recipe_id:", recipeIdAndClass[0]);
-            executeUpdate(dbp.getQuery("deleteLibRecipeArgs", substitutions));
-            executeUpdate(dbp.getQuery("deleteLibRecipe", substitutions));
-        }
+  public void removeLibRecipeNamed(String recipeName) throws SQLException {
+    String[] recipeIdAndClass = getRecipeIdAndClass(recipeName);
+    if (recipeIdAndClass != null) {
+      substitutions.put(":recipe_id:", recipeIdAndClass[0]);
+      executeUpdate(dbp.getQuery("deleteLibRecipeArgs", substitutions));
+      executeUpdate(dbp.getQuery("deleteLibRecipe", substitutions));
     }
+  }
 
   /**
    * Inserts the specified recipe into the database.
@@ -249,274 +252,283 @@ public class PDbBase {
    * then just update the database recipe (by removing it
    * and inserting the new recipe using the same id).
    **/
-    private String insertLibRecipe(RecipeComponent rc,
-                                   String recipeId) throws SQLException {
+  private String insertLibRecipe(RecipeComponent rc,
+				 String recipeId) throws SQLException {
+    try {
+      if (recipeId != null)
+	removeLibRecipeNamed(rc.getRecipeName());
+      else
+	recipeId = getNextId("queryMaxRecipeId", "RECIPE-");
+      substitutions.put(":recipe_id:", recipeId);
+      substitutions.put(":java_class:", rc.getClass().getName());
+      substitutions.put(":description:", "No description available");
+      executeUpdate(dbp.getQuery("insertLibRecipe", substitutions));
+      int order = 0;
+      for (Iterator j = rc.getLocalPropertyNames(); j.hasNext(); ) {
+	CompositeName pname = (CompositeName) j.next();
+	Property prop = rc.getProperty(pname);
+	Object val = prop.getValue();
+	if (val == null) continue; // Don't write null values
+	String sval = val.toString();
+	if (sval.equals("")) continue; // Don't write empty values
+	String name = pname.last().toString();
+	substitutions.put(":arg_name:", name);
+	substitutions.put(":arg_value:", sval);
+	substitutions.put(":arg_order:", String.valueOf(order++));
+	executeUpdate(dbp.getQuery("insertLibRecipeProp", substitutions));
+      }
+      return recipeId;
+    } catch (SQLException sqle) {
+      System.out.println("Exception in insertLibRecipe: " + sqle);
+      Thread.dumpStack();
+      return null;
+    }
+  }
+
+  private String[] getRecipeIdAndClass(String recipeName) {
+    substitutions.put(":recipe_name:", recipeName);
+    ResultSet rs = null;
+    try {
+      rs = executeQuery(stmt, 
+			dbp.getQuery("queryLibRecipeByName", substitutions));
+      if (rs.next()) {
+	String[] result = new String[] {rs.getString(1), rs.getString(2)};
+	rs.close();
+	return result;
+      } else {
+	return null;
+      }
+    } catch (SQLException sqle) {
+      if(log.isErrorEnabled()) {
+	log.error("SQL Exception: ", sqle);
+      }
+      return null;
+    } finally {
       try {
-        if (recipeId != null)
-          removeLibRecipeNamed(rc.getRecipeName());
-        else
-          recipeId = getNextId("queryMaxRecipeId", "RECIPE-");
-        substitutions.put(":recipe_id:", recipeId);
-        substitutions.put(":java_class:", rc.getClass().getName());
-        substitutions.put(":description:", "No description available");
-        executeUpdate(dbp.getQuery("insertLibRecipe", substitutions));
-        int order = 0;
-        for (Iterator j = rc.getLocalPropertyNames(); j.hasNext(); ) {
-            CompositeName pname = (CompositeName) j.next();
-            Property prop = rc.getProperty(pname);
-            Object val = prop.getValue();
-            if (val == null) continue; // Don't write null values
-            String sval = val.toString();
-            if (sval.equals("")) continue; // Don't write empty values
-            String name = pname.last().toString();
-            substitutions.put(":arg_name:", name);
-            substitutions.put(":arg_value:", sval);
-            substitutions.put(":arg_order:", String.valueOf(order++));
-            executeUpdate(dbp.getQuery("insertLibRecipeProp", substitutions));
-        }
-        return recipeId;
-      } catch (SQLException sqle) {
-        System.out.println("Exception in insertLibRecipe: " + sqle);
-        Thread.dumpStack();
-        return null;
+	if (rs != null)
+	  rs.close();
+      } catch (SQLException sqle2) {
+	if (log.isErrorEnabled()) {
+	  log.error("SQL Exception: ", sqle2);
+	}
+	return null;
       }
     }
+  }
 
-    private String[] getRecipeIdAndClass(String recipeName) {
-      substitutions.put(":recipe_name:", recipeName);
-      ResultSet rs = null;
+  protected String getNextId(String queryName, String prefix) {
+    DecimalFormat format = new DecimalFormat("0000");
+    format.setPositivePrefix(prefix);
+    substitutions.put(":max_id_pattern:", prefix + "____");
+    String id = format.format(1); // Default
+    try {
+      Statement stmt = dbConnection.createStatement();
       try {
-        rs = executeQuery(stmt, 
-                          dbp.getQuery("queryLibRecipeByName", substitutions));
-        if (rs.next()) {
-          return new String[] {rs.getString(1), rs.getString(2)};
-        } else {
-          return null;
-        }
-      } catch (SQLException sqle) {
-        if(log.isErrorEnabled()) {
-          log.error("SQL Exception: ", sqle);
-        }
-        return null;
+	String query = dbp.getQuery(queryName, substitutions);
+	ResultSet rs = executeQuery(stmt, query);
+	try {
+	  if (rs.next()) {
+	    String maxId = rs.getString(1);
+	    if (maxId != null) {
+	      int n = format.parse(maxId).intValue();
+	      id = format.format(n + 1);
+	    }
+	  }
+	} finally {
+	  rs.close();
+	}
       } finally {
-        try {
-          if (rs != null)
-            rs.close();
-        } catch (SQLException sqle2) {
-          if (log.isErrorEnabled()) {
-            log.error("SQL Exception: ", sqle2);
-          }
-          return null;
-        }
+	stmt.close();
       }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+	log.error("Exception: ", e);
+      }
+      // Ignore exceptions and use default
     }
+    return id;
+  }
 
-    protected String getNextId(String queryName, String prefix) {
-        DecimalFormat format = new DecimalFormat("0000");
-        format.setPositivePrefix(prefix);
-        substitutions.put(":max_id_pattern:", prefix + "____");
-        String id = format.format(1); // Default
-        try {
-            Statement stmt = dbConnection.createStatement();
-            try {
-                String query = dbp.getQuery(queryName, substitutions);
-                ResultSet rs = executeQuery(stmt, query);
-                try {
-                    if (rs.next()) {
-                        String maxId = rs.getString(1);
-                        if (maxId != null) {
-                            int n = format.parse(maxId).intValue();
-                            id = format.format(n + 1);
-                        }
-                    }
-                } finally {
-                    rs.close();
-                }
-            } finally {
-                stmt.close();
-            }
-        } catch (Exception e) {
-          if(log.isErrorEnabled()) {
-            log.error("Exception: ", e);
-          }
-            // Ignore exceptions and use default
-        }
-        return id;
+  /**
+   * Utility method to perform an executeUpdate statement. Also
+   * additional code to be added for each executeUpdate for
+   * debugging purposes.
+   **/
+  protected int executeUpdate(String query) throws SQLException {
+    if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
+    try {
+      long startTime = 0;
+      if (pwlog != null)
+	startTime = System.currentTimeMillis();
+      int result = updateStmt.executeUpdate(query);
+      if (pwlog != null) {
+	long endTime = System.currentTimeMillis();
+	pwlog.println((endTime - startTime) + " " + query);
+      }
+      return result;
+    } catch (SQLException sqle) {
+      if(log.isErrorEnabled()) {
+	log.error("SQLException query: " + query, sqle);
+      }
+      if (pwlog != null) {
+	pwlog.println("SQLException query: " + query);
+	pwlog.flush();
+      }
+      throw sqle;
     }
+  }
 
-    /**
-     * Utility method to perform an executeUpdate statement. Also
-     * additional code to be added for each executeUpdate for
-     * debugging purposes.
-     **/
-    protected int executeUpdate(String query) throws SQLException {
-        if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
-        try {
-            long startTime = 0;
-            if (pwlog != null)
-                startTime = System.currentTimeMillis();
-            int result = updateStmt.executeUpdate(query);
-            if (pwlog != null) {
-                long endTime = System.currentTimeMillis();
-                pwlog.println((endTime - startTime) + " " + query);
-            }
-            return result;
-        } catch (SQLException sqle) {
-          if(log.isErrorEnabled()) {
-            log.error("SQLException query: " + query, sqle);
-          }
-          if (pwlog != null) {
-            pwlog.println("SQLException query: " + query);
-            pwlog.flush();
-          }
-          throw sqle;
-        }
+  /**
+   * Utility method to perform an executeUpdate statement. Also
+   * additional code to be added for each executeUpdate for
+   * debugging purposes.
+   **/
+  protected ResultSet executeQuery(PreparedStatement pstmt, String query) throws SQLException {
+    if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
+    try {
+      long startTime = 0;
+      if (pwlog != null)
+	startTime = System.currentTimeMillis();
+      ResultSet result = pstmt.executeQuery();
+      if (pwlog != null) {
+	long endTime = System.currentTimeMillis();
+	pwlog.println((endTime - startTime) + " " + query);
+      }
+      return result;
+    } catch (SQLException sqle) {
+      if(log.isErrorEnabled()) {
+	log.error("SQLException query: " + query, sqle);
+      }
+      if (pwlog != null) {
+	pwlog.println("SQLException query: " + query);
+	pwlog.flush();
+      }
+      throw sqle;
     }
+  }
 
-    /**
-     * Utility method to perform an executeUpdate statement. Also
-     * additional code to be added for each executeUpdate for
-     * debugging purposes.
-     **/
-    protected ResultSet executeQuery(PreparedStatement pstmt, String query) throws SQLException {
-        if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
-        try {
-            long startTime = 0;
-            if (pwlog != null)
-                startTime = System.currentTimeMillis();
-            ResultSet result = pstmt.executeQuery();
-            if (pwlog != null) {
-                long endTime = System.currentTimeMillis();
-                pwlog.println((endTime - startTime) + " " + query);
-            }
-            return result;
-        } catch (SQLException sqle) {
-          if(log.isErrorEnabled()) {
-            log.error("SQLException query: " + query, sqle);
-          }
-            if (pwlog != null) {
-                pwlog.println("SQLException query: " + query);
-                pwlog.flush();
-            }
-            throw sqle;
-        }
+  /**
+   * Utility method to perform an executeUpdate statement. Also
+   * additional code to be added for each executeUpdate for
+   * debugging purposes.
+   **/
+  protected int executeUpdate(PreparedStatement pstmt, String query) throws SQLException {
+    if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
+    try {
+      long startTime = 0;
+      if (pwlog != null)
+	startTime = System.currentTimeMillis();
+      int result = pstmt.executeUpdate();
+      if (pwlog != null) {
+	long endTime = System.currentTimeMillis();
+	pwlog.println((endTime - startTime) + " " + query);
+      }
+      return result;
+    } catch (SQLException sqle) {
+      if(log.isErrorEnabled()) {
+	log.error("SQLException query: " + query, sqle);
+      }
+      if (pwlog != null) {
+	pwlog.println("SQLException query: " + query);
+	pwlog.flush();
+      }
+      throw sqle;
     }
+  }
 
-    /**
-     * Utility method to perform an executeUpdate statement. Also
-     * additional code to be added for each executeUpdate for
-     * debugging purposes.
-     **/
-    protected int executeUpdate(PreparedStatement pstmt, String query) throws SQLException {
-        if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
-        try {
-            long startTime = 0;
-            if (pwlog != null)
-                startTime = System.currentTimeMillis();
-            int result = pstmt.executeUpdate();
-            if (pwlog != null) {
-                long endTime = System.currentTimeMillis();
-                pwlog.println((endTime - startTime) + " " + query);
-            }
-            return result;
-        } catch (SQLException sqle) {
-          if(log.isErrorEnabled()) {
-            log.error("SQLException query: " + query, sqle);
-          }
-            if (pwlog != null) {
-                pwlog.println("SQLException query: " + query);
-                pwlog.flush();
-            }
-            throw sqle;
-        }
+  /**
+   * Utility method to perform an executeQuery statement. Also
+   * additional code to be added for each executeQuery for
+   * debugging purposes.
+   **/
+  protected ResultSet executeQuery(Statement stmt, String query) throws SQLException {
+    if (query == null) throw new IllegalArgumentException("executeQuery: null query");
+    try {
+      long startTime = 0;
+      if (pwlog != null)
+	startTime = System.currentTimeMillis();
+      ResultSet rs = stmt.executeQuery(query);
+      if (pwlog != null) {
+	long endTime = System.currentTimeMillis();
+	pwlog.println((endTime - startTime) + " " + query);
+      }
+      return rs;
+    } catch (SQLException sqle) {
+      if(log.isErrorEnabled()) {
+	log.error("SQLException query: " + query, sqle);
+      }
+      if (pwlog != null) {
+	pwlog.println("SQLException query: " + query);
+	pwlog.flush();
+      }
+      throw sqle;
     }
+  }
 
-    /**
-     * Utility method to perform an executeQuery statement. Also
-     * additional code to be added for each executeQuery for
-     * debugging purposes.
-     **/
-    protected ResultSet executeQuery(Statement stmt, String query) throws SQLException {
-        if (query == null) throw new IllegalArgumentException("executeQuery: null query");
-        try {
-            long startTime = 0;
-            if (pwlog != null)
-                startTime = System.currentTimeMillis();
-            ResultSet rs = stmt.executeQuery(query);
-            if (pwlog != null) {
-                long endTime = System.currentTimeMillis();
-                pwlog.println((endTime - startTime) + " " + query);
-            }
-            return rs;
-        } catch (SQLException sqle) {
-          if(log.isErrorEnabled()) {
-            log.error("SQLException query: " + query, sqle);
-          }
-            if (pwlog != null) {
-                pwlog.println("SQLException query: " + query);
-                pwlog.flush();
-            }
-            throw sqle;
-        }
-    }
+  /**
+   * Enables debugging
+   **/
+  public void setDebug(boolean newDebug) {
+    debug = newDebug;
+    dbp.setDebug(newDebug);
+  }
 
-    /**
-     * Enables debugging
-     **/
-    public void setDebug(boolean newDebug) {
-        debug = newDebug;
-        dbp.setDebug(newDebug);
+  /**
+   * Indicates that this is no longer needed. Closes the database
+   * connection. Well-behaved users of this class will close when
+   * done. Otherwise, the finalizer will close it.
+   **/
+  public synchronized void close() throws SQLException {
+    if (pwlog != null) {
+      pwlog.flush();
+      pwlog.close();
+      pwlog = null;
     }
-
-    /**
-     * Indicates that this is no longer needed. Closes the database
-     * connection. Well-behaved users of this class will close when
-     * done. Otherwise, the finalizer will close it.
-     **/
-    public synchronized void close() throws SQLException {
-        if (pwlog != null) {
-            pwlog.flush();
-            pwlog.close();
-            pwlog = null;
-        }
-        if (dbConnection != null) {
-            if (!dbConnection.getAutoCommit()) dbConnection.commit();
-            dbConnection.close();
-            dbConnection = null;
-        }
+    if (dbConnection != null) {
+      if (dbConnection.isClosed()) {
+	if (log.isDebugEnabled()) {
+	  log.debug("Connection is closed when about to commit & close it");
+	}
+      } else {
+	if (!dbConnection.getAutoCommit()) dbConnection.commit();
+	dbConnection.close();
+      }
+      dbConnection = null;
     }
+  }
 
   private void createLogger() {
     log = CSMART.createLogger(this.getClass().getName());
   }
 
-    protected void finalize() {
-        try {
-            if (dbConnection != null) close();
-        } catch (SQLException sqle) {
-          if(log.isErrorEnabled()) {
-            log.error("Exception", sqle);
-          }
-        }
+  protected void finalize() {
+    try {
+      if (dbConnection != null) close();
+    } catch (SQLException sqle) {
+      if(log.isErrorEnabled()) {
+	log.error("Exception", sqle);
+      }
     }
+  }
 
-    /**
-     * Quote a string for SQL. We don't double quotes that appear in
-     * strings because we have no cases where such quotes occur.
-     **/
-    protected static String sqlQuote(String s) {
-        if (s == null) return "null";
-        int quoteIndex = s.indexOf('\'');
-	// If the string already starts & ends with a single quote, we're done
-	if (quoteIndex == 0 && s.lastIndexOf('\'') == s.length() - 1)
-	  return s;
-	  
-        while (quoteIndex >= 0) {
-            s = s.substring(0, quoteIndex) + "''" + s.substring(quoteIndex + 1);
-            quoteIndex = s.indexOf('\'', quoteIndex + 2);
-        }
-        return "'" + s + "'";
+  /**
+   * Quote a string for SQL. We don't double quotes that appear in
+   * strings because we have no cases where such quotes occur.
+   **/
+  protected static String sqlQuote(String s) {
+    if (s == null) return "null";
+    String ret = null;
+    int quoteIndex = s.indexOf('\'');
+    // If the string already starts & ends with a single quote, we're done
+    if (quoteIndex == 0 && s.lastIndexOf('\'') == s.length() - 1)
+      return s;
+    ret = new String(s);
+    while (quoteIndex >= 0) {
+      ret = ret.substring(0, quoteIndex) + "''" + ret.substring(quoteIndex + 1);
+      quoteIndex = ret.indexOf('\'', quoteIndex + 2);
     }
+    return "'" + ret + "'";
+  }
 
   private void readObject(ObjectInputStream ois)
     throws IOException, ClassNotFoundException
