@@ -1060,7 +1060,14 @@ public class CSMARTConsole extends JFrame {
   private boolean createNode(NodeComponent nodeComponent, String hostName) {
     String nodeName = nodeComponent.getShortName();
     // create an unique node name to circumvent server problems
-    String uniqueNodeName = nodeName + currentTrial;
+    String uniqueNodeName = nodeName;
+
+    // Can't change the name of the Nodes when running
+    // from the database, cause it needs to load those names
+    if (! CSMART.inDBMode()) {
+      uniqueNodeName = nodeName + currentTrial;
+    }
+    
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
     ConsoleTextPane stdoutPane = new ConsoleTextPane(doc);
     JScrollPane scrollPane = new JScrollPane(stdoutPane);
@@ -1098,15 +1105,31 @@ public class CSMARTConsole extends JFrame {
     properties.put("org.cougaar.tools.server.name", DEFAULT_SERVER_NAME);
     int port = 8484;
     String[] args = new String[4];
-    args[0] = "-f";
-    args[1] = uniqueNodeName + ".ini";
+
+    // FIXME!!!
+    // There are new & better ways to run the server and give it parameters
+    // So use them....
+    if (! CSMART.inDBMode()) {
+      args[0] = "-f";
+      args[1] = uniqueNodeName + ".ini";
+    } else {
+      args[0] = "-X"; // ExperimentID to run
+      args[1] = experiment.getExperimentID();
+    }
+    
     args[2] = "-controlPort";
     args[3] = Integer.toString(port);
     // set configuration file names in nodesToRun
     for (int i = 0; i < nodesToRun.length; i++) 
       ((ConfigurableComponent)nodesToRun[i]).addProperty("ConfigurationFileName", 
 				nodesToRun[i].getShortName() + currentTrial);
+
+    // FIXME:
+    // Doesn't this write the config files in the local, client-side directory!!!
+    // It shouldn't be doing this!!!
+    
     // write the configuration files
+    // Note that this configWriter, if in DB Mode, does very little
     ConfigurationWriter configWriter = 
       experiment.getConfigurationWriter(nodesToRun);
     try {

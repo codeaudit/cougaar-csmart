@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.*;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.server.ConfigurationWriter;
 
 /**
@@ -57,6 +58,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private boolean editable = true;
   private boolean runnable = true;
 
+  private String expID = null; // An Experiment has a single ExpID
+  // Soon Experiment's Trials will have TrialIDs
+
+  // An Experiment has multiple Configuration pieces, potentially:
+  // Host/Node, Node/Agent would be 2, for example
+  private List configAssemblyIDs = new ArrayList();
+
   public Experiment(String name, SocietyComponent[] societyComponents,
 		    ImpactComponent[] impacts, MetricComponent[] metrics)
   {
@@ -68,6 +76,24 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   public Experiment(String name) {
     super(name);
+  }
+
+  public void setExperimentID(String expID) {
+    this.expID = expID;
+  }
+
+  // This method should get called by Organizer
+  // When user tries to load a previously saved Experiment
+  public static Experiment loadCMTExperiment (String expID) {
+    Experiment ret = new Experiment(expID);
+    ret.setExperimentID(expID);
+    
+    // FIXME:
+    // Retrieve the experiment with this ID from the database:
+    // Get the Assembly's that are societies, and add them to the Experiment
+    // Get the Assembly's that are configurations and fill in the H/N/A stuff,
+    // but store where we got this info
+    return ret;
   }
   
   public void setName(String newName) {
@@ -562,6 +588,17 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     fireModification();
   }
 
+  public String getExperimentID() {
+    if (CSMART.inDBMode()) {
+      // FIXME:
+      // This should save unsaved pieces of the configuration to the database,
+      // create the appropriate trials/experiments, then return the ID
+      return expID;
+    } else {
+      return null;
+    }
+  }
+
   /**
    * An Experiment now has a ConfigurationWriter -
    * one which lets all the components write themselves out
@@ -572,11 +609,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes) {
     // The given set of nodes is potentially fewer than the full set in the society
     // Note the ugly this parameter...
-    ExpConfigWriterNew test = new ExpConfigWriterNew(getComponents(), nodes, this);
+    if (CSMART.inDBMode()) {
+      // FIXME!!!
+      // Send a config writer that only writes LeafComponentData
+      return new LeafOnlyConfigWriter(getComponents(), nodes, this);
+    }
 
-    return test;
-    //    System.err.println(this + " created test write: " + test);
-    //return new ExperimentConfigWriter(societies, impacts, nodes);
+    return new ExpConfigWriterNew(getComponents(), nodes, this);
   }
 
   /**
@@ -700,7 +739,15 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void createDefaultConfiguration() {
     // Check if it already has a node?
     // create one Node
-    NodeComponent node = addNode("Node0");
+    NodeComponent node = null;
+
+    // BIG HACK IN HERE!!!!!!
+    SocietyComponent soc = getSocietyComponent(0);
+    if (soc != null && soc.getSocietyName().equals("3ID-135-CMT")) {
+      node = addNode("SMALL-135-TRANS-NODE");
+      expID = "SMALL-135-TRANS";
+    } else
+      node = addNode("Node0");
     
     // Put all the agents in this Node
     // Skip agents already assigned to Nodes?
