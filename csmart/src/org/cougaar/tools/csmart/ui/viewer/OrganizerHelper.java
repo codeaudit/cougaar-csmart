@@ -604,6 +604,7 @@ public class OrganizerHelper {
     createLogger();
     
     String query = null;
+    RecipeComponent rc = null;
     try {
       Connection conn = DBUtils.getConnection();
       try {
@@ -618,11 +619,11 @@ public class OrganizerHelper {
               new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
             getRecipeProperties(dbRecipe, conn, substitutions);
             dbRecipe.name = recipeName;
-            RecipeComponent rc = createRecipe(dbRecipe.name, dbRecipe.cls);
+            rc = createRecipe(dbRecipe.name, dbRecipe.cls);
             setRecipeComponentProperties(dbRecipe, rc);
             ((RecipeBase)rc).resetModified();
             ((RecipeBase)rc).installListeners();
-            return rc;
+            //return rc;
           } catch (ClassNotFoundException cnfe) {
             if(log.isErrorEnabled()) {
               log.error("for recipe", cnfe);
@@ -642,7 +643,7 @@ public class OrganizerHelper {
         log.error("Caught SQL exception getting DBRecipe " + query, se);
       }
     }    
-    return null;
+    return rc;
   }
 
   private void setRecipeComponentProperties(DbRecipe dbRecipe, 

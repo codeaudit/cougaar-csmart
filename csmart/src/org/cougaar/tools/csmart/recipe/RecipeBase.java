@@ -157,13 +157,14 @@ public abstract class RecipeBase
         log.error("Exception", sqle);
       }
       result = false;
-    }
-    try {
-      if (pdb != null)
-        pdb.close();
-    } catch (Exception sqle) {
-      if(log.isErrorEnabled()) {
-        log.error("Exception", sqle);
+    } finally {
+      try {
+	if (pdb != null)
+	  pdb.close();
+      } catch (Exception sqle) {
+	if(log.isErrorEnabled()) {
+	  log.error("Exception", sqle);
+	}
       }
     }
     if (result) {

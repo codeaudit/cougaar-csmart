@@ -594,15 +594,19 @@ public class PopulateDb extends PDbBase {
     if (assembly_id == null || assembly_id.equals("")) 
       return;
     PopulateDb pdb = new PopulateDb(null, null);
-    if (!pdb.isAssemblyUsed(assembly_id)) {
-      if (pdb.log.isInfoEnabled()) {
-	pdb.log.info("Deleting assembly from the database: " + assembly_id);
+    try {
+      if (!pdb.isAssemblyUsed(assembly_id)) {
+	if (pdb.log.isInfoEnabled()) {
+	  pdb.log.info("Deleting assembly from the database: " + assembly_id);
+	}
+	pdb.cleanAssembly(assembly_id);
+      } else if (pdb.log.isInfoEnabled()) {
+	pdb.log.info("deleteSociety not deleting asb " + assembly_id + " cause its still in use");
       }
-      pdb.cleanAssembly(assembly_id);
-    } else if (pdb.log.isInfoEnabled()) {
-      pdb.log.info("deleteSociety not deleting asb " + assembly_id + " cause its still in use");
+    } finally {
+      if (pdb != null)
+	pdb.close();
     }
-    pdb.close();
   }
 
   /**
@@ -618,17 +622,24 @@ public class PopulateDb extends PDbBase {
     if (exptId == null || exptId.equals("") || newName == null || newName.equals(""))
       return;
     PopulateDb pdb = new PopulateDb(exptId, null);
-    if (newName.equals(pdb.getOldExperimentName())) {
-      if (pdb.log.isDebugEnabled()) {
-	pdb.log.debug("changeExptName: new name (" + newName + ") same as old for expt " + exptId);
+    try {
+      if (newName.equals(pdb.getOldExperimentName())) {
+	if (pdb.log.isDebugEnabled()) {
+	  pdb.log.debug("changeExptName: new name (" + newName + ") same as old for expt " + exptId);
+	}
+	pdb.close();
+	pdb = null;
+	return;
       }
-      pdb.close();
-      return;
+      
+      // OK. Really do the update.
+      pdb.reallyChangeExptName(newName);
+    } finally {
+      if (pdb != null) {
+	pdb.close();
+	pdb = null;
+      }
     }
-
-    // OK. Really do the update.
-    pdb.reallyChangeExptName(newName);
-    pdb.close();
   }
   
   /**
@@ -905,8 +916,14 @@ public class PopulateDb extends PDbBase {
     if (assemblyID == null || assemblyID.equals("") || newName == null || newName.equals(""))
       return;
     PopulateDb pdb = new PopulateDb(null, null);
-    pdb.reallyChangeSocietyName(assemblyID, newName);
-    pdb.close();
+    try {
+      pdb.reallyChangeSocietyName(assemblyID, newName);
+    } finally {
+      if (pdb != null) {
+	pdb.close();
+	pdb = null;
+      }
+    }
   }
 
   private void reallyChangeSocietyName(String assemblyID, String newName) throws SQLException, IOException {

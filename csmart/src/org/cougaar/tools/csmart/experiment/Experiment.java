@@ -1599,6 +1599,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @see org.cougaar.tools.csmart.core.db.PopulateDb
    */
   public void saveToDb(DBConflictHandler ch) {
+    PopulateDb pdb = null;
     try {
       if (log.isInfoEnabled()) {
 	log.info("Saving experiment " + getExperimentName() + " to database");
@@ -1608,7 +1609,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
       boolean componentWasRemoved = false;
 
-      PopulateDb pdb = null;
       SocietyComponent sc = getSocietyComponent();
       if (sc == null) {
         if (log.isErrorEnabled()) 
@@ -1733,13 +1733,18 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	}
       }
 
-      pdb.close();
+      resetModified();
     } catch (Exception sqle) {
       if (log.isErrorEnabled())
 	log.error("Error saving experiment to database: ", sqle);
       return;
+    } finally {
+      if (pdb != null) {
+	try {
+	  pdb.close();
+	} catch (SQLException e) {}
+      }
     }
-    resetModified();
   }
 
   private void saveToDb() {
@@ -1861,8 +1866,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     // then give everyone a chance to modify what they've collectively produced
     boolean componentModified = false;
     List components = getComponents();
+    PopulateDb pdb = null;
     try {
-      PopulateDb pdb = new PopulateDb(getExperimentID(), trialID);
+      pdb = new PopulateDb(getExperimentID(), trialID);
       for (int i = 0, n = components.size(); i < n; i++) {
 	BaseComponent soc = (BaseComponent) components.get(i);
 	if (log.isDebugEnabled()) {
@@ -1875,10 +1881,15 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	componentModified |= soc.componentWasRemoved();
       }
       
-      pdb.close();
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
 	log.error("allowModifyCData error with pdb", e);
+      }
+    } finally {
+      if (pdb != null) {
+	try {
+	  pdb.close();
+	} catch (SQLException e) {}
       }
     }
     return componentModified;

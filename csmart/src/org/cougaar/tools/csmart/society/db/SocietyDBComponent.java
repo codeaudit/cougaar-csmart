@@ -101,6 +101,8 @@ public class SocietyDBComponent
 	    agent.initProperties();
 	    addChild(agent);
 	  }
+	  rs.close();
+	  stmt.close();
 	} finally {
 	  conn.close();
 	}

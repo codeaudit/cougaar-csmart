@@ -186,6 +186,7 @@ public class CMT {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.CMT");
 
     ResultSet rs = null;
+    boolean ret = false;
     try {
       StringBuffer q = new StringBuffer();
       Connection conn = DBUtils.getConnection(QUERY_FILE);
@@ -194,14 +195,20 @@ public class CMT {
 	stmt = conn.createStatement();
 	rs = stmt.executeQuery(dbQuery);
 	if(rs.next()){
-	  return true;
+	  ret = true;
 	} else {
-	  return false;
+	  ret = false;
 	}
       } finally {
+	try {
+	  rs.close();
+	  stmt.close();	
+	} catch (SQLException e) {
+	  if(log.isErrorEnabled()) {
+	    log.error("hasRows"+dbQuery + " while closing statement", e);
+	  }
+	}
 	conn.close();
-	rs.close();
-	stmt.close();	
       } 
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
@@ -209,6 +216,8 @@ public class CMT {
       }
       throw new RuntimeException("Error" + e);
     }
+    
+    return ret;
   }
   
   static String sqlThreads(String[] threads){
@@ -645,8 +654,14 @@ public class CMT {
 	  rs.close();
 	}
       } finally {
+	try {
+	  stmt.close();
+	} catch (SQLException e) {
+	  if(log.isErrorEnabled()) {
+	    log.error("Exception closing statement in getNextId: ", e);
+	  }
+	}
         dbConnection.close();
-	stmt.close();
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {

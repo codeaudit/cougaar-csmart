@@ -1296,7 +1296,8 @@ public class Organizer extends JScrollPane {
           }
         }
       } finally {
-        pdb.close();
+	if (pdb != null)
+	  pdb.close();
       }
     } catch (Exception e) {
       JOptionPane.showMessageDialog(this,

@@ -24,6 +24,7 @@ import java.io.FileFilter;
 import java.io.ObjectInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -312,9 +313,11 @@ public abstract class SocietyBase
     
     // But probably only want to pass it in if it was in fact a CMT assembly, no?
     // Or does it hurt to pass it in?
+    PopulateDb pdb = null;
+    boolean ret = true;
     try {
       // FIXME: Is there a non-gui conflict handler I should use?
-      PopulateDb pdb = new PopulateDb(oldCMTAsbid, name, currAssID, GUIUtils.createSaveToDbConflictHandler(null));
+      pdb = new PopulateDb(oldCMTAsbid, name, currAssID, GUIUtils.createSaveToDbConflictHandler(null));
       pdb.populateCSA(SocietyComponentCreator.getComponentData(this));
       // Set the new CSA assembly ID on the society - get it from the PDB
       //      setAssemblyId(pdb.getCMTAssemblyId());
@@ -326,12 +329,18 @@ public abstract class SocietyBase
       if (log.isErrorEnabled()) {
 	log.error("Error saving society to database: ", sqle);
       }
-      return false;
+      ret = false;
+    } finally {
+      if (pdb != null) {
+	try {
+	  pdb.close();
+	} catch (SQLException e) {}
+      }
     }
     modified = false;
     // tell listeners society is now saved
     fireModification(new ModificationEvent(this, SOCIETY_SAVED));
-    return true;
+    return ret;
   }
   
   // Save the copy in the database before returning
