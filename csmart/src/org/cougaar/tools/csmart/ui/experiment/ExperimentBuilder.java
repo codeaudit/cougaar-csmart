@@ -31,6 +31,7 @@ import org.cougaar.tools.csmart.ui.Browser;
 
 public class ExperimentBuilder extends JFrame {
   private static final String FILE_MENU = "File";
+  private static final String SAVE_MENU_ITEM = "Save";
   private static final String EXIT_MENU_ITEM = "Exit";
   private static final String HELP_MENU = "Help";
   protected static final String HELP_DOC = "help.html";
@@ -59,6 +60,11 @@ public class ExperimentBuilder extends JFrame {
       }
     };
   private Action[] fileActions = {
+    new AbstractAction(SAVE_MENU_ITEM) {
+      public void actionPerformed(ActionEvent e) {
+        hostConfigurationBuilder.save();
+      }
+    },
     new AbstractAction(EXIT_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
 	exit();

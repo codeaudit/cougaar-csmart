@@ -42,6 +42,7 @@ import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.configuration.ConsoleDNDTree;
 import org.cougaar.tools.csmart.ui.configuration.ConsoleTreeObject;
+import org.cougaar.tools.csmart.ui.console.ExperimentDB;
 import org.cougaar.tools.csmart.ui.console.NodeArgumentDialog;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
@@ -1143,6 +1144,69 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       node.addProperty("org.cougaar.configuration.password",
                        CSMART.getDatabaseUserPassword());
       node.addProperty("org.cougaar.experiment.id", experiment.getTrialID());
+    }
+  }
+
+  /**
+   * Create a hashtable that matches host name (String) to
+   * node names (ArrayList of String),
+   * and a hashtable that maps node name (String) to
+   * agent names (ArrayList of String).
+   */
+
+  public void save() {
+    Hashtable hostToNodes = new Hashtable();
+    HostComponent[] hosts = experiment.getHosts();
+    for (int i = 0; i < hosts.length; i++) {
+      String hostName = hosts[i].getShortName();
+      NodeComponent[] nodeComponents = hosts[i].getNodes();
+      ArrayList nodes = new ArrayList();
+      for (int j = 0; j < nodeComponents.length; j++) {
+        nodes.add(nodeComponents[j].getShortName());
+      }
+      hostToNodes.put(hostName, nodes);
+    }
+    Hashtable nodeToAgents = new Hashtable();
+    NodeComponent[] nodes = experiment.getNodes();
+    for (int i = 0; i < nodes.length; i++) {
+      String nodeName = nodes[i].getShortName();
+      AgentComponent[] agentComponents = nodes[i].getAgents();
+      ArrayList agents = new ArrayList();
+      for (int j = 0; j < agentComponents.length; j++) {
+        agents.add(agentComponents[j].getShortName());
+      }
+      nodeToAgents.put(nodeName, agents);
+    }
+    String assemblyName = 
+      (String)JOptionPane.showInputDialog(this, "Name", "Name",
+                                      JOptionPane.QUESTION_MESSAGE,
+                                      null, null, "");
+    if (assemblyName == null)
+      return;
+    ExperimentDB.addMachineAssignments(hostToNodes, assemblyName);
+    ExperimentDB.addNodeAssignments(nodeToAgents, assemblyName);
+    //    printHashtables(hostToNodes, nodeToAgents);
+  }
+
+  // for debugging
+  private void printHashtables(Hashtable hostToNodes, Hashtable nodeToAgents) {
+    Set s = hostToNodes.keySet();
+    String[] hostNames = (String[])s.toArray(new String[s.size()]);
+    for (int i = 0; i < hostNames.length; i++) {
+      System.out.println("Host name: " + hostNames[i]);
+      ArrayList nodes = (ArrayList)hostToNodes.get(hostNames[i]);
+      Iterator it = nodes.iterator();
+      while (it.hasNext())
+        System.out.println("  " + it.next());
+    }
+    s = nodeToAgents.keySet();
+    String[] nodeNames = (String[])s.toArray(new String[s.size()]);
+    for (int i = 0; i < nodeNames.length; i++) {
+      System.out.println("Node name: " + nodeNames[i]);
+      ArrayList agents = (ArrayList)nodeToAgents.get(nodeNames[i]);
+      Iterator it = agents.iterator();
+      while (it.hasNext())
+        System.out.println("  " + it.next());
     }
   }
 
