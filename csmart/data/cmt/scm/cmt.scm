@@ -92,6 +92,20 @@
 	))
       answer)))
 
+(define (query-1-result query how name)
+  (with-query-jdbc
+   query
+   (lambda (result)
+     (if (.next result) (how result name)
+	 ""))))
+
+(define (query-1-int query name)
+  (query-1-result query .getInt name))
+
+(define (query-1-string query name)
+  (query-1-result query .getString name))
+
+
 ;;;
 ;;; view query
 ;;;
@@ -373,7 +387,6 @@
     )
   )
 
-
 (define (tabbrev thread)
   (cond
    ((eq? thread 'BASE) 'B)
@@ -384,13 +397,24 @@
    ((eq? thread 'CLASS-4)4 )
    ((eq? thread 'CLASS-5)5 )
    ((eq? thread 'CLASS-8)8 )
-   ((eq? thread 'CLASS-9)9)))
+   ((eq? thread 'CLASS-9)9)
+
+
+   ((.equals "STRATEGIC-TRANS" thread) 'S)
+   ((.equals  "THEATER-TRANS" thread)'T)
+   ((.equals "CLASS-1"  thread)1 )
+   ((.equals "CLASS-3"  thread)3 )
+   ((.equals "CLASS-4"  thread)4 )
+   ((.equals "CLASS-5"  thread)5 )
+   ((.equals "CLASS-8"  thread)8 )
+   ((.equals "CLASS-9"  thread)9)))
+
 
 
 (define (get-assembly-id cfw_g_id threads version)
   (set! assembly_id (string-append "CMT-" cfw_g_id
 				   version
-				   "{" (apply string-append (map tabbrev threads)) "}")))
+				   "{" (apply string-append (map* tabbrev threads)) "}")))
 
 
 (define (create-cmt-asb assembly_description cfw_g_id threads version clones)
@@ -1230,6 +1254,7 @@
    query))
 
 (define (dbu query)
+  (newline)
   (println (string-append "dbu:" query))
   (db-update
    (getrefDBConnection)
@@ -1298,6 +1323,13 @@
 		     )
     ht))
 
+
+(define (getUniqueTrialName experiment_id)
+  (query-1-string (string-append 
+		   "select  trial_id from " asb-prefix "EXPT_TRIAL where expt_id=" (sqlQuote experiment_id))
+		  "TRIAL_ID"
+		  )
+  )
 
 (define (removeTrial experiment_id trial_id)
   (let((x ()))
@@ -1438,15 +1470,16 @@
 ;;
 
 (define (isULThreadSelected trial_id thread_name)
-  
   (let*
       ((thread_id (get-thread-id thread_name))
        (threadSelected #f))
+    
     (define (do-entry rs)
       (cond
        ((.next rs)
 	(set! threadSelected #t)
 	)))
+    (println (list 'isULThreadSelected trial_id thread_name thread_id threadSelected))
     (with-query-jdbc (string-append 
 		      "select THREAD_ID from " 
 		      asb-prefix "expt_trial_thread tt"
@@ -1460,16 +1493,17 @@
 
 (define (get-thread-id thread_name)
   (cond
-   ((.equals "Subsistence (Class 1)" thread_name)
-    "CLASS-1")
-   ((.equals "Fuel (Class 3)" thread_name)
-    "CLASS-3")
-   ((.equals "Construction Material (Class 4)" thread_name)
-    "CLASS-4")
-   ((.equals "Ammunition (Class 5)" thread_name)
-    "CLASS-5")
-   ((.equals "Spare Parts (Class 9)" thread_name)
-    "CLASS-9")))
+   ((.equals "Subsistence (Class 1)" thread_name) "CLASS-1")
+   ((.equals "Fuel (Class 3)" thread_name) "CLASS-3")
+   ((.equals "Construction Material (Class 4)" thread_name)"CLASS-4")
+   ((.equals "Ammunition (Class 5)" thread_name)"CLASS-5")
+   ((.equals "Spare Parts (Class 9)" thread_name)"CLASS-9")
+   ((.equals "CLASS-1" thread_name) "CLASS-1")
+   ((.equals "CLASS-3" thread_name) "CLASS-3")
+   ((.equals "CLASS-4" thread_name)"CLASS-4")
+   ((.equals "CLASS-5" thread_name)"CLASS-5")
+   ((.equals "CLASS-9" thread_name) "CLASS-9")))
+
 
 (define (setULThreadSelected trial_id thread_name) 
   (let
@@ -1636,7 +1670,6 @@
     assembly_id)
   )
 
-
 (define (addCSMARTAssembly assembly_id assembly_description)
   (cond
    ((= 0 (dbu (string-append
@@ -1648,3 +1681,104 @@
 	  "'CSMART',"
 	  (sqlQuote assembly_description)")"))
     )))
+
+
+(define (not-exists table id_field where)
+  (= 0
+     (dbu (string-append "update " table "set " field "="field where))))
+
+
+
+;;describe v4_expt_experiment
+;; Name				 Null?	  Type
+;; ------------------------------- -------- ----
+;; EXPT_ID			 NOT NULL VARCHAR2(50)
+;; DESCRIPTION				  VARCHAR2(200)
+;; NAME					  VARCHAR2(50)
+;; CFW_GROUP_ID				  VARCHAR2(50)
+
+;;describe V4_EXPT_TRIAL
+;; Name				 Null?	  Type
+;; ------------------------------- -------- ----
+;; TRIAL_ID			 NOT NULL VARCHAR2(50)
+;; EXPT_ID				  VARCHAR2(50)
+;; DESCRIPTION				  VARCHAR2(100)
+;; NAME					  VARCHAR2(50)
+;;
+;;describe v4_expt_trial_assembly
+;;Name				 Null?	  Type
+;; ------------------------------- -------- ----
+;; EXPT_ID			 NOT NULL VARCHAR2(50)
+;; TRIAL_ID			 NOT NULL VARCHAR2(50)
+;; ASSEMBLY_ID			 NOT NULL VARCHAR2(50)
+;; DESCRIPTION				  VARCHAR2(200)
+;;
+
+(define (cloneExperiment experiment_id new_name)
+  (let*
+      ((new_expt_id (string-append "EXPT_" (query-1-int "select experiment_number.nextval from dual" "NEXTVAL")))
+       )
+    (dbu (string-append
+	  "insert into " asb-prefix "expt_experiment"
+	  "   select " (sqlQuote new_expt_id) ","
+	  "   " (sqlQuote new_name) ","
+	  "   " (sqlQuote new_name) ","
+	  "   cfw_group_id from " asb-prefix "expt_experiment where expt_id=" (sqlQuote experiment_id)))
+    (dbu (string-append
+	  "insert into " asb-prefix "expt_trial"
+	  "   select " 
+	  "   " (sqlQuote (string-append new_expt_id ".TRIAL")) ","
+	  "   " (sqlQuote new_expt_id) ","
+	  "   " (sqlQuote new_name) ","
+	  "   "(sqlQuote new_name) 
+	  "   from "
+	  "   "	  asb-prefix "expt_trial where expt_id=" (sqlQuote experiment_id)))
+    (dbu (string-append
+	  "insert into " asb-prefix "expt_trial_assembly"
+	  "   select " 
+	  "   " (sqlQuote new_expt_id) ","
+	  "   " (sqlQuote (string-append new_expt_id ".TRIAL")) ","
+	  "   ta.assembly_id,"
+	  "   ta.description"
+	  "   from "
+	  "   "	  asb-prefix "expt_trial_assembly ta,"
+	  "   "	  asb-prefix "asb_assembly a"
+	  "   where expt_id=" (sqlQuote experiment_id)
+	  "   and ta.assembly_id=a.assembly_id"
+	  "   and a.assembly_type <> 'CSM'"))
+    ))
+
+(define (query-set query col)
+  ;; cols is a String[].
+  (with-query-jdbc
+   query
+   (lambda (result)
+     (do ((ans (HashSet.)))
+         ((not (.next result)) ans)     
+       (.add ans (.getString result col))))))
+
+
+(define (updateCMTAssembly experiment_id)
+  (let*
+      ((assembly_description (string-append "assembly for: " experiment_id))
+       (threads (query-set "select thread_id from v4_expt_trial_thread" "THREAD_ID"))
+       (cfw_group_id 
+	(query-1-string
+	 (string-append "select cfw_group_id from " asb-prefix "expt_experiment where  expt_id=" (sqlQuote experiment_id))
+	 "CFW_GROUP_ID"))
+       )
+    (.add threads "STRATEGIC-TRANS")
+    (.add threads "THEATER-TRANS")
+    (println (list 'create-cmt-asb assembly_description cfw_group_id threads "" clones))
+    (create-cmt-asb assembly_description cfw_group_id threads "" clones)
+    ))
+
+
+
+
+
+
+
+
+
+
