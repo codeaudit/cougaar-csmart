@@ -557,7 +557,7 @@ public class ScalabilityXAgent
     // Add all Relationship data
     for (Iterator iter = supporting.iterator(); iter.hasNext(); ) {
       RelationshipData relData = new RelationshipData();
-      relData.setType(RelationshipData.SUPERIOR);
+      relData.setType(RelationshipData.SUPPORTING);
       relData.setCluster(((ScalabilityXAgent) iter.next()).getFullName().toString());
       relData.setRole("ScalabilityProvider");
       assetData.addRelationship(relData);
