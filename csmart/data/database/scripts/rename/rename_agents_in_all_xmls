@@ -15,7 +15,7 @@ script=" ./rename_agents_in_xml";
 # Jeff's table of agent names
 #
 # See the TIC CVS repository
-table="$COUGAAR_INSTALL_PATH/csmart/config/org_agent_builder/org_data/org_hierarchy.csv";
+table="$COUGAAR_INSTALL_PATH/csmart/config/org_agent_builder/1ad.org_data/org_hierarchy.csv";
 
 # where to find the xml files
 src=$1;
