@@ -26,48 +26,124 @@ import java.util.*;
 import javax.swing.*;
 
 import org.cougaar.util.log.Logger;
+import org.cougaar.core.component.ComponentDescription;
+
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
+/**
+ * Window to show the detailed contents of an Agent
+ **/
 public class AgentInfoPanel extends JPanel {
   private transient Logger log;
 
   public AgentInfoPanel(Experiment experiment, String agentName) {
     super();
     log = CSMART.createLogger(this.getClass().getName());
+    
+    // Warning: This next line may save the whole experiment
     ComponentData societyComponentData = experiment.getSocietyComponentData();
+
     if (societyComponentData == null) {
       JOptionPane.showMessageDialog(this, "No information available",
                                     "No Information", 
                                     JOptionPane.PLAIN_MESSAGE);
+      if (log.isDebugEnabled()) {
+	log.debug("Experiment returned no component data: " + experiment.getExperimentName());
+      }
       return;
     }
     ComponentData agentComponentData = null;
     ComponentData[] children = societyComponentData.getChildren();
-    for (int i = 0; i < children.length; i++) {
-      if (children[i].getType().equals(ComponentData.HOST)) {
-        ComponentData[] nodes = children[i].getChildren();
-        for (int j = 0; j < nodes.length; j++) {
-          ComponentData[] agents = nodes[j].getChildren();
-          for (int k = 0; k < agents.length; k++) {
-            if (agents[k] instanceof AgentComponentData &&
-                agents[k].getName().equals(agentName)) {
-              agentComponentData = agents[k];
-              break;
-            }
-          }
-        }
+
+    // Yuck this is ugly.....
+    if (societyComponentData.getType().equals(ComponentData.NODE) || societyComponentData.getType().equals(ComponentData.AGENT)) {
+      if (societyComponentData.getName().equals(agentName)) {
+	agentComponentData = societyComponentData;
       }
     }
-    if (agentComponentData == null)
+
+    if (agentComponentData == null) {
+
+      // Loop to find the Agent we want
+      for (int i = 0; i < children.length; i++) {
+	if (agentComponentData != null)
+	  break;
+	if (children[i].getType().equals(ComponentData.NODE)) {
+	  // Let it possibly be the Node itself
+	  if (agentName.equals(children[i].getName())) {
+	    agentComponentData = children[i];
+	    break;
+	  }
+	  
+	  ComponentData[] agents = children[i].getChildren();
+	  for (int k = 0; k < agents.length; k++) {
+	    if (agentComponentData != null)
+	      break;
+	    if (agents[k].getName().equals(agentName)) {
+	      agentComponentData = agents[k];
+	      break;
+	    }
+	  }
+	} else if (children[i].getType().equals(ComponentData.AGENT)) {
+	  // Let it possibly be the Node itself
+	  if (agentName.equals(children[i].getName())) {
+	    agentComponentData = children[i];
+	    break;
+	  }
+	} else if (children[i].getType().equals(ComponentData.HOST)) {
+	  ComponentData[] nodes = children[i].getChildren();
+
+	  for (int j = 0; j < nodes.length; j++) {    
+	    if (agentComponentData != null)
+	      break;
+	    // Let it possibly be the Node itself
+	    if (agentName.equals(nodes[j].getName())) {
+	      agentComponentData = nodes[j];
+	      break;
+	    }
+	    
+	    ComponentData[] agents = nodes[j].getChildren();
+	    for (int k = 0; k < agents.length; k++) {
+	      if (agentComponentData != null)
+		break;
+	      if (agents[k].getName().equals(agentName)) {
+		agentComponentData = agents[k];
+		break;
+	      }
+	    }
+	  }
+	}
+      }
+    }
+
+    if (agentComponentData == null) {
+      JOptionPane.showMessageDialog(this, "No information available",
+                                    "No Information", 
+                                    JOptionPane.PLAIN_MESSAGE);
+      if (log.isDebugEnabled()) {
+	log.debug("Got null agentComponentData after search?");
+      }
       return;
+    }
+
     ComponentData[] agentChildren = agentComponentData.getChildren();
     ArrayList entries = new ArrayList(agentChildren.length);
     for (int i = 0; i < agentChildren.length; i++) {
       StringBuffer sb = new StringBuffer();
-      sb.append(agentChildren[i].getType());
+      if (agentChildren[i].getType().equals(ComponentData.AGENTBINDER)) {
+	sb.append("Node.AgentManager.Agent.PluginManager.Binder");
+      } else if (agentChildren[i].getType().equals(ComponentData.NODEBINDER)) {
+	sb.append("Node.AgentManager.Binder");
+      } else {
+	sb.append(agentChildren[i].getType());
+      }
+      if(ComponentDescription.parsePriority(agentChildren[i].getPriority()) != 
+	 ComponentDescription.PRIORITY_COMPONENT) {
+	sb.append("(" + agentChildren[i].getPriority() + ")");
+      }
       sb.append(" = ");
       sb.append(agentChildren[i].getClassName());
       if (agentChildren[i].parameterCount() != 0) {
