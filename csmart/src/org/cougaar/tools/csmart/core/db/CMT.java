@@ -696,6 +696,10 @@ public class CMT {
     subs.put(":assembly_id",assembly_id);
     // this query is legal in both Oracle and mySQL
     DBUtils.dbUpdate("updateCMTAssembly",subs, QUERY_FILE);
+
+    // FIXME: Also update the CMT assembly in the runtime table?
+    //DBUtils.dbUpdate("updateRuntimeCMTAssembly",subs, QUERY_FILE);
+
     DBUtils.dbUpdate("updateAssemblyIDOnExpt",subs, QUERY_FILE);
     DBUtils.dbUpdate("updateRuntimeAssemblyIDOnExpt",subs, QUERY_FILE);
     return assembly_id;
