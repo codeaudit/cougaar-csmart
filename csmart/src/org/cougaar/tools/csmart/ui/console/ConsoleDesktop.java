@@ -40,7 +40,7 @@ public class ConsoleDesktop extends JDesktopPane {
                            ConsoleNodeListener listener,
                            InternalFrameListener frameListener,
                            JScrollPane pane,
-                           JButton statusButton,
+                           JRadioButton statusButton,
                            String logFileName) {
     JInternalFrame frame = new ConsoleInternalFrame(node, listener, pane, 
                                                     statusButton, logFileName);

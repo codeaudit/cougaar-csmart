@@ -894,8 +894,8 @@ public class Organizer extends JScrollPane {
 					       JOptionPane.OK_CANCEL_OPTION,
 					       JOptionPane.ERROR_MESSAGE);
 	if (ok != JOptionPane.OK_OPTION) return null;
-        sc = createSoc(name, item.cls);
       }
+      sc = createSoc(name, item.cls);
     } else {
       // create a society from a database
       // answer is the society name obtained from the database

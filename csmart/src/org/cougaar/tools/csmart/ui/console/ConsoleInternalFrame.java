@@ -73,13 +73,13 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private HostComponent host;
   private String hostName;
   private String notifyCondition;
-  private JButton statusButton;
+  private JRadioButton statusButton;
   private String logFileName;
 
   public ConsoleInternalFrame(NodeComponent node, 
                               ConsoleNodeListener listener,
                               JScrollPane pane,
-                              JButton statusButton,
+                              JRadioButton statusButton,
                               String logFileName) {
     super("",   // title
           true, //resizable
@@ -213,8 +213,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private void initKeyMap(ConsoleTextPane pane) {
     InputMap im = pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
     ActionMap am = pane.getActionMap();
-    //    InputMap im = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-    //    ActionMap am = getActionMap();
     im.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK), 
            SEARCH_ACTION);
     am.put(SEARCH_ACTION, searchAction);
@@ -246,7 +244,13 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(10, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel(CSMARTConsole.getStatusColorDescription(statusButton)),
+    String status = "";
+    // get status from tool tip text; ought to be a better way
+    String s = statusButton.getToolTipText();
+    int index = s.lastIndexOf(":");
+    if (index != -1)
+      status = s.substring(index+1);
+    aboutPanel.add(new JLabel(status),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
@@ -287,7 +291,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           0, 0));
     String hostAddress = "";
     try {
-      InetAdress host = InetAddress.getByName(hostName);
+      InetAddress host = InetAddress.getByName(hostName);
       hostAddress = host.toString();
     } catch (UnknownHostException uhe) {
     }
