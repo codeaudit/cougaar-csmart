@@ -22,11 +22,8 @@ package org.cougaar.tools.csmart.recipe;
 
 import java.io.IOException;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Iterator;
-import java.util.Properties;
 import java.util.Set;
 
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
@@ -79,7 +76,7 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
     // If we have never read the available queries, or the recipeQueries.q file was modified,
     // must re-collect the available queries
     if (availQueries == null || newMod != rQFileLastMod) {
-      availQueries = new HashSet();
+      availQueries = new TreeSet(); // keep queries sorted by name
       DBProperties dbp = null;
       
       // First grab the queries from PopulateDb.q
