@@ -81,22 +81,22 @@ public class MultiNameTest extends TestCase {
   }
 
   public void testEndsWith() {
-    assert("Test endsWith()", tst.endsWith(new SimpleName(componentName)));
+    assertTrue("Test endsWith()", tst.endsWith(new SimpleName(componentName)));
   }
 
   public void testStartsWith() {
-    assert("Test starsWith()", tst.startsWith(new SimpleName("Parent")));
+    assertTrue("Test starsWith()", tst.startsWith(new SimpleName("Parent")));
   }
 
   public void testEquals() {
-    assert("Test equals()", tst.equals(tst));
+    assertTrue("Test equals()", tst.equals(tst));
   }
 
   public void testCompareTo() {
-    assert("Test compareTo() [0]", (tst.compareTo(new SimpleMultiName(componentName)) == 0));
+    assertTrue("Test compareTo() [0]", (tst.compareTo(new SimpleMultiName(componentName)) == 0));
     SimpleName sn = new SimpleName("Testing");
-    assert("Test compareTo() [>0]", (tst.compareTo(new SimpleMultiName(sn)) > 0));
-    assert("Test compareTo() [<0]", (tst.compareTo(new SimpleName("a")) < 0));
+    assertTrue("Test compareTo() [>0]", (tst.compareTo(new SimpleMultiName(sn)) > 0));
+    assertTrue("Test compareTo() [<0]", (tst.compareTo(new SimpleName("a")) < 0));
   }
 
   public static Test suite() {

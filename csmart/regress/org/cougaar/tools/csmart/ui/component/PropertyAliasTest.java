@@ -80,7 +80,7 @@ public class PropertyAliasTest extends TestCase {
 
   public void testValueSet() {
     tst.setValue(new Integer(34));
-    assert("Test isValueSet()", tst.isValueSet());
+    assertTrue("Test isValueSet()", tst.isValueSet());
   }
 
   public void testToolTip() {

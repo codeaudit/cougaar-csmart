@@ -53,23 +53,23 @@ public class SimpleNameTest extends TestCase {
   }
 
   public void testEndsWith() {
-    assert("Test endsWith()", tst.endsWith(new SimpleName(name)));
-    assert("Test endsWith()", !tst.endsWith(new SimpleMulti(name)));
+    assertTrue("Test endsWith()", tst.endsWith(new SimpleName(name)));
+    assertTrue("Test endsWith()", !tst.endsWith(new SimpleMulti(name)));
   }
 
   public void testStartsWith() {
-    assert("Test startsWith()", tst.startsWith(new SimpleName(name)));
-    assert("Test startsWith()", !tst.startsWith(new SimpleMulti(name)));    
+    assertTrue("Test startsWith()", tst.startsWith(new SimpleName(name)));
+    assertTrue("Test startsWith()", !tst.startsWith(new SimpleMulti(name)));    
   }
 
   public void testEquals() {
-    assert("Test equals()", tst.equals(new SimpleName(name)));
+    assertTrue("Test equals()", tst.equals(new SimpleName(name)));
   }
 
   public void testCompareTo() {
-    assert("Test compareTo()", (tst.compareTo(new SimpleName(name)) == 0));
-    assert("Test compareTo()", (tst.compareTo(new SimpleMulti(name)) > 0));
-    assert("Test compareTo()", (tst.compareTo(new SimpleName("a")) < 0));
+    assertTrue("Test compareTo()", (tst.compareTo(new SimpleName(name)) == 0));
+    assertTrue("Test compareTo()", (tst.compareTo(new SimpleMulti(name)) > 0));
+    assertTrue("Test compareTo()", (tst.compareTo(new SimpleName("a")) < 0));
   }
 
   public static Test suite() {

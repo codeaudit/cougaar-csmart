@@ -40,11 +40,11 @@ public class FloatRangeTest extends TestCase {
   }
 
   public void testIsInRange() {
-    assert("Test isInRange()", fr.isInRange(new Float(8.5)));
-    assert("Test isInRange()", fr.isInRange(new Float(0.01)));
-    assert("Test isInRange()", !fr.isInRange(new Integer(5)));
-    assert("Test isInRange()", !fr.isInRange(new Float(10.1)));
-    assert("Test isInRange()", !fr.isInRange(new String("Hello")));
+    assertTrue("Test isInRange()", fr.isInRange(new Float(8.5)));
+    assertTrue("Test isInRange()", fr.isInRange(new Float(0.01)));
+    assertTrue("Test isInRange()", !fr.isInRange(new Integer(5)));
+    assertTrue("Test isInRange()", !fr.isInRange(new Float(10.1)));
+    assertTrue("Test isInRange()", !fr.isInRange(new String("Hello")));
   }
 
   public void testToString() {

@@ -39,8 +39,8 @@ public class StringRangeTest extends TestCase {
   }
 
   public void testIsInRange() {
-    assert("Test isInRange()", tst.isInRange(testString));
-    assert("Test isInRange()", !tst.isInRange(new String("Hello")));
+    assertTrue("Test isInRange()", tst.isInRange(testString));
+    assertTrue("Test isInRange()", !tst.isInRange(new String("Hello")));
   }
 
   public void testToString() {

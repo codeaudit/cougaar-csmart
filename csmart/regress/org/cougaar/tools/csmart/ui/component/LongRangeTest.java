@@ -40,11 +40,11 @@ public class LongRangeTest extends TestCase {
   }
 
   public void testIsInRange() {
-    assert("Test isInRange()", lr.isInRange(new Long(8)));
-    assert("Test isInRange()", lr.isInRange(new Long(1)));
-    assert("Test isInRange()", !lr.isInRange(new Float(5.2)));
-    assert("Test isInRange()", !lr.isInRange(new Float(10.1)));
-    assert("Test isInRange()", !lr.isInRange(new String("Hello")));
+    assertTrue("Test isInRange()", lr.isInRange(new Long(8)));
+    assertTrue("Test isInRange()", lr.isInRange(new Long(1)));
+    assertTrue("Test isInRange()", !lr.isInRange(new Float(5.2)));
+    assertTrue("Test isInRange()", !lr.isInRange(new Float(10.1)));
+    assertTrue("Test isInRange()", !lr.isInRange(new String("Hello")));
   }
 
   public void testToString() {

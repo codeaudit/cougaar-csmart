@@ -40,11 +40,11 @@ public class DoubleRangeTest extends TestCase {
   }
 
   public void testIsInRange() {
-    assert("Test isInRange()", dr.isInRange(new Double(8.5)));
-    assert("Test isInRange()", dr.isInRange(new Double(0.01)));
-    assert("Test isInRange()", !dr.isInRange(new Integer(5)));
-    assert("Test isInRange()", !dr.isInRange(new Double(10.1)));
-    assert("Test isInRange()", !dr.isInRange(new String("Hello")));
+    assertTrue("Test isInRange()", dr.isInRange(new Double(8.5)));
+    assertTrue("Test isInRange()", dr.isInRange(new Double(0.01)));
+    assertTrue("Test isInRange()", !dr.isInRange(new Integer(5)));
+    assertTrue("Test isInRange()", !dr.isInRange(new Double(10.1)));
+    assertTrue("Test isInRange()", !dr.isInRange(new String("Hello")));
   }
 
   public void testToString() {
