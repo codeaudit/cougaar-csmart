@@ -35,8 +35,7 @@ public class ScalabilityConfigurationWriter implements ConfigurationWriter {
     for (int i = 0; i < nodes.length; i++) {
       NodeComponent node = nodes[i];
       File nodeFile = 
-	new File(configDir, 
-		 ((ConfigurableComponent)node).getName().last() + ".ini");
+	new File(configDir, node.getShortName() + ".ini");
       PrintWriter writer = new PrintWriter(new FileWriter(nodeFile));
       // Ensure that this node is for my agents only? Or at least no Impact
       // agents?

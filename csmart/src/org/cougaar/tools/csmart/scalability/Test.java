@@ -29,14 +29,14 @@ public class Test {
         System.out.println("Agents:");
         for (Iterator i = agents.iterator(); i.hasNext(); ) {
             ScalabilityXAgent c = (ScalabilityXAgent) i.next();
-            System.out.println("Agent " + c.getName());
+            System.out.println("Agent " + c.getFullName());
             c.printLocalProperties(System.out);
         }
         Collection plugins = society.getDescendentsOfClass(ScalabilityXPlugIn.class);
         System.out.println("Plugins:");
         for (Iterator i = plugins.iterator(); i.hasNext(); ) {
             ScalabilityXAgent c = (ScalabilityXAgent) i.next();
-            System.out.println("Plugin " + c.getName());
+            System.out.println("Plugin " + c.getFullName());
             c.printLocalProperties(System.out);
         }
     }

@@ -403,16 +403,16 @@ public class ScalabilityXAgent
     return sum;
   }
   public String getConfigLine() {
-    return "cluster = " + getName();
+    return "cluster = " + getFullName();
   }
   public void writeIniFile(File configDir) throws IOException {
-    File iniFile = new File(configDir, getName() + ".ini");
+    File iniFile = new File(configDir, getFullName() + ".ini");
     PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
     adjustAllocators();
     try {
       writer.println("[ Cluster ]");
       writer.println("class = " + agentClassName);
-      writer.println("uic = \"" + getName() + "\"");
+      writer.println("uic = \"" + getFullName() + "\"");
       writer.println("cloned = false");
       writer.println();
       writer.println("[ PlugIns ]");
@@ -433,31 +433,31 @@ public class ScalabilityXAgent
     }
   }
   public void writePrototypeIniFile(File configDir) throws IOException {
-    File iniFile = new File(configDir, getName() + "-prototype-ini.dat");
+    File iniFile = new File(configDir, getFullName() + "-prototype-ini.dat");
     PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
     try {
       writer.println("[Prototype] CombatOrganization");
       writer.println();
       writer.println("[UniqueId] \"UTC/CombatOrg\"");
       writer.println();
-      writer.println("[UIC] \"UIC/" + getName() + "\"");
+      writer.println("[UIC] \"UIC/" + getFullName() + "\"");
       writer.println();
       writer.println("[Relationship]");
       for (Iterator iter = supporting.iterator(); iter.hasNext(); ) {
-        writer.println("Supporting \"" + ((ScalabilityXAgent) iter.next()).getName() + "\" \"ScalabilityProvider\"");
+        writer.println("Supporting \"" + ((ScalabilityXAgent) iter.next()).getFullName() + "\" \"ScalabilityProvider\"");
       }
       if (superior != null) {
-        writer.println("Supporting \"" + superior.getName() + "\" \"ScalabilityControlProvider\"");
-        writer.println("Supporting \"" + superior.getName() + "\" \"ScalabilityStatisticsProvider\"");
-        writer.println("Superior  \"" + superior.getName() + "\" \"\"");
+        writer.println("Supporting \"" + superior.getFullName() + "\" \"ScalabilityControlProvider\"");
+        writer.println("Supporting \"" + superior.getFullName() + "\" \"ScalabilityStatisticsProvider\"");
+        writer.println("Superior  \"" + superior.getFullName() + "\" \"\"");
       }
       writer.println();
       writer.println("[TypeIdentificationPG]");
       writer.println("TypeIdentification String \"UTC/RTOrg\"");
-      writer.println("Nomenclature String \"" + getName() + "\"");
+      writer.println("Nomenclature String \"" + getFullName() + "\"");
       writer.println();
       writer.println("[ClusterPG]");
-      writer.println("ClusterIdentifier ClusterIdentifier \"" + getName() + "\"");
+      writer.println("ClusterIdentifier ClusterIdentifier \"" + getFullName() + "\"");
       writer.println();
       writer.println("[OrganizationPG]");
       writer.println("Roles Collection<Role> \"ScalabilityProvider, ScalabilityControlProvider, ScalabilityStatisticsProvider\"");

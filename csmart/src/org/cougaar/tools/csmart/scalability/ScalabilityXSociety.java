@@ -181,7 +181,7 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
   }
 
   public String getSocietyName() {
-    return getName().last().toString();
+    return getShortName();
   }
 
   public void initProperties() {

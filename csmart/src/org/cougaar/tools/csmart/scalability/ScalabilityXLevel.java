@@ -40,7 +40,7 @@ public class ScalabilityXLevel
             Property p = e.getProperty();
             CompositeName pName = p.getName();
             ConfigurableComponent c = p.getConfigurableComponent();
-            if (pName.size() == getName().size() + 2) {
+            if (pName.size() == getFullName().size() + 2) {
                 String name = pName.last().toString();
                 if (!name.equals(ScalabilityXAgent.PROP_INDEX)) {
                     Property myProp = getProperty(name);
