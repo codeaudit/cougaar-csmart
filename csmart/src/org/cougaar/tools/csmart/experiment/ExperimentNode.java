@@ -66,6 +66,14 @@ public class ExperimentNode
     addProperty("AgentNames", new ArrayList());
   }
 
+  public boolean equals(Object o) {
+    if(o instanceof ExperimentNode) {
+      return getShortName().equals(((ExperimentNode)o).getShortName());
+    } else {
+      return false;
+    }
+  }
+
   /**
    * Adds node name as an argument to the node.
    */
