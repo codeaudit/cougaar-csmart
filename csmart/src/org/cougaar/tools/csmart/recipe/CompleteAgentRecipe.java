@@ -83,6 +83,13 @@ public class CompleteAgentRecipe extends ComplexRecipeBase
     super(name, assemblyId);
   }
 
+  public CompleteAgentRecipe(String name, String assemblyId, String recipeId) {
+    super(name, assemblyId, recipeId);
+
+    // recipeId is not needed for this recipe, however the method sig is needed
+    // so OrganizerHelper can find the class correctly using reflection.
+  }
+
   /**
    * Initialize any local Properties
    *

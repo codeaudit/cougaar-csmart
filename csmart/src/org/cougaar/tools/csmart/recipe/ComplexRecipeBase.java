@@ -38,6 +38,7 @@ import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
@@ -46,6 +47,7 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.society.SocietyComponentCreator;
 import org.cougaar.tools.csmart.society.cdata.AgentCDataComponent;
+import org.cougaar.tools.csmart.society.cdata.BaseCDataComponent;
 import org.cougaar.tools.csmart.society.db.AgentDBComponent;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.util.DBProperties;
@@ -82,6 +84,7 @@ public class ComplexRecipeBase extends RecipeBase
   public static final String PROP_TARGET_COMPONENT_QUERY_DESC = 
     "The query name for selecting components to modify";
 
+  protected String recipeId = null;
   protected String assemblyId = null;
   protected String oldAssemblyId = null;
   private boolean saveInProgress = false;
@@ -101,6 +104,13 @@ public class ComplexRecipeBase extends RecipeBase
     super(name);
     this.assemblyId = assemblyId;
     this.name = name;
+  }
+
+  public ComplexRecipeBase (String name, String assemblyId, String recipeId){
+    super(name);
+    this.assemblyId = assemblyId;
+    this.name = name;
+    this.recipeId = recipeId;
   }
 
   public ComplexRecipeBase (ComponentData cdata, String assemblyId) {
@@ -224,6 +234,7 @@ public class ComplexRecipeBase extends RecipeBase
       initAgentsFromDb();
       initPluginsFromDb();
       initBindersFromDb();
+      initTargetsFromDb();
       // After reading the soc from the DB, it is not modified.
       //      modified = false;
       modified = false;
@@ -317,37 +328,88 @@ public class ComplexRecipeBase extends RecipeBase
   }
 
   private void initBindersFromDb() {
-    System.out.println("Not implemented yet");
+//     System.out.println("Not implemented yet");
+  }
+
+  private void initTargetsFromDb() {
+    Map substitutions = new HashMap();
+    if (recipeId != null) {
+      substitutions.put(":recipe_id", recipeId);
+
+      try {
+	Connection conn = DBUtils.getConnection();
+	try {
+	  Statement stmt = conn.createStatement();
+	  String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
+	  ResultSet rs = stmt.executeQuery(query);
+	  while (rs.next()) {
+            String name = rs.getString(1);
+            if(name.startsWith("$$CP")) {
+              int start = name.indexOf(".");
+              String component = name.substring((start+1), name.indexOf(".", (start+1)));
+              // Find the Component and add the Property
+              for(int i=0; i < getChildCount(); i++) {
+                ConfigurableComponent cc = (ConfigurableComponent)getChild(i);
+                if(cc.getShortName().equals(component)) {
+                  cc.addProperty(name.substring(name.lastIndexOf(".")+1), rs.getString(2));
+                }
+              }
+            }
+	  }
+	  rs.close();
+	  stmt.close();
+	} finally {
+	  conn.close();
+	}
+      } catch (Exception e) {
+        if(log.isErrorEnabled()) {
+          log.error("Exception", e);
+        }
+	throw new RuntimeException("Error" + e);
+      }
+    }    
   }
 
   private void initFromCData() {
     // create society properties from cdata
     // create agents from cdata
     ArrayList agentData = new ArrayList();
+    ArrayList componentData = new ArrayList();
     ArrayList alldata = new ArrayList();
     if (cdata != null)
       alldata.add(cdata);
     
     // FIXME: It'd be nice to deal with binders of Agents in here!!!
-
-    // Find all the agents
+    
+    // Find all the data.
     for (int i = 0; i < alldata.size(); i++) {
       ComponentData someData = (ComponentData)alldata.get(i);
       if (someData.getType().equals(ComponentData.AGENT)) {
         agentData.add(someData);
+      } else if (someData.getType().equals(ComponentData.PLUGIN) ||
+                 someData.getType().equals(ComponentData.NODEBINDER) ||
+                 someData.getType().equals(ComponentData.AGENTBINDER)){
+        componentData.add(someData);
       } else {
         ComponentData[] moreData = someData.getChildren();
         for (int j = 0; j < moreData.length; j++) 
           alldata.add(moreData[j]);
       }
     }
-
+    
     // For each agent, create a component and add it as a child
     for (int i = 0; i < agentData.size(); i++) {
       AgentComponent agentComponent = 
         new AgentCDataComponent((ComponentData)agentData.get(i));
       agentComponent.initProperties();
       addChild(agentComponent);
+    }
+      
+    for (int j=0; j < componentData.size(); j++) {
+      BaseComponent baseComponent = 
+        new BaseCDataComponent((ComponentData)componentData.get(j));
+      baseComponent.initProperties();
+      addChild(baseComponent);
     }
   }
 

@@ -848,7 +848,7 @@ public class OrganizerHelper {
             try {
               Class cls = Class.forName(rs.getString(3));
               Class[] args = {String.class, String.class};
-              con = cls.getConstructor(new Class[] {String.class, String.class});
+              con = cls.getConstructor(new Class[] {String.class, String.class, String.class});
               
             } catch(Exception e) {
               if(log.isErrorEnabled()) {
@@ -858,7 +858,7 @@ public class OrganizerHelper {
             }
             
             try {
-              rc = (RecipeComponent) con.newInstance(new Object[] {rs.getString(2), getRecipeAssembly(conn, substitutions)});
+              rc = (RecipeComponent) con.newInstance(new Object[] {rs.getString(2), getRecipeAssembly(conn, substitutions), recipeId});
             } catch(Exception ee) {
               if(log.isErrorEnabled()) {
                 log.error("Error creating recipe instance", ee);

@@ -44,6 +44,7 @@ import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
@@ -89,6 +90,15 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
   public ComponentCollectionRecipe(String name, String assemblyId) {
     super(name, assemblyId);
   }
+
+  public ComponentCollectionRecipe(String name, String assemblyId, String recipeId) {
+    super(name, assemblyId, recipeId);
+  }
+
+  public ComponentCollectionRecipe(ComponentData cdata, String assemblyId) {
+    super(cdata, assemblyId);
+  }
+
   /**
    * Initialize any local Properties
    *
@@ -262,7 +272,14 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
         ac.addParameter(cc.getShortName()); // Agents have one parameter, the agent name
         ac.setOwner(cc);
         ac.setParent(cd);
+        // Add any new Parameters...
+        Iterator iter = getLocalProperties();
+        while(iter.hasNext()) {
+          Property p = (Property)iter.next();
+          ac.addParameter(p);
+        }
         cd.addChild((ComponentData)ac);
+
       } else if (cc instanceof ComponentBase) {
         GenericComponentData ac = new GenericComponentData();
         ac.setName(cc.getShortName());
@@ -293,6 +310,34 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
     modifyComponentData(cd);
 
     return addComponentData(cd);
+  }
+
+  public ModifiableComponent copy(String name) {
+    ComponentData cdata = getComponentData();
+    cdata.setName(name);
+    RecipeComponent component = new ComponentCollectionRecipe(cdata, null);
+    component.initProperties();
+
+    ((ComponentCollectionRecipe)component).modified = this.modified;
+    ((ComponentCollectionRecipe)component).oldAssemblyId = getAssemblyId();
+
+    for(int i=0; i < getChildCount(); i ++) {
+      ConfigurableComponent child = (ConfigurableComponent)getChild(i);
+      if(child.getProperty(PROP_TARGET_COMPONENT_QUERY) != null) {
+      }
+    }
+    return component;
+  }
+
+  public boolean saveToDatabase() {
+    for(int i=0; i < getChildCount(); i ++) {
+      ConfigurableComponent child = (ConfigurableComponent)getChild(i);
+      if(child.getProperty(PROP_TARGET_COMPONENT_QUERY) != null) {
+        addProperty(("$$CP=" + child.getProperty(PROP_TARGET_COMPONENT_QUERY).getName()), child.getProperty(PROP_TARGET_COMPONENT_QUERY).getValue());
+      }
+    }
+    
+    return super.saveToDatabase();
   }
 
 }
