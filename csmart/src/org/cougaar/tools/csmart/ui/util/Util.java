@@ -268,6 +268,7 @@ public class Util {
 						    String PSP_id,
 						    String filter,
 						    int limit) {
+    System.out.println("Util: getCollectionFromCluster: " + PSP_id);
     Collection results = null;
     //    String URLSpec = clusterURL + PSP_PACKAGE + "/" + PSP_id;
     String URLSpec = clusterURL + "/" + PSP_id;
@@ -286,7 +287,10 @@ public class Util {
       // read events from PSP
       InputStream is = connection.getInputStream();
       ObjectInputStream p = new ObjectInputStream(is);
-      results = (Collection)p.readObject();
+      Object o = p.readObject();
+      System.out.println("Util: " + o.getClass().getName());
+      results = (Collection)o;
+      //results = (Collection)p.readObject();
       if (results == null || results.isEmpty()) {
 	results = null;
 	JOptionPane.showMessageDialog(null,
