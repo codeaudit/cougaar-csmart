@@ -80,19 +80,28 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
     // must re-collect the available queries
     if (availQueries == null || newMod != rQFileLastMod) {
       availQueries = new HashSet();
-      rQFileLastMod = 0l;
       DBProperties dbp = null;
       
       // First grab the queries from PopulateDb.q
       // Note that this is the cached DBProperties - which may already
       // have the contents of recipeQueries.q in it
       try {
-	dbp = DBProperties.readQueryFile(PDbBase.QUERY_FILE);
+	// If have read the file before but still got indication of a change,
+	// then re-read the query file to throw out any query name changes
+	if (rQFileLastMod != 0l) {
+	  if (log.isDebugEnabled()) {
+	    log.debug("Re-reading query files.");
+	  }
+	  dbp = DBProperties.reReadQueryFile(PDbBase.QUERY_FILE);
+	} else
+	  dbp = DBProperties.readQueryFile(PDbBase.QUERY_FILE);
       } catch (IOException ioe) {
 	if (log.isDebugEnabled()) {
 	  log.debug("Couldn't read " + PDbBase.QUERY_FILE);
 	}
       }
+
+      rQFileLastMod = 0l;
 
       // Add in the contents of recipeQueries.q - possibly just over-writing
       // the values previously added

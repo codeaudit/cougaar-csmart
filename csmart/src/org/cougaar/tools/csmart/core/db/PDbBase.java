@@ -121,6 +121,17 @@ public class PDbBase {
     // Only read in the RQ file if it was modified since we last read it in
     if (newMod != rQFileLastMod) {
       try {
+	// If this wasnt our first read
+	// But the recipeQueries.q file has changed,
+	// Then force a re-read of everything, thus getting rid of any old
+	// queries under old names
+	if (rQFileLastMod != 0l) {
+	  if (log.isDebugEnabled()) {
+	    log.debug("Doing forced reread of query files.");
+	  }
+	  dbp = DBProperties.reReadQueryFile(QUERY_FILE);
+	}
+
 	// This next line _always_ re-parses the query file.
 	dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
 	rQFileLastMod = newMod;
