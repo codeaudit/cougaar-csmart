@@ -48,7 +48,6 @@ set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/bootstrap.jar
 
 set DEVPATH = ""
 if ($?COUGAAR_DEV_PATH) then
-    set LIBPATHS = "${COUGAAR_DEV_PATH}:${LIBPATHS}"
     set DEVPATH = "-Dorg.cougaar.class.path=${COUGAAR_DEV_PATH}"
 endif
     
