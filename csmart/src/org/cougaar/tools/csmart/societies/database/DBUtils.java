@@ -23,6 +23,8 @@ package org.cougaar.tools.csmart.societies.database;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
@@ -121,12 +123,12 @@ public class DBUtils {
 	    }
 	  }
 	} catch (ClassNotFoundException e) {
-          System.out.println("Class not found: " + e);
+          System.err.println("Class not found: " + e);
 	} catch (SQLException se) {
-          System.out.println("Sql exception: " + se);
+          System.err.println("Sql exception: " + se);
         }
       } catch(IOException e) {
-        System.out.println("io exception: " + e);
+        System.err.println("IO exception: " + e);
       }
     }
     return valid;
@@ -182,4 +184,25 @@ public class DBUtils {
       
     return result;
   }
+
+  public static String getAssemblyMatch(ArrayList assemblyIDs) {
+    StringBuffer assemblyMatch = new StringBuffer();
+    assemblyMatch.append("in (");
+    Iterator iter = assemblyIDs.iterator();
+    boolean first = true;
+    while (iter.hasNext()) {
+      String val = (String)iter.next();
+      if (first) {
+        first = false;
+      } else {
+        assemblyMatch.append(", ");
+      }
+      assemblyMatch.append("'");
+      assemblyMatch.append(val);
+      assemblyMatch.append("'");
+    }
+    assemblyMatch.append(")");
+    return assemblyMatch.toString();
+  }
+
 }
