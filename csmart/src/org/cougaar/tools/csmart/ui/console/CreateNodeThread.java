@@ -1,51 +1,31 @@
 package org.cougaar.tools.csmart.ui.console;
 
-import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.server.ProcessDescription;
 import org.cougaar.tools.server.RemoteListenableConfig;
 import org.cougaar.tools.server.RemoteProcess;
-import org.cougaar.util.Parameters;
 import org.cougaar.util.log.Logger;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Hashtable;
 
 /**
  * org.cougaar.tools.csmart.ui.console
  *
  */
-public class CreateNodeThread extends SwingWorker {
+public class CreateNodeThread extends Thread {
 
-  private boolean reset = false;
   private Logger log = CSMART.createLogger(this.getClass().getName());
-  private Object runningNodesLock = new Object();
-  private Hashtable runningNodes; // maps node names to RemoteProcesses
-  private JToggleButton runButton;
-  private Experiment experiment;
-  private volatile boolean stopNodeCreation;
-  private AppServerSupport appServerSupport;
   private NodeModel model;
   RemoteProcess remoteNode = null;
   private boolean success = false;
-
-  // set this flag when you first run an experiment
-  // it's purpose is to ignore a non-null experiment if you're only
-  // attaching to nodes
-  private boolean usingExperiment = false;
+  private boolean stop = false;
 
   public CreateNodeThread(NodeModel model) {
-    super();
     this.model = model;
   }
 
-  public Object construct() {
+  public void run() {
     createNode();
-    return remoteNode;
-  }
-
-  public void finished() {
     if(!success) {
       String node = model.getInfo().getNodeName();
       String host = model.getInfo().getHostName();
@@ -66,21 +46,20 @@ public class CreateNodeThread extends SwingWorker {
     // Create the process description, then the proccess
     String name = model.getInfo().getNodeName();
     try {
-      ProcessDescription desc = 
+      ProcessDescription desc =
         new ProcessDescription(name, "csmart",
                                model.getInfo().getProperties(),
                                model.getInfo().getArgs());
-      RemoteListenableConfig conf = 
+      RemoteListenableConfig conf =
         new RemoteListenableConfig(model.getListener(),
-                                   CSMART.getNodeListenerId(), 
+                                   CSMART.getNodeListenerId(),
                                    null, model.getOutputPolicy());
 
       // Next line does the actual creation -- including RMI stuff that could take a while
       remoteNode = model.getInfo().getAppServer().createRemoteProcess(desc, conf);
 
       if (log.isDebugEnabled()) {
-        log.debug("Adding listener: " + CSMART.getNodeListenerId() + 
-                  " for: " + name);
+        log.debug("Adding listener: " + CSMART.getNodeListenerId() + " for: " + name);
       }
       success = true;
     } catch (Exception e) {
@@ -93,12 +72,5 @@ public class CreateNodeThread extends SwingWorker {
         log.error("CSMARTConsole: cannot create node: " + model.getInfo().getNodeName(), e);
       }
     }
-
-//    synchronized (runningNodesLock) {
-//      runningNodes.put(nodeInfo.getNodeInfo().getNodeName(), remoteNode);
-//    } // end synchronized
-//
-//    // Set up the UI for the Node
-//    SwingUtilities.invokeLater(new ExtractRunAction.NodeCreateThread(nodeInfo, remoteNode));
   }
 }
