@@ -105,7 +105,7 @@ public class ABCAgent
   public static final String PROP_INITIALIZER_DESC = "Name of the Metric Initialization plugin";
 
   
-  private String agentClassName = "org.cougaar.core.cluster.ClusterImpl";
+  private static final String agentClassName = "org.cougaar.core.cluster.ClusterImpl";
 
   /** Full names of all plugins **/
   private static final String CustomerPlugIn_name =
