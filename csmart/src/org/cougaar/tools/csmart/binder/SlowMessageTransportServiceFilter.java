@@ -150,7 +150,7 @@ public class SlowMessageTransportServiceFilter
       public void registerAgent(Agent agent) {
         getAgentManager().registerAgent(agent);
       }
-    };
+    }
 
 
     protected ServiceBroker createFilteringServiceBroker(ServiceBroker sb) {
