@@ -203,7 +203,7 @@
 		<!-- Copy any gifs and HTML help files over as well -->
 		<copy todir="${examples.build}" >
 		  <fileset dir="${examples}">
-		    <patternset id="images.and.html"/>
+		    <patternset id="images.and.html.and.def"/>
 		  </fileset>
 		</copy>
 	</target>
@@ -280,7 +280,8 @@
 		<!-- Copy any gifs and HTML help files over as well -->
 		<copy todir="${build}" >
 		  <fileset dir="${src}">
-		    <patternset id="images.and.html">
+		    <patternset id="images.and.html.and.def">
+		      <include name="**/*.def"/>
 		      <include name="**/*.gif"/>
 		      <include name="**/*.html"/>
 		      <include name="**/*.htm"/>
