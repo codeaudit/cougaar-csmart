@@ -385,7 +385,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 	System.exit(0); // if running standalone, exit
       else {
 	closeSubWindows();
-	experiment.removeExperimentListener(listener);
+        if (experiment != null)
+          experiment.removeExperimentListener(listener);
 	NamedFrame.getNamedFrame().removeFrame(this);
 	dispose();
       }
