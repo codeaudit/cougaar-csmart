@@ -37,7 +37,13 @@ A Component Insertion Recipe contains the following parameters:
   to be inserted and where by executing queries in the configuration
   database. There are three queries, described below, specifying the
   components to be modified, the components to be inserted and the
-  arguments of the inserted components.
+  arguments of the inserted components. All such queries come from
+  CIP/configs/common/PopulateDb.q (for basic or example queries), or a
+  file called "recipeQueries.q" for user defined queries (often built
+  by copying queries from the other file, renaming them, and editing
+  one or two values). This other file should be someplace on the
+  Cougaar Config Path - for example, the directory from which CSMART
+  is run, or CIP/configs/common.
 </p>
 <p>
   <a name="TARGET_QUERY"><h3>Target Component Selection Query</h3></a>
