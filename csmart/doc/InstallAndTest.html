@@ -122,20 +122,9 @@ java version "1.4.0"
 Java(TM) 2 Runtime Environment, Standard Edition (build 1.4.0-b92)
 Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
         </pre>
-    If not, edit your PATH as described above.<br><br></li>
-
-  <li>Make sure you have the JSSE 1.0.2 (Java Secure Sockets Extension) jars
-    in your JDK's path:
-       <pre>
-       ls $JAVA_HOME/jre/lib/ext
-       </pre>
-    Minimally this should list:
-       <pre>
-       jcert.jar  jnet.jar  jsse.jar
-       </pre>
-    If you lack these jars then download them from:
-       <a href="http://java.sun.com/products/jsse"
-       >http://java.sun.com/products/jsse</a>. <br><br>
+    If not, edit your PATH as described above.<br>Note that JDK1.4
+    includes the JSSE which previously was a separate install.<br>
+<br>
        <b>Windows Note:</b> <i>Windows often installs JRE in 2 places: under JDK, and also 
        in C:\Program Files\JavaSoft\JRE, and both places need JSSE installed.</i><br><br>
     You may also need to modify the default JSSE security file (in
@@ -252,7 +241,7 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
     <br><br>The CSMART configuration database tables are loaded from '.csv' 
     files provided in "$CIP/csmart/data/database/csv" directory.
     To load the database from these files, run the script 
-    "$CIP/csmart/data/database/scripts/mysql/load_1ad_mysql.sh[bat]".This will drop 
+    "$CIP/csmart/data/database/scripts/mysql/load_1ad_mysql.sh[bat]". This will drop 
     the old tables in the database first and load 
     the new tables from the .csv files.
 
@@ -260,8 +249,8 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
         $./load_1ad_mysql.sh [db username] [db password] [database name]       
       </pre>
 
-    To dump a snapshot of the CSMART configuration database (excludes domain data tables), 
-    run the script "$CIP/csmart/data/database/scripts/mysql/dump_1ad_mysql.sh".  
+    Optional later step for developers: To dump a snapshot of the CSMART configuration database (excludes domain data tables), 
+    run the script "$CIP/csmart/data/database/scripts/mysql/dump_1ad_mysql.sh[bat]".  
 
       <pre>
         $./dump_1ad_mysql.sh [db username] [db password] [database name]
@@ -285,8 +274,9 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
     load_1ad_mysql.sh script.
 
     <br><br><b>Note</b> Before dumping a current snapshot of the database, you must ensure that
-     this directory is empty.  If you wish to preserve various versions of the database 
-     tables, you must either rename or move the files currently in this directory.<br><br></li><p>
+     this directory is empty.  You should usually rename or move the
+     files currently in this directory to save the original table data
+     definitions.<br><br></li><p>
 
   <li>Create a user for accessing the database. Here we create a user
   <i>myname</i> with password <i>mypass</i> who can only access the database
