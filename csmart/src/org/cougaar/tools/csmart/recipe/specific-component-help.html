@@ -34,6 +34,11 @@ A Specific Component Recipe contains the following parameters:
 	  <td>0..MAX</td>
 	</tr>
 	<tr>
+	  <td><a href="#PRIORITY">Priority</a></td>
+	  <td>String</td>
+	  <td>HIGH, INTERNAL, BINDER, COMPONENT, LOW, STANDARD</td>
+	</tr>
+	<tr>
 	  <td><a href="#TARGET_QUERY">Target Component Selection Query</a></td>
 	  <td>String</td>
 	  <td></td>
@@ -73,7 +78,11 @@ insert the same plugin in the same agent twice, pick a unique name.
 Specifies the number of arguments required for this component.
 Modification of this value creates new <a href="#VALUE">parameters</a>
 used to specify the values of each argument.
- 
+
+<a name="PRIORITY"><h3>Priority</h3></a>
+Specifies the component load priority in it's container relative to
+other child components loaded at the same time at the same containment point.<br> 
+
 <a name="TARGET_QUERY"><h3>Target Component Selection Query</h3></a>
 Specifies a defined query in a .q file.  This query is used to
 selected the exact components that should be modified with this
