@@ -47,6 +47,7 @@ import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.db.CMT;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.db.CommunityDbUtils;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentListener;
@@ -2189,9 +2190,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       try {
 	JOptionPane.showMessageDialog(null, "Writing ini file to " + f.getAbsolutePath() + "...");
 	cw.writeConfigFiles(f);
-	// FIXME: Also, write out the community XML file
-	// if (! ConfigDbUtils.dumpCommunityXML(f.getFullPath() + "communities.xml", getCommAsbID())) 
-	// log.error("Couldn't write communities.xml file");
+	// Also, write out the community XML file
+	if (! CommunityDbUtils.dumpCommunityXML(f.getAbsolutePath() + "communities.xml", getCommAsbID())) 
+	  log.error("Couldn't write communities.xml file");
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
           log.error("Couldn't write ini files: ", e);

@@ -48,6 +48,7 @@ import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.db.DBConflictHandler;
+import org.cougaar.tools.csmart.core.db.CommunityDbUtils;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
@@ -637,14 +638,14 @@ public class Organizer extends JScrollPane {
 	break;
       xmlFile = chooser.getSelectedFile();
     }
-
-//     if (xmlFile != null && !ConfigDbUtils.importCommunityXML(xmlFile, experiment.getCommAsbID())) {
-//       // There may have been none, so don't complain too loudly.
-//       if (log.isInfoEnabled()) {
-// 	log.info("crtExpFromFile got no Community XML data out of " + xmlFile.getFullPath());
-//       }
-//     }
-
+    
+    if (xmlFile != null && !CommunityDbUtils.importCommunityXML(xmlFile, experiment.getCommAsbID())) {
+      // There may have been none, so don't complain too loudly.
+      if (log.isInfoEnabled()) {
+ 	log.info("crtExpFromFile got no Community XML data out of " + xmlFile.getAbsolutePath());
+      }
+    }
+    
     DefaultMutableTreeNode experimentNode =
       addExperimentToWorkspace(experiment, getSelectedNode());
     addSocietyToWorkspace(society, experimentNode);

@@ -37,6 +37,7 @@ import javax.swing.tree.TreePath;
 
 import org.cougaar.util.log.Logger;
 
+import org.cougaar.tools.csmart.core.db.CommunityDbUtils;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
@@ -47,6 +48,9 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
 
+/**
+ * Experiment Builder Tabbed Pane for editing communities
+ */
 public class CommunityPanel extends JPanel {
   private static final String VIEW_COMMUNITY_ACTION = "Display Community...";
   private static final String NEW_COMMUNITY_ACTION = "New Community...";
@@ -465,12 +469,12 @@ public class CommunityPanel extends JPanel {
       xmlFile = chooser.getSelectedFile();
     }
 
-//     if (xmlFile != null && !ConfigDbUtils.importCommunityXML(xmlFile, experiment.getCommAsbID())) {
-//       // There may have been none, so don't complain too loudly.
-//       if (log.isInfoEnabled()) {
-// 	log.info("crtExpFromFile got no Community XML data out of " + xmlFile.getFullPath());
-//       }
-//     }
+    if (xmlFile != null && !CommunityDbUtils.importCommunityXML(xmlFile, experiment.getCommAsbID())) {
+      // There may have been none, so don't complain too loudly.
+      if (log.isInfoEnabled()) {
+ 	log.info("crtExpFromFile got no Community XML data out of " + xmlFile.getAbsolutePath());
+      }
+    }
 
     // re-init display if necessary
     update();
