@@ -700,4 +700,12 @@ public class ABCSociety
     return new ABCConfigurationWriter(this, nodes, nodeFileAddition);
   }
 
+  public ComponentProperties copy(ComponentProperties result) {
+    result = super.copy(result);
+    // Try to get the PROP_SUPPLIES and PROP_INITIALIZER properties
+    // reset to have the new society name in them
+    if (result instanceof ABCSociety)
+      ((ABCSociety)result).changeSociety();
+    return result;
+  }
 }
