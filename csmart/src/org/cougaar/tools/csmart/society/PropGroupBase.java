@@ -21,9 +21,11 @@
 package org.cougaar.tools.csmart.society;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Iterator;
 import org.cougaar.tools.csmart.core.cdata.PGPropData;
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -46,8 +48,6 @@ public class PropGroupBase
   private PropGroupData pgd;
   private transient Logger log;
 
-  private Property[] propProperties = null;
-
   public PropGroupBase(PropGroupData pgd){
     super(pgd.getName());
     this.pgd = pgd;
@@ -55,7 +55,6 @@ public class PropGroupBase
   }
   
   public void initProperties() {
-    propProperties = new Property[pgd.getPropertyCount()];
     Iterator iter = pgd.getPropertiesIterator();
     int i=0;
     while(iter.hasNext()) {
@@ -68,14 +67,13 @@ public class PropGroupBase
         name = data.getName() + " ("+ data.getSubType() + ")";
       }
 
-      propProperties[i++] = addProperty(name, data.getValue());
+      addProperty(name, data.getValue());
     }
   }
 
   private void createLogger() {
     log = CSMART.createLogger(this.getClass().getName());
   }
-
 
   private String getName(Property prop) {
     String name = prop.getName().toString();
@@ -104,8 +102,14 @@ public class PropGroupBase
   public PropGroupData getPropGroupData() {
         PropGroupData pgData = new PropGroupData(this.getShortName());
 
-        for(int i=0; i < propProperties.length; i++) {
-          Property prop = propProperties[i];
+        Iterator props = getSortedLocalPropertyNames();
+        while (props.hasNext()) {
+          Property prop;
+          CompositeName pname = (CompositeName)props.next();
+          if (pname != null)
+            prop = getProperty(pname);
+          else
+            continue;
           PGPropData oldPG = getProp(getName(prop));
           PGPropData pg = new PGPropData();
           if(oldPG != null) {
@@ -114,7 +118,21 @@ public class PropGroupBase
             pg.setSubType(oldPG.getSubType());
           } else {
             pg.setName(getName(prop));
-            pg.setType(getType(prop));
+            String type = getType(prop);
+            // if the value for this property is a list, then this type
+            // is really the subtype
+            // do a prop.getPropertyClass()?
+            // This doesnt appear usually set, cant depend on it
+            // So what, get the value?
+            if ((prop.getValue() != null) && 
+                (prop.getValue().getClass().isArray() ||
+                 Collection.class.isAssignableFrom(prop.getValue().getClass()))) {
+              pg.setSubType(type);
+              pg.setType("Collection");
+            } else {
+              // otherwise, set this as the type
+              pg.setType(type);
+            }
           }
 
           pg.setValue(prop.getValue());
