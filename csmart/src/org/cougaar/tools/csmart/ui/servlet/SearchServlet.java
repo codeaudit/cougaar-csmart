@@ -110,6 +110,10 @@ public class SearchServlet
   public SearchServlet(SimpleServletSupport support) {
     super();
     this.support = support;
+  
+    if ( !  ( "/CSMART_SearchServlet".equals(support.getPath()) ) ) {
+      System.out.println("Error in servlet path: " + support.getPath());
+    }
   }
   
   /* Reponds to the GET http method call 

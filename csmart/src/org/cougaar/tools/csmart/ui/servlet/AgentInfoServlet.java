@@ -79,6 +79,9 @@ public class AgentInfoServlet
   public AgentInfoServlet(SimpleServletSupport support) {
     super();
     this.support = support;
+     if ( !  ( "/CSMART_AgentInfoServlet".equals(support.getPath()) ) ) {
+      System.out.println("Error in servlet path: " + support.getPath());
+    }
   }
   
   public void doGet(

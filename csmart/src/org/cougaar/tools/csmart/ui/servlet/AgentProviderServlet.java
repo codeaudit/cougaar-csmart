@@ -68,6 +68,9 @@ public class AgentProviderServlet
   public AgentProviderServlet(SimpleServletSupport support) {
     super();
     this.support = support;
+    if ( !  ( "/CSMART_AgentProviderServlet".equals(support.getPath()) ) ) {
+      System.out.println("Error in servlet path: " + support.getPath());
+    }
   }
 
   public void doGet(

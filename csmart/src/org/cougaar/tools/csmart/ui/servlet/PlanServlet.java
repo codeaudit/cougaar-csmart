@@ -89,6 +89,9 @@ public class PlanServlet
     super();
     this.support = support;
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
+    if ( !  ( "/CSMART_PlanServlet".equals(support.getPath()) ) ) {
+      System.out.println("Error in servlet path: " + support.getPath());
+    }
   }
   
   public void doGet(

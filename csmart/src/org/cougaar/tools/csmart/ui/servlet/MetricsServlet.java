@@ -74,6 +74,9 @@ public class MetricsServlet
     super();
     this.support = support;
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
+    if ( !  ( "/CSMART_MetricsServlet".equals(support.getPath()) ) ) {
+      System.out.println("Error in servlet path: " + support.getPath());
+    }
   }
   
   /* Reponds to the GET http method call 
