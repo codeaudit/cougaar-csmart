@@ -140,13 +140,12 @@ public class BasicMetric extends RecipeBase
     propStartDelay = addProperty(PROP_STARTDELAY, PROP_STARTDELAY_DFLT);
     propStartDelay.setToolTip(PROP_STARTDELAY_DESC);
 
-    propResultsDir = addProperty(PROP_RESULTSDIR, PROP_RESULTSDIR_DFLT);
-    propResultsDir.setToolTip(PROP_RESULTSDIR_DESC);
+//     propResultsDir = addProperty(PROP_RESULTSDIR, PROP_RESULTSDIR_DFLT);
+//     propResultsDir.setToolTip(PROP_RESULTSDIR_DESC);
 
     // For now, don't show this property - we need the results filter to change
     // appropriately before we can let the user change this
     // FIXME!
-    setPropertyVisible(propResultsDir, false);
 
     // Task Verb to search for
     propTVerb = addProperty(PROP_TVERB, PROP_TVERB_DFLT);
@@ -238,8 +237,9 @@ public class BasicMetric extends RecipeBase
     plugin.setOwner(this);
 
     // Add parameters here:
-    // Why can't I find it by name? Cause it's hidden?
-    plugin.addParameter(propResultsDir.getValue()); // dir for Results files
+    // Switch to using the actual resultsDir prop
+    // when we allow the user to edit it. See above in initProperties.
+    plugin.addParameter(PROP_RESULTSDIR_DFLT); // dir for Results files
     plugin.addParameter(getProperty(PROP_TVERB).getValue()); // Task Verb to search for
     addParameter(plugin, PROP_BBSERV);
     addParameter(plugin, PROP_PRSERV);
