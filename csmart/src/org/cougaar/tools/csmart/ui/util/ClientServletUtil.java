@@ -52,6 +52,30 @@ public class ClientServletUtil {
   public static final String METRICS_SERVLET = "CSMART_MetricsServlet";
 
   /**
+   * Get data which is a list of text strings from the specified url.
+   * @param string a URL string
+   * @return Vector list of strings returned
+   */
+
+  public static Vector getDataFromURL(String URLString) throws Exception {
+    URL url = new URL(URLString);
+    URLConnection connection = url.openConnection();
+    connection.setDoInput(true);
+    connection.setDoOutput(true);
+    InputStream is = connection.getInputStream();
+    BufferedReader r =
+      new BufferedReader(new InputStreamReader(is));
+    Vector data = new Vector();
+    String s = r.readLine();
+    while (s != null) {
+      s = r.readLine();
+      if (s != null)
+        data.add(s);
+    }
+    return data;
+  }
+
+  /**
    * Contact the agent provider servlet at the specified URL,
    * which returns the URLs of all the agents in the society.
    * This may return null or a vector with zero elements;
