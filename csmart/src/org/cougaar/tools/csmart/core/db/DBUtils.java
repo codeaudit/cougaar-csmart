@@ -947,6 +947,8 @@ public class DBUtils {
   }
 
   public static final boolean containsCMTAssembly(String experimentId) {
+    if (experimentId == null || experimentId.equals(""))
+      return false;
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     boolean result = false;
     Map substitutions = new HashMap();
