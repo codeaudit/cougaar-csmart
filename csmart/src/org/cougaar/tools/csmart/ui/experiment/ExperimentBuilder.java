@@ -49,6 +49,7 @@ public class ExperimentBuilder extends JFrame {
   private static final String SAVE_MENU_ITEM = "Save";
   private static final String SAVE_AS_MENU_ITEM = "Save As...";
   private static final String DUMP_INI_ITEM = "Debug: Dump .ini files";
+  private static final String DUMP_HNA_ITEM = "Dump HNA Mapping";
   private static final String EXIT_MENU_ITEM = "Close";
   private static final String FIND_MENU = "Find";
   private static final String FIND_HOST_MENU_ITEM = "Find Host...";
@@ -113,6 +114,11 @@ public class ExperimentBuilder extends JFrame {
     new AbstractAction(DUMP_INI_ITEM) {
 	public void actionPerformed(ActionEvent e) {
 	  dumpINIs();
+	}
+      },
+    new AbstractAction(DUMP_HNA_ITEM) {
+	public void actionPerformed(ActionEvent e) {
+	  dumpHNA();
 	}
       },
     new AbstractAction(EXIT_MENU_ITEM) {
@@ -388,6 +394,10 @@ public class ExperimentBuilder extends JFrame {
   // Dump out the ini files for the first trial to the local results directory
   private void dumpINIs() {
     experiment.dumpINIFiles();
+  }
+
+  private void dumpHNA() {
+    experiment.dumpHNA();
   }
 
   /**
