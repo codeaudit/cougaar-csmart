@@ -35,6 +35,8 @@ import org.cougaar.util.DBConnectionPool;
 public class DBUtils {
 
   public static final String DATABASE = "org.cougaar.configuration.database";
+  public static final String USER = "org.cougaar.configuration.user";
+  public static final String PASSWORD = "org.cougaar.configuration.password";
   public static final String QUERY_FILE = "CSMART.q";
   public static final String ASSEMBLYID_QUERY = "queryAssemblyID";
 
@@ -61,9 +63,9 @@ public class DBUtils {
 
     boolean valid = false;
 
-    valid = (Parameters.findParameter("org.cougaar.configuration.database") == null) ? false : true;
-    valid &= (Parameters.findParameter("org.cougaar.configuration.user") == null) ? false : true;
-    valid &= (Parameters.findParameter("org.cougaar.configuration.password") == null) ? false : true;
+    valid = (Parameters.findParameter(DBUtils.DATABASE) == null) ? false : true;
+    valid &= (Parameters.findParameter(DBUtils.USER) == null) ? false : true;
+    valid &= (Parameters.findParameter(DBUtils.PASSWORD) == null) ? false : true;
 
     return valid;
   }
