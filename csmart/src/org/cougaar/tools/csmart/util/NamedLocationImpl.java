@@ -30,11 +30,35 @@ public class NamedLocationImpl implements NewNamedLocation {
   
   /**
    * Creates a new <code>NamedLocationImpl</code> instance.
+   * This constructor will try to parse the String to find
+   * a name, lat, and long (float degrees). If it cant, it treats the String
+   * as a Name.<br>
+   * The 3 fields are expected to be separated with a vertical bar (|).<br>
+   * If there are errors parsing the lat & long, the default is 0.0 for each.
    *
-   * @param name a <code>String</code> location name
+   * @param name a <code>String</code> location name or composite location, lat, long
    */
   public NamedLocationImpl (String name) {
-    this.setName(name);
+    if (name.indexOf('|') == -1) {
+      //System.err.println("setting name to full thing: " + name);
+      this.setName(name);
+    } else {
+      this.setName(name.substring(0, name.indexOf('|')));
+      //System.err.println("Found composite name, set it to " + this.name);
+      name = name.substring(name.indexOf('|') + 1);
+      String lat = name.substring(0, name.indexOf('|'));
+      String lon = name.substring(name.indexOf('|') + 1);
+      //System.err.println("lat will be: " + lat + ", long: " + lon);
+      float flat = 0.0f;
+      float flon = 0.0f;
+      try {
+	flat = Float.parseFloat(lat);
+	flon = Float.parseFloat(lon);
+      } catch (NumberFormatException nfe) {
+      }
+      this.setPosition(new LatLonPoint(flat, flon));
+      //System.err.println("Got position: " + getPosition());
+    }
   }
 
   /**
