@@ -652,7 +652,6 @@ public class Organizer extends JScrollPane {
    * If it's not in an experiment, then warn the user that they
    * need to save any experiments that contain it.
    */
-
   protected void renameSociety() {
     DefaultMutableTreeNode node = getSelectedNode();
     DefaultMutableTreeNode parentNode = 
@@ -671,14 +670,16 @@ public class Organizer extends JScrollPane {
       Experiment experiment = (Experiment)o;
       model.removeNodeFromParent(node);
       experiment.removeSocietyComponent();
-      SocietyComponent societyCopy = (SocietyComponent)society.copy(newName);
+      SocietyComponent societyCopy = (SocietyComponent)society.copyAndSave(newName);
       experiment.addSocietyComponent(societyCopy);
 
       addSocietyToWorkspace(societyCopy, parentNode);
     } else {
       societyNames.add(newName);
+      // Make this method in SocietyBase do the DB update
+      // so we dont have to do a separate save
       society.setName(newName);
-      society.saveToDatabase();
+      //society.saveToDatabase();
       Enumeration nodes = root.depthFirstEnumeration();
       while (nodes.hasMoreElements()) {
         node = (DefaultMutableTreeNode)nodes.nextElement();
