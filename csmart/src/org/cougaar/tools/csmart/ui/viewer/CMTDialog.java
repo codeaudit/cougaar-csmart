@@ -40,6 +40,11 @@ import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
+/**
+ * For loading experiments based on CMT assemblies, select the
+ * threads of supply to include, possibly regenerating the CMT
+ * assembly if necessary.
+ */
 public class CMTDialog extends JDialog {
   // thread names displayed for user
   private static final String[] ULThreads = {
@@ -70,9 +75,32 @@ public class CMTDialog extends JDialog {
 
   private transient Logger log;
 
+  /**
+   * Creates a new <code>CMTDialog</code> instance. Will always show the UI.
+   *
+   * @param parent a <code>JFrame</code> to locate this window
+   * @param organizer an <code>Organizer</code> to load into
+   * @param experimentName a <code>String</code> experiment name to laod
+   * @param experimentId a <code>String</code> experiment ID to load
+   */
   public CMTDialog(JFrame parent, Organizer organizer,
                    String experimentName,
                    String experimentId) {
+    this(parent, organizer, experimentName, experimentId, false);
+  }
+
+  /**
+   * Creates a new <code>CMTDialog</code> instance.
+   *
+   * @param parent a <code>JFrame</code> to locate this window
+   * @param organizer an <code>Organizer</code> to load into
+   * @param experimentName a <code>String</code> experiment name to laod
+   * @param experimentId a <code>String</code> experiment ID to load
+   * @param noShow a <code>boolean</code> indicating whether to actually show the UI, or just take the existing selection
+   */
+  public CMTDialog(JFrame parent, Organizer organizer,
+                   String experimentName,
+                   String experimentId, boolean noShow) {
     super(parent, "Threads and Groups", true); // modal dialog
     createLogger();
     this.organizer = organizer; // to get unique names
@@ -247,7 +275,10 @@ public class CMTDialog extends JDialog {
     int centerY = p.y + d.height/2;
     Dimension myD = getSize();
     setLocation(new Point(centerX - myD.width/2, centerY - myD.height/2));
-    show();
+    if (noShow) 
+      cancelled = false;
+    else
+      show();
   }
 
   private void createLogger() {
