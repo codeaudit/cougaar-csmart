@@ -124,13 +124,15 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
   }
 
   public void setValue(Object value) {
-    Object old = this.value;
-    this.value = value;
-    try {
-      fireValueChanged(old);
-    } catch (RuntimeException re) {
-      this.value = old;
-      throw re;
+    if(value != this.value) {
+      Object old = this.value;
+      this.value = value;
+      try {
+	fireValueChanged(old);
+      } catch (RuntimeException re) {
+	this.value = old;
+	throw re;
+      }
     }
   }
 
