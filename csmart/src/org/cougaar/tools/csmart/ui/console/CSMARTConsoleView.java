@@ -16,11 +16,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
+import java.beans.PropertyVetoException;
 
 /**
  * org.cougaar.tools.csmart.ui.console
@@ -178,6 +182,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     stopButton.setToolTipText("Halt experiment at end of current");
     stopButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        runButton.getModel().setSelected(false);
         runStateChanged();
       }
     });
@@ -785,6 +790,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
   //  }
 
   private void runStateChanged() {
+    System.out.println("runButton = " + runButton.getModel().isSelected());
     model.setRunning(runButton.getModel().isSelected());
   }
 
@@ -827,8 +833,57 @@ public class CSMARTConsoleView extends JFrame implements Observer {
       desktop.addNodeFrame((NodeView)arg, ((NodeView) arg).getNodeName());
       NodeModel nm = model.getNodeModel(((NodeView)arg).getNodeName());
       statusButtons.add(nm.getStatusButton());
+      nm.getStatusButton().addMouseListener(myMouseListener);
       buttonPanel.add(nm.getStatusButton());
       return;
+    }
+  }
+
+  /**
+   * Listener on the node status buttons.
+   * Right click pops-up a menu with the "About" node menu item.
+   * Left click opens the node standard out frame,
+   * and highlights the node in the configuration tree.
+   */
+  private MouseListener myMouseListener = new MouseAdapter() {
+    public void mouseClicked(MouseEvent e) {
+      if (e.isPopupTrigger()) {
+        doPopup(e);
+      } else {
+        String nodeName = ((JRadioButton) e.getSource()).getActionCommand();
+//        displayNodeFrame(nodeName);
+//        selectNodeInHostTree(nodeName);
+      }
+    }
+
+    public void mousePressed(MouseEvent e) {
+      if (e.isPopupTrigger()) doPopup(e);
+    }
+
+    public void mouseReleased(MouseEvent e) {
+      if (e.isPopupTrigger()) doPopup(e);
+    }
+  };
+
+  /**
+   * Display pop-up menu with "about" menu item, which provides
+   * the same functionality as the "about" menu item in the node window,
+   * but from the node status lamp.
+   */
+
+  private void doPopup(MouseEvent e) {
+//    selectedNodeName = ((JRadioButton) e.getSource()).getActionCommand();
+    nodeMenu.show((Component) e.getSource(), e.getX(), e.getY());
+  }
+
+  private void displayNodeFrame(String nodeName) {
+    JInternalFrame frame = desktop.getNodeFrame(nodeName);
+    if (frame == null)
+      return; // frame not created yet
+    try {
+      frame.setIcon(false);
+      frame.setSelected(true);
+    } catch (PropertyVetoException exc) {
     }
   }
 
