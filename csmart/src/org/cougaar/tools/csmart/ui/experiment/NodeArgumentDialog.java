@@ -31,13 +31,14 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.util.*;
 
-import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.util.log.Logger;
+
+import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Set and edit Command line arguments for the Node.
- * @property org.cougaar.install.path is used as to find a file of Node -D arguments
+ * @property org.cougaar.install.path is used to find a file of Node -D arguments
  */
 public class NodeArgumentDialog extends JDialog {
   Properties props;
