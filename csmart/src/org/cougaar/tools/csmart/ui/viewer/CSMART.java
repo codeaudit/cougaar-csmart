@@ -582,7 +582,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     // when experiments are deleted from the database, we don't try to
     // delete them from the workspace
     String experimentName = experiment.getExperimentName();
-    if (!ExperimentDB.isExperimentNameInDatabase(experimentName)) {
+    if (experiment.isInDatabase() &&
+        !ExperimentDB.isExperimentNameInDatabase(experimentName)) {
       experiment.setEditable(false);
       experiment.setRunnable(false);
       JOptionPane.showMessageDialog(this,

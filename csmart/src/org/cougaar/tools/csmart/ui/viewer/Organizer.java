@@ -1907,7 +1907,14 @@ public class Organizer extends JScrollPane {
   private void deleteFolder(DefaultMutableTreeNode node) {
     if (node == root) return;
     if (node == null) return;
-    model.removeNodeFromParent(node);
+    int reply = 
+      JOptionPane.showConfirmDialog(this,
+                                    "Delete folder and all its contents?",
+                                    "Delete Folder",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.PLAIN_MESSAGE);
+    if (reply == JOptionPane.OK_OPTION)
+      model.removeNodeFromParent(node);
   }
 
   private void restore(String fileName) {
