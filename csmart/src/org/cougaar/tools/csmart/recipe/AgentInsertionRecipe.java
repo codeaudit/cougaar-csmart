@@ -312,8 +312,12 @@ public class AgentInsertionRecipe extends RecipeBase
   public ComponentData addComponentData(ComponentData data) {
     ComponentData[] children = data.getChildren();
 
-    for(int i=0; i < children.length; i++) {
+    // Search from the bottom of the list up, agents
+    // in recipes are inserted at the bottom of the list
+    // This will result in a faster search and find.
+    for(int i=children.length-1; i >= 0; i--) {
       ComponentData child = children[i];
+        
       if(child.getType() == ComponentData.AGENT) {
         Iterator iter = ((Collection)getDescendentsOfClass(AgentComponent.class)).iterator();
 
@@ -338,13 +342,17 @@ public class AgentInsertionRecipe extends RecipeBase
 
 	    // Replace the existing AgentComponentData
 	    // with a new one, to ensure we replace all values
-	    data.setChild(i, nchild);
+            int idx;
+            if((idx = data.getChildIndex(child)) != -1 ) {
+              data.setChild(idx, nchild);
+            }
 	    break; // we found the agent. Break out of the loop!
           }
         }
-      } else {
+      } else if( child.getType() == ComponentData.NODE ||
+                 child.getType() == ComponentData.HOST ) {
 	// Recurse in case of hosts / nodes
-        data = addComponentData(child);
+        addComponentData(child);
       }
     }
     return data;
