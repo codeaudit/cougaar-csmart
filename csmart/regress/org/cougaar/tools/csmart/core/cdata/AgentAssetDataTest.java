@@ -94,11 +94,11 @@ public class AgentAssetDataTest extends TestCase {
     assertEquals("Test ITPOrg 2", true, aad.isTPOrg());
   }
 
-  public void testGetClusterID() {
-    assertEquals("Test GetClusterID", AGENT_NAME, aad.getClusterID());
+  public void testGetAgentID() {
+    assertEquals("Test GetAgentID", AGENT_NAME, aad.getAgentID());
 
     AgentAssetData nullTest = new AgentAssetData(null);
-    assertNull("Test GetClusterID", nullTest.getClusterID());
+    assertNull("Test GetAgentID", nullTest.getAgentID());
   }
 
   public void testSetGetAssetClass() {
@@ -121,10 +121,10 @@ public class AgentAssetDataTest extends TestCase {
     aad.setType(AgentAssetData.ENTITY);
     assertNull("Test UIC, Entity Type", aad.getUIC());
     
-    // Test with null Cluster ID.
-    AgentAssetData nullCluster = new AgentAssetData(null);
-    nullCluster.setType(AgentAssetData.ORG);
-    assertNull("Test UIC, Null Case", nullCluster.getUIC());
+    // Test with null Agent ID.
+    AgentAssetData nullAgent = new AgentAssetData(null);
+    nullAgent.setType(AgentAssetData.ORG);
+    assertNull("Test UIC, Null Case", nullAgent.getUIC());
 
     aad.setType(AgentAssetData.ORG);
     String uicName = "UIC/" + AGENT_NAME;
