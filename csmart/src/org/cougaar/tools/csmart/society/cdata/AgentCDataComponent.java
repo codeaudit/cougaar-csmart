@@ -73,49 +73,6 @@ public class AgentCDataComponent
     addAssetData();
   }
 
-  protected void addBinders() {
-    // Add binders
-    // FIXME: Is this right?
-    ContainerBase container = new ContainerBase("Binders");
-    container.initProperties();
-    addChild(container);
-
-    ComponentData[] childCData = cdata.getChildren();
-    for (int i = 0; i < childCData.length; i++) {
-      if (childCData[i].getType().equals(ComponentData.AGENTBINDER)) {
-        BinderBase binder = new BinderBase(childCData[i].getName(),
-                                           childCData[i].getClassName());
-        binder.initProperties();
-	binder.setComponentType(childCData[i].getType());
-        Object[] parameters = childCData[i].getParameters();
-        for (int j = 0; j < parameters.length; j++) 
-          binder.addProperty(BinderBase.PROP_PARAM + j, (String)parameters[j]);
-        container.addChild(binder);
-      }
-    }
-  }
-
-  protected void addPlugins() {
-    // add plugins
-    ContainerBase container = new ContainerBase("Plugins");
-    container.initProperties();
-    addChild(container);
-
-    ComponentData[] childCData = cdata.getChildren();
-    for (int i = 0; i < childCData.length; i++) {
-      if (childCData[i].getType().equals(ComponentData.PLUGIN)) {
-        PluginBase plugin = new PluginBase(childCData[i].getName(),
-                                           childCData[i].getClassName());
-        plugin.initProperties();
-        Object[] parameters = childCData[i].getParameters();
-        for (int j = 0; j < parameters.length; j++) 
-          plugin.addProperty(PluginBase.PROP_PARAM + j, (String)parameters[j]);
-        container.addChild(plugin);
-      }
-    }
-
-  }
-
   protected void addComponent(String typeid, String containerName) {
     ContainerBase container = new ContainerBase(containerName);
     container.initProperties();
@@ -138,7 +95,8 @@ public class AgentCDataComponent
 
         Object[] parameters = childCData[i].getParameters();
         for (int j = 0; j < parameters.length; j++) 
-          component.addProperty(ComponentBase.PROP_PARAM + j, parameters[j]);
+	  //          component.addProperty(ComponentBase.PROP_PARAM + j, parameters[j]);
+          component.addParameter(parameters[j]);
         container.addChild(component);
       }
     }
@@ -164,7 +122,8 @@ public class AgentCDataComponent
 	plugin.setComponentType(childCData[i].getType());
         Object[] parameters = childCData[i].getParameters();
         for (int j = 0; j < parameters.length; j++) 
-          plugin.addProperty(ComponentBase.PROP_PARAM + j, (String)parameters[j]);
+	  //          plugin.addProperty(ComponentBase.PROP_PARAM + j, parameters[j]);
+          plugin.addParameter(parameters[j]);
         container.addChild(plugin);
       }
     }
