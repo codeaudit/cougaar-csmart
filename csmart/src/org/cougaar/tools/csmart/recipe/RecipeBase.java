@@ -133,7 +133,7 @@ public abstract class RecipeBase
     boolean result = false;
     try {
       PDbBase pdb = new PDbBase();
-      pdb.replaceLibRecipe(this);
+      pdb.insureLibRecipe(this);
       result = true;
     } catch (Exception sqle) {
       if(log.isErrorEnabled()) {
