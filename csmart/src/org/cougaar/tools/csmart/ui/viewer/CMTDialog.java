@@ -54,6 +54,7 @@ public class CMTDialog extends JDialog {
   private boolean cloned = false;
   private String trialId;
   private String[] groupNames;
+  private JCheckBox forceRecomputeBox;
   private ArrayList groupCheckBoxes = new ArrayList();
   private ArrayList ULThreadCheckBoxes = new ArrayList();
   private ArrayList multiplierFields = new ArrayList();
@@ -95,7 +96,7 @@ public class CMTDialog extends JDialog {
       ULThreadCheckBoxes.add(cb);
       boolean sel = ExperimentDB.isULThreadSelected(trialId, ULDBThreads[i]);
       cb.setSelected(sel);
-      originalThreadSelected.add(new Boolean(sel));
+      originalThreadSelected.add(new Boolean(sel));      
       //if (i == (ULThreads.length-1))
       //  cb.setEnabled(false); // spare parts
       bottomPanel.add(cb,
@@ -106,12 +107,12 @@ public class CMTDialog extends JDialog {
                                              0, 0));
     }
     leftIndent = leftIndent - 5;
-    bottomPanel.add(new JLabel("Select Organization Groups:"),
-              new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.NONE,
-                                     new Insets(0, leftIndent, 0, 0),
-                                     0, 0));
+//     bottomPanel.add(new JLabel("Select Organization Groups:"),
+//               new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+//                                      GridBagConstraints.WEST,
+//                                      GridBagConstraints.NONE,
+//                                      new Insets(0, leftIndent, 0, 0),
+//                                      0, 0));
     leftIndent = leftIndent + 5;
     Map groupNameToId = ExperimentDB.getOrganizationGroups(experimentId);
     Set groups = groupNameToId.keySet();
@@ -170,6 +171,24 @@ public class CMTDialog extends JDialog {
                                        0, 0));
       x = 0;
     }
+
+    leftIndent = leftIndent - 5;
+    bottomPanel.add(new JLabel("Society:"),
+              new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.NONE,
+                                     new Insets(0, leftIndent, 0, 0),
+                                     0, 0));
+    leftIndent = leftIndent + 5;
+
+    forceRecomputeBox = new JCheckBox("Force Recompute");
+    bottomPanel.add(forceRecomputeBox,
+                new GridBagConstraints(x, y+1, 1, 1, 0.0, 0.0,
+                                       GridBagConstraints.WEST,
+                                       GridBagConstraints.NONE,
+                                       new Insets(0, leftIndent, 5, 5),
+                                       0, 0));
+   
     panel.add(bottomPanel, BorderLayout.CENTER);
 
     // Buttons panel
@@ -223,6 +242,13 @@ public class CMTDialog extends JDialog {
 
 
   /**
+   * Returns true if the force recompute society box was selected, false otherwise.
+   */
+  public boolean isForceRecomputeSelected() {
+    return forceRecomputeBox.isSelected();
+  }
+
+  /**
    * If threads, groups or multipliers have been modified, then
    * create a new trial.
    */
@@ -271,6 +297,12 @@ public class CMTDialog extends JDialog {
       } catch (NumberFormatException e) {
       }
     }
+    if(forceRecomputeBox.isSelected()) {
+      System.out.println("Force Recompute Checked");
+      ExperimentDB.deleteCMTAssembly(experimentId);
+      modified = true;
+    }
+
     if (modified) {
       ExperimentDB.updateCMTAssembly(experimentId);
       trialId = ExperimentDB.getTrialId(experimentId);
