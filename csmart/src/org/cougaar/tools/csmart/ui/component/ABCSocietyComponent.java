@@ -133,7 +133,6 @@ public class ABCSocietyComponent
    */
 
   private void setCommunities(int nCommunities) {
-    System.out.println("Setting number of communities to: " + nCommunities);
     while (getChildCount() > nCommunities) {
       removeChild(getChild(getChildCount() - 1));
     }
@@ -144,8 +143,8 @@ public class ABCSocietyComponent
       community.initProperties();
       addChild(community);
     }
-    System.out.println("Number of properties is now: " + 
-		       getPropertyNamesList().size());
+//     System.out.println("Number of properties is now: " + 
+// 		       getPropertyNamesList().size());
   }
 
   private void renameCommunities() {
