@@ -21,7 +21,9 @@
 
 package org.cougaar.tools.csmart.ui.util;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -31,6 +33,9 @@ import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.*;
 import javax.swing.JOptionPane;
+
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Utilities for contacting servlets in societies.
@@ -56,17 +61,24 @@ public class ClientServletUtil {
    * @param URL the URL of the agent to contact
    * @return vector of String; URLs of agents in society
    */
+
   public static Vector getAgentURLs(String URLString) throws Exception {
-    String urlSpec = URLString + "/" + AGENT_PROVIDER_SERVLET;
+    String urlSpec = URLString + "/agents?all&text";
     URL url = new URL(urlSpec);
     URLConnection connection = url.openConnection();
     connection.setDoInput(true);
     connection.setDoOutput(true);
-    // get agent URLs from servlet
     InputStream is = connection.getInputStream();
-    ObjectInputStream p = new ObjectInputStream(is);
-    Vector readObjects = (Vector) p.readObject();
-    return readObjects;
+    BufferedReader r =
+      new BufferedReader(new InputStreamReader(is));
+    Vector urls = new Vector();
+    String s = r.readLine();
+    while (s != null) {
+      s = r.readLine();
+      if (s != null)
+        urls.add(URLString + "/$" + s + "/");
+    }
+    return urls;
   }
 
   /**
@@ -132,6 +144,7 @@ public class ClientServletUtil {
                                                   ArrayList parameterValues,
                                                   List data,
                                                   int limit) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
     URLSpec.setBase(agentURL + servletId);
     if (parameterNames != null)
       URLSpec.addArgs(parameterNames, parameterValues);
@@ -155,7 +168,10 @@ public class ClientServletUtil {
       InputStream is = connection.getInputStream();
       ObjectInputStream p = new ObjectInputStream(is);
       results = (Collection)p.readObject();
-    } catch (Exception e){}
+    } catch (Exception e){
+      if (log.isErrorEnabled())
+        log.error("Exception contacting: " + urlSpec, e);
+    }
     return results;
   }
 
