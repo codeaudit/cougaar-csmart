@@ -169,15 +169,13 @@ public class PDbBase {
       return false; // different class
 
     Map newProps = new HashMap();
-    for (Iterator j = rc.getPropertyNames(); j.hasNext(); ) {
-      CompositeName pname = (CompositeName) j.next();
-      Property prop = rc.getProperty(pname);
+    for (Iterator j = rc.getProperties(); j.hasNext(); ) {
+      Property prop = (Property) j.next();
       Object val = prop.getValue();
       if (val == null) continue; // Don't write null values
       String sval = val.toString();
       if (sval.equals("")) continue; // Don't write empty values
-      String name = pname.last().toString();
-      newProps.put(name, sval);
+      newProps.put(prop.getName().last().toString(), sval);
     }
 
     Map oldProps = new HashMap();
