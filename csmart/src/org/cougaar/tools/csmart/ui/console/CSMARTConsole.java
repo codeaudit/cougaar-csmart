@@ -1390,6 +1390,11 @@ public class CSMARTConsole extends JFrame {
             }
             // call the method that would have been called
             // had the node been stopped
+
+	    // FIXME: This method is immediately going to try to contact the remote
+	    // process, which will probably cause another exception. Ugly.
+	    // I could add this to oldNodes and remove from runningNodes now,
+	    // then nodeStopped won't try to do anything?
             nodeStopped(nodeName);
             getNodeStatusButton(nodeName).setStatus(NodeStatusButton.STATUS_NO_ANSWER);
           }
@@ -1800,6 +1805,9 @@ public class CSMARTConsole extends JFrame {
       }
       // call the method that would have been called when the 
       // ConsoleNodeListener received the node destroyed confirmation
+      // FIXME: As per above, perhaps I should remove from runningNodes / add
+      // to oldNodes myself here so nodeStopped doesn't try to contact
+      // the Node itself?
       nodeStopped(nodeName);
       getNodeStatusButton(nodeName).setStatus(NodeStatusButton.STATUS_NO_ANSWER);
     }
@@ -1932,7 +1940,7 @@ public class CSMARTConsole extends JFrame {
     ArrayList nodesToAttach = appServerSupport.getNodesToAttach();
     if (nodesToAttach == null) {
       // There were no Nodes to attach to
-      JOptionPane.showMessageDialog(this, "No New Nodes to Attach To.", 
+      JOptionPane.showMessageDialog(this, "No new Nodes to Attach to.", 
 				    "Attach", JOptionPane.PLAIN_MESSAGE);
       return;
     } else if  (nodesToAttach.isEmpty()) {
@@ -2074,6 +2082,12 @@ public class CSMARTConsole extends JFrame {
                                String dirname) {
     char[] cbuf = new char[1000];
     try {
+      // FIXME: This reads just from the current directory,
+      // but should read from wherever the BasicMetric told it to read,
+      // or in general, wherever the Component says to read
+      // But does the AppServer support calling list on arbitrary paths?
+      // See bug 1668
+      // Maybe to generalize, let this traverse sub-directories?
       String[] filenames = remoteFS.list("./");
       for (int i = 0; i < filenames.length; i++) {
         if (!isResultFile(filenames[i]))
