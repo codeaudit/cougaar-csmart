@@ -126,7 +126,8 @@ public class CSMART extends JFrame {
       },
     new AbstractAction(VERSION_ACTION) {
         public void actionPerformed(ActionEvent e) {
-          CSMART.displayURL(ABOUT_DOC);
+	  Browser.setPage(writeDebug());
+          //CSMART.displayURL(ABOUT_DOC);
         }
       },
     new AbstractAction(ABOUT_CSMART_ACTION) {
