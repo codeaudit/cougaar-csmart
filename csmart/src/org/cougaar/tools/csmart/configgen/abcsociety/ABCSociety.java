@@ -710,7 +710,31 @@ public class ABCSociety
   }
 
 
-  public void processData(ComponentData data) {
+//   public void processData(ComponentData data) {
+//     ComponentData[] children = data.getChildren();
+
+//     // This seams like it can be more efficient.
+//     for(int i=0; i < children.length; i++) {
+//       ComponentData child = children[i];
+//       if(child.getType() == ComponentData.AGENT) {
+
+// 	Iterator iter = ((Collection)getDescendentsOfClass(ABCAgent.class)).iterator();
+
+// 	while(iter.hasNext()) {
+// 	  ABCAgent agent = (ABCAgent)iter.next();
+// 	  if(child.getName().equals(agent.getFullName().toString())) {
+// 	    child.setOwner(this);
+// 	    agent.addComponentData(child);
+// 	  }
+// 	}		
+//       } else {
+// 	// Process it's children.
+// 	processData(child);
+//       }      
+//     }
+//   }
+
+  public ComponentData addComponentData(ComponentData data) {
     ComponentData[] children = data.getChildren();
 
     // This seams like it can be more efficient.
@@ -729,15 +753,12 @@ public class ABCSociety
 	}		
       } else {
 	// Process it's children.
-	processData(child);
+	//processData(child);
+	addComponentData(child);
       }      
     }
-  }
 
-  public ComponentData addComponentData(ComponentData data) {
-    ComponentData[] children = data.getChildren();
-
-    processData(data);
+    //    processData(data);
 
     return data;
   }
