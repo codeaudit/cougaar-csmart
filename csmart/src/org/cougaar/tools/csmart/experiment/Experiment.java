@@ -1304,6 +1304,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @exception IllegalArgumentException if an error occurs
    */
   public HostComponent addHost(String name) throws IllegalArgumentException {
+    // FIXME: Maybe forbid localhost?
     if(hostExists(name)) {
       throw new IllegalArgumentException("Host Already Exists in Society");
     } else {
@@ -1346,6 +1347,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    */
   public void renameHost(HostComponent hostComponent, String name) 
     throws IllegalArgumentException {
+    // Fixme: Maybe forbid localhost?
     ExperimentHost testHost = new ExperimentHost(name);
     if(hosts.contains(testHost)) {
       throw new IllegalArgumentException("Host Already Exists in Society");
@@ -1449,7 +1451,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @exception IllegalArgumentException if an error occurs
    */
   public NodeComponent addNode(String name) throws IllegalArgumentException {
-    if(!nodeExists(name)) {
+    // if have an agent of this name, complain
+    if (! agentNameUnique(name)) {
+      throw new IllegalArgumentException("Name already in use (by a Node or Agent)");
+    } else if(!nodeExists(name)) {
       ExperimentNode result = new ExperimentNode(name, this);
       result.initProperties();
       addNodeComponent(result);
@@ -1485,6 +1490,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public void renameNode(NodeComponent nc, String name) throws IllegalArgumentException {
     if(nodeExists(name)) {
       throw new IllegalArgumentException("Node name already exists!");
+    } else if (! agentNameUnique(name)) {
+      throw new IllegalArgumentException("Name already in use");
     } else {
       if (nc.getFullName().equals(name))
 	return;
@@ -1509,6 +1516,24 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
   private boolean nodeExists(String name) {
     return (nodes.contains(new ExperimentNode(name, this))) ? true : false;
+  }
+
+  private boolean agentNameUnique(String name) {
+    if (name == null || name.equals(""))
+      return false;
+
+    // is this agent / node name combination unique
+    for (Iterator i = nodes.iterator(); i.hasNext(); ) {
+      NodeComponent nc = (NodeComponent) i.next();
+      if (nc.getShortName().equals(name))
+	return false;
+    }
+    for (Iterator i = getAgentsList().iterator(); i.hasNext(); ) {
+      AgentComponent nc = (AgentComponent) i.next();
+      if (nc.getShortName().equals(name))
+	return false;
+    }
+    return true;
   }
 
   private void addNodeComponent(ExperimentNode node) {
