@@ -572,15 +572,13 @@ public class ConsoleInternalFrame extends JInternalFrame {
     agentsList.setBackground(aboutPanel.getBackground());
     agentsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     agentsList.addListSelectionListener(new ListSelectionListener() {
-	// Bug 1494 
       public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting())
           return;
-	// Does getLastIndex always show later in the list, so
-	// that if you change selection to something earlier in the list,
-	// you wont see the new selection?
-        String agentName = (String)agentNames.get(e.getLastIndex());
-        displayPlugins(agentName);
+        JList agentsList = (JList)e.getSource();
+        String agentName = (String)agentsList.getSelectedValue();
+        if (agentName != null)
+          displayPlugins(agentName);
       }
     });
     JScrollPane jspAgents = new JScrollPane(agentsList);
