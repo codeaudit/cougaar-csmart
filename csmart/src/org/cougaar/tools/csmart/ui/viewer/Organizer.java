@@ -304,7 +304,7 @@ public class Organizer extends JScrollPane {
 	  renameRecipe(popupNode);
 	}
       },
-    new AbstractAction("Save to Database") {
+    new AbstractAction("Save To Database") {
 	public void actionPerformed(ActionEvent e) {
 	  saveRecipe(popupNode);
 	}

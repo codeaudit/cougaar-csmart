@@ -43,7 +43,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   private boolean isEditable; // remember if society was editable on entering
   private static final String FILE_MENU = "File";
   private static final String EXIT_MENU_ITEM = "Exit";
-  private static final String SAVE_DB_MENU_ITEM = "Save to Database";
+  private static final String SAVE_DB_MENU_ITEM = "Save To Database";
 
   private static final String HELP_MENU = "Help";
 
