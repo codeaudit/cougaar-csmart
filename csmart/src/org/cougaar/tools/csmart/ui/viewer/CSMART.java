@@ -803,11 +803,18 @@ public class CSMART extends JFrame {
   private void addTool(String toolName, String docName, JFrame tool) {
     NamedFrame.getNamedFrame().addFrame(toolName + ": " + docName, tool);
     final JFrame frameArg = tool;
+    final boolean isConsole = (toolName == EXPERIMENT_CONTROLLER);
     tool.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
     tool.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
         if(!frameArg.getGlassPane().isVisible()) {
+
+	  // If user hit cancel in exit dialog in console,
+	  // then don't close the window
+	  if (isConsole && ((CSMARTConsole)frameArg).dontClose)
+	    return;
+
           NamedFrame.getNamedFrame().removeFrame(frameArg);
 	  // Next line can cause NPE in Container.removeNotify(line 1878)
 	  // Is there some test we can/should do on the JFrame before calling?
