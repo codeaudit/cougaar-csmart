@@ -1,12 +1,12 @@
-/* 
+/*
  * <copyright>
  *  Copyright 2001-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -26,7 +26,7 @@ import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 
 import java.io.Serializable;
 
-/** 
+/**
  * Interface that contains all data
  * associated with an UltraLog component.
  */
@@ -50,7 +50,7 @@ public interface ComponentData extends Serializable {
   // Note must augment ComponentTypeProperty, logic in GenericComponentData
   // Also ComponentBase & SpecificInsertionRecipe & PopulateDb
   // And the various Agent*Components too probably
-  
+
   /**
    * Gets the type of this component.  Component Types
    * are defined in this file.
@@ -60,29 +60,29 @@ public interface ComponentData extends Serializable {
   String getType();
 
   /**
-   * Sets the Type of this component.  
+   * Sets the Type of this component.
    * Basic component types are defined in the file
    * for convenience.
    *
    * @param type Type of the component.
    */
   void setType(String type);
- 
+
   /**
    * Gets the name of the component.
    *
    * @return Name of this component.
    */
   String getName();
-  
+
   /**
    * Sets the name of this component.
    *
    * @param name of this component.
    */
   void setName(String name);
-  
-  /** 
+
+  /**
    * Gets the class for this component
    * (SimpleAgent for Agent components)
    *
@@ -93,7 +93,7 @@ public interface ComponentData extends Serializable {
   /**
    * Sets the class for this component.
    *
-   * @param classname, including package.
+   * @param className including package.
    */
   void setClassName(String className);
 
@@ -118,7 +118,7 @@ public interface ComponentData extends Serializable {
    * on onr of the predefined values in <code>ComponentDescription</code>
    *
    * @see org.cougaar.core.component.ComponentDescription
-   * @param priority 
+   * @param priority
    */
   void setPriority(int priority);
 
@@ -132,21 +132,21 @@ public interface ComponentData extends Serializable {
   /**
    * Sets all children of this component.
    *
-   * @param ComponentData[] Array of all children
+   * @param child ComponentData[] Array of all children
    */
   void setChildren(ComponentData[] child);
 
   /**
    * Adds a child component
-   * @param ComponentData child component.
+   * @param child ComponentData child component.
    */
   void addChild(ComponentData child);
-  
+
   /**
    * Adds a child component at the given index.
    * all following children are shifted right.
-   * @param int Index to add now child
-   * @param ComponentData child component.
+   * @param index to add now child
+   * @param child ComponentData child component.
    */
   void addChild(int index, ComponentData child);
 
@@ -154,7 +154,7 @@ public interface ComponentData extends Serializable {
    * Sets a child component at the specified index, replacing the current value.
    *
    * @param index position to add new child component.
-   * @param ComponentData child component.
+   * @param child ComponentData component.
    * @throws IndexOutOfBoundsException if the index is out of range
    *            (index &lt; 0 || index &gt; size()).
    */
@@ -168,7 +168,7 @@ public interface ComponentData extends Serializable {
    * @return an <code>int</code> array index, -1 if not present
    */
   int getChildIndex(ComponentData child);
-  
+
   /**
    * Returns count of all children.
    *
@@ -186,7 +186,7 @@ public interface ComponentData extends Serializable {
    * @param comp a <code>ComponentData</code> to add / update
    */
   void addChildDefaultLoc(ComponentData comp);
-  
+
   /**
    * Gets all parameters associated with this component.
    *
@@ -197,14 +197,14 @@ public interface ComponentData extends Serializable {
   /**
    * Sets all parameters for this object.
    *
-   * @param Object[] Array of parameters
+   * @param params Object[] Array of parameters
    */
   void setParameters(Object[] params);
-  
+
   /**
    * Adds a single parameter for this object.
    *
-   * @param Object parameter for this component.
+   * @param param Object parameter for this component.
    */
   void addParameter(Object param);
 
@@ -237,7 +237,7 @@ public interface ComponentData extends Serializable {
   /**
    * Sets the parent of this component.
    *
-   * @param ComponentData Parent of this component.
+   * @param parent ComponentData of this component.
    */
   void setParent(ComponentData parent);
 
@@ -253,7 +253,7 @@ public interface ComponentData extends Serializable {
    * Sets the Configurable Component that is associated with
    * this object.
    *
-   * @param ConfigurableComponent Owner
+   * @param owner ConfigurableComponent
    */
   void setOwner(ConfigurableComponent owner);
 
@@ -269,7 +269,7 @@ public interface ComponentData extends Serializable {
   /**
    * Sets all leaf components for this component.
    *
-   * @param LeafComponentData[] Array of all leaf components
+   * @param leaves LeafComponentData[] Array of all leaf components
    */
   void setLeafComponents(LeafComponentData[] leaves);
 
@@ -277,20 +277,20 @@ public interface ComponentData extends Serializable {
    * Sets a leaf component at the given index, replacting the current component
    *
    * @param index Index of the leaf component
-   * @param LeafComponentData new leaf for this component.
+   * @param leaf LeafComponentData new leaf for this component.
    * @throws IndexOutOfBoundsException if the index is out of range
    *            (index &lt; 0 || index &gt; size()).
    */
-  void setLeafComponent(int index, LeafComponentData leaf) 
+  void setLeafComponent(int index, LeafComponentData leaf)
     throws IndexOutOfBoundsException;
 
   /**
    * Adds a single leaf component to this component
-   * 
-   * @param LeafComponentData new leaf component 
+   *
+   * @param leaf LeafComponentData new leaf component
    */
   void addLeafComponent(LeafComponentData leaf);
-  
+
 
   /**
    * Returns a count of all leaf components.
@@ -329,7 +329,7 @@ public interface ComponentData extends Serializable {
    * @return array of all TimePhasedData objects.
    */
   TimePhasedData[] getTimePhasedData();
-  
+
   /**
    * Sets all TimePhasedData objects for this component.
    *
