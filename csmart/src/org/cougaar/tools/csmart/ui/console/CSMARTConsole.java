@@ -57,6 +57,7 @@ import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
+import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.server.*;
 import org.cougaar.tools.server.rmi.ClientCommunityController;
@@ -732,8 +733,11 @@ public class CSMARTConsole extends JFrame {
             });
         } else
           // create and display iconified GLSClient
+          // if its servlets exist
           SwingUtilities.invokeLater(new Runnable() {
               public void run() {
+                //                if (!findServlets())
+                //                  return;
                 JInternalFrame jif = 
                   new JInternalFrame("GLS", true, false, true, true);
                 jif.getContentPane().add(new GLSClient(getOPlanAgentURL()));
@@ -758,6 +762,41 @@ public class CSMARTConsole extends JFrame {
       }
     }
   }
+
+  /**
+   * Find servlets for GLSClient.
+   * Looks for servlets named glsinit and glsreply
+   * in the NCA agent.
+   * TODO: should get required servlets from GLSClient
+   * and then display GUI if the servlets exist
+   */
+
+  private boolean findServlets() {
+    String URL = getOPlanAgentURL();
+    if (URL == null)
+      return false;
+    URL = URL + "/list?text";
+    Vector data = null;
+    try {
+      data = ClientServletUtil.getDataFromURL(URL);
+    } catch (Exception e) {
+      if (log.isErrorEnabled())
+        log.error("Exception reading from: " + URL, e);
+      return false;
+    }
+    boolean foundGLSInit = false;
+    boolean foundGLSReply = false;
+    for (int i = 0; i < data.size(); i++) {
+      String s = (String)data.get(i);
+      if (s.endsWith("glsinit")) {
+        foundGLSInit = true;
+      } else if (s.endsWith("glsreply")) {
+        foundGLSReply = true;
+      }
+    }
+    return foundGLSInit & foundGLSReply;
+  }
+
 
   /**
    * Get the agent URL (http://host:port/$agentname)
