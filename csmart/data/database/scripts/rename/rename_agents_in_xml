@@ -1,0 +1,211 @@
+#!/usr/bin/perl
+
+#
+# Read a CSV file with the new agent names:
+#   IGNORE, OLD_NAME, NEW_NAME_PREFIX, NEW_NAME_SUFFIX, ...
+# Create a map of (OLD_NAME -> NEW_NAME)
+#
+# Fix the agent names in the following XML:
+#
+#   <agent name='OLD_NAME' ../>
+#   <node name='OLD_NAME'../>
+#   <facet *_org_id='OLD_NAME'/>
+#   -Dorg.cougaar.node.name=OLD_NAME
+#   <component name='OLD_NAME|class'/>
+#
+
+my $table_file;
+my $xml_file;
+
+my $verbose=0;
+my $print_table=0;
+
+my %table;
+
+parse_args();
+if (!defined($xml_file)) {
+  usage();
+  exit(1);
+}
+read_table();
+if ($print_table) {
+  print "<!-- table: \n";
+  foreach (sort (keys %table)) {
+    print "($_, $table{$_})\n";
+  }
+  print "-->\n";
+}
+fix_xml();
+exit(0);
+
+sub usage {
+  print STDERR <<EOF;
+Usage: $0 [OPTION] RENAME_TABLE XML_FILE
+Rename the agents in Cougaar society XML file.
+
+Options:
+
+ --print_table   print the rename table
+ --verbose       print verbose STDERR logging
+ --help          display usage
+
+The file specified by the RENAME_TABLE should be a CSV
+file with lines in the following format:
+  IGNORE, OLD_NAME, NEW_NAME_PREFIX, NEW_NAME_SUFFIX, ...
+For example, this line from the "org_hierarchy.csv" file:
+   1,NCA,OSD,GOV,etc
+which would rename "NCA" to "OSD.GOV".
+
+The XML file should contain the following tags:
+  <agent name='OLD_NAME' ../>
+  <node name='OLD_NAME'../>
+  <facet *_org_id='OLD_NAME'/>
+  -Dorg.cougaar.node.name=OLD_NAME
+  <component name='OLD_NAME|class'/>
+For example, this short example:
+  <society>
+    <host name='localhost'>
+      <node name='1AD_TINY'>
+        <agent name='NCA' ../>
+      </node>
+    </host>
+  </society>
+
+The above example rename table and xml file would generate
+this standard-output:
+  <society>
+    <host name='localhost'>
+      <node name='1AD_TINY'>
+        <agent name='OSD.GOV' ../>
+      </node>
+    </host>
+  </society>
+
+Report bugs to http://www.cougaar.org/bugs
+EOF
+  exit(1);
+}
+
+sub parse_args {
+  foreach (@args = @ARGV) {
+    chomp;
+    my $arg = $_;
+    if (/^-+(.*)/) {
+      $arg = $1;
+      if ($arg eq "print_table") {
+        $print_table=1;
+      } elsif ($arg eq "verbose") {
+        $verbose=1;
+      } elsif ($arg eq "help") {
+        usage();
+      }
+    } elsif (!defined($table_file)) {
+      $table_file = $arg;
+    } elsif (!defined($xml_file)) {
+      $xml_file = $arg;
+    } else {
+      usage();
+    }
+  }
+}
+
+sub read_table {
+  my $filename = $table_file;
+  open(FD, "<$filename")
+    or die "Unable to open $filename: $!\n";
+  my $first_line=1;
+  while (<FD>) {
+    chomp;
+    my $line = $_;
+    if ($line =~ /^\s*#/) {
+      # ignore comments
+    } else {
+      @cols = split(/\s*,\s*/, $line);
+      if ($first_line) {
+        $first_line=0;
+        if ("order" eq $cols[0] &&
+            "orig_org_id" eq $cols[1] &&
+            "base_org_id" eq $cols[2] &&
+            "suffix" eq $cols[3]) {
+          # good
+          if ($verbose) {
+            print STDERR "VALID HEADERS: $line\n";
+          }
+        } else { 
+          print "Unexpected first line of file $filename:\n";
+          print $line;
+          print "Expecting a CSV header:\n";
+          print "order,orig_org_id,base_org_id,suffix\n";
+          close FD;
+          exit(1);
+        }
+      } else {
+        my $orig_name=$cols[1];
+        my $new_name=$cols[2];
+        if (defined($cols[3])) {
+          $new_name="$new_name.$cols[3]";
+        }
+        if ($verbose) { 
+          print STDERR "TABLE ($orig_name, $new_name)\n";
+        }
+        $table{$orig_name}=$new_name;
+      }
+    }
+  }
+  close FD;
+}
+
+sub fix_xml {
+  my $filename = $xml_file;
+  open(FD, "<$filename")
+    or die "Unable to open $filename: $!\n";
+  while (<FD>) {
+    my $line = $_;
+    # fix only first match?
+    my $type;
+    my $before;
+    my $old_name;
+    if ($line =~ /(<\s*(agent|node)\s+name\s*=\s*['"])([^'"]+)/) {
+      $type=$2;
+      $before=$1;
+      $old_name=$3;
+    } elsif ($line =~ /(<\s*facet\s+\S+_org_id\s*=\s*['"])([^'"]+)/) {
+      $type="facet";
+      $before=$1;
+      $old_name=$2;
+    } elsif ($line =~ /(-Dorg\.cougaar\.node\.name=)(\S+)/) {
+      $type="node.name";
+      $before=$1;
+      $old_name=$2;
+    } elsif ($line =~ /(\s+name\s*=\s*['"])([^|]+)\|/) {
+      $type="component";
+      $before=$1;
+      $old_name=$2;
+    }
+    if (defined($old_name)) {
+      if ($verbose) {
+        print STDERR "$type ($before)($old_name) line: $line";
+      }
+      my $new_name=$table{$old_name};
+      if (defined($new_name)) {
+        if ($line =~ s/$before$old_name/$before$new_name/) {
+          if ($verbose) {
+            print STDERR "FIXED $line";
+          }
+        } else {
+          if ($verbose) {
+            print STDERR "FAILED ($old_name -> $new_name) in $line";
+          }
+        }
+      } else {
+        if ($verbose) {
+          print STDERR "UNKNOWN $old_name in $line";
+        }
+      }
+    } else {
+      if ($verbose) { print STDERR "IGNORE $old_name in $line"; }
+    }
+    print $line;
+  }
+  close FD;
+}
