@@ -355,7 +355,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 			 new HostConfigurationBuilder(experiment));
     // TODO: society component should be non-editable at this point
     configTabbedPane.add("Trial Values", 
-			 new PropertyEditorPanel((ModifiableConfigurableComponent)societyComponent));
+			 //			 new PropertyEditorPanel((ModifiableConfigurableComponent)societyComponent));
+			 new PropertyEditorPanel(experiment.getComponentsAsArray()));
 
     // create tabbed panes for running nodes, tabs are added dynamically
     tabbedPane = new JTabbedPane();
