@@ -48,12 +48,24 @@ public class OrganizerMouseListener extends MouseAdapter {
   private JPopupMenu rootMenu = new JPopupMenu();
   
   // Define actions for use on menus
-  private AbstractAction newExperimentAction =
-    new AbstractAction(ActionUtil.NEW_EXPERIMENT_ACTION) {
+
+  private Action[] newExperimentActions = {
+    new AbstractAction(ActionUtil.NEW_EXPERIMENT_FROM_DB_ACTION) {
         public void actionPerformed(ActionEvent e) {
           organizer.selectExperimentFromDatabase();
         }
-      };
+      },
+    new AbstractAction(ActionUtil.NEW_EXPERIMENT_FROM_FILE_ACTION) {
+        public void actionPerformed(ActionEvent e) {
+          organizer.createExperimentFromFile();
+        }
+      },
+    new AbstractAction(ActionUtil.NEW_EXPERIMENT_FROM_UI_ACTION) {
+        public void actionPerformed(ActionEvent e) {
+          organizer.createExperimentFromUI();
+        }
+      }
+  };
 
   private Action newSocietyAction = 
     new AbstractAction("New Society") {
@@ -211,12 +223,14 @@ public class OrganizerMouseListener extends MouseAdapter {
     }
   };
 
+  private JMenu newExperimentMenu = new JMenu(ActionUtil.NEW_EXPERIMENT_ACTION);
+  private JMenu newExperimentInFolderMenu = new JMenu(ActionUtil.NEW_EXPERIMENT_ACTION);
   private JMenu newRecipeMenu = new JMenu(ActionUtil.NEW_RECIPE_ACTION);
   private JMenu newRecipeInFolderMenu = new JMenu(ActionUtil.NEW_RECIPE_ACTION);
 
   // define pop-up menus
   private Object[] rootMenuItems = {
-    newExperimentAction,
+    newExperimentMenu,
     newSocietyAction,
     newRecipeMenu,
     newFolderAction,
@@ -252,7 +266,7 @@ public class OrganizerMouseListener extends MouseAdapter {
   };
 
   private Object[] folderMenuItems = {
-    newExperimentAction,
+    newExperimentInFolderMenu,
     newRecipeInFolderMenu,
     newFolderAction,
     deleteFolderAction,
@@ -264,6 +278,9 @@ public class OrganizerMouseListener extends MouseAdapter {
     this.organizer = organizer;
     this.workspace = workspace;
     //    newSocietyAction.setEnabled(false); // disable creating builtin societies
+    // set up experiment submenus
+    for (int i = 0; i < newExperimentActions.length; i++) 
+      newExperimentMenu.add(newExperimentActions[i]);
     // set up recipe submenus
     for (int i = 0; i < newRecipeActions.length; i++) {
       newRecipeMenu.add(newRecipeActions[i]);

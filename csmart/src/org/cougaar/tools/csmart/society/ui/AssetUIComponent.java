@@ -50,16 +50,16 @@ public class AssetUIComponent
   }
 
   public void initProperties() {
-    Property p = addProperty(AssetComponent.PROP_TYPE, "");
-    p.setToolTip(PROP_TYPE_DESC);
-    p = addProperty(AssetComponent.PROP_CLASS, "");
-    p.setToolTip(PROP_CLASS_DESC);
-    p = addProperty(AssetComponent.PROP_UID, "");
-    p.setToolTip(PROP_UID_DESC);
-    p = addProperty(AssetComponent.PROP_UNITNAME, "");
-    p.setToolTip(PROP_UNITNAME_DESC);
-    p = addProperty(PROP_UIC, "");
-    p.setToolTip(PROP_UIC_DESC);
+    propAssetType = addProperty(AssetComponent.PROP_TYPE, new Integer(0));
+    propAssetType.setToolTip(PROP_TYPE_DESC);
+    propAssetClass = addProperty(AssetComponent.PROP_CLASS, "");
+    propAssetClass.setToolTip(PROP_CLASS_DESC);
+    propUniqueID = addProperty(AssetComponent.PROP_UID, "");
+    propUniqueID.setToolTip(PROP_UID_DESC);
+    propUnitName = addProperty(AssetComponent.PROP_UNITNAME, "");
+    propUnitName.setToolTip(PROP_UNITNAME_DESC);
+    propUIC = addProperty(PROP_UIC, "");
+    propUIC.setToolTip(PROP_UIC_DESC);
   }
 
   /**

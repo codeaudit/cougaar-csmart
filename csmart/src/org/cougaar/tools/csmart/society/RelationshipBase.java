@@ -20,9 +20,11 @@
  */
 package org.cougaar.tools.csmart.society;
 
+import java.util.HashSet;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 
@@ -69,9 +71,16 @@ public class RelationshipBase
     log = CSMART.createLogger(this.getClass().getName());
   }
 
+  // TODO: Roles are defined in org.cougaar.glm.ldm,
+  // which this doesn't build with -- should they be
+  // added here as allowedValues?
   public void initProperties() {
     propType = addProperty(PROP_TYPE, relationship.getType());
     propType.setToolTip(PROP_TYPE_DESC);
+    HashSet allowedTypes = new HashSet();
+    allowedTypes.add(new StringRange("Supporting"));
+    allowedTypes.add(new StringRange("Subordinate"));
+    propType.setAllowedValues(allowedTypes);
     propRole = addProperty(PROP_ROLE, relationship.getRole());
     propRole.setToolTip(PROP_ROLE_DESC);
     propItem = addProperty(PROP_ITEM, relationship.getItem());

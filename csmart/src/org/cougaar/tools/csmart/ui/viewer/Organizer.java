@@ -58,6 +58,7 @@ import org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
+import org.cougaar.tools.csmart.society.ui.SocietyUIComponent;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.recipe.RecipeList;
@@ -382,6 +383,39 @@ public class Organizer extends JScrollPane {
     return name;
   }
 
+  /**
+   * Create an experiment for a society read from a file.
+   */
+
+  public void createExperimentFromFile() {
+    // query user for INI file and create society
+    SocietyComponent society = newSocietyComponent();
+    if (society == null)
+      return;
+    DefaultMutableTreeNode selectedNode = getSelectedNode();
+    Experiment experiment = 
+      new Experiment("Experiment for " + society.getSocietyName(),
+                     society, null);
+    addExperimentToWorkspace(experiment, selectedNode);
+    addSocietyToWorkspace(society, selectedNode);
+  }
+
+  /**
+   * Create an experiment and a society that will be specified
+   * from the user interface.
+   */
+
+  public void createExperimentFromUI() {
+    String name = getUniqueExperimentName("", false);
+    if (name == null)
+      return;
+    DefaultMutableTreeNode selectedNode = getSelectedNode();
+    SocietyComponent society = new SocietyUIComponent("Society for " + name);
+    Experiment experiment = new Experiment(name, society, null);
+    addExperimentToWorkspace(experiment, selectedNode);
+    addSocietyToWorkspace(society, selectedNode);
+  }
+
   public DefaultMutableTreeNode newExperiment() {
     String name = getUniqueExperimentName(experimentNames.generateName(),
                                           false);
@@ -413,11 +447,11 @@ public class Organizer extends JScrollPane {
    * Allows tools that need an experiment to create one
    * if it does not exist when the tool is invoked.
    */
-  public void addExperiment() {
-    // make root be the selected node
-    workspace.setSelectionPath(new TreePath(root.getPath())); 
-    DefaultMutableTreeNode newNode = newExperiment();
-  }
+//    public void addExperiment() {
+//      // make root be the selected node
+//      workspace.setSelectionPath(new TreePath(root.getPath())); 
+//      DefaultMutableTreeNode newNode = newExperiment();
+//    }
 
   private DefaultMutableTreeNode addExperimentToWorkspace(Experiment experiment) {
     return addExperimentToWorkspace(experiment, getSelectedNode());
@@ -501,7 +535,7 @@ public class Organizer extends JScrollPane {
    * Create a new built-in society.
    */
 
-  public DefaultMutableTreeNode newSociety() {
+  private SocietyComponent newSocietyComponent() {
     // display file chooser to allow user to select file that defines society
     JFileChooser chooser = 
       new JFileChooser(SocietyFinder.getInstance().getPath());
@@ -544,6 +578,11 @@ public class Organizer extends JScrollPane {
     }
     societyNames.add(name);
     sc.setName(name); 
+    return sc;
+  }
+
+  public DefaultMutableTreeNode newSociety() {
+    SocietyComponent sc = newSocietyComponent();
     DefaultMutableTreeNode newNode = 
       addSocietyToWorkspace(sc, getSelectedNode());
     workspace.setSelection(newNode);

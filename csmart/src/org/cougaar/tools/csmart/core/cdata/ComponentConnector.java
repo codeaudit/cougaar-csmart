@@ -101,10 +101,6 @@ public class ComponentConnector {
         log.error("Caught an error reading file", e);
       }
     }
-    if(log.isDebugEnabled()) {
-      log.debug("File: " + filename + " parse success");
-    }
-
     return desc;
   }
 

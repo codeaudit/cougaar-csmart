@@ -880,7 +880,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     } else if (s.indexOf(EXPERIMENT_BUILDER) != -1) {
       Experiment[] experiments = organizer.getSelectedExperiments();
       if (experiments == null || experiments.length == 0) {
-	organizer.addExperiment();
+        //	organizer.addExperiment();
 	experiments = organizer.getSelectedExperiments();
       }
       if (experiments != null && experiments.length == 1)

@@ -38,6 +38,9 @@ public class ActionUtil {
   public static String DELETE_ACTION = "Delete";
   public static String RENAME_ACTION = "Rename";
   public static String NEW_EXPERIMENT_ACTION = "New Experiment";
+  public static String NEW_EXPERIMENT_FROM_DB_ACTION = "From Database";
+  public static String NEW_EXPERIMENT_FROM_FILE_ACTION = "From File";
+  public static String NEW_EXPERIMENT_FROM_UI_ACTION = "From User";
   public static String NEW_SOCIETY_ACTION = "New Society";
   public static String NEW_RECIPE_ACTION = "New Recipe";
   public static String NEW_FOLDER_ACTION = "New Folder";

@@ -74,6 +74,8 @@ public class SocietyFileComponent
       log.debug("Parse File: " + filename);
     }
     desc = ComponentConnector.parseFile(filename);
+    if (desc == null)
+      return;
     for(int i=0; i < desc.length; i++) {
       String agentName = ComponentConnector.getAgentName(desc[i]);
       if(log.isDebugEnabled()) {

@@ -56,6 +56,7 @@ import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
+import org.cougaar.tools.csmart.society.ui.SocietyUIComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 import org.cougaar.util.Parameters;
@@ -134,16 +135,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   // and should be saved
   private transient boolean modified = true;
 
-  // Mark experiment with Society created from INI files,
-  // which should therefore be saved using the PopulateDb that expects
-  // no CMT assembly
-  // Should this be extended to also handle societies from edited
-  // experiments? Such societies reloaded from DB?
-  // Experiments with recipes that do modify / remove?
-  private transient boolean fromFile = false;
-  
-
-
   ////////////////////////////////////////////
   // Constructors
   ////////////////////////////////////////////
@@ -154,14 +145,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     this(name);
     init();
     setSocietyComponent(societyComponent);
-    if(societyComponent instanceof SocietyFileComponent) {
-      // Will use PopulateDb without CMT assembly
-      fromFile = true;
-    }
-    setRecipeComponents(recipes);
-    if(log.isDebugEnabled()) {
-      log.debug("Experiment: " + name);
-    }
+    if (recipes != null)
+      setRecipeComponents(recipes);
   }
 
   public Experiment(String name) {
@@ -211,7 +196,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 			       Parameters.findParameter(DBUtils.USER));
       defaultNodeArguments.put(CONFIG_PASSWD, 
 			       Parameters.findParameter(DBUtils.PASSWORD));
-      defaultNodeArguments.setReadOnlyProperty(EXPERIMENT_ID, getTrialID());
+      if (getTrialID() != null)
+        defaultNodeArguments.setReadOnlyProperty(EXPERIMENT_ID, getTrialID());
     }
     try {
       defaultNodeArguments.put(ENV_DISPLAY, 
@@ -1491,7 +1477,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       boolean componentWasRemoved = generateCompleteSociety();
 
       PopulateDb pdb = null;
-      if(fromFile) {
+      SocietyComponent sc = getSocietyComponent();
+      if (sc instanceof SocietyFileComponent ||
+          sc instanceof SocietyUIComponent) {
 	// Created with a SocietyFileComponent
 	// Have no CMT assembly, nor previous
 	// experiment or trial ID.

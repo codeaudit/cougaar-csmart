@@ -30,14 +30,6 @@ public class SocietyUIComponent
   }
 
   public void initProperties() {
-    if (log.isWarnEnabled()) {
-      log.warn("Not implemented");
-    }
   }
 
-  public void addComponentData() {
-    if (log.isWarnEnabled()) {
-      log.warn("Not implemented");
-    }
-  }
 }
