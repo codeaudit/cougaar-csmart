@@ -42,6 +42,8 @@ Sub-directories:
         headers.
 
    scripts/:
+        Contains Dos-version GNU sed v3.02
+
         Contains the subdirectory - 
            mysql/:
                 dump_1ad_mysql.sh - Shell script for generating a '.csv' file 
@@ -75,14 +77,14 @@ Sub-directories:
                                       a user to easily edit the generated '.csv' files.
                                       It should not be called directly by the user.
 
-                load_1ad_mysql.sh - This script will load the configuration database from
+                load_1ad_mysql.sh[bat] - This script will load the configuration database from
                                   the '.csv' files contained in the csmart/data/database/csv
                                   directory.  The script will drop all existing configuration
                                   database tables before loading the new ones.
 
-                                  The script calls the mysql script load_mysql_db.sql'. This script is an easy way to "clean out" your configuration database.
+                                  The script calls the mysql script load_db.sql'. This script is an easy way to "clean out" your configuration database.
 
-                load_mysql_db.sql - SQL script that loads the configuration database
+                load_db.sql - SQL script that loads the configuration database
                                   from data contained in specified '.csv' files in the
                                   csmart/data/database/csv directory.  It should not be
                                   called directly by the user.
@@ -98,7 +100,7 @@ To edit the structure of any tables contained in the configuration database, a u
 need to edit the following scripts to ensure their continued function:
 
 dump_mysql_db.sql
-load_mysql_db.sql
+load_db.sql
 
 If modifying or eliminating columns for a given table,  the user should verify that the 
 respective header file contained in csmart/data/database/headers/ remains valid. Be sure to edit the corresponding .q files in configs/common, and possibly
