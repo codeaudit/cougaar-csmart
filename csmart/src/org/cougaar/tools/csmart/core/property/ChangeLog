@@ -1,0 +1,63 @@
+2002-01-14  travers@dhcp077-232.bbn.com  <travers@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/BaseComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ComponentProperties.java:
+	Renamed file.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModifiableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModifiableConfigurableComponent.java:
+	Renamed ComponentProperties to BaseComponent.
+	Made ModifiableComponent interface extend BaseComponent.
+	Added copy method to ModifiableComponent.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/ComponentName.java:
+	Renamed ComponentProperties to BaseComponent.
+
+2002-01-14  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModifiableConfigurableComponent.java:
+	Moved editable variable as a local protected member variable.
+
+2002-01-10  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/SimpleName.java:
+	Made member variable private
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/DoubleRange.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/FloatRange.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/IntegerRange.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/LongRange.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/Range.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/StringRange.java:
+	Made all member variables private.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ChildConfigurationListener.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ComponentProperties.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponentProperty.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/InvalidPropertyValueException.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModifiableConfigurableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModificationEvent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModificationListener.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertiesListener.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyAlias.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyBase.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyEvent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyHelper.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/Property.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyListener.java:
+	Cleaned up JavaDocs
+
+2002-01-09  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ComposableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponentProperty.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyAlias.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/Property.java:
+	More repackaging related fixes to imports, etc
+
+2002-01-09  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ComposableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponentProperty.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyAlias.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyBase.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/Property.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/TestGUI.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyHelper.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/ComponentName.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/CompositeName.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/ConcatenatedName.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/MultiName.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/Name.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/SimpleName.java:
+	Fixed package names and imports
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ComponentProperties.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponent.java:
+	Fixed imports
+
+2002-01-09  travers@dhcp077-232.bbn.com  <travers@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertiesListener.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyAdapter.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyAlias.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyBase.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyEvent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyHelper.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/Property.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyListener.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/TestGUI.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ChildConfigurationListener.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ComponentProperties.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ComposableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponentListener.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponentPropertyAdapter.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponentProperty.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/InvalidPropertyValueException.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModifiableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModifiableConfigurableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModificationEvent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModificationListener.java:
+	Fixed package names.
+
+2002-01-09  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/ComponentName.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/CompositeName.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/ConcatenatedName.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/MultiName.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/Name.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/name/SimpleName.java:
+	move from ui/component
+
+2002-01-09  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/DoubleRange.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/FloatRange.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/IntegerRange.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/LongRange.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/RangeBase.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/Range.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/StringRange.java:
+	Modifed package lines, missed by the script.
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/FloatRange.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/IntegerRange.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/LongRange.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/RangeBase.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/Range.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/StringRange.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/range/DoubleRange.java:
+	New package for all Range related classes
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyListener.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/TestGUI.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModifiableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModifiableConfigurableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModificationEvent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ModificationListener.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertiesListener.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyAdapter.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyAlias.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyBase.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyEvent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/PropertyHelper.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/Property.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ChildConfigurationListener.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ComponentProperties.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ComposableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponent.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponentListener.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponentPropertyAdapter.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/ConfigurableComponentProperty.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/core/property/InvalidPropertyValueException.java:
+	New package for all classes that modify properties
+
