@@ -152,9 +152,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public Experiment(String name) {
     super(name);
     init();
-    if(log.isDebugEnabled()) {
-      log.debug("Experiment: " + name);
-    }
   }
 
   public Experiment(String name, String expID, String trialID) {
@@ -162,9 +159,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     this.expID = expID;
     this.trialID = trialID;
     init();
-    if(log.isDebugEnabled()) {
-      log.debug("Experiment: " + expID + " Trial: " + trialID);
-    }
   }
 
   ////////////////////////////////////////////
@@ -537,9 +531,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void setEditable(boolean editable) {
     if (editable == overrideEditable) return; // no change
     overrideEditable = editable;
-    if(log.isDebugEnabled()) {
-      log.debug("new editable " + editable);
-    }
     fireModification();
   }
 
@@ -1157,9 +1148,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         String thisHost = hosts[i].getShortName();
         if (thisHost.equals(nameServerHost)) {
           newNameServer = oldNameServer;
-          if(log.isDebugEnabled()) {
-            log.debug("Keeping Name Server: " + nameServerHost);
-          }
           break hostLoop;       // Use existing nameserver definition
         }
         if (dfltNameServer == null) { // First host is default
@@ -1349,9 +1337,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         }
         writtenAgents.add(agents[j]);
       }
-    }
-    if(log.isDebugEnabled()) {
-      log.debug("# Agents for node: " + nc.getName() + " is: " + writtenAgents.size());
     }
     return writtenAgents;
   }
@@ -1612,9 +1597,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
     for (int i = 0; i < agentsToWrite.length; i++) {
       if (savedAgents.contains(agentsToWrite[i])) {
-        if(log.isDebugEnabled()) {
-          log.debug("Skipping Agent: " + agentsToWrite[i].getShortName());
-        }
         continue;
       }
       if(log.isDebugEnabled()) {
