@@ -338,6 +338,7 @@ public class AgentInsertionRecipe extends RecipeBase
 	    // Replace the existing AgentComponentData
 	    // with a new one, to ensure we replace all values
 	    data.setChild(i, nchild);
+	    break; // we found the agent. Break out of the loop!
           }
         }
       } else {
