@@ -1,3 +1,20 @@
+2001-10-17  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java (Repository):
+	Fix comparisons and insertions of dates to insert timestamps and
+	convert to and from milliseconds as needed.
+
+	* ExpConfigWriterNew.java (Repository): 
+	* RelationshipData.java (Repository): 
+	* CMTAgent.java (Repository): 
+	* BasicMetric.java (Repository): 
+	* ABCAgent.java (Repository): 
+	* ScalabilityXAgent.java (Repository):
+	Use milliseconds in RelationshipData for times, not strings.
+	Change RelationshipData.cluster Relationship.supported. Remove
+	RelationshipData.relationship. Changes all references to
+	RelationshipData accordingly.
+
 2001-09-26  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* ScalabilityXLevel.java (Repository):
