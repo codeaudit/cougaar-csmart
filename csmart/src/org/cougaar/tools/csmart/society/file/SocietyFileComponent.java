@@ -36,6 +36,7 @@ public class SocietyFileComponent
   private String name;
   private ComponentDescription[] desc;
   private String[] filenames = null;
+  private String singleFilename = null;
   private boolean filesParsed = false;
 
   /**
@@ -45,10 +46,25 @@ public class SocietyFileComponent
    * to be of the form: <agentname>.ini
    * @param filename the name of the file that enumerates the agents
    */
-
   public SocietyFileComponent(String filename) {
     super(filename);
     this.name = filename;
+    this.singleFilename = filename;
+  }
+
+  /**
+   * Creates a new <code>SocietyFileComponent</code> from the given 
+   * Node file, with the given (different) name.
+   *
+   * @param filename a <code>String</code> name of a Node file on the ConfigPath
+   * @param socname a <code>String</code> name for the new society
+   */
+  public SocietyFileComponent(String filename, String socname) {
+    super(socname);
+    this.name = socname;
+
+    // Must store the filename for use in initproperties
+    this.singleFilename = filename;
   }
 
   /**
@@ -57,7 +73,6 @@ public class SocietyFileComponent
    * @param name Name of the society
    * @param filenames Names of the files that define the agents
    */
-
   public SocietyFileComponent(String name, String[] filenames) {
     super(name);
     this.filenames = filenames;
@@ -82,7 +97,7 @@ public class SocietyFileComponent
   }
 
   private void initFromSingleFile() {
-    String filename = name;
+    String filename = singleFilename;
     if(log.isDebugEnabled()) {
       log.debug("Parse File: " + filename);
     }
