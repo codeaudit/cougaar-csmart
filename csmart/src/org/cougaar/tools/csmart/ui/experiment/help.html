@@ -116,7 +116,8 @@ the name of the node.</li>
 Assign agents to nodes. Drag and drop agents from the "Unassigned Agents"
 tree to the nodes created in the previous step. To select a group of agents,
 left click on the first agent to select, and shift left click on the last
-agent.</li>
+agent. New in 9.2.1, it is possible to run a Node without any Agent
+assigned to it. This is useful for, among other things, Agent Mobiility.</li>
 </ol>
 <p>
  Using the pop-up or File menus, additional information can be added to the
@@ -150,7 +151,10 @@ agent.</li>
  the first argument to the running process must be the name of the
  class to run - <code>org.cougaar.core.node.Node</code> for standard
  Cougaar societies. This argument is specified in the first line of
- the non -D argument text box.
+ the non -D argument text box.<br> New in 9.2.1, you may include the
+ string $HOST in a command line argument, and CSMART will substitute
+ at runtime the name of the Host on which that Node is running (using
+ the name you specified within CSMART).
 </p>
 There are a number of other File menu options for further configuring
 your Experiment. In particular, note the "Save" and "Save As" options

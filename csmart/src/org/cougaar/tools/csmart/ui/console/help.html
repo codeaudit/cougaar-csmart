@@ -124,9 +124,6 @@ Windows menu.</li> The types of messages that can be displayed are:
 </li>
 <li>Idle: Controls the color of the node status button and provides data for the Utilization History graph (which can be displayed from the Node Window Menu).
 </li>
-<li>Heartbeat: An "@" written periodically to indicate that the Node
-is running. (Obsolete)
-</li>
 </ul>
 </ul>
 In future, you may also be able to filter by Log4J logging level.<br>
@@ -169,7 +166,9 @@ the machine on which it is running.  Displays the name of the log
 file, which can be easily cut and pasted into a text editor.  Displays
 the host location and description and the node description; this
 information can be added to the host and node in the Experiment
-Builder. Also shows the command line arguments and agents configured to run on the Node.</li>
+Builder. Also shows the command line arguments and agents as
+originally configured to run on the Node. If you click on the Agent
+name, you can see the components configured to run in that Agent.</li>
 <li>Machine CPU Usage: Displays CPU usage for all processes on the machine on which the node is running.  (This information is not supported for Windows machines.)</li>
 <li>Node CPU Usage: Displays CPU usage for the Node's processes and child processes.  (This information is not displayed for Windows machines.)</li>
 <li>Utilization History: Displays a graph of the relative load at the node, over time.</li>
@@ -217,9 +216,6 @@ button.</li>
 <li>Wait for the OPLAN publishing work to quiesce.</li>
 <li>Publish GLS Root</li>
 <li>You may then rescind that task, or publish another</li>
-<li>If after publishing the OPLAN the GLS UI does not update to
-reflect that, you may have hit the "Connect" button too early. For
-this run, try instead the standalone CIP/bin/GLSInit.[bat/sh] UI.</li>
 </ul>
 <br>
 <h3>Notes:</h3>
@@ -231,8 +227,18 @@ to contact the NameService on Win32 machines.
 <p>Also, errors in the <i>server</i> server console window, such as: "RMI Exception: Class not found", or "RMI Exception: no RMI class
 loader", usually indicate a classpath problem. Be sure that both server.jar
 and csmart.jar are on the classpath used to run the server, the classpath
-defined in the server properties file, and in the classpath for running
-CSMART.<br>
+defined in the server properties file, and in the classpath for
+running CSMART.<br>
+<p>Finally, with Cougaar 9.2.1 or better, be sure that your AppServer properties file
+contains the "java.Xbootclasspath/p" argument, which is now
+required (without this you will see a message like "Fatal error
+java.lang.NoSuchMethodException: newInstanceFromDesc"). In addition, 
+Cougaar Nodes should be run using the JDK Hotspot Server VM, not the
+Client VM that comes with the JRE. To do so, your AppServer properties
+file must include the java.server argument, and JDK_HOME/bin must be
+early in your Path. The corresponding error indicates something like:
+"Error: no `server' JVM at `C:\Program
+Files\Java\j2re1.4.0\bin\server\jvm.dll'."<br>
 <p>In general, most errors running societies can be traced to one of
 the following:<br>
 <ul><li>Firewall issues between CSMART machine and Node machines</li>
