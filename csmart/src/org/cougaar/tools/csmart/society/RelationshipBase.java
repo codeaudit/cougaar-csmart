@@ -20,6 +20,7 @@
  */
 package org.cougaar.tools.csmart.society;
 
+import java.text.DateFormat;
 import java.util.HashSet;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
@@ -27,6 +28,7 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+import java.util.Date;
 
 /**
  * RelationshipBase.java
@@ -46,8 +48,6 @@ public class RelationshipBase
   implements RelationshipComponent {
   private transient Logger log;
 
-  // FIXME!!! Where are the start and end times!!!
-
   public static final String PROP_TYPE = "Type";
   public static final String PROP_TYPE_DESC = "Type of Relationship";
 
@@ -63,11 +63,19 @@ public class RelationshipBase
   public static final String PROP_SUPPORTED = "Supported Agent";
   public static final String PROP_SUPPORTED_DESC = "Agent Supported by this relationship";
 
+  public static final String PROP_STARTTIME = "Start Time";
+  public static final String PROP_STARTTIME_DESC = "Time Relationship starts";
+
+  public static final String PROP_STOPTIME = "Stop Time";
+  public static final String PROP_STOPTIME_DESC = "Time Relationship ends";
+
   private Property propType;
   private Property propRole;
   private Property propItem;
   private Property propTypeId;
   private Property propSupported;
+  private Property propStartTime;
+  private Property propStopTime;
   private RelationshipData relationship;
 
   public RelationshipBase (RelationshipData relationship) {
@@ -84,17 +92,8 @@ public class RelationshipBase
   // which this doesn't build with -- should they be
   // added here as allowedValues?
   public void initProperties() {
-    if(log.isDebugEnabled()) {
-      log.debug("In RelationshipBase initProperties()");
-    }
-
     propType = addProperty(PROP_TYPE, relationship.getType());
     propType.setToolTip(PROP_TYPE_DESC);
-//     HashSet allowedTypes = new HashSet();
-//     allowedTypes.add(new StringRange("Supporting"));
-//     allowedTypes.add(new StringRange("Subordinate"));
-//     allowedTypes.add(new StringRange("StrategicTransportionProvider"));
-//     propType.setAllowedValues(allowedTypes);
     propRole = addProperty(PROP_ROLE, relationship.getRole());
     propRole.setToolTip(PROP_ROLE_DESC);
     propItem = addProperty(PROP_ITEM, relationship.getItemId());
@@ -103,6 +102,15 @@ public class RelationshipBase
     propTypeId.setToolTip(PROP_TYPEID_DESC);
     propSupported = addProperty(PROP_SUPPORTED, relationship.getSupported());
     propSupported.setToolTip(PROP_SUPPORTED_DESC);
+
+    DateFormat format = DateFormat.getInstance();
+    propStartTime = addProperty(PROP_STARTTIME,
+                             format.format(new Date(relationship.getStartTime())));
+    propStartTime.setToolTip(PROP_STARTTIME_DESC);
+
+    propStopTime = addProperty(PROP_STOPTIME,
+                            format.format(new Date(relationship.getEndTime())));
+    propStopTime.setToolTip(PROP_STOPTIME_DESC);
   }
 
 }// RelationshipBase
