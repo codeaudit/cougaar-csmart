@@ -2200,7 +2200,7 @@ public class Organizer extends JScrollPane {
 	} catch (Exception e) {
           if(log.isErrorEnabled()) {
 	    // Don't dump stack on this -- too verbose
-            log.error("Organizer: can't read file: " + f + " got exception ", e);
+            log.error("Organizer: can't read file: " + f + " got exception " + e);
           }
 	} finally {
 	  ois.close();
