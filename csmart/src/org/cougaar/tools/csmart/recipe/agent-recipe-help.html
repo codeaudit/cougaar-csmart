@@ -18,7 +18,7 @@ all Agents.  This is to address bug <a href="https://www.alpine.bbn.com/bugzilla
 <ul>
 <li>org.cougaar.mlm.plugin.organization.OrgDataPlugin</li>
 <li>org.cougaar.mlm.plugin.organization.OrgReportPlugin</li>
-<li>ClusterPG</li>
+<li>Asset with ClusterPG, ItemIdentificationPG, TypeIdentificationPG</li>
 </ul>
 <br>
 
@@ -36,6 +36,11 @@ all Agents.  This is to address bug <a href="https://www.alpine.bbn.com/bugzilla
 	</tr>
 	<tr>
 	  <td><a href="#ALT_TYPE_ID">Alternate Type Identification</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#ASSET_CLASS">Asset Class</a></td>
 	  <td>String</td>
 	  <td></td>
 	</tr>
@@ -83,6 +88,9 @@ An alternate identification for the type of this Organization.
 <a name="NOMEN"><h3>Nomenclature</h3></a>
 A verbose nomenclature for this Organization.
 
+<a name="ASSET_CLASS"><h3>Asset Class</h3></a>
+The class of Organization Asset to use for this Agent. The default is almost always correct.
+
 <a name="CLASS_NAME"><h3>Class Name</h3></a>
 The class for this Agent. The default is almost always correct.
 
@@ -106,5 +114,5 @@ The type identification for this agent.
 
 </body></html>
 
-<!-- Last Modified: $Date: 2002-06-14 12:57:04 $ -->
-<!-- By $Author: bkrisler $ -->
+<!-- Last Modified: $Date: 2002-06-24 21:42:40 $ -->
+<!-- By $Author: ahelsing $ -->
