@@ -47,9 +47,10 @@ import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.monitor.generic.UIProperties;
 import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetrics;
 import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetricsFrame;
-//import org.cougaar.tools.csmart.ui.psp.ThreadUtils;
 
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
+import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
+import org.cougaar.tools.csmart.ui.util.ServletResult;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
@@ -539,32 +540,108 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    * The user is only queried once, unless we fail to contact the agent.
    */
 
-  private static Vector getAgents() {
+  private static Vector getAgentURLs() {
     getAgentURL();
     if (agentURL == null)
       return null;
-    Vector agents = Util.getClusters(agentURL);
+    Vector agentURLs = null;
+    try {
+      agentURLs = ClientServletUtil.getAgentURLs(agentURL);
+      if (agentURLs == null)
+	JOptionPane.showMessageDialog(null,
+                              agentURL + "/" +
+                              ClientServletUtil.AGENT_PROVIDER_SERVLET +
+			      " returned null; no information to graph.");
+      else if (agentURLs.size() == 0)
+	JOptionPane.showMessageDialog(null,
+                                      agentURL + "/" +
+                                   ClientServletUtil.AGENT_PROVIDER_SERVLET +
+                           " returned no agents; no information to graph.");
+    } catch (Exception e) {
+       JOptionPane.showMessageDialog(null,
+                                     "Failed to contact: " + 
+                                     agentURL + "/" +
+                                     ClientServletUtil.AGENT_PROVIDER_SERVLET +
+                                     "; no information to graph.");
+    }
+
     // if failed to contact agents, reset agentURL to null, 
     // so user is queried again
-    if (agents == null) 
+    if (agentURLs == null) 
       agentURL = null; 
-    return agents;
+    return agentURLs;
   }
 
 
   /**
-   * Query user for agent URL and get objects from the
-   * specified PSP.
+   * Query user for an agent URL in the society,
+   * get the URLs for all agents in that society,
+   * and get objects from the specified servlet at all agents.
    */
 
-  public static Collection getObjectsFromPSP(String PSPName) {
-    Vector agents = getAgents();
-    if (agents == null)
+  public static Collection getObjectsFromServlet(String servletName) {
+    Vector agentURLs = getAgentURLs();
+    if (agentURLs == null)
       return null;
-    //    System.out.println("CSMARTUL: getting objects from: " + PSPName);
-    Collection objectsFromPSP = 
-      Util.getCollectionFromClusters(agents, PSPName, null);
-    return objectsFromPSP;
+    return getObjectsFromServlet(agentURLs, servletName, null, null, -1);
+  }
+
+  /**
+   * Invoke specified servlet with parameter names, values, and limit,
+   * at specified agents, and return results.
+   */
+
+  private static Collection getObjectsFromServlet(Vector agentURLs,
+                                                  String servletName,
+                                                  ArrayList parameterNames,
+                                                  ArrayList parameterValues,
+                                                  int limit) {
+    return getObjectsFromServletWorker(agentURLs, servletName, 
+                                       parameterNames, parameterValues, limit);
+  }
+
+  private static Collection getObjectsFromServletWorker(Vector agentURLs,
+                                            String servletName,
+                                            ArrayList parameterNames,
+                                            ArrayList parameterValues,
+                                            int limit) {
+    ServletResult servletResult =
+      ClientServletUtil.getCollectionFromAgents(agentURLs, servletName,
+                                                parameterNames, 
+                                                parameterValues, limit);
+    ArrayList collections = servletResult.getCollections();
+    int nAgents = 0;
+    StringBuffer buf = new StringBuffer(100);
+    Collection objectsFromServlet = null;
+    for (int i = 0; i < agentURLs.size(); i++) {
+      Collection col = (Collection)collections.get(i);
+      if (col != null) {
+        nAgents++;
+        if (objectsFromServlet == null)
+          objectsFromServlet = col;
+        else {
+          try {
+            objectsFromServlet.addAll(col);
+          } catch (Exception e) {
+            System.out.println("CSMARTUL can't add results to collection: " + e);
+          }
+        }
+      } else { // these are the agents we couldn't contact
+        buf.append("\n");
+        buf.append(agentURLs.get(i));
+      }
+    }
+    
+// TODO: is there a way to distinguish we couldn't contact vs. we didn't try (because of exceeded limits?)
+    if (servletResult.isLimitExceeded())
+      JOptionPane.showMessageDialog(null,
+             "Exceeded limit, producing a trimmed graph from: " + nAgents);
+    else if (buf.length() != 0) 
+      JOptionPane.showMessageDialog(null,
+                                    "Failed to contact servlet: " +
+                                    servletName + " at agents:" +
+                                    buf.toString());
+    return objectsFromServlet;
   }
 
   /**
@@ -575,7 +652,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     if (communityToAgents != null)
       return; // only do this once
     // get agent and community names
-    Collection objectsFromPSP = getObjectsFromPSP(PSP_COMMUNITY);
+    Collection objectsFromPSP = getObjectsFromServlet(PSP_COMMUNITY);
     if (objectsFromPSP == null) 
       return;
     if (objectsFromPSP.size() == 0)
@@ -613,7 +690,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 	communityToAgents.put(communityName, agents);
       } else
 	agents.addElement(agentName);
-      agentToURL.put(agentName, properties.get(PropertyNames.AGENT_URL));
+      String url = (String)properties.get(PropertyNames.AGENT_URL);
+      url = url.substring(0, url.indexOf(PSP_COMMUNITY));
+      agentToURL.put(agentName, url);
     }
   }
 
@@ -623,7 +702,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   private void makeCommunityGraph() {
     // get agent and community names
-    Collection objectsFromPSP = getObjectsFromPSP(PSP_COMMUNITY);
+    Collection objectsFromPSP = getObjectsFromServlet(PSP_COMMUNITY);
     if (objectsFromPSP == null) 
       return;
     int n = objectsFromPSP.size();
@@ -683,49 +762,38 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     Vector agentURLs = new Vector();
     for (int i = 0; i < agentsToContact.size(); i++) {
       String URL = 
-  	(String)agentToURL.get((String)agentsToContact.elementAt(i));
+    	(String)agentToURL.get((String)agentsToContact.elementAt(i));
       if (URL != null)
-  	agentURLs.add(URL);
+    	agentURLs.add(URL);
     }
 
-    String PSPId = PSP_PLAN;
-    String filterValue = filter.getIgnoreObjectTypes();
-    int filterLimit  = filter.getNumberOfObjects();
-    String baseURL =
-        PSPId + "?" +
-        PropertyNames.PLAN_OBJECTS_TO_IGNORE +
-        "=" +
-        filterValue;
+    String servletId = PSP_PLAN;
+    int limit  = filter.getNumberOfObjects();
+    ArrayList parameterNames = new ArrayList(1);
+    ArrayList parameterValues = new ArrayList(1);
+    // for example, planObjectsToIgnore=Plan_Element,Workflow,Asset
+    String ignoreTypes = filter.getIgnoreObjectTypes();
+    if (ignoreTypes != null) {
+      parameterNames.add(PropertyNames.PLAN_OBJECTS_TO_IGNORE);
+      parameterValues.add(ignoreTypes);
+    }
+    Collection objectsFromServlets = 
+      getObjectsFromServletWorker(agentURLs, servletId,
+                                  parameterNames, parameterValues, limit);
 
-    // query
-    Collection objectsFromPSP =
-      Util.getCollectionFromClusters(agentURLs, 
-				     baseURL,
-				     null,
-				     filterLimit);
-    int nObjs = 
-      ((objectsFromPSP != null) ? 
-       objectsFromPSP.size() : 
-       (0));
-    //    System.out.println("Received plan objects: "+nObjs);
-
-    if (nObjs <= 0) {
-      // no response?
+    if (objectsFromServlets == null)
       return;
-    }
 
-    if (nObjs > filterLimit) {
-      // exceeded limit by one.
-      //
-      // Util.getCol.. did the popup warning
-    }
+    int nObjs = objectsFromServlets.size();
+    if (nObjs == 0)
+      return;
 
     // a Vector of ULPlanNodes
     Vector nodeObjects = new Vector();
 
     int nDuplicates = 0;
     Set UIDs = new HashSet();
-    Iterator iter = objectsFromPSP.iterator();
+    Iterator iter = objectsFromServlets.iterator();
     for (int i = 0; i < nObjs; i++) {
       PropertyTree properties = (PropertyTree)iter.next();
       // get the UID
@@ -898,7 +966,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private void makeSocietyGraph() {
-    Collection objectsFromPSP = getObjectsFromPSP(PSP_CLUSTER);
+    Collection objectsFromPSP = getObjectsFromServlet(PSP_CLUSTER);
     if (objectsFromPSP == null)
       return;
     Vector nodeObjects = new Vector(objectsFromPSP.size());
@@ -956,7 +1024,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   }
 
   public void makeMetricsGraph() {
-    Collection objectsFromPSP = getObjectsFromPSP(PSP_METRICS);
+    Collection objectsFromPSP = getObjectsFromServlet(PSP_METRICS);
     if (objectsFromPSP == null)
       return;
     System.out.println("Received metrics: " + objectsFromPSP.size());
