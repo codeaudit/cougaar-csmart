@@ -152,6 +152,8 @@ public class AssetDBComponent
 	  }
           rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
           rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
+	  // AMH: This line was missing? 7/2/02
+	  rData.setTypeId((String)rel.getProperty(RelationshipBase.PROP_TYPEID).getValue());
           rData.setSupported((String)rel.getProperty(RelationshipBase.PROP_SUPPORTED).getValue());
 
           DateFormat df = DateFormat.getInstance();
@@ -215,12 +217,31 @@ public class AssetDBComponent
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
           RelationshipData rd = new RelationshipData();
+	  // Get the Component ALIB ID being supported
           String supported = rs.getString(1);
+
+	  // Using that, look up the ClusterID, TypeID, ItemID
+	  // But default back to the ALIB_ID if necessary
+	  // FIXME: Look up these PG IDs
+	  String cID = getPGVal("ClusterPG|ClusterIdentifier", supported);
+	  if (cID == null || cID.equals(""))
+	    cID = supported;
+
+	  String typeID = getPGVal("TypeIdentificationPG|TypeIdentification", supported);
+	  if (typeID == null || typeID.equals(""))
+	    typeID = supported;
+
+	  String itemID = getPGVal("ItemIdentificationPG|ItemIdentification", supported);
+	  if (itemID == null || itemID.equals(""))
+	    itemID = supported;
+
+          rd.setItemId(itemID);
+          rd.setSupported(cID);
+	  rd.setTypeId(typeID);
+
           String role = rs.getString(2);
           Timestamp startDate = rs.getTimestamp(3);
           Timestamp endDate = rs.getTimestamp(4);
-          rd.setItemId(supported);
-          rd.setSupported(supported);
           if (role.equals("Subordinate")) {
             rd.setRole("");
             rd.setType("Subordinate");
@@ -254,6 +275,46 @@ public class AssetDBComponent
     return (RelationshipData[])relationshipData.toArray(new RelationshipData[relationshipData.size()]);
   }
 
+  // Given a PG_ATTRIBUTE_LIB_ID and a COMPONENT_ALIB_ID, 
+  // look up the first value given
+  private String getPGVal(String pgID, String agent) {
+    if (agent == null || agent.equals("") || pgID == null || pgID.equals(""))
+      return null;
+
+    // This hashmap gets re-used so dont kill the agent_name
+    Object old = substitutions.get(":agent_name");
+
+    substitutions.put(":agent_name", agent);
+    substitutions.put(":pgAttrLibId", pgID);
+    String result = null;
+    try {
+      Connection conn2 = DBUtils.getConnection();
+      try {
+        Statement stmt2 = conn2.createStatement();	
+        String query2 = DBUtils.getQuery(QUERY_PG_VALUES, substitutions);
+        ResultSet rs2 = stmt2.executeQuery(query2);
+        if (rs2.next()) {
+	  result = rs2.getString(1);
+        }
+        rs2.close();
+        stmt2.close();
+      } finally {
+        conn2.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("Exception getting PGVal for agent " + agent + " and PG " + pgID, e);
+      }
+    }
+
+    substitutions.put(":agent_name", old);
+
+    if (log.isDebugEnabled()) {
+      log.debug("getPGVal returning " + result + " for agent " + agent + " and pgID " + pgID);
+    }
+    return result;
+  }
+  
   private void addRelationships(RelationshipData[] rel) {
     ContainerBase relContainer = new ContainerBase("Relationships");
     relContainer.initProperties();
