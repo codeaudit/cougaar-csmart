@@ -40,7 +40,7 @@ import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 
 /**
- * A Metric that adds the CSMART Metric collection Plugin to any society.<br>
+ * A Metric that adds the CSMART Metric collection Plugin to any society. <br>
  * These add no agents, but do add 1 plugin to every agent in the society,
  * plus one controlling plugin to one of the agents, picked at random.<br>
  * The user can specify the sample interval, the start delay, and the maximum

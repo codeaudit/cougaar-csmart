@@ -76,6 +76,7 @@ public interface InfrastructureEvent
   //
 
   /**
+   * Is this an event effecting the wire. 
    * Equivalent to<pre>
    *   <tt>(getType().equals(org.cougaar.tools.csmart.Constants.WIRE_BUSY) ||
    *        getType().equals(org.cougaar.tools.csmart.Constants.WIRE_DOWN))</tt>
@@ -86,6 +87,7 @@ public interface InfrastructureEvent
   boolean isWireType();
 
   /**
+   * Is this an event about a Node. 
    * Equivalent to<pre>
    *   <tt>(getType().equals(org.cougaar.tools.csmart.Constants.NODE_BUSY) ||
    *        getType().equals(org.cougaar.tools.csmart.Constants.NODE_DOWN))</tt>
@@ -96,7 +98,8 @@ public interface InfrastructureEvent
   boolean isNodeType();
 
   /**
-   * Equivalent to<pre>
+   * Does the event indicate a busy resource. 
+   * Equivalent to <pre>
    *   <tt>(getType().equals(org.cougaar.tools.csmart.Constants.NODE_BUSY) ||
    *        getType().equals(org.cougaar.tools.csmart.Constants.WIRE_BUSY))</tt>
    * also
@@ -108,7 +111,8 @@ public interface InfrastructureEvent
   boolean isBusyType();
 
   /**
-   * Equivalent to<pre>
+   * Does the event indicate something is down. 
+   * Equivalent to <pre>
    *   <tt>(getType().equals(org.cougaar.tools.csmart.Constants.NODE_DOWN) ||
    *        getType().equals(org.cougaar.tools.csmart.Constants.WIRE_DOWN))</tt>
    * also

@@ -51,8 +51,8 @@ import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
- * Expects no input
- * Returns agent name and community name from Entity object
+ * Returns agent name and community name from Entity object. <br>
+ * Expects no input. 
  *
  * <p>
  * Can be loaded manually by including this line in an agent's .ini configuration file: <pre/>

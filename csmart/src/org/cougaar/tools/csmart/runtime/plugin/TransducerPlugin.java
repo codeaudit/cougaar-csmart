@@ -92,7 +92,7 @@ public class TransducerPlugin extends CSMARTPlugin {
 
   /**
    * For each new <code>RealWorldEvent</code>, give its model the society
-   * representation, and the special limited factory.<br>
+   * representation, and the special limited factory. <br>
    * For each <code>InfrastructureEvent</code> that it gives back, publish it.
    */
   public void execute() {

@@ -57,7 +57,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import java.io.ObjectInputStream;
 
 /**
- * Panel that holds the PropertyEditor for editing the properties of a <code>ModifiableConfigurableComponent</code><br>
+ * Panel that holds the PropertyEditor for editing the properties of a <code>ModifiableConfigurableComponent</code>. <br>
  * It will both view a non-editable components, and edit an editable one.<br>
  * Note that you may in fact view/edit multiple components at once.
  */

@@ -48,7 +48,7 @@ public interface RealWorldEvent extends Directive, UniqueObject, Publishable, Se
   String getType();
 
   /**
-   * Each <code>RealWorldEvent<code> must return a model of its impact.<br>
+   * Each <code>RealWorldEvent<code> must return a model of its impact. <br>
    * This method does that.
    *
    * @return an <code>ImpactModel</code> of the events impact.
@@ -56,7 +56,7 @@ public interface RealWorldEvent extends Directive, UniqueObject, Publishable, Se
   ImpactModel getModel();
 
   /**
-   * Return a list of Name-Value pairs for use by the UI.
+   * Return a list of Name-Value pairs for use by the UI. 
    * The Names are Strings and the Values are to-Stringable Objects.<br>
    *
    * @return a <code>List</code> of Name-Value pairs, using <code>org.cougaar.tools.csmart.util.ArgValue</code>

@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Hold the data to describe the local Asset in an Agent.<br>
+ * Hold the data to describe the local Asset in an Agent. <br>
  * This is usually an Organization or Entity, such as would be described
  * in a prototype-ini.dat file.<br>
  * Elements:<ul>

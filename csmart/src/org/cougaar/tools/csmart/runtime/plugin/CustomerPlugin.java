@@ -44,7 +44,7 @@ import org.cougaar.tools.csmart.util.parser.TaskFileParser;
 
 /**
  * A simple Customer - inject new <code>Task</code>s into the sytem,
- * and adjust a simple happiness metric based on the executed results.<br>
+ * and adjust a simple happiness metric based on the executed results. <br>
  * Task verbs, required completion times, and rate of insertion
  * are all specified in an initialization file. Time between new <code>Task</code>s
  * is modulated by a specified randomization amount.<br>
@@ -328,7 +328,7 @@ public class CustomerPlugin extends CSMARTPlugin {
   /**
    * Loop over changed <code>PlanElement</code>s - if the
    * <code>EstimatedResult</code> has changed and is of high
-   * confidence, update happiness.<br>
+   * confidence, update happiness. <br>
    * Similarly on receiving a new <code>Disposition</code>.<br>
    * On getting a new <code>Task</code>, publish another
    * of the same <code>Verb</code>.<br>

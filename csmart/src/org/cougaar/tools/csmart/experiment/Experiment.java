@@ -1046,7 +1046,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   /**
    * If the experiment has still unbound properties,
-   * then we can't run it yet.<br>
+   * then we can't run it yet. <br>
    * For each property in the experiment, if it is not set,
    * and we don't have a set of experimental values, return true;
    *

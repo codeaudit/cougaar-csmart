@@ -60,7 +60,7 @@ import java.util.*;
 import org.cougaar.tools.scalability.performance.jni.CpuClock;
 
 /**
- * Collect statistics on Agent operation.<br>
+ * Collect statistics on Agent operation. <br>
  * This Plugin should be included in each Agent for which you want to collect statistics.<br>
  * Note that some statistics are per-Node however.<br><br>
  * This plugin is driven by control tasks, sent from a single instance of the

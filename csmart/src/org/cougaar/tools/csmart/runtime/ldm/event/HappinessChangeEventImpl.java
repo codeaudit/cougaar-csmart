@@ -26,7 +26,7 @@ import org.cougaar.core.agent.ClusterIdentifier;
 
 /**
  * Indicates the change in customer satisfaction due to the linked
- * <code>PlanElement</code>'s result.<br>
+ * <code>PlanElement</code>'s result. <br>
  *
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  * @see org.cougaar.planning.ldm.plan.PlanElement

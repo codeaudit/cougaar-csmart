@@ -1169,7 +1169,7 @@ public class AllocatorPlugin
 
   /**
    * Allocate the <code>Task</code> using our 
-   * <code>ExpandedRule</code>s.<br>
+   * <code>ExpandedRule</code>s. <br>
    *
    * These rules are ordered by convention: First any <code>LocalAsset</code>,
    * then <code>OrgAsset</code>s.  The Org rules are ordered,

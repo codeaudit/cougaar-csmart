@@ -72,8 +72,9 @@ public class ULPlanFilter {
   private boolean preFilter = true;
 
   /**
+   * Create filter on items returned and displayed. 
    * TODO: in Servlet or in CSMARTUL, add agent name and community name
-   * to properties on an object
+   * to properties on an object. 
    * There are three cases in which filters are created:
    * 1) the user is filtering the data before fetching the data (prefilter);
    *    the community->agents mapping is specified;
@@ -175,16 +176,15 @@ public class ULPlanFilter {
 
   /**
    * Get names of agents to contact for prefiltering,
-   * i.e. only fetch data from specified agents.
+   * i.e. only fetch data from specified agents. 
    * @return Vector of Strings, names of agents to contact
    */
-
   public Vector getAgentsSelected() {
     return agentsSelected;
   }
 
   /**
-   * Get filter to pass to agents for prefiltering.
+   * Get filter to pass to agents for prefiltering. 
    * Creates a filter, which is a comma separated list of ignoreObjectTypes
    * @return filter to pass to agent sevlet or null (if user cancelled dialog)
    */

@@ -167,9 +167,9 @@ public class CMTSociety
 
   /**
    * Returns whether or not the society is running, 
-   * i.e. can be dynamically monitored.
+   * i.e. can be dynamically monitored. 
    * Running societies are not editable, but they can be copied,
-   * and the copy can be edited.
+   * and the copy can be edited. 
    * @return true if society is running and false otherwise
    */
   public boolean isRunning() {
@@ -178,7 +178,7 @@ public class CMTSociety
 
   /**
    * Return a file filter which can be used to fetch
-   * the metrics files for this experiment.
+   * the metrics files for this experiment. 
    * @return file filter to get metrics files for this experiment
    */
   public FileFilter getResultFileFilter() {

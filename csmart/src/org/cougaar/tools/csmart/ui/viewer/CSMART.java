@@ -968,7 +968,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   }
 
   /**
-   * Start up CSMART main UI.<br>
+   * Start up CSMART main UI. <br>
    * If <code>org.cougaar.useBootstrapper</code> is set false, use CLASSPATH to find classes as normal.<br>
    * Otherwise, use the Cougaar Bootstrapper to search the Classpath + CIP/lib, /plugins, /sys, etc.
    **/

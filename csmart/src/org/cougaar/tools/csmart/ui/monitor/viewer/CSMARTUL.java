@@ -1127,7 +1127,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   }
 
   /**
-   * Start up the CSMART Society Monitor stand-alone.<br>
+   * Start up the CSMART Society Monitor stand-alone. <br>
    * If <code>org.cougaar.useBootstrapper</code> is set false, use CLASSPATH to find classes as normal.<br>
    * Otherwise, use the Cougaar Bootstrapper to search the Classpath + CIP/lib, /plugins, /sys, etc.
    **/

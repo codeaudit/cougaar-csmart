@@ -46,7 +46,7 @@ import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
- * Servlet to gather Metrics for CSMART
+ * Servlet to gather Metrics for CSMART. 
  *
  * <pre/>
  *    number of tasks

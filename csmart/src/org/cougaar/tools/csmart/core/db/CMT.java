@@ -48,7 +48,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Methods for constructing a society in the configuration database' assembly
- * portion, from the CFW portion of the database.<br>
+ * portion, from the CFW portion of the database. <br>
  * That is, create and manage the CMT assemblies.
  */
 public class CMT {

@@ -27,7 +27,7 @@ import org.cougaar.tools.csmart.core.property.BaseComponent;
 
 /**
  * A simple interface implemented by configurable components 
- * that represent agents.<br>
+ * that represent agents. <br>
  * They can write their line in the Node.ini file,
  * and can write their own Agent ini File.
  */

@@ -1443,11 +1443,10 @@ public class CSMARTConsole extends JFrame {
 
   /** 
    * Called from ConsoleInternalFrame (i.e. from menu on the node's output
-   * window) to stop a node.
+   * window) to stop a node. 
    * If this is the only node, then it is handled the same
    * as selecting the Abort button on the console.
    */
-
   public void stopNode(NodeComponent node) {
     boolean doAbort = false;
     synchronized (runningNodesLock) {
@@ -1480,11 +1479,10 @@ public class CSMARTConsole extends JFrame {
 
   /**
    * Called from ConsoleInternalFrame (i.e. from menu on the node's output
-   * window) to restart the node.
+   * window) to restart the node. 
    * If this is the only node, then it is handled the same
    * as selecting the Run button on the console.
    */
-
   public RemoteProcess restartNode(NodeComponent nodeComponent) {
     boolean doRun = false;
     synchronized (runningNodes) {

@@ -309,9 +309,8 @@ public class CSMARTGraph extends Graph
   }
 
   /**
-   * Used by specialized graphs (i.e. event graphs) to read properties.
+   * Used by specialized graphs (i.e. event graphs) to read properties. 
    */
-
   public static UIProperties getProperties() {
     return properties;
   }
@@ -1711,7 +1710,7 @@ public class CSMARTGraph extends Graph
   }
 
   /**
-   * Layout the graph (i.e. determine the positions of nodes and edges).
+   * Layout the graph (i.e. determine the positions of nodes and edges). 
    * Invoke graph.printGraph to print an ascii representation of the graph,
    * which is saved in the dot file (specified by dotFileName)
    * in the directory specified by org.cougaar.install.
@@ -1721,7 +1720,6 @@ public class CSMARTGraph extends Graph
    * Parse the results of the dot tool, which produces a new graph
    * with positions added.
    */
-
   public void doLayout() {
     if(log.isInfoEnabled()) {
       log.info("CSMARTGraph: Starting layout...");

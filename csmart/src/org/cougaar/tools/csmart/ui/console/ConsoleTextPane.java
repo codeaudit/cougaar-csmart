@@ -252,11 +252,10 @@ public class ConsoleTextPane extends JTextPane {
    * Search for the "current" string (i.e. the last string specified in
    * a call to the search method) starting at the end of the last 
    * search string found (or at the beginning of the screen buffer, 
-   * if the previous search string was removed from the buffer).
+   * if the previous search string was removed from the buffer). 
    * Search is case insensitive.
    * @return true if string found and false otherwise
    */
-
   public boolean searchNext() {
     if (searchString != null) 
       return worker(searchString, searchPosition, true);
