@@ -68,7 +68,13 @@ public class AgentAssetData implements Serializable {
   /** Asset of type Organization with Time-Phased Relationships **/
   // The -relationships.ini file will be written out
   public static final int TPORG = 2; 
+
+  /** Ini file format is new style (uses AssetDataPlugin) **/
+  public static final int NEW_FORMAT = 0;
   
+  /** Ini file format is the old style **/
+  public static final int OLD_FORMAT = 1;
+
   /** Common Asset Class Types **/
 
   /** Entity Asset Class **/
@@ -78,7 +84,7 @@ public class AgentAssetData implements Serializable {
   public static final String COMBAT_ASSETCLASS = "CombatOrganization";
 
   // The default type is ENTITY
-  private int type = 0;
+  private int type = AgentAssetData.ENTITY;
 
   private String assetClass = null; // CombatOrganization, Entity, etc
   private String uniqID = null; // For Orgs only, not used, UTC/RTOrg or CombatOrg
@@ -92,6 +98,8 @@ public class AgentAssetData implements Serializable {
   private List propGroups; // PropGroupData objects
   private List relats; // RelatData objects
 
+  private int iniStyle = AgentAssetData.NEW_FORMAT;
+  
   /**
    * Creates a new <code>AgentAssetData</code> instance.
    * Assigned to a specific agent.
@@ -194,6 +202,34 @@ public class AgentAssetData implements Serializable {
     } else {
       return null;
     }
+  }
+
+  /**
+   * Sets the ini file format style.
+   *
+   * @param style 
+   */
+  public void setIniFormat(int style) {
+    this.iniStyle = style;
+  }
+
+  /**
+   * Gets the current ini format style
+   *
+   * @return an <code>int</code> value
+   */
+  public int getIniFormat() {
+    return this.iniStyle;
+  }
+
+  /**
+   * Returns true if the ini file is of the new
+   * format.  
+   *
+   * @return a <code>boolean</code> value
+   */
+  public boolean isNewIniFormat() {
+    return (this.iniStyle == AgentAssetData.NEW_FORMAT);
   }
 
   /**
