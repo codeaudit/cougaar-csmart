@@ -128,21 +128,29 @@ assigned to it. This is useful for, among other things, Agent Mobiility.</li>
  Experiment Controller.
 </p>
 <p>
+<b>Setting Command Line Arguments</b>
  Some of this information is for the convenience of the user; it does
  not affect running the experiment. The command line arguments,
  however, are passed as -D options and command line arguments to the
  node when it is run and so directly affect how the nodes of the
  society are run. CSMART sets a number of such arguments by default.
  See the Cougaar documentation for an explanation of these values, and
- a list of other possible arguments. The global command line and
- command line values both
+ a list of other possible arguments. <br><br>
+The global command line and command line values both
  affect running the nodes of the society. Each node receives a
  combination of the global command line values and its own command
  line values. The node command line values override the global
  ones. Command line arguments set here will over-ride or augment any
  values specified in the AppServer properties files (server.props).
- A few -D arguments are not editable. Of particular note with this
- release: the -D argument <code>java.class.name</code> indicates the
+ A few -D arguments are not editable. 
+To set an environment variable, make the name "env.&lt;name&gt;".
+To specify a JVM property, ie one that will be passed like
+ "-&lt;name&gt;", set the name here to be "java.&lt;name&gt;", for
+ instance, a name of "java.foo" will turn into "-foo".
+All other names will become -D arguments.
+If you want a -D argument named "java.something", name it here
+ "java.java.something". For further details, see the file "server/doc/README".<br>
+Of particular note: the -D argument <code>java.class.name</code> indicates the
  class that will be executed by the AppServer. For standard Cougaar
  societies, this should be the Bootstrapper, and the default uses the
  Bootstrapper included in the bootstrap module. However, other
@@ -151,10 +159,11 @@ assigned to it. This is useful for, among other things, Agent Mobiility.</li>
  the first argument to the running process must be the name of the
  class to run - <code>org.cougaar.core.node.Node</code> for standard
  Cougaar societies. This argument is specified in the first line of
- the non -D argument text box.<br> New in 9.2.1, you may include the
+ the non -D argument text box.<br> 
+As of 9.2.1, you may include the
  string $HOST in a command line argument, and CSMART will substitute
  at runtime the name of the Host on which that Node is running (using
- the name you specified within CSMART).
+ the form of the name you specified within CSMART).<br>
 </p>
 There are a number of other File menu options for further configuring
 your Experiment. In particular, note the "Save" and "Save As" options
