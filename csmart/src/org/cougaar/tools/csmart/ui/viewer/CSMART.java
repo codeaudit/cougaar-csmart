@@ -843,7 +843,7 @@ public class CSMART extends JFrame {
    *
    * @return a <code>String</code> debug string for logging
    */
-  public String writeDebug() {
+  public static String writeDebug() {
     // Cougaar version, build info
     StringBuffer result = new StringBuffer();
     String version = null;
