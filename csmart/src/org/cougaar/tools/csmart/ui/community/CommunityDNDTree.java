@@ -120,7 +120,9 @@ public class CommunityDNDTree extends DNDTree {
     }
     DefaultMutableTreeNode newNode =
       new DefaultMutableTreeNode(new CommunityTreeObject(name, type, communityName),
-                                 !type.equals("Agent"));
+				 (type.equals("Root") || 
+				  type.equals("Host") || 
+				  type.equalsIgnoreCase("Community")));
     model.insertNodeInto(newNode, node, node.getChildCount());
     // expand branch below new node and scroll to display new node
     expandBranch(newNode);
