@@ -80,4 +80,11 @@ public interface CompositeName extends Comparable, Serializable {
      * @param name to be compared with. Must be a CompositeName.
      **/
     boolean equals(Object o);
+
+  /** 
+   * Flush any information cached about this name, presumably because the
+   * prefix has changed in some way.
+   **/
+  void decache();
+
 } 
