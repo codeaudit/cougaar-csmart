@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
@@ -35,20 +36,12 @@ import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.society.ComponentBase;
 
 
-
 /**
- * BaseCDataComponent.java
- *
- *
- * Created: Fri Jul 12 09:27:05 2002
- *
- * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
+ * A BaseComponent initialized from ComponentData. Used when copying Complex Recipes.
  */
-
 public class BaseCDataComponent extends ComponentBase implements BaseComponent {
   
-  ComponentData cdata;
+  private ComponentData cdata;
 
   public BaseCDataComponent(ComponentData cdata) {
     super(cdata.getName());
@@ -58,13 +51,17 @@ public class BaseCDataComponent extends ComponentBase implements BaseComponent {
     this.type = cdata.getType();
   }
 
-
   /**
-   * Describe <code>initProperties</code> method here.
-   *
+   * Initialize the Properties using the super class. Then copy over the
+   * other slots: LIB_ID, ALIB_ID, and the Parameters.
    */
   public void initProperties() {
     super.initProperties();
+    setLibID(cdata.getLibID());
+    setAlibID(cdata.getAlibID());
+    // for each parameter of the component, call addParameter
+    for (int i = 0; i < cdata.parameterCount(); i++)
+      addParameter(cdata.getParameter(i));
   }
 
 }// BaseCDataComponent
