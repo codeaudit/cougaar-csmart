@@ -946,5 +946,33 @@ public class DBUtils {
     return s;
   }
 
+  public static final boolean containsCMTAssembly(String experimentId) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
+    boolean result = false;
+    Map substitutions = new HashMap();
+    String query = "";
+    substitutions.put(":expt_id:", experimentId);
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+	Statement stmt = conn.createStatement();	
+        query = getQuery("queryCMTAssembly", substitutions);
+	ResultSet rs = stmt.executeQuery(query);
+        if(rs.next())
+          result = true;
+	rs.close();
+	stmt.close();
+      } finally {
+	conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("querySet: "+query, e);
+      }
+      throw new RuntimeException("Error" + e);
+    }
+    return result;
+  }
+
 }
 
