@@ -33,6 +33,7 @@ import org.cougaar.tools.server.RemoteHostRegistry;
 import org.cougaar.tools.server.RemoteListenable;
 import org.cougaar.tools.server.RemoteProcess;
 import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -45,6 +46,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 public class AppServerSupport {
   private RemoteHostRegistry remoteHostRegistry;
   private AppServerList appServers;// known app servers; array of AppServerDesc
+
   // this maps the "experiment name-node name" to an AppServerDesc
   // and provides the app server on which the node is running
   // note that the same name must be used for the ProcessDescription
@@ -124,7 +126,8 @@ public class AppServerSupport {
       AppServerDesc desc = 
         new AppServerDesc(appServer, hostName, remotePort);
       appServers.add(desc);
-      System.out.println("Adding app server for: " + hostName + " " + remotePort);
+      if (log.isDebugEnabled()) 
+	log.debug("Adding app server for: " + hostName + " " + remotePort);
     }
     return appServer;
   }
@@ -175,14 +178,16 @@ public class AppServerSupport {
         for (int j = 0; j < listenerNames.size(); j++) {
           String s = (String)listenerNames.get(j);
           if (s.equals(CSMART.getNodeListenerId())) {
-            System.out.println("Killing node listener: " + s +
-                               " for node: " + name);
+	    if (log.isDebugEnabled()) {
+	      log.debug("Killing node listener: " + s +
+				 " for node: " + name);
+	    }
             rl.removeListener(s);
           }
         }
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
-          log.error("Exception killing listener: " + e);
+          log.error("Exception killing listener: ", e);
         }
       }
     }
@@ -257,8 +262,12 @@ public class AppServerSupport {
     int index = s.indexOf(':');
     if (index == -1)
       return;
+
     String hostName = s.substring(0, index);
     hostName = hostName.trim();
+    if (hostName.equals(""))
+      return;
+
     String port = s.substring(index+1);
     port = port.trim();
     int remotePort = 0;
@@ -267,6 +276,7 @@ public class AppServerSupport {
     } catch (Exception e) {
       return;
     }
+
     RemoteHost appServer = getAppServer(hostName, remotePort);
     if (appServer != null)
       addAppServerWorker(new AppServerDesc(appServer, hostName, remotePort));
@@ -288,7 +298,9 @@ public class AppServerSupport {
    * @return true if there are new nodes
    */
   private boolean updateNodeToAppServerMapping() {
-    System.out.println("Updating app servers");
+    if (log.isDebugEnabled())
+      log.debug("Updating app servers");
+
     boolean haveNewNodes = false;
     // get process descriptions from all known app servers
     // and store info in a new hashtable
@@ -301,15 +313,17 @@ public class AppServerSupport {
         someNodes = appServer.listProcessDescriptions();
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
-          log.error("Exception getting info from app server: " + e);
+          log.error("Exception getting info from app server: ", e);
         }
       }
       if (someNodes != null) {
         for (Iterator j = someNodes.iterator(); j.hasNext(); ) {
           ProcessDescription pd = (ProcessDescription)j.next();
           String name = pd.getName();
-          System.out.println("Adding app server for: " + name +
-                             " " + appServerDesc);
+	  if (log.isDebugEnabled()) {
+	    log.debug("Adding app server for: " + name +
+			       " " + appServerDesc);
+	  }
           newNodeToAppServer.put(name, appServerDesc);
           // if the new node is mapped to an
           // app server on the same machine and port as the old mapping
@@ -410,8 +424,8 @@ public class AppServerSupport {
         continue;
       }
       Properties properties = (Properties)pd.getJavaProperties();
-      String nodeName = (String)properties.get("org.cougaar.node.name");
-      String hostName = (String)properties.get("org.cougaar.name.server");
+      String nodeName = (String)properties.get(Experiment.NODE_NAME);
+      String hostName = (String)properties.get(Experiment.NAME_SERVER);
       java.util.List args = pd.getCommandLineArguments();
       results.add(new NodeInfo(appServer, nodeName, hostName,
                                processName,
