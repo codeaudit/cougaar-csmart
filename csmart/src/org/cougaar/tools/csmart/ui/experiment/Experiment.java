@@ -23,9 +23,12 @@ package org.cougaar.tools.csmart.ui.experiment;
 
 import java.io.File;
 import java.net.URL;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.*;
 import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.server.ConfigurationWriter;
@@ -44,6 +47,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private List hosts = new ArrayList();
   private List nodes = new ArrayList();
   private List recipes = new ArrayList();
+  private Properties defaultNodeArguments;
   private transient List listeners = null;
   private File resultDirectory; // where to store results
   private int numberOfTrials = 1;
@@ -77,6 +81,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     this(name);
     setSocietyComponents(societyComponents);
     setRecipes(recipes);
+    setDefaultNodeArguments();
   }
 
   public Experiment(String name) {
@@ -88,7 +93,44 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     this.expID = expID;
     this.trialID = trialID;
     inDatabase = true;
+    setDefaultNodeArguments();
     //    System.out.println("Experiment: " + expID + " Trial: " + trialID);
+  }
+
+  private void setDefaultNodeArguments() {
+    defaultNodeArguments = new Properties();
+    defaultNodeArguments.put("org.cougaar.core.cluster.persistence.enabled", "false");
+    defaultNodeArguments.put("user.timezone", "GMT");
+    defaultNodeArguments.put("org.cougaar.core.cluster.startTime", "08/10/2005");
+    defaultNodeArguments.put("csmart.log.severity", "PROBLEM");
+    defaultNodeArguments.put("org.cougaar.domain.planning.ldm.lps.ComplainingLP.level",
+                             "0");
+    defaultNodeArguments.put("org.cougaar.message.transport.aspects",
+                             "org.cougaar.core.mts.StatisticsAspect");
+    defaultNodeArguments.put("org.cougaar.tools.server.nameserver.ports", 
+                             CSMARTConsole.NAME_SERVER_PORTS);
+    defaultNodeArguments.put("org.cougaar.control.port", 
+                             Integer.toString(CSMARTConsole.APP_SERVER_DEFAULT_PORT));
+    if (isInDatabase()) {
+      defaultNodeArguments.put("org.cougaar.configuration.database", 
+                               CSMART.getDatabaseConfiguration());
+      defaultNodeArguments.put("org.cougaar.configuration.user", 
+                               CSMART.getDatabaseUserName());
+      defaultNodeArguments.put("org.cougaar.configuration.password", 
+                               CSMART.getDatabaseUserPassword());
+      defaultNodeArguments.put("org.cougaar.experiment.id", getTrialID());
+    }
+    try {
+      defaultNodeArguments
+        .put("env.DISPLAY", InetAddress.getLocalHost().getHostName() +
+             ":0.0");
+    } catch (UnknownHostException uhe) {
+      System.out.println(uhe);
+    }
+  }
+
+  public Properties getDefaultNodeArguments() {
+    return defaultNodeArguments;
   }
 
   public void setExperimentID(String expID) {
@@ -611,9 +653,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       ComponentData theSoc = new GenericComponentData();
       theSoc.setType(ComponentData.SOCIETY);
       theSoc.setName(getExperimentName()); // this should be experiment: trial FIXME
-      theSoc.setClassName(""); // leave this out? FIXME
+      theSoc.setClassName("java.lang.Object"); // Must not be null
       theSoc.setOwner(this); // the experiment
       theSoc.setParent(null);
+      addDefaultNodeArguments(theSoc);
       PopulateDb pdb =
         new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
                        getExperimentID(), trialID, !isCloned());
@@ -642,9 +685,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         writtenNodes.add(nodesToWrite[i]);
       }
 
-      // Some components will want access to the complete set of Nodes in the society, etc.
-      // To get that, they must get back to the root soc object,
-      // and do a getOwner and go from there. Ugly.
+      // Some components will want access to the complete set of Nodes
+      // in the society, etc. To get that, they must get back to the
+      // root soc object, and do a getOwner and go from there. Ugly.
     
       // Now ask each component in turn to add its stuff
       for (int i = 0; i < components.size(); i++) {
@@ -669,6 +712,14 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
   }
 
+  private void addDefaultNodeArguments(ComponentData theSoc) {
+    Properties props = getDefaultNodeArguments();
+    for (Iterator i = props.entrySet().iterator(); i.hasNext(); ) {
+      Map.Entry entry = (Map.Entry) i.next();
+      theSoc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
+    }
+  }
+
   private void saveNodeToDb(NodeComponent node, ComponentData parent) {
     ComponentData nc = new GenericComponentData();
     nc.setType(ComponentData.NODE);
@@ -679,6 +730,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     ComponentName name = 
       new ComponentName((ConfigurableComponent) node, "ConfigurationFileName");
     nc.addParameter(node.getShortName());
+    Properties props = node.getArguments();
+    for (Iterator i = props.entrySet().iterator(); i.hasNext(); ) {
+      Map.Entry entry = (Map.Entry) i.next();
+      nc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
+    }
     parent.addChild(nc);
     AgentComponent[] agents = node.getAgents();
     if (agents != null && agents.length > 0) {
