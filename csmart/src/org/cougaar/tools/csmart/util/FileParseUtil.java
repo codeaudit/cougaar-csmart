@@ -143,7 +143,15 @@ public class FileParseUtil {
    * @param filename - The file to determine if old or new style.
    */
   public static final boolean isOldStyleIni(String filename) {
-    return FileParseUtil.containsPattern(filename, "UniqueId");
+    if(FileParseUtil.containsPattern(filename, "^\\[UniqueId") ||
+       FileParseUtil.containsPattern(filename, "^\\[UIC") ||
+       !FileParseUtil.containsPattern(filename, 
+                                      "\\[Relationship\\]\\s*([^\\s#]+[^\\S\\n\\r]+){5}\\S*")) {
+
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public static void main(String args[]) {
