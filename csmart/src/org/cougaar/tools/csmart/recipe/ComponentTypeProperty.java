@@ -61,7 +61,7 @@ public class ComponentTypeProperty extends ConfigurableComponentProperty {
 
     // FIXME!!! Must allow arbitrary things here!
 
-    setAllowedValues(allComponents);
+    //    setAllowedValues(allComponents);
     setPropertyClass(String.class);
   }
 
