@@ -322,7 +322,7 @@ public class CommunityPanel extends JPanel {
     };
 
   private boolean isCommNameUnique(String name) {
-    if (name == null || name.equals(""))
+    if (name == null || name.trim().equals(""))
       return false;
     ArrayList communityNames = CommunityDBUtils.getCommunitiesForExperiment(experiment.getCommAsbID());
     if (communityNames == null || communityNames.isEmpty())
@@ -346,9 +346,10 @@ public class CommunityPanel extends JPanel {
     DefaultMutableTreeNode node = 
       (DefaultMutableTreeNode)path.getLastPathComponent();
     CommunityTreeObject cto = (CommunityTreeObject)node.getUserObject();
-    if (cto.isRoot())
+    if (cto.isRoot()) {
+      // FIXME: Bug 1903: Both items come up selected?
       rootMenu.show(communityTree, x, y);
-    else if (cto.isCommunity())
+    } else if (cto.isCommunity())
       communityMenu.show(communityTree, x, y);
     else if (node.getChildCount() != 0)
       parentEntityMenu.show(communityTree, x, y);
@@ -359,8 +360,9 @@ public class CommunityPanel extends JPanel {
   private void createCommunity() {
     String communityName = JOptionPane.showInputDialog("New community name: ");
     while (true) {
-      if (communityName == null || communityName.length() == 0)
+      if (communityName == null || communityName.trim().length() == 0)
 	return;
+      communityName = communityName.trim();
       if (isCommNameUnique(communityName))
 	break;
       communityName = JOptionPane.showInputDialog("New Unique community name: ");
@@ -379,6 +381,10 @@ public class CommunityPanel extends JPanel {
     if (result != JOptionPane.OK_OPTION)
       return;
     String communityType = (String)cb.getSelectedItem();
+
+    if (communityType != null)
+      communityType = communityType.trim();
+
     DefaultTreeModel model = (DefaultTreeModel)communityTree.getModel();
     CommunityTreeObject cto = 
       new CommunityTreeObject(communityName, "Community");
@@ -442,13 +448,15 @@ public class CommunityPanel extends JPanel {
   private void importCommunities() {
     // Add in community info for this society
     JFileChooser chooser = 
-      new JFileChooser(SocietyFinder.getInstance().getPath());
+      new JFileChooser(System.getProperty("org.cougaar.install.path"));
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.setDialogTitle("Select the communities.xml file to import");
     // Allow selection of XML files and directories
     chooser.addChoosableFileFilter(new FileFilter() {
 	public boolean accept(File f) {
 	  if (f == null)
+	    return false;
+	  if (! f.canRead())
 	    return false;
 	  if (f.isDirectory())
 	    return true;
@@ -467,6 +475,10 @@ public class CommunityPanel extends JPanel {
       if (result != JFileChooser.APPROVE_OPTION)
 	return;
       xmlFile = chooser.getSelectedFile();
+      if (xmlFile != null) {
+	if (! xmlFile.canRead() || xmlFile.isDirectory())
+	  xmlFile = null;
+      }
     }
 
     if (xmlFile != null && !CommunityDbUtils.importCommunityXML(xmlFile, experiment.getCommAsbID())) {
@@ -649,6 +661,8 @@ public class CommunityPanel extends JPanel {
     if (result != JOptionPane.OK_OPTION)
       return null;
     String communityName = (String)cb.getSelectedItem();
+    if (communityName == null)
+      return null;
     communityName = communityName.trim();
     if (communityName.length() == 0)
       return null;
