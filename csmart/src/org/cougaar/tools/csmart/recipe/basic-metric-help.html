@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Basic Metric Help</title>
+</head>
+<body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+<h1>Basic Metric Configuration Help</h1>
+The Basic Metric collects rudimentary run-time performance metrics for any society to which it is added. The results can then be viewed in the <a href="../../ui/analyzer/help.html">Performance Analyzer.</a><br>
+
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#MAX_SAMPLES">Max Number of Metric Samples</a></td>
+	  <td>Integer</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#SAMPLE_INTERVAL">Metric Sample Interval</a></td>
+	  <td>Integer</td>
+	  <td>0 - 60</td>
+	</tr>
+	<tr>
+	  <td><a href="#START_DELAY">Start Delay</a></td>
+	  <td>Integer</td>
+	  <td>0 - 60</td>
+	</tr>
+	<tr>
+	  <td><a href="#TASK_VERB">Task Verb</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#BLACKBOARD_STATS">Blackboard Statistics Service On/Off</a></td>
+	  <td>Integer</td>
+	  <td>0 or 1</td>
+	</tr>
+	<tr>
+	  <td><a href="#PROTOTYPE_REGISTRY">Prototype Registry Service On/Off</a></td>
+	  <td>Integer</td>
+	  <td>0 or 1</td>
+	</tr>
+	<tr>
+	  <td><a href="#NODE_METRICS">Node Metrics Service On/Off</a></td>
+	  <td>Integer</td>
+	  <td>0 or 1</td>
+	</tr>
+	<tr>
+	  <td><a href="#MSG_STATS">Message Stats Service On/Off</a></td>
+	  <td>Integer</td>
+	  <td>0 or 1</td>
+	</tr>
+	<tr>
+	  <td><a href="#MSG_WATCH">Message Watcher Service On/Off</a></td>
+	  <td>Integer</td>
+	  <td>0 or 1</td>
+	</tr>
+    </table>  
+    <br><br>
+
+Throughout task production, metrics are collected for each agent.  Once the 
+agent is started, it will start producing metrics at <a href="#START_DELAY">Start Delay</a> + 
+current time.  The agent will then continue to report its metrics at every 
+interval <a href="#SAMPLE_INTERVAL">Sample Interval</a> until the requested number 
+of metrics samples <a href="#MAX_SAMPLES">Maximum Number of Samples</a> are collected.<br>
+<br>
+Metrics contain some standard statistics that are always collected. These include:
+
+<h3>Sample Length in Seconds</h3>
+This statistic is the CPU seconds used by the Node during a sample.<br>
+<i>Note: This CPU statistic requires the separate CpuClock shared library, included
+with the scalability module.   See the Scalability module's install
+instructions for installing the CpuClock library. If you do not install
+this library, you will see a warning exception, which can be ignored.</i><br>
+
+<h3>Memory used by Node in Megabytes</h3>
+This statistic indicates the total memory allocated to the Node in megabytes.<br>
+<br>
+ 
+<h2>Option Metrics and Parameters</h2>
+The remaining parameters allow you to customize metrics collection and which metrics are collected.
+
+<a name="MAX_SAMPLES"><h3>Max Number of Metric Samples</h3></a>
+The maximum number of metrics samples to collect.
+
+<a name="SAMPLE_INTERVAL"><h3>Metric Sample Interval</h3></a>
+Specifies the interval, in seconds,  that metric samples are collected.  The first metric is collected
+at current time + <a href="#START_DELAY">Start Delay</a> and subsequent metrics
+are collected at every interval until the maximum number of samples are collected or
+the society stops running.
+
+<a name="START_DELAY"><h3>Start Delay</h3></a>
+Start delay specifies a delay, in seconds, before metrics collection start.  
+
+<a name="TASK_VERB"><h3>Task Verb</h3></a>
+The Task Verb parameter allows you to request that the plugin count the tasks with the 
+given Verb that go by.
+<br>
+It will also count the time since the first task with that Verb went by.
+<br>
+For example, use this to count the Transport tasks, or to see how long
+after a Determine Requirements Task things get busy.
+<br><br>
+Setting the task verb adds three new statistics: <br>
+<ul>
+  <li>Time since first Task with the Verb</li>
+  <li>Number of Tasks in this interval with the verb</li>
+  <li>Total Tasks seen with the verb</li>
+</ul>
+<i>Note:  See know issues for more information on Task Verb</i>
+
+
+The following parameters indicate various services that contain statistics. Collection
+of these statistics can be turned on/off by setting the value of the parameter.
+<b>Default is: off</b> for all services
+<br>
+<a name="BLACKBOARD_STATS"><h3>Blackboard Statistics Service</h3></a>
+Turning on Blackboard statistics adds:
+<ul>
+  <li>Count of Assets on this Agent's Blackboard</li>
+  <li>Plan Elements on this Blackboard</li>
+  <li>Tasks on the Blackboard</li>
+  <li>Total Objects on this Blackboard</li>
+</ul>
+
+<a name="PROTOTYPE_REGISTRY"><h3>Prototype Registry Service</h3></a>
+<ul>
+  <li>Cached Prototypes</li>
+  <li>Property Providers</li>
+  <li>Prototype Providers</li>
+</ul>
+<a name="NODE_METRICS"><h3>Node Metrics Service</h3></a>
+Active threads in the COUGAAR group (a per-Node stat)<br>
+Free memory (bytes) in this Node's allocation<br>
+Total memory (bytes) in this Node's allocation<br>
+
+
+The remaining statistics are recorded only if the MessageStatisticsService was requested.
+<b>Default is: On</b>
+<br>
+
+<a name="MSG_STATS"><h3>Message Stats Service</h3></a>
+Message Queue Length (a per-Node statistic)<br>
+MessageBytes Sent (per-Node)<br>
+Messages sent (per-Node)<br>
+
+<a name="MSG_WATCH"><h3>Message Watcher Service</h3></a>
+Directives received by this Agent<br>
+Directives sent<br>
+Notifications received by this Agent<br>
+Notifications sent by this Agent<br>
+
+</body></html>
+
+<!-- Last Modified: $Date: 2002-01-09 17:09:53 $ -->
+<!-- By $Author: bkrisler $ -->
+
+
