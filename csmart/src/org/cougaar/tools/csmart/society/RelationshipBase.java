@@ -92,6 +92,15 @@ public class RelationshipBase
   // which this doesn't build with -- should they be
   // added here as allowedValues?
   public void initProperties() {
+    if (relationship == null) { 
+      if (log.isErrorEnabled()) {
+	log.error("Report under bug 1304: " + this + " using CSMART " + CSMART.writeDebug() + " got null relationship to create from", new Throwable());
+      }
+    } else if (relationship.getType() == null) {
+      if (log.isErrorEnabled()) {
+	log.error("Report under bug 1304: " + this + " using CSMART " + CSMART.writeDebug() + " got null relationship type to create from in relationship: " + relationship, new Throwable());
+      }
+    }
     propType = addProperty(PROP_TYPE, relationship.getType());
     propType.setToolTip(PROP_TYPE_DESC);
     propRole = addProperty(PROP_ROLE, relationship.getRole());
