@@ -23,7 +23,7 @@ package org.cougaar.tools.csmart.recipe;
 /**
  * ComplexRecipeComponent.java
  *
- * Marker interface used to identify with type
+ * Marker interface used to identify which type
  * of recipe is being edited.
  *
  * Created: Thu Jun 20 09:53:17 2002
@@ -31,9 +31,8 @@ package org.cougaar.tools.csmart.recipe;
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  * @version 1.0
  */
-
 public interface ComplexRecipeComponent extends RecipeComponent {
 
-  public void addTargetQueryProperty();
+  void addTargetQueryProperty();
 
 }// ComplexdRecipeComponent
