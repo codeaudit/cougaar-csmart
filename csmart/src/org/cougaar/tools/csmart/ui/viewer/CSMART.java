@@ -319,6 +319,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
           windowMenu.remove(menuItem);
           titleToMenuItem.remove(event.title);
         }
+	// If the window was the Exp.Builder or the Console, update
+	// the experiment Controls
+	if (event.title.startsWith("Experiment"))
+	    enableExperimentTools();
       } else if (event.eventType == NamedFrame.Event.CHANGED) {
 	JMenuItem menuItem = (JMenuItem)titleToMenuItem.get(event.prevTitle);
         if (menuItem == null) {
@@ -346,9 +350,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 				    "Component Not Editable",
 				    JOptionPane.YES_NO_OPTION,
 				    JOptionPane.WARNING_MESSAGE);
-      if (result != JOptionPane.YES_OPTION)
-	return;
-      cc = organizer.copyComponent(cc, null);
+      if (result != JOptionPane.YES_OPTION) {
+	openForEditing = false;
+	//	return;
+      } else {
+	cc = organizer.copyComponent(cc, null);
+      }
     }
     // note that cc is guaranteed non-null when this is called
     Class[] paramClasses = { ModifiableConfigurableComponent.class };
@@ -381,9 +388,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 				    "Experiment Not Editable",
 				    JOptionPane.YES_NO_OPTION,
 				    JOptionPane.WARNING_MESSAGE);
-      if (result != JOptionPane.YES_OPTION)
-	return;
-      experiment = organizer.copyExperiment(experiment, null);
+      if (result != JOptionPane.YES_OPTION) {
+	openForEditing = false;
+	//	return;
+      } else {
+	experiment = organizer.copyExperiment(experiment, null);
+      }
     }
     Class[] paramClasses = { CSMART.class, Experiment.class };
     Object[] params = new Object[2];
