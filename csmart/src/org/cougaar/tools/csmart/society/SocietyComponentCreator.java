@@ -21,6 +21,7 @@
 package org.cougaar.tools.csmart.society;
 
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Iterator;
 import org.cougaar.core.agent.ClusterImpl;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
@@ -32,6 +33,8 @@ import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 
 /**
@@ -92,19 +95,50 @@ public class SocietyComponentCreator {
     ac.addParameter(agent.getShortName()); // Agents have one parameter, the agent name
     ac.setOwner(owner);
     ac.setParent(parent);
-    addPropertiesAsParameters(ac, agent);
+    addBinders(ac, agent);
+    addPlugins(ac, agent);
     parent.addChild((ComponentData)ac);
+  }
+
+  private static final void addBinders(ComponentData cd, BaseComponent cp) {
+    Iterator iter = ((Collection)cp.getDescendentsOfClass(ContainerBase.class)).iterator();
+    while(iter.hasNext()) {
+      ContainerBase container = (ContainerBase)iter.next();
+      if(container.getShortName().equals("Binders")) {
+        for(int i=0; i < container.getChildCount(); i++) {
+          BinderBase binder = (BinderBase) container.getChild(i);
+          binder.addComponentData(cd);
+        }
+      }
+    }
+  }
+
+  private static final void addPlugins(ComponentData cd, BaseComponent cp) {
+    Iterator iter = ((Collection)cp.getDescendentsOfClass(ContainerBase.class)).iterator();
+    while(iter.hasNext()) {
+      ContainerBase container = (ContainerBase)iter.next();
+      if(container.getShortName().equals("Plugins")) {
+        for(int i=0; i < container.getChildCount(); i++) {
+          PluginBase plugin = (PluginBase) container.getChild(i);
+          plugin.addComponentData(cd);
+        }
+      }
+    }
   }
 
   private static final void addPropertiesAsParameters(ComponentData cd, 
                                                       BaseComponent cp)
   {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.SocietyComponentCreator");
     for (Iterator it = cp.getPropertyNames(); it.hasNext(); ) {
       ComponentName pname = (ComponentName) it.next();
       Property prop = cp.getProperty(pname);
       if (prop != null) {
         Object pvalue = prop.getValue();
         if (pvalue instanceof String)
+          if(log.isWarnEnabled()) {
+            log.warn("Adding Parameter.");
+          }
           cd.addParameter(PROP_PREFIX + pname.last() + "=" + pvalue);
       }
     }
