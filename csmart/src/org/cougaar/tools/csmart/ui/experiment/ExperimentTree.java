@@ -28,6 +28,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.dnd.*;
 import java.awt.datatransfer.*;
+import java.io.ObjectInputStream;
+import java.io.IOException;
+
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
@@ -37,135 +40,133 @@ import org.cougaar.tools.csmart.ui.console.*;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
 import org.cougaar.tools.csmart.ui.tree.DMTNArray;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.ObjectInputStream;
-import java.io.IOException;
+
+import org.cougaar.util.log.Logger;
 
 public class ExperimentTree extends DNDTree {
   private transient Logger log;
 
-    public static final String RECIPES = "Recipes";
-    public static final String SOCIETIES = "Societies";
-    public static final String COMPONENTS = "Components";
-    public static final CSMARTDataFlavor societyFlavor =
-        new CSMARTDataFlavor(SocietyComponent.class,
-                             null,
-                             ExperimentTree.class,
-                             "Society");
-    public static final CSMARTDataFlavor recipeFlavor =
-      new CSMARTDataFlavor(RecipeComponent.class,
-                             null,
-                             ExperimentTree.class,
-                             "Recipe");
-    public static final CSMARTDataFlavor componentFlavor =
-        new CSMARTDataFlavor(ModifiableComponent.class,
-                             null,
-                             ExperimentTree.class,
-                             "Modifiable Component");
+  public static final String RECIPES = "Recipes";
+  public static final String SOCIETIES = "Societies";
+  public static final String COMPONENTS = "Components";
+  public static final CSMARTDataFlavor societyFlavor =
+    new CSMARTDataFlavor(SocietyComponent.class,
+			 null,
+			 ExperimentTree.class,
+			 "Society");
+  public static final CSMARTDataFlavor recipeFlavor =
+    new CSMARTDataFlavor(RecipeComponent.class,
+			 null,
+			 ExperimentTree.class,
+			 "Recipe");
+  public static final CSMARTDataFlavor componentFlavor =
+    new CSMARTDataFlavor(ModifiableComponent.class,
+			 null,
+			 ExperimentTree.class,
+			 "Modifiable Component");
 
-    private DefaultTreeModel model;
-    private Experiment experiment;
+  private DefaultTreeModel model;
+  private Experiment experiment;
 
-    private static class MyTransferable implements Transferable {
-        Object theData;
-        DataFlavor[] flavors;
-        public MyTransferable(DefaultMutableTreeNode aNode) {
-            theData = aNode.getUserObject();
-            if (theData instanceof RecipeComponent)
-	      //else if (theData instanceof Recipe)
-                flavors = new DataFlavor[] {recipeFlavor};
-            else if (theData instanceof ModifiableComponent)
-                flavors = new DataFlavor[] {componentFlavor};
-            else
-                throw new IllegalArgumentException("Unknown node");
-        }
-        public Object getTransferData(DataFlavor flavor) {
-            if (!flavor.equals(flavors[0]))
-                throw new IllegalArgumentException("Illegal DataFlavor");
-            return theData;
-        }
-        public DataFlavor[] getTransferDataFlavors() {
-            return flavors;
-        }
-        public boolean isDataFlavorSupported(DataFlavor flavor) {
-            return flavors[0].equals(flavor);
-        }
+  private static class MyTransferable implements Transferable {
+    Object theData;
+    DataFlavor[] flavors;
+    public MyTransferable(DefaultMutableTreeNode aNode) {
+      theData = aNode.getUserObject();
+      if (theData instanceof RecipeComponent)
+	//else if (theData instanceof Recipe)
+	flavors = new DataFlavor[] {recipeFlavor};
+      else if (theData instanceof ModifiableComponent)
+	flavors = new DataFlavor[] {componentFlavor};
+      else
+	throw new IllegalArgumentException("Unknown node");
     }
-
-    public ExperimentTree(DefaultTreeModel model,
-                          Experiment experiment) {
-        super(model);
-        this.model = model;
-        this.experiment = experiment;
-        setExpandsSelectedPaths(true);
-        createLogger();
+    public Object getTransferData(DataFlavor flavor) {
+      if (!flavor.equals(flavors[0]))
+	throw new IllegalArgumentException("Illegal DataFlavor");
+      return theData;
     }
+    public DataFlavor[] getTransferDataFlavors() {
+      return flavors;
+    }
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+      return flavors[0].equals(flavor);
+    }
+  }
+
+  public ExperimentTree(DefaultTreeModel model,
+			Experiment experiment) {
+    super(model);
+    this.model = model;
+    this.experiment = experiment;
+    setExpandsSelectedPaths(true);
+    createLogger();
+  }
 
   private void createLogger() {
     log = CSMART.createLogger(this.getClass().getName());
   }
 
-    public void setSelection(TreeNode treeNode) {
-        TreeNode[] nodes = model.getPathToRoot(treeNode);
-        TreePath path = new TreePath(nodes);
-        setSelectionPath(path);
-    }
+  public void setSelection(TreeNode treeNode) {
+    TreeNode[] nodes = model.getPathToRoot(treeNode);
+    TreePath path = new TreePath(nodes);
+    setSelectionPath(path);
+  }
 
-    public Transferable makeDraggableObject(Object o) {
-        Transferable tran = null;
-        if (o instanceof DefaultMutableTreeNode) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
-            try {
-                return new MyTransferable(node);
-            } catch (IllegalArgumentException iae) {
-                return null;
-            }
-        }
-        throw new IllegalArgumentException("Not a DefaultMutableTreeNode");
+  public Transferable makeDraggableObject(Object o) {
+    if (o instanceof DefaultMutableTreeNode) {
+      DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
+      try {
+	return new MyTransferable(node);
+      } catch (IllegalArgumentException iae) {
+	return null;
+      }
     }
+    throw new IllegalArgumentException("Not a DefaultMutableTreeNode");
+  }
 
-    private int testFlavors(DataFlavor[] possibleFlavors, CSMARTDataFlavor testFlavor) {
-        for (int i = 0; i < possibleFlavors.length; i++) {
-            DataFlavor flavor = possibleFlavors[i];
-            if (flavor instanceof CSMARTDataFlavor) {
-                CSMARTDataFlavor cflavor = (CSMARTDataFlavor) flavor;
-                if (cflavor.equals(testFlavor)) {
-                    if (getClass().getName()
-                        .equals(cflavor.getSourceClassName())) {
-                        return DnDConstants.ACTION_MOVE;
-                    } else {
-                        return DnDConstants.ACTION_COPY;
-                    }
-                }
-            }
-        }
-        return DnDConstants.ACTION_NONE;
+  private int testFlavors(DataFlavor[] possibleFlavors, CSMARTDataFlavor testFlavor) {
+    for (int i = 0; i < possibleFlavors.length; i++) {
+      DataFlavor flavor = possibleFlavors[i];
+      if (flavor instanceof CSMARTDataFlavor) {
+	CSMARTDataFlavor cflavor = (CSMARTDataFlavor) flavor;
+	if (cflavor.equals(testFlavor)) {
+	  if (getClass().getName()
+	      .equals(cflavor.getSourceClassName())) {
+	    return DnDConstants.ACTION_MOVE;
+	  } else {
+	    return DnDConstants.ACTION_COPY;
+	  }
+	}
+      }
     }
+    return DnDConstants.ACTION_NONE;
+  }
 
-    public int isDroppable(DataFlavor[] possibleFlavors,
-                           DefaultMutableTreeNode target)
-    {
-        if (!isEditable())
-          return DnDConstants.ACTION_NONE;
-        Object userObject = target.getUserObject();
-        if (userObject instanceof String) {
-            if (userObject.equals(SOCIETIES)) {
-		// only allow one society per experiment for now
-		if (target.getChildCount() > 0)
-		    return DnDConstants.ACTION_NONE;
-                return testFlavors(possibleFlavors, societyFlavor);
-            }
-            if (userObject.equals(RECIPES)) {
-                return testFlavors(possibleFlavors, recipeFlavor);
-            }
-        } else if (target == model.getRoot()) {
-            return DnDConstants.ACTION_COPY
-                & (testFlavors(possibleFlavors, societyFlavor)
-                   | testFlavors(possibleFlavors, recipeFlavor));
-        }
-        return DnDConstants.ACTION_NONE;
+  public int isDroppable(DataFlavor[] possibleFlavors,
+			 DefaultMutableTreeNode target)
+  {
+    if (!isEditable())
+      return DnDConstants.ACTION_NONE;
+    Object userObject = target.getUserObject();
+    if (userObject instanceof String) {
+      if (userObject.equals(SOCIETIES)) {
+	// only allow one society per experiment for now
+	if (target.getChildCount() > 0)
+	  return DnDConstants.ACTION_NONE;
+	return testFlavors(possibleFlavors, societyFlavor);
+      }
+      if (userObject.equals(RECIPES)) {
+	return testFlavors(possibleFlavors, recipeFlavor);
+      }
+    } else if (target == model.getRoot()) {
+      return DnDConstants.ACTION_COPY
+	& (testFlavors(possibleFlavors, societyFlavor)
+	   | testFlavors(possibleFlavors, recipeFlavor));
     }
+    return DnDConstants.ACTION_NONE;
+  }
 
   public boolean isDraggable(Object o) {
     if (o instanceof DefaultMutableTreeNode) {
@@ -319,12 +320,12 @@ public class ExperimentTree extends DNDTree {
 	  javax.swing.SwingUtilities.invokeLater(new Runnable() {
 	      public void run() {
 		JOptionPane.showMessageDialog(null, 
-                                          "Experiment cannot contain two agents with the same name: " + dupName,
-                                          "Recipe Add Aborted!",
-                                          JOptionPane.ERROR_MESSAGE);
+					      "Experiment cannot contain two agents with the same name: " + dupName,
+					      "Recipe Add Aborted!",
+					      JOptionPane.ERROR_MESSAGE);
 	      }
 	    });
-            return false;
+	  return false;
         }
       }
     }
