@@ -46,12 +46,14 @@ set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
 # Third party jars are in CIP/sys
 #set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/sys/xerces.jar:${COUGAAR_INSTALL_PATH}/sys/grappa1_2.jar:${COUGAAR_INSTALL_PATH}/sys/jcchart451K.jar"
 
+set DEVPATH = ""
 if ($?COUGAAR_DEV_PATH) then
     set LIBPATHS = "${COUGAAR_DEV_PATH}:${LIBPATHS}"
+    set DEVPATH = "-Dorg.cougaar.class.path=${COUGAAR_DEV_PATH}"
 endif
     
 set MYMEMORY="-Xms100m -Xmx300m"
-set MYPROPERTIES="-Dorg.cougaar.install.path=${COUGAAR_INSTALL_PATH}"
+set MYPROPERTIES="-Dorg.cougaar.install.path=${COUGAAR_INSTALL_PATH} ${DEVPATH}"
 set MYCONFIGPATH="-Dorg.cougaar.config.path=${COUGAAR_INSTALL_PATH}/csmart/data/common/\;"
 
 set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -classpath $LIBPATHS"

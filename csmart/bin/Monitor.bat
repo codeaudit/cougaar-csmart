@@ -25,6 +25,9 @@ REM Script to run the CSMART Society Monitor as a standalone
 REM calls setlibpath.bat which sets the path to the required jar files.
 CALL %COUGAAR_INSTALL_PATH%\bin\setlibpath.bat
 
+REM start the classpath with the optional COUGAAR_DEV_PATH
+SET DEVPATH=
+IF NOT "%COUGAAR_DEV_PATH%" == "" SET DEVPATH=-Dorg.cougaar.class.path=%COUGAAR_DEV_PATH%
 REM Use the Bootstrapper to find Jar files.
 
 SET MYMEMORY=-Xms100m -Xmx300m
@@ -33,5 +36,5 @@ SET MYCONFIGPATH=-Dorg.cougaar.config.path="%COUGAAR_INSTALL_PATH%/csmart/data/c
 
 @ECHO ON
 
-java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% -classpath %LIBPATHS% org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
+java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %DEVPATH% -classpath %LIBPATHS% org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
 
