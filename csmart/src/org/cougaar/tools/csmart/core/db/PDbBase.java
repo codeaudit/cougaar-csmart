@@ -297,7 +297,7 @@ public class PDbBase {
 	Property prop = rc.getProperty(pname);
 	if (prop == null) {
 	  if (log.isErrorEnabled()) {
-	    log.error("Saving recipe " + rc.getRecipeName() + " under ID " + recipeId + " couldn't find property " + pname);
+	    log.error("Saving recipe " + rc.getRecipeName() + " under ID " + recipeId + " couldn't find property " + pname + ". Will continue.", new Throwable());
 	  }
 	  continue;
 	}
