@@ -203,6 +203,15 @@ database, the table names may be uppercase in some instances. This
 will cause problems - you will need to reload your database, after
 setting the above parameter.
 
-  
+Setting the Nameserver host property in Experiment Builder
+- If you have custom set the nameserver host / port on some Nodes in
+the Experiment Builder, but find that your setting didn't "stick", and
+some other host was used instead:
+  Did you add, remove, or reorder the hosts / Nodes after setting this
+  property? If you do so, CSMART re-calculates the nameserver host (to
+  be sure the host exists, etc). To get around this, be sure to set
+  the nameserver host / port _after_ you have set up all the hosts /
+  nodes that you want in your experiment.
+    
 Be sure to check the Cougaar Bug list for known issues, at http://www.cougaar.org/bugs 
 If all else fails, send a query to cougaar-developers@cougaar.org
