@@ -956,8 +956,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     while (true) {
       hostName = JOptionPane.showInputDialog("New host name: ");
       // FIXME: Forbid localhost here?
-      if (hostName == null || hostName.length() == 0)
+      if (hostName == null || hostName.trim().length() == 0)
         return;
+      hostName = hostName.trim();
       HostComponent[] hc = experiment.getHostComponents();
       boolean isUnique = true;
       for (int i = 0; i < hc.length; i++) 
@@ -1140,8 +1141,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     String nodeName = null;
     while (true) {
       nodeName = JOptionPane.showInputDialog("New node name: ");
-      if (nodeName == null || nodeName.length() == 0)
+      if (nodeName == null || nodeName.trim().length() == 0)
         return;
+      nodeName = nodeName.trim();
       // don't allow node names that are the same as node or agent names
       if (isNodeNameUnique(nodeName))
         break;
@@ -1497,8 +1499,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
                                            "Host Description",
                                            JOptionPane.QUESTION_MESSAGE,
                                            null, null, description);
-    if (s != null && s.length() != 0) 
-      setPropertyOfNode(hostTree, "Description", s);
+    if (s != null && s.trim().length() != 0) 
+      setPropertyOfNode(hostTree, "Description", s.trim());
   }
 
   public void setHostType() {
@@ -1509,8 +1511,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
                                            "Host Machine Type",
                                            JOptionPane.QUESTION_MESSAGE,
                                            null, machineTypes, machineType);
-    if (s != null && s.length() != 0) 
-      setPropertyOfNode(hostTree, "MachineType", s);
+    if (s != null && s.trim().length() != 0) 
+      setPropertyOfNode(hostTree, "MachineType", s.trim());
   }
 
   public void setHostLocation() {
@@ -1520,8 +1522,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
                                            "Host Location",
                                            JOptionPane.QUESTION_MESSAGE,
                                            null, null, location);
-    if (s != null && s.length() != 0) 
-      setPropertyOfNode(hostTree, "Location", s);
+    if (s != null && s.trim().length() != 0) 
+      setPropertyOfNode(hostTree, "Location", s.trim());
   }
 
   /**
@@ -1541,8 +1543,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
                                             JOptionPane.QUESTION_MESSAGE,
                                             null, null, description);
       askedUser = true;
-      if (description != null && description.length() != 0)
-        setPropertyOfNode(hostTree, "Description", description);
+      if (description != null && description.trim().length() != 0)
+        setPropertyOfNode(hostTree, "Description", description.trim());
     }
     if (getSelectedNodesInNodeTree() != null) {
       if (!askedUser) {
@@ -1554,8 +1556,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
                                               JOptionPane.QUESTION_MESSAGE,
                                               null, null, description);
       }
-      if (description != null && description.length() != 0)
-        setPropertyOfNode(nodeTree, "Description", description);
+      if (description != null && description.trim().length() != 0)
+        setPropertyOfNode(nodeTree, "Description", description.trim());
     }
   }
 
@@ -1563,7 +1565,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Pop-up input dialog to get node description from user.
    * Called with the tree from which this menu item was invoked.
    */
-
   private void setNodeDescription(JTree tree) {
     String description = getPropertyOfNode(tree, "Description");
     String s = (String)JOptionPane.showInputDialog(this,
@@ -1571,15 +1572,14 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
                                            "Node Description",
                                            JOptionPane.QUESTION_MESSAGE,
                                            null, null, description);
-    if (s != null && s.length() != 0)
-      setPropertyOfNode(tree, "Description", s);
+    if (s != null && s.trim().length() != 0)
+      setPropertyOfNode(tree, "Description", s.trim());
   }
 
   /**
    * Pop-up input dialog to get node command line arguments from user.
    * Called with the tree from which this menu item was invoked.
    */
-
   public void setNodeCommandLine() {
     DefaultMutableTreeNode[] nodes = getSelectedNodesInHostTree();
     if (nodes != null) {
@@ -1689,7 +1689,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * @param components list of components from which user should select
    * @param label to use in dialog boxes (i.e. Host, Node, Agent)
    */
-
   private void findWorker(JTree[] trees, BaseComponent[] components,
                           String label) {
     if (components.length == 0) {
@@ -1828,6 +1827,5 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     return cto.getComponent();
   }
 }
-
 
 
