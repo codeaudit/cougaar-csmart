@@ -65,6 +65,9 @@ public abstract class RecipeBase
   // modification event
   public static final int RECIPE_SAVED = 3;
 
+  // used to block modify notifications while saving
+  private boolean saveInProgress = false; 
+
   public RecipeBase (String name){
     super(name);
     createLogger();
@@ -148,6 +151,7 @@ public abstract class RecipeBase
    * @return boolean true if save was successful
    */
   public boolean saveToDatabase() {
+    saveInProgress = true;
     boolean result = false;
     PDbBase pdb = null;
     try {
@@ -169,6 +173,7 @@ public abstract class RecipeBase
 	}
       }
     }
+    saveInProgress = false;
     if (result) {
       modified = false;
       fireModification(new ModificationEvent(this, RECIPE_SAVED));
@@ -209,6 +214,8 @@ public abstract class RecipeBase
           fireModification();
         }
       };
+
+  // Bug 1357: Add in own ModificationListener as per SocietyBase, it check on saveInProgress?
 
   public ModifiableComponent copy(String name) {
     ModifiableComponent copiedComponent = super.copy(name);
