@@ -664,24 +664,20 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   /**
-   * Do nothing when agent nodes are inserted into a node tree,
-   * because the treeNodesInserted method gets called both on
-   * host tree nodes and node tree nodes when a node is dragged
-   * on to the host tree.
+   * Add agent nodes if they were dragged on to the node
+   * tree and the node wasn't dragged on to a host, so that the
+   * node to agent mapping is preserved.
    */
 
   private void treeNodesInsertedInNodeTree(TreeModelEvent e) {
-//     TreePath path = e.getTreePath();
-//     DefaultMutableTreeNode changedNode = 
-//       (DefaultMutableTreeNode)path.getLastPathComponent();
-//     ConsoleTreeObject cto = (ConsoleTreeObject)(changedNode.getUserObject());
-//     // agents were dragged on to a node
-//     // tell the node that agents were added 
-//     if (!cto.isRoot()) {
-//       System.out.println("Agents were added to node in node tree: " +
-// 			 ((NodeComponent)cto.getComponent()).toString());
-//       addAgentsToNode((NodeComponent)cto.getComponent(), e.getChildren());
-//     }
+    TreePath path = e.getTreePath();
+    DefaultMutableTreeNode changedNode = 
+      (DefaultMutableTreeNode)path.getLastPathComponent();
+    ConsoleTreeObject cto = (ConsoleTreeObject)(changedNode.getUserObject());
+    // agents were dragged on to a node
+    // tell the node that agents were added 
+    if (!cto.isRoot()) 
+      addAgentsToNode((NodeComponent)cto.getComponent(), e.getChildren());
   }
 
   /**
