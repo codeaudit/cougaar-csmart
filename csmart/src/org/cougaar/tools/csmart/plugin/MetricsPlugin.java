@@ -473,9 +473,14 @@ public class MetricsPlugin
 
     writer.print("\t");
     writer.print(deltaPlanElementCount);
-    
+
+    double timeDelta = (timeFirstMyTask == 0l ? 0l : (System.currentTimeMillis() - timeFirstMyTask) / 1000.0);
     if (myTaskSearch != null) {
-      writer.print("\t" + ((System.currentTimeMillis() - timeFirstMyTask) / 1000.0) + "\t");
+      if (timeFirstMyTask == 0l) {
+	writer.print("\t-1\t");
+      } else {
+	writer.print("\t" + timeDelta + "\t");
+      }
       writer.print(countMyTasksThisInterval + "\t");
       writer.print(countMyTasks);
     }
@@ -500,7 +505,11 @@ public class MetricsPlugin
       log.log(this, log.DEBUG, 
 	      "Tasks Done   : " + deltaPlanElementCount);
       if (myTaskSearch != null) {
-	log.log(this, log.DEBUG, "Time (sec) since first task of verb " + searchVerb + ": " + ((System.currentTimeMillis() - timeFirstMyTask) / 1000.0) + "\n");
+	if (timeFirstMyTask == 0l) {
+	  log.log(this, log.DEBUG, "Time (sec) since first task of verb " + searchVerb + ": <Not seen yet>\n");
+	} else {
+	  log.log(this, log.DEBUG, "Time (sec) since first task of verb " + searchVerb + ": " + timeDelta + "\n");
+	}
 	log.log(this, log.DEBUG, "Num tasks this interval of verb " + searchVerb + ": " + countMyTasksThisInterval + "\n");
 	log.log(this, log.DEBUG, "Total tasks seen with verb " + searchVerb + ": " + countMyTasks + "\n");
       }
