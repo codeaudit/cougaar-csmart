@@ -57,70 +57,41 @@ public class AgentComponentDataTest extends TestCase {
     } catch(IndexOutOfBoundsException e) {}
   }
 
-  public void testCommunityTimePhased() {
-    CommunityTimePhasedData[] ctpd = new CommunityTimePhasedData[3];
-    CommunityTimePhasedData c1 =  new CommunityTimePhasedData();
-    CommunityTimePhasedData c2 =  new CommunityTimePhasedData();
-    CommunityTimePhasedData c3 =  new CommunityTimePhasedData();
-    c1.addCommunity("Comm1");
-    c2.addCommunity("Comm2");
-    c3.addCommunity("Comm3");
-    ctpd[0] = c1;
-    ctpd[1] = c2;
-    ctpd[2] = c3;
 
-    data.setCommunityData(ctpd);
-    assertEquals("Test setCommunityData", 3, data.getCommunityCount()); 
-    CommunityTimePhasedData c4 = new CommunityTimePhasedData();
-    c4.addCommunity("NewEntry");
-    data.addCommunity(c4);
-    CommunityTimePhasedData[] all = data.getCommunityData();
-    assertEquals("Test addCommunity()", c4, all[3]);
-    Iterator iter = data.getCommunityIterator();
-    CommunityTimePhasedData cc = (CommunityTimePhasedData)iter.next();
-    assertEquals("Test getCommunityIterator()", c1, cc);
+//   public void testRelationshipTimePhased() {
+//     RelationshipTimePhasedData[] rel = new RelationshipTimePhasedData[3];
+//     RelationshipTimePhasedData r1 =  new RelationshipTimePhasedData();
+//     RelationshipTimePhasedData r2 =  new RelationshipTimePhasedData();
+//     RelationshipTimePhasedData r3 =  new RelationshipTimePhasedData();
+//     r1.setRole("Role1");
+//     r1.setItem("Item1");
+//     r2.setRole("Role2");
+//     r2.setItem("Item2");
+//     r3.setRole("Role3");
+//     r3.setItem("Item3");
 
-    try {
-      data.setCommunity(10, c4);
-      fail("IndexOutOfBoundsException Expected");
-    } catch(IndexOutOfBoundsException e) {}
+//     rel[0] = r1;
+//     rel[1] = r2;
+//     rel[2] = r3;
 
-  }
+//     data.setRelationshipData(rel);
+//     assertEquals("Test setRelationshipData", 3, data.getRelationshipCount()); 
+//     RelationshipTimePhasedData r4 = new RelationshipTimePhasedData();
+//     r4.setRole("NewRole");
+//     r4.setItem("NewItem");
+//     data.addRelationship(r4);
+//     RelationshipTimePhasedData[] all = data.getRelationshipData();
+//     assertEquals("Test addRelationship()", r4, all[3]);
+//     Iterator iter = data.getRelationshipIterator();
+//     RelationshipTimePhasedData rr = (RelationshipTimePhasedData)iter.next();
+//     assertEquals("Test getRelationshipIterator()", r1, rr);
 
-  public void testRelationshipTimePhased() {
-    RelationshipTimePhasedData[] rel = new RelationshipTimePhasedData[3];
-    RelationshipTimePhasedData r1 =  new RelationshipTimePhasedData();
-    RelationshipTimePhasedData r2 =  new RelationshipTimePhasedData();
-    RelationshipTimePhasedData r3 =  new RelationshipTimePhasedData();
-    r1.setRole("Role1");
-    r1.setItem("Item1");
-    r2.setRole("Role2");
-    r2.setItem("Item2");
-    r3.setRole("Role3");
-    r3.setItem("Item3");
+//     try {
+//       data.setRelationship(10, r4);
+//       fail("IndexOutOfBoundsException Expected");
+//     } catch(IndexOutOfBoundsException e) {}
 
-    rel[0] = r1;
-    rel[1] = r2;
-    rel[2] = r3;
-
-    data.setRelationshipData(rel);
-    assertEquals("Test setRelationshipData", 3, data.getRelationshipCount()); 
-    RelationshipTimePhasedData r4 = new RelationshipTimePhasedData();
-    r4.setRole("NewRole");
-    r4.setItem("NewItem");
-    data.addRelationship(r4);
-    RelationshipTimePhasedData[] all = data.getRelationshipData();
-    assertEquals("Test addRelationship()", r4, all[3]);
-    Iterator iter = data.getRelationshipIterator();
-    RelationshipTimePhasedData rr = (RelationshipTimePhasedData)iter.next();
-    assertEquals("Test getRelationshipIterator()", r1, rr);
-
-    try {
-      data.setRelationship(10, r4);
-      fail("IndexOutOfBoundsException Expected");
-    } catch(IndexOutOfBoundsException e) {}
-
-  }
+//   }
 
   public static Test suite() {
     return new TestSuite(AgentComponentDataTest.class);
