@@ -101,9 +101,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private static String agentURL = null; // agent to contact initially
   private static String agentHost = "localhost";
   // default agent port
-  private static int agentPort = 8800;
+  public static int agentPort = 8800;
   // node component argument that specifies alternate port
-  private static String AGENT_PORT = "org.cougaar.lib.web.http.port";
+  public static String AGENT_PORT = "org.cougaar.lib.web.http.port";
   // maps host to port
   private static CSMARTAgentMap agentMap;
   // these mappings are determined once per experiment
