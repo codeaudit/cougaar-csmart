@@ -1611,13 +1611,6 @@ public class CSMARTConsole extends JFrame {
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
     ConsoleTextPane textPane = new ConsoleTextPane(doc, statusButton);
     JScrollPane scrollPane = new JScrollPane(textPane);
-
-    ///////////////
-    // FIXME: For now, hard-code to tell AppServer to always leave nodes
-    // running if CSMART dies
-    // This is not a property of the Node, but rather of the process relative to the
-    // AppServer - so putting it here means the Node will see this too, which is useless
-    properties.setProperty("org.cougaar.tools.server.swallowOutputConnectionException", "true");
     
     // create a node event listener to get events from the node
     OutputListener listener;

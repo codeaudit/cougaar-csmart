@@ -215,7 +215,11 @@ The argument <code>org.cougaar.experiment.id</code> is the key for
 your society to use to initialize itself from the database, and cannot
 be edited.<br>
 The argument <code>org.cougaar.control.port</code> tells the Node what
-port to listen on for control messages from the AppServer.<br><br>
+port to listen on for control messages from the AppServer.<br>
+The argument
+<code>org.cougaar.tools.server.swallowOutputConnectionException</code>,
+if true, tells the AppServer to keep the Node
+running if CSMART should unexpectedly die.<br><br>
 As of 9.2.1, you may include the
  string $HOST in a command line argument, and CSMART will substitute
  at runtime the name of the Host on which that Node is running (using

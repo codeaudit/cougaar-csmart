@@ -95,6 +95,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public static final String BOOTSTRAP_CLASS = "java.class.name";
   public static final String NAME_SERVER = "org.cougaar.name.server";
   public static final String NODE_NAME = "org.cougaar.node.name";
+  // When true, if CSMART dies, the society does not die
+  public static final String AS_SWALLOW_ERRORS = "org.cougaar.tools.server.swallowOutputConnectionException";
 
   
   // Define some Defaults
@@ -110,6 +112,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public static final String NAME_SERVER_PORTS = "8888:5555";
   public static final String DEFAULT_BOOTSTRAP_CLASS = "org.cougaar.bootstrap.Bootstrapper";
   public static final String DEFAULT_NODE_CLASS = "org.cougaar.core.node.Node";
+  public static final String AS_SWALLOW_ERRORS_DFLT = "true";
 
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
   public static final String PROP_PREFIX = "PROP$";
@@ -245,6 +248,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     defaultNodeArguments.put(COMPLAININGLP_LEVEL, COMPLAININGLP_LEVEL_DFLT);
     defaultNodeArguments.put(TRANSPORT_ASPECTS, TRANSPORT_ASPECTS_DFLT);
     defaultNodeArguments.put(CONTROL_PORT, Integer.toString(APP_SERVER_DEFAULT_PORT));
+
+    // By default, we tell the AppServer to ignore connection errors
+    // if CSMART dies, so that the society does _not_ die.
+    defaultNodeArguments.put(AS_SWALLOW_ERRORS, AS_SWALLOW_ERRORS_DFLT);
+
     // Class of Node to run. This is the first argument to the BOOTSTRAP_CLASS
     // below.
     defaultNodeArguments.put(CSMARTConsole.COMMAND_ARGUMENTS, DEFAULT_NODE_CLASS);
