@@ -181,7 +181,15 @@ public class ComponentDataXML extends XMLUtils {
       element = doc.createElement(AGENT_NODE);
     }
 
-    element.setAttribute(NAME_ATTR, data.getName());
+
+    if(element != null) {
+      if(data != null && data.getName() != null) {
+        element.setAttribute(NAME_ATTR, data.getName());
+      } else {
+        element.setAttribute(NAME_ATTR, "");
+      }
+    }
+
     // For now, don't walk below Agent.  This will
     // need to change when we implement ability to
     // Generate a complete XML file from ComponentData.
