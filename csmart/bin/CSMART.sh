@@ -75,7 +75,7 @@ MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY
 # and will not be restored from the workspace file. You will have to
 # reload all experiments from the database every time you restart.
 # To do so, uncomment the following line.
-# set MYPROPERTIES="-Dorg.cougaar.tools.csmart.doWorkspace=false $MYPROPERTIES"
+# MYPROPERTIES="-Dorg.cougaar.tools.csmart.doWorkspace=false $MYPROPERTIES"
 
 # Set the config path to include the basic CSMART config files first
 MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
