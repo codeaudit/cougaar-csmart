@@ -176,22 +176,4 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     isEditable = configComponent.isEditable();
     saveMenuItem.setEnabled(configComponent instanceof RecipeComponent);
   }
-
-  public static void main(String[] args) {
-    final ABCSocietyComponent abc = new ABCSocietyComponent();
-    PropertyBuilder builder = new PropertyBuilder(abc);
-    abc.initProperties();
-    JMenu testMenu = new JMenu("Test");
-    JMenuItem testMenuItem = new JMenuItem("Test Change");
-    testMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-	abc.test();
-      }
-    });
-    testMenu.add(testMenuItem);
-    builder.getRootPane().getJMenuBar().add(testMenu);
-    builder.pack();
-    builder.setDefaultCloseOperation(EXIT_ON_CLOSE);
-  }
-
 }
