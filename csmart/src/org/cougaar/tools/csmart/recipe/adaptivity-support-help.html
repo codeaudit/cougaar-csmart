@@ -8,7 +8,20 @@
 <h1>Adaptivity Support Recipe</h1>
 Adaptivity Support Recipes allow users to insert Adaptivity Support
 in any society at the set of places indicated by a database query. 
-An Adaptivity Support Recipe contains the following parameters:
+In particular, it adds the following plugins:<br>
+<code>org.cougaar.core.adaptivity.AdaptivityEngine</code>
+<code>org.cougaar.core.adaptivity.ConditionServiceProvider</code>
+<code>org.cougaar.core.adaptivity.OperatingModeServiceProvider</code>
+<code>org.cougaar.core.adaptivity.OperatingModePolicyManager</code>
+<code>org.cougaar.core.adaptivity.PlaybookManager(&lt;agent
+name&gt;-plays.txt)</code><br>
+- where you must have put the Plays file with that name on all
+relevant machines, in a location on the <code>org.cougaar.config.path</code><br>
+And finally, it can optionally include the <code>AEViewerServlet</code>, using the
+parameter described below.
+Note that this recipe does not add the <code>PolicyInjectorPlugin</code>.<br><br>
+
+An Adaptivity Support Recipe contains the following parameters:<br>
     <h2>Component Fields</h2>
     <table width="400">
 	<tr>
@@ -46,7 +59,9 @@ CIP/configs/common, for example.<br>
 
 <a name="SERVLET"><h3>AEViewerServlet</h3></a>
 The AEViewerServlet is used for debugging the Adaptivity Support within an
-Agent.
+Agent. This property allows you to optionally include this servlet
+(<code>org.cougaar.core.adaptivity.AEViewerServlet</code>) in your
+society. It will run at the URI: <code>/aeviewer</code><br>
 
 </body>
 </html>
