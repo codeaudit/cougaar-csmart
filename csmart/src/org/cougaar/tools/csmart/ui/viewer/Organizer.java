@@ -38,32 +38,32 @@ import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 
-import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.ui.component.CompositeName;
+import org.cougaar.tools.csmart.core.db.DBUtils;
+import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.tools.csmart.core.db.PDbBase;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.tools.csmart.recipe.EmptyMetric;
-import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
-import org.cougaar.tools.csmart.experiment.NodeComponent;
-import org.cougaar.tools.csmart.core.db.PDbBase;
-import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
-import org.cougaar.tools.csmart.recipe.RecipeComponent;
-import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.core.db.ExperimentDB;
-import org.cougaar.tools.csmart.ui.experiment.*;
-import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
-import org.cougaar.tools.csmart.society.abc.ABCSociety;
+import org.cougaar.tools.csmart.experiment.Experiment;
+import org.cougaar.tools.csmart.experiment.HostComponent;
+import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.recipe.BasicMetric;
+import org.cougaar.tools.csmart.recipe.EmptyMetric;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.society.abc.ABCSociety;
+import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.society.cmt.CMTSociety;
-import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.tools.csmart.recipe.*;
+import org.cougaar.tools.csmart.ui.experiment.*;
 
 
 /**

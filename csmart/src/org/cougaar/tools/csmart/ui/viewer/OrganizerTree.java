@@ -28,14 +28,12 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.dnd.*;
 import java.awt.datatransfer.*;
-import org.cougaar.tools.csmart.ui.experiment.*;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.ui.console.*;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
-import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
 
 public class OrganizerTree extends DNDTree {
     public static final DataFlavor folderFlavor =

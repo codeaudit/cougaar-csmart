@@ -37,20 +37,27 @@ import javax.swing.tree.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
-import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
-import org.cougaar.tools.csmart.ui.configbuilder.PropertyEditorPanel;
-import org.cougaar.tools.csmart.ui.component.*;
-import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
-import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
+import org.cougaar.tools.csmart.experiment.HostComponent;
+import org.cougaar.tools.csmart.experiment.NodeComponent;
+import org.cougaar.tools.csmart.experiment.SocietyComponent;
 import org.cougaar.tools.csmart.experiment.Trial;
 import org.cougaar.tools.csmart.experiment.TrialResult;
+import org.cougaar.tools.csmart.recipe.MetricComponent;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
+import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.tools.csmart.ui.configbuilder.PropertyEditorPanel;
+import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
+import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.tools.server.*;
 import org.cougaar.tools.server.rmi.ClientCommunityController;
-import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.util.Parameters;
 
 public class CSMARTConsole extends JFrame {

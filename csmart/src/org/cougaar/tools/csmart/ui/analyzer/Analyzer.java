@@ -21,13 +21,6 @@
 
 package org.cougaar.tools.csmart.ui.analyzer;
 
-import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.recipe.RecipeComponent;
-import org.cougaar.tools.csmart.recipe.MetricComponent;
-import org.cougaar.tools.csmart.experiment.Experiment;
-import org.cougaar.tools.csmart.ui.util.NamedFrame;
-import org.cougaar.util.Parameters;
-
 import java.awt.GridLayout;
 import java.awt.event.*;
 import java.io.*;
@@ -35,8 +28,14 @@ import java.net.URL;
 import javax.swing.*;
 import java.util.*;
 
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.Parameters;
+import org.cougaar.tools.csmart.experiment.Experiment;
+import org.cougaar.tools.csmart.recipe.MetricComponent;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.ui.util.NamedFrame;
 
 public class Analyzer extends JFrame implements ActionListener {
   // system property; location of Excel
