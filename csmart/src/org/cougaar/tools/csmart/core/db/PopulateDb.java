@@ -206,12 +206,12 @@ public class PopulateDb extends PDbBase {
     // Society was previously saved.
     if (societyId != null) {
       if (log.isDebugEnabled()) {
-	log.debug("Had a societyId: " + societyId);
+	log.debug("Preparing to save experiment " + exptId + " with society: " + societyId);
       }
       // is it already in the config DB and runtime DB? If not, add it
       if (! assemblyInConfig(societyId)) {
 	if (log.isDebugEnabled()) {
-	  log.debug("Didn't have soc in Config: " + societyId);
+	  log.debug("Didn't have society in Config: " + societyId);
 	}
 	// first remove any other CMT or CSA assembly in config for this experiment
 	cleanOldConfigSocietyAssemblies();
@@ -232,7 +232,7 @@ public class PopulateDb extends PDbBase {
 	
       if (! assemblyInRuntime(societyId)) {
 	if (log.isDebugEnabled()) {
-	  log.debug("Didn't have soc in Runtime: " + societyId);
+	  log.debug("Didn't have society in Runtime: " + societyId);
 	}
 	// first remove any CMT or CSA assembly in runtime for this experiment
 	cleanOldRuntimeSocietyAssemblies();
@@ -338,9 +338,9 @@ public class PopulateDb extends PDbBase {
   }
 
   public String getTrialId() {
-    if(log.isDebugEnabled()) {
-      log.debug("trialId: " + trialId);
-    }
+//     if(log.isDebugEnabled()) {
+//       log.debug("trialId: " + trialId);
+//     }
     return trialId;
   }
 
@@ -368,9 +368,9 @@ public class PopulateDb extends PDbBase {
    * @exception SQLException if an error occurs
    */
   private void cleanOldConfigSocietyAssemblies() throws SQLException {
-    if (log.isDebugEnabled()) {
-      log.debug("cleanOldConfigSoc with subs " + substitutions);
-    }
+//     if (log.isDebugEnabled()) {
+//       log.debug("cleanOldConfigSoc with subs " + substitutions);
+//     }
     Statement stmt = getStatement();
     ResultSet rs =
       executeQuery(stmt, dbp.getQuery("queryOldSocietyConfigAssembliesToClean", substitutions));
@@ -379,7 +379,7 @@ public class PopulateDb extends PDbBase {
       if (asb == null || asb.equals(""))
 	continue;
       if (log.isDebugEnabled()) {
-	log.debug("Cleaning asb from config: " + asb);
+	log.debug("Cleaning assembly from config: " + asb);
       }
       substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(asb) + ")");
       executeUpdate(dbp.getQuery("cleanTrialConfigAssembly", substitutions));
@@ -387,7 +387,7 @@ public class PopulateDb extends PDbBase {
       // So we've just removed the assembly from the config time.
       // Will remove it now unless it is also in runtime
       if (log.isDebugEnabled() && assemblyInRuntime(asb)) {
-	log.debug("In CleanOld with asb " + asb + " but wont really delete cause its in runtime for trial " + trialId);
+	log.debug("In cleanOldConfig with assembly " + asb + " but wont really delete cause its in runtime for this trial " + trialId);
       }
       if (! isAssemblyUsed(asb))
 	cleanAssembly(asb);
@@ -413,10 +413,7 @@ public class PopulateDb extends PDbBase {
 	continue;
       substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(asb) + ")");
       if (log.isDebugEnabled()) {
-	log.debug("Cleaning asb from runtime: " + asb);
-      }
-      if (asb.equals("CSMI-0001") && log.isErrorEnabled()) {
-	log.error("clnOldRuntime wants to delete CSMI-0001! Sub: " + substitutions, new Throwable("Who is the culprit?"));
+	log.debug("Cleaning assembly from runtime: " + asb);
       }
 		  
       executeUpdate(dbp.getQuery("cleanTrialAssembly", substitutions));
@@ -424,7 +421,7 @@ public class PopulateDb extends PDbBase {
       // So we've just removed the assembly from the config time.
       // Will remove it now unless it is also in runtime
       if (log.isDebugEnabled() && assemblyInConfig(asb)) {
-	log.debug("In CleanOld with asb " + asb + " but wont really delete cause its in configtime for trial " + trialId);
+	log.debug("In cleanOldRun with assembly " + asb + " but wont really delete cause its in configtime for trial " + trialId);
       }
       if (! isAssemblyUsed(asb))
 	cleanAssembly(asb);
@@ -474,14 +471,6 @@ public class PopulateDb extends PDbBase {
     Statement stmt = getStatement();
     ResultSet ctrs =      
       executeQuery(stmt, dbp.getQuery("queryAssembliesToClean", substitutions));
-    if (log.isDebugEnabled()) {
-      while (ctrs.next()) {
-	log.debug("clnTrial asbtoCln: " + ctrs.getString(1));
-      }
-      ctrs.close();
-      ctrs = executeQuery(stmt, dbp.getQuery("queryAssembliesToClean", substitutions));
-    }
-
     boolean first = true;
     StringBuffer assembliesToDelete = new StringBuffer();
     assembliesToDelete.append("(");
@@ -501,12 +490,9 @@ public class PopulateDb extends PDbBase {
       assembliesToDelete.append(sqlQuote(asb));
 
       // if asb not used other than the current trial
-      if (log.isDebugEnabled()) {
-	log.debug("cleanTrial looking at asb " + asb);
-      }
       if (! isAssemblyUsed(asb)) {
 	if (log.isDebugEnabled()) {
-	  log.debug("assembly " + asb + " not used, except in trial " + trialId + " which we are deleting");
+	  log.debug("cleanTrial: assembly " + asb + " not used, except in trial " + trialId + " which we are deleting, so well really delete it");
 	}
 	if (rfirst) {
 	  rfirst = false;
@@ -517,21 +503,9 @@ public class PopulateDb extends PDbBase {
       } else if (log.isDebugEnabled()) {
 	log.debug("cleanTrial not deleting asb " + asb + " cause its still in use outside trial " + trialId);
       }
-      if (asb.equals("CSMI-0001") && log.isErrorEnabled()) {
-	log.error("CleanTrial adding CSMI0001 to list of assemblies to remove from runtime. Subs: " + substitutions, new Throwable("Who did it?"));
-      }
-      if (log.isDebugEnabled()) {
-	log.debug("About to go to top of loop with subs: " + substitutions);
-	log.debug("RS says to q, is this the last: " + ctrs.isLast());
-	log.debug("RS says to q, is this the first: " + ctrs.isFirst());
-      }
     } // done with loop over assemblies to clean up
     ctrs.close();
     stmt.close();
-
-    if(log.isDebugEnabled()) {
-      log.debug("cleanTrial Substitutions: " + substitutions);
-    }
 
     assembliesToDelete.append(")");
     assembliesToReallyDelete.append(")");
@@ -552,7 +526,9 @@ public class PopulateDb extends PDbBase {
     // where if this is true there were none
     if (! rfirst) {
       substitutions.put(":assemblies_to_clean:", assembliesToReallyDelete.toString());
-      log.debug("Assemblies to completely delete: " + assembliesToReallyDelete);
+      if (log.isDebugEnabled()) {
+	log.debug("Assemblies to completely delete: " + assembliesToReallyDelete);
+      }
       cleanAssemblies(false);
     }
 
@@ -576,7 +552,7 @@ public class PopulateDb extends PDbBase {
     if (assembly_id == null || assembly_id.equals(""))
       return;
     if (log.isDebugEnabled()) {
-      log.debug("Removing assembly from config: " + assembly_id);
+      log.debug("Removing assembly from config for trial " + trialId + ": " + assembly_id);
     }
     substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
     executeUpdate(dbp.getQuery("cleanTrialConfigAssembly", substitutions));
@@ -593,10 +569,7 @@ public class PopulateDb extends PDbBase {
       return;
     substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
     if (log.isDebugEnabled()) {
-      log.debug("Removing assembly from runtime: " + assembly_id);
-    }
-    if (log.isErrorEnabled() && assembly_id.equals("CSMI-0001")) {
-      log.error("Who is deleting CSMI-0001 from runtime?", new Throwable("Who is the culprit?"));
+      log.debug("Removing assembly from runtime for trial " + trialId + ": " + assembly_id);
     }
     executeUpdate(dbp.getQuery("cleanTrialAssembly", substitutions));
   }
@@ -634,9 +607,6 @@ public class PopulateDb extends PDbBase {
   private void cleanAssembly(String assembly_id, boolean partial) throws SQLException {
     if (assembly_id == null || assembly_id.equals(""))
       return;
-    if (assembly_id.equals("CSMI-0001") && log.isErrorEnabled()) {
-      log.error("clnAsb for CSMI0001! Sub: " + substitutions, new Throwable("Who called cleanAssemblyFor csmi-0001"));
-    }
     substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
     cleanAssemblies(partial);
   }
@@ -648,9 +618,6 @@ public class PopulateDb extends PDbBase {
     if (assembly_id == null || assembly_id.equals(""))
       return;
     substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
-    if (assembly_id.equals("CSMI-0001") && log.isErrorEnabled()) {
-      log.error("clnAsb for CSMI0001! Sub: " + substitutions, new Throwable("Who called cleanAssemblyFor csmi-0001"));
-    }
     cleanAssemblies(false);
   }
 
@@ -699,19 +666,19 @@ public class PopulateDb extends PDbBase {
       // FIXME: Does this really do that?
       if (assid == null || assid.equals(csmiAssemblyId) || assid.equals(hnaAssemblyId)) {
 	if (log.isDebugEnabled()) {
-	  log.debug("removeOrphan not touching my asb: " + assid);
+	  log.debug("removeOrphan not touching asb used in current trial (" + trialId + ": " + assid);
 	}
 	continue;
       }
       if (assemblyInRuntime(assid)) {
 	if (log.isDebugEnabled()) {
-	  log.debug("removeOrphan found asb in runtime not in local var: will skip: " + assid);
+	  log.debug("removeOrphan found asb in runtime for trial " + trialId + " not in local var: will skip: " + assid);
 	}
 	continue;
       } 
       if (assemblyInConfig(assid)) {
 	if (log.isDebugEnabled()) {
-	  log.debug("removeOrphan found asb in configtime not in local var: will skip: " + assid);
+	  log.debug("removeOrphan found asb in configtime for trial " + trialId + " not in local var: will skip: " + assid);
 	}
 	continue;
       }
@@ -778,13 +745,13 @@ public class PopulateDb extends PDbBase {
 
     if (log.isDebugEnabled()) {
       if (! hadcmt)
-	log.debug("Didnt find cmt " + cmtAssemblyId);
+	log.debug("Didnt find in DB my cmt " + cmtAssemblyId);
       if (! hadcsa)
-	log.debug("Didnt find csa " + csaAssemblyId);
+	log.debug("Didnt find in DB my csa " + csaAssemblyId);
       if (! hadhna)
-	log.debug("Didnt find hna " + hnaAssemblyId);
+	log.debug("Didnt find in DB my hna " + hnaAssemblyId);
       if (! hadcsmi)
-	log.debug("Didnt find csmi " + csmiAssemblyId);
+	log.debug("Didnt find in DB my csmi " + csmiAssemblyId);
     }
     q.append(')');
     if (first) {            // No matches
@@ -835,7 +802,7 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":trial_type:", idType);
     trialId = getNextId("queryMaxTrialId", trialIdPrefix);
     if(log.isDebugEnabled()) {
-      log.debug("TrialId: " + trialId);
+      log.debug("Created new TrialId: " + trialId);
     }
     substitutions.put(":trial_id:", trialId);
     substitutions.put(":description:", description);
@@ -893,9 +860,6 @@ public class PopulateDb extends PDbBase {
     assemblyId = getNextId("queryMaxAssemblyId", assemblyIdPrefix);
     substitutions.put(":assembly_id:", assemblyId);
     substitutions.put(":trial_id:", trialId);
-    // This appears to cause an SQLE sometimes with a double open and close-quote
-    // on the assembly_id
-    // One to many calls to sqlQuote I think.
     executeUpdate(dbp.getQuery("insertAssemblyId", substitutions));
     executeUpdate(dbp.getQuery("insertTrialAssembly", substitutions));
     return assemblyId;
@@ -960,7 +924,7 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":trial_id:", trialId);
     substitutions.put(":assembly_type:", getAssemblyType(assembly_id));
     if (log.isDebugEnabled()) {
-      log.debug("Adding asb to config: " + assembly_id);
+      log.debug("Adding assembly to config for trial " + trialId + ": " + assembly_id);
     }
     executeUpdate(dbp.getQuery("insertTrialConfigAssembly", substitutions));
   }    
@@ -976,7 +940,7 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":trial_id:", trialId);
     substitutions.put(":assembly_type:", getAssemblyType(assembly_id));
     if (log.isDebugEnabled()) {
-      log.debug("Adding asb to runtime: " + assembly_id);
+      log.debug("Adding assembly to runtime for trial " + trialId + ": " + assembly_id);
     }
     executeUpdate(dbp.getQuery("insertTrialAssembly", substitutions));
   }    
@@ -1133,8 +1097,8 @@ public class PopulateDb extends PDbBase {
 	// This should be the real society definition
 	if (cmtAssemblyId != null && ! assid.equals(cmtAssemblyId)) {
 	  // an old CMT assembly still listed somehow. Delete it!
-	  if (log.isDebugEnabled()) {
-	    log.debug("Found unknown CMT assembly " + assid + " in config for trial " + trialId);
+	  if (log.isWarnEnabled()) {
+	    log.warn("Found unknown CMT assembly " + assid + " in config for trial " + trialId);
 	  }
 	  removeConfigAssembly(assid);
 	  removeRuntimeAssembly(assid);
@@ -1186,8 +1150,8 @@ public class PopulateDb extends PDbBase {
 	// This could be the cmtAssemblyId 
 	// and if so, fine.
 	if (cmtAssemblyId != null && ! assid.equals(cmtAssemblyId)) {
-	  if (log.isDebugEnabled()) {
-	    log.debug("Got a CSA asb in config (" + assid + ") thats not the society assembly (" + cmtAssemblyId + ") for trial " + trialId);
+	  if (log.isWarnEnabled()) {
+	    log.warn("Got a CSA asb in config (" + assid + ") thats not the society assembly (" + cmtAssemblyId + ") for trial " + trialId);
 	  }
 	  // A CSA in configtime that isnt the society definition
 	  removeConfigAssembly(assid);
@@ -1215,8 +1179,8 @@ public class PopulateDb extends PDbBase {
 	}
       } else {
 	// What kind of assembly is this? CSMI? Delete it!
-	if (log.isDebugEnabled()) {
-	  log.debug("Found non CSA/CSHNA/CMT assembly (" + assid + ") in config for trial " + trialId);
+	if (log.isWarnEnabled()) {
+	  log.warn("Found non CSA/CSHNA/CMT assembly (" + assid + ") in config for trial " + trialId);
 	}
 	removeConfigAssembly(assid);
 	
@@ -1262,14 +1226,14 @@ public class PopulateDb extends PDbBase {
     rs = executeQuery(stmt, dbp.getQuery("queryTrialAssemblies", substitutions));
     assid = null;
 
-    // Loop overl all assemblies in runtime for this assembly
+    // Loop over all assemblies in runtime for this assembly
     while (rs.next()) {
       assid = rs.getString(1);
       if (assid.startsWith(hnaType)) {
 	// This is an HNA assembly ID
 	if (! assid.equals(hnaAssemblyId)) {
-	  if (log.isDebugEnabled()) {
-	    log.debug("Found old HNA (" + assid + ") in runtime for trial " + trialId);
+	  if (log.isWarnEnabled()) {
+	    log.warn("Found old HNA (" + assid + ") in runtime for trial " + trialId);
 	  }
 	  // And not the current one
 	  // So remove it for this Trial and potentially all
@@ -1319,16 +1283,16 @@ public class PopulateDb extends PDbBase {
 	    // Have a CSA. That's odd.
 	    // if this is in the runtime, should remove the CMT from the runtime.
 	    if (assemblyInRuntime(csaAssemblyId)) {
-	      if (log.isDebugEnabled()) {
-		log.debug("Found CMT cmtAssId (" + assid + ") in runtime. But also have a CSA (" + csaAssemblyId + ") in runtime, for trial " + trialId + ". Remove the CMT from the runtime.");
+	      if (log.isWarnEnabled()) {
+		log.warn("Found CMT cmtAssId (" + assid + ") in runtime. But also have a CSA (" + csaAssemblyId + ") in runtime, for trial " + trialId + ". Remove the CMT from the runtime.");
 	      }
 	      removeRuntimeAssembly(assid);
 	      
 	      // Also should remove any CSMI in runtime
 	      // FIXME!!!
 	      if (csmiAssemblyId != null) {
-		if (log.isDebugEnabled()) {
-		  log.debug("fixAsb run loop found CSA (" + csaAssemblyId + ") in runtime thats not the society def, but also have a CSMI defined (" + csmiAssemblyId + "), which I'll remove");
+		if (log.isWarnEnabled()) {
+		  log.warn("fixAsb run loop found CSA (" + csaAssemblyId + ") in runtime thats not the society def, but also have a CSMI defined (" + csmiAssemblyId + "), which I'll remove");
 		}
 		removeRuntimeAssembly(csmiAssemblyId);
 		removeConfigAssembly(csmiAssemblyId); // no-op probably
@@ -1382,12 +1346,12 @@ public class PopulateDb extends PDbBase {
 	  if (csaAssemblyId != null && ! csaAssemblyId.equals(cmtAssemblyId)) {
 	    // But have another CSA assembly than this
 	    // which is probably the real runtime def
-	    if (log.isDebugEnabled()) {
-	      log.debug("fixAsb run found soc def CSA (" + assid + ") in runtime, but have other CSA in local var (" + csaAssemblyId);
+	    if (log.isWarnEnabled()) {
+	      log.warn("fixAsb run found soc def CSA (" + assid + ") in runtime, but have other CSA in local var (" + csaAssemblyId);
 	    }
 	    if (assemblyInRuntime(csaAssemblyId)) {
-	      if (log.isDebugEnabled()) {
-		log.debug("fixAsb run found that other CSA also in runtime. Remove orig (" + assid + ") from runtime");
+	      if (log.isWarnEnabled()) {
+		log.warn("fixAsb run found that other CSA also in runtime. Remove orig (" + assid + ") from runtime");
 	      }
 
 	      // I guess I need to remove the societyDef CSA asb
@@ -1399,8 +1363,8 @@ public class PopulateDb extends PDbBase {
 	      // and remove old society def CSA?
 
 	      // FIXME!!!
-	      if (log.isDebugEnabled()) {
-		log.debug("fixAsb run says 2nd CSA in var not in runtime, while 1st is. Is local var wrong? Or does runtime have the wrong CSA in runtime?");
+	      if (log.isWarnEnabled()) {
+		log.warn("fixAsb run says 2nd CSA in var not in runtime, while 1st is. Is local var wrong? Or does runtime have the wrong CSA in runtime?");
 	      }
 	    }
 	  } // end of block checking for 2nd CSA asb
@@ -1486,16 +1450,16 @@ public class PopulateDb extends PDbBase {
 		addAssemblyToConfig(csaAssemblyId);
 	      }
 	      if (! assemblyInRuntime(csaAssemblyId)) {
-		if (log.isDebugEnabled()) {
-		  log.debug("fixAsb run found our CSMI, and our single CSA (" + csaAssemblyId + ") was not in runtime. Adding it");
+		if (log.isWarnEnabled()) {
+		  log.warn("fixAsb run found our CSMI, and our single CSA (" + csaAssemblyId + ") was not in runtime. Adding it");
 		}
 		addAssemblyToRuntime(csaAssemblyId);
 	      }
 	    } else {
 	      // Error. This suggests we had a removal / mod. Probably want
 	      // to delete the CSMI altoghether
-	      if (log.isInfoEnabled()) {
-		log.info("fixAsb run found our CSMI, but have 2 CSAs. I'll assume we had a mod and want to remove the CSMI");
+	      if (log.isWarnEnabled()) {
+		log.warn("fixAsb run found our CSMI, but have 2 CSAs. I'll assume we had a mod and want to remove the CSMI");
 	      }
 	      removeRuntimeAssembly(assid);
 	      removeConfigAssembly(assid); // should be a no-op
@@ -1515,8 +1479,8 @@ public class PopulateDb extends PDbBase {
 	      addAssemblyToConfig(cmtAssemblyId);
 	    }
 	    if (! assemblyInRuntime(cmtAssemblyId)) {
-	      if (log.isDebugEnabled()) {
-		log.debug("fixAsb run found our CSMI, and our single CSA/CMT (" + cmtAssemblyId + ") was not in runtime. Adding it");
+	      if (log.isWarnEnabled()) {
+		log.warn("fixAsb run found our CSMI, and our single CSA/CMT (" + cmtAssemblyId + ") was not in runtime. Adding it");
 	      }
 	      addAssemblyToRuntime(cmtAssemblyId);
 	    }
@@ -1534,8 +1498,8 @@ public class PopulateDb extends PDbBase {
 	}
       } else {
 	// What kind of assembly is this. Delete it!
-	if (log.isInfoEnabled()) {
-	  log.info("Found unknown assembly (" + assid + ") in runtime for trial " + trialId);
+	if (log.isWarnEnabled()) {
+	  log.warn("Found unknown assembly (" + assid + ") in runtime for trial " + trialId);
 	}
 	removeRuntimeAssembly(assid);
 	removeConfigAssembly(assid);
@@ -1696,6 +1660,9 @@ public class PopulateDb extends PDbBase {
 
     // If this is saving an Experiment, we create a CSA assembly:
     if (exptId != null && trialId != null) {
+      if (log.isDebugEnabled()) {
+	log.debug("populateCSA creating new soc def CSA for trial " + trialId);
+      }
       // reset the flag noticing that something was modified while saving
       componentWasRemoved = false;
 
@@ -1804,9 +1771,9 @@ public class PopulateDb extends PDbBase {
 
 	// Is given component in runtime hierarchy?
 	String cchq = dbp.getQuery("checkComponentHierarchy", substitutions);
-	if (log.isDebugEnabled()) {
-	  log.debug("populate for assembly " + assemblyId + " and alib_id " + id + ": Doing query: " + cchq);
-	}
+// 	if (log.isDebugEnabled()) {
+// 	  log.debug("populate for assembly " + assemblyId + " and alib_id " + id + ": Doing query: " + cchq);
+// 	}
 	stmt = getStatement();
 	rs = executeQuery(stmt, cchq);
 	// If not, add it
@@ -1823,9 +1790,9 @@ public class PopulateDb extends PDbBase {
 	    // It doesn't really matter: 
 	    // all the insertions in populateAgent check
 	    // for themselves before doing inserts
-	    if (log.isDebugEnabled()) {
-	      log.debug("Found new contained agent for this hierarchy");
-	    }
+// 	    if (log.isDebugEnabled()) {
+// 	      log.debug("Found new contained agent for this hierarchy");
+// 	    }
 	    addedAgents.add(id);
 	  }
 	  result = true; // Modified the experiment in the database 
@@ -1870,8 +1837,8 @@ public class PopulateDb extends PDbBase {
 					 + " args from "
 					 + data);
     } else {
-      if (log.isInfoEnabled()) {
-	log.info("Count new args minus old is: " + excess);
+      if (log.isDebugEnabled()) {
+	log.debug("Count new args minus old is: " + excess);
       }
     }
 
@@ -1893,14 +1860,14 @@ public class PopulateDb extends PDbBase {
     while (oldIter.hasNext()) {
       Argument newArg = (Argument) newIter.next();
       Argument oldArg = (Argument) oldIter.next();
-      if (log.isInfoEnabled()) {
-	log.info("Comp args for " + data.getName() + ". New " + newArg.toString() + ", Old: " + oldArg.toString());
-	// print out the number, the values....
-      }
+//       if (log.isDebugEnabled()) {
+// 	log.debug("Comp args for " + data.getName() + ". New " + newArg.toString() + ", Old: " + oldArg.toString());
+// 	// print out the number, the values....
+//       }
 		 
       while (!newArg.argument.equals(oldArg.argument)) {
-	if(log.isWarnEnabled()) {
-	  log.warn("newArg != oldArg, new: " +newArg.toString() + " old: " + oldArg.toString());
+	if(log.isInfoEnabled()) {
+	  log.info("newArg != oldArg, new: " +newArg.toString() + " old: " + oldArg.toString());
 	}
 	// Assume arguments were inserted
 	excess--;
@@ -1908,7 +1875,7 @@ public class PopulateDb extends PDbBase {
 	  if (log.isInfoEnabled()) {
 	    log.info("Component args cannot be modified or removed: " + data);
 	  }
-	  // FIXME: Throw something recognizable that the experiment
+	  // Throw something recognizable that the experiment
 	  // can catch and call populateCSA
 	  componentWasRemoved = true;
 	  throw new IllegalArgumentException("Component args cannot be modified or removed: " + data);
@@ -1931,9 +1898,9 @@ public class PopulateDb extends PDbBase {
     // present to the database.
     for (Iterator i = argsToInsert.iterator(); i.hasNext(); ) {
       Argument arg = (Argument) i.next();
-      if (log.isDebugEnabled()) {
-	log.debug("Adding new argument to " + data.getName() + ": " + arg.argument);
-      }
+//       if (log.isDebugEnabled()) {
+// 	log.debug("Adding new argument to " + data.getName() + ": " + arg.argument);
+//       }
       substitutions.put(":argument_value:", sqlQuote(arg.argument));
       substitutions.put(":argument_order:", sqlQuote(String.valueOf(arg.order)));
       executeUpdate(dbp.getQuery("insertComponentArg", substitutions));
@@ -1965,9 +1932,9 @@ public class PopulateDb extends PDbBase {
 	return result;
       }
     } else {
-      if (log.isDebugEnabled()) {
-	log.debug("Not an agent: " + data.getName() + ", its a " + data.getType());
-      }
+//       if (log.isDebugEnabled()) {
+// 	log.debug("Not an agent: " + data.getName() + ", its a " + data.getType());
+//       }
     }
      
 
@@ -2045,9 +2012,9 @@ public class PopulateDb extends PDbBase {
                         pgName + ", " + prop.getName());
             }
           }
-	  if (log.isDebugEnabled()) {
-	    log.debug("Pag for " + data.getName() + " at PropGroupData " + i + " with name " + pgName + " has " + props.length + " props, of which #" + j + " is " + propInfo.toString());
-	  }
+// 	  if (log.isDebugEnabled()) {
+// 	    log.debug("Pag for " + data.getName() + " at PropGroupData " + i + " with name " + pgName + " has " + props.length + " props, of which #" + j + " is " + propInfo.toString());
+// 	  }
 	  substitutions.put(":component_alib_id:", sqlQuote(getComponentAlibId(data)));
 	  substitutions.put(":pg_attribute_lib_id:", sqlQuote(propInfo.getAttributeLibId()));
 
@@ -2064,12 +2031,12 @@ public class PopulateDb extends PDbBase {
 
 	    // For each value of this multiple valued property
 	    String[] values = ((PGPropMultiVal) prop.getValue()).getValuesStringArray();
-	    if (log.isDebugEnabled()) {
-	      log.debug("pag for agent " + data.getName() + " and alibid " + propInfo.getAttributeLibId() + " has " + values.length + " values");
-	      for (int k = 0; k < values.length; k++) {
-		log.debug("Value " + k + " = " + values[k]);
-	      }
-	    }
+// 	    if (log.isDebugEnabled()) {
+// 	      log.debug("pag for agent " + data.getName() + " and alibid " + propInfo.getAttributeLibId() + " has " + values.length + " values");
+// 	      for (int k = 0; k < values.length; k++) {
+// 		log.debug("Value " + k + " = " + values[k]);
+// 	      }
+// 	    }
 	    for (int k = 0; k < values.length; k++) {
 	      substitutions.put(":attribute_value:", sqlQuote(values[k]));
 	      substitutions.put(":attribute_order:", String.valueOf(k));
@@ -2099,9 +2066,9 @@ public class PopulateDb extends PDbBase {
 		// all at order 0, including this one, dont add it again
 		if ((count > 1 && hasval) || (count == 1 && values.length == 1 && hasval)) {
 		  // Dont bother inserting again
-		  if (log.isDebugEnabled()) {
-		    log.debug("PopAgent not inserting PG multival " + values[k] + " for pagent " + data.getName() + " under attlibid " + propInfo.getAttributeLibId() + ", cause already have " + count + " values all with order 0, including this one.");
-		  }
+// 		  if (log.isDebugEnabled()) {
+// 		    log.debug("PopAgent not inserting PG multival " + values[k] + " for pagent " + data.getName() + " under attlibid " + propInfo.getAttributeLibId() + ", cause already have " + count + " values all with order 0, including this one.");
+// 		  }
 		} else {
 		  
 		  if (log.isDebugEnabled()) {
@@ -2224,9 +2191,9 @@ public class PopulateDb extends PDbBase {
       substitutions.put(":attribute_type:", sqlQuote(propType)); 
     }
 
-    if (log.isDebugEnabled()) {
-      log.debug("attribute_type: " + substitutions.get(":attribute_type:"));
-    }
+//     if (log.isDebugEnabled()) {
+//       log.debug("attribute_type: " + substitutions.get(":attribute_type:"));
+//     }
 
     executeUpdate(dbp.getQuery("insertLibPGAttribute", substitutions));
   }
@@ -2391,9 +2358,9 @@ public class PopulateDb extends PDbBase {
     // may need to be added
     insureLib();
     String query1 = dbp.getQuery("checkAlibComponent", substitutions);
-    if (log.isDebugEnabled()) {
-      log.debug("insureAlib doing query " + query1);
-    }
+//     if (log.isDebugEnabled()) {
+//       log.debug("insureAlib doing query " + query1);
+//     }
     Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, query1);
     if (!rs.next()) {
