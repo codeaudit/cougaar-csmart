@@ -78,10 +78,27 @@ public class ExperimentNode
    * Adds node name as an argument to the node.
    */
 
+  // add an observer to my arguments
+  // if the caller changes these arguments,
+  // notify my modification listeners
+  private transient Observer myObserver = null;
+
+  private void createObserver() {
+    if (myObserver == null) {
+      myObserver = new Observer() {
+        public void update(Observable o, Object arg) {
+          ExperimentNode.this.fireModification();
+        }
+      };
+      arguments.addObserver(myObserver);
+    }
+  }
+
   private void addDefaultArgumentsToNode(String nodeName) {
     arguments =
       new ReadOnlyProperties(Collections.singleton("org.cougaar.node.name"),
                              experiment.getDefaultNodeArguments());
+    createObserver();
     arguments.setReadOnlyProperty("org.cougaar.node.name", nodeName);
   }
 
@@ -172,6 +189,7 @@ public class ExperimentNode
   {
     ois.defaultReadObject();
     createLogger();
+    createObserver();
   }
 
 }

@@ -49,7 +49,10 @@ import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
@@ -67,7 +70,7 @@ import org.cougaar.tools.csmart.experiment.ExperimentHost;
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
  * Computes the trials, and the configuration data for running a trial.
  */
-public class Experiment extends ModifiableConfigurableComponent implements ModificationListener, java.io.Serializable {
+public class Experiment extends ModifiableConfigurableComponent implements java.io.Serializable {
 
   // Define some Node Args
   public static final String EXPERIMENT_ID = "org.cougaar.experiment.id";
@@ -93,8 +96,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   // org.cougaar.control.port; port for contacting applications server
   public static final int APP_SERVER_DEFAULT_PORT = 8484;
   public static final String NAME_SERVER_PORTS = "8888:5555";
-
-
 
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
   public static final String PROP_PREFIX = "PROP$";
@@ -128,6 +129,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   // Soon Experiment's Trials will have TrialIDs
 
   private ComponentData completeSociety = null;
+
+  // modification event
+  private static final int EXPERIMENT_SAVED = 1;
+
   private transient LeafOnlyConfigWriter configWriter = null;
 
   private transient Logger log;
@@ -248,7 +253,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    *
    */
   public void removeSocietyComponent() {
+    removeListeners((ModifiableConfigurableComponent)societyComponent);
     this.societyComponent = null;
+    fireModification();
   }
 
   /**
@@ -274,10 +281,30 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   // Private Methods
 
   private void setSocietyComponent(SocietyComponent society) {
+    if (this.societyComponent != null)
+      removeSocietyComponent();
     this.societyComponent = society;
+    installListeners((ModifiableConfigurableComponent)society);
+    fireModification();
   }
 
+  private void installListeners(ModifiableConfigurableComponent component) {
+    component.addModificationListener(myModificationListener);
+    component.addPropertiesListener(myPropertiesListener);
+    for (Iterator i = component.getPropertyNames(); i.hasNext(); ) {
+      Property p = component.getProperty((CompositeName)i.next());
+      p.addPropertyListener(myPropertyListener);
+    }
+  }
 
+  private void removeListeners(ModifiableConfigurableComponent component) {
+    component.removeModificationListener(myModificationListener);
+    component.removePropertiesListener(myPropertiesListener);
+    for (Iterator i = component.getPropertyNames(); i.hasNext(); ) {
+      Property p = component.getProperty((CompositeName)i.next());
+      p.removePropertyListener(myPropertyListener);
+    }
+  }
 
   ////////////////////////////////////////////
   // Recipe Component Operations.
@@ -291,9 +318,14 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    *
    * @param ary RecipeComponents
    */
-  public void setRecipeComponents(RecipeComponent[] ary) {
-    this.recipes.clear();
-    this.recipes.addAll(Arrays.asList(ary));
+  public void setRecipeComponents(RecipeComponent[] newRecipes) {
+    for (int i = 0; i < recipes.size(); i++)
+      removeListeners((ModifiableConfigurableComponent)recipes.get(i));
+    recipes.clear();
+    for (int i = 0; i < newRecipes.length; i++)
+      installListeners((ModifiableConfigurableComponent)newRecipes[i]);
+    recipes.addAll(Arrays.asList(newRecipes));
+    fireModification();
   }
 
 
@@ -305,9 +337,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void addRecipeComponent(RecipeComponent recipe) throws IllegalArgumentException {
     if (!recipes.contains(recipe)) {
       recipes.add(recipe);
+      installListeners((ModifiableConfigurableComponent)recipe);
     } else {
       throw new IllegalArgumentException("Recipe already exists in experiment");
     }
+    fireModification();
   }
   
   /**
@@ -317,6 +351,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    */
   public void removeRecipeComponent(RecipeComponent recipe) {
     this.recipes.remove(recipe);
+    removeListeners((ModifiableConfigurableComponent)recipe);
+    fireModification();
   }
 
   /**
@@ -994,16 +1030,59 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return completeSociety;
   }
 
-  public void modified(ModificationEvent e) {
-    // This method needs to be implemented.
-    fireModification();
-    modified = true;
+  /**
+   * Create a modification listener, which is registered on
+   * all the experiment components. If any components
+   * are modified, then mark this experiment as modified,
+   * and fire a modification event to the experiment's
+   * modification listeners.
+   * Checks for modification event being EXPERIMENT_SAVED
+   * in which case, it does not mark the experiment modified.
+   */
+
+  ModificationListener myModificationListener = 
+    new ModificationListener() {
+        public void modified(ModificationEvent e) {
+          // tell listeners on experiment that experiment was modified
+          notifyExperimentListeners(e);
+        }
+      };
+
+  private void notifyExperimentListeners(ModificationEvent e) {
+    if (e.getWhatChanged() == EXPERIMENT_SAVED)
+      super.fireModification();
+    else
+      fireModification();
   }
 
-  protected void fireModification() {
+  public void fireModification() {
+    modified = true;
     super.fireModification();
   }
 
+  PropertiesListener myPropertiesListener =
+    new PropertiesListener() {
+        public void propertyAdded(PropertyEvent e) {
+          e.getProperty().addPropertyListener(myPropertyListener);
+          fireModification();
+        }
+
+        public void propertyRemoved(PropertyEvent e) {
+          e.getProperty().removePropertyListener(myPropertyListener);
+          fireModification();
+        }
+      };
+
+  PropertyListener myPropertyListener =
+    new PropertyListener() {
+        public void propertyValueChanged(PropertyEvent e) {
+          fireModification();
+        }
+
+        public void propertyOtherChanged(PropertyEvent e) {
+          fireModification();
+        }
+      };
 
   // Private Methods
 
@@ -1021,8 +1100,18 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     ois.defaultReadObject();
     createLogger();
     modified = false;
-//     modified = true; // causes config writer to write the ComponentData tree
-//     createConfigWriter();
+    // reinstall listeners
+    if (societyComponent != null)
+      installListeners((ModifiableConfigurableComponent)societyComponent);
+    RecipeComponent[] recipes = getRecipeComponents();
+    for (int i = 0; i < recipes.length; i++)
+      installListeners((ModifiableConfigurableComponent)recipes[i]);
+    HostComponent[] hostComponents = getHostComponents();
+    for (int i = 0; i < hostComponents.length; i++)
+      installListeners((ModifiableConfigurableComponent)hostComponents[i]);
+    NodeComponent[] nodeComponents = getNodeComponents();
+    for (int i = 0; i < nodeComponents.length; i++)
+      installListeners((ModifiableConfigurableComponent)nodeComponents[i]);
   }
 
   private void addPropertiesAsParameters(ComponentData cd, BaseComponent cp)
@@ -1098,7 +1187,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     hosts.remove(hostComponent);
     // Let the host disassociate itself from nodes
     ((ExperimentHost)hostComponent).dispose();           
-    ((ExperimentHost)hostComponent).removeModificationListener(this);
+    removeListeners((ExperimentHost)hostComponent);
     fireModification();
   }
 
@@ -1196,7 +1285,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   private ExperimentHost addHostComponent(ExperimentHost host) {
     hosts.add(host);
-    host.addModificationListener(this);
+    installListeners(host);
     fireModification();
     return host;
   }
@@ -1233,10 +1322,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @param nc <code>NodeComponent</code> of the Node to remove
    */
   public void removeNode(NodeComponent nc) {
-    ExperimentNode sc = (ExperimentNode) nc;
+    ExperimentNode expNode = (ExperimentNode) nc;
     nodes.remove(nc);
-    sc.dispose();           // Let the node disassociate itself from agents
-    sc.removeModificationListener(this);
+    expNode.dispose();         // Let the node disassociate itself from agents
+    removeListeners(expNode);
     fireModification();
   }
 
@@ -1271,37 +1360,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return result;
   }
 
-
-  // Private
-
-  private void addNodes() {
-    NodeComponent[] nodesToWrite = getNodeComponents();
-    for (int i = 0; i < nodesToWrite.length; i++) {
-      ComponentData nc = new GenericComponentData();
-      nc.setType(ComponentData.NODE);
-      nc.setName(nodesToWrite[i].getShortName());
-      nc.setClassName("org.cougaar.core.node.Node"); // leave this out?? FIXME
-      nc.setOwner(this);
-      nc.setParent(completeSociety);
-      ComponentName name = 
-	  new ComponentName((ConfigurableComponent)nodesToWrite[i], "ConfigurationFileName");
-      try {
-	nc.addParameter(((BaseComponent)nodesToWrite[i]).getProperty(name).getValue().toString());
-      } catch (NullPointerException e) {
-	nc.addParameter(nc.getName() + ".ini");
-      }
-      completeSociety.addChild(nc);
-      addAgents(nodesToWrite[i], nc);
-    }
-  }
-
   private boolean nodeExists(String name) {
     return (nodes.contains(new ExperimentNode(name, this))) ? true : false;
   }
 
   private void addNodeComponent(ExperimentNode node) {
     nodes.add(node);
-    node.addModificationListener(this);
+    installListeners(node);
     fireModification();
   }
 
@@ -1432,29 +1497,17 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     parent.addChild((ComponentData)ac);
   }
 
-  private void addAgents(NodeComponent node, ComponentData nc) {
-    AgentComponent[] agents = node.getAgents();
-    if (agents == null || agents.length == 0)
-      return;
-    for (int i = 0; i < agents.length; i++) {
-      AgentComponentData ac = new AgentComponentData();
-      ac.setName(agents[i].getFullName().toString());
-      // FIXME!!
-      ac.setOwner(null); // the society that contains this agent FIXME!!!
-      ac.setParent(nc);
-      nc.addChild((ComponentData)ac);
-    }
-  }
-
-
-
-
 
   ////////////////////////////////////////////
   // Database Specific Operations
   ////////////////////////////////////////////
   
   /**
+   * Save the experiment to the database, regardless of
+   * whether or not it's been modified.
+   * To avoid useless saves, the caller should check the modified
+   * flag with isModified.  This method specifically does not check
+   * the modified flag to allow the user to force saving the experiment.
    * If the experiment has been modified, save it to the database.
    * This creates the full ComponentData tree and then uses
    * <code>PopulateDb</code> to save it to the database
@@ -1463,11 +1516,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @see org.cougaar.tools.csmart.core.db.PopulateDb
    */
   public void saveToDb(DBConflictHandler ch) {
-    if (!modified) {
-      if (log.isDebugEnabled()) 
-        log.debug("Save to database not needed; experiment not modified");
-      return;
-    }
     try {
       updateNameServerHostName(); // Be sure this is up-to-date
       List components = getComponents();
@@ -1560,8 +1608,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 	log.error("Error saving experiment to database: ", sqle);
       return;
     }
-    modified = false;
-    fireModification(); // tell listeners experiment is now saved
+    resetModified();
   }
 
   private void saveToDb() {
@@ -1700,18 +1747,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
 
     ExperimentINIWriter cw = new ExperimentINIWriter(completeSociety);
-
-//     if (DBUtils.dbMode) {
-//       if(log.isDebugEnabled()) {
-//         log.debug("dumpINIFiles: Save to Db");
-//       }
-// //       saveToDb();
-//       if (completeSociety == null)
-//         return;
-//     } else {
-//       cw = new ExperimentINIWriter(completeSociety);
-//     }
-
     File resultDir = getResultDirectory();
     // if user didn't specify results directory, save in local directory
     if (resultDir == null) {
@@ -1737,7 +1772,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (f != null) {
       try {
 	JOptionPane.showMessageDialog(null, "Writing ini file to " + f.getAbsolutePath() + "...");
-	//	System.out.println("Writing ini files to " + f.getAbsolutePath() + "...");
 	cw.writeConfigFiles(f);
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
@@ -1751,7 +1785,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (DBUtils.dbMode) {
       // Send a config writer that only writes LeafComponentData
       try {
-        //        configWriter = new LeafOnlyConfigWriter(getComponents(), nodes, this);
         createConfigWriter();
         return configWriter.getFileNames();
       } catch (Exception e) {
@@ -1951,8 +1984,26 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     host.addNode(node);
   }
 
+  /**
+   * Returns whether or not this experiment has been modified
+   * since it was saved to the database.
+   * @return true if experiment has been modified
+   */
   public boolean isModified() {
     return modified;
+  }
+
+  /**
+   * Indicate that the experiment is up-to-date with respect to the database.
+   * Use with caution!  The only reason to reset this flag 
+   * is that when an experiment is created from the database, its components
+   * are built-up from the database information, and thus the experiment
+   * appears to be modified.
+   */
+  public void resetModified() {
+    modified = false;
+    // tell listeners experiment is now saved
+    fireModification(new ModificationEvent(this, EXPERIMENT_SAVED));
   }
 
 } // end of Experiment.java
