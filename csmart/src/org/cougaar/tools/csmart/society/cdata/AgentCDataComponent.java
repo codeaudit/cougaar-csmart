@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -35,9 +35,9 @@ import org.cougaar.tools.csmart.society.PluginBase;
  * Create a ConfigurableComponent which represents an Agent
  * from ComponentData.
  */
-public class AgentCDataComponent 
-  extends AgentBase
-  implements AgentComponent {
+public class AgentCDataComponent
+    extends AgentBase
+    implements AgentComponent {
 
   ComponentData cdata;
 
@@ -75,27 +75,27 @@ public class AgentCDataComponent
     ComponentBase component = null;
     for (int i = 0; i < childCData.length; i++) {
       if (childCData[i].getType().equals(typeid)) {
-        
-        if(typeid.equals(ComponentData.PLUGIN)) {
+
+        if (typeid.equals(ComponentData.PLUGIN)) {
           component = new PluginBase(childCData[i].getName(),
-                                                   childCData[i].getClassName(), childCData[i].getPriority());
+                                     childCData[i].getClassName(), childCData[i].getPriority());
         } else if (typeid.equals(ComponentData.AGENTBINDER)) {
           component = new BinderBase(childCData[i].getName(),
-                                             childCData[i].getClassName(), childCData[i].getPriority());
+                                     childCData[i].getClassName(), childCData[i].getPriority());
         }
         component.initProperties();
-	component.setComponentType(childCData[i].getType());
+        component.setComponentType(childCData[i].getType());
 
         Object[] parameters = childCData[i].getParameters();
-        for (int j = 0; j < parameters.length; j++) 
-	  //          component.addProperty(ComponentBase.PROP_PARAM + j, parameters[j]);
+        for (int j = 0; j < parameters.length; j++)
+            //          component.addProperty(ComponentBase.PROP_PARAM + j, parameters[j]);
           component.addParameter(parameters[j]);
         container.addChild(component);
       }
     }
   }
 
-    // FIXME: Add misc components -- how do I find the type though?
+  // FIXME: Add misc components -- how do I find the type though?
   protected void addComponents() {
     // add plugins
     ContainerBase container = new ContainerBase("Other Components");
@@ -105,17 +105,17 @@ public class AgentCDataComponent
     ComponentData[] childCData = cdata.getChildren();
     for (int i = 0; i < childCData.length; i++) {
       if (childCData[i].getType().equals(ComponentData.PLUGIN) ||
-	  childCData[i].getType().equals(ComponentData.AGENTBINDER) ||
-	  ! childCData[i].getParent().getType().equals(ComponentData.AGENT)) {
-	// not added here
+          childCData[i].getType().equals(ComponentData.AGENTBINDER) ||
+          !childCData[i].getParent().getType().equals(ComponentData.AGENT)) {
+// not added here
       } else {
         ComponentBase plugin = new ComponentBase(childCData[i].getName(),
-                                           childCData[i].getClassName(), childCData[i].getPriority(), childCData[i].getType());
+                                                 childCData[i].getClassName(), childCData[i].getPriority(), childCData[i].getType());
         plugin.initProperties();
-	//	plugin.setComponentType(childCData[i].getType());
+//	plugin.setComponentType(childCData[i].getType());
         Object[] parameters = childCData[i].getParameters();
-        for (int j = 0; j < parameters.length; j++) 
-	  //          plugin.addProperty(ComponentBase.PROP_PARAM + j, parameters[j]);
+        for (int j = 0; j < parameters.length; j++)
+            //          plugin.addProperty(ComponentBase.PROP_PARAM + j, parameters[j]);
           plugin.addParameter(parameters[j]);
         container.addChild(plugin);
       }
@@ -127,8 +127,8 @@ public class AgentCDataComponent
   protected void addAssetData() {
     // add asset data components
     if (cdata.getAgentAssetData() != null) {
-      BaseComponent asset = 
-	(BaseComponent)new AssetCDataComponent(cdata.getAgentAssetData());
+      BaseComponent asset =
+          (BaseComponent) new AssetCDataComponent(cdata.getAgentAssetData());
       asset.initProperties();
       addChild(asset);
     }

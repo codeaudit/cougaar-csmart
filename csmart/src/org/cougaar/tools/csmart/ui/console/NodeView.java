@@ -344,6 +344,7 @@ public class NodeView extends JInternalFrame implements Observer {
     aboutPanel.setLayout(new GridBagLayout());
     int x = 0;
     int y = 0;
+
     // insets are top, left, bottom, right
     aboutPanel.add(new JLabel("Status:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
