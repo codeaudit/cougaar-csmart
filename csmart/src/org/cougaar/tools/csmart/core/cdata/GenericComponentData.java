@@ -386,10 +386,11 @@ public class GenericComponentData implements ComponentData, Serializable {
       buf.append(", Owner: " + getOwner());
     }
     buf.append(", LeafCount: " + leafCount());
+    // FIXME print out the arguments
     buf.append(", ChildCount: " + childCount());
     ComponentData[] children = getChildren();
     for (int i = 0; i < childCount(); i++) {
-      buf.append(", Child[" + i + "]: \n" + children[i] + "\n");
+      buf.append(", Child[" + i + "]: \n" + children[i].getName() + "\n");
     }
     return buf.toString();
   }
