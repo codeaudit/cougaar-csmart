@@ -23,8 +23,8 @@ Zip file:
 "Domain-MySQL.ZIP" contains a datafile called "1ad_domain_data_dump.sql"
 which is the sql script to be run to load all domain data tables into 
 the CSMART configuration database. If you are upgrading from version
-9.2 or below of Cougaar, you should re-load this data as an additional
-table has been added.
+9.4 or below of Cougaar, you should re-load this data as an additional
+table and new domain data has been added.
 
 Sub-directories:
 
@@ -81,10 +81,8 @@ Sub-directories:
                               See csmart/data/database/doc/db-scripts-guide.html 
                               for further information.
               
-                        csmart-db.load-mysql-tables.sql -SQL script that loads the
-                                                         configuration database
-                                                         from data contained in specified 
-                                                         '.csv' files in the
+                        csmart-db.load-mysql-tables.sql -Loads the configuration database
+                                                         from '.csv' files in the
                                                          csmart/data/database/csv directory.
                                                          It should not be called directly by 
                                                          the user.
