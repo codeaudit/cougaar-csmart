@@ -990,11 +990,14 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     HostComponent[] hosts = getHostComponents();
     HostComponent[] nhosts = new HostComponent[hosts.length];
     for (int i = 0; i < hosts.length; i++) {
+      // FIXME: instead to nhosts[i] = hosts[i].copy();
+      // and then don't need the following 2 set calls hopefully
       nhosts[i] = experimentCopy.addHost(hosts[i].getShortName().toString());
       nhosts[i].setServerPort(hosts[i].getServerPort());
       nhosts[i].setMonitoringPort(hosts[i].getMonitoringPort());
 
       // FIXME: What about other Host fields? OS, etc?
+      // -- answer - see above fixme
     }
     // copy nodes
     NodeComponent[] nodes = getNodeComponents();
@@ -1004,11 +1007,13 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       experimentCopy.addNodeComponent((ExperimentNode)nnodes[i]);
 
       // FIXME: What about other Node fields?
+      // answer -- see comment in ExperimentNode.copy
     }
 
     // reconcile hosts-nodes-agents
     AgentComponent[] nagents = experimentCopy.getAgents();
     NodeComponent nnode = null;
+    ArrayList nNodesCopied = new ArrayList();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] onodes = hosts[i].getNodes();
       // for each of the old nodes, find the corresponding new node
@@ -1027,12 +1032,24 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
           for (int y = 0; y < nagents.length; y++) 
             if (nagents[y].getShortName().equals(oagents[x].getShortName()))
               nnode.addAgent(nagents[y]);
+
+	// Record which Nodes we've copied the Agents for
+	nNodesCopied.add(nnode);
       }
     }
 
     // FIXME: What about if orig Experiment had Agents assigned to a Node
     // that was not assigned to a host - is that mapping lost?
-
+    // I think so. So we need to maybe keep track of which Nodes we updated just now
+    for (int i = 0; i < nnnodes.length; i++) {
+      if (! nNodesCopied.contains(nnodes[i])) {
+	// We may need to copy the old node-agent mapping onto this new node
+	if (log.isDebugEnabled()) {
+	  log.debug("copy: Found node whose Agent mapping may not have been copied: " + nnodes[i]);
+	}
+	// FIXME!!!
+      }
+    }
     // copy the results directory; results from the copied experiment
     // will be stored in this directory under the copied experiment name
     experimentCopy.setResultDirectory(getResultDirectory());
