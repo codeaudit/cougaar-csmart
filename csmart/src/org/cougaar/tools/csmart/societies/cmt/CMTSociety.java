@@ -47,6 +47,8 @@ import org.cougaar.tools.csmart.ui.component.PropertiesListener;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.component.*;
 
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+
 import org.cougaar.tools.csmart.societies.database.DBUtils;
 
 public class CMTSociety 
@@ -93,7 +95,7 @@ public class CMTSociety
     // -- basically, we want the componentdata stuff, or at least the list of Agents with names
     // creating the necessary AgentComponents
 
-    if(DBUtils.isValidDBConnection()) {
+    if(CSMART.inDBMode()) {
       try {
 	substitutions.put(":assembly_type", "CMT");
 	Connection conn = DBUtils.getConnection();
