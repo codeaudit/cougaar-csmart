@@ -711,6 +711,11 @@ public class PropertyEditorPanel extends JPanel
    */
 
   private void addAgent() {
+    DefaultMutableTreeNode selNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    ModifiableComponent society = 
+      (ModifiableComponent)nodeToComponent.get(selNode);
+
     String name = 
       (String)JOptionPane.showInputDialog(this, "Enter Agent Name", 
                                           "Agent Name",
@@ -722,10 +727,23 @@ public class PropertyEditorPanel extends JPanel
     if (name.equals(""))
       return;
 
-    DefaultMutableTreeNode selNode =
-      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-    ModifiableComponent society = 
-      (ModifiableComponent)nodeToComponent.get(selNode);
+    if (society instanceof ComplexRecipeComponent) {
+      while (name.equals(society.getFullName().toString())) {
+	if (log.isInfoEnabled())
+	  log.info("Cant add agent to Complex recipe with same name as recipe: " + name);
+	name = 
+	  (String)JOptionPane.showInputDialog(this, "Enter Agent Name different from Recipe name", 
+                                          "Agent Name",
+                                          JOptionPane.QUESTION_MESSAGE,
+                                          null, null, name);
+	if (name == null) return;
+	
+	name = name.trim();
+	if (name.equals(""))
+	  return;
+      }
+    }
+
     AgentComponent agentComponent = 
       (AgentComponent)new AgentUIComponent(name);
     // put the node in the tree before adding properties to it
@@ -1201,12 +1219,15 @@ public class PropertyEditorPanel extends JPanel
       int index = name.indexOf("param-");
       if (index == -1)
         continue;
+      int curNum = -1;
       try {
-        lastParamNumber = Integer.parseInt(name.substring(index+6));
+        curNum = Integer.parseInt(name.substring(index+6));
       } catch (NumberFormatException nfe) {
-        System.out.println("NFE: " + nfe);
+        //System.out.println("NFE: " + nfe);
         // just ignore
       }
+      if (curNum > lastParamNumber)
+	lastParamNumber = curNum;
     }
     // generate next highest numbered name
     lastParamNumber++;
