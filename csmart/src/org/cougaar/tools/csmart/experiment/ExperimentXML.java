@@ -56,6 +56,11 @@ public class ExperimentXML extends ComponentDataXML {
 
   }
 
+  public ComponentData parseExperimentFile(File file) {
+    return createComponentData(file);
+
+  }
+
   public void createExperimentFile(ComponentData data, File configDir) {
     if(data == null) {
       if(log.isErrorEnabled()) {

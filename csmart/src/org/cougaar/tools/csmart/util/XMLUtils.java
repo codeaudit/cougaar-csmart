@@ -21,6 +21,7 @@
 package org.cougaar.tools.csmart.util;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -69,6 +70,28 @@ public class XMLUtils {
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
 	log.error("Exception Parsing file: " + filename, e);
+      }
+    }
+
+    return null;
+  }
+
+  public Document loadXMLFile(File file) {
+    try {
+      DOMParser parser = new DOMParser();
+      parser.parse(new InputSource(new FileInputStream(file)));
+      return parser.getDocument();
+    } catch (org.xml.sax.SAXParseException spe) {
+      if (log.isErrorEnabled()) {
+	log.error("Parse exception Parsing file: " + file.getName(), spe);
+      }
+    } catch (org.xml.sax.SAXException se) {
+      if (log.isErrorEnabled()) {
+	log.error("SAX exception Parsing file: " + file.getName(), se);
+      }
+    } catch (Exception e) {
+      if (log.isErrorEnabled()) {
+	log.error("Exception Parsing file: " + file.getName(), e);
       }
     }
 

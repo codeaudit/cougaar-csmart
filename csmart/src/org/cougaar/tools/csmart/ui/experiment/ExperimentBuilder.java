@@ -50,6 +50,7 @@ public class ExperimentBuilder extends JFrame {
   private static final String SAVE_AS_MENU_ITEM = "Save As...";
   private static final String DUMP_INI_ITEM = "Debug: Dump .ini files";
   private static final String DUMP_HNA_ITEM = "Dump HNA Mapping";
+  private static final String IMPORT_HNA_ITEM = "Import HNA Mapping";
   private static final String EXIT_MENU_ITEM = "Close";
   private static final String FIND_MENU = "Find";
   private static final String FIND_HOST_MENU_ITEM = "Find Host...";
@@ -116,9 +117,16 @@ public class ExperimentBuilder extends JFrame {
 	  dumpINIs();
 	}
       },
+  };
+  private Action[] hnaActions = {
     new AbstractAction(DUMP_HNA_ITEM) {
 	public void actionPerformed(ActionEvent e) {
 	  dumpHNA();
+	}
+      },
+    new AbstractAction(IMPORT_HNA_ITEM) {
+	public void actionPerformed(ActionEvent e) {
+	  importHNAMap();
 	}
       },
     new AbstractAction(EXIT_MENU_ITEM) {
@@ -129,6 +137,7 @@ public class ExperimentBuilder extends JFrame {
       }
     }
   };
+
   private Action[] findActions = {
     new AbstractAction(FIND_HOST_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
@@ -259,6 +268,11 @@ public class ExperimentBuilder extends JFrame {
     for (int i = 0; i < fileActions.length; i++) {
       fileMenu.add(fileActions[i]);
     }
+    fileMenu.addSeparator();
+    for (int i = 0; i < hnaActions.length; i++) {
+      fileMenu.add(hnaActions[i]);
+    }
+    
     fileMenu.addMenuListener(myMenuListener);
     findMenu = new JMenu(FIND_MENU);
     findMenu.setToolTipText("Find a host, node, or agent.");
@@ -398,6 +412,11 @@ public class ExperimentBuilder extends JFrame {
 
   private void dumpHNA() {
     experiment.dumpHNA();
+  }
+
+  private void importHNAMap() {
+    experiment.importHNA(this);
+    hcb.update();
   }
 
   /**

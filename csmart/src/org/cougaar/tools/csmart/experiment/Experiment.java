@@ -20,6 +20,9 @@
  */
 package org.cougaar.tools.csmart.experiment;
 
+
+
+import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -30,13 +33,10 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.*;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-
 import org.cougaar.core.agent.ClusterImpl;
 import org.cougaar.core.node.Node;
-import org.cougaar.util.Parameters;
-import org.cougaar.util.log.Logger;
-
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
@@ -54,6 +54,7 @@ import org.cougaar.tools.csmart.core.property.ModificationListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.experiment.ExperimentHost;
 import org.cougaar.tools.csmart.recipe.RecipeBase;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
@@ -61,10 +62,12 @@ import org.cougaar.tools.csmart.society.SocietyBase;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.tools.csmart.society.ui.SocietyUIComponent;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
-import org.cougaar.tools.csmart.experiment.ExperimentHost;
+import org.cougaar.util.Parameters;
+import org.cougaar.util.log.Logger;
 
 /**
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
@@ -2045,10 +2048,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     }
   }
 
-
-  
-
-
   public void dumpHNA() {
     generateCompleteSociety();
 
@@ -2084,6 +2083,187 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
           log.error("Couldn't write ini files: ", e);
+        }
+      }
+    }
+  }
+
+
+  public void importHNA(Component parent) {
+    JFileChooser chooser = new JFileChooser(SocietyFinder.getInstance().getPath());
+    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+	public boolean accept (File f) {
+	  return (f.isDirectory() || (f.isFile()) && 
+            (f.getName().endsWith("xml") || f.getName().endsWith("XML")));
+	}
+	public String getDescription() {return "HNA XML Files";}
+      });
+    File file = null;
+    while(file == null) {
+      int result = chooser.showDialog(parent, "OK");
+      if(result != JFileChooser.APPROVE_OPTION)
+        return;
+      file = chooser.getSelectedFile();
+    }
+
+    ComponentData mapping = null;
+    if(file != null) {
+      ExperimentXML parser = new ExperimentXML();
+      mapping = parser.parseExperimentFile(file);
+      if(mapping == null) {
+        if(log.isErrorEnabled()) {
+          log.error("Error parsing file: " + file.getName());
+        }
+        // Display an error dialog here!
+        return;
+      }
+      
+      addNewMapping(mapping);
+    }
+  }
+
+  public void addNewMapping(ComponentData mapping) {
+    if(mapping.getType().equals(ComponentData.SOCIETY)) {
+      addChildren(mapping.getChildren());
+    } else {
+      if(log.isErrorEnabled()) {
+        log.error("Didn't start with a society!");
+      }
+    }
+  }
+
+  public void addChildren(ComponentData[] children) {
+    for(int i=0; i < children.length; i++) {
+      ComponentData child = children[i];
+        if(child.getType().equals(ComponentData.HOST)) {
+          // Add host.
+          HostComponent host = null;
+          try {
+            host = addHost(child.getName());
+          } catch(IllegalArgumentException e) {
+            // Host already exists.
+            HostComponent[] allHosts = getHostComponents();
+            for(int x=0; x < allHosts.length; x++) {
+              if(allHosts[x].getShortName().equals(child.getName())) {
+                host = allHosts[x];
+                break;
+              }
+            }
+            if(log.isDebugEnabled()) {
+              log.debug("Host already exists: " + child.getName());
+            }
+          }
+          addHostChildren(child.getChildren(), host);
+        } else if(child.getType().equals(ComponentData.NODE)) {
+          // Add node.
+          NodeComponent node = null;
+          try {
+            node = addNode(child.getName());
+          } catch(IllegalArgumentException e) {
+            // Node already exists.
+            NodeComponent[] allNodes = getNodeComponents();
+            for(int x=0; x < allNodes.length; x++) {
+              if(allNodes[x].getShortName().equals(child.getName())) {
+                node = allNodes[x];
+                break;
+              }
+            }
+            if(log.isDebugEnabled()) {
+              log.debug("Node already exists: " + child.getName());
+            }
+          }
+          addNodeChildren(child.getChildren(), node);
+        } else if(child.getType().equals(ComponentData.AGENT)) {
+          // Map agent, only if it already exists.
+//           if(log.isDebugEnabled()) {
+//             log.debug("Need to map Agent: " + child.getName());
+//           }
+        } else {
+          if(log.isWarnEnabled()) {
+            log.warn("Unknown Type: " + child.getType());
+          }
+        }
+      }
+  }
+
+  public void addHostChildren(ComponentData[] children, HostComponent host) {
+    for(int i=0; i < children.length; i++) {
+      boolean foundInHost = false;
+      boolean foundInSociety = false;
+      ComponentData child = children[i];
+      NodeComponent expNode = null;
+      NodeComponent[] allNodes = getNodeComponents();
+      if(child.getType().equals(ComponentData.NODE)) {
+        for(int k=0; k < allNodes.length; k++) {
+          if(child.getName().equals(allNodes[k].getShortName())) {
+            foundInSociety = true;
+            expNode = allNodes[k];
+            break;
+          }
+        }
+        NodeComponent[] crntNodes = host.getNodes();
+        for(int j=0; j < crntNodes.length; j++) {
+          if(child.getName().equals(crntNodes[j].getShortName())) {
+            foundInHost = true;
+            break;
+          }
+        }
+        if(!foundInHost) {
+          // See if in Exp.
+          NodeComponent node = null;
+          if(foundInSociety) {
+            node = host.addNode(expNode);
+          } else {
+            node = host.addNode(addNode(child.getName()));
+          }
+
+          addNodeChildren(child.getChildren(), node);
+        }
+      } else {
+        if(log.isWarnEnabled()) {
+          log.warn("Unknown child of host: " + child.getName());
+        }
+      }
+    }
+  }
+
+  public void addNodeChildren(ComponentData[] children, NodeComponent node) {
+    for(int i=0; i < children.length; i++) {
+      boolean foundInSociety = false;
+      boolean foundInNode = false;
+      ComponentData child = children[i];
+      AgentComponent[] allAgents = getAgents();
+      AgentComponent addAgent = null;
+      if(child.getType().equals(ComponentData.AGENT)) {
+        for(int k=0; k < allAgents.length; k++) {
+          if(child.getName().equals(allAgents[k].getShortName())) {
+            foundInSociety = true;
+            addAgent = allAgents[k];
+            break;
+          }
+        }
+
+        if(foundInSociety) {
+          AgentComponent[] crntAgents = node.getAgents();
+          for(int j=0; j < crntAgents.length; j++) {
+            if(child.getName().equals(crntAgents[j].getShortName())) {
+              foundInNode = true;
+              break;
+            }
+          }
+          if(!foundInNode) {
+            node.addAgent(addAgent);
+//             societyComponent.removeChild(addAgent);
+          }
+        } else {
+          if(log.isWarnEnabled()) {
+            log.warn("Agent: " + child.getName() + "not known.  Add aborted");
+          }
+        }
+      } else {
+        if(log.isWarnEnabled()) {
+          log.warn("Unknown child of node: " + child.getName());
         }
       }
     }

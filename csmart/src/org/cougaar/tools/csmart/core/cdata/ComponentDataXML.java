@@ -20,6 +20,7 @@
  */
 package org.cougaar.tools.csmart.core.cdata;
 
+import java.io.File;
 import java.io.IOException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -86,6 +87,24 @@ public class ComponentDataXML extends XMLUtils {
       }
     }
     return doc;
+  }
+
+  public ComponentData createComponentData(File file) {
+    Document doc = loadXMLFile(file);
+    if(doc == null) return null;
+
+    ComponentData society = new GenericComponentData();
+    society.setType(ComponentData.SOCIETY);
+    society.setName(doc.getDocumentElement().getAttribute(NAME_ATTR));
+    society.setClassName("java.lang.Object");
+    society.setParent(null);
+    society.setOwner(null);
+    if(log.isDebugEnabled()) {
+      log.debug("Creating society: " + society.getName());
+    }
+    parse(doc.getDocumentElement(), society);
+
+    return society;
   }
 
   public ComponentData createComponentData(String filename) {

@@ -35,7 +35,7 @@ public interface HostComponent extends BaseComponent {
    * Add a node to the host.
    * @param node the node to add
    */
-  void addNode(NodeComponent node);
+  NodeComponent addNode(NodeComponent node);
 
   /**
    * Remove the specified node from the host.

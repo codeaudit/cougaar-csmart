@@ -80,7 +80,7 @@ public class ExperimentHost
     return (NodeComponent[]) nodes.toArray(new NodeComponent[getNodeCount()]);
   }
 
-  public void addNode(NodeComponent node) {
+  public NodeComponent addNode(NodeComponent node) {
     Property prop = getProperty("NodeNames");
     if (prop == null) 
       prop = addProperty("NodeNames", new ArrayList());
@@ -93,6 +93,7 @@ public class ExperimentHost
     }
     nodes.add(sa);
     fireModification();
+    return sa;
   }
 
   public NodeComponent getNode(int ix) {
