@@ -313,8 +313,15 @@ public class ServletGroupInsertionRecipe extends RecipeBase
             plugin.setClassName(servlet.getClassname());
             plugin.setParent(data);
             plugin.setOwner(this);
-	    plugin.setName(GenericComponentData.getSubComponentUniqueName(data, plugin));
-            data.addChildDefaultLoc(plugin);
+	    if (GenericComponentData.alreadyAdded(data, plugin)) {
+	      if (log.isDebugEnabled()) {
+		log.debug("Not re-adding servlet. " + data.getName() + " already contains " + plugin);
+	      }
+	    } else {
+	      data.addChildDefaultLoc(plugin);
+	      plugin.setName(GenericComponentData.getSubComponentUniqueName(data, plugin));
+	    }
+
           }
         }
       }
@@ -333,9 +340,14 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 	    for (int j = 0; j < numargs; j++)
 	      comp.addParameter((String)propNewServletArgs[i][j].getValue());
 
-	    comp.setName(GenericComponentData.getSubComponentUniqueName(data, comp));
-
-            data.addChildDefaultLoc(comp);
+	    if (GenericComponentData.alreadyAdded(data, comp)) {
+	      if (log.isDebugEnabled()) {
+		log.debug("Not re-adding servlet. " + data.getName() + " already contains " + comp);
+	      }
+	    } else {
+	      comp.setName(GenericComponentData.getSubComponentUniqueName(data, comp));
+	      data.addChildDefaultLoc(comp);
+	    }
         }
       }
 //     } else {

@@ -201,11 +201,18 @@ public class SpecificInsertionRecipe extends RecipeBase
 
       // Reset the name to ensure uniqueness. This will use the user-specified name if possible,
       // but tack on the first parameter and/or a number if necessary to ensure a unique name
-      comp.setName(GenericComponentData.getSubComponentUniqueName(data, comp));
 
-      data.addChildDefaultLoc(comp);
-      if(log.isInfoEnabled()) {
-        log.info("Inserted " + comp + " into " + data.getName());
+      if (GenericComponentData.alreadyAdded(data, comp)) {
+	if (log.isDebugEnabled()) {
+	  log.debug("Not re-adding component. " + data.getName() + " already contains " + comp);
+	}
+      } else {
+	comp.setName(GenericComponentData.getSubComponentUniqueName(data, comp));
+	
+	data.addChildDefaultLoc(comp);
+	if(log.isInfoEnabled()) {
+	  log.info("Inserted " + comp + " into " + data.getName());
+	}
       }
     }
     if (data.childCount() > 0) {

@@ -196,12 +196,18 @@ public class ComponentInsertionRecipe extends RecipeBase
         comp.setParent(data);
         comp.setOwner(this);
 	
-	// Reset the name to ensure uniqueness in this context. The original name will be preserved if it is unique
-	comp.setName(GenericComponentData.getSubComponentUniqueName(data, comp));
-
-	// Add this component, replacing any existing copy,
-	// and ensuring binders go before others
-	data.addChildDefaultLoc(comp);
+	if (GenericComponentData.alreadyAdded(data, comp)) {
+	  if (log.isDebugEnabled()) {
+	    log.debug("Not re-adding component. " + data.getName() + " already contains " + comp);
+	  }
+	} else {
+	  // Reset the name to ensure uniqueness in this context. The original name will be preserved if it is unique
+	  comp.setName(GenericComponentData.getSubComponentUniqueName(data, comp));
+	  
+	  // Add this component, replacing any existing copy,
+	  // and ensuring binders go before others
+	  data.addChildDefaultLoc(comp);
+	}
       }
     }
 	

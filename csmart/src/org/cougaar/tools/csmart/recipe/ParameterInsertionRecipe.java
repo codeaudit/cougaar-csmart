@@ -111,6 +111,8 @@ public class ParameterInsertionRecipe extends RecipeBase
   {
     String pluginAlib = data.getName() + "|" + propPluginName.getValue().toString();
 
+    // FIXME: This code does not check that the newly modified child is not now a duplicate within the Agent!
+
     // FIXME: Is the slot really NAME or CLASS or must it be the same?!!!
     if (targets.contains(pdb.getComponentAlibId(data))) {
       ComponentData[] children = data.getChildren();
