@@ -22,17 +22,20 @@ package org.cougaar.tools.csmart.ui.viewer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.swing.tree.*;
-import java.util.Enumeration;
 
-import org.cougaar.tools.csmart.util.XMLUtils;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.tools.csmart.util.XMLUtils;
 import org.cougaar.util.log.Logger;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -52,6 +55,9 @@ public class OrganizerXML extends XMLUtils {
   public static final String ID_ATTR = "ID";
   
   private Logger log;
+
+  private Document doc;
+  private Organizer organizer;
 
   public OrganizerXML (){
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer.OrganizerXML");
@@ -117,6 +123,12 @@ public class OrganizerXML extends XMLUtils {
       exp.setAttribute(NAME_ATTR, ((Experiment)o).getExperimentName());
       exp.setAttribute(ID_ATTR, ((Experiment)o).getExperimentID());
       // what about experiment result directory?
+      File eResDir = ((Experiment)o).getResultDirectory();
+      if (eResDir != null) {
+	Element resDir = doc.createElement(RESULTDIR_NODE);
+	resDir.setAttribute(NAME_ATTR, eResDir.getPath());
+	exp.appendChild(resDir);
+      }
       return exp;
     } else if (o instanceof RecipeComponent) {
       Element rec = doc.createElement(RECIPE_NODE);
@@ -140,9 +152,119 @@ public class OrganizerXML extends XMLUtils {
     }
   }
 
-  // Organizer itself can call loadXMLFile
-  // create the root Node
-  // then I dont know what....
+  /**
+   * Load the given XML file, creating the workspace in the given Organizer. 
+   * The caller is expected to have set up the organizer with a workspace, 
+   * TreeModel, and root Node. 
+   *
+   * @param workspacefilename a <code>String</code> file name to load
+   * @param organizer an <code>Organizer</code> to fill in
+   * @return a <code>DefaultMutableTreeNode</code> root node in the workspace.
+   */
+  public DefaultMutableTreeNode populateWorkspace (String workspacefilename, Organizer organizer) {
+    if (organizer == null)
+      return null;
+    doc = loadXMLFile(workspacefilename);
+    if (doc == null) return null;
+    this.organizer = organizer;
+
+    return parse(doc.getDocumentElement(), organizer.root);
+  }
+  
+
+  // Parsing an XML workspace representation.
+  // Given a root element (that has been handled), and a root Workspace
+  // node that has been added, add any children
+  private DefaultMutableTreeNode parse(Element element, DefaultMutableTreeNode parentNode) {
+    NodeList children = element.getChildNodes();
+    for(int i=0; i < children.getLength(); i++) {
+      Node child = children.item(i);
+      if (child.getNodeType() == Node.ELEMENT_NODE) {
+	if (child.getNodeName().equals(WORKSPACE_NODE)) {
+	  // The root workspace node has already been added
+	  parse(((Element)child), parentNode);
+	} else if (child.getNodeName().equals(RESULTDIR_NODE)) {
+	  // There are 2 kinds of result directories - global and experiment
+	  String resdir = ((Element)child).getAttribute(NAME_ATTR);
+	  if (resdir != null) {
+	    if (element.getNodeName().equals(WORKSPACE_NODE)) {
+	      // If the parent element is the hi-level workspace,
+	      // then this is the global result node
+	      organizer.csmart.setResultFile(resdir);
+	    } else {
+	      // Otherwise we're trying to set the resultdir on an experiment
+	      if (parentNode != null && parentNode.getUserObject() instanceof Experiment) {
+		Experiment exp = (Experiment)parentNode.getUserObject();
+		exp.setResultDirectory(new File(resdir));
+	      }
+	    }
+	  }
+	} else if (child.getNodeName().equals(EXPERIMENT_NODE)) {
+	  // For experiments, get the name and ID
+	  String eName = ((Element)child).getAttribute(NAME_ATTR);
+	  String eID = ((Element)child).getAttribute(ID_ATTR);
+	  if (log.isInfoEnabled())
+	    log.info("Adding experiment " + eName + "(" + eID + ") to workspace.");
+
+	  // Double check that there is an experiment of that name/ID in the DB, and do something if not? Popup?
+	  // If name is wrong but ID is Ok, we'll lose the recipes at least!
+	  Map expNamesMap = ExperimentDB.getExperimentNames();
+	  String dbid = (String)expNamesMap.get(eName);
+	  if (dbid == null) {
+	    if (log.isWarnEnabled()) {
+	      log.warn("XML file Exp name " + eName + " not found in DB!");
+	      log.warn("Will skip loading that experiment. Look for it manually later.");
+	    }
+	    // Or perhaps load it anyhow, losing recipes & whatnot?
+	  } else if (! dbid.equals(eID)) {
+	    if (log.isWarnEnabled()) {
+	      log.warn("XML file Exp " + eName + " lists experiment ID of " + eID + " but DB says experiment with that name has ID " + dbid + "!");
+	      log.warn("Will skip loading that experiment. Load it manually later if you really want it.");
+	    }
+	  } else {  
+	    // This will load the experiment (incl CMTDialog),
+	    // create the Node, add it to the workspace, and also
+	    // add any recipes & societies & whatnot to the workspace
+	    // FIXME: This method does a GUIUtils delay, which means
+	    // the recipes get added to the workspace
+	    // before the experiment has been fully loaded and added,
+	    // which means all the experiments end up at the bottom,
+	    // even if the user's organizer had listed it earlier
+	    organizer.selectGivenExperimentFromDatabase(eName, eID, false);
+	    DefaultMutableTreeNode eNode = organizer.getSelectedNode();
+	    // But we recurse in case there is a resultdir
+	    parse(((Element)child), eNode);
+	  }
+	} else if (child.getNodeName().equals(RECIPE_NODE)) {
+	  // For recipes, we load them be name
+	  String rName = ((Element)child).getAttribute(NAME_ATTR);
+	  RecipeComponent rc = organizer.helper.loadRecipeNamed(rName);
+	  // However, make sure it's not already in the workspace
+	  // before adding it to the workspace
+	  // -- this will create the node, add it, and reset the selection
+	  if (rc == null) {
+	    if (log.isErrorEnabled())
+	      log.error("Could not find recipe named " + rName + " in database! Skipping...");
+	    // Popup?
+	  } else if (! organizer.isInWorkspace(rc)) {
+	    if (log.isInfoEnabled())
+	      log.info("Adding recipe " + rName + " to workspace.");
+	    organizer.addRecipeToWorkspace(rc, parentNode);
+	  }
+	} else if (child.getNodeName().equals(FOLDER_NODE)) {
+	  String fName = ((Element)child).getAttribute(NAME_ATTR);
+	  if (log.isInfoEnabled())
+	    log.info("Adding folder " + fName + " to workspace.");
+	  DefaultMutableTreeNode fNode = organizer.addFolderToWorkspace(fName, parentNode);
+	  // (this will set the new selected node to be that folder)
+	  // also, it returns the new workspace node
+	  // recurse into the folder contents
+	  parse(((Element)child), fNode);
+	}
+      }
+    }
+    return parentNode;
+  }
 
   /**
    * Given the root node in an XML document, find the result dir name, if any.
