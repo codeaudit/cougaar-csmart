@@ -153,10 +153,10 @@ public class ABCImpact
   }
   
   public ImpactComponent copy(Organizer organizer, Object context) {
-//     ImpactComponent newImpact = new ABCImpact(organizer.generateImpactName(name));
-//     ((ABCImpact)newImpact).setFile(xmlfile);
-//     return newImpact;
-    return null;
+     ImpactComponent newImpact = new ABCImpact(organizer.generateImpactName(name));
+     if (xmlfile != null)
+       ((ABCImpact)newImpact).setFile(new File(xmlfile.getPath()));
+     return newImpact;
   }
   
   /**
