@@ -27,6 +27,11 @@ import org.cougaar.core.plugin.SimplePlugIn;
 import org.cougaar.domain.planning.ldm.asset.*;
 import org.cougaar.domain.planning.ldm.plan.*;
 
+import org.cougaar.core.society.MessageStatistics.Statistics;
+import org.cougaar.core.component.ServiceRevokedListener;
+import org.cougaar.core.component.ServiceRevokedEvent;
+import org.cougaar.core.mts.MessageStatisticsService;
+
 import org.cougaar.util.UnaryPredicate;
 
 import java.io.File;
@@ -69,6 +74,7 @@ public class MetricsPlugin
   private int startPlanElementCount = 0; // count since last stats record
   private Set completedPlanElements = new HashSet();
   private PrintWriter writer;
+  private MessageStatisticsService messageStatsService = null;
 
   boolean started = false;
   
@@ -165,6 +171,16 @@ public class MetricsPlugin
     myTasks = (IncrementalSubscription) subscribe(myTasksPredicate);
 
     //        startStatistics();
+    messageStatsService = (MessageStatisticsService)
+        getBindingSite().getServiceBroker().getService(this, MessageStatisticsService.class, 
+                                                       new ServiceRevokedListener() {
+                                                               public void serviceRevoked(ServiceRevokedEvent re) {
+                                                                   if (MessageStatisticsService.class.equals(re.getService())){
+                                                                       messageStatsService = null;
+                                                                   }
+                                                               }
+                                                           }); 
+    
   }
 
   // process statistics tasks and count completed planelements
@@ -272,6 +288,7 @@ public class MetricsPlugin
     // This forces the MessageStatistics to be reset
     // Deprecated...
     //    getMetricsSnapshot(mstats, true);
+    messageStatsService.getMessageStatistics(true);
 //      System.out.println("Statistics start " + ourCluster);
 
     // Write out column headers in output file
@@ -373,25 +390,28 @@ public class MetricsPlugin
     
     writer.print("\t");
     //    if (mstats.averageMessageQueueLength == -1) {
-      writer.print("0.0");
-//      } else {
-//        writer.print(mstats.averageMessageQueueLength);
-//      }
+    if (messageStatsService.getMessageStatistics(false).averageMessageQueueLength == -1) {
+        writer.print("0.0");
+    } else {
+        writer.print(messageStatsService.getMessageStatistics(false).averageMessageQueueLength);
+    }
     
     writer.print("\t");
     //    if (mstats.totalMessageBytes == -1) {
-      writer.print("0.0");
-//      } else {
-//        writer.print(mstats.totalMessageBytes);
-//      }
-    
+    if (messageStatsService.getMessageStatistics(false).totalMessageBytes == -1) {
+        writer.print("0.0");
+    } else {
+        writer.print(messageStatsService.getMessageStatistics(false).totalMessageBytes);
+    } 
+   
     writer.print("\t");
     //    if (mstats.totalMessageCount == -1) {
+    if (messageStatsService.getMessageStatistics(false).totalMessageCount == -1) {
       writer.print("0.0");
-//      } else {
-//        writer.print(mstats.totalMessageCount);
-//      }
-    
+      } else {
+        writer.print(messageStatsService.getMessageStatistics(false).totalMessageCount);
+      }    
+
     writer.print("\t");
     writer.print(deltaPlanElementCount);
     writer.println();
@@ -400,9 +420,9 @@ public class MetricsPlugin
 	      "CPU          : " + timeFormat.format(cpuTime/1000.0) + "\n" + 
 	      "Used Memory  : " + memoryFormat.format(usedMemory/(1024.0*1024.0)) + "\n" + 
 	      "Total Memory : " + memoryFormat.format(totalMemory/(1024.0*1024.0)) + "\n" + 
-//  	      "Message Queue: " + mstats.averageMessageQueueLength + "\n" + 
-//  	      "Message Bytes: " + mstats.totalMessageBytes + "\n" + 
-//  	      "Message Count: " + mstats.totalMessageCount + "\n" + 
+  	      "Message Queue: " + messageStatsService.getMessageStatistics(false).averageMessageQueueLength + "\n" + 
+  	      "Message Bytes: " + messageStatsService.getMessageStatistics(false).totalMessageBytes + "\n" + 
+  	      "Message Count: " + messageStatsService.getMessageStatistics(false).totalMessageCount + "\n" + 
 	      "Message Queue: 0.0\n" + 
 	      "Message Bytes: 0.0\n" + 
 	      "Message Count: 0.0\n" + 
