@@ -72,10 +72,10 @@ public interface MiscComponent extends ModifiableComponent {
   /**
    * Adds a Parameter to this component
    *
-   * @param param Unique string for this parameter
+   * @param param Unique Object for this parameter's value
    * @return a <code>Property</code> value
    */
-  Property addParameter(String param);
+  Property addParameter(Object param);
 
   /**
    * Add a parameter that is based on some other property (typically a
