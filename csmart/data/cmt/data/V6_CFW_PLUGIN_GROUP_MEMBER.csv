@@ -38,7 +38,6 @@ CFW_ID,PLUGIN_GROUP_ID,PLUGIN_CLASS,PLUGIN_CLASS_ORDER,BLANK
 3ID-CFW,SubsistenceDemand,mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn,1, 
 3ID-CFW,SubsistenceInventoryManagement,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0, 
 3ID-CFW,TheaterConstruction,org.cougaar.domain.mlm.construction.ConstructionInventoryPlugIn,1, 
-3ID-CFW,TheaterConstruction,org.cougaar.domain.mlm.construction.ConstructionProjectionPlugIn,0, 
 3ID-CFW,TheaterTransportProvider,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,1, 
 3ID-CFW,TheaterTransportProviderVishnu,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn,1, 
 3ID-CFW,TheaterTransportProviderVishnu,mil.darpa.log.alpine.blackjack.plugins.TransportAllocatorPlugIn,2, 
