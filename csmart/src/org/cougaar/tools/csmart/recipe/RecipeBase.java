@@ -66,7 +66,7 @@ public abstract class RecipeBase
   public static final int RECIPE_SAVED = 3;
 
   // used to block modify notifications while saving
-  private boolean saveInProgress = false; 
+  private transient boolean saveInProgress = false; 
 
   public RecipeBase (String name){
     super(name);
@@ -80,6 +80,32 @@ public abstract class RecipeBase
 
   public String getRecipeName() {
     return getShortName();
+  }
+
+  public void setName(String newName) {
+    if (newName == null || newName.equals("") || newName.equals(getRecipeName())) 
+      return;
+
+    boolean temp = modified;
+    String oldname = getRecipeName();
+    super.setName(newName);
+
+    // do the DB save that is necessary
+    try {
+      PDbBase.changeRecipeName(oldname, newName);
+    } catch (Exception e) {
+      if (log.isErrorEnabled()) {
+	log.error("setName exception changing name from " + oldname + " to " + newName, e);
+      }
+      // On error, mark the recipe as modified
+      temp = true;
+    }
+    
+    // It may be that since recipes save via properties
+    // and the property names will have changed that I should
+    // do an xor or something perhaps, but more likely just
+    // mark it true always
+    modified = temp;
   }
 
   // not needed; these are the same as in ModifiableConfigurableComponent
