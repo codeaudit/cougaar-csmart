@@ -134,7 +134,7 @@ public class OrganizerMouseListener extends MouseAdapter {
 	}
       };
 
-  private AbstractAction configureRecipeAction =
+  private AbstractAction configureAction =
     new AbstractAction(ActionUtil.CONFIGURE_ACTION, 
                        new ImageIcon(getClass().getResource("SB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
@@ -177,6 +177,27 @@ public class OrganizerMouseListener extends MouseAdapter {
 	}
       };
 
+  private AbstractAction deleteSocietyAction =
+    new AbstractAction(ActionUtil.DELETE_ACTION) {
+        public void actionPerformed(ActionEvent e) {
+          organizer.deleteSociety();
+        }
+      };
+
+  private AbstractAction renameSocietyAction =
+    new AbstractAction(ActionUtil.RENAME_ACTION) {
+        public void actionPerformed(ActionEvent e) {
+          organizer.renameSociety();
+        }
+      };
+
+  private AbstractAction saveSocietyAction =
+    new AbstractAction(ActionUtil.SAVE_TO_DATABASE_ACTION) {
+        public void actionPerformed(ActionEvent e) {
+          organizer.saveSociety();
+        }
+      };
+
   private Action[] newRecipeActions = {
     new AbstractAction("From Database") {
 	public void actionPerformed(ActionEvent e) {
@@ -213,8 +234,17 @@ public class OrganizerMouseListener extends MouseAdapter {
     saveExperimentAction
   };
 
+  private Object[] societyMenuItems = {
+    configureAction,
+    buildExperimentAction,
+    duplicateAction,
+    deleteSocietyAction,
+    renameSocietyAction,
+    saveSocietyAction
+  };
+
   private Object[] recipeMenuItems = {
-    configureRecipeAction,
+    configureAction,
     duplicateAction,
     deleteRecipeAction,
     renameRecipeAction,
@@ -233,7 +263,7 @@ public class OrganizerMouseListener extends MouseAdapter {
                                 OrganizerTree workspace) {
     this.organizer = organizer;
     this.workspace = workspace;
-    newSocietyAction.setEnabled(false); // disable creating builtin societies
+    //    newSocietyAction.setEnabled(false); // disable creating builtin societies
     // set up recipe submenus
     for (int i = 0; i < newRecipeActions.length; i++) {
       newRecipeMenu.add(newRecipeActions[i]);
@@ -247,6 +277,8 @@ public class OrganizerMouseListener extends MouseAdapter {
     }
     for (int i = 0; i < experimentMenuItems.length; i++) 
       experimentMenu.add((Action)experimentMenuItems[i]);
+    for (int i = 0; i < societyMenuItems.length; i++)
+      societyMenu.add((Action)societyMenuItems[i]);
     for (int i = 0; i < recipeMenuItems.length; i++)
       recipeMenu.add((Action)recipeMenuItems[i]);
     for (int i = 0; i < folderMenuItems.length; i++) {

@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.ui.viewer;
 
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.society.SocietyComponent;
 
 /**
  * Set of utilities for determining what tools & actions
@@ -37,6 +38,7 @@ public class ActionUtil {
   public static String DELETE_ACTION = "Delete";
   public static String RENAME_ACTION = "Rename";
   public static String NEW_EXPERIMENT_ACTION = "New Experiment";
+  public static String NEW_SOCIETY_ACTION = "New Society";
   public static String NEW_RECIPE_ACTION = "New Recipe";
   public static String NEW_FOLDER_ACTION = "New Folder";
   public static String DELETE_EXPERIMENT_FROM_DATABASE_ACTION = 
@@ -74,6 +76,7 @@ public class ActionUtil {
 
     if (organizer.getSelectedNode().isRoot()) {
       if (action.equals(NEW_EXPERIMENT_ACTION) ||
+          action.equals(NEW_SOCIETY_ACTION) ||
           action.equals(NEW_RECIPE_ACTION) ||
           action.equals(NEW_FOLDER_ACTION) ||
           action.equals(RENAME_ACTION) ||
@@ -132,6 +135,7 @@ public class ActionUtil {
         return true;
       }
       else if (action.equals(NEW_EXPERIMENT_ACTION) ||
+               action.equals(NEW_SOCIETY_ACTION) ||
                action.equals(NEW_RECIPE_ACTION) ||
                action.equals(NEW_FOLDER_ACTION) ||
                action.equals(RENAME_ACTION)) {
@@ -185,6 +189,26 @@ public class ActionUtil {
         return false;
     } // end if selected object is experiment
 
+
+    if (selectedObject instanceof SocietyComponent) {
+      SocietyComponent society = (SocietyComponent)selectedObject;
+      if (action.equals(DUPLICATE_ACTION))
+        return true;
+      if (action.equals(SAVE_TO_DATABASE_ACTION)) {
+        return false;
+      } else if (action.equals(BUILD_ACTION)) {
+        return !CSMART.isSocietyInEditor(society);
+      } else if (action.equals(DELETE_ACTION) ||
+                 action.equals(RENAME_ACTION) ||
+                 action.equals(CONFIGURE_ACTION)) {
+        return (!CSMART.isSocietyInEditor(society));
+      } else if (action.equals(BUILD_ACTION)) {
+ // TODO: should return true only if society not in experiment????
+        return true;
+      } else
+        return false;
+    } // end if selected object is society
+
     if (selectedObject instanceof RecipeComponent) {
       RecipeComponent recipe = (RecipeComponent)selectedObject;
       if (action.equals(DUPLICATE_ACTION) ||
@@ -197,6 +221,7 @@ public class ActionUtil {
       else
         return false;
     } // end if selected object is recipe
+
     System.out.println("Util: unhandled case: " + action);
     return false;
   }

@@ -231,8 +231,11 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
           organizer.newSociety();
         }
       });
-    newSocietyMenuItem.setEnabled(false); // disable creating built-in societies
+    //    newSocietyMenuItem.setEnabled(true); // disable creating built-in societies
     fileMenu.add(newSocietyMenuItem);
+    if(log.isDebugEnabled()) {
+      log.debug("Enable Society Menu");
+    }
     newFolderMenuItem = new JMenuItem(ActionUtil.NEW_FOLDER_ACTION);
     newFolderMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -590,6 +593,14 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       return false;
   }
     
+  public static boolean isSocietyInEditor(SocietyComponent society) {
+    String s = CONFIGURATION_BUILDER + ": " + society.getShortName();
+    if (NamedFrame.getNamedFrame().getFrame(s) != null)
+      return true;
+    else
+      return false;
+  }
+
   public void runExperimentBuilder(Experiment experiment, 
                                    boolean alwaysNew) {
     // if this experiment is being edited, then don't edit again
@@ -1030,7 +1041,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     lf = LoggerFactory.getInstance();
 
     Properties defaults = new Properties();
-    defaults.setProperty("log4j.rootCategory", "WARN, A1");
+    defaults.setProperty("log4j.rootCategory", "DEBUG, A1");
     defaults.setProperty("log4j.appender.A1",
                          "org.apache.log4j.ConsoleAppender");
     defaults.setProperty("log4j.appender.A1.Target", "System.out");

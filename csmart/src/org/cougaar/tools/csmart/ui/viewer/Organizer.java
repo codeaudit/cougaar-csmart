@@ -59,6 +59,7 @@ import org.cougaar.tools.csmart.recipe.ABCImpact;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.abc.ABCSociety;
+import org.cougaar.tools.csmart.society.ini.INISociety;
 import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.society.cmt.CMTSociety;
 import org.cougaar.util.log.Logger;
@@ -98,6 +99,7 @@ public class Organizer extends JScrollPane {
   private NameClassItem[] builtInSocieties = {
     new NameClassItem("Scalability", ScalabilityXSociety.class),
     new NameClassItem("ABC", ABCSociety.class),
+    new NameClassItem("INI", INISociety.class),
   };
 
   // The stand-alone recipes that can be created in CSMART
@@ -521,35 +523,39 @@ public class Organizer extends JScrollPane {
 				  "ScalabilityX");
     if (answer == null)
       return null;
-    SocietyComponent sc = null;
-    if (answer instanceof NameClassItem) {
-      // create a scalability or abc society
-      NameClassItem item = (NameClassItem) answer;
-      String name = societyNames.generateName(item.name);
-      while (true) {
-	name = (String) JOptionPane.showInputDialog(this, "Enter Society Name",
-						    "Name Society",
-						    JOptionPane.QUESTION_MESSAGE,
-						    null, null,
-						    name);
-	if (name == null) return null;
-	if (!societyNames.contains(name)) break;
-	int ok = JOptionPane.showConfirmDialog(this,
-					       "Use an unique name",
-					       "Society Name Not Unique",
-					       JOptionPane.OK_CANCEL_OPTION,
-					       JOptionPane.ERROR_MESSAGE);
-	if (ok != JOptionPane.OK_OPTION) return null;
-      }
-      sc = helper.createSociety(name, item.cls);
-    }
+    NameClassItem item = (NameClassItem) answer;
+    // display file chooser to allow user to select file that defines society
+    JFileChooser chooser = 
+      new JFileChooser(SocietyFinder.getInstance().getPath());
+    int result = chooser.showOpenDialog(this);
+    if (result != JFileChooser.APPROVE_OPTION ||
+        chooser.getSelectedFile().isDirectory())
+      return null;
+    String name = chooser.getSelectedFile().getName();
+    // create society using file name
+    SocietyComponent sc = helper.createSociety(name, item.cls);
     if (sc == null)
       return null;
+    if (name.endsWith(".ini"))
+      name = name.substring(0, name.length()-4);
+    // if name is not unique, then get an unique name for the society
+    while (societyNames.contains(name)) {
+      name = societyNames.generateName(name);
+      name = 
+        (String)JOptionPane.showInputDialog(this, "Enter Society Name",
+                                            "Society Name Not Unique",
+                                            JOptionPane.QUESTION_MESSAGE,
+                                            null, null, name);
+      if (name == null) return null; // TODO: delete society to clean up
+    }
+    societyNames.add(name);
+    sc.setName(name); 
     DefaultMutableTreeNode newNode = 
       addSocietyToWorkspace(sc, getSelectedNode());
     workspace.setSelection(newNode);
     return newNode;
   }
+
   /**
    * Create a new society and make it be the selected society.
    * Allows tools that need a society to create one,
@@ -892,6 +898,21 @@ public class Organizer extends JScrollPane {
                                     "Error Writing Database",
                                     JOptionPane.ERROR_MESSAGE);
     }
+  }
+
+  ///////////////////////////////
+  // Save society
+  ///////////////////////////////
+
+  public void saveSociety() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node == null) return;
+    SocietyComponent sc = (SocietyComponent) node.getUserObject();
+    saveSociety(sc);
+  }
+
+  private void saveSociety(SocietyComponent sc) {
+    System.out.println("Save Society not implemented");
   }
 
   ///////////////////////////////////
