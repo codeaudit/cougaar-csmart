@@ -426,16 +426,18 @@ DROP TABLE IF EXISTS tempcopy.v4_expt_trial_mod_recipe;
 CREATE TABLE tempcopy.v4_expt_trial_mod_recipe AS
   SELECT DISTINCT
     CONCAT(CONCAT(E.EXPT_ID,'-:suffix'),'.TRIAL') AS TRIAL_ID, 
-    CONCAT(AA.MOD_RECIPE_LIB_ID,'-cpy') AS MOD_RECIPE_LIB_ID,
+    CONCAT(AA.MOD_RECIPE_LIB_ID,M.NAME) AS MOD_RECIPE_LIB_ID,
     AA.RECIPE_ORDER,
     CONCAT(E.EXPT_ID,'-:suffix') AS EXPT_ID
   FROM
      v4_expt_trial_mod_recipe AA,
      v4_expt_experiment E,
+     v4_lib_mod_recipe M,
      v4_expt_trial ET
   WHERE
       E.EXPT_ID = ET.EXPT_ID
       AND ET.TRIAL_ID = AA.TRIAL_ID
+      AND M.MOD_RECIPE_LIB_ID = AA.MOD_RECIPE_LIB_ID
       AND E.NAME = ':oldExpt';
 
 -- v4_expt_experiment

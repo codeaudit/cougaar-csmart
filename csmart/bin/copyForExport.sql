@@ -78,7 +78,7 @@ DROP TABLE IF EXISTS tempcopy.v4_lib_mod_recipe;
 
 CREATE TABLE tempcopy.v4_lib_mod_recipe AS
   SELECT DISTINCT
-    CONCAT(AA.MOD_RECIPE_LIB_ID, '-cpy') AS MOD_RECIPE_LIB_ID,
+    CONCAT(AA.MOD_RECIPE_LIB_ID, AA.NAME) AS MOD_RECIPE_LIB_ID,
     CONCAT(AA.NAME, '-cpy') AS NAME,
     AA.JAVA_CLASS,
     AA.DESCRIPTION
@@ -98,17 +98,19 @@ DROP TABLE IF EXISTS tempcopy.v4_lib_mod_recipe_arg;
 
 CREATE TABLE tempcopy.v4_lib_mod_recipe_arg AS
   SELECT DISTINCT
-    CONCAT(AA.MOD_RECIPE_LIB_ID, '-cpy') AS MOD_RECIPE_LIB_ID,
+    CONCAT(AA.MOD_RECIPE_LIB_ID, AT.NAME) AS MOD_RECIPE_LIB_ID,
     AA.ARG_NAME,
     AA.ARG_ORDER,
     AA.ARG_VALUE
   FROM
     v4_lib_mod_recipe_arg AA,
+    v4_lib_mod_recipe AT,
     v4_expt_trial_mod_recipe ER,
     v4_expt_trial ET,
     v4_expt_experiment E
   WHERE
     AA.MOD_RECIPE_LIB_ID = ER.MOD_RECIPE_LIB_ID
+    AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
     AND ER.TRIAL_ID = ET.TRIAL_ID
     AND ET.EXPT_ID = E.EXPT_ID
     AND E.NAME = ':exptName';
