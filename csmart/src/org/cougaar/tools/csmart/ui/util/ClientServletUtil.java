@@ -46,7 +46,8 @@ public class ClientServletUtil {
     "CSMART_CommunityProviderServlet";
   public static final String AGENT_INFO_SERVLET = 
     "CSMART_AgentInfoServlet";
-  public static final String AGENT_PROVIDER_SERVLET = "agents?all&text";
+  public static final String AGENT_PROVIDER_SERVLET = 
+    "agents?scope=all&format=text";
   public static final String PLAN_SERVLET = "CSMART_PlanServlet";
   public static final String SEARCH_SERVLET = "CSMART_SearchServlet";
   public static final String METRICS_SERVLET = "CSMART_MetricsServlet";
