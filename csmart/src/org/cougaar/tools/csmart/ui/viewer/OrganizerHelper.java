@@ -636,6 +636,8 @@ public class OrganizerHelper {
 
   private static Class[] singleStringConstructor = {String.class};
 
+  private static Class[] twoStringConstructor = {String.class, String.class};
+
   private static Class[] multiConstructor = {String.class, String[].class};
 
   public RecipeComponent createRecipe(String name, Class cls) {
@@ -671,15 +673,18 @@ public class OrganizerHelper {
   /**
    * Create a new society from a node file which enumerates
    * the names of the agents in the society.
+   * @param name a <code>String</code> node file name
+   * @param socName a <code>String</code> name for the new society
+   * @param cls a <code>Class</code> Class of Society to create
+   * @return a <code>SocietyComponent</code>
    */
-
-  public SocietyComponent createSociety(String name, Class cls) {
+  public SocietyComponent createSociety(String name, String socName, Class cls) {
     createLogger();
     
     try {
-      Constructor constructor = cls.getConstructor(singleStringConstructor);
+      Constructor constructor = cls.getConstructor(twoStringConstructor);
       SocietyComponent sc = 
-        (SocietyComponent) constructor.newInstance(new String[] {name});
+        (SocietyComponent) constructor.newInstance(new String[] {name, socName});
       sc.initProperties();
       sc.saveToDatabase();
       return sc;
@@ -707,6 +712,7 @@ public class OrganizerHelper {
       SocietyComponent sc = 
         (SocietyComponent) constructor.newInstance(new Object[] {name, filenames});
       sc.initProperties();
+      sc.saveToDatabase();
       return sc;
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
