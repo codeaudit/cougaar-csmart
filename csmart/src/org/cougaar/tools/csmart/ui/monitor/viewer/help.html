@@ -31,7 +31,8 @@ include any other factors in graph layout.
 <p>The Society Monitor provides the following displays:
 <ul>
 <li>
-<b>Community: </b>The communities in the society, if specified. </li>
+<b>Community: </b>The communities in the society, if specified using
+CommunityPGs (not the yellow pages). </li>
 
 <li>
 <b>Agents: </b>The agents in the society and their relationships to each
@@ -48,6 +49,10 @@ to a single plan object.</li>
 <li>
 <b>Metrics</b>: Show one (potentially many) calculated graphs of society
 activity.</li>
+
+<li>
+<b>Topology</b>: Display the current (dynamically changing) assignment
+of Agents to Nodes to Hosts in the society.</li>
 
 <br>&nbsp;</ul>
 When first launching a tool, if not running from CSMART, you are prompted
@@ -66,7 +71,8 @@ File: Create new graphs, save graphs, and exit.</li>
 
 <ul>
 <li>
-New: Create a new Community, Agents, Plan or Thread graph or a new Metrics display. This duplicates the functionality
+New: Create a new Community, Agents, Plan or Thread graph or a new
+Metrics or Topology display. This duplicates the functionality
 available on the tool bar buttons.</li>
 
 <li>
@@ -252,8 +258,9 @@ so that the node whose attributes are displayed, is visible.</li>
 
 
 <b>Agents</b>
-<p>The Society Monitor's Agents View displays the agents in a running
-Cougaar society. Each agent is labeled with its nomenclature. It is
+<p>The Society Monitor's Agents View displays the Entities or Organizations in a running
+Cougaar society. It displays only those agents that have an Entity or
+Organization asset.  Each agent is labeled with its nomenclature. It is
 linked to every other agent with which it has a relationship. Agents
 are laid out top-to-bottom. You may produce new graphs showing only
 selected relationships, from the File menu. Alternatively, given a
@@ -282,7 +289,10 @@ Superiors and Providers).</li>
 
 <b>Community</b>
 <p>This shows the communities in a running society, with their
-relationships (the sum of the relationships of their agents).</p>
+relationships (the sum of the relationships of their agents). It
+displays the communities as defined in the CommunityPG on Entity or
+Organization Assets on the blackboard (and not those defined in the
+yellow pages).</p>
 
 
 <b>Plan</b>
@@ -358,7 +368,7 @@ including Node Agents. CSMART will present an Error dialog displaying
 the set of Agents in which it was not able to contact the Servlet it
 needs to use. This will usually include all NodeAgents in the Society,
 unless you have specifically added the CSMART Servlets to those
-Nodes. These errors can be ignored. But f the Society Monitor is
+Nodes. These errors can be ignored. But if the Society Monitor is
 unable to contact a running society at all, or if some data from real
 Agents is missing, confirm that these CSMART Servlets are loaded in
 all relevant Agents:
@@ -374,6 +384,7 @@ org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.serv
 </li>
 <li>plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.SearchServlet, /CSMART_SearchServlet)
 </li>
+<li>plugin = org.cougaar.core.topology.TopologyReaderServlet</li>
 </ul>
 
 <br><br>
