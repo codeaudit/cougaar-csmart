@@ -6,15 +6,13 @@
 <body bgcolor="white">
 
 <p>
-<center><h1>
-CSMART Installation and Getting Started HOW-TO</h1></center>
+<center><h1>CSMART Installation and Getting Started HOW-TO</h1></center>
 <p>
 <p>
 This document provides step-by-step instructions on how to install and run a 
 single CSMART application.  See
   <a href="http://www.cougaar.org">http://www.cougaar.org</a>
-for an overview of 
-<a href="http://www.cougaar.org">Cougaar</a>
+for an overview of <a href="http://www.cougaar.org">Cougaar</a>
 and the &quot;<a href="http://www.cougaar.org/documents/pdg.html">Cougaar
 Developers Guide</a>&quot;.  Also see the 
 <a href="http://www.cougaar.org/projects/csmart/csmart-users-guide.pdf">
@@ -79,11 +77,6 @@ very similar for WinNT) and a MYSQL database.
     Walks through a step-by-step run of CSMART, from experiment creation,
     running the experiment using the AppServer, to the final results
     analysis.</li><p>
-
-  <li><a href="#csmartLogging">CSMART Logging</a>.<br>
-    Covers the Logging service within CSMART.
-    </li><p>
-    
 </ol>
 
 <p>
@@ -128,7 +121,7 @@ very similar for WinNT) and a MYSQL database.
        in C:\Program Files\JavaSoft\JRE, and both places need JSSE installed.</i><br><br>
     You may also need to modify the default JSSE security file (in
     JRE/lib/security/java.security), by adding the line:
-    <pre>security.provider.3=com.sun.net.ssl.internal.ssl.Provider</pre><br><br></li>
+    <pre>security.provider.3=com.sun.net.ssl.internal.ssl.Provider</pre><br></li>
 
   <li>If you require a local database (Oracle or MySQL) then you must
     install this database.  Currently CSMART has been fully tested on a MySQL database. See <a href="#dbInst">below</a> for instructions.
@@ -148,11 +141,11 @@ very similar for WinNT) and a MYSQL database.
     then you will need to install an "X-Server" such as
     <a href="http://www.hummingbird.com/products/nc/exceed/">Exceed</a>
      or <a href="http://xfree86.cygwin.com">XFree (install on cygwin, free)</a>.
-    </li><p>
+    </li>
   </ol>
 </li><p>
 
-<br><br>
+<br>
 
 <a name="dbInst">
 <li><font size=+1><b>To install a configuration database:</b></font></a>
@@ -217,7 +210,7 @@ very similar for WinNT) and a MYSQL database.
         mysql&gt; exit;
         $ mysql -u root -p mycoug &lt; [CMT MySQL data dump, eg 1ad_dump_full.sql]
 	[supply root password set during installation]
-      </pre><br>
+      </pre>
       <b>Note</b> If
 	you have a previous database you wish to replace, the command
 	to drop the old database first is "drop database
@@ -239,7 +232,7 @@ very similar for WinNT) and a MYSQL database.
       You could instead create this user such that any machine in your
       domain can access it (with the security risks that entails), by
       doing: <pre><i>myname</i>@"%.foo.com"</pre>
-  <br><br></li><p>
+  <br></li><p>
 
   <li>Once you have imported the CMT MySQL datafile, be sure to follow
   the same steps to import the Cougaar domain plugin MySQL database:
@@ -403,7 +396,7 @@ very similar for WinNT) and a MYSQL database.
   </ol>
 </li><p>
 
-<br><br>
+<br>
 
 <a name="cougaarEnv">
 <li><font size=+1><b>To set your 
@@ -434,7 +427,7 @@ environment variables:</b></font></a>
     This is typically not required.
 </li><p>
 
-<br><br>
+<br>
 
 <a name="minitest">
 <li><font size=+1><b>To verify the 
@@ -479,7 +472,7 @@ installation using
   </ol>
 </li><p>
 
-<br><br>
+<br>
 
 <a name="httpVisuals">
 <li><font size=+1><b>To use an HTTP browser to view the society:</b></font></a>
@@ -506,7 +499,7 @@ installation using
   </ol>
 </li><p>
 
-<br><br>
+<br>
 
 <a name="socMonitor">
 <li><font size=+1><b>To just use the CSMART Society Monitor UIs:</b></font></a>
@@ -550,7 +543,7 @@ installation using
   </ol>
 </li><p>
 
-<br><br>
+<br>
 
 <a name="appServer">
 <li><font size=+1><b>To configure the AppServer:</b></font></a>
@@ -603,7 +596,7 @@ installation using
   </ol>
 </li><p>
 
-<br><br>
+<br>
 
 <a name="csmartConfig">
 <li><font size=+1><b>To configure CSMART:</b></font></a>
@@ -650,16 +643,42 @@ installation using
   Configuration path. Typically, users put this in the same place as
   their cougaar.rc file, CIP/configs/common.</li><p>
 
+  <li>(Optional) CSMART uses <a
+  href="http://jakarta.apache.org/log4j">log4j</a> to log all
+  messages, warnings, and errors. Users may want to tune how verbose
+  the logging is. All logging is package specific and can be
+  controlled by the debug.properties file located in
+  csmart/data/common.<br>
+  For detailed configuration options, see log4j specific documentation.  Default logging
+   is displayed on the Console (where CSMART was started) and only displays log messages of
+   priority WARN or Higher.  All logs are also, by default, output to a file: csmart.log which
+   is in the Current Working Directory.  This file is a rolling logfile that will role at a
+   size of: 1024KB.
+  <p>
+  The only options that a user may want to modify in the debug.properties file are:
+  <ol>
+    <li>Change the Log Level<br>
+  To change the log level for the entire society Change:
+  <tt>log4j.rootCategory=WARN, stdout, rolling</tt>
+  in the debug.properties file to the desired log level.
+  FATAL > ERROR > WARN > INFO > DEBUG
+    </li>
+    <li>Change Log Level for a specific package.<br>
+       To change the logging level for a specific package.  Add a line like:
+       <tt>log4j.category.org.cougaar.tools.csmart.ui.console=DEBUG</tt> with the
+       desired package name and debug level to the debug.properties file.
+    </li>
+  </ol>
+  </li><br>
+
   <li>CSMART is now ready to run by using:
        <pre> 
        cd $COUGAAR_INSTALL_PATH/csmart/bin
        ./CSMART
        </pre></li><p>
   </ol>
-</li><p>
-
-<br><br>
-
+</li>
+<br>
 <a name="csmartRun">
 <li><font size=+1><b>Example run of CSMART:</b></font></a>
   <p>
@@ -881,7 +900,7 @@ installation using
   </ol>
   </li>
   
-  <br><br>
+  <br>
   <li><a name="analyzeResults">To analyze the results of an Experiment (see section 8 of the User's Guide):</a>
     <ol>
     <li>This is only useful if a metrics was selected during experiment
@@ -908,34 +927,6 @@ installation using
 </ol>
 </li>
 <br><br>
-
-<a name="csmartLogging">
-<li>
-<font size=+1><b>About CSMART Logging</b></font></a>
-  <p>
-   The CSMART Logging is a tool, mostly for developers, but also useful for users.
-   All logging is package specific and can be controlled by the debug.properties file
-   located in csmart/data/common.  The logging uses <a href="http://jakarta.apache.org/log4j">log4j</a>.  For detailed configuration options, see log4j specific documentation.  Default logging
-   is displayed on the Console (where CSMART was started) and only displays log messages of
-   priority WARN or Higher.  All logs are also, by default, output to a file: csmart.log which
-   is in the Current Working Directory.  This file is a rolling logfile that will role at a
-   size of: 1024KB.
-  <p>
-  The only options that a user may want to modify in the debug.properties file are:
-  <ol>
-  <li>Change the Log Level<br>
-  To change the log level for the entire society Change:
-  <tt>log4j.rootCategory=WARN, stdout, rolling</tt>
-  in the debug.properties file to the desired log level.
-  FATAL > ERROR > WARN > INFO > DEBUG
-</li>
-  <li>Change Log Level for a specific package.<br>
-  To change the logging level for a specific package.  Add a line:
-  <tt>log4j.category.org.cougaar.tools.csmart.ui.console=DEBUG</tt> with the
-  desired package name and debug level to the debug.properties file.
-  </li>
-
-  </ol>
 
 </body>
 </html>

@@ -21,7 +21,7 @@ Showing a Society Monitor Graph
 your OS, then you should make sure that dot.exe or dot-l386 are
 installed in CIP/csmart/bin. Use dot.exe on Windows, dot-l386 on Solaris or
 Linux (may also work on other Unix variants, not supported). If you
-believe you are running one of thos OSes, and get an error message
+believe you are running one of those OSes, and get an error message
 claiming your OS was not understood, please submit a bug including the
 full OS type ("uname -a" or equivalent) for your system, to the
 Cougaar bug tracking site on www.cougaar.org, under the CSMART,
@@ -35,7 +35,7 @@ in the classpath for the Society Monitor
 csmart/data/common/servlets.txt in your agent configurations
 
 Running one of the supplied pre-configured Societies or using the
-include Metrics
+included Metrics
 - If you see an error like FileNotFoundException, Node00.ini not
 found, then make sure that your org.cougaar.config.path as specified
 in your AppServer properties file ends with an (escaped) semi-colon,
