@@ -58,7 +58,7 @@ public class CMTAgent
   public static final String PROP_COMPONENT_CATEGORY = "Component Category";
   private static final String QUERY_AGENT_DATA = "queryAgentData";
   private static final String QUERY_PLUGIN_NAME = "queryPluginNames";
-  private static final String QUERY_PLUGIN_ARGS = "queryPluginArgs";
+  private static final String QUERY_PLUGIN_ARGS = "queryComponentArgs";
   private static final String QUERY_AGENT_RELATIONS = "queryAgentRelationships";
   private static final String QUERY_AGENT_ASSET_CLASS = "queryAgentAssetClass";
 
