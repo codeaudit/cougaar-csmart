@@ -46,6 +46,8 @@ public class CMTAgent
   public static final String PROP_COMPONENT_CATEGORY = "Component Category";
   private static final String QUERY_AGENT_DATA = "queryAgentData";
   private static final String QUERY_PLUGIN_NAME = "queryPluginNames";
+  private static final String QUERY_PLUGIN_ARGS = "queryPluginArgs";
+  private static final String QUERY_AGENT_RELATIONS = "queryAgentRelationships";
 
   // The tree will not display in the builder
   // if there are no properties so put it's name.
@@ -152,6 +154,48 @@ public class CMTAgent
     return result;
   }
 
+  private ComponentData addAssetData(ComponentData data) {
+//     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
+
+//     // Is this correct?  Are all agents Entities?
+//     assetData.setType(AgentAssetData.ENTITY);
+//     assetData.setAssetClass("Entity");
+
+//     // Add all Relationship data
+//     try {
+//       Connection conn = DBUtils.getConnection();
+//       try {
+// 	Statement stmt = conn.createStatement();	
+//         dbp.setDebug(true);
+// 	String query = dbp.getQuery(QUERY_AGENT_RELATIONS, substitutions);
+	
+// 	ResultSet rs = stmt.executeQuery(query);
+// 	while(rs.next()) {
+// 	  GenericComponentData plugin = new GenericComponentData();
+//           String pluginClassName = rs.getString(1);
+// 	  plugin.setType(ComponentData.PLUGIN);
+//           plugin.setClassName(pluginClassName);
+// 	  plugin.setParent(data);
+// 	  plugin.setOwner(this);
+// 	  plugin.setName(pluginClassName);	  
+// 	  plugin.setAlibID(rs.getString(2));
+// 	  data.addChild(plugin);
+// 	}
+// 	rs.close();
+// 	stmt.close();
+
+//       } finally {
+// 	conn.close();
+//       }
+//     } catch (Exception e) {
+//       e.printStackTrace();
+//       throw new RuntimeException("Error" + e);
+//     }
+
+    return data;
+  }
+
+
   public ComponentData addComponentData(ComponentData data) {
 
     //    System.out.println("Agent: " + data.getName());
@@ -184,8 +228,21 @@ public class CMTAgent
 	  plugin.setOwner(this);
 	  plugin.setName(pluginClassName);	  
 	  plugin.setAlibID(rs.getString(2));
+	  substitutions.put(":comp_id", rs.getString(3));
+	  Statement stmt2 = conn.createStatement();
+	  String query2 = dbp.getQuery(QUERY_PLUGIN_ARGS, substitutions);
+	  ResultSet rs2 = stmt.executeQuery(query2);
+	  while (rs2.next()) {
+	    String arg = rs2.getString(1);
+	    System.out.println("Adding Arg: " + arg);	    
+	    plugin.addParameter(arg);
+	  }
+	  rs2.close();
+	  stmt2.close();
 	  data.addChild(plugin);
 	}
+	rs.close();
+	stmt.close();
 
       } finally {
 	conn.close();
@@ -194,6 +251,9 @@ public class CMTAgent
       e.printStackTrace();
       throw new RuntimeException("Error" + e);
     }
+
+    data = addAssetData(data);
+
     return data;
   }
 
