@@ -387,7 +387,9 @@ public class AssetDBComponent
           String pgAttrLibId = (String)pgAttrLibIds.get(i);
           substitutions.put(":pgAttrLibId", pgAttrLibId);
           PGAttr pgAttr = (PGAttr)pgAttributes.get(pgAttrLibId);
-          String attrType = pgAttr.getAttrType();
+	  // FIXME: Why is attrType unused here? ATTRIBUTE_TYPE col from lib_pg_attr
+	  // It is String, ClusterIdentifier, etc
+	  //          String attrType = pgAttr.getAttrType();
           String aggregateType = pgAttr.getAggregateType();
           query = DBUtils.getQuery(QUERY_PG_VALUES, substitutions);
           rs = stmt.executeQuery(query);
