@@ -181,6 +181,9 @@ public class ExperimentNode
     Properties newProps = nodeCopy.getArguments();
     newProps.clear();
     newProps.putAll(getArguments());
+
+    // FIXME: Copy the other Properties (description, etc)
+    // Just want to avoid copying the Property named "AgentNames"
     return nodeCopy;
   }
 

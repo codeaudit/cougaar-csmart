@@ -152,6 +152,9 @@ public class ExperimentHost
     this.monitoringPort = monitoringPort;
   }
 
+  // FIXME: Add a copy method that takes avoids copying the NodeNames property
+
+
   private void readObject(ObjectInputStream ois)
     throws IOException, ClassNotFoundException
   {
