@@ -3,10 +3,14 @@ CSMART Release Notes
 Release 9.0:
 - The CSMART required Cougaar 3rd party jar file: grappa1_2_bbn.jar has been changed to grappa1_2.jar. The BBN modifications in the prior jar are now included in the standard Grappa jar.
 - Repackage and code cleanup for readability
-- Use Servlets instead of PSPs
+- Use Servlets instead of PSPs. You must now explicitly add
+a PSP to your society, including adding the PlanServerPlugin, if you
+really want to run a PSP.
+- Remove use of ConfigurationWriter in talking to the AppServer
 - New ServletGroupInsertion recipe for inserting sets of servlets
 - Default inclusion of basic servlets with built-in experiments
 - Use new Cougaar Logging Service
+- New Servlet based GLS / Oplan UIs
 - Disabled built-in societies, pending full database support
 - Due to above, experiments with multiple trials are temporarily disabled
 
