@@ -562,8 +562,6 @@ public class ABCAgent
   }
 
 public ComponentData addComponentData(ComponentData data) {
-//     data.setType(ComponentData.AGENT);
-//     data.setName(getFullName().toString());
 //     data.setClassName(agentClassName);
 //     data.setOwner(this);
 //     data.setParent(getParent());
