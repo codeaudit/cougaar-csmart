@@ -149,7 +149,7 @@ public class PopulateDb {
      * @param assemblyId is used to identify all components added to
      * the database.
      **/
-    public PopulateDb(String assemblyIdPrefix, String exptId, String trialId)
+    public PopulateDb(String assemblyType, String exptId, String trialId)
         throws SQLException, IOException
     {
         dbp = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
@@ -169,7 +169,7 @@ public class PopulateDb {
         }
         dbConnection = DBConnectionPool.getConnection(database, username, password);
         stmt = dbConnection.createStatement();
-        setAssemblyId(assemblyIdPrefix, exptId, trialId);
+        setAssemblyId(assemblyType, exptId, trialId);
     }
 
     public String getAssemblyId() {
@@ -179,7 +179,9 @@ public class PopulateDb {
     private void setAssemblyId(String assemblyIdPrefix, String exptId, String trialId)
         throws SQLException
     {
+        String assemblyIdPrefix = assemblyType + "-";
         substitutions.put(":assembly_id_pattern", assemblyIdPrefix + "____");
+        substitutions.put(":assembly_type", assemblyType);
         DecimalFormat assemblyIdFormat =
             new DecimalFormat(assemblyIdPrefix + "0000");
         ResultSet rs =
