@@ -138,7 +138,7 @@ sub read_table {
       @cols = split(/\s*,\s*/, $line);
       if ($first_line) {
         $first_line=0;
-        if ("order" eq $cols[0] &&
+        if ("org_order" eq $cols[0] &&
             "orig_org_id" eq $cols[1] &&
             "base_org_id" eq $cols[2] &&
             "suffix" eq $cols[3]) {

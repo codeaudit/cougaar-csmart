@@ -123,7 +123,7 @@ sub read_table {
       @cols = split(/\s*,\s*/, $line);
       if ($first_line) {
         $first_line=0;
-        if ("order" eq $cols[0] &&
+        if ("org_order" eq $cols[0] &&
             "orig_org_id" eq $cols[1] &&
             "base_org_id" eq $cols[2] &&
             "suffix" eq $cols[3]) {
@@ -169,7 +169,11 @@ sub fix_xml {
       $type=$2;
       $before=$1;
       $old_name=$3;
-    } elsif ($line =~ /(<\s*facet\s+\S+_org_id\s*=\s*[\'\"])([^\'\"]+)/) {
+    } elsif ($line =~ /(<\s*facet\s+su\S*_org_id\s*=\s*[\'\"])([^\'\"]+)/) { #for superior_org_id and subordinate_org_id
+      $type="facet";
+      $before=$1;
+      $old_name=$2;
+    } elsif ($line =~ /(<\s*facet\s+org_id\s*=\s*[\'\"])([^\'\"]+)/) {#for org_id
       $type="facet";
       $before=$1;
       $old_name=$2;
@@ -186,9 +190,9 @@ sub fix_xml {
       if ($verbose) {
         print STDERR "$type ($before)($old_name) line: $line";
       }
-      my $new_name=$table{$old_name};
+      my $new_name=$table{$old_name};  #get new name from table previously read in
       if (defined($new_name)) {
-        if ($line =~ s/$before$old_name/$before$new_name/) {
+        if ($line =~ s/$before$old_name/$before$new_name/) { # substitute new name for old name
           if ($verbose) {
             print STDERR "FIXED $line";
           }

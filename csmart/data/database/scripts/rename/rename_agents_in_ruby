@@ -1,0 +1,243 @@
+#!/usr/bin/perl
+
+#
+# Read a CSV file with the new agent names:
+#   IGNORE, OLD_NAME, NEW_NAME_PREFIX, NEW_NAME_SUFFIX, ...
+# Create a map of (OLD_NAME -> NEW_NAME)
+#
+# Fix the agent names in the following XML:
+#
+#   <agent name='OLD_NAME' ../>
+#   <node name='OLD_NAME'../>
+#   <facet *_org_id='OLD_NAME'/>
+#   -Dorg.cougaar.node.name=OLD_NAME
+#   <component name='OLD_NAME|class'/>
+#
+
+my $table_file;
+my $ruby_file;
+
+my $verbose=0;
+my $print_table=0;
+
+my %table;
+
+parse_args();
+if (!defined($ruby_file)) {
+  usage();
+  exit(1);
+}
+read_table();
+if ($print_table) {
+  print "<!-- table: \n";
+  foreach (sort (keys %table)) {
+    print "($_, $table{$_})\n";
+  }
+  print "-->\n";
+}
+fix_ruby();
+exit(0);
+
+sub usage {
+  print STDERR <<EOF;
+Usage: $0 [OPTION] RENAME_TABLE RUBY_FILE
+Rename the agents in Cougaar society Ruby file.
+
+Options:
+
+ --print_table   print the rename table
+ --verbose       print verbose STDERR logging
+ --help          display usage
+
+The file specified by the RENAME_TABLE should be a CSV
+file with lines in the following format:
+  IGNORE, OLD_NAME, NEW_NAME_PREFIX, NEW_NAME_SUFFIX, ...
+For example, this line from the "org_hierarchy.csv" file:
+   1,NCA,OSD,GOV,etc
+which would rename "NCA" to "OSD.GOV".
+
+The Ruby file should contain the following lines:
+      node.add_agent('OLD_NAME') do |agent|
+          facet[:org_id]='OLD_NAME'
+          facet[:orig_org_id]='OLD_NAME'
+          facet[:superior_org_id]='OLD_NAME'
+          facet[:subordinate_org_id]='OLD_NAME'
+          facet[:sca_supported_org]='OLD_NAME'
+
+For example, this short example:
+      node.add_agent('1-AD') do |agent|
+        agent.add_facet do |facet|
+          facet[:org_id]='1-AD'
+        end
+        agent.add_facet do |facet|
+          facet[:orig_org_id]='1-AD'
+        end
+        agent.add_facet do |facet|
+          facet[:superior_org_id]='5-CORPS'
+        end
+        agent.add_facet do |facet|
+          facet[:subordinate_org_id]='2-BDE-1-AD'
+        end
+        agent.add_facet do |facet|
+          facet[:subordinate_org_id]='DISCOM-1-AD'
+        end
+        agent.add_facet do |facet|
+          facet[:sca_echelon_of_support]='CORPS'
+          facet[:sca_supported_org]='1-AD'
+        end
+
+
+The above example rename table and ruby file would generate
+this standard-output:
+      node.add_agent('1-AD.ARMY.MIL') do |agent|
+        agent.add_facet do |facet|
+          facet[:org_id]='1-AD.ARMY.MIL'
+        end
+        agent.add_facet do |facet|
+          facet[:orig_org_id]='1-AD'
+        end
+        agent.add_facet do |facet|
+          facet[:superior_org_id]='5-CORPS.ARMY.MIL'
+        end
+        agent.add_facet do |facet|
+          facet[:subordinate_org_id]='2-BDE.1-AD.ARMY.MIL'
+        end
+        agent.add_facet do |facet|
+          facet[:subordinate_org_id]='DISCOM.1-AD.ARMY.MIL'
+        end
+        agent.add_facet do |facet|
+          facet[:sca_echelon_of_support]='CORPS'
+          facet[:sca_supported_org]='1-AD.ARMY.MIL'
+        end
+
+Report bugs to http://www.cougaar.org/bugs
+EOF
+  exit(1);
+}
+
+sub parse_args {
+  foreach (@args = @ARGV) {
+    chomp;
+    my $arg = $_;
+    if (/^-+(.*)/) {
+      $arg = $1;
+      if ($arg eq "print_table") {
+        $print_table=1;
+      } elsif ($arg eq "verbose") {
+        $verbose=1;
+      } elsif ($arg eq "help") {
+        usage();
+      }
+    } elsif (!defined($table_file)) {
+      $table_file = $arg;
+    } elsif (!defined($ruby_file)) {
+      $ruby_file = $arg;
+    } else {
+      usage();
+    }
+  }
+}
+
+sub read_table {
+  my $filename = $table_file;
+  open(FD, "<$filename")
+    or die "Unable to open $filename: $!\n";
+  my $first_line=1;
+  while (<FD>) {
+    chomp;
+    my $line = $_;
+    if ($line =~ /^\s*#/) {
+      # ignore comments
+    } else {
+      @cols = split(/\s*,\s*/, $line);
+      if ($first_line) {
+        $first_line=0;
+        if ("org_order" eq $cols[0] &&
+            "orig_org_id" eq $cols[1] &&
+            "base_org_id" eq $cols[2] &&
+            "suffix" eq $cols[3]) {
+          # good
+          if ($verbose) {
+            print STDERR "VALID HEADERS: $line\n";
+          }
+        } else { 
+          print "Unexpected first line of file $filename:\n";
+          print $line;
+          print "Expecting a CSV header:\n";
+          print "org_order,orig_org_id,base_org_id,suffix\n";
+          close FD;
+          exit(1);
+        }
+      } else {
+        my $orig_name=$cols[1];
+        my $new_name=$cols[2];
+        if (defined($cols[3])) {
+          $new_name="$new_name.$cols[3]";
+        }
+        if ($verbose) { 
+          print STDERR "TABLE ($orig_name, $new_name)\n";
+        }
+        $table{$orig_name}=$new_name;
+      }
+    }
+  }
+  close FD;
+}
+
+sub fix_ruby {
+    my $filename = $ruby_file;
+    open(FD, "<$filename")
+        or die "Unable to open $filename: $!\n";
+    while (<FD>) {
+        my $line = $_;
+        # fix only first match?
+        my $type;
+        my $before;
+        my $old_name;
+        my $before_chopped;
+        my $after_chopped;
+
+
+        if($line =~ /(.*node\.add_agent\s*\(\s*[\'\"])([^\'\"]+)(.*)/) {
+            $type="addagent";
+            $before=$1;
+            $old_name=$2;
+            $after=$3;
+        } elsif ($line =~ /(.*facet\s*\[:su\S*_org_id\s*\]=\s*[\'\"])([^\'\"]+)(.*)/) { #for superior_org_id and subordinate_org_id
+            $type="facet";
+            $before=$1;
+            $old_name=$2;
+            $after=$3;
+        } elsif ($line =~/(.*facet\s*\[:org_id\s*\]=\s*[\'\"])([^\'\"]+)(.*)/) { #for org_id
+            $type="facet";
+            $before=$1;
+            $old_name=$2;
+            $after=$3;
+        } elsif ($line =~/(.*facet\s*\[:sca_supported_org\s*\]=\s*[\'\"])([^\'\"]+)(.*)/) { #for sca_supported_org
+            $type="facet";
+            $before=$1;
+            $old_name=$2;
+            $after=$3;
+        }
+
+        if (defined($old_name)) {
+            if ($verbose) {
+                print STDERR "$type ($before)($old_name) line: $line";
+            }
+            my $new_name=$table{$old_name};  #get new name from table previously read in
+            if (defined($new_name)) {
+                $line = $before.$new_name.$after."\n";
+
+
+            } else {
+                if ($verbose) {
+                    print STDERR "UNKNOWN $old_name in $line";
+                }
+            }
+        } else {
+            if ($verbose) { print STDERR "IGNORE $old_name in $line"; }
+        }
+        print $line;
+    }
+    close FD;
+}
