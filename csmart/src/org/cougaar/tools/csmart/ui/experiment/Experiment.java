@@ -653,6 +653,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void saveToDb() {
     System.out.println("saveToDb");
     try {
+      Set writtenNodes = new HashSet();
       List components = getComponents();
       NodeComponent[] nodesToWrite = getNodes();
       ComponentData theSoc = new GenericComponentData();
@@ -668,30 +669,25 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       trialID = pdb.getTrialId();
 
       // For each node, create a GenericComponentData, and add it to the society
-      for (int i = 0; i < nodesToWrite.length; i++) {
-        NodeComponent node = nodesToWrite[i];
-        ComponentData nc = new GenericComponentData();
-        nc.setType(ComponentData.NODE);
-        nc.setName(node.getShortName());
-        nc.setClassName(Node.class.getName()); // leave this out?? FIXME
-        nc.setOwner(this); // the experiment? FIXME
-        nc.setParent(theSoc);
-        ComponentName name = 
-	  new ComponentName((ConfigurableComponent) nodesToWrite[i], "ConfigurationFileName");
-        nc.addParameter(node.getShortName());
-        theSoc.addChild(nc);
-        AgentComponent[] agents = node.getAgents();
-        if (agents != null && agents.length > 0) {
-          for (int j = 0; j < agents.length; j++) {
-            AgentComponentData ac = new AgentComponentData();
-            ac.setName(agents[j].getShortName());
-            ac.setClassName(ClusterImpl.class.getName());
-            // FIXME!!
-            ac.setOwner(null); // the society that contains this agent FIXME!!!
-            ac.setParent(nc);
-            nc.addChild((ComponentData)ac);
-          }
+      for (Iterator i = hosts.iterator(); i.hasNext(); ) {
+        ExperimentHost host = (ExperimentHost) i.next();
+        ComponentData hc = new GenericComponentData();
+        hc.setType(ComponentData.HOST);
+        hc.setName(host.getShortName());
+        hc.setClassName("");
+        hc.setOwner(this);
+        hc.setParent(theSoc);
+        theSoc.addChild(hc);
+        NodeComponent[] nodes = host.getNodes();
+        for (int j = 0; j < nodes.length; j++) {
+          saveNodeToDb(nodes[j], hc);
+          writtenNodes.add(nodes[j]);
         }
+      }
+      for (int i = 0; i < nodesToWrite.length; i++) {
+        if (writtenNodes.contains(nodesToWrite[i])) continue;
+        saveNodeToDb(nodesToWrite[i], theSoc);
+        writtenNodes.add(nodesToWrite[i]);
       }
 
       // Some components will want access to the complete set of Nodes in the society, etc.
@@ -717,6 +713,31 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       pdb.close();
     } catch (Exception sqle) {
       sqle.printStackTrace();
+    }
+  }
+
+  private void saveNodeToDb(NodeComponent node, ComponentData parent) {
+    ComponentData nc = new GenericComponentData();
+    nc.setType(ComponentData.NODE);
+    nc.setName(node.getShortName());
+    nc.setClassName(Node.class.getName()); // leave this out?? FIXME
+    nc.setOwner(this); // the experiment? FIXME
+    nc.setParent(parent);
+    ComponentName name = 
+      new ComponentName((ConfigurableComponent) node, "ConfigurationFileName");
+    nc.addParameter(node.getShortName());
+    parent.addChild(nc);
+    AgentComponent[] agents = node.getAgents();
+    if (agents != null && agents.length > 0) {
+      for (int j = 0; j < agents.length; j++) {
+        AgentComponentData ac = new AgentComponentData();
+        ac.setName(agents[j].getShortName());
+        ac.setClassName(ClusterImpl.class.getName());
+        // FIXME!!
+        ac.setOwner(null); // the society that contains this agent FIXME!!!
+        ac.setParent(nc);
+        nc.addChild((ComponentData)ac);
+      }
     }
   }
 
