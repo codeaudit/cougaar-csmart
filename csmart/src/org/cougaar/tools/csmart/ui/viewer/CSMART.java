@@ -280,6 +280,8 @@ public class CSMART extends JFrame {
           Object userObject = node.getUserObject();
           if (userObject instanceof Experiment)
             runAnalyzer((Experiment)userObject);
+          else
+            runAnalyzer();
         }
       };
 
@@ -671,6 +673,11 @@ public class CSMART extends JFrame {
   protected void runAnalyzer(Experiment experiment) {
     JFrame tool = (JFrame)new Analyzer(this, experiment);
     addTool(PERFORMANCE_ANALYZER, experiment.getExperimentName(), tool);
+  }
+
+  protected void runAnalyzer() {
+    JFrame tool = (JFrame)new Analyzer(this);
+    addTool(PERFORMANCE_ANALYZER, "", tool);
   }
 
   /**
