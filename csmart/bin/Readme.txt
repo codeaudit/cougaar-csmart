@@ -73,3 +73,86 @@ build.xml
 
 [The sample scripts for running the AppServer have been moved to the server 
  module.]
+
+copy-experiment.sh
+[Helper file: copyASB.sql]
+	Script to copy a complete CSMART database experiment, under a
+	new name. Requires Unix like shell (ie Cygwin
+	on Windows). Use this as precursor to modifying that
+	experiment in place (substituting a Plugin class, for
+	example), or exporting the experiment for sharing with others.
+	Be sure to double-quote the experiment name or suffix if they
+	contain spaces.
+
+	Usage: copy-experiment.sh [Old Experiment Name] [Suffix for
+	new name] [DB User Name] [DB Password] [Database name]
+	[Optional: remote host of MySQL DB]
+
+delete-temp-db.sh
+	Script to drop the temporary database created above. Use
+	this after copying an experiment using the above script, and
+	exporting it if desired.
+
+	Usage: delete-temp-db.sh [MySQL User] [Password] [DB Name]
+	[Optional: Remote MySQL DB host name]
+
+switchPlugin-class.sh
+(Helper files switchPlugin-class.sql, get-assembly.sql]
+	Script to replace one plugin with another in all uses in a
+	named experiment. Use this after doing a deep copy of an
+	experiment, using the above script. DO NOT use this on one of
+	the base experiments. Be sure to double-quote the experiment
+	name if it contains spaces. If you later alter the thread
+	selection in this experiment, the substitution will be lost.
+
+	Usage: switchPlugin-class.sh [Old fully qual'ed plugin class]
+	[New plugin class] [Experiment name to update] [Config DB
+	Username] [Password] [MySQL Config DB database name]
+	[Optional: MySQL DB Host]
+
+	For example: To run a 1AD society, class 3, but use the SRA
+	Inventory Plugin instead of the ANTS equivalent.
+	1) Use CSMART to load a 1AD society from the database, and
+	select the class 3 thread.
+	2) Save the new experiment to the database.
+	3) Run copy-experiment.sh, giving it the experiment name from
+	#2 and a suffix, say, "with-SRA-plugin"
+	4) Run switchPlugin-class.sh giving it the new experiment name
+	(old-suffix)
+	5) (Either export the new experiment for use elsewhere, using
+	the exportExperiment script, or delete the temporary database,
+	using the delete-temp-db script.)
+	6) Load the new experiment from the database, and DO NOT
+	change the thread selection. Proceed to otherwise configure
+	and run this experiment as normal.
+	
+
+exportExperiment.sh
+[Helper: copyForExport.sql]
+	 Export the named experiment, for use on another database. You
+	 MUST run the above copy-experiment first. This will copy all
+	 included recipes as well, but you must be sure that the
+	 needed recipe Queries are moved over as well. Also, if the
+	 other database contains recipes with the same name, you will
+	 get errors. The temporary
+	 database created by the above copy script, and used here, is
+	 deleted when this script completes. Be sure to quote the
+	 experiment name if it contains spaces. 
+
+	 Usage: exportExperiment.sh [Experiment to export] [DB
+	 Username] [DB Password] [DB name] [Optional: host name]
+
+export-recipe.sh
+[Helper: copyRecipeForExport.sql]
+	 Export the named recipe for use on another database. If a
+	 recipe with the same name exists in the other database, you
+	 _will_ get errors. Quote the recipe name if it contains
+	 spaces. Note that you should have run the delete temp db
+	 script above if you previously copied an experiment, or you
+	 will get errors. Note that you will have to copy over the
+	 needed recipe queries separately.
+
+	 Usage: export-recipe.sh [Recipe Name] [Config DB Username]
+	 [Password] [MySQL Config DB database name] [Optional: MySQL
+	 DB host name]
+
