@@ -20,7 +20,7 @@
 # PERFORMANCE OF THE COUGAAR SOFTWARE.
 # </copyright>
 
-if [ "x$1" = "x" ]; then
+if [ "x$3" = "x" ]; then
   echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] "
   exit
 fi
