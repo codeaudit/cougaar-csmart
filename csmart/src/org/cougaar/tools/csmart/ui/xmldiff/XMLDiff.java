@@ -6,7 +6,6 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.NamedNodeMap;
 import org.cougaar.tools.csmart.util.XMLUtils;
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
-import org.cougaar.tools.csmart.ui.organization.CSVTree;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -184,6 +183,10 @@ public class XMLDiff extends JFrame {
                 Node agentNode = nodeChildren.item(k);
                 String agentName =
                   agentNode.getAttributes().getNamedItem("name").getNodeValue();
+                // ignore new agent name suffix
+                int index = agentName.indexOf(".");
+                if (index != -1)
+                  agentName = agentName.substring(0, index);
                 agentNames.add(agentName);    // all agents in this society
                 nameToNode.put(agentName, agentNode);
               }
@@ -192,6 +195,7 @@ public class XMLDiff extends JFrame {
         } // end for each child of a host
       } // end for host
     } // end for each child of the society
+
     // sort agent names
     // use the sorted names to sort the nodes (using the hashtable)
     // and then create and add the agent tree nodes to the tree in order
@@ -209,100 +213,73 @@ public class XMLDiff extends JFrame {
     return tree;
   }
 
-//  private JTree readFile(String prefix, String filename, ArrayList agentNames) {
-//    String societyName = "";
-//    if (filename.endsWith(".xml"))
-//      societyName = filename.substring(0, filename.length()-4);
-//    int lastIndex = societyName.lastIndexOf("/");
-//    if (lastIndex != -1)
-//      societyName = societyName.substring(lastIndex+1);
-//    Document doc = utils.loadXMLFile(filename);
-//    Node societyNode = doc.getFirstChild();
-//    societyName =
-//      societyNode.getAttributes().getNamedItem("name").getNodeValue();
-//    DefaultMutableTreeNode root =
-//      new DefaultMutableTreeNode(new UserObject(societyName), true);
-//    JTree tree = new JTree(root);
-//    tree.setShowsRootHandles(true);
-//    NodeList children = societyNode.getChildNodes();
-//    int n = children.getLength();
-//    for (int i = 0; i < n; i++)  {
-//      if (children.item(i).getNodeName().equals("host")) {
-//        Node hostNode = children.item(i);
-//        String hostName =
-//          hostNode.getAttributes().getNamedItem("name").getNodeValue();
-//        DefaultMutableTreeNode hostTreeNode =
-//          new DefaultMutableTreeNode(new UserObject(hostName), true);
-//        root.add(hostTreeNode);
-//        addNodeNodes(prefix, hostNode, hostTreeNode, agentNames);
-//      }
-//    }
-//    return tree;
-//  }
+  /**
+   * Return a string which uniquely identifies the component.
+   * The string returned is the classname followed by
+   * a parenthesized comma-separated list of the arguments.
+   */
+  private String getUniqueName(Node componentNode) {
+    String className = "";
+    NamedNodeMap attributes = componentNode.getAttributes();
+    // get class name
+    int n = attributes.getLength();
+    for (int i = 0; i < n; i++) {
+      Node node = attributes.item(i);
+      String name = node.getNodeName();
+      if (name.equals("class")) {
+        className = node.getNodeValue();
+        className = className.trim();
+        break;
+      }
+    }
+    // get argument list
+    String argList = "";
+    NodeList children = componentNode.getChildNodes();
+    n = children.getLength();
+    for (int i = 0; i < n; i++) {
+      Node node = children.item(i);
+      if (node.getNodeName().equals("argument")) {
+        NodeList args = node.getChildNodes();
+        for (int j = 0; j < args.getLength(); j++) {
+          Node argNode = args.item(j);
+          String arg = argNode.getNodeValue();
+          arg = arg.trim();
+          if (argList.length() == 0)
+            argList = arg;
+          else
+            argList = argList + "," + arg;
+        }
+      }
+    }
+    return className + "(" + argList + ")";
+  }
 
-//  private void addNodeNodes(String prefix,
-//                            Node hostNode, DefaultMutableTreeNode hostTreeNode,
-//                            ArrayList agentNames) {
-//    NodeList children = hostNode.getChildNodes();
-//    int n = children.getLength();
-//    for (int i = 0; i < n; i++) {
-//      if (children.item(i).getNodeName().equals("node")) {
-//        Node nodeNode = children.item(i);
-//        String nodeName =
-//          nodeNode.getAttributes().getNamedItem("name").getNodeValue();
-//        DefaultMutableTreeNode nodeTreeNode =
-//          new DefaultMutableTreeNode(new UserObject(nodeName), true);
-//        hostTreeNode.add(nodeTreeNode);
-//        addAgentNodes(prefix, nodeNode, nodeTreeNode, agentNames);
-//      }
-//    }
-//  }
-
-//  private void addAgentNodes(String prefix, Node nodeNode, DefaultMutableTreeNode nodeTreeNode,
-//                             ArrayList agentNames) {
-//    NodeList children = nodeNode.getChildNodes();
-//    int n = children.getLength();
-//    ArrayList agentTreeNodes = new ArrayList();
-//    ArrayList tmpAgentNames = new ArrayList();
-//    Hashtable nameToNode = new Hashtable(); // map agent name to agent tree node
-//    for (int i = 0; i < n; i++) {
-//      if (children.item(i).getNodeName().equals("agent")) {
-//        Node agentNode = children.item(i);
-//        String agentName =
-//          agentNode.getAttributes().getNamedItem("name").getNodeValue();
-//        tmpAgentNames.add(agentName); // agents in this node
-//        agentNames.add(agentName);    // all agents in this society
-//        DefaultMutableTreeNode agentTreeNode =
-//          new DefaultMutableTreeNode(new UserObject(agentName), true);
-//        allNamesToNodes.put(prefix + "-" + agentName, agentTreeNode);
-//        nameToNode.put(agentName, agentTreeNode); // agents in this node and their tree nodes
-//        addComponents(prefix + "-" + agentName, agentNode, agentTreeNode);
-//      }
-//    }
-//    // sort the agent names within a node
-//    // use the sorted names to sort the nodes (using the hashtable)
-//    // and then add the agent tree nodes to the tree in order
-//    Collections.sort(tmpAgentNames);
-//    for (int i = 0; i < tmpAgentNames.size(); i++) {
-//      nodeTreeNode.add((DefaultMutableTreeNode)nameToNode.get(tmpAgentNames.get(i)));
-//    }
-//  }
 
   private void addComponents(String prefix, Node agentNode, DefaultMutableTreeNode agentTreeNode) {
     NodeList children = agentNode.getChildNodes();
+    ArrayList componentNames = new ArrayList();
+    Hashtable nameToNode = new Hashtable();
     int n = children.getLength();
     for (int i = 0; i < n; i++) {
       if (children.item(i).getNodeName().equals("component")) {
         Node componentNode = children.item(i);
-        String componentName =
-          componentNode.getAttributes().getNamedItem("name").getNodeValue();
-        DefaultMutableTreeNode componentTreeNode =
-          new DefaultMutableTreeNode(new UserObject(componentName), true);
-        allNamesToNodes.put(prefix + "-" + componentName, componentTreeNode);
-        agentTreeNode.add(componentTreeNode);
-        addAttributes(prefix + "-" + componentName, componentNode, componentTreeNode);
-        addArguments(prefix + "-" + componentName, componentNode, componentTreeNode);
+        // use class name  and arguments of component as the component name
+        String componentName = getUniqueName(componentNode);
+        componentNames.add(componentName);
+        nameToNode.put(componentName, componentNode);
       }
+    }
+    Collections.sort(componentNames);
+    for (int i = 0; i < componentNames.size(); i++) {
+      String componentName = (String)componentNames.get(i);
+      UserObject obj = new UserObject(componentName);
+      DefaultMutableTreeNode componentTreeNode =
+        new DefaultMutableTreeNode(obj, true);
+      agentTreeNode.add(componentTreeNode);
+      allNamesToNodes.put(prefix + "-" + componentName, componentTreeNode);
+      Node componentNode = (Node)nameToNode.get(componentName);
+      addAttributes(prefix + "-" + componentName, componentNode, componentTreeNode);
+      addArguments(prefix + "-" + componentName, componentNode, componentTreeNode);
     }
   }
 
@@ -343,7 +320,6 @@ public class XMLDiff extends JFrame {
           allNamesToNodes.put(prefix + "-" + arg, argTreeNode);
           argumentsNode.add(argTreeNode);
         }
-
       }
     }
   }
@@ -357,13 +333,11 @@ public class XMLDiff extends JFrame {
     ArrayList commonAgentNames = new ArrayList();
     for (int i = 0; i < leftAgentNames.size(); i++)
       if (!rightAgentNames.contains(leftAgentNames.get(i))) {
-//        System.out.println("In left tree only: " + leftAgentNames.get(i));
         markDifferent((DefaultMutableTreeNode)allNamesToNodes.get("left-" + leftAgentNames.get(i)));
       } else
         commonAgentNames.add(leftAgentNames.get(i));
     for (int i = 0; i < rightAgentNames.size(); i++)
       if (!leftAgentNames.contains(rightAgentNames.get(i))) {
-//        System.out.println("In right tree only: " + rightAgentNames.get(i));
         markDifferent((DefaultMutableTreeNode)allNamesToNodes.get("right-" + rightAgentNames.get(i)));
       }
     for (int i = 0; i < commonAgentNames.size(); i++) {
@@ -446,14 +420,12 @@ public class XMLDiff extends JFrame {
     // if the component is different, then also mark all its children as different
     for (int i = 0; i < leftComponentNames.size(); i++)
       if (!rightComponentNames.contains(leftComponentNames.get(i))) {
-//        System.out.println("In left tree only: " + leftComponentNames.get(i));
         String s = "left-" + agentName + "-" + leftComponentNames.get(i);
         markDifferent((DefaultMutableTreeNode)allNamesToNodes.get(s));
       } else
         commonComponentNames.add(leftComponentNames.get(i));
     for (int i = 0; i < rightComponentNames.size(); i++)
       if (!leftComponentNames.contains(rightComponentNames.get(i))) {
-//        System.out.println("In right tree only: " + rightComponentNames.get(i));
         String s = "right-" + agentName + "-" + rightComponentNames.get(i);
         markDifferent((DefaultMutableTreeNode)allNamesToNodes.get(s));
       }
@@ -508,15 +480,17 @@ public class XMLDiff extends JFrame {
     ArrayList rightAttributes = getAttributes(rightComponentNode);
     for (int i = 0; i < leftAttributes.size(); i++) {
       String leftAttr = (String)leftAttributes.get(i);
+      if (leftAttr.startsWith("name:"))
+        continue; // ignore name attribute
       if (!rightAttributes.contains(leftAttr)) {
-//        System.out.println("In left tree only: " + leftAttr);
         setDifferent((DefaultMutableTreeNode)allNamesToNodes.get("left-" + prefix + "-" + leftAttr));
       }
     }
     for (int i = 0; i < rightAttributes.size(); i++) {
       String rightAttr = (String)rightAttributes.get(i);
+      if (rightAttr.startsWith("name:"))
+        continue; // ignore name attribute
       if (!leftAttributes.contains(rightAttr)) {
-//        System.out.println("In right tree only: " + rightAttr);
         setDifferent((DefaultMutableTreeNode)allNamesToNodes.get("right-" + prefix + "-" + rightAttr));
       }
     }
@@ -558,14 +532,12 @@ public class XMLDiff extends JFrame {
     for (int i = 0; i < leftArguments.size(); i++) {
       String leftArg = (String)leftArguments.get(i);
       if (!rightArguments.contains(leftArg)) {
-//        System.out.println("In left tree only: " + leftArg);
         setDifferent((DefaultMutableTreeNode)allNamesToNodes.get("left-" + prefix + "-" + leftArg));
       }
     }
     for (int i = 0; i < rightArguments.size(); i++) {
       String rightArg = (String)rightArguments.get(i);
       if (!leftArguments.contains(rightArg)) {
-//        System.out.println("In right tree only: " + rightArg);
         setDifferent((DefaultMutableTreeNode)allNamesToNodes.get("right-" + prefix + "-" + rightArg));
       }
     }
