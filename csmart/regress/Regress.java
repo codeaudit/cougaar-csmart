@@ -58,7 +58,7 @@ public class Regress extends TestSuite {
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.cdata.GenericLeafComponentDataTest.class));    
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.cdata.CommunityTimePhasedDataTest.class));    
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.experiment.LeafOnlyConfigWriterTest.class));    
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.experiment.AgentComponentDataTest.class));    
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.cdata.AgentComponentDataTest.class));    
 
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.cdata.TimePhasedDataTest.class));    
     // This is broken currently, cause of missing .q files and such
