@@ -167,7 +167,10 @@ public class AgentDBComponent
     addBinders();
     addPlugins();
     addComponents();
-    addAssetData();
+    
+    if(DBUtils.agentHasAssetData(name, assemblyID)) {
+      addAssetData();
+    }
   }
 
   private void initDBProperties() throws IOException {
