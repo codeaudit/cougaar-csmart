@@ -23,6 +23,13 @@ package org.cougaar.tools.csmart.core.property;
 import java.io.Serializable;
 import java.util.EventListener;
 
+/**
+ * Interface that defines a ChildConfigurationListener.
+ *
+ * A ChildConfigurationListener listens for changes within
+ * a child component and signals an event when a child component
+ * has changed.
+ */
 public interface ChildConfigurationListener extends EventListener, Serializable {
     void childConfigurationChanged();
 }

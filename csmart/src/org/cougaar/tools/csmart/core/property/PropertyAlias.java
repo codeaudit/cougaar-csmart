@@ -40,6 +40,13 @@ public class PropertyAlias extends PropertyBase implements Property, PropertyLis
   private Property prop;
   private CompositeName name;
 
+  /**
+   * Creates a new <code>PropertyAlias</code> instance.
+   *
+   * @param c 
+   * @param name 
+   * @param refProp 
+   */
   public PropertyAlias(ConfigurableComponent c, String name, Property refProp) {
     super(c);
     if (refProp == null) throw new IllegalArgumentException("null refProp for " + name);
@@ -126,6 +133,7 @@ public class PropertyAlias extends PropertyBase implements Property, PropertyLis
     if (result != null) return result;
     return prop.getToolTip();
   }
+
   public URL getHelp() {
     URL result = super.getHelp();
     if (result != null) return result;

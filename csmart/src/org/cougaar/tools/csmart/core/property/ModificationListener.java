@@ -24,6 +24,10 @@ package org.cougaar.tools.csmart.core.property;
 import java.io.Serializable;
 import java.util.EventListener;
 
+
+/**
+ * Defines a Listener for Component Modifications.
+ */
 public interface ModificationListener extends EventListener, Serializable {
     void modified(ModificationEvent e);
 }

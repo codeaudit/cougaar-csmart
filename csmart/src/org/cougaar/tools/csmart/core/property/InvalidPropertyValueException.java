@@ -21,6 +21,11 @@
 
 package org.cougaar.tools.csmart.core.property;
 
+/**
+ * Custom Exception class used to indicate an InvalidPropertyValue
+ * in a Component Property.
+ *
+ */
 public class InvalidPropertyValueException extends Exception {
     public InvalidPropertyValueException(String msg) {
         super(msg);

@@ -22,46 +22,79 @@ package org.cougaar.tools.csmart.core.property;
 
 import java.util.EventObject;
 
+/**
+ * Defines an Custom Event class for Properties
+ *
+ */
 public class PropertyEvent extends EventObject {
     static final long serialVersionUID = -2000572256849383880L;
 
-    public static final int            VALUE_CHANGED = 0;
-    public static final int     DEFAULTVALUE_CHANGED = 1;
-    public static final int            LABEL_CHANGED = 2;
-    public static final int             NAME_CHANGED = 3;
-    public static final int            CLASS_CHANGED = 4;
-    public static final int    ALLOWEDVALUES_CHANGED = 5;
-    public static final int EXPERIMENTVALUES_CHANGED = 6;
-    public static final int         PROPERTY_ADDED   = 7;
-    public static final int         PROPERTY_REMOVED = 8;
-    public static final int          TOOLTIP_CHANGED = 9;
-    public static final int             HELP_CHANGED =10;
+  /** Possible Changes **/
+  public static final int            VALUE_CHANGED = 0;
+  public static final int     DEFAULTVALUE_CHANGED = 1;
+  public static final int            LABEL_CHANGED = 2;
+  public static final int             NAME_CHANGED = 3;
+  public static final int            CLASS_CHANGED = 4;
+  public static final int    ALLOWEDVALUES_CHANGED = 5;
+  public static final int EXPERIMENTVALUES_CHANGED = 6;
+  public static final int         PROPERTY_ADDED   = 7;
+  public static final int         PROPERTY_REMOVED = 8;
+  public static final int          TOOLTIP_CHANGED = 9;
+  public static final int             HELP_CHANGED =10;
 
-    private Object previousValue;
-    private int whatChanged;
+  private Object previousValue;
+  private int whatChanged;
 
-    public PropertyEvent(Object src, int whatChanged) {
-        this(src, whatChanged, null);
-    }
+  /**
+   * Creates a new <code>PropertyEvent</code> instance.
+   *
+   * @param src 
+   * @param whatChanged 
+   */
+  public PropertyEvent(Object src, int whatChanged) {
+    this(src, whatChanged, null);
+  }
 
-    public PropertyEvent(Object src, int whatChanged, Object previousValue) {
-        super(src);
-        this.whatChanged = whatChanged;
-        this.previousValue = previousValue;
-    }
+  /**
+   * Creates a new <code>PropertyEvent</code> instance.
+   *
+   * @param src 
+   * @param whatChanged 
+   * @param previousValue 
+   */
+  public PropertyEvent(Object src, int whatChanged, Object previousValue) {
+    super(src);
+    this.whatChanged = whatChanged;
+    this.previousValue = previousValue;
+  }
 
-    public int getWhatChanged() {
-        return whatChanged;
-    }
+  /**
+   * Gets what changed to cause this event.
+   *
+   * @return an <code>int</code> value
+   */
+  public int getWhatChanged() {
+    return whatChanged;
+  }
 
-    public Object getPreviousValue() {
-        return previousValue;
-    }
+  /**
+   * Gets the previous value, before the change.
+   *
+   * @return an <code>Object</code> value
+   */
+  public Object getPreviousValue() {
+    return previousValue;
+  }
 
-    public Property getProperty() {
-        Object result = getSource();
-        if (result instanceof Property)
-            return (Property) result;
-        return null;
-    }
+  /**
+   * Gets the Property that changed.
+   *
+   * @return a <code>Property</code> value
+   */
+  public Property getProperty() {
+    Object result = getSource();
+    if (result instanceof Property)
+      return (Property) result;
+    return null;
+  }
 }

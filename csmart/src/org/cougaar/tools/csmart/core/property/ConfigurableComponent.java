@@ -52,10 +52,10 @@ import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 
 /**
- * For each property, define:
- * name, label, default value, current value, allowed values, experiment values
- * This is the default configurable component implementation,
- * it can be overridden by specific components.
+ * This is the default configurable component implementation.
+ * It implements all methods that define, name, label, etc. Properties.
+ *
+ * This method can be overridden by specific components.
  */
 
 public abstract class ConfigurableComponent
@@ -93,6 +93,11 @@ public abstract class ConfigurableComponent
     }
   }
 
+  /**
+   * Gets an <code>EventListenerList</code>.
+   *
+   * @return an <code>EventListenerList</code> object
+   */
   protected EventListenerList getEventListenerList() {
     if (listeners == null) listeners = new EventListenerList();
     return listeners;
@@ -101,26 +106,39 @@ public abstract class ConfigurableComponent
   /**
    * Add a PropertiesListener. PropertiesListeners are invoked
    * whenever properties are added or removed.
-   **/
+   *
+   * @param l <code>PropertiesListener</code> to add
+   */
   public void addPropertiesListener(PropertiesListener l) {
     getEventListenerList().add(PropertiesListener.class, l);
   }
 
+  /**
+   * Removes a PropertiesListener.
+   *
+   * @param l <code>PropertiesListener</code> to remove
+   */
   public void removePropertiesListener(PropertiesListener l) {
     getEventListenerList().remove(PropertiesListener.class, l);
   }
 
-  private void firePropertyAdded(Property p) {
-    if (listeners != null) {
-      firePropertyAdded(new PropertyEvent(p, PropertyEvent.PROPERTY_ADDED));
-    }
-  }
-
+  /**
+   * Fires an <code>PropertyEvent</code> when a new property
+   * is added to the component.
+   *
+   * @param ev <code>PropertyEvent </code>
+   */
   protected void firePropertyAdded(PropertyEvent ev) {
     PropertiesListener[] ls =
       (PropertiesListener[]) getEventListenerList().getListeners(PropertiesListener.class);
     for (int i = 0; i < ls.length; i++) {
       ls[i].propertyAdded(ev);
+    }
+  }
+
+  private void firePropertyAdded(Property p) {
+    if (listeners != null) {
+      firePropertyAdded(new PropertyEvent(p, PropertyEvent.PROPERTY_ADDED));
     }
   }
 
@@ -159,7 +177,8 @@ public abstract class ConfigurableComponent
   public abstract void initProperties();
 
   /**
-   * Get a <code>URL</code> for a description of the component. May return <code>null</code>.<br>
+   * Get a <code>URL</code> for a description of the component. May return <code>null</code>.
+   * <br>
    * This default implementation returns <code>null</code>.
    *
    * @return an <code>URL</code> describing this component.
@@ -168,6 +187,13 @@ public abstract class ConfigurableComponent
     return null;
   }
   
+  /**
+   * Gets the Ancestor of this component.  
+   * The ancestor is a specific class type.
+   *
+   * @param cls <code>Class</code> of Ancestor 
+   * @return <code>ConfigurableComponent</code> for the ancestor.
+   */
   protected ConfigurableComponent getAncestorOfClass(Class cls) {
     ConfigurableComponent parent = getParent();
     if (parent == null) return null;
@@ -175,6 +201,15 @@ public abstract class ConfigurableComponent
     return parent.getAncestorOfClass(cls);
   }
 
+  /**
+   * Gets a <code>Collection</code> of all Descendents of this component 
+   * that are a specific class type.
+   * Note: The collection (parameter) must be initialized!
+   *
+   * @param cls The <code>Class</code> of the Descendents
+   * @param c An Empty <code>Collection</code> for the result.
+   * @return a <code>Collection</code> of a descendents requested.
+   */
   public Collection getDescendentsOfClass(Class cls, Collection c) {
     for (int i = 0, n = getChildCount(); i < n; i++) {
       ConfigurableComponent child = getChild(i);
@@ -184,6 +219,13 @@ public abstract class ConfigurableComponent
     return c;
   }
         
+  /**
+   * Gets a <code>Collection</code> of all Descendents of this component 
+   * that are a specific class type.
+   *
+   * @param cls The <code>Class</code> of the Descendents
+   * @return a <code>Collection</code> of a descendents requested.
+   */
   public Collection getDescendentsOfClass(Class cls) {
     return getDescendentsOfClass(cls, new ArrayList());
   }
@@ -191,6 +233,7 @@ public abstract class ConfigurableComponent
   /**
    * Set the name of this component. The name is relative to the
    * parent and must be distinct in that context.
+   *
    * @param newName the new name for this component.
    **/
   public void setName(String newName) {
@@ -199,24 +242,39 @@ public abstract class ConfigurableComponent
     finishNameChange();
   }
 
-  //  public CompositeName getName() {
-  //    return myName;
-  //  }
-
+  /**
+   * Gets the short name of this component.  All component names
+   * are made up of a chain based on the component hierarchy.
+   * This chain is: grandparent.parent.child
+   * Short name is just 'child'.
+   *
+   * @return a <code>String</code> value of the short name.
+   */
   public String getShortName() {
     return getFullName().last().toString();
   }
 
+  /**
+   * Gets the full name of this component. All component names
+   * are made up of a chain based on the component hierarchy.
+   * This chain is: grandparent.parent.child
+   *
+   * Full name is the complete chain.
+   *
+   * @return a <code>CompositeName</code> value of the full component name.
+   */
   public CompositeName getFullName() {
     return myName;
   }
 
 
   /**
-   * Add a child to this component.
+   * Add a child to this component. Childs are always of type
+   * <code>ConfigurableComponent</code>.
+   *
    * @param c the child to add
-   * @param propertyMap maps child property names to prope
-   **/
+   * @return Count of all Children in this component.
+   */
   public int addChild(ConfigurableComponent c) {
     if (children == null) children = new ArrayList();
     c.addPropertiesListener(myPropertiesListener);
@@ -230,10 +288,20 @@ public abstract class ConfigurableComponent
     return children.size() - 1;
   }
 
+  /**
+   * Removes a child component at a specific index.
+   *
+   * @param childIndex Index of child to remove.
+   */
   public void removeChild(int childIndex) {
     removeChild(getChild(childIndex));
   }
 
+  /**
+   * Removes a specific child component.
+   *
+   * @param c <code>ConfigurableComponent</code> of child to remove.
+   */
   public void removeChild(ConfigurableComponent c) {
     if (children == null || c.getParent() != this) return;
     c.removePropertiesListener(myPropertiesListener);
@@ -246,21 +314,42 @@ public abstract class ConfigurableComponent
     c.setParent(null);
   }
 
+  /**
+   * Removes all children of this component.
+   *
+   */
   public void removeAllChildren() {
     while(getChildCount() != 0) {
       removeChild(getChildCount() - 1);
     }
   }
 
+  /**
+   * Gets a count of all children within this component.
+   *
+   * @return Child Count.
+   */
   public int getChildCount() {
     if (children == null) return 0;
     return children.size();
   }
 
+  /**
+   * Gets a child component from a specific index.
+   *
+   * @param n index of child component to retreive.
+   * @return a <code>ConfigurableComponent</code> object for that child.
+   */
   public ConfigurableComponent getChild(int n) {
     return (ConfigurableComponent) children.get(n);
   }
 
+  /**
+   * Gets a child component based on the childs Full Name.
+   *
+   * @param childName <code>CompositeName</code> of the child.
+   * @return a <code>ConfigurableComponent</code> object of the child.
+   */
   public ConfigurableComponent getChild(CompositeName childName) {
     ConfigurableComponent cc = null;
 
@@ -277,7 +366,9 @@ public abstract class ConfigurableComponent
   /**
    * Changing our parent changes all our property names so we have to
    * rehash them
-   **/
+   *
+   * @param newParent New Parent Component
+   */
   public void setParent(ConfigurableComponent newParent) {
     ConfigurableComponent oldParent = parent;
     startNameChange();
@@ -291,15 +382,26 @@ public abstract class ConfigurableComponent
   /**
    * Add a ChildConfigurationListener. ChildConfigurationListener are
    * invoked whenever children are added or removed.
-   **/
+   *
+   * @param l <code>ChildConfigurationListener</code> to add to this component.
+   */
   public void addChildConfigurationListener(ChildConfigurationListener l) {
     getEventListenerList().add(ChildConfigurationListener.class, l);
   }
 
+  /**
+   * Removes a <code>ChildConfigurationListener</code> from this component.
+   *
+   * @param l <code>ChildCondigurationListener</code> to remove.
+   */
   public void removeChildConfigurationListener(ChildConfigurationListener l) {
     getEventListenerList().remove(ChildConfigurationListener.class, l);
   }
 
+  /**
+   * Fires an event when a child configuration has changed.
+   *
+   */
   protected void fireChildConfigurationChanged() {
     ChildConfigurationListener[] ls =
       (ChildConfigurationListener[])
@@ -377,12 +479,19 @@ public abstract class ConfigurableComponent
     return myProperties;
   }
 
+  /**
+   * Gets the parent of this component.  If there are no
+   * parents, NULL is returned.
+   *
+   * @return a <code>ConfigurableComponent</code> object for the parent, or null if no parent.
+   */
   public ConfigurableComponent getParent() {
     return parent;
   }
 
   /**
    * Get a property by name.
+   *
    * @param name the name of the property.
    * @return the property or null if there is no property with the
    * specified name
@@ -400,6 +509,12 @@ public abstract class ConfigurableComponent
     return null;
   }
 
+  /**
+   * Gets a local property based on a <code>String</code> name.
+   *
+   * @param localName of the property
+   * @return a <code>Property</code> object.
+   */
   public Property getProperty(String localName) {
     return getProperty(new ComponentName(this, localName));
   }
@@ -418,31 +533,87 @@ public abstract class ConfigurableComponent
     return addProperty(name, value, value.getClass(), true);
   }
 
+  /**
+   * Add an invisible property to the component.  Invisible properties
+   * are property that act and behave just like a normal property but
+   * are not visible to the GUI.
+   *
+   * @param name of the property
+   * @param value of the propery
+   * @return a <code>Property</code> object for the new Property
+   */
   public Property addInvisibleProperty(String name, Object value) {
     if (value == null) throw new IllegalArgumentException("null value not allowed");
     return addProperty(name, value, value.getClass(), false);
   }
 
+  /**
+   * Adds a property to the component with a given name, value and class.
+   *
+   * @param name Name of the property
+   * @param value Value of the property
+   * @param cls Class of the property
+   * @return a <code>Property</code> object for the new Property.
+   */
   public Property addProperty(String name, Object value, Class cls) {
     return addProperty(name, value, cls, true);
   }
 
+  /**
+   * Adds an invisible property to the component with a given name, value and class.
+   *
+   * @param name Name of the property
+   * @param value Value of the property
+   * @param cls Class of the property
+   * @return a <code>Property</code> object for the new Property.
+   */
   public Property addInvisibleProperty(String name, Object value, Class cls) {
     return addProperty(name, value, cls, false);
   }
 
-  private Property addProperty(String name, Object value, Class cls, boolean visible) {
-    Property result = addProperty(new ConfigurableComponentProperty(this, name, value), visible);
-    result.setPropertyClass(cls);
-    return result;
-  }
-
+  /**
+   * Adds a new Property to the Component.
+   *
+   * @param p <code>Property</code> to add.
+   * @return a <code>Property</code> value
+   */
   public Property addProperty(Property p) {
     return addProperty(p, true);
   }
 
+  /**
+   * Adds a new Invisible Property to the component.
+   *
+   * @param p <code>Property</code> to add.
+   * @return a <code>Property</code> value
+   */
   public Property addInvisibleProperty(Property p) {
     return addProperty(p, false);
+  }
+
+  /**
+   * Adds a new Property with an attached PropertyListener
+   *
+   * @param name Name of the new Property
+   * @param value Value of the new Property
+   * @param l PropertyListener for this Property
+   * @return a <code>Property</code> value
+   */
+  public Property addProperty(String name, Object value, PropertyListener l) {
+    Property p = addProperty(name, value, value.getClass(), false);
+    p.addPropertyListener(l);
+    return p;
+  }
+
+
+  /**
+   * Removes a Property from this component.
+   *
+   * @param prop Property to remove.
+   */
+  public void removeProperty(Property prop) {
+    setPropertyVisible(prop, false);
+    firePropertyRemoved(prop);
   }
 
   private Property addProperty(Property p, boolean visible) {
@@ -452,24 +623,28 @@ public abstract class ConfigurableComponent
     return p;
   }
 
-  public Property addProperty(String name, Object value, PropertyListener l) {
-    Property p = addProperty(name, value, value.getClass(), false);
-    p.addPropertyListener(l);
-    return p;
+  private Property addProperty(String name, Object value, Class cls, boolean visible) {
+    Property result = addProperty(new ConfigurableComponentProperty(this, name, value), visible);
+    result.setPropertyClass(cls);
+    return result;
   }
 
 
-  public void removeProperty(Property prop) {
-//     System.out.println("Removing Property: " + prop.getName());
-    setPropertyVisible(prop, false);
-    //    getMyProperties().put(p.getName(), p);
-    firePropertyRemoved(prop);
-  }
-
+  /**
+   * Gets an <code>Iterator</code> of all properties Local to this component.
+   *
+   * @return an <code>Iterator</code> of all local properties
+   */
   public Iterator getLocalPropertyNames() {
     return new FilteredIterator(getPropertyNames(), localPropertyNamePredicate);
   }
 
+  /**
+   * Gets an <code>Iterator</code> of all properties Local to this component, sorted.
+   * 
+   *
+   * @return an <code>Iterator</code> of all sorted local properties
+   */
   public Iterator getSortedLocalPropertyNames() {
     ArrayList names = new ArrayList();
     Iterator iter = new FilteredIterator(getPropertyNames(), localPropertyNamePredicate);
@@ -497,6 +672,11 @@ public abstract class ConfigurableComponent
     }
   };
     
+  /**
+   * Gets an <code>Iterator</code> of all Property Names in this component.
+   *
+   * @return an <code>Iterator</code> value
+   */
   public Iterator getPropertyNames() {
     for (Iterator i = getMyProperties().keySet().iterator(); i.hasNext(); ) {
       Object key = i.next();
@@ -553,11 +733,23 @@ public abstract class ConfigurableComponent
     }
   }
 
+  /**
+   * Determines if the specificed property is visible.
+   * If a property is not visible, it cannot be seen in the GUI.
+   *
+   * @param prop Property to check visiblity
+   * @return a <code>boolean</code> value
+   */
   public boolean isPropertyVisible(Property prop) {
     Object np = getMyProperties().get(prop.getName());
     return !nullProperty.equals(np);
   }
 
+  /**
+   * Gets a <code>List</code> of all Properties in this component.
+   *
+   * @return a <code>List</code> value
+   */
   public List getPropertyNamesList() {
     List props = new ArrayList();
     for (Iterator i = getPropertyNames(); i.hasNext(); ) {
@@ -567,6 +759,12 @@ public abstract class ConfigurableComponent
     return props;
   }
 
+  /**
+   * Copies a ComponentProperties Object
+   *
+   * @param result Object to copy
+   * @return a <code>ComponentProperties</code> value
+   */
   public ComponentProperties copy(ComponentProperties result) {
     // Make sure we're copying apples into apples
     // The result can be a sub-class, but we want it
@@ -697,10 +895,21 @@ public abstract class ConfigurableComponent
     }
   }
 
+  /**
+   * Dumps a list of the Local Properties
+   *
+   * @param out Stream to dump properties to.
+   */
   public void printLocalProperties(PrintStream out) {
     printLocalProperties(out, "");
   }
 
+  /**
+   * Prints a list of local properties.
+   *
+   * @param out Stream to print properties to.
+   * @param indent Indentation before each output string.
+   */
   public void printLocalProperties(PrintStream out, String indent) {
     List props = new ArrayList();
     for (Iterator iterator = getLocalPropertyNames(); iterator.hasNext(); )
@@ -708,14 +917,32 @@ public abstract class ConfigurableComponent
     printProperties(out, indent, props);
   }
 
+  /**
+   * Prints all Properties for this component.
+   *
+   * @param out Stream to print to.
+   */
   public void printAllProperties(PrintStream out) {
     printAllProperties(out, "");
   }
 
+  /**
+   * Prints all Properties for this component.
+   *
+   * @param out Stream to print to.
+   * @param indent Indentation amount before each output line.
+   */
   public void printAllProperties(PrintStream out, String indent) {
     printProperties(out, "", getPropertyNamesList());
   }
 
+  /**
+   * Prints a specific list of Properties.
+   *
+   * @param out Stream to output to.
+   * @param indent About to indent output.
+   * @param props List of Properties to list.
+   */
   private void printProperties(PrintStream out, String indent, List props) {
     int n = props.size();
     out.println(indent + "Number of properties: " + n);

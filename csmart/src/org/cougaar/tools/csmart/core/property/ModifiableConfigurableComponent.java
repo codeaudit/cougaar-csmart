@@ -31,41 +31,69 @@ public abstract class ModifiableConfigurableComponent
   extends ConfigurableComponent
   implements ModifiableComponent
 {
-//    private static final long serialVersionUID = -7727291298618568087L;
 
-    protected ModifiableConfigurableComponent(String name) {
-        super(name);
-    }
+  /**
+   * Creates a new <code>ModifiableConfigurableComponent</code> instance.
+   *
+   * @param name 
+   */
+  protected ModifiableConfigurableComponent(String name) {
+    super(name);
+  }
 
+  /**
+   * Indicates if this component can be edited.
+   *
+   * @return a <code>boolean</code> value
+   */
   public boolean isEditable() {
     return false;
   }
 
+  /**
+   * Sets if this component can be edited.
+   *
+   * @param editable 
+   */
   public void setEditable (boolean editable) {
   }
   
-    public void addModificationListener(ModificationListener l) {
-        getEventListenerList().add(ModificationListener.class, l);
-    }
+  /**
+   * Adds a new ModificationListener to this Component.
+   *
+   * @param l ModificationListener for this component.
+   */
+  public void addModificationListener(ModificationListener l) {
+    getEventListenerList().add(ModificationListener.class, l);
+  }
 
-    public void removeModificationListener(ModificationListener l) {
-        getEventListenerList().remove(ModificationListener.class, l);
-    }
+  /**
+   * Removes a ModificationListener from this component.
+   *
+   * @param l ModificationListener to remove.
+   */
+  public void removeModificationListener(ModificationListener l) {
+    getEventListenerList().remove(ModificationListener.class, l);
+  }
 
-    protected void fireModification() {
-        fireModification(new ModificationEvent(this, ModificationEvent.SOMETHING_CHANGED));
-    }
+  /**
+   * Fires an Event when a Modification has been made to the component.
+   *
+   */
+  protected void fireModification() {
+    fireModification(new ModificationEvent(this, ModificationEvent.SOMETHING_CHANGED));
+  }
 
-    protected void fireModification(ModificationEvent event) {
-        ModificationListener[] ls =
-            (ModificationListener[]) getEventListenerList()
-            .getListeners(ModificationListener.class);
-        for (int i = 0; i < ls.length; i++) {
-            try {
-                ls[i].modified(event);
-            } catch (RuntimeException re) {
-                re.printStackTrace();
-            }
-        }
+  protected void fireModification(ModificationEvent event) {
+    ModificationListener[] ls =
+      (ModificationListener[]) getEventListenerList()
+      .getListeners(ModificationListener.class);
+    for (int i = 0; i < ls.length; i++) {
+      try {
+        ls[i].modified(event);
+      } catch (RuntimeException re) {
+        re.printStackTrace();
+      }
     }
+  }
 }

@@ -24,6 +24,10 @@ package org.cougaar.tools.csmart.core.property;
 import java.io.Serializable;
 import java.util.EventListener;
 
+/**
+ * Defines a Listener for Properties
+ *
+ */
 public interface PropertiesListener extends EventListener, Serializable {
     long serialVersionUID = -7670483003143673509L;
 

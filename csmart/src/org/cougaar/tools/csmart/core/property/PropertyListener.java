@@ -23,6 +23,10 @@ package org.cougaar.tools.csmart.core.property;
 import java.util.EventListener;
 import java.io.Serializable;
 
+/**
+ * Defines a listener for a Property
+ *
+ */
 public interface PropertyListener extends EventListener, Serializable {
     void propertyValueChanged(PropertyEvent e);
     void propertyOtherChanged(PropertyEvent e);

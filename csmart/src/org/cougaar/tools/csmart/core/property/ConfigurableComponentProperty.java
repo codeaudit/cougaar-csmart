@@ -27,6 +27,9 @@ import java.util.Set;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 /**
+ * A ConfigurableComponentProperty is a property within a ConfigurableComponent.
+ * Usually these properties are displayed on the GUI, however, they don't always
+ * have to be displayed.
  * Every property has these attributes:
  * name, propertyClass, label, defaultValue, value, allowedValues, 
  * and experimentValues.
@@ -69,14 +72,31 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
     setAllowedValues(prop.getAllowedValues());
   }
 
+  /**
+   * Gets the name of this Property
+   *
+   * @return a <code>CompositeName</code> value
+   */
   public CompositeName getName() {
     return name;
   }
 
+  /**
+   * Gets the class of this Property.  The Class of the Property 
+   * is the Class Type of values that are accepted by this property.
+   *
+   * @return a <code>Class</code> value
+   */
   public Class getPropertyClass() {
     return propertyClass;
   }
 
+  /**
+   * Sets the class of this Property.  The Class indicates what type
+   * of values are excepted in this Property.
+   *
+   * @param c Class of this property
+   */
   public void setPropertyClass(Class c) {
     Class old = propertyClass;
     propertyClass = c;
@@ -88,10 +108,22 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
     }
   }
 
+  /**
+   * Gets the Label of this Property.  The Label is a text string
+   * describing this property.
+   *
+   * @return a <code>String</code> value
+   */
   public String getLabel() {
     return label;
   }
 
+  /**
+   * Sets the label of this Property.  The label is a text string
+   * describing this property.
+   *
+   * @param label of this property
+   */
   public void setLabel(String label) {
     String old = this.label;
     this.label = label;
@@ -103,10 +135,22 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
     }
   }
 
+  /**
+   * Gets the default value of this Property.  All Properties
+   * should contain a default value.
+   *
+   * @return an <code>Object</code> value
+   */
   public Object getDefaultValue() {
     return defaultValue;
   }
 
+  /**
+   * Sets the default value for this Property.  All Properties
+   * should contain a default value.
+   *
+   * @param defaultValue of the Property
+   */
   public void setDefaultValue(Object defaultValue) {
     Object old = this.defaultValue;
     this.defaultValue = defaultValue;
@@ -119,11 +163,21 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
     }
   }
 
+  /**
+   * Gets the value of this Property
+   *
+   * @return an <code>Object</code> value
+   */
   public Object getValue() {
     if (value == null) return defaultValue;
     return value;
   }
 
+  /**
+   * Sets the value of this Property
+   *
+   * @param value of the property
+   */
   public void setValue(Object value) {
     if(value != this.value) {
       Object old = this.value;
@@ -137,10 +191,26 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
     }
   }
 
+  /**
+   * Gets a <code>List</code> of Experiment Values.
+   * All properties can contain a list of values to
+   * be used in a experiment.  This values indicate
+   * a range that should be used for a specific property.
+   * 
+   * @return a <code>List</code> value
+   */
   public List getExperimentValues() {
     return experimentValues;
   }
 
+  /**
+   * Defines a <code>List</code> of Experiment Values.
+   * All properties can contain a list of values to
+   * be used in a experiment.  This values indicate
+   * a range that should be used for a specific property.
+   *
+   * @param experimentValues 
+   */
   public void setExperimentValues(List experimentValues) {
     List old = this.experimentValues;
     this.experimentValues = experimentValues;
@@ -152,10 +222,23 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
     }
   }
 
+  /**
+   * Gets a Set of all allowed values.
+   * Properties allow ranges of allowable values,
+   * If defined, they method returns that list.
+   *
+   * @return a <code>Set</code> value
+   */
   public Set getAllowedValues() {
     return allowedValues;
   }
 
+  /**
+   * Sets a range of allowed values.
+   * Properties allow ranges of allowable values,
+   *
+   * @param allowedValues 
+   */
   public void setAllowedValues(Set allowedValues) {
     Set old = allowedValues;
     this.allowedValues = allowedValues;
@@ -167,6 +250,11 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
     }
   }
 
+  /**
+   * Indicates if a value has been set for this Property.
+   *
+   * @return a <code>boolean</code> value
+   */
   public boolean isValueSet() {
     return value != null;
   }

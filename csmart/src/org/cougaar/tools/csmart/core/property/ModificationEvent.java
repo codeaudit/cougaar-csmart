@@ -22,6 +22,11 @@ package org.cougaar.tools.csmart.core.property;
 
 import java.util.EventObject;
 
+/**
+ * Defines an Event that is used by components to indicate
+ * that a modification has occured.
+ *
+ */
 public class ModificationEvent extends EventObject {
     static final long serialVersionUID = 792752318075945807L;
 
