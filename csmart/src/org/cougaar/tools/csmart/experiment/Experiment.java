@@ -108,6 +108,12 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private transient LeafOnlyConfigWriter configWriter = null;
 
   private transient Logger log;
+  private transient boolean modified = true;
+
+  /**
+   * Build an experiment around a society or recipes.
+   * This builds an experiment which is not in the database.
+   */
 
   public Experiment(String name, SocietyComponent societyComponent,
 		    RecipeComponent[] recipes)
@@ -318,9 +324,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @return true if experiment is editable, false otherwise
    */
   public boolean isEditable() {
-    //    if (editInProgress || runInProgress)
-    //      return false;
-    // allow user to edit a running experiment
     if (editInProgress)
       return false;
     if (overrideEditable)
@@ -349,8 +352,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if(log.isDebugEnabled()) {
       log.debug("new editable " + editable);
     }
-    //    for (int i = 0; i < getComponentCount(); i++)
-    //      getComponent(i).setEditable(editable);
     fireModification();
   }
 
@@ -478,6 +479,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   public void modified(ModificationEvent e) {
     fireModification();
+    modified = true;
   }
 
   protected void fireModification() {
@@ -591,7 +593,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   public void removeNode(NodeComponent nc) {
-    System.out.println("Removed node: " + nc.getShortName());
     ExperimentNode sc = (ExperimentNode) nc;
     nodes.remove(nc);
     sc.dispose();           // Let the node disassociate itself from agents
@@ -742,6 +743,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * An Experiment now has a configuration writer that
    * lets all the components write themselves out
    */
+
   private void createConfigWriter() {
     configWriter = new LeafOnlyConfigWriter(getSocietyComponentData());
   }
@@ -770,6 +772,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   public void saveToDb(DBConflictHandler ch) {
+    if (!modified) {
+      if (log.isDebugEnabled()) 
+        log.debug("Save to database not needed; experiment not modified");
+      return;
+    }
     try {
       updateNameServerHostName(); // Be sure this is up-to-date
       Set writtenNodes = new HashSet();
@@ -847,7 +854,25 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     } catch (Exception sqle) {
       if (log.isErrorEnabled())
 	log.error(sqle.toString());
+      return;
     }
+    modified = false;
+  }
+
+  private void saveToDb() {
+    saveToDb(new DBConflictHandler() {
+        public int handleConflict(Object msg, Object[] choices, 
+                                  Object defaultChoice) {
+          return JOptionPane.showOptionDialog(null,
+                                              msg,
+                                              "Database Conflict",
+                                              JOptionPane.WARNING_MESSAGE,
+                                              JOptionPane.DEFAULT_OPTION,
+                                              null,
+                                              choices,
+                                              defaultChoice);
+        }
+      });
   }
 
   /** 
@@ -860,30 +885,14 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   public void dumpINIFiles() {
     ExperimentINIWriter cw = null;
-    theWholeSoc = null;
     if (DBUtils.dbMode) {
-      if (theWholeSoc == null) {
-	// write it to the db
-	saveToDb(new DBConflictHandler() {
-	    public int handleConflict(Object msg, Object[] choices, 
-                            Object defaultChoice) {
-	      return JOptionPane.showOptionDialog(null,
-						  msg,
-						  "Database Conflict",
-						  JOptionPane.WARNING_MESSAGE,
-						  JOptionPane.DEFAULT_OPTION,
-						  null,
-						  choices,
-						  defaultChoice);
-	    }
-	  });
-      }
-      if (theWholeSoc != null)
-	cw = new ExperimentINIWriter(theWholeSoc);
-    } else {
+      saveToDb();
+      if (theWholeSoc == null)
+        return;
+      cw = new ExperimentINIWriter(theWholeSoc);
+    } else
       cw = new ExperimentINIWriter(getComponents(), getNodes(), this);
-    }
-    
+
     File resultDir = getResultDirectory();
     // if user didn't specify results directory, save in local directory
     if (resultDir == null) {
@@ -1318,42 +1327,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @return ComponentData the component data for the society
    */
 
-  // TODO: make creating the society component data be the
-  // same for both standalone and indatabase experiments
-  // and consolidate the code in one place
-  // parts of this are currently replicated in two configuration
-  // writers and in the saveToDb method above
-  // saveToDb creates host component data; the config writers and this do not
   public ComponentData getSocietyComponentData() {
-    if (DBUtils.dbMode && theWholeSoc != null)
-      return theWholeSoc;
-    theWholeSoc = new GenericComponentData();
-    theWholeSoc.setType(ComponentData.SOCIETY);
-    theWholeSoc.setName(getExperimentName()); // this should be experiment: trial FIXME
-    theWholeSoc.setClassName("java.lang.Object"); // leave this out? FIXME
-    theWholeSoc.setOwner(this); // the experiment
-    theWholeSoc.setParent(null);
-    // For each node, create a GenericComponentData, and add it to the society
-    addNodes();
-
-    // Some components will want access to the complete set of Nodes in the society, etc.
-    // To get that, they must get back to the root soc object,
-    // and do a getOwner and go from there. Ugly.
-    
-    // Now ask each component in turn to add its stuff
-    List components = getComponents();
-    for (int i = 0; i < components.size(); i++) {
-      BaseComponent soc = (BaseComponent) components.get(i);
-      soc.addComponentData(theWholeSoc);
-    }
-    // Then give everyone a chance to modify what they've collectively produced
-    for (int i = 0; i < components.size(); i++) {
-      BaseComponent soc = (BaseComponent) components.get(i);
-      soc.modifyComponentData(theWholeSoc);
-    }    
+    saveToDb(); // if modified, update component data and save to database
     return theWholeSoc;
   }
-  
+
   private void addNodes() {
     NodeComponent[] nodesToWrite = getNodes();
     for (int i = 0; i < nodesToWrite.length; i++) {
@@ -1394,6 +1372,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   {
     ois.defaultReadObject();
     createLogger();
+    modified = true; // causes config writer to write the ComponentData tree
     createConfigWriter();
   }
 
