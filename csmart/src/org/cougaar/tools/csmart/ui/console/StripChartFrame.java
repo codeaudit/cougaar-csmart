@@ -32,12 +32,17 @@ import javax.swing.event.*;
  * Frame for a strip chart.
  **/
 
-public class StripChartFrame extends JFrame {
+public class StripChartFrame extends JInternalFrame {
   JCChart chart;
   private StripChartSource data;
   private JCAxis xaxis;
 
-  public StripChartFrame(JCChart chart) {
+  public StripChartFrame(JCChart chart, String title) {
+    super(title + ":Load",   // title
+          true, //resizable
+          true, //closable
+          true, //maximizable
+          true);//iconifiable
     JPanel panel = new JPanel(new BorderLayout());
     panel.setBackground(Color.lightGray);
     panel.setForeground(Color.black);
@@ -55,7 +60,7 @@ public class StripChartFrame extends JFrame {
     StripChart chart = new StripChart();
     StripChartSource source = new StripChartSource(chart);
     chart.init(source);
-    StripChartFrame f = new StripChartFrame(chart);
+    StripChartFrame f = new StripChartFrame(chart, "Test");
     // experimental random data generated periodically
     Thread kicker = new Thread(source);
     kicker.start();

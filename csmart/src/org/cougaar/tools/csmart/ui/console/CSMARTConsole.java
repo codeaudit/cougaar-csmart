@@ -21,9 +21,10 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyVetoException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.URL;
 import java.text.DateFormat;
@@ -96,6 +97,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   Action searchAction;
   Action searchNextAction;
   JPanel buttonPanel; // contains status buttons
+  JPopupMenu aboutMenu; // pop-up menu on status button
   public static Dimension HGAP10 = new Dimension(10,1);
   public static Dimension HGAP5 = new Dimension(5,1);
   public static Dimension VGAP30 = new Dimension(1,30);
@@ -117,6 +119,9 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   protected static final String ABOUT_CSMART_ITEM = "About CSMART";
   protected static final String ABOUT_DOC = "../help/about-csmart.html";
   protected static final String HELP_MENU_ITEM = "Help";
+
+  private static final String ABOUT_MENU = "About";
+  private static final String ABOUT_ACTION = "About";
 
   // status button colors
   public static Color busyStatus = new Color(230, 255, 230); // shades of green
@@ -142,6 +147,9 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   private Date runStart = null;
   
   private ConsoleDesktop desktop;
+
+  // node frame whose status lamp is selected
+  private ConsoleInternalFrame selectedNodeFrame;
 
   /**
    * Create and show console GUI.
@@ -267,7 +275,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
     JMenuBar menuBar = new JMenuBar();
     menuBar.add(fileMenu);
-    menuBar.add(nodeMenu);
+    //    menuBar.add(nodeMenu);
     menuBar.add(helpMenu);
     getRootPane().setJMenuBar(menuBar);
 
@@ -386,6 +394,14 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 				     0, 0));
 
     statusButtons = new ButtonGroup();
+    aboutMenu = new JPopupMenu(ABOUT_MENU);
+    Action aboutAction = new AbstractAction(ABOUT_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        displayAboutNode();
+      }
+    };
+    aboutMenu.add(aboutAction);
+    
 
     // create tabbed panes for configuration information (not editable)
     //    JTabbedPane configTabbedPane = new JTabbedPane();
@@ -500,12 +516,12 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * Create a button representing a node.
    */
-  private JRadioButton createStatusButton(String nodeName) {
+  private JRadioButton createStatusButton(String nodeName, String hostName) {
     // use unknown color
     JRadioButton button = 
       new JRadioButton(new ColoredCircle(unknownStatus, 20));
     button.setSelectedIcon(new SelectedColoredCircle(unknownStatus, 20));
-    button.setToolTipText(nodeName);
+    button.setToolTipText(nodeName + ":" + hostName);
     button.setActionCommand(nodeName);
     button.setFocusPainted(false);
     button.setBorderPainted(false);
@@ -524,6 +540,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    */
   private void addStatusButton(JRadioButton button) {
     statusButtons.add(button);
+    button.addMouseListener(myMouseListener);
     buttonPanel.add(button);
   }
 
@@ -950,25 +967,25 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    */
 
   public void displayStripChart(String nodeName) {
-    JFrame f = (JFrame)chartFrames.get(nodeName);
-    if (f != null) {
-      f.toFront();
-      f.setState(Frame.NORMAL);
-      return;
-    }
-    JCChart chart = (JCChart)charts.get(nodeName);
-    if (chart == null)
-      return;
-    final Frame newChartFrame = new StripChartFrame(chart);
-    newChartFrame.setTitle(NamedFrame.getNamedFrame().addFrame(nodeName, (JFrame)newChartFrame));
-    newChartFrame.addWindowListener(new WindowAdapter() {
-      public void windowClosing(WindowEvent e) {
-	chartFrames.remove(newChartFrame.getTitle());
-	NamedFrame.getNamedFrame().removeFrame((JFrame)newChartFrame);
-	newChartFrame.dispose();
-      }
-    });
-    chartFrames.put(nodeName, newChartFrame);
+//      JFrame f = (JFrame)chartFrames.get(nodeName);
+//      if (f != null) {
+//        f.toFront();
+//        f.setState(Frame.NORMAL);
+//        return;
+//      }
+//      JCChart chart = (JCChart)charts.get(nodeName);
+//      if (chart == null)
+//        return;
+//      final Frame newChartFrame = new StripChartFrame(chart);
+//      newChartFrame.setTitle(NamedFrame.getNamedFrame().addFrame(nodeName, (JFrame)newChartFrame));
+//      newChartFrame.addWindowListener(new WindowAdapter() {
+//        public void windowClosing(WindowEvent e) {
+//  	chartFrames.remove(newChartFrame.getTitle());
+//  	NamedFrame.getNamedFrame().removeFrame((JFrame)newChartFrame);
+//  	newChartFrame.dispose();
+//        }
+//      });
+//      chartFrames.put(nodeName, newChartFrame);
   }
 
   /**
@@ -1093,7 +1110,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     ConsoleTextPane stdoutPane = new ConsoleTextPane(doc);
 
     // create a status button
-    JRadioButton statusButton = createStatusButton(nodeName);
+    JRadioButton statusButton = createStatusButton(nodeName, hostName);
 
     // create a node event listener to get events from the node
     NodeEventListener listener = null;
@@ -1110,11 +1127,11 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     }
 
     // set up idle chart
-    JCChart chart = new StripChart();
-    StripChartSource chartDataModel = new StripChartSource(chart);
-    ((StripChart)chart).init(chartDataModel);
-    ((ConsoleNodeListener)listener).setIdleChart(chart, chartDataModel);
-    charts.put(nodeName, chart);
+    //    JCChart chart = new StripChart();
+    //    StripChartSource chartDataModel = new StripChartSource(chart);
+    //    ((StripChart)chart).init(chartDataModel);
+    //    ((ConsoleNodeListener)listener).setIdleChart(chart, chartDataModel);
+    //    charts.put(nodeName, chart);
 
     // create node event filter with no buffering
     // so that idle display is "smooth"
@@ -1191,9 +1208,16 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     //      System.out.println("Node: " + nodeName + " contains agent: " + 
     //                         names.get(i));
     //    }
-    desktop.addNodeFrame(nodeComponent, stdoutPane);
+
+    // need to pass consolenodelistener to internal frame
+    // so that the listener can be invoked to gather idle chart information
+    // when the user requests the chart
+    desktop.addNodeFrame(nodeComponent, 
+                         (ConsoleNodeListener)listener, 
+                         new NodeFrameListener(),
+                         stdoutPane);
     searchAction.setEnabled(true);
-    initKeyMap(stdoutPane);
+    //    initKeyMap(stdoutPane);
     addStatusButton(statusButton);
     updateExperimentControls(experiment, true);
     startTimers();
@@ -1477,5 +1501,77 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     SocietyComponent sc = (SocietyComponent)new org.cougaar.tools.csmart.scalability.ScalabilityXSociety();
     console.setSocietyComponent(sc);
   }
+
+  class NodeFrameListener implements InternalFrameListener {
+    public void internalFrameClosed(InternalFrameEvent e) {
+    }
+    public void internalFrameClosing(InternalFrameEvent e) {
+    }
+    public void internalFrameDeactivated(InternalFrameEvent e) {
+    }
+    public void internalFrameIconified(InternalFrameEvent e) {
+    }
+    public void internalFrameOpened(InternalFrameEvent e) {
+    }
+    public void internalFrameActivated(InternalFrameEvent e) {
+      frameSelected(e);
+    }
+    public void internalFrameDeiconified(InternalFrameEvent e) {
+      frameSelected(e);
+    }
+    private void frameSelected(InternalFrameEvent e) {
+      ConsoleInternalFrame frame = (ConsoleInternalFrame)e.getInternalFrame();
+      NodeComponent node = frame.getNodeComponent();
+      selectStatusButton(node.getShortName());
+    }
+  }
+
+  /**
+   * Display pop-up menu with "about" menu item, which provides
+   * the same functionality as the "about" menu item in the node window,
+   * but from the node status lamp.
+   */
+
+  private void doPopup(MouseEvent e) {
+    String nodeName = ((JRadioButton)e.getSource()).getActionCommand();
+    selectedNodeFrame = desktop.getNodeFrame(nodeName);
+    aboutMenu.show((Component)e.getSource(), e.getX(), e.getY());
+  }
+
+  private void displayAboutNode() {
+    selectedNodeFrame.displayAbout();
+  }
+
+  private void displayNodeFrame(MouseEvent e) {
+    String nodeName = ((JRadioButton)e.getSource()).getActionCommand();
+    selectedNodeFrame = desktop.getNodeFrame(nodeName);
+    try {
+      selectedNodeFrame.setIcon(false);
+      selectedNodeFrame.setSelected(true);
+    } catch (PropertyVetoException exc) {
+    }
+  }
+
+
+  /**
+   * Listener on the node status buttons.
+   * Right click pops-up a menu with the "About" node menu item.
+   * Left double click opens the node standard out frame.
+   */
+
+  private MouseListener myMouseListener = new MouseAdapter() {
+    public void mouseClicked(MouseEvent e) {
+      if (e.isPopupTrigger()) 
+        doPopup(e);
+      else if (e.getClickCount() == 2) 
+        displayNodeFrame(e);
+    }
+    public void mousePressed(MouseEvent e) {
+      if (e.isPopupTrigger()) doPopup(e);
+    }
+    public void mouseReleased(MouseEvent e) {
+      if (e.isPopupTrigger()) doPopup(e);
+    }
+  };
 
 }

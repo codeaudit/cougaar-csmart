@@ -35,6 +35,7 @@ public class SelectedColoredCircle implements Icon {
   static final Map hints =
   java.util.Collections.singletonMap(RenderingHints.KEY_ANTIALIASING, 
 	                             RenderingHints.VALUE_ANTIALIAS_ON);
+  static final Stroke wideStroke = new BasicStroke(2);
 
   /**
    * Create a SelectedColored circle icon.
@@ -50,11 +51,16 @@ public class SelectedColoredCircle implements Icon {
   public void paintIcon(Component c, Graphics g, int x, int y) {
     Color oldColor = g.getColor();
     RenderingHints oldHints = ((Graphics2D)g).getRenderingHints();
-    g.setColor(color);
+    Stroke oldStroke = ((Graphics2D)g).getStroke();
     ((Graphics2D)g).addRenderingHints(hints);
-    g.fillOval(x, y, width, width);
+    ((Graphics2D)g).setStroke(wideStroke);
+    g.setColor(Color.darkGray);
+    g.drawOval(x, y, width, width);
+    g.setColor(color);
+    g.fillOval(x+1,y+1,width-2,width-2);
     g.setColor(oldColor);
     ((Graphics2D)g).setRenderingHints(oldHints);
+    ((Graphics2D)g).setStroke(oldStroke);
   }
   
   public int getIconWidth() { return width; }

@@ -21,20 +21,48 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
+import java.beans.PropertyVetoException;
+import java.util.Hashtable;
 import javax.swing.*;
+import javax.swing.event.InternalFrameListener;
 
 import org.cougaar.tools.csmart.ui.component.NodeComponent;
 
 public class ConsoleDesktop extends JDesktopPane {
+  Hashtable myFrames = new Hashtable();
 
-  public void addNodeFrame(NodeComponent node, JComponent component) {
-    ConsoleInternalFrame frame = new ConsoleInternalFrame(node, component);
+  /**
+   * Add a node output frame to the desktop.
+   * The frame is iconified and not selected.
+   */
+
+  public void addNodeFrame(NodeComponent node, 
+                           ConsoleNodeListener listener,
+                           InternalFrameListener frameListener,
+                           JComponent component) {
+    JInternalFrame frame = 
+      new ConsoleInternalFrame(node, listener, component);
+    frame.addInternalFrameListener(frameListener);
+    addFrame(frame, true);
+    myFrames.put(node.getShortName(), frame);
+  }
+
+  public ConsoleInternalFrame getNodeFrame(String nodeName) {
+    return (ConsoleInternalFrame)myFrames.get(nodeName);
+  }
+
+  /**
+   * Add an internal frame to the desktop, and optionally iconify it.
+   */
+
+  public void addFrame(JInternalFrame frame, boolean iconify) {
     frame.setVisible(true);
     add(frame, JLayeredPane.DEFAULT_LAYER);
-    try {
-      frame.setSelected(true);
-    } catch (Exception e) {
-      System.out.println(e);
+    if (iconify) {
+      try {
+        frame.setIcon(true);
+      } catch (PropertyVetoException e) {
+      }
     }
   }
 }

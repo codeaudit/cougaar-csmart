@@ -353,7 +353,7 @@ public class ConsoleNodeListener implements NodeEventListener {
       timestamp = 0l;
     }
     
-    if (idleTimeDataModel != null)
+    if (idleTimeDataModel != null) 
       idleTimeDataModel.addValue(result, timestamp);
   }
 

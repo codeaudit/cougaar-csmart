@@ -21,12 +21,16 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
+import java.awt.Event;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.util.ArrayList;
 import javax.swing.*;
+
+import com.klg.jclass.chart.JCChart;
 
 import org.cougaar.tools.csmart.ui.component.ComponentName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
@@ -47,20 +51,46 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String SEARCH_MENU = "Search";
   private static final String SEARCH_ACTION = "Search...";
   private static final String SEARCH_NEXT_ACTION = "Search Next";
+  private static final String STATUS_MENU = "Status";
+  private static final String HISTORY_ACTION = "Utilization History";
   private static int openFrameCount = 0;
   private static final int xOffset = 30, yOffset = 30;
   private NodeComponent node;
+  private ConsoleNodeListener listener;
   private JComponent component;
+  private Action searchAction;
   private Action searchNextAction;
+  private HostComponent host;
+  private String hostName;
 
-  public ConsoleInternalFrame(NodeComponent node, JComponent component) {
-    super(node.getShortName(),
+  public ConsoleInternalFrame(NodeComponent node, 
+                              ConsoleNodeListener listener,
+                              JComponent component) {
+    super("",   // title
           true, //resizable
           true, //closable
           true, //maximizable
           true);//iconifiable
     this.node = node;
+    this.listener = listener;
     this.component = component;
+    // get host component by getting the experiment and 
+    // searching its hosts for one with this node.
+    Experiment experiment = 
+      (Experiment)getPropertyValue((ConfigurableComponent)node, "Experiment");
+    HostComponent[] hosts = experiment.getHosts();
+    for (int i = 0; i < hosts.length; i++) {
+      NodeComponent[] nodes = hosts[i].getNodes();
+      for (int j = 0; j < nodes.length; j++) {
+        if (nodes[j].equals(node)) {
+          host = hosts[i];
+          hostName = host.getShortName();
+          break;
+        }
+      }
+    }
+    // title is "node name:host name"
+    setTitle(node.getShortName() + ":" + hostName);
     // init menu
     JMenuBar menuBar = new JMenuBar();
     JMenu aboutMenu = new JMenu(ABOUT_MENU);
@@ -97,7 +127,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     };
     controlMenu.add(traceAction);
     JMenu searchMenu = new JMenu(SEARCH_MENU);
-    Action searchAction = new AbstractAction(SEARCH_ACTION) {
+    searchAction = new AbstractAction(SEARCH_ACTION) {
       public void actionPerformed(ActionEvent e) {
         search_actionPerformed();
       }
@@ -109,10 +139,19 @@ public class ConsoleInternalFrame extends JInternalFrame {
       }
     };
     searchMenu.add(searchNextAction);
+    JMenu statusMenu = new JMenu(STATUS_MENU);
+    Action historyAction = new AbstractAction(HISTORY_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+	history_actionPerformed();
+      }
+    };
+    statusMenu.add(historyAction);
     menuBar.add(aboutMenu);
     menuBar.add(controlMenu);
     menuBar.add(searchMenu);
+    menuBar.add(statusMenu);
     getRootPane().setJMenuBar(menuBar);
+    initKeyMap((ConsoleTextPane)component);
     openFrameCount++;
     getContentPane().add(component);
     setSize(300,300);
@@ -120,28 +159,29 @@ public class ConsoleInternalFrame extends JInternalFrame {
     setLocation(xOffset*openFrameCount, yOffset*openFrameCount);
   }
 
-  private void displayAbout() {
+  /**
+   * Set up a keymap so that ctrl-s invokes search and ctrl-t invokes
+   * search next.
+   */
+
+  private void initKeyMap(ConsoleTextPane pane) {
+    InputMap im = pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+    ActionMap am = pane.getActionMap();
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_S, Event.CTRL_MASK), 
+           SEARCH_ACTION);
+    am.put(SEARCH_ACTION, searchAction);
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_T, Event.CTRL_MASK), 
+           SEARCH_NEXT_ACTION);
+    am.put(SEARCH_NEXT_ACTION, searchNextAction);
+  }
+
+  public NodeComponent getNodeComponent() {
+    return node;
+  }
+
+  public void displayAbout() {
     ArrayList agentNames = 
       (ArrayList)getPropertyValue((ConfigurableComponent)node, "AgentNames");
-    // TODO: is there a better way to do this?
-    // do nodes have to point to hosts?
-    // get host component by getting the experiment and 
-    // searching its hosts for one with this node
-    String hostName = "";
-    Experiment experiment = 
-      (Experiment)getPropertyValue((ConfigurableComponent)node, "Experiment");
-    HostComponent[] hosts = experiment.getHosts();
-    HostComponent host = null;
-    for (int i = 0; i < hosts.length; i++) {
-      NodeComponent[] nodes = hosts[i].getNodes();
-      for (int j = 0; j < nodes.length; j++) {
-        if (nodes[j].equals(node)) {
-          host = hosts[i];
-          hostName = host.getShortName();
-          break;
-        }
-      }
-    }
     JPanel aboutPanel = new JPanel();
     aboutPanel.setLayout(new GridBagLayout());
     int x = 0;
@@ -270,6 +310,19 @@ public class ConsoleInternalFrame extends JInternalFrame {
     component.repaint();
   }
 
+  /**
+   * Display strip chart for node.
+   */
+
+  public void history_actionPerformed() {
+    JCChart chart = new StripChart();
+    StripChartSource chartDataModel = new StripChartSource(chart);
+    ((StripChart)chart).init(chartDataModel);
+    listener.setIdleChart(chart, chartDataModel);
+    JInternalFrame chartFrame = new StripChartFrame(chart, title);
+    ConsoleDesktop desktop = (ConsoleDesktop)getDesktopPane();
+    desktop.addFrame(chartFrame, false);
+  }
 
 }
 

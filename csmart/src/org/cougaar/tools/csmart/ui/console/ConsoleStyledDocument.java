@@ -35,7 +35,6 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       // special case, the string is larger than the document
       // just insert the end of the string
       if (len >= MAX_CHARACTERS) {
-        System.out.println("Removing 1000 characters");
         remove(0, MAX_CHARACTERS);
         super.insertString(0, s.substring(len - MAX_CHARACTERS), a);
         return;
@@ -46,7 +45,6 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       if (neededSpace > MAX_CHARACTERS) {
         int tmp = Math.max(neededSpace - MAX_CHARACTERS,
                            MIN_REMOVE_CHARACTERS);
-        System.out.println("Removing characters: " + tmp);
         remove(0, Math.max(neededSpace - MAX_CHARACTERS,
                            MIN_REMOVE_CHARACTERS));
       }
