@@ -1228,7 +1228,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     try {
       File f = new File(dirname);
       // guarantee that directories exist
-      if (!f.mkdirs()) {
+      if (!f.exists() && !f.mkdirs() && !f.exists()) {
 	System.out.println("CSMARTConsole: Could not save results in: " +
 			   dirname);
 	return;
