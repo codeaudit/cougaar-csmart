@@ -164,6 +164,9 @@ public class ExperimentTree extends DNDTree {
                     }
                 }
                 Object userData = t.getTransferData(flavor);
+                if ((userData instanceof ModifiableConfigurableComponent) &&
+                    !((ModifiableConfigurableComponent)userData).isEditable())
+                  return DnDConstants.ACTION_NONE;
                 DefaultMutableTreeNode node =
                     new DefaultMutableTreeNode(userData, false);
                 int ix = target.getChildCount();

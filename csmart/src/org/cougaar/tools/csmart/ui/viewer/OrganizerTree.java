@@ -143,14 +143,12 @@ public class OrganizerTree extends DNDTree {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
 	    if (node == getModel().getRoot()) 
 	      return false; // not draggable if it's the root node
-	    Object userObject = node.getUserObject();
-	    // FIXME!!! Should this be instanceof ModifiableConfigurableComponent?????
-	    if (userObject != null &&
-  		(userObject instanceof ModifiableConfigurableComponent) &&
-  		!((ModifiableConfigurableComponent)userObject).isEditable())
-	      return false; // not draggable if it's a non-editable component
+//  	    Object userObject = node.getUserObject();
+//  	    if (userObject != null &&
+//    		(userObject instanceof ModifiableConfigurableComponent) &&
+//    		!((ModifiableConfigurableComponent)userObject).isEditable())
+//  	      return false; // not draggable if it's a non-editable component
 	    return true;
-	    //            return node != getModel().getRoot();
         }
         return false;
     }
