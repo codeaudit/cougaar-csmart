@@ -35,7 +35,6 @@ import java.lang.ArrayIndexOutOfBoundsException;
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  * @version 1.0
  */
-
 public class RecipeList {
 
   // Add any new recipes to this array.
@@ -46,7 +45,7 @@ public class RecipeList {
     new NameClassPair("Agent Insertion", AgentInsertionRecipe.class),
     new NameClassPair("Parameter Insertion", ParameterInsertionRecipe.class),
     new NameClassPair("Servlet Group Insertion", ServletGroupInsertionRecipe.class),
-    new NameClassPair("Switch Plugin", SwitchPluginRecipe.class),
+    //    new NameClassPair("Switch Plugin", SwitchPluginRecipe.class),
   };
 
   public static final String[] getRecipeNames() {
