@@ -287,7 +287,7 @@ public abstract class SocietyBase
    */
   public boolean saveToDatabase() {
     if(log.isInfoEnabled()) {
-      log.info("saveToDatabase society (" + getSocietyName() + ") with asb: " + getAssemblyId());
+      log.info("saveToDatabase society (" + getSocietyName() + ") with asb: " + getAssemblyId() + " and old Assembly: " + oldAssemblyId);
     }
 
     // TODO:
