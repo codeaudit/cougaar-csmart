@@ -63,20 +63,18 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
    */
 
   /**
-   * Set a description for this trial.
+   * Set a text description for this trial.
    * @param description description of the trial
    */
-
-  public void setDescription(String description) {
+  public void setTextDescription(String description) {
     getProperty(DESCRIPTION_PROPERTY).setValue(description);
   }
 
   /**
-   * Get the description of this trial.
+   * Get the text description of this trial.
    * @return description of the trial
    */
-
-  public String getDescription() {
+  public String getTextDescription() {
     return (String)getProperty(DESCRIPTION_PROPERTY).getValue();
   }
 
@@ -84,7 +82,6 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
    * Get results of all runs of this trial.
    * @return array of trial results (timestamp and results location)
    */
-
   public TrialResult[] getTrialResults() {
     return (TrialResult[])trialResults.toArray(new TrialResult[trialResults.size()]);
   }
