@@ -18,6 +18,7 @@ DROP INDEX refasb_assembly30 ON asb_component_hierarchy;
 DROP INDEX refasb_assembly19 ON asb_oplan;
 DROP INDEX refasb_oplan20 ON asb_oplan_agent_attr;
 DROP INDEX refalib_component21 ON asb_oplan_agent_attr;
+DROP INDEX refalib_component99 ON oplan_agent_attr;
 DROP INDEX refcfw_instance4 ON cfw_alploc;
 DROP INDEX reflib_plugin_arg43 ON cfw_context_plugin_arg;
 DROP INDEX refcfw_instance44 ON cfw_context_plugin_arg;

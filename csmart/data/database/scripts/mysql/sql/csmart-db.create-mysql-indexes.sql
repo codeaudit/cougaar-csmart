@@ -118,6 +118,12 @@ CREATE INDEX refasb_oplan20 ON asb_oplan_agent_attr(OPLAN_ID, ASSEMBLY_ID);
 CREATE INDEX refalib_component21 ON asb_oplan_agent_attr(COMPONENT_ALIB_ID);
 ;
 ## 
+## INDEX: refalib_component21 
+##
+
+CREATE INDEX refalib_component99 ON oplan_agent_attr(ORG_ID);
+;
+## 
 ## INDEX: refcfw_instance4 
 ##
 
