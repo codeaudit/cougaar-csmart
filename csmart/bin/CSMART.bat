@@ -19,10 +19,8 @@ REM " TORTIOUS CONDUCT, ARISING OUT OF OR IN CONNECTION WITH THE USE OR"
 REM " PERFORMANCE OF THE COUGAAR SOFTWARE."
 REM "</copyright>"
 
-
 REM Main script to run CSMART
 REM Users may want to customize the location of MS Excel
-
 
 REM Make sure that COUGAAR_INSTALL_PATH is specified
 IF NOT "%COUGAAR_INSTALL_PATH%" == "" GOTO L_2
@@ -71,6 +69,17 @@ REM and will not be restored from the workspace file. You will have to
 REM reload all experiments from the database every time you restart.
 REM To do so, uncomment the following line.
 REM SET MYPROPERTIES=-Dorg.cougaar.tools.csmart.doWorkspace=false %MYPROPERTIES%
+
+REM By default, CSMART only permits Recipe target queries to look at
+REM the basic society definition, the communities, and the Agent,
+REM Nodes, and Hosts. In particular, you should not depend on the
+REM particular Plugins, Binder, or parameters within Agents. These items
+REM may be changed by a recipe, and those changes will not be available to 
+REM later recipes in deciding whether the recipe is applicable in that
+REM case. If however, you have a recipe that needs this added
+REM complexity (for example, wants to look at Agent relationships), then
+REM un-comment the following line.
+REM SET MYPROPERTIES=-Dorg.cougaar.tools.csmart.allowComplexRecipeQueries=true %MYPROPERTIES%
 
 @ECHO ON
 

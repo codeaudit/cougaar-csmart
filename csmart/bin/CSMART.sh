@@ -77,6 +77,18 @@ MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY
 # To do so, uncomment the following line.
 # MYPROPERTIES="-Dorg.cougaar.tools.csmart.doWorkspace=false $MYPROPERTIES"
 
+
+# By default, CSMART only permits Recipe target queries to look at
+# the basic society definition, the communities, and the Agent,
+# Nodes, and Hosts. In particular, you should not depend on the
+# particular Plugins, Binder, or parameters within Agents. These items
+# may be changed by a recipe, and those changes will not be available to 
+# later recipes in deciding whether the recipe is applicable in that
+# case. If however, you have a recipe that needs this added
+# complexity (for example, wants to look at Agent relationships), then
+# un-comment the following line.
+# set MYPROPERTIES="-Dorg.cougaar.tools.csmart.allowComplexRecipeQueries=true $MYPROPERTIES"
+
 # Set the config path to include the basic CSMART config files first
 MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
 
