@@ -21,26 +21,42 @@
 
 package org.cougaar.tools.csmart.ui.servlet;
 
-import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import java.util.Collection;
+import java.util.Vector;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.ArrayList;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpUtils;
 
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
-import org.cougaar.planning.ldm.asset.*;
-import org.cougaar.planning.ldm.plan.*;
-import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
-import org.cougaar.util.*;
-import org.cougaar.tools.csmart.ui.psp.TranslateUtils;
+import org.cougaar.planning.ldm.asset.CommunityPG;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.asset.LocationSchedulePG;
 
+import org.cougaar.planning.ldm.plan.*;
+
+import org.cougaar.util.UnaryPredicate;
+import org.cougaar.util.PropertyTree;
+
+import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
+
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 /**
- * This PSP gathers information about clusters and their relationships.
+ * This Servlet gathers information about clusters and their relationships.
  * The information is encoded in name/value pairs stored in PropertyTree
  * objects which are serialized to the client.
  */
@@ -107,9 +123,8 @@ public class ClusterInfoServlet
       this.support = support;
     }
     
-    
     /**
-     * This is the main PSP method called by the infrastructure in response
+     * This is the main Servlet method called by the infrastructure in response
      * to receiving a request from a client.
      * Get information about this cluster and its relationships
      * and return these to the client in a serialized PropertyTree.
@@ -135,7 +150,7 @@ public class ClusterInfoServlet
       ServletUtil.parseParams(vis, request);
       
       try {
-	System.out.println("PSP_ClusterInfo received query..........");
+	System.out.println("CSMART_ClusterInfoServlet received query..........");
 	Vector collection = getSelfInformation();
 	if (collection!=null)
 	  {
@@ -145,7 +160,7 @@ public class ClusterInfoServlet
 	    //out.print(collection);
 	  }
       } catch (Exception e) {
-	System.out.println("PSP_ClusterInfo Exception: " + e);
+	System.out.println("CSMART_ClusterInfoServlet Exception: " + e);
 	e.printStackTrace();
       }
     }
