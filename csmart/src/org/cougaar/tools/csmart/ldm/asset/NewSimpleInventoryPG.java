@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Tue May 15 11:07:43 EDT 2001 from csmartProps.def - DO NOT HAND EDIT */
+/* @generated Thu Sep 06 13:26:09 EDT 2001 from D:\CSMART\Cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
 /** Additional methods for SimpleInventoryPG
  * offering mutators (set methods) for the object's owner
  **/
@@ -35,6 +35,6 @@ import java.util.*;
 
 
 public interface NewSimpleInventoryPG extends SimpleInventoryPG, NewPropertyGroup, org.cougaar.domain.planning.ldm.dq.HasDataQuality {
-  public SimpleInventoryBG getInvBG();
-  public void setInvBG(SimpleInventoryBG _invBG);
+  SimpleInventoryBG getInvBG();
+  void setInvBG(SimpleInventoryBG _invBG);
 }

@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Tue May 15 11:07:43 EDT 2001 from csmartProps.def - DO NOT HAND EDIT */
+/* @generated Thu Sep 06 13:26:09 EDT 2001 from D:\CSMART\Cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
 /** Primary client interface for SimpleInventoryPG.
  *  @see NewSimpleInventoryPG
  *  @see SimpleInventoryPGImpl
@@ -47,20 +47,20 @@ public interface SimpleInventoryPG extends PropertyGroup, org.cougaar.domain.pla
   String toString(boolean verbose);
   // introspection and construction
   /** the method of factoryClass that creates this type **/
-  public static final String factoryMethod = "newSimpleInventoryPG";
+  String factoryMethod = "newSimpleInventoryPG";
   /** the (mutable) class type returned by factoryMethod **/
-  public static final String mutableClass = "org.cougaar.tools.csmart.ldm.asset.NewSimpleInventoryPG";
+  String mutableClass = "org.cougaar.tools.csmart.ldm.asset.NewSimpleInventoryPG";
   /** the factory class **/
-  public static final Class factoryClass = org.cougaar.tools.csmart.ldm.asset.PropertyGroupFactory.class;
+  Class factoryClass = org.cougaar.tools.csmart.ldm.asset.PropertyGroupFactory.class;
   /** the (immutable) class type returned by domain factory **/
-  public static final Class primaryClass = org.cougaar.tools.csmart.ldm.asset.SimpleInventoryPG.class;
-  public static final String assetSetter = "setSimpleInventoryPG";
-  public static final String assetGetter = "getSimpleInventoryPG";
+   Class primaryClass = org.cougaar.tools.csmart.ldm.asset.SimpleInventoryPG.class;
+  String assetSetter = "setSimpleInventoryPG";
+  String assetGetter = "getSimpleInventoryPG";
   /** The Null instance for indicating that the PG definitely has no value **/
-  public static final SimpleInventoryPG nullPG = new Null_SimpleInventoryPG();
+  SimpleInventoryPG nullPG = new Null_SimpleInventoryPG();
 
 /** Null_PG implementation for SimpleInventoryPG **/
-static final class Null_SimpleInventoryPG
+final class Null_SimpleInventoryPG
   implements SimpleInventoryPG, Null_PG
 {
   public SimpleInventoryBG getInvBG() {
@@ -97,7 +97,7 @@ static final class Null_SimpleInventoryPG
 }
 
 /** Future PG implementation for SimpleInventoryPG **/
-public final static class Future
+final class Future
   implements SimpleInventoryPG, Future_PG
 {
   public long consume(long time) {

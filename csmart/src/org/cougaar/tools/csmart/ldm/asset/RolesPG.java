@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Tue May 15 11:07:43 EDT 2001 from csmartProps.def - DO NOT HAND EDIT */
+/* @generated Thu Sep 06 13:26:09 EDT 2001 from D:\CSMART\Cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
 /** Primary client interface for RolesPG.
  * a list of roles for LocalAssets to specify their capabilities
  *  @see NewRolesPG
@@ -49,20 +49,20 @@ public interface RolesPG extends PropertyGroup, org.cougaar.domain.planning.ldm.
 
   // introspection and construction
   /** the method of factoryClass that creates this type **/
-  public static final String factoryMethod = "newRolesPG";
+  String factoryMethod = "newRolesPG";
   /** the (mutable) class type returned by factoryMethod **/
-  public static final String mutableClass = "org.cougaar.tools.csmart.ldm.asset.NewRolesPG";
+  String mutableClass = "org.cougaar.tools.csmart.ldm.asset.NewRolesPG";
   /** the factory class **/
-  public static final Class factoryClass = org.cougaar.tools.csmart.ldm.asset.PropertyGroupFactory.class;
+  Class factoryClass = org.cougaar.tools.csmart.ldm.asset.PropertyGroupFactory.class;
   /** the (immutable) class type returned by domain factory **/
-  public static final Class primaryClass = org.cougaar.tools.csmart.ldm.asset.RolesPG.class;
-  public static final String assetSetter = "setRolesPG";
-  public static final String assetGetter = "getRolesPG";
+   Class primaryClass = org.cougaar.tools.csmart.ldm.asset.RolesPG.class;
+  String assetSetter = "setRolesPG";
+  String assetGetter = "getRolesPG";
   /** The Null instance for indicating that the PG definitely has no value **/
-  public static final RolesPG nullPG = new Null_RolesPG();
+  RolesPG nullPG = new Null_RolesPG();
 
 /** Null_PG implementation for RolesPG **/
-static final class Null_RolesPG
+final class Null_RolesPG
   implements RolesPG, Null_PG
 {
   public List getRoles() { throw new UndefinedValueException(); }
@@ -88,7 +88,7 @@ static final class Null_RolesPG
 }
 
 /** Future PG implementation for RolesPG **/
-public final static class Future
+final class Future
   implements RolesPG, Future_PG
 {
   public List getRoles() {

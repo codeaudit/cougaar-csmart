@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Tue May 15 11:07:46 EDT 2001 from csmartAssets.def - DO NOT HAND EDIT */
+/* @generated Thu Sep 06 13:26:09 EDT 2001 from D:\CSMART\Cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartAssets.def - DO NOT HAND EDIT */
 package org.cougaar.tools.csmart.ldm.asset;
 import org.cougaar.domain.planning.ldm.asset.*;
 import java.io.ObjectOutputStream;
@@ -121,6 +121,44 @@ public class LocalAsset extends CSMARTAsset {
       mySimpleInventoryPG=(SimpleInventoryPG)pg;
     } else
       super.setLocalPG(c,pg);
+  }
+
+  public void setLocalPGSchedule(PropertyGroupSchedule pgSchedule) {
+      super.setLocalPGSchedule(pgSchedule);
+  }
+
+  public PropertyGroup removeLocalPG(Class c) {
+    PropertyGroup removed = null;
+    if (RolesPG.class.equals(c)) {
+      removed=myRolesPG;
+      myRolesPG=null;
+    } else
+    if (SimpleInventoryPG.class.equals(c)) {
+      removed=mySimpleInventoryPG;
+      mySimpleInventoryPG=null;
+    } else
+      removed=super.removeLocalPG(c);
+    return removed;
+  }
+
+  public PropertyGroup removeLocalPG(PropertyGroup pg) {
+    PropertyGroup removed = null;
+    Class pgc = pg.getPrimaryClass();
+    if (RolesPG.class.equals(pgc)) {
+      removed=myRolesPG;
+      myRolesPG=null;
+    } else
+    if (SimpleInventoryPG.class.equals(pgc)) {
+      removed=mySimpleInventoryPG;
+      mySimpleInventoryPG=null;
+    } else
+      removed= super.removeLocalPG(pg);
+    return removed;
+  }
+
+  public PropertyGroupSchedule removeLocalPGSchedule(Class c) {
+    PropertyGroupSchedule removed = null;
+    return removed;
   }
 
   public PropertyGroup generateDefaultPG(Class c) {

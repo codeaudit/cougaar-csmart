@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Tue May 15 11:07:43 EDT 2001 from csmartProps.def - DO NOT HAND EDIT */
+/* @generated Thu Sep 06 13:26:09 EDT 2001 from D:\CSMART\Cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
 /** AbstractFactory implementation for Properties.
  * Prevents clients from needing to know the implementation
  * class(es) of any of the properties.
@@ -36,21 +36,21 @@ import java.util.*;
 
 public class PropertyGroupFactory extends org.cougaar.domain.planning.ldm.asset.PropertyGroupFactory {
   // brand-new instance factory
-  public static NewHappinessPG newHappinessPG() {
-    return new HappinessPGImpl();
-  }
-  // instance from prototype factory
-  public static NewHappinessPG newHappinessPG(HappinessPG prototype) {
-    return new HappinessPGImpl(prototype);
-  }
-
-  // brand-new instance factory
   public static NewSimpleInventoryPG newSimpleInventoryPG() {
     return new SimpleInventoryPGImpl();
   }
   // instance from prototype factory
   public static NewSimpleInventoryPG newSimpleInventoryPG(SimpleInventoryPG prototype) {
     return new SimpleInventoryPGImpl(prototype);
+  }
+
+  // brand-new instance factory
+  public static NewHappinessPG newHappinessPG() {
+    return new HappinessPGImpl();
+  }
+  // instance from prototype factory
+  public static NewHappinessPG newHappinessPG(HappinessPG prototype) {
+    return new HappinessPGImpl(prototype);
   }
 
   // brand-new instance factory
@@ -68,8 +68,8 @@ public class PropertyGroupFactory extends org.cougaar.domain.planning.ldm.asset.
    * <factorymethodname> takes zero or one (prototype) argument.
    **/
   public static String properties[][]={
-    {"org.cougaar.tools.csmart.ldm.asset.HappinessPG", "newHappinessPG"},
     {"org.cougaar.tools.csmart.ldm.asset.SimpleInventoryPG", "newSimpleInventoryPG"},
+    {"org.cougaar.tools.csmart.ldm.asset.HappinessPG", "newHappinessPG"},
     {"org.cougaar.tools.csmart.ldm.asset.RolesPG", "newRolesPG"}
   };
 }

@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Tue May 15 11:07:43 EDT 2001 from csmartProps.def - DO NOT HAND EDIT */
+/* @generated Thu Sep 06 13:26:09 EDT 2001 from D:\CSMART\Cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
 /** Implementation of RolesPG.
  *  @see RolesPG
  *  @see NewRolesPG
@@ -44,7 +44,7 @@ public class RolesPGImpl extends java.beans.SimpleBeanInfo
   implements NewRolesPG, Cloneable
 {
   public RolesPGImpl() {
-  };
+  }
 
   // Slots
 
@@ -141,8 +141,7 @@ public class RolesPGImpl extends java.beans.SimpleBeanInfo
   public NewPropertyGroup unlock(Object key) { return this; }
 
   public Object clone() throws CloneNotSupportedException {
-    RolesPGImpl _tmp = new RolesPGImpl(this);
-    return _tmp;
+    return new RolesPGImpl(RolesPGImpl.this);
   }
 
   public PropertyGroup copy() {
@@ -166,7 +165,7 @@ public class RolesPGImpl extends java.beans.SimpleBeanInfo
     try {
       properties[0]= new IndexedPropertyDescriptor("roles", RolesPG.class, "getRolesAsArray", null, "getIndexedRoles", null);
     } catch (Exception e) { System.err.println("Caught: "+e); e.printStackTrace(); }
-  };
+  }
 
   public PropertyDescriptor[] getPropertyDescriptors() {
     return properties;
@@ -195,8 +194,11 @@ public class RolesPGImpl extends java.beans.SimpleBeanInfo
     }
 
     public PropertyGroup copy() {
-      return new RolesPGImpl(RolesPGImpl.this);
+      try {
+        return (PropertyGroup) clone();
+      } catch (CloneNotSupportedException cnse) { return null;}
     }
+
 
     public Object clone() throws CloneNotSupportedException {
       return new RolesPGImpl(RolesPGImpl.this);

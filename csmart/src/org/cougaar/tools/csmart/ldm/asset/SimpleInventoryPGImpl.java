@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Tue May 15 11:07:43 EDT 2001 from csmartProps.def - DO NOT HAND EDIT */
+/* @generated Thu Sep 06 13:26:09 EDT 2001 from D:\CSMART\Cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
 /** Implementation of SimpleInventoryPG.
  *  @see SimpleInventoryPG
  *  @see NewSimpleInventoryPG
@@ -44,7 +44,7 @@ public class SimpleInventoryPGImpl extends java.beans.SimpleBeanInfo
   implements NewSimpleInventoryPG, Cloneable
 {
   public SimpleInventoryPGImpl() {
-  };
+  }
 
   // Slots
 
@@ -121,7 +121,9 @@ public class SimpleInventoryPGImpl extends java.beans.SimpleBeanInfo
 
   public Object clone() throws CloneNotSupportedException {
     SimpleInventoryPGImpl _tmp = new SimpleInventoryPGImpl(this);
-    _tmp.invBG = (SimpleInventoryBG) invBG.copy(_tmp);
+    if (invBG != null) {
+      _tmp.invBG = (SimpleInventoryBG) invBG.copy(_tmp);
+    }
     return _tmp;
   }
 
@@ -170,11 +172,18 @@ public class SimpleInventoryPGImpl extends java.beans.SimpleBeanInfo
     }
 
     public PropertyGroup copy() {
-      return new SimpleInventoryPGImpl(SimpleInventoryPGImpl.this);
+      try {
+        return (PropertyGroup) clone();
+      } catch (CloneNotSupportedException cnse) { return null;}
     }
 
+
     public Object clone() throws CloneNotSupportedException {
-      return new SimpleInventoryPGImpl(SimpleInventoryPGImpl.this);
+      SimpleInventoryPGImpl _tmp = new SimpleInventoryPGImpl(this);
+      if (invBG != null) {
+        _tmp.invBG = (SimpleInventoryBG) invBG.copy(_tmp);
+      }
+      return _tmp;
     }
 
   public long consume(long time) {

@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Tue May 15 11:07:43 EDT 2001 from csmartProps.def - DO NOT HAND EDIT */
+/* @generated Thu Sep 06 13:26:09 EDT 2001 from D:\CSMART\Cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
 /** Implementation of HappinessPG.
  *  @see HappinessPG
  *  @see NewHappinessPG
@@ -45,7 +45,7 @@ public class HappinessPGImpl extends java.beans.SimpleBeanInfo
 {
   public HappinessPGImpl() {
     hBG = new HappinessBG(this);
-  };
+  }
 
   // Slots
 
@@ -114,7 +114,9 @@ public class HappinessPGImpl extends java.beans.SimpleBeanInfo
 
   public Object clone() throws CloneNotSupportedException {
     HappinessPGImpl _tmp = new HappinessPGImpl(this);
-    _tmp.hBG = (HappinessBG) hBG.copy(_tmp);
+    if (hBG != null) {
+      _tmp.hBG = (HappinessBG) hBG.copy(_tmp);
+    }
     return _tmp;
   }
 
@@ -163,11 +165,18 @@ public class HappinessPGImpl extends java.beans.SimpleBeanInfo
     }
 
     public PropertyGroup copy() {
-      return new HappinessPGImpl(HappinessPGImpl.this);
+      try {
+        return (PropertyGroup) clone();
+      } catch (CloneNotSupportedException cnse) { return null;}
     }
 
+
     public Object clone() throws CloneNotSupportedException {
-      return new HappinessPGImpl(HappinessPGImpl.this);
+      HappinessPGImpl _tmp = new HappinessPGImpl(this);
+      if (hBG != null) {
+        _tmp.hBG = (HappinessBG) hBG.copy(_tmp);
+      }
+      return _tmp;
     }
 
   public long getStartTime() {

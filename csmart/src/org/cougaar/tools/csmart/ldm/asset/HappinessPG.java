@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Tue May 15 11:07:43 EDT 2001 from csmartProps.def - DO NOT HAND EDIT */
+/* @generated Thu Sep 06 13:26:09 EDT 2001 from D:\CSMART\Cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
 /** Primary client interface for HappinessPG.
  * wrapper for HappinessBG
  *  @see NewHappinessPG
@@ -47,20 +47,20 @@ public interface HappinessPG extends PropertyGroup, org.cougaar.domain.planning.
   String toString(boolean verbose);
   // introspection and construction
   /** the method of factoryClass that creates this type **/
-  public static final String factoryMethod = "newHappinessPG";
+  String factoryMethod = "newHappinessPG";
   /** the (mutable) class type returned by factoryMethod **/
-  public static final String mutableClass = "org.cougaar.tools.csmart.ldm.asset.NewHappinessPG";
+  String mutableClass = "org.cougaar.tools.csmart.ldm.asset.NewHappinessPG";
   /** the factory class **/
-  public static final Class factoryClass = org.cougaar.tools.csmart.ldm.asset.PropertyGroupFactory.class;
+  Class factoryClass = org.cougaar.tools.csmart.ldm.asset.PropertyGroupFactory.class;
   /** the (immutable) class type returned by domain factory **/
-  public static final Class primaryClass = org.cougaar.tools.csmart.ldm.asset.HappinessPG.class;
-  public static final String assetSetter = "setHappinessPG";
-  public static final String assetGetter = "getHappinessPG";
+   Class primaryClass = org.cougaar.tools.csmart.ldm.asset.HappinessPG.class;
+  String assetSetter = "setHappinessPG";
+  String assetGetter = "getHappinessPG";
   /** The Null instance for indicating that the PG definitely has no value **/
-  public static final HappinessPG nullPG = new Null_HappinessPG();
+  HappinessPG nullPG = new Null_HappinessPG();
 
 /** Null_PG implementation for HappinessPG **/
-static final class Null_HappinessPG
+final class Null_HappinessPG
   implements HappinessPG, Null_PG
 {
   public long getStartTime() { throw new UndefinedValueException(); }
@@ -90,7 +90,7 @@ static final class Null_HappinessPG
 }
 
 /** Future PG implementation for HappinessPG **/
-public final static class Future
+final class Future
   implements HappinessPG, Future_PG
 {
   public long getStartTime() {
