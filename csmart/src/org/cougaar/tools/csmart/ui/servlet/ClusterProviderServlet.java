@@ -21,31 +21,34 @@
 
 package org.cougaar.tools.csmart.ui.servlet;
 
-import org.cougaar.util.UnaryPredicate;
-
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
 
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
-import org.cougaar.planning.ldm.asset.*;
-import org.cougaar.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.asset.CommunityPG;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.plan.HasRelationships;
 
-import java.io.*;
+import org.cougaar.util.UnaryPredicate;
+
 import java.util.Collections;
 import java.util.Vector;
 
+import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.PrintStream;
 
 /**
- * This PSP expects no input, and returns the URLs of all the clusters
+ * This Servlet expects no input, and returns the URLs of all the clusters
  * as a serialized object which is a Vector of Strings.
  * It is used by the CSMARTUL applications to obtain the URLs of the clusters.
  * <pre>
- * Invoke as: CLUSTER_URLS.PSP
+ * Invoke as: CMART_ClusterProviderServlet
  * Returns: URLs, serialized Vector of Strings
  * </pre>
  */
