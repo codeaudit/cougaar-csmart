@@ -520,13 +520,13 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * Return whether or not experiment is runnable.  An experiment is runnable:
    * if it has a host-node-agent mapping, and
    * it has no unbound properties, and
-   * it's not being edited or run
+   * it's not being edited or run, and
+   * it's been saved in the database (i.e. the modified flag is false)
    * @return whether or not an experiment is runnable
    */
   public boolean isRunnable() {
-    if (!hasConfiguration() || hasUnboundProperties())
+    if (!hasConfiguration() || hasUnboundProperties() || modified)
       return false;
-    //    return !editInProgress && !runInProgress;
     return !runInProgress; // allow user to run experiment they're editing
   }
 
