@@ -61,7 +61,7 @@ MOD_RECIPE_LIB_ID,ARG_NAME,ARG_ORDER,ARG_VALUE,BLANK
 "RECIPE-OplanEditServlet","Component Name",1.000000000000000000000000000000,"org.cougaar.logistics.servlet.OplanEditServlet",
 "RECIPE-OplanEditServlet","Component Priority",2.000000000000000000000000000000,"COMPONENT",
 "RECIPE-OplanEditServlet","Number of Arguments",3.000000000000000000000000000000,"2",
-"RECIPE-OplanEditServlet","Target Component Selection Query",4.000000000000000000000000000000,"recipeQueryNCAAgent",
+"RECIPE-OplanEditServlet","Target Component Selection Query",4.000000000000000000000000000000,"recipeQueryAllAgents",
 "RECIPE-OplanEditServlet","Type of Insertion",5.000000000000000000000000000000,"plugin",
 "RECIPE-OplanEditServlet","Value 1",6.000000000000000000000000000000,"org.cougaar.logistics.servlet.OplanEditServlet",
 "RECIPE-OplanEditServlet","Value 2",7.000000000000000000000000000000,"/editOplan",
