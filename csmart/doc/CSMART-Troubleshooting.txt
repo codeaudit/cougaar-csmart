@@ -68,6 +68,24 @@ You should confirm that you started your MySQL database at that host/port,
      from "localhost" in both the "db" and "user" tables. See the
      MySQL documentation.
 
+- CSMART can contact your database just fine (load an experiment,
+  configure it, etc), but your nodes cannot --
+  you get errors in the node output windows like: 
+    SQLException: Cannot connect to MySQL server on 207.106.41.23:3306.
+    Is there a MySQL server running on the machine/port you are trying
+    to connect to? (java.net.SocketException)
+    Possible busy server. Retrying....
+1) Make sure that your AppServer server.props has a correct value for
+  env.SYSTEMROOT (none on Linux, and your Windows install directory on
+  Windows)
+2) Make sure you have the same cougaar.rc(or .cougaarrc) file on all your node
+  machines as on your CSMART machine, and only one such file (check
+  $HOME, $COUGAAR_INSTALL_PATH and
+  $COUGAAR_INSTALL_PATH/configs/common)
+3) Finally, check the user access permissions inside the MySQL
+  database. See your MySQL documentation about the 'USER' and 'DB'
+  tables.
+
 - If on startup you get a JDBC error like:
 java.sql.SQLException: Unknown driver driver.mysql//localhost
 then make sure your JDBC connection string is correctly formatted.
