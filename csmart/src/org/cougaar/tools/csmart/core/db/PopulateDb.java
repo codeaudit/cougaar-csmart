@@ -2770,6 +2770,10 @@ public class PopulateDb extends PDbBase {
    * @exception SQLException if an error occurs
    */
   private StringBuffer compareQueryResults(ResultSet rs, String[] keys) throws SQLException {
+  // FIXME!!!
+  // If it looks like this Lib ID is different, offer the option that this is really
+  // a new LIB ID!!!
+
     StringBuffer diff = null;
     for (int i = 0; i < keys.length; i++) {
       Object oldValue = rs.getObject(i + 1);
@@ -2837,6 +2841,10 @@ public class PopulateDb extends PDbBase {
 	":component_category:",
 	":clone_set_id:"
       };
+  // FIXME!!!
+  // If it looks like this Lib ID is different, offer the option that this is really
+  // a new LIB ID!!!
+
       StringBuffer diff = compareQueryResults(rs, subvars);
       if (diff == null) {
 	// Value is ok
@@ -2875,6 +2883,10 @@ public class PopulateDb extends PDbBase {
 	":component_class:",
 	":insertion_point:"
       };
+  // FIXME!!!
+  // If it looks like this Lib ID is different, offer the option that this is really
+  // a new LIB ID!!!
+
       StringBuffer diff = compareQueryResults(rs, subvars);
       if (diff == null) {
 	// Value is ok
