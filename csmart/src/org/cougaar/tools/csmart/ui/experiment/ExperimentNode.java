@@ -21,7 +21,10 @@
 
 package org.cougaar.tools.csmart.ui.experiment;
 
-import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.ui.component.AgentComponent;
+import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.ui.component.NodeComponent;
+import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
@@ -34,7 +37,7 @@ import java.util.*;
  **/
 public class ExperimentNode
   extends ModifiableConfigurableComponent
-  implements Serializable, NodeComponent, ModifiableComponent
+  implements Serializable, NodeComponent
 {
   private static final long serialVersionUID = 253490717511962460L;
 
