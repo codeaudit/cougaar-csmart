@@ -70,6 +70,7 @@ public class PopulateDb extends PDbBase {
   private static String realcmtType = "CMT";
   private static String realcsmiType = "CSMI";
   private static String realcshnaType = "CSHNA";
+  public static final String COMM_ASB_TYPE = "COMM";
 
   // The cmtAssemblyId defines the baseline society - 
   // the one in the Config assemblies table. Note however
@@ -78,6 +79,7 @@ public class PopulateDb extends PDbBase {
   private String csmiAssemblyId;
   private String csaAssemblyId;
   private String hnaAssemblyId;
+  private String commAssemblyId = null; // community info
 
   private Map propertyInfos = new HashMap();
   private Set alibComponents = new HashSet();
@@ -209,6 +211,8 @@ public class PopulateDb extends PDbBase {
     // all the old assemblies, threads
     String oldExperimentName = getOldExperimentName();
     if (!experimentName.equals(oldExperimentName)) {
+      // Warning: This copies only the base society def
+      // not CSHNA, COMM, etc
       cloneTrial(trialId, experimentName, "Modified " + oldExperimentName);
     }
 
@@ -311,6 +315,8 @@ public class PopulateDb extends PDbBase {
       return hnaType;
     } else if (assemblyId.startsWith(csmiType)) {
       return csmiType;
+    } else if (assemblyId.startsWith(COMM_ASB_TYPE)) {
+      return COMM_ASB_TYPE;
     } else {
       return "Unknown";
     }
@@ -371,6 +377,44 @@ public class PopulateDb extends PDbBase {
 
   public String getCMTAssemblyId() {
     return cmtAssemblyId;
+  }
+
+  public String getCommAssemblyId() {
+    return commAssemblyId;
+  }
+
+  /**
+   * Save this Assembly ID as the Community Assembly, both in the DB
+   * in both tables, and in this local instance.
+   * Does nothing given a null ID or if the given ID is already in local
+   * instance. 
+   * Should be called during Experiment.saveToDB
+   *
+   * @param id a <code>String</code> assembly ID to hold community info.
+   */
+  public void setCommAssemblyId(String id) throws SQLException {
+    if (id == null)
+      return;
+
+    if (commAssemblyId != null) {
+      if (commAssemblyId.equals(id))
+	return;
+      // got new ID not same as old
+      // remove the old from config & runtime
+      removeConfigAssembly(commAssemblyId);
+      removeRuntimeAssembly(commAssemblyId);
+      if (! isAssemblyUsed(commAssemblyId))
+	cleanAssembly(commAssemblyId);
+      // delete it if not used
+    }
+
+    commAssemblyId = id;
+
+    // put this id in runtime & config for this expt/trial
+    addAssemblyToConfig(commAssemblyId);
+    addAssemblyToRuntime(commAssemblyId);
+    // Do I want to do this?
+    //setAssemblyMatch();
   }
 
   /**
@@ -447,12 +491,15 @@ public class PopulateDb extends PDbBase {
    * Clean out a trial for re-saving. So remove the old HNA assembly
    * (from both tables) and CSMI assembly if any. 
    * Also remove any current trials - must be reset. 
+   * Remove any COMM assembly from the trial tables, but
+   * carefully do NOT completely remove the COMM assembly.
    * The caller must make sure that any extra CSA assembly not in runtime,
    * when the society is defined by a CSA assembly.
    **/
   private void cleanTrial(String cmtType, String hnaType, String csmiType, String oldTrialId)
     throws SQLException
   {
+
     // Basically we'll drop the HNA, CSMI assembly and recipes. It will drop
     // the CMT assembly too, but only if cmtType is null
     // Also drop any CSA in runtime if cmtType is not a CSA
@@ -503,7 +550,8 @@ public class PopulateDb extends PDbBase {
       assembliesToDelete.append(sqlQuote(asb));
 
       // if asb not used other than the current trial
-      if (! isAssemblyUsed(asb)) {
+      // and not a community assembly
+      if (! isAssemblyUsed(asb) && COMM_ASB_TYPE != getAssemblyType(asb)) {
 	if (log.isDebugEnabled()) {
 	  log.debug("cleanTrial: assembly " + asb + " not used, except in trial " + trialId + " which we are deleting, so well really delete it");
 	}
@@ -709,6 +757,10 @@ public class PopulateDb extends PDbBase {
       executeUpdate(dbp.getQuery("cleanASBOplan", substitutions));
       executeUpdate(dbp.getQuery("cleanASBOplanAAttr", substitutions));
     }
+
+    // Community tables too
+    executeUpdate(dbp.getQuery("cleanASBComm", substitutions));
+    executeUpdate(dbp.getQuery("cleanASBCommEntity", substitutions));
   }
 
   // Find all the unused CSMI and CSHNA assemblies and completely delete them
@@ -727,7 +779,10 @@ public class PopulateDb extends PDbBase {
       assid = rs.getString(1);
       // So be sure to avoid ours
       // FIXME: Does this really do that?
-      if (assid == null || assid.equals(csmiAssemblyId) || assid.equals(hnaAssemblyId)) {
+      // FIXME: Maybe skip comm type assemblies altogether?
+      // Do that if this might get called while have a new expt
+      // that has not been saved, cause then comm info only in DB
+      if (assid == null || assid.equals(csmiAssemblyId) || assid.equals(hnaAssemblyId) || assid.equals(commAssemblyId)) {
 	if (log.isDebugEnabled()) {
 	  log.debug("removeOrphan not touching asb used in current trial (" + trialId + ": " + assid);
 	}
@@ -745,6 +800,12 @@ public class PopulateDb extends PDbBase {
 	}
 	continue;
       }
+
+      // FIXME: Will this delete community assembly when I dont want to?
+      // I think this is only called by fixAssemblies,
+      // so as long as that sets up the commID in tables / var
+      // stuff OK, this is OK.
+
       // for each such assembly
       // FIXME: This will not delete a CSHNA or CSMI assembly that in the DB
       // is associated with this Trial, but whose assId we don't have
@@ -766,6 +827,9 @@ public class PopulateDb extends PDbBase {
       csmiAssemblyId = hnaAssemblyId;
     else
       csmiAssemblyId = addAssembly(csmiType);
+
+    // FIXME What about community assembly!!
+
     setAssemblyMatch();
   }
 
@@ -780,6 +844,7 @@ public class PopulateDb extends PDbBase {
     boolean hadcsa = (csaAssemblyId == null);
     boolean hadhna = (hnaAssemblyId == null);
     boolean hadcsmi = (csmiAssemblyId == null);
+    boolean hadcomm = (commAssemblyId == null);
     q.append("in (");
     while (rs.next()) {
       if (first) {
@@ -788,7 +853,7 @@ public class PopulateDb extends PDbBase {
 	q.append(", ");
       }
       if (log.isDebugEnabled()) {
-	if (! rs.getString(1).equals(cmtAssemblyId) && ! rs.getString(1).equals(csaAssemblyId) && ! rs.getString(1).equals(hnaAssemblyId) && ! rs.getString(1).equals(csmiAssemblyId)) {
+	if (! rs.getString(1).equals(cmtAssemblyId) && ! rs.getString(1).equals(csaAssemblyId) && ! rs.getString(1).equals(hnaAssemblyId) && ! rs.getString(1).equals(csmiAssemblyId) && ! rs.getString(1).equals(commAssemblyId)) {
 	  log.debug("setAsbMatch got asb " + rs.getString(1) + " thats not in local vars");
 	}
 	if (rs.getString(1).equals(cmtAssemblyId))
@@ -799,6 +864,8 @@ public class PopulateDb extends PDbBase {
 	  hadhna = true;
 	if (rs.getString(1).equals(csmiAssemblyId))
 	  hadcsmi = true;
+	if (rs.getString(1).equals(commAssemblyId))
+	  hadcomm = true;
       } // end of debug block
 
       q.append("'").append(rs.getString(1)).append("'");
@@ -815,6 +882,8 @@ public class PopulateDb extends PDbBase {
 	log.debug("Didnt find in DB my hna " + hnaAssemblyId);
       if (! hadcsmi)
 	log.debug("Didnt find in DB my csmi " + csmiAssemblyId);
+      if (! hadcomm)
+	log.debug("Didnt find in DB my comm " + commAssemblyId);
     }
     q.append(')');
     if (first) {            // No matches
@@ -974,6 +1043,109 @@ public class PopulateDb extends PDbBase {
     executeUpdate(dbp.getQuery("insertTrialAssembly", substitutions));
     return assemblyId;
   }
+
+  ////////////////////////////////////////////////////////
+  // Community related methods
+
+  // Create a new Comm assembly and put it in the asb_assembly table
+  // Use this when create a new experiment not from DB.
+  public String getNewCommAssembly() throws SQLException {
+    String idType = COMM_ASB_TYPE;
+    String assemblyId;
+    String assemblyIdPrefix = idType + "-";
+    substitutions.put(":assembly_id_pattern:", assemblyIdPrefix + "____");
+    substitutions.put(":assembly_type:", idType);
+    substitutions.put(":assembly_desc:", idType + " assembly");
+    assemblyId = getNextId("queryMaxAssemblyId", assemblyIdPrefix);
+    if (assemblyId == null) {
+      if (log.isErrorEnabled()) {
+	log.error("getNewCommAsb got null new AssemblyID, none added");
+      }
+      return null;
+    }
+    substitutions.put(":assembly_id:", sqlQuote(assemblyId));
+    executeUpdate(dbp.getQuery("insertAssemblyId", substitutions));
+    return assemblyId;
+  }
+
+  // Use this on expt.copy and OrganizerHelper expt load from non-base
+  // and if get default comm in base, also on base
+  public String getNewCommAsbFromOld(String oldCommAsb) throws SQLException {
+    String assemblyId = getNewCommAssembly();
+    if (assemblyId == null) {
+      return null;
+    }
+
+    if (oldCommAsb != null && ! oldCommAsb.equals(""))
+      copyOldCommToNew(oldCommAsb, assemblyId);
+    return assemblyId;
+  }    
+
+  // Presumably used in same situation as above and more likely
+  public String getNewCommAsbFromExpt(String exptId, String trialId) throws SQLException {
+    // get the comm asb for that expt/trial
+    String oldCommAsb = getCommAsbForExpt(exptId, trialId);
+    if (oldCommAsb == null) {
+      if (log.isWarnEnabled()) {
+	log.warn("getNewCommAsbFromExpt found no community assembly for expt " + exptId + ", trial: " + trialId);
+      }
+    }
+    return getNewCommAsbFromOld(oldCommAsb);
+  }
+
+  // Retrieve the community assembly for the 
+  // given experiment. Possibly used on load?
+  // Certainly must be used before do expt.save
+  // and set this asb_id in a slot on the expt
+  // so can set it before doing save but after creating the pdb
+  public String getCommAsbForExpt(String exptId, String trialId) throws SQLException {
+    if (exptId == null || trialId == null || exptId.equals("") || trialId.equals(""))
+      return null;
+
+    // put these 2 in the substitutions
+    substitutions.put(":expt_id:", exptId);
+    substitutions.put(":trial_id:", trialId); 
+    substitutions.put(":comm_type:", COMM_ASB_TYPE); 
+    
+    // execute a query
+    Statement stmt = getStatement();
+    ResultSet rs = executeQuery(stmt, dbp.getQuery("queryExptCommAsb", substitutions));
+    String ret = null;
+    if (rs.next()) {
+      ret = rs.getString(1);
+    }
+    rs.close();
+    stmt.close();
+    // return the result or null
+    return ret;
+  }
+
+  // Copy the community table entries under the old assembly
+  // into the new
+  private void copyOldCommToNew(String oldCommAsb, String newCommAsb) throws SQLException {
+    if (oldCommAsb == null || oldCommAsb.equals("") || newCommAsb == null || newCommAsb.equals(""))
+      return;
+
+    // put these in substitutions map
+    substitutions.put(":old_assembly_id:", oldCommAsb);
+    substitutions.put(":new_assembly_id:", newCommAsb);
+
+    // do some query
+    String qs = dbp.getQuery("copyCommQueryNames", substitutions);
+    StringTokenizer queries = new StringTokenizer(qs);
+    // Note that executeUpdate in PDbBase uses a shared connection,
+    // so we should be OK.
+    while (queries.hasMoreTokens()) {
+      String queryName = queries.nextToken();
+      if (log.isDebugEnabled()) {
+	log.debug("copyOldCommToNew: doing query " + queryName);
+      }
+      executeUpdate(dbp.getQuery(queryName, substitutions));
+    }
+  }
+
+  // End of community stuff
+  ///////////////////////////////////////////////////////////
 
   /**
    * See if the given assembly is used by this trial at config time
@@ -1304,6 +1476,51 @@ public class PopulateDb extends PDbBase {
 	  // Note that we now know a CMT asb in runtime would be bad
 	  // But we could still have a CSMI in runtime
 	}
+      } else if (assid.startsWith(COMM_ASB_TYPE)) {
+	// Comm Assembly
+	if (log.isDebugEnabled()) {
+	  log.debug("fixAsb: Found a Comm assembly (" + assid + ") in config for trial " + trialId);
+	}
+	// FIXME: Do I expect this ID to be in object? Put it there?
+
+	// A couple options: This might be an old one
+	// that needs to be removed?
+	// Or maybe we already saved it
+	// then put it in runtime too
+	// Make sure it is in runtime too?
+	if (! assemblyInRuntime(assid))
+	  addAssemblyToRuntime(assid);
+
+	// but also want to see if
+	// the assid we found is also the on in the variable
+	if (commAssemblyId != null) {
+	  if (assid.equals(commAssemblyId)) {
+	    // found local var comm in config
+	    if (log.isDebugEnabled()) {
+	      log.debug("fixAsb: found comm asb in config same as local var");
+	    }
+	  } else {
+	    if (log.isDebugEnabled()) {
+	      log.debug("fixAsb: found comm asb in config not same as that in local var. delete from tables");
+	    }
+	    // local var comm is not same as one in config
+	    removeConfigAssembly(assid);
+	    removeRuntimeAssembly(assid);
+	    if (! isAssemblyUsed(assid))
+	      cleanAssembly(assid);
+	  }
+	} else {
+	  if (log.isDebugEnabled()) {
+	    log.debug("fixAsb: found comm asb in config but nothing in local var");
+	    log.debug("fixAsb: save it in local var and use it");
+	  }
+	  // Found a comm assembly in config
+	  // but not in local var
+	  // Shouldnt I have one in local var?
+	  // if not I guess set it
+	  commAssemblyId = assid;
+	}
+
       } else {
 	// What kind of assembly is this? CSMI? Delete it!
 	if (log.isWarnEnabled()) {
@@ -1629,6 +1846,47 @@ public class PopulateDb extends PDbBase {
 	    }
 	  }
 	}
+      } else if (assid.startsWith(COMM_ASB_TYPE)) {
+	// Comm Assembly
+	if (log.isDebugEnabled()) {
+	  log.debug("fixAsb: Found a Comm assembly (" + assid + ") in runtime for trial " + trialId);
+	}
+	// FIXME: Do I expect this ID to be in object? Put it there?
+	// This might be an old one to remove, or the one in the local
+	// var to leave there
+	
+	// Make sure it is in config too?
+	if (! assemblyInConfig(assid))
+	  addAssemblyToConfig(assid);
+	
+	if (commAssemblyId != null) {
+	  if (assid.equals(commAssemblyId)) {
+	    // found local var comm in runtime
+	    if (log.isDebugEnabled()) {
+	      log.debug("fixAsb: found comm asb in runtime same as local var");
+	    }
+	  } else {
+	    if (log.isDebugEnabled()) {
+	      log.debug("fixAsb: found comm asb in runtime not same as that in local var. delete from tables");
+	    }
+	    // local var comm is not same as one in runtime
+	    removeConfigAssembly(assid);
+	    removeRuntimeAssembly(assid);
+	    if (! isAssemblyUsed(assid))
+	      cleanAssembly(assid);
+	  }
+	} else {
+	  if (log.isDebugEnabled()) {
+	    log.debug("fixAsb: found comm asb in runtime but nothing in local var");
+	    log.debug("fixAsb: save it in local var and use it");
+	  }
+	  // Found a comm assembly in runtime
+	  // but not in local var
+	  // Shouldnt I have one in local var?
+	  // if not I guess set it
+	  commAssemblyId = assid;
+	}
+	
       } else {
 	// What kind of assembly is this. Delete it!
 	if (log.isWarnEnabled()) {
