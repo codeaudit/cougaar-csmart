@@ -1,7 +1,7 @@
 PlanViewServlet,org.cougaar.planning.servlet.PlanViewServlet,/tasks
 CompletionServlet,org.cougaar.mlm.ui.psp.transit.CompletionServlet,/completion
-AgentProviderServlet,org.cougaar.tools.csmart.ui.servlet.ClusterProviderServlet,/CSMART_ClusterProviderServlet
-AgentInfoServlet,org.cougaar.tools.csmart.ui.servlet.ClusterInfoServlet,/CSMART_ClusterInfoServlet
+AgentProviderServlet,org.cougaar.tools.csmart.ui.servlet.AgentProviderServlet,/CSMART_AgentProviderServlet
+AgentInfoServlet,org.cougaar.tools.csmart.ui.servlet.AgentInfoServlet,/CSMART_AgentInfoServlet
 CommunityProviderServlet,org.cougaar.tools.csmart.ui.servlet.CommunityProviderServlet,/CSMART_CommunityProviderServlet
 MetricsServlet,org.cougaar.tools.csmart.ui.servlet.MetricsServlet,/CSMART_MetricsServlet
 SearchServlet,org.cougaar.tools.csmart.ui.servlet.SearchServlet,/CSMART_SearchServlet
