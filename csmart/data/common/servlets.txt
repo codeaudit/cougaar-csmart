@@ -27,6 +27,9 @@ MetricsServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools
 SearchServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools.csmart.ui.servlet.SearchServlet,/CSMART_SearchServlet
 PlanServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools.csmart.ui.servlet.PlanServlet,/CSMART_PlanServlet
 
+# New WhitePages servlet for available at /wp
+WhitePagesServlet,org.cougaar.core.util.WhitePagesServlet,/wp
+
 # New Topology servlet for Topology SocMon UI, available at /topology
 TopologyServlet,org.cougaar.core.topology.TopologyReaderServlet
 
