@@ -35,8 +35,12 @@ import org.cougaar.tools.csmart.ui.console.*;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
 import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class ExperimentTree extends DNDTree {
+  private transient Logger log;
+
     public static final String RECIPES = "Recipes";
     public static final String SOCIETIES = "Societies";
     public static final String COMPONENTS = "Components";
@@ -88,6 +92,7 @@ public class ExperimentTree extends DNDTree {
         super(model);
         this.model = model;
         setExpandsSelectedPaths(true);
+        log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
     }
 
     public void setSelection(TreeNode treeNode) {
@@ -199,9 +204,11 @@ public class ExperimentTree extends DNDTree {
                 if (before != null) {
                     ix = model.getIndexOfChild(target, before);
                 }
-//                  System.out.println("Insert into " + target
-//                                     + " at " + ix
-//                                     + " before " + before);
+                if(log.isDebugEnabled()) {
+                  log.debug("Insert into " + target
+                            + " at " + ix
+                            + " before " + before);
+                }
                 model.insertNodeInto(node, target, ix);
                 selectNode(node);
                 return action;

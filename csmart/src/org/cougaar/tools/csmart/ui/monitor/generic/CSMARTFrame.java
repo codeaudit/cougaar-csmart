@@ -39,6 +39,8 @@ import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.Browser;
 import java.net.URL;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Frame for displaying graphs.
@@ -77,6 +79,8 @@ public class CSMARTFrame extends JFrame implements ActionListener
   protected static final String HELP_MENU_ITEM = "Help";
 
   protected static final String SEPARATOR = "Separator";
+  
+  private transient Logger log;
 
   private String[] fileMenuItems = { 
     NEW_WITH_SELECTION_MENU_ITEM, SEPARATOR,
@@ -144,6 +148,8 @@ public class CSMARTFrame extends JFrame implements ActionListener
 
   public CSMARTFrame(String title, CSMARTGraph graph) {
     super(title);
+
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
     //    this.title = Util.getNamedFrame().addFrame(title, this);
     // guarantee unique name, this may change title
     NamedFrame.getNamedFrame().addFrame(title, this);
@@ -160,8 +166,10 @@ public class CSMARTFrame extends JFrame implements ActionListener
     // keep track of attributes being displayed
     nodeToAttributeFrame = new Hashtable();
     show();
-    //    System.out.println("CSMARTFrame: Displaying graph at: " +
-    //		       System.currentTimeMillis()/1000);
+      if(log.isDebugEnabled()) {
+        log.debug("CSMARTFrame: Displaying graph at: " +
+                  System.currentTimeMillis()/1000);
+      }
   }
 
   /**
@@ -687,7 +695,9 @@ public class CSMARTFrame extends JFrame implements ActionListener
 
   public CSMARTGraph newGraphFromSelection() {
     if (graph == null) {
-      System.out.println("WARNING: graph is null");
+      if(log.isDebugEnabled()) {
+      log.warn("WARNING: graph is null");
+      }
       return null;
     }
     // create a copy of the original graph, both nodes and edges
@@ -697,7 +707,9 @@ public class CSMARTFrame extends JFrame implements ActionListener
     // get the selected nodes and edges from the original graph
     Vector elements = graph.getSelectedElements();
     if (elements == null) {
-      System.out.println("No elements selected");
+      if(log.isDebugEnabled()) {
+        log.warn("No elements selected");
+      }
       return null;
     }
     // get the names of the selected nodes
@@ -751,7 +763,9 @@ public class CSMARTFrame extends JFrame implements ActionListener
 //   public void scrollToSelected() {
 //     Node node = getSelectedNode();
 //     if (node == null) {
-//       System.out.println("no selected node");
+//       if(log.isDebugEnabled()) {
+//         log.warn("no selected node");
+//       }
 //       return;
 //     }
 //     Rectangle viewRect = viewport.getViewRect();
@@ -781,7 +795,9 @@ public class CSMARTFrame extends JFrame implements ActionListener
   public void scrollToSelected() {
     Node node = getSelectedNode();
     if (node == null) {
-      System.out.println("no selected node");
+      if(log.isDebugEnabled()) {
+        log.warn("no selected node");
+      }
       return;
     }
     Rectangle r = getSelectedNode().getGrappaNexus().getBounds();

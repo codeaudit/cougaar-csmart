@@ -36,6 +36,8 @@ import java.io.IOException;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * A JTree with drag and drop capability.
@@ -51,12 +53,15 @@ public abstract class DNDTree
   DragSource dragSource = null;  // enables component to be a dragSource
   DefaultMutableTreeNode[] dragSourceNodes;     // The (TreeNodes) that are being dragged from here
 
+  private transient Logger log;
+
   /**
    * Initialize DropTarget and DragSource and JTree.
    */
 
   public DNDTree(DefaultTreeModel model) {
     super(model);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.tree");
     // make tree editable by default; drag checks the isEditable flag
     setEditable(true); 
     setUI(new SpecialMetalTreeUI());
@@ -142,14 +147,20 @@ public abstract class DNDTree
         target = (DefaultMutableTreeNode) target.getParent();
 	if (target.getAllowsChildren()) {
           int action = isDroppable(possibleFlavors, target);
-//            System.out.println("Action is " + action);
+          if(log.isDebugEnabled()) {
+            log.debug("Action is " + action);
+          }
           return action;
 	} else {
-	  //	  System.out.println(target + " disallows children");
+          if(log.isDebugEnabled()) {
+            log.debug(target + " disallows children");
+          }
 	}
       }
     } else {
-      //      System.out.println("no target here");
+      if(log.isDebugEnabled()) {
+        log.debug("no target here");
+      }
     }
     return DnDConstants.ACTION_NONE;
   }
@@ -247,7 +258,9 @@ public abstract class DNDTree
         dragSourceNodes[i] =
           (DefaultMutableTreeNode) paths[i].getLastPathComponent();
       }
-//        System.out.println("Multi-drag " + dragSourceNodes.length + " nodes");
+      if(log.isDebugEnabled()) {
+       log.debug("Multi-drag " + dragSourceNodes.length + " nodes");
+      }
       Transferable draggableObject =
         makeDraggableObject(new DMTNArray(dragSourceNodes));
       dragSource.startDrag(event, DragSource.DefaultMoveDrop, 
@@ -278,7 +291,9 @@ public abstract class DNDTree
    */
 
   public void dragDropEnd (DragSourceDropEvent event) {
-//      System.out.println("drop action = " + event.getDropAction());
+    if(log.isDebugEnabled()) {
+     log.debug("drop action = " + event.getDropAction());
+    }
     if (event.getDropSuccess()
         && event.getDropAction() == DnDConstants.ACTION_MOVE)
       removeElement();
@@ -304,7 +319,9 @@ public abstract class DNDTree
    */
 
   public void dragEnter (DragSourceDragEvent event) {
-    //    System.out.println( " drag source listener dragEnter");
+      if(log.isDebugEnabled()) {
+        log.debug( " drag source listener dragEnter");
+      }
   }
 
   /**
@@ -313,7 +330,9 @@ public abstract class DNDTree
    */
 
   public void dragOver (DragSourceDragEvent event) {
-    //    System.out.println( "dragExit");
+      if(log.isDebugEnabled()) {
+        log.debug( "dragExit");
+      }
   }
 
   /**
@@ -322,7 +341,9 @@ public abstract class DNDTree
    */
 
   public void dragExit (DragSourceEvent event) {
-    //    System.out.println( "dragExit");
+    if(log.isDebugEnabled()) {
+    log.debug( "dragExit");
+    }
   }
 
   /**
@@ -331,7 +352,9 @@ public abstract class DNDTree
    */
    
   public void dropActionChanged ( DragSourceDragEvent event) {
-//      System.out.println( "dropActionChanged"); 
+      if(log.isDebugEnabled()) {
+        log.debug( "dropActionChanged"); 
+      }
   }
 
   /**
@@ -342,9 +365,13 @@ public abstract class DNDTree
     // start for debugging
     //    DefaultMutableTreeNode target = getDropTarget(event.getLocation());
     //    if (target != null)
-    //      System.out.println("DRAG ENTER: " + target.getRoot());
+    //  if(log.isDebugEnabled()) {
+    //    log.debug("DRAG ENTER: " + target.getRoot());
+    //  }
     //    else
-    //      System.out.println("DRAG ENTER: " + null);
+    //  if(log.isDebugEnabled()) {
+    //    log.debug("DRAG ENTER: " + null);
+    //  }
     // end for debugging
     int action = testDrop(event);
     if (action == DnDConstants.ACTION_NONE)
@@ -361,9 +388,13 @@ public abstract class DNDTree
     // start for debugging
     //    DefaultMutableTreeNode target = getDropTarget(event.getLocation());
     //    if (target != null)
-    //      System.out.println("drag over: " + target.getRoot());
+    //  if(log.isDebugEnabled()) {
+    //    log.debug("drag over: " + target.getRoot());
+    //  }
     //    else
-    //      System.out.println("drag over: " + null);
+    //  if(log.isDebugEnabled()) {
+    //    log.debug("drag over: " + null);
+    //  }
     // end for debugging
     int action = testDrop(event);
     if (action == DnDConstants.ACTION_NONE) {
@@ -377,7 +408,9 @@ public abstract class DNDTree
    */
 
   public void dragExit (DropTargetEvent event) {
-    //    System.out.println( "dragExit");
+      if(log.isDebugEnabled()) {
+        log.debug( "dragExit");
+      }
   }
 
   /**

@@ -23,13 +23,17 @@ package org.cougaar.tools.csmart.ui.viewer;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class UniqueNameSet extends HashSet {
   private String prefix;
   private int nameCounter = 0;
+  private transient Logger log;
 
   public UniqueNameSet(String prefix) {
     this.prefix = prefix;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
   }
 
   public void init(Object[] things, Method getNameMethod) {
@@ -39,8 +43,10 @@ public class UniqueNameSet extends HashSet {
         String name = (String) getNameMethod.invoke(things[i], noArgs);
         add(name);
       } catch (Exception e) {
-        System.err.println("Reading: " + things[i]);
-        e.printStackTrace();
+        if(log.isDebugEnabled()) {
+          log.error("Reading: " + things[i]);
+          e.printStackTrace();
+        }
       }
     }
   }

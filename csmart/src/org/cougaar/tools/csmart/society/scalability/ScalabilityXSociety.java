@@ -277,7 +277,9 @@ implements Serializable, ModificationListener
   {
     Property cp = child.getProperty(mp.name);
     if (cp == null) {
-//        System.out.println("Child has no " + mp.name);
+      if(log.isDebugEnabled()) {
+        log.debug("Child has no " + mp.name);
+      }
       return;
     }
     int nlvls = getChildCount();

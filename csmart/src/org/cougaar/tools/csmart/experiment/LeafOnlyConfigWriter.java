@@ -42,6 +42,8 @@ import org.cougaar.tools.csmart.core.cdata.LeafComponentData;
 
 import java.io.PrintWriter;
 import java.io.FileWriter;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Config writer that writes out only the LeafComponentData - that is, only writes files
@@ -53,8 +55,10 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
   transient NodeComponent[] nodesToWrite;
   transient List components;
   ComponentData theSoc;
+  private transient Logger log;
 
   public LeafOnlyConfigWriter(List components, NodeComponent[] nodesToWrite, Experiment exp) {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
     this.nodesToWrite = nodesToWrite;
     this.components = components;
     theSoc = new GenericComponentData();
@@ -161,14 +165,18 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
       if (leaf == null)
 	continue;
       if (!leaf.getType().equals(LeafComponentData.FILE)) {
-	System.err.println("Got unknown LeafComponent type: " + leaf.getType());
+        if(log.isDebugEnabled()) {
+          log.error("Got unknown LeafComponent type: " + leaf.getType());
+        }
 	continue;
       }
       PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, leaf.getName())));
       try {
 	writer.println(leaf.getValue().toString());
       } catch (Exception e) {
-	System.out.println("Error writing config file: " + e);
+        if(log.isDebugEnabled()) {
+          log.error("Error writing config file: " + e);
+        }
       }
       finally {
 	writer.close();

@@ -59,6 +59,7 @@ import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.tools.server.*;
 import org.cougaar.tools.server.rmi.ClientCommunityController;
 import org.cougaar.util.Parameters;
+import org.cougaar.util.log.Logger;
 
 public class CSMARTConsole extends JFrame {
   public static final String COMMAND_ARGUMENTS = "Command$Arguments";
@@ -152,6 +153,8 @@ public class CSMARTConsole extends JFrame {
   Legend legend; // the node status lamp legend
   CSMARTConsole console;
 
+  private transient Logger log;
+
   /**
    * Create and show console GUI.
    */
@@ -164,6 +167,7 @@ public class CSMARTConsole extends JFrame {
     societyComponent = experiment.getSocietyComponent(0);
     desktop = new ConsoleDesktop();
     setSocietyComponent(societyComponent);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
   }
 
   /**
@@ -675,7 +679,9 @@ public class CSMARTConsole extends JFrame {
 
     // this state should be detected earlier and the run button disabled
     if (!haveMoreTrials()) {
-      System.out.println("CSMARTConsole: WARNING: no more trials to run");
+      if(log.isDebugEnabled()) {
+        log.warn("CSMARTConsole: WARNING: no more trials to run");
+      }
       runButton.setSelected(false);
       runButton.setEnabled(false);
       return; // nothing to run
@@ -874,7 +880,9 @@ public class CSMARTConsole extends JFrame {
       try {
         nodeCreator.join();
       } catch (InterruptedException ie) {
-        System.err.println("Exception waiting for node creation thread to die: " + ie);
+        if(log.isDebugEnabled()) {
+          log.error("Exception waiting for node creation thread to die: " + ie);
+        }
       }
       nodeCreator = null;
     }
@@ -899,14 +907,18 @@ public class CSMARTConsole extends JFrame {
       } // end synchronized
       String nodeName = nodeComponent.getShortName();
       if (nsc == null) {
-        System.err.println("Unknown node name: " + nodeName);
+        if(log.isDebugEnabled()) {
+          log.error("Unknown node name: " + nodeName);
+        }
         continue;
       }
       try {
         nsc.flushNodeEvents();
         nsc.destroy();
       } catch (Exception ex) {
-        System.err.println("Unable to destroy node, assuming it's dead: " + ex);
+        if(log.isDebugEnabled()) {
+          log.error("Unable to destroy node, assuming it's dead: " + ex);
+        }
         nodeStopped(nodeComponent);
         getNodeStatusButton(nodeComponent.getShortName()).setStatus(NodeStatusButton.STATUS_NO_ANSWER);
       }
@@ -1171,7 +1183,9 @@ public class CSMARTConsole extends JFrame {
                                            statusButton,
                                            doc);
       } catch (Exception e) {
-        System.err.println("Unable to create output for: " + nodeName);
+        if(log.isDebugEnabled()) {
+          log.error("Unable to create output for: " + nodeName);
+        }
         continue;
       }
 
@@ -1192,7 +1206,10 @@ public class CSMARTConsole extends JFrame {
       try {
         hsc = communitySupport.getHost(hostName, getAppServerPort(properties));
       } catch (Exception e) {
-        System.out.println("CSMARTConsole: cannot create node: " + nodeName);
+        if(log.isDebugEnabled()) {
+          log.error("CSMARTConsole: cannot create node: " + nodeName);
+        }
+
         JOptionPane.showMessageDialog(this,
                                       "Cannot create node on: " + hostName +
                                       "; check that server is running");
@@ -1241,8 +1258,10 @@ public class CSMARTConsole extends JFrame {
                                  nci.filter, 
                                  nci.configWriter);
       } catch (Exception e) {
-        System.out.println("CSMARTConsole: cannot create node: " + 
+        if(log.isDebugEnabled()) {
+        log.error("CSMARTConsole: cannot create node: " + 
                            nci.nodeName);
+        }
         JOptionPane.showMessageDialog(this,
                                       "Cannot create node on: " + 
                                       nci.hostName +
@@ -1298,7 +1317,9 @@ public class CSMARTConsole extends JFrame {
       nsc.flushNodeEvents();
       nsc.destroy();
     } catch (Exception ex) {
-      System.err.println("Unable to destroy node, assuming it's dead: " + ex);
+      if(log.isDebugEnabled()) {
+        log.error("Unable to destroy node, assuming it's dead: " + ex);
+      }
       // call the method that would have been called when the 
       // ConsoleNodeListener received the node destroyed confirmation
       nodeStopped(node); 
@@ -1344,7 +1365,9 @@ public class CSMARTConsole extends JFrame {
       hostServer = 
         communitySupport.getHost(hostName, getAppServerPort(properties));
     } catch (Exception e) {
-      System.out.println(e);
+      if(log.isDebugEnabled()) {
+        log.error(e.toString());
+      }
       return null;
     }
     // close the log file and remove the old node event listener
@@ -1363,8 +1386,10 @@ public class CSMARTConsole extends JFrame {
 					 getNodeStatusButton(nodeName),
                                          doc);
     } catch (Exception e) {
-      System.err.println("Unable to create output for: " + nodeName);
-      e.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Unable to create output for: " + nodeName);
+        e.printStackTrace();
+      }
       return null;
     }
     if (displayFilter != null)
@@ -1381,7 +1406,9 @@ public class CSMARTConsole extends JFrame {
         } // end synchronized
       }
     } catch (Exception e) {
-      System.out.println(e);
+      if(log.isDebugEnabled()) {
+        log.error(e.toString());
+      }
     }
     return nsc;
   }
@@ -1452,8 +1479,10 @@ public class CSMARTConsole extends JFrame {
 	writer.close();
       }
     } catch (Exception e) {
-      System.out.println("Analyzer: copyResultFiles: " + e);
-      e.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Analyzer: copyResultFiles: " + e);
+        e.printStackTrace();
+      }
     }
   }
 
@@ -1481,16 +1510,20 @@ public class CSMARTConsole extends JFrame {
       File f = new File(dirname);
       // guarantee that directories exist
       if (!f.exists() && !f.mkdirs() && !f.exists()) {
-	System.out.println("CSMARTConsole: Could not save results in: " +
+        if(log.isDebugEnabled()) {
+          log.error("CSMARTConsole: Could not save results in: " +
 			   dirname);
+        }
 	return;
       }
       String myHostName = InetAddress.getLocalHost().getHostName();
       URL url = new URL("file", myHostName, dirname);
       trial.addTrialResult(new TrialResult(runStart, url));
     } catch (Exception e) {
-      System.out.println("Exception creating trial results URL: " + e);
-      e.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Exception creating trial results URL: " + e);
+        e.printStackTrace();
+      }
     }
     HostComponent[] hosts = experiment.getHosts();
     for (int i = 0; i < hosts.length; i++) {
@@ -1553,7 +1586,9 @@ public class CSMARTConsole extends JFrame {
       if (!f.exists() && !f.mkdirs() && !f.exists()) 
 	return filename;
     } catch (Exception e) {
-      System.out.println("Couldn't create results directory: " + e);
+      if(log.isDebugEnabled()) {
+        log.error("Couldn't create results directory: " + e);
+      }
       return filename;
     }
     return dirname + File.separatorChar + filename;
@@ -1587,6 +1622,7 @@ public class CSMARTConsole extends JFrame {
     JRadioButton allButton = new JRadioButton("All");
     JRadioButton sizeButton = new JRadioButton("Buffer Size");
     JTextField sizeTF = new JTextField(8);
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
     if (currentViewSize == -1) {
       allButton.setSelected(true);
       sizeButton.setSelected(false);
@@ -1618,7 +1654,9 @@ public class CSMARTConsole extends JFrame {
       try {
         newViewSize = Integer.parseInt(sizeTF.getText());
       } catch (NumberFormatException e) {
-        System.out.println(e);
+        if(log.isDebugEnabled()) {
+          log.error(e.toString());
+        }
         return currentViewSize;
       }
     }
@@ -1664,7 +1702,9 @@ public class CSMARTConsole extends JFrame {
   private void formatMenuItem_actionPerformed() {
     ConsoleFontChooser cfc = new ConsoleFontChooser();
     cfc.setVisible(true);
-    System.out.println("Font Chooser not implemented yet");
+      if(log.isDebugEnabled()) {
+        log.error("Font Chooser not implemented yet");
+      }
   }
 
   /**

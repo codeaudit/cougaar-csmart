@@ -28,6 +28,8 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 import java.io.Serializable;
 import java.util.*;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Maintains information about a node and generates the
@@ -44,12 +46,14 @@ public class ExperimentNode
   private List agents = new ArrayList();
   private Experiment experiment;
   private ReadOnlyProperties arguments = null;
+  private transient Logger log;
 
   public ExperimentNode(String nodeName, Experiment experiment) {
     super(nodeName);
     this.experiment = experiment;
     addProperty("Experiment", experiment);
     addDefaultArgumentsToNode(nodeName);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
   }
 
   public void initProperties() {
@@ -86,8 +90,10 @@ public class ExperimentNode
       prop = addProperty("AgentNames", new ArrayList());
     ArrayList names = (ArrayList)prop.getValue();
     names.add(agent.getShortName());
-    //    System.out.println("ExperimentNode: " + getShortName() +
-    //                       " added agent: " + agent.getShortName());
+    if(log.isDebugEnabled()) {
+      log.debug("ExperimentNode: " + getShortName() +
+                " added agent: " + agent.getShortName());
+    }
     agents.add(agent);
     fireModification();
   }
@@ -104,8 +110,10 @@ public class ExperimentNode
       if (index != -1)
         names.remove(agent.getShortName());
     }
-    //    System.out.println("ExperimentNode: " + getShortName() +
-    //                       " removed agent: " + agent.getShortName());
+    if(log.isDebugEnabled()) {
+      log.debug("ExperimentNode: " + getShortName() +
+                " removed agent: " + agent.getShortName());
+    }
     agents.remove(agent);
     fireModification();
   }

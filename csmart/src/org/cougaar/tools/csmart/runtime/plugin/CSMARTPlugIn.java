@@ -38,6 +38,8 @@ import org.cougaar.tools.csmart.util.*;
 
 import org.cougaar.util.StateModelException;
 import org.cougaar.util.UnaryPredicate;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * CSMART Base PlugIn. Provide support for publishing after a delay and convenience methods.<br>
@@ -54,6 +56,8 @@ public abstract class CSMARTPlugIn
    */
   protected static final long MINIMUM_DELAY_MILLIS = 100;
 
+  private transient Logger log;
+
   //
   // CSMART hooks, i.e. CSMARTFactory, etc
   //
@@ -69,13 +73,11 @@ public abstract class CSMARTPlugIn
   /** Identifier of PlugIn */
   private UID id = null;
   
-  /** Log output for this PlugIn */
-  protected LogStream log;
-  
   // 
   // constructor
   //
   public CSMARTPlugIn() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
   }
 
   /**
@@ -122,7 +124,6 @@ public abstract class CSMARTPlugIn
     
     // Give each PlugIn a UID to uniquely identify it
     this.id = theCSMARTF.getNextUID();
-    this.log = theCSMARTF.getLogStream();
   } // end of load()
 
   // A couple convenience functions to provide backwards compatibility
@@ -386,13 +387,15 @@ public abstract class CSMARTPlugIn
    */
   protected class SyncAlarm implements Alarm {
 
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+
     private final long expTime;
 
     private boolean expired = false;
 
     public SyncAlarm(long expTime) {
       this.expTime = expTime;
-      if (log.isApplicable(log.VERY_VERBOSE)) {
+      if (log.isDebugEnabled()) {
         String msg = 
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+
           "\n Create \"waitMillis\" Alarm"+
@@ -401,7 +404,7 @@ public abstract class CSMARTPlugIn
           "\n expTime:  "+expTime+
           "\n notify:  "+super.toString()+
           "\n @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
-        log.log(this.getClass().getName(), log.VERY_VERBOSE, msg);
+        log.debug(msg);
       }
     }
 
@@ -411,7 +414,7 @@ public abstract class CSMARTPlugIn
 
     public synchronized void expire() {
       if (!expired) {
-        if (log.isApplicable(log.VERY_VERBOSE)) {
+        if (log.isDebugEnabled()) {
           String msg = 
             "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+
             "\n Expire \"waitMillis\" Alarm"+
@@ -420,7 +423,7 @@ public abstract class CSMARTPlugIn
             "\n expTime:  "+expTime+
             "\n notify:  "+super.toString()+
             "\n @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@";
-          log.log(this.getClass().getName(), log.VERY_VERBOSE, msg);
+          log.debug(msg);
         }
         expired = true;
         this.notify();
@@ -465,6 +468,8 @@ public abstract class CSMARTPlugIn
    */
   protected class DelayPublishAlarm implements Alarm {
 
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+
     private static final byte EXPIRED        = 0;
     public  static final byte PUBLISH_ADD    = 1;
     public  static final byte PUBLISH_CHANGE = 2;
@@ -486,7 +491,7 @@ public abstract class CSMARTPlugIn
       this.o = o;
       this.expTime = expTime;
       this.pred = pred;
-      if (log.isApplicable(log.VERY_VERBOSE)) {
+      if (log.isDebugEnabled()) {
         String msg = 
           "#################################"+
           "\n Create \"publish"+
@@ -504,7 +509,7 @@ public abstract class CSMARTPlugIn
           "\n pred:  "+pred+
           "\n Object:  "+o.toString()+
           "\n #################################";
-        log.log(this.getClass().getName(), log.VERY_VERBOSE, msg);
+        log.debug(msg);
       }
     }
 
@@ -514,7 +519,7 @@ public abstract class CSMARTPlugIn
 
     public synchronized void expire() {
       if (pubStyle != EXPIRED) {
-        if (log.isApplicable(log.VERY_VERBOSE)) {
+        if (log.isDebugEnabled()) {
           String msg = 
             "#################################"+
             "\n Release \"publish"+
@@ -531,10 +536,10 @@ public abstract class CSMARTPlugIn
             "\n expTime:  "+expTime+
             "\n Object:  "+o.toString()+
             "\n #################################";
-          log.log(this.getClass().getName(), log.VERY_VERBOSE, msg);
+          log.debug(msg);
         }
-//  	if (log.isApplicable(log.VERY_VERBOSE)) {
-//  	  log.log(this, log.VERY_VERBOSE, "expire: " + this + " about to get blackboard service");
+//  	if (log.isDebugEnabled()) {
+//  	  log.debug("expire: " + this + " about to get blackboard service");
 //  	}
         BlackboardService bbs = CSMARTPlugIn.this.getBlackboardService();
 //  	if (log.isApplicable(log.VERY_VERBOSE)) {
@@ -619,8 +624,10 @@ public abstract class CSMARTPlugIn
       setupSubscriptions();
     } catch (Exception e) {
       synchronized (System.err) {
-        System.err.println(getAgentIdentifier().toString()+"/"+this+" caught "+e);
-        e.printStackTrace();
+        if(log.isDebugEnabled()) {
+          log.error(getAgentIdentifier().toString()+"/"+this+" caught "+e);
+          e.printStackTrace();
+        }
       }
     } finally {
       getBlackboardService().closeTransaction(false);
@@ -651,8 +658,10 @@ public abstract class CSMARTPlugIn
         //}
     } catch (Exception e) {
       synchronized (System.err) {
-        System.err.println(getAgentIdentifier().toString()+"/"+this+" caught "+e);
-        e.printStackTrace();
+        if(log.isDebugEnabled()) {
+          log.error(getAgentIdentifier().toString()+"/"+this+" caught "+e);
+          e.printStackTrace();
+        }
       }
       //doExecute = true;
     } finally {

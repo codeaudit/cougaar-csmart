@@ -57,6 +57,8 @@ import org.cougaar.tools.server.ConfigurationWriter;
 import org.cougaar.core.node.Node;
 import org.cougaar.core.agent.ClusterImpl;
 import org.cougaar.util.Parameters;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
@@ -105,10 +107,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   private ComponentData theWholeSoc = null;
 
+  private transient Logger log;
+
   public Experiment(String name, SocietyComponent[] societyComponents,
 		    RecipeComponent[] recipes)
   {
     this(name);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
     setSocietyComponents(societyComponents);
     setRecipes(recipes);
     setDefaultNodeArguments();
@@ -116,16 +121,20 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   public Experiment(String name) {
     super(name);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
     setDefaultNodeArguments();
   }
 
   public Experiment(String name, String expID, String trialID) {
     super(name);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
     this.expID = expID;
     this.trialID = trialID;
     inDatabase = true;
     setDefaultNodeArguments();
-    //    System.out.println("Experiment: " + expID + " Trial: " + trialID);
+    if(log.isDebugEnabled()) {
+      log.debug("Experiment: " + expID + " Trial: " + trialID);
+    }
   }
 
   private void setDefaultNodeArguments() {
@@ -337,7 +346,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void setEditable(boolean editable) {
     if (editable == overrideEditable) return; // no change
     overrideEditable = editable;
-    //    System.err.println("new editable " + editable);
+    if(log.isDebugEnabled()) {
+      log.debug("new editable " + editable);
+    }
     //    for (int i = 0; i < getComponentCount(); i++)
     //      getComponent(i).setEditable(editable);
     fireModification();
@@ -576,7 +587,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         String thisHost = hosts[i].getShortName();
         if (thisHost.equals(nameServerHost)) {
           newNameServer = oldNameServer;
-          //	  System.out.println("Keeping " + nameServerHost);
+          if(log.isDebugEnabled()) {
+            log.debug("Keeping " + nameServerHost);
+          }
           break hostLoop;       // Use existing nameserver definition
         }
         if (dfltNameServer == null) { // First host is default
@@ -601,7 +614,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (newNameServer != null) {
       defaultNodeArgs.setProperty("org.cougaar.name.server", newNameServer);
     }
-    //    System.out.println("org.cougaar.name.server=" + newNameServer);
+    if(log.isDebugEnabled()) {
+      log.debug("org.cougaar.name.server=" + newNameServer);
+    }
   }
 
   private void addNodeComponent(ExperimentNode node) {
@@ -845,7 +860,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       boolean componentWasRemoved = false;
       for (int i = 0, n = components.size(); i < n; i++) {
         BaseComponent soc = (BaseComponent) components.get(i);
-//          System.out.println(soc + ".addComponentData");
+        if(log.isDebugEnabled()) {
+          log.debug(soc + ".addComponentData");
+        }
         soc.addComponentData(theSoc);
         componentWasRemoved |= soc.componentWasRemoved();
       }
@@ -879,7 +896,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       if (theWholeSoc == null) {
 	// write it to the db
 	// FIXME!!
-	System.out.println("Save experiment first.");
+        if(log.isDebugEnabled()) {
+          log.error("Save experiment first.");
+        }
 	return;
       } 
       cw = new ExperimentINIWriter(theWholeSoc);
@@ -904,15 +923,19 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       if (!f.exists() && !f.mkdirs() && !f.exists()) 
 	f = new File(".");
     } catch (Exception e) {
-      System.out.println("Couldn't create results directory: " + e);
+      if(log.isDebugEnabled()) {
+        log.error("Couldn't create results directory: " + e);
+      }
     }
     if (f != null) {
       try {
 	System.out.println("Writing ini files to " + f.getAbsolutePath() + "...");
 	cw.writeConfigFiles(f);
       } catch (Exception e) {
-	System.err.println("Couldn't write ini files: " + e);
-	e.printStackTrace();
+        if(log.isDebugEnabled()) {
+          log.error("Couldn't write ini files: " + e);
+          e.printStackTrace();
+        }
       }
     }
   }
@@ -949,9 +972,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         ac.setName(agents[j].getShortName());
         ac.setClassName(ClusterImpl.class.getName());
         ac.addParameter(agents[j].getShortName()); // Agents have one parameter, the agent name
-        //        System.out.println("Adding agent: " + 
-        //                           agents[j].getShortName() +
-        //                           " to: " + node.getShortName());
+        if(log.isDebugEnabled()) {
+          log.debug("Adding agent: " + 
+                    agents[j].getShortName() +
+                    " to: " + node.getShortName());
+        }
         // FIXME!!
         ac.setOwner(null); // the society that contains this agent FIXME!!!
         ac.setParent(nc);

@@ -46,6 +46,7 @@ import org.cougaar.tools.csmart.core.cdata.PGPropData;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 
 import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.util.log.Logger;
 
 public class AgentInsertionRecipe extends RecipeBase
   implements Serializable
@@ -118,7 +119,7 @@ public class AgentInsertionRecipe extends RecipeBase
   private Property propItemPG;
 
   public AgentInsertionRecipe() {
-    super("Agent Component Recipe");
+    this("Agent Component Recipe");
   }
 
   public AgentInsertionRecipe(String name) {
@@ -256,11 +257,15 @@ public class AgentInsertionRecipe extends RecipeBase
     } // end of if ()
         
     removeAllChildren();
-    //System.out.println("Length = " + agents.length);
+    if(log.isDebugEnabled()) {
+      log.debug("Length = " + agents.length);
+    }
     for(int i=0; i < agents.length; i++) {
       InsertAgentComponent iAgent = new InsertAgentComponent(agents[i]);
       iAgent.initProperties(propRelations, propRoles);
-      //System.out.println("AddChild: " + agents[i]);
+      if(log.isDebugEnabled()) {
+        log.debug("AddChild: " + agents[i]);
+      }
       addChild(iAgent);
     }
   }
@@ -317,7 +322,9 @@ public class AgentInsertionRecipe extends RecipeBase
   private ComponentData addAssetData(ComponentData data) {
     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
 
-    //System.out.println("Adding Asset Data");
+      if(log.isDebugEnabled()) {
+        log.debug("Adding Asset Data");
+      }
     assetData.setType(AgentAssetData.ORG);
     assetData.setAssetClass(propAssetClass.getValue().toString());
     assetData.setUniqueID("UTC/RTOrg");
@@ -351,7 +358,9 @@ public class AgentInsertionRecipe extends RecipeBase
   private PropGroupData createClusterPG() {
     PropGroupData pgd = new PropGroupData(PropGroupData.CLUSTER);
 
-    //System.out.println("Creating ClusterPG");
+    if(log.isDebugEnabled()) {
+      log.debug("Creating ClusterPG");
+    }
     
     PGPropData pgData = new PGPropData();
     pgData.setName("ClusterIdentifier");
@@ -365,7 +374,9 @@ public class AgentInsertionRecipe extends RecipeBase
   private PropGroupData createTypeIdentificationPG() {
     PropGroupData pgd = new PropGroupData(PropGroupData.TYPE_IDENTIFICATION);
 
-    //System.out.println("Creating TypeIDPG");
+    if(log.isDebugEnabled()) {
+      log.debug("Creating TypeIDPG");
+    }
     
     // Add Type Identification
     PGPropData pgData = new PGPropData();
@@ -394,7 +405,9 @@ public class AgentInsertionRecipe extends RecipeBase
   private PropGroupData createItemIdentificationPG() {
     PropGroupData pgd = new PropGroupData(PropGroupData.ITEM_IDENTIFICATION);
 
-    //System.out.println("Creating itemIdentificationPG");
+    if(log.isDebugEnabled()) {
+      log.debug("Creating itemIdentificationPG");
+    }
     PGPropData pgData = new PGPropData();
     pgData.setName("ItemIdentification");
     pgData.setType("String");

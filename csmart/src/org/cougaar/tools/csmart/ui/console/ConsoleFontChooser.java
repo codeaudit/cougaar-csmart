@@ -29,6 +29,8 @@ import javax.swing.border.*;
 import javax.swing.JColorChooser;
 
 import org.cougaar.tools.server.NodeEvent;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class ConsoleFontChooser extends JDialog {
   private JComboBox msgTypesCB;
@@ -46,7 +48,7 @@ public class ConsoleFontChooser extends JDialog {
   private static final String IDLENESS = "Idleness";
   private static final String NODEDESTROYED = "Node Destroyed";
 
-
+  private transient Logger log;
 
   private static final String FONTSIZE[] = {"8","9","10","11","12","14","16","18","20","22","24","26","28","36","48","72"};
   private static final String FONTS[] = {"Regular","Italic","Bold","BoldItalic"};
@@ -58,6 +60,8 @@ public class ConsoleFontChooser extends JDialog {
   public ConsoleFontChooser() {
     // create a modal dialog
     super((java.awt.Frame)null, "Select Font", true); 
+
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
 
     JPanel panel = new JPanel(new BorderLayout());
     // define the gui here
@@ -71,7 +75,10 @@ public class ConsoleFontChooser extends JDialog {
       public void actionPerformed(ActionEvent e) {
         int index = msgTypesCB.getSelectedIndex()-1;
         if (index <0) return;
-        //        System.out.println("index is - " + index + "and font style is " + fontStyleCB.getSelectedItem());
+        if(log.isDebugEnabled()) {
+          log.debug("index is - " + index + 
+                    "and font style is " + fontStyleCB.getSelectedItem());
+        }
         fontSizes[index]=new Integer((String)fontSizeCB.getSelectedItem()).intValue();
         fontTypes[index]=(String)fontStyleCB.getSelectedItem();
         fontColors[index]=selectedColor;
@@ -190,19 +197,25 @@ public class ConsoleFontChooser extends JDialog {
 
   public int getFontSize(int messageType) {
     int size = fontSizes[messageType];
-    //System.out.println(size);
+      if(log.isDebugEnabled()) {
+        log.debug("Font Size: " + size);
+      }
     return size;
   }
 
   public String getFontStyle(int messageType) {
     String style = fontTypes[messageType];
-    //System.out.println(style);
+      if(log.isDebugEnabled()) {
+        log.debug(style);
+      }
     return style;
   }
 
   public Color getFontColor(int messageType) {
     Color fontColor = fontColors[messageType];
-    //System.out.println(fontColor);
+      if(log.isDebugEnabled()) {
+        log.debug("Font Color: " + fontColor.toString());
+      }
     return fontColor;
   }
 

@@ -28,25 +28,36 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class Test {
     public static void test1() {
+      Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.scalability");
         ScalabilityXSociety society = new ScalabilityXSociety("test1");
         society.getProperty(ScalabilityXSociety.PROP_LEVELCOUNT).setValue(new Integer(3));
         society.getProperty(ScalabilityXSociety.PROP_AGENTCOUNT)
             .setValue(new int[] {1, 2, 3});
         Collection agents = society.getDescendentsOfClass(ScalabilityXAgent.class);
-        System.out.println("Agents:");
+        if(log.isDebugEnabled()) {
+          log.debug("Agents:");
+        }
         for (Iterator i = agents.iterator(); i.hasNext(); ) {
             ScalabilityXAgent c = (ScalabilityXAgent) i.next();
-            System.out.println("Agent " + c.getFullName());
+            if(log.isDebugEnabled()) {
+              log.debug("Agent " + c.getFullName());
+            }
             c.printLocalProperties(System.out);
         }
         Collection plugins = society.getDescendentsOfClass(ScalabilityXPlugIn.class);
-        System.out.println("Plugins:");
+        if(log.isDebugEnabled()) {
+          log.debug("Plugins:");
+        }
         for (Iterator i = plugins.iterator(); i.hasNext(); ) {
             ScalabilityXAgent c = (ScalabilityXAgent) i.next();
-            System.out.println("Plugin " + c.getFullName());
+            if(log.isDebugEnabled()) {
+              log.debug("Plugin " + c.getFullName());
+            }
             c.printLocalProperties(System.out);
         }
     }

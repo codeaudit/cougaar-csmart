@@ -30,6 +30,8 @@ import javax.swing.table.DefaultTableModel;
 import java.util.*;
 
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class NodeArgumentDialog extends JDialog {
   Properties props;
@@ -37,9 +39,11 @@ public class NodeArgumentDialog extends JDialog {
   NodeArgumentTableModel model;
   JTextArea args;
   int returnValue;
+  private transient Logger log;
 
   public NodeArgumentDialog(String title, Properties props, boolean isLocal) {
     super((Frame)null, title, true); // display modal dialog
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
     Box nodeArgPanel = Box.createVerticalBox();
     JPanel argumentPanel = new JPanel();
     // ok and cancel buttons panel
@@ -57,7 +61,9 @@ public class NodeArgumentDialog extends JDialog {
             if (rowIndex != -1 && colIndex != -1)
               model.setValueAt(((JTextField)c).getText(), rowIndex, colIndex);
           } else
-            System.out.println("Unexpected editor class: " + c.getClass());
+            if(log.isDebugEnabled()) {
+              log.error("Unexpected editor class: " + c.getClass());
+            }
         returnValue = JOptionPane.OK_OPTION;
         setVisible(false);
       }
@@ -198,7 +204,9 @@ public class NodeArgumentDialog extends JDialog {
       in = new FileInputStream(chooser.getSelectedFile());
       properties.load(in);
     } catch (Exception e) {
-      System.err.println("Exception reading properties file: " + e);
+      if(log.isDebugEnabled()) {
+        log.error("Exception reading properties file: " + e);
+      }
       return;
     }
     // add all properties from the file, overwriting any existing property

@@ -37,6 +37,8 @@ import org.cougaar.planning.ldm.plan.AuxiliaryQueryType;
 import org.cougaar.tools.csmart.runtime.ldm.asset.LocalAsset;
 import org.cougaar.tools.csmart.runtime.ldm.asset.SimpleInventoryPG;
 import org.cougaar.tools.csmart.Constants;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**  
  * The ExecutorPlugIn intercepts allocations to local assets, and asks
@@ -68,6 +70,8 @@ public class ExecutorPlugIn
    */
   private IncrementalSubscription allocSub;
 
+  private transient Logger log;
+
   private UnaryPredicate allocP = new UnaryPredicate() {
     public boolean execute(Object o) {
       if (o instanceof Allocation) {
@@ -84,16 +88,18 @@ public class ExecutorPlugIn
   };
 
   public void setupSubscriptions() {
-    if (log.isApplicable(log.VERY_VERBOSE)) {
-      log.log(this, log.VERY_VERBOSE, "setupSubscriptions: " + this + ":Entering");
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+
+    if (log.isDebugEnabled()) {
+      log.debug("setupSubscriptions: " + this + ":Entering");
     }
 
     allocSub = (IncrementalSubscription)subscribe(allocP);
   }
 
   public void execute() {
-//      if (log.isApplicable(log.VERY_VERBOSE)) {
-//        log.log(this, log.VERY_VERBOSE, "execute:" + this);
+//      if (log.isDebugEnabled()) {
+//        log.info("execute:" + this);
 //      }
 
     long currentTime = currentTimeMillis();
@@ -101,8 +107,8 @@ public class ExecutorPlugIn
     for (Enumeration en = allocSub.getAddedList(); 
         en.hasMoreElements();
         ) {
-      if (log.isApplicable(log.VERY_VERBOSE)) {
-	log.log(this, log.VERY_VERBOSE, "execute:" + this + 
+      if (log.isDebugEnabled()) {
+	log.info("execute:" + this + 
           ": got something from Alloc Subscription");
       }
 
@@ -140,8 +146,8 @@ public class ExecutorPlugIn
       double []results = {(double)assetTime}; // matching values for those Aspects
       
       if(assetTime > 0) {
-	if (log.isApplicable(log.VERBOSE)) {
-	  log.log(this, log.VERBOSE, "execute:" + this + ": Alloc request met at time: " + assetTime);
+	if (log.isDebugEnabled()) {
+	  log.info("execute:" + this + ": Alloc request met at time: " + assetTime);
 	}
 	nar = theLDMF.newAllocationResult(1.0, // confidence rating
 					  true, // success
@@ -162,8 +168,8 @@ public class ExecutorPlugIn
 	// send them.
 
       } else {
-	if (log.isApplicable(log.VERBOSE)) {
-	  log.log(this, log.VERBOSE, "execute:" + this + ": Alloc request failed!");
+	if (log.isDebugEnabled()) {
+	  log.info("execute:" + this + ": Alloc request failed!");
 	}
 
 	// do I need different results?

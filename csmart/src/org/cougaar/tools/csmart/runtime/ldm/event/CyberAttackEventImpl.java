@@ -32,6 +32,8 @@ import org.cougaar.core.agent.ClusterIdentifier;
 import org.cougaar.tools.csmart.util.ArgValue;
 import org.cougaar.tools.csmart.Constants;
 import org.cougaar.tools.csmart.runtime.ldm.plugin.transducer.Society;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Implementation of the CyberAttackEvent. See <a href="https://www.ultralog.net/workinggroups/ExtEventPositionPaper-rbl8.pdf">CSMART Event paper</a> for model details.
@@ -50,11 +52,16 @@ public class CyberAttackEventImpl extends RealWorldEventImpl
   
   private class ImpMod implements ImpactModel {
     
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.event");
+
     public Iterator getImpact(Society world, IEFactory theIEF) {
       
       ArrayList iEvents = new ArrayList();
       if (world.existsAgent(targetAgentCID)) {
-	//System.out.println("CAEImpl model: calcing impacts on existing Agent " + targetAgentCID.toString());
+        if(log.isDebugEnabled()) {
+          log.debug("CAEImpl model: calcing impacts on existing Agent " + 
+                    targetAgentCID.toString());
+        }
 	NewInfrastructureEvent ie = theIEF.newInfrastructureEvent();
 	ie.setDestination(getTarget());
 	ie.setDuration(getDuration());
@@ -76,10 +83,14 @@ public class CyberAttackEventImpl extends RealWorldEventImpl
 	    iEvents.add(ie);
 	  }
 	} // else, we don't know about it and we don't add the event
-	//System.out.println("CAE model done handling event " + ie);
+        if(log.isDebugEnabled()) {
+          log.debug("CAE model done handling event " + ie);
+        }
       } else {
 	// else, publish nothing
-	//System.out.println("CAE model says world " + world + " doesnt know about agent " + targetAgentCID.toString());
+        if(log.isDebugEnabled()) {
+          log.debug("CAE model says world " + world + " doesnt know about agent " + targetAgentCID.toString());
+        }
 	return EmptyIterator.iterator();
       }
       return iEvents.iterator();

@@ -60,6 +60,8 @@ import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.abc.ABCSociety;
 import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.society.cmt.CMTSociety;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * The Organizer holds all the component a user creates
@@ -83,6 +85,9 @@ public class Organizer extends JScrollPane {
   private OrganizerTree workspace;
   private Organizer organizer;
   private CMTDialog cmtDialog;
+
+  private transient Logger log;
+
   private DBConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(this);
   
@@ -118,6 +123,8 @@ public class Organizer extends JScrollPane {
   }
   
   public Organizer(CSMART csmart, String workspaceFileName) {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+
     setPreferredSize(new Dimension(400, 100));
     JPanel panel = new JPanel(new BorderLayout());
     setViewportView(panel);
@@ -350,7 +357,9 @@ public class Organizer extends JScrollPane {
         try {
           inDatabase = ExperimentDB.isExperimentNameInDatabase(name);
         } catch (RuntimeException e) {
-          System.err.println(e);
+          if(log.isDebugEnabled()) {
+            log.error("RuntimeException", e);
+          }
         }
         if (inDatabase) {
           int answer = JOptionPane.showConfirmDialog(this,
@@ -641,8 +650,10 @@ public class Organizer extends JScrollPane {
           }
         }.start();
     } catch (RuntimeException re) {
-      System.out.println("Runtime exception saving experiment: " + re);
-      re.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Runtime exception saving experiment", re);
+        re.printStackTrace();
+      }
       GUIUtils.timeConsumingTaskEnd(organizer);
     }
     experimentNames.add(newName);
@@ -824,8 +835,10 @@ public class Organizer extends JScrollPane {
         }
       }.start();
     } catch (RuntimeException re) {
-      System.out.println("Runtime exception creating experiment: " + re);
-      re.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Runtime exception creating experiment", re);
+        re.printStackTrace();
+      }
       GUIUtils.timeConsumingTaskEnd(organizer);
     }
   }
@@ -904,8 +917,10 @@ public class Organizer extends JScrollPane {
           }
         }.start();
     } catch (RuntimeException re) {
-      System.out.println("Runtime exception duplicating experiment: " + re);
-      re.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Runtime exception duplicating experiment", re);
+        re.printStackTrace();
+      }
       GUIUtils.timeConsumingTaskEnd(organizer);
     }
     DefaultMutableTreeNode node = 
@@ -1304,7 +1319,9 @@ public class Organizer extends JScrollPane {
 //          } catch (OptionalDataException ode) {
 //          } catch (IOException ioe) {
 	} catch (Exception e) {
-	  System.err.println("Organizer: can't read file: " + f + " exception: " + e);
+          if(log.isDebugEnabled()) {
+            log.error("Organizer: can't read file: " + f + " exception: " + e);
+          }
 	} finally {
 	  ois.close();
 	} 	  
@@ -1413,7 +1430,9 @@ public class Organizer extends JScrollPane {
   }
   
   private void save(String fileName) {
-    //      System.out.println("Saving to: " + fileName);
+    if(log.isDebugEnabled()) {
+      log.debug("Saving to: " + fileName);
+    }
     if (!fileName.endsWith(".bin"))
       fileName = fileName + ".bin";
     try {

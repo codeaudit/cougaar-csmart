@@ -41,6 +41,8 @@ import java.util.Vector;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * This Servlet expects no input, and returns the URLs of all the agents
@@ -55,10 +57,12 @@ public class ClusterProviderServlet
   extends HttpServlet
 {
   private SimpleServletSupport support;
-  
+  private transient Logger log;
+
   public ClusterProviderServlet(SimpleServletSupport support) {
     super();
     this.support = support;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
   }
 
   public void doGet(
@@ -95,6 +99,7 @@ public class ClusterProviderServlet
      * parameters from the URL:
      */
     ServletOutputStream out; 
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
 
     /* since "ClusterProvider" is a static inner class, here
      * we hold onto the support API.
@@ -141,18 +146,26 @@ public class ClusterProviderServlet
 
 	StringBuffer buf = HttpUtils.getRequestURL(request);
 	String url = buf.toString();
-	System.out.println("URL: " + url);
+        if(log.isDebugEnabled()) {
+          log.debug("URL: " + url);
+        }
 	
 	// get all agent names; reconstruct the urls and return
 	getAllNamesAndUrls(urls, names, url, false);
 	
-	System.out.println("Got urls: " + urls);
+        if(log.isDebugEnabled()) {
+          log.debug("Got urls: " + urls);
+        }
 	// send the urls to the client
 	ObjectOutputStream p = new ObjectOutputStream(out);
 	p.writeObject(urls);
-	System.out.println("Sent agent urls");
+        if(log.isDebugEnabled()) {
+          log.debug("Sent cluster urls");
+        }
       } catch (Exception e) {
-	System.out.println("Exception: " + e);
+        if(log.isDebugEnabled()) {
+          log.error("Exception", e);
+        }
       }
     }
     

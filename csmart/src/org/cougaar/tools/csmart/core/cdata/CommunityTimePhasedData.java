@@ -24,6 +24,8 @@ package org.cougaar.tools.csmart.core.cdata;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.text.ParseException;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Data structure used to store Community Time Phased data.
@@ -33,20 +35,26 @@ import java.text.ParseException;
  */
 public class CommunityTimePhasedData extends TimePhasedData {
   private ArrayList communities;
+  private transient Logger log;
 
   /** Default Constructor **/
   public CommunityTimePhasedData() {
     super();
     communities = new ArrayList();
+    CSMART.createLogger("org.cougaar.tools.csmart.core.cdata");
     try {
       setStartTime("");
     } catch (ParseException pe) {
-      // Insert Log Code Here
+      if(log.isDebugEnabled()) {
+        log.error("Caught an exception setting startTime");
+      }
     }
     try {
       setStopTime("");
     } catch (ParseException pe) {
-      // Insert Log Code Here
+      if(log.isDebugEnabled()) {
+        log.error("Caught an exception setting stopTime");
+      }
     }
   }
 

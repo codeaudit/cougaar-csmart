@@ -23,6 +23,8 @@ package org.cougaar.tools.csmart.runtime.binder;
 import java.util.List;
 
 import org.cougaar.core.mts.Message;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * An implementation of <tt>MessageReleaseScheduler</tt>.
@@ -43,8 +45,6 @@ public class MessageReleaseSchedulerImpl
    */
   private static final long MIN_SLEEP_MILLIS = 250;
 
-  private static final boolean VERBOSE = false;
-
   private boolean anyWork = false;
   private Object workLock = new Object();
 
@@ -54,6 +54,8 @@ public class MessageReleaseSchedulerImpl
 
   private long sleepMS;
   private long prevTime = System.currentTimeMillis();
+
+  private transient Logger log;
 
   public MessageReleaseSchedulerImpl(
       double samplesPerSecond,
@@ -66,13 +68,14 @@ public class MessageReleaseSchedulerImpl
     this.sleepMS = t;
     this.inQ = new ObjectReleaseQueue(inMessagesPerSecond);
     this.outQ = new ObjectReleaseQueue(outMessagesPerSecond);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
   }
 
   public void degradeReleaseRate(
       double factor,
       long duration) {
-    if (VERBOSE) {
-      System.out.println(
+    if (log.isDebugEnabled()) {
+      log.debug(
           "Degrade release rate to ("+factor+", "+duration+")");
     }
     synchronized (qLock) {
@@ -84,8 +87,8 @@ public class MessageReleaseSchedulerImpl
   public void sendMessage(Message m) {
     synchronized (qLock) {
       boolean wasEmpty = outQ.isEmpty();
-      if (VERBOSE) {
-        System.out.println(
+      if (log.isDebugEnabled()) {
+        log.debug(
             "  # send-lock ("+wasEmpty+") ["+outQ.size()+"]");
       }
       try {
@@ -127,16 +130,16 @@ public class MessageReleaseSchedulerImpl
       shouldWait = inQ.isEmpty() && outQ.isEmpty();
     }
     if (shouldWait) {
-      if (VERBOSE) {
-        System.out.println("@waiting for a non-empty queue");
+      if (log.isDebugEnabled()) {
+        log.debug("@waiting for a non-empty queue");
       }
       waitForActivity();
     }
 
     // sleep a bit
     try {
-      if (VERBOSE) {
-        System.out.println("@sleep("+sleepMS+")");
+      if (log.isDebugEnabled()) {
+        log.debug("@sleep("+sleepMS+")");
       }
       Thread.sleep(sleepMS);
     } catch (InterruptedException ie) {
@@ -145,16 +148,16 @@ public class MessageReleaseSchedulerImpl
     // get the messages
     synchronized (qLock) {
       long nowTime = System.currentTimeMillis();
-      if (VERBOSE) {
-        System.out.println("@get queue messages("+prevTime+", "+nowTime+")");
+      if (log.isDebugEnabled()) {
+        log.debug("@get queue messages("+prevTime+", "+nowTime+")");
       }
       // in:
       inQ.getDueObjects(toIn, prevTime, nowTime);
       // out:
       outQ.getDueObjects(toOut, prevTime, nowTime);
       //
-      if (VERBOSE) {
-        System.out.println("@got messages");
+      if (log.isDebugEnabled()) {
+        log.debug("@got messages");
       }
       prevTime = nowTime;
     }
@@ -162,20 +165,20 @@ public class MessageReleaseSchedulerImpl
 
   private void waitForActivity() {
     synchronized (workLock) {
-      if (VERBOSE) {
-        System.out.println("  * wait-locked ("+anyWork+")");
+      if (log.isDebugEnabled()) {
+        log.debug("  * wait-locked ("+anyWork+")");
       }
       while (!(anyWork)) {
         try {
-          if (VERBOSE) {
-            System.out.println("  * wait-wait");
+          if (log.isDebugEnabled()) {
+            log.debug("  * wait-wait");
           }
           workLock.wait();
         } catch (InterruptedException ie) {
         }
       }
-      if (VERBOSE) {
-        System.out.println("  * wait-release ("+anyWork+" -> false)");
+      if (log.isDebugEnabled()) {
+        log.debug("  * wait-release ("+anyWork+" -> false)");
       }
       anyWork = false;
     }
@@ -187,8 +190,8 @@ public class MessageReleaseSchedulerImpl
       synchronized (workLock) {
         if (!(anyWork)) {
           anyWork = true; 
-          if (VERBOSE) {
-            System.out.println("  * signal-notify");
+          if (log.isDebugEnabled()) {
+            log.debug("  * signal-notify");
           }
           workLock.notify();
         }

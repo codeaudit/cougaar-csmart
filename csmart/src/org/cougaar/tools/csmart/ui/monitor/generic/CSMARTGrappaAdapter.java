@@ -25,6 +25,8 @@ import att.grappa.*;
 import java.awt.Rectangle;
 import java.awt.event.*;
 import java.util.Vector;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Adds functionality to GrappaAdapter which is the class that handles
@@ -42,6 +44,7 @@ import java.util.Vector;
 public class CSMARTGrappaAdapter extends GrappaAdapter {
   BirdFrame birdFrame = null;
   CSMARTFrame frame = null;
+  private transient Logger log;
 
   /**
    * Create an adapter for the overview frame and graph frame.
@@ -53,6 +56,7 @@ public class CSMARTGrappaAdapter extends GrappaAdapter {
     super();
     this.birdFrame = birdFrame;
     this.frame = frame;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
   }
 
   /**
@@ -117,7 +121,9 @@ public class CSMARTGrappaAdapter extends GrappaAdapter {
 //       //      Rectangle r = new Rectangle(x, y, width, height);
 //       //      Rectangle r = new Rectangle(outline.getX(), outline.getY(),
 //       //				  outline.getWidth(), outline.getHeight());
-//       //      System.out.println("Scrolling to: " + r);
+//       //       if(log.isDebugEnabled()) {
+//       //      log.debug("Scrolling to: " + r);
+//       //      }
 //       //      eventFrame.scrollRectToVisible();
 //     //    }
    }

@@ -54,6 +54,8 @@ import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * This Servlet gathers information about agents and their relationships.
@@ -66,10 +68,12 @@ public class ClusterInfoServlet
   public static final Role SELF_ROLE = Role.getRole("Self");
   
   private SimpleServletSupport support;
-  
+  private transient Logger log;
+
   public ClusterInfoServlet(SimpleServletSupport support) {
     super();
     this.support = support;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
   }
   
   public void doGet(
@@ -107,6 +111,7 @@ public class ClusterInfoServlet
      * parameters from the URL:
      */
     ServletOutputStream out; 
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
     
     /* since "ClusterInfo" is a static inner class, here
      * we hold onto the support API.
@@ -147,18 +152,24 @@ public class ClusterInfoServlet
       ServletUtil.parseParams(vis, request);
       
       try {
-	System.out.println("CSMART_ClusterInfoServlet received query..........");
+        if(log.isDebugEnabled()) {
+          log.debug("CSMART_ClusterInfoServlet received query..........");
+        }
 	Vector collection = getSelfInformation();
 	if (collection!=null)
 	  {
 	    ObjectOutputStream p = new ObjectOutputStream(out);
 	    p.writeObject(collection);
-	    System.out.println("Sent agent urls");
+            if(log.isDebugEnabled()) {
+              log.debug("Sent cluster urls");
+            }
 	    //out.print(collection);
 	  }
       } catch (Exception e) {
-	System.out.println("CSMART_ClusterInfoServlet Exception: " + e);
-	e.printStackTrace();
+        if(log.isDebugEnabled()) {
+          log.error("CSMART_ClusterInfoServlet Exception", e);
+          e.printStackTrace();
+        }
       }
     }
     

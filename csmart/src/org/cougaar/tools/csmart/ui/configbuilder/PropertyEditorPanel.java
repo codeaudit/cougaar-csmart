@@ -52,6 +52,8 @@ import org.cougaar.tools.csmart.core.property.PropertyHelper;
 import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Panel that holds the PropertyEditor for editing the properties of a <code>ModifiableConfigurableComponent</code><br>
@@ -73,6 +75,7 @@ public class PropertyEditorPanel extends JPanel
   boolean isEditable;
   ModifiableComponent[] compsToConfig = null; // support an array of things to edit/view
   ModifiableComponent componentToConfigure = null;
+  private transient Logger log;
 
   public PropertyEditorPanel(ModifiableComponent configComp, 
                              boolean isEditable) {
@@ -86,6 +89,7 @@ public class PropertyEditorPanel extends JPanel
     compsToConfig = new ModifiableConfigurableComponent[1];
     compsToConfig[0] = configComp;
     setModifiableConfigurableComponent();
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
   }
 
   /**
@@ -152,8 +156,10 @@ public class PropertyEditorPanel extends JPanel
       }
       p.setValue(value);
     } catch (InvalidPropertyValueException e) {
-      System.err.println("PropertyBuilder: can't set value in property: " + e);
-      e.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("PropertyBuilder: can't set value in property: " + e);
+        e.printStackTrace();
+      }
     }
   }
 
@@ -288,7 +294,9 @@ public class PropertyEditorPanel extends JPanel
       if (path == null) return;
       PropertyTreeNode node = (PropertyTreeNode)path.getLastPathComponent();
       if (name.getPrefix().equals(node.getName())) {
-//         System.out.println("PropertyBuilder: Property added: " + name);
+        if(log.isDebugEnabled()) {
+          log.debug("PropertyBuilder: Property added: " + name);
+        }
         addComponentForProperty(prop);
       }
     }
@@ -307,7 +315,9 @@ public class PropertyEditorPanel extends JPanel
       if (path == null) return;
       PropertyTreeNode node = (PropertyTreeNode)path.getLastPathComponent();
       if (name.getPrefix().equals(node.getName())) {
-//         System.out.println("PropertyBuilder: Property removed: " + prop.getName());
+        if(log.isDebugEnabled()) {
+          log.debug("PropertyBuilder: Property removed: " + prop.getName());
+        }
         removeComponentForProperty(prop);
       }
     }
@@ -409,9 +419,6 @@ public class PropertyEditorPanel extends JPanel
   }
 
   public void propertyOtherChanged(PropertyEvent e) {
-    //    System.out.println("PropertyBuilder: propertyOtherChanged: " +
-    //		       e.getWhatChanged());
-    //    e.getProperty().printProperty(System.out);
     // TODO: handle DEFAULTVALUE_CHANGED, LABEL_CHANGED,
     // CLASS_CHANGED, ALLOWEDVALUES_CHANGED
   }

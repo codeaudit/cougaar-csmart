@@ -21,6 +21,8 @@
 package org.cougaar.tools.csmart.runtime.binder;
 
 import java.util.*;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * An <code>Object</code> queue which also maintains the release-rate.
@@ -32,12 +34,11 @@ import java.util.*;
  */
 public class ObjectReleaseQueue {
 
-  private static final boolean VERBOSE = false;
-
   private double objectsPerMS;
   private CapacityChart capChart;
   private TrimmableArrayList objQ;
   private double nDueObjects;
+  private transient Logger log;
 
   public ObjectReleaseQueue(double objectsPerSecond) {
     if (objectsPerSecond < 0.0) {
@@ -51,6 +52,7 @@ public class ObjectReleaseQueue {
     nDueObjects = 0.0;
     // really want a circular queue, but a List is okay:
     objQ = new TrimmableArrayList();
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
   }
 
   public void degradeReleaseRate(
@@ -94,14 +96,14 @@ public class ObjectReleaseQueue {
     }
     //
     double area = capChart.getArea(prevTime, nowTime);
-    if (VERBOSE) {
-      System.out.println("  getArea("+(nowTime-prevTime)+") -> "+area);
+    if (log.isDebugEnabled()) {
+      log.debug("  getArea("+(nowTime-prevTime)+") -> "+area);
     }
     if (area > 0.0) {
       double d = (objectsPerMS * area);
       nDueObjects += d;
-      if (VERBOSE) {
-        System.out.println(
+      if (log.isDebugEnabled()) {
+        log.debug(
             "    objectsPerMS: "+objectsPerMS+" * area: "+area+" = "+d+
             ", nDueObjects -> "+nDueObjects);
       }
@@ -110,8 +112,8 @@ public class ObjectReleaseQueue {
         int qsize = objQ.size();
         double flr = Math.floor(nDueObjects);
         int nDue = (int)flr;
-        if (VERBOSE) {
-          System.out.println(
+        if (log.isDebugEnabled()) {
+          log.debug(
               "release min(qsize: "+qsize+", nDue: "+nDue+
               " from flr("+nDueObjects+"), p -> "+(nDueObjects - flr));
         }

@@ -43,6 +43,8 @@ import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.cmt.CMTSociety;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class OrganizerHelper {
   private static final String EXPT_DESC_QUERY = "queryExptDescriptions";
@@ -51,6 +53,8 @@ public class OrganizerHelper {
   private static final String EXPT_NODE_QUERY = "queryNodes";
   private static final String EXPT_HOST_QUERY = "queryHosts";
   private static final String COMPONENT_ARGS_QUERY = "queryComponentArgs";
+
+  private transient Logger log;
 
   private DBConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(null);
@@ -65,6 +69,9 @@ public class OrganizerHelper {
                                      String experimentName,
                                      String experimentId,
                                      String trialId) {
+
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+
     // get assembly ids for trial
     ArrayList assemblyIds = getTrialAssemblyIds(experimentId, trialId);
     String assemblyMatch = getAssemblyMatch(assemblyIds);
@@ -78,7 +85,9 @@ public class OrganizerHelper {
     } else { // We need to create a new trial.
       // Need to have the experiment id, trial id, and multiplicity
       // for the call that will generate the assembly here.
-      System.out.println("No assemblies for: " + experimentId + " " + trialId);
+      if(log.isDebugEnabled()) {
+        log.warn("No assemblies for: " + experimentId + " " + trialId);
+      }
       return null; // creating an experiment from scratch not implemented yet
     }
     Experiment experiment = new Experiment((String)experimentName, 
@@ -133,7 +142,9 @@ public class OrganizerHelper {
       if (!ExperimentDB.isExperimentNameInDatabase(experimentName))
 	experiment.saveToDb(saveToDbConflictHandler);
     } catch (RuntimeException e) {
-      System.err.println(e);
+      if(log.isDebugEnabled()) {
+        log.error("RuntimeException", e);
+      }
     }
     return experiment;
   }
@@ -160,8 +171,10 @@ public class OrganizerHelper {
       rs.close();
       stmt.close();
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception getting Trial pieces: " + query + ": " + se);
-      se.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Caught SQL exception getting Trial pieces: " + query + ": " + se);
+        se.printStackTrace();
+      }
     }
     return assemblyIds;
   }
@@ -184,7 +197,9 @@ public class OrganizerHelper {
     }
     // Avoid ugly exceptions if got no assemblies:
     if (assemblyIDs.size() < 1) {
-      System.out.println("Got no assemblies!");
+      if(log.isDebugEnabled()) {
+        log.warn("Got no assemblies!");
+      }
       assemblyMatch.append("''");
     }
     assemblyMatch.append(")");
@@ -205,7 +220,9 @@ public class OrganizerHelper {
       substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
       query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
-      //      System.out.println("Organizer: Nodes query: " + query);
+      if(log.isDebugEnabled()) {
+        log.debug("Organizer: Nodes query: " + query);
+      }
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         nodes.add(rs.getString(1));
@@ -214,8 +231,10 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();
     } catch (SQLException se) {      
-      System.err.println("Caught SQL exception getting Nodes " + query + ": " + se);
-      se.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Caught SQL exception getting Nodes " + query + ": " + se);
+        se.printStackTrace();
+      }
     }
     return nodes;
   }
@@ -231,7 +250,9 @@ public class OrganizerHelper {
       substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
       query = DBUtils.getQuery(EXPT_HOST_QUERY, substitutions);
-      //      System.out.println("Organizer: Get hosts query: " + query);
+      if(log.isDebugEnabled()) {
+        log.debug("Organizer: Get hosts query: " + query);
+      }
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         hosts.add(rs.getString(1));
@@ -240,8 +261,10 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();
     } catch (SQLException se) {      
-      System.err.println("Caught SQL exception getting hosts: " + query + ": " + se);
-      se.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Caught SQL exception getting hosts: " + query + ": " + se);
+        se.printStackTrace();
+      }
     }
     return hosts;
   }
@@ -263,8 +286,10 @@ public class OrganizerHelper {
         conn.close();
       }
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception setting NodeArgs: " + se);
+      if(log.isDebugEnabled()) {
+        log.error("Caught SQL exception setting NodeArgs: " + se);
       se.printStackTrace();
+      }
     }
   }
 
@@ -281,7 +306,9 @@ public class OrganizerHelper {
       substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
       query = DBUtils.getQuery("queryHostNodes", substitutions);
-      //      System.out.println(query);
+      if(log.isDebugEnabled()) {
+        log.debug(query);
+      }
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
 	String hostName = rs.getString(1);
@@ -305,8 +332,10 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception getting HN map " + query + ": " + se);
-      se.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Caught SQL exception getting HN map " + query + ": " + se);
+        se.printStackTrace();
+      }
     }
   }
 
@@ -338,7 +367,9 @@ public class OrganizerHelper {
         // Query All Agents for each node.
         // Loop Query for every node.
         query = DBUtils.getQuery("queryComponents", substitutions);
-	//        System.out.println("Organizer: Get agents: " + query);
+        if(log.isDebugEnabled()) {
+          log.debug("Organizer: Get agents: " + query);
+        }
         rs = stmt.executeQuery(query);
         while(rs.next()) {
           // Find AgentComponent.
@@ -347,7 +378,9 @@ public class OrganizerHelper {
             AgentComponent ac = agents[i];
             if (ac.getShortName().equals(aName)) {
               nodeComponent.addAgent(ac);
-              //System.out.println("Organizer:  Adding agent named:  " + ac.getShortName());
+              if(log.isDebugEnabled()) {
+                log.debug("Organizer:  Adding agent named:  " + ac.getShortName());
+              }
               break;
             }	    
           } 	  
@@ -357,8 +390,10 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception getting agents " + query + ": " + se);
-      se.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Caught SQL exception getting agents " + query + ": " + se);
+        se.printStackTrace();
+      }
     }
   }
 
@@ -398,7 +433,9 @@ public class OrganizerHelper {
       substitutions.put(":comp_alib_id", comp_alib_id);
       Statement stmt = conn.createStatement();
       query = DBUtils.getQuery(COMPONENT_ARGS_QUERY, substitutions);
-      //      System.out.println("Organizer " + COMPONENT_ARGS_QUERY + ": "  + query);
+      if(log.isDebugEnabled()) {
+        log.debug("Organizer " + COMPONENT_ARGS_QUERY + ": "  + query);
+      }
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         String param = rs.getString(1);
@@ -409,10 +446,14 @@ public class OrganizerHelper {
           String pvalue = param.substring(ix2 + 1);
           Property prop = cc.getProperty(pname);
           if (prop == null) {
-	    //            System.out.println("adding " + pname + "=" + pvalue);
+            if(log.isDebugEnabled()) {
+              log.debug("adding " + pname + "=" + pvalue);
+            }
             cc.addProperty(pname, pvalue);
           } else {
-	    //            System.out.println("setting " + pname + "=" + pvalue);
+            if(log.isDebugEnabled()) {
+              log.debug("setting " + pname + "=" + pvalue);
+            }
             prop.setValue(pvalue);
           }
         }
@@ -421,8 +462,10 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();
     } catch (SQLException se) {      
-      System.err.println("Caught SQL exception gettin compArgs " + query + ": " + se);
-      se.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Caught SQL exception gettin compArgs " + query + ": " + se);
+        se.printStackTrace();
+      }
     }
   }
 
@@ -446,15 +489,19 @@ public class OrganizerHelper {
           getRecipeProperties(dbRecipe, conn, substitutions);
           recipeList.add(dbRecipe);
         } catch (ClassNotFoundException cnfe) {
-          System.err.println(cnfe + ": for recipe");
+          if(log.isDebugEnabled()) {
+            log.error(cnfe + ": for recipe");
+          }
         }
       }
       rs.close();
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception getting recipes " + query + ": " + se);
-      se.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Caught SQL exception getting recipes " + query + ": " + se);
+        se.printStackTrace();
+      }
     }    
     
     return recipeList;
@@ -476,8 +523,10 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception getting recipe names " + query + ": " + se);
-      se.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Caught SQL exception getting recipe names " + query + ": " + se);
+        se.printStackTrace();
+      }
     }    
     
     return recipes;
@@ -517,18 +566,24 @@ public class OrganizerHelper {
             setRecipeComponentProperties(dbRecipe, rc);
             return rc;
           } catch (ClassNotFoundException cnfe) {
-            System.err.println(cnfe + ": for recipe");
+            if(log.isDebugEnabled()) {
+              log.error(cnfe + ": for recipe");
+            }
           }
         }
-        System.err.println("Recipe not found: " + recipeId);
+        if(log.isDebugEnabled()) {
+          log.error("Recipe not found: " + recipeId);
+        }
         rs.close();
         stmt.close();
       } finally {
         conn.close();
       }
     } catch (SQLException se) {
-      System.err.println("Caught SQL exception gettin DBRecipe " + query + ": " + se);
-      se.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Caught SQL exception gettin DBRecipe " + query + ": " + se);
+        se.printStackTrace();
+      }
     }    
     return null;
   }
@@ -541,7 +596,9 @@ public class OrganizerHelper {
         String propValue = (String) dbRecipe.props.get(propName);
         Property prop = rc.getProperty(propName);
         if (prop == null) {
-          System.err.println("Unknown property: " + propName + "=" + propValue);
+          if(log.isDebugEnabled()) {
+            log.error("Unknown property: " + propName + "=" + propValue);
+          }
         } else {
           Class propClass = prop.getPropertyClass();
           Constructor constructor = 

@@ -27,6 +27,8 @@ import java.util.*;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.monitor.generic.NodeObject;
 import org.cougaar.util.PropertyTree;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class ULPlanNode implements NodeObject {
   PropertyTree properties;
@@ -45,6 +47,8 @@ public class ULPlanNode implements NodeObject {
   static int maxLabelLength = 20; // maximum label length in characters/line
   String tooltip = "";
 
+  private transient Logger log; 
+
   /**
    * Create node object from properties for a plan object,
    * with the following links:
@@ -58,6 +62,8 @@ public class ULPlanNode implements NodeObject {
    */
 
   public ULPlanNode(PropertyTree p, String communityName) {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.plan");
+
     this.properties = p;
     UID = (String)properties.get(PropertyNames.UID_ATTR);
     tooltip = UID; // default tooltip if none other is set
@@ -81,7 +87,9 @@ public class ULPlanNode implements NodeObject {
     if (objectType.equals(PropertyNames.TASK_OBJECT)) {
       taskType = (String)properties.get(PropertyNames.TASK_TYPE);
       if (taskType == null)
-	System.out.println("TASK WITH NO TASK TYPE");
+        if(log.isDebugEnabled()) {
+          log.info("TASK WITH NO TASK TYPE");
+        }
       if (taskType.equals(PropertyNames.MPTASK))
 	properties.put(PropertyNames.TABLE_TITLE, 
 		       PropertyNames.MPTASK + " " + UID);
@@ -182,7 +190,9 @@ public class ULPlanNode implements NodeObject {
       try {
 	happiness = Double.parseDouble(s);
       } catch (Exception e) {
-	System.out.println("ULPlanNode: " + e);
+        if(log.isDebugEnabled()) {
+          log.error("ULPlanNode: " + e);
+        }
       }
       label = nf.format(happiness * 100) + "%";
       tooltip = (String)properties.get(PropertyNames.EVENT_DESCRIPTION);

@@ -32,6 +32,8 @@ import org.cougaar.util.UnaryPredicate;
 import org.cougaar.tools.csmart.runtime.ldm.event.InfrastructureEvent;
 import org.cougaar.tools.csmart.runtime.binder.SlowMessageTransportServiceProxyController;
 import org.cougaar.tools.csmart.runtime.binder.SlowMessageTransportServiceFilter;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Plugin that looks for <code>InfrastructureEvent</code>s and 
@@ -49,6 +51,8 @@ public class ABCImpactPlugin extends SimplePlugIn {
 
   private IncrementalSubscription infEventSub;
 
+  private transient Logger log;
+
   private UnaryPredicate createInfEventPred() {
     final ClusterIdentifier myCID = getAgentIdentifier();
     return
@@ -65,9 +69,11 @@ public class ABCImpactPlugin extends SimplePlugIn {
    * Find the MessageTransport controller, subscribe to InfrastructureEvents.
    */
   public void setupSubscriptions() {
-    if (VERBOSE) {
-      System.out.println(
-          this+" setting up subscriptions");
+
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+
+    if(log.isDebugEnabled()) {
+      log.debug(" setting up subscriptions");
     }
 
     // get the service broker
@@ -81,16 +87,14 @@ public class ABCImpactPlugin extends SimplePlugIn {
           null);
     if (mtController == null) {
       // no controller, never run!
-      if (VERBOSE) {
-        System.out.println(
-            this+" unable to find the MessageTransport controller");
+      if(log.isDebugEnabled()) {
+        log.debug(" unable to find the MessageTransport controller");
       }
       return;
     }
 
-    if (VERBOSE) {
-      System.out.println(
-          this+" subscribing to InfrastructureEvents");
+    if (log.isDebugEnabled()) {
+      log.debug("subscribing to InfrastructureEvents");
     }
 
     // subscribe to InfrastructureEvents
@@ -105,9 +109,8 @@ public class ABCImpactPlugin extends SimplePlugIn {
           en.hasMoreElements(); 
           ) {
         InfrastructureEvent ie = (InfrastructureEvent)en.nextElement();
-        if (VERBOSE) {
-          System.out.println(
-              this+" handling added InfEvent: "+ie);
+        if (log.isDebugEnabled()) {
+          log.debug("handling added InfEvent: "+ie);
         }
         if (ie.isWireType()) {
           // MessageTransport degradation
@@ -119,16 +122,17 @@ public class ABCImpactPlugin extends SimplePlugIn {
             mtController.degradeReleaseRate(
                 (1.0 - ie.getIntensity()),
                 ie.getDuration());
-            if (VERBOSE) {
-              System.out.println(
-                  this+" MessageTransport degraded by "+
+            if (log.isDebugEnabled()) {
+              log.debug(
+                  " MessageTransport degraded by "+
                   ((int)(100.0 * ie.getIntensity()))+
                   "% for "+ie.getDuration()+" milliseconds");
             }
           } catch (Exception e) {
             // illegal parameters?
-            System.err.println(
-                this+" unable to degrade MessageTransport: "+e);
+            if(log.isDebugEnabled()) {
+              log.error(" unable to degrade MessageTransport", e);
+            }
           }
         } else {
           // CPU-degradation not implemented yet

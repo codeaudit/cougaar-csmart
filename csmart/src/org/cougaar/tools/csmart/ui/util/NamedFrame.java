@@ -23,6 +23,8 @@ package org.cougaar.tools.csmart.ui.util;
 
 import java.util.*;
 import javax.swing.JFrame;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Ensure that window names are unique within the CSMARTUL application.
@@ -63,6 +65,8 @@ public class NamedFrame extends Observable {
 
   private static NamedFrame singleton = null;
 
+  private transient Logger log;
+
   public static synchronized NamedFrame getNamedFrame() {
     if (singleton == null) {
       singleton = new NamedFrame();
@@ -74,6 +78,7 @@ public class NamedFrame extends Observable {
    * Disallow new. Must use singleton instance via getNamedFrame
    **/
   private NamedFrame() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.util");
   }
 
   /**
@@ -98,7 +103,9 @@ public class NamedFrame extends Observable {
     int otherIndex = 1;
     while (titleToFrame.get(title) != null)
       title = baseTitle + " " + otherIndex++;
-    //    System.out.println("NamedFrame: adding: " + title);
+    if(log.isDebugEnabled()) {
+      log.debug("NamedFrame: adding: " + title);
+    }
     titleToFrame.put(title, frame);
     setChanged();
     // notify observers with title and frame
@@ -108,7 +115,9 @@ public class NamedFrame extends Observable {
   }
 
   public JFrame getFrame(String title) {
-    //    System.out.println("NamedFrame: getFrame: " + title);
+    if(log.isDebugEnabled()) {
+      log.debug("NamedFrame: getFrame: " + title);
+    }
     return (JFrame) titleToFrame.get(title);
   }
 
@@ -143,7 +152,9 @@ public class NamedFrame extends Observable {
   public void removeFrame(JFrame frame) {
     //    String s = removeTitleColon(frame.getTitle());
     String s = frame.getTitle();
-    //    System.out.println("NamedFrame: removing: " + s);
+    if(log.isDebugEnabled()) {
+      log.debug("NamedFrame: removing: " + s);
+    }
     titleToFrame.remove(s);
     setChanged();
     notifyObservers(new Event(frame, s, Event.REMOVED, null));

@@ -31,6 +31,8 @@ import org.cougaar.planning.ldm.plan.*;
 import org.cougaar.util.UnaryPredicate;
 
 import java.util.*;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * MetricsInitializerPlugIn : Launch a number of tasks and wait
@@ -63,6 +65,8 @@ public class MetricsInitializerPlugin
   implements MetricsConstants
 
 {
+
+
   // Numeric parameters
   private int numProviders = 0;
   private int sampleInterval = 0;
@@ -88,6 +92,7 @@ public class MetricsInitializerPlugin
 
   private HashSet activeControlTasks = new HashSet();
   private Alarm sampleTimer = null; // Times sampling
+  private transient Logger log;
 
   HashMap metricsProviders = new HashMap();
 
@@ -124,6 +129,8 @@ public class MetricsInitializerPlugin
   private IncrementalSubscription finishAllocations;
 
   private static class ControlPredicate implements UnaryPredicate {
+    
+
     private Verb verb;
     ControlPredicate(Verb verb) {
       this.verb = verb;
@@ -140,12 +147,13 @@ public class MetricsInitializerPlugin
   
   public void setupSubscriptions() 
   {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
     Vector params = getParameters() != null ? new Vector(getParameters()) : null;
 
     if ((params.size() < 2) ||
         (params.size() > 4)) {
-      if (log.isApplicable(log.PROBLEM)) {
-	log.log(this, log.PROBLEM, "MetricsInitializerPlugin Usage: <numProviders> <sampleInterval> [<startDelay> [<maxNumSamples>]]");
+      if (log.isDebugEnabled()) {
+	log.debug("MetricsInitializerPlugin Usage: <numProviders> <sampleInterval> [<startDelay> [<maxNumSamples>]]");
       }
       return;
     }
@@ -168,8 +176,8 @@ public class MetricsInitializerPlugin
     if (params.size() > 3) {
       maxNumSamples = Integer.parseInt((String) params.elementAt(3));
     }
-    if (log.isApplicable(log.DEBUG)) {
-      log.log(this, log.DEBUG, "MetricsInitializerPlugin: " +
+    if (log.isDebugEnabled()) {
+      log.debug("MetricsInitializerPlugin: " +
                        " numProviders = " + numProviders +
                        ", sampleInterval = " +  sampleInterval +
                        ", startDelay = " + startDelay +
@@ -301,8 +309,8 @@ public class MetricsInitializerPlugin
   }
   
   private boolean checkProviders() {
-    if (log.isApplicable(log.VERBOSE)) {
-      log.log(this, log.VERBOSE, "Num providers: " + numProviders + 
+    if (log.isDebugEnabled()) {
+      log.info("Num providers: " + numProviders + 
                        " metricsProviders.size(): " + metricsProviders.size());
     }
     return (metricsProviders.size() >= numProviders);
@@ -366,8 +374,8 @@ public class MetricsInitializerPlugin
   }
 
   private void finishEverything() {
-    if (log.isApplicable(log.PROBLEM)) {
-      log.log(this, log.PROBLEM, "All finished!");
+    if (log.isDebugEnabled()) {
+      log.debug("All finished!");
     }
     //System.exit(0);
   }
@@ -379,7 +387,9 @@ public class MetricsInitializerPlugin
    **/
   private Alarm wakeAfterRealTime(long delayTime) { 
     if (delayTime<=0) {
-      System.err.println("\nwakeAfterRealTime("+delayTime+") is in the past!");
+      if(log.isDebugEnabled()) {
+        log.error("\nwakeAfterRealTime("+delayTime+") is in the past!");
+      }
       Thread.dumpStack();
       delayTime=1000;
     }

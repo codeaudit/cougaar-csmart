@@ -51,6 +51,8 @@ import org.cougaar.util.DBConnectionPool;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 /**
  * This class takes a structure of ComponentData objects and populates
  * the configuration database with some or all of the components
@@ -70,7 +72,9 @@ public class PDbBase {
     private static final String DFLT_LOG_QUERIES = "false";
     private static boolean logQueries =
         System.getProperty(PROP_LOG_QUERIES, DFLT_LOG_QUERIES).equals("true");
-        
+
+  private transient Logger log;
+
     protected Map substitutions = new HashMap() {
         public Object put(Object key, Object val) {
             if (val == null) throw new IllegalArgumentException("Null value for " + key);
@@ -83,7 +87,7 @@ public class PDbBase {
     protected Statement stmt;
     protected Statement updateStmt;
     protected boolean debug = false;
-    protected PrintWriter log;
+    protected PrintWriter pwlog;
 
     /**
      * Constructor
@@ -91,8 +95,11 @@ public class PDbBase {
     public PDbBase()
         throws SQLException, IOException
     {
+
+      log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+
         if (logQueries)
-            log = new PrintWriter(new FileWriter(getLogName()));
+            pwlog = new PrintWriter(new FileWriter(getLogName()));
         dbp = DBProperties.readQueryFile(QUERY_FILE);
         try {
             dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
@@ -289,21 +296,23 @@ public class PDbBase {
         if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
         try {
             long startTime = 0;
-            if (log != null)
+            if (pwlog != null)
                 startTime = System.currentTimeMillis();
             int result = updateStmt.executeUpdate(query);
-            if (log != null) {
+            if (pwlog != null) {
                 long endTime = System.currentTimeMillis();
-                log.println((endTime - startTime) + " " + query);
+                pwlog.println((endTime - startTime) + " " + query);
             }
             return result;
         } catch (SQLException sqle) {
-            System.err.println("SQLException query: " + query);
-            if (log != null) {
-                log.println("SQLException query: " + query);
-                log.flush();
-            }
-            throw sqle;
+          if(log.isDebugEnabled()) {
+            log.error("SQLException query: " + query);
+          }
+          if (pwlog != null) {
+            pwlog.println("SQLException query: " + query);
+            pwlog.flush();
+          }
+          throw sqle;
         }
     }
 
@@ -316,19 +325,21 @@ public class PDbBase {
         if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
         try {
             long startTime = 0;
-            if (log != null)
+            if (pwlog != null)
                 startTime = System.currentTimeMillis();
             ResultSet result = pstmt.executeQuery();
-            if (log != null) {
+            if (pwlog != null) {
                 long endTime = System.currentTimeMillis();
-                log.println((endTime - startTime) + " " + query);
+                pwlog.println((endTime - startTime) + " " + query);
             }
             return result;
         } catch (SQLException sqle) {
-            System.err.println("SQLException query: " + query);
-            if (log != null) {
-                log.println("SQLException query: " + query);
-                log.flush();
+          if(log.isDebugEnabled()) {
+            log.error("SQLException query: " + query);
+          }
+            if (pwlog != null) {
+                pwlog.println("SQLException query: " + query);
+                pwlog.flush();
             }
             throw sqle;
         }
@@ -343,19 +354,21 @@ public class PDbBase {
         if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
         try {
             long startTime = 0;
-            if (log != null)
+            if (pwlog != null)
                 startTime = System.currentTimeMillis();
             int result = pstmt.executeUpdate();
-            if (log != null) {
+            if (pwlog != null) {
                 long endTime = System.currentTimeMillis();
-                log.println((endTime - startTime) + " " + query);
+                pwlog.println((endTime - startTime) + " " + query);
             }
             return result;
         } catch (SQLException sqle) {
-            System.err.println("SQLException query: " + query);
-            if (log != null) {
-                log.println("SQLException query: " + query);
-                log.flush();
+          if(log.isDebugEnabled()) {
+            log.error("SQLException query: " + query, sqle);
+          }
+            if (pwlog != null) {
+                pwlog.println("SQLException query: " + query);
+                pwlog.flush();
             }
             throw sqle;
         }
@@ -370,19 +383,21 @@ public class PDbBase {
         if (query == null) throw new IllegalArgumentException("executeQuery: null query");
         try {
             long startTime = 0;
-            if (log != null)
+            if (pwlog != null)
                 startTime = System.currentTimeMillis();
             ResultSet rs = stmt.executeQuery(query);
-            if (log != null) {
+            if (pwlog != null) {
                 long endTime = System.currentTimeMillis();
-                log.println((endTime - startTime) + " " + query);
+                pwlog.println((endTime - startTime) + " " + query);
             }
             return rs;
         } catch (SQLException sqle) {
-            System.err.println("SQLException query: " + query);
-            if (log != null) {
-                log.println("SQLException query: " + query);
-                log.flush();
+          if(log.isDebugEnabled()) {
+            log.error("SQLException query: " + query, sqle);
+          }
+            if (pwlog != null) {
+                pwlog.println("SQLException query: " + query);
+                pwlog.flush();
             }
             throw sqle;
         }
@@ -402,10 +417,10 @@ public class PDbBase {
      * done. Otherwise, the finalizer will close it.
      **/
     public synchronized void close() throws SQLException {
-        if (log != null) {
-            log.flush();
-            log.close();
-            log = null;
+        if (pwlog != null) {
+            pwlog.flush();
+            pwlog.close();
+            pwlog = null;
         }
         if (dbConnection != null) {
             if (!dbConnection.getAutoCommit()) dbConnection.commit();

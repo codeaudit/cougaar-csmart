@@ -293,7 +293,10 @@ public class ABCSociety
 	  if(level == (child.getLevel() - 1)) {
 	    externalProviders[index++] = provider;
 	  } else {
-	    //	    System.out.println("Skipping: " + provider + ": My Level = " + child.getLevel() + ": " + level);
+            if(log.isDebugEnabled()) {
+              log.debug("Skipping: " + provider + 
+                        ": My Level = " + child.getLevel() + ": " + level);
+            }
 	  } 
 	}
 

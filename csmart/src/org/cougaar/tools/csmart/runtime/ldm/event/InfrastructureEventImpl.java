@@ -30,6 +30,8 @@ import org.cougaar.core.util.UID;
 import org.cougaar.tools.csmart.util.EarthConstants;
 
 import org.cougaar.tools.csmart.Constants;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Implementation of <code>InfrastructureEvent</code>.
@@ -56,12 +58,18 @@ public class InfrastructureEventImpl
     this.uid = uid;
   }
 
+  private transient Logger log;
+
   // constructor
 
-  public InfrastructureEventImpl() {}
+  public InfrastructureEventImpl() {
+    this(null);
+  }
   
   public InfrastructureEventImpl(UID uid) {
     setUID(uid);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.event");
+
   }
 
   public InfrastructureEventImpl(
@@ -70,6 +78,8 @@ public class InfrastructureEventImpl
       String type,
       long duration,
       double intensity) {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.event");
+
     setUID(uid);
     setDestination(destination);
     setDuration(duration);
@@ -213,8 +223,10 @@ public class InfrastructureEventImpl
     ClusterIdentifier old = getSource();
     if (old != null) {
       if (! asource.equals(old)) {
-        System.err.println("Bad InfrastructureEvent.setSource("+asource+") was "+old+":");
-        Thread.dumpStack();
+        if(log.isDebugEnabled()) {
+          log.error("Bad InfrastructureEvent.setSource("+asource+") was "+old+":");
+          Thread.dumpStack();
+        }
       }
     } else {
       super.setSource(asource);

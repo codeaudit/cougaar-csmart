@@ -26,6 +26,8 @@ import javax.swing.table.AbstractTableModel;
 import att.grappa.*;
 
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Provide the values for the attribute table for the specified node
@@ -38,6 +40,7 @@ public class ULSocietyTableModel extends AbstractTableModel {
   Vector names;
   Vector values;
   Node node;
+  private transient Logger log;
 
   /**
    * Create table model for the specified node.
@@ -45,6 +48,7 @@ public class ULSocietyTableModel extends AbstractTableModel {
    */
 
   public ULSocietyTableModel(Node node) {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.society");
     this.node = node;
     names = new Vector();
     values = new Vector();
@@ -112,8 +116,10 @@ public class ULSocietyTableModel extends AbstractTableModel {
   private void addAttribute(String name) {
     Attribute a = node.getLocalAttribute(name);
     if (a == null) {
-      //      System.out.println("ULSocietyTableModel: attribute not found: " +
-      //			 name);
+      if(log.isDebugEnabled()) {
+        log.debug("ULSocietyTableModel: attribute not found: " +
+                  name);
+      }
       return;
     }
     names.addElement(name);

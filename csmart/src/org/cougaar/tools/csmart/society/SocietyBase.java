@@ -32,6 +32,8 @@ import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.Property;
 import java.util.List;
 import java.util.ArrayList;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * SocietyBase.java
@@ -56,8 +58,11 @@ public abstract class SocietyBase
   protected List nodes = new ArrayList();
   protected List hosts = new ArrayList();
 
+  protected transient Logger log;
+
   public SocietyBase(String name){
     super(name);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.society");
   }
 
   /**

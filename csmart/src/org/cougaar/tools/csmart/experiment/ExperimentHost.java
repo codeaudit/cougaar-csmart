@@ -29,6 +29,8 @@ import java.util.List;
 
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Maintains information about a host and generates the
@@ -46,9 +48,11 @@ public class ExperimentHost
   private List nodes = new ArrayList();
   private int serverPort;
   private int monitoringPort;
+  private transient Logger log;
 
   public ExperimentHost(String hostName) {
       super(hostName);
+      log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
   }
 
   public void initProperties() {
@@ -70,9 +74,12 @@ public class ExperimentHost
     ArrayList names = (ArrayList)prop.getValue();
     names.add(node.getShortName());
     ExperimentNode sa = (ExperimentNode) node;
-    //    System.out.println("ExperimentHost: " + getShortName() +
-    //                       " added node: " + node.getShortName());
-    nodes.add(sa);
+    if(log.isDebugEnabled()) {
+      log.debug("ExperimentHost: " + getShortName() +
+                " added node: " + node.getShortName());
+    }
+
+     nodes.add(sa);
     fireModification();
   }
 
@@ -88,8 +95,10 @@ public class ExperimentHost
       if (index != -1)
         names.remove(node.getShortName());
     }
-    //    System.out.println("ExperimentHost: " + getShortName() +
-    //                       " removed node: " + node.getShortName());
+    if(log.isDebugEnabled()) {
+      log.debug("ExperimentHost: " + getShortName() +
+                 " removed node: " + node.getShortName());
+    }
     nodes.remove(node);
     fireModification();
   }

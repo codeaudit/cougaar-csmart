@@ -21,12 +21,22 @@
 
 package org.cougaar.tools.csmart.core.property.range;
 
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+
 /**
  * Base class for ranges adding Comparable API that compares the
  * string value of the ranges.
  **/
 
 public class RangeBase {
+  private transient Logger log;
+
+  public RangeBase() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.core.property.range");
+  }
+
     public int compareTo(Object o) {
         return toString().compareTo(o.toString());
     }

@@ -60,6 +60,8 @@ import org.cougaar.tools.csmart.runtime.ldm.event.DeadlineTimerEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.NewDeadlineTimerEvent;
 import org.cougaar.tools.csmart.runtime.ldm.asset.LocalAsset;
 import org.cougaar.tools.csmart.runtime.ldm.asset.RolesPG;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 
 /**
@@ -112,6 +114,7 @@ public class AllocatorPlugIn
   private static final long DEFAULT_TRANS_DELAY = 150;
   private static final long DEFAULT_TRY_TIME = 540000;
 
+  private transient Logger log;
   /** 
    * @see #minAllocTime 
    */
@@ -359,12 +362,10 @@ public class AllocatorPlugIn
    * And finaly DeadlineTimer Events, in case an allocation took too long.
    */
   public void setupSubscriptions() {
-    // set my logging identifier
-    this.myId = "Allocator ("+getUID()+")";
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
 
-    if (log.isApplicable(log.VERY_VERBOSE)) {
-      log.log(this, log.VERY_VERBOSE, 
-          (myId+" entering setupSubscriptions"));
+    if (log.isDebugEnabled()) {
+      log.debug(" entering setupSubscriptions");
     }
 
     // parse the "template" rules from our configuration info
@@ -372,9 +373,8 @@ public class AllocatorPlugIn
       parseTemplateRules();
     } catch (Exception e) {
       // unable to configure!
-      if (log.isApplicable(log.SEVERE)) {
-        log.log(this, log.SEVERE, 
-            (myId+" configuration error: "+e.getMessage()));
+      if (log.isDebugEnabled()) {
+        log.debug(" configuration error: "+e.getMessage());
       }
       return;
     }
@@ -414,9 +414,8 @@ public class AllocatorPlugIn
     //
     deadlineSub = (IncrementalSubscription)subscribe(createDeadlineP());
 
-    if (log.isApplicable(log.VERY_VERBOSE)) {
-      log.log(this, log.VERY_VERBOSE,
-          (myId+" waiting for Tasks"));
+    if (log.isDebugEnabled()) {
+      log.debug(" waiting for Tasks");
     }
   } // end of setupSubscriptions
 
@@ -487,9 +486,8 @@ public class AllocatorPlugIn
     for (int i = 0; i < nparams; i++) {
       String filename = (String)params.elementAt(i);
 
-      if(log.isApplicable(log.VERY_VERBOSE)) {
-	log.log(this, log.VERY_VERBOSE, "parseTemplateRules:" + this + ":Parsing - " +
-		filename);
+      if(log.isDebugEnabled()) {
+	log.debug("parseTemplateRules:" + this + ":Parsing - " + filename);
       }
 
       // open our configuration stream[i]
@@ -573,9 +571,9 @@ public class AllocatorPlugIn
             csv.remove(0);
             roles = csv;
           }
-	  if(log.isApplicable(log.VERY_VERBOSE)) {
-	    log.log(this, log.VERY_VERBOSE, "parseTemplateRules:" + this + 
-		    ": Adding new rule: " + text + ":" + roles.toString());
+	  if(log.isDebugEnabled()) {
+	    log.debug("parseTemplateRules:" + this + 
+                      ": Adding new rule: " + text + ":" + roles.toString());
 	  }  
           this.templateRules.add(new TemplateRule(text, roles));
         }
@@ -593,10 +591,6 @@ public class AllocatorPlugIn
   public void execute() {
     // get the current time
     long currTime = currentTimeMillis();
-
-//      if(log.isApplicable(log.VERY_VERBOSE)) {
-//        log.log(this, log.VERY_VERBOSE, "execute:" + this + ":entering");
-//      }
 
     //
     // Watch for added Assets
@@ -619,8 +613,8 @@ public class AllocatorPlugIn
 	sortedlocalassets = sortAssets(addedC);
 	if (comboassets != null) {
 	  // UhOh! there are already some orgs in here! Error?
-	  if (log.isApplicable(log.DEBUG)) {
-	    log.log(this, log.DEBUG, "execute: " + this + " got Entitys before local assets!");
+	  if (log.isDebugEnabled()) {
+	    log.warn("execute: " + this + " got Entitys before local assets!");
 	  }
 	  // We could:
 	  //1: ignore the problem that some allocations may have happened,
@@ -633,20 +627,19 @@ public class AllocatorPlugIn
 	  // comboassets.addAll(sortedlocalassets);
 	} else {
 	  // These are the first assets to arrive
-	  if (log.isApplicable(log.VERBOSE)) {
-	    log.log(this, log.VERBOSE, "execute: " + this + " got first assets, locals");
+	  if (log.isDebugEnabled()) {
+	    log.info("execute: " + this + " got first assets, locals");
 	  }
 	  if (haveAllocatedPastLocals) {
-	    if (log.isApplicable(log.PROBLEM)) {
-	      log.log(this, log.PROBLEM, "execute: " + this + " failed a previous allocation due to no rules at all, and now there are some. Why did they arrive late?");
+	    if (log.isDebugEnabled()) {
+	      log.error("execute: " + this + " failed a previous allocation due to no rules at all, and now there are some. Why did they arrive late?");
 	    }
 	  }
 	  comboassets = sortedlocalassets;
 	}
 
-	if(log.isApplicable(log.VERY_VERBOSE)) {
-	  log.log(this, log.VERY_VERBOSE, "execute:" + "asset size = " + 
-		  comboassets.size());
+	if(log.isDebugEnabled()) {
+	  log.debug("execute:" + "asset size = " + comboassets.size());
 	}
 
         // save the array of "expanded" rules
@@ -654,10 +647,8 @@ public class AllocatorPlugIn
         this.expandedRules = 
           handleCreatedAsset((List)comboassets);
       } else {
-        if (log.isApplicable(log.SEVERE)) {
-          log.log(this, log.SEVERE,
-              (myId+" ignoring assets created at time ("+
-               currTime+") > 1"));
+        if (log.isDebugEnabled()) {
+          log.debug(" ignoring assets created at time ("+ currTime+") > 1");
         }
         // System.exit(-1);
       }
@@ -681,24 +672,26 @@ public class AllocatorPlugIn
 	  // Tack these on to the end
 	  // however, its conceivable that a Task will have been allocated already!!!
 	  // FIXME!!!
-	  if (log.isApplicable(log.VERY_VERBOSE)) {
-	    log.log(this, log.VERY_VERBOSE, "execute: " + this + " got entities after some local assets. Tasks may have been allocated!");
+	  if (log.isDebugEnabled()) {
+	    log.debug("execute: " + this + " got entities after some local assets. Tasks may have been allocated!");
 	  }
-	  if (log.isApplicable(log.PROBLEM)) {
+	  if (log.isDebugEnabled()) {
 	    if (haveAllocatedPastLocals) {
-	      log.log(this, log.PROBLEM, "execute: " + this + " and weve done an allocation that either ran out of rules and so would have been failed!");
+	      log.error("execute: " + this + 
+                        " and weve done an allocation that either ran out " + 
+                        "of rules and so would have been failed!");
 	    }
 	  }
 	  comboassets.addAll(entityassets);
 	} else {
 	  // Entitys arrived before local assets? Maybe there are none.
-	  if (log.isApplicable(log.DEBUG)) {
-	    log.log(this, log.DEBUG, "execute: " + this + " got entities before any locals");
+	  if (log.isDebugEnabled()) {
+	    log.debug("execute: " + this + " got entities before any locals");
 	  }
 	  // Could I have a flag to notice if any tasks have been allocated?
 	  if (haveAllocatedPastLocals) {
-	    if (log.isApplicable(log.PROBLEM)) {
-	      log.log(this, log.PROBLEM, "execute: " + this + " previous allocation used an org or ran out of rules, and so might legitimately have used one of these new orgs. Next re-alloc might do something funny cause of rule index change.");
+	    if (log.isDebugEnabled()) {
+	      log.error("execute: " + this + " previous allocation used an org or ran out of rules, and so might legitimately have used one of these new orgs. Next re-alloc might do something funny cause of rule index change.");
 	    }
 	  }
 	  // The problem is that I can't really stop the allocations altogether
@@ -707,12 +700,12 @@ public class AllocatorPlugIn
 	} // end of checks whether there are previous comboassets	
       } else {
 	// entitys are trickling in.  Its possible we've already allocated a task!!!
-	if (log.isApplicable(log.VERBOSE)) {
-	  log.log(this, log.VERBOSE, "execute: " + this + " entitys are trickling in!");
+	if (log.isDebugEnabled()) {
+	  log.info("execute: " + this + " entitys are trickling in!");
 	}
 	if (haveAllocatedPastLocals) {
-	  if (log.isApplicable(log.PROBLEM)) {
-	    log.log(this, log.PROBLEM, "execute: " + this + " previously allocated to a non-local, so that allocation likely screwy.");
+	  if (log.isDebugEnabled()) {
+	    log.error("execute: " + this + " previously allocated to a non-local, so that allocation likely screwy.");
 	  }
 	}
 	// be sure to use the previous entity assets as well
@@ -729,9 +722,8 @@ public class AllocatorPlugIn
 	comboassets.addAll(entityassets);
       } // end of if block checking have entity assets already
       
-      if(log.isApplicable(log.VERY_VERBOSE)) {
-	log.log(this, log.VERY_VERBOSE, "execute:" + "asset size = " + 
-		comboassets.size());
+      if(log.isDebugEnabled()) {
+	log.debug("execute:" + "asset size = " + comboassets.size());
       }
       
       // save the array of "expanded" rules
@@ -753,9 +745,8 @@ public class AllocatorPlugIn
           en.hasMoreElements(); 
           ) {
         Task t = (Task)en.nextElement();
-        if (log.isApplicable(log.VERY_VERBOSE)) {
-          log.log(this, log.VERY_VERBOSE,
-              (myId+" received new task: "+t.getUID()));
+        if (log.isDebugEnabled()) {
+          log.debug(" received new task: "+t.getUID());
         }
         // allocate the task
 	// So this method we would expect to
@@ -768,8 +759,8 @@ public class AllocatorPlugIn
         allocate(t, -1, currTime, null);
 
 	if (t.getPlanElement() == null) {
-	  if (log.isApplicable(log.PROBLEM)) {
-	    log.log(this, log.PROBLEM, "execute: " + this + " allocated a task, but it says it has not PlanElement! Task: " + t);
+	  if (log.isDebugEnabled()) {
+	    log.error("execute: " + this + " allocated a task, but it says it has not PlanElement! Task: " + t);
 	  }
 	}
       }
@@ -778,8 +769,8 @@ public class AllocatorPlugIn
       for (Enumeration en = taskSub.getRemovedList();
 	   en.hasMoreElements();) {
 	Task t = (Task)en.nextElement();
-	if (log.isApplicable(log.VERY_VERBOSE)) {
-	  log.log(this, log.VERY_VERBOSE, "execute: " + this + " notified of removed Task: " + t.getUID());
+	if (log.isDebugEnabled()) {
+	  log.debug("execute: " + this + " notified of removed Task: " + t.getUID());
 	}
 	
 	// Look in my list of Allocations and remove any that match.
@@ -832,8 +823,8 @@ public class AllocatorPlugIn
 	if (alloc.getReportedResult() == null || alloc.getReportedResult().equals(alloc.getEstimatedResult())) {
 	  // either there is no reported result or its already the same as the estimated result
 	  // so ignore this
-	  if (log.isApplicable(log.VERBOSE)) {
-	    log.log(this, log.DEBUG, "execute: " + this + " allocationSub fired but this alloc did not have a ReportedResult or its same as the Estimated, skipping: " + alloc);
+	  if (log.isDebugEnabled()) {
+	    log.info("execute: " + this + " allocationSub fired but this alloc did not have a ReportedResult or its same as the Estimated, skipping: " + alloc);
 	  }
 	  continue;
 	}
@@ -841,8 +832,8 @@ public class AllocatorPlugIn
 	if (estAR != null && estAR.getConfidenceRating() > successBorder) {
 	  // this Allocation already has a high confidence EstimatedResult - theres nothing
 	  // to do here
-	  if (log.isApplicable(log.VERBOSE)) {
-	    log.log(this, log.DEBUG, "execute: " + this + " allocationSub fired but this alloc allready has a high conf. Estimated result, skipping: " + alloc);
+	  if (log.isDebugEnabled()) {
+	    log.info("execute: " + this + " allocationSub fired but this alloc allready has a high conf. Estimated result, skipping: " + alloc);
 	  }
 	  continue;
 	}
@@ -851,8 +842,8 @@ public class AllocatorPlugIn
 	  // Our marker that we rescinded an Allocation
 	  // or propagated its success up is already here
 	  // dont do anything more
-	  if (log.isApplicable(log.PROBLEM)) {
-	    log.log(this, log.PROBLEM, "execute: " + this + " woke up with Allocation Id otherwise try to handle, but it has the rule index marker: " + alloc);
+	  if (log.isDebugEnabled()) {
+	    log.error("execute: " + this + " woke up with Allocation Id otherwise try to handle, but it has the rule index marker: " + alloc);
 	  }
 	  continue;
 	}
@@ -860,8 +851,8 @@ public class AllocatorPlugIn
 	// What about using changeReports? Only works if Executor fixed
 //  	if (! PlugInHelper.checkChangeReports(allocationSub.getChangeReports(alloc), PlanElement.ReportedResultChangeReport.class)) {
 //  	  // This Allocation did not change due to a ReportedResult change
-//  	  if (log.isApplicable(log.VERBOSE)) {
-//  	    log.log(this, log.DEBUG, "execute: " + this + " allocationSub fired but this alloc did not have the ReportedResult change according to the change reports, skipping: " + alloc);
+//  	  if (log.isDebugEnabled()) {
+//  	    log.info("execute: " + this + " allocationSub fired but this alloc did not have the ReportedResult change according to the change reports, skipping: " + alloc);
 //  	  }
 //  	  continue;
 //  	}
@@ -883,8 +874,8 @@ public class AllocatorPlugIn
             currTime);
       }
     } // end of check of new DeadlineTimerEvents
-//      if (log.isApplicable(log.VERY_VERBOSE)) {
-//        log.log(this, log.VERY_VERBOSE, "execute: " + this + " exitting execute loop");
+//      if (log.isDebugEnabled()) {
+//        log.debug("execute: " + this + " exitting execute loop");
 //      }
   } // end of execute()
 
@@ -900,9 +891,9 @@ public class AllocatorPlugIn
     List expRules = new ArrayList();
 
     int nAssets = assetList.size();
-//      if (log.isApplicable(log.VERY_VERBOSE)) {
-//        log.log(this, log.VERY_VERBOSE,
-//            (myId+" received "+nAssets+" assets"+
+//      if (log.isDebugEnabled()) {
+//        log.debug(
+//            " received "+nAssets+" assets"+
 //             "\nnow matching to rules"));
 //      }
     // for all "template" rules
@@ -924,17 +915,17 @@ public class AllocatorPlugIn
           //   template rule to the matching asset
           ExpandedRule expandedRuleIJ = 
             new ExpandedRule(templateRuleI, assetJ);
-          if (log.isApplicable(log.VERY_VERBOSE)) {
-            log.log(this, log.VERY_VERBOSE,
-                (myId+" matched asset "+assetJ.getUID()+
+          if (log.isDebugEnabled()) {
+            log.debug(
+                " matched asset "+assetJ.getUID()+
                  " to rule "+templateRuleI+" as expanded rule["+
-                 expRules.size()+"]"));
+                 expRules.size()+"]");
           }
           // append the new "expanded" rule to the table
           expRules.add(expandedRuleIJ);
         } else {
-          if (log.isApplicable(log.VERY_VERBOSE)) {
-            log.log(this, log.VERY_VERBOSE,
+          if (log.isDebugEnabled()) {
+            log.debug(
                 (myId+" ignoring non-matching asset "+assetJ+
                  " with rule "+templateRuleI));
           }
@@ -974,8 +965,8 @@ public class AllocatorPlugIn
     
     AllocationResult responseI = allocI.getReportedResult();
     if (responseI == null) {
-      if (log.isApplicable(log.PROBLEM)) {
-	log.log(this, log.PROBLEM, "handleAllocation: " + this + " got alloc with null AR: " + allocI);
+      if (log.isDebugEnabled()) {
+	log.error("handleAllocation: " + this + " got alloc with null AR: " + allocI);
       }
       // Rescind the alloc? Wait for an AR to appear? 
       // For now, try waiting
@@ -986,8 +977,8 @@ public class AllocatorPlugIn
     Task task = allocI.getTask();
     if (task == null) {
       // Allocation couldn't find the Task its allocating
-      if (log.isApplicable(log.PROBLEM)) {
-        log.log(this, log.PROBLEM, 
+      if (log.isDebugEnabled()) {
+        log.error( 
 		"execute: " + this + 
 		" got Allocation with no Task parent: " + allocI);
       }
@@ -997,8 +988,8 @@ public class AllocatorPlugIn
     
     // If the Allocation's Task doesnt point back to the Allocation, we have trouble
     if (task.getPlanElement() == null || ! task.getPlanElement().equals(allocI)) {
-      if (log.isApplicable(log.SEVERE)) {
-	log.log(this, log.SEVERE, "handleAllocation: " + this + " got alloc whose Task doesn't point back to it! Alloc: " + allocI + " with RepResult: " + responseI + " and Task: " + task);
+      if (log.isDebugEnabled()) {
+	log.error("handleAllocation: " + this + " got alloc whose Task doesn't point back to it! Alloc: " + allocI + " with RepResult: " + responseI + " and Task: " + task);
       }
       rescindAllocation(allocI);
       return;
@@ -1007,8 +998,8 @@ public class AllocatorPlugIn
     // Make sure we didnt get here by mistake
     if (getAllocRuleIndex(allocI) <= -100) {
       // Weve previously handled this Allocation. Don't do it again
-      if (log.isApplicable(log.SEVERE)) {
-	log.log(this, log.SEVERE, "handleAllocation: " + this + " got an Allocation and about to update the PlanElement on it, but its marked with rule index: " + getAllocRuleIndex(allocI) + " for alloc: " + allocI);
+      if (log.isDebugEnabled()) {
+	log.error("handleAllocation: " + this + " got an Allocation and about to update the PlanElement on it, but its marked with rule index: " + getAllocRuleIndex(allocI) + " for alloc: " + allocI);
       }
       return;
     }
@@ -1022,8 +1013,8 @@ public class AllocatorPlugIn
 
     if (responseI.getConfidenceRating() <= successBorder) {
       // This response is not high confidence. For now, we do nothing
-      if (log.isApplicable(log.DEBUG)) {
-	log.log(this, log.DEBUG, "handleAllocation: " + this + " got low confidence AR on allocation " + allocI);
+      if (log.isDebugEnabled()) {
+	log.debug("handleAllocation: " + this + " got low confidence AR on allocation " + allocI);
       }
       return;
     } // end of block on low-confidence AR
@@ -1051,8 +1042,8 @@ public class AllocatorPlugIn
 	// FIXME!!!
 	publishChangeAfter(allocI, taskRespPubDelay);
 	//publishChange(allocI);
-	if (log.isApplicable(log.VERBOSE)) {
-	  log.log(this, log.VERBOSE, "handleAllocation: " + this + " reporting succesful Allocation up: " + allocI);
+	if (log.isDebugEnabled()) {
+	  log.debug("handleAllocation: " + this + " reporting succesful Allocation up: " + allocI);
 	}
       }
       return;
@@ -1063,14 +1054,14 @@ public class AllocatorPlugIn
     int ruleIndex = 0; // fill in the AllocRuleIndex,
     ruleIndex = getAllocRuleIndex(allocI);
     
-    if (log.isApplicable(log.VERBOSE)) {
+    if (log.isDebugEnabled()) {
       // get the reason out of the AR
       String reason = null;
       // How do I retrieve the reason from the AR?
       reason = responseI.auxiliaryQuery(AuxiliaryQueryType.FAILURE_REASON);
       if (reason == null) 
 	reason = "(no reason given)";
-      log.log(this, log.VERBOSE, "handleAllocation: " + this + " got failed response due to " + reason + " for alloc " + allocI);
+      log.info("handleAllocation: " + this + " got failed response due to " + reason + " for alloc " + allocI);
     }
     // However if there are no more rules, just do a failure Disposition saving the original
     // failure reason
@@ -1090,8 +1081,8 @@ public class AllocatorPlugIn
       setAllocRuleIndex(alloc, (-1 * (getAllocRuleIndex(alloc) + 100)));
 
     // log something
-    if (log.isApplicable(log.VERBOSE)) {
-      log.log(this, log.VERBOSE, "rescindAllocation: " + this + " deleting Allocation " + alloc);
+    if (log.isDebugEnabled()) {
+      log.info("rescindAllocation: " + this + " deleting Allocation " + alloc);
     }
     // rescind the allocation
     publishRemove(alloc);
@@ -1104,8 +1095,8 @@ public class AllocatorPlugIn
    */
   private void rescindDeadlineTimerEvent(DeadlineTimerEvent deadline) {
     // log something
-    if (log.isApplicable(log.VERBOSE)) {
-      log.log(this, log.VERBOSE, "rescindDeadlineTimerEvent: " + this + " deleting DeadlineTimerEvent " + deadline);
+    if (log.isDebugEnabled()) {
+      log.info("rescindDeadlineTimerEvent: " + this + " deleting DeadlineTimerEvent " + deadline);
     }
     // rescind the deadline
     publishRemove(deadline);
@@ -1157,20 +1148,20 @@ public class AllocatorPlugIn
     Task task = allocI.getTask();
     if (task == null) {
       // Allocation couldn't find the Task its allocating
-      if (log.isApplicable(log.PROBLEM)) {
-        log.log(this, log.PROBLEM, 
+      if (log.isDebugEnabled()) {
+        log.warn(
 		"execute: " + this + 
 		" got Allocation with no Task: " + allocI);
       }
       return;
     }
     
-    if (log.isApplicable(log.VERBOSE)) {
-      log.log(this, log.VERBOSE,
-	      (myId+" exceeded deadline: "+deadlineI.getUID()+
+    if (log.isDebugEnabled()) {
+      log.info(
+	      " exceeded deadline: "+deadlineI.getUID()+
 	       "\nfor allocating task: "+task.getUID()+
 	       "\nwill attempt another allocation["+
-	       (getAllocRuleIndex(allocI)+1)+"]"));
+	       (getAllocRuleIndex(allocI)+1)+"]");
     }
     
     // attempt to re-allocate to the next rule
@@ -1246,11 +1237,11 @@ public class AllocatorPlugIn
     // make sure the deadline has not been exceeded
     if (taskDeadline <= currTime) {
       // Task deadline is already past the current time!
-      if (log.isApplicable(log.VERBOSE)) {
-        log.log(this, log.VERBOSE,
-		(myId+" unable to allocate task: "+task.getUID()+
+      if (log.isDebugEnabled()) {
+        log.info(
+		" unable to allocate task: "+task.getUID()+
 		 "\ndue to deadline ("+taskDeadline+" <= "+
-		 currTime+")"));
+		 currTime+")");
       }
       int[] aspect_types = {AspectType.END_TIME};
       double[] results = {(double)getTaskDeadline(task)};
@@ -1294,32 +1285,32 @@ public class AllocatorPlugIn
       if (++matchingRuleIndex >= expandedRules.length) {
 	haveAllocatedPastLocals = true;
         // no more rules apply
-        if (log.isApplicable(log.VERBOSE)) {
+        if (log.isDebugEnabled()) {
 	  if (expandedRules.length == 0) {
-	    log.log(this, log.VERBOSE, "allocate: " + myId + " couldn't allocate cause have no expanded rules at all!");
+	    log.info("allocate: " + myId + " couldn't allocate cause have no expanded rules at all!");
 	  } else if (startingRuleIndex < 0) {
-	    log.log(this, log.VERBOSE,
-		  (myId+" unable to allocate task: "+task.getUID()+
+	    log.info(
+		  " unable to allocate task: "+task.getUID()+
 		   "\ndue to no rule at all in " +
 		   expandedRules.length+" matching \""+
-		   text+"\""));
+		   text+"\"");
 	  } else {
-	    log.log(this, log.VERBOSE,
-		  (myId+" unable to allocate task: "+task.getUID()+
+	    log.info(
+		  " unable to allocate task: "+task.getUID()+
 		   "\ndue to no rule remaining from index "+(startingRuleIndex + 1)+" to "+
 		   expandedRules.length+" matching \""+
-		   text+"\""));
+		   text+"\"");
 	  }
         }
 
-//  	if (log.isApplicable(log.VERBOSE)) {
+//  	if (log.isDebugEnabled()) {
 //  	  String par;
 //  	  if (parent == null) {
 //  	    par = "(none)";
 //  	  } else {
 //  	    par = parent.toString();
 //  	  }
-//  	  log.log(this, log.VERBOSE, "allocate:" + this + ":parent = " + par);
+//  	  log.info("allocate:" + this + ":parent = " + par);
 //  	}
  
         if (parent instanceof DeadlineTimerEvent) {
@@ -1439,8 +1430,8 @@ public class AllocatorPlugIn
       //
       // Note that we used the guess-timated travel times, so this 
       //   may fail tasks that might have succeeded.
-      if (log.isApplicable(log.VERBOSE)) {
-        log.log(this, log.VERBOSE, 
+      if (log.isDebugEnabled()) {
+        log.info( 
 		"Unable to allocate task cause calculated "+
 		"deadline too soon");
       }
@@ -1693,13 +1684,13 @@ public class AllocatorPlugIn
     publishAddAt(deadlineE, deadlineTime);
 
     // done handling task
-    if (log.isApplicable(log.VERBOSE)) {
-      log.log(this, log.VERBOSE,
-          (myId+" allocated task: "+task.getUID()+
+    if (log.isDebugEnabled()) {
+      log.info(
+          " allocated task: "+task.getUID()+
            "\nto asset: "+alloc.getAsset().getUID()+
 	   "\nusing new Allocation " + alloc.getUID()+
            "\nvia rule["+matchingRuleIndex+"]: "+
-           expandedRules[matchingRuleIndex]));
+           expandedRules[matchingRuleIndex]);
     }
   } // end of publishAllocation
 
@@ -1732,8 +1723,8 @@ public class AllocatorPlugIn
     Disposition disp = theLDMF.createFailedDisposition(task.getPlan(), task, estAR);
 
     publishAddAfter(disp, this.taskRespPubDelay);
-    if (log.isApplicable(log.VERBOSE)) {
-      log.log(this, log.VERBOSE, "publishFailureDisposition: " + this + " publishing failure: " + disp);
+    if (log.isDebugEnabled()) {
+      log.info("publishFailureDisposition: " + this + " publishing failure: " + disp);
     }
   }
 
@@ -1772,6 +1763,7 @@ public class AllocatorPlugIn
      */
     private final String task;
 
+    private transient Logger log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
     /**
      * String for the single required asset role, or a Collection of 
      *   Strings for multiple (UNION) required roles.
@@ -1836,7 +1828,9 @@ public class AllocatorPlugIn
       // If its an ABC LocalAsset, treat it separately
       if (asset instanceof LocalAsset) {
 	LocalAsset lasset = (LocalAsset)asset;
-	//System.out.println("TESTING- got a local Asset to match: " + lasset);
+        if(log.isDebugEnabled()) {
+          log.debug("TESTING- got a local Asset to match: " + lasset);
+        }
 	RolesPG rolesPG = 
 	  ((lasset != null) ?  lasset.getRolesPG() : null);
 	if (rolesPG == null) {

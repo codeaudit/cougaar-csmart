@@ -50,6 +50,8 @@ import org.cougaar.util.DBConnectionPool;
 
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.cdata.*;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * This class takes a structure of ComponentData objects and populates
@@ -73,6 +75,8 @@ public class PopulateDb extends PDbBase {
     private DBConflictHandler conflictHandler;
     private boolean keepAll = false;
     private boolean overwriteAll = false;
+
+  private transient Logger log; 
 
     /**
      * Inner class to serve as the key to information about
@@ -189,6 +193,8 @@ public class PopulateDb extends PDbBase {
         throws SQLException, IOException
     {
         super();
+        log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+
         if (cmtType == null) throw new IllegalArgumentException("null cmtType");
         if (hnaType == null) throw new IllegalArgumentException("null hnaType");
         if (csmiType == null) throw new IllegalArgumentException("null csmiType");
@@ -791,7 +797,9 @@ public class PopulateDb extends PDbBase {
                 try {
                     executeUpdate(pstmt2, query);
                 } catch (SQLException e) {
-                    System.err.println("SQLException query: " + query);
+                  if(log.isDebugEnabled()) {
+                    log.error("SQLException query: " + query, e);
+                  }
                     throw e;
                 } finally {
                     pstmt2.close();

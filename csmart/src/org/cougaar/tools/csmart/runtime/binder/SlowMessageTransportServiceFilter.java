@@ -31,6 +31,8 @@ import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.node.*;
 import org.cougaar.core.mts.*;
 import org.cougaar.core.service.MessageTransportService;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * A <code>ServiceFilter</code> to wrap the <code>MessageTransportService</code> 
@@ -49,14 +51,16 @@ import org.cougaar.core.service.MessageTransportService;
 public class SlowMessageTransportServiceFilter 
   extends ServiceFilter 
 {
-  private static final boolean VERBOSE = false;
-
   private double samplesPerSecond;
   private double inMessagesPerSecond;
   private double outMessagesPerSecond;
+  private transient Logger log;
 
   public SlowMessageTransportServiceFilter() {
-    System.out.println("\n\n SlowMT created\n\n");
+    log = CSMART.createLogger("org.cougaar.tools.csmart.log.binder");
+    if(log.isDebugEnabled()) {
+      log.info("\n\n SlowMT created\n\n");
+    }
   }
 
   protected Class getBinderClass(Object child) {
@@ -101,7 +105,9 @@ public class SlowMessageTransportServiceFilter
       MessageTransportService origMT,
       Object requestor) {
 
-    System.out.println("\n\nCreate slow MT for "+requestor+"\n\n");
+    if(log.isDebugEnabled()) {
+      log.info("\n\nCreate slow MT for "+requestor+"\n\n");
+    }
 
     // create a new wrapped MessageTransportService
     //
@@ -166,10 +172,13 @@ public class SlowMessageTransportServiceFilter
       extends FilteringServiceBroker 
     {
       private SlowMessageTransportServiceProxy smt;
+      private transient Logger log;
+
       public SlowMessageTransportFilteringServiceBroker(ServiceBroker sb) {
         super(sb);
-        if (VERBOSE) {
-          System.out.println("created smtfsb with "+sb);
+        log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
+        if (log.isDebugEnabled()) {
+          log.debug("created smtfsb with "+sb);
         }
       }
       public Object getService(
@@ -177,14 +186,14 @@ public class SlowMessageTransportServiceFilter
           Class serviceClass,
           ServiceRevokedListener srl) {
         if (serviceClass == SlowMessageTransportServiceProxyController.class) {
-          if (VERBOSE) {
-            System.out.println("lookup controller!");
+          if (log.isDebugEnabled()) {
+            log.debug("lookup controller!");
           }
           // request for the Controller API for our wrapped service
           return smt;
         } else {
-          if (VERBOSE) {
-            System.out.println("smtfsb.askSuper for "+serviceClass);
+          if (log.isDebugEnabled()) {
+            log.debug("smtfsb.askSuper for "+serviceClass);
           }
           return super.getService(requestor, serviceClass, srl);
         }
@@ -193,12 +202,12 @@ public class SlowMessageTransportServiceFilter
           Object service, 
           Class serviceClass, 
           Object client) {
-        if (VERBOSE) {
-          System.out.println("getServiceProxy");
+        if (log.isDebugEnabled()) {
+          log.debug("getServiceProxy");
         }
         if (service instanceof MessageTransportService) {
-          if (VERBOSE) {
-            System.out.println("get mt service");
+          if (log.isDebugEnabled()) {
+            log.debug("get mt service");
           }
           if (smt == null) {
             // create a new wrapped MessageTransportService
@@ -209,8 +218,8 @@ public class SlowMessageTransportServiceFilter
           }
           return smt;
         } else {
-          if (VERBOSE) {
-            System.out.println("lack other service: "+serviceClass);
+          if (log.isDebugEnabled()) {
+            log.debug("lack other service: "+serviceClass);
           }
         }
         return null;

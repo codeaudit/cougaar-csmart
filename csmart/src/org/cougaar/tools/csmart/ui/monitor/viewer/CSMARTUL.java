@@ -65,6 +65,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 import javax.swing.*;
+import org.cougaar.util.log.Logger;
 
 /**
  * The user interface for the CSMART Society.
@@ -108,6 +109,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private static ArrayList myWindows = new ArrayList();
   private static Experiment experiment;
   private static MyExperimentListener listener;
+
+  private transient Logger log;
 
   // configure what views to support
   private static final String[] views = {
@@ -171,6 +174,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   
   public CSMARTUL(CSMART csmart) {
     this.csmart = csmart;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+
     refreshAgents();
     // create one version of properties for all objects
     // and set them in CSMARTGraph because it can't address CSMARTUL
@@ -318,7 +323,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       } else if (event.eventType == NamedFrame.Event.REMOVED) {
         JMenuItem menuItem = (JMenuItem) titleToMenuItem.get(event.title);
         if (menuItem == null) {
-          System.err.println("CSMARTUL: No window menu item for " + event.title);
+          if(log.isDebugEnabled()) {
+            log.error("CSMARTUL: No window menu item for " + event.title);
+          }
         } else {
           windowMenu.remove(menuItem);
           titleToMenuItem.remove(event.title);
@@ -326,7 +333,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       } else if (event.eventType == NamedFrame.Event.CHANGED) {
 	JMenuItem menuItem = (JMenuItem)titleToMenuItem.get(event.prevTitle);
         if (menuItem == null) {
-          System.err.println("CSMARTUL: No window menu item for " + event.title);
+          if(log.isDebugEnabled()) {
+            log.error("CSMARTUL: No window menu item for " + event.title);
+          }
         } else {
           windowMenu.remove(menuItem);
           titleToMenuItem.remove(event.prevTitle);
@@ -471,6 +480,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private static void getAgentURL() {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+
     if (agentURL != null)
       return; // only ask user for agent locations once
     JTextField tf = 
@@ -503,7 +514,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 	try {
 	  agentPort = Integer.parseInt(s);
 	} catch (Exception e) {
-	  System.out.println("CSMARTUL: " + e);
+          if(log.isDebugEnabled()) {
+            log.error("CSMARTUL: " + e);
+          }
 	}
       }
     }
@@ -580,6 +593,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
                                             ArrayList parameterNames,
                                             ArrayList parameterValues,
                                             int limit) {
+
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+
     ServletResult servletResult =
       ClientServletUtil.getCollectionFromAgents(agentURLs, servletName,
                                                 parameterNames, 
@@ -602,7 +618,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
           try {
             objectsFromServlet.addAll(col);
           } catch (Exception e) {
-            System.out.println("CSMARTUL can't add results to collection: " + e);
+            if(log.isDebugEnabled()) {
+              log.error("CSMARTUL can't add results to collection: " + e);
+            }
           }
         }
       } else { // these are the agents we couldn't contact
@@ -645,14 +663,18 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private static void processOrganizationAssets(Collection orgAssets) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+
     communityToAgents = new Hashtable();
     agentToCommunity = new Hashtable();
     agentToURL = new Hashtable();
     for (Iterator i = orgAssets.iterator(); i.hasNext(); ) {
       Object o = i.next();
       if (!(o instanceof PropertyTree)) {
-	System.out.println("CSMARTUL: expected PropertyTree, got: " + 
-			   o.getClass());
+        if(log.isDebugEnabled()) {
+          log.warn("CSMARTUL: expected PropertyTree, got: " + 
+                   o.getClass());
+        }
 	continue;
       }
       PropertyTree properties = (PropertyTree)o;
@@ -665,7 +687,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       if (agents == null) {
 	agents = new Vector();
 	agents.addElement(agentName);
-        //        System.out.println("Adding agent name: " + agentName);
+        if(log.isDebugEnabled()) {
+          log.debug("Adding agent name: " + agentName);
+        }
 	communityToAgents.put(communityName, agents);
       } else
 	agents.addElement(agentName);
@@ -790,13 +814,16 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       } else {
 	nDuplicates++;
       }
+
       // for debugging
-      //      Set keys = properties.keySet();
-      //      System.out.println("Property names/values........");
-      //      for (Iterator j = keys.iterator(); j.hasNext(); ) {
-      //	String s = (String)j.next();
-      //	System.out.println(s + "," + properties.get(s));
-      //      }
+      if(log.isDebugEnabled()) {
+        Set keys = properties.keySet();
+        log.debug("Property names/values........");
+        for (Iterator j = keys.iterator(); j.hasNext(); ) {
+          String s = (String)j.next();
+          log.debug(s + "," + properties.get(s));
+        }
+      }
       // end for debugging
 
     }
@@ -844,7 +871,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     try {
       limit = Integer.parseInt(sLimit);
     } catch (NumberFormatException nfe) {
-      System.err.println("Illegal number: "+sLimit);
+      if(log.isDebugEnabled()) {
+        log.error("Illegal number: "+sLimit);
+      }
       return;
     }
     String sIsDown = JOptionPane.showInputDialog("TraceChildren (true/false): ");
@@ -955,8 +984,10 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     for (Iterator i = objectsFromServlet.iterator(); i.hasNext(); ) {
       Object o = i.next();
       if (!(o instanceof PropertyTree)) {
-	System.out.println("CSMARTUL: expected PropertyTree, got: " + 
-			   o.getClass());
+        if(log.isDebugEnabled()) {
+          log.warn("CSMARTUL: expected PropertyTree, got: " + 
+                             o.getClass());
+        }
 	continue;
       }
       PropertyTree properties = (PropertyTree)o;
@@ -990,7 +1021,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
               // so that graphing "one side" of the relationship is ok
               //              node.addOutgoingLink(relatedToUID);
               //            else
-              System.out.println("Unknown relationship: " + relatedToName);
+              if(log.isDebugEnabled()) {
+                log.info("Unknown relationship: " + relatedToName);
+              }
           }
         }
       }
@@ -1008,7 +1041,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       getObjectsFromServlet(ClientServletUtil.METRICS_SERVLET);
     if (objectsFromServlet == null)
       return;
-    System.out.println("Received metrics: " + objectsFromServlet.size());
+    if(log.isDebugEnabled()) {
+      log.info("Received metrics: " + objectsFromServlet.size());
+    }
 
     ArrayList names = new ArrayList();
     ArrayList data = new ArrayList();

@@ -32,6 +32,8 @@ import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * ConfigurableComponent to manage the agents at a single level. Such
@@ -44,6 +46,8 @@ public class ScalabilityXLevel
     implements Serializable
 {
     private static final long serialVersionUID = -1866337426260177284L;
+    
+  private transient Logger log;
 
     public static final String PROP_AGENTCOUNT = "Agent Count";
     public static final Object PROP_AGENTCOUNT_DFLT = new Integer(1);
@@ -115,7 +119,10 @@ public class ScalabilityXLevel
                         p.setHelp(myProp.getHelp());
                     }
                 }
-		//                System.out.println("Hide " + p.getName());
+                if(log.isDebugEnabled()) {
+                  log.debug("Hide " + p.getName());
+                }
+
                 setPropertyVisible(p, false); // Hide this.
             }
         }
@@ -127,6 +134,7 @@ public class ScalabilityXLevel
         super("lvl" + level);
         this.level = level;
         this.superior = superior;
+        log = CSMART.createLogger("org.cougaar.tools.csmart.society.scalability");
     }
 
     public void setCustomers(List customers) {
@@ -185,7 +193,6 @@ public class ScalabilityXLevel
             c.addPropertiesListener(childPropertiesListener);
             addChild(c);
             c.initProperties();
-//              c.printAllProperties(System.out);
         }
     }
 }

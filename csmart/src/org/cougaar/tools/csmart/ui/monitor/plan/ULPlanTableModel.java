@@ -29,11 +29,14 @@ import att.grappa.Node;
 
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.util.PropertyTree;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class ULPlanTableModel extends AbstractTableModel {
   Vector names;
   Vector values;
   Node node;
+  private transient Logger log;
 
   /**
    * Create table model for the specified node.
@@ -44,6 +47,7 @@ public class ULPlanTableModel extends AbstractTableModel {
 
   public ULPlanTableModel(Node node) {
     this.node = node;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.plan");
     names = new Vector();
     values = new Vector();
     Enumeration keys = node.getLocalAttributeKeys();
@@ -150,8 +154,10 @@ public class ULPlanTableModel extends AbstractTableModel {
   private void addAttribute(String name) {
     Attribute a = node.getLocalAttribute(name);
     if (a == null) {
-      //      System.out.println("ULPlanTableModel: attribute not found: " +
-      //			 name);
+      if(log.isDebugEnabled()) {
+        log.debug("ULPlanTableModel: attribute not found: " +
+                  name);
+      }
       return;
     }
     names.addElement(name);
@@ -166,7 +172,9 @@ public class ULPlanTableModel extends AbstractTableModel {
   private void addAssetPropertyAttribute(String name, String prefix) {
     int i = name.indexOf('_', prefix.length()+1);
     if (i == -1) {
-      System.out.println("Bad prefix: " + prefix + " for name: " + name);
+      if(log.isDebugEnabled()) {
+        log.debug("Bad prefix: " + prefix + " for name: " + name);
+      }
       names.addElement(name); // badly formed prefix
     } else
       names.addElement(name.substring(i+1));

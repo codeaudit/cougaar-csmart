@@ -58,6 +58,8 @@ import java.text.NumberFormat;
 import java.util.*;
 
 import org.cougaar.tools.scalability.performance.jni.CpuClock;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Collect statistics on Agent operation.<br>
@@ -179,6 +181,8 @@ public class MetricsPlugin
   private long timeFirstMyTask = 0l;
   private String searchVerb = null;
 
+  private transient Logger log;
+
   // This plugin only wants the statistics gathering tasks.
   private IncrementalSubscription myTasks;
   public UnaryPredicate myTasksPredicate = new UnaryPredicate() {
@@ -242,6 +246,7 @@ public class MetricsPlugin
           
   public void setupSubscriptions()
   {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
     // Is this necessary?
     // This asset, in this plugin, is only used to be the place
     // control tasks are allocated to
@@ -344,14 +349,14 @@ public class MetricsPlugin
       } // end of if have more than 2 params
       
       if (params.size() > 7) {
-	if (log.isApplicable(log.PROBLEM)) {
+	if (log.isDebugEnabled()) {
 	  // Explain the parameters correctly...
 	  // wantBBStats
 	  // wantProtoRegStats
 	  // wantNodeStats
 	  // wantMessStats -- ON by default
 	  // wantMessWatchStats
-	  log.log(this, log.PROBLEM, "MetricsPlugin Usage: [[<directory name to write results in>],[<Task Verb to search for>],[<1 or 0>], [<1 or 0>],[<1 or 0>],[<1 or 0>],[<1 or 0>]] -- where the [1/0] indicates turning on or off the following services for Metrics collection: BlackboardService, ProtypeRegistryService, NodeMetricsService, MessageStatsService, and MessageWatcherService. Default is to use only the MessageStatsService");
+	  log.error("MetricsPlugin Usage: [[<directory name to write results in>],[<Task Verb to search for>],[<1 or 0>], [<1 or 0>],[<1 or 0>],[<1 or 0>],[<1 or 0>]] -- where the [1/0] indicates turning on or off the following services for Metrics collection: BlackboardService, ProtypeRegistryService, NodeMetricsService, MessageStatsService, and MessageWatcherService. Default is to use only the MessageStatsService");
 	}
 	// return;
       }
@@ -361,15 +366,15 @@ public class MetricsPlugin
       path = path + File.separator;
     }
 
-    if (log.isApplicable(log.DEBUG)) {
-      log.log(this, log.DEBUG, this + "Writing " + path + ourCluster + RESULTS_FILENAME_SUFFIX);
+    if (log.isDebugEnabled()) {
+      log.debug("Writing " + path + ourCluster + RESULTS_FILENAME_SUFFIX);
     }
     
     try {
       writer = new PrintWriter(new FileWriter(path + ourCluster + RESULTS_FILENAME_SUFFIX));
     } catch (IOException ioe) {
-      if (log.isApplicable(log.SEVERE)) {
-	log.log(this, log.SEVERE, "Fatal IOException opening statistics file: " + path + ourCluster + RESULTS_FILENAME_SUFFIX);
+      if (log.isDebugEnabled()) {
+	log.debug("Fatal IOException opening statistics file: " + path + ourCluster + RESULTS_FILENAME_SUFFIX);
       }
       // should this really exit?
       //System.exit(1);
@@ -394,8 +399,8 @@ public class MetricsPlugin
 							     }
 							   }
 							 });
-      if (log.isApplicable(log.VERBOSE)) {
-	log.log(this, log.VERBOSE, this + ": MessageStatsService is: " + messageStatsService);
+      if (log.isDebugEnabled()) {
+	log.debug(": MessageStatsService is: " + messageStatsService);
       }
     } // end of block on messStats
   } // end of setupSubscriptions()
@@ -579,8 +584,8 @@ public class MetricsPlugin
   private void finishStatistics() {
     writer.close();
     if (writer.checkError()) {
-      if (log.isApplicable(log.PROBLEM)) {
-	log.log(this, log.PROBLEM, "Error writing statistics file");
+      if (log.isDebugEnabled()) {
+	log.error("Error writing statistics file");
       }
     }
   }
@@ -719,59 +724,58 @@ public class MetricsPlugin
 
     writer.println();
     
-    if (log.isApplicable(log.DEBUG)) {
-      log.log(this, log.DEBUG, "Duration     : " + timeFormat.format(elapsedTime/1000.0) + "\n" + 
+    if (log.isDebugEnabled()) {
+      log.debug("Duration     : " + timeFormat.format(elapsedTime/1000.0) + "\n" + 
 	      "CPU          : " + timeFormat.format(cpuTime/1000.0) + "\n" + 
 	      "Used Memory  : " + memoryFormat.format(usedMemory/(1024.0*1024.0)) + "\n" + 
 	      "Total Memory : " + memoryFormat.format(totalMemory/(1024.0*1024.0)) + "\n");
       if (wantMessStats) {
-	log.log(this, log.DEBUG, 
+	log.debug(
   	      "Message Queue: " + averageMessageQueueLength + "\n" + 
   	      "Message Bytes: " + totalMessageBytes + "\n" + 
 		"Message Count: " + totalMessageCount + "\n");
       }
       
-      log.log(this, log.DEBUG, 
-	      "Tasks Done   : " + deltaPlanElementCount);
+      log.debug("Tasks Done   : " + deltaPlanElementCount);
       
       if (myTaskSearch != null) {
 	if (timeFirstMyTask == 0l) {
-	  log.log(this, log.DEBUG, "Time (sec) since first task of Verb " + searchVerb + ": <Not seen yet>\n");
+	  log.debug("Time (sec) since first task of Verb " + searchVerb + ": <Not seen yet>\n");
 	} else {
-	  log.log(this, log.DEBUG, "Time (sec) since first task of Verb " + searchVerb + ": " + timeDelta + "\n");
+	  log.debug("Time (sec) since first task of Verb " + searchVerb + ": " + timeDelta + "\n");
 	}
-	log.log(this, log.DEBUG, "Num Tasks this interval of Verb " + searchVerb + ": " + countMyTasksThisInterval + "\n");
-	log.log(this, log.DEBUG, "Total Tasks seen with Verb " + searchVerb + ": " + countMyTasks + "\n");
+	log.debug("Num Tasks this interval of Verb " + searchVerb + ": " + countMyTasksThisInterval + "\n");
+	log.debug("Total Tasks seen with Verb " + searchVerb + ": " + countMyTasks + "\n");
       }
       
       // Blackboard stats
       if (wantBBStats) {
-	log.log(this, log.DEBUG, "Total Assets on BBoard: " + assetCount + "\n");
-	log.log(this, log.DEBUG, "Total PlanElements on BBoard: " + planElementCount + "\n");
-	log.log(this, log.DEBUG, "Total Tasks on BBoard: " + bbTaskCount + "\n");
-	log.log(this, log.DEBUG, "Total Objects on BBoard: " + bbObjCount + "\n");
+	log.debug("Total Assets on BBoard: " + assetCount + "\n");
+	log.debug("Total PlanElements on BBoard: " + planElementCount + "\n");
+	log.debug("Total Tasks on BBoard: " + bbTaskCount + "\n");
+	log.debug("Total Objects on BBoard: " + bbObjCount + "\n");
       }
       
       // ProtypeRegistryStats
       if (wantProtoRegStats) {
-	log.log(this, log.DEBUG, "Cached Prototypes: " + cachedPrototypeCount + "\n");
-	log.log(this, log.DEBUG, "Property Providers: " + propProvCount + "\n");
-	log.log(this, log.DEBUG, "Prototype Providers: " + protoProvCount + "\n");
+	log.debug("Cached Prototypes: " + cachedPrototypeCount + "\n");
+	log.debug("Property Providers: " + propProvCount + "\n");
+	log.debug("Prototype Providers: " + protoProvCount + "\n");
       }
       
       // Node Statistics
       if (wantNodeStats) {
-	log.log(this, log.DEBUG, "Active COUGAAR Threads: " + activeThreadCount + "\n");
-	log.log(this, log.DEBUG, "Free memory in Node's allocation (bytes): " + freeMemory + "\n");
-	log.log(this, log.DEBUG, "Total memory for Node (bytes): " + totalMemory + "\n");
+	log.debug("Active COUGAAR Threads: " + activeThreadCount + "\n");
+	log.debug("Free memory in Node's allocation (bytes): " + freeMemory + "\n");
+	log.debug("Total memory for Node (bytes): " + totalMemory + "\n");
       }
 
       // MessageWatcher Stats
       if (wantMessWatchStats) {
-	log.log(this, log.DEBUG, "Directives received by Agent: " + directivesIn + "\n");
-	log.log(this, log.DEBUG, "Directives sent by Agent: " + directivesOut + "\n");
-	log.log(this, log.DEBUG, "Notifications received by Agent: " + notificationsIn + "\n");
-	log.log(this, log.DEBUG, "Notifications sent by Agent: " + notificationsOut + "\n");
+	log.debug("Directives received by Agent: " + directivesIn + "\n");
+	log.debug("Directives sent by Agent: " + directivesOut + "\n");
+	log.debug("Notifications received by Agent: " + notificationsIn + "\n");
+	log.debug("Notifications sent by Agent: " + notificationsOut + "\n");
       }
     }
     

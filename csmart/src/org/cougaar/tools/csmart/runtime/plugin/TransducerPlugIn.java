@@ -40,6 +40,8 @@ import org.cougaar.tools.csmart.runtime.ldm.event.ImpactModel;
 import org.cougaar.tools.csmart.runtime.ldm.event.InfrastructureEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.NewInfrastructureEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.IEFactory;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Translate <code>RealWorldEvent</code>s into <code>InfrastructureEvent</code>s<br>
@@ -64,6 +66,8 @@ import org.cougaar.tools.csmart.runtime.ldm.event.IEFactory;
 public class TransducerPlugIn extends CSMARTPlugIn {
   private IncrementalSubscription rweSub;
 
+  private transient Logger log;
+
   private Society world = null;
   
   // Subscribe to all RealWorldEvents
@@ -80,6 +84,8 @@ public class TransducerPlugIn extends CSMARTPlugIn {
    * and subscribe to RealWorldEvents
    */
   public void setupSubscriptions() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+
     world = new Society();
     theIEF = new IEFactory(theCSMARTF);
     
@@ -96,9 +102,9 @@ public class TransducerPlugIn extends CSMARTPlugIn {
    * For each <code>InfrastructureEvent</code> that it gives back, publish it.
    */
   public void execute() {
-    if(log.isApplicable(log.DEBUG)) {
+    if(log.isDebugEnabled()) {
       String msg = "execute: " + this;
-      log.log(this, log.DEBUG, msg);
+      log.debug(msg);
     }
     long currentTime = currentTimeMillis();
 
@@ -107,8 +113,8 @@ public class TransducerPlugIn extends CSMARTPlugIn {
       RealWorldEvent rwe = (RealWorldEvent)addedRWEs.nextElement();
       if (rwe == null) {
 	// error!
-	if (log.isApplicable(log.PROBLEM)) {
-	  log.log(this, log.PROBLEM, "execute: " + this + " got null RWE on subscription");
+	if (log.isDebugEnabled()) {
+	  log.error("execute: " + this + " got null RWE on subscription");
 	}
 	continue;
       }
@@ -116,13 +122,13 @@ public class TransducerPlugIn extends CSMARTPlugIn {
       ImpactModel model = rwe.getModel();
       if (model == null) {
 	// error!
-	if (log.isApplicable(log.PROBLEM)) {
-	  log.log(this, log.PROBLEM, "execute: " + this + " got null RWE model from event: " + rwe);
+	if (log.isDebugEnabled()) {
+	  log.error("execute: " + this + " got null RWE model from event: " + rwe);
 	}
 	continue;
       }
-      if (log.isApplicable(log.DEBUG)) {
-	log.log(this, log.DEBUG, "execute: " + this + ": about to get impacts of " + rwe);
+      if (log.isDebugEnabled()) {
+	log.debug("execute: " + this + ": about to get impacts of " + rwe);
       }
       // give the model the world and a factory
       Iterator effects = model.getImpact(world, theIEF);
@@ -131,33 +137,33 @@ public class TransducerPlugIn extends CSMARTPlugIn {
       
       if (effects == null) {
 	// error!  No impact!
-	if (log.isApplicable(log.DEBUG)) {
-	  log.log(this, log.DEBUG, "execute: " + this + " null effects on the world for " + rwe);
+	if (log.isDebugEnabled()) {
+	  log.debug("execute: " + this + " null effects on the world for " + rwe);
 	}
 	continue;
       } else if (effects.equals(EmptyIterator.iterator())) {
 	// error!  No impact!
-	if (log.isApplicable(log.DEBUG)) {
-	  log.log(this, log.DEBUG, "execute: " + this + " empty Iterator effects on the world for " + rwe);
+	if (log.isDebugEnabled()) {
+	  log.debug("execute: " + this + " empty Iterator effects on the world for " + rwe);
 	}
 	continue;
       } else if (!(effects.hasNext())) {
 	// error!  No impact!
-	if (log.isApplicable(log.DEBUG)) {
-	  log.log(this, log.DEBUG, "execute: " + this + " iterator wo next effects on the world for " + rwe);
+	if (log.isDebugEnabled()) {
+	  log.debug("execute: " + this + " iterator wo next effects on the world for " + rwe);
 	}
 	continue;
       } else {
-	if (log.isApplicable(log.DEBUG)) {
-	  log.log(this, log.DEBUG, "execute: " + this + " got effects for " + rwe);
+	if (log.isDebugEnabled()) {
+	  log.debug("execute: " + this + " got effects for " + rwe);
 	}
 	for ( ; effects.hasNext(); ) {
 	  // publish each of the events
 	  InfrastructureEvent ie = (InfrastructureEvent)effects.next();
 	  if (ie != null) {
 	    // log something
-	    if (log.isApplicable(log.DEBUG)) {
-	      log.log(this, log.DEBUG, "execute: " + this + " publishing effect: " + ie);
+	    if (log.isDebugEnabled()) {
+	      log.debug("execute: " + this + " publishing effect: " + ie);
 	    }
 	    // Right here, I could not publish ies destined to a Customer Agent
 	    // Note that isolating a customer node is OK, just not
@@ -166,8 +172,8 @@ public class TransducerPlugIn extends CSMARTPlugIn {
 	      // This is heading to a customer agent!
 	      if (ie.isNodeType()) {
 		// to effect the Node (vs the wire)
-//  		if (log.isApplicable(log.DEBUG)) {
-//  		  log.log(this, log.DEBUG, "execute: " + this + " not publishing effect on Customer agent node: " + ie);
+//  		if (log.isDebugEnabled()) {
+//  		  log.debug("execute: " + this + " not publishing effect on Customer agent node: " + ie);
 //  		}
 //  		continue;
 	      }
@@ -182,8 +188,8 @@ public class TransducerPlugIn extends CSMARTPlugIn {
 	    //	    publishAdd(ie);
 	    publishAddAt(ie, ie.getTime());
 	  } else {
-	    if (log.isApplicable(log.PROBLEM)) {
-	      log.log(this, log.PROBLEM, "execute: " + this + " got null IE as an effect!");
+	    if (log.isDebugEnabled()) {
+	      log.error("execute: " + this + " got null IE as an effect!");
 	    }
 	  }
 	} // end of loop to publish the IEs
@@ -232,8 +238,8 @@ public class TransducerPlugIn extends CSMARTPlugIn {
 		// create a new Agent
 		Agent newAg = processInputLine(line);
 		if (newAg != null) {
-		  if (log.isApplicable(log.VERBOSE)) {
-		    log.log(this, log.VERBOSE, "parseParameters: " + this + " adding Agent to the world: " + newAg);
+		  if (log.isDebugEnabled()) {
+		    log.debug("parseParameters: " + this + " adding Agent to the world: " + newAg);
 		  }
 		  world.addAgent(newAg);
 		}
@@ -242,7 +248,9 @@ public class TransducerPlugIn extends CSMARTPlugIn {
 	      if(line.length() == 0) {
 		// Empty line with a CR. This is fin.
 	      } else {
-		System.err.println("Got an expection parsing input file.");
+                if(log.isDebugEnabled()) {
+                  log.error("Got an expection parsing input file.", e);
+                }
 	      }
 	    }
 	  }
@@ -250,8 +258,8 @@ public class TransducerPlugIn extends CSMARTPlugIn {
 	in.close();
       } catch (IOException e) {
 	// error reading input data!
-	if (log.isApplicable(log.PROBLEM)) {
-	  log.log(this, log.PROBLEM, "parseParameters: " + this + " failed to read input data.");
+	if (log.isDebugEnabled()) {
+	  log.error("parseParameters: " + this + " failed to read input data.");
 	}
       }
     }
@@ -264,8 +272,8 @@ public class TransducerPlugIn extends CSMARTPlugIn {
       // error -- need at least 3 words on the line!
 
       // log something
-      if (log.isApplicable(log.PROBLEM)) {
-	log.log(this, log.PROBLEM, "processInputLine: " + this + " got Agent description missing elements: " + line);
+      if (log.isDebugEnabled()) {
+	log.error("processInputLine: " + this + " got Agent description missing elements: " + line);
       }
       return null;
     }
@@ -277,8 +285,8 @@ public class TransducerPlugIn extends CSMARTPlugIn {
       lat = Float.parseFloat((String)words.elementAt(1));
       lon = Float.parseFloat((String)words.elementAt(2));
     } catch (NumberFormatException nfe) {
-      if (log.isApplicable(log.PROBLEM)) {
-	log.log(this, log.PROBLEM, "processInputLine: " + this + " got non-float Lat or Lon: " + (String)words.elementAt(1) + ", " + (String)words.elementAt(2));
+      if (log.isDebugEnabled()) {
+	log.error("processInputLine: " + this + " got non-float Lat or Lon: " + (String)words.elementAt(1) + ", " + (String)words.elementAt(2));
       }
       return null;
     }

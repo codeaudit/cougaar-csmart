@@ -28,6 +28,8 @@ import java.awt.Color;
 import java.awt.Event;
 import java.awt.Font;
 import javax.swing.BorderFactory;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * StripChart.java
@@ -39,9 +41,11 @@ import javax.swing.BorderFactory;
 public class StripChart extends JCChart {
   Color tan = new Color(0xe2,0xc4,0x9c);
   Color lightTan = new Color(0xff,0xe2,0xba);
+  Logger log;
 
   public StripChart() {
     super(JCChart.PLOT);
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
   }
 
   public void init(ChartDataModel data) {
@@ -81,7 +85,9 @@ public class StripChart extends JCChart {
     try {
       yTitle.setRotation(ChartText.DEG_270);
     } catch (Exception e) {
-      System.out.println("StripChart: " + e);
+      if(log.isDebugEnabled()) {
+        log.error("StripChart: " + e);
+      }
     }
     yaxis.setTitle(yTitle);
 

@@ -28,6 +28,8 @@ import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyAlias;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 public class ScalabilityXPlugIn
   extends ConfigurableComponent
@@ -39,9 +41,12 @@ public class ScalabilityXPlugIn
   private int nParameters = 0;
   private String pluginClass;
 
+  private transient Logger log;
+
   public ScalabilityXPlugIn(String name, String pluginClass) {
     super(name);
     this.pluginClass = pluginClass;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.society.scalability");
   }
 
   public void initProperties() {
@@ -57,13 +62,17 @@ public class ScalabilityXPlugIn
 
   public Property addParameter(final int param) {
     Property result = addInvisibleProperty(PROP_PARAM + nParameters++, new Integer(param));
-//      System.out.println(getShortName() + " parameter " + (nParameters-1) + " = " + result.getValue());
+      if(log.isDebugEnabled()) {
+        log.debug(getShortName() + " parameter " + (nParameters-1) + " = " + result.getValue());
+      }
     return result;
   }
 
   public Property addParameter(final String param) {
     Property result = addInvisibleProperty(PROP_PARAM + nParameters++, param);
-//      System.out.println(getShortName() + " parameter " + (nParameters-1) + " = " + result.getValue());
+    if(log.isDebugEnabled()) {
+      log.debug(getShortName() + " parameter " + (nParameters-1) + " = " + result.getValue());
+    }
     return result;
   }
 
@@ -72,7 +81,9 @@ public class ScalabilityXPlugIn
    * property of our parnt.
    **/
   public Property addParameter(Property prop) {
-//      System.out.println(getShortName() + " parameter " + (nParameters) + " = " + prop.getValue());
+      if(log.isDebugEnabled()) {
+        log.debug(getShortName() + " parameter " + (nParameters) + " = " + prop.getValue());
+      }
     return addInvisibleProperty(new PropertyAlias(this, PROP_PARAM + nParameters++, prop));
   }
 

@@ -31,6 +31,8 @@ import org.cougaar.util.PropertyTree;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
 import org.cougaar.tools.csmart.ui.util.ServletResult;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Utility <tt>getFullThread(..)<tt> methods for multi-agent interaction
@@ -160,6 +162,8 @@ public final class ThreadUtils {
       int limit,
       Map agentToUIDs) {
 
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+
     boolean hasLimit = (limit >= 0);
     int remainingLimit = limit;
 
@@ -174,10 +178,12 @@ public final class ThreadUtils {
 
       if (VERBOSE) {
         // show the work-map
-        System.out.println("workMap["+workMap.size()+"]:");
-        Iterator iter = workMap.entrySet().iterator();
-        for (int x = 0; x < workMap.size(); x++) {
-          System.out.println("   "+x+"  "+iter.next());
+        if(log.isDebugEnabled()) {
+          log.debug("workMap["+workMap.size()+"]:");
+          Iterator iter = workMap.entrySet().iterator();
+          for (int x = 0; x < workMap.size(); x++) {
+            log.debug("   "+x+"  "+iter.next());
+          }
         }
       }
 
@@ -187,8 +193,9 @@ public final class ThreadUtils {
 
       // query the servlet
       if (VERBOSE) {
-        System.out.println(
-            "--query "+findAgentName+" ["+findUIDs.size()+"]--");
+        if(log.isDebugEnabled()) {
+          log.debug("--query "+findAgentName+" ["+findUIDs.size()+"]--");
+        }
       }
       List l = 
         getLocalThread(
@@ -199,7 +206,9 @@ public final class ThreadUtils {
             remainingLimit);
       int n = ((l != null) ? l.size() : 0);
       if (VERBOSE) {
-        System.out.println("--done["+n+"]--");
+        if(log.isDebugEnabled()) {
+          log.debug("--done["+n+"]--");
+        }
       }
 
       if (n <= 0) {
@@ -227,11 +236,13 @@ public final class ThreadUtils {
       for (int i = 0; i < n; i++) {
         PropertyTree pti = (PropertyTree)l.get(i);
         if (VERBOSE) {
-          System.out.println(
-              "  "+i+"  "+
-              pti.get("Object_Type")+
-              " "+
-              pti.get("UID"));
+          if(log.isDebugEnabled()) {
+            log.debug(
+                      "  "+i+"  "+
+                      pti.get("Object_Type")+
+                      " "+
+                      pti.get("UID"));
+          }
         }
         // switch on "isDown" -- let HotSpot optimize the loop
         if (isDown) {
@@ -242,8 +253,9 @@ public final class ThreadUtils {
             String allocTask = 
               (String)pti.get(PropertyNames.ALLOCATION_TASK_UID);
             if (VERBOSE) {
-              System.out.println(
-                  "trace agent: "+allocAgent+", uid: "+allocTask);
+              if(log.isDebugEnabled()) {
+                log.debug("trace agent: "+allocAgent+", uid: "+allocTask);
+              }
             }
             List toL = (List)workMap.get(allocAgent);
             if (toL == null) {
@@ -261,8 +273,9 @@ public final class ThreadUtils {
             String parentTask = 
               (String)pti.get(PropertyNames.TASK_PARENT_UID);
             if (VERBOSE) {
-              System.out.println(
-                  "trace agent: "+parentAgent+", uid: "+parentTask);
+              if(log.isDebugEnabled()) {
+                log.debug("trace agent: "+parentAgent+", uid: "+parentTask);
+              }
             }
             List toL = (List)workMap.get(parentAgent);
             if (toL == null) {

@@ -61,6 +61,11 @@ import org.cougaar.tools.csmart.ui.util.Util;
 
 import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.io.FileInputStream;
+import org.cougaar.util.ConfigFinder;
+import java.io.IOException;
 
 /**
  * Top level CSMART user interface.
@@ -653,7 +658,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     // the isRunnable flag is off, but we don't detect it
     if (!experiment.isRunnable()) {
       if (log.isDebugEnabled())
-        log.debug("CSMART: WARNING: experiment is not runnable");
+        log.warn("CSMART: WARNING: experiment is not runnable");
       enableConsoleTool(false);
       return;
     }
@@ -952,11 +957,29 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   private static LoggerFactory lf;
   static {
     lf = LoggerFactory.getInstance();
-//     Map map = new HashMap();
-//     map.put("org.cougaar.core.logging.log4j.rootCategory", "DEBUG, A1");
-//     map.put("org.cougaar.core.logging.log4j.appender.A1", "org.apache.log4j.FileAppender");
 
-    lf.configure(null); // Show I be setting these properties?
+    Properties defaults = new Properties();
+    defaults.setProperty("org.cougaar.core.logging.rootCategory", "WARN, A1");
+    defaults.setProperty("org.cougaar.core.logging.appender.A1",
+                         "org.apache.log4j.ConsoleAppender");
+    defaults.setProperty("org.cougaar.core.logging.appender.A1.Target", "System.out");
+    defaults.setProperty("org.cougaar.core.logging.appender.A1.layout", 
+                         "org.apache.log4j.PatternLayout");
+    defaults.setProperty("org.cougaar.core.logging.appender.A1.layout.ConversionPattern", 
+                         "%d{ABSOLUTE} %-5p [ %t] - %m%n");
+
+    Properties props = new Properties();
+    // Get the debug file.
+    ConfigFinder cf = ConfigFinder.getInstance();
+    try {
+      props. load(new FileInputStream(cf.locateFile("debug.properties")));
+    } catch(Exception e) {
+      System.err.println("Could not read debug properties file, using defaults");
+      e.printStackTrace();
+      props = null;
+    }
+
+    lf.configure((props == null) ? defaults : props);
   }
 
   /**
@@ -966,7 +989,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * @return a <code>Logger</code> value
    */
   public static Logger createLogger(Object requestor) {
+    //    System.out.println("using requestor");
     return lf.createLogger(requestor);
+  }
+
+  public static Logger createLogger(String name) {
+    return lf.createLogger(name);
   }
 
 }

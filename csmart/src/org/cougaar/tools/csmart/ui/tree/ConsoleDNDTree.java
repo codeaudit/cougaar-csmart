@@ -32,6 +32,8 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.ui.tree.*;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Provides method definitions for abstract methods in DNDTree.
@@ -41,6 +43,10 @@ import org.cougaar.tools.csmart.ui.tree.*;
  */
 
 public class ConsoleDNDTree extends DNDTree {
+
+  private transient Logger log;
+
+
   public static CSMARTDataFlavor agentFlavor =
     new CSMARTDataFlavor(DefaultMutableTreeNode.class,
                          AgentComponent.class,
@@ -69,6 +75,7 @@ public class ConsoleDNDTree extends DNDTree {
 
   public ConsoleDNDTree(DefaultTreeModel model) {
     super(model);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.tree");
   }
 
   protected boolean supportsMultiDrag() {
@@ -120,14 +127,22 @@ public class ConsoleDNDTree extends DNDTree {
       cto = (ConsoleTreeObject) userObject;
       for (int i = 0; i < flavors.length; i++) {
         if (cto.allowsDataFlavor(flavors[i])) {
-//            System.out.println(cto + " allows " + flavors[i]);
+          if(log.isDebugEnabled()) {
+            log.debug(cto + " allows " + flavors[i]);
+          }
           return DnDConstants.ACTION_MOVE;
         }
-//          System.out.println(cto + " disallows " + flavors[i]);
+        if(log.isDebugEnabled()) {
+          log.debug(cto + " disallows " + flavors[i]);
+        }
       }
-//        System.out.println(cto + " accepts none of the flavors");
+      if(log.isDebugEnabled()) {
+        log.debug(cto + " accepts none of the flavors");
+      }
     } else {
-//        System.out.println(target + " has type " + userObject.getClass());
+      if(log.isDebugEnabled()) {
+        log.debug(target + " has type " + userObject.getClass());
+      }
     }
     return DnDConstants.ACTION_NONE;
   }

@@ -26,6 +26,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import javax.swing.JComponent;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Borrowed from Cove.
@@ -40,16 +42,20 @@ public class ComponentPrinter implements Printable, Pageable {
     private boolean debug = false;
     private boolean disableDoubleBuffering = true;
     private double scale;
+  private transient Logger log;
 
     // Sadly, required for dealing with margins in NT
     private static final int x_margin_fudge_factor = 2;
 
 
     public ComponentPrinter(JComponent component, String jobName) {
+      log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
 	this.component = component;
 	job = PrinterJob.getPrinterJob();
 	if (job == null) {
-	    System.err.println("Couldn't find a printer!");
+          if(log.isDebugEnabled()) {
+	    log.error("Couldn't find a printer!");
+          }
 	} else {
 	    java.awt.Toolkit tk = java.awt.Toolkit.getDefaultToolkit();
 	    scale = 72.0/tk.getScreenResolution();
@@ -66,9 +72,10 @@ public class ComponentPrinter implements Printable, Pageable {
 	    if (frameWidth%pageWidth != 0) dimension.width++;
 	    dimension.height = (int) (frameHeight/pageHeight);
 	    if (frameHeight%pageHeight != 0) dimension.height++;
-	    if (debug) 
-		System.out.println("Page layout: " + 
-				   dimension.width + "," + dimension.height);
+              if(log.isDebugEnabled()) {
+                log.debug("Page layout: " + 
+                          dimension.width + "," + dimension.height);
+              }
 	    job.setPageable(this);
 	}
     }
@@ -91,7 +98,9 @@ public class ComponentPrinter implements Printable, Pageable {
 	try {
 	    job.print();
 	} catch (PrinterException e) {
-	    System.err.println("Print job failed: " + e);
+          if(log.isDebugEnabled()) {
+	    log.error("Print job failed: " + e);
+          }
 	}
     }
 
@@ -109,7 +118,9 @@ public class ComponentPrinter implements Printable, Pageable {
 	xTrans += x_margin_fudge_factor*format.getImageableX();
 	yTrans += format.getImageableY();
 
-	if (debug) System.out.println("Translation: " + xTrans + "," + yTrans);
+        if(log.isDebugEnabled()) {
+          log.debug("Translation: " + xTrans + "," + yTrans);
+        }
 
 	Graphics2D g2d = (Graphics2D) g;
 	g2d.scale(scale, scale);
@@ -119,7 +130,10 @@ public class ComponentPrinter implements Printable, Pageable {
 	component.print(g2d);
 	if (disableDoubleBuffering) component.setDoubleBuffered(true);
 
-	if (debug) System.out.println("done");
+        if(log.isDebugEnabled()) {
+          log.debug("done");
+        }
+
 	return Printable.PAGE_EXISTS;
     }
 

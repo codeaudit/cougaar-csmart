@@ -28,6 +28,10 @@ import org.cougaar.tools.csmart.core.property.range.Range;
 public class PropertyHelper {
   private static final Class[] stringArgType = {String.class};
 
+
+  public PropertyHelper() {
+  }
+
   private static Object valueFromString(Class cls, String s)
     throws InvalidPropertyValueException
   {
@@ -130,7 +134,6 @@ public class PropertyHelper {
         return validateStringArrayValue(validValues, newValue);
       return newValue;
     } else if (cls.equals(ArrayList.class)) {
-      // System.out.println("!!! validateValue - is ArrayList");
       if (!(newValue.getClass().getComponentType() == ArrayList.class)) {
         newValue = convertStringToArrayList(newValue.toString());
       }

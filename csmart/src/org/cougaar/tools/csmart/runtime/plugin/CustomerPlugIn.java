@@ -41,6 +41,8 @@ import org.cougaar.tools.csmart.runtime.ldm.asset.HappinessPG;
 import org.cougaar.tools.csmart.runtime.ldm.event.NewHappinessChangeEvent;
 import org.cougaar.tools.csmart.runtime.ldm.plugin.customer.*;
 import org.cougaar.tools.csmart.util.parser.TaskFileParser;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * A simple Customer - inject new <code>Task</code>s into the sytem,
@@ -77,6 +79,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
   private java.util.Random sharedRandom = new java.util.Random();
 
   private long pubDelay = 2000L;
+
+  private transient Logger log;
 
   private PlanElementPredicate peP = new PlanElementPredicate() {
       public boolean execute(PlanElement o) {
@@ -117,8 +121,10 @@ public class CustomerPlugIn extends CSMARTPlugIn {
    *
    */
   public void setupSubscriptions() {
-    if (log.isApplicable(log.VERY_VERBOSE)) {
-      log.log(this, log.VERY_VERBOSE, "setupSubscriptions:" + this + ":Entering");
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+
+    if (log.isDebugEnabled()) {
+      log.debug("setupSubscriptions:" + this + ":Entering");
     }
 
     peSub = (IncrementalSubscription) subscribe(peP);
@@ -172,8 +178,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
     if (taskFileName.equals("none")) {
       // New CSMART config UI puts this in if the customer is not to publish any tasks
       // So we're done here....
-      if (log.isApplicable(log.DEBUG)) {
-	log.log(this, log.DEBUG, "setupSubscriptions: " + this + " has no task file. Not publishing any tasks!");
+      if (log.isDebugEnabled()) {
+	log.debug("setupSubscriptions: " + this + " has no task file. Not publishing any tasks!");
       }
     } else {
       loadTasks(taskFileName);
@@ -196,8 +202,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
    * @param task a <code>SingleCustomerTask</code> value
    */
   private void publishTask(SingleCustomerTask task) {
-    if (log.isApplicable(log.VERY_VERBOSE)) {
-      log.log(this, log.VERY_VERBOSE, "publishTask: " + this + " entered");
+    if (log.isDebugEnabled()) {
+      log.debug("publishTask: " + this + " entered");
     }
     long pubTime;
 
@@ -237,14 +243,14 @@ public class CustomerPlugIn extends CSMARTPlugIn {
     
     pubTime += pubDelay;
 
-    if (log.isApplicable(log.VERY_VERBOSE)) {
-      log.log(this, log.VERBOSE, "publishTask:" + this + ": Rate: " + rate +
+    if (log.isDebugEnabled()) {
+      log.debug("publishTask:" + this + ": Rate: " + rate +
 	      ": pubTime: " + pubTime + " at curr time: " + currentTimeMillis());
     }
 
     if (pubTime > stopSIMTime) {
-      if (log.isApplicable(log.VERBOSE)) {
-	log.log(this, log.VERBOSE, 
+      if (log.isDebugEnabled()) {
+	log.info(
 		"publishTask: " + this + 
 		" not publishing task cause pubTime(" + pubTime + 
 		") > stopSimTime(" + stopSIMTime + ")");
@@ -272,8 +278,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 
     // then publishAfter it with Wake Time == pubTime
     nTask.setPlan(theLDMF.getRealityPlan());
-    if (log.isApplicable(log.VERY_VERBOSE)) {
-      log.log(this, log.VERY_VERBOSE, "publishTask: " + this + " about to publishAddAt new task: " + nTask);
+    if (log.isDebugEnabled()) {
+      log.debug("publishTask: " + this + " about to publishAddAt new task: " + nTask);
     }
     publishAddAt(nTask, pubTime);
 
@@ -296,8 +302,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
       tfp.load(fileName);
       tfp.parse();
     } catch (IOException e) {
-      if (log.isApplicable(log.SEVERE)) {
-	log.log(this, log.SEVERE, "loadTasks:" + this + ":Error parsing TaskFile");
+      if (log.isDebugEnabled()) {
+	log.debug("loadTasks:" + this + ":Error parsing TaskFile");
       }
     }
 
@@ -344,8 +350,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 
     Enumeration changedPEs = peSub.getChangedList();
     while(changedPEs.hasMoreElements()) {
-      if(log.isApplicable(log.VERY_VERBOSE)) {
-	log.log(this, log.VERY_VERBOSE, "execute:" + this +
+      if(log.isDebugEnabled()) {
+	log.debug("execute:" + this +
 		": got changed PlanElement from Subscription");
       }
 
@@ -358,8 +364,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 
 	// Make sure that this is the 
 	// Estimated Result changed.  Update Customer Happiness.
-	if(log.isApplicable(log.VERY_VERBOSE)) {
-	  log.log(this, log.VERY_VERBOSE, "execute:" + this +
+	if(log.isDebugEnabled()) {
+	  log.debug("execute:" + this +
 		  ": got changed, high-conf EstimatedResult from PlanElement");
 	}
 	
@@ -371,8 +377,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 	  String reason = estR.auxiliaryQuery(AuxiliaryQueryType.FAILURE_REASON);
 	  if (reason == null) 
 	    reason = "(no reason given)";
-	  if (log.isApplicable(log.VERBOSE)) {
-	    log.log(this, log.VERBOSE, "execute: " + this + " got failed task for reason: " + reason);
+	  if (log.isDebugEnabled()) {
+	    log.debug("execute: " + this + " got failed task for reason: " + reason);
 	  }
 	}
 
@@ -386,8 +392,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 	  currHappy = updateHappiness(changeval, pe, currHappy);
 	}
       } else {
-	if(log.isApplicable(log.VERY_VERBOSE)) {
-	  log.log(this, log.VERY_VERBOSE, "execute:" + this + ": EstimatedResult not high-conf on PlanElement");
+	if(log.isDebugEnabled()) {
+	  log.debug("execute:" + this + ": EstimatedResult not high-conf on PlanElement");
 	}
       }
     } // end of changedPEs while loop
@@ -400,8 +406,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
     while(newPEs.hasMoreElements()) {
       PlanElement pe = (PlanElement)newPEs.nextElement();
       if (pe instanceof Disposition) {
-	if (log.isApplicable(log.VERBOSE)) {
-	  log.log(this, log.VERBOSE, "execute: " + this + " got new Disposition");
+	if (log.isDebugEnabled()) {
+	  log.debug("execute: " + this + " got new Disposition");
 	}
 	// This is worth handling
 	AllocationResult estR = pe.getEstimatedResult();
@@ -423,8 +429,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 	    String reason = estR.auxiliaryQuery(AuxiliaryQueryType.FAILURE_REASON);
 	    if (reason == null) 
 	      reason = "(no reason given)";
-	    if (log.isApplicable(log.VERBOSE)) {
-	      log.log(this, log.VERBOSE, "execute: " + this + " got failed task for reason: " + reason);
+	    if (log.isDebugEnabled()) {
+	      log.debug("execute: " + this + " got failed task for reason: " + reason);
 	    }
 	  }
 	  CustAnnot annot = (CustAnnot)pe.getTask().getAnnotation();
@@ -434,8 +440,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 	  }
 	} else {
 	  // estR didn't change
-	  if(log.isApplicable(log.VERY_VERBOSE)) {
-	    log.log(this, log.VERY_VERBOSE, "execute:" + this + ": EstimatedResult not set on Disposition");
+	  if(log.isDebugEnabled()) {
+	    log.debug("execute:" + this + ": EstimatedResult not set on Disposition");
 	  }
 	}
       } else {
@@ -453,8 +459,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 //        }
 
       Task t = (Task)addedTasks.nextElement();
-      if (log.isApplicable(log.VERY_VERBOSE)) {
-	log.log(this, log.VERY_VERBOSE, "execute: " + this + " got added Task " + t.getUID() + " of Verb " + t.getVerb());
+      if (log.isDebugEnabled()) {
+	log.debug("execute: " + this + " got added Task " + t.getUID() + " of Verb " + t.getVerb());
       }
       double now = (double)currentTimeMillis();
       if(now < stopSIMTime) {
@@ -464,8 +470,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 //  	}
 	publishTask((SingleCustomerTask)tasks.get(t.getVerb().toString()));
       } else {
-	if(log.isApplicable(log.DEBUG)) {
-	  log.log(this, log.DEBUG, "execute: " + this + " not pubbing new Task cause " +
+	if(log.isDebugEnabled()) {
+	  log.info("execute: " + this + " not pubbing new Task cause " +
 		  "[" + (long)now + " >= " + (long)stopSIMTime + "]");
 	}
       }
@@ -529,8 +535,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
       (SingleCustomerTask) tasks.get(pe.getTask().getVerb().toString());
     vitality = st.getVitality();
 
-    if (log.isApplicable(log.VERY_VERBOSE)) {
-      log.log(this, log.VERY_VERBOSE, "updateHappiness:" + this + "(1 - " + vitality + 
+    if (log.isDebugEnabled()) {
+      log.debug("updateHappiness:" + this + "(1 - " + vitality + 
 	      ") * " + currentHappiness + " + " + taskResponse + " * " + vitality);
     }
 
@@ -569,8 +575,8 @@ public class CustomerPlugIn extends CSMARTPlugIn {
     hce.setSource(getAgentIdentifier());
     hce.setPublisher(this.toString());
     
-    if (log.isApplicable(log.DEBUG)) {
-      log.log(this, log.DEBUG, "updateHappiness:" + this + ": Created Event "+hce);
+    if (log.isDebugEnabled()) {
+      log.debug("updateHappiness:" + this + ": Created Event "+hce);
     }
 
     publishAdd(hce);

@@ -42,6 +42,8 @@ import org.cougaar.util.UnaryPredicate;
 import org.cougaar.planning.ldm.plan.AllocationResult;
 import org.cougaar.planning.ldm.plan.PlanElement;
 import org.cougaar.planning.ldm.plan.Task;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Servlet to gather Metrics for CSMART
@@ -56,10 +58,12 @@ public class MetricsServlet
   extends HttpServlet
 {
   private SimpleServletSupport support;
-  
+  private transient Logger log;
+
   public MetricsServlet(SimpleServletSupport support) {
     super();
     this.support = support;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
   }
   
   /* Reponds to the GET http method call 
@@ -110,6 +114,8 @@ public class MetricsServlet
      * the "support" from the outer class.
      */      
     private SimpleServletSupport support;
+
+    private transient Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
     
     /* Inner class constructor
      * 
@@ -163,8 +169,10 @@ public class MetricsServlet
 	  System.out.println("Sent Objects");  
 	}
       } catch (Exception e) {
-	System.out.println("CSMART_MetricsServlet Exception: " + e);
-	e.printStackTrace(); 
+        if(log.isDebugEnabled()) {
+          log.error("CSMART_MetricsServlet Exception", e);
+          e.printStackTrace();
+        }
       }
     }
     

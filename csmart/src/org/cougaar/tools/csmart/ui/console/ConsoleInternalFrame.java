@@ -56,6 +56,8 @@ import org.cougaar.tools.server.HostServesClient;
 import org.cougaar.tools.server.NodeEventFilter;
 import org.cougaar.tools.server.NodeServesClient;
 import org.cougaar.tools.server.system.ProcessStatus;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class ConsoleInternalFrame extends JInternalFrame {
   private static final String NODE_MENU = "Node";
@@ -108,6 +110,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private CSMARTConsole console;
   private Experiment experiment;
 
+  private transient Logger log;
+
   public ConsoleInternalFrame(NodeComponent node, 
                               ConsoleNodeListener listener,
                               JScrollPane pane,
@@ -126,6 +130,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
     this.logFileName = logFileName;
     this.nodeServer = nodeServer;
     this.console = console;
+
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
+
     consoleTextPane = (ConsoleTextPane)pane.getViewport().getView();
     // get host component by getting the experiment and 
     // searching its hosts for one with this node.
@@ -838,7 +845,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private void displayPlugIns(String agentName) {
     ComponentData societyComponentData = experiment.getSocietyComponentData();
     if (societyComponentData == null) {
-      System.out.println("ConsoleInternalFrame: Need to save experiment");
+      if(log.isDebugEnabled()) {
+        log.warn("ConsoleInternalFrame: Need to save experiment");
+      }
       return;
     }
     ComponentData[] children = societyComponentData.getChildren();

@@ -50,6 +50,8 @@ import org.cougaar.tools.csmart.core.property.name.SimpleName;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * This is the default configurable component implementation.
@@ -76,6 +78,8 @@ public abstract class ConfigurableComponent
   private transient EventListenerList listeners = null;
 
   private PropertiesListener myPropertiesListener = new MyPropertiesListener();
+
+  private transient Logger log;
 
   private class MyPropertiesListener
     implements PropertiesListener, ConfigurableComponentListener
@@ -172,6 +176,8 @@ public abstract class ConfigurableComponent
       name += "-" + ++nameCount;
     }
     myName = new ComponentName(null, name);
+
+    log = CSMART.createLogger("org.cougaar.tools.csmart.core.property");
   }
 
   public abstract void initProperties();
@@ -800,7 +806,9 @@ public abstract class ConfigurableComponent
           }
 	}
       } catch (InvalidPropertyValueException e) {
-	System.out.println(getClass().getName() + e);
+        if(log.isDebugEnabled()) {
+          log.error("Caught InvalidPropertyValueException: " + getClass().getName() + e);
+        }
       }
     }
 

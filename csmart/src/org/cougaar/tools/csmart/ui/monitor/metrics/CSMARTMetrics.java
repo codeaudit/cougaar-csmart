@@ -40,10 +40,14 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.*;
 import java.io.*;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class CSMARTMetrics extends JPanel {
 
   String[] seriesLabels = {"Completed Tasks", "Unallocated", "Low Confidence Result"};
+
+  private transient Logger log;
 
   //  private static final String PSP_METRICS = "PSP_Metrics.PSP";
   private static final String PSP_METRICS = "CSMART_MetricsServlet";
@@ -66,14 +70,17 @@ public class CSMARTMetrics extends JPanel {
   }
 
   public CSMARTMetrics(File f) {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.metrics");
     try {
       ObjectInputStream ois = 
 	new ObjectInputStream(new FileInputStream(f));
       chartDataTableModel = (TableModel)ois.readObject();
       namearray = (String[])ois.readObject();
     } catch( Exception e) {
-      System.err.println("Object read exception: " + e);
-      System.err.print("CSMARTMetrics: Could not read the file.");
+      if(log.isDebugEnabled()) {
+        log.error("Object read exception: " + e);
+        log.error("CSMARTMetrics: Could not read the file.");
+      }
     }
 
     init();
@@ -182,7 +189,9 @@ public class CSMARTMetrics extends JPanel {
     oos.flush();
     oos.close();
     } catch(Exception e) {
-      System.out.println("Exception: " + e);
+      if(log.isDebugEnabled()) {
+        log.error("Exception: " + e);
+      }
     }
 
     inputFile = outputFile;
@@ -216,7 +225,9 @@ public class CSMARTMetrics extends JPanel {
     Collection objectsFromPSP = CSMARTUL.getObjectsFromServlet(PSP_METRICS);
     if (objectsFromPSP == null)
       return;
-    System.out.println("Received metrics: " + objectsFromPSP.size());
+      if(log.isDebugEnabled()) {
+        log.info("Received metrics: " + objectsFromPSP.size());
+      }
 
     ArrayList names = new ArrayList();
     ArrayList data = new ArrayList();

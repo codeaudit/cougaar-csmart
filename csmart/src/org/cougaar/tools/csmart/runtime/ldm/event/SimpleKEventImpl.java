@@ -32,6 +32,8 @@ import org.cougaar.tools.csmart.Constants;
 import org.cougaar.tools.csmart.util.*;
 import org.cougaar.tools.csmart.runtime.ldm.plugin.transducer.Society;
 import org.cougaar.tools.csmart.runtime.ldm.plugin.transducer.Agent;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 
 /**
@@ -63,11 +65,15 @@ public class SimpleKEventImpl extends KineticEventImpl
   private LatLonPoint location = null;
   
   private class ImpMod implements ImpactModel {
-    
+
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
+
     public Iterator getImpact(Society world, IEFactory theIEF) {
       ArrayList iEvents = new ArrayList();
       if (location == null) {
-	//System.out.println("SKEImpl model: Empty iterator cause null location");
+        if(log.isDebugEnabled()) {
+          log.debug("SKEImpl model: Empty iterator cause null location");
+        }
 	return EmptyIterator.iterator();
       }
       float radius = 0F;
@@ -86,12 +92,16 @@ public class SimpleKEventImpl extends KineticEventImpl
 	recoveryMultiplier = EARTHQUAKE_RECOVERY_MULTIPLIER;
 	nodeNetRecoverRatio = EARTHQUAKE_NODE_NET_RECOVER_RATIO;
       } else {
-	//System.out.println("SKEImpl model: Empty iterator cause not known RWE type");
+        if(log.isDebugEnabled()) {
+          log.debug("SKEImpl model: Empty iterator cause not known RWE type");
+        }
 	return EmptyIterator.iterator();
       }
       
       Collection affectedAgents = world.getAgentsWithinKM(location,radius);
-      //System.out.println("SKEImpl model: # of affectedAgents: " + affectedAgents.size());
+      if(log.isDebugEnabled()) {
+        log.debug("SKEImpl model: # of affectedAgents: " + affectedAgents.size());
+      }
       for (Iterator it = affectedAgents.iterator(); it.hasNext(); ) {
 	Agent agent = (Agent) it.next();
 	double distanceFromEpic = agent.distanceFrom(location);

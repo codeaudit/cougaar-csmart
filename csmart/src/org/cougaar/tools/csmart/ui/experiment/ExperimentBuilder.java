@@ -40,6 +40,7 @@ import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
+import org.cougaar.util.log.Logger;
 
 public class ExperimentBuilder extends JFrame implements ModificationListener {
   private static final String FILE_MENU = "File";
@@ -80,6 +81,8 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   private JMenuItem hostLocationMenuItem;
   private JMenuItem deleteHostMenuItem;
   private JMenuItem deleteNodeMenuItem;
+
+  private transient Logger log;
 
   private Action helpAction = new AbstractAction(HELP_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
@@ -144,6 +147,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
 
   public ExperimentBuilder(CSMART csmart, Experiment experiment) {
     this.csmart = csmart;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
     setExperiment(experiment);
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
@@ -409,7 +413,9 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
         }
       }.start();
     } catch (RuntimeException re) {
-      System.out.println("Error saving experiment: " + re);
+      if(log.isDebugEnabled()) {
+        log.error("Error saving experiment: " + re);
+      }
       GUIUtils.timeConsumingTaskEnd(c);
     }
   }

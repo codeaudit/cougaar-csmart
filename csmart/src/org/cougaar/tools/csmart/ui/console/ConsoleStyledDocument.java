@@ -31,15 +31,20 @@ import java.io.IOException;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 public class ConsoleStyledDocument extends DefaultStyledDocument {
   // DefaultStyledDocument buffer size is 4096
   int bufferSize;
   int minRemoveSize;
 
+  private transient Logger log;
+
   public ConsoleStyledDocument() {
     bufferSize = DefaultStyledDocument.BUFFER_SIZE_DEFAULT * 4;
     minRemoveSize = (int)(bufferSize * .2);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
   }
 
   /**
@@ -56,15 +61,19 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       // clear document
       remove(0, getLength());
     } catch (Exception e) {
-      System.out.println(e);
-      e.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error(e.toString());
+        e.printStackTrace();
+      }
     }
     // read log file contents into document
     BufferedReader reader = null;
     try {
       reader = new BufferedReader(new FileReader(logFileName));
     } catch (FileNotFoundException fnfe) {
-      System.out.println(fnfe);
+      if(log.isDebugEnabled()) {
+        log.error(fnfe.toString());
+      }
     }
     try {
       while (true) {
@@ -75,9 +84,13 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
           break;
       }
     } catch (IOException ioe) {
-      System.out.println(ioe);
+      if(log.isDebugEnabled()) {
+        log.error(ioe.toString());
+      }
     } catch (BadLocationException ble) {
-      System.out.println(ble);
+      if(log.isDebugEnabled()) {
+        log.error(ble.toString());
+      }
     }
     bufferSize = -1; // don't trim document any more
   }
@@ -116,9 +129,11 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
         remove(0, tmp);
       }
     } catch (BadLocationException ble) {
-      System.out.println("Bad location exception: " + ble +
-                         " " + ble.offsetRequested());
-      ble.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Bad location exception: " + ble +
+                           " " + ble.offsetRequested());
+        ble.printStackTrace();
+      }
     }
   }
 
@@ -153,8 +168,10 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
 //        // clear document
 //        remove(0, getLength());
 //      } catch (Exception e) {
-//        System.out.println(e);
-//        e.printStackTrace();
+//       if(log.isDebugEnabled()) {
+//         log.error(e.toString());
+//         e.printStackTrace();
+//       }
 //      }
 //      // read log file contents into document
 //      try {
@@ -163,7 +180,9 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
 //        while (true) {
 //          String s = logFile.readLine();
 //          if (s != null) {
-//            System.out.println("Inserting: " + s + " at: " + getLength());
+//            if(log.isDebugEnabled()) {
+//              log.debug("Inserting: " + s + " at: " + getLength());
+//            }
 //            insertString(getLength(), s, a);
 //          } else {
 //            logFile.close();
@@ -171,11 +190,17 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
 //          }
 //        }
 //      } catch (FileNotFoundException fnfe) {
-//        System.out.println(fnfe);
+//        if(log.isDebugEnabled()) {
+//          log.error(fnfe.toString());
+//        }
 //      } catch (IOException ioe) {
-//        System.out.println(ioe);
+//           if(log.isDebugEnabled()) {
+//             log.error(ioe.toString());
+//           }
 //      } catch (BadLocationException ble) {
-//        System.out.println(ble);
+//        if(log.isDebugEnabled()) {
+//           log.error(ble.toString());
+//         }
 //      }
 //      bufferSize = -1; // don't trim document any more
 //    }
@@ -183,6 +208,7 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
   public static void main(String[] args) {
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
     AttributeSet a = new javax.swing.text.SimpleAttributeSet();
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
     // with MAX_CHARACTER = 5 this prints:
     // abc, abcde, fghij, vwxyz
     doc.setBufferSize(5);
@@ -190,28 +216,42 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       BufferedWriter logFile = new BufferedWriter(new FileWriter("tmp"));
       logFile.write("abc");
       doc.appendString("abc", a);
-      System.out.println(doc.getText(0, doc.getLength()));
+      if(log.isDebugEnabled()) {
+        log.debug(doc.getText(0, doc.getLength()));
+      }
       logFile.write("de");
       doc.appendString("de", a);
-      System.out.println(doc.getText(0, doc.getLength()));
+      if(log.isDebugEnabled()) {
+        log.debug(doc.getText(0, doc.getLength()));
+      }
       logFile.write("fghij");
       doc.appendString("fghij", a);
-      System.out.println(doc.getText(0, doc.getLength()));
+      if(log.isDebugEnabled()) {
+        log.debug(doc.getText(0, doc.getLength()));
+      }
       logFile.write("klmnopqrstuvwxyz");
       doc.appendString("klmnopqrstuvwxyz", a);
-      System.out.println(doc.getText(0, doc.getLength()));
+      if(log.isDebugEnabled()) {
+        log.debug(doc.getText(0, doc.getLength()));
+      }
       logFile.close();
       doc.fillFromLogFile("tmp");
-      System.out.println(doc.getText(0, doc.getLength()));
+      if(log.isDebugEnabled()) {
+        log.debug(doc.getText(0, doc.getLength()));
+      }
       logFile = new BufferedWriter(new FileWriter("tmp", true));
       logFile.write("12345");
       doc.appendString("12345", a);
-      System.out.println("Final document");
-      System.out.println(doc.getText(0, doc.getLength()));
+      if(log.isDebugEnabled()) {
+        log.debug("Final document");
+        log.debug(doc.getText(0, doc.getLength()));
+      }
       logFile.close();
     } catch (Exception e) {
-      System.out.println(e);
-      e.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error(e.toString());
+        e.printStackTrace();
+      }
     }
   }
 }

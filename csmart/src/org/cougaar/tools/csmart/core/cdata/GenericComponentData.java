@@ -25,6 +25,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Generic Component Data.
@@ -46,11 +48,15 @@ public class GenericComponentData implements ComponentData, Serializable {
   private AgentAssetData assetData = null;
   private String aLibID = null;
 
+  private transient Logger log;
+
+
   public GenericComponentData() {
     children = new ArrayList();
     parameters = new ArrayList();
     leafComponents = new ArrayList();
     timePhasedData = new ArrayList();
+    log = CSMART.createLogger("org.cougaar.tools.csmart.core.cdata");
   }
 
   public String getType() {
@@ -113,7 +119,9 @@ public class GenericComponentData implements ComponentData, Serializable {
     // at the same level.
     // Components that are .equals with other items already
     // there will replace the existing versions
-    //System.out.println("Adding comp: " + comp + " to " + this.getName());
+    if(log.isDebugEnabled()) {
+      log.debug("Adding comp: " + comp + " to " + this.getName());
+    }
     ComponentData[] dkids = this.getChildren();
     int lastbinder = -1; // last binder
     int firstother = -1; // -1 if no kids or first is after
@@ -123,20 +131,28 @@ public class GenericComponentData implements ComponentData, Serializable {
       ComponentData kid = dkids[i];
       if (this.getType().equals(ComponentData.NODE)) {
 	if (kid.getType().equals(ComponentData.AGENT)) {
-	  //System.out.println("Got an agent at index: " + i);
+          if(log.isDebugEnabled()) {
+	  log.debug("Got an agent at index: " + i);
+          }
 	  if (firstother < 0)
 	    firstother = i;
 	} else if (kid.getType().equals(ComponentData.NODEBINDER)) {
-	  //System.out.println("Got a nodebinder at index: " + i);
+          if(log.isDebugEnabled()) {
+            log.debug("Got a nodebinder at index: " + i);
+          }
 	  lastbinder = i;
 	}
       } else if (this.getType().equals(ComponentData.AGENT)) {
 	if (kid.getType().equals(ComponentData.PLUGIN)) {
-	  //System.out.println("Got a plugin at index: " + i);
+          if(log.isDebugEnabled()) {
+            log.debug("Got a plugin at index: " + i);
+          }
 	  if (firstother < 0)
 	    firstother = i;	      
 	} else if (kid.getType().equals(ComponentData.AGENTBINDER)) {
-	  //System.out.println("Got an agentbinder at index: " + i);
+          if(log.isDebugEnabled()) {
+            log.debug("Got an agentbinder at index: " + i);
+          }
 	  lastbinder = i;
 	}
       }
@@ -146,14 +162,14 @@ public class GenericComponentData implements ComponentData, Serializable {
     
     // If this is a binder
     if (comp.getType().equals(ComponentData.NODEBINDER) || comp.getType().equals(ComponentData.AGENTBINDER)) {
-      //System.out.println("Comp being added is a binder");
+      if(log.isDebugEnabled()) {
+        log.debug("Comp being added is a binder");
+      }
       // see if it is in node/agent at all
       if (this.getChildIndex(comp) >= 0) {
-	//System.out.println("Which is already present");
 	// if it is there
 	// see if there are any agents/plugins before it
 	if (firstother < this.getChildIndex(comp)) {
-	  //System.out.println("and comes after some other items it should precede");
 	  // if there are, must remove it and later add it
 	  // Its easiest to do a complete fix
 	  // FIXME: This shuffles all the other binders,
@@ -176,25 +192,29 @@ public class GenericComponentData implements ComponentData, Serializable {
 	  } // end of loop to add others
 	  this.setChildren((ComponentData [])dkidsnew.toArray(new ComponentData[dkidsnew.size()]));
 	} else {
-	  //System.out.println(".. replaceing old version with new");
+          if(log.isDebugEnabled()) {
+            log.debug(".. replaceing old version with new");
+          }
 	  // else all agents/plugins are after it. Replace old with new
 	  this.setChild(this.getChildIndex(comp), comp);
 	}
       } else {
-	//System.out.println("Which is not yet present. Adding at index: " + (lastbinder + 1));
+          if(log.isDebugEnabled()) {
+            log.debug("Adding at index: " + (lastbinder + 1));
+          }
 	// else if it is not there at all, insert it after last binder
 	this.addChild(lastbinder + 1, comp);
       }
     } else {
-      //System.out.println("Adding a non binder");
+      if(log.isDebugEnabled()) {
+        log.debug("Adding a non binder");
+      }
       // else if its an agent or a plugin
       // see if it is there at all
       if (this.getChildIndex(comp) >= 0) {
-	//System.out.println("Which is already present");
 	// if it is, do this.setChild(its index>, comp)
 	this.setChild(this.getChildIndex(comp), comp);
       } else {
-	//System.out.println("Which is not yet present");
 	// else (it is not there), do this.addChild(comp)
 	// FIXME: Maybe this should add it after the last item not its type?
 	this.addChild(comp);

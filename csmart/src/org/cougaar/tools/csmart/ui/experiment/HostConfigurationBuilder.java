@@ -49,6 +49,7 @@ import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 public class HostConfigurationBuilder extends JPanel implements TreeModelListener {
   Experiment experiment;
@@ -66,6 +67,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   DNDTree hostTree;
   DNDTree nodeTree;
   DNDTree agentTree;
+
+  private transient Logger log;
 
   // menu items for popup menu in hostTree and for 
   // File menu in ExperimentBuilder
@@ -90,6 +93,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   public HostConfigurationBuilder(Experiment experiment, 
                                   ExperimentBuilder experimentBuilder) {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
     this.experiment = experiment;
     this.experimentBuilder = experimentBuilder;
     hostConfigurationBuilder = this; // for inner class dialogs
@@ -571,8 +575,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
       hostFile.close();
     } catch (IOException e) {
-      System.err.println("Error during read/open from file: " + pathName + 
-			 " " + e.toString());
+      if(log.isDebugEnabled()) {
+        log.error("Error during read/open from file: " + pathName + 
+                           " " + e.toString());
+      }
       return;
     } 
     DefaultMutableTreeNode root = 
@@ -868,7 +874,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private void newNodeInTree(JTree tree) {
     TreePath path = tree.getSelectionPath();
     if (path == null) {
-      System.out.println("HostConfigurationBuilder newNodeInTree called with null path; ignoring");
+      if(log.isDebugEnabled()) {
+      log.warn("HostConfigurationBuilder newNodeInTree called with null path; ignoring");
+      }
       return;
     }
     DefaultMutableTreeNode selectedNode = 

@@ -32,6 +32,8 @@ import att.grappa.*;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTFrame;
 import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Find plan object from a dialog in which the user can specify:
@@ -140,7 +142,7 @@ public class ULPlanFinder extends JDialog {
   private JRadioButton observedButton;
   private ButtonGroup statusButtonGroup;
   private String status;
-
+  private transient Logger log;
 
   public ULPlanFinder(CSMARTFrame frame, 
                       CSMARTGraph graph, 
@@ -148,6 +150,7 @@ public class ULPlanFinder extends JDialog {
 
     super(frame, "Finder");
 
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.plan");
     this.communityToAgents = communityToAgents;
     this.graph = graph;
     this.frame = frame;
@@ -1032,7 +1035,9 @@ public class ULPlanFinder extends JDialog {
           toLabel.setEnabled(false);
           endTimeField.setEnabled(false);
           estimatedButton.setSelected(false);
-          System.out.println("in all action listener");
+          if(log.isDebugEnabled()) {
+            log.info("in all action listener");
+          }
           reportedButton.setSelected(false);
           observedButton.setSelected(false);
         }
@@ -1634,7 +1639,9 @@ public class ULPlanFinder extends JDialog {
       try {
 	nodeValue = Float.parseFloat(s);
       } catch (NumberFormatException e) {
-	System.out.println("ULPlanFinder: " + e);
+        if(log.isDebugEnabled()) {
+          log.error("ULPlanFinder: " + e);
+        }
 	continue;
       }
       if (nodeValue >= startTime && nodeValue <= endTime)
@@ -1656,7 +1663,9 @@ public class ULPlanFinder extends JDialog {
       try {
 	nodeValue = Long.parseLong(s);
       } catch (NumberFormatException e) {
-	System.out.println("ULPlanFinder: " + e);
+        if(log.isDebugEnabled()) {
+          log.error("ULPlanFinder: " + e);
+        }
 	continue;
       }
       if (nodeValue >= startTime && nodeValue <= endTime)
@@ -1678,7 +1687,9 @@ public class ULPlanFinder extends JDialog {
       try {
 	nodeValue = Double.parseDouble(s);
       } catch (NumberFormatException e) {
-	System.out.println("ULPlanFinder: " + e);
+        if(log.isDebugEnabled()) {
+          log.error("ULPlanFinder: " + e);
+        }
 	continue;
       }
       if (nodeValue >= startTime && nodeValue <= endTime)
@@ -1700,7 +1711,9 @@ public class ULPlanFinder extends JDialog {
       try {
 	nodeValue = Float.parseFloat(s);
       } catch (NumberFormatException e) {
-	System.out.println("ULPlanFinder: " + e);
+        if(log.isDebugEnabled()) {
+          log.error("ULPlanFinder: " + e);
+        }
 	continue;
       }
       if (nodeValue == value)
@@ -1722,7 +1735,9 @@ public class ULPlanFinder extends JDialog {
       try {
 	nodeValue = Long.parseLong(s);
       } catch (NumberFormatException e) {
-	System.out.println("ULPlanFinder: " + e);
+        if(log.isDebugEnabled()) {
+          log.error("ULPlanFinder: " + e);
+        }
 	continue;
       }
       if (nodeValue == value)
@@ -1781,9 +1796,13 @@ public class ULPlanFinder extends JDialog {
       a = node.getAttribute(otherAttName);
       if (a != null) {
 	//
-//System.out.println("NodesWEA looking for " + attributeValue + " and have " + a.getStringValue());
+      if(log.isDebugEnabled()) {
+        log.debug("NodesWEA looking for " + attributeValue + " and have " + a.getStringValue());
+      }
 	if (a.getStringValue().equals(attributeValue)) {
-	  //System.out.println("NodesWEA found match for atValue " + attributeValue + " on attribute " + otherAttName);
+          if(log.isDebugEnabled()) {
+           log.debug("NodesWEA found match for atValue " + attributeValue + " on attribute " + otherAttName);
+          }
 	  selectedNodes.addElement(node);
 	}
       }

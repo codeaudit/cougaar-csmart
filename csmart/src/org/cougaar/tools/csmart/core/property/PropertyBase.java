@@ -29,6 +29,8 @@ import java.net.URL;
 import java.io.*;
 
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Base implementation of the <code>Property</code> Interface
@@ -39,6 +41,7 @@ public abstract class PropertyBase implements Property {
   private ConfigurableComponent component;
   private String tooltip;
   private URL help;
+  private transient Logger log;
 
   /**
    * Creates a new <code>PropertyBase</code> instance.
@@ -47,6 +50,7 @@ public abstract class PropertyBase implements Property {
    */
   protected PropertyBase(ConfigurableComponent c) {
     component = c;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.core.property");
   }
 
   public final ConfigurableComponent getConfigurableComponent() {

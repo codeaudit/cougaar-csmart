@@ -47,6 +47,8 @@ import org.cougaar.planning.ldm.plan.HasRelationships;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames; 
 import org.cougaar.util.PropertyTree;
 import org.cougaar.util.UnaryPredicate;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Expects no input
@@ -56,10 +58,12 @@ public class CommunityProviderServlet
   extends HttpServlet
 {
   private SimpleServletSupport support;
-  
+  private transient Logger log;
+
   public CommunityProviderServlet(SimpleServletSupport support) {
     super();
     this.support = support;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
   }
 
   public void doGet(
@@ -97,6 +101,7 @@ public class CommunityProviderServlet
      * parameters from the URL:
      */
     ServletOutputStream out; 
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
 
     /* since "ClusterProvider" is a static inner class, here
      * we hold onto the support API.
@@ -138,17 +143,23 @@ public class CommunityProviderServlet
       
       // need try/catch here or caller sends exceptions to client as html
       try {
-	System.out.println("CSMART_CommunityProviderServlet received query..........");
+        if(log.isDebugEnabled()) {
+          log.debug("CSMART_CommunityProviderServlet received query..........");
+        }
 	StringBuffer buf = HttpUtils.getRequestURL(request);
 	Vector collection = getSelfInformation(buf);
 	//out.print(collection);
 	
 	ObjectOutputStream p = new ObjectOutputStream(out);
 	p.writeObject(collection);
-	System.out.println("Sent agent urls");
+        if(log.isDebugEnabled()) {
+          log.debug("Sent cluster urls");
+        }
       } catch (Exception e) {
-	System.out.println("CSMART_CommunityProviderServlet Exception: " + e);
-	e.printStackTrace();
+        if(log.isDebugEnabled()) {
+          log.error("CSMART_CommunityProviderServlet Exception", e);
+          e.printStackTrace();
+        }
       }
     }
 
@@ -196,7 +207,10 @@ public class CommunityProviderServlet
 	if (communityPG != null) {
 	  Collection communities = communityPG.getCommunities();
 	  if (communities.size() > 1) 
-	    System.out.println("CSMART_CommunityProviderServlet: WARNING: handling agents in multiple communities is not implemented.");
+            if(log.isDebugEnabled()) {
+              log.warn("CSMART_CommunityProviderServlet: WARNING: " + 
+                       "handling agents in multiple communities is not implemented.");
+            }
 	  Iterator i = communities.iterator();
 	  while (i.hasNext()) {
 	    communityName = (String)i.next();

@@ -36,6 +36,8 @@ import org.cougaar.planning.ldm.plan.Directive;
 
 import org.cougaar.tools.csmart.runtime.ldm.event.RealWorldEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.InfrastructureEvent;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * LP to transfer <code>RealWorldEvent</code>s and <code>InfrastructureEvent</code>s
@@ -47,8 +49,12 @@ import org.cougaar.tools.csmart.runtime.ldm.event.InfrastructureEvent;
  * @see org.cougaar.tools.csmart.runtime.ldm.CSMARTDomain
  */
 public class ImpactsLP extends LogPlanLogicProvider implements MessageLogicProvider, EnvelopeLogicProvider {
+
+  private transient Logger log;
+
   public ImpactsLP(LogPlanServesLogicProvider logplan, ClusterServesLogicProvider cluster) {
     super(logplan, cluster);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.lps");
   }
 
   /**
@@ -103,8 +109,10 @@ public class ImpactsLP extends LogPlanLogicProvider implements MessageLogicProvi
     try {
       logplan.add(dir);
     } catch (SubscriberException se) {
-      System.err.println("Could not add RWE or IE to logplan: " + dir);
-      se.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Could not add RWE or IE to logplan: " + dir);
+        se.printStackTrace();
+      }
     }
   }
 } // ImpactsLP.java

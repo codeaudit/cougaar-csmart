@@ -280,7 +280,9 @@ public class BasicMetric extends RecipeBase
     // First, find the MetricsInitializer Plugin
     if (picd == null) {
       // couldn't find the initializer plugin. Big problem
-      System.err.println("BasicMetric: Could not insert initializer?");
+      if(log.isDebugEnabled()) {
+        log.error("BasicMetric: Could not insert initializer?");
+      }
       return data;
     }
     

@@ -24,6 +24,8 @@ package org.cougaar.tools.csmart.ui.util;
 import org.cougaar.util.ConfigFinder;
 
 import java.io.File;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Utilities for CSMART GUI.
@@ -39,13 +41,16 @@ public class Util {
    */
 
   public static String getPath(String filename) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.util");
     ConfigFinder configFinder = ConfigFinder.getInstance();
     File file = configFinder.locateFile(filename);
     String path = null;
     try {
       path = file.getCanonicalPath();
     } catch (Exception e) {
-      //      System.out.println("Could not find: " + filename);
+      if(log.isDebugEnabled()) {
+        log.error("Could not find: " + filename);
+      }
     }
     return path;
   }

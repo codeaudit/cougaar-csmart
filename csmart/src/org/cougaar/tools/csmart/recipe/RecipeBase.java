@@ -36,6 +36,8 @@ import org.cougaar.tools.csmart.core.property.ModificationListener;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import java.util.HashSet;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 
 /**
@@ -52,8 +54,11 @@ public abstract class RecipeBase
   protected static final String TRUE = "True";
   protected static final String FALSE = "False";
 
+  protected transient Logger log;
+
   public RecipeBase (String name){
     super(name);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.recipe");
   }
 
   public String getRecipeName() {

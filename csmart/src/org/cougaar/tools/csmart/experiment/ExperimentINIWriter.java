@@ -42,18 +42,22 @@ import org.cougaar.tools.csmart.society.abc.ABCAgent;
 import org.cougaar.tools.csmart.society.abc.ABCSociety;
 import org.cougaar.tools.csmart.society.scalability.ScalabilityXAgent;
 import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 // Create a society ComponentData
 public class ExperimentINIWriter implements ConfigurationWriter {
   transient NodeComponent[] nodesToWrite;
   transient List components;
   ComponentData theSoc;
+  private transient Logger log;
 
   // Remove when prototypes are fixed.
   private String metricsInitializer = null;
 
   public ExperimentINIWriter(ComponentData theSoc) {
     this.theSoc = theSoc;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
   }
   
   public ExperimentINIWriter(List components, NodeComponent[] nodesToWrite, Experiment exp) {
@@ -149,7 +153,9 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	writeChildLine(writer, children[i]);
       }
     } catch (Exception e) {
-      System.out.println("Error writing config file: " + e);
+      if(log.isDebugEnabled()) {
+        log.error("Error writing config file: " + e);
+      }
     }
     finally {
       writer.close();
@@ -163,7 +169,9 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.print("society = ");
       writeChildLine(writer, hc);
     } catch (Exception e) {
-      System.out.println("Error writing config file: " + e);
+      if(log.isDebugEnabled()) {
+        log.error("Error writing config file: " + e);
+      }
     }
     finally {
       writer.close();
@@ -209,15 +217,19 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       if (leaf == null)
 	continue;
       if (!leaf.getType().equals(LeafComponentData.FILE)) {
-	System.err.println("Got unknown LeafComponent type: " + leaf.getType());
+        if(log.isDebugEnabled()) {
+          log.error("Got unknown LeafComponent type: " + leaf.getType());
+        }
 	continue;
       }
       PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, leaf.getName())));
       try {
 	writer.println(leaf.getValue().toString());
       } catch (Exception e) {
-	System.out.println("Error writing config file: " + e);
-	e.printStackTrace();
+        if(log.isDebugEnabled()) {
+          log.error("Error writing config file: " + e);
+          e.printStackTrace();
+        }
       }
       finally {
 	writer.close();
@@ -248,7 +260,9 @@ public class ExperimentINIWriter implements ConfigurationWriter {
                    children[i].getType().equals(ComponentData.SOCIETY) || 
                    children[i].getType().equals(ComponentData.AGENT) || 
                    children[i].getType().equals(ComponentData.PLUGIN)) {
-	  System.err.println("Got unexpected child of Node type: " + children[i]);
+          if(log.isDebugEnabled()) {
+            log.error("Got unexpected child of Node type: " + children[i]);
+          }
 	} else {
 	  // What is the prefix line I write here?
 	  // FIXME!!!!!!
@@ -290,7 +304,9 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	} else {
 //  	} else if (!children[i].getType().equals(ComponentData.NODEBINDER) 
 //                     || !children[i].getType().equals(ComponentData.AGENTBINDER)) {
-	  System.err.println("Got a child of a Node that wasn't an Agent or Node Binder: " + children[i]);
+          if(log.isDebugEnabled()) {
+            log.error("Got a child of a Node that wasn't an Agent or Node Binder: " + children[i]);
+          }
 	}
       }
       writer.println();
@@ -302,8 +318,10 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.println();
       writer.println("[ AuthorizedOperation ]");
     } catch (Exception e) {
-      System.out.println("Error writing config file: " + e);
-      e.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Error writing config file: " + e);
+        e.printStackTrace();
+      }
     }
     finally {
       writer.close();
@@ -353,8 +371,10 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.println();
       writer.println("[ AuthorizedOperation ]");
     } catch (Exception e) {
-      System.out.println("Error writing config file: " + e);
-      e.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Error writing config file: " + e);
+        e.printStackTrace();
+      }
     }
     finally {
       writer.close();

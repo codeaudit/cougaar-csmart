@@ -190,7 +190,7 @@ public class PropGroupData implements Serializable {
 	buf.append(((PGPropData)propsIter.next()).toString() + " ");
       }
       buf.append(">");
-      // FIXME!!!
+      // FIXME!!!  Why, whats wrong?
 
     }
     return buf.toString();

@@ -34,8 +34,12 @@ import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class OrganizerTree extends DNDTree {
+  private transient Logger log;
+
     public static final DataFlavor folderFlavor =
         DataFlavor.stringFlavor;
     public static final CSMARTDataFlavor societyFlavor =
@@ -98,6 +102,7 @@ public class OrganizerTree extends DNDTree {
         super(model);
         this.model = model;
         setExpandsSelectedPaths(true);
+        log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
     }
 
     public void setSelection(TreeNode treeNode) {
@@ -162,12 +167,17 @@ public class OrganizerTree extends DNDTree {
                 if (before != null) {
                     ix = model.getIndexOfChild(target, before);
                 }
-//                  System.out.println("Insert into " + target + " at " + ix + " before " + before);
+                if(log.isDebugEnabled()) {
+                  log.debug("Insert into " + target + " at " + ix + " before " + before);
+                }
                 model.insertNodeInto(node, target, ix);
                 selectNode(node);
                 return action;  // Always MOVE
             } catch (Exception e) {
+              if(log.isDebugEnabled()) {
+                log.error("Caught an exception", e);
                 e.printStackTrace();
+              }
             }
         }
         return DnDConstants.ACTION_NONE;

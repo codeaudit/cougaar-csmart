@@ -26,6 +26,8 @@ import java.io.*;
 import java.util.*;
 
 import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Utility class that supports a common set of properties (especially color),
@@ -56,6 +58,8 @@ public class UIProperties {
   public static final String DEFAULT_GRAPH_LINE_SIZE = "2";
   public static final String DEFAULT_GRAPH_LEGEND_SIZE = "8";
 
+  private transient Logger log;
+
   String[] clusterNames = { "Attacker", "Firewall", "Victim" };
   int nextColor = 1;
   Properties properties;
@@ -67,6 +71,7 @@ public class UIProperties {
    */
 
   public UIProperties() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
     // define default properties
     Properties defaults = new Properties();
     setDefaults(defaults);
@@ -78,8 +83,10 @@ public class UIProperties {
       try {
 	properties.load(new FileInputStream(file));
       } catch (Exception e) {
-	System.out.println("Could not read properties file: " + 
-			   file.getPath() + " " + e);
+        if(log.isDebugEnabled()) {
+          log.warn("Could not read properties file: " + 
+                             file.getPath() + " " + e);
+        }
       }
     }
     int maxColor =
@@ -88,10 +95,14 @@ public class UIProperties {
   }
 
   private void printColors() {
-    System.out.println("Maximum colors: " + maxColor);
+      if(log.isDebugEnabled()) {
+        log.debug("Maximum colors: " + maxColor);
+      }
     for (int i = 1; i <= maxColor; i++) {
       String s = "color.cluster." + i; // color.cluster.i
-      System.out.println(s + " is: " + properties.getProperty(s));
+      if(log.isDebugEnabled()) {
+        log.debug(s + " is: " + properties.getProperty(s));
+      }
     }
   }
 
@@ -104,8 +115,10 @@ public class UIProperties {
     try {
       properties.store(new FileOutputStream(file), "CSMART UI Properties");
     } catch (Exception e) {
-      System.out.println("Could not save CSMART UI Properties in: " +
-			 file.getPath() + " " + e);
+      if(log.isDebugEnabled()) {
+        log.error("Could not save CSMART UI Properties in: " +
+                  file.getPath() + " " + e);
+      }
     }
   }
 
@@ -167,7 +180,9 @@ public class UIProperties {
       for (int i = 0; i < 3; i++)
 	rgb[i] = Integer.parseInt(st.nextToken());
     } catch (Exception e) {
-      System.out.println("Exception parsing color string: " + e);
+      if(log.isDebugEnabled()) {
+        log.error("Exception parsing color string: " + e);
+      }
       return Color.green;
     }
     return new Color(rgb[0], rgb[1], rgb[2]);
@@ -258,7 +273,9 @@ public class UIProperties {
     nextColor++;
     if (nextColor > maxColor)
       nextColor = 1;
-    //    System.out.println("Assigned: " + colorString + " to: " + clusterName);
+      if(log.isDebugEnabled()) {
+        log.debug("Assigned: " + colorString + " to: " + clusterName);
+      }
     return stringToColor(colorString);
   }
 

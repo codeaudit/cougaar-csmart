@@ -42,6 +42,8 @@ import org.cougaar.tools.csmart.runtime.ldm.event.CyberAttackEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.NewCyberAttackEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.KineticEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.NewSimpleKEvent;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * The ScriptedEventPlugIn allows real world events to enter the society
@@ -64,15 +66,19 @@ public class ScriptedEventPlugIn
 
   /** ClusterID of Agent containing the Transducer PlugIn **/
   private ClusterIdentifier transducer;
-  
+
+  private transient Logger log;
+
   /**
    * Lets face it, this plugin just blindly publishes events, it doesn't
    * even care if they succeed.  No subscriptions for now.<br>
    * It parses the given XML events file, and sends one event per entry.<br>
    */
   public void setupSubscriptions() {
-    if (log.isApplicable(log.VERY_VERBOSE)) {
-      log.log(this, log.VERY_VERBOSE, "setupSubscriptions:" + this + ":Entering");
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+
+    if (log.isDebugEnabled()) {
+      log.debug("setupSubscriptions:" + this + ":Entering");
     }
     
     // Load in the config file.
@@ -109,8 +115,8 @@ public class ScriptedEventPlugIn
       
       // Get a list of all Nodes in the document. "*" Returns all Elements.
       NodeList nodes = parser.getDocument().getElementsByTagName("*");
-      if (log.isApplicable(log.DEBUG)) {
-	log.log(this, log.DEBUG, "publishEvents: " + this + ": got " + nodes.getLength() + " nodes");
+      if (log.isDebugEnabled()) {
+	log.debug("publishEvents: " + this + ": got " + nodes.getLength() + " nodes");
       }
       for (int i = 0; i < nodes.getLength(); i++) {
 	Node node = (Node)nodes.item(i);
@@ -120,8 +126,8 @@ public class ScriptedEventPlugIn
 	  // keep going
 	} else if (nodeName.equals("CYBER")) {
 	  RealWorldEvent cyber = createCyber(node);
-	  if (log.isApplicable(log.DEBUG)) {
-	    log.log(this, log.DEBUG, "publishEvents:" + this + ": Publishing cyber event "+cyber.getUID());
+	  if (log.isDebugEnabled()) {
+	    log.debug("publishEvents:" + this + ": Publishing cyber event "+cyber.getUID());
 	  }
 	  // Note: The Transducer is responsible for delaying the InfEvent as
 	  // necessary.
@@ -129,48 +135,46 @@ public class ScriptedEventPlugIn
 	} else if (nodeName.equals("KINETIC")) {
 	  // Have a Kinetic Event Node
 	  RealWorldEvent kinetic = createKinetic(node);
-	  if (log.isApplicable(log.DEBUG)) {
-	    log.log(this, log.DEBUG, "publishEvents:" + this + ": Publishing kinetic event "+kinetic.getUID());
+	  if (log.isDebugEnabled()) {
+	    log.debug("publishEvents:" + this + ": Publishing kinetic event "+kinetic.getUID());
 	  }
 	  // Note: The Transducer is responsible for delaying the InfEvent as
 	  // necessary.
 	  publishAdd(kinetic);
 	} else {
-	  if (log.isApplicable(log.PROBLEM)) {
-	    log.log(this, log.PROBLEM, "publishEvents:" + this + ": got unknown node type");
+	  if (log.isDebugEnabled()) {
+	    log.debug("publishEvents:" + this + ": got unknown node type");
 	  }
 	  if (nodeName.equals("EVENTLIST")) {
 	    // Have an EventList Node
-	    if (log.isApplicable(log.DEBUG)) {
-	      log.log(this, log.DEBUG, "publishEvents:" + this + ": got node type EVENTLIST");
+	    if (log.isDebugEnabled()) {
+	      log.debug("publishEvents:" + this + ": got node type EVENTLIST");
 	    }
 	  }
 	  if (nodeName.equals("PARAM")) {
 	    // Have a Param Node
-	    if (log.isApplicable(log.DEBUG)) {
-	      log.log(this, log.DEBUG, "publishEvents:" + this + ": got node type PARAM");
+	    if (log.isDebugEnabled()) {
+	      log.debug("publishEvents:" + this + ": got node type PARAM");
 	    }
 	  }
 	}
       }
     } catch (org.xml.sax.SAXParseException spe) {
-      if (log.isApplicable(log.SEVERE)) {
-	log.log(this, log.SEVERE,
-		"publishEvents: Parse exception Parsing file: " + fileName);
+      if (log.isDebugEnabled()) {
+	log.error("publishEvents: Parse exception Parsing file: " + fileName);
       }
       spe.printStackTrace(System.err);
     } catch (org.xml.sax.SAXException se) {
-      if (log.isApplicable(log.SEVERE)) {
-	log.log(this, log.SEVERE,
-                "publishEvents: SAX exception parsing file: " + fileName);
+      if (log.isDebugEnabled()) {
+	log.error("publishEvents: SAX exception parsing file: " + fileName);
       }
       if (se.getException() != null)
 	se.getException().printStackTrace(System.err);
       else
 	se.printStackTrace(System.err);
     } catch (Exception e) {
-      if (log.isApplicable(log.SEVERE)) {
-	log.log(this, log.SEVERE,"publishEvents: exception parsing Attack Tree File: " +
+      if (log.isDebugEnabled()) {
+	log.error("publishEvents: exception parsing Attack Tree File: " +
                     fileName);
       }
       e.printStackTrace(System.err);

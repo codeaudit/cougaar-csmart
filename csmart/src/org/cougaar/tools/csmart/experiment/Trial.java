@@ -26,6 +26,8 @@ import java.util.ArrayList;
 
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 public class Trial extends ModifiableConfigurableComponent implements Serializable {
   private static final String DESCRIPTION_PROPERTY = "description";
@@ -38,6 +40,8 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
 
   private boolean editable = false;
 
+  private transient Logger log;
+
   /**
    * Construct a trial with the given name.
    * @param name
@@ -48,6 +52,7 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
     trialParameters = new ArrayList();
     trialValues = new ArrayList();
     trialResults = new ArrayList();
+    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
   }
 
   public void initProperties() {
@@ -167,12 +172,16 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
       sb.append(((Property)trialParameters.get(i)).getName());
       sb.append(",");
     }
-    System.out.println(sb.substring(0, sb.length()-1));
+    if(log.isDebugEnabled()) {
+      log.info(sb.substring(0, sb.length()-1));
+    }
     sb.setLength(0);
     for (int i = 0; i < trialValues.size(); i++) {
       sb.append(trialValues.get(i).toString());
       sb.append(",");
     }
-    System.out.println(sb.substring(0, sb.length()-1));
+    if(log.isDebugEnabled()) {
+      log.info(sb.substring(0, sb.length()-1));
+    }
   }
 }

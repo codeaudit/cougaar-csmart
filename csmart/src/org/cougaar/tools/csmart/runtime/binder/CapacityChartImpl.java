@@ -20,6 +20,10 @@
  */
 package org.cougaar.tools.csmart.runtime.binder;
 
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+
+
 /**
  * @see CapacityChart
  */
@@ -27,10 +31,10 @@ public class CapacityChartImpl implements CapacityChart {
 
   private static final boolean DEBUG = false;
 
-  private static final boolean VERBOSE = false;
-
   private static final CapacityChart ROOT_CAPACITY_CHART = 
     new RootCapacityChartImpl();
+
+  private transient Logger log;
 
   /**
    * Create a 100% capacity chart for time <tt>0</tt> to 
@@ -65,6 +69,7 @@ public class CapacityChartImpl implements CapacityChart {
    * @see #create(double,long,long)
    */
   protected CapacityChartImpl() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
   }
 
   /**
@@ -76,6 +81,9 @@ public class CapacityChartImpl implements CapacityChart {
       long begin, 
       long end, 
       CapacityChart post) {
+
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
+
     if (DEBUG) {
       ASSERT(f >= 0.0);
       ASSERT(1.0 > f);
@@ -95,9 +103,8 @@ public class CapacityChartImpl implements CapacityChart {
   }
 
   public double getCapacity(long time) {
-    if (VERBOSE) {
-      System.out.println(
-          "--["+((int)(f*100))+"%].getCapacity("+time+")--");
+    if (log.isDebugEnabled()) {
+      log.debug("--["+((int)(f*100))+"%].getCapacity("+time+")--");
     }
     //
     if (time < begin) {
@@ -116,8 +123,8 @@ public class CapacityChartImpl implements CapacityChart {
   }
 
   public double getArea(long start, long stop) {
-    if (VERBOSE) {
-      System.out.println(
+    if (log.isDebugEnabled()) {
+      log.debug(
           "--["+((int)(f*100))+"%].getArea("+
           start+", "+stop+")--");
     }
@@ -160,8 +167,8 @@ public class CapacityChartImpl implements CapacityChart {
    */
   public CapacityChart create(
       double factor, long start, long stop) {
-    if (VERBOSE) {
-      System.out.println(
+    if (log.isDebugEnabled()) {
+      log.debug(
           "--["+((int)(f*100))+"%].create("+
           factor+", "+start+", "+stop+")");
     }
@@ -225,23 +232,26 @@ public class CapacityChartImpl implements CapacityChart {
   private static class RootCapacityChartImpl
     implements CapacityChart {
 
-      public RootCapacityChartImpl() {}
+    private transient Logger log;
+      public RootCapacityChartImpl() {
+        log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
+      }
 
       public long getTime() {
         return 0;
       }
 
       public double getCapacity(long time) {
-        if (VERBOSE) {
-          System.out.println("--[1].getCapacity("+time+")");
+        if (log.isDebugEnabled()) {
+          log.debug("--[1].getCapacity("+time+")");
         }
         //
         return 1.0;
       }
 
       public double getArea(long start, long stop) {
-        if (VERBOSE) {
-          System.out.println("--[1].getArea("+start+", "+stop+")");
+        if (log.isDebugEnabled()) {
+          log.debug("--[1].getArea("+start+", "+stop+")");
         }
         //
         if (stop <= start) {
@@ -259,8 +269,8 @@ public class CapacityChartImpl implements CapacityChart {
 
       public CapacityChart create(
           double factor, long start, long stop) {
-        if (VERBOSE) {
-          System.out.println(
+        if (log.isDebugEnabled()) {
+          log.debug(
               "--[1].create("+factor+", "+start+", "+stop+")");
         }
         //

@@ -35,6 +35,8 @@ import javax.swing.border.LineBorder;
 
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.db.DBUtils;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class CMTDialog extends JDialog {
   // thread names displayed for user
@@ -64,10 +66,13 @@ public class CMTDialog extends JDialog {
   private Organizer organizer;
   private boolean cancelled = false;
 
+  private transient Logger log;
+
   public CMTDialog(JFrame parent, Organizer organizer,
                    String experimentName,
                    String experimentId) {
     super(parent, "Threads and Groups", true); // modal dialog
+    log = CSMART.createLogger(getClass().getPackage().toString());
     this.organizer = organizer; // to get unique names
     this.experimentName = experimentName;
     this.experimentId = experimentId;
@@ -298,7 +303,9 @@ public class CMTDialog extends JDialog {
       }
     }
     if(forceRecomputeBox.isSelected()) {
-      System.out.println("Force Recompute Checked");
+      if(log.isDebugEnabled()) {
+        log.info("Force Recompute Checked");
+      }
       ExperimentDB.deleteCMTAssembly(experimentId);
       modified = true;
     }
@@ -306,10 +313,14 @@ public class CMTDialog extends JDialog {
     if (modified) {
       String newCMTasb = ExperimentDB.updateCMTAssembly(experimentId);
       if (forceRecomputeBox.isSelected()) {
-	System.out.println("new CMTasb is: "+newCMTasb);
+        if(log.isDebugEnabled()) {
+          log.info("new CMTasb is: "+newCMTasb);
+        }
 	ExperimentDB.deleteCMTAssembly(experimentId);
 	newCMTasb = ExperimentDB.updateCMTAssembly(experimentId);
-	System.out.println("new CMTasb is: "+newCMTasb);
+        if(log.isDebugEnabled()) {
+          log.info("new CMTasb is: "+newCMTasb);
+        }
       }
       trialId = ExperimentDB.getTrialId(experimentId);
     }
@@ -333,7 +344,9 @@ public class CMTDialog extends JDialog {
         return false;
       experimentName = name;
     }
-    //System.out.println("Cloning experiment: " + experimentName);
+    if(log.isDebugEnabled()) {
+      log.debug("Cloning experiment: " + experimentName);
+    }
     experimentId = ExperimentDB.cloneExperiment(experimentId, 
                                                 experimentName);
     trialId = ExperimentDB.getTrialId(experimentId);

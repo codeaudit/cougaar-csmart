@@ -56,7 +56,9 @@ import org.cougaar.planning.ldm.plan.Expansion;
 
 import org.cougaar.tools.csmart.runtime.ldm.event.HappinessChangeEvent;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
-import org.cougaar.tools.csmart.ui.servlet.TranslateUtils;
+import org.cougaar.tools.csmart.ui.psp.TranslateUtils;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * This Servlet traverses Tasks and related objects (plan elements, assets,
@@ -71,10 +73,12 @@ public class PlanServlet
    * Cougaar hook
    */
   private SimpleServletSupport support;
-  
+  private transient Logger log;
+
   public PlanServlet(SimpleServletSupport support) {
     super();
     this.support = support;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
   }
   
   public void doGet(
@@ -126,6 +130,8 @@ public class PlanServlet
     
     /* limit on number of PropertyTrees to return; see javadocs above */
     static int limit = Integer.MAX_VALUE;
+
+    private transient Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
  
     /* since "PlanProvider" is a static inner class, here
      * we hold onto the support API.
@@ -173,11 +179,15 @@ public class PlanServlet
 	  {
 	    ObjectOutputStream p = new ObjectOutputStream(out);
 	    p.writeObject(ret);
-	    System.out.println("Sent Objects");
+            if(log.isDebugEnabled()) {
+              log.debug("Sent Objects");
+            }
 	  }
       } catch (Exception e) {
-	System.out.println("PlanServlet Exception: " + e);
-	e.printStackTrace(); 
+        if(log.isDebugEnabled()) {
+          log.debug("PlanServlet Exception: " + e);
+          e.printStackTrace(); 
+        }
       }
     }
     
@@ -325,6 +335,8 @@ public class PlanServlet
      */
     
     public static void setParams(String name, String value) {
+      Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
+
       if (name.equals(PropertyNames.PLAN_OBJECTS_TO_IGNORE)) {
         try {
           StringTokenizer st = 
@@ -340,7 +352,9 @@ public class PlanServlet
             }
           }
         } catch (Exception e) {
-          System.err.println("Illegal parameter: "+name+"="+value);
+          if(log.isDebugEnabled()) {
+            log.error("Illegal parameter: "+name+"="+value);
+          }
         }
       } else if (name.equals("limit")) {
         try {
@@ -349,7 +363,9 @@ public class PlanServlet
             limit = Integer.MAX_VALUE;
           }
         } catch (Exception e) {
-          System.err.println("Illegal parameter: "+name+"="+value);
+          if(log.isDebugEnabled()) {
+            log.error("Illegal parameter: "+name+"="+value);
+          }
         }
       }
     }

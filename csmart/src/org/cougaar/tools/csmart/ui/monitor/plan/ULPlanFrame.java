@@ -40,6 +40,8 @@ import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 
 import att.grappa.Node;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class ULPlanFrame extends CSMARTFrame {
   private static final String THREAD_UP_MENU_ITEM = "Ancestor Thread";
@@ -60,12 +62,14 @@ public class ULPlanFrame extends CSMARTFrame {
   private JMenuItem threadUpMenuItem;
   private JMenuItem threadDownMenuItem;
 
+  private transient Logger log;
+
   public ULPlanFrame(String title, CSMARTGraph graph, ULPlanFilter filter) {
     super(title, graph);
     setProperties();
     this.filter = filter;
     this.graph = graph;
-
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.plan");
   }
 
   public void customize() {
@@ -190,7 +194,9 @@ public class ULPlanFrame extends CSMARTFrame {
       try {
         limit = Integer.parseInt(sLimit);
       } catch (NumberFormatException nfe) {
-        System.err.println("Illegal number: "+sLimit);
+        if(log.isDebugEnabled()) {
+          log.error("Illegal number: "+sLimit);
+        }
         return;
       }
 

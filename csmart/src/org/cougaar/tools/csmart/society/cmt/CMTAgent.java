@@ -46,6 +46,8 @@ import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 
 import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * A single Agent in a <code>CMTSociety</code>, ie one that was created from the configuration Database.
@@ -67,6 +69,8 @@ public class CMTAgent
   private static final String QUERY_AGENT_RELATIONS = "queryAgentRelationships";
   private static final String QUERY_AGENT_ASSET_CLASS = "queryAgentAssetClass";
 
+  private transient Logger log;
+
   // The tree will not display in the builder
   // if there are no properties so put it's name.
   private Property propName;
@@ -86,12 +90,16 @@ public class CMTAgent
     super(name);
     this.name = name;
     this.assemblyID = null;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.society.cmt");
   }
+
   public CMTAgent(String name, List assemblyID) {
     super(name);
     this.name = name;
     this.assemblyID = assemblyID;
+    log = CSMART.createLogger("org.cougaar.tools.csmart.society.cmt");
   }
+
   public void initProperties() {
     String componentID = name;
     String componentCategory = "agent";
@@ -299,8 +307,11 @@ public class CMTAgent
   public boolean equals(Object o) {
     if (o instanceof AgentComponent) {
       AgentComponent that = (AgentComponent)o;
-//        System.out.println(this + " has short name " + this.getShortName());
-//        System.out.println("Compared to " + that + " which has short name " + that.getShortName());
+      if(log.isDebugEnabled()) {
+        log.debug(this + " has short name " + this.getShortName());
+        log.debug("Compared to " + that + " which has short name " + that.getShortName());
+      }
+
       if (!this.getShortName().equals(that.getShortName())  ) {
 	return false;
       }     

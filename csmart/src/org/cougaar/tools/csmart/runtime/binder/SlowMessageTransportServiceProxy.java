@@ -27,6 +27,8 @@ import org.cougaar.core.mts.*;
 import org.cougaar.core.mts.Message;
 import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.service.MessageTransportService;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 
 /**
@@ -41,6 +43,7 @@ public class SlowMessageTransportServiceProxy
              SlowMessageTransportServiceProxyController {
 
   private static final boolean VERBOSE = false;
+  private transient Logger log;
 
   private MessageTransportClient mtc;
   private MessageTransportService mt;
@@ -53,6 +56,7 @@ public class SlowMessageTransportServiceProxy
       MessageTransportService mt,
       Object requestor,
       MessageReleaseScheduler mrs) {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
     this.mt = mt;
     this.mtc = 
       ((requestor instanceof MessageTransportClient) ? 
@@ -64,6 +68,7 @@ public class SlowMessageTransportServiceProxy
     ReleaseRunner rr = new ReleaseRunner();
     Thread rt = new Thread(rr);
     rt.start();
+
   }
 
   public void degradeReleaseRate(
@@ -79,8 +84,10 @@ public class SlowMessageTransportServiceProxy
   public void registerClient(final MessageTransportClient mtc) {
     if (mtc != this.mtc) {
       if (VERBOSE) {
-        System.err.println(
-            "Expecting the service-requestor to be the client (OK)");
+        if(log.isDebugEnabled()) {
+          log.error(
+                    "Expecting the service-requestor to be the client (OK)");
+        }
       }
     }
     this.wrappedClient = 
@@ -120,16 +127,18 @@ public class SlowMessageTransportServiceProxy
       // in/out buffers of Messages
       List inBuf = new ArrayList();
       List outBuf = new ArrayList();
+      Logger log = 
+        CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
 
       while (true) {
 
-        if (VERBOSE) {
-          System.out.println("+ getIO");
+        if (log.isDebugEnabled()) {
+          log.debug("+ getIO");
         }
         mrs.getDueMessages(inBuf, outBuf);
 
-        if (VERBOSE) {
-          System.out.println(
+        if (log.isDebugEnabled()) {
+          log.debug(
               "+ sendIO(in: "+inBuf.size()+", out:"+outBuf.size()+")");
         }
         int nIn = inBuf.size();

@@ -37,6 +37,7 @@ import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
+import org.cougaar.util.log.Logger;
 
 public class Analyzer extends JFrame implements ActionListener {
   // system property; location of Excel
@@ -66,11 +67,14 @@ public class Analyzer extends JFrame implements ActionListener {
   private Process process;
   private Experiment experiment;
 
+  private transient Logger log;
+
   /**
    * Display a csv file in excel.
    */
 
   public Analyzer(CSMART csmart, Experiment experiment) {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
     this.csmart = csmart;
     this.experiment = experiment;
     myFrame = this;
@@ -147,18 +151,24 @@ public class Analyzer extends JFrame implements ActionListener {
       Parameters.findParameter("org.cougaar.tools.csmart.excelpath");
     
     if (excel == null || excel.equals("")) {
-      System.out.println("Excel location not specified");
+      if(log.isDebugEnabled()) {
+        log.error("Excel location not specified");
+      }
       return;
     }
     
     String[] cmds = { excel, "" };
-    System.out.println("Launching excel from: " + cmds[0]);
+    if(log.isDebugEnabled()) {
+      log.info("Launching excel from: " + cmds[0]);
+    }
     cmds[1] = filePathName;
     try {
       process = Runtime.getRuntime().exec(cmds);
     } catch (Exception e) {
-      System.out.println("Analyzer: exception: " + e);
-      e.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Analyzer: exception: " + e);
+        e.printStackTrace();
+      }
     }
   }
 

@@ -116,18 +116,25 @@ public class ParameterInsertionRecipe extends RecipeBase
 	//if (children[i].getName().equals(pluginAlib)) {
 	// Compare the plugins name, not the alib id, right?
 	if (children[i].getAlibID() != null && children[i].getAlibID().equals(pluginAlib)) {
-	  //	  System.out.println("Got match for pluginalibid: " + pluginAlib + " on child " + children[i].toString());
+          if(log.isDebugEnabled()) {
+            log.debug("Got match for pluginalibid: " + 
+                      pluginAlib + " on child " + children[i].toString());
+          }
           children[i].addParameter(propParameter.getValue().toString());
           break;
         } else if (children[i].getClassName().equals(propPluginName.getValue().toString())) {
-	  //System.out.println("Got match for plugin class: " + children[i].toString());
+          if(log.isDebugEnabled()) {
+            log.debug("Got match for plugin class: " + children[i].toString());
+          }
 	  // FIXME: If this agent has 2 plugins with the same class,
 	  // which do I do? This currently does the first only
 	  // FIXME: Make sure this parameter isnt already there?
           children[i].addParameter(propParameter.getValue().toString());
           break;
         } else if (children[i].getName().equals(propPluginName.getValue().toString())) {
-	  //System.out.println("Got match for plugin name: " + children[i].toString());
+          if(log.isDebugEnabled()) {
+            log.debug("Got match for plugin name: " + children[i].toString());
+          }
 	  // FIXME: If this agent has 2 plugins with the same name,
 	  // which do I do? This currently does the first only
 	  // FIXME: Make sure this parameter isnt already there?
@@ -135,7 +142,10 @@ public class ParameterInsertionRecipe extends RecipeBase
           break;
 	  // Here is the broken original version....
 //  	} else if (children[i].getName().equals(pluginAlib)) {
-//  	  System.out.println("Got match AGAINST NAME(?) for pluginalibid: " + pluginAlib + " on child " + children[i].toString());
+//           if(log.isDebugEnabled()) {
+//             log.debug("Got match AGAINST NAME(?) for pluginalibid: " + 
+//                       pluginAlib + " on child " + children[i].toString());
+//           }
 //            children[i].addParameter(propParameter.getValue().toString());
 //            break;
         }        

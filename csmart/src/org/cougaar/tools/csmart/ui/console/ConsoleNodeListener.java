@@ -36,6 +36,8 @@ import org.cougaar.tools.server.NodeServesClient;
 
 import com.klg.jclass.chart.JCChart;
 import com.klg.jclass.chart.ChartDataModel;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Listener for "pushed" Node activities.
@@ -60,11 +62,16 @@ public class ConsoleNodeListener implements NodeEventListener {
   private Object logFileLock = new Object();
   private int nLogEvents = 0;
 
+  private transient Logger log;
+
   public ConsoleNodeListener(CSMARTConsole console,
 			     NodeComponent nodeComponent,
 			     String logFileName, 
 			     NodeStatusButton statusButton,
                              ConsoleStyledDocument doc) throws IOException {
+
+
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
 
     this.console = console;
     this.nodeComponent = nodeComponent;
@@ -123,8 +130,10 @@ public class ConsoleNodeListener implements NodeEventListener {
     try {
       ret = Double.parseDouble(idle);
     } catch (NumberFormatException e) {
-      System.err.println("Couldn't parse that idle string");
-      e.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Couldn't parse that idle string");
+        e.printStackTrace();
+      }
     }
     return ret;
   }
@@ -148,8 +157,10 @@ public class ConsoleNodeListener implements NodeEventListener {
     try {
       ret = Long.parseLong(time);
     } catch (NumberFormatException e) {
-      System.err.println("Couldn't parse that time string");
-      e.printStackTrace();
+      if(log.isDebugEnabled()) {
+        log.error("Couldn't parse that time string");
+        e.printStackTrace();
+      }
     }
     return ret;
   }
@@ -175,7 +186,9 @@ public class ConsoleNodeListener implements NodeEventListener {
           nLogEvents = 0;
         }
       } catch (Exception e) {
-        System.out.println("Exception writing to log file: " + e);
+        if(log.isDebugEnabled()) {
+          log.error("Exception writing to log file: " + e);
+        }
       }
     }
 
@@ -239,7 +252,9 @@ public class ConsoleNodeListener implements NodeEventListener {
           }
         } while (++i < n);
       } catch (Exception e) {
-        System.out.println("Exception writing to log file: " + e);
+        if(log.isDebugEnabled()) {
+          log.error("Exception writing to log file: " + e);
+        }
       }
     }
 
@@ -394,7 +409,9 @@ public class ConsoleNodeListener implements NodeEventListener {
       try {
         logFile.close();
       } catch (Exception e) {
-        System.out.println("Exception closing log file: " + e);
+        if(log.isDebugEnabled()) {
+          log.error("Exception closing log file: " + e);
+        }
       }
     }
   }
@@ -411,7 +428,9 @@ public class ConsoleNodeListener implements NodeEventListener {
         doc.fillFromLogFile(logFileName);
         logFile = new BufferedWriter(new FileWriter(logFileName, true));
       } catch (Exception e) {
-        System.out.println(e);
+        if(log.isDebugEnabled()) {
+          log.error(e.toString());
+        }
       }
     }
   }

@@ -51,8 +51,10 @@ public class PGPropMultiVal implements Serializable {
   public void setValues(Object[] newValues) {
     this.values.clear();
     for(int i=0; i < newValues.length; i++) {
-      // check that newValues[i] one of String or ArgValue??
-      // FIXME!!
+      if(!(newValues[i] instanceof String) ||
+         !(newValues[i] instanceof ArgValue)) {
+        throw new RuntimeException("Value must be a String or ArgValue ["+ newValues[i]+"]");
+      }
       this.values.add(newValues[i]);
     }
   }

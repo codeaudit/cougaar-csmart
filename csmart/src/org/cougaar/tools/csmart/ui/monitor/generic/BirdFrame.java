@@ -27,6 +27,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import att.grappa.*;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /** 
  * Overview (bird's eye view) of graph.
@@ -34,6 +36,8 @@ import att.grappa.*;
 
 public class BirdFrame extends JFrame implements ChangeListener {
   private static final int initSize = 300;
+  private transient Logger log;
+
   CSMARTGraph overviewGraph;
   CSMARTFrame frame;
   //  GrappaPanel gp;
@@ -49,6 +53,7 @@ public class BirdFrame extends JFrame implements ChangeListener {
 
   public BirdFrame(String title, Graph graph, CSMARTFrame frame) {
     super(title);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
     // if user closes window, this hides the window, so we can re-use it
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
@@ -83,7 +88,9 @@ public class BirdFrame extends JFrame implements ChangeListener {
 //     viewX = viewX - p.x;
 //     viewY = viewY - p.y;
 //     AffineTransform inverseTransform = eventGP.getInverseTransform();
-//     System.out.println("Inverse transform: " + inverseTransform.toString());
+//       if(log.isDebugEnabled()) {
+//         log.debug("Inverse transform: " + inverseTransform.toString());
+//       }
 //     double[] pts = new double[] {
 //       viewX, viewY, 
 // 	viewX + view.getExtentSize().width,
@@ -95,7 +102,9 @@ public class BirdFrame extends JFrame implements ChangeListener {
 //     Graphics2D g2d = (Graphics2D)gp.getGraphics();
 //     AffineTransform orig = g2d.getTransform();
 //     g2d.setTransform(gp.getTransform());
-//     System.out.println("Transform: " + gp.getTransform().toString());
+//       if(log.isDebugEnabled()) {
+//     log.debug("Transform: " + gp.getTransform().toString());
+//       }
 //     g2d.setXORMode(Color.darkGray);
 //     if (previousBox != null) {
 //       g2d.draw(previousBox);
@@ -123,14 +132,18 @@ public class BirdFrame extends JFrame implements ChangeListener {
 //     inverseTransform.transform(pts, 0, pts, 0, 2);
 //     GrappaBox box = new GrappaBox(pts[0], pts[1],
 // 				  pts[2] - pts[0], pts[3] - pts[1]);
-//     System.out.println("Update visible area to: " + box);
+//       if(log.isDebugEnabled()) {
+//         log.debug("Update visible area to: " + box);
+//       }
 //     Graphics2D g2d = (Graphics2D)gp.getGraphics();
 //     AffineTransform orig = g2d.getTransform();
 //     g2d.setTransform(gp.getTransform());
 //     g2d.setXORMode(Color.red);
 //     // erase previous outline if any
 //     if (previousBox != null) {
-//       System.out.println("Drawing previous box: " + previousBox);
+//       if(log.isDebugEnabled()) {
+//         log.debug("Drawing previous box: " + previousBox);
+//       }
 //       g2d.draw(previousBox);
 //     }
 //     gp.setVisibleOutline(box);

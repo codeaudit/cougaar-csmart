@@ -28,6 +28,8 @@ import com.klg.jclass.chart.JCAxis;
 import com.klg.jclass.chart.ChartDataViewSeries;
 import com.klg.jclass.chart.data.JCDefaultDataSource;
 import com.klg.jclass.chart.ChartDataEvent;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * StripChartSource is a Chart Data Source that 
@@ -50,6 +52,8 @@ public class StripChartSource extends JCDefaultDataSource implements Runnable {
   final String[] labels = { "Idle Time" };
   private JCChart chart;
 
+  private transient Logger log;
+
   /**
    * Constructor.
    * @param c the chart this data source is a part of.
@@ -59,6 +63,7 @@ public class StripChartSource extends JCDefaultDataSource implements Runnable {
     super(null, null, null, null, "Strip Chart");
     chart = c;
     init();
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
   }
 
 
@@ -123,14 +128,18 @@ public class StripChartSource extends JCDefaultDataSource implements Runnable {
   // sample updating thread for debugging
 
   public void run() {
-    System.out.println("Running....");
+      if(log.isDebugEnabled()) {
+        log.debug("Running....");
+      }
     while (true) {
       try {
 	Thread.sleep(1000);
 	addValue((System.currentTimeMillis() % 100)*.01,
 		 System.currentTimeMillis());
       } catch (Exception e) {
-	System.out.println("StripChartSource: " + e);
+        if(log.isDebugEnabled()) {
+          log.error("StripChartSource: " + e);
+        }
       }
     }
   }

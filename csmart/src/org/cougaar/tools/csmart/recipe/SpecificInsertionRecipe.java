@@ -183,7 +183,9 @@ public class SpecificInsertionRecipe extends RecipeBase
       comp.setParent(data);
       comp.setOwner(this);
       data.addChildDefaultLoc(comp);
-      //      System.out.println("Inserted " + comp + " into " + data.getName());
+      if(log.isDebugEnabled()) {
+        log.info("Inserted " + comp + " into " + data.getName());
+      }
     }
     if (data.childCount() > 0) {
       // for each child, call this same method.

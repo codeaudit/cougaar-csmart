@@ -28,6 +28,8 @@ import org.cougaar.core.util.UID;
 import org.cougaar.planning.ldm.plan.DirectiveImpl;
 
 import org.cougaar.tools.csmart.util.ArgValue;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Parent for all adverse real world events, with which you impact
@@ -48,6 +50,7 @@ public abstract class RealWorldEventImpl extends DirectiveImpl
    * The type of this RWE - a constant from the Constants file
    */
   private String myType = null;
+  private transient Logger log;
 
   public ClusterIdentifier getOwner() {
     return source;
@@ -68,6 +71,7 @@ public abstract class RealWorldEventImpl extends DirectiveImpl
    * @param uid an <code>UID</code> for the Event
    */
   public RealWorldEventImpl (UID uid) {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.event");
     setUID(uid);
   }
   
@@ -120,8 +124,10 @@ public abstract class RealWorldEventImpl extends DirectiveImpl
     ClusterIdentifier old = getSource();
     if (old != null) {
       if (! asource.equals(old)) {
-        System.err.println("Bad RealWorldEvent.setSource("+asource+") was "+old+":");
-        Thread.dumpStack();
+        if(log.isDebugEnabled()) {
+          log.error("Bad RealWorldEvent.setSource("+asource+") was "+old+":");
+          Thread.dumpStack();
+        }
       }
     } else {
       super.setSource(asource);

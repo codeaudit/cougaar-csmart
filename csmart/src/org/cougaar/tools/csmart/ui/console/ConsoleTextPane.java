@@ -34,6 +34,8 @@ import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Position;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * A text pane that contains a ConsoleStyledDocument and supports
@@ -55,9 +57,13 @@ public class ConsoleTextPane extends JTextPane {
   int notifyCount;
   MyDocumentListener docListener = null;
 
+  private transient Logger log;
+
   public ConsoleTextPane(ConsoleStyledDocument doc, 
                          NodeStatusButton statusButton) {
     super(doc);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
+
     this.doc = doc;
     this.statusButton = statusButton;
     highlighter = getHighlighter();
@@ -74,8 +80,10 @@ public class ConsoleTextPane extends JTextPane {
       searchHighlightReference =
         highlighter.addHighlight(startOffset, endOffset, searchHighlight);
     } catch (BadLocationException ble) {
-      System.out.println("Bad location exception: " + ble.offsetRequested() +
-                         " " + ble);
+      if(log.isDebugEnabled()) {
+        log.error("Bad location exception: " + ble.offsetRequested() +
+                  " " + ble);
+      }
     }
   }
 
@@ -86,8 +94,10 @@ public class ConsoleTextPane extends JTextPane {
       notifyHighlightReference =
         highlighter.addHighlight(startOffset, endOffset, notifyHighlight);
     } catch (BadLocationException ble) {
-      System.out.println("Bad location exception: " + ble.offsetRequested() +
-                         " " + ble);
+      if(log.isDebugEnabled()) {
+      log.error("Bad location exception: " + ble.offsetRequested() +
+                " " + ble);
+      }
     }
   }
 
@@ -97,8 +107,10 @@ public class ConsoleTextPane extends JTextPane {
       Rectangle r = modelToView(startOffset);
       scrollRectToVisible(r);
     } catch (BadLocationException ble) {
-      System.out.println("Bad location exception: " + ble.offsetRequested() +
-                         " " + ble);
+      if(log.isDebugEnabled()) {
+        log.error("Bad location exception: " + ble.offsetRequested() +
+                  " " + ble);
+      }
     }
   }
 
@@ -137,8 +149,10 @@ public class ConsoleTextPane extends JTextPane {
       }
       displayHighlightedText(startOffset, endOffset);
     } catch (BadLocationException ble) {
-      System.out.println("Bad location exception: " + ble.offsetRequested() +
-                         " " + ble);
+      if(log.isDebugEnabled()) {
+        log.error("Bad location exception: " + ble.offsetRequested() +
+                  " " + ble);
+      }
       return false;
     }
     return true;
@@ -252,15 +266,18 @@ public class ConsoleTextPane extends JTextPane {
 
   // for testing, print keymap with recursion
   static void printKeymap(javax.swing.text.Keymap m, int indent) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
     javax.swing.KeyStroke[] k = m.getBoundKeyStrokes();
     for (int i = 0; i < k.length; i++) {
       for (int j = 0; j < indent; j++)
-        System.out.print(" ");
-      System.out.print("Keystroke <" +
-        java.awt.event.KeyEvent.getKeyModifiersText(k[i].getModifiers()) +
-        " " + java.awt.event.KeyEvent.getKeyText(k[i].getKeyCode()) + "> ");
-      javax.swing.Action a = m.getAction(k[i]);
-      System.out.println((String)a.getValue(javax.swing.Action.NAME));
+        if(log.isDebugEnabled()) {
+          log.debug(" ");
+          log.debug("Keystroke <" +
+                           java.awt.event.KeyEvent.getKeyModifiersText(k[i].getModifiers()) +
+                           " " + java.awt.event.KeyEvent.getKeyText(k[i].getKeyCode()) + "> ");
+          javax.swing.Action a = m.getAction(k[i]);
+          log.debug((String)a.getValue(javax.swing.Action.NAME));
+        }
     }
     m = m.getResolveParent();
     if (m != null)
@@ -323,8 +340,10 @@ public class ConsoleTextPane extends JTextPane {
           statusButton.setStatus(NodeStatusButton.STATUS_NOTIFY);
         }
       } catch (BadLocationException ble) {
-        System.out.println(ble);
-        ble.printStackTrace();
+        if(log.isDebugEnabled()) {
+          log.error(ble.toString());
+          ble.printStackTrace();
+        }
       }
     }
 

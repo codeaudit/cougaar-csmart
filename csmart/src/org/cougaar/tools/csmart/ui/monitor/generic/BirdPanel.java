@@ -27,6 +27,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import att.grappa.*;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * This class should support displaying a rectangle on the overview frame
@@ -35,9 +37,11 @@ import att.grappa.*;
 
 public class BirdPanel extends GrappaPanel {
   GrappaBox outline;
+  private transient Logger log;
 
   public BirdPanel(Graph graph) {
     super(graph);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
   }
 
 //   public void setVisibleOutline(GrappaBox r) {
@@ -46,11 +50,15 @@ public class BirdPanel extends GrappaPanel {
 
 //   public void paintComponent(Graphics g) {
 //     super.paintComponent(g);
-//     System.out.println("Painting component");
+//       if(log.isDebugEnabled()) {
+//         log.debug("Painting component");
+//       }
 //     // draw outline box in grappa panel
 //     if (outline != null) {
 //       Graphics2D g2d = (Graphics2D)g;
-//       System.out.println("Drawing box in paintComponent: " + outline);
+//       if(log.isDebugEnabled()) {
+//         log.debug("Drawing box in paintComponent: " + outline);
+//       }
 //       g2d.setPaint(Color.red);
 //       g2d.draw(outline);
 //     }
