@@ -28,6 +28,7 @@ import org.cougaar.tools.server.ConfigurationWriter;
 
 import org.cougaar.tools.csmart.scalability.ScalabilityMetricsFileFilter;
 import org.cougaar.tools.csmart.ui.component.AgentComponent;
+import org.cougaar.tools.csmart.ui.component.ComponentData;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.ui.component.MetricComponent;
 import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
