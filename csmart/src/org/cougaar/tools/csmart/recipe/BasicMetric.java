@@ -18,7 +18,7 @@
  * PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.society.abc;
+package org.cougaar.tools.csmart.recipe;
 
 import java.io.FileFilter;
 import java.io.Serializable;
@@ -29,8 +29,9 @@ import org.cougaar.tools.csmart.society.scalability.ScalabilityMetricsFileFilter
 
 import org.cougaar.tools.csmart.experiment.Experiment;
 
-import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
 
 /**
  * A Metric that adds the CSMART Metric collection Plugin to any society.<br>

@@ -31,6 +31,10 @@ import javax.swing.JOptionPane;
 import org.cougaar.tools.server.ConfigurationWriter;
 
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
+import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.core.property.PropertyListener;
+import org.cougaar.tools.csmart.core.property.ModificationListener;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.society.scalability.ScalabilityMetricsFileFilter;
 
 /**

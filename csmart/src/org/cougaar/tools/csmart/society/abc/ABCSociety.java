@@ -21,10 +21,11 @@
 package org.cougaar.tools.csmart.society.abc;
 
 import org.cougaar.tools.csmart.Constants;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.society.scalability.ScalabilityMetricsFileFilter;
-import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
-
 import org.cougaar.tools.server.ConfigurationWriter;
 
 // import java.io.File;

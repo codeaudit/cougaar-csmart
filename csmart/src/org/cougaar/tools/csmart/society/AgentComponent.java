@@ -18,10 +18,12 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.society;
 
 import java.io.File;
 import java.io.IOException;
+
+import org.cougaar.tools.csmart.core.property.ComponentProperties;
 
 /**
  * A simple interface implemented by configurable components 

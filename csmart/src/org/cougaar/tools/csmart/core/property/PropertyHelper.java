@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.core.property;
 
 import java.util.*;
 import java.lang.reflect.*;
+import org.cougaar.tools.csmart.core.property.range.Range;
 
 public class PropertyHelper {
     private static final Class[] stringArgType = {String.class};

@@ -22,6 +22,7 @@
 package org.cougaar.tools.csmart.core.cdata;
 
 import java.io.Serializable;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 
 /** 
  * Interface that contains all data
@@ -148,7 +149,7 @@ public interface ComponentData extends Serializable {
    *
    * @param comp a <code>ComponentData</code> to add / update
    */
-  public void addChildDefaultLoc(ComponentData comp);
+  void addChildDefaultLoc(ComponentData comp);
   
   /**
    * Gets all parameters associated with this component.

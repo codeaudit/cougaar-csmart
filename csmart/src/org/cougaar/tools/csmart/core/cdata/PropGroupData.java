@@ -18,7 +18,7 @@
  * PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.core.data;
+package org.cougaar.tools.csmart.core.cdata;
 
 import java.lang.IndexOutOfBoundsException;
 import java.io.Serializable;

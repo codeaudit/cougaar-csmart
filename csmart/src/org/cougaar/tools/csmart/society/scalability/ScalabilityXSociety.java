@@ -33,7 +33,10 @@ import java.util.Set;
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
-import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModificationListener;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.society.SocietyComponent;
 
 /**
  * Create configuration files to run an COUGAAR society with given
