@@ -214,10 +214,15 @@ very similar for WinNT.
         mysql&gt; create database mycoug
         mysql&gt; -&gt; ;
         mysql&gt; exit;
-        $ mysql -u root -p mycoug &lt; [CMT MySQL data dump, eg 1ad_dump.sql]
+        $ mysql -u root -p mycoug &lt; [CMT MySQL data dump, eg 1ad_dump_full.sql]
 	[supply root password set during installation]
       </pre><br>
-      Note that if you have a previous database you wish to replace, the command to drop the old database first is "drop database mycoug;". However, most scripts will drop the old tables before loading the new, so this is not strictly necessary.</li><p>
+      Note that if
+	you have a previous database you wish to replace, the command
+	to drop the old database first is "drop database
+	mycoug;". However, most scripts will drop the old tables
+	before loading the new, so this is not strictly
+	necessary.</li><p>
 
   <li>Create a user for accessing the database. Here we create a user
   "myname" with password "mypass" who can only access the database

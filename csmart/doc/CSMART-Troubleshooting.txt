@@ -182,7 +182,7 @@ Compiling CSMART
 
 MySQL Database issues
 - If you get SQL errors, claiming that a table does not exist, eg
-error: Table 'mycoug.GEOLOC' doesn't exist
+error: Table 'mycoug.V4_EXPT_EXPERIMENT' doesn't exist
 (but which you believe does in fact exist), it may be a case issue - MySQL
 is case sensitive on table names. This solution applies to MySQL
 databases run on Unix.
