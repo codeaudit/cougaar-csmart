@@ -139,9 +139,9 @@ public class ComponentBase
     while (names.hasNext()) {
       CompositeName cname = (CompositeName) names.next();
       String name = cname.toString();
-      if (log.isDebugEnabled()) {
-        log.debug("Looking at property " + name);
-      }
+//       if (log.isDebugEnabled()) {
+//         log.debug("Looking at property " + name);
+//       }
       if (name.indexOf(PROP_PARAM) != -1) {
         if (log.isDebugEnabled()) {
           log.debug("Found parameter " + name);
@@ -287,6 +287,14 @@ public class ComponentBase
   public void setComponentType(String type) {
     if (type == null || type.equals("") || type.equals(this.getComponentType()))
       return;
+    if (type.equalsIgnoreCase("Node.AgentManager.Agent"))
+      type = ComponentData.AGENT;
+    else if (type.equalsIgnoreCase("Node.AgentManager.Binder"))
+      type = ComponentData.NODEBINDER;
+    else if (type.equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Binder"))
+      type = ComponentData.AGENTBINDER;
+    else if (type.equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Plugin"))
+      type = ComponentData.PLUGIN;
     Property p = getProperty(PROP_TYPE);
     if (p != null) {
       p.setValue(type);
