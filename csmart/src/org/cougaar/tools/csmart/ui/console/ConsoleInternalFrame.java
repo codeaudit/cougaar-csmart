@@ -736,14 +736,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
    * by the node listener.
    */
 
-//    public void enableRestart(boolean enable) {
-//      startAction.setEnabled(enable);
-//      stopAction.setEnabled(!enable);
-//    }
-
-  public void enableRestart() {
-    startAction.setEnabled(true);
-    stopAction.setEnabled(false);
+  public void enableRestart(boolean enable) {
+    startAction.setEnabled(enable);
+    stopAction.setEnabled(!enable);
   }
 
   private void restart_actionPerformed() {

@@ -1287,6 +1287,12 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @return ComponentData the component data for the society
    */
 
+  // TODO: make creating the society component data be the
+  // same for both standalone and indatabase experiments
+  // and consolidate the code in one place
+  // parts of this are currently replicated in two configuration
+  // writers and in the saveToDb method above
+  // saveToDb creates host component data; the config writers and this do not
   public ComponentData getSocietyComponentData() {
     if (inDatabase)
       return theWholeSoc;

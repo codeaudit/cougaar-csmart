@@ -74,16 +74,18 @@ public class CSMARTConsole extends JFrame {
   javax.swing.Timer trialTimer;
   javax.swing.Timer experimentTimer;
   boolean userStoppedTrials = false;
-  boolean stopping = false;
+  boolean stopping = false; // user is stopping the experiment
   //  boolean aborting = false;
   Hashtable runningNodes; // maps NodeComponents to NodeServesClient
+  Object runningNodesLock = new Object();
   ArrayList oldNodes; // node components to destroy before running again
   NodeComponent[] nodesToRun; // node components that contain agents to run
   String[] hostsToRunOn;      // hosts that are assigned nodes to run
   ArrayList hostsToUse; // Hosts that are actually having stuff run on them
   Hashtable nodeListeners; // ConsoleNodeListener referenced by node name
   Hashtable nodePanes;     // ConsoleTextPane referenced by node name
-  String notifyCondition; // if this appears in node stdout, notify user
+  // if this appears in node stdout, notify user
+  String notifyCondition = "exception"; 
   boolean notifyOnStandardError = false; // if stderr appears, notify user
   int viewSize = DEFAULT_VIEW_SIZE; // number of characters in node view
   ConsoleNodeOutputFilter displayFilter;
@@ -145,12 +147,14 @@ public class CSMARTConsole extends JFrame {
   private String selectedNodeName;
 
   Legend legend; // the node status lamp legend
+  CSMARTConsole console;
 
   /**
    * Create and show console GUI.
    */
   public CSMARTConsole(CSMART csmart) {
     this.csmart = csmart;
+    console = this;
     experiment = csmart.getExperiment();
     isEditable = experiment.isEditable();
     experiment.setEditable(false); // not editable while we have it
@@ -565,7 +569,9 @@ public class CSMARTConsole extends JFrame {
   }
 
   private void displayAboutNode() {
-    desktop.getNodeFrame(selectedNodeName).displayAbout();
+    ConsoleInternalFrame frame = desktop.getNodeFrame(selectedNodeName);
+    if (frame != null)
+      frame.displayAbout();
   }
 
   private void displayNodeFrame(String nodeName) {
@@ -598,6 +604,8 @@ public class CSMARTConsole extends JFrame {
   private void resetNodeStatus() {
     ConsoleTextPane consoleTextPane =
       (ConsoleTextPane)nodePanes.get(selectedNodeName);
+    if (consoleTextPane == null)
+      return;
     consoleTextPane.clearNotify();
     NodeStatusButton button = getNodeStatusButton(selectedNodeName);
     if (button != null)
@@ -700,63 +708,47 @@ public class CSMARTConsole extends JFrame {
       runTrial();
   }
 
+  private Thread nodeCreator;
+  private volatile boolean stopNodeCreation;
+  private volatile boolean starting; // true while we're creating nodes
+  private ArrayList nodeCreationInfoList;
+
   private void runTrial() {
     setTrialValues();
-    final CSMARTConsole console = this;
-    GUIUtils.timeConsumingTaskStart(this);
-    try {
-      new Thread("CreateNodes") {
-        public void run() {
-          createNodes();
-          GUIUtils.timeConsumingTaskEnd(console);
+    runStart = new Date();
+    nodeCreationInfoList = new ArrayList();
+    prepareToCreateNodes();
+    stopNodeCreation = false;
+    startTimers();
+    nodeCreator = new Thread("CreateNodes") {
+      public void run() {
+        createNodes();
+        starting = false;
+        // reset controls if no nodes started successfully
+        boolean reset = false;
+        synchronized (runningNodesLock) {
+          if (runningNodes.isEmpty())
+            reset = true;
+        } // end synchronized
+        if (reset) {
+          SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                runButton.setSelected(false);
+                runButton.setEnabled(true);
+                unsetTrialValues();
+                currentTrial--;
+              }
+            });
         }
-      }.start();
+      }
+    };
+    starting = true;
+    try {
+      nodeCreator.start();
     } catch (RuntimeException re) {
       re.printStackTrace();
-      GUIUtils.timeConsumingTaskEnd(this);
     }
   }
-
-  /**
-   * Create nodes; if no nodes can be run, reset the run button,
-   * unset the trial values, decrement the trial counter, and return.
-   */
-
-  private void createNodes() {
-    // first set configuration file name in all node components
-    for (int i = 0; i < nodesToRun.length; i++) {
-      NodeComponent nodeComponent = nodesToRun[i];
-      ((ConfigurableComponent)nodeComponent).addProperty("ConfigurationFileName",
-                                 nodeComponent.getShortName() + currentTrial);
-    }
-    String tmp =
-      Parameters.findParameter("org.cougaar.tools.csmart.startdelay");
-    int delay = 1;
-    if (tmp != null) {
-      try {
-        delay = Integer.parseInt(tmp);
-      } catch (NumberFormatException nfe) {
-      }
-    }
-    boolean haveRunningNode = false;
-    runStart = new Date();
-    for (int i = 0; i < nodesToRun.length; i++) {
-      try {
-        Thread.sleep(delay);
-      } catch (Exception e) {
-      }
-      NodeComponent nodeComponent = nodesToRun[i];
-      if (createNode(nodeComponent, hostsToRunOn[i]))
-	haveRunningNode = true;
-    }
-    if (!haveRunningNode) {
-      runButton.setSelected(false);
-      runButton.setEnabled(true);
-      unsetTrialValues();
-      currentTrial--;
-    }
-  }
-
   private boolean haveMoreTrials() {
     return currentTrial < (experiment.getTrialCount()-1);
   }
@@ -896,17 +888,40 @@ public class CSMARTConsole extends JFrame {
    * and used to abort trials.
    */
   private void stopAllNodes() {
+    // if there's a thread still creating nodes, stop it
+    stopNodeCreation = true;
+    // wait for the creating thread to stop
+    if (nodeCreator != null) {
+      try {
+        nodeCreator.join();
+      } catch (InterruptedException ie) {
+        System.err.println("Exception waiting for node creation thread to die: " + ie);
+      }
+      nodeCreator = null;
+    }
+    // at this point all the nodes have been created, but
+    // the gui controls for the last node created may not have
+    // been created (as they're created via a swing-thread-invoke-later)
+    // so we can no longer assume that a gui (node frame, status button)
+    // exists for every node
+
     // set a flag indicating that we're stopping the trial
     stopping = true;
-    Enumeration nodeComponents = runningNodes.keys();
+    Enumeration nodeComponents;
+    synchronized (runningNodesLock) {
+      nodeComponents = runningNodes.keys();
+    } // end synchronized
     while (nodeComponents.hasMoreElements()) {
       NodeComponent nodeComponent = 
-	(NodeComponent)nodeComponents.nextElement();
-      NodeServesClient nsc = (NodeServesClient)runningNodes.get(nodeComponent);
+        (NodeComponent)nodeComponents.nextElement();
+      NodeServesClient nsc;
+      synchronized (runningNodesLock) {
+        nsc = (NodeServesClient)runningNodes.get(nodeComponent);
+      } // end synchronized
       String nodeName = nodeComponent.getShortName();
       if (nsc == null) {
         System.err.println("Unknown node name: " + nodeName);
-	continue;
+        continue;
       }
       try {
         nsc.flushNodeEvents();
@@ -950,17 +965,6 @@ public class CSMARTConsole extends JFrame {
     for (int i = 0; i < nSocieties; i++)
       experiment.getSocietyComponent(i).setRunning(isRunning);
 
-    // if aborting, disable and unselect all controls
-//      if (aborting) {
-//        runButton.setEnabled(false);
-//        runButton.setSelected(false);
-//        stopButton.setEnabled(false);
-//        stopButton.setSelected(false);
-//        abortButton.setEnabled(false);
-//        abortButton.setSelected(false);
-//        return;
-//      }
-
     // if not running, enable the run button, and don't select it
     // if running, disable the run button and select it
     runButton.setEnabled(!isRunning && haveMoreTrials());
@@ -972,6 +976,14 @@ public class CSMARTConsole extends JFrame {
     stopButton.setSelected(false);
     abortButton.setEnabled(isRunning);
     abortButton.setSelected(false);
+
+    // if not running, don't allow the user to restart individual nodes
+    JInternalFrame[] frames = desktop.getAllFrames();
+    for (int i = 0; i < frames.length; i++) {
+      String s = frames[i].getTitle();
+      if (!s.equals("Configuration") && !s.equals("Trial Values")) 
+        ((ConsoleInternalFrame)frames[i]).enableRestart(false);
+    }
   }
 
   /**
@@ -984,29 +996,37 @@ public class CSMARTConsole extends JFrame {
    * Update the gui controls.
    */
   public void nodeStopped(NodeComponent nodeComponent) {
-    if (runningNodes.get(nodeComponent) != null) {
-      oldNodes.add(nodeComponent);
-      runningNodes.remove(nodeComponent);
-    }
-    // enable restart command on node output window
-    desktop.getNodeFrame(nodeComponent.getShortName()).enableRestart();
-    // if any node has stopped, then don't kill the rest of the nodes
-    // when any node has stopped, kill the rest of the nodes
-    // unless we're already killing the other nodes
-    //    if (!stopping) 
-    //      stopAllNodes();
+    synchronized (runningNodesLock) {
+      if (runningNodes.get(nodeComponent) != null) {
+        oldNodes.add(nodeComponent);
+        runningNodes.remove(nodeComponent);
+      }
+    } // end synchronized
+
+    // enable restart command on node output window, only if we're not stopping
+    ConsoleInternalFrame frame = 
+      desktop.getNodeFrame(nodeComponent.getShortName());
+    if (frame != null && !stopping)
+      frame.enableRestart(true);
+
+    // ignore condition in which we temporarily have 
+    // no running nodes while starting
+    if (starting) 
+      return;
 
     // when all nodes have stopped, save results
     // run the next trial and update the gui controls
-    if (runningNodes.isEmpty()) {
+    boolean finishedTrial = false;
+    synchronized (runningNodesLock) {
+      if (runningNodes.isEmpty())
+        finishedTrial = true;
+    } // end synchronized
+    if (finishedTrial) {
       stopping = false;
       trialFinished();
-      //      if (aborting) {
-        //	experimentFinished();
-      //	aborting = false;
-      //      } else if (haveMoreTrials()) {
       if (haveMoreTrials()) {
 	if (!userStoppedTrials) {
+          // if the trial stopped by itself, then start the next trial
 	  destroyOldNodes(); // destroy old guis before starting new ones
 	  runTrial(); // run next trial
 	} else { // user stopped trials, allow them to run the next one
@@ -1028,13 +1048,12 @@ public class CSMARTConsole extends JFrame {
     for (Iterator i = c.iterator(); i.hasNext(); )
       ((ConsoleNodeListener)i.next()).closeLogFile();
     saveResults();
-    //    nodeListeners.clear();
-    //    nodePanes.clear();
     updateExperimentControls(experiment, false);
   }
 
   /**
    * The experiment is finished; disable and deselect the run button;
+   * disable the restart menus in the node output frames;
    * stop the timers; and
    * unset the property values used in the experiment.
    */
@@ -1123,96 +1142,152 @@ public class CSMARTConsole extends JFrame {
    * so that it can update it.
    * Returns true if successful and false otherwise.
    */
-  private boolean createNode(NodeComponent nodeComponent, String hostName) {
-    String nodeName = nodeComponent.getShortName();
-    // create an unique node name to circumvent server problems
-    String uniqueNodeName = nodeName;
 
-    // get arguments from NodeComponent and pass them to ApplicationServer
-    // note that these properties augment any properties that
-    // are passed to the server in a properties file on startup
-    Properties properties = getNodeMinusD(nodeComponent);
-    String[] args = getNodeArguments(nodeComponent);
 
-    if (!experiment.isInDatabase()) {
-      // Can't change the name of the Nodes when running
-      // from the database, cause it needs to load those names
-      uniqueNodeName = nodeName + currentTrial;
-      properties.setProperty("org.cougaar.node.name", uniqueNodeName);
-      properties.setProperty("org.cougaar.filename", uniqueNodeName + ".ini");
-    } else
-      properties.setProperty("org.cougaar.experiment.id", 
-                             experiment.getTrialID());
-    properties.setProperty("org.cougaar.core.cluster.persistence.clear",
-                           "true");
-    // create a status button
-    NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
+  private void prepareToCreateNodes() {
+    for (int i = 0; i < nodesToRun.length; i++) {
+      NodeComponent nodeComponent = nodesToRun[i];
+      // set configuration file name
+      ((ConfigurableComponent)nodeComponent).addProperty(
+                  "ConfigurationFileName",
+                  nodeComponent.getShortName() + currentTrial);
+      String hostName = hostsToRunOn[i];
+      final String nodeName = nodeComponent.getShortName();
+      // create an unique node name to circumvent server problems
+      String uniqueNodeName = nodeName;
 
-    ConsoleStyledDocument doc = new ConsoleStyledDocument();
-    ConsoleTextPane textPane = new ConsoleTextPane(doc, statusButton);
-    JScrollPane scrollPane = new JScrollPane(textPane);
+      // get arguments from NodeComponent and pass them to ApplicationServer
+      // note that these properties augment any properties that
+      // are passed to the server in a properties file on startup
+      Properties properties = getNodeMinusD(nodeComponent);
+      String[] args = getNodeArguments(nodeComponent);
 
-    // create a node event listener to get events from the node
-    NodeEventListener listener = null;
-    String logFileName = getLogFileName(nodeName);
-    try {
-      listener = new ConsoleNodeListener(this,
-					 nodeComponent,
-                                         logFileName,
-					 statusButton,
-                                         doc);
-    } catch (Exception e) {
-      System.err.println("Unable to create output for: " + nodeName);
-      e.printStackTrace();
-      return false;
+      if (!experiment.isInDatabase()) {
+        // Can't change the name of the Nodes when running
+        // from the database, cause it needs to load those names
+        uniqueNodeName = nodeName + currentTrial;
+        properties.setProperty("org.cougaar.node.name", uniqueNodeName);
+        properties.setProperty("org.cougaar.filename", uniqueNodeName + ".ini");
+      } else
+        properties.setProperty("org.cougaar.experiment.id", 
+                               experiment.getTrialID());
+      properties.setProperty("org.cougaar.core.cluster.persistence.clear",
+                             "true");
+      // create a status button
+      NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
+
+      ConsoleStyledDocument doc = new ConsoleStyledDocument();
+      ConsoleTextPane textPane = new ConsoleTextPane(doc, statusButton);
+      JScrollPane scrollPane = new JScrollPane(textPane);
+
+      // create a node event listener to get events from the node
+      NodeEventListener listener;
+      String logFileName = getLogFileName(nodeName);
+      try {
+        listener = new ConsoleNodeListener(this,
+                                           nodeComponent,
+                                           logFileName,
+                                           statusButton,
+                                           doc);
+      } catch (Exception e) {
+        System.err.println("Unable to create output for: " + nodeName);
+        continue;
+      }
+
+      if (notifyCondition != null)
+        textPane.setNotifyCondition(notifyCondition);
+      ((ConsoleStyledDocument)textPane.getStyledDocument()).setBufferSize(viewSize);
+      if (notifyOnStandardError)
+        statusButton.setNotifyOnStandardError(true);
+      if (displayFilter != null)
+        ((ConsoleNodeListener)listener).setFilter(displayFilter);
+      nodeListeners.put(nodeName, listener);
+      nodePanes.put(nodeName, textPane);
+
+      NodeEventFilter filter = new NodeEventFilter(10);
+      ConfigurationWriter configWriter = 
+        experiment.getConfigurationWriter(nodesToRun);
+      HostServesClient hsc = null;
+      try {
+        hsc = communitySupport.getHost(hostName, getAppServerPort(properties));
+      } catch (Exception e) {
+        System.out.println("CSMARTConsole: cannot create node: " + nodeName);
+        JOptionPane.showMessageDialog(this,
+                                      "Cannot create node on: " + hostName +
+                                      "; check that server is running");
+        continue;
+      }
+
+      NodeCreationInfo nci =
+        new NodeCreationInfo(hsc, uniqueNodeName, properties, args,
+                             listener, filter, configWriter, 
+                             nodeName, hostName,
+                             nodeComponent, scrollPane, statusButton,
+                             logFileName);
+      nodeCreationInfoList.add(nci);
     }
-    if (notifyCondition != null)
-      textPane.setNotifyCondition(notifyCondition);
-    ((ConsoleStyledDocument)textPane.getStyledDocument()).setBufferSize(viewSize);
-    if (notifyOnStandardError)
-      statusButton.setNotifyOnStandardError(true);
-    if (displayFilter != null)
-      ((ConsoleNodeListener)listener).setFilter(displayFilter);
-    nodeListeners.put(nodeName, listener);
-    nodePanes.put(nodeName, textPane);
+  }
 
-    NodeEventFilter filter = new NodeEventFilter(10);
-    ConfigurationWriter configWriter = 
-      experiment.getConfigurationWriter(nodesToRun);
-
-    // create the node
-    NodeServesClient nsc = null;
-    try {
-      HostServesClient hsc = 
-        communitySupport.getHost(hostName, getAppServerPort(properties));
-      //      System.out.println("Properties:");
-      //      properties.list(System.out);
-      nsc = hsc.createNode(uniqueNodeName, properties, args,
-                           listener, filter, configWriter);
-      if (nsc != null)
-	runningNodes.put(nodeComponent, nsc);
-    } catch (Exception e) {
-       System.out.println("CSMARTConsole: cannot create node: " + nodeName);
-       JOptionPane.showMessageDialog(this,
-				     "Cannot create node on: " + hostName +
-				     "; check that server is running");
-       e.printStackTrace();
-       return false;
+  // runs in a separate thread
+  private void createNodes() {
+    int delay = 1;
+    // get inter-node start delay
+    String tmp =
+      Parameters.findParameter("org.cougaar.tools.csmart.startdelay");
+    if (tmp != null) {
+      try {
+        delay = Integer.parseInt(tmp);
+      } catch (NumberFormatException nfe) {
+      }
     }
+    final int interNodeStartDelay = delay;
 
-    // only add gui controls if successfully created node
-    addStatusButton(statusButton);
-    desktop.addNodeFrame(nodeComponent, 
-                         (ConsoleNodeListener)listener, 
-                         new NodeFrameListener(),
-                         scrollPane,
-                         statusButton,
-                         logFileName,
-                         nsc,
-                         this);
-    updateExperimentControls(experiment, true);
-    startTimers();
-    return true;
+    for (int i = 0; i < nodeCreationInfoList.size(); i++) {
+      try {
+        Thread.sleep(interNodeStartDelay);
+      } catch (Exception e) {
+      }
+      if (stopNodeCreation)
+        break;
+      final NodeCreationInfo nci = 
+        (NodeCreationInfo)nodeCreationInfoList.get(i);
+      final NodeServesClient nsc;
+      try {
+        nsc = nci.hsc.createNode(nci.uniqueNodeName, 
+                                 nci.properties, 
+                                 nci.args,
+                                 nci.listener, 
+                                 nci.filter, 
+                                 nci.configWriter);
+      } catch (Exception e) {
+        System.out.println("CSMARTConsole: cannot create node: " + 
+                           nci.nodeName);
+        JOptionPane.showMessageDialog(this,
+                                      "Cannot create node on: " + 
+                                      nci.hostName +
+                                      "; check that server is running");
+        continue;
+      }
+      synchronized (runningNodesLock) {
+        runningNodes.put(nci.nodeComponent, nsc);
+      } // end synchronized
+      SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+            // don't create gui controls if node creation has been stopped
+            if (nodeCreator == null) return;
+            addStatusButton(nci.statusButton);
+            desktop.addNodeFrame(nci.nodeComponent,
+                                 (ConsoleNodeListener)nci.listener, 
+                                 new NodeFrameListener(),
+                                 nci.scrollPane,
+                                 nci.statusButton,
+                                 nci.logFileName,
+                                 nsc,
+                                 console);
+            updateExperimentControls(experiment, true);
+          }
+        });
+    }
   }
 
   /** 
@@ -1223,11 +1298,19 @@ public class CSMARTConsole extends JFrame {
    */
 
   public void stopNode(NodeComponent node) {
-    if (runningNodes.size() == 1) {
+    boolean doAbort = false;
+    synchronized (runningNodesLock) {
+      if (runningNodes.size() == 1)
+        doAbort = true;
+    } // end synchronized
+    if (doAbort) {
       abortButton_actionPerformed();
       return;
     }
-    NodeServesClient nsc = (NodeServesClient)runningNodes.get(node);
+    NodeServesClient nsc;
+    synchronized (runningNodesLock) {
+      nsc = (NodeServesClient)runningNodes.get(node);
+    } // end synchronized
     if (nsc == null)
       return;
     try {
@@ -1250,7 +1333,12 @@ public class CSMARTConsole extends JFrame {
    */
 
   public NodeServesClient restartNode(NodeComponent nodeComponent) {
-    if (oldNodes.size() + runningNodes.size() == 1) {
+    boolean doRun = false;
+    synchronized (runningNodes) {
+      if (oldNodes.size() + runningNodes.size() == 1)
+        doRun = true;
+    } // end synchronized
+    if (doRun) {
       runButton_actionPerformed();
       return null; // it doesn't matter what we return, the caller is going away
     }
@@ -1306,8 +1394,11 @@ public class CSMARTConsole extends JFrame {
     try {
       nsc = hostServer.createNode(nodeName, properties, args,
                                   listener, new NodeEventFilter(10), null);
-      if (nsc != null)
-        runningNodes.put(nodeComponent, nsc);
+      if (nsc != null) {
+        synchronized (runningNodesLock) {
+          runningNodes.put(nodeComponent, nsc);
+        } // end synchronized
+      }
     } catch (Exception e) {
       System.out.println(e);
     }
@@ -1633,16 +1724,6 @@ public class CSMARTConsole extends JFrame {
    */
 
   private void setNotifyMenuItem_actionPerformed() {
-//      String s = 
-//        (String)JOptionPane.showInputDialog(this,
-//                                            "Search string:",
-//                                            "Notification",
-//                                            JOptionPane.QUESTION_MESSAGE,
-//                                            null, null, notifyCondition);
-//      if (s == null || s.length() == 0)
-//        notifyCondition = null;
-//      else
-//        notifyCondition = s;
     JPanel notifyPanel = new JPanel(new GridBagLayout());
     int x = 0;
     int y = 0;
@@ -1846,4 +1927,53 @@ public class CSMARTConsole extends JFrame {
     }
   }
 
+  /**
+   * This contains all the information needed to create a node
+   * and display its output.  It's passed to a separate thread
+   * that creates the node.
+   */
+
+  class NodeCreationInfo {
+    HostServesClient hsc;
+    String uniqueNodeName;
+    Properties properties;
+    String[] args;
+    NodeEventListener listener;
+    NodeEventFilter filter;
+    ConfigurationWriter configWriter;
+    String nodeName;
+    String hostName;
+    NodeComponent nodeComponent;
+    JScrollPane scrollPane;
+    NodeStatusButton statusButton;
+    String logFileName;
+
+    public NodeCreationInfo(HostServesClient hsc,
+                            String uniqueNodeName,
+                            Properties properties,
+                            String[] args,
+                            NodeEventListener listener,
+                            NodeEventFilter filter,
+                            ConfigurationWriter configWriter,
+                            String nodeName,
+                            String hostName,
+                            NodeComponent nodeComponent,
+                            JScrollPane scrollPane,
+                            NodeStatusButton statusButton,
+                            String logFileName) {
+      this.hsc = hsc;
+      this.uniqueNodeName = uniqueNodeName;
+      this.properties = properties;
+      this.args = args;
+      this.listener = listener;
+      this.filter = filter;
+      this.configWriter = configWriter;
+      this.nodeName = nodeName;
+      this.hostName = hostName;
+      this.nodeComponent = nodeComponent;
+      this.scrollPane = scrollPane;
+      this.statusButton = statusButton;
+      this.logFileName = logFileName;
+    }
+  }
 }
