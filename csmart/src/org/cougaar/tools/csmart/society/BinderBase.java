@@ -78,7 +78,7 @@ public class BinderBase
       this.priority = 
         ComponentDescription.priorityToString(ComponentDescription.PRIORITY_BINDER);
     }
-    this.type = type;
+    this.type = getCanonicalType(type);
     createLogger();
   }
 

@@ -56,7 +56,7 @@ public class PluginBase
   public PluginBase(String name, String classname, String priority, String type) {
     super(name);
     this.classname = classname;
-    this.type = type;
+    this.type = getCanonicalType(type);
     if(priority != null)
       this.priority = priority;
     createLogger();

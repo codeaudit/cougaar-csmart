@@ -79,7 +79,7 @@ public class ComponentBase
   public ComponentBase(String name, String classname, String priority, String type) {
     super(name);
     this.classname = classname;
-    this.type = type;
+    this.type = getCanonicalType(type);
     if(priority != null)
       this.priority = priority;
     createLogger();
@@ -137,55 +137,10 @@ public class ComponentBase
     // add self to data
     ComponentData self = new GenericComponentData();
 
-    // If the user specified the long version of common insertion points,
-    // translate to the short version for consistency
+    // We don't try to translate the component type here
+    // because that might cause a modification,
+    // which isn't the intent at this point
     self.setType(getComponentType());
-    Property p = getProperty(PROP_TYPE);
-    if (self.getType().equalsIgnoreCase("Node.AgentManager.Binder")) {
-      self.setType(ComponentData.NODEBINDER);
-      if (p != null)
-	p.setValue(ComponentData.NODEBINDER);
-    } else if (self.getType() != ComponentData.NODEBINDER && self.getType().equalsIgnoreCase(ComponentData.NODEBINDER)) {
-      self.setType(ComponentData.NODEBINDER);
-      if (p != null)
-	p.setValue(ComponentData.NODEBINDER);
-    } else if (self.getType().equalsIgnoreCase("nodebinder")) {
-      self.setType(ComponentData.NODEBINDER);
-      if (p != null)
-	p.setValue(ComponentData.NODEBINDER);
-    } else if (self.getType().equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Binder")) {
-      self.setType(ComponentData.AGENTBINDER);
-      if (p != null)
-	p.setValue(ComponentData.AGENTBINDER);
-    } else if (self.getType() != ComponentData.AGENTBINDER && self.getType().equalsIgnoreCase("agent binder")) {
-      self.setType(ComponentData.AGENTBINDER);
-      if (p != null)
-	p.setValue(ComponentData.AGENTBINDER);
-    } else if (self.getType().equalsIgnoreCase("agentbinder")) {
-      self.setType(ComponentData.AGENTBINDER);
-      if (p != null)
-	p.setValue(ComponentData.AGENTBINDER);
-    } else if (self.getType().equalsIgnoreCase("binder")) {
-      self.setType(ComponentData.AGENTBINDER);
-      if (p != null)
-	p.setValue(ComponentData.AGENTBINDER);
-    } else if (self.getType().equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Plugin")) {
-      self.setType(ComponentData.PLUGIN);
-      if (p != null)
-	p.setValue(ComponentData.PLUGIN);
-    } else if (self.getType() != ComponentData.PLUGIN && self.getType().equalsIgnoreCase("Plugin")) {
-      self.setType(ComponentData.PLUGIN);
-      if (p != null)
-	p.setValue(ComponentData.PLUGIN);
-    } else if (self.getType().equalsIgnoreCase("Node.AgentManager.Agent")) {
-      self.setType(ComponentData.AGENT);
-      if (p != null)
-	p.setValue(ComponentData.AGENT);
-    } else if (self.getType() != ComponentData.AGENT && self.getType().equalsIgnoreCase("Agent")) {
-      self.setType(ComponentData.AGENT);
-      if (p != null)
-	p.setValue(ComponentData.AGENT);
-    }
 
     self.setOwner(this);
     self.setParent(data);
@@ -272,16 +227,10 @@ public class ComponentBase
     return type;
   }
 
-  /**
-   * Allow outside users to set the Component type to one of the
-   * values in the constants in ComponentData.
-   *
-   * @param type a <code>String</code> binder type
-   */
-  public void setComponentType(String type) {
-    if (type == null || type.equals("") || type.equals(this.getComponentType()))
-      return;
-
+  // Turn random strings into the constants wherever possible
+  protected String getCanonicalType(String type) {
+    if (type == null || type.equals(""))
+      return "";
     if (type.equalsIgnoreCase("Node.AgentManager.Agent"))
       type = ComponentData.AGENT;
     else if (type.equalsIgnoreCase("Node.AgentManager.Binder"))
@@ -296,10 +245,33 @@ public class ComponentBase
       type = ComponentData.NODEBINDER;
     else if (type.equalsIgnoreCase("agentbinder"))
       type = ComponentData.AGENTBINDER;
-    else if (type.equalsIgnoreCase("plugin"))
+    else if (type.equalsIgnoreCase("domain"))
+      type = ComponentData.DOMAIN;
+    else if (type.equalsIgnoreCase(ComponentData.NODEBINDER))
+      type = ComponentData.NODEBINDER;
+    else if (type.equalsIgnoreCase(ComponentData.AGENTBINDER))
+      type = ComponentData.AGENTBINDER;
+    else if (type.equalsIgnoreCase(ComponentData.PLUGIN))
       type = ComponentData.PLUGIN;
-    else if (type.equalsIgnoreCase("agent"))
+    else if (type.equalsIgnoreCase(ComponentData.AGENT))
       type = ComponentData.AGENT;
+    else if (type.equalsIgnoreCase(ComponentData.DOMAIN))
+      type = ComponentData.DOMAIN;
+
+    return type;
+  }
+
+  /**
+   * Allow outside users to set the Component type to one of the
+   * values in the constants in ComponentData.
+   *
+   * @param type a <code>String</code> binder type
+   */
+  public void setComponentType(String type) {
+    if (type == null || type.equals("") || type.equals(this.getComponentType()))
+      return;
+
+    type = getCanonicalType(type);
 
     Property p = getProperty(PROP_TYPE);
     if (p != null) {
