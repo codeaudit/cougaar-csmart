@@ -163,7 +163,8 @@
 	contain UnicaseRemoteObject-->
 	<!-- command is rmic -g -v1.2 -d destdir -classpath
 	destdir:restofclasspath listoffiles -->
-	<target name="rmic-source" depends="prepare-rmic, prepare"
+	<!-- remove dependency on prepare-rmic cause it is currently broken -->
+	<target name="rmic-source" depends="prepare"
 	unless="rmic.notRequired" if="has.build">
 	<!-- core version does: both versions 1.2 and 1.1, with
 	verify, no debug.
@@ -210,9 +211,11 @@
 	<!-- ========================================================== -->	
 	<target name="compile-examples" depends="prepare, compile" description="Compiles the example Code" if="has.examples">
 		<mkdir dir="${examples.build}" />
+		<!-- source=1.4 required to allow asserts -->
 		<javac srcdir="${examples}"
 		       destdir="${examples.build}"
 		       includeAntRuntime="no"
+		       source="1.4"
  		       debug="${build.compiler.debug}"
 		       optimize="${build.compiler.optimize}"
 		       deprecation="${build.compiler.deprecation}">
@@ -272,6 +275,7 @@
 		</uptodate>
 	</target>
 	
+	<!-- FIXME: The identity mapper is not right!!! -->
 	<target name="prepare-rmic" depends="prepare" if="has.build">
 		<!-- Check if rmic is required -->
 		<uptodate property="rmic.notRequired">
@@ -292,7 +296,9 @@
 	<target name="really-compile" depends="prepare, defrunner" if="has.src">
 		<mkdir dir="${build}" />
 		<available property="has.build" file="${build}"/>
+		<!-- source=1.4 required for asserts -->
 		<javac srcdir="${src}" destdir="${build}"
+		       source="1.4"
 		       includeAntRuntime="no"
 		       debug="${build.compiler.debug}"
 		       optimize="${build.compiler.optimize}"
@@ -337,7 +343,7 @@
 	<!-- ====================================================================== -->	
 	<target name="compile-tests" depends="prepare, junit, compile" description="Compile unit tests" if="junit.present"> 
 	     <mkdir dir="${testbuild}" />
-	     <javac srcdir="${testsrc}" destdir="${testbuild}"
+	     <javac srcdir="${testsrc}" destdir="${testbuild}" source="1.4"
 	            deprecation="${build.compiler.deprecation}"
 		    optimize="off"
 		    debug="on">
