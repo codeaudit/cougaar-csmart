@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 1997-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -42,6 +42,7 @@ import org.cougaar.planning.ldm.plan.PlanElement;
 import org.cougaar.planning.ldm.plan.Role;
 import org.cougaar.planning.ldm.plan.Task;
 import org.cougaar.planning.ldm.plan.Verb;
+import org.cougaar.planning.ldm.plan.AspectValue;
 import org.cougaar.planning.service.PrototypeRegistryService;
 import org.cougaar.tools.scalability.performance.jni.CpuClock;
 import org.cougaar.util.UnaryPredicate;
@@ -137,7 +138,7 @@ import java.util.Vector;
  * @see MetricsConstants
  * @see MetricsInitializerPlugin
  */
-public class MetricsPlugin 
+public class MetricsPlugin
   extends CSMARTPlugin
   implements MetricsConstants
 {
@@ -154,7 +155,7 @@ public class MetricsPlugin
   private int startPlanElementCount = 0; // count since last stats record
   private Set completedPlanElements = new HashSet();
   private PrintWriter writer; // write out the metrics
-  
+
   // Services to use to get metrics
   private PrototypeRegistryService protoRegistryService = null;
   private BlackboardMetricsService bbMetricsService = null;
@@ -170,7 +171,7 @@ public class MetricsPlugin
   private boolean wantMessWatchStats = false;
 
   boolean started = false; // dont call start twice by mistake
-  
+
   static NumberFormat timeFormat = new DecimalFormat("0.000 seconds");
   static NumberFormat memoryFormat = new DecimalFormat("0.000 MBi");
 
@@ -182,7 +183,7 @@ public class MetricsPlugin
   // This plugin only wants the statistics gathering tasks.
   private IncrementalSubscription myTasks;
   public UnaryPredicate myTasksPredicate = new UnaryPredicate() {
-    public boolean execute(Object o) { 
+    public boolean execute(Object o) {
       if (o instanceof Task) {
 	Task task = (Task) o;
         Verb verb = task.getVerb();
@@ -207,7 +208,7 @@ public class MetricsPlugin
   private UnaryPredicate taskSearchPred;
   private UnaryPredicate createTSPred(final String sverb) {
     return new UnaryPredicate() {
-	public boolean execute(Object o) { 
+	public boolean execute(Object o) {
 	  if (o instanceof Task) {
 	    Task task = (Task) o;
 	    Verb verb = task.getVerb();
@@ -239,7 +240,7 @@ public class MetricsPlugin
       return false;
     }
   };
-          
+
   public void setupSubscriptions()
   {
     // Is this necessary?
@@ -273,7 +274,7 @@ public class MetricsPlugin
           if (Integer.parseInt((String)params.elementAt(2)) != 0 ) {
             wantBBStats = true;
             bbMetricsService = (BlackboardMetricsService)
-              getServiceBroker().getService(this, BlackboardMetricsService.class, 
+              getServiceBroker().getService(this, BlackboardMetricsService.class,
                                             new ServiceRevokedListener() {
                                                 public void serviceRevoked(ServiceRevokedEvent re) {
                                                   if (BlackboardMetricsService.class.equals(re.getService())) {
@@ -283,38 +284,38 @@ public class MetricsPlugin
                                               });
           } // end of parsed non-0 int
         } // end of have at least 3 params
-	
+
         if ( params.size() >= 4) {
 	  // ProtypeRegistry stats are the 4th parameter, number 3
           if (Integer.parseInt((String)params.elementAt(3)) != 0 ) {
             wantProtoRegStats = true;
             protoRegistryService = (PrototypeRegistryService)
-              getServiceBroker().getService(this, PrototypeRegistryService.class, 
+              getServiceBroker().getService(this, PrototypeRegistryService.class,
                                             new ServiceRevokedListener() {
                                                 public void serviceRevoked(ServiceRevokedEvent re) {
                                                   if (PrototypeRegistryService.class.equals(re.getService()))
                                                     protoRegistryService  = null;
                                                 }
                                               });
-      
-          } // end of parsed non-0 int              
+
+          } // end of parsed non-0 int
         } // end of if have at least 4 params
-        
+
         if (params.size() >= 5 ) {
 	  // Node metrics stats are the 5th param, number 4
           if (Integer.parseInt((String)params.elementAt(4)) != 0 ) {
-            wantNodeStats = true;  
+            wantNodeStats = true;
             nodeMetricsService = (NodeMetricsService)
-              getServiceBroker().getService(this, NodeMetricsService.class, 
+              getServiceBroker().getService(this, NodeMetricsService.class,
                                             new ServiceRevokedListener() {
                                                 public void serviceRevoked(ServiceRevokedEvent re) {
                                                   if (NodeMetricsService.class.equals(re.getService())) {
                                                     nodeMetricsService = null;
                                                   }
                                                 }
-                                              });          
-      
-          } // end of if parsed non-0 int                  
+                                              });
+
+          } // end of if parsed non-0 int
         } // end of if have at least 5 params
 
 	if (params.size() >= 6) {
@@ -327,22 +328,22 @@ public class MetricsPlugin
         if (params.size() == 7) {
 	  // Message Watcher statistics are the 7th parameter, number 6
           if (Integer.parseInt((String)params.elementAt(6)) != 0 ) {
-            wantMessWatchStats = true;      
+            wantMessWatchStats = true;
 
             messageWatchService = (MessageWatcherService)
-              getServiceBroker().getService(this,MessageWatcherService.class, 
+              getServiceBroker().getService(this,MessageWatcherService.class,
                                             new ServiceRevokedListener() {
                                                 public void serviceRevoked(ServiceRevokedEvent re) {
                                                   if (MessageWatcherService.class.equals(re.getService()))
                                                     messageWatchService = null;
                                                 }
-                                              });   
+                                              });
             messageWatchService.addMessageTransportWatcher(_messageWatcher = new MessageWatcher());
           } // end of if parsed non-0 int
         } // end of if have 7 params
-		
+
       } // end of if have more than 2 params
-      
+
       if (params.size() > 7) {
 	if (log.isErrorEnabled()) {
 	  // Explain the parameters correctly...
@@ -364,7 +365,7 @@ public class MetricsPlugin
     if (log.isDebugEnabled()) {
       log.debug("Writing " + path + ourCluster + RESULTS_FILENAME_SUFFIX);
     }
-    
+
     try {
       writer = new PrintWriter(new FileWriter(path + ourCluster + RESULTS_FILENAME_SUFFIX));
     } catch (IOException ioe) {
@@ -386,7 +387,7 @@ public class MetricsPlugin
     //        startStatistics();
     if (wantMessStats) {
       messageStatsService = (MessageStatisticsService)
-        getBindingSite().getServiceBroker().getService(this, MessageStatisticsService.class, 
+        getBindingSite().getServiceBroker().getService(this, MessageStatisticsService.class,
                                                        new ServiceRevokedListener() {
 							   public void serviceRevoked(ServiceRevokedEvent re) {
 							     if (MessageStatisticsService.class.equals(re.getService())){
@@ -399,7 +400,7 @@ public class MetricsPlugin
       }
     } // end of block on messStats
   } // end of setupSubscriptions()
-    
+
   // process statistics tasks and count completed planelements
   public void execute()
   {
@@ -414,7 +415,7 @@ public class MetricsPlugin
     // Count up the tasks I see with my verb
     if (myTaskSearch != null && myTaskSearch.hasChanged())
       processMyTasks(myTaskSearch.getAddedList());
-    
+
     // If we have any control tasks to handle, do so
     if (myTasks.hasChanged()) {
       processTasks(myTasks.getAddedList());
@@ -432,7 +433,7 @@ public class MetricsPlugin
       e.nextElement();
     }
   }
-  
+
   // remove removed PEs from our collection
   private void removePlanElements(Enumeration e) {
     while (e.hasMoreElements()) {
@@ -488,17 +489,16 @@ public class MetricsPlugin
 	// is ready, comment out the following line
 	//continue;
       }
-      
+
       // Dummy aspect/results
-      int []types = {AspectType.COST};
-      double []results = {(double) 0.0};
-      AllocationResult estAR = 
+      AspectValue[] values = {AspectValue.newAspectValue(AspectType.COST, 0.0)};
+      AllocationResult estAR =
         theLDMF.newAllocationResult(1.0, // rating
                                     true, // success
-                                    types, results);
-        
+                                    values);
+
       // Create allocation of task to asset with given estimated result
-      Allocation alloc = 
+      Allocation alloc =
         theLDMF.createAllocation(task.getPlan(), task, dummyAsset, estAR,
                                  MetricsProviderRole);
       publishAdd(alloc);
@@ -523,18 +523,18 @@ public class MetricsPlugin
     // FIXME: Next 2 overlap with Node service
     writer.print("Mem (MB) Used\t");
     writer.print("Total Mem Allocated to Node (MB)");
-    
+
     if (wantMessStats && messageStatsService != null)
       messageStatsService.getMessageStatistics(true);
-    
+
     if (wantMessStats) {
       writer.print("\tMsg Q Length\t");
       writer.print("Msg Bytes Sent\t");
       writer.print("Msgs Sent");
     } // end of if ()
-    
+
     writer.print("\tTasks Done During Sample");
-    
+
     if (myTaskSearch != null) {
       // Print headers for optional results
       writer.print("\tTime since first Task with Verb " + searchVerb + "\t");
@@ -546,14 +546,14 @@ public class MetricsPlugin
       writer.print("\tTotal Blackboard Asset Count\t");
       writer.print("Total Plan Element Count\t");
       writer.print("Total Task Count\t");
-      writer.print("Blackboard Object Count");      
+      writer.print("Blackboard Object Count");
     } // end of if ()
 
     // FIXME What exactly are these counting?
     if (wantProtoRegStats) {
       writer.print("\tCached Prototype Cnt\t");
       writer.print("Property Provider Cnt\t");
-      writer.print("Prototype Provider Cnt");      
+      writer.print("Prototype Provider Cnt");
     } // end of if ()
 
     if (wantNodeStats) {
@@ -562,16 +562,16 @@ public class MetricsPlugin
       writer.print("Free Mem (bytes)\t");
       writer.print("Total Mem (bytes)");
     } // end of if ()
-    
+
     if (wantMessWatchStats) {
       writer.print("\tDirectives Into Agent\t");
       writer.print("Directives Out\t");
       writer.print("Notifications In\t");
-      writer.print("Notifications Out");      
+      writer.print("Notifications Out");
     } // end of if ()
     writer.println();
   }
-  
+
   /**
    * Close the statistics output stream
    *
@@ -626,7 +626,7 @@ public class MetricsPlugin
       propProvCount = protoRegistryService.getPropertyProviderCount();
       protoProvCount = protoRegistryService.getPrototypeProviderCount();
     }
-    
+
     // NodeMetricsService
     long freeMemory = 0l;
     long totalMemory = 0l;
@@ -652,7 +652,7 @@ public class MetricsPlugin
       notificationsIn = _messageWatcher.getNotificationsIn();
       notificationsOut = _messageWatcher.getNotificationsOut();
     }
-    
+
     long usedMemory = totalMemory - freeMemory;
     long elapsedTime = currentTime - startTime;
     long cpu = CpuClock.cpuTimeMillis();
@@ -668,15 +668,15 @@ public class MetricsPlugin
     writer.print(usedMemory/(1024.0*1024.0));
     writer.print("\t");
     writer.print(totalMemory/(1024.0*1024.0));
-    
+
     writer.print("\t");
-    
+
     if (wantMessStats) {
       writer.print(averageMessageQueueLength + "\t");
       writer.print(totalMessageBytes + "\t");
       writer.print(totalMessageCount);
     }
-    
+
     writer.print("\t");
     writer.print(deltaPlanElementCount);
 
@@ -697,13 +697,13 @@ public class MetricsPlugin
       writer.print("\t" + bbTaskCount);
       writer.print("\t" + bbObjCount);
     } // end of if ()
-  
+
     if (wantProtoRegStats) {
       writer.print("\t" + cachedPrototypeCount);
       writer.print("\t" + propProvCount);
       writer.print("\t" + protoProvCount);
     } // end of if ()
-    
+
     if (wantNodeStats) {
       writer.print("\t" + activeThreadCount);
       writer.print("\t" + freeMemory);
@@ -718,21 +718,21 @@ public class MetricsPlugin
     } // end of if ()
 
     writer.println();
-    
+
     if (log.isDebugEnabled()) {
-      log.debug("Duration     : " + timeFormat.format(elapsedTime/1000.0) + "\n" + 
-	      "CPU          : " + timeFormat.format(cpuTime/1000.0) + "\n" + 
-	      "Used Memory  : " + memoryFormat.format(usedMemory/(1024.0*1024.0)) + "\n" + 
+      log.debug("Duration     : " + timeFormat.format(elapsedTime/1000.0) + "\n" +
+	      "CPU          : " + timeFormat.format(cpuTime/1000.0) + "\n" +
+	      "Used Memory  : " + memoryFormat.format(usedMemory/(1024.0*1024.0)) + "\n" +
 	      "Total Memory : " + memoryFormat.format(totalMemory/(1024.0*1024.0)) + "\n");
       if (wantMessStats) {
 	log.debug(
-  	      "Message Queue: " + averageMessageQueueLength + "\n" + 
-  	      "Message Bytes: " + totalMessageBytes + "\n" + 
+  	      "Message Queue: " + averageMessageQueueLength + "\n" +
+  	      "Message Bytes: " + totalMessageBytes + "\n" +
 		"Message Count: " + totalMessageCount + "\n");
       }
-      
+
       log.debug("Tasks Done   : " + deltaPlanElementCount);
-      
+
       if (myTaskSearch != null) {
 	if (timeFirstMyTask == 0l) {
 	  log.debug("Time (sec) since first task of Verb " + searchVerb + ": <Not seen yet>\n");
@@ -742,7 +742,7 @@ public class MetricsPlugin
 	log.debug("Num Tasks this interval of Verb " + searchVerb + ": " + countMyTasksThisInterval + "\n");
 	log.debug("Total Tasks seen with Verb " + searchVerb + ": " + countMyTasks + "\n");
       }
-      
+
       // Blackboard stats
       if (wantBBStats) {
 	log.debug("Total Assets on BBoard: " + assetCount + "\n");
@@ -750,14 +750,14 @@ public class MetricsPlugin
 	log.debug("Total Tasks on BBoard: " + bbTaskCount + "\n");
 	log.debug("Total Objects on BBoard: " + bbObjCount + "\n");
       }
-      
+
       // ProtypeRegistryStats
       if (wantProtoRegStats) {
 	log.debug("Cached Prototypes: " + cachedPrototypeCount + "\n");
 	log.debug("Property Providers: " + propProvCount + "\n");
 	log.debug("Prototype Providers: " + protoProvCount + "\n");
       }
-      
+
       // Node Statistics
       if (wantNodeStats) {
 	log.debug("Active COUGAAR Threads: " + activeThreadCount + "\n");
@@ -773,10 +773,10 @@ public class MetricsPlugin
 	log.debug("Notifications sent by Agent: " + notificationsOut + "\n");
       }
     }
-    
+
     // reset task count variable
     countMyTasksThisInterval = 0;
-    
+
     // Flush the writer?
     writer.flush();
   } // end of sampleStatistics()
@@ -790,12 +790,12 @@ public class MetricsPlugin
     private int directivesOut = 0;
     private int notificationsIn = 0;
     private int notificationsOut = 0;
-        
+
     public MessageWatcher() {
       //            me = getAgentIdentifier();
       me = MetricsPlugin.this.getAgentIdentifier();
     }
-        
+
     public void messageSent(Message m) {
       if (m.getOriginator().equals(me)) {
         if (m instanceof DirectiveMessage) {
