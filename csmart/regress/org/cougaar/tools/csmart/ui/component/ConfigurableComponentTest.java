@@ -32,7 +32,7 @@ public class ConfigurableComponentTest extends TestCase {
   }
 
   public void testAddChild() {
-    assertEquals("Test addChild()", 1, sc.addChild(new SimpleComponent("Child")));         	 
+    assertEquals("Test addChild()", 0, sc.addChild(new SimpleComponent("Child")));         	 
   }
 
   public void testRemoveChild() {
@@ -77,8 +77,14 @@ public class ConfigurableComponentTest extends TestCase {
     assertEquals("Test getChild(CompositeName)", tmp, sc.getChild(name));
   }
 
+  public void testaddProperty() {
+    ConfigurableComponentProperty ccp = new ConfigurableComponentProperty(new SimpleComponent(), "Prop1", new Integer(1));
+    sc.addProperty(ccp);
+    assertEquals("Test addProperty", ccp, sc.getProperty(ccp.getName()));
+  }
+
   public static Test suite() {
-    return new TestSuite(LongRangeTest.class);
+    return new TestSuite(ConfigurableComponentTest.class);
   }
 
   public static void main(String[] args) {
