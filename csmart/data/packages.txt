@@ -1,0 +1,76 @@
+Last updated: 10/19/01
+
+The document outlines the current CSMART package structure:
+
+-- org.cougaar.tools.csmart
+   
+  -- binder
+      CSMART binder related code (Binder is used by Impacts)
+
+  -- ldm
+    -- asset
+	All CSMART/ABC Assets
+    -- event
+        All CSMART/ABC Events
+    -- lps
+        All CSMART/ABC LP's
+    -- plugin
+      -- customer
+          Customer Plugin specific classes
+      -- transducer
+          Transducer Plugin specific classes
+
+  -- plugin
+      All CSMART/ABC Plugins.
+
+  -- scalability
+      All classes for the Scalability Configurable Components
+
+  -- societies
+    -- abcsociety
+        All classes for the ABC Configurable Components Plus Basic Metrics Components
+    -- cmt
+        All classes for the CMT Configurable Component
+    -- database
+        Contains database utility classes.
+  -- ui
+    -- analyzer
+	Performance Analyzer
+    -- builder
+	Property Table builder classes
+    -- component
+	All code relating to ConfigurableComponents, ComponentData, Data Ranges
+        and some db classes.
+    -- configuration
+	Console Drag and Drop Tree classes
+    -- console
+	All classes relating to the console, including charting classes
+    -- experiment
+	All classes relating to experiments, trials, Impact Component and various html files
+    -- help
+	About CSMART help 
+    -- monitor
+      -- community
+	  Community View classes
+      -- generic
+	  Various monitor related classes
+      -- metrics
+	  Metrics graphs
+      -- plan
+          Plan view classes
+      -- society 
+          Society View classes
+      -- viewer
+          Gif files and the CSMART UI
+    -- psp
+	All PSP's used by CSMART
+    -- tree
+	UI Drag and Drop tree classes
+    -- util
+	Various UI utility classes
+    -- viewer
+	All classes related to the Organizer + Gifs
+  -- util
+      Various utility classes
+    -- parser
+      Various parsers required by CSMART/ABC
