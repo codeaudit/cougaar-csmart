@@ -443,6 +443,7 @@ public class AppServerSupport {
    * Display all process names from app servers and return the names
    * that the user selects.  Ignore nodes that have a listener
    * from this instance of CSMART.
+   * @return List of process names user wants to attach to, empty list if none
    */
   private String[] getNodesToAttach(ArrayList nodes) {
     if (nodes == null || nodes.size() == 0)
@@ -456,7 +457,7 @@ public class AppServerSupport {
         sel.add(selected[i]);
       return (String[])sel.toArray(new String[selected.length]);
     } else
-      return null;
+      return new String[0];
   }
 
   /**
