@@ -212,13 +212,31 @@ public class CMTAgent
 
   public ComponentData addComponentData(ComponentData data) {
 
-    StringBuffer assemblyMatch = null;
-    
     String name = data.getName();
     int dotPos = name.lastIndexOf('.');
     if (dotPos >= 0) {
       name = name.substring(dotPos + 1);
     }
+
+    StringBuffer assemblyMatch = new StringBuffer();
+    assemblyMatch.append("in (");
+    Iterator iter = assemblyID.iterator();
+    boolean first = true;
+    while (iter.hasNext()) {
+      String val = (String)iter.next();
+      if (first) {
+	first = false;
+      } else {
+	assemblyMatch.append(", ");
+      }
+      assemblyMatch.append("'");
+      assemblyMatch.append(val);
+      assemblyMatch.append("'");
+    }
+    assemblyMatch.append(")");
+
+    substitutions.put(":assemblyMatch", assemblyMatch.toString());
+
     substitutions.put(":agent_name", name);
 
     data.setAlibID((String)propComponentID.getValue());
@@ -239,7 +257,9 @@ public class CMTAgent
 	  plugin.setParent(data);
 	  plugin.setOwner(this);
 	  plugin.setName(pluginClassName);	  
-	  plugin.setAlibID(rs.getString(2));
+	  String alibId =rs.getString(2);
+	  plugin.setAlibID(alibId);
+	  substitutions.put(":comp_alib_id", alibId);
 	  substitutions.put(":comp_id", rs.getString(3));
 	  Statement stmt2 = conn.createStatement();
 	  String query2 = dbp.getQuery(QUERY_PLUGIN_ARGS, substitutions);
