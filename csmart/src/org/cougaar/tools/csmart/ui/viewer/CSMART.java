@@ -116,7 +116,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   private static final String POST="</font></b></center></html>";
   private static final String[] views = {
     PRE + "Configuration<br>Builder" + POST,
-    PRE + "Configuration<br>Helper" + POST,
     PRE + "Experiment<br>Builder" + POST,
     PRE + "Experiment<br>Controller" + POST,
     PRE + "Society<br>Monitor" + POST,
@@ -125,7 +124,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   private static final String[] tooltips = {
     "Specify properties of a society or other configurable component.",
-    "", 
     "Configure an experiment.",
     "Start, stop and abort experiments.",
     "Monitor a running society.",
@@ -134,7 +132,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   private static final String[] iconFilenames = {
     "SB.gif",
-    "CC.gif",
     "EB.gif",
     "EC.gif",
     "SM.gif",
@@ -303,9 +300,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       button.setVerticalTextPosition(JButton.BOTTOM);
       button.addActionListener(this);
       button.setToolTipText(tooltips[i]);
-      // disable experiment checker
-      if (i == 1)
-	button.setEnabled(false);
       toolBar.add(button);
     }
     enableMonitorTool(false);
@@ -447,15 +441,15 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   }
 
   private void enableConsoleTool(boolean enable) {
-    ((JButton)toolBar.getComponentAtIndex(3)).setEnabled(enable);
+    ((JButton)toolBar.getComponentAtIndex(2)).setEnabled(enable);
   }
 
   private void enableMonitorTool(boolean enable) {
-    ((JButton)toolBar.getComponentAtIndex(4)).setEnabled(enable);
+    ((JButton)toolBar.getComponentAtIndex(3)).setEnabled(enable);
   }
 
   private void enableAnalyzerTool(boolean enable) {
-    ((JButton)toolBar.getComponentAtIndex(5)).setEnabled(enable);
+    ((JButton)toolBar.getComponentAtIndex(4)).setEnabled(enable);
   }
 
   /**
@@ -770,7 +764,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	runMultipleBuilders((ModifiableComponent[])components.toArray(new ModifiableComponent[components.size()]));
       }
     } else if (s.equals(views[1])) {
-    } else if (s.equals(views[2])) {
       Experiment[] experiments = organizer.getSelectedExperiments();
       if (experiments == null || experiments.length == 0) {
 	organizer.addExperiment();
@@ -780,13 +773,13 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	runExperimentBuilder(experiments[0], false);
       else if (experiments != null && experiments.length > 1)
 	runMultipleExperimentBuilders(experiments);
-    } else if (s.equals(views[3])) {
+    } else if (s.equals(views[2])) {
       Experiment[] experiments = organizer.getSelectedExperiments();
       if (experiments != null && experiments.length > 0)
         runConsole(experiments[0]);
-    } else if (s.equals(views[4])) {
+    } else if (s.equals(views[3])) {
       runMonitor();
-    } else if (s.equals(views[5])) {
+    } else if (s.equals(views[4])) {
       Experiment[] experiments = organizer.getSelectedExperiments();
       if (experiments != null && experiments.length > 0)
         runAnalyzer(experiments[0]);
