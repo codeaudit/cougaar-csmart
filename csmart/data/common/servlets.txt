@@ -9,7 +9,7 @@ PlanViewServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.plan
 CompletionServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.planning.servlet.CompletionServlet,/completion
 
 # For the data grabber
-HierarchyServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.planning.servlet.HierarchyServlet,/hierarchy
+HierarchyServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.planning.HierarchyServlet,/hierarchy
 DataGathererServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.mlm.ui.servlet.DataGathererServlet,/datagatherer
 
 # Allows loading arbitrary components
