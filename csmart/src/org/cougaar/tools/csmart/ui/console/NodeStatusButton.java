@@ -71,16 +71,16 @@ public class NodeStatusButton extends JRadioButton {
     unknownStatus,
   };
   private static String[] descriptions = {
-    "extremely busy",
-    "very busy",
-    "busy",
-    "somewhat busy",
-    "somewhat idle",
-    "idle",
-    "node created",
-    "node destroyed",
-    "no answer",
-    "unknown",
+    "Extremely busy",
+    "Very busy",
+    "Busy",
+    "Somewhat busy",
+    "Somewhat idle",
+    "Idle",
+    "Node created",
+    "Node destroyed",
+    "No answer",
+    "Unknown",
   };
 
   public NodeStatusButton(Icon icon) {
