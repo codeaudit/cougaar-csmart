@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Experiment name="ExampleExperiment">
+  <Host name="host1.bbn.com">
+    <Node name="Node1">
+      <Agent name="TestAgent">
+      </Agent>
+    </Node>
+  </Host>
+  <Host name="host2.bbn.com">
+    <Node name="SimpleNode">
+      <Agent name="NewAgent">
+      </Agent>
+      <Agent name="NewAgent2">
+      </Agent>
+    </Node>
+  </Host>
+  <Node name="Unmapped Node">
+  </Node>
+</Experiment>
