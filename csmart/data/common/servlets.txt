@@ -8,3 +8,4 @@ SearchServlet,org.cougaar.tools.csmart.ui.servlet.SearchServlet,/CSMART_SearchSe
 PlanServlet,org.cougaar.tools.csmart.ui.servlet.PlanServlet,/CSMART_PlanServlet
 HierarchyServlet,org.cougaar.mlm.ui.psp.transit.HierarchyServlet,/hierarchy
 DataGathererServlet,org.cougaar.mlm.ui.psp.transit.DataGathererServlet,/datagatherer
+LoaderServletComponent,plugin = org.cougaar.planning.servlet.LoaderServletComponent,/load
