@@ -25,6 +25,8 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -115,73 +117,85 @@ public class CMTDialog extends JDialog {
                                              new Insets(0, leftIndent, 5, 0),
                                              0, 0));
     }
-    leftIndent = leftIndent - 5;
-    bottomPanel.add(new JLabel("Select Organization Groups:"),
-              new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.NONE,
-                                     new Insets(0, leftIndent, 0, 0),
-                                     0, 0));
-    leftIndent = leftIndent + 5;
+
+    /////////////////////////
+    // Now the multiplier groups
+
     Map groupNameToId = ExperimentDB.getOrganizationGroups(experimentId);
     Set groups = groupNameToId.keySet();
     groupNames = (String[])groups.toArray(new String[groups.size()]);
     int nGroupNames = groupNames.length;
-    for (int i = 0; i < nGroupNames; i++) {
-      String groupName = (String)groupNames[i];
-      JCheckBox groupCB = new JCheckBox(groupName);
-      
-//        if (DBUtils.isMySQL())
-//  	groupCB.setEnabled(false); // MySQL DB
-      
-      boolean sel = ExperimentDB.isGroupSelected(trialId, groupName);
-      groupCheckBoxes.add(groupCB);
-      originalGroupSelected.add(new Boolean(sel));
-      groupCB.setSelected(sel);
-      bottomPanel.add(groupCB,
+
+    // Only bother if there are any groups
+    if (nGroupNames > 0) {
+      leftIndent = leftIndent - 5;
+      bottomPanel.add(new JLabel("Select Organization Groups:"),
+		      new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+					     GridBagConstraints.WEST,
+					     GridBagConstraints.NONE,
+					     new Insets(0, leftIndent, 0, 0),
+					     0, 0));
+      leftIndent = leftIndent + 5;
+      for (int i = 0; i < nGroupNames; i++) {
+	String groupName = (String)groupNames[i];
+	JCheckBox groupCB = new JCheckBox(groupName);
+	
+	//        if (DBUtils.isMySQL())
+	//  	groupCB.setEnabled(false); // MySQL DB
+	
+	boolean sel = ExperimentDB.isGroupSelected(trialId, groupName);
+	groupCheckBoxes.add(groupCB);
+	originalGroupSelected.add(new Boolean(sel));
+	groupCB.setSelected(sel);
+	bottomPanel.add(groupCB,
                 new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                        GridBagConstraints.WEST,
                                        GridBagConstraints.NONE,
                                        new Insets(0, leftIndent, 5, 0),
                                        0, 0));
-      bottomPanel.add(new JLabel("Number of Copies:"),
+	bottomPanel.add(new JLabel("Number of Copies:"),
                 new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                        GridBagConstraints.WEST,
                                        GridBagConstraints.NONE,
                                        new Insets(0, 0, 5, 5),
                                        0, 0));
-      JTextField multiplierField = new JTextField(4);
-      multiplierFields.add(multiplierField);
-      int multiplier = ExperimentDB.getMultiplier(trialId, groupName);
-      multiplierField.setText(String.valueOf(multiplier));
-      originalGroupMultiplier.add(new Integer(multiplier));
-      bottomPanel.add(multiplierField,
+	JTextField multiplierField = new JTextField(4);
+	multiplierFields.add(multiplierField);
+	int multiplier = ExperimentDB.getMultiplier(trialId, groupName);
+	multiplierField.setText(String.valueOf(multiplier));
+	originalGroupMultiplier.add(new Integer(multiplier));
+	bottomPanel.add(multiplierField,
                 new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                        GridBagConstraints.WEST,
                                        GridBagConstraints.NONE,
                                        new Insets(0, 0, 5, 5),
                                        0, 0));
-      bottomPanel.add(new JLabel("Members:"),
+	bottomPanel.add(new JLabel("Members:"),
                 new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                        GridBagConstraints.WEST,
                                        GridBagConstraints.NONE,
                                        new Insets(0, 0, 5, 5),
                                        0, 0));
-      Set members = 
-        ExperimentDB.getOrganizationsInGroup(experimentId, 
+	Set members = 
+	  ExperimentDB.getOrganizationsInGroup(experimentId, 
                                          (String)groupNameToId.get(groupName));
-      JList membersList = new JList(members.toArray());
-      membersList.setVisibleRowCount(4);
-      bottomPanel.add(new JScrollPane(membersList),
+	JList membersList = new JList(members.toArray());
+	membersList.setVisibleRowCount(4);
+	bottomPanel.add(new JScrollPane(membersList),
                 new GridBagConstraints(x++, y++, 1, 1, 0.0, 0.0,
                                        GridBagConstraints.WEST,
                                        GridBagConstraints.NONE,
                                        new Insets(0, 0, 5, 5),
                                        0, 0));
-      x = 0;
+	x = 0;
+      } // loop over groups
     }
 
+    //////////////////////
+    // Now the other items
+
     leftIndent = leftIndent - 5;
+    // FIXME: (bug 1888) better label?
     bottomPanel.add(new JLabel("Society:"),
               new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
                                      GridBagConstraints.WEST,
@@ -214,6 +228,13 @@ public class CMTDialog extends JDialog {
         cancel_actionPerformed();
       }
     });
+
+    addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent e) {
+	cancel_actionPerformed();
+      }
+    });
+
     buttonPanel.add(okButton);
     buttonPanel.add(cancelButton);
     panel.add(buttonPanel, BorderLayout.SOUTH);
