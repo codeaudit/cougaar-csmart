@@ -145,7 +145,7 @@ while (<CREATE_TABLES_IN>) {
 #				print ($column_name,":: ",$input_line_2,"\n") # Debug printout
 			}
 		}
-		$output_text = $output_text.");\n";                   # Tack on a ");"
+		$output_text = $output_text.")\n";                   # Tack on a ")"
 		$output_text =~ s/,\n\)/\n\)/;                        # Remove the last ","
         open (LOAD_TABLE_OUT,   ">"."./load-ctl/".$table_name.".ctl");
 		printf (LOAD_TABLE_OUT $output_text."\n");           # Dump the $output_text
@@ -160,13 +160,12 @@ exit();
 
 # FORM_LOAD_DATA_TABLE(table_name);
 sub FORM_LOAD_DATA_TABLE {
-	$infile_prefix = ":cip/csmart/data/database/csv/";
     local($table_name)=@_[0];
 
 	$output_text = "options (\n";
 	$output_text = $output_text."  skip=1)\n";
 
-	$output_text = $output_text."LOAD INFILE '".$infile_prefix.$table_name.".csv.tmp'\n";
+	$output_text = $output_text."LOAD\n";
 	$output_text = $output_text."    INTO TABLE ".$table_name."\n";
 
     $output_text = $output_text."    INSERT\n";
