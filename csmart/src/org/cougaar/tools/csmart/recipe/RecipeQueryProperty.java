@@ -115,8 +115,8 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
       // Get the last modified date of the recipeQueries file.
       // If it's the same now as it was before, dont re-read
       File rqfile = ConfigFinder.getInstance().locateFile(RecipeComponent.RECIPE_QUERY_FILE);
+      long newMod = 0l;
       if (rqfile != null) {
-	long newMod = 0l;
 	try {
 	  newMod = rqfile.lastModified();
 	} catch (SecurityException se) {
@@ -138,6 +138,10 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
 	  // Alternatively, have a reRead method in DBProperties
 	  DBProperties dbp = DBProperties.readQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
 	  dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
+
+	  // Only reset lastmod timestamp after succesfully reparsing
+	  rQFileLastMod = newMod;
+
 	  for (Iterator i = dbp.keySet().iterator();
                i.hasNext(); ) {
             String s = i.next().toString();
@@ -153,13 +157,12 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
 	    log.debug("No " + RecipeComponent.RECIPE_QUERY_FILE + " to parse.");
 	  }
         }
-                
       } catch (IOException ioe) {
         if(log.isErrorEnabled()) {
           log.error("Exception", ioe);
         }
       }
-    }
+    } // end of block to reread recipeQueries.q
     return availableQueries;
   }
 }
