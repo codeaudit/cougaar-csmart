@@ -41,10 +41,10 @@ REM First write the basic script to a file, with the CIP
 ECHO s/:cip/%COUGAAR_INSTALL_PATH%/g > cip.txt
 
 REM Then double the backslashes
-sed.exe "s/\\/\\\\\\\\/g" cip.txt > script.txt
+%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe "s/\\/\\\\\\\\/g" cip.txt > script.txt
 
 REM then do the real substitution
-%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sed.exe -f script.txt %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\load_mysql_db.sql > load_mysql_db_new.sql
+%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe -f script.txt %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\load_db.sql > load_mysql_db_new.sql
 
 DEL cip.txt
 DEL script.txt

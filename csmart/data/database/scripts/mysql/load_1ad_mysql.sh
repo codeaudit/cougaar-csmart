@@ -28,10 +28,10 @@ fi
 #Change potential backslashes in COUGAAR_INSTALL_PATH to forward slashes
 echo $COUGAAR_INSTALL_PATH | tr '\\' '/' > newcip.txt
 #Replace variable in sql script with CIP
-sed s/:cip/$(cat newcip.txt | sed 's/\//\\\//g')/ load_mysql_db.sql > load_mysql_db_new.sql
+sed s/:cip/$(cat newcip.txt | sed 's/\//\\\//g')/ load_db.sql > load_mysql_db_new.sql
 rm newcip.txt
-#sed s/:cip/$(echo "$COUGAAR_INSTALL_PATH" | sed 's/\\/\\\\\\\\/g')/ load_mysql_db.sql > load_mysql_db_new.sql
-#sed s/:cip/$(echo "$COUGAAR_INSTALL_PATH" | sed 's/\//\\\//g')/ load_mysql_db.sql > load_mysql_db_new.sql
+#sed s/:cip/$(echo "$COUGAAR_INSTALL_PATH" | sed 's/\\/\\\\\\\\/g')/ load_db.sql > load_mysql_db_new.sql
+#sed s/:cip/$(echo "$COUGAAR_INSTALL_PATH" | sed 's/\//\\\//g')/ load_db.sql > load_mysql_db_new.sql
 
 echo "Loading '.csv' files to database."
 mysql -u$1 -p$2 $3 < load_mysql_db_new.sql
