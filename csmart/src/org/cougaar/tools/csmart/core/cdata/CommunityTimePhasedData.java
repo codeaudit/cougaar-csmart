@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.core.cdata;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.text.ParseException;
 
 /**
  * Data structure used to store Community Time Phased data.
@@ -37,8 +38,16 @@ public class CommunityTimePhasedData extends TimePhasedData {
   public CommunityTimePhasedData() {
     super();
     communities = new ArrayList();
-    setStartTime("");
-    setStopTime("");
+    try {
+      setStartTime("");
+    } catch (ParseException pe) {
+      // Insert Log Code Here
+    }
+    try {
+      setStopTime("");
+    } catch (ParseException pe) {
+      // Insert Log Code Here
+    }
   }
 
   /**
