@@ -619,6 +619,8 @@ public class PropertyEditorPanel extends JPanel
       assetMenu.show(tree, x, y);
     else if (o instanceof AgentComponent)
       agentMenu.show(tree, x, y);
+    else if (o instanceof RelationshipComponent)
+      agentMenu.show(tree, x, y);
     else if (o instanceof BaseComponent)
       baseComponentMenu.show(tree, x, y);
     else if (log.isErrorEnabled())
