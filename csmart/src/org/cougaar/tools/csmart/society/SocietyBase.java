@@ -214,13 +214,16 @@ public abstract class SocietyBase
     if (myProperty != null) {
       setPropertyVisible(addedProperty, true);
     }
+    fireModification();
   }
 
   /**
    * Called when a property has been removed from the society
    * @param e The <code>PropertyEvent</code> describing the removed property.
    */
-  public void propertyRemoved(PropertyEvent e) {}
+  public void propertyRemoved(PropertyEvent e) {
+    fireModification();
+  }
 
   /**
    * Adds any relevent <code>ComponentData</code> for this component.
@@ -282,15 +285,10 @@ public abstract class SocietyBase
     // Should I resist creating a new assembly ID, to avoid
     // breaking other experiments? Or always create one?
     
-    String oldCMTAsbid = null;
-    String currAssID = null;
-    // FIXME: How do I get that old assembly ID?
-    // Is it the assemblyId in the current assemblyid slot?
-    if (oldAssemblyId != null)
-      oldCMTAsbid = oldAssemblyId;
-    currAssID = getAssemblyId();
+    String oldCMTAsbid = oldAssemblyId;
+    String currAssID = getAssemblyId();
 
-    if (currAssID.startsWith("CMT")) {
+    if (currAssID != null && currAssID.startsWith("CMT")) {
       if (log.isDebugEnabled()) {
 	log.debug("saveToDB not saving CMT society (" + getSocietyName() + ") with id " + currAssID + " and old ID " + oldCMTAsbid);
       }
@@ -371,4 +369,14 @@ public abstract class SocietyBase
   public boolean isModified() {
     return modified;
   }
+
+  public void fireModification() {
+    modified = true;
+    super.fireModification();
+  }
+
+  // Add my own properties listener?
+  // Add my own modification listener & a separate type for
+  // society_saved?
+
 }// SocietyBase
