@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.ui.console;
+package org.cougaar.tools.csmart.core.db;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

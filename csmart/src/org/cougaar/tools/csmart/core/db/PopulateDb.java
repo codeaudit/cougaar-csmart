@@ -48,6 +48,9 @@ import org.cougaar.util.DBProperties;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.DBConnectionPool;
 
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.core.cdata.*;
+
 /**
  * This class takes a structure of ComponentData objects and populates
  * the configuration database with some or all of the components
