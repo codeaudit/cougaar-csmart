@@ -78,7 +78,7 @@
 	   <pathelement location="${lib}/glm.jar" />
 	   <pathelement location="${lib}/scalability.jar" />
 	   <pathelement location="${lib}/server.jar" />
-	   <pathelement location="${sys}/grappa1_2_bbn.jar" />
+	   <pathelement location="${sys}/grappa1_2.jar" />
 	   <pathelement location="${sys}/xerces.jar" />
 	   <pathelement location="${sys}/jcchart451K.jar" />
 	   <pathelement location="${sys}/junit.jar" />
