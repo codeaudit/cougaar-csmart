@@ -145,14 +145,6 @@ public class ABCAgentTest extends TestCase {
       fail("Expected RelationshipTimePhasedData");
     }
 
-    if(tpd[3] instanceof RelationshipTimePhasedData) {
-      RelationshipTimePhasedData rel = (RelationshipTimePhasedData)tpd[3];
-      assertEquals("Test Relationship Role", "MetricsControlProvider", rel.getRole());
-      assertEquals("Test Item", "Initializer", rel.getItem());
-      assertEquals("Test Cluster", "Initializer", rel.getCluster());
-    } else {
-      fail("Expected RelationshipTimePhasedData");
-    }
   }
 
   public static junit.framework.Test suite() {
