@@ -166,7 +166,7 @@ public class ComponentBase
 //     }
 
 
-    if (alreadyAdded(data, self)) {
+    if (GenericComponentData.alreadyAdded(data, self)) {
       if (log.isDebugEnabled()) {
 	log.debug(data.getName() + " already has component " + self);
       }
@@ -177,68 +177,6 @@ public class ComponentBase
 
     data.addChildDefaultLoc(self);
     return data;
-  }
-
-  // Helper method: Does the given parent already contain a component
-  // with the same class, type, and parameters
-  // Does not check its children or leaf data
-
-
-  /**
-   * Look for the given ComponentData in the given parent, using its class, type, and parameters.
-   * Do not consider the name of the child, or any AssetData or children it might have.
-   * That is, if any existing child of the given parent has the same type, class, and parameter list
-   * of the given candidate child, return true. Also return true if the parent or child is null. Return
-   * false if the parent has no children.
-   *
-   * @param parent a <code>ComponentData</code> that may already contain the component
-   * @param self a <code>ComponentData</code> a component to look for
-   * @return a <code>boolean</code>, true if a component with the same type, class, and parameters is already present
-   */
-  protected boolean alreadyAdded(final ComponentData parent, final ComponentData self) {
-    if (self == null || parent == null)
-      return true;
-    ComponentData[] children = parent.getChildren();
-    if (children == null)
-      return false;
-    if (log.isDebugEnabled() && children.length != parent.childCount()) {
-      log.debug(parent + " says childCount is " + parent.childCount() + " but returned array of children was of length " + children.length);
-    }
-    for (int i = 0; i < children.length; i++) {
-      boolean isdiff = false;
-      ComponentData kid = children[i];
-      if (kid == null) {
-	if (log.isErrorEnabled()) {
-	  log.error("Please report seeing Bug 1279: Child " + i + " out of " + parent.childCount() + " is null in " + parent.getName() + " while considering adding " + self.getName(), new Throwable());
-	}
-	// FIXME: Maybe do a parent.setChildren with a new list that doesn't include
-	// the null?
-      } else if (kid.getClassName().equals(self.getClassName())) {
-	if (kid.getType().equals(self.getType())) {
-	  if (kid.parameterCount() == self.parameterCount()) {
-	    // Then we better compare the parameters in turn.
-	    // As soon as we find one that differs, were OK.
-	    for (int j = 0; j < kid.parameterCount(); j++) {
-	      if (! kid.getParameter(j).equals(self.getParameter(j))) {
-		isdiff = true;
-		break;
-	      }
-	    } // loop over params
-	    // If we get here, we finished comparing the parameters
-            // Either cause we broke out, and isdiff is true
-            // Or we completely compared the child, and it is
-            // identical.
-            // If we did not mark this child as different,
-            // then return true - it is the same
-	    if (! isdiff)
-	      return true;
-	  } // check param count
-	} // check comp type
-      } // check comp class
-    } // loop over children
-
-    // If we get here, we did not find any component that is identical
-    return false;
   }
 
   public String getFolderLabel() {
