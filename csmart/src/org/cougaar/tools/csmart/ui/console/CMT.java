@@ -112,14 +112,14 @@ public class CMT {
 
     public static boolean hasRows(String table, String column, String val){
 	String dbQuery = "update "+table+" set "+column+"="+column+" where "+column+"="+val;
-	System.out.println("hasRows: "+dbQuery);
+	//System.out.println("hasRows: "+dbQuery);
 	int count=0;
 	try {
 	    Connection conn = getConnection();
 	    try {
 		Statement stmt = conn.createStatement();	
 		count = stmt.executeUpdate(dbQuery);
-		System.out.println("updated "+count+" items into the database");
+//  		System.out.println("updated "+count+" items into the database");
 		stmt.close();
 
 	    } finally {
@@ -153,7 +153,7 @@ public class CMT {
 	    addSubs(subs,":threads", sqlThreads);
 	    addSubs(subs,":oplan_ids","('093FF')");
 
-	    System.out.println("subs = "+subs);
+//  	    System.out.println("subs = "+subs);
 
 	    if(!hasRows(asbPrefix+"asb_assembly","assembly_id",sqlQuote(assembly_id))){
 		dbUpdate("insertASBAssembly",
@@ -661,7 +661,7 @@ public class CMT {
 
     public static int deleteItems(String table, String column, String val){
 	String dbQuery = "delete from "+table+" where "+column+"="+val;
-	System.out.println("dbDelete: "+dbQuery);
+//  	System.out.println("dbDelete: "+dbQuery);
 	int count=0;
 	try {
 	    Connection conn = getConnection();
@@ -669,7 +669,7 @@ public class CMT {
 		try {
 		    Statement stmt = conn.createStatement();	
 		    count = stmt.executeUpdate(dbQuery);
-		    System.out.println("Deleted "+count+" items from the database");
+//  		    System.out.println("Deleted "+count+" items from the database");
 		    stmt.close();
 
 		} finally {
@@ -685,7 +685,7 @@ public class CMT {
 
     public static Set querySet(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-	System.out.println("querySet: "+dbQuery);
+//  	System.out.println("querySet: "+dbQuery);
 	Set s = new HashSet();
 	try {
 	    Connection conn = getConnection();
@@ -710,7 +710,7 @@ public class CMT {
 
     public static Hashtable queryHT(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-	System.out.println("queryHT: "+dbQuery);
+//  	System.out.println("queryHT: "+dbQuery);
 	Hashtable ht = new Hashtable();
 	try {
 	    Connection conn = getConnection();
@@ -736,7 +736,7 @@ public class CMT {
 
     public static String query1String(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-	System.out.println("query1String: "+dbQuery);
+//  	System.out.println("query1String: "+dbQuery);
 	String res = null;
 	try {
 	    Connection conn = getConnection();
@@ -762,7 +762,7 @@ public class CMT {
 
     public static Integer query1Int(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-	System.out.println("query1Int: "+dbQuery);
+//  	System.out.println("query1Int: "+dbQuery);
 	Integer res = null;
 	try {
 	    Connection conn = getConnection();
@@ -796,7 +796,7 @@ public class CMT {
 
     public static int dbInsert(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-	System.out.println("dbInsert: "+dbQuery);
+//  	System.out.println("dbInsert: "+dbQuery);
 	int count=0;
 	try {
 	    Connection conn = getConnection();
@@ -805,7 +805,7 @@ public class CMT {
 		try {
 		    Statement stmt = conn.createStatement();	
 		    count = stmt.executeUpdate(dbQuery);
-		    System.out.println("Inserted "+count+" items into the database");
+//  		    System.out.println("Inserted "+count+" items into the database");
 		    stmt.close();
 
 		} finally {
@@ -821,7 +821,7 @@ public class CMT {
 
     public static int dbUpdate(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-	System.out.println("dbUpdate: "+dbQuery);
+//  	System.out.println("dbUpdate: "+dbQuery);
 	int count=0;
 	try {
 	    Connection conn = getConnection();
@@ -829,7 +829,7 @@ public class CMT {
 		try {
 		    Statement stmt = conn.createStatement();	
 		    count = stmt.executeUpdate(dbQuery);
-		    System.out.println("dbUpdate updated "+count+" items in the database"); 
+//  		    System.out.println("dbUpdate updated "+count+" items in the database"); 
 		    stmt.close();
 		} finally {
 		    conn.close();
@@ -847,7 +847,7 @@ public class CMT {
 
     public static int dbDelete(String query, Map substitutions){
 	String dbQuery = getQuery(query, substitutions);
-	System.out.println("dbDelete: "+dbQuery);
+//  	System.out.println("dbDelete: "+dbQuery);
 	int count=0;
 	try {
 	    Connection conn = getConnection();
@@ -855,7 +855,7 @@ public class CMT {
 		try {
 		    Statement stmt = conn.createStatement();	
 		    count = stmt.executeUpdate(dbQuery);
-		    System.out.println("dbDelete deleted "+count+" items from the database"); 
+//  		    System.out.println("dbDelete deleted "+count+" items from the database"); 
 		    stmt.close();
 		} finally {
 		    conn.close();
