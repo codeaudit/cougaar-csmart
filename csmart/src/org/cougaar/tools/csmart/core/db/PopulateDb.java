@@ -595,14 +595,14 @@ public class PopulateDb extends PDbBase {
     if (log.isDebugEnabled()) {
       log.debug("Removing assembly from config: " + assembly_id);
     }
-    substitutions.put(":assemblies_to_clean:", sqlQuote("(" + assembly_id + ")"));
+    substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
     executeUpdate(dbp.getQuery("cleanTrialConfigAssembly", substitutions));
   }
 
   private void removeRuntimeAssembly(String assembly_id) throws SQLException {
     if (assembly_id == null || assembly_id.equals(""))
       return;
-    substitutions.put(":assemblies_to_clean:", sqlQuote("(" + assembly_id + ")"));
+    substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
     if (log.isDebugEnabled()) {
       log.debug("Removing assembly from runtime: " + assembly_id);
     }
@@ -628,7 +628,7 @@ public class PopulateDb extends PDbBase {
   private void cleanAssembly(String assembly_id) throws SQLException {
     if (assembly_id == null || assembly_id.equals(""))
       return;
-    substitutions.put(":assemblies_to_clean:", sqlQuote("(" + assembly_id + ")"));
+    substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
     cleanAssemblies();
   }
 
@@ -715,7 +715,7 @@ public class PopulateDb extends PDbBase {
     // and return the new ID
     // which will be 
     if (log.isDebugEnabled()) {
-      log.debug("Creating new CSA based on soc: " + cmtAsbID + ": " + societyName);
+      log.debug("Creating new CSA : " + (cmtAsbID != null ? "based on soc: " + cmtAsbID : "from scratch") + ": " + societyName);
     }
     String assemblyIdPrefix = csaType + "-";
     substitutions.put(":assembly_id_pattern:", assemblyIdPrefix + "____");
