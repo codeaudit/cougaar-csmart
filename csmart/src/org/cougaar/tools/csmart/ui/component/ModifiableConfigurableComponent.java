@@ -37,6 +37,13 @@ public abstract class ModifiableConfigurableComponent
         super(name);
     }
 
+  public boolean isEditable() {
+    return false;
+  }
+
+  public void setEditable (boolean editable) {
+  }
+  
     public void addModificationListener(ModificationListener l) {
         getEventListenerList().add(ModificationListener.class, l);
     }
