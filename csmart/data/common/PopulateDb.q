@@ -298,14 +298,6 @@ cleanASBAgentRel=\
  DELETE FROM asb_agent_relation \
   WHERE ASSEMBLY_ID IN :assemblies_to_clean:
 
-cleanASBOplan=\
- DELETE FROM asb_oplan \
-  WHERE ASSEMBLY_ID IN :assemblies_to_clean:
-
-cleanASBOplanAAttr=\
- DELETE FROM asb_oplan_agent_attr \
-  WHERE ASSEMBLY_ID IN :assemblies_to_clean:
-
 cleanASBComm=\
  DELETE FROM community_attribute \
   WHERE ASSEMBLY_ID IN :assemblies_to_clean:
@@ -444,50 +436,6 @@ copyCMTThreads2=\
    FROM `tmp_cmtt_:expt_id:`
 
 copyCMTThreads3=DROP TABLE `tmp_cmtt_:expt_id:`
-
-# OPLAN Copy stuff
-copyOPLANQueryNames.oracle=copyOPLANEntry copyOPLANAttrEntries
-
-copyOPLANEntry=\
- INSERT INTO asb_oplan (ASSEMBLY_ID, OPLAN_ID, OPERATION_NAME, PRIORITY, C0_DATE) \
- SELECT ':new_assembly_id:', OPLAN_ID, OPERATION_NAME, PRIORITY, C0_DATE \
-	FROM asb_oplan \
-   WHERE ASSEMBLY_ID = ':old_assembly_id:'
-
-copyOPLANAttrEntries=\
- INSERT INTO asb_oplan_agent_attr (ASSEMBLY_ID, OPLAN_ID, COMPONENT_ALIB_ID, COMPONENT_ID, START_CDAY, ATTRIBUTE_NAME, END_CDAY, ATTRIBUTE_VALUE) \
-   SELECT ':new_assembly_id:', OPLAN_ID, COMPONENT_ALIB_ID, COMPONENT_ID, START_CDAY, ATTRIBUTE_NAME, END_CDAY, ATTRIBUTE_VALUE \
-       FROM asb_oplan_agent_attr \
-    WHERE ASSEMBLY_ID = ':old_assembly_id:'
-
-copyOPLANQueryNames.mysql=copyOPLANEntry1 copyOPLANEntry2 copyOPLANEntry3 copyOPLANAttrEntries1 copyOPLANAttrEntries2 copyOPLANAttrEntries3
-
-copyOPLANEntry1=\
- CREATE TEMPORARY TABLE `tmp_ope_:old_assembly_id:` AS \
-   SELECT OPLAN_ID, OPERATION_NAME, PRIORITY, C0_DATE \
-    FROM asb_oplan \
-   WHERE ASSEMBLY_ID = ':old_assembly_id:'
-
-copyOPLANEntry2=\
- INSERT INTO asb_oplan (ASSEMBLY_ID, OPLAN_ID, OPERATION_NAME, PRIORITY, C0_DATE) \
-  SELECT ':new_assembly_id:', OPLAN_ID, OPERATION_NAME, PRIORITY, C0_DATE \
-   FROM `tmp_ope_:old_assembly_id:`
-
-copyOPLANEntry3=DROP TABLE `tmp_ope_:old_assembly_id:`
-
-copyOPLANAttrEntries1=\
- CREATE TEMPORARY TABLE `tmp_opae_:old_assembly_id:` AS \
-   SELECT OPLAN_ID, COMPONENT_ALIB_ID, COMPONENT_ID, START_CDAY, ATTRIBUTE_NAME, END_CDAY, ATTRIBUTE_VALUE \
-  FROM asb_oplan_agent_attr \
-   WHERE ASSEMBLY_ID = ':old_assembly_id:'
-
-copyOPLANAttrEntries2=\
- INSERT INTO asb_oplan_agent_attr (ASSEMBLY_ID, OPLAN_ID, COMPONENT_ALIB_ID, COMPONENT_ID, START_CDAY, ATTRIBUTE_NAME, END_CDAY, ATTRIBUTE_VALUE) \
-   SELECT ':new_assembly_id:', OPLAN_ID, COMPONENT_ALIB_ID, COMPONENT_ID, START_CDAY, ATTRIBUTE_NAME, END_CDAY, ATTRIBUTE_VALUE \
-    FROM `tmp_opae_:old_assembly_id:`
-
-copyOPLANAttrEntries3=DROP TABLE `tmp_opae_:old_assembly_id:`
-# End of OPLAN copy stuff
 
 # Copy Community Assembly
 copyCommQueryNames.oracle=copyCommAttr copyCommEntityAttr
