@@ -1,0 +1,11 @@
+2001-11-07  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ComponentInsertionRecipe.java:
+	Remove debug println
+
+2001-11-06  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ComponentInsertionRecipe.java:
+	New recipe component that inserts components based on the result
+	of doing queries.
+
