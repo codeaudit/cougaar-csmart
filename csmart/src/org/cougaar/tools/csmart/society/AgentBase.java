@@ -93,12 +93,6 @@ public abstract class AgentBase
   public void initProperties() {
     Property p = addProperty(PROP_CLASSNAME, new String(classname));
     p.setToolTip(PROP_CLASSNAME_DESC);
-
-    addBinders();
-    addPlugins();
-    // FIXME: Add misc components
-    addComponents();
-    addAssetData();
   }
 
   /**
