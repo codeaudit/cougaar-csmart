@@ -194,8 +194,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     createLog();
 
     // Write initial CSMART info to the log file
-    if (log.isFatalEnabled()) {
-      log.fatal(writeDebug());
+    if (log.isShoutEnabled()) {
+      log.shout(writeDebug());
     }
 
     resultDir = initResultDir();
