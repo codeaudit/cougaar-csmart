@@ -55,9 +55,8 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
     return getAvailableQueries();
   }
 
-  // Cached list of available recipe queries from PopDb
-  private static Set popDBQueries = null;
-  private static Set recipeQQueries = null; // from recipeQueries.q
+  // Cached list of available recipe queries
+  private static Set availQueries = null;
 
   // When was the recipeQueries.q file last modified
   private static long rQFileLastMod = 0l;
@@ -65,29 +64,6 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
   // Get the recipe queries available, updating the local cache
   private static Set getAvailableQueries() {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.recipe.RecipeQueryProperty");
-    Set returnQ = new HashSet(); // list to return
-
-    // Read PopDB for recipe queries exactly once
-    if (popDBQueries == null) {
-      try {
-        popDBQueries = new HashSet();
-        // Get the base queries
-        for (Iterator i = DBProperties.readQueryFile(PDbBase.QUERY_FILE).keySet().iterator();
-             i.hasNext(); ) {
-          String s = i.next().toString();
-          if (s.startsWith("recipeQuery"))
-            popDBQueries.add(new StringRange(s));
-        }
-      } catch (IOException ioe) {
-        if(log.isErrorEnabled()) {
-          log.error("Exception", ioe);
-        }
-        popDBQueries = Collections.EMPTY_SET;
-      }
-    }
-
-    // The returned list includes at least those from popDB
-    returnQ.addAll(popDBQueries);
 
     // Get the last modified date of the recipeQueries file.
     // If it's the same now as it was before, dont re-read
@@ -100,57 +76,50 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
       }
     }
 
-    // If file wasnt modified, use what we have
-    if (newMod == rQFileLastMod) {
-      if (log.isDebugEnabled()) {
-	log.debug("Not re-reading unmodified " + RecipeComponent.RECIPE_QUERY_FILE);
+    // If we have never read the available queries, or the recipeQueries.q file was modified,
+    // must re-collect the available queries
+    if (availQueries == null || newMod != rQFileLastMod) {
+      availQueries = new HashSet();
+      rQFileLastMod = 0l;
+      DBProperties dbp = null;
+      
+      // First grab the queries from PopulateDb.q
+      // Note that this is the cached DBProperties - which may already
+      // have the contents of recipeQueries.q in it
+      try {
+	dbp = DBProperties.readQueryFile(PDbBase.QUERY_FILE);
+      } catch (IOException ioe) {
+	if (log.isDebugEnabled()) {
+	  log.debug("Couldn't read " + PDbBase.QUERY_FILE);
+	}
       }
-      if (recipeQQueries != null)
-	returnQ.addAll(recipeQQueries);
-      return returnQ;
-    }
 
-    // If we get here, we're going to re-parse the recipeQueries.q file
-    if (recipeQQueries == null)
-      recipeQQueries = new HashSet();
-    else
-      recipeQQueries.clear();
-
-    // (Re-)read recipeQueries.q, allowing user to edit the query names there
-    try {
-
-      // FIXME: Note that cause DBProperties is caching,
-      // Old query names will remain,
-      // until we have a real reRead method in DBProperties
-      // Must reRead -- calling addQueryFile effectively handles adding additional
-      // queries, but not removing (renaming) queries
-      // Alternatively, have a reRead method in DBProperties
-      DBProperties dbp = DBProperties.readQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
-      dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
+      // Add in the contents of recipeQueries.q - possibly just over-writing
+      // the values previously added
+      try {
+	// Add to the basic PopDb.q the queries in recipeQueries.q
+	dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
+	rQFileLastMod = newMod;
+      } catch (IOException e) {
+	if (log.isDebugEnabled()) {
+	  log.debug("No " + RecipeComponent.RECIPE_QUERY_FILE + " file found.");
+	}
+      }
       
-      // Only reset lastmod timestamp after succesfully reparsing
-      rQFileLastMod = newMod;
-      
+      // Now collect the query names from the combo .q file
       for (Iterator i = dbp.keySet().iterator();
 	   i.hasNext(); ) {
 	String s = i.next().toString();
 	if (s.startsWith("recipeQuery")) {
-	  // Add only if not already present
-	  if (! recipeQQueries.contains(new StringRange(s)))
-	    recipeQQueries.add(new StringRange(s));
+	  StringRange sr = new StringRange(s);
+	  // Since on save only the last query of a given name is available,
+	  // only list queries with a duplicate name once
+	  if (! availQueries.contains(sr)) 
+	    availQueries.add(sr);
 	}
-      }
-    } catch (FileNotFoundException e) {
-      // this is normal if a user has no separate recipe query file.
-      if (log.isDebugEnabled()) {
-	log.debug("No " + RecipeComponent.RECIPE_QUERY_FILE + " to parse.");
-      }
-    } catch (IOException ioe) {
-      if(log.isErrorEnabled()) {
-	log.error("Exception", ioe);
-      }
-    }
-    returnQ.addAll(recipeQQueries);
-    return returnQ;
+      } // loop over query names
+    } // end of block to (re-)read the queries
+
+    return availQueries;
   }
 }
