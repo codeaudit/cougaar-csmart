@@ -575,8 +575,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
       public void valueChanged(ListSelectionEvent e) {
         if (e.getValueIsAdjusting())
           return;
-        JList agentsList = (JList)e.getSource();
-        String agentName = (String)agentsList.getSelectedValue();
+        JList myagentsList = (JList)e.getSource();
+        String agentName = (String)myagentsList.getSelectedValue();
         if (agentName != null)
           displayPlugins(agentName);
       }
