@@ -77,7 +77,7 @@ public class ABCConfigurationWriter implements ConfigurationWriter {
 	writer.println(agents[i].getConfigLine());
 	if (agents[i] instanceof ABCAgent) {
 	  ABCAgent agent = (ABCAgent)agents[i];
-	  agent.writePrototypeIniFile(configDir);
+	  //agent.writePrototypeIniFile(configDir);
 	}
       }
       writer.println();

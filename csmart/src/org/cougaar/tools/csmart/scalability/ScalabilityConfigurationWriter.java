@@ -76,7 +76,7 @@ public class ScalabilityConfigurationWriter implements ConfigurationWriter {
         writer.println(agents[i].getConfigLine());
 	if (agents[i] instanceof ScalabilityXAgent) {
 	  ScalabilityXAgent agent = (ScalabilityXAgent)agents[i];
-	  agent.writePrototypeIniFile(configDir);
+	  //agent.writePrototypeIniFile(configDir);
 	}
       }
       writer.println();
