@@ -172,6 +172,7 @@ public class CSMARTConsole extends JFrame {
   private static final String VIEW_APP_SERVER_ITEM = "View";
   private static final String ADD_APP_SERVER_ITEM = "Add...";
   private static final String DELETE_APP_SERVER_ITEM = "Delete...";
+  private static final String KILL_ALL_PROCS_ITEM = "Kill Any Nodes";
   private static final String REFRESH_APP_SERVER_ITEM = "Refresh";
   private static final String SET_POLL_INTERVAL_ITEM = "Set Poll Interval";
   private static final String HELP_MENU = "Help";
@@ -229,6 +230,10 @@ public class CSMARTConsole extends JFrame {
 
     // Start up the Timer to poll for new AppServers
     resetASPoller();
+
+    // FIXME: CSMART Could, optionally, kill everything running
+    // when it starts up, with this call
+    //    appServerSupport.killAllProcesses();
   }
 
   // Cancel any old AppServer poller
@@ -450,6 +455,20 @@ public class CSMARTConsole extends JFrame {
       });
     deleteMenuItem.setToolTipText("Ignore Application Servers.");
     appServerMenu.add(deleteMenuItem);
+
+    JMenuItem killAllMenuItem = new JMenuItem(KILL_ALL_PROCS_ITEM);
+    killAllMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+	  // First, kill anything this console knows about
+	  if (abortButton != null && abortButton.isEnabled())
+	    abortButton_actionPerformed();
+	  // Then kill anything remaining
+          appServerSupport.killAllProcesses();
+        }
+      });
+    killAllMenuItem.setToolTipText("Kill Any Nodes on known App Servers.");
+    appServerMenu.add(killAllMenuItem);
+
     JMenuItem refreshMenuItem = new JMenuItem(REFRESH_APP_SERVER_ITEM);
     refreshMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -1609,6 +1628,16 @@ public class CSMARTConsole extends JFrame {
       try {
         String procName = 
           appServerSupport.getProcessName(experimentName, nci.nodeName);
+
+	// Check that a process with description desc is not
+	// already running, modify the process name if so
+	while (appServerSupport.isProcessNameUsed(procName)) {
+	  if (log.isDebugEnabled()) {
+	    log.debug("ctNodes: process with name " + procName + " already running");
+	  }
+	  procName = procName + "1";
+	}
+
         String groupName = "csmart";
         ProcessDescription desc =
           new ProcessDescription(procName,
@@ -1616,8 +1645,6 @@ public class CSMARTConsole extends JFrame {
                                  nci.properties,
                                  nci.args);
 
-	// FIXME: Check that a process with description desc is not
-	// already running on server nci.remoteAppServer?
 
         RemoteListenableConfig conf =
           new RemoteListenableConfig(nci.listener, 
@@ -1640,7 +1667,7 @@ public class CSMARTConsole extends JFrame {
                     nci.nodeName, e);
         }
         JOptionPane.showMessageDialog(this,
-                                      "Cannot create node on: " + 
+                                      "Cannot create node " + nci.nodeName + " on: " + 
                                       nci.hostName +
                                       "; check that server is running");
         continue;
@@ -1780,7 +1807,17 @@ public class CSMARTConsole extends JFrame {
       String experimentName = "Experiment";
       if (experiment != null && usingExperiment)
         experimentName = experiment.getExperimentName();
-      String procName = experimentName + "-" + nodeName;
+      String procName = appServerSupport.getProcessName(experimentName, nodeName);
+
+      // Check that a process with description desc is not
+      // already running, modify the process name if so
+      while (appServerSupport.isProcessNameUsed(procName)) {
+	if (log.isDebugEnabled()) {
+	  log.debug("ctNodes: process with name " + procName + " already running");
+	}
+	procName = procName + "1";
+      }
+
       String groupName = "csmart";
       ProcessDescription desc =
         new ProcessDescription(procName,
