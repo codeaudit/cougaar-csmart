@@ -2009,7 +2009,7 @@ public class PopulateDb extends PDbBase {
       if (! componentWasRemoved) 
 	throw iae;
       if (log.isInfoEnabled()) {
-	log.info("Caught iae " + iae.toString() + " while saving HNA. Must redo as a CSA");
+	log.info("Caught iae " + iae.toString() + " while saving HNA " + hnaAssemblyId + ". Must redo as a CSA");
       }
 
       // Clean out the current hnaAssemblyId
@@ -2262,7 +2262,7 @@ public class PopulateDb extends PDbBase {
     int excess = newArgs.size() - oldArgs.size();
     if (excess < 0) {
       if (log.isInfoEnabled()) {
-	log.info("Attempt to remove "	 + (-excess)
+	log.info("populatDb saving into Asb " + assemblyId + ": Attempt to remove "	 + (-excess)
 		 + " args from "
 		 + data);
       }
@@ -2305,13 +2305,13 @@ public class PopulateDb extends PDbBase {
 		 
       while (!newArg.argument.equals(oldArg.argument)) {
 	if(log.isInfoEnabled()) {
-	  log.info("newArg != oldArg, new: " +newArg.toString() + " old: " + oldArg.toString());
+	  log.info("popDb: newArg != oldArg, new: " +newArg.toString() + " old: " + oldArg.toString());
 	}
 	// Assume arguments were inserted
 	excess--;
 	if (excess < 0) {
 	  if (log.isInfoEnabled()) {
-	    log.info("Component args cannot be modified or removed: " + data);
+	    log.info("popDb saving into ASB " + assemblyId + ": Component args cannot be modified or removed (excess=" + excess + "): " + data);
 	  }
 	  // Throw something recognizable that the experiment
 	  // can catch and call populateCSA
