@@ -138,8 +138,6 @@ public class PropertyBuilder extends JFrame implements ActionListener {
           CSMART.getOrganizer().replaceComponent(experiment, originalComponent, recipe);
         }
       }
-      System.out.println("Saving component to database: " + configComponent.getShortName());
-      // TODO: need to mark all experiments that contain this society as needing saving
       saveToDatabase();
     }
   }
