@@ -1533,10 +1533,8 @@ public class Organizer extends JScrollPane {
     for (int i = 0; i < experiments.size(); i++) {
       Experiment experiment = (Experiment)experiments.get(i);
       SocietyComponent sc = experiment.getSocietyComponent();
-      if (sc != null && sc.equals(society)) {
-        experiment.modified(new ModificationEvent(this, 0));
+      if (sc != null && sc.equals(society))
         results.add(experiment.getExperimentName());
-      }
     }
     return results;
   }
@@ -1553,7 +1551,6 @@ public class Organizer extends JScrollPane {
       RecipeComponent[] recipes = experiment.getRecipeComponents();
       for (int j = 0; j < recipes.length; j++) {
         if (recipes[j].equals(recipe)) {
-          experiment.modified(new ModificationEvent(this, 0));
           results.add(experiment.getExperimentName());
           break;
         }
@@ -1660,9 +1657,7 @@ public class Organizer extends JScrollPane {
     addNode(node, newNode);
     experimentNames.add(experiment.getExperimentName());
     workspace.setSelection(newNode);
-    // TODO: if add experiment properties,
-    // then need to install listeners
-    experiment.addModificationListener(myModificationListener);
+    installListeners(experiment);
     return newNode;
   }
 

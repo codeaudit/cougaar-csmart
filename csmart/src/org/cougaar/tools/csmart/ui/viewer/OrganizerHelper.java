@@ -85,7 +85,6 @@ public class OrganizerHelper {
     // get nodes for trial
     ArrayList nodes = getNodes(trialId, assemblyMatch);
     ArrayList hosts = getHosts(trialId, assemblyMatch);
-    //    CMTSociety soc = null;
     SocietyDBComponent soc = null;
     if (assemblyIds.size() != 0) {
       // Get the Society Assembly Id (CMT or CSA).
@@ -181,6 +180,7 @@ public class OrganizerHelper {
         log.error("RuntimeException", e);
       }
     }
+    experiment.resetModified(); // the experiment is NOT modified at this point
     return experiment;
   }
 
