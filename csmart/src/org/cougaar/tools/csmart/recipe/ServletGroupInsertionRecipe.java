@@ -143,29 +143,33 @@ public class ServletGroupInsertionRecipe extends RecipeBase
       }
     } 
     if (vec == null) {
-      try { 
-        vec = new Vector();
-        RandomAccessFile servletFile = null;
-        // read servlets, one per line
-        servletFile = new RandomAccessFile(inputFile, "r");      
-        while (true) {
-          String isrv = servletFile.readLine(); // get servlet line
-	  // Skip comment lines
-          if (isrv == null) {
-            break;
-          }
-          isrv = isrv.trim();
-	  if (isrv.startsWith("#") || isrv.equals(""))
-	    continue;
-          ServletListRecord servletRecord = parseServletLine(isrv);
-          vec.add(servletRecord);
-        }
-        servletFile.close();
-
-      } catch (IOException e) {
-	if (log.isErrorEnabled()) {
-	  log.error("Error during read/open from file: " + inputFile, e);
+      vec = new Vector();
+      if (inputFile != null) {
+	try { 
+	  RandomAccessFile servletFile = null;
+	  // read servlets, one per line
+	  servletFile = new RandomAccessFile(inputFile, "r");      
+	  while (true) {
+	    String isrv = servletFile.readLine(); // get servlet line
+	    // Skip comment lines
+	    if (isrv == null) {
+	      break;
+	    }
+	    isrv = isrv.trim();
+	    if (isrv.startsWith("#") || isrv.equals(""))
+	      continue;
+	    ServletListRecord servletRecord = parseServletLine(isrv);
+	    vec.add(servletRecord);
+	  }
+	  servletFile.close();
+	} catch (IOException e) {
+	  if (log.isErrorEnabled()) {
+	    log.error("Error during read/open from file: " + inputFile, e);
+	  }
 	}
+      } else {
+	if (log.isWarnEnabled())
+	  log.warn("Unable to find servlets.txt!");
       }
     }
     return vec;    
