@@ -47,8 +47,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String CPU_USAGE_ACTION = "CPU Usage";
   private static final String MEMORY_USAGE_ACTION = "Memory Usage";
   private static final String CONTROL_MENU = "Control";
-  private static final String START_ACTION = "Start";
-  private static final String STOP_ACTION = "Stop";
+  private static final String START_ACTION = "Restart";
+  private static final String STOP_ACTION = "Kill";
+  private static final String MOVE_ACTION = "Move";
   private static final String TRACE_ACTION = "Stack Trace";
   private static final String SEARCH_MENU = "Search";
   private static final String SEARCH_ACTION = "Search...";
@@ -58,6 +59,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String DISPLAY_MENU = "Display";
   private static final String DISPLAY_ACTION = "Set Screen Buffer Size...";
   private static final String DISPLAY_ALL_ACTION = "Display All";
+  private static final String SELECT_ALL_ACTION = "Select All";
   private static final String NOTIFY_MENU = "Notify";
   private static final String NOTIFY_ACTION = "Notify When...";
   private static final String NOTIFY_NEXT_ACTION = "Notify Next";
@@ -132,16 +134,25 @@ public class ConsoleInternalFrame extends JInternalFrame {
       public void actionPerformed(ActionEvent e) {
       }
     };
+    startAction.setEnabled(false);
     controlMenu.add(startAction);
     Action stopAction = new AbstractAction(STOP_ACTION) {
       public void actionPerformed(ActionEvent e) {
       }
     };
+    stopAction.setEnabled(false);
     controlMenu.add(stopAction);
+    Action moveAction = new AbstractAction(MOVE_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+      }
+    };
+    moveAction.setEnabled(false);
+    controlMenu.add(moveAction);
     Action traceAction = new AbstractAction(TRACE_ACTION) {
       public void actionPerformed(ActionEvent e) {
       }
     };
+    traceAction.setEnabled(false);
     controlMenu.add(traceAction);
     JMenu displayMenu = new JMenu(DISPLAY_MENU);
     Action displayAction = new AbstractAction(DISPLAY_ACTION) {
@@ -156,6 +167,12 @@ public class ConsoleInternalFrame extends JInternalFrame {
       }
     };
     displayMenu.add(displayAllAction);
+    Action selectAllAction = new AbstractAction(SELECT_ALL_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        selectAll_actionPerformed();
+      }
+    };
+    displayMenu.add(selectAllAction);
     JMenu searchMenu = new JMenu(SEARCH_MENU);
     searchAction = new AbstractAction(SEARCH_ACTION) {
       public void actionPerformed(ActionEvent e) {
@@ -238,6 +255,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     aboutPanel.setLayout(new GridBagLayout());
     int x = 0;
     int y = 0;
+    // insets are top, left, bottom, right
     aboutPanel.add(new JLabel("Status:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
@@ -261,33 +279,33 @@ public class ConsoleInternalFrame extends JInternalFrame {
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.NONE,
-                                          new Insets(10, 0, 5, 5),
+                                          new Insets(0, 0, 5, 5),
                                           0, 0));
     aboutPanel.add(new JLabel(logFileName),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
-                                          new Insets(10, 0, 5, 0),
+                                          new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
     aboutPanel.add(new JLabel("Host Name:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.NONE,
-                                          new Insets(10, 0, 5, 5),
+                                          new Insets(0, 0, 5, 5),
                                           0, 0));
     aboutPanel.add(new JLabel(hostName),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
-                                          new Insets(10, 0, 5, 0),
+                                          new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
     aboutPanel.add(new JLabel("Host Address:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.NONE,
-                                          new Insets(10, 0, 5, 5),
+                                          new Insets(0, 0, 5, 5),
                                           0, 0));
     String hostAddress = "";
     try {
@@ -299,7 +317,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
-                                          new Insets(10, 0, 5, 0),
+                                          new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
     aboutPanel.add(new JLabel("Host Description:"),
@@ -461,6 +479,14 @@ public class ConsoleInternalFrame extends JInternalFrame {
     ConsoleStyledDocument doc = 
       (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
     doc.setBufferSize(-1);
+  }
+
+  /**
+   * Select everything in the node's output pane.
+   */
+
+  public void selectAll_actionPerformed() {
+    consoleTextPane.selectAll();
   }
 
   /**

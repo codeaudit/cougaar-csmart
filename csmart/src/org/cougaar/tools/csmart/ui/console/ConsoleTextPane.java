@@ -108,6 +108,9 @@ public class ConsoleTextPane extends JTextPane {
    * @param startPosition position in document to start search
    * @param search true for "search"; false for "notify"
    * @return boolean whether or not string was found
+   * TODO: if the last text in the buffer is highlighted, then
+   * the highlighting is automatically applied to any new text added,
+   * how to avoid this?
    */
 
   private boolean worker(String s, Position startPosition, boolean search) {
@@ -242,12 +245,12 @@ public class ConsoleTextPane extends JTextPane {
       new javax.swing.text.SimpleAttributeSet();
     ConsoleTextPane pane = new ConsoleTextPane(doc);
     pane.appendString("abcdefghijklmnopqrstuvw", a);
-    pane.search("ab");
+    pane.search("abc");
     pane.setNotifyCondition("xyz");
     pane.appendString("xyzabc", a);
-    pane.searchNext();
     pane.appendString("xyz", a);
     pane.notifyNext();
+    pane.searchNext();
     javax.swing.JFrame frame = new javax.swing.JFrame();
     frame.getContentPane().add(pane);
     frame.pack();

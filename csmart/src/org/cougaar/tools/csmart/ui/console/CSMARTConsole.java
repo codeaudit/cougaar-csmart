@@ -1433,7 +1433,10 @@ public class CSMARTConsole extends JFrame {
       colorDescriptions.put(CSMARTConsole.stdErrStatus, "error");
       colorDescriptions.put(CSMARTConsole.notifyStatus, "notify");
     }
-    return (String)colorDescriptions.get(statusColor);
+    String s = (String)colorDescriptions.get(statusColor);
+    if (s == null)
+      s = "";
+    return s;
   }
 
   public static void main(String[] args) {
