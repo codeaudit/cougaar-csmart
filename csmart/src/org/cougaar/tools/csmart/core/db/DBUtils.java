@@ -218,6 +218,43 @@ public class DBUtils {
     }
     return conn;
   }
+  
+  public static String getSocietyName(ArrayList assemblyIds) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
+    Iterator iter = assemblyIds.iterator();
+    Map substitutions = new HashMap();
+    String result = null;
+
+    while(iter.hasNext()) {
+      String id = (String)iter.next();
+      if(id.startsWith("CMT") || id.startsWith("CSA")) { 
+        substitutions.put(":assembly_id:", id);
+        break; 
+      }
+    }
+
+    if( !substitutions.isEmpty() ) {
+      String query = null;
+      try {
+        Connection conn = getConnection();
+        Statement stmt = conn.createStatement();
+        query = getQuery("querySocietyName", substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          result = rs.getString(1);
+        }
+        
+        rs.close();
+        stmt.close();
+      } catch (SQLException se) {
+        if(log.isErrorEnabled()) {
+          log.error("Caught SQL exception getting Society Name " + query, se);
+        }
+      }
+    }
+
+    return result;
+  }
 
   /**
    * Retrive the named query from the default query file
