@@ -91,7 +91,8 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
                i.hasNext(); ) {
             String s = i.next().toString();
             if (s.startsWith("recipeQuery"))
-              availableQueries.add(new StringRange(s));
+	      if (! availableQueries.contains(new StringRange(s)))
+		availableQueries.add(new StringRange(s));
           }
         } catch (FileNotFoundException e) {
           // this is normal if a user has no separate recipe query file.
@@ -123,7 +124,7 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
 	// If file wasnt modified, use what we have
 	if (newMod == rQFileLastMod) {
 	  if (log.isDebugEnabled()) {
-	    log.debug("Not re-reading unmodified" + RecipeComponent.RECIPE_QUERY_FILE);
+	    log.debug("Not re-reading unmodified " + RecipeComponent.RECIPE_QUERY_FILE);
 	  }
 	  return availableQueries;
 	}
