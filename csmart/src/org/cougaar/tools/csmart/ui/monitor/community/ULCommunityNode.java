@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -49,9 +49,8 @@ public class ULCommunityNode implements NodeObject {
 
   /**
    * Create a NodeObject from a PropertyTree based on an AssetEvent.
-   * @param properties    properties from an AssetEvent; supplied by the PSP
+   * @param properties  properties from an AssetEvent; supplied by the servlet
    */
-
   public ULCommunityNode(PropertyTree properties) {
     UID = (String)properties.get(PropertyNames.UID_ATTR);
     // use community name as color map

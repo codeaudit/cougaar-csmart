@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -22,7 +22,7 @@
 package org.cougaar.tools.csmart.ui.monitor.viewer;
 
 /**
- * Maps an agent name to the PSP host and port for that agent, for
+ * Maps an agent name to the Servlet host and port for that agent, for
  * use by <tt>ThreadUtils</code>.
  *
  * @see ThreadUtils
@@ -30,18 +30,18 @@ package org.cougaar.tools.csmart.ui.monitor.viewer;
 public interface AgentMapping {
 
   /**
-   * Get the host for an agent's PSP server.
+   * Get the host for an agent's Servlet server.
    * <p>
-   * PSP queries are more efficient if the host for this specific agent 
-   * is known, but the existing PSP proxy mechanism should allow the user to
-   * specify one PSP host for all agents.
+   * Servlet queries are more efficient if the host for this specific agent 
+   * is known, but the URLConnection redirect mechanism should allow the user to
+   * specify one Servlet host for all agents.
    */
   String getHost(String agentName);
 
   /**
-   * Get the port address for an agent's PSP server.
+   * Get the port address for an agent's HTTP server.
    * <p>
-   * Typically this is "5555", but the user might configure this 
+   * Typically this is "8800", but the user might configure this 
    * port to a different address.
    *
    * @see #getHost(String)

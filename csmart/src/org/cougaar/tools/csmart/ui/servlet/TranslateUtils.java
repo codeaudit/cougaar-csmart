@@ -538,11 +538,10 @@ public final class TranslateUtils {
   /**
    * Get description of object that is an indirect object
    * of a prepositional phrase.
-   * Adapted from PSP_PlanView.  The indirect object of a prepositional
+   * The indirect object of a prepositional
    * phrase is defined as an object, so there's no way to know
    * what object types are legal.  The documentation claims one of:
    * Asset, Location, Schedule, Requisition, Vector, or OPLAN
-   * but the code in PSP_PlanView handles additional cases.
    */
   private static String getPrepositionalObjectDescription(
 							  Object indirectObject) {

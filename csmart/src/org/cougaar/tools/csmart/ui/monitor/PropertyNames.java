@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -22,11 +22,10 @@
 package org.cougaar.tools.csmart.ui.monitor;
 
 /**
- * Names and values passed from PSPs to clients.
+ * Names and values passed from Servlets to clients.
  * Property names must not have spaces as they are used
  * as attribute names in grappa nodes.
  */
-
 public class PropertyNames {
   // names for common properties
   public static final String OBJECT_TYPE = "Object_Type";

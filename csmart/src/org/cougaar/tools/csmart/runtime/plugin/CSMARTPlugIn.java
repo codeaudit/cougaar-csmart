@@ -144,7 +144,7 @@ public abstract class CSMARTPlugIn
    * during which time the PlugIn and all other PlugIns in the Cluster will
    * wait.
    *
-   * In CSMART only the PSP server runs in it's own Thread, so this will
+   * In CSMART only the all run in this Thread, so this will
    * halt all PlugIn activity!
    */
   protected void waitMillis(long delayMillis) {

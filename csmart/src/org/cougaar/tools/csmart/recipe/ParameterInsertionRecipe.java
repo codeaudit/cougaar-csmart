@@ -1,6 +1,6 @@
 /**
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -39,11 +39,11 @@ public class ParameterInsertionRecipe extends RecipeBase
   private static final String DESCRIPTION_RESOURCE_NAME 
     = "parameter-insertion-recipe-description.html";
   private static final String BACKUP_DESCRIPTION = 
-    "ParameterInsertionRecipe provides a method for inserting new Parameters into a PSP";
+    "ParameterInsertionRecipe provides a method for inserting new Parameters into a Plugin";
 
   private static final String PROP_QUERY = "Agent Query";
   private static final String PROP_QUERY_DFLT = "";
-  private static final String PROP_QUERY_DESC = "Query for agents to update PSP parameters";
+  private static final String PROP_QUERY_DESC = "Query for agents to update Plugin parameters";
 
   private static final String PROP_PLUGINNAME = "Plugin Name";
   private static final String PROP_PLUGINNAME_DFLT = "";

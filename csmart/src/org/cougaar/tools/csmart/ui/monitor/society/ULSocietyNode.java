@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,6 @@ import org.cougaar.util.PropertyTree;
  * a PropertyTree object derived from Organization assets.
  * These objects are used to populate Society graphs.
  */
-
 public class ULSocietyNode implements NodeObject {
   boolean visible;
   String UID;
@@ -51,9 +50,8 @@ public class ULSocietyNode implements NodeObject {
 
   /**
    * Create a NodeObject from a PropertyTree based on an AssetEvent.
-   * @param properties    properties from an AssetEvent; supplied by the PSP
+   * @param properties  properties from an AssetEvent; supplied by the Servlet
    */
-
   public ULSocietyNode(PropertyTree properties) {
     UID = (String)properties.get(PropertyNames.UID_ATTR);
     color = (String)properties.get(PropertyNames.ORGANIZATION_NAME);

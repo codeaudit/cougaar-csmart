@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -72,7 +72,7 @@ public class ULPlanFilter {
   private boolean preFilter = true;
 
   /**
-   * TODO: in PSP or in CSMARTUL, add agent name and community name
+   * TODO: in Servlet or in CSMARTUL, add agent name and community name
    * to properties on an object
    * There are three cases in which filters are created:
    * 1) the user is filtering the data before fetching the data (prefilter);
@@ -91,7 +91,6 @@ public class ULPlanFilter {
    *
    * Prefilter.
    */
-
   public ULPlanFilter(Hashtable communityToAgents) {
     this.communityToAgents = communityToAgents;
     agentNames = new Vector();
@@ -187,9 +186,8 @@ public class ULPlanFilter {
   /**
    * Get filter to pass to agents for prefiltering.
    * Creates a filter, which is a comma separated list of ignoreObjectTypes
-   * @return filter to pass to agent PSP or null (if user cancelled dialog)
+   * @return filter to pass to agent sevlet or null (if user cancelled dialog)
    */
-
   public String getIgnoreObjectTypes() {
     if (ignoreObjectTypes == null)
       return null;
@@ -319,7 +317,7 @@ public class ULPlanFilter {
     for (int i = 0; i < PLAN_OBJECT_TYPES.length; i++) {
       x = 0;
       String s = PLAN_OBJECT_TYPES[i];
-      // names are sent to PSPs, so must not have spaces
+      // names are sent to Servlets, so must not have spaces
       // make pretty names for display
       JLabel label = new JLabel(s.replace('_', ' '));
       planObjectComponents.add(label);
