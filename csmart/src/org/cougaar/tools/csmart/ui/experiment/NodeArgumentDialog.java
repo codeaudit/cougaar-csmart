@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -21,7 +21,7 @@
 
 package org.cougaar.tools.csmart.ui.experiment;
 
-import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
+import org.cougaar.tools.csmart.ui.console.CSMARTConsoleModel;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 
@@ -50,24 +50,24 @@ public class NodeArgumentDialog extends JDialog {
   int returnValue;
   JButton deleteButton;
   private transient Logger log;
-  
-  public NodeArgumentDialog(String title, Properties props, 
+
+  public NodeArgumentDialog(String title, Properties props,
                             boolean isLocal, boolean isEditable) {
-    super((Frame)null, title, isEditable); // display modal dialog
+    super((Frame) null, title, isEditable); // display modal dialog
 
     createLogger();
 
     Box nodeArgPanel = Box.createVerticalBox();
 
     // create JTable
-    if (isEditable) 
+    if (isEditable)
       argTable = new JTable();
     else {
       argTable = new JTable() {
-          public boolean isCellEditable(int row, int column) {
-            return false;
-          }
-        };
+        public boolean isCellEditable(int row, int column) {
+          return false;
+        }
+      };
     }
     // don't allow user to reorder columns
     argTable.getTableHeader().setReorderingAllowed(false);
@@ -80,21 +80,21 @@ public class NodeArgumentDialog extends JDialog {
     if (isLocal && isEditable) {
       ListSelectionModel lsm = argTable.getSelectionModel();
       lsm.addListSelectionListener(new ListSelectionListener() {
-          public void valueChanged(ListSelectionEvent e) {
-            //Ignore extra messages.
-            if (e.getValueIsAdjusting()) return;
-                    
-            ListSelectionModel lsm2 = (ListSelectionModel)e.getSource();
-            if (!lsm2.isSelectionEmpty()) {
-              int selectedRow = lsm2.getMinSelectionIndex();
-              Object o = argTable.getModel().getValueAt(selectedRow, 2);
-              if (o.equals("*"))
-                deleteButton.setEnabled(false);
-              else
-                deleteButton.setEnabled(true);
-            }
+        public void valueChanged(ListSelectionEvent e) {
+          //Ignore extra messages.
+          if (e.getValueIsAdjusting()) return;
+
+          ListSelectionModel lsm2 = (ListSelectionModel) e.getSource();
+          if (!lsm2.isSelectionEmpty()) {
+            int selectedRow = lsm2.getMinSelectionIndex();
+            Object o = argTable.getModel().getValueAt(selectedRow, 2);
+            if (o.equals("*"))
+              deleteButton.setEnabled(false);
+            else
+              deleteButton.setEnabled(true);
           }
-        });
+        }
+      });
     }
 
     JPanel tablePanel = new JPanel(new BorderLayout());
@@ -110,7 +110,7 @@ public class NodeArgumentDialog extends JDialog {
     argumentPanel.add(args);
 
     this.props = props;
-    String value = props.getProperty(CSMARTConsole.COMMAND_ARGUMENTS);
+    String value = props.getProperty(CSMARTConsoleModel.COMMAND_ARGUMENTS);
     setArguments(value);
     model = new NodeArgumentTableModel(props, isLocal);
     argTable.setModel(model);
@@ -119,10 +119,10 @@ public class NodeArgumentDialog extends JDialog {
     if (!isEditable) {
       JButton okButton = new JButton("OK");
       okButton.addActionListener(new ActionListener() {
-          public void actionPerformed(ActionEvent e) {
-            setVisible(false);
-          }
-        });
+        public void actionPerformed(ActionEvent e) {
+          setVisible(false);
+        }
+      });
       nodeArgPanel.add(tablePanel);
       nodeArgPanel.add(argumentPanel);
       JPanel panel = new JPanel();
@@ -146,11 +146,10 @@ public class NodeArgumentDialog extends JDialog {
             int rowIndex = argTable.getEditingRow();
             int colIndex = argTable.getEditingColumn();
             if (rowIndex != -1 && colIndex != -1)
-              model.setValueAt(((JTextField)c).getText(), rowIndex, colIndex);
-          } else
-            if(log.isErrorEnabled()) {
-              log.error("Unexpected editor class: " + c.getClass());
-            }
+              model.setValueAt(((JTextField) c).getText(), rowIndex, colIndex);
+          } else if (log.isErrorEnabled()) {
+            log.error("Unexpected editor class: " + c.getClass());
+          }
         returnValue = JOptionPane.OK_OPTION;
         setVisible(false);
       }
@@ -213,7 +212,7 @@ public class NodeArgumentDialog extends JDialog {
 
   /**
    * Return a value indicating how the dialog was dismissed: one of
-   * JOptionPane.OK_OPTION, JOptionPane.CANCEL_OPTION, 
+   * JOptionPane.OK_OPTION, JOptionPane.CANCEL_OPTION,
    * JOptionPane.CLOSED_OPTION
    */
   public int getValue() {
@@ -227,9 +226,9 @@ public class NodeArgumentDialog extends JDialog {
   public boolean updateProperties() {
     boolean isModified = model.updateProperties();
     String s = getArguments();
-    if (s != null && 
-        !s.equals(props.getProperty(CSMARTConsole.COMMAND_ARGUMENTS))) {
-      props.setProperty(CSMARTConsole.COMMAND_ARGUMENTS, s);
+    if (s != null &&
+        !s.equals(props.getProperty(CSMARTConsoleModel.COMMAND_ARGUMENTS))) {
+      props.setProperty(CSMARTConsoleModel.COMMAND_ARGUMENTS, s);
       isModified = true;
     }
     return isModified;
@@ -265,7 +264,7 @@ public class NodeArgumentDialog extends JDialog {
       return;
 
     File sel = chooser.getSelectedFile();
-    if (sel == null || ! sel.canRead() || sel.isDirectory())
+    if (sel == null || !sel.canRead() || sel.isDirectory())
       return;
 
     FileInputStream in = null;
@@ -274,7 +273,7 @@ public class NodeArgumentDialog extends JDialog {
       in = new FileInputStream(sel);
       properties.load(in);
     } catch (Exception e) {
-      if(log.isErrorEnabled()) {
+      if (log.isErrorEnabled()) {
         log.error("Exception reading properties file: ", e);
       }
       return;
@@ -282,8 +281,8 @@ public class NodeArgumentDialog extends JDialog {
     // add all properties from the file, overwriting any existing property
     Enumeration keys = properties.propertyNames();
     while (keys.hasMoreElements()) {
-      String key = (String)keys.nextElement();
-      if (key.equals(CSMARTConsole.COMMAND_ARGUMENTS))
+      String key = (String) keys.nextElement();
+      if (key.equals(CSMARTConsoleModel.COMMAND_ARGUMENTS))
         setArguments(properties.getProperty(key));
       else
         model.addRow(key, properties.getProperty(key));
@@ -295,8 +294,8 @@ public class NodeArgumentDialog extends JDialog {
     props.setProperty("Color", "Red");
     props.setProperty("Number", "33");
     props.setProperty("Day", "Friday");
-    NodeArgumentDialog nad = 
-      new NodeArgumentDialog("Test", props, true, false);
+    NodeArgumentDialog nad =
+        new NodeArgumentDialog("Test", props, true, false);
     nad.setVisible(true);
     if (nad.getValue() != JOptionPane.OK_OPTION)
       return;
@@ -307,5 +306,5 @@ public class NodeArgumentDialog extends JDialog {
 
 }
 
-    
+
 

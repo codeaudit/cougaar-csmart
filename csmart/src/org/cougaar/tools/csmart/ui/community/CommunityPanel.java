@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -25,9 +25,10 @@ package org.cougaar.tools.csmart.ui.community;
 
 import org.cougaar.tools.csmart.core.db.CommunityDbUtils;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.experiment.Experiment;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
+import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
@@ -138,7 +139,7 @@ public class CommunityPanel extends JPanel {
     this.experiment = experiment;
     splitPane.remove(treePane);
     if (log.isDebugEnabled()) {
-      if (experiment != null) 
+      if (experiment != null)
 	log.debug("reinit using Comm ASB " + experiment.getCommAsbID());
     }
     if (experiment != null)
@@ -152,7 +153,7 @@ public class CommunityPanel extends JPanel {
   private JTable createTable() {
     CommunityTable communityTable =  new CommunityTable();
     if (log.isDebugEnabled()) {
-      if (experiment != null) 
+      if (experiment != null)
 	log.debug("createTable using Comm ASB " + experiment.getCommAsbID());
     }
     if (experiment != null)
@@ -162,14 +163,14 @@ public class CommunityPanel extends JPanel {
   }
 
   private JSplitPane createTreeDisplay() {
-    DefaultMutableTreeNode root = 
+    DefaultMutableTreeNode root =
       new DefaultMutableTreeNode(new CommunityTreeObject("Community"));
     DefaultTreeModel treeModel = new DefaultTreeModel(root, true) {
       public void valueForPathChanged(TreePath path, Object newValue) {
         if (newValue == null || newValue.toString().equals("")) return;
-        DefaultMutableTreeNode node = 
+        DefaultMutableTreeNode node =
           (DefaultMutableTreeNode)path.getLastPathComponent();
-        CommunityTreeObject cto = 
+        CommunityTreeObject cto =
           (CommunityTreeObject)node.getUserObject();
         cto.setLabel(newValue.toString());
         nodeChanged(node);
@@ -183,7 +184,7 @@ public class CommunityPanel extends JPanel {
     communityTree.addTreeSelectionListener(new CommunityTreeSelectionListener(communityTableUtils));
     JScrollPane communityScrollPane = new JScrollPane(communityTree);
 
-    // attach a mouse listener to the community tree to display menu 
+    // attach a mouse listener to the community tree to display menu
     MouseListener communityTreeMouseListener = new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
         if (e.isPopupTrigger()) displayCommunityTreeMenu(e);
@@ -209,19 +210,19 @@ public class CommunityPanel extends JPanel {
     entityMenu = new JPopupMenu();
     entityMenu.add(new JMenuItem(addParameterAction));
     entityMenu.add(new JMenuItem(deleteAction));
-    DefaultMutableTreeNode hostRoot = 
+    DefaultMutableTreeNode hostRoot =
       new DefaultMutableTreeNode(new CommunityTreeObject("Hosts"));
     hostTree = new EntityDNDTree(new DefaultTreeModel(hostRoot, true));
     hostTree.setExpandsSelectedPaths(true);
     hostTree.setCellEditor(noEdit);
     JScrollPane hostScrollPane = new JScrollPane(hostTree);
-    DefaultMutableTreeNode nodeRoot = 
-      new DefaultMutableTreeNode(new CommunityTreeObject("Nodes (unassigned)"));    
+    DefaultMutableTreeNode nodeRoot =
+      new DefaultMutableTreeNode(new CommunityTreeObject("Nodes (unassigned)"));
     nodeTree = new EntityDNDTree(new DefaultTreeModel(nodeRoot, true));
     nodeTree.setExpandsSelectedPaths(true);
     nodeTree.setCellEditor(noEdit);
     JScrollPane nodeScrollPane = new JScrollPane(nodeTree);
-    DefaultMutableTreeNode agentRoot = 
+    DefaultMutableTreeNode agentRoot =
       new DefaultMutableTreeNode(new CommunityTreeObject("Agents (unassigned)"));
     agentTree = new EntityDNDTree(new DefaultTreeModel(agentRoot, true));
     agentTree.setExpandsSelectedPaths(true);
@@ -296,7 +297,7 @@ public class CommunityPanel extends JPanel {
   DefaultCellEditor treeCellEditor = new DefaultCellEditor(new JTextField()) {
       public boolean isCellEditable(EventObject e) {
         if (super.isCellEditable(e) && e instanceof MouseEvent) {
-          TreePath path = 
+          TreePath path =
             communityTree.getPathForLocation(((MouseEvent)e).getX(),
                                              ((MouseEvent)e).getY());
           if (path == null)
@@ -320,7 +321,7 @@ public class CommunityPanel extends JPanel {
 	  if (! uniq)
 	    return uniq;
           return super.stopCellEditing();
-        } 
+        }
         return false;
       }
     };
@@ -347,7 +348,7 @@ public class CommunityPanel extends JPanel {
     TreePath[] selectedPaths = communityTree.getSelectionPaths();
     if (!communityTree.isPathSelected(path) || selectedPaths.length > 1)
       communityTree.setSelectionPath(path);
-    DefaultMutableTreeNode node = 
+    DefaultMutableTreeNode node =
       (DefaultMutableTreeNode)path.getLastPathComponent();
     CommunityTreeObject cto = (CommunityTreeObject)node.getUserObject();
     if (cto.isRoot()) {
@@ -378,7 +379,7 @@ public class CommunityPanel extends JPanel {
     JPanel panel = new JPanel();
     panel.add(new JLabel("Community Type:"));
     panel.add(cb);
-    int result = 
+    int result =
       JOptionPane.showConfirmDialog(null, panel, "Community Type",
                                     JOptionPane.OK_CANCEL_OPTION,
                                     JOptionPane.PLAIN_MESSAGE);
@@ -390,7 +391,7 @@ public class CommunityPanel extends JPanel {
       communityType = communityType.trim();
 
     DefaultTreeModel model = (DefaultTreeModel)communityTree.getModel();
-    CommunityTreeObject cto = 
+    CommunityTreeObject cto =
       new CommunityTreeObject(communityName, "Community");
     DefaultMutableTreeNode node = new DefaultMutableTreeNode(cto, true);
     TreePath selectedPath = communityTree.getSelectionPath();
@@ -399,7 +400,7 @@ public class CommunityPanel extends JPanel {
       DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
       model.insertNodeInto(node, root, root.getChildCount());
     } else {
-      DefaultMutableTreeNode selectedNode = 
+      DefaultMutableTreeNode selectedNode =
         (DefaultMutableTreeNode)selectedPath.getLastPathComponent();
       CommunityTreeObject selectedObject =
         (CommunityTreeObject)selectedNode.getUserObject();
@@ -451,7 +452,7 @@ public class CommunityPanel extends JPanel {
   // Import community definitions from an XML File
   private void importCommunities() {
     // Add in community info for this society
-    JFileChooser chooser = 
+    JFileChooser chooser =
       new JFileChooser(System.getProperty("org.cougaar.install.path"));
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.setDialogTitle("Select the communities.xml file to import");
@@ -466,13 +467,13 @@ public class CommunityPanel extends JPanel {
 	    return true;
 	  return f.getName().endsWith(".xml");
 	}
-	
+
 	public String getDescription() {
 	  return "XML Files";
 	}
-	
+
       });
-    
+
     File xmlFile = null;
     while (xmlFile == null) {
       int result = chooser.showDialog(this, "OK");
@@ -508,7 +509,7 @@ public class CommunityPanel extends JPanel {
       return;
     DefaultMutableTreeNode selectedNode =
       (DefaultMutableTreeNode)selectedPath.getLastPathComponent();
-    CommunityTreeObject cto = 
+    CommunityTreeObject cto =
       (CommunityTreeObject)selectedNode.getUserObject();
     if (cto.isCommunity()) {
       String communityName = cto.toString();
@@ -531,7 +532,7 @@ public class CommunityPanel extends JPanel {
    */
 
   private void addHostsFromExperiment() {
-    DefaultMutableTreeNode root = 
+    DefaultMutableTreeNode root =
       (DefaultMutableTreeNode)hostTree.getModel().getRoot();
     DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
     HostComponent[] hosts = experiment.getHostComponents();
@@ -544,14 +545,14 @@ public class CommunityPanel extends JPanel {
       for (int j = 0; j < nodes.length; j++) {
 	NodeComponent nodeComponent = nodes[j];
 	cto = new CommunityTreeObject(nodeComponent);
-	DefaultMutableTreeNode nodeTreeNode = 
+	DefaultMutableTreeNode nodeTreeNode =
 	  new DefaultMutableTreeNode(cto, true);
 	model.insertNodeInto(nodeTreeNode, hostNode, hostNode.getChildCount());
 	AgentComponent[] agents = nodeComponent.getAgents();
 	for (int k = 0; k < agents.length; k++) {
 	  AgentComponent agentComponent = agents[k];
 	  cto = new CommunityTreeObject(agentComponent);
-	  DefaultMutableTreeNode agentNode = 
+	  DefaultMutableTreeNode agentNode =
 	    new DefaultMutableTreeNode(cto, false);
 	  model.insertNodeInto(agentNode, nodeTreeNode,
 			       nodeTreeNode.getChildCount());
@@ -571,23 +572,23 @@ public class CommunityPanel extends JPanel {
     unassignedNodes.addAll(Arrays.asList(nodes));
     for (int i = 0; i < hosts.length; i++)
       unassignedNodes.removeAll(Arrays.asList(hosts[i].getNodes()));
-    DefaultMutableTreeNode root = 
+    DefaultMutableTreeNode root =
       (DefaultMutableTreeNode)nodeTree.getModel().getRoot();
     DefaultTreeModel model = (DefaultTreeModel)nodeTree.getModel();
     Iterator iter = unassignedNodes.iterator();
     while (iter.hasNext()) {
       NodeComponent nodeComponent = (NodeComponent)iter.next();
       CommunityTreeObject cto = new CommunityTreeObject(nodeComponent);
-      DefaultMutableTreeNode newNodeTreeNode = 
+      DefaultMutableTreeNode newNodeTreeNode =
 	new DefaultMutableTreeNode(cto, true);
       model.insertNodeInto(newNodeTreeNode, root, root.getChildCount());
       AgentComponent[] agents = nodeComponent.getAgents();
       for (int j = 0; j < agents.length; j++) {
 	AgentComponent agentComponent = agents[j];
 	cto = new CommunityTreeObject(agentComponent);
-	DefaultMutableTreeNode newAgentNode = 
+	DefaultMutableTreeNode newAgentNode =
 	  new DefaultMutableTreeNode(cto, false);
-	model.insertNodeInto(newAgentNode, newNodeTreeNode, 
+	model.insertNodeInto(newAgentNode, newNodeTreeNode,
 			     newNodeTreeNode.getChildCount());
       }
     }
@@ -652,7 +653,7 @@ public class CommunityPanel extends JPanel {
     // Add special community name meaning show all communities...
     communityNames.add(0, "All");
 
-    JComboBox cb = 
+    JComboBox cb =
       new JComboBox(communityNames.toArray(new String[communityNames.size()]));
     cb.setEditable(false);
     JPanel panel = new JPanel();
@@ -718,7 +719,7 @@ public class CommunityPanel extends JPanel {
 // 	}
 	// This first argument must point to the tree root
         // so that the new nodes are added to the root
-	addToTree(communityTree.addNode(root, communityName, 
+	addToTree(communityTree.addNode(root, communityName,
                                         "Community", null),
 		  communityName);
       }
@@ -743,7 +744,7 @@ public class CommunityPanel extends JPanel {
 	  log.debug("addToTree got unknown type " + entityType + " for " + entityName + " in comm " + communityName);
 	}
       }
-      DefaultMutableTreeNode newNode = 
+      DefaultMutableTreeNode newNode =
         communityTree.addNode(node, entityName, entityType, communityName);
       if (entityType.equals("Community"))
         addToTree(newNode, entityName);

@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -22,6 +22,7 @@
 package org.cougaar.tools.csmart.ui.configbuilder;
 
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
@@ -67,7 +68,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   private ModifiableComponent originalComponent;
   private boolean componentWasSaved = false;
 
-  public PropertyBuilder(CSMART csmart, ModifiableComponent mc, 
+  public PropertyBuilder(CSMART csmart, ModifiableComponent mc,
                          ModifiableComponent originalComponent,
                          Experiment experiment) {
     log = CSMART.createLogger(this.getClass().getName());
@@ -118,7 +119,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     setVisible(true);
   }
 
-  // if we modified a component in an experiment, 
+  // if we modified a component in an experiment,
   // update the experiment and update the workspace view
   // and save the component in the database
   // if we modified a component not in the database,
@@ -151,7 +152,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   }
 
   private boolean isModified() {
-    return ((configComponent instanceof SocietyComponent && 
+    return ((configComponent instanceof SocietyComponent &&
              ((SocietyComponent)configComponent).isModified()) ||
             (configComponent instanceof RecipeComponent &&
              ((RecipeComponent)configComponent).isModified()));
@@ -193,10 +194,10 @@ public class PropertyBuilder extends JFrame implements ActionListener {
       URL about = (URL)getClass().getResource(ABOUT_DOC);
       if (about != null)
 	Browser.setPage(about);
-    }	       
+    }
   }
 
-  /** 
+  /**
    * Save society and recipes to database.
    */
 

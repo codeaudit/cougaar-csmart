@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -24,6 +24,7 @@ package org.cougaar.tools.csmart.ui.experiment;
 import org.cougaar.tools.csmart.core.db.CMT;
 import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.Experiment;
 
 import javax.swing.*;
@@ -88,7 +89,7 @@ public class ThreadBuilder extends JPanel {
     leftIndent = leftIndent + 5;
     for (int i = 0; i < ULThreads.length; i++) {
       JCheckBox cb = new JCheckBox(ULThreads[i]);
-      boolean sel = 
+      boolean sel =
         ExperimentDB.isULThreadSelected(trialId, CMT.ULDBThreads[i]);
       ULThreadCheckBoxes.add(cb);
       cb.setSelected(sel);
@@ -158,8 +159,8 @@ public class ThreadBuilder extends JPanel {
                                  GridBagConstraints.NONE,
                                  new Insets(0, 0, 5, 5),
                                  0, 0));
-	Set members = 
-	  ExperimentDB.getOrganizationsInGroup(experimentId, 
+	Set members =
+	  ExperimentDB.getOrganizationsInGroup(experimentId,
                                          (String)groupNameToId.get(groupName));
 	JList membersList = new JList(members.toArray());
 	membersList.setVisibleRowCount(4);

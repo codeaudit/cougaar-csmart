@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -25,6 +25,7 @@ import org.cougaar.core.agent.AgentManager;
 import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.core.plugin.PluginManager;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
@@ -42,13 +43,13 @@ public class AgentInfoPanel extends JPanel {
   public AgentInfoPanel(Experiment experiment, String agentName) {
     super();
     log = CSMART.createLogger(this.getClass().getName());
-    
+
     // Warning: This next line may save the whole experiment
     ComponentData societyComponentData = experiment.getSocietyComponentData();
 
     if (societyComponentData == null) {
       JOptionPane.showMessageDialog(this, "No information available",
-                                    "No Information", 
+                                    "No Information",
                                     JOptionPane.PLAIN_MESSAGE);
       if (log.isDebugEnabled()) {
 	log.debug("Experiment returned no component data: " + experiment.getExperimentName());
@@ -77,7 +78,7 @@ public class AgentInfoPanel extends JPanel {
 	    agentComponentData = children[i];
 	    break;
 	  }
-	  
+
 	  ComponentData[] agents = children[i].getChildren();
 	  for (int k = 0; k < agents.length; k++) {
 	    if (agentComponentData != null)
@@ -96,7 +97,7 @@ public class AgentInfoPanel extends JPanel {
 	} else if (children[i].getType().equals(ComponentData.HOST)) {
 	  ComponentData[] nodes = children[i].getChildren();
 
-	  for (int j = 0; j < nodes.length; j++) {    
+	  for (int j = 0; j < nodes.length; j++) {
 	    if (agentComponentData != null)
 	      break;
 	    // Let it possibly be the Node itself
@@ -104,7 +105,7 @@ public class AgentInfoPanel extends JPanel {
 	      agentComponentData = nodes[j];
 	      break;
 	    }
-	    
+
 	    ComponentData[] agents = nodes[j].getChildren();
 	    for (int k = 0; k < agents.length; k++) {
 	      if (agentComponentData != null)
@@ -121,7 +122,7 @@ public class AgentInfoPanel extends JPanel {
 
     if (agentComponentData == null) {
       JOptionPane.showMessageDialog(this, "No information available",
-                                    "No Information", 
+                                    "No Information",
                                     JOptionPane.PLAIN_MESSAGE);
       if (log.isDebugEnabled()) {
 	log.debug("Got null agentComponentData after search?");
@@ -140,7 +141,7 @@ public class AgentInfoPanel extends JPanel {
       } else {
 	sb.append(agentChildren[i].getType());
       }
-      if(ComponentDescription.parsePriority(agentChildren[i].getPriority()) != 
+      if(ComponentDescription.parsePriority(agentChildren[i].getPriority()) !=
 	 ComponentDescription.PRIORITY_COMPONENT) {
 	sb.append("(" + agentChildren[i].getPriority() + ")");
       }

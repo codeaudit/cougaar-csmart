@@ -1,12 +1,12 @@
-/* 
+/*
  * <copyright>
  *  Copyright 2001-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -20,6 +20,7 @@
  */
 package org.cougaar.tools.csmart.ui.experiment;
 
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
@@ -77,11 +78,11 @@ public class UnboundPropertyBuilder extends JPanel {
       removeSelectedItems();
     }
   };
-  
+
   private Action[] popupActions = {
     removeAction
   };
-  
+
   private Action[] societiesActions = {
     // FIXME: Why do we allow doing this?
     new AbstractAction(REMOVE_MENU_ITEM + " Society") {
@@ -90,7 +91,7 @@ public class UnboundPropertyBuilder extends JPanel {
       }
     }
   };
-  
+
   private Action[] recipesActions = {
     new AbstractAction(REMOVE_MENU_ITEM + " All Recipes") {
       public void actionPerformed(ActionEvent e) {
@@ -143,7 +144,7 @@ public class UnboundPropertyBuilder extends JPanel {
    * @param experiment the experiment to edit
    * @param experimentBuilder the <code>ExperimentBuilder</code> that this user interface was invoked from
    */
-  public UnboundPropertyBuilder(Experiment experiment, 
+  public UnboundPropertyBuilder(Experiment experiment,
                                 ExperimentBuilder experimentBuilder) {
     this.experiment = experiment;
     this.experimentBuilder = experimentBuilder;
@@ -201,7 +202,7 @@ public class UnboundPropertyBuilder extends JPanel {
   }
 
   /**
-   * Display information about the experiment.  Called to 
+   * Display information about the experiment.  Called to
    * re-use this interface.
    * @param newExperiment the new experiment to edit
    */
@@ -266,10 +267,10 @@ public class UnboundPropertyBuilder extends JPanel {
   }
 
   /**
-   * Display the correct popup menu for "Societies", "Recipes" or 
+   * Display the correct popup menu for "Societies", "Recipes" or
    * one or more recipes.
-   * If multiple objects are selected, 
-   * then, if they're not all recipes, then select 
+   * If multiple objects are selected,
+   * then, if they're not all recipes, then select
    * the one the mouse is pointing at.
    */
   private void doPopup(MouseEvent e) {
@@ -306,7 +307,7 @@ public class UnboundPropertyBuilder extends JPanel {
    */
   private void removeAllChildren(DefaultMutableTreeNode parent) {
     for (int i = 0; i < parent.getChildCount(); i++) {
-//       DefaultMutableTreeNode node = 
+//       DefaultMutableTreeNode node =
 // 	(DefaultMutableTreeNode)parent.getChildAt(i);
       // make removed society component editable again
 //        Object userObject = node.getUserObject();
@@ -325,7 +326,7 @@ public class UnboundPropertyBuilder extends JPanel {
     TreePath[] selectionPaths = tree.getSelectionPaths();
     if (selectionPaths == null)
       return;
-    DefaultMutableTreeNode[] nodes = 
+    DefaultMutableTreeNode[] nodes =
       new DefaultMutableTreeNode[selectionPaths.length];
     for (int i = 0; i < nodes.length; i++) {
       nodes[i] =

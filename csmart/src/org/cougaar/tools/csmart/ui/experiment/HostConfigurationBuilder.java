@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -24,9 +24,10 @@ package org.cougaar.tools.csmart.ui.experiment;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
-import org.cougaar.tools.csmart.experiment.Experiment;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
+import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.ui.tree.ConsoleDNDTree;
@@ -88,7 +89,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   private transient Logger log;
 
-  // menu items for popup menu in hostTree and for 
+  // menu items for popup menu in hostTree and for
   // File menu in ExperimentBuilder
   public static final String NEW_HOST_MENU_ITEM = "New Host...";
   public static final String NEW_NODE_MENU_ITEM = "New Node...";
@@ -111,7 +112,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   // map node component to host component
   private Hashtable nodeToHost = new Hashtable();
 
-  public HostConfigurationBuilder(Experiment experiment, 
+  public HostConfigurationBuilder(Experiment experiment,
                                   ExperimentBuilder experimentBuilder) {
     createLogger();
     this.experiment = experiment;
@@ -129,13 +130,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   private void initDisplay() {
-    // host split pane contains host tree and 
+    // host split pane contains host tree and
     // the bottom split pane which contains the node and agent trees
     JSplitPane hostPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 
     // tree of hosts and assigned nodes and agents
-    DefaultMutableTreeNode root = 
-      new DefaultMutableTreeNode(new ConsoleTreeObject("Hosts", 
+    DefaultMutableTreeNode root =
+      new DefaultMutableTreeNode(new ConsoleTreeObject("Hosts",
 		       HostComponent.class.getName()));
     // setting "askAllowsChildren" forces empty nodes that can have
     // children to be displayed as "folders" rather than leaf nodes
@@ -233,7 +234,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
 
-    JMenuItem hostDescriptionMenuItem = 
+    JMenuItem hostDescriptionMenuItem =
       new JMenuItem(DESCRIBE_MENU_ITEM);
     hostDescriptionMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -255,7 +256,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
 
-    JMenuItem describeNodeInHostMenuItem = 
+    JMenuItem describeNodeInHostMenuItem =
       new JMenuItem(DESCRIBE_MENU_ITEM);
     describeNodeInHostMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -263,7 +264,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
 
-    cmdLineNodeInHostMenuItem = 
+    cmdLineNodeInHostMenuItem =
       new JMenuItem(NODE_COMMAND_LINE_MENU_ITEM);
     cmdLineNodeInHostMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -285,7 +286,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
 
-    showComponentsHostMenuItem = 
+    showComponentsHostMenuItem =
       new JMenuItem(SHOW_COMPONENTS_MENU_ITEM);
     showComponentsHostMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -293,7 +294,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         }
       });
 
-    showComponentsHostAMenuItem = 
+    showComponentsHostAMenuItem =
       new JMenuItem(SHOW_COMPONENTS_MENU_ITEM);
     showComponentsHostAMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -329,8 +330,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
     // Can't add this directly - must be a copy
     //    viewOnlyHostMenu.add(showComponentsHostMenuItem);
-    
-    // attach a mouse listener to the host tree to display menu 
+
+    // attach a mouse listener to the host tree to display menu
     MouseListener hostTreeMouseListener = new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
         if (e.isPopupTrigger()) displayHostTreeMenu(e);
@@ -347,7 +348,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     // bottom split pane contains the node and agent trees
     JSplitPane bottomPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     // tree of unassigned nodes
-    ConsoleTreeObject cto = new ConsoleTreeObject("Nodes (unassigned)", 
+    ConsoleTreeObject cto = new ConsoleTreeObject("Nodes (unassigned)",
                  NodeComponent.class.getName());
     root = new DefaultMutableTreeNode(cto, true);
     model = createModel(experiment, root, true);
@@ -419,7 +420,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
     cmdLineNodeMenuItem.setEnabled(true);
-    JMenuItem globalCmdLineMenuItem = 
+    JMenuItem globalCmdLineMenuItem =
       new JMenuItem(GLOBAL_COMMAND_LINE_MENU_ITEM);
     globalCmdLineMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -434,7 +435,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
 
-    showComponentsNodeMenuItem = 
+    showComponentsNodeMenuItem =
       new JMenuItem(SHOW_COMPONENTS_MENU_ITEM);
     showComponentsNodeMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -442,14 +443,14 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         }
       });
 
-    showComponentsNodeAMenuItem = 
+    showComponentsNodeAMenuItem =
       new JMenuItem(SHOW_COMPONENTS_MENU_ITEM);
     showComponentsNodeAMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           showAgentComponents(nodeTree);
         }
       });
-    
+
 
     nodeNodeMenu.add(describeNodeMenuItem);
     nodeNodeMenu.add(cmdLineNodeMenuItem);
@@ -465,11 +466,11 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         }
       };
     viewOnlyNodeMenu.add(viewArgumentsNodeAction);
-    
+
     // Can't add this directly, must be a copy
     //    viewOnlyNodeMenu.add(showComponentsNodeMenuItem);
 
-    // attach a mouse listener to the node tree to display menu 
+    // attach a mouse listener to the node tree to display menu
     MouseListener nodeTreeMouseListener = new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
         if (e.isPopupTrigger()) displayNodeTreeMenu(e);
@@ -484,13 +485,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     nodeTree.addMouseListener(nodeTreeMouseListener);
 
     // tree of unassigned agents
-    cto = new ConsoleTreeObject("Agents (unassigned)", 
+    cto = new ConsoleTreeObject("Agents (unassigned)",
 		AgentComponent.class.getName());
     root = new DefaultMutableTreeNode(cto, true);
     model = createModel(experiment, root, true);
     agentTree = new ConsoleDNDTree(model);
 
-    // attach a mouse listener to the agent tree to display menu 
+    // attach a mouse listener to the agent tree to display menu
     MouseListener agentTreeMouseListener = new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
         if (e.isPopupTrigger()) displayAgentTreeMenu(e);
@@ -504,7 +505,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     };
     agentTree.addMouseListener(agentTreeMouseListener);
 
-    showComponentsAgentMenuItem = 
+    showComponentsAgentMenuItem =
       new JMenuItem(SHOW_COMPONENTS_MENU_ITEM);
     showComponentsAgentMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -551,7 +552,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     experiment = newExperiment;
     // if this pane is being displayed, then bring it up-to-date
     if (isShowing())
-      update(); 
+      update();
   }
 
   /**
@@ -621,10 +622,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * so that the initial view of the tree is fully expanded.
    */
   private void expandTree(JTree tree) {
-    Enumeration nodes = 
+    Enumeration nodes =
       ((DefaultMutableTreeNode)tree.getModel().getRoot()).depthFirstEnumeration();
     while (nodes.hasMoreElements()) {
-      DefaultMutableTreeNode node = 
+      DefaultMutableTreeNode node =
 	(DefaultMutableTreeNode)nodes.nextElement();
       tree.expandPath(new TreePath(node.getPath()));
     }
@@ -634,7 +635,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Add hosts and their nodes and agents from an experiment.
    */
   private void addHostsFromExperiment() {
-    DefaultMutableTreeNode root = 
+    DefaultMutableTreeNode root =
       (DefaultMutableTreeNode)hostTree.getModel().getRoot();
     DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
     HostComponent[] hosts = experiment.getHostComponents();
@@ -647,7 +648,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       for (int j = 0; j < nodes.length; j++) {
 	NodeComponent nodeComponent = nodes[j];
 	cto = new ConsoleTreeObject(nodeComponent);
-	DefaultMutableTreeNode nodeTreeNode = 
+	DefaultMutableTreeNode nodeTreeNode =
 	  new DefaultMutableTreeNode(cto, true);
 	model.insertNodeInto(nodeTreeNode, hostNode, hostNode.getChildCount());
         nodeToHost.put(nodeComponent, hostComponent);
@@ -655,7 +656,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	for (int k = 0; k < agents.length; k++) {
 	  AgentComponent agentComponent = agents[k];
 	  cto = new ConsoleTreeObject(agentComponent);
-	  DefaultMutableTreeNode agentNode = 
+	  DefaultMutableTreeNode agentNode =
 	    new DefaultMutableTreeNode(cto, false);
 	  model.insertNodeInto(agentNode, nodeTreeNode,
 			       nodeTreeNode.getChildCount());
@@ -677,10 +678,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     java.util.List hosts = new ArrayList();
     RandomAccessFile hostFile = null;
     // read hosts, one per line
-    try { 
-      hostFile = new RandomAccessFile(pathName, "r");      
+    try {
+      hostFile = new RandomAccessFile(pathName, "r");
       while (true) {
-	String ihost = hostFile.readLine(); // get their name       
+	String ihost = hostFile.readLine(); // get their name
 	if (ihost == null) {
 	  break;
 	}
@@ -693,23 +694,23 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       hostFile.close();
     } catch (IOException e) {
       if(log.isErrorEnabled()) {
-        log.error("Error during read/open from file: " + pathName + 
+        log.error("Error during read/open from file: " + pathName +
                            " ", e);
       }
       return;
-    } 
-    DefaultMutableTreeNode root = 
+    }
+    DefaultMutableTreeNode root =
       (DefaultMutableTreeNode)hostTree.getModel().getRoot();
     DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
     DefaultMutableTreeNode hostNode = null;
     HostComponent[] hostsInExperiment = experiment.getHostComponents();
     Vector hostNames = new Vector(hostsInExperiment.length);
-    for (int i = 0; i < hostsInExperiment.length; i++) 
+    for (int i = 0; i < hostsInExperiment.length; i++)
       hostNames.add(hostsInExperiment[i].toString());
     for (int i = 0; i < hosts.size(); i++) {
       if (hostNames.contains((String)hosts.get(i)))
 	continue; // this host already exists in the experiment
-      HostComponent hostComponent = 
+      HostComponent hostComponent =
 	experiment.addHost((String)hosts.get(i));
       ConsoleTreeObject cto = new ConsoleTreeObject(hostComponent);
       hostNode = new DefaultMutableTreeNode(cto, true);
@@ -718,7 +719,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     if (hostNode != null)
       hostTree.scrollPathToVisible(new TreePath(hostNode.getPath()));
   }
-  
+
   /**
    * Add unassigned nodes from experiment to unassigned nodes tree.
    */
@@ -732,23 +733,23 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     unassignedNodes.addAll(Arrays.asList(nodes));
     for (int i = 0; i < hosts.length; i++)
       unassignedNodes.removeAll(Arrays.asList(hosts[i].getNodes()));
-    DefaultMutableTreeNode root = 
+    DefaultMutableTreeNode root =
       (DefaultMutableTreeNode)nodeTree.getModel().getRoot();
     DefaultTreeModel model = (DefaultTreeModel)nodeTree.getModel();
     Iterator iter = unassignedNodes.iterator();
     while (iter.hasNext()) {
       NodeComponent nodeComponent = (NodeComponent)iter.next();
       ConsoleTreeObject cto = new ConsoleTreeObject(nodeComponent);
-      DefaultMutableTreeNode newNodeTreeNode = 
+      DefaultMutableTreeNode newNodeTreeNode =
 	new DefaultMutableTreeNode(cto, true);
       model.insertNodeInto(newNodeTreeNode, root, root.getChildCount());
       AgentComponent[] agents = nodeComponent.getAgents();
       for (int j = 0; j < agents.length; j++) {
 	AgentComponent agentComponent = agents[j];
 	cto = new ConsoleTreeObject(agentComponent);
-	DefaultMutableTreeNode newAgentNode = 
+	DefaultMutableTreeNode newAgentNode =
 	  new DefaultMutableTreeNode(cto, false);
-	model.insertNodeInto(newAgentNode, newNodeTreeNode, 
+	model.insertNodeInto(newAgentNode, newNodeTreeNode,
 			     newNodeTreeNode.getChildCount());
         agentToNode.put(agentComponent, nodeComponent);
       }
@@ -774,7 +775,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       return c1.getShortName().compareTo(c2.getShortName());
     }
   };
-      
+
 //    private static Comparator builtInBaseComponentComparator = new Comparator() {
 //      public int compare(Object o1, Object o2) {
 //        BaseComponent c1 = (BaseComponent) o1;
@@ -908,7 +909,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         (DefaultMutableTreeNode)selPath.getLastPathComponent();
       ConsoleTreeObject selected =
         (ConsoleTreeObject)selNode.getUserObject();
-      // display popup menu 
+      // display popup menu
       if (selected.isRoot()) {
         if (hostTree.isEditable())
           hostRootMenu.show(hostTree, e.getX(), e.getY());
@@ -936,7 +937,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         hostAgentMenu.show(hostTree, e.getX(), e.getY());
       }
     }
-  } 
+  }
 
   /**
    * Display global command line arguments.
@@ -946,10 +947,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     if (!(c instanceof JTree))
       return;
     NodeArgumentDialog dialog;
-    DefaultMutableTreeNode[] selectedNodes = 
+    DefaultMutableTreeNode[] selectedNodes =
       getSelectedItemsInTree((JTree)c, NodeComponent.class);
     if (selectedNodes != null && selectedNodes.length == 1) {
-      ConsoleTreeObject cto = 
+      ConsoleTreeObject cto =
         (ConsoleTreeObject)(selectedNodes[0]).getUserObject();
       NodeComponent nodeComponent = (NodeComponent)cto.getComponent();
       dialog = new NodeArgumentDialog("Node " + nodeComponent.getShortName() +
@@ -958,7 +959,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
                                       true, false);
     } else
       dialog = new NodeArgumentDialog("Global Command Line",
-                                      experiment.getDefaultNodeArguments(), 
+                                      experiment.getDefaultNodeArguments(),
                                       false, false);
     dialog.setVisible(true);
   }
@@ -976,7 +977,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       hostName = hostName.trim();
       HostComponent[] hc = experiment.getHostComponents();
       boolean isUnique = true;
-      for (int i = 0; i < hc.length; i++) 
+      for (int i = 0; i < hc.length; i++)
         if (hostName.equalsIgnoreCase(hc[i].getShortName())) {
           isUnique = false;
           break;
@@ -991,7 +992,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       if (ok != JOptionPane.OK_OPTION) return;
     }
     DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
-    DefaultMutableTreeNode hostTreeRoot = 
+    DefaultMutableTreeNode hostTreeRoot =
       (DefaultMutableTreeNode)model.getRoot();
     HostComponent hostComponent = experiment.addHost(hostName);
     ConsoleTreeObject cto = new ConsoleTreeObject(hostComponent);
@@ -1004,7 +1005,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   private boolean isHostNameUnique(String name) {
     HostComponent[] hc = experiment.getHostComponents();
-    for (int i = 0; i < hc.length; i++) 
+    for (int i = 0; i < hc.length; i++)
       if (name.equalsIgnoreCase(hc[i].getShortName()))
         return false;
     return true;
@@ -1120,7 +1121,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
     String agentName = cto.getName();
-    JOptionPane.showMessageDialog(this, 
+    JOptionPane.showMessageDialog(this,
                                   new AgentInfoPanel(experiment, agentName),
                                   "Information: " + agentName,
                                   JOptionPane.PLAIN_MESSAGE);
@@ -1137,7 +1138,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   public void createUnassignedNode() {
     // FIXME: If nothing in nodeTree selected, select the root
-    // That way can create an unassigned Node without 
+    // That way can create an unassigned Node without
     // selecting anything
     newNodeInTree(nodeTree);
   }
@@ -1151,7 +1152,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
       return;
     }
-    DefaultMutableTreeNode selectedNode = 
+    DefaultMutableTreeNode selectedNode =
       (DefaultMutableTreeNode)path.getLastPathComponent();
     String nodeName = null;
     while (true) {
@@ -1199,12 +1200,12 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
     Enumeration nodes = root.breadthFirstEnumeration();
     while (nodes.hasMoreElements()) {
-      DefaultMutableTreeNode node = 
+      DefaultMutableTreeNode node =
  	(DefaultMutableTreeNode)nodes.nextElement();
         if (node.getUserObject() instanceof ConsoleTreeObject) {
           ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
           if ((cto.isNode() || cto.isAgent()) &&
-              cto.getName().equalsIgnoreCase(name)) 
+              cto.getName().equalsIgnoreCase(name))
             return false;
         }
     }
@@ -1223,7 +1224,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
   private void deleteNodesFromTree(JTree tree) {
     TreePath[] selectedPaths = tree.getSelectionPaths();
-    for (int i = 0; i < selectedPaths.length; i++) 
+    for (int i = 0; i < selectedPaths.length; i++)
       deleteNodeFromTree(tree, selectedPaths[i]);
     //    setRunButtonEnabled();
   }
@@ -1232,9 +1233,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Delete node component from either host or unassigned nodes tree.
    */
   private void deleteNodeFromTree(JTree tree, TreePath path) {
-    DefaultMutableTreeNode selectedNode = 
+    DefaultMutableTreeNode selectedNode =
       (DefaultMutableTreeNode)path.getLastPathComponent();
-    ConsoleTreeObject nodeCTO = 
+    ConsoleTreeObject nodeCTO =
       (ConsoleTreeObject)selectedNode.getUserObject();
     NodeComponent nodeComponent = (NodeComponent)nodeCTO.getComponent();
     BaseComponent parentComponent =
@@ -1242,11 +1243,11 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     // get any agents that are descendants of the node being deleted
     // and return them to the unassigned agents tree
     DefaultTreeModel agentModel = (DefaultTreeModel)agentTree.getModel();
-    DefaultMutableTreeNode root = 
+    DefaultMutableTreeNode root =
       (DefaultMutableTreeNode)agentModel.getRoot();
     int n = selectedNode.getChildCount();
     for (int i = 0; i < n; i++) {
-      DefaultMutableTreeNode node = 
+      DefaultMutableTreeNode node =
 	(DefaultMutableTreeNode)selectedNode.getChildAt(0);
       ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
       if (cto.isAgent()) {
@@ -1295,7 +1296,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
   private void treeNodesInsertedInHostTree(TreePath path, Object[] children) {
     BaseComponent component = getComponentFromPath(path);
-    if (component instanceof NodeComponent) 
+    if (component instanceof NodeComponent)
       addAgentsToNode((NodeComponent)component, children);
     else if (component instanceof HostComponent)
       addNodesToHost((HostComponent)component, children);
@@ -1304,16 +1305,16 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * Update agent component to node component mapping
    * when agents are dragged onto the Unassigned Nodes tree.
-   * Remove node component from host component 
+   * Remove node component from host component
    * when nodes are dragged onto the Unassigned Nodes tree.
    */
   private void treeNodesInsertedInNodeTree(TreePath path, Object[] children) {
     BaseComponent component = getComponentFromPath(path);
     if (component == null) { // add nodes to Unassigned Nodes tree
       for (int i = 0; i < children.length; i++) {
-        NodeComponent nodeComponent = 
+        NodeComponent nodeComponent =
           (NodeComponent)getComponentFromTreeNode((DefaultMutableTreeNode)children[i]);
-        HostComponent previousParent = 
+        HostComponent previousParent =
           (HostComponent)nodeToHost.get(nodeComponent);
         if (previousParent != null)
           previousParent.removeNode(nodeComponent);
@@ -1330,10 +1331,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
   private void treeNodesInsertedInAgentTree(Object[] children) {
     for (int i = 0; i < children.length; i++) {
-      AgentComponent agent = 
+      AgentComponent agent =
         (AgentComponent)getComponentFromTreeNode((DefaultMutableTreeNode)children[i]);
       NodeComponent previousParent = (NodeComponent)agentToNode.get(agent);
-      if (previousParent != null) 
+      if (previousParent != null)
         previousParent.removeAgent(agent);
       agentToNode.remove(agent); // update mapping
     }
@@ -1346,9 +1347,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private void addNodesToHost(HostComponent hostComponent,
                               Object[] newChildren) {
     for (int i = 0; i < newChildren.length; i++) {
-      NodeComponent nodeComponent = 
+      NodeComponent nodeComponent =
         (NodeComponent)getComponentFromTreeNode((DefaultMutableTreeNode)newChildren[i]);
-      HostComponent previousParent = 
+      HostComponent previousParent =
         (HostComponent)nodeToHost.get(nodeComponent);
       // ignore moving nodes within the same host
       if (previousParent != null && previousParent.equals(hostComponent))
@@ -1367,15 +1368,15 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private void addAgentsToNode(NodeComponent nodeComponent,
 			       Object[] newChildren) {
     for (int i = 0; i < newChildren.length; i++) {
-      AgentComponent agentComponent = 
+      AgentComponent agentComponent =
         (AgentComponent)getComponentFromTreeNode((DefaultMutableTreeNode)newChildren[i]);
-      NodeComponent previousParent = 
+      NodeComponent previousParent =
         (NodeComponent)agentToNode.get(agentComponent);
       // ignore moving agents within the same node
       if (previousParent != null && previousParent.equals(nodeComponent))
         return;
       nodeComponent.addAgent(agentComponent);
-      if (previousParent != null) 
+      if (previousParent != null)
         previousParent.removeAgent(agentComponent);
       agentToNode.put(agentComponent, nodeComponent); // update mapping
     }
@@ -1397,7 +1398,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 //      Object source = e.getSource();
 //      // handle user editing the name of a host in the host tree
 //      if (hostTree.getModel().equals(source)) {
-//        DefaultMutableTreeNode parent = 
+//        DefaultMutableTreeNode parent =
 //          (DefaultMutableTreeNode)e.getTreePath().getLastPathComponent();
 //        if (((ConsoleTreeObject)parent.getUserObject()).isRoot()) {
 //          experimentBuilder.setModified(true);
@@ -1405,11 +1406,11 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 //        }
 //      }
 //      // handle user editing the name of a node in the host or node tree
-//      if (hostTree.getModel().equals(source) || 
+//      if (hostTree.getModel().equals(source) ||
 //          nodeTree.getModel().equals(source)) {
 //        Object[] children = e.getChildren();
 //        if (children != null && children.length > 0) {
-//          DefaultMutableTreeNode firstChild = 
+//          DefaultMutableTreeNode firstChild =
 //            (DefaultMutableTreeNode)children[0];
 //          ConsoleTreeObject changedNode =
 //            (ConsoleTreeObject)firstChild.getUserObject();
@@ -1427,7 +1428,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
   public void treeStructureChanged(TreeModelEvent e) {
   }
-  
+
   /**
    * Listener for deleting items from host tree.
    * Called when user selects "Delete" from popup menu.
@@ -1437,18 +1438,18 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   public void deleteHost() {
     TreePath[] selectedPaths = hostTree.getSelectionPaths();
     for (int i = 0; i < selectedPaths.length; i++) {
-      DefaultMutableTreeNode selectedNode = 
+      DefaultMutableTreeNode selectedNode =
         (DefaultMutableTreeNode)selectedPaths[i].getLastPathComponent();
-      ConsoleTreeObject hostCTO = 
+      ConsoleTreeObject hostCTO =
         (ConsoleTreeObject)selectedNode.getUserObject();
       // get any nodes that are descendants of the host being deleted
       // and return them to the unassigned nodes tree
       DefaultTreeModel nodeModel = (DefaultTreeModel)nodeTree.getModel();
-      DefaultMutableTreeNode root = 
+      DefaultMutableTreeNode root =
         (DefaultMutableTreeNode)nodeModel.getRoot();
       int n = selectedNode.getChildCount();
       for (int j = 0; j < n; j++) {
-        DefaultMutableTreeNode node = 
+        DefaultMutableTreeNode node =
           (DefaultMutableTreeNode)selectedNode.getChildAt(0);
         ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
         if (cto.isNode()) {
@@ -1478,7 +1479,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   /**
-   * Helper method to set value of property of selected nodes 
+   * Helper method to set value of property of selected nodes
    * in specified tree.
    */
   private void setPropertyOfNode(JTree tree, String name, String value) {
@@ -1492,7 +1493,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
   }
 
-    
+
   public void setHostDescription() {
     String description = getPropertyOfNode(hostTree, "Description");
     String s = (String)JOptionPane.showInputDialog(this,
@@ -1500,7 +1501,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
                                            "Host Description",
                                            JOptionPane.QUESTION_MESSAGE,
                                            null, null, description);
-    if (s != null && s.trim().length() != 0) 
+    if (s != null && s.trim().length() != 0)
       setPropertyOfNode(hostTree, "Description", s.trim());
   }
 
@@ -1512,7 +1513,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
                                            "Host Machine Type",
                                            JOptionPane.QUESTION_MESSAGE,
                                            null, machineTypes, machineType);
-    if (s != null && s.trim().length() != 0) 
+    if (s != null && s.trim().length() != 0)
       setPropertyOfNode(hostTree, "MachineType", s.trim());
   }
 
@@ -1523,7 +1524,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
                                            "Host Location",
                                            JOptionPane.QUESTION_MESSAGE,
                                            null, null, location);
-    if (s != null && s.trim().length() != 0) 
+    if (s != null && s.trim().length() != 0)
       setPropertyOfNode(hostTree, "Location", s.trim());
   }
 
@@ -1587,7 +1588,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       return;
     }
     nodes = getSelectedNodesInNodeTree();
-    if (nodes != null) 
+    if (nodes != null)
       setNodeCommandLine(nodes[0]);
   }
 
@@ -1611,7 +1612,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
   public void setGlobalCommandLine() {
     experiment.updateNameServerHostName(); // Be sure this is up-do-date
-    NodeArgumentDialog dialog = 
+    NodeArgumentDialog dialog =
       new NodeArgumentDialog("Global Command Line",
                              experiment.getDefaultNodeArguments(), false, true);
     dialog.setVisible(true);
@@ -1624,7 +1625,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Select a node in the host tree.
    */
   public void selectNodeInHostTree(String nodeName) {
-    selectNodeInTree(hostTree, HostComponent.class, nodeName);
+    selectNodeInTree(hostTree, NodeComponent.class, nodeName);
   }
 
   private boolean selectNodeInTree(JTree tree, Class componentClass,
@@ -1634,18 +1635,18 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     TreePath path = null;
     Enumeration nodes = root.breadthFirstEnumeration();
     while (nodes.hasMoreElements()) {
-      DefaultMutableTreeNode node = 
+      DefaultMutableTreeNode node =
  	(DefaultMutableTreeNode)nodes.nextElement();
         if (node.getUserObject() instanceof ConsoleTreeObject) {
           ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
           if (cto.getComponent() != null &&
-              cto.getComponent().getClass().equals(componentClass) &&
+              componentClass.isInstance(cto.getComponent()) &&
               cto.getName().equalsIgnoreCase(name)) {
             path = new TreePath(node.getPath());
             tree.setSelectionPath(path);
             tree.scrollPathToVisible(path);
             return true;
-          } 
+          }
         }
     }
     return false;
@@ -1698,7 +1699,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       names.add(components[i].getShortName());
     Collections.sort(names);
     String[] choices = (String[])names.toArray(new String[names.size()]);
-    Object answer = 
+    Object answer =
       JOptionPane.showInputDialog(this, "Select " + label,
                                   "Find " + label,
                                   JOptionPane.QUESTION_MESSAGE,

@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -21,6 +21,7 @@
 
 package org.cougaar.tools.csmart.ui.analyzer;
 
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.MetricComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
@@ -74,7 +75,6 @@ public class Analyzer extends JFrame implements ActionListener {
   /**
    * Display a csv file in excel.
    * @param csmart Handle to CSMART
-   * @param experiment Handle to the Experiment
    */
   public Analyzer(CSMART csmart) {
     this(csmart, null);
@@ -105,8 +105,8 @@ public class Analyzer extends JFrame implements ActionListener {
       mItem.addActionListener(this);
       helpMenu.add(mItem);
     }
-    
-    getRootPane().setJMenuBar(menuBar); 
+
+    getRootPane().setJMenuBar(menuBar);
     menuBar.add(fileMenu);
     menuBar.add(helpMenu);
 
@@ -159,7 +159,7 @@ public class Analyzer extends JFrame implements ActionListener {
       resultsDir = experiment.getResultDirectory();
     if (resultsDir == null) {
         JOptionPane.showMessageDialog(this, "No Results (Metrics) Directory for Experiment",
-  				    "No Results Directory", 
+  				    "No Results Directory",
   				    JOptionPane.WARNING_MESSAGE);
         return;
     }
@@ -170,7 +170,7 @@ public class Analyzer extends JFrame implements ActionListener {
       fileChooser.setFileFilter(new MyFileFilter(experiment));
     }
     int result = fileChooser.showOpenDialog(this);
-    if (result != JFileChooser.APPROVE_OPTION) 
+    if (result != JFileChooser.APPROVE_OPTION)
       return;
     if (fileChooser.getSelectedFile().isDirectory())
       return; // user specified a directory, not a file
@@ -179,9 +179,9 @@ public class Analyzer extends JFrame implements ActionListener {
 
     String filePathName = fileChooser.getSelectedFile().getPath();
 
-    String excel = 
+    String excel =
       Parameters.findParameter("org.cougaar.tools.csmart.excelpath");
-    
+
     if (excel == null || excel.equals("")) {
       if(log.isErrorEnabled()) {
         log.error("Excel location not specified");
@@ -191,7 +191,7 @@ public class Analyzer extends JFrame implements ActionListener {
 
     // FIXME: Bug 1886: test that the file pointed to by the excel
     // parameter exists here. Perhaps prompt for one?
-    
+
     String[] cmds = { excel, "" };
     if(log.isInfoEnabled()) {
       log.info("Launching excel from: " + cmds[0]);

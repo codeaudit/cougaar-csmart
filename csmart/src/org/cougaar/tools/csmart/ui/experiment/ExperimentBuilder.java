@@ -1,12 +1,12 @@
-/* 
+/*
  * <copyright>
  *  Copyright 2001-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -24,6 +24,7 @@ package org.cougaar.tools.csmart.ui.experiment;
 import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.community.CommunityPanel;
@@ -224,7 +225,7 @@ public class ExperimentBuilder extends JFrame {
     // Set up Configure menu
     configureMenu = new JMenu(CONFIGURE_MENU);
     configureMenu.setToolTipText("Configure hosts and nodes");
-    newHostMenuItem = 
+    newHostMenuItem =
       new JMenuItem(HostConfigurationBuilder.NEW_HOST_MENU_ITEM);
     newHostMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -233,7 +234,7 @@ public class ExperimentBuilder extends JFrame {
       });
     newHostMenuItem.setToolTipText("Add new Host to experiment");
     configureMenu.add(newHostMenuItem);
-    describeHostMenuItem = 
+    describeHostMenuItem =
       new JMenuItem(HostConfigurationBuilder.DESCRIBE_HOST_MENU_ITEM);
     describeHostMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -242,7 +243,7 @@ public class ExperimentBuilder extends JFrame {
       });
     describeHostMenuItem.setToolTipText("Add user only host description");
     configureMenu.add(describeHostMenuItem);
-    hostTypeMenuItem = 
+    hostTypeMenuItem =
       new JMenuItem(HostConfigurationBuilder.HOST_TYPE_MENU_ITEM);
     hostTypeMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -251,7 +252,7 @@ public class ExperimentBuilder extends JFrame {
       });
     hostTypeMenuItem.setToolTipText("Specify the host platform for user information");
     configureMenu.add(hostTypeMenuItem);
-    hostLocationMenuItem = 
+    hostLocationMenuItem =
       new JMenuItem(HostConfigurationBuilder.HOST_LOCATION_MENU_ITEM);
     hostLocationMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -260,7 +261,7 @@ public class ExperimentBuilder extends JFrame {
       });
     hostLocationMenuItem.setToolTipText("Specify host location for user use");
     configureMenu.add(hostLocationMenuItem);
-    deleteHostMenuItem = 
+    deleteHostMenuItem =
       new JMenuItem(HostConfigurationBuilder.DELETE_HOST_MENU_ITEM);
     deleteHostMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -272,7 +273,7 @@ public class ExperimentBuilder extends JFrame {
 
     configureMenu.addSeparator();
 
-    globalCommandLineMenuItem = 
+    globalCommandLineMenuItem =
       new JMenuItem(HostConfigurationBuilder.GLOBAL_COMMAND_LINE_MENU_ITEM);
     globalCommandLineMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -282,7 +283,7 @@ public class ExperimentBuilder extends JFrame {
     globalCommandLineMenuItem.setToolTipText("Specify Command Line Arguments common to all Nodes");
     configureMenu.add(globalCommandLineMenuItem);
 
-    commandLineMenuItem = 
+    commandLineMenuItem =
       new JMenuItem(HostConfigurationBuilder.NODE_COMMAND_LINE_MENU_ITEM);
     commandLineMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -313,7 +314,7 @@ public class ExperimentBuilder extends JFrame {
       });
     newNodeMenu.add(newAssignedNodeMenuItem);
     configureMenu.add(newNodeMenu);
-    describeNodeMenuItem = 
+    describeNodeMenuItem =
       new JMenuItem(HostConfigurationBuilder.DESCRIBE_NODE_MENU_ITEM);
     describeNodeMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -322,7 +323,7 @@ public class ExperimentBuilder extends JFrame {
       });
     describeNodeMenuItem.setToolTipText("Add user readable description of the Node");
     configureMenu.add(describeNodeMenuItem);
-    deleteNodeMenuItem = 
+    deleteNodeMenuItem =
       new JMenuItem(HostConfigurationBuilder.DELETE_NODE_MENU_ITEM);
     deleteNodeMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -344,7 +345,7 @@ public class ExperimentBuilder extends JFrame {
     configureMenu.addMenuListener(myMenuListener);
 
     // End of Configure menu setup. Now File Menu
-    
+
     JMenu fileMenu = new JMenu(FILE_MENU);
     fileMenu.setToolTipText("Save, export configuration, or quit");
 
@@ -373,7 +374,7 @@ public class ExperimentBuilder extends JFrame {
     for (int i = 0; i < findActions.length; i++) {
       findMenu.add(findActions[i]);
     }
-    
+
     // Finally the Help menu
     JMenu helpMenu = new JMenu(HELP_MENU);
     helpMenu.setToolTipText("Display documentation.");
@@ -406,7 +407,7 @@ public class ExperimentBuilder extends JFrame {
     });
     propertyBuilder = new UnboundPropertyBuilder(experiment, this);
     tabbedPane.add("Properties", propertyBuilder);
-    hcb = 
+    hcb =
       new HostConfigurationBuilder(experiment, this);
     tabbedPane.add("Configurations", hcb);
 
@@ -479,7 +480,7 @@ public class ExperimentBuilder extends JFrame {
   }
 
   /**
-   * If the experiment was from the database and 
+   * If the experiment was from the database and
    * components were either added or removed or
    * the host-node-agent mapping was modified, then save it,
    * otherwise display a dialog indicating that no modifications were made.
@@ -506,11 +507,11 @@ public class ExperimentBuilder extends JFrame {
     // reuse existing name
     String name = null;
     if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
-      name = 
+      name =
         CSMART.getOrganizer().getUniqueExperimentName(experiment.getShortName(), true);
       if (name == null)
         return;
-      experiment.setName(name);      
+      experiment.setName(name);
     }
     saveHelper(false);
     // reset title on the window here?
@@ -533,7 +534,7 @@ public class ExperimentBuilder extends JFrame {
   }
 
   /**
-   * Save the experiment.  
+   * Save the experiment.
    * Save if the user said to do so anyhow,
    * or if it was modified.
    */
@@ -545,7 +546,7 @@ public class ExperimentBuilder extends JFrame {
       try {
 	new Thread("Save") {
 	  public void run() {
-	    experiment.saveToDb(saveToDbConflictHandler);
+	    experiment.save(saveToDbConflictHandler);
 	    GUIUtils.timeConsumingTaskEnd(csmart);
 	    GUIUtils.timeConsumingTaskEnd(c);
 	  }
@@ -590,23 +591,23 @@ public class ExperimentBuilder extends JFrame {
         if (!hcbEnabled)
           return;
         // configure menu items for host configuration builder
-        // enable "global command line" command 
+        // enable "global command line" command
         // if either root, or any set of hosts or nodes is selected
-        DefaultMutableTreeNode[] hostsInHostTree = 
+        DefaultMutableTreeNode[] hostsInHostTree =
           hcb.getSelectedHostsInHostTree();
-        DefaultMutableTreeNode[] nodesInHostTree = 
+        DefaultMutableTreeNode[] nodesInHostTree =
           hcb.getSelectedNodesInHostTree();
-        DefaultMutableTreeNode[] nodesInNodeTree = 
+        DefaultMutableTreeNode[] nodesInNodeTree =
           hcb.getSelectedNodesInNodeTree();
         boolean isNodeRootSelected = hcb.isNodeTreeRootSelected();
         // enable "new node" command if unassigned nodes root is selected
         // or one host is selected in the host tree
         newUnassignedNodeMenuItem.setEnabled(isNodeRootSelected);
         if (hostsInHostTree != null && hostsInHostTree.length == 1) {
-          newAssignedNodeMenuItem.setText("On " + 
+          newAssignedNodeMenuItem.setText("On " +
                                           hostsInHostTree[0].toString());
           newAssignedNodeMenuItem.setEnabled(true);
-        } else 
+        } else
           newAssignedNodeMenuItem.setEnabled(false);
         newNodeMenu.setEnabled(newAssignedNodeMenuItem.isEnabled() ||
                                newUnassignedNodeMenuItem.isEnabled());

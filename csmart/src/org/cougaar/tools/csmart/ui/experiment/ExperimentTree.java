@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -22,6 +22,7 @@
 package org.cougaar.tools.csmart.ui.experiment;
 
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
@@ -94,8 +95,7 @@ public class ExperimentTree extends DNDTree {
     }
   }
 
-  public ExperimentTree(DefaultTreeModel model,
-			Experiment experiment) {
+  public ExperimentTree(DefaultTreeModel model, Experiment experiment) {
     super(model);
     this.model = model;
     this.experiment = experiment;
@@ -182,7 +182,7 @@ public class ExperimentTree extends DNDTree {
   /**
    * Add a dropped element to the tree.
    * Rejects duplicates.  An object is a duplicate
-   * if it has the same name as a child of the target, 
+   * if it has the same name as a child of the target,
    * and is not from the same tree.
    * @param t the transferable object to drop
    * @param target where to drop the object
@@ -217,9 +217,9 @@ public class ExperimentTree extends DNDTree {
     }
     if (data instanceof DMTNArray) {
       DMTNArray nodes = (DMTNArray) data;
-      for (int i = 0; i < nodes.nodes.length; i++) 
+      for (int i = 0; i < nodes.nodes.length; i++)
         addElement(nodes.nodes[i].getUserObject(), flavor, target, before);
-    } else 
+    } else
       addElement(data, flavor, target, before);
     return action;
   }
@@ -255,16 +255,16 @@ public class ExperimentTree extends DNDTree {
         return; // no place to put the new element
     }
     // make sure we don't add a recipe to the societies or vice versa
-    if (target.getUserObject().equals(SOCIETIES) && 
+    if (target.getUserObject().equals(SOCIETIES) &&
         userData instanceof RecipeComponent) {
       return;
     }
-    if (target.getUserObject().equals(RECIPES) && 
+    if (target.getUserObject().equals(RECIPES) &&
         userData instanceof SocietyComponent) {
       return;
     }
     // don't add more than one society
-    if (target.getUserObject().equals(SOCIETIES) && 
+    if (target.getUserObject().equals(SOCIETIES) &&
         target.getChildCount() > 0) {
       return;
     }
@@ -283,16 +283,16 @@ public class ExperimentTree extends DNDTree {
         String newName = mcc.getShortName();
         int ix = target.getChildCount();
         for (int i = 0; i < ix; i++) {
-          DefaultMutableTreeNode childNode = 
+          DefaultMutableTreeNode childNode =
             (DefaultMutableTreeNode)target.getChildAt(i);
           Object targetChildData = childNode.getUserObject();
           if (targetChildData instanceof ModifiableComponent &&
-              ((ModifiableComponent)targetChildData).getShortName().equals(newName)) 
+              ((ModifiableComponent)targetChildData).getShortName().equals(newName))
             return;
         }
       }
     }
-    DefaultMutableTreeNode node = 
+    DefaultMutableTreeNode node =
       new DefaultMutableTreeNode(userData, false);
     int ix = target.getChildCount();
     if (before != null) {
@@ -316,7 +316,7 @@ public class ExperimentTree extends DNDTree {
 	  // Need to remove recipe and inform user.
 	  javax.swing.SwingUtilities.invokeLater(new Runnable() {
 	      public void run() {
-		JOptionPane.showMessageDialog(null, 
+		JOptionPane.showMessageDialog(null,
 					      "Experiment cannot contain two agents with the same name: " + dupName,
 					      "Recipe Add Aborted!",
 					      JOptionPane.ERROR_MESSAGE);

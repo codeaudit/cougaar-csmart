@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -71,7 +71,7 @@ public class NamedFrame extends Observable {
     //    METRICS,
     //    TOPOLOGY
   };
-  private static int index[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }; // used for common titles
+  private static int index[] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1}; // used for common titles
 
   // If CSMART dies do not store the info on what windows are open
   private static transient NamedFrame singleton = null;
@@ -115,8 +115,8 @@ public class NamedFrame extends Observable {
     // number commonly used titles
     for (int i = 0; i < titles.length; i++) {
       if (title.equals(titles[i])) {
-	title = titles[i] + " " + index[i]++;
-	break;
+        title = titles[i] + " " + index[i]++;
+        break;
       }
     }
     String baseTitle = title;
@@ -138,9 +138,9 @@ public class NamedFrame extends Observable {
   public JFrame getToolFrame(String toolTitle) {
     Enumeration titles = titleToFrame.keys();
     while (titles.hasMoreElements()) {
-      String title = (String)titles.nextElement();
-      if (title.startsWith(toolTitle)) 
-	return (JFrame)titleToFrame.get(title);
+      String title = (String) titles.nextElement();
+      if (title.startsWith(toolTitle))
+        return (JFrame) titleToFrame.get(title);
     }
     return null;
   }
@@ -149,22 +149,22 @@ public class NamedFrame extends Observable {
     String newTitle = toolTitle + ": " + societyName;
     Enumeration titles = titleToFrame.keys();
     while (titles.hasMoreElements()) {
-      String title = (String)titles.nextElement();
+      String title = (String) titles.nextElement();
       if (title.startsWith(toolTitle)) {
-	JFrame frame = (JFrame)titleToFrame.get(title);
-	if (title.equals(newTitle))
-	  return frame;
-	else {
-	  // rename frame by removing and adding
-	  titleToFrame.remove(title);
-	  titleToFrame.put(newTitle, frame);
-	  frame.setTitle(newTitle);
-	  setChanged();
-	  notifyObservers(new Event(frame, newTitle, Event.CHANGED, title));
-	  return frame;
-	}
+        JFrame frame = (JFrame) titleToFrame.get(title);
+        if (title.equals(newTitle))
+          return frame;
+        else {
+          // rename frame by removing and adding
+          titleToFrame.remove(title);
+          titleToFrame.put(newTitle, frame);
+          frame.setTitle(newTitle);
+          setChanged();
+          notifyObservers(new Event(frame, newTitle, Event.CHANGED, title));
+          return frame;
+        }
       }
-    }  
+    }
     return null;
   }
 
@@ -181,7 +181,7 @@ public class NamedFrame extends Observable {
 
     if (titleToFrame.remove(s) == null) {
       if (log.isInfoEnabled()) {
-	log.info("Couldnt find frame " + s);
+        log.info("Couldnt find frame " + s);
       }
       // Nothing changed so dont tell people it did
     } else {
@@ -206,6 +206,7 @@ public class NamedFrame extends Observable {
     public String title;
     public int eventType;
     public String prevTitle;
+
     public Event(JFrame frame, String title, int eventType, String prevTitle) {
       this.frame = frame;
       this.title = title;
@@ -215,8 +216,7 @@ public class NamedFrame extends Observable {
   }
 
   private void readObject(ObjectInputStream ois)
-    throws IOException, ClassNotFoundException
-  {
+      throws IOException, ClassNotFoundException {
     ois.defaultReadObject();
     createLogger();
     titleToFrame = new Hashtable();

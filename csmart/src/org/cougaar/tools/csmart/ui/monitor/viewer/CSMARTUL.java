@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -23,9 +23,10 @@ package org.cougaar.tools.csmart.ui.monitor.viewer;
 
 import org.cougaar.bootstrap.Bootstrapper;
 import org.cougaar.core.util.UID;
-import org.cougaar.tools.csmart.experiment.Experiment;
+import org.cougaar.tools.csmart.experiment.DBExperiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
+import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
@@ -148,9 +149,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   /**
    * Start the society monitor.  If there is a single running
-   * experiment in CSMART, then monitor it; otherwise, ask the 
+   * experiment in CSMART, then monitor it; otherwise, ask the
    * user which host and port to contact to monitor an experiment.
-   */ 
+   */
 
   public CSMARTUL(CSMART csmart, Experiment experimentToMonitor) {
     this.csmart = csmart;
@@ -165,7 +166,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     // TODO: better handling of properties
     CSMARTGraph.setProperties(properties);
     JMenuBar menuBar = new JMenuBar();
-    getRootPane().setJMenuBar(menuBar); 
+    getRootPane().setJMenuBar(menuBar);
     JMenu fileMenu = new JMenu(FILE_MENU);
     fileMenu.setToolTipText("Create new views, open saved views, or exit.");
     JMenu newMenu = new JMenu(NEW_MENU_ITEM);
@@ -204,7 +205,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
 
     menuBar.add(fileMenu);
-    
+
     // if running stand alone, then add a windows menu
     // to keep track of windows created by this tool
     // TODO: replicated NamedWindow capability at this level, but under csmart
@@ -403,7 +404,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       if (f != null) {
 	f.toFront();
 	f.setState(Frame.NORMAL);
-      }  
+      }
     }
   }
 
@@ -416,9 +417,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private void closeSubWindows() {
     for (int i = 0; i < myWindows.size(); i++) {
       Window w = (Window)myWindows.get(i);
-      WindowListener[] wls = 
+      WindowListener[] wls =
 	(WindowListener[])(w.getListeners(WindowListener.class));
-      for (int j = 0; j < wls.length; j++) 
+      for (int j = 0; j < wls.length; j++)
 	wls[j].windowClosing(new WindowEvent(w, WindowEvent.WINDOW_CLOSED));
     }
     myWindows.clear();
@@ -427,9 +428,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private void openMetrics() {
     File file = readFile("mtr", "Metrics files");
     if (file != null && file.canRead()) {
-      Window w = 
+      Window w =
 	(Window)new CSMARTMetricsFrame(NamedFrame.METRICS, file);
-      myWindows.add(w);      
+      myWindows.add(w);
     } else {
       if (log.isInfoEnabled())
 	log.info("openMetrics: no (readable) file selected");
@@ -452,7 +453,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       if (graph == null)
 	return;
       String fileName = file.getName();
-      String graphType = 
+      String graphType =
 	(String)graph.getAttributeValue(CSMARTGraph.GRAPH_TYPE);
       if (graphType.equals(CSMARTGraph.GRAPH_TYPE_XML))
         new XMLFrame("Test", graph);
@@ -477,7 +478,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     String[] filters = { extension };
     ExtensionFileFilter filter =
       new ExtensionFileFilter(filters, description);
-    JFileChooser jfc = 
+    JFileChooser jfc =
       new JFileChooser(System.getProperty("org.cougaar.install.path"));
     jfc.addChoosableFileFilter(filter);
     if (jfc.showOpenDialog(this) == JFileChooser.CANCEL_OPTION)
@@ -492,7 +493,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 				    extension + "'.");
       return null;
     }
-    
+
     return file;
   }
 
@@ -513,7 +514,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private static void getAgentURL() {
     //    Logger log = CSMART.createLogger(CSMARTUL.class.getName());
 
-    if (csmart != null) 
+    if (csmart != null)
       setExperimentToMonitor();
     else
       setURLToMonitor();
@@ -536,7 +537,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     panel.add(new JLabel("Experiment to Monitor:"));
     panel.add(cb);
     panel.add(new JLabel("Select last item to enter custom URL"));
-    int result = 
+    int result =
       JOptionPane.showConfirmDialog(null, panel, "Experiment To Monitor",
                                     JOptionPane.OK_CANCEL_OPTION,
                                     JOptionPane.PLAIN_MESSAGE);
@@ -560,12 +561,12 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     // FIXME: Use secure mode if necessary here!
     // How do I decide?
     // Must I use a different port as well?
-    JTextField tf = 
+    JTextField tf =
       new JTextField(ClientServletUtil.makeURL("localhost", agentPort));
     JPanel panel = new JPanel();
     panel.add(new JLabel("Agent URL:"));
     panel.add(tf);
-    int result = 
+    int result =
       JOptionPane.showOptionDialog(null, panel, "Agent URL",
 				   JOptionPane.OK_CANCEL_OPTION,
 				   JOptionPane.PLAIN_MESSAGE,
@@ -580,12 +581,12 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       agentProtocol = agentURL.substring(0, agentURL.indexOf("://"));
       startIndex = agentURL.indexOf("://") + 3;
     }
-   
+
 
     endIndex = agentURL.indexOf(":", startIndex);
     if (endIndex != -1)
       agentHost = agentURL.substring(startIndex, endIndex);
-    else 
+    else
       agentHost = agentURL.substring(startIndex);
 
     startIndex = endIndex;
@@ -662,16 +663,16 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       // FIXME: Ignore NodeAgents here?
     } catch (Exception e) {
        JOptionPane.showMessageDialog(null,
-                                     "Failed to contact: " + 
+                                     "Failed to contact: " +
                                      agentURL + "/" +
                                      ClientServletUtil.AGENT_PROVIDER_SERVLET +
                                      "; no information to graph.");
     }
 
-    // if failed to contact agents, reset agentURL to null, 
+    // if failed to contact agents, reset agentURL to null,
     // so user is queried again
-    if (agentURLs == null) 
-      agentURL = null; 
+    if (agentURLs == null)
+      agentURL = null;
     return agentURLs;
   }
 
@@ -699,7 +700,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
                                                   ArrayList parameterNames,
                                                   ArrayList parameterValues,
                                                   int limit) {
-    return getObjectsFromServletWorker(agentURLs, servletName, 
+    return getObjectsFromServletWorker(agentURLs, servletName,
                                        parameterNames, parameterValues, limit);
   }
 
@@ -713,7 +714,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
     ServletResult servletResult =
       ClientServletUtil.getCollectionFromAgents(agentURLs, servletName,
-                                                parameterNames, 
+                                                parameterNames,
                                                 parameterValues, limit);
     int n = servletResult.getNumberOfResponses();
     StringBuffer buf = new StringBuffer(100);
@@ -750,7 +751,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       JOptionPane.showMessageDialog(null,
            "Exceeded limit, producing a trimmed graph from " + nAgents +
                                       " agents.");
-    else if (buf.length() != 0) 
+    else if (buf.length() != 0)
       JOptionPane.showMessageDialog(null, buf.toString());
     return objectsFromServlet;
   }
@@ -763,9 +764,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     if (communityToAgents != null)
       return; // only do this once
     // get agent and community names
-    Collection orgAssets = 
+    Collection orgAssets =
       getObjectsFromServlet(ClientServletUtil.COMMUNITY_SERVLET);
-    if (orgAssets == null) 
+    if (orgAssets == null)
       return;
     if (orgAssets.size() == 0)
       JOptionPane.showMessageDialog(null,
@@ -787,15 +788,15 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       Object o = i.next();
       if (!(o instanceof PropertyTree)) {
         if(log.isWarnEnabled()) {
-          log.warn("CSMARTUL: expected PropertyTree, got: " + 
+          log.warn("CSMARTUL: expected PropertyTree, got: " +
                    o.getClass());
         }
 	continue;
       }
       PropertyTree properties = (PropertyTree)o;
-      String agentName = 
+      String agentName =
 	(String)properties.get(PropertyNames.AGENT_NAME);
-      String communityName = 
+      String communityName =
 	(String)properties.get(PropertyNames.AGENT_COMMUNITY_NAME);
       agentToCommunity.put(agentName, communityName);
       Vector agents = (Vector)communityToAgents.get(communityName);
@@ -820,9 +821,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   private void makeCommunityGraph() {
     // get agent and community names
-    Collection objectsFromServlet = 
+    Collection objectsFromServlet =
       getObjectsFromServlet(ClientServletUtil.COMMUNITY_SERVLET);
-    if (objectsFromServlet == null) 
+    if (objectsFromServlet == null)
       return;
     int n = objectsFromServlet.size();
     if (n == 0)
@@ -834,7 +835,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     Hashtable nameToNodeObject = new Hashtable(n);
     for (Iterator i = objectsFromServlet.iterator(); i.hasNext(); ) {
       PropertyTree properties = (PropertyTree)i.next();
-      String communityName = 
+      String communityName =
 	(String)properties.get(PropertyNames.AGENT_COMMUNITY_NAME);
       if (nameToNodeObject.get(communityName) == null) { // filter duplicates
 	nameToNodeObject.put(communityName, new ULCommunityNode(properties));
@@ -849,7 +850,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       node.addMembers((Vector)communityToAgents.get(name));
     }
     if (nodeObjects.size() != 0) {
-      Window w = 
+      Window w =
 	(Window)new ULCommunityFrame(NamedFrame.COMMUNITY,
 				     new CSMARTGraph(nodeObjects,
 						     CSMARTGraph.GRAPH_TYPE_COMMUNITY));
@@ -863,7 +864,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   private void makePlanGraph() {
     // get community<->agent mapping
-    getCommunities(); 
+    getCommunities();
 
     if (communityToAgents == null || communityToAgents.size() == 0)
       return; // nothing to graph
@@ -880,7 +881,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
     Vector agentURLs = new Vector();
     for (int i = 0; i < agentsToContact.size(); i++) {
-      String URL = 
+      String URL =
     	(String)agentToURL.get((String)agentsToContact.elementAt(i));
       if (URL != null)
     	agentURLs.add(URL);
@@ -896,7 +897,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       parameterNames.add(PropertyNames.PLAN_OBJECTS_TO_IGNORE);
       parameterValues.add(ignoreTypes);
     }
-    Collection objectsFromServlets = 
+    Collection objectsFromServlets =
       getObjectsFromServletWorker(agentURLs, servletId,
                                   parameterNames, parameterValues, limit);
 
@@ -944,9 +945,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     }
     // only create popup if objects were found
     if (nodeObjects.size() != 0) {
-      Window w = 
-	(Window)new ULPlanFrame(NamedFrame.PLAN, 
-				new CSMARTGraph(nodeObjects, 
+      Window w =
+	(Window)new ULPlanFrame(NamedFrame.PLAN,
+				new CSMARTGraph(nodeObjects,
 						CSMARTGraph.GRAPH_TYPE_PLAN),
 				filter);
       myWindows.add(w);
@@ -968,10 +969,10 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     //    UID=<default to empty>
     //    AgentName=<default to empty>
     //    Limit=<default to 200, add "no-limit" checkbox + grey-out>
-    //    Trace=<option box of "children"/"parents", default to children> 
+    //    Trace=<option box of "children"/"parents", default to children>
 
     // awkward popups for now:
-    UID = JOptionPane.showInputDialog("Plan Object UID: "); 
+    UID = JOptionPane.showInputDialog("Plan Object UID: ");
     if (UID == null) {
       return;
     }
@@ -1014,7 +1015,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   public static void makeThreadGraph(String UID, String agentName,
 				     boolean isDown, int limit) {
     getCommunities();
-    List objectsFromServlet = ThreadUtils.getFullThread(agentMap, isDown, limit, 
+    List objectsFromServlet = ThreadUtils.getFullThread(agentMap, isDown, limit,
 						    agentName, UID);
     if (objectsFromServlet == null || objectsFromServlet.size() == 0) {
       JOptionPane.showMessageDialog(null,
@@ -1054,9 +1055,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       nodeObjects.add(new ULPlanNode(properties, community));
     }
     if (nodeObjects.size() != 0) {
-      Window w = 
-	(Window)new ULPlanFrame(NamedFrame.PLAN, 
-				new CSMARTGraph(nodeObjects, 
+      Window w =
+	(Window)new ULPlanFrame(NamedFrame.PLAN,
+				new CSMARTGraph(nodeObjects,
 						CSMARTGraph.GRAPH_TYPE_PLAN),
 				new ULPlanFilter(communityToAgents));
       myWindows.add(w);
@@ -1094,7 +1095,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private void makeSocietyGraph() {
-    Collection objectsFromServlet = 
+    Collection objectsFromServlet =
       getObjectsFromServlet(ClientServletUtil.AGENT_INFO_SERVLET);
     if (objectsFromServlet == null)
       return;
@@ -1104,7 +1105,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       Object o = i.next();
       if (!(o instanceof PropertyTree)) {
         if(log.isWarnEnabled()) {
-          log.warn("CSMARTUL: expected PropertyTree, got: " + 
+          log.warn("CSMARTUL: expected PropertyTree, got: " +
                              o.getClass());
         }
 	continue;
@@ -1116,8 +1117,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       String UID = node.getUID();
       nameToUID.put(name, UID);
     }
-    // organizations refer to each other by name, 
-    // hence after creating nodes for all organizations, 
+    // organizations refer to each other by name,
+    // hence after creating nodes for all organizations,
     // we create links from the name-to-UID mapping
     for (int i = 0; i < nodeObjects.size(); i++) {
       ULSocietyNode node = (ULSocietyNode)nodeObjects.elementAt(i);
@@ -1131,7 +1132,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 	  String relatedToUID = (String)nameToUID.get(relatedToName);
           // this creates duplicate links but grappa catches them; see csmartgraph
 	  if (relatedToUID != null) {
-            if (relationship.endsWith("Customer") || 
+            if (relationship.endsWith("Customer") ||
                 relationship.endsWith("Superior"))
               node.addIncomingLink(relatedToUID);
             else if (!relationship.endsWith("Provider") &&
@@ -1156,7 +1157,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   }
 
   public void makeMetricsGraph() {
-    Collection objectsFromServlet = 
+    Collection objectsFromServlet =
       getObjectsFromServlet(ClientServletUtil.METRICS_SERVLET);
     if (objectsFromServlet == null)
       return;
@@ -1172,11 +1173,11 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       Object obj = iter.next();
       if(obj instanceof String) {
 	names.add(obj);
-      }	else if (obj instanceof Integer[]) { 
+      }	else if (obj instanceof Integer[]) {
 	data.add(obj);
       }
     }
-      Window w = 
+      Window w =
 	(Window)new CSMARTMetricsFrame(NamedFrame.METRICS, names, data);
       myWindows.add(w);
   }
@@ -1203,7 +1204,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     }
   }
 
-  public static void launch(String[] args) {    
+  public static void launch(String[] args) {
     new CSMARTUL(null, null);
   }
 
