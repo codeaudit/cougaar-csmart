@@ -1,5 +1,93 @@
 CSMART Release Notes
 
+Release 9.4:
+- Domain database has been updated. To get the latest data, reload the
+  mysqldump.9.2.txt file (found in dbmsq/data/mysql), using a command like:
+mysql -f -u [user] -p[pw] [db] < mysqldump.9.2.txt
+- Configuration database schema has changed. To support the UL
+  Adaptive Logistics thread, the configuration CFW database now supports
+  multiple plugins of the same class in the same Agent. If you plan to
+  run the Adaptive Logistics society, you must re-load your
+  configuration database, following the instructions in InstallAndTest.html
+- New Communities editing window. This window allows users to easily
+  create new Communities with arbitrary attributes, and add Agents (or
+  Communities) to those Communities, with arbitrary attributes. All
+  community data is stored on a per-experiment basis, and loaded at
+  run-time using the standard DBInitializer. To use this editor,
+  select the "Communities" tab in the Experiment Builder.
+- CSMART code changes to correctly handle various database IDs. (bug 1465)
+- Bug 1466: But configuration database url in the version info CSMART prints.
+- Force Agent Insertion recipes to always include an Org Asset. This
+  way, all non-Node Agents appear in the CSMART Society Monitor. (bug
+  1446)
+- Lay out the Host Configuration Builder horizontally, for ease of use
+  (bug 1447).
+- Bug 1441: Restrict recipe arguments that need to be positive to a
+  positive range.
+- Bug 1474: Allow Nodes and Hosts to have same name, but not Nodes and Agents.
+- Bug 1446: Include the JDBC URL for the CSMART DB in the version
+  information printed on error and at startup. And re-enable it on the
+  Help menu under Show Version.
+- Bug 1414: Dis-allow creating new recipes, etc inside experiments, etc.
+- Avoid NPE when doing drag-n-drop (bug 1456).
+- Bug 1464: Ensure that components added via a recipe with a specific
+  name to not conflict with components of same class in the database.
+- Fix an unreported bug causing NPEs on reading a non-Default
+  workspace file.
+- Bug 1377: Sort Servlet recipe property names to help avoid
+  errors. Properties now have an invisible flag, used to avoid
+  displaying invisible properties usually. Add a method however to get
+  at invisible properties. This allows copying, saving, & restoring
+  sometimes-invisible properties to work, avoiding the errors.
+- Bug 950: Make exported Recipe IDs include recipe name, to ensure
+  uniqueness
+- Bug 1401: Change a primary key to a unique key, to avoid possible
+  corrupted MySQL index files.
+- Small changes to ComponentBase to avoid society / experiments
+  becoming modified during a copy.
+
+Release 9.2.2.1:
+This point release along the 9.2.2 branch includes some last minute
+additions for the June Ultra*Log integration. Changes include:
+- Bug 1457: Allow Nodes to contain non-Agents when dumping HNA maps to XML.
+- Bug 1428: The drop-down list of recipe queries when configuring a
+  recipe now refreshes to add new queries added to your
+  recipeQueries.q file while running CSMART. Note that deleted /
+  renamed queries will still appear, as they are still available for
+  use by recipes during this run of CSMART.
+- Bug 1363: Allow user to export an Experiment's Host-Node-Agent
+  mapping to an XML file, from a menu item in the Experiment
+  Builder. This file can then be imported, also from the File menu, on
+  later new experiments (even after reconstructing the CSMART DB). All
+  Agents that exist in the experiment on import, will be assigned to
+  Nodes with the names in the XML file (creating new Nodes if
+  necessary), and similarly Nodes will be assigned to Hosts (creating
+  new Hosts if necessary). Note that only the Host-Node-Agent mapping
+  is exported, not the -D arguments or the components in any of the Nodes.
+- Bug 950 (partial fix): Exported recipes now include the recipe name
+  as part of the ID, to ensure uniqueness.
+- Bug 1351: Read components in insertion order from DB, to ensure
+  specified load order is preserved.
+- Bug 1408: Remove setPreferredSize call so scroll bars in Properties
+  pane of Experiment Builder work again.
+- Bug 1387: Allow ComponentTypeProperty to accept any component type
+  (aka insertion point). This fixes the bug that prevented
+  SpecificInsertionRecipes from adding components at non-standard
+  insertion points.
+- Bug 1396: Disable the un-used ImpactsLP in the CSMARTDomain. By
+  disabling it, we avoid using the CSMART logger un-necessarily.
+- Bug 1364 (partial fix): Add Dos version of recipe export script
+  (export-recipe.bat)
+- Bug 1399: Node Info window, when you click on the agent name, now
+  shows you _all_ sub-components, not just Plugins.
+- Bug 1377: Copying / saving AgentInsertionRecipe without an OrgAsset
+  or ServletGroupInsertionRecipe with an extra servlet added caused
+  NPEs. This fix avoids those errors, without however solving the
+  underlying problem. You are currently forbidden from creating an
+  Agent through an AgentInsertionRecipe without including an
+  OrgAsset. You are similarly forbidden from adding non-standard
+  servlets using the ServletGroupInsertion Recipe.
+
 Release 9.2.2:
 - Solved bug 1304 & related 1279. Note that now that this is solved, we 
   have reverted the default for doWorkspace! By default, the workspace
