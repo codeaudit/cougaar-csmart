@@ -1070,15 +1070,9 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
     // create the node
     try {
-      // TODO: obtain most recent version of server and see if this works
-      //      HostServesClient hsc = communitySupport.createHost(hostName, port);
-      //      NodeServesClient nsc = hsc.createNode(nodeName, properties, args, 
-      //					    listener, filter, configWriter);
-       NodeServesClient nsc = 
-  	communitySupport.createNode(hostName, port, regName,
- 				    nodeName, properties,
- 				    args, listener, filter, 
- 				    configWriter);
+      HostServesClient hsc = communitySupport.getHost(hostName, port);
+      NodeServesClient nsc = hsc.createNode(nodeName, properties, args, 
+      					    listener, filter, configWriter);
       if (nsc != null)
 	runningNodes.put(nodeComponent, nsc);
     } catch (Exception e) {
