@@ -1,0 +1,52 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <title>Adaptivity Support Recipe</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h1>Adaptivity Support Recipe</h1>
+Adaptivity Support Recipes allow users to insert Adaptivity Support
+in any society at the set of places indicated by a database query. 
+A Adaptivity Support Recipe contains the following parameters:
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#TARGET_QUERY">Target Component Selection Query</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#SERVLET">AEViewerServlet</a></td>
+	  <td>Boolean</td>
+	  <td>Indicate if the insertion should also include the AEViewServlet.</td>
+	</tr>
+    </table>  
+    <br><br>
+
+Creating a Adaptivity Support is an easy way to quickly add Adaptivity to
+your agents.
+<br><br>
+
+<a name="TARGET_QUERY"><h3>Target Component Selection Query</h3></a>
+Specifies a defined query in a .q file.  This query is used to
+selected the exact components that should be modified with this
+recipe. Base, sample queries are in
+CIP/configs/common/PopulateDb.q<br>
+Users should create their own queries in a file called
+"recipeQueries.q", which should be placed someplace on the Cougaar
+Config Path: in the directory from which you run CSMART, or in
+CIP/configs/common, for example.<br>
+<em>IMPORTANT: All recipes query names must begin with "recipeQuery"!</em><br>
+
+<a name="SERVLET"><h3>AEViewerServlet</h3></a>
+The AEViewerServlet is used for debugging the Adaptivity Support within an
+Agent.
+
+</body>
+</html>
