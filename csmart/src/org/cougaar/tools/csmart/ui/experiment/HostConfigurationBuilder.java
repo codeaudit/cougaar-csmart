@@ -63,6 +63,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   DNDTree nodeTree;
   DNDTree agentTree;
   String nameServerHostName = "";
+  private boolean modified = false; // set true if any mapping changes
   //  private Hashtable hostToNodes = new Hashtable();
   //  private Hashtable nodeToAgents = new Hashtable();
   // menu items for popup menu in hostTree
@@ -720,6 +721,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       treeNodesInsertedInHostTree(e);
     else if (nodeTree.getModel().equals(source))
       treeNodesInsertedInNodeTree(e);
+    modified = true;
   }
 
   /**
@@ -823,6 +825,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       treeNodesRemovedFromHostTree(e);
     else if (nodeTree.getModel().equals(source))
       treeNodesRemovedFromNodeTree(e);
+    modified = true;
   }
 
 
@@ -897,6 +900,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     Object source = e.getSource();
     if (hostTree.getModel().equals(source))
       setNameServerHostName();
+    modified = true;
   }
 
   /**
@@ -1195,11 +1199,11 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 //    }
 
   public void save() {
-//      Hashtable newHostToNodes = new Hashtable();
-//      Hashtable newNodeToAgents = new Hashtable();
-//      setHostNodeAgentMapping(newHostToNodes, newNodeToAgents);
-//      Utils.updateHostNodeAgentMapping(hostToNodes, nodeToAgents,
-//                                       newHostToNodes, newNodeToAgents);
+    if (!modified) {
+      JOptionPane.showMessageDialog(this, "No modifications were made.");
+      return;
+    }
+    modified = false;
     String name = "";
     Hashtable experimentNamesHT = ExperimentDB.getExperimentNames();
     Set experimentNameSet = experimentNamesHT.keySet();
@@ -1224,6 +1228,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       if (answer != JOptionPane.OK_OPTION) return;
     }
     //    experiment.saveToDatabase(name);
+    // experiment.setCloned(true);
   }
 
   private DefaultTreeModel createModel(final Experiment experiment, DefaultMutableTreeNode node, boolean askKids) {

@@ -1405,20 +1405,21 @@ public class Organizer extends JScrollPane {
    * Add assembly ids for trial.
    */
 
-  private ArrayList getTrialAssemblyIds(String trialId) {
+  private ArrayList getTrialAssemblyIds(String experimentId, String trialId) {
     ArrayList assemblyIds = new ArrayList();
     try {
       Connection conn = DBUtils.getConnection();
       Map substitutions = new HashMap();
+      substitutions.put(":expt_id", experimentId);
       substitutions.put(":trial_id", trialId);
       Statement stmt = conn.createStatement();
       String query = DBUtils.getQuery(EXPT_ASSEM_QUERY, substitutions);
+      System.out.println("getTrialAssemblyIds: " + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         String asmid = rs.getString(1);
         System.out.println("Assembly ID: " + asmid);	  
         assemblyIds.add(asmid);
-        break;
       }
       rs.close();
       stmt.close();
@@ -1462,6 +1463,7 @@ public class Organizer extends JScrollPane {
       substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
       String query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
+      System.out.println("Nodes query: " + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         nodes.add(rs.getString(1));
@@ -1531,7 +1533,7 @@ public class Organizer extends JScrollPane {
                                    String trialId) {
     System.out.println("Creating society");
     // get assembly ids for trial
-    ArrayList assemblyIds = getTrialAssemblyIds(trialId);
+    ArrayList assemblyIds = getTrialAssemblyIds(experimentId, trialId);
     String assemblyMatch = getAssemblyMatch(assemblyIds);
     // get nodes for trial
     ArrayList nodes = getNodes(trialId, assemblyMatch);
