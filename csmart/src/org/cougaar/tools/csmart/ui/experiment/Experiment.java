@@ -91,6 +91,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void addMetric(Metric metric) {
     if (!metrics.contains(metric)) metrics.add(metric);
   }
+  
+  public void addComponent(ModifiableConfigurableComponent comp) {
+    if (comp instanceof SocietyComponent)
+      addSocietyComponent((SocietyComponent)comp);
+    else if (comp instanceof ImpactComponent)
+      addImpact((ImpactComponent)comp);
+//      else if (comp instanceof MetricComponent)
+//        addMetric((MetricComponent)comp);
+    // handle others!!!
+  }
   public void removeSociety(SocietyComponent sc) {
     societies.remove(sc);
   }
@@ -105,6 +115,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       removeSociety((SocietyComponent)comp);
     if (comp instanceof ImpactComponent)
       removeImpact((ImpactComponent)comp);
+//      if (comp instanceof MetricComponent)
+//        removeMetric((MetricComponent)comp);
+    // Must handle random components!!!
   }
   public int getSocietyComponentCount() {
     return societies.size();
@@ -112,6 +125,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public int getComponentCount() {
     //    return societies.size() + impacts.size() + metrics.size();
     return societies.size() + impacts.size();
+    // this is a kludge
   }
   public int getImpactCount() {
     return impacts.size();
@@ -130,6 +144,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
   
   public ModifiableConfigurableComponent getComponent(int i) {
+    // What a hack!!!
     if (i < getSocietyComponentCount())
       return (ModifiableConfigurableComponent)getSocietyComponent(i);
     else if (i < getImpactCount() + getSocietyComponentCount())
@@ -252,17 +267,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public Experiment copy(Organizer organizer, Object context) {
     String uniqueName = organizer.generateExperimentName(getExperimentName());
     Experiment experimentCopy = new Experiment(uniqueName);
-    for (int i = 0; i < societies.size(); i++) {
-      SocietyComponent sc = (SocietyComponent)societies.get(i);
-      SocietyComponent copiedSC = organizer.copySociety(sc, context);
-      experimentCopy.addSocietyComponent(copiedSC);
+    for (int i = 0; i < getComponentCount(); i++) {
+      ModifiableConfigurableComponent sc = getComponent(i);
+      ModifiableConfigurableComponent copiedSC = organizer.copyComponent(sc, context);
+      experimentCopy.addComponent(copiedSC);
     }
-    // copy impacts & metrics the same
-    for (int i = 0; i < impacts.size(); i++) {
-      ImpactComponent impact = (ImpactComponent)impacts.get(i);
-      ImpactComponent copiedImpact = organizer.copyImpact(impact, context);
-      experimentCopy.addImpact(copiedImpact);
-    }
+    
+    // Remove this once Metric stuff is fixed!!!!
     for (int i = 0; i < metrics.size(); i++) {
       Metric metric = (Metric)metrics.get(i);
       Metric copiedMetric = organizer.copyMetric(metric, context);
@@ -278,7 +289,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * notified when an experiment is terminated.
    * @param listener the listener
    */
-
   public void addExperimentListener(ExperimentListener listener) {
     if (listeners == null) 
       listeners = new ArrayList();
@@ -297,7 +307,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * Get the URL of the file that describes this experiment.
    * @param helpFile the URL of the file
    */
-
   public URL getDescription() {
     return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
   }
@@ -306,7 +315,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * The following code to support hosts and nodes was removed from
    * ScalabilityXSociety.
    */
-
   public void initProperties() {
   }
 
@@ -371,7 +379,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   /**
    * Get the agents from the societies in the experiment.
    */
-
   private List getAgentsInSocieties() {
     List agents = new ArrayList();
     for (int i = 0; i < societies.size(); i++) {
@@ -426,7 +433,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * it no longer contains some agents, those agents are also
    * removed from the nodes.
    */
-
   public NodeComponent[] getNodes() {
     List agents = getAgentsList();
     for (Iterator i = nodes.iterator(); i.hasNext(); ) {
@@ -538,10 +544,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     List experimentValues = new ArrayList();
     int n = getComponentCount();
     for (int i = 0; i < n; i++) {
-      ModifiableConfigurableComponent society = getComponent(i);
-      List propertyNames = society.getPropertyNamesList();
+      ModifiableConfigurableComponent comp = getComponent(i);
+      List propertyNames = comp.getPropertyNamesList();
       for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
-	Property property = society.getProperty((CompositeName)j.next());
+	Property property = comp.getProperty((CompositeName)j.next());
 	List values = property.getExperimentValues();
 	if (values != null && values.size() != 0) {
 	  properties.add(property);
@@ -632,10 +638,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     ArrayList experimentValueCounts = new ArrayList(100);
     int n = getComponentCount();
     for (int i = 0; i < n; i++) {
-      ModifiableConfigurableComponent society = getComponent(i);
-      Iterator names = society.getPropertyNames();
+      ModifiableConfigurableComponent comp = getComponent(i);
+      Iterator names = comp.getPropertyNames();
       while (names.hasNext()) {
-	Property property = society.getProperty((CompositeName)names.next());
+	Property property = comp.getProperty((CompositeName)names.next());
 	List values = property.getExperimentValues();
 	if (values != null)
 	  experimentValueCounts.add(new Integer(values.size()));
