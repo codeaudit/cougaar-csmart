@@ -1799,6 +1799,7 @@ public class CSMARTConsole extends JFrame {
   /**
    * Display dialog to set size of screen buffer for node output.
    * Return user's response.  An value of -1 means display all.
+   * A value of -2 means that the user cancelled the dialog.
    */
 
   static int displayViewSizeDialog(int currentViewSize) {
@@ -1830,7 +1831,7 @@ public class CSMARTConsole extends JFrame {
                                     JOptionPane.QUESTION_MESSAGE,
                                     null);
     if (result == JOptionPane.CANCEL_OPTION)
-      return currentViewSize; // no change
+      return -2; // user cancelled
     int newViewSize = 0;
     if (allButton.isSelected()) {
       newViewSize = -1;
@@ -1848,7 +1849,10 @@ public class CSMARTConsole extends JFrame {
   }
 
   private void viewSizeMenuItem_actionPerformed() {
-    viewSize = displayViewSizeDialog(viewSize);
+    int newViewSize = displayViewSizeDialog(viewSize);
+    if (newViewSize == -2)
+      return; // ignore, user cancelled
+    viewSize = newViewSize;
     Enumeration textPanes = nodePanes.elements();
     while (textPanes.hasMoreElements()) {
       JTextPane textPane = (JTextPane)textPanes.nextElement();

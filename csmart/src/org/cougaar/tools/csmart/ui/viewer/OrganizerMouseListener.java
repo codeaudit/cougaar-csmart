@@ -73,6 +73,7 @@ public class OrganizerMouseListener extends MouseAdapter {
     };
 
     Object[] experimentMenuItems = {
+      organizer.buildCommunityAction,
       organizer.buildExperimentAction,
       organizer.runExperimentAction,
       organizer.duplicateAction,

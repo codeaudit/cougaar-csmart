@@ -53,6 +53,7 @@ public class ActionUtil {
   public static String DELETE_RECIPE_FROM_DATABASE_ACTION = 
     "Delete Recipe From Database";
   public static String SAVE_ACTION = "Save";
+  public static String BUILD_COMMUNITY_ACTION = "Build Community";
   
   /**
    * Enable/disable an action, based on the object selected.
@@ -153,6 +154,8 @@ public class ActionUtil {
   private static boolean isActionAllowedOnExperiment(String action,
                                                      Organizer organizer,
                                                      Experiment experiment) {
+    if (action.equals(BUILD_COMMUNITY_ACTION))
+      return true;
     if (action.equals(DUPLICATE_ACTION))
       return true;
     if (action.equals(SAVE_ACTION) && experiment.isModified())

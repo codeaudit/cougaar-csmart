@@ -723,7 +723,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
     ConsoleStyledDocument doc = 
       (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
     int viewSize = CSMARTConsole.displayViewSizeDialog(doc.getBufferSize());
-    doc.setBufferSize(viewSize);
+    if (viewSize != -2)
+      doc.setBufferSize(viewSize);
   }
 
   /**
