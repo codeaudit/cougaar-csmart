@@ -1461,6 +1461,32 @@
     ht)
   )
 
+
+(define (getOrganizationsInGroup experiment_id group_id)
+  (let
+      ((hs (HashSet.)))
+    (define (do-entry rs)
+      (cond
+       ((.next rs)
+	(.add hs (.getString rs "ORG_ID"))
+	(do-entry rs)
+	)))
+    (with-query-jdbc (string-append 
+		      "select om.ORG_ID from " 
+		      asb-prefix "EXPT_EXPERIMENT exp,"
+		      cfw-prefix "CFW_GROUP_MEMBER gm,"
+		      cfw-prefix "CFW_ORG_GROUP_ORG_MEMBER om"
+		      "   where exp.expt_id="(sqlQuote experiment_id)
+		      "   and exp.cfw_group_id =gm.cfw_group_id"
+		      "   and om.cfw_id=gm.cfw_id"
+		      "   and om.org_group_id="(sqlQuote group_id))
+		     do-entry
+		     )
+;;    (.put ht "Third Infantry Division" "Third Infantry Division")
+;;    (.put ht "2nd Brigade" "2nd Brigade")
+    hs)
+  )
+
 ;;describe v4_expt_trial_thread
 ;; Name				 Null?	  Type
 ;; ------------------------------- -------- ----

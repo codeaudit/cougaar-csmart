@@ -22,6 +22,7 @@
 package org.cougaar.tools.csmart.ui.console;
 
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.Set;
 import java.io.File;
 import java.io.FileReader;
@@ -55,140 +56,144 @@ public class ExperimentDB {
     }
 
 
-  /*
-   * Returns hashtable where the keys are human readable names (Strings) and
-   * the values are experiment ids (Strings).
-   */
+    /*
+     * Returns hashtable where the keys are human readable names (Strings) and
+     * the values are experiment ids (Strings).
+     */
 
-  public static Hashtable getExperimentNames() {
-      return (Hashtable)call("getExperimentNames");
-  }
+    public static Hashtable getExperimentNames() {
+	return (Hashtable)call("getExperimentNames");
+    }
 
-  /*
-   * Returns hashtable where the keys are human readable names (Strings) and
-   * the values are trial ids (Strings).
-   */
+    /*
+     * Returns hashtable where the keys are human readable names (Strings) and
+     * the values are trial ids (Strings).
+     */
 
-  public static Hashtable getTrialNames(String experimentId) {
-      return (Hashtable)call("getTrialNames",experimentId);
-  }
-
-
-  public static String getTrialId(String experimentId) {
-      return (String)call("getUniqueTrialName",experimentId); 
-  }
-
-  /**
-   * Add the named trial to the experiment.  The name supplied is
-   * the human readable name; the value returned is the new trial id or null.
-   */
-
-  public static String addTrialName(String experimentId, String name) {
-      return (String)call("addTrialName",experimentId,name);
-  }
-
-  public static String addAssembly(String experimentId,
-                                   String assemblyId,
-                                   String trialId) {
-      return (String)call("addAssembly",experimentId,assemblyId,trialId);
-  }
-
-  /*
-   * Returns society templates for an experiment.
-   * Returns hashtable where human readable names are keys
-   * and ids are values.
-   */
-
-  public static String getSocietyTemplateForExperiment(String experimentId) {
-    return (String)call("getSocietyTemplateForExperiment",experimentId);
-  }
-
-  /*
-   * Create a new experiment based on the given societyTemplate
-   *  returns the experimentId
-   */
-
-  public static String createExperiment(String experimentName,String societyTemplate) {
-    return (String)call("createExperiment",experimentName,societyTemplate);
-  }
-
-  public static String addNodeAssignments(Hashtable nodeTable ,String assemblyName) {
-    return (String)call("addNodeAssignments",nodeTable,assemblyName);
-  }
-
-  public static String addMachineAssignments(Hashtable machineTable ,String assemblyName) {
-    return (String)call("addMachineAssignments",machineTable,assemblyName);
-  }
+    public static Hashtable getTrialNames(String experimentId) {
+	return (Hashtable)call("getTrialNames",experimentId);
+    }
 
 
-  /**
-   * Returns hashtable of all society templates in database.
-   */
+    public static String getTrialId(String experimentId) {
+	return (String)call("getUniqueTrialName",experimentId); 
+    }
 
-  public static Hashtable getSocietyTemplates() {
-      return (Hashtable)call("getSocietyTemplates");
+    /**
+     * Add the named trial to the experiment.  The name supplied is
+     * the human readable name; the value returned is the new trial id or null.
+     */
 
-  }
+    public static String addTrialName(String experimentId, String name) {
+	return (String)call("addTrialName",experimentId,name);
+    }
 
-  public static Hashtable getOrganizationGroups(String experimentId) {
-      return (Hashtable)call("getOrganizationGroups",experimentId);
-  }
+    public static String addAssembly(String experimentId,
+				     String assemblyId,
+				     String trialId) {
+	return (String)call("addAssembly",experimentId,assemblyId,trialId);
+    }
 
-  public static boolean isULThreadSelected(String trialId, String threadName) {
-      Boolean b =(Boolean)call("isULThreadSelected", trialId,threadName);
-      return b.booleanValue();
-  }
+    /*
+     * Returns society templates for an experiment.
+     * Returns hashtable where human readable names are keys
+     * and ids are values.
+     */
 
-  public static void setULThreadSelected(String trialId, String threadName, 
-                                  boolean selected) {
-      if(selected){
-	  call("setULThreadSelected",trialId,threadName);
-      } else {
-	  call("setULThreadNotSelected",trialId,threadName);
-      }
+    public static String getSocietyTemplateForExperiment(String experimentId) {
+	return (String)call("getSocietyTemplateForExperiment",experimentId);
+    }
 
-      System.out.println("Thread: " + threadName +
-                       " selected: " + selected);
-  }
+    /*
+     * Create a new experiment based on the given societyTemplate
+     *  returns the experimentId
+     */
 
-  public static boolean isGroupSelected(String trialId, String groupName) {
-      Boolean b =(Boolean)call("isGroupSelected", trialId,groupName);
-      return b.booleanValue();
-  }
+    public static String createExperiment(String experimentName,String societyTemplate) {
+	return (String)call("createExperiment",experimentName,societyTemplate);
+    }
 
-  public static void setGroupSelected(String trialId, String groupName, 
-                               boolean selected) {
-    System.out.println("Group: " + groupName +
-                       " selected: " + selected);
-  }
+    public static String addNodeAssignments(Hashtable nodeTable ,String assemblyName) {
+	return (String)call("addNodeAssignments",nodeTable,assemblyName);
+    }
+
+    public static String addMachineAssignments(Hashtable machineTable ,String assemblyName) {
+	return (String)call("addMachineAssignments",machineTable,assemblyName);
+    }
+
+
+    /**
+     * Returns hashtable of all society templates in database.
+     */
+
+    public static Hashtable getSocietyTemplates() {
+	return (Hashtable)call("getSocietyTemplates");
+
+    }
+
+    public static Hashtable getOrganizationGroups(String experimentId) {
+	return (Hashtable)call("getOrganizationGroups",experimentId);
+    }
+
+    public static HashSet getOrganizationsInGroup(String experimentId, String groupId){
+	return (HashSet)call("getOrganizationsInGroup",experimentId,groupId);
+    }
+
+    public static boolean isULThreadSelected(String trialId, String threadName) {
+	Boolean b =(Boolean)call("isULThreadSelected", trialId,threadName);
+	return b.booleanValue();
+    }
+
+    public static void setULThreadSelected(String trialId, String threadName, 
+					   boolean selected) {
+	if(selected){
+	    call("setULThreadSelected",trialId,threadName);
+	} else {
+	    call("setULThreadNotSelected",trialId,threadName);
+	}
+
+	System.out.println("Thread: " + threadName +
+			   " selected: " + selected);
+    }
+
+    public static boolean isGroupSelected(String trialId, String groupName) {
+	Boolean b =(Boolean)call("isGroupSelected", trialId,groupName);
+	return b.booleanValue();
+    }
+
+    public static void setGroupSelected(String trialId, String groupName, 
+					boolean selected) {
+	System.out.println("Group: " + groupName +
+			   " selected: " + selected);
+    }
     
-  public static int getMultiplier(String trialId, String groupName) {
-    return 1;
-  }
+    public static int getMultiplier(String trialId, String groupName) {
+	return 1;
+    }
 
-  public static void setMultiplier(String trialId, String groupName, 
-                                   int value) {
-    System.out.println("Group: " + groupName + " value: " + value);
-  }
+    public static void setMultiplier(String trialId, String groupName, 
+				     int value) {
+	System.out.println("Group: " + groupName + " value: " + value);
+    }
 
-  /**
-   * Clone specified experimentId with the specified human readable name.
-   * Returns new experiment id.
-   * Creates new trial id for new experiment id.
-   */
+    /**
+     * Clone specified experimentId with the specified human readable name.
+     * Returns new experiment id.
+     * Creates new trial id for new experiment id.
+     */
 
-  public static String cloneExperiment(String experimentId, String newName) {
-      return (String)call("cloneExperiment",experimentId, newName);
-  }
+    public static String cloneExperiment(String experimentId, String newName) {
+	return (String)call("cloneExperiment",experimentId, newName);
+    }
 
-  /**
-   * This MUST be called after calling setGroups, setThreads, or setMultipliers
-   * to actually update the experiment.
-   */
+    /**
+     * This MUST be called after calling setGroups, setThreads, or setMultipliers
+     * to actually update the experiment.
+     */
 
-  public static void updateCMTAssembly(String experimentId) {
-      (String)call("updateCMTAssembly",experimentId);
-  }
+    public static void updateCMTAssembly(String experimentId) {
+	call("updateCMTAssembly",experimentId);
+    }
 
     /**Silk utility functions
      **/
