@@ -163,9 +163,14 @@ public class ComponentDataXML extends XMLUtils {
     }
 
     element.setAttribute(NAME_ATTR, data.getName());
-    ComponentData[] children = data.getChildren();
-    for(int i=0; i < children.length; i++) {
-      addChildToDocument(doc, children[i], element);
+    // For now, don't walk below Agent.  This will
+    // need to change when we implement ability to
+    // Generate a complete XML file from ComponentData.
+    if(!data.getType().equals(ComponentData.AGENT)) {
+      ComponentData[] children = data.getChildren();
+      for(int i=0; i < children.length; i++) {
+        addChildToDocument(doc, children[i], element);
+      }
     }
     parent.appendChild(element);
   }
