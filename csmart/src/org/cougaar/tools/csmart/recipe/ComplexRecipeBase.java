@@ -22,6 +22,7 @@ package org.cougaar.tools.csmart.recipe;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -45,9 +46,11 @@ import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.ComponentBase;
 import org.cougaar.tools.csmart.society.PluginBase;
@@ -233,7 +236,28 @@ public class ComplexRecipeBase extends RecipeBase
     propAssemblyId = addProperty(ASSEMBLY_PROP, ((assemblyId != null) ? assemblyId : ""));
     propAssemblyId.setVisible(false);
 
-    if (initName != getRecipeName()) {
+    // Bug 2021: Must listen to changes to the Agent name
+    // property and reject name same as the recipe name. Note we could
+    // have done this in AgentDBComponent, but that would be uglier.
+    // loop over children and look for the property
+    for (int i = 0; i < getChildCount(); i++) {
+      Property propName = ((ConfigurableComponent)getChild(i)).getProperty(AgentDBComponent.PROP_AGENT_NAME);
+      if (propName != null) {
+	propName.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
+	  public void propertyValueChanged(PropertyEvent e) {
+	    String newVal = (String)e.getProperty().getValue();
+	    if (getRecipeName().equals(newVal)) {
+	      if (log.isDebugEnabled())
+		log.debug("Complex recipe: agent name changing to recipe name (" + newVal + ")! Will reject.");
+	      String old = (String)e.getPreviousValue();
+	      e.getProperty().setValue(old);
+	    }
+	  }
+	});
+      }
+    }
+
+    if (! getRecipeName().equals(initName)) {
       // A recipe copy - mark it as modified
       oldAssemblyId = assemblyId;
       assemblyId = "";
@@ -304,6 +328,9 @@ public class ComplexRecipeBase extends RecipeBase
     String assemblyMatch = DBUtils.getListMatch(assemblyId);
     if (assemblyMatch != null) {
       substitutions.put(":assemblyMatch", assemblyMatch);
+      // Warning: Since we use the recipe name here, 
+      // we'll only find the components in the DB if the DB lists them
+      // with parent of the this recipe name
       substitutions.put(":agent_name", initName);
     }
 
@@ -401,6 +428,7 @@ public class ComplexRecipeBase extends RecipeBase
               if(log.isDebugEnabled()) {
                 log.debug("Looking for: " + component + " out of " + getChildCount() + " children");
               }
+	      boolean foundit = false;
               for(int i=0; i < getChildCount(); i++) {
                 ConfigurableComponent cc = (ConfigurableComponent)getChild(i);
 //                 ComponentBase cc = (ComponentBase)getChild(i);
@@ -417,6 +445,7 @@ public class ComplexRecipeBase extends RecipeBase
                       log.debug("Found Desired Parent: " + tag + " adding parameter");
                     }
                     cc.addProperty(PROP_TARGET_COMPONENT_QUERY, rs.getString(2));
+		    foundit = true;
 		    break;
                   }
                 } else {
@@ -426,6 +455,10 @@ public class ComplexRecipeBase extends RecipeBase
 		  }
 		}
               } // loop over children
+	      if (! foundit) {
+		if (log.isWarnEnabled())
+		  log.warn("Unable to find component " + component + " to set override target query on: " + propName);
+	      }
             } else if (! propName.equals(ASSEMBLY_PROP)) {
 	      // Non child component property
 	      Property prop = getProperty(propName);
@@ -521,9 +554,10 @@ public class ComplexRecipeBase extends RecipeBase
     // Now let all components add their data.
     addComponentData(cd);
 
-    modifyComponentData(cd);
+    return modifyComponentData(cd);
 
-    return addComponentData(cd);
+    // FIXME: Why are we calling addComponentData twice?
+    //    return addComponentData(cd);
   }
 
   /**
@@ -575,6 +609,8 @@ public class ComplexRecipeBase extends RecipeBase
     parent.addChild((ComponentData)ac);
   }
 
+  private static Class[] constructorParams = {ComponentData.class, String.class};
+
   /**
    * Copies a ComplexRecipe
    *
@@ -585,10 +621,22 @@ public class ComplexRecipeBase extends RecipeBase
     
     ComponentData cdata = getComponentData();
     cdata.setName(name);
-    RecipeComponent component = new ComplexRecipeBase(cdata, null);
+    RecipeComponent component = null;
+    // Use reflection so we create a recipe of the correct type.
+    try {
+      Constructor cons = this.getClass().getConstructor(constructorParams);
+      component = (RecipeComponent)cons.newInstance(new Object[] {cdata, null});
+    } catch (Exception e) {
+      if (log.isErrorEnabled())
+	log.error("copy: Failed to create a copy of class " + this.getClass(), e);
+      return null;
+    }
     component.initProperties();
 
-    ((ComplexRecipeBase)component).modified = this.modified;
+    // FIXME: Next line means the copy initialized from CDATA will not be
+    // marked modified if this one was not, when in fact it is not
+    // entirely in the DB, right?
+    //    ((ComplexRecipeBase)component).modified = this.modified;
     ((ComplexRecipeBase)component).oldAssemblyId = getAssemblyId();
 
     return component;
