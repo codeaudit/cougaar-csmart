@@ -200,7 +200,7 @@ public final class SocietyFinder {
       File url = new File(aURL);
       //System.out.println("Trying "+url+": ");
       InputStream is = url.toURL().openStream();
-      System.err.println("Found it. File " + aURL + " is " + url);
+      //System.err.println("Found it. File " + aURL + " is " + url);
       if (is != null)
 	return is;
     }
@@ -208,7 +208,7 @@ public final class SocietyFinder {
 //       System.out.println("Got exception" + mue);
 //     }
     catch (IOException ioe) {
-      System.out.println("Got exception" + ioe);
+      //System.out.println("Got exception" + ioe);
     }
 
     // Then try all the things on the ConfigPath
@@ -219,17 +219,17 @@ public final class SocietyFinder {
         //System.out.println("Trying "+url+": ");
         InputStream is = url.openStream();
         if (is == null) continue; // Don't return null
-        System.out.println("Found it. File " + aURL + " is " + url);
+        //System.out.println("Found it. File " + aURL + " is " + url);
         return is;
       }
       catch (MalformedURLException mue) {
         //if (verbose) { System.err.println(); }
-	System.out.println("Got exception" + mue);
+	//System.out.println("Got exception" + mue);
         continue;
       }
       catch (IOException ioe) {
         //if (verbose) { System.err.println(); }
-	System.out.println("Got exception" + ioe);
+	//System.out.println("Got exception" + ioe);
         continue;
       }
     }
