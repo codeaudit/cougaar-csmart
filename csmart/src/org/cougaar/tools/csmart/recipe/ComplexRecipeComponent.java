@@ -33,6 +33,10 @@ package org.cougaar.tools.csmart.recipe;
  */
 public interface ComplexRecipeComponent extends RecipeComponent {
 
+  /** Identifier Tags for a ComplexRecipe **/
+  public static final String RECIPE_CLASS = "##RECIPE_CLASS##";
+  public static final String RECIPE_AGENT = "##RECIPE_AGENT##";
+
   void addTargetQueryProperty();
 
 }// ComplexdRecipeComponent
