@@ -73,6 +73,7 @@ public class FileParseUtil {
       File input = new File(filename);
       if (! input.exists()) {
 	// Try the ConfigFinder
+	// FIXME: On windows, maybe we need to use SocietyFinder?
 	input = ConfigFinder.getInstance().locateFile(filename);
       }
       if (input != null && input.exists()) {
