@@ -69,8 +69,6 @@ import java.util.HashMap;
  * a society.
  */
 public class CSMART extends JFrame implements ActionListener, Observer, TreeSelectionListener {
-  public static String MONITOR = "Society Monitor";
-
   private static Organizer organizer;
   private static JFileChooser workspaceFileChooser;
   private static Hashtable titleToMenuItem = new Hashtable();
@@ -107,11 +105,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   protected static final String HELP_DOC = "help.html";
   protected static final String ABOUT_CSMART_ITEM = "About CSMART";
-  //  protected static final String ABOUT_DOC = "../help/about-csmart.html";
   protected static final String ABOUT_DOC = "/org/cougaar/tools/csmart/ui/help/about-csmart.html";
   protected static final String HELP_MENU_ITEM = "About Launcher";
-
-  //  private static boolean dbMode = false;
 
   private transient Logger log;
 
@@ -121,12 +116,18 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   private static final String PRE="<html><center><b><font face=\"sans-serif\">";
   private static final String POST="</font></b></center></html>";
+  // tool names
+  private static final String CONFIGURATION_BUILDER = "Configuration Builder";
+  private static final String EXPERIMENT_BUILDER = "Experiment Builder";
+  private static final String EXPERIMENT_CONTROLLER = "Experiment Controller";
+  private static final String SOCIETY_MONITOR = "Society Monitor";
+  private static final String PERFORMANCE_ANALYZER = "Performance Analyzer";
   private static final String[] views = {
-    PRE + "Configuration<br>Builder" + POST,
-    PRE + "Experiment<br>Builder" + POST,
-    PRE + "Experiment<br>Controller" + POST,
-    PRE + "Society<br>Monitor" + POST,
-    PRE + "Performance<br>Analyzer" + POST
+    CONFIGURATION_BUILDER,
+    EXPERIMENT_BUILDER,
+    EXPERIMENT_CONTROLLER,
+    SOCIETY_MONITOR,
+    PERFORMANCE_ANALYZER
   };
 
   private static final String[] tooltips = {
@@ -146,8 +147,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   };
 
 
-  // TODO: does this get replaced by a simple, new experiment and new recipe?
-  // Actions for file menu; enabled dependent on workspace selection
   private Action[] newExperimentActions = {
     new AbstractAction("From Database") {
         public void actionPerformed(ActionEvent e) {
@@ -196,11 +195,11 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     newResultsMenuItem.addActionListener(this);
     newResultsMenuItem.setToolTipText("Select a directory for saving results");
     fileMenu.add(newResultsMenuItem);
-    newExperimentMenu = new JMenu("New Experiment");
+    newExperimentMenu = new JMenu(ActionUtil.NEW_EXPERIMENT_ACTION);
     for (int i = 0; i < newExperimentActions.length; i++)
       newExperimentMenu.add(newExperimentActions[i]);
     fileMenu.add(newExperimentMenu);
-    newRecipeMenu = new JMenu("New Recipe");
+    newRecipeMenu = new JMenu(ActionUtil.NEW_RECIPE_ACTION);
     for (int i = 0; i < newRecipeActions.length; i++)
       newRecipeMenu.add(newRecipeActions[i]);
     fileMenu.add(newRecipeMenu);
@@ -212,7 +211,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       });
     newSocietyMenuItem.setEnabled(false); // disable creating built-in societies
     fileMenu.add(newSocietyMenuItem);
-    newFolderMenuItem = new JMenuItem("New Folder");
+    newFolderMenuItem = new JMenuItem(ActionUtil.NEW_FOLDER_ACTION);
     newFolderMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           organizer.newFolder();
@@ -220,63 +219,66 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       });
     fileMenu.add(newFolderMenuItem);
     fileMenu.addSeparator();
-    configureMenuItem = new JMenuItem("Configure");
+    configureMenuItem = new JMenuItem(ActionUtil.CONFIGURE_ACTION);
     configureMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          organizer.configure();
+          organizer.startBuilder();
         }
       });
     fileMenu.add(configureMenuItem);
-    buildMenuItem = new JMenuItem("Build");
+    buildMenuItem = new JMenuItem(ActionUtil.BUILD_ACTION);
     buildMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           organizer.startExperimentBuilder();
         }
       });
     fileMenu.add(buildMenuItem);
-    runMenuItem = new JMenuItem("Run");
+    runMenuItem = new JMenuItem(ActionUtil.RUN_ACTION);
     runMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           organizer.startConsole();
         }
       });
     fileMenu.add(runMenuItem);
-    duplicateMenuItem = new JMenuItem("Duplicate");
+    duplicateMenuItem = new JMenuItem(ActionUtil.DUPLICATE_ACTION);
     duplicateMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           organizer.duplicate();
         }
       });
     fileMenu.add(duplicateMenuItem);
-    deleteMenuItem = new JMenuItem("Delete");
+    deleteMenuItem = new JMenuItem(ActionUtil.DELETE_ACTION);
     deleteMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           organizer.delete();
         }
       });
     fileMenu.add(deleteMenuItem);
-    deleteExperimentFromDatabaseMenuItem = new JMenuItem("Delete Experiment From Database");
+    deleteExperimentFromDatabaseMenuItem = 
+      new JMenuItem(ActionUtil.DELETE_EXPERIMENT_FROM_DATABASE_ACTION);
     deleteExperimentFromDatabaseMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           organizer.deleteExperimentFromDatabase();
         }
       });
     fileMenu.add(deleteExperimentFromDatabaseMenuItem);
-    deleteRecipeFromDatabaseMenuItem = new JMenuItem("Delete Recipe From Database");
+    deleteRecipeFromDatabaseMenuItem = 
+      new JMenuItem(ActionUtil.DELETE_EXPERIMENT_FROM_DATABASE_ACTION);
     deleteRecipeFromDatabaseMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           organizer.deleteRecipeFromDatabase();
         }
       });
     fileMenu.add(deleteRecipeFromDatabaseMenuItem);
-    renameMenuItem = new JMenuItem("Rename");
+    renameMenuItem = new JMenuItem(ActionUtil.RENAME_ACTION);
     renameMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           organizer.rename();
         }
       });
     fileMenu.add(renameMenuItem);
-    saveToDatabaseMenuItem = new JMenuItem("Save To Database");
+    saveToDatabaseMenuItem = 
+      new JMenuItem(ActionUtil.SAVE_TO_DATABASE_ACTION);
     saveToDatabaseMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           organizer.saveRecipe();
@@ -314,12 +316,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       JButton button = makeButton(views[i], iconFilenames[i]);
       button.setHorizontalTextPosition(JButton.CENTER);
       button.setVerticalTextPosition(JButton.BOTTOM);
+      button.setActionCommand(views[i]);
       button.addActionListener(this);
       button.setToolTipText(tooltips[i]);
       toolBar.add(button);
     }
-    enableMonitorTool(false);
-    enableExperimentTools();
+    enableCSMARTTools();
 
     // if user closes this window, quit
     addWindowListener(new WindowAdapter() {
@@ -344,10 +346,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * is selected in the organizer.
    */
 
-  // TODO: need to rethink how and what we're going to represent
-  // in the organizer; and to what extent we'll enable/disable
-  // actions based on the selection or state of selection
-
   private MenuListener myMenuListener =
     new MenuListener() {
         public void menuCanceled(MenuEvent e) {
@@ -356,96 +354,28 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         }
         public void menuSelected(MenuEvent e) {
           int n = fileMenu.getItemCount();
-          // disable all but the first two and last items
-          for (int i = 2; i < n-2; i++) {
+          // skip Open Workspace, Save New Results, and Exit 
+          // which are always enabled
+          for (int i = 2; i < n-1; i++) {
             JMenuItem menuItem = fileMenu.getItem(i);
-            if (menuItem != null)
-              menuItem.setEnabled(false);
-          }
-          if (organizer.getSelectedNode() == null)
-            return;
-          // now enable the menu items specific to the class of object
-          // selected in the Organizer
-          if (organizer.getSelectedNode().isRoot()) {
-            newExperimentMenu.setEnabled(true);
-            newRecipeMenu.setEnabled(true);
-            //            newSocietyMenuItem.setEnabled(true);
-            newFolderMenuItem.setEnabled(true);
-            renameMenuItem.setEnabled(true);
-            deleteExperimentFromDatabaseMenuItem.setEnabled(true);
-            deleteRecipeFromDatabaseMenuItem.setEnabled(true);
-            return;
-          } 
-          Object selObject = organizer.getSelectedObject();
-          if (selObject instanceof ModifiableComponent) {
-            if (((ModifiableComponent)selObject).isEditable()) {
-              renameMenuItem.setEnabled(true);
-            } else {
-              renameMenuItem.setEnabled(false);
-            }
-          }
-          if (selObject instanceof Experiment) {
-            configureMenuItem.setEnabled(true);
-            if (((Experiment)selObject).getSocietyComponentCount() != 0 &&
-                ((Experiment)selObject).isRunnable())
-              runMenuItem.setEnabled(true);
-            duplicateMenuItem.setEnabled(true);
-            deleteMenuItem.setEnabled(true);
-          } else if (selObject instanceof SocietyComponent) {
-            configureMenuItem.setEnabled(true);
-            if (((ModifiableComponent)selObject).isEditable())
-              buildMenuItem.setEnabled(true);
-            runMenuItem.setEnabled(true);
-            duplicateMenuItem.setEnabled(true);
-            deleteMenuItem.setEnabled(true);
-          } else if (selObject instanceof RecipeComponent) {
-            configureMenuItem.setEnabled(true);
-            if (((ModifiableComponent)selObject).isEditable())
-              buildMenuItem.setEnabled(true);
-            duplicateMenuItem.setEnabled(true);
-            deleteMenuItem.setEnabled(true);
-            saveToDatabaseMenuItem.setEnabled(true);
-          } else if (selObject instanceof ModifiableComponent) {
-            if (((ModifiableComponent)selObject).isEditable())
-              buildMenuItem.setEnabled(true);
-            duplicateMenuItem.setEnabled(true);
-            deleteMenuItem.setEnabled(true);
-          } else if (selObject instanceof String) {
-            newExperimentMenu.setEnabled(true);
-            newRecipeMenu.setEnabled(true);
-            //            newSocietyMenuItem.setEnabled(true);
-            newFolderMenuItem.setEnabled(true);
-            deleteMenuItem.setEnabled(true);
-            renameMenuItem.setEnabled(true);
+            if (menuItem != null) // skip separators
+              menuItem.setEnabled(ActionUtil.isActionAllowed(menuItem.getActionCommand(), organizer, false));
           }
         }
-      };
+      }; // end of listener
 
-  public Experiment getExperiment() {
-    Experiment[] exp = organizer.getSelectedExperiments();
-    if (exp == null || exp.length == 0)
-      return null;
-    return exp[0];
-  }
-
-//    public SocietyComponent getSociety() {
-//      SocietyComponent[] societies = organizer.getSelectedSocieties();
-//      if (societies == null || societies.length == 0)
-//        return null;
-//      return societies[0];
-//    }
+  // TODO: the following only keep track of the most
+  // recently started experiment; we need a better way to
+  // allow the monitor to monitor a single experiment
+  // or query the user if there are multiple experiments running
 
   /**
    * Set which experiment is running.  Called with null when experiment
    * terminates or is terminated.
-   * TODO: allow monitor tool to run on saved files when no experiment running?
    */
-  // TODO: determine what checks we want -- do we want to prevent the
-  // user from doing something when an experiment is running?
 
   public void setRunningExperiment(Experiment experiment) {
     runningExperiment = experiment;
-    enableMonitorTool(runningExperiment != null);
   }
 
   /**
@@ -456,54 +386,52 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     return runningExperiment;
   }
 
+  private void enableConfigurationTool(boolean enable) {
+    ((JButton)toolBar.getComponentAtIndex(0)).setEnabled(enable);
+  }
+
+  // When built-in societies are supported,
+  // then the experiment tool should always be enabled,
+  // because you could create a new experiment and add a society to it.
+  // When built-in societies are not supported,
+  // creating your own experiment does not make sense,
+  // so the experiment tool is only enabled if an experiment is selected.
+
+  private void enableExperimentTool(boolean enable) {
+    ((JButton)toolBar.getComponentAtIndex(1)).setEnabled(enable);
+  }
+
   private void enableConsoleTool(boolean enable) {
     ((JButton)toolBar.getComponentAtIndex(2)).setEnabled(enable);
   }
 
-  private void enableMonitorTool(boolean enable) {
-    ((JButton)toolBar.getComponentAtIndex(3)).setEnabled(enable);
-  }
-
-  private void enableAnalyzerTool(boolean enable) {
-    ((JButton)toolBar.getComponentAtIndex(4)).setEnabled(enable);
-  }
-
   /**
-   * Listen on organizer tree to determine when an experiment
-   * is selected.  Disable console and analyzer
-   * when no experiment is selected.
+   * TreeSelectionListener interface.
+   * Listen on organizer tree to determine what is selected
+   * and enable appropriate tools.
    */
 
   public void valueChanged(TreeSelectionEvent e) {
-    enableExperimentTools();
+    enableCSMARTTools();
   }
-  
-  // TODO: experiment tool buttons should also be enabled/disabled
-  // as tools are run, but there are no listeners (on tool completion)
-  // to support this
-  private void enableExperimentTools() {
-    Experiment exp[] = organizer.getSelectedExperiments();
-    if (exp == null || exp.length == 0) {
-      enableConsoleTool(false);
-      enableAnalyzerTool(false);
-    } else {
-      enableAnalyzerTool(true);
-      // TODO: if at least one selected experiment has a society
-      // then enable the console tool
-      // for now, check that the first selected experiment
-      // has a society, because the first experiment will be the one run
-      //      for (int i = 0; i < exp.length; i++)
-      //	if (exp[i].getSocietyComponentCount() != 0) {
-      //	  enableConsoleTool(true);
-      //	  return;
-      //	}
-      if (exp.length > 0 && 
-	  exp[0].getSocietyComponentCount() != 0 &&
-	  exp[0].isRunnable())
-	enableConsoleTool(true);
-      else
-	enableConsoleTool(false);
-    }
+
+  /**
+   * Called on initialization, when a selection changes in the Organizer,
+   * or when the configuration builder, experiment builder, or console
+   * start or stop.
+   * If an experiment is selected, then enable the 
+   * experiment builder, unless it's already being edited.
+   * If a runnable experiment is selected, then enable the console.
+   * If a society or recipe is selected, then enable the 
+   * configuration builder tool, if it's not already being edited.
+   * Uses the action utilities to figure out what's allowed,
+   * so that it matches the File menu and pop-up menus.
+   */
+
+  private void enableCSMARTTools() {
+    enableConfigurationTool(ActionUtil.isActionAllowed(ActionUtil.CONFIGURE_ACTION, organizer, false));
+    enableExperimentTool(ActionUtil.isActionAllowed(ActionUtil.BUILD_ACTION, organizer, false));
+    enableConsoleTool(ActionUtil.isActionAllowed(ActionUtil.RUN_ACTION, organizer, false));
   }
 
   private void exit() {
@@ -515,6 +443,14 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   }
 
   private JButton makeButton(String label, String iconFilename) {
+    // replace spaces in label with <br> so that labels fit on buttons
+    int index = label.indexOf(' ');
+    while (index != -1) {
+      label = label.substring(0, index) + "<br>" +
+        label.substring(index+1);
+      index = label.indexOf(' ');
+    }
+    label = PRE + label + POST; // formatting
     URL iconURL = getClass().getResource(iconFilename);
     if (iconURL == null)
       return new JButton(label);
@@ -524,6 +460,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   /**
    * Window management for windows launched by CSMART.
+   * Updates which tools are enabled.
    */
 
   public void update(Observable o, Object arg) {
@@ -535,6 +472,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         titleToMenuItem.put(event.title, menuItem);
         menuItem.addActionListener(this);
         windowMenu.add(menuItem);
+        // update experiment Controls, as the experiment's runnability
+        // may have changed
+        if ((event.title.indexOf(CONFIGURATION_BUILDER) != -1) ||
+            (event.title.indexOf(EXPERIMENT_BUILDER) != -1) ||
+            (event.title.indexOf(EXPERIMENT_CONTROLLER) != -1))
+          enableCSMARTTools();
       } else if (event.eventType == NamedFrame.Event.REMOVED) {
         JMenuItem menuItem = (JMenuItem) titleToMenuItem.get(event.title);
         if (menuItem == null) {
@@ -545,10 +488,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
           windowMenu.remove(menuItem);
           titleToMenuItem.remove(event.title);
         }
-	// If the window was the Exp.Builder or the Console, update
-	// the experiment Controls
-	if (event.title.startsWith("Experiment"))
-	    enableExperimentTools();
+        // update experiment Controls, as the experiment's runnability
+        // may have changed
+        if ((event.title.indexOf(CONFIGURATION_BUILDER) != -1) ||
+            (event.title.indexOf(EXPERIMENT_BUILDER) != -1) ||
+            (event.title.indexOf(EXPERIMENT_CONTROLLER) != -1))
+          enableCSMARTTools();
       } else if (event.eventType == NamedFrame.Event.CHANGED) {
 	JMenuItem menuItem = (JMenuItem)titleToMenuItem.get(event.prevTitle);
         if (menuItem == null) {
@@ -567,9 +512,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     }
   }
 
-  /**
-   * ActionListener interface.
-   */
   // the rest of this is methods to launch the various tools
   // within CSMART
   public void runBuilder(ModifiableComponent cc, 
@@ -578,7 +520,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       Object[] options = { "Edit", "View", "Copy", "Cancel" };
       int result = 
         JOptionPane.showOptionDialog(this,
-                                     cc.getShortName() + " has been run",
+                                     cc.getShortName() + " is not editable",
                                      "Not Editable",
                                      JOptionPane.DEFAULT_OPTION,
                                      JOptionPane.WARNING_MESSAGE,
@@ -602,47 +544,85 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     Class[] paramClasses = { ModifiableComponent.class };
     Object[] params = new Object[1];
     params[0] = cc;
-    createTool("Configuration Builder", PropertyBuilder.class, 
+    createTool(CONFIGURATION_BUILDER, PropertyBuilder.class, 
 	       alwaysNew, cc.getShortName(), (ModifiableComponent)cc,
 	       paramClasses, params);
   }
 
   private void runMultipleBuilders(ModifiableComponent[] comps) {
     for (int i = 0; i < comps.length; i++) {
-      String s = "Configuration Builder: " + comps[i].getShortName();
+      String s = CONFIGURATION_BUILDER + ": " + comps[i].getShortName();
       if (NamedFrame.getNamedFrame().getFrame(s) == null) 
   	runBuilder(comps[i], true);
     }
   }
 
+  public static boolean isExperimentInEditor(Experiment experiment) {
+    String s = EXPERIMENT_BUILDER + ": " + experiment.getExperimentName();
+    if (NamedFrame.getNamedFrame().getFrame(s) != null)
+      return true;
+    else
+      return false;
+  }
+    
+  public static boolean isRecipeInEditor(RecipeComponent recipe) {
+    String s = CONFIGURATION_BUILDER + ": " + recipe.getRecipeName();
+    if (NamedFrame.getNamedFrame().getFrame(s) != null)
+      return true;
+    else
+      return false;
+  }
+    
   public void runExperimentBuilder(Experiment experiment, 
                                    boolean alwaysNew) {
-    if (!experiment.isEditable()) {
+    // if this experiment is being edited, then don't edit again
+    if (isExperimentInEditor(experiment))
+      return;
+    // if the experiment is being run, it can't be edited
+    if (experiment.isRunInProgress()) {
+      Object[] options = { "View", "Copy", "Cancel" };
+      experiment = queryUser(experiment, options);
+    } else if (!experiment.isEditable()) {
+      // otherwise editability can be overwritten
       Object[] options = { "Edit", "View", "Copy", "Cancel" };
-      int result = 
+      experiment = queryUser(experiment, options);
+    }
+    // if it's editable, then just edit it
+    if (experiment != null)
+      runExperimentBuilderWorker(experiment, alwaysNew);
+  }
+
+  private Experiment queryUser(Experiment experiment,
+                               Object[] options) {
+    int result = 
         JOptionPane.showOptionDialog(this,
-                                     experiment.getShortName() + " has been run",
+                                     experiment.getShortName() + 
+                                     " is not editable",
                                      "Experiment Not Editable",
                                      JOptionPane.DEFAULT_OPTION,
                                      JOptionPane.WARNING_MESSAGE,
                                      null,
                                      options,
                                      options[0]);
-      if (result == 0) {
-        // edit it anyway
-        experiment.setEditable(true);
-      } else if (result == 2) {
-        // copy it
-        experiment = organizer.copyExperiment(experiment);
-      } else if (result != 1)
-        // user cancelled
-        return;
-    }
+    if (options[result].equals("Edit"))
+      // edit it anyway
+      experiment.setEditable(true);
+    else if (options[result].equals("Copy"))
+      // copy it
+      experiment = organizer.copyExperiment(experiment);
+    else if (options[result].equals("Cancel"))
+      // user cancelled
+      return null;
+    return experiment;
+  }
+   
+  private void runExperimentBuilderWorker(Experiment experiment,
+                                          boolean alwaysNew) {
     Class[] paramClasses = { CSMART.class, Experiment.class };
     Object[] params = new Object[2];
     params[0] = this;
     params[1] = experiment;
-    createTool("Experiment Builder", ExperimentBuilder.class, 
+    createTool(EXPERIMENT_BUILDER, ExperimentBuilder.class, 
 	       alwaysNew, experiment.getExperimentName(), experiment,
 	       paramClasses, params);
   }
@@ -653,12 +633,13 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    */
 
   private void runMultipleExperimentBuilders(Experiment[] experiments) {
-    for (int i = 0; i < experiments.length; i++) {
-      String s = "Experiment Builder: " + experiments[i].getExperimentName();
-      if (NamedFrame.getNamedFrame().getFrame(s) == null) 
-	runExperimentBuilder(experiments[i], true);
-    }
+    for (int i = 0; i < experiments.length; i++) 
+      runExperimentBuilder(experiments[i], true);
   }
+
+  /**
+   * Run the specified experiment.  The experiment must be runnable.
+   */
 
   public void runConsole(Experiment experiment) {
     // TODO: we get here if the user edits an experiment containing
@@ -671,41 +652,36 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     // TODO: we get here if the user is editing an experiment
     // the isRunnable flag is off, but we don't detect it
     if (!experiment.isRunnable()) {
+      if (log.isDebugEnabled())
+        log.debug("CSMART: WARNING: experiment is not runnable");
       enableConsoleTool(false);
       return;
     }
-    // don't run the experiment if it's no longer in the database
-    // the editable and runnable flags are "lazily" set
-    // when experiments are deleted from the database, we don't try to
-    // delete them from the workspace
-    String experimentName = experiment.getExperimentName();
-    if (experiment.isInDatabase() &&
-        !ExperimentDB.isExperimentNameInDatabase(experimentName)) {
-      experiment.setEditable(false);
-      experiment.setRunnable(false);
-      JOptionPane.showMessageDialog(this,
-                                    "Experiment " + experimentName +
-                      " is not runnable because it is not in the database.",
-                                    "Experiment Not Runnable",
-                                    JOptionPane.WARNING_MESSAGE);
-      enableConsoleTool(false);
-      return;
-    }
-    console = (CSMARTConsole)createNewTool("Experiment Controller",
+    Class[] paramClasses = { CSMART.class, Experiment.class };
+    Object[] params = new Object[2];
+    params[0] = this;
+    params[1] = experiment;
+    console = (CSMARTConsole)createNewTool(EXPERIMENT_CONTROLLER,
 					   CSMARTConsole.class, 
-					   experimentName,
-					   experiment, null, null);
+					   experiment.getExperimentName(),
+					   experiment, 
+                                           paramClasses, params);
   }
 
   public void runMonitor() {
     HostComponent[] hosts = getRunningExperiment().getHosts();
     String name = hosts[0].getShortName();
-    createTool(MONITOR, CSMARTUL.class, name, null, null, null);
+    createTool(SOCIETY_MONITOR, CSMARTUL.class, name, null, null, null);
   }
 
   public void runAnalyzer(Experiment experiment) {
-    createTool("Performance Analyzer", Analyzer.class, 
-	       experiment.getExperimentName(), experiment, null, null);
+    Class[] paramClasses = { CSMART.class, Experiment.class };
+    Object[] params = new Object[2];
+    params[0] = this;
+    params[1] = experiment;
+    createTool(PERFORMANCE_ANALYZER, Analyzer.class, 
+	       experiment.getExperimentName(), experiment, 
+               paramClasses, params);
   }
 
   private void noSocietySelected() {
@@ -788,6 +764,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     return resultDir;
   }
 
+  /**
+   * ActionListener interface.
+   */
   public void actionPerformed(ActionEvent e) {
     String s = ((AbstractButton)e.getSource()).getActionCommand();
     if (s.equals(NEW_MENU_ITEM)) {
@@ -804,7 +783,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       URL about = (URL)getClass().getResource(ABOUT_DOC);
       if (about != null)
 	Browser.setPage(about);
-    } else if (s.equals(views[0])) {
+    } else if (s.indexOf(CONFIGURATION_BUILDER) != -1) {
       // Configuration Builder is used to edit both societies and recipes
       ArrayList components = new ArrayList();
       RecipeComponent[] recipes = organizer.getSelectedRecipes();
@@ -828,7 +807,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       else if (components.size() > 1) {
 	runMultipleBuilders((ModifiableComponent[])components.toArray(new ModifiableComponent[components.size()]));
       }
-    } else if (s.equals(views[1])) {
+    } else if (s.indexOf(EXPERIMENT_BUILDER) != -1) {
       Experiment[] experiments = organizer.getSelectedExperiments();
       if (experiments == null || experiments.length == 0) {
 	organizer.addExperiment();
@@ -838,13 +817,18 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	runExperimentBuilder(experiments[0], false);
       else if (experiments != null && experiments.length > 1)
 	runMultipleExperimentBuilders(experiments);
-    } else if (s.equals(views[2])) {
+    } else if (s.indexOf(EXPERIMENT_CONTROLLER) != -1) {
       Experiment[] experiments = organizer.getSelectedExperiments();
-      if (experiments != null && experiments.length > 0)
-        runConsole(experiments[0]);
-    } else if (s.equals(views[3])) {
+      if (experiments != null) {
+        for (int i = 0; i < experiments.length; i++) 
+          if (experiments[i].isRunnable()) {
+            runConsole(experiments[i]);
+            break;
+          }
+      }
+    } else if (s.indexOf(SOCIETY_MONITOR) != -1) {
       runMonitor();
-    } else if (s.equals(views[4])) {
+    } else if (s.indexOf(PERFORMANCE_ANALYZER) != -1) {
       Experiment[] experiments = organizer.getSelectedExperiments();
       if (experiments != null && experiments.length > 0)
         runAnalyzer(experiments[0]);
@@ -898,6 +882,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	    ((PropertyBuilder)tool).reinit((ModifiableComponent)argument);
 	  else if (tool instanceof Analyzer)
 	    ((Analyzer)tool).reinit((Experiment)argument);
+          enableCSMARTTools(); // update tools
 	}
       }
       // if have tool window, just bring it to the front and return
@@ -929,8 +914,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       toolName = toolName + ": " + docName;
     NamedFrame.getNamedFrame().addFrame(toolName, tool);
     final JFrame frameArg = tool;
-    // TODO: do we need to be a window listener
-    // we're registerd with NamedFrames to get updates on windows closing
     tool.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
 	NamedFrame.getNamedFrame().removeFrame(frameArg);

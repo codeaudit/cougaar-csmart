@@ -37,7 +37,7 @@ public class OrganizerMouseListener extends MouseAdapter {
   private JPopupMenu societyMenu = new JPopupMenu();
   private JPopupMenu recipeMenu = new JPopupMenu();
   private JPopupMenu experimentMenu = new JPopupMenu();
-  private JPopupMenu treeMenu = new JPopupMenu();
+  private JPopupMenu folderMenu = new JPopupMenu();
   private JPopupMenu rootMenu = new JPopupMenu();
   
   // Define actions for use on menus
@@ -53,22 +53,22 @@ public class OrganizerMouseListener extends MouseAdapter {
 //  	}
 //        },
     newSocietyAction,
-    new AbstractAction("New Folder") {
+    new AbstractAction(ActionUtil.NEW_FOLDER_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.newFolder();
 	}
       },
-    new AbstractAction("Rename") {
+    new AbstractAction(ActionUtil.RENAME_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.renameWorkspace();
 	}
       },
-    new AbstractAction("Delete Experiment From Database") {
+    new AbstractAction(ActionUtil.DELETE_EXPERIMENT_FROM_DATABASE_ACTION) {
       public void actionPerformed(ActionEvent e) {
         organizer.deleteExperimentFromDatabase();
       }
     },
-    new AbstractAction("Delete Recipe From Database") {
+    new AbstractAction(ActionUtil.DELETE_RECIPE_FROM_DATABASE_ACTION) {
       public void actionPerformed(ActionEvent e) {
         organizer.deleteRecipeFromDatabase();
       }
@@ -87,34 +87,34 @@ public class OrganizerMouseListener extends MouseAdapter {
     }
   };
   private Action[] experimentAction = {
-    new AbstractAction("Configure", new ImageIcon(getClass().getResource("EB16.gif"))) {
+    new AbstractAction(ActionUtil.BUILD_ACTION, new ImageIcon(getClass().getResource("EB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.startExperimentBuilder();
 	}
       },
-    new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
+    new AbstractAction(ActionUtil.RUN_ACTION, new ImageIcon(getClass().getResource("EC16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.startConsole();
 	}
       },
-    new AbstractAction("Duplicate") {
+    new AbstractAction(ActionUtil.DUPLICATE_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.duplicate();
 	}
       },
-    new AbstractAction("Delete") {
+    new AbstractAction(ActionUtil.DELETE_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.deleteExperiment();
 	}
       },
-    new AbstractAction("Rename") {
+    new AbstractAction(ActionUtil.RENAME_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.renameExperiment();
 	}
       }
   };
   private Action[] societyAction = {
-    new AbstractAction("Configure", new ImageIcon(getClass().getResource("SB16.gif"))) {
+    new AbstractAction(ActionUtil.CONFIGURE_ACTION, new ImageIcon(getClass().getResource("SB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.startBuilder();
 	}
@@ -130,17 +130,17 @@ public class OrganizerMouseListener extends MouseAdapter {
 	  organizer.startConsole();
 	}
       },
-    new AbstractAction("Duplicate") {
+    new AbstractAction(ActionUtil.DUPLICATE_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.duplicate();
 	}
       },
-    new AbstractAction("Delete") {
+    new AbstractAction(ActionUtil.DELETE_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.deleteSociety();
 	}
       },
-    new AbstractAction("Rename") {
+    new AbstractAction(ActionUtil.RENAME_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.renameSociety();
 	}
@@ -159,61 +159,55 @@ public class OrganizerMouseListener extends MouseAdapter {
     }
   };
   private Action[] recipeAction = {
-    new AbstractAction("Configure", new ImageIcon(getClass().getResource("SB16.gif"))) {
+    new AbstractAction(ActionUtil.CONFIGURE_ACTION, new ImageIcon(getClass().getResource("SB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.startBuilder();
 	}
       },
-    new AbstractAction("Build Experiment",
-		       new ImageIcon(getClass().getResource("EB16.gif"))) {
-	public void actionPerformed(ActionEvent e) {
-	  organizer.startExperimentBuilder();
-	}
-      },
-    new AbstractAction("Duplicate") {
+    new AbstractAction(ActionUtil.DUPLICATE_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.duplicate();
 	}
       },
-    new AbstractAction("Delete") {
+    new AbstractAction(ActionUtil.DELETE_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.deleteRecipe();
 	}
       },
-    new AbstractAction("Rename") {
+    new AbstractAction(ActionUtil.RENAME_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.renameRecipe();
 	}
       },
-    new AbstractAction("Save To Database") {
+    new AbstractAction(ActionUtil.SAVE_TO_DATABASE_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.saveRecipe();
 	}
       }
   };
-  private Action[] treeAction = {
+  private Action[] folderAction = {
     newSocietyAction,
 //      new AbstractAction("New Society") {
 //  	public void actionPerformed(ActionEvent e) {
 //            organizer.newSociety();
 //  	}
 //        },
-    new AbstractAction("New Recipe") {
-	public void actionPerformed(ActionEvent e) {
-	  organizer.newRecipe();
-	}
-      },
-    new AbstractAction("New Folder") {
+//      new AbstractAction("New Recipe") {
+//  	public void actionPerformed(ActionEvent e) {
+//  	  organizer.newRecipe();
+//  	}
+//        },
+    new AbstractAction(ActionUtil.NEW_FOLDER_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.newFolder();
 	}
       },
-    new AbstractAction("Delete") {
+    new AbstractAction(ActionUtil.DELETE_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.deleteFolder();
 	}
       },
-    new AbstractAction("Rename") {
+    new AbstractAction(ActionUtil.RENAME_ACTION) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.renameFolder();
 	}
@@ -224,13 +218,13 @@ public class OrganizerMouseListener extends MouseAdapter {
                                 OrganizerTree workspace) {
     this.organizer = organizer;
     this.workspace = workspace;
-    newSocietyAction.setEnabled(false); // disable creatin builtin societies
-    JMenu newExperimentMenu = new JMenu("New Experiment");
+    newSocietyAction.setEnabled(false); // disable creating builtin societies
+    JMenu newExperimentMenu = new JMenu(ActionUtil.NEW_EXPERIMENT_ACTION);
     for (int i = 0; i < newExperimentActions.length; i++) {
       newExperimentMenu.add(newExperimentActions[i]);
     }
     rootMenu.add(newExperimentMenu);
-    JMenu newRecipeMenu = new JMenu("New Recipe");
+    JMenu newRecipeMenu = new JMenu(ActionUtil.NEW_RECIPE_ACTION);
     for (int i = 0; i < newRecipeActions.length; i++) {
       newRecipeMenu.add(newRecipeActions[i]);
     }
@@ -247,18 +241,18 @@ public class OrganizerMouseListener extends MouseAdapter {
     for (int i = 0; i < experimentAction.length; i++) {
       experimentMenu.add(experimentAction[i]);
     }
-    JMenu newExperimentInTreeMenu = new JMenu("New Experiment");
+    JMenu newExperimentInFolderMenu = new JMenu(ActionUtil.NEW_EXPERIMENT_ACTION);
     for (int i = 0; i < newExperimentActions.length; i++) {
-      newExperimentInTreeMenu.add(newExperimentActions[i]);
+      newExperimentInFolderMenu.add(newExperimentActions[i]);
     }
-    treeMenu.add(newExperimentInTreeMenu);
-    JMenu newRecipeInTreeMenu = new JMenu("New Recipe");
+    folderMenu.add(newExperimentInFolderMenu);
+    JMenu newRecipeInFolderMenu = new JMenu(ActionUtil.NEW_RECIPE_ACTION);
     for (int i = 0; i < newRecipeActions.length; i++) {
-      newRecipeInTreeMenu.add(newRecipeActions[i]);
+      newRecipeInFolderMenu.add(newRecipeActions[i]);
     }
-    treeMenu.add(newRecipeInTreeMenu);
-    for (int i = 0; i < treeAction.length; i++) {
-      treeMenu.add(treeAction[i]);
+    folderMenu.add(newRecipeInFolderMenu);
+    for (int i = 0; i < folderAction.length; i++) {
+      folderMenu.add(folderAction[i]);
     }
   }
 
@@ -288,73 +282,51 @@ public class OrganizerMouseListener extends MouseAdapter {
       (DefaultMutableTreeNode) selPath.getLastPathComponent();
     Object o = selectedNode.getUserObject();
     if (selectedNode.isRoot()) {
+      configureRootMenu();
       rootMenu.show(workspace, e.getX(), e.getY());
     } else if (o instanceof SocietyComponent) {
-      configureSocietyMenu(((SocietyComponent)o).isEditable());
+      configureSocietyMenu();
       societyMenu.show(workspace, e.getX(), e.getY());
     } else if (o instanceof RecipeComponent) {
-      configureRecipeMenu(((RecipeComponent)o).isEditable());
+      configureRecipeMenu();
       recipeMenu.show(workspace, e.getX(), e.getY());
     } else if (o instanceof Experiment) {
-      configureExperimentMenu(((Experiment)o));
+      configureExperimentMenu();
       experimentMenu.show(workspace, e.getX(), e.getY());
     } else if (o instanceof String) {
-      treeMenu.show(workspace, e.getX(), e.getY());
+      configureFolderMenu();
+      folderMenu.show(workspace, e.getX(), e.getY());
     }
   }
   
-  private void configureExperimentMenu(Experiment experiment) {
-    boolean isEditable = experiment.isEditable();
-    if (isEditable) {
-      for (int i = 0; i < experimentAction.length; i++)
-	experimentAction[i].setEnabled(true);
-    } else {
-      for (int i = 0; i < experimentAction.length; i++) {
-	String s = (String)experimentAction[i].getValue(Action.NAME);
-	if (s.equals("Rename")) {
-	  experimentAction[i].setEnabled(false);
-          break;
-        }
-      }
-    }
-    for (int i = 0; i < experimentAction.length; i++) {
-      String s = (String)experimentAction[i].getValue(Action.NAME);
-      if (s.equals("Run")) {
-	if (experiment.getSocietyComponentCount() != 0 &&
-	    experiment.isRunnable())
-	  experimentAction[i].setEnabled(true);
-	else
-	  experimentAction[i].setEnabled(false);
-	break;
-      }
+  private void configureRootMenu() {
+    for (int i = 0; i < rootAction.length; i++) {
+      String s = (String)rootAction[i].getValue(Action.NAME);
+      rootAction[i].setEnabled(ActionUtil.isActionAllowed(s, organizer, true));
     }
   }
 
-  private void configureSocietyMenu(boolean isEditable) {
-    if (isEditable) {
-      for (int i = 0; i < societyAction.length; i++) 
-	societyAction[i].setEnabled(true);
-    } else {
-      for (int i = 0; i < societyAction.length; i++) {
-	String s = (String)societyAction[i].getValue(Action.NAME);
-	if (s.equals("Build Experiment") ||
-	    s.equals("Rename"))
-	  societyAction[i].setEnabled(false);
-      }
+  private void configureFolderMenu() {
+    for (int i = 0; i < folderAction.length; i++) {
+      String s = (String)folderAction[i].getValue(Action.NAME);
+      folderAction[i].setEnabled(ActionUtil.isActionAllowed(s, organizer, true));
     }
   }
-  
-  private void configureRecipeMenu(boolean isEditable) {
-    if (isEditable) {
-      for (int i = 0; i < recipeAction.length; i++) 
-	recipeAction[i].setEnabled(true);
-    } else {
-      for (int i = 0; i < recipeAction.length; i++) {
-	String s = (String)recipeAction[i].getValue(Action.NAME);
-	if (s.equals("Build Experiment") ||
-	    s.equals("Rename"))
-	  recipeAction[i].setEnabled(false);
-      }
+
+  private void configureExperimentMenu() {
+    for (int i = 0; i < experimentAction.length; i++) {
+      String s = (String)experimentAction[i].getValue(Action.NAME);
+      experimentAction[i].setEnabled(ActionUtil.isActionAllowed(s, organizer, true));
+    }
+  }
+
+  private void configureSocietyMenu() {
+  }
+
+  private void configureRecipeMenu() {
+    for (int i = 0; i < recipeAction.length; i++) {
+      String s = (String)recipeAction[i].getValue(Action.NAME);
+      recipeAction[i].setEnabled(ActionUtil.isActionAllowed(s, organizer, true));
     }
   }
 

@@ -236,15 +236,6 @@ public class Organizer extends JScrollPane {
   // Start tools
   ////////////////////////////////////  
 
-  public void configure() {
-    Object selectedObject = getSelectedObject();
-    if (selectedObject instanceof Experiment)
-      startExperimentBuilder();
-    else if (selectedObject instanceof SocietyComponent ||
-             selectedObject instanceof RecipeComponent)
-      startBuilder();
-  }
-
   public void startBuilder() {
     csmart.runBuilder((ModifiableComponent) getSelectedNode().getUserObject(), 
                       false);
@@ -288,7 +279,13 @@ public class Organizer extends JScrollPane {
     if (experiment != null)
       csmart.runExperimentBuilder(experiment, false);
   }
-  
+
+  /**
+   * Try to run the console.  This is called in two cases:
+   * 1) the user has selected a runnable experiment
+   * 2) the user has selected a society and this method creates an experiment
+   */
+
   public void startConsole() {
     DefaultMutableTreeNode node = getSelectedNode();
     Object o = node.getUserObject();
@@ -308,23 +305,18 @@ public class Organizer extends JScrollPane {
       experimentNames.add(name);
       experiment.addModificationListener(myModificationListener);
       workspace.setSelection(newNode);
-
+      // can't run if experiment has unbound properties
+      if (experiment.hasUnboundProperties()) {
+        csmart.runExperimentBuilder(experiment, false);
+        return;
+      }
+      if (!experiment.hasConfiguration())
+        experiment.createDefaultConfiguration();
     } else if (o instanceof Experiment) {
       experiment = (Experiment) o;
     } else {
       return;
     }
-    // In addition, its possible there are unbound properties!
-    if (experiment.hasUnboundProperties()) {
-      // can't run it without setting these
-      csmart.runExperimentBuilder(experiment, false);
-    }
-    // At this point the user may not have created a configuration.
-    // So they really can't run the console quite yet.
-    // We'll create a default configuration for them
-    if (! experiment.hasConfiguration())
-      experiment.createDefaultConfiguration();
-
     // Start up the console on the experiment
     csmart.runConsole(experiment);
   }
@@ -818,13 +810,15 @@ public class Organizer extends JScrollPane {
                                          cmtDialog.getExperimentName(),
                                          cmtDialog.getExperimentId(), 
                                          trialId);
-            if (experiment != null)
-              workspace.setSelection(addExperimentToWorkspace(experiment));
-            // TODO: why are recipes listed in the organizer tree separately?
-            RecipeComponent[] recipes = experiment.getRecipes();
-            for (int i = 0; i < recipes.length; i++)
-              if (!recipeNames.contains(recipes[i].getRecipeName()))
-                addRecipeToWorkspace(recipes[i]);
+            if (experiment != null) {
+              DefaultMutableTreeNode newNode =
+                addExperimentToWorkspace(experiment);
+              RecipeComponent[] recipes = experiment.getRecipes();
+              for (int i = 0; i < recipes.length; i++)
+                if (!recipeNames.contains(recipes[i].getRecipeName()))
+                  addRecipeToWorkspace(recipes[i]);
+              workspace.setSelection(newNode);
+            }
           }
           GUIUtils.timeConsumingTaskEnd(organizer);
         }
@@ -900,24 +894,19 @@ public class Organizer extends JScrollPane {
   public Experiment copyExperiment(Experiment experiment) {
     String newName = generateExperimentName(experiment.getExperimentName());
     final Experiment experimentCopy = (Experiment)experiment.copy(newName);
-    // if the experiment was from a database, then save copy in the database
-    // if the copy isn't modified, this is the only place it's put in the
-    // database and hence made runnable
-    if (experiment.isInDatabase()) {
-      //      experimentCopy.setCloned(false);
-      GUIUtils.timeConsumingTaskStart(organizer);
-      try {
-        new Thread("DuplicateExperiment") {
-            public void run() {
-              experimentCopy.saveToDb(saveToDbConflictHandler);
-              GUIUtils.timeConsumingTaskEnd(organizer);
-            }
-          }.start();
-      } catch (RuntimeException re) {
-        System.out.println("Runtime exception duplicating experiment: " + re);
-        re.printStackTrace();
-        GUIUtils.timeConsumingTaskEnd(organizer);
-      }
+    // save copy in database
+    GUIUtils.timeConsumingTaskStart(organizer);
+    try {
+      new Thread("DuplicateExperiment") {
+          public void run() {
+            experimentCopy.saveToDb(saveToDbConflictHandler);
+            GUIUtils.timeConsumingTaskEnd(organizer);
+          }
+        }.start();
+    } catch (RuntimeException re) {
+      System.out.println("Runtime exception duplicating experiment: " + re);
+      re.printStackTrace();
+      GUIUtils.timeConsumingTaskEnd(organizer);
     }
     DefaultMutableTreeNode node = 
       (DefaultMutableTreeNode)findNode(experiment).getParent();
@@ -985,46 +974,29 @@ public class Organizer extends JScrollPane {
     if (node == null) return;
     Experiment experiment = (Experiment)node.getUserObject();
     if (!experiment.isEditable()) {
-      String reason = "has been run";
-      if (experiment.isRunning())
-	reason = "is in use";
-      int result = JOptionPane.showConfirmDialog(this,
-						 "Experiment " + reason + "; delete anyway?",
-						 "Experiment Not Editable",
-						 JOptionPane.YES_NO_OPTION,
-						 JOptionPane.WARNING_MESSAGE);
+      int result = 
+        JOptionPane.showConfirmDialog(this,
+                                 "Experiment is not editable; delete anyway?",
+                                      "Experiment Not Editable",
+                                      JOptionPane.YES_NO_OPTION,
+                                      JOptionPane.WARNING_MESSAGE);
       if (result != JOptionPane.YES_OPTION)
 	return;
     }
     model.removeNodeFromParent(node);
-    experimentNames.remove(experiment.getExperimentName());
-    // if experiment was in database, ask if it should be deleted from there
-    if (experiment.isInDatabase()) {
-      int result = 
-        JOptionPane.showConfirmDialog(this,
-                                      "Delete experiment from database?",
-                                      "Delete Experiment From Database",
-                                      JOptionPane.YES_NO_OPTION,
-                                      JOptionPane.WARNING_MESSAGE);
-      if (result != JOptionPane.YES_OPTION)
-        return;
-
-      final String id = experiment.getExperimentID();
-      final String name = experiment.getShortName();
-      GUIUtils.timeConsumingTaskStart(organizer);
-      try {
-        new Thread("DeleteExperiment") {
-          public void run() {
-            ExperimentDB.deleteExperiment(id, name);
-            GUIUtils.timeConsumingTaskEnd(organizer);
-          }
-        }.start();
-      } catch (RuntimeException re) {
-        System.out.println("Runtime exception deleting experiment: " + re);
-        re.printStackTrace();
-        GUIUtils.timeConsumingTaskEnd(organizer);
-      }
-    }
+    String experimentName = experiment.getExperimentName(); 
+    experimentNames.remove(experimentName);
+    // ask if experiment should be deleted from database
+    int result = 
+      JOptionPane.showConfirmDialog(this,
+                                    "Delete experiment from database?",
+                                    "Delete Experiment From Database",
+                                    JOptionPane.YES_NO_OPTION,
+                                    JOptionPane.WARNING_MESSAGE);
+    if (result != JOptionPane.YES_OPTION)
+      return;
+    ExperimentDB.deleteExperiment(experiment.getExperimentID(),
+                                  experimentName);
   }
   
   /**
@@ -1093,6 +1065,10 @@ public class Organizer extends JScrollPane {
       model.removeNodeFromParent(node);
   }
 
+  /**
+   * Delete experiment from database and from workspace if it's there.
+   */
+
   public void deleteExperimentFromDatabase() {
     Map experimentNamesMap = ExperimentDB.getExperimentNames();
     Set keys = experimentNamesMap.keySet();
@@ -1110,6 +1086,15 @@ public class Organizer extends JScrollPane {
     String experimentName = (String)cb.getSelectedItem();
     String experimentId = (String)experimentNamesMap.get(experimentName);
     ExperimentDB.deleteExperiment(experimentId, experimentName);
+    // if experiment is in workspace, 
+    // select it and delete it from there as well
+    // selecting the experiment first notifies listeners appropriately
+    DefaultMutableTreeNode node = findNodeNamed(experimentName);
+    if (node != null) {
+      workspace.setSelection(node);
+      model.removeNodeFromParent(node);
+      experimentNames.remove(experimentName);
+    }
   }
 
   public void deleteRecipeFromDatabase() {
@@ -1180,11 +1165,21 @@ public class Organizer extends JScrollPane {
   private DefaultMutableTreeNode findNode(Object userObject) {
     Enumeration nodes = root.depthFirstEnumeration();
     while (nodes.hasMoreElements()) {
-      //      System.out.println("Have Element");
       DefaultMutableTreeNode node = 
 	(DefaultMutableTreeNode)nodes.nextElement();
       if (node.isLeaf() &&
 	  node.getUserObject().equals(userObject))
+	return node;
+    }
+    return null;
+  }
+
+  private DefaultMutableTreeNode findNodeNamed(String s) {
+    Enumeration nodes = root.depthFirstEnumeration();
+    while (nodes.hasMoreElements()) {
+      DefaultMutableTreeNode node = 
+	(DefaultMutableTreeNode)nodes.nextElement();
+      if (node.isLeaf() && node.toString().equals(s))
 	return node;
     }
     return null;
