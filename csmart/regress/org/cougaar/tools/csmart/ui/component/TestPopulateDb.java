@@ -189,7 +189,8 @@ public class TestPopulateDb extends TestCase {
     private DBProperties getDBProperties() throws IOException {
         URL url = getClass().getResource(QUERY_FILE);
         assertNotNull("Null url for " + QUERY_FILE, url);
-        return DBProperties.readQueryFile(DATABASE, url);
+        DBProperties dbp = DBProperties.readQueryFile(url);
+        return dbp;
     }
 
     private static String sqlQuote(String s) {
