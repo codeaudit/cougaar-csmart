@@ -2596,7 +2596,7 @@ public class CSMARTConsole extends JFrame {
   class AppServerList extends ArrayList {
     public void add(AppServerDescription desc) {
       if (desc == null) return;
-      for (int i = 0; i < size(); i++) {
+      for (int i = 0; i < AppServerList.this.size(); i++) {
         AppServerDescription asd = (AppServerDescription)get(i);
         if (desc.hostName.equals(asd.hostName) &&
             desc.remotePort == asd.remotePort) {
