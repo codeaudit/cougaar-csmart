@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,6 @@ import javax.swing.JOptionPane;
 /**
  * Utilities for contacting servlets in societies.
  */
-
 public class ClientServletUtil {
   // names of servlets used by CSMART
   public static final String COMMUNITY_SERVLET = 
@@ -57,7 +56,6 @@ public class ClientServletUtil {
    * @param URL the URL of the agent to contact
    * @return vector of String; URLs of agents in society
    */
-
   public static Vector getAgentURLs(String URL) throws Exception {
     String urlSpec = URL + "/" + AGENT_PROVIDER_SERVLET;
     URL url = new URL(urlSpec);
@@ -82,7 +80,6 @@ public class ClientServletUtil {
                            accept a limit=N argument
    * @return            results from servlets
    */
-
   public static ServletResult getCollectionFromAgents(Vector agentURLs,
                                                       String servletId,
                                                       ArrayList parameterNames,
@@ -128,7 +125,6 @@ public class ClientServletUtil {
    * @param limit     max. number of objects to return, or -1 if no limit
    * @return          the collection from the servlet or null
    */
-
   public static Collection getCollectionFromAgent(String agentURL,
                                                   String servletId,
                                                   ArrayList parameterNames,
@@ -173,7 +169,6 @@ public class ClientServletUtil {
    * @param port the port in the URL
    * @return the URL string
    */
-
   public static String makeURL(String host, int port) {
     return "http://" + host + ":" + String.valueOf(port) + "/";
   }
