@@ -517,6 +517,8 @@ public class CSMART extends JFrame {
       experiment = (Experiment)cc;
       // copy the original experiment and put the copy in the workspace
       Experiment experimentCopy = organizer.copyExperiment(experiment);
+      if (experimentCopy == null)
+        return;
       // remove all the components from the copy
       SocietyComponent sc = experimentCopy.getSocietyComponent();
       if (sc != null)
@@ -533,6 +535,15 @@ public class CSMART extends JFrame {
       cc = new SocietyCDataComponent(cdata,
          ((SocietyComponent)experiment.getSocietyComponent()).getAssemblyId());
       cc.initProperties();
+      // get an unique name for the society and if the
+      // user cancels out, then cancel this operation
+      String name = ((SocietyComponent)cc).getSocietyName();
+      String newName = 
+        organizer.getUniqueSocietyName(name, true);
+      if (newName == null)
+        return;
+      else if (!newName.equals(name))
+        cc.setName(newName);
       // Save this new society:
       ((SocietyComponent)cc).saveToDatabase();
       // put the new society in the copy of the experiment
@@ -557,16 +568,17 @@ public class CSMART extends JFrame {
           if (cc instanceof SocietyComponent) {
             SocietyComponent society = (SocietyComponent)cc;
             String newName =
-              organizer.generateSocietyName(society.getSocietyName());
+              organizer.generateSocietyName(society.getSocietyName(), 
+                                            false);
             SocietyComponent societyCopy = (SocietyComponent)society.copy(newName);
             originalComponent = cc;
             cc = societyCopy;
-//             if (societyCopy.isModified())
-//               System.out.println("CSMART: society is modified");
           } else if (cc instanceof RecipeComponent) {
             RecipeComponent recipe = (RecipeComponent)cc;
             String newName =
-              organizer.generateRecipeName(recipe.getRecipeName());
+              organizer.generateRecipeName(recipe.getRecipeName(), false);
+            if (newName == null)
+              return;
             RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
             originalComponent = cc;
             cc = recipeCopy;
@@ -814,11 +826,6 @@ public class CSMART extends JFrame {
     }
   }
 
-  public String getUniqueExperimentName(String name, 
-                                        boolean allowExistingName) {
-    return organizer.getUniqueExperimentName(name, allowExistingName);
-  }
-  
   public static void launch(String[] args) {
     new CSMART();
   }

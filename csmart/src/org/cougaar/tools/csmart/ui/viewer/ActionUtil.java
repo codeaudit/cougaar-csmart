@@ -155,11 +155,16 @@ public class ActionUtil {
     if (action.equals(DUPLICATE_ACTION))
       return true;
     SocietyComponent society = experiment.getSocietyComponent();
-    if (CSMART.isSocietyInEditor(society))
+    if (society != null && CSMART.isSocietyInEditor(society))
       return false;
     RecipeComponent[] recipes = experiment.getRecipeComponents();
     for (int i = 0; i < recipes.length; i++) {
       if (CSMART.isRecipeInEditor(recipes[i]))
+        return false;
+    }
+    if (society == null) {
+      if (action.equals(RUN_ACTION) ||
+          action.equals(CONFIGURE_ACTION))
         return false;
     }
     if (action.equals(RUN_ACTION))

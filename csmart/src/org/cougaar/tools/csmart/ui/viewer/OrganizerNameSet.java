@@ -32,9 +32,26 @@ import org.cougaar.tools.csmart.core.db.ExperimentDB;
 public class OrganizerNameSet extends UniqueNameSet {
   private Class[] noTypes = new Class[0];
   private Method getNameMethod = null;
+  private String prompt;
+  private String databaseCheck;
+  private Method dbCheckMethod = null;
 
-  public OrganizerNameSet(String namePrefix) {
+  /**
+   * The namePrefix is used as the base to generate uniqu names.
+   * The prompt is the prompt to display for the user to get a name.
+   * The databaseCheck method is assumed to be the name of a method
+   * in ExperimentDB that takes the component name as an argument
+   * and returns a boolean indicating if that name is in the database.
+   * @param prefix a single word prepended to unique objects
+   * @param prompt a single word describing the object to be named
+   * @param databaseCheck method name to check for name in database or null
+   */
+
+  public OrganizerNameSet(String namePrefix, String prompt,
+                          String databaseCheck) {
     super(namePrefix);
+    this.prompt = prompt;
+    this.databaseCheck = databaseCheck;
   }
 
   public void init(DefaultMutableTreeNode root, Class leafClass,
@@ -84,20 +101,12 @@ public class OrganizerNameSet extends UniqueNameSet {
   /**
    * Get a name for a folder, experiment, society, recipe, etc.
    * that is unique in the workspace and in the database.
-   * The databaseCheck method is assumed to be the name of a method
-   * in ExperimentDB that takes the component name as an argument
-   * and returns a boolean indicating if that name is in the database.
-   * @param prompt a single word describing the object to be named
    * @param originalName the current name of the object
    * @param allowExistingName true to allow existing name (true if renaming)
-   * @param databaseCheck method name to check for name in database or null
    * @return String new unique name
    */
-  protected String getUniqueName(String prompt,
-                                 String originalName,
-                                 boolean allowExistingName,
-                                 String databaseCheck) {
-    Method dbCheckMethod = null;
+  protected String getUniqueName(String originalName,
+                                 boolean allowExistingName) {
     String name = null;
     while (true) {
       // get new name from user
@@ -125,12 +134,9 @@ public class OrganizerNameSet extends UniqueNameSet {
         // if name is unique in CSMART and not checking database, return name
         if (databaseCheck == null)
           return name;
-        // get the method to check for the name in the database
-        if (dbCheckMethod == null)
-          dbCheckMethod = getDatabaseCheckMethod(databaseCheck);
         // ensure that name is not in the database
         // if can't reach database, just assume that name is ok
-        boolean inDatabase = isInDatabase(name, dbCheckMethod);
+        boolean inDatabase = isInDatabase(name);
         if (inDatabase) {
           title = prompt + " Name Not Unique";
           int answer = 
@@ -146,8 +152,7 @@ public class OrganizerNameSet extends UniqueNameSet {
     } // end while loop
   }
 
-  private Method getDatabaseCheckMethod(String databaseCheck) {
-    Method dbCheckMethod = null;
+  private void getDatabaseCheckMethod() {
     Class[] paramClasses = { String.class };
     try {
       dbCheckMethod =
@@ -157,12 +162,17 @@ public class OrganizerNameSet extends UniqueNameSet {
         log.error("No such method", e);
       }
     }
-    return dbCheckMethod;
   }
 
   // ensure that name is not in the database
   // if can't reach database, just assume that name is not there
-  private boolean isInDatabase(String name, Method dbCheckMethod) {
+  private boolean isInDatabase(String name) {
+    if (databaseCheck == null)
+      return false;
+    if (dbCheckMethod == null)
+      getDatabaseCheckMethod();
+    if (dbCheckMethod == null)
+      return false;
     boolean inDatabase = false;
     Object[] args = new Object[1];
     args[0] = name;
@@ -183,13 +193,24 @@ public class OrganizerNameSet extends UniqueNameSet {
     return inDatabase;
   }
 
-  protected boolean isUniqueName(String name, String databaseCheck) {
-    boolean inDatabase = false;
-    if (databaseCheck != null) {
-      Method dbCheckMethod = getDatabaseCheckMethod(databaseCheck);
-      if (dbCheckMethod != null)
-        inDatabase = isInDatabase(name, dbCheckMethod);
-    }
-    return !contains(name) && !inDatabase;
+  protected boolean isUniqueName(String name) {
+    return !contains(name) && !isInDatabase(name);
   }
+
+  /**
+   * Generate a name that is unique in the CSMART workspace,
+   * and in the database.  The user is only prompted
+   * for a new name, if the generated name is not unique.
+   */
+
+  protected String generateUniqueName(String name, 
+                                      boolean allowExistingName) {
+    if (!allowExistingName)
+      name = generateName(name);
+    if (isUniqueName(name))
+      return name;
+    else
+      return getUniqueName(name, allowExistingName);
+  }
+
 }

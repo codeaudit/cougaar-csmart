@@ -112,10 +112,17 @@ public class Organizer extends JScrollPane {
   private Object[] recipeNameClassItems = null;
 
   // Define Unique Name sets
-  private OrganizerNameSet societyNames = new OrganizerNameSet("Society");
-  private OrganizerNameSet experimentNames = new OrganizerNameSet("Experiment");
-  private OrganizerNameSet recipeNames = new OrganizerNameSet("Recipe");
-  private OrganizerNameSet folderNames = new OrganizerNameSet("Folder");
+  private OrganizerNameSet experimentNames = 
+    new OrganizerNameSet("Experiment", "Experiment",
+                         "isExperimentNameInDatabase");
+  private OrganizerNameSet societyNames = 
+    new OrganizerNameSet("Society", "Society",
+                         "isSocietyNameInDatabase");
+  private OrganizerNameSet recipeNames = 
+    new OrganizerNameSet("Recipe", "Recipe",
+                         "isRecipeNameInDatabase");
+  private OrganizerNameSet folderNames = 
+    new OrganizerNameSet("Folder", "Folder", null);
 
   // define helper class
   private OrganizerHelper helper;
@@ -418,15 +425,21 @@ public class Organizer extends JScrollPane {
   }
 
   private Experiment createExperiment(SocietyComponent society) {
-    String name = "Experiment for " + society.getSocietyName();
-    return new Experiment(experimentNames.generateName(name),
+    String name = generateExperimentName("Experiment for " + 
+                                         society.getSocietyName(), false);
+    if (name == null)
+      return null;
+    return new Experiment(name,
                           society,
                           new RecipeComponent[0]);
   }
 
   private Experiment createExperiment(RecipeComponent recipe) {
-    String name = "Experiment for " + recipe.getRecipeName();
-    return new Experiment(experimentNames.generateName(name),
+    String name = generateExperimentName("Experiment for " + 
+                                         recipe.getRecipeName(), false);
+    if (name == null)
+      return null;
+    return new Experiment(name,
                           null,
                           new RecipeComponent[] {recipe});
   }
@@ -443,11 +456,13 @@ public class Organizer extends JScrollPane {
     Object o = node.getUserObject();
     if (o instanceof SocietyComponent) {
       experiment = createExperiment((SocietyComponent)o);
-      addExperimentAndComponentsToWorkspace(experiment, 
+      if (experiment != null)
+        addExperimentAndComponentsToWorkspace(experiment, 
                                  (DefaultMutableTreeNode) node.getParent());
     } else if (o instanceof RecipeComponent) {
       experiment = createExperiment((RecipeComponent)o);
-      addExperimentAndComponentsToWorkspace(experiment, 
+      if (experiment != null)
+        addExperimentAndComponentsToWorkspace(experiment, 
                                  (DefaultMutableTreeNode) node.getParent());
     } else if (o instanceof Experiment) 
       experiment = (Experiment) o;
@@ -467,7 +482,9 @@ public class Organizer extends JScrollPane {
     Experiment experiment = null;
     if (o instanceof SocietyComponent) {
       experiment = createExperiment((SocietyComponent)o);
-      addExperimentToWorkspace(experiment, 
+      if (experiment == null)
+        return;
+      addExperimentAndComponentsToWorkspace(experiment, 
                         (DefaultMutableTreeNode) node.getParent());
       // can't run if experiment has unbound properties
       if (experiment.hasUnboundProperties()) {
@@ -491,33 +508,55 @@ public class Organizer extends JScrollPane {
   // Unique name support
   //////////////////////////////////
 
-  protected String getUniqueExperimentName(String originalName,
-                                           boolean allowExistingName) {
-    return experimentNames.getUniqueName("Experiment", originalName,
-                         allowExistingName, "isExperimentNameInDatabase");
+  /**
+   * Get a unique name, optionally allowing the existing name.
+   * Prompts the user for a name based on the original name,
+   * and then checks the user entered value for uniqueness in 
+   * the CSMART workspace and in the database.
+   */
+
+  public String getUniqueExperimentName(String originalName,
+                                        boolean allowExistingName) {
+    return experimentNames.getUniqueName(originalName, allowExistingName);
   }
 
   protected String getUniqueSocietyName(String originalName,
                                      boolean allowExistingName) {
-    return societyNames.getUniqueName("Society", originalName,
-                         allowExistingName, "isSocietyNameInDatabase");
-  }
-
-  protected boolean isUniqueSocietyName(String originalName) {
-    return societyNames.isUniqueName(originalName,
-                                     "isSocietyNameInDatabase");
+    return societyNames.getUniqueName(originalName, allowExistingName);
   }
 
   protected String getUniqueRecipeName(String originalName,
                                     boolean allowExistingName) {
-    return recipeNames.getUniqueName("Recipe", originalName,
-                         allowExistingName, "isRecipeNameInDatabase");
+    return recipeNames.getUniqueName(originalName, allowExistingName);
   }
 
   private String getUniqueFolderName(String originalName,
                                      boolean allowExistingName) {
-    return folderNames.getUniqueName("Folder", originalName,
-                         allowExistingName, null);
+    return folderNames.getUniqueName(originalName, allowExistingName);
+  }
+
+  protected boolean isUniqueSocietyName(String name) {
+    return societyNames.isUniqueName(name);
+  }
+
+  /**
+   * Generate unique names.  Only prompts user if a generated
+   * name conflicts in the database.
+   */
+
+  protected String generateExperimentName(String name,
+                                          boolean allowExistingName) {
+    return experimentNames.generateUniqueName(name, allowExistingName);
+  }
+
+  protected String generateSocietyName(String name,
+                                       boolean allowExistingName) {
+    return societyNames.generateUniqueName(name, allowExistingName);
+  }
+
+  protected String generateRecipeName(String name, 
+                                      boolean allowExistingName) {
+    return recipeNames.generateUniqueName(name, allowExistingName);
   }
 
   ///////////////////////////////////
@@ -555,10 +594,6 @@ public class Organizer extends JScrollPane {
   //////////////////////////////////
 
   protected void addSociety(SocietyComponent sc) {
-    String name = sc.getSocietyName();
-    String newName = societyNames.generateName(name);
-    if (!newName.equals(name))
-      sc.setName(newName);
     // add society as sibling of experiment
     DefaultMutableTreeNode parentNode = 
       (DefaultMutableTreeNode)(getSelectedNode().getParent());
@@ -585,22 +620,9 @@ public class Organizer extends JScrollPane {
 				  "Empty Recipe");
     if (answer instanceof NameClassItem) {
       NameClassItem item = (NameClassItem) answer;
-      String name = recipeNames.generateName(item.name);
-      while (true) {
-	name = (String) JOptionPane.showInputDialog(this, "Enter Recipe Name",
-						    "Name Recipe",
-						    JOptionPane.QUESTION_MESSAGE,
-						    null, null,
-						    name);
-	if (name == null) return;
-	if (!recipeNames.contains(name)) break;
-	int ok = JOptionPane.showConfirmDialog(this,
-					       "Use an unique name",
-					       "Recipe Name Not Unique",
-					       JOptionPane.OK_CANCEL_OPTION,
-					       JOptionPane.ERROR_MESSAGE);
-	if (ok != JOptionPane.OK_OPTION) return;
-      }
+      String name = generateRecipeName(item.name, false);
+      if (name == null)
+        return;
       RecipeComponent recipe = helper.createRecipe(name, item.cls);
       if (recipe != null)
 	addRecipeToWorkspace(recipe, getSelectedNode());
@@ -826,13 +848,10 @@ public class Organizer extends JScrollPane {
     // if the CSMART workspace contains an experiment with this name,
     // then force the user to select a new unique name
     if (experimentNames.contains(experimentName)) {
-      experimentName = 
-        getUniqueExperimentName(experimentNames.generateName(experimentName),
-                                false);
+      experimentName = generateExperimentName(experimentName, false);
       if (experimentName == null)
         return;
     }
-
     // Does this experiment use a CMT assembly for configuration?
     // If so, use the CMTDialog
     // Otherwise, just do the load (which is now done through the CMTDialog)
@@ -987,8 +1006,7 @@ public class Organizer extends JScrollPane {
     String recipeId = (String) recipeNamesHT.get(recipeName);
     // produce an unique name for CSMART if necessary
     if (recipeNames.contains(recipeName)) {
-      recipeName =
-        getUniqueRecipeName(recipeNames.generateName(recipeName), false);
+      recipeName = generateRecipeName(recipeName, false);
       if (recipeName == null)
         return;
     }
@@ -1021,7 +1039,10 @@ public class Organizer extends JScrollPane {
   }
 
   protected Experiment copyExperiment(Experiment experiment) {
-    String newName = generateExperimentName(experiment.getExperimentName());
+    String newName = 
+      generateExperimentName(experiment.getExperimentName(), false);
+    if (newName == null)
+      return null;
     final Experiment experimentCopy = (Experiment)experiment.copy(newName);
     // save copy in database
     GUIUtils.timeConsumingTaskStart(organizer);
@@ -1061,7 +1082,10 @@ public class Organizer extends JScrollPane {
    * @return SocietyComponent the copied society
    */
   protected SocietyComponent copySociety(SocietyComponent society) {
-    String newName = generateSocietyName(society.getSocietyName());
+    String newName = 
+      generateSocietyName(society.getSocietyName(), false);
+    if (newName == null)
+      return null;
     final SocietyComponent societyCopy = 
       (SocietyComponent)society.copy(newName);
     // save society copy
@@ -1101,7 +1125,10 @@ public class Organizer extends JScrollPane {
    */
 
   protected RecipeComponent copyRecipe(RecipeComponent recipe) {
-    String newName = generateRecipeName(recipe.getRecipeName());
+    String newName = 
+      generateRecipeName(recipe.getRecipeName(), false);
+    if (newName == null)
+      return null;
     final RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
     GUIUtils.timeConsumingTaskStart(organizer);
     try {
@@ -1700,18 +1727,6 @@ public class Organizer extends JScrollPane {
   // Utilities
   ///////////////////////////////
 
-  protected String generateExperimentName(String name) {
-    return experimentNames.generateName(name);
-  }
-  
-  protected String generateSocietyName(String name) {
-    return societyNames.generateName(name);
-  }
-
-  protected String generateRecipeName(String name) {
-    return recipeNames.generateName(name);
-  }
-
   private void installListeners(ModifiableComponent component) {
     component.addModificationListener(myModificationListener);
   }
@@ -1910,20 +1925,20 @@ public class Organizer extends JScrollPane {
 
   private TreeModelListener myModelListener = new TreeModelListener() {
       public void treeNodesChanged(TreeModelEvent e) {
-	if (doWorkspace)
-	  update();
+        if (doWorkspace)
+          update();
       }
       public void treeNodesInserted(TreeModelEvent e) {
-	if (doWorkspace)
-	  update();
+        if (doWorkspace)
+          update();
       }
       public void treeNodesRemoved(TreeModelEvent e) {
-	if (doWorkspace)
-	  update();
+        if (doWorkspace)
+          update();
       }
       public void treeStructureChanged(TreeModelEvent e) {
-	if (doWorkspace)
-	  update();
+        if (doWorkspace)
+          update();
       }
     };
   

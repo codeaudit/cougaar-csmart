@@ -779,7 +779,7 @@ public class OrganizerHelper {
     if (name.endsWith(".ini"))
       name = name.substring(0, name.length()-4);
     if (!organizer.isUniqueSocietyName(name))
-      name = organizer.getUniqueSocietyName(name, true);
+      name = organizer.getUniqueSocietyName(name, false);
     if (name == null) return null; 
 
     if (file.isDirectory()) {
