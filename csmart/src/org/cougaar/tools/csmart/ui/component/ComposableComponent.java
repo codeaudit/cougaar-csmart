@@ -104,6 +104,7 @@ public interface ComposableComponent extends Serializable {
   /**
    * Returns a child of this component.
    * @param childName Name of child to retrieve
+   * @return Requested child or null of child not found
    */
   public ConfigurableComponent getChild(CompositeName childName);
 
