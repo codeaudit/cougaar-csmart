@@ -41,7 +41,6 @@ public abstract class PropertyBase implements Property {
   private ConfigurableComponent component;
   private String tooltip;
   private URL help;
-  private transient Logger log;
   private boolean visible = true;
 
   /**
@@ -51,11 +50,6 @@ public abstract class PropertyBase implements Property {
    */
   protected PropertyBase(ConfigurableComponent c) {
     component = c;
-    createLogger();
-  }
-
-  private void createLogger() {
-    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public final ConfigurableComponent getConfigurableComponent() {
@@ -102,7 +96,11 @@ public abstract class PropertyBase implements Property {
   }
 
   public void addPropertyListener(PropertyListener l) {
-    if (listeners == null) listeners = new ArrayList();
+    // MIK: most have 1 or two listeners, and most are duplicates.
+    // it would be better to have the listener slot be an Object
+    // of either PropertyLister or LinkedList rather than waste 
+    // our space with an ArrayList.
+    if (listeners == null) listeners = new ArrayList(1);
     listeners.add(l);
   }
 
@@ -168,7 +166,6 @@ public abstract class PropertyBase implements Property {
   {
     stream.defaultReadObject();
     listeners = (List) stream.readObject();
-    createLogger();
   }
 
   public void printProperty(PrintStream out) {
