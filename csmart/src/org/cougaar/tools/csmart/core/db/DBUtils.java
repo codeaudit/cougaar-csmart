@@ -61,6 +61,7 @@ public class DBUtils {
   private static final String EXPERIMENT_QUERY = "queryExptsWithRecipe";
   private static final String EXPERIMENT_SOCIETY_QUERY = "queryExptsWithSociety";
   private static final String PLUGIN_QUERY = "queryGetPluginClasses";
+  private static final String BINDER_QUERY = "queryGetBinderClasses";
 
   // Flag whether to actually go to DB on queries
   public static boolean execute = true;
@@ -1112,6 +1113,20 @@ public class DBUtils {
    */
   public static Set dbGetPluginClasses() {
     String dbQuery = DBUtils.getQuery(PLUGIN_QUERY, new HashMap());
+    return dbGetPluginOrBinderClasses(dbQuery);
+  }
+
+  /**
+   * Get a set of binder class names.
+   *
+   * @return a <code>Set</code> of all binder class names in the database
+   */
+  public static Set dbGetBinderClasses() {
+    String dbQuery = DBUtils.getQuery(BINDER_QUERY, new HashMap());
+    return dbGetPluginOrBinderClasses(dbQuery);
+  }
+
+  private static Set dbGetPluginOrBinderClasses(String dbQuery) {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     Set s = new HashSet();
     try {
