@@ -490,8 +490,8 @@ public class OrganizerHelper {
     return recipeList;
   }
 
-  public Map getRecipeNamesFromDatabase() {
-    createLogger();
+  public static Map getRecipeNamesFromDatabase() {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer.OrganizerHelper");
     
     Map recipes = new TreeMap();
     String query = null;

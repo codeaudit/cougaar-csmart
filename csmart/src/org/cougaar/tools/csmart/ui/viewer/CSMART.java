@@ -107,8 +107,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   // the entries in the file menu; conditionally enabled
   // based on selection in the workspace
   private static JMenu fileMenu;
-  private static JMenu newExperimentMenu;
   private static JMenu newRecipeMenu;
+  private static JMenuItem newExperimentMenuItem;
   private static JMenuItem newSocietyMenuItem;
   private static JMenuItem newFolderMenuItem;
   private static JMenuItem configureMenuItem;
@@ -173,19 +173,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     "PA.gif"
   };
 
-
-  private Action[] newExperimentActions = {
-    new AbstractAction("From Database") {
-        public void actionPerformed(ActionEvent e) {
-          organizer.selectExperimentFromDatabase();
-        }
-      },
-    new AbstractAction("Built In") {
-        public void actionPerformed(ActionEvent e) {
-          organizer.newExperiment();
-        }
-      }
-  };
   private Action[] newRecipeActions = {
     new AbstractAction("From Database") {
         public void actionPerformed(ActionEvent e) {
@@ -227,10 +214,13 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     newResultsMenuItem.addActionListener(this);
     newResultsMenuItem.setToolTipText("Select a directory for saving results");
     fileMenu.add(newResultsMenuItem);
-    newExperimentMenu = new JMenu(ActionUtil.NEW_EXPERIMENT_ACTION);
-    for (int i = 0; i < newExperimentActions.length; i++)
-      newExperimentMenu.add(newExperimentActions[i]);
-    fileMenu.add(newExperimentMenu);
+    newExperimentMenuItem = new JMenuItem(ActionUtil.NEW_EXPERIMENT_ACTION);
+    newExperimentMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          organizer.selectExperimentFromDatabase();
+        }
+      });
+    fileMenu.add(newExperimentMenuItem);
     newRecipeMenu = new JMenu(ActionUtil.NEW_RECIPE_ACTION);
     for (int i = 0; i < newRecipeActions.length; i++)
       newRecipeMenu.add(newRecipeActions[i]);

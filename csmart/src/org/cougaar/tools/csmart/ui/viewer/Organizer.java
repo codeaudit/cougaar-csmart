@@ -575,6 +575,49 @@ public class Organizer extends JScrollPane {
   // New Recipes
   /////////////////////////////////  
 
+  /**
+   * Ensure that recipe name is unique in both CSMART and the database.
+   * Optionally allow re-use of existing name.
+   */
+
+  public String getUniqueRecipeName(String originalName,
+                                    boolean allowExistingName) {
+    String name = null;
+    while (true) {
+      name = (String) JOptionPane.showInputDialog(this, "Enter Recipe Name",
+                                                  "Recipe Name",
+                                                  JOptionPane.QUESTION_MESSAGE,
+                                                  null, null,
+                                                  originalName);
+      if (name == null) return null;
+      if (name.equals(originalName) && allowExistingName)
+        return name;
+      // if name is unique in CSMART
+      if (!recipeNames.contains(name)) {
+        // ensure that name is not in the database
+        Map recipeNamesHT = OrganizerHelper.getRecipeNamesFromDatabase();
+        Set dbRecipeNames = recipeNamesHT.keySet();
+        if (dbRecipeNames.contains(name)) {
+          int answer = JOptionPane.showConfirmDialog(this,
+                     "This name is in the database; use an unique name",
+                                                 "Recipe Name Not Unique",
+						 JOptionPane.OK_CANCEL_OPTION,
+						 JOptionPane.ERROR_MESSAGE);
+          if (answer != JOptionPane.OK_OPTION) return null;
+        } else
+          break; // have unique name
+      } else {
+        int answer = JOptionPane.showConfirmDialog(this,
+						 "Use an unique name",
+						 "Recipe Name Not Unique",
+						 JOptionPane.OK_CANCEL_OPTION,
+						 JOptionPane.ERROR_MESSAGE);
+        if (answer != JOptionPane.OK_OPTION) return null;
+      }
+    }
+    return name;
+  }
+
   public void newRecipe() {
     Object[] values = metNameClassItems;
     Object answer =
@@ -756,16 +799,15 @@ public class Organizer extends JScrollPane {
    */
 
   public void renameRecipe() {
-    String newName = getUniqueName("New recipe name",
-                                   "Recipe Name not Unique",
-                                   recipeNames);
-    if (newName == null)
-      return;
     DefaultMutableTreeNode node = getSelectedNode();
     final RecipeComponent recipe = (RecipeComponent) node.getUserObject();
-    if (newName.equals(recipe.getRecipeName()))
+    String originalName = recipe.getRecipeName();
+    String newName = getUniqueRecipeName(originalName, true);
+    if (newName == null)
       return;
-    recipeNames.remove(recipe.getRecipeName());
+    if (newName.equals(originalName))
+      return;
+    recipeNames.remove(originalName);
     recipe.setName(newName);
     GUIUtils.timeConsumingTaskStart(organizer);
     try {
@@ -955,13 +997,10 @@ public class Organizer extends JScrollPane {
     String recipeId = (String) recipeNamesHT.get(recipeName);
     // produce an unique name for CSMART if necessary
     if (recipeNames.contains(recipeName)) {
-      JOptionPane.showMessageDialog(null,
-                                    "There is already a recipe named "
-                                    + recipeName
-                                    + " in your workspace.\nDelete or rename it first.",
-                                    "Recipe Exists",
-                                    JOptionPane.ERROR_MESSAGE);
-      return;
+      recipeName =
+        getUniqueRecipeName(recipeNames.generateName(recipeName), false);
+      if (recipeName == null)
+        return;
     }
     RecipeComponent rc = helper.getDatabaseRecipe(recipeId, recipeName);
     if (rc != null)
