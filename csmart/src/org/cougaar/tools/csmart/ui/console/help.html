@@ -16,12 +16,12 @@ automatically, to stop after a Trial completes, or to abort a Trial.
 Trials are defined in the Experiment Builder.
 A Trial is one "run" of a Society with all Unbound Properties bound
 to one set of values as specified in the Experiment Builder.<br>  
-<i>Note: Some experiments do not use Societies with Unbound Properties; these experiments 
+<i>Note: Experiments from the database do not use Societies with Unbound Properties; these experiments 
 have one trial, and the user interface is simplified accordingly.</i>
 <p>The Experiment Controller also collects and displays all output from the nodes in the experiment, and provides several facilities for automatically and manually searching this ouput, and notifying the user of error conditions.
 <p>Note that you must separately launch the AppServer on each host used in
 the experiment. See the installation instructions for running the Server.
-<p><em>Important</em>: Be sure to save your experiment to the database before running it in the console.<br>
+<br>
 <br>
 A typical usage would be to <ol>
 <li>Start the AppServers.</li>
@@ -45,8 +45,7 @@ at the end of the current trial.
 If the Society is not configured to stop automatically, as in the
 supplied database societies, 
 then this stops the current trial immediately.
-In the latter case, if the Society Monitor tool is monitoring the experiment, 
-you will be asked to confirm the Stop action.</li>
+</li>
 <li>
 Select the "Abort" button to abort the trial, ending it immediately.</li>
 </ul>
@@ -252,7 +251,7 @@ database.</li>
 </ul>
 <br><br>
 <!-- hhmts start -->
-Last modified: Mon Oct 29 14:53:47 EST 2001
+Last modified: Wed Feb 13 14:53:47 EST 2002
 <!-- hhmts end -->
 </body>
 </html>

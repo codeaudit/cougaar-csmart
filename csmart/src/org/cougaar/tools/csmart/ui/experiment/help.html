@@ -9,11 +9,11 @@
 <h2>Experiment Builder</h2>
 Use this tool to build an Experiment from a pre-defined Experiment in
 a database, and zero or more Recipes. In particular, use this tool to
-allocate Agents accross available Hosts, and set run-time command line
-arguments.<br>
-This tool may occasionally be opened in View only mode. In this case
+allocate Agents across available Hosts, and set run-time command line
+arguments.<br><br>
+This tool may be opened in View only mode. In this case
 the user may not modify the current experiment configuration, but may
-only view the current settings. Many interfaces will be greyed out.<br>
+view the current settings. Menus that support modifying the experiment will be greyed out.<br><br>
 Recipes modify the behavior of the Society in the Experiment in various ways (collect run-time statistics, add simulated behaviors, etc).  
 To add a Recipe to your Experiment, create the Recipe in your workspace organizer,
 and drag it into the Recipes folder in the Experiment Builder. 
@@ -21,7 +21,7 @@ Note that all
 changes to your experiment are saved automatically in your workspace
 and in the database. Since experiment definitions are saved in the
 database, they may be easily re-used later from other client
-machines.<br>
+machines.<br><br>
 Note that when you exit the Experiment Builder, your changes to the
 experiment are saved to the database. Societies are run from the
 database only. Therefore, you must save all your changes to the
@@ -33,17 +33,17 @@ An experiment can contain any number of recipes.  Recipes are defined modificati
 to a society, and will be applied in the order in which they
 are listed under the Recipes folder. (You may re-order them.) By default, a recipe to include
 all basic servlets is included in experiments from the database, but
-users may remove this recipe and include any other they prefer.
+users may remove this recipe and include any other they prefer.  Note however, that some servlets support the Society Monitor; removing these servlets will make it impossible for the Society Monitor to collect information from the society blackboard.
 
 <h3>Component Recipes</h3>
 Component Recipes provide the ability to add a new component to a specific set
-of agents within a society.  For more information on Component Recipies,
+of agents within a society.  For more information on Component Recipes,
 see the documentation for a specific Component Recipe (Specific Insertion, Agent Insertion, Servlet Group Insertion, etc.).
 <h3>Impact Recipes</h3>
 Use the Experiment Builder to include a set of simulated external impacts
 in your experiment. To do so, create a new ABC Impact in the workspace
 organizer, and drag it into the Recipes folder. 
-<br>For details on the ABC Impact external impacts, and creating your own
+For details on the ABC Impact external impacts, and creating your own
 external impacts, see the Users' Guide.
 <h3>Metrics Recipes</h3>
 Using the Experiment Builder, CSMART users will be able to specify the
@@ -54,7 +54,7 @@ as CPU usage, memory utilization, bandwidth usage, Tasks propagated, etc.
 Typically, these statistics come from the core Metrics Service. In future,
 they will also come from the QuO run-time kernel service, or other user-specified
 sources.
-<br>As the society runs, these metrics are typically recorded in results
+<br><br>As the society runs, these metrics are typically recorded in results
 files (one per agent). Use the <a href="../analyzer/help.html">Performance Analyzer</a> to retrieve these results files for client-side analysis.
 As the society runs, periodic statistic snapshots
 are collected, and written to a tab separated value text file (one file
@@ -130,12 +130,12 @@ agent.</li>
  See the Cougaar documentation for an explanation of these values, and
  a list of other possible arguments. The global command line and
  command line values both
- affect the running the nodes of the society. Each node receives a
+ affect running the nodes of the society. Each node receives a
  combination of the global command line values and its own command
  line values. The node command line values override the global
  ones. Command line arguments set here will over-ride or augment any
  values specified in the AppServer properties files (server.props).
- Some -D arguments are not editable, but most are.
+ A few -D arguments are not editable.
 </p>
 There are a number of other File menu options for further configuring
 your Experiment. In particular, note the "Save" and "Save As" options
@@ -153,8 +153,8 @@ Experiment.  These were set in an earler dialog when the Experiment
 was created, and cannot be edited here.
 
 </p>
-<!-- hhmts start --> Last modified: Mon Oct 29
-15:21:44 EST 2001 <!-- hhmts end -->
+<!-- hhmts start --> Last modified: Wed Feb 13
+15:21:44 EST 2002 <!-- hhmts end -->
 
 </body>
 </html>

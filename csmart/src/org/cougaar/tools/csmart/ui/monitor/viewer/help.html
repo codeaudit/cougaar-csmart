@@ -13,11 +13,12 @@ distributed running Cougaar society. This data is obtained by collecting
 information from the contents of each agent's Blackboard, or from the results
 of specific metrics collection Plugins (or by loading saved graph or metrics
 data). This tool allows users to monitor any currently running Cougaar
-society.
+society or to view graphs saved from previous experiments.
 <p>Views within this tool communicate via the standard Servlet interface with
-a running society. When running under CSMART, the Society Monitor is enabled
-only when an experiment is running, and automatically contacts the society
-in the running experiment. When running standalone, the user is prompted
+a running society. When running under CSMART, if a single experiment is being run, then the Society Monitor automatically contacts the society
+in the running experiment. If running multiple experiments, CSMART queries
+the user to select an experiment to monitor.
+When running standalone, the user is prompted
 for a URL in the running society. To run the Society Monitor in stand-alone
 mode, ensure that the CSMART Servlets are included in your Agent's
 configuration (database or INI files)
@@ -321,7 +322,7 @@ org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.serv
 
 <br><br>
 <!-- hhmts start -->
-Last modified: Mon Oct 29 15:39:45 EST 2001
+Last modified: Wed Feb 13 15:39:45 EST 2002
 <!-- hhmts end -->
 </body>
 </html>
