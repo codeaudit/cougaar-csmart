@@ -43,6 +43,14 @@
   (initialize)
   )
 
+(define (use-database database user password)
+  (set! refDBDriver   "oracle.jdbc.driver.OracleDriver")
+  (set! refDBConnURL  database)
+  (set! refDBUser     user)
+  (set! refDBPasswd   password)
+  (initialize)
+  )
+
 (define (initialize)
   ;; Register the Oracle driver. 
   ;;(DriverManager.registerDriver (OracleDriver.))
@@ -53,7 +61,8 @@
   #t))
 
 (define (setDBConnection conn)
-      (set! refDBConnection conn)
+  (println (list 'setDBConnection conn))
+  (set! refDBConnection conn)
 )
 
 (define (createStatement conn)
@@ -91,7 +100,7 @@
 
 (define (with-query-jdbc query ex)
   (let((q query))
-    (println (string-append "(with-query-jdbc " query))
+    ;;(println (string-append "(with-query-jdbc " query))
     (let* ((stmt (createStatement (getrefDBConnection)))
 	   (rs (.executeQuery stmt query))
 	   (answer (ex rs)))
@@ -1350,7 +1359,7 @@
 
 (define (dbu query)
   (newline)
-  (println (string-append "dbu:" query))
+  ;;(println (string-append "dbu:" query))
   (db-update
    (getrefDBConnection)
    query))
@@ -2116,7 +2125,7 @@
     (.add threads "STRATEGIC-TRANS")
     (.add threads "THEATER-TRANS")
     (set! threads (order-threads threads))
-    (println (list 'create-cmt-asb assembly_description cfw_group_id threads "" clones))
+    ;;(println (list 'create-cmt-asb assembly_description cfw_group_id threads "" clones))
     (set! assembly_id (create-cmt-asb assembly_description cfw_group_id threads "" clones))
     (dbu (string-append
 	  "update "

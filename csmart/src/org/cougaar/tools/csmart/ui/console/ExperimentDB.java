@@ -21,20 +21,21 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.util.Hashtable;
-import java.util.HashSet;
-import java.util.Set;
 import java.io.File;
 import java.io.FileReader;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Set;
+import org.cougaar.tools.csmart.societies.database.DBUtils;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.DBProperties;
+import silk.InputPort;
+import silk.Pair;
+import silk.Procedure;
 import silk.SI;
 import silk.Scheme;
-import silk.Procedure;
-import silk.U;
-import silk.Pair;
 import silk.Symbol;
-import silk.InputPort;
-import org.cougaar.tools.csmart.societies.database.DBUtils;
-import org.cougaar.util.DBProperties;
+import silk.U;
 
   /**
    * Interface to the database.
@@ -55,12 +56,18 @@ public class ExperimentDB {
 	    cmtLoaded=true;
 	    try{
 		DBProperties dbProps = DBProperties.readQueryFile("org.cougaar.configuration.database", "CSMART.q");
-		String database = dbProps.getProperty("database");
-		String username = dbProps.getProperty("username");
-		String password = dbProps.getProperty("password");
-		System.out.println("call(use-eiger,"+username+","+password+")");
-		call("use-eiger",username,password);
+//  		String database = dbProps.getProperty("database");
+//  		String username = dbProps.getProperty("username");
+//  		String password = dbProps.getProperty("password");
+		String database = CSMART.getDatabaseConfiguration();
+		String username = CSMART.getDatabaseUserName();
+		String password = CSMART.getDatabaseUserPassword();
+//  		System.out.println("call(use-database,"+database+","+username+","+password+")");
+//		call("use-database",database,username,password);
+		call("setDBConnection",DBUtils.getConnection());
 	    } catch (java.io.IOException e){
+		e.printStackTrace();
+	    } catch (java.sql.SQLException e){
 		e.printStackTrace();
 	    }
 
@@ -189,8 +196,7 @@ public class ExperimentDB {
 	    call("setULThreadNotSelected",trialId,threadName);
 	}
 
-	System.out.println("Thread: " + threadName +
-			   " selected: " + selected);
+	//System.out.println("Thread: " + threadName + " selected: " + selected);
     }
 
     public static boolean isGroupSelected(String trialId, String groupName) {
