@@ -304,7 +304,13 @@ public class PrototypeParser {
           if(subType != null) {
             propData.setSubType(subType);
           }
-          propData.setValue(getValue(parseArgs(dataType, tokens.sval)));
+          String val = (String)getValue(parseArgs(dataType, tokens.sval));
+          System.out.println("Value: " + val);
+          if(propData.getName().equals("HomeLocation")) {
+            propData.setValue(parseHomeLocation(val));
+          } else {
+            propData.setValue(val);
+          }
 
           newVal = tokens.nextToken();
           member = tokens.sval;
@@ -325,6 +331,10 @@ public class PrototypeParser {
       }
     }
     return newVal;
+  }
+
+  private String parseHomeLocation(String argument) {
+    return argument.substring(argument.indexOf("=")+1, argument.indexOf(","));
   }
 
   private Object getValue(Object arg) {
