@@ -219,23 +219,28 @@ public class OrganizerHelper {
     String query = null;
     try {
       Connection conn = DBUtils.getConnection();
-      Map substitutions = new HashMap();
-      substitutions.put(":expt_id", experimentId);
-      substitutions.put(":trial_id", trialId);
-      Statement stmt = conn.createStatement();
-      query = DBUtils.getQuery(EXPT_ASSEM_QUERY, substitutions);
-      ResultSet rs = stmt.executeQuery(query);
-      while(rs.next()) {
-        String asmid = rs.getString(1);
-        assemblyIds.add(asmid);
+      try {
+        Map substitutions = new HashMap();
+        substitutions.put(":expt_id", experimentId);
+        substitutions.put(":trial_id", trialId);
+        Statement stmt = conn.createStatement();
+        query = DBUtils.getQuery(EXPT_ASSEM_QUERY, substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          String asmid = rs.getString(1);
+          assemblyIds.add(asmid);
+        }
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
       }
-      rs.close();
-      stmt.close();
     } catch (SQLException se) {
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting Trial pieces: " + query, se);
       }
-    }
+    } 
+
     return assemblyIds;
   }
 
@@ -247,21 +252,24 @@ public class OrganizerHelper {
     String query = null;
     try {
       Connection conn = DBUtils.getConnection();
-      Map substitutions = new HashMap();
-      substitutions.put(":trial_id", trialId);
-      substitutions.put(":assemblyMatch", assemblyMatch);
-      Statement stmt = conn.createStatement();
-      query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
-      if(log.isDebugEnabled()) {
-        log.debug("Organizer: Nodes query: " + query);
+      try {
+        Map substitutions = new HashMap();
+        substitutions.put(":trial_id", trialId);
+        substitutions.put(":assemblyMatch", assemblyMatch);
+        Statement stmt = conn.createStatement();
+        query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
+        if(log.isDebugEnabled()) {
+          log.debug("Organizer: Nodes query: " + query);
+        }
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          nodes.add(rs.getString(1));
+        }
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
       }
-      ResultSet rs = stmt.executeQuery(query);
-      while(rs.next()) {
-        nodes.add(rs.getString(1));
-      }
-      rs.close();
-      stmt.close();
-      conn.close();
     } catch (SQLException se) {      
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting Nodes " + query, se);
@@ -277,25 +285,29 @@ public class OrganizerHelper {
     String query = null;
     try {
       Connection conn = DBUtils.getConnection();
-      Map substitutions = new HashMap();
-      substitutions.put(":assemblyMatch", assemblyMatch);
-      Statement stmt = conn.createStatement();
-      query = DBUtils.getQuery(EXPT_HOST_QUERY, substitutions);
-      if(log.isDebugEnabled()) {
+      try {
+        Map substitutions = new HashMap();
+        substitutions.put(":assemblyMatch", assemblyMatch);
+        Statement stmt = conn.createStatement();
+        query = DBUtils.getQuery(EXPT_HOST_QUERY, substitutions);
+        if(log.isDebugEnabled()) {
         log.debug("Organizer: Get hosts query: " + query);
+        }
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          hosts.add(rs.getString(1));
+        }
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
       }
-      ResultSet rs = stmt.executeQuery(query);
-      while(rs.next()) {
-        hosts.add(rs.getString(1));
-      }
-      rs.close();
-      stmt.close();
-      conn.close();
     } catch (SQLException se) {      
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting hosts: " + query, se);
       }
-    }
+    } 
+
     return hosts;
   }
 
@@ -331,35 +343,37 @@ public class OrganizerHelper {
     String query = null;
     try {
       Connection conn = DBUtils.getConnection();
-      Map substitutions = new HashMap();
-      substitutions.put(":assemblyMatch", assemblyMatch);
-      Statement stmt = conn.createStatement();
-      query = DBUtils.getQuery("queryHostNodes", substitutions);
-      if(log.isDebugEnabled()) {
-        log.debug("mapNodesToHosts: " + query);
+      try {
+        Map substitutions = new HashMap();
+        substitutions.put(":assemblyMatch", assemblyMatch);
+        Statement stmt = conn.createStatement();
+        query = DBUtils.getQuery("queryHostNodes", substitutions);
+        if(log.isDebugEnabled()) {
+          log.debug("mapNodesToHosts: " + query);
+        }
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          String hostName = rs.getString(1);
+          String nodeName = rs.getString(2);	
+          for (int i=0; i < hostComponents.length; i++) {
+            HostComponent hc = hostComponents[i];
+            if (hc.getShortName().equals(hostName)) {
+              for (int j=0; j < nodeComponents.length; j++) {
+                NodeComponent nc = nodeComponents[j];
+                if (nc.getShortName().equals(nodeName)) {
+                  hc.addNode(nc);
+                  break;
+                }	      
+              }	    
+              break;
+            }	  
+          } 
+        }
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
       }
-      ResultSet rs = stmt.executeQuery(query);
-      while(rs.next()) {
-	String hostName = rs.getString(1);
-	String nodeName = rs.getString(2);	
-	for (int i=0; i < hostComponents.length; i++) {
-	  HostComponent hc = hostComponents[i];
-	  if (hc.getShortName().equals(hostName)) {
-	    for (int j=0; j < nodeComponents.length; j++) {
-	      NodeComponent nc = nodeComponents[j];
-	      if (nc.getShortName().equals(nodeName)) {
-		hc.addNode(nc);
-		break;
-	      }	      
-	    }	    
-	    break;
-	  }	  
-	} 
-      }
-      rs.close();
-
-      stmt.close();
-      conn.close();   
     } catch (SQLException se) {
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting HN map " + query, se);
@@ -375,48 +389,51 @@ public class OrganizerHelper {
     String query = null;
     try {
       Connection conn = DBUtils.getConnection();
-      Map substitutions = new HashMap();
-      substitutions.put(":trial_id", trialId);
-      substitutions.put(":assemblyMatch", assemblyMatch);
-      substitutions.put(":insertion_point", "Node.AgentManager.Agent");	  
-      Statement stmt = conn.createStatement();
-      NodeComponent nodeComponent = null;
-      while(iter.hasNext()) {
-        query = null;
-        ResultSet rs;
-        String nodeName = (String)iter.next();
-        nodeComponent = experiment.addNode(nodeName);
-        setComponentProperties(nodeComponent, nodeName, assemblyMatch);
-        substitutions.put(":parent_name", nodeName);
-        substitutions.put(":comp_alib_id", nodeName);
-        // Get args of the node
-        Properties nodeProps = nodeComponent.getArguments();
-        getComponentArguments(stmt, substitutions, nodeProps);
-        // Query All Agents for each node.
-        // Loop Query for every node.
-        query = DBUtils.getQuery("queryComponents", substitutions);
-//         if(log.isDebugEnabled()) {
-//           log.debug("Organizer: Get agents: " + query);
-//         }
-        rs = stmt.executeQuery(query);
-        while(rs.next()) {
-          // Find AgentComponent.
-          String aName = rs.getString(1);
-          for (int i=0; i < agents.length; i++) {
-            AgentComponent ac = agents[i];
-            if (ac.getShortName().equals(aName)) {
-              nodeComponent.addAgent(ac);
-//                if(log.isDebugEnabled()) {
-//                  log.debug("OrganizerHelper:  Adding agent named:  " + ac.getShortName());
-//                }
-              break;
-            }	    
-          } 	  
+      try {
+        Map substitutions = new HashMap();
+        substitutions.put(":trial_id", trialId);
+        substitutions.put(":assemblyMatch", assemblyMatch);
+        substitutions.put(":insertion_point", "Node.AgentManager.Agent");	 
+        Statement stmt = conn.createStatement();
+        NodeComponent nodeComponent = null;
+        while(iter.hasNext()) {
+          query = null;
+          ResultSet rs;
+          String nodeName = (String)iter.next();
+          nodeComponent = experiment.addNode(nodeName);
+          setComponentProperties(nodeComponent, nodeName, assemblyMatch);
+          substitutions.put(":parent_name", nodeName);
+          substitutions.put(":comp_alib_id", nodeName);
+          // Get args of the node
+          Properties nodeProps = nodeComponent.getArguments();
+          getComponentArguments(stmt, substitutions, nodeProps);
+          // Query All Agents for each node.
+          // Loop Query for every node.
+          query = DBUtils.getQuery("queryComponents", substitutions);
+          //         if(log.isDebugEnabled()) {
+          //           log.debug("Organizer: Get agents: " + query);
+          //         }
+          rs = stmt.executeQuery(query);
+          while(rs.next()) {
+            // Find AgentComponent.
+            String aName = rs.getString(1);
+            for (int i=0; i < agents.length; i++) {
+              AgentComponent ac = agents[i];
+              if (ac.getShortName().equals(aName)) {
+                nodeComponent.addAgent(ac);
+                //                if(log.isDebugEnabled()) {
+                //                  log.debug("OrganizerHelper:  Adding agent named:  " + ac.getShortName());
+                //                }
+                break;
+              }	    
+            } 	  
+          }
+          rs.close();
         }
-        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
       }
-      stmt.close();
-      conn.close();   
     } catch (SQLException se) {
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting agents " + query, se);
@@ -455,40 +472,43 @@ public class OrganizerHelper {
     String query = null;
     try {
       Connection conn = DBUtils.getConnection();
-      Map substitutions = new HashMap();
-      substitutions.put(":assemblyMatch", assemblyMatch);
-      substitutions.put(":comp_alib_id", comp_alib_id);
-      Statement stmt = conn.createStatement();
-      query = DBUtils.getQuery(COMPONENT_ARGS_QUERY, substitutions);
-      if(log.isDebugEnabled()) {
-        log.debug("OrganizerHelper " + COMPONENT_ARGS_QUERY + ": "  + query);
-      }
-
-      ResultSet rs = stmt.executeQuery(query);
-      while(rs.next()) {
-        String param = rs.getString(1);
-        if (param.startsWith(Experiment.PROP_PREFIX)) {
-          int ix1 = Experiment.PROP_PREFIX.length();
-          int ix2 = param.indexOf('=', ix1);
-          String pname = param.substring(ix1, ix2);
-          String pvalue = param.substring(ix2 + 1);
-          Property prop = cc.getProperty(pname);
-          if (prop == null) {
-//             if(log.isDebugEnabled()) {
-//               log.debug("adding " + pname + "=" + pvalue);
-//             }
-            cc.addProperty(pname, pvalue);
-          } else {
-//             if(log.isDebugEnabled()) {
-//               log.debug("setting " + pname + "=" + pvalue);
-//             }
-            prop.setValue(pvalue);
+      try {
+        Map substitutions = new HashMap();
+        substitutions.put(":assemblyMatch", assemblyMatch);
+        substitutions.put(":comp_alib_id", comp_alib_id);
+        Statement stmt = conn.createStatement();
+        query = DBUtils.getQuery(COMPONENT_ARGS_QUERY, substitutions);
+        if(log.isDebugEnabled()) {
+          log.debug("OrganizerHelper " + COMPONENT_ARGS_QUERY + ": "  + query);
+        }
+        
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          String param = rs.getString(1);
+          if (param.startsWith(Experiment.PROP_PREFIX)) {
+            int ix1 = Experiment.PROP_PREFIX.length();
+            int ix2 = param.indexOf('=', ix1);
+            String pname = param.substring(ix1, ix2);
+            String pvalue = param.substring(ix2 + 1);
+            Property prop = cc.getProperty(pname);
+            if (prop == null) {
+              //             if(log.isDebugEnabled()) {
+              //               log.debug("adding " + pname + "=" + pvalue);
+              //             }
+              cc.addProperty(pname, pvalue);
+            } else {
+              //             if(log.isDebugEnabled()) {
+              //               log.debug("setting " + pname + "=" + pvalue);
+              //             }
+              prop.setValue(pvalue);
+            }
           }
         }
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
       }
-      rs.close();
-      stmt.close();
-      conn.close();
     } catch (SQLException se) {      
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting compArgs " + query, se);
@@ -501,34 +521,37 @@ public class OrganizerHelper {
     String query = null;
     try {
       Connection conn = DBUtils.getConnection();
-      Map substitutions = new HashMap();
-      substitutions.put(":trial_id", trialId);
-      substitutions.put(":expt_id", exptId);
-      Statement stmt = conn.createStatement();
-      query = DBUtils.getQuery("queryRecipes", substitutions);
-      ResultSet rs = stmt.executeQuery(query);
-      while(rs.next()) {
-        try {
-          DbRecipe dbRecipe = 
-            new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
-          String recipeId = rs.getString(1);
-          substitutions.put(":recipe_id", recipeId);
-          getRecipeProperties(dbRecipe, conn, substitutions);
-          recipeList.add(dbRecipe);
-        } catch (ClassNotFoundException cnfe) {
-          if(log.isErrorEnabled()) {
-            log.error("for recipe", cnfe);
+      try {
+        Map substitutions = new HashMap();
+        substitutions.put(":trial_id", trialId);
+        substitutions.put(":expt_id", exptId);
+        Statement stmt = conn.createStatement();
+        query = DBUtils.getQuery("queryRecipes", substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          try {
+            DbRecipe dbRecipe = 
+              new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
+            String recipeId = rs.getString(1);
+            substitutions.put(":recipe_id", recipeId);
+            getRecipeProperties(dbRecipe, conn, substitutions);
+            recipeList.add(dbRecipe);
+          } catch (ClassNotFoundException cnfe) {
+            if(log.isErrorEnabled()) {
+              log.error("for recipe", cnfe);
+            }
           }
         }
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
       }
-      rs.close();
-      stmt.close();
-      conn.close();   
     } catch (SQLException se) {
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting recipes " + query, se);
       }
-    }    
+    }
     
     return recipeList;
   }
@@ -540,21 +563,24 @@ public class OrganizerHelper {
     String query = null;
     try {
       Connection conn = DBUtils.getConnection();
-      Statement stmt = conn.createStatement();
-      Map substitutions = new HashMap();
-      query = DBUtils.getQuery("queryLibRecipes", substitutions);
-      ResultSet rs = stmt.executeQuery(query);
-      while(rs.next()) {
-        recipes.put(rs.getString(2), rs.getString(1));
+      try {
+        Statement stmt = conn.createStatement();
+        Map substitutions = new HashMap();
+        query = DBUtils.getQuery("queryLibRecipes", substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          recipes.put(rs.getString(2), rs.getString(1));
+        }
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
       }
-      rs.close();
-      stmt.close();
-      conn.close();   
     } catch (SQLException se) {
       if(log.isErrorEnabled()) {
         log.error("Caught SQL exception getting recipe names " + query, se);
       }
-    }    
+    }
     
     return recipes;
   }
