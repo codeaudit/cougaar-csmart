@@ -26,7 +26,7 @@ package org.cougaar.tools.csmart.ui.component;
  * always has a single String value.
  */
 
-public class StringRange implements Range {
+public class StringRange extends RangeBase implements Range {
   static final long serialVersionUID = -7351616054609766392L;
 
   String value;

@@ -25,7 +25,7 @@ package org.cougaar.tools.csmart.ui.component;
  * An implementation of the Range interface for doubles.
  */
 
-public class DoubleRange implements Range {
+public class DoubleRange extends RangeBase implements Range {
 
   double minValue;
   double maxValue;

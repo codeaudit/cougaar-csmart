@@ -25,7 +25,7 @@ package org.cougaar.tools.csmart.ui.component;
  * An implementation of the Range interface for integers.
  */
 
-public class IntegerRange implements Range {
+public class IntegerRange extends RangeBase implements Range {
   static final long serialVersionUID = 6546059774126493583L;
 
   int minValue;

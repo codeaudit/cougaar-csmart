@@ -25,7 +25,7 @@ package org.cougaar.tools.csmart.ui.component;
  * An implementation of the Range interface for longs.
  */
 
-public class LongRange implements Range {
+public class LongRange extends RangeBase implements Range {
 
   long minValue;
   long maxValue;

@@ -25,7 +25,7 @@ package org.cougaar.tools.csmart.ui.component;
  * An implementation of the Range interface for floats.
  */
 
-public class FloatRange implements Range {
+public class FloatRange extends RangeBase implements Range {
 
   float minValue;
   float maxValue;

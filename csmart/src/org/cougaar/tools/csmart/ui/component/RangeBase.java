@@ -21,31 +21,13 @@
 
 package org.cougaar.tools.csmart.ui.component;
 
-import java.io.Serializable;
 /**
- * The interface for values that can be get/set on a configurable component.
- * There are implementations of this for Integer and String.
- */
+ * Base class for ranges adding Comparable API that compares the
+ * string value of the ranges.
+ **/
 
-public interface Range extends Serializable, Comparable {
-    /**
-     * Get the minimum value of the range. Values are allowed to be
-     * equal to the minimum value
-     * @return an object having the minimum value
-     **/
-    Object getMinimumValue();
-
-    /**
-     * Get the maximum value of the range. Values are allowed to
-     * be equal to the maximum value
-     * @return an object having the maximum value
-     **/
-    Object getMaximumValue();
-
-    /**
-     * Test if an Object is in this Range
-     * @param o the Object to test
-     **/
-    boolean isInRange(Object o);
+public class RangeBase {
+    public int compareTo(Object o) {
+        return toString().compareTo(o.toString());
+    }
 }
-

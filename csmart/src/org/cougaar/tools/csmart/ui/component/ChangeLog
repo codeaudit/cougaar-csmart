@@ -1,3 +1,23 @@
+2001-11-12  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* DoubleRange.java: 
+	* FloatRange.java: 
+	* IntegerRange.java: 
+	* LongRange.java: 
+	* StringRange.java: 
+	* RangeBase.java: 
+	* Range.java:
+	Make Range objects Comparable by extending Comparable. Implement
+	compareToMethod in RangeBase class by comparing the toString()
+	values. This allows presentation of the allowed values as a sorted
+	list.
+
+2001-11-09  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PDbBase.java:
+	Commit before close only if auto-commit is off. Turn off
+	auto-commit when opening the connection.
+
 2001-11-07  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* PopulateDb.java:
