@@ -774,7 +774,7 @@ public class Organizer extends JScrollPane {
       case PDbBase.RECIPE_STATUS_ABSENT:
         break;                // Just write it
       }
-      pdb.replaceLibRecipe(rc);
+      pdb.insureLibRecipe(rc);
       JOptionPane.showMessageDialog(this,
                                     "Recipe written successfully.",
                                     "Recipe Written",
