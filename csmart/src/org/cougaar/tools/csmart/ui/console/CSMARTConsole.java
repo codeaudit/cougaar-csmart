@@ -1128,18 +1128,8 @@ public class CSMARTConsole extends JFrame {
 				nodesToRun[i].getShortName() + currentTrial);
 
     ConfigurationWriter configWriter = null;
-    // TODO: can't write configWriter in createNode; get marshalling error
-    // get two different errors depending on whether we're writing
-    // a scalability society or an abc society
     if (!CSMART.inDBMode()) {
       configWriter = experiment.getConfigurationWriter(nodesToRun);
-      // workaround for running locally, just write config files
-//        try {
-//          configWriter.writeConfigFiles(new File("."));
-//        } catch (Exception e) {
-//          System.out.println("Could not write config files");
-//        }
-//        configWriter = null;
     }
 
     // create the node

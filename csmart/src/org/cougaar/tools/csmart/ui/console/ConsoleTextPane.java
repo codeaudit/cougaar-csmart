@@ -233,12 +233,24 @@ public class ConsoleTextPane extends JTextPane {
       new javax.swing.text.SimpleAttributeSet();
     ConsoleTextPane pane = 
       new ConsoleTextPane(doc, new NodeStatusButton((javax.swing.Icon)null));
-    doc.setBufferSize(20);
+    //    doc.setBufferSize(20);
     doc.appendString("abcdefghijklmnopqrstuvw", a);
-    pane.setNotifyCondition("now is the time for all good men");
+    //    pane.setNotifyCondition("now is the time for all good men");
     doc.appendString("now is the time for all good men", a);
+    pane.setCaretPosition(0);
+    pane.moveCaretPosition(pane.getDocument().getLength());
+    JScrollPane scrollPane = new JScrollPane(pane);
+    javax.swing.JDesktopPane desktop = new javax.swing.JDesktopPane();
+    javax.swing.JInternalFrame internalFrame = 
+      new javax.swing.JInternalFrame("", true, false, true, true);
+    internalFrame.getContentPane().add(scrollPane);
+    internalFrame.setSize(100, 100);
+    internalFrame.setLocation(10, 10);
+    internalFrame.setVisible(true);
+    desktop.add(internalFrame,
+                javax.swing.JLayeredPane.DEFAULT_LAYER);
     javax.swing.JFrame frame = new javax.swing.JFrame();
-    frame.getContentPane().add(pane);
+    frame.getContentPane().add(desktop);
     frame.pack();
     frame.setSize(200, 200);
     frame.setVisible(true);
