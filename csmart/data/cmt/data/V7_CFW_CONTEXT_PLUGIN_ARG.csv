@@ -1,19 +1,71 @@
 CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PARAMETER_VALUE,PARAMETER_ORDER,THREAD_ID,ORG_ID,NOMENCLATURE,UIC
-1AD-CFW,AMMO-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE,,,
-1AD-CFW,AMMO-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,1,BASE,,,
-1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE,,,
-1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,1,BASE,,,
-1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|3, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,3,BASE,,,
-1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|2, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,2,BASE,,,
-1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|4, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,4,BASE,,,
-1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE,,,
-1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,1,BASE,,,
-1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|3, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,3,BASE,,,
-1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|2, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,2,BASE,,,
-1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|4, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,4,BASE,,,
-1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE,,,
-1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,1,BASE,,,
-1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|3, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,3,BASE,,,
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|BulkPOL|1, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,BulkPOL,2,BASE,,,
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|PackagedPOL|2, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,PackagedPOL,3,BASE,,,
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|Ammunition|3, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,Ammunition,1,BASE,,,
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|Consumable|4, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,Consumable,4,BASE,,,
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.generic.PropagationPlugIn|forward.xml|0, ,org.cougaar.domain.mlm.plugin.generic.PropagationPlugIn,0,PROPAGATION_RULES,forward.xml,0,BASE,,,
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn|default_allocation_rules.xml|0, ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,default_allocation_rules.xml,0,BASE,,,
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn|092MP.oplan.q|0, ,org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn,0,OPLAN_Q_FILE,092MP.oplan.q,0,BASE,,,
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|LimitResourcesPolicy.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,NCA_POLICY_FILES,LimitResourcesPolicy.ldm.xml,0,BASE,,,
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OffsetDays=7|1, ,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,0,STRAT_TRANS_ARGS,OffsetDays=7,1,BASE,,,
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OriginFile=None|0, ,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,0,STRAT_TRANS_ARGS,OriginFile=None,0,BASE,,,
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn|+PrototypeProvider|1, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn,0,SUBSISTENCE_LDM_ARGS, +PrototypeProvider,1,BASE,,,
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn|subsistence.q|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn,0,SUBSISTENCE_LDM_ARGS,subsistence.q,0,BASE,,,
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceConsumerLDMPlugIn|subsistence.q|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceConsumerLDMPlugIn,0,SUBSISTENCE_CONSUMER_LDM_FILE,subsistence.q,0,BASE,,,
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn|ClassISubsistence|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn,0,SUBSISTENCE_PROJECTION_ARGS,ClassISubsistence,0,BASE,,,
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn|+PrototypeProvider|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn,1,MEILDM_PROCESSOR, +PrototypeProvider,0,BASE,,,
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn|icisMEI.q|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn,0,MEILDM_FILE,icisMEI.q,0,BASE
+
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_5corps_aggregate_assets.q|0,,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_5corps_aggregate_assets.q,0,BASE
+1AD-CFW,416-TKCO-POL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|416-TKCO-POL.assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,416-TKCO-POL.assets.q,0,BASE
+1AD-CFW,418-TKCO-POL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|418-TKCO-POL.assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,418-TKCO-POL.assets.q,0,BASE
+1AD-CFW,89-TKCO-CGO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|89-TKCO-CGO.assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,89-TKCO-CGO.assets.q,0,BASE
+
+1AD-CFW,CORPS-ORD-MGR,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,CORPS-ORD-MGR,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,1,ADD
+1AD-CFW,CORPS-ORD-MGR,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|2, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,2,ADD
+1AD-CFW,CORPS-ORD-MGR,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|3, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,3,ADD
+1AD-CFW,CORPS-ORD-MGR,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Consumable|5, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Consumable,5,ADD
+1AD-CFW,CORPS-ORD-MGR,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|6,,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,6,ADD
+1AD-CFW,CORPS-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|3, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,3,BASE
+1AD-CFW,CORPS-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|5, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,5,BASE
+1AD-CFW,CORPS-ORD-MGR,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-CORPS-ORD-MGR.ldm.xml|1, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-CORPS-ORD-MGR.ldm.xml,1,BASE
+
+1AD-CFW,THEATER-ORD-MGR,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,THEATER-ORD-MGR,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,1,ADD
+1AD-CFW,THEATER-ORD-MGR,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|2, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,2,ADD
+1AD-CFW,THEATER-ORD-MGR,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|3, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,3,ADD
+1AD-CFW,THEATER-ORD-MGR,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Consumable|5, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Consumable,5,ADD
+1AD-CFW,THEATER-ORD-MGR,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|6,,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,6,ADD
+1AD-CFW,THEATER-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|3, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,3,BASE
+1AD-CFW,THEATER-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|5, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,5,BASE
+1AD-CFW,THEATER-ORD-MGR,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-THEATER-ORD-MGR.ldm.xml|1, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-THEATER-ORD-MGR.ldm.xml,1,BASE
+
+1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
+1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,1,BASE
+1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|3, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,3,BASE
+1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|2, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,2,BASE
+1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|4, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,4,BASE
+1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,1,ADD
+1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|2, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,2,ADD
+1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|4, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,4,ADD
+1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|5, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,5,ADD
+1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|3, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,3,ADD
+1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
+1AD-CFW,3-69-ARBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-BN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-2BDE-BN.ldm.xml,0,BASE
+1AD-CFW,4-64-ARBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-BN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-2BDE-BN.ldm.xml,0,BASE
+
+
+
+1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
+1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,1,BASE
+1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|3, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,3,BASE
+1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|2, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,2,BASE
+1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|4, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,4,BASE
+1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
+1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,1,BASE
+1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|3, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,3,BASE
 1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|2, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,2,BASE
 1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|4, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,4,BASE
 1AD-CFW,CAVSQDN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
@@ -55,9 +107,6 @@ CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PAR
 1AD-CFW,INFBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|3, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,3,BASE
 1AD-CFW,INFBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|2, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,2,BASE
 1AD-CFW,INFBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|4, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,4,BASE
-1AD-CFW,MATERIEL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,1,BASE
-1AD-CFW,MATERIEL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -AmmunitionInventory,0,BASE
-1AD-CFW,MATERIEL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|2, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,2,BASE
 1AD-CFW,MSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,MSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|2, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,2,BASE
 1AD-CFW,MSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|4, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,4,BASE
@@ -85,7 +134,6 @@ CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PAR
 1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn|icisMEI.q|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn,0,MEILDM_FILE,icisMEI.q,0,BASE
 1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn|+PrototypeProvider|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn,1,PARTSLDM_PROCESSOR, +PrototypeProvider,0,BASE
 1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn|icisParts.q|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn,0,PARTSLDM_FILE,icisParts.q,0,BASE
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceConsumerLDMPlugIn|subsistence.q|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceConsumerLDMPlugIn,0,SUBSISTENCE_CONSUMER_LDM_FILE,subsistence.q,0,BASE
 1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+SubsistenceInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +SubsistenceInventory,0,BASE
 1AD-CFW,DASB,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+SubsistenceInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +SubsistenceInventory,0,BASE
 1AD-CFW,FSB,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+SubsistenceInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +SubsistenceInventory,0,BASE
@@ -97,76 +145,23 @@ CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PAR
 1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+ClassISubsistenceTransport|1, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +ClassISubsistenceTransport,1,BASE
 1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+SubsistenceInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +SubsistenceInventory,0,BASE
 1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|ClassISubsistence_inv=TCBN-HHC_classisubsistence.inv|2, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS,ClassISubsistence_inv=TCBN-HHC_classisubsistence.inv,2,BASE
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn|+PrototypeProvider|1, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn,0,SUBSISTENCE_LDM_ARGS, +PrototypeProvider,1,BASE
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn|subsistence.q|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn,0,SUBSISTENCE_LDM_ARGS,subsistence.q,0,BASE
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn|ClassISubsistence|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn,0,SUBSISTENCE_PROJECTION_ARGS,ClassISubsistence,0,BASE
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|Ammunition|1, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,Ammunition,1,BASE
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|BulkPOL|2, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,BulkPOL,2,BASE
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|Consumable|4, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,Consumable,4,BASE
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|PackagedPOL|3, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,PackagedPOL,3,BASE
 1AD-CFW,89-TKCO-CGO,mil.darpa.log.alpine.blackjack.plugins.TransportAllocatorPlugIn|envFile=89-TKCO-CGO.env.xml|0, ,mil.darpa.log.alpine.blackjack.plugins.TransportAllocatorPlugIn,0,TRANSPORT_ALLOCATOR_ARGS,envFile=89-TKCO-CGO.env.xml,0,BASE
 1AD-CFW,89-TKCO-CGO,mil.darpa.log.alpine.blackjack.plugins.TransportExpanderPlugIn|envFile=89-TKCO-CGO.env.xml|0, ,mil.darpa.log.alpine.blackjack.plugins.TransportExpanderPlugIn,0,TRANSPORT_EXPANDER_ARGS,envFile=89-TKCO-CGO.env.xml,0,BASE
 1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.construction.ConstructionInventoryPlugIn|+ClassIVConstructionMaterialInventory|0, ,org.cougaar.domain.mlm.construction.ConstructionInventoryPlugIn,0,CONSTRUCTION_INVENTORY_ARGS, +ClassIVConstructionMaterialInventory,0,BASE
 1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.construction.ConstructionProjectionPlugIn|-ClassIVConstructionMaterialSupplyTasks|0, ,org.cougaar.domain.mlm.construction.ConstructionProjectionPlugIn,0,CONSTRUCTION_PROJECTION_ARGS, -ClassIVConstructionMaterialSupplyTasks,0,BASE
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn|default_allocation_rules.xml|0, ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,default_allocation_rules.xml,0,BASE
 1AD-CFW,CONUS-ORD-SUPPLY,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn|IOC_allocation_rules.xml|0, ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,IOC_allocation_rules.xml,0,BASE
 1AD-CFW,DIV-HQ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn|3ID_allocation_rules.xml|0, ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,3ID_allocation_rules.xml,0,BASE
 1AD-CFW,SUPPLY-SOURCE,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn|trans_router.xml|0, ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,trans_router.xml,0,BASE
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.generic.PropagationPlugIn|forward.xml|0, ,org.cougaar.domain.mlm.plugin.generic.PropagationPlugIn,0,PROPAGATION_RULES,forward.xml,0,BASE
 1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn|Build_Short_Runway|1, ,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn,0,UNIVERSAL_EXPANDER_ARGS,Build_Short_Runway,1,BASE
 1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn|Build_Small_Tent_City|2, ,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn,0,UNIVERSAL_EXPANDER_ARGS,Build_Small_Tent_City,2,BASE
 1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn|Expand_Runway_Apron|0, ,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn,0,UNIVERSAL_EXPANDER_ARGS,Expand_Runway_Apron,0,BASE
-1AD-CFW,1-14-CAVSQDN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,1-23-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,1-37-FABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,2-3-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,296-SPTBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,3-BDE-2ID-HHC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,3ID-OTHER,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,416-TKCO-POL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|416-TKCO-POL.assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,416-TKCO-POL.assets.q,0,BASE
-1AD-CFW,418-TKCO-POL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|418-TKCO-POL.assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,418-TKCO-POL.assets.q,0,BASE
-1AD-CFW,5-20-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,89-TKCO-CGO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|89-TKCO-CGO.assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,89-TKCO-CGO.assets.q,0,BASE
-1AD-CFW,AMMO-SUPPLY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_ARBN_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_ARBN_assets.q,0,BASE
-1AD-CFW,AVNBN-ATTACK,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_AVNBN_ATTACK_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_AVNBN_ATTACK_assets.q,0,BASE
-1AD-CFW,AVNBN-TRANSPORT,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_AVNBN_TRANSPORT_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_AVNBN_TRANSPORT_assets.q,0,BASE
-1AD-CFW,BDE-HHC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_MSB_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_MSB_assets.q,0,BASE
-1AD-CFW,CAVSQDN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_CAVSQDN_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_CAVSQDN_assets.q,0,BASE
-1AD-CFW,CORPS-MAINT,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,DASB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_DASB_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_DASB_assets.q,0,BASE
-1AD-CFW,DISCOM-HQ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_assets.q,0,BASE
-1AD-CFW,DIV-HQ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_MSB_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_MSB_assets.q,0,BASE
-1AD-CFW,ENGBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_ENGBN_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_ENGBN_assets.q,0,BASE
-1AD-CFW,FABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_FABN_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_FABN_assets.q,0,BASE
-1AD-CFW,FSB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_FSB_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_FSB_assets.q,0,BASE
-1AD-CFW,IBCT-OTHER,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,IBCT-SPTBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_INFBN_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_INFBN_assets.q,0,BASE
-1AD-CFW,MATERIEL-SUPPLY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,MEDICAL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,MEDICAL-SUPPLY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,MSB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_MSB_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,eiger_MSB_assets.q,0,BASE
-1AD-CFW,OTHER,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,POL-SUPPLY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,SPTGP-HHC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,SPTGP-UNIT,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,THEATER-TRANSPORT,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,THEATER-TRANSPORT-VISHNU,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,TRANS-TERMINAL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_all_aggregate_assets.q,0,BASE
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn|092MP.oplan.q|0, ,org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn,0,OPLAN_Q_FILE,092MP.oplan.q,0,BASE
 1AD-CFW,10-ENGBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-BN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-2BDE-BN.ldm.xml,0,BASE
 1AD-CFW,1-41-FABN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-BN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-2BDE-BN.ldm.xml,0,BASE
 1AD-CFW,2-7-INFBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-BN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-2BDE-BN.ldm.xml,0,BASE
-1AD-CFW,3-69-ARBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-BN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-2BDE-BN.ldm.xml,0,BASE
 1AD-CFW,3-FSB,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-FSB.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-2BDE-FSB.ldm.xml,0,BASE
 1AD-CFW,3ID-HHC,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|ArmyFeedingPolicy.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,DIV_POLICY_FILES,ArmyFeedingPolicy.ldm.xml,0,BASE
 1AD-CFW,3ID-HHC,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|BasicLoadPolicy.ldm.xml|1, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,DIV_POLICY_FILES,BasicLoadPolicy.ldm.xml,1,BASE
-1AD-CFW,4-64-ARBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-BN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-2BDE-BN.ldm.xml,0,BASE
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|LimitResourcesPolicy.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,NCA_POLICY_FILES,LimitResourcesPolicy.ldm.xml,0,BASE
 1AD-CFW,AMMO-SUPPLY,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-MATERIEL-SUPPLY.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-MATERIEL-SUPPLY.ldm.xml,0,BASE
-1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
 1AD-CFW,AVNBN-ATTACK,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
 1AD-CFW,AVNBN-TRANSPORT,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
 1AD-CFW,CAVSQDN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
@@ -182,19 +177,13 @@ CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PAR
 1AD-CFW,MSB,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-MSB.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-MSB.ldm.xml,0,BASE
 1AD-CFW,POL-SUPPLY,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-MATERIEL-SUPPLY.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-MATERIEL-SUPPLY.ldm.xml,0,BASE
 1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-Construction.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-Construction.ldm.xml,0,BASE
-1AD-CFW,TRANS-TERMINAL,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-TRANS-TERMINAL.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-TRANS-TERMINAL.ldm.xml,0,BASE
 1AD-CFW,3ID-OTHER,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,BASE
-1AD-CFW,AMMO-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,1,ADD
-1AD-CFW,AMMO-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|3, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,3,ADD
-1AD-CFW,AMMO-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|4, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,4,ADD
-1AD-CFW,AMMO-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|2, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,2,ADD
-1AD-CFW,AMMO-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,1,ADD
-1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|2, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,2,ADD
-1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|4, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,4,ADD
-1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|5, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,5,ADD
-1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|3, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,3,ADD
-1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+
+
+
+
+
+
 1AD-CFW,AVNBN-ATTACK,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,1,ADD
 1AD-CFW,AVNBN-ATTACK,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|2, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,2,ADD
 1AD-CFW,AVNBN-ATTACK,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|4, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,4,ADD
@@ -288,8 +277,6 @@ CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PAR
 1AD-CFW,TRANS-TERMINAL,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|4, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,4,ADD
 1AD-CFW,TRANS-TERMINAL,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|2, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,2,ADD
 1AD-CFW,TRANS-TERMINAL,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OffsetDays=7|1, ,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,0,STRAT_TRANS_ARGS,OffsetDays=7,1,BASE
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OriginFile=None|0, ,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,0,STRAT_TRANS_ARGS,OriginFile=None,0,BASE
 1AD-CFW,CONUS-ORD-SUPPLY,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Supply|0, ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,0,UNIVERSAL_ALLOCATOR_ARGS,Supply,0,BASE
 1AD-CFW,DLAHQ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Supply|0, ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,0,UNIVERSAL_ALLOCATOR_ARGS,Supply,0,BASE
 1AD-CFW,FUTURE,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Supply|0, ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,0,UNIVERSAL_ALLOCATOR_ARGS,Supply,0,BASE
@@ -308,96 +295,14 @@ CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PAR
 
 
 
-
-
-1AD-CFW,317-ENGBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WA0GAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WA0GAA',1,BASE,317-ENGBN,317 Eng Bn,WA0GAA
-1AD-CFW,1-9-FABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WA2SAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WA2SAA',1,BASE,1-9-FABN,1/9FA Bn,WA2SAA
-1AD-CFW,3-BDE-2ID-HHC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAH9AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAH9AA',1,BASE,3-BDE-2ID-HHC,"HHC, 3rd Bde, 2ID",WAH9AA
-1AD-CFW,5-20-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAJKAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAJKAA',1,BASE,5-20-INFBN,5/20 Inf Bn,WAJKAA
-1AD-CFW,10-ENGBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAP7AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAP7AA',1,BASE,10-ENGBN,10 Eng Bn,WAP7AA
-1AD-CFW,3-7-CAVSQDN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAP9AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAP9AA',1,BASE,3-7-CAVSQDN,3/7 Cav Sqdrn,WAP9AA
-1AD-CFW,3-69-ARBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQ1AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQ1AA',1,BASE,3-69-ARBN,3/69 Tnk Bn,WAQ1AA
-1AD-CFW,12-FABTRY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQBAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQBAA',1,BASE,12-FABTRY,13 FA Btry MLRS,WAQBAA
-1AD-CFW,3-15-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQEAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQEAA',1,BASE,3-15-INFBN,3/15 Inf Bn (Mech),WAQEAA
-1AD-CFW,2-7-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQGAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQGAA',1,BASE,2-7-INFBN,2/7 Inf Bn (Mech),WAQGAA
-1AD-CFW,3ID-HHC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQJAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQJAA',1,BASE,3ID-HHC,"HHC, 3ID",WAQJAA
-1AD-CFW,3-MPCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQKAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQKAA',1,BASE,3-MPCO,3 MP Co,WAQKAA
-1AD-CFW,1-3-AVNBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQLAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQLAA',1,BASE,1-3-AVNBN,1/3 Avn Bn (AH64),WAQLAA
-1AD-CFW,123-SIGBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQMAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQMAA',1,BASE,123-SIGBN,123 Signal Bn,WAQMAA
-1AD-CFW,1-BDE-3ID-HHC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQNAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQNAA',1,BASE,1-BDE-3ID-HHC,"HHC, 1 Bde, 3ID",WAQNAA
-1AD-CFW,2-BDE-3ID-HHC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQPAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQPAA',1,BASE,2-BDE-3ID-HHC,"HHC, 2 Bde, 3ID",WAQPAA
-1AD-CFW,DIVARTY-3ID-HHB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQRAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQRAA',1,BASE,DIVARTY-3ID-HHB,"HHB, 3 ID, DIVARTY",WAQRAA
-1AD-CFW,3-DISCOM-HHC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQSAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQSAA',1,BASE,3-DISCOM-HHC,HHC 3 DISCOM,WAQSAA
-1AD-CFW,3-7-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQYAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQYAA',1,BASE,3-7-INFBN,3/17 Inf Bn (Mech),WAQYAA
-1AD-CFW,1-41-FABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQZAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAQZAA',1,BASE,1-41-FABN,1/41 FA Bn,WAQZAA
-1AD-CFW,1-15-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAR0AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAR0AA',1,BASE,1-15-INFBN,1/15 Inf Bn (Mech),WAR0AA
-1AD-CFW,3-BDE-3ID-HHC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAR4AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAR4AA',1,BASE,3-BDE-3ID-HHC,"HHC, 3 Bde, 3ID",WAR4AA
-1AD-CFW,1-23-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WARNAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WARNAA',1,BASE,1-23-INFBN,1/23 Inf Bn,WARNAA
-1AD-CFW,1-10-FABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WARXAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WARXAA',1,BASE,1-10-FABN,1/10 FA Bn,WARXAA
-1AD-CFW,1-64-ARBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAZDAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAZDAA',1,BASE,1-64-ARBN,1/64 Tnk Bn,WAZDAA
-1AD-CFW,11-ENGBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAZYAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAZYAA',1,BASE,11-ENGBN,11 Eng Bn,WAZYAA
-1AD-CFW,24-CSB-HHD,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0VAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB0VAA',1,BASE,24-CSB-HHD,HHD 24 Corps Spt Bn,WB0VAA
-1AD-CFW,632-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB40AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB40AA',1,BASE,632-MAINTCO,632 Maint Co Non Div,WB40AA
-1AD-CFW,92-ENGBN-CBTHVY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBAHAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WBAHAA',1,BASE,92-ENGBN-CBTHVY,92 Engineering BN - Combat Heavy,WBAHAA
-1AD-CFW,21-MED-CSHOSP,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBH7AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WBH7AA',1,BASE,21-MED-CSHOSP,21 MD Combat Support HSP,WBH7AA
-1AD-CFW,36-MEDEVACBN-GAMBCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBHGAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WBHGAA',1,BASE,36-MEDEVACBN-GAMBCO,"Gnd Amb Co,36 Med Evac Bn",WBHGAA
-1AD-CFW,61-ASMEDBN-MEDCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBHNAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WBHNAA',1,BASE,61-ASMEDBN-MEDCO,"Med Co, 61 Area Spt Med Bn",WBHNAA
-1AD-CFW,126-MEDTM-FSURG,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBQDAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WBQDAA',1,BASE,126-MEDTM-FSURG,126 MD Tm Fwd Surgical,WBQDAA
-1AD-CFW,209-MICO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBWFAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WBWFAA',1,BASE,209-MICO,209 MI Co,WBWFAA
-1AD-CFW,157-QMCO-FSVC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WC4PAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WC4PAA',1,BASE,157-QMCO-FSVC,157 QM Fld Svc Co,WC4PAA
-1AD-CFW,10-TCBN-HHC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKYAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCKYAA',1,BASE,10-TCBN-HHC,HHC 10 TC Bn,WCKYAA
-1AD-CFW,396-TCCO-PLS,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCM6AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCM6AA',1,BASE,396-TCCO-PLS,396 TC Co PLS,WCM6AA
-1AD-CFW,96-TCCO-HET,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCMAAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCMAAA',1,BASE,96-TCCO-HET,96 TC Co (Het),WCMAAA
-1AD-CFW,89-TKCO-CGO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCN6AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCN6AA',1,BASE,89-TKCO-CGO,89 MDM Tk Co(CGO),WCN6AA
-1AD-CFW,119-TCCO-CGO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCP7AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCP7AA',1,BASE,119-TCCO-CGO,119 TC Co CGO Transfer,WCP7AA
-1AD-CFW,186-WTRPURDET,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCW7AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCW7AA',1,BASE,186-WTRPURDET,186 Water Purification Det,WCW7AA
-1AD-CFW,24-ODCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDHJAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDHJAA',1,BASE,24-ODCO,"24 OD Co, Ammo DS PLS",WDHJAA
-1AD-CFW,703-MSB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDKAAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDKAAA',1,BASE,703-MSB,703 Main Spt Bn,WDKAAA
-1AD-CFW,226-QMCO-SPLY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDMJAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDMJAA',1,BASE,226-QMCO-SPLY,226 QM Supply Co,WDMJAA
-1AD-CFW,18-QMPLT,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDNZAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDNZAA',1,BASE,18-QMPLT,18 QM Perishable Sub Plat,WDNZAA
-1AD-CFW,2-3-AVNBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDX9AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDX9AA',1,BASE,2-3-AVNBN,2/3 Avn Bn Gen Spt,WDX9AA
-1AD-CFW,18-ENGCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WE0VAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WE0VAA',1,BASE,18-ENGCO,18 Eng Co,WE0VAA
-1AD-CFW,296-SPTBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WE4QAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WE4QAA',1,BASE,296-SPTBN,296 Spt Bn,WE4QAA
-1AD-CFW,602-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WE7NAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WE7NAA',1,BASE,602-MAINTCO,602 Maint Co Non Div,WE7NAA
-1AD-CFW,39-FABTRY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WE93AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WE93AA',1,BASE,39-FABTRY,39 FA Btry TgtAcq,WE93AA
-1AD-CFW,571-MEDDET-AMBL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEAEAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WEAEAA',1,BASE,571-MEDDET-AMBL,571 Med Det (Ambl)(UH-1),WEAEAA
-1AD-CFW,110-QMCO-POLSPLY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WELKAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WELKAA',1,BASE,110-QMCO-POLSPLY,110 QM POL Supply Co,WELKAA
-1AD-CFW,180-TCBN-HHD,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEP0AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WEP0AA',1,BASE,180-TCBN-HHD,180 TC Bn HHD,WEP0AA
-1AD-CFW,3-AVNBDE-HHC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEPQAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WEPQAA',1,BASE,3-AVNBDE-HHC,HHC 3 Avn Bde,WEPQAA
-1AD-CFW,553-CSB-HHD,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEU5AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WEU5AA',1,BASE,553-CSB-HHD,HHD 553 Corps Spt Bn,WEU5AA
-1AD-CFW,259-QMCO-FSVC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEU6AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WEU6AA',1,BASE,259-QMCO-FSVC,259 QM Fld Svc Co,WEU6AA
-1AD-CFW,416-TKCO-POL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEZ4AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WEZ4AA',1,BASE,416-TKCO-POL,416 MDM Tk Co (POL),WEZ4AA
-1AD-CFW,418-TKCO-POL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEZ5AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WEZ5AA',1,BASE,418-TKCO-POL,418 MDM Tk Co (POL),WEZ5AA
-1AD-CFW,1-3-ADABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEZMAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WEZMAA',1,BASE,1-3-ADABN,1/3 ADA Bn,WEZMAA
-1AD-CFW,202-WTRPURDET,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFB6AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WFB6AA',1,BASE,202-WTRPURDET,202 Water Purification Det,WFB6AA
-1AD-CFW,4-64-ARBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFL9AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WFL9AA',1,BASE,4-64-ARBN,4/64 Tnk Bn,WFL9AA
-1AD-CFW,512-QMCO-WTRSPLY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFS4AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WFS4AA',1,BASE,512-QMCO-WTRSPLY,512 QM Water Supply Co,WFS4AA
-1AD-CFW,52-INF-CCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFTQAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WFTQAA',1,BASE,52-INF-CCO,"C Co, 52 Inf (Anti armor)",WFTQAA
-1AD-CFW,334-SIGCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WG02AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WG02AA',1,BASE,334-SIGCO,334 Signal Co,WG02AA
-1AD-CFW,147-MEDLOGBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WG43AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WG43AA',1,BASE,147-MEDLOGBN,"B Co, 147 Med Log Bn",WG43AA
-1AD-CFW,1-30-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WGK6AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WGK6AA',1,BASE,1-30-INFBN,1/30 Inf Bn (Mech),WGK6AA
-1AD-CFW,2-69-ARBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WGM6AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WGM6AA',1,BASE,2-69-ARBN,2/69 Ar Bn,WGM6AA
-1AD-CFW,103-MIBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH67AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH67AA',1,BASE,103-MIBN,103 MI BN,WH67AA
-1AD-CFW,406-TCDET-TPT,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WHEKAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WHEKAA',1,BASE,406-TCDET-TPT,406 TC Det (Transfer PT),WHEKAA
-1AD-CFW,3-FSB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJATAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WJATAA',1,BASE,3-FSB,3 Fwd Spt Bn (1x2),WJATAA
-1AD-CFW,26-FSB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJAUAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WJAUAA',1,BASE,26-FSB,26 Fwd Spt Bn (2x1),WJAUAA
-1AD-CFW,ENGBDE-3ID-HHD,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJD1AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WJD1AA',1,BASE,ENGBDE-3ID-HHD,"HHD, 3 ID, ENGBDE",WJD1AA
-1AD-CFW,203-FSB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJD2AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WJD2AA',1,BASE,203-FSB,203 Fwd Spt Bn (2x1),WJD2AA
-1AD-CFW,24-SPTGP-HHC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJEMAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WJEMAA',1,BASE,24-SPTGP-HHC,HHC 24 Spt Group,WJEMAA
-1AD-CFW,1-37-FABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJFJAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WJFJAA',1,BASE,1-37-FABN,1/37 FA Bn,WJFJAA
-1AD-CFW,603-DASB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJFKAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WJFKAA',1,BASE,603-DASB,603 AVN Spt Bn,WJFKAA
-1AD-CFW,2-3-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJHHAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WJHHAA',1,BASE,2-3-INFBN,2/3 Inf Bn,WJHHAA
-1AD-CFW,1-14-CAVSQDN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJHJAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WJHJAA',1,BASE,1-14-CAVSQDN,1/14 Cav Sqdrn (RSTA),WJHJAA
-1AD-CFW,343-QMCO-SPLY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WSS7AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WSS7AA',1,BASE,343-QMCO-SPLY,343 QM Supply Co,WSS7AA
-1AD-CFW,324-SCBN-TRITAC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WV43AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WV43AA',1,BASE,324-SCBN-TRITAC,324 SC Bn Area EAC TRITAC,WV43AA
-TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,,,,
-TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,,,,
-TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,,,,,,,,,,
-TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,,,,
-TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.GenericVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, ,,,,,,,,,
-TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,,,,
-TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, ,,,,,,,,,
-TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|defaultFormat=GLMT.ShipPacker.dff.xml|1, ,,,,,,,,,
+TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,,,,,,,
+TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.GenericVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|defaultFormat=GLMT.ShipPacker.dff.xml|1, 
 TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, 
 TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, 
 TRANSCOM-CFW,TRANSCOM-TheaterGround,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.Transport.env.xml|0, 
@@ -407,3 +312,132 @@ TRANSCOM-STUB-CFW,TRANSCOM-HQ,org.cougaar.domain.mlm.plugin.sample.UniversalAllo
 TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.pkg.glmtrans.plugins.base.GLMTransOneToManyExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, 
 TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.pkg.glmtrans.plugins.TranscomVishnuPlugIn|envFile=GLMT.TRANSCOM.env.xml|0, 
 TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.lib.plugin.UTILLdmXMLPlugIn|ldmFile=GLMT.TRANSCOM.ldm.xml|0, 
+
+
+
+
+
+
+
+
+
+
+1AD-CFW,5-CORPS,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAT6AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAT6AA',1,BASE,5-CORPS,5-CORPS,WAT6AA
+1AD-CFW,1-AD,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPBAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAPBAA',1,BASE,1-AD,1-AD,WAPBAA
+1AD-CFW,501-MPCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPCAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAPCAA',1,BASE,501-MPCO,501-MPCO,WAPCAA
+1AD-CFW,141-SIGBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPEAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAPEAA',1,BASE,141-SIGBN,141-SIGBN,WAPEAA
+1AD-CFW,1-4-ADABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WGM8AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WGM8AA',1,BASE,1-4-ADABN,1-4-ADABN,WGM8AA
+1AD-CFW,501-MIBN-CEWI,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH6YAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH6YAA',1,BASE,501-MIBN-CEWI,501-MIBN-CEWI,WH6YAA
+1AD-CFW,69-CHEMCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WA8RAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WA8RAA',1,BASE,69-CHEMCO,69-CHEMCO,WA8RAA
+1AD-CFW,1-BDE-1-AD,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAELAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAELAA',1,BASE,1-BDE-1-AD,1-BDE-1-AD,WAELAA
+1AD-CFW,2-37-ARBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAD9AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAD9AA',1,BASE,2-37-ARBN,2-37-ARBN,WAD9AA
+1AD-CFW,1-36-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAE3AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAE3AA',1,BASE,1-36-INFBN,1-36-INFBN,WAE3AA
+1AD-CFW,1-37-ARBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH54AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH54AA',1,BASE,1-37-ARBN,1-37-ARBN,WH54AA
+1AD-CFW,16-ENGBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAEUAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAEUAA',1,BASE,16-ENGBN,16-ENGBN,WAEUAA
+1AD-CFW,2-3-FABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAEQAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAEQAA',1,BASE,2-3-FABN,2-3-FABN,WAEQAA
+1AD-CFW,501-FSB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH96AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH96AA',1,BASE,501-FSB,501-FSB,WH96AA
+1AD-CFW,2-BDE-1-AD,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPGAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAPGAA',1,BASE,2-BDE-1-AD,2-BDE-1-AD,WAPGAA
+1AD-CFW,1-6-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPSAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAPSAA',1,BASE,1-6-INFBN,1-6-INFBN,WAPSAA
+1AD-CFW,2-6-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPWAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAPWAA',1,BASE,2-6-INFBN,2-6-INFBN,WAPWAA
+1AD-CFW,1-35-ARBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPYAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAPYAA',1,BASE,1-35-ARBN,1-35-ARBN,WAPYAA
+1AD-CFW,40-ENGBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDKXAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDKXAA',1,BASE,40-ENGBN,40-ENGBN,WDKXAA
+1AD-CFW,4-27-FABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH28AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH28AA',1,BASE,4-27-FABN,4-27-FABN,WH28AA
+1AD-CFW,47-FSB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH98AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH98AA',1,BASE,47-FSB,47-FSB,WH98AA
+1AD-CFW,3-BDE-1-AD,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAHEAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAHEAA',1,BASE,3-BDE-1-AD,3-BDE-1-AD,WAHEAA
+1AD-CFW,1-13-ARBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAFZAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAFZAA',1,BASE,1-13-ARBN,1-13-ARBN,WAFZAA
+1AD-CFW,1-41-INFBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAHSAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAHSAA',1,BASE,1-41-INFBN,1-41-INFBN,WAHSAA
+1AD-CFW,2-70-ARBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAZBAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAZBAA',1,BASE,2-70-ARBN,2-70-ARBN,WAZBAA
+1AD-CFW,70-ENGBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAZ8AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAZ8AA',1,BASE,70-ENGBN,70-ENGBN,WAZ8AA
+1AD-CFW,4-1-FABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH9UAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH9UAA',1,BASE,4-1-FABN,4-1-FABN,WH9UAA
+1AD-CFW,125-FSB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJA0AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WJA0AA',1,BASE,125-FSB,125-FSB,WJA0AA
+1AD-CFW,DIVARTY-1-AD,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPKAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAPKAA',1,BASE,DIVARTY-1-AD,DIVARTY-1-AD,WAPKAA
+1AD-CFW,25-FABTRY-TGTACQ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH5QAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH5QAA',1,BASE,25-FABTRY-TGTACQ,25-FABTRY-TGTACQ,WH5QAA
+1AD-CFW,1-94-FABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAF7AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAF7AA',1,BASE,1-94-FABN,1-94-FABN,WAF7AA
+1AD-CFW,DISCOM-1-AD,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAPLAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAPLAA',1,BASE,DISCOM-1-AD,DISCOM-1-AD,WAPLAA
+1AD-CFW,123-MSB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDJ0AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDJ0AA',1,BASE,123-MSB,123-MSB,WDJ0AA
+1AD-CFW,AVNBDE-1-AD,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDJUAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDJUAA',1,BASE,AVNBDE-1-AD,AVNBDE-1-AD,WDJUAA
+1AD-CFW,1-1-CAVSQDN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAETAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAETAA',1,BASE,1-1-CAVSQDN,1-1-CAVSQDN,WAETAA
+1AD-CFW,1-501-AVNBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAFDAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAFDAA',1,BASE,1-501-AVNBN,1-501-AVNBN,WAFDAA
+1AD-CFW,2-501-AVNBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDUVAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDUVAA',1,BASE,2-501-AVNBN,2-501-AVNBN,WDUVAA
+1AD-CFW,127-DASB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJEQAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WJEQAA',1,BASE,127-DASB,127-DASB,WJEQAA
+1AD-CFW,16-CSG,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WC9GAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WC9GAA',1,BASE,16-CSG,16-CSG,WC9GAA
+1AD-CFW,485-CSB,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0UAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB0UAA',1,BASE,485-CSB,485-CSB,WB0UAA
+1AD-CFW,596-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WE7LAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WE7LAA',1,BASE,596-MAINTCO,596-MAINTCO,WE7LAA
+1AD-CFW,26-SSCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH1LAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH1LAA',1,BASE,26-SSCO,26-SSCO,WH1LAA
+1AD-CFW,588-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WD4MAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WD4MAA',1,BASE,588-MAINTCO,588-MAINTCO,WD4MAA
+1AD-CFW,592-ORDCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WQ92AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WQ92AA',1,BASE,592-ORDCO,592-ORDCO,WQ92AA
+1AD-CFW,102-POL-SUPPLYCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WELQAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WELQAA',1,BASE,102-POL-SUPPLYCO,102-POL-SUPPLYCO,WELQAA
+1AD-CFW,18-MAINTBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0MAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB0MAA',1,BASE,18-MAINTBN,18-MAINTBN,WB0MAA
+1AD-CFW,77-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB35AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB35AA',1,BASE,77-MAINTCO,77-MAINTCO,WB35AA
+1AD-CFW,226-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WD4PAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WD4PAA',1,BASE,226-MAINTCO,226-MAINTCO,WD4PAA
+1AD-CFW,263-FLDSVC-CO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WQ1FAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WQ1FAA',1,BASE,263-FLDSVC-CO,263-FLDSVC-CO,WQ1FAA
+1AD-CFW,227-SUPPLYCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEVGAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WEVGAA',1,BASE,227-SUPPLYCO,227-SUPPLYCO,WEVGAA
+1AD-CFW,106-TCBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKVAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCKVAA',1,BASE,106-TCBN,106-TCBN,WCKVAA
+1AD-CFW,594-MDM-TRKCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCPGAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCPGAA',1,BASE,594-MDM-TRKCO,594-MDM-TRKCO,WCPGAA
+1AD-CFW,372-CGO-TRANSCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFSRAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WFSRAA',1,BASE,372-CGO-TRANSCO,372-CGO-TRANSCO,WFSRAA
+1AD-CFW,15-PLS-TRKCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNPAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCNPAA',1,BASE,15-PLS-TRKCO,15-PLS-TRKCO,WCNPAA
+1AD-CFW,238-POL-TRKCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WS1AAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WS1AAA',1,BASE,238-POL-TRKCO,238-POL-TRKCO,WS1AAA
+1AD-CFW,3-SUPCOM-HQ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBG0AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WBG0AA',1,BASE,3-SUPCOM-HQ,3-SUPCOM-HQ,WBG0AA
+1AD-CFW,208-SCCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCF0AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCF0AA',1,BASE,208-SCCO,208-SCCO,WCF0AA
+1AD-CFW,27-TCBN-MVTCTRL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCPPAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCPPAA',1,BASE,27-TCBN-MVTCTRL,27-TCBN-MVTCTRL,WCPPAA
+1AD-CFW,19-MMC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH3FAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH3FAA',1,BASE,19-MMC,19-MMC,WH3FAA
+1AD-CFW,7-CSG,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH7MAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH7MAA',1,BASE,7-CSG,7-CSG,WH7MAA
+1AD-CFW,71-MAINTBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0RAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB0RAA',1,BASE,71-MAINTBN,71-MAINTBN,WB0RAA
+1AD-CFW,240-SSCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WE7PAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WE7PAA',1,BASE,240-SSCO,240-SSCO,WE7PAA
+1AD-CFW,317-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WET9AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WET9AA',1,BASE,317-MAINTCO,317-MAINTCO,WET9AA
+1AD-CFW,597-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WHLMAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WHLMAA',1,BASE,597-MAINTCO,597-MAINTCO,WHLMAA
+1AD-CFW,565-RPRPTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDWTAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDWTAA',1,BASE,565-RPRPTCO,565-RPRPTCO,WDWTAA
+1AD-CFW,71-ORDCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WET5AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WET5AA',1,BASE,71-ORDCO,71-ORDCO,WET5AA
+1AD-CFW,561-SSBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDEEAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDEEAA',1,BASE,561-SSBN,561-SSBN,WDEEAA
+1AD-CFW,541-POL-TRKCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNDAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCNDAA',1,BASE,541-POL-TRKCO,541-POL-TRKCO,WCNDAA
+1AD-CFW,584-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WEYBAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WEYBAA',1,BASE,584-MAINTCO,584-MAINTCO,WEYBAA
+1AD-CFW,181-TCBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKXAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCKXAA',1,BASE,181-TCBN,181-TCBN,WCKXAA
+1AD-CFW,377-HVY-TRKCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCMBAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCMBAA',1,BASE,377-HVY-TRKCO,377-HVY-TRKCO,WCMBAA
+1AD-CFW,41-POL-TRKCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCMPAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCMPAA',1,BASE,41-POL-TRKCO,41-POL-TRKCO,WCMPAA
+1AD-CFW,51-MDM-TRKCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNTAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCNTAA',1,BASE,51-MDM-TRKCO,51-MDM-TRKCO,WCNTAA
+1AD-CFW,316-POL-SUPPLYBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WSRPAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WSRPAA',1,BASE,316-POL-SUPPLYBN,316-POL-SUPPLYBN,WSRPAA
+1AD-CFW,900-POL-SUPPLYCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WSTMAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WSTMAA',1,BASE,900-POL-SUPPLYCO,900-POL-SUPPLYCO,WSTMAA
+1AD-CFW,515-POL-TRKCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNBAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCNBAA',1,BASE,515-POL-TRKCO,515-POL-TRKCO,WCNBAA
+1AD-CFW,125-ORDBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WQ91AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WQ91AA',1,BASE,125-ORDBN,125-ORDBN,WQ91AA
+1AD-CFW,452-ORDCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WQ56AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WQ56AA',1,BASE,452-ORDCO,452-ORDCO,WQ56AA
+1AD-CFW,529-ORDCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB5KAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB5KAA',1,BASE,529-ORDCO,529-ORDCO,WB5KAA
+1AD-CFW,11-AVN-RGT,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAAFAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAAFAA',1,BASE,11-AVN-RGT,11-AVN-RGT,WAAFAA
+1AD-CFW,12-AVNBDE,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCYPAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCYPAA',1,BASE,12-AVNBDE,12-AVNBDE,WCYPAA
+1AD-CFW,130-ENGBDE,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WHDLAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WHDLAA',1,BASE,130-ENGBDE,130-ENGBDE,WHDLAA
+1AD-CFW,52-ENGBN-CBTHVY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WNAHAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WNAHAA',1,BASE,52-ENGBN-CBTHVY,52-ENGBN-CBTHVY,WNAHAA
+1AD-CFW,244-ENGBN-CBTHVY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WS5DAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WS5DAA',1,BASE,244-ENGBN-CBTHVY,244-ENGBN-CBTHVY,WS5DAA
+1AD-CFW,69-ADABDE,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAVNAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAVNAA',1,BASE,69-ADABDE,69-ADABDE,WAVNAA
+1AD-CFW,286-ADA-SCCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAYRAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAYRAA',1,BASE,286-ADA-SCCO,286-ADA-SCCO,WAYRAA
+1AD-CFW,18-MPBDE,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFPEAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WFPEAA',1,BASE,18-MPBDE,18-MPBDE,WFPEAA
+1AD-CFW,205-MIBDE,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH8HAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH8HAA',1,BASE,205-MIBDE,205-MIBDE,WH8HAA
+1AD-CFW,30-MEDBDE,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBG7AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WBG7AA',1,BASE,30-MEDBDE,30-MEDBDE,WBG7AA
+1AD-CFW,22-SIGBDE,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCDWAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCDWAA',1,BASE,22-SIGBDE,22-SIGBDE,WCDWAA
+1AD-CFW,5-CORPS-ARTY,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WA0TAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WA0TAA',1,BASE,5-CORPS-ARTY,5-CORPS-ARTY,WA0TAA
+1AD-CFW,41-FABDE,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WA00AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WA00AA',1,BASE,41-FABDE,41-FABDE,WA00AA
+1AD-CFW,2-4-FABN-MLRS,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH1SAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH1SAA',1,BASE,2-4-FABN-MLRS,2-4-FABN-MLRS,WH1SAA
+1AD-CFW,1-27-FABN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAKRAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WAKRAA',1,BASE,1-27-FABN,1-27-FABN,WAKRAA
+1AD-CFW,3-13-FABN-155,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WG1DAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WG1DAA',1,BASE,3-13-FABN-155,3-13-FABN-155,WG1DAA
+1AD-CFW,21-TSC-HQ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WNBSAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WNBSAA',1,BASE,21-TSC-HQ,21-TSC-HQ,WNBSAA
+1AD-CFW,200-MMC,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WNBPAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WNBPAA',1,BASE,200-MMC,200-MMC,WNBPAA
+1AD-CFW,7-TCGP-TPTDD,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WD1HAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WD1HAA',1,BASE,7-TCGP-TPTDD,7-TCGP-TPTDD,WD1HAA
+1AD-CFW,29-SPTGP,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCAYAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCAYAA',1,BASE,29-SPTGP,29-SPTGP,WCAYAA
+1AD-CFW,51-MAINTBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB0HAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB0HAA',1,BASE,51-MAINTBN,51-MAINTBN,WB0HAA
+1AD-CFW,512-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB38AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB38AA',1,BASE,512-MAINTCO,512-MAINTCO,WB38AA
+1AD-CFW,574-SSCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDCQAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDCQAA',1,BASE,574-SSCO,574-SSCO,WDCQAA
+1AD-CFW,5-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB1XAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB1XAA',1,BASE,5-MAINTCO,5-MAINTCO,WB1XAA
+1AD-CFW,343-SUPPLYCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WSS7AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WSS7AA',1,BASE,343-SUPPLYCO,343-SUPPLYCO,WSS7AA
+1AD-CFW,18-PERISH-SUBPLT,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDNZAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDNZAA',1,BASE,18-PERISH-SUBPLT,18-PERISH-SUBPLT,WDNZAA
+1AD-CFW,191-ORDBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WFMVAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WFMVAA',1,BASE,191-ORDBN,191-ORDBN,WFMVAA
+1AD-CFW,23-ORDCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB3TAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB3TAA',1,BASE,23-ORDCO,23-ORDCO,WB3TAA
+1AD-CFW,702-EODDET,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB54Y1'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB54Y1',1,BASE,702-EODDET,702-EODDET,WB54Y1
+1AD-CFW,720-EODDET,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB6CRD'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB6CRD',1,BASE,720-EODDET,720-EODDET,WB6CRD
+1AD-CFW,24-ORDCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WDHJAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WDHJAA',1,BASE,24-ORDCO,24-ORDCO,WDHJAA
+1AD-CFW,37-TRANSGP,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCJZAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCJZAA',1,BASE,37-TRANSGP,37-TRANSGP,WCJZAA
+1AD-CFW,28-TCBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKNAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCKNAA',1,BASE,28-TCBN,28-TCBN,WCKNAA
+1AD-CFW,66-MDM-TRKCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNXAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCNXAA',1,BASE,66-MDM-TRKCO,66-MDM-TRKCO,WCNXAA
+1AD-CFW,68-MDM-TRKCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCNZAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCNZAA',1,BASE,68-MDM-TRKCO,68-MDM-TRKCO,WCNZAA
+1AD-CFW,109-MDM-TRKCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH38AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WH38AA',1,BASE,109-MDM-TRKCO,109-MDM-TRKCO,WH38AA
+1AD-CFW,6-TCBN,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCKKAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WCKKAA',1,BASE,6-TCBN,6-TCBN,WCKKAA
+1AD-CFW,416-POL-TRKCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WNCNAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WNCNAA',1,BASE,416-POL-TRKCO,416-POL-TRKCO,WNCNAA
+1AD-CFW,110-POL-SUPPLYCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WELKAA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WELKAA',1,BASE,110-POL-SUPPLYCO,110-POL-SUPPLYCO,WELKAA
+1AD-CFW,632-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|uic='WB40AA'|1, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,UIC,uic='WB40AA',1,BASE,632-MAINTCO,632-MAINTCO,WB40AA

@@ -33,7 +33,6 @@ CFW_ID,PLUGIN_GROUP_ID,PLUGIN_CLASS,PLUGIN_CLASS_ORDER,BLANK
 1AD-CFW,StrategicTransport,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,0, 
 1AD-CFW,SubsistenceAssets,mil.darpa.log.alpine.blackjack.plugins.SubsistenceConsumerLDMPlugIn,2, 
 1AD-CFW,SubsistenceAssets,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn,3, 
-1AD-CFW,SubsistenceDemand,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0, 
 1AD-CFW,SubsistenceDemand,mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn,1, 
 1AD-CFW,SubsistenceInventoryManagement,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0, 
 1AD-CFW,TheaterConstruction,org.cougaar.domain.mlm.construction.ConstructionInventoryPlugIn,1, 
