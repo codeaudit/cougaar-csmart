@@ -265,10 +265,22 @@ public class ExperimentINIWriter implements ConfigurationWriter {
   } // end of writeLeafData  
   
   private void writeNodeFile(File configDir, ComponentData nc) throws IOException {
-//     if (nc.childCount() == 0) {
-//       // node has no agents or binders. skip it
-//       return;
-//     }
+    if (nc.childCount() == 0) {
+      if (log.isDebugEnabled()) {
+	log.debug("Found node with no children. it's parent: " + nc.getParent());
+      }
+      // node has no agents or binders. 
+      // If it also has no Parent (IE the parent is the society, not a host)
+      // then skip it
+      if (nc.getParent() == null || nc.getParent().getType().equals(ComponentData.SOCIETY))
+	return;
+    } else if (nc.getParent() == null || nc.getParent().getType().equals(ComponentData.SOCIETY)) {
+      // Node has children, but is not assigned to a Host.
+      // Maybe we're dumping a raw society, not assigned to resources. In this case,
+      // writing is OK. But if the Node has no Agents, maybe we should
+      // not write out?
+    }
+
     Object[] parameters = nc.getParameters();
     String configFileName = nc.getName() + ".ini";
     if (parameters.length > 0)
@@ -349,8 +361,8 @@ public class ExperimentINIWriter implements ConfigurationWriter {
         } else {
           //  	} else if (!children[i].getType().equals(ComponentData.NODEBINDER) 
           //                     || !children[i].getType().equals(ComponentData.AGENTBINDER)) {
-          if(log.isInfoEnabled()) {
-            log.info("Got a child of a Node that wasn't an Agent or Node Binder Type: "
+          if(log.isDebugEnabled()) {
+            log.debug("Got a child of a Node that wasn't an Agent or Node Binder Type: "
                       + children[i].getType());
           }
         }
