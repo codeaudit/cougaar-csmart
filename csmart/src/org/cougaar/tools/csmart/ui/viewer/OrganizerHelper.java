@@ -385,7 +385,7 @@ public class OrganizerHelper {
             if (ac.getShortName().equals(aName)) {
               nodeComponent.addAgent(ac);
 //                if(log.isDebugEnabled()) {
-//                  log.debug("Organizer:  Adding agent named:  " + ac.getShortName());
+//                  log.debug("OrganizerHelper:  Adding agent named:  " + ac.getShortName());
 //                }
               break;
             }	    
@@ -408,7 +408,7 @@ public class OrganizerHelper {
     throws SQLException
   {
     boolean first = true;
-    String query = DBUtils.getQuery("queryComponentArgs", substitutions);
+    String query = DBUtils.getQuery(COMPONENT_ARGS_QUERY, substitutions);
     ResultSet rs = stmt.executeQuery(query);
     while (rs.next()) {
       String arg = rs.getString(1);
@@ -439,8 +439,9 @@ public class OrganizerHelper {
       Statement stmt = conn.createStatement();
       query = DBUtils.getQuery(COMPONENT_ARGS_QUERY, substitutions);
       if(log.isDebugEnabled()) {
-        log.debug("Organizer " + COMPONENT_ARGS_QUERY + ": "  + query);
+        log.debug("OrganizerHelper " + COMPONENT_ARGS_QUERY + ": "  + query);
       }
+
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         String param = rs.getString(1);
@@ -468,7 +469,7 @@ public class OrganizerHelper {
       conn.close();
     } catch (SQLException se) {      
       if(log.isErrorEnabled()) {
-        log.error("Caught SQL exception gettin compArgs " + query, se);
+        log.error("Caught SQL exception getting compArgs " + query, se);
       }
     }
   }
