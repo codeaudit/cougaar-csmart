@@ -1431,8 +1431,10 @@ public class Organizer extends JScrollPane {
 	    // Even if the user wanted it removed, only remove
 	    // it if it is not in use, including any experiments
 	    // currently in the workspace
-	    if (! pdb.isRecipeUsed(recipe))
-	      pdb.removeLibRecipe(recipe);
+	    // Bug 2032 -- not completely deleting complex recipes
+ 	    if (! pdb.isRecipeUsed(recipe))
+	      helper.deleteRecipe(recipe.getRecipeName());
+// 	      pdb.removeLibRecipe(recipe);
           }
         }
       } finally {
@@ -2183,7 +2185,7 @@ public class Organizer extends JScrollPane {
 	if (log.isInfoEnabled()) {
 	  log.info("Reading from workspace file " + fileName);
 	}
-	ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+	ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(f)));
 	try {
 	  root = (DefaultMutableTreeNode) ois.readObject();
 	  for (Enumeration e = root.depthFirstEnumeration();
@@ -2202,7 +2204,8 @@ public class Organizer extends JScrollPane {
 	} catch (Exception e) {
           if(log.isErrorEnabled()) {
 	    // Don't dump stack on this -- too verbose
-            log.error("Organizer: can't read file: " + f + " got exception " + e);
+	    //            log.error("Organizer: can't read file: " + f + " got exception " + e);
+            log.error("Organizer: can't read file: " + f + " got exception ", e);
           }
 	} finally {
 	  ois.close();
@@ -2297,7 +2300,7 @@ public class Organizer extends JScrollPane {
       fileName = fileName + ".bin";
     try {
       File f = new File(fileName);
-      ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+      ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(f)));
             try {
 	      oos.writeObject(root);
             } finally {
