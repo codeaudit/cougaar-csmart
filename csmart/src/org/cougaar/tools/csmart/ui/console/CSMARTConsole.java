@@ -311,14 +311,14 @@ public class CSMARTConsole extends JFrame {
         markNodeDead(nodeName);
         continue;
       }
-      if (!appServerSupport.isValidRemoteHost(ni.getAppServer())) {
-        if (log.isWarnEnabled())
-          log.warn("Lost contact with AppServer on " + ni.getHostName() + " for node " + nodeName + " (Marked as not valid remote host). Assuming it is dead.");
-        // Note - this could be a timeout, so don't do it
-        // so that it's not reversable
-        markNodeDead(nodeName, false);
-        continue;
-      }
+//       if (!appServerSupport.isValidRemoteHost(ni.getAppServer())) {
+//         if (log.isWarnEnabled())
+//           log.warn("Lost contact with AppServer on " + ni.getHostName() + " for node " + nodeName + " (Marked as not valid remote host). Assuming it is dead.");
+//         // Note - this could be a timeout, so don't do it
+//         // so that it's not reversable
+//         markNodeDead(nodeName, false);
+//         continue;
+//       }
 
       RemoteProcess rp = null;
       synchronized (runningNodesLock) {
@@ -1131,10 +1131,10 @@ public class CSMARTConsole extends JFrame {
           log.error("Null trial ID for experiment!");
         }
         // get the app server to use
-        RemoteHost appServer =
-            appServerSupport.addAppServerForExperiment(hostName, properties);
-        if (appServer == null)
-          continue;
+        //        RemoteHost appServer =
+        //            appServerSupport.addAppServerForExperiment(hostName, properties);
+        //        if (appServer == null)
+        //          continue;
 
         //        nodeToNodeInfo.put(nodeName,
         //                           new NodeInfo(appServer,
@@ -2096,7 +2096,7 @@ public class CSMARTConsole extends JFrame {
     // a Node -- default is to remove old data
     properties.remove(Experiment.PERSIST_CLEAR);
 
-    int remotePort = appServerSupport.getAppServerPort(properties);
+    //    int remotePort = appServerSupport.getAppServerPort(properties);
     // Next line may do RMI -- do in non-AWT thread?
     //    RemoteHost remoteAppServer =
     //        appServerSupport.getAppServer(hostName, remotePort);
@@ -2480,35 +2480,35 @@ public class CSMARTConsole extends JFrame {
     }
     Collection values = nodeToNodeInfo.values();
     java.util.List contactedAS = new ArrayList();
-    for (Iterator i = values.iterator(); i.hasNext();) {
-      NodeInfo ni = (NodeInfo) i.next();
-      RemoteHost remoteAppServer = ni.getAppServer();
-      // Ask appServerSupport if this guy is legit?
-      if (remoteAppServer != null && !contactedAS.contains(remoteAppServer) && appServerSupport.isValidRemoteHost(remoteAppServer)) {
-        contactedAS.add(remoteAppServer);
-        RemoteFileSystem remoteFS = null;
-        try {
-          remoteFS = remoteAppServer.getRemoteFileSystem();
-        } catch (Exception e) {
-          final String host = ni.getHostName();
-          SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-              JOptionPane.showMessageDialog(CSMARTConsole.this,
-                                            "Cannot save results.  Unable to access filesystem for " +
-                                            host + ".",
-                                            "Unable to access file system",
-                                            JOptionPane.WARNING_MESSAGE);
-            }
-          });
-          if (log.isErrorEnabled())
-            log.error("saveResults failed to get filesystem on " + ni.getHostName() + ": ", e);
-          // Tell appServerSupport to see if the host is legit
-          //          appServerSupport.haveNewNodes();
-          continue;
-        }
-        copyResultFiles(remoteFS, dirname);
-      }
-    }
+//     for (Iterator i = values.iterator(); i.hasNext();) {
+//       NodeInfo ni = (NodeInfo) i.next();
+//       RemoteHost remoteAppServer = ni.getAppServer();
+//       // Ask appServerSupport if this guy is legit?
+//       if (remoteAppServer != null && !contactedAS.contains(remoteAppServer) && appServerSupport.isValidRemoteHost(remoteAppServer)) {
+//         contactedAS.add(remoteAppServer);
+//         RemoteFileSystem remoteFS = null;
+//         try {
+//           remoteFS = remoteAppServer.getRemoteFileSystem();
+//         } catch (Exception e) {
+//           final String host = ni.getHostName();
+//           SwingUtilities.invokeLater(new Runnable() {
+//             public void run() {
+//               JOptionPane.showMessageDialog(CSMARTConsole.this,
+//                                             "Cannot save results.  Unable to access filesystem for " +
+//                                             host + ".",
+//                                             "Unable to access file system",
+//                                             JOptionPane.WARNING_MESSAGE);
+//             }
+//           });
+//           if (log.isErrorEnabled())
+//             log.error("saveResults failed to get filesystem on " + ni.getHostName() + ": ", e);
+//           // Tell appServerSupport to see if the host is legit
+//           //          appServerSupport.haveNewNodes();
+//           continue;
+//         }
+//         copyResultFiles(remoteFS, dirname);
+//       }
+//     }
   }
 
   /**
@@ -3136,7 +3136,7 @@ public class CSMARTConsole extends JFrame {
       for (int j = 0; j < nodes.length; j++) {
         NodeComponent nodeComponent = nodes[j];
         Properties properties = getNodeMinusD(nodeComponent, hostName);
-        appServerSupport.addAppServerForExperiment(hostName, properties);
+        //        appServerSupport.addAppServerForExperiment(hostName, properties);
       }
     }
     //    appServerSupport.refreshAppServers();

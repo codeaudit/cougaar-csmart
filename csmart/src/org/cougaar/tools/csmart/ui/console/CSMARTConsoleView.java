@@ -879,7 +879,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     if (appServersSelected == null) return;
     for (int i = 0; i < appServersSelected.length; i++) {
       AppServerDesc appServerDesc = (AppServerDesc)appServersSelected[i];
-      model.appServerDelete(appServerDesc.hostName, appServerDesc.port);
+      model.appServerDelete(appServerDesc);
     }
   }
 
