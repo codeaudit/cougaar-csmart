@@ -33,7 +33,11 @@ import javax.swing.JOptionPane;
  */
 
 public class Util {
-  private static final String PSP_PACKAGE = "csmart/monitor";
+  //  private static final String PSP_PACKAGE = "csmart/monitor";
+
+  // servlet to get the URLs of all clusters in the society
+  private static final String PSP_CLUSTERPROVIDER = 
+    "CSMART_ClusterProviderServlet";
 
   /**
    * Contact the PSP: "csmart/monitor/CLUSTER_URLS.PSP" at the specified URL.
@@ -47,8 +51,9 @@ public class Util {
 
   public static Vector getClusters(String clusterURL) {
     Vector clusterURLs = null;
-    String PSP_id = "CLUSTER_URLS.PSP";
-    String URLSpec = clusterURL + PSP_PACKAGE + "/" + PSP_id;
+    //    String PSP_id = "CLUSTER_URLS.PSP";
+    //    String URLSpec = clusterURL + PSP_PACKAGE + "/" + PSP_CLUSTERPROVIDER;
+    String URLSpec = clusterURL + "/" + PSP_CLUSTERPROVIDER;
     try {
       URL url = new URL(URLSpec);
       URLConnection connection = url.openConnection();
@@ -87,16 +92,16 @@ public class Util {
    * @return             information from the PSPs; vector of Object
    */
 
-  public static Vector getDataFromClusters(Vector clusterURLs,
-					   String PSP_id) {
-    Vector results = new Vector();
-    for (int i = 0; i < clusterURLs.size(); i++) {
-      Object tmp = getDataFromCluster((String)clusterURLs.elementAt(i),
- 				      PSP_id);
-      results.add(tmp);
-    }
-    return results;
-  }
+//    public static Vector getDataFromClusters(Vector clusterURLs,
+//  					   String PSP_id) {
+//      Vector results = new Vector();
+//      for (int i = 0; i < clusterURLs.size(); i++) {
+//        Object tmp = getDataFromCluster((String)clusterURLs.elementAt(i),
+//   				      PSP_id);
+//        results.add(tmp);
+//      }
+//      return results;
+//    }
 
   /**
    * Get information from the specified PSP at the specified cluster.
@@ -106,23 +111,24 @@ public class Util {
    * @return            the object returned by the PSP or null
    */
 
-  private static Object getDataFromCluster(String clusterURL, String PSP_id) {
-    Object results = null;
-    String URLSpec = clusterURL + PSP_PACKAGE + "/" + PSP_id;
-    try {
-      URL url = new URL(URLSpec);
-      URLConnection connection = url.openConnection();
-      connection.setDoInput(true);
-      connection.setDoOutput(true);
-      // read events from PSP
-      InputStream is = connection.getInputStream();
-      ObjectInputStream p = new ObjectInputStream(is);
-      results = p.readObject();
-    } catch (Exception e) {
-      System.out.println("Failed to contact: " + URLSpec + " " + e);
-    }
-    return results;
-  }
+//    private static Object getDataFromCluster(String clusterURL, String PSP_id) {
+//      Object results = null;
+//      //    String URLSpec = clusterURL + PSP_PACKAGE + "/" + PSP_id;
+//      String URLSpec = clusterURL + "/" + PSP_id;
+//      try {
+//        URL url = new URL(URLSpec);
+//        URLConnection connection = url.openConnection();
+//        connection.setDoInput(true);
+//        connection.setDoOutput(true);
+//        // read events from PSP
+//        InputStream is = connection.getInputStream();
+//        ObjectInputStream p = new ObjectInputStream(is);
+//        results = p.readObject();
+//      } catch (Exception e) {
+//        System.out.println("Failed to contact: " + URLSpec + " " + e);
+//      }
+//      return results;
+//    }
 
   /**
    * Equivalent to 
@@ -263,7 +269,8 @@ public class Util {
 						    String filter,
 						    int limit) {
     Collection results = null;
-    String URLSpec = clusterURL + PSP_PACKAGE + "/" + PSP_id;
+    //    String URLSpec = clusterURL + PSP_PACKAGE + "/" + PSP_id;
+    String URLSpec = clusterURL + "/" + PSP_id;
     String agent = URLSpec;
     if (filter != null)
       URLSpec = "?operatorPredicate=" + URLEncoder.encode(filter);
