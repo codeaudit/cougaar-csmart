@@ -94,6 +94,7 @@ public class ABCImpact
   public static final String PROP_OUT_MSGSPERSECOND_DESC = "How many messages can be sent per second by an agent";
 
   public static final String BinderClass_name = "org.cougaar.tools.csmart.binder.SlowMessageTransportServiceFilter";
+  public static final String ImpactPlugin_name = "org.cougaar.tools.csmart.plugin.ABCImpactPlugin";
 
   private static final String tAgentName = "Transducer";
   private static final String gAgentName = "Generator";
@@ -248,47 +249,7 @@ public class ABCImpact
       } 
     }
   }
-  
-  /**
-   * Get a configuration writer for this Impact.
-   * Warning: This Impact assumes that it has been given
-   * All of the Nodes in the Society
-   */
-  public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes) {
-    return new ABCImpactCWriter(nodes);
-  }
-
-  class ABCImpactCWriter implements ConfigurationWriter {
-    AgentComponent[] allagents;
     
-    public ABCImpactCWriter(NodeComponent[] nodes) {
-      ArrayList tmp = new ArrayList();
-      for (int i = 0; i < nodes.length; i++) {
-	NodeComponent node = nodes[i];
-	AgentComponent[] ags = node.getAgents();
-	for (int j = 0; j < ags.length; j++) {
-	  tmp.add(ags[j]);
-	}
-      }
-      this.allagents = (AgentComponent[])tmp.toArray(new AgentComponent[tmp.size()]);
-    }
-
-    /**
-     * Just writes out the XML File and the Society File.
-     * The Agent files get written out by the societies themselves,
-     * as things are currently written.<br>
-     * WARNING: This assumes it has gotten all of the Nodes
-     * in the Society!
-     *
-     * @param configDir a <code>File</code> path
-     * @exception IOException if an error occurs
-     */
-    public void writeConfigFiles(File configDir) throws IOException {
-      writeFile(configDir, xmlFileContents, (String)rweFile);
-      writeFile(configDir, societyFileContents, societyFile);
-    }
-  }
-  
   /**
    * This is the opportunity for an impact to specify additional
    * components to load into non-Impact Agents
@@ -325,22 +286,6 @@ public class ABCImpact
     data.addParameter(propOutMsgsPerSecond.getValue());
 
     return data;
-  }
-
-  private void writeFile(File configDir, String contents, String fname) {
-     PrintWriter writer = null;
-    if (configDir == null)
-      configDir = new File(System.getProperty("org.cougaar.install.path"));
-    try {
-      writer = new PrintWriter(new FileWriter(new File(configDir, fname)));
-      writer.print(contents);
-    } catch (IOException e) {
-    } finally {
-      try {
-	writer.close();
-      } catch (NullPointerException e) {
-      }
-    }
   }
 
   private LeafComponentData createSocietyLeaf() {
@@ -424,10 +369,6 @@ public class ABCImpact
     return lcd;
   }
 
-  private void writeSocietyFile(File configDir, AgentComponent[] agents) {
-    writeFile(configDir, societyFileContents, socFileName);
-  }
-
   public URL getDescription() {
     return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
   }
@@ -471,13 +412,34 @@ public class ABCImpact
    */
   public void propertyRemoved(PropertyEvent e) {}
 
-
   public ComponentData addComponentData(ComponentData data) {
 
-    processData(data);
+    ComponentData[] children = data.getChildren();
 
-    data.addLeafComponent(createRWELeaf());
-    data.addLeafComponent(createSocietyLeaf());
+    for(int i=0; i < children.length; i++) {
+      ComponentData child = children[i];
+      if(child.getType() == ComponentData.AGENT) {
+	// Process it.
+	if(child.getName().equals(generatorAgent.getFullName().toString())) {
+	  // Found Generator
+	  child.setOwner(this);
+	  child = generatorAgent.addComponentData(child);
+	  // Add the society.dat and xml file as leaves of the generator.
+	  child.addLeafComponent(createRWELeaf());
+	  child.addLeafComponent(createSocietyLeaf());
+	} else if(child.getName().equals(transducerAgent.getFullName().toString())) {
+	  // Found Transducer
+	  child.setOwner(this);
+	  child = transducerAgent.addComponentData(child);
+	} else {
+	  // Add agent name to list for Society data file.
+	  agentNames.add(child.getName());
+	}
+      } else {
+	// Process it's children.
+	addComponentData(child);
+      }      
+    }
 
     return data;
   }
@@ -486,49 +448,31 @@ public class ABCImpact
     ComponentData data = new GenericComponentData();
     
     data.setType(ComponentData.PLUGIN);
-    data.setName("org.cougaar.tools.csmart.plugin.ABCImpactPlugin");
+    data.setName(ImpactPlugin_name);
 
     return data;
   }
 
-  public void processData(ComponentData data) {
+  private ComponentData addBinder(ComponentData data) {
     ComponentData[] children = data.getChildren();
-    
+
     for(int i=0; i < children.length; i++) {
       ComponentData child = children[i];
       if(child.getType() == ComponentData.NODE) {
 	child.addChild(0, createBinderComponentData());
-      } else if(child.getType() == ComponentData.AGENT) {
-	// Process it.
-	if(child.getName().equals(generatorAgent.getFullName().toString())) {
-	  // Found Generator
-	  child.setOwner(this);
-	  child = generatorAgent.getComponentData(child);
-	} else if(child.getName().equals(transducerAgent.getFullName().toString())) {
-	  // Found Transducer
-	  child.setOwner(this);
-	  child = transducerAgent.getComponentData(child);
-	} else {
-	  // Add ImpactPlugin to the Agent.
-	  child.addChild(getImpactPlugIn());
-
-	  // Add agent name to list for Society data file.
-	  agentNames.add(child.getName());
-	}
       } else {
-	// Process it's children.
-	processData(child);
-      }      
+	addBinder(child);
+      }
     }
+    return data;
   }
 
-  public void modifyData(ComponentData data) {
+  private ComponentData addImpactPlugin(ComponentData data) {
     ComponentData[] children = data.getChildren();
-    
+
     for(int i=0; i < children.length; i++) {
       ComponentData child = children[i];
       if(child.getType() == ComponentData.AGENT) {
-
 	// Process it.
 	if(!child.getName().equals(generatorAgent.getFullName().toString()) &&
 	   !child.getName().equals(transducerAgent.getFullName().toString())) {
@@ -538,16 +482,25 @@ public class ABCImpact
 	}
       } else {
 	// Process it's children.
-	modifyData(child);
+	addImpactPlugin(child);
       }      
     }
+    return data;
   }
 
   public ComponentData modifyComponentData(ComponentData data) {
-    modifyData(data);
+    ComponentData[] children = data.getChildren();
+
+    // First we need to add a line to the Node file for the Binder.
+    data = addBinder(data);
+
+    // Now add the ImpactPlugin to all agents.
+    data = addImpactPlugin(data);
 
     return data;
   }
+
+
 
   // Simple ImpactAgent Component.
   class ImpactAgentComponent extends ConfigurableComponent 
@@ -577,55 +530,11 @@ public class ABCImpact
       // No props to init.
     }
 
-    public String getConfigLine() {
-      return null;
-    }
-
     public boolean isGenerator() {
       return generator;
     }
 
-    public void writeIniFile(File configDir) throws IOException {
-      File iniFile = new File(configDir, this.getFullName() + ".ini");
-      PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
-
-      try {
-	writer.println("# $id$");
-	writer.println("[ Cluster ]");
-	writer.println("class = " + agentClass_name);
-	writer.println("uic = \"" + this.getFullName().toString() + "\"");
-	writer.println("cloned = false");
-	writer.println();
-	writer.println("[ PlugIns ]");
-	if(generator) {
-	  writer.print("plugin = " + scriptedEvent_name);
-	  writer.print("(" + rweFile + ", ");
-	  Iterator iter = 
-	    ((Collection)this.getParent().getDescendentsOfClass(ImpactAgentComponent.class)).iterator();
-	  while(iter.hasNext()) {
-	    ImpactAgentComponent iac = (ImpactAgentComponent)iter.next();
-	    if(!iac.isGenerator()) {
-	      writer.print(iac.getFullName().toString() + ")\n");
-	    }
-	  }
-	} else {
-	  writer.print("plugin = " + transducer_name);
-	  writer.println("(" + societyFile + ")");
-	}
-	writer.println("plugin = " + planServer_name);
-	writer.println();
-	writer.println("[ Policies ]");
-	writer.println();
-	writer.println("[ Permission ]");
-	writer.println();
-	writer.println("[ AuthorizedOperation ]");
-      }
-      finally {
-	writer.close();
-      }
-    }
-
-    public ComponentData getComponentData(ComponentData child) {
+    public ComponentData addComponentData(ComponentData child) {
       StringBuffer sb = new StringBuffer();
       ABCImpact parent = (ABCImpact)this.getParent();
 
@@ -655,8 +564,24 @@ public class ABCImpact
       plugin.setType(ComponentData.PLUGIN);
       plugin.setName(planServer_name);
       child.addChild(plugin);
+      child = addAssetData(child);
 
       return child;
+    }
+
+    public ComponentData modifyComponentData(ComponentData data) {
+      return data;
+    }
+
+    private ComponentData addAssetData(ComponentData data) {
+      AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
+
+      assetData.setType(AgentAssetData.ENTITY);
+      assetData.setAssetClass("Entity");
+
+      data.addAgentAssetData(assetData);
+
+      return data;
     }
   }
 
