@@ -29,7 +29,6 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
-import org.cougaar.tools.csmart.experiment.ExperimentListener;
 
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.monitor.community.ULCommunityFrame;
@@ -114,7 +113,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private static UIProperties properties = new UIProperties();
   private static ArrayList myWindows = new ArrayList();
   private static Experiment experiment;
-  private static MyExperimentListener listener;
 
   private transient Logger log;
 
@@ -155,12 +153,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     createLogger();
 
     // find host and port to contact
-    if (experiment != null) {
+    if (experiment != null)
       setHostToMonitor();
-      // add experiment listener to shut down monitor when experiment stops
-      listener = new MyExperimentListener(this);
-      experiment.addExperimentListener(listener);
-    }
     // create one version of properties for all objects
     // and set them in CSMARTGraph because it can't address CSMARTUL
     // TODO: better handling of properties
@@ -248,8 +242,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       addWindowListener(new WindowAdapter() {
 	public void windowClosing(WindowEvent e) {
 	  closeSubWindows();
-          if (experiment != null)
-            experiment.removeExperimentListener(listener);
 	}
       });
     }
@@ -385,8 +377,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 	System.exit(0); // if running standalone, exit
       else {
 	closeSubWindows();
-        if (experiment != null)
-          experiment.removeExperimentListener(listener);
 	NamedFrame.getNamedFrame().removeFrame(this);
 	dispose();
       }
@@ -1154,31 +1144,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   public static void launch(String[] args) {    
     new CSMARTUL(null, null);
-  }
-
-  class MyExperimentListener implements ExperimentListener {
-    CSMARTUL monitor;
-
-    MyExperimentListener(CSMARTUL monitor) {
-      this.monitor = monitor;
-    }
-
-    public boolean isMonitoring() {
-      // return true if any monitoring processes are running
-      //      return (monitor.myWindows.length != 0);
-      // there's no good way to re-init the monitor now
-      // so always say it's running, so it's killed and re-initted
-      // with the next experiment
-      // TODO: only kill off windows that are monitoring the experiment?
-      return true;
-    }
-
-    public void experimentTerminated() {
-      monitor.closeSubWindows();
-      experiment.removeExperimentListener(this);
-      NamedFrame.getNamedFrame().removeFrame(monitor);
-      monitor.dispose();
-    }
   }
 
   private void readObject(ObjectInputStream ois)

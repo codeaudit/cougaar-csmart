@@ -562,31 +562,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   // within CSMART
   public void runBuilder(ModifiableComponent cc, 
                          boolean alwaysNew) {
-    // components are always editable
-//      if (!cc.isEditable()) {
-//        Object[] options = { "Edit", "View", "Copy", "Cancel" };
-//        int result = 
-//          JOptionPane.showOptionDialog(this,
-//                                       cc.getShortName() + " is not editable",
-//                                       "Not Editable",
-//                                       JOptionPane.DEFAULT_OPTION,
-//                                       JOptionPane.WARNING_MESSAGE,
-//                                       null,
-//                                       options,
-//                                       options[0]);
-//        if (result == 0) {
-//          // edit it anyway
-//          cc.setEditable(true);
-//        } else if (result == 2) {
-//          // copy it
-//          if (cc instanceof RecipeComponent)
-//            cc = organizer.copyRecipe((RecipeComponent)cc);
-//          else if (cc instanceof SocietyComponent)
-//            cc = organizer.copySociety((SocietyComponent)cc);
-//        } else if (result != 1)
-//          // user cancelled
-//          return;
-//      }
     // note that cc is guaranteed non-null when this is called
     Class[] paramClasses = { ModifiableComponent.class };
     Object[] params = new Object[1];
@@ -888,8 +863,15 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
           }
       }
     } else if (s.indexOf(SOCIETY_MONITOR) != -1) {
-      if (NamedFrame.getNamedFrame().getToolFrame(SOCIETY_MONITOR) == null)
+      // only run one society monitor
+      // if user selects "Society Monitor" and its running
+      // bring the frame to the front
+      JFrame societyMonitorFrame = 
+        NamedFrame.getNamedFrame().getToolFrame(SOCIETY_MONITOR);
+      if (societyMonitorFrame == null)
         runMonitor();
+      else
+        societyMonitorFrame.toFront();
     } else if (s.indexOf(PERFORMANCE_ANALYZER) != -1) {
       Experiment[] experiments = organizer.getSelectedExperiments();
       if (experiments != null && experiments.length > 0)
@@ -928,11 +910,13 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 			    boolean alwaysNew, String docName,
 			    Object argument, Class[] paramClasses, Object[] params) {
     JFrame tool = null;
-
+    String title = toolName;
+    if (docName != null && docName.length() != 0)
+      title = title + ": " + docName;
     // try to reuse tool
     if (!alwaysNew) {
       // first try to get tool displaying the same document
-      tool = NamedFrame.getNamedFrame().getFrame(toolName + ": " + docName);
+      tool = NamedFrame.getNamedFrame().getFrame(title);
       // if have tool displaying another document, reuse the tool
       if (tool == null) {
 	tool = NamedFrame.getNamedFrame().getToolFrame(toolName, docName);
@@ -971,9 +955,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       }
       return null;
     }
-    if (docName != null)
-      toolName = toolName + ": " + docName;
-    NamedFrame.getNamedFrame().addFrame(toolName, tool);
+    NamedFrame.getNamedFrame().addFrame(title, tool);
     final JFrame frameArg = tool;
     tool.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {

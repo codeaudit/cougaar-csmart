@@ -372,21 +372,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   /**
-   * Returns true if this experiment is being monitored, false otherwise.
-   * @return true if experiment is being monitored
-   */
-  public boolean isMonitored() {
-    if (listeners == null) 
-      return false;
-    for (int i = 0; i < listeners.size(); i++) {
-      ExperimentListener listener = (ExperimentListener)listeners.get(i);
-      if (listener.isMonitoring())
-	return true;
-    }
-    return false;
-  }
-
-  /**
    * Stop after the current trial.
    * This invokes experimentStopped.
    */
@@ -399,12 +384,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * Notify listeners that experiment was terminated.
    */
   public void experimentStopped() {
-    if (listeners != null) {
-      for (int i = 0; i < listeners.size(); i++) {
-	ExperimentListener listener = (ExperimentListener)listeners.get(i);
-	listener.experimentTerminated();
-      }
-    }
     // Tell the Societies in the experiment they are no longer running?
     if (society != null)
       society.setRunning(false);
@@ -481,26 +460,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     experimentCopy.setResultDirectory(getResultDirectory());
     
     return experimentCopy;
-  }
-
-  /**
-   * Add a listener that is queried
-   * when the experiment is about to be manually terminated, and
-   * notified when an experiment is terminated.
-   * @param listener the listener
-   */
-  public void addExperimentListener(ExperimentListener listener) {
-    if (listeners == null) 
-      listeners = new ArrayList();
-    listeners.add(listener);
-  }
-
-  public void removeExperimentListener(ExperimentListener listener) {
-    if (listeners == null) 
-      return;
-    int i = listeners.indexOf(listener);
-    if (i != -1)
-      listeners.remove(i);
   }
 
   /**

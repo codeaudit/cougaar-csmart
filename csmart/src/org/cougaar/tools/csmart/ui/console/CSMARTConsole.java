@@ -872,35 +872,16 @@ public class CSMARTConsole extends JFrame {
   /**
    * Stop all nodes.
    * If the society in the experiment is self terminating, 
-   * just stop after the current trial (don't start next trial).
-   * If any society is not self terminating, determine if the experiment
-   * is being monitored, and if so, ask the user to confirm the stop. 
+   * just stop after the current trial (don't start next trial),
+   * otherwise stop immediately (same as abort).
    */
   private void stopButton_actionPerformed(ActionEvent e) {
     stopButton.setSelected(true); // indicate stopping
     stopButton.setEnabled(false); // disable until experiment stops
-    boolean isSelfTerminating = true;
     SocietyComponent society = experiment.getSocietyComponent();
-    if (society != null && !society.isSelfTerminating()) {
-      isSelfTerminating = false;
-    }
-    // society in experiment will self terminate
-    if (isSelfTerminating) {
-      userStoppedTrials = true;
-      return;
-    }
-    // need to manually stop society
-    // if society is being monitored, ask user to confirm stop
-    if (experiment.isMonitored()) {
-      int response = 
-	JOptionPane.showConfirmDialog(this,
-				      "Experiment is being monitored; stop anyway (society monitor displays will be destroyed)?",
-				      "Confirm Stop",
-				      JOptionPane.YES_NO_OPTION);
-      if (response == JOptionPane.YES_OPTION) 
-	stopAllNodes();
-    } else
-      stopAllNodes();
+    userStoppedTrials = true; // if self terminating, don't start next trial
+    if (society != null && !society.isSelfTerminating())
+      stopAllNodes(); // manually stop society immediately
   }
 
   /**
