@@ -23,11 +23,14 @@ package org.cougaar.tools.csmart.ui.experiment;
 
 import java.io.File;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.server.ConfigurationWriter;
+import org.cougaar.core.society.Node;
+import org.cougaar.core.cluster.ClusterImpl;
 
 /**
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
@@ -57,6 +60,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private String variationScheme = variationSchemes[0];
   private boolean editable = true;
   private boolean runnable = true;
+  private boolean cloned = false;
 
   private String expID = null; // An Experiment has a single ExpID
   private String trialID = null;
@@ -599,6 +603,14 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     fireModification();
   }
 
+  public boolean isCloned() {
+    return cloned;
+  }
+
+  public void setCloned(boolean newCloned) {
+    cloned = newCloned;
+  }
+
   public String getExperimentID() {
     if (inDatabase) {
       return expID;
@@ -628,13 +640,83 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (inDatabase) {
       // Send a config writer that only writes LeafComponentData
       try {
-        return new DBConfigWriter(getComponents(), nodes, this);
+        return new LeafOnlyConfigWriter(getComponents(), nodes, this);
       } catch (Exception e) {
         e.printStackTrace();
         return null;
       }
     } else {
       return new ExpConfigWriterNew(getComponents(), nodes, this);
+    }
+  }
+
+  public void saveToDb() {
+    try {
+      List components = getComponents();
+      NodeComponent[] nodesToWrite = getNodes();
+      ComponentData theSoc = new GenericComponentData();
+      theSoc.setType(ComponentData.SOCIETY);
+      theSoc.setName(getExperimentName()); // this should be experiment: trial FIXME
+      theSoc.setClassName(""); // leave this out? FIXME
+      theSoc.setOwner(this); // the experiment
+      theSoc.setParent(null);
+      PopulateDb pdb =
+        new PopulateDb("CMT", "CSMART", "CSM",
+                       getExperimentID(), trialID, !isCloned());
+      setExperimentID(pdb.getExperimentId());
+      trialID = pdb.getTrialId();
+
+      // For each node, create a GenericComponentData, and add it to the society
+      for (int i = 0; i < nodesToWrite.length; i++) {
+        NodeComponent node = nodesToWrite[i];
+        ComponentData nc = new GenericComponentData();
+        nc.setType(ComponentData.NODE);
+        nc.setName(node.getShortName());
+        nc.setClassName(Node.class.getName()); // leave this out?? FIXME
+        nc.setOwner(this); // the experiment? FIXME
+        nc.setParent(theSoc);
+        ComponentName name = 
+	  new ComponentName((ConfigurableComponent) nodesToWrite[i], "ConfigurationFileName");
+        nc.addParameter(((ComponentProperties)nodesToWrite[i]).getProperty(name).getValue().toString());
+        theSoc.addChild(nc);
+        pdb.addWritableComponent(nc); // Write all node components
+        AgentComponent[] agents = node.getAgents();
+        if (agents != null && agents.length > 0) {
+          for (int j = 0; j < agents.length; j++) {
+            AgentComponentData ac = new AgentComponentData();
+            ac.setName(agents[j].getShortName());
+            ac.setClassName(ClusterImpl.class.getName());
+            // FIXME!!
+            ac.setOwner(null); // the society that contains this agent FIXME!!!
+            ac.setParent(nc);
+            nc.addChild((ComponentData)ac);
+          }
+        }
+      }
+
+      // Some components will want access to the complete set of Nodes in the society, etc.
+      // To get that, they must get back to the root soc object,
+      // and do a getOwner and go from there. Ugly.
+    
+      // Now ask each component in turn to add its stuff
+      for (int i = 0; i < components.size(); i++) {
+        ComponentProperties soc = (ComponentProperties) components.get(i);
+        System.out.println(soc + ".addComponentData");
+        soc.addComponentData(theSoc);
+      }
+      pdb.setReadOnlyComponents(theSoc); // All others at this point are readonly
+
+      // Then give everyone a chance to modify what they've collectively produced
+      for (int i = components.size() - 1; i >= 0; i--) {
+        ComponentProperties soc = (ComponentProperties) components.get(i);
+        soc.modifyComponentData(theSoc);
+      }
+      if (pdb.populate(theSoc, 1)) {
+        setCloned(true);        // If not cloned before, we certainly are now
+      }
+      pdb.close();
+    } catch (Exception sqle) {
+      sqle.printStackTrace();
     }
   }
 
