@@ -40,6 +40,7 @@ import org.xml.sax.InputSource;
 /**
  * XMLUtils.java
  *
+ * Basic utilities for parsing and writing XML files.
  *
  * Created: Wed Jun  5 10:41:48 2002
  *
@@ -54,6 +55,12 @@ public class XMLUtils {
     log = CSMART.createLogger("org.cougaar.tools.csmart.util.XMLUtils");
   }
 
+  /**
+   * Loads and parses an XML file into a <code>Document</code>
+   *
+   * @param filename Name of file to load.
+   * @return a <code>Document</code> value
+   */
   public Document loadXMLFile(String filename) {
     try {
       DOMParser parser = new DOMParser();
@@ -76,6 +83,12 @@ public class XMLUtils {
     return null;
   }
 
+  /**
+   * Loads and parses and XML file into a <code>Document</code>
+   *
+   * @param file - Handle to xml file.
+   * @return a <code>Document</code> value
+   */
   public Document loadXMLFile(File file) {
     try {
       DOMParser parser = new DOMParser();

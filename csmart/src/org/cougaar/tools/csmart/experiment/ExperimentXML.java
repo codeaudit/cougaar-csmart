@@ -30,6 +30,8 @@ import org.cougaar.util.log.Logger;
 /**
  * ExperimentXML.java
  *
+ * Allows the conversion of an Experiment to XML and from XML to
+ * an Experiment ComponentData (Host / Node / Agent mapping)
  *
  * Created: Wed Jun  5 11:38:56 2002
  *
@@ -44,7 +46,17 @@ public class ExperimentXML extends ComponentDataXML {
     log = CSMART.createLogger("org.cougaar.tools.csmart.experiment.ExperimentDump");
   }
   
+  /**
+   * Parses the specified file into and Experiment ComponentData.
+   * An Experiment ComponentData contains no detailed Agent information.
+   * Just Host, Node, Agent mappings.
+   *
+   * @param filename - Name of file to parse
+   * @return a <code>ComponentData</code> value
+   */
   public ComponentData parseExperimentFile(String filename) {
+    // TODO: Parse out and store Agent details from the new ComponentData
+    // this should be just a pure HNA mapping.
     if(filename == null || filename.equals("")) {
       if(log.isErrorEnabled()) {
         log.error("Invaild filename: " + filename);
@@ -56,12 +68,30 @@ public class ExperimentXML extends ComponentDataXML {
 
   }
 
+  /**
+   * Parses the specified file into and Experiment ComponentData.
+   * An Experiment ComponentData contains no detailed Agent information.
+   * Just Host, Node, Agent mappings.
+   *
+   * @param file - Handle to file to parse.
+   * @return a <code>ComponentData</code> value
+   */
   public ComponentData parseExperimentFile(File file) {
+    // TODO: Parse out and store Agent details from the new ComponentData
+    // this should be just a pure HNA mapping.
     return createComponentData(file);
 
   }
 
+  /**
+   * Creates an Experiment XML file from a ComponentData object.
+   *
+   * @param data ComponentData to convert into XML
+   * @param configDir - Directory to store file.
+   */
   public void createExperimentFile(ComponentData data, File configDir) {
+    // TODO: Parse out all Agent details from the component data.
+    // make it a pure HNA mapping.
     if(data == null) {
       if(log.isErrorEnabled()) {
         log.error("Cannot create Experiment XML File, ComponentData was null!");

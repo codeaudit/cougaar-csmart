@@ -2048,6 +2048,12 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     }
   }
 
+  /**
+   * Dumps a Host / Node / Agent mapping to an XML file.
+   * The stored file can then be imported at a later date
+   * to re-create all mappings in the current experiment.
+   *
+   */
   public void dumpHNA() {
     generateCompleteSociety();
 
@@ -2089,6 +2095,13 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
 
+  /**
+   * Imports a HNA XML file.  The file is imported into
+   * a <code>ComponentData</code> structure which is then 
+   * traversed and applied to the current experiment.
+   *
+   * @param parent - Parent GUI Component
+   */
   public void importHNA(Component parent) {
     JFileChooser chooser = new JFileChooser(SocietyFinder.getInstance().getPath());
     chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
@@ -2119,20 +2132,22 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
         return;
       }
       
-      addNewMapping(mapping);
-    }
-  }
-
-  public void addNewMapping(ComponentData mapping) {
-    if(mapping.getType().equals(ComponentData.SOCIETY)) {
-      addChildren(mapping.getChildren());
-    } else {
-      if(log.isErrorEnabled()) {
-        log.error("Didn't start with a society!");
+      if(mapping.getType().equals(ComponentData.SOCIETY)) {
+        addChildren(mapping.getChildren());
+      } else {
+        if(log.isErrorEnabled()) {
+          log.error("Didn't start with a society!");
+        }
       }
     }
   }
 
+  /**
+   * Adds new children to the experiment components
+   * based on the NHA mappings loaded in from a file.
+   *
+   * @param children - Child Component to re-map.
+   */
   public void addChildren(ComponentData[] children) {
     for(int i=0; i < children.length; i++) {
       ComponentData child = children[i];
@@ -2175,10 +2190,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
           }
           addNodeChildren(child.getChildren(), node);
         } else if(child.getType().equals(ComponentData.AGENT)) {
-          // Map agent, only if it already exists.
-//           if(log.isDebugEnabled()) {
-//             log.debug("Need to map Agent: " + child.getName());
-//           }
+          // Ignore.
         } else {
           if(log.isWarnEnabled()) {
             log.warn("Unknown Type: " + child.getType());
@@ -2187,6 +2199,12 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       }
   }
 
+  /**
+   * Adds all new children to the HostComponent
+   *
+   * @param children All children of the new HostComponent.
+   * @param host - HostComponent to add children to.
+   */
   public void addHostChildren(ComponentData[] children, HostComponent host) {
     for(int i=0; i < children.length; i++) {
       boolean foundInHost = false;
@@ -2228,6 +2246,13 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     }
   }
 
+  /**
+   * Adds all children to the Node.
+   *
+   *
+   * @param children All new children for the node.
+   * @param node Node to add children to.
+   */
   public void addNodeChildren(ComponentData[] children, NodeComponent node) {
     for(int i=0; i < children.length; i++) {
       boolean foundInSociety = false;
@@ -2254,7 +2279,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
           }
           if(!foundInNode) {
             node.addAgent(addAgent);
-//             societyComponent.removeChild(addAgent);
           }
         } else {
           if(log.isWarnEnabled()) {
