@@ -78,11 +78,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     "Global Command Line Arguments";
   private static final String HOST_TYPE_MENU_ITEM = "Type";
   private static final String HOST_LOCATION_MENU_ITEM = "Location";
+  private JPanel hostConfigurationBuilder;
 
   public HostConfigurationBuilder(Experiment experiment, 
                                   ExperimentBuilder experimentBuilder) {
     this.experiment = experiment;
     this.experimentBuilder = experimentBuilder;
+    hostConfigurationBuilder = this; // for inner class dialogs
     isEditable = experiment.isEditable();
     isRunnable = experiment.isRunnable();
     initDisplay();
@@ -111,10 +113,50 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	  if (path == null)
 	    return false;
 	  Object o = path.getLastPathComponent();
-	  if (((DefaultMutableTreeNode)o).isRoot())
+          DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode)o;
+	  if (treeNode.isRoot() ||
+              ((ConsoleTreeObject)treeNode.getUserObject()).isAgent())
 	    return false;
 	}
 	return super.isCellEditable(e);
+      }
+      public boolean stopCellEditing() {
+        TreePath path = hostTree.getEditingPath();
+        DefaultMutableTreeNode node =
+          (DefaultMutableTreeNode)path.getLastPathComponent();
+        int result = 0;
+        if (node.getUserObject() instanceof ConsoleTreeObject) {
+          ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
+          if (cto.isHost()) {
+            // stop cell editing, accept new unique value
+            if (isHostNameUnique((String)getCellEditorValue()))
+              return super.stopCellEditing();
+            // tell user that value isn't unique
+            result = JOptionPane.showConfirmDialog(hostConfigurationBuilder,
+                                                   "Use an unique name",
+                                                   "Host Name Not Unique",
+                                                   JOptionPane.OK_CANCEL_OPTION,
+                                                   JOptionPane.ERROR_MESSAGE);
+          } else if (cto.isNode()) {
+            // stop cell editing, accept new unique value
+            if (isNodeNameUnique((String)getCellEditorValue()))
+              return super.stopCellEditing();
+            // tell user that value isn't unique
+            result = JOptionPane.showConfirmDialog(hostConfigurationBuilder,
+                                                   "Use an unique name",
+                                                   "Node Name Not Unique",
+                                                   JOptionPane.OK_CANCEL_OPTION,
+                                                   JOptionPane.ERROR_MESSAGE);
+          }
+        } else
+          return super.stopCellEditing();
+        // user cancelled the message dialog, so cancel the editing
+        if (result != JOptionPane.OK_OPTION) {
+          cancelCellEditing();
+          return true;
+        }
+        // user entered non-unique value, not done editing
+        return false;
       }
     };
     hostTree.setCellEditor(myEditor);
@@ -254,10 +296,28 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	  Object o = path.getLastPathComponent();
 	  DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode)o;
 	  if (treeNode.isRoot() ||
-	      ((ConsoleTreeObject)treeNode.getUserObject()).isNode())
+	      ((ConsoleTreeObject)treeNode.getUserObject()).isAgent())
 	    return false;
 	}
 	return super.isCellEditable(e);
+      }
+      public boolean stopCellEditing() {
+        // stop cell editing, accept new unique value
+        if (isNodeNameUnique((String)getCellEditorValue()))
+          return super.stopCellEditing();
+        // tell user that value isn't unique
+        int ok = JOptionPane.showConfirmDialog(hostConfigurationBuilder,
+                                               "Use an unique name",
+                                               "Node Name Not Unique",
+                                               JOptionPane.OK_CANCEL_OPTION,
+                                               JOptionPane.ERROR_MESSAGE);
+        // user cancelled the message dialog, so cancel the editing
+        if (ok != JOptionPane.OK_OPTION) {
+          cancelCellEditing();
+          return true;
+        }
+        // user entered non-unique value, not done editing
+        return false;
       }
     };
     nodeTree.setCellEditor(nodeEditor);
@@ -701,6 +761,15 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostTree.scrollPathToVisible(new TreePath(hostNode.getPath()));
   }
 
+  private boolean isHostNameUnique(String name) {
+    HostComponent[] hc = experiment.getHosts();
+    boolean isUnique = true;
+    for (int i = 0; i < hc.length; i++) 
+      if (name.equals(hc[i].getShortName()))
+        return false;
+    return true;
+  }
+
   /**
    * Display the popup menus for the node tree, either the node menu
    * or the root menu.
@@ -770,9 +839,21 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
     DefaultMutableTreeNode selectedNode = 
       (DefaultMutableTreeNode)path.getLastPathComponent();
-    String nodeName = JOptionPane.showInputDialog("New node name: ");
-    if (nodeName == null || nodeName.length() == 0)
-      return;
+    String nodeName = null;
+    while (true) {
+      nodeName = JOptionPane.showInputDialog("New node name: ");
+      if (nodeName == null || nodeName.length() == 0)
+        return;
+      // don't allow node names that are the same as node or agent names
+      if (isNodeNameUnique(nodeName))
+        break;
+      int ok = JOptionPane.showConfirmDialog(this,
+                                             "Use an unique name",
+                                             "Node Name Not Unique",
+                                             JOptionPane.OK_CANCEL_OPTION,
+                                             JOptionPane.ERROR_MESSAGE);
+      if (ok != JOptionPane.OK_OPTION) return;
+    }
     DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
     NodeComponent nodeComponent = experiment.addNode(nodeName);
     DefaultMutableTreeNode newNode =
@@ -781,6 +862,35 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 			 selectedNode,
 			 selectedNode.getChildCount());
     tree.scrollPathToVisible(new TreePath(newNode.getPath()));
+  }
+
+  // check all trees and return false if there's a node or agent
+  // with the same name
+
+  private boolean isNodeNameUnique(String name) {
+    if (isNodeNameUniqueInTree(hostTree, name) &&
+        isNodeNameUniqueInTree(nodeTree, name) &&
+        isNodeNameUniqueInTree(agentTree, name))
+      return true;
+    else
+      return false;
+  }
+
+  private boolean isNodeNameUniqueInTree(JTree tree, String name) {
+    DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+    DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
+    Enumeration nodes = root.breadthFirstEnumeration();
+    while (nodes.hasMoreElements()) {
+      DefaultMutableTreeNode node = 
+ 	(DefaultMutableTreeNode)nodes.nextElement();
+        if (node.getUserObject() instanceof ConsoleTreeObject) {
+          ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
+          if ((cto.isNode() || cto.isAgent()) &&
+              cto.getName().equals(name)) 
+            return false;
+        }
+    }
+    return true;
   }
 
   /**
@@ -1042,17 +1152,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   public void treeNodesChanged(TreeModelEvent e) {
     Object source = e.getSource();
-    //    System.out.println("Tree Node Changed: " +
-    //                       ((ConsoleTreeObject)((DefaultMutableTreeNode)e.getTreePath().getLastPathComponent()).getUserObject()).getName());
-//      if (hostTree.getModel().equals(source)) 
-//        System.out.println("Host tree changed");
-//      else if (nodeTree.getModel().equals(source))
-//        System.out.println("Node tree changed");
-//      Object[] tmp = e.getChildren();
-//      for (int i = 0; i < tmp.length; i++) {
-//        System.out.println("Child changed: " +
-//           ((ConsoleTreeObject)((DefaultMutableTreeNode)tmp[i]).getUserObject()).getName());
-//      }
     // handle user editing the name of a host in the host tree
     if (hostTree.getModel().equals(source)) {
       DefaultMutableTreeNode parent = 
@@ -1304,8 +1403,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	  // Allow renaming hosts or Nodes only
 	  DefaultMutableTreeNode aNode = (DefaultMutableTreeNode)path.getLastPathComponent();
 	  ConsoleTreeObject cto = (ConsoleTreeObject)aNode.getUserObject();
-	    // FIXME: Do check to avoid duplicate
-	    // host or node names?
 	  String name = newValue.toString();
 	  if (cto.isHost()) {
 	    experiment.renameHost((HostComponent)cto.getComponent(), name);
