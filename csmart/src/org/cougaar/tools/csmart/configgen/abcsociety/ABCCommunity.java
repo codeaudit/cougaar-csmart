@@ -343,7 +343,8 @@ public class ABCCommunity
     la.getProperty(ABCLocalAsset.PROP_NAME).setValue(assetName);
     la.getProperty(ABCLocalAsset.PROP_ROLES).setValue(roles);
     int production = ((Integer)getProperty(PROP_PRODUCTION).getValue()).intValue();
-    la.getProperty(ABCLocalAsset.PROP_DECAMOUNT).setValue(new Long(deplete / production));
+    long newDeplete = ((deplete / production) > 100) ? 100 : (deplete / production);
+    la.getProperty(ABCLocalAsset.PROP_DECAMOUNT).setValue(new Long(newDeplete));
     la.getProperty(ABCLocalAsset.PROP_AVGTIME).setValue(new Long(avgTime));
     la.getProperty(ABCLocalAsset.PROP_INVDEV).setValue(new Long(invChaos));
     la.getProperty(ABCLocalAsset.PROP_TIMEDEV).setValue(new Long(timeChaos));
@@ -477,6 +478,7 @@ public class ABCCommunity
     }
     setPropertyVisible(myProp, false);
   }
+
 
   /**
    * Generates all ini files for agents
