@@ -84,7 +84,9 @@ public class CommunityDBUtils {
         conn.close();
       }
     } catch (SQLException se) {
-      if(log.isErrorEnabled()) {
+      if (se.toString().indexOf("Duplicate") != -1 || se.toString().indexOf("Invalid argument value") != -1)
+	throw new IllegalArgumentException(se.toString());
+      else if (log.isErrorEnabled()) {
         log.error("Caught SQL exception executing query: " + query, se);
       }
     } 
