@@ -60,6 +60,7 @@ public class CSMARTGraph extends Graph
   private static final String PSEUDO_EDGE = "pseudo_edge";
   public static final String INVISIBLE_ATTRIBUTE = "invisible";
   private static final String COLOR_TABLE = "ColorTable";
+  private static final String LACKS_LAYOUT= "LacksLayout";
 
   // Name of the .dot file generated from data retrieved from society
   private static final String dotFileName = "csmart.dot";
@@ -114,6 +115,7 @@ public class CSMARTGraph extends Graph
     printAttributes.put(GrappaConstants.DIR_ATTR, "");
     setEdgeAttribute(GrappaConstants.PRINTLIST_ATTR, printAttributes);
     setNodeAttribute(GrappaConstants.PRINTLIST_ATTR, printAttributes);
+    setAttribute(LACKS_LAYOUT, "true");
   }
 
   /**
@@ -298,6 +300,15 @@ public class CSMARTGraph extends Graph
       }
     }
     graph.buildShapes();
+    // do layout if this is a raw "csmart.dot" copy
+    Attribute lacksLayoutAttr = graph.getAttribute(LACKS_LAYOUT);
+    String lacksLayout = 
+      (lacksLayoutAttr != null ? 
+       lacksLayoutAttr.getStringValue() : 
+       null);
+    if ("true".equals(lacksLayout)) {
+      graph.doLayout();
+    }
     return graph;
   }
 
@@ -414,6 +425,10 @@ public class CSMARTGraph extends Graph
     Attribute a = graphToCopy.getAttribute(GRAPH_TYPE);
     if (a != null)
       setAttribute(GRAPH_TYPE, a.getStringValue());
+    // preserve layout
+    a = graphToCopy.getAttribute(LACKS_LAYOUT);
+    if (a != null)
+      setAttribute(LACKS_LAYOUT, a.getStringValue());
     customizeGraph(); // set direction, font, etc.
   }
 
@@ -489,6 +504,10 @@ public class CSMARTGraph extends Graph
     Attribute a = graphToCopy.getAttribute(GRAPH_TYPE);
     if (a != null)
       setAttribute(GRAPH_TYPE, a.getStringValue());
+    // preserve layout
+    a = graphToCopy.getAttribute(LACKS_LAYOUT);
+    if (a != null)
+      setAttribute(LACKS_LAYOUT, a.getStringValue());
     customizeGraph(); // set direction, font, etc.
   }
 
@@ -1728,6 +1747,9 @@ public class CSMARTGraph extends Graph
       log.info("CSMARTGraph: Starting layout...");
     }
 
+    // could check attribute LACKS_LAYOUT for "true".
+    // currently this is guaranteed by the callers.
+
     // if we have a mapping of UIDs to nodes then we can minimize the
     // information sent to the layout engine
     boolean minimizeGraph = true;
@@ -1805,6 +1827,8 @@ public class CSMARTGraph extends Graph
     
     // hide nodes and edges with the INVISIBLE_ATTRIBUTE set to true
     hideInvisibleElements();
+    
+    setAttribute(LACKS_LAYOUT, "false");
   } // end of doLayout()
 
   /**
