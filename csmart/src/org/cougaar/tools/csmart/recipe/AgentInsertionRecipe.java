@@ -48,6 +48,10 @@ import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.util.log.Logger;
 
+/**
+ * Recipe to add an empty Agent to the society.
+ * User may decide to include an Organization asset.
+ */
 public class AgentInsertionRecipe extends RecipeBase
   implements Serializable
 {
