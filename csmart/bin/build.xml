@@ -88,6 +88,8 @@
 	or even see if they exist -->
 	<!-- Change name of this path to match the module name as approp -->
 	<path id="csmart.classpath">
+           <pathelement location="${lib}/bootstrap.jar" />
+           <pathelement location="${lib}/util.jar" />
            <pathelement location="${lib}/core.jar" />
 	   <pathelement location="${lib}/glm.jar" />
 	   <pathelement location="${lib}/scalability.jar" />
