@@ -364,7 +364,7 @@
   )
 
 (define (clear-cmt-assembly cfw_g_id threads version)
-  (set! assembly_id (get-assembly-id cfw_g_id threads version))
+  (set! assembly_id (get-assembly-id cfw_g_id threads version ()))
   (clear-cmt-asb  assembly_id))
 
 (define (clear-cmt-asb  assembly_id)
@@ -380,6 +380,10 @@
 	       (dbu (string-append "delete from " asb-prefix "asb_component_arg where assembly_id = " (sqlQuote assembly_id)))))
   (print (list (string-append "delete from " asb-prefix "asb_oplan_agent_attr where assembly_id = " (sqlQuote assembly_id))
 	       (dbu (string-append "delete from " asb-prefix "asb_oplan_agent_attr where assembly_id = " (sqlQuote assembly_id)))))
+  (print (list (string-append "delete from " asb-prefix "asb_oplan where assembly_id = " (sqlQuote assembly_id))
+	       (dbu (string-append "delete from " asb-prefix "asb_oplan where assembly_id = " (sqlQuote assembly_id)))))
+  (print (list (string-append "delete from " asb-prefix "asb_assembly where assembly_id = " (sqlQuote assembly_id))
+	       (dbu (string-append "delete from " asb-prefix "asb_assembly where assembly_id = " (sqlQuote assembly_id)))))
 
   ;;(dbu (string-append "delete from " asb-prefix "alib_component"))
 ;;  (print (list (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id))
@@ -420,10 +424,11 @@
 
 
 
-(define (get-assembly-id cfw_g_id threads version)
+(define (get-assembly-id cfw_g_id threads version clones)
   (set! assembly_id (string-append "CMT-" cfw_g_id
 				   version
-				   "{" (apply string-append (map* tabbrev threads)) "}")))
+				   "{" (apply string-append (map* tabbrev threads)) "}"
+				   (apply string-append (map* (lambda(clone) (second clone))clones )))))
 
 
 (define (create-cmt-asb assembly_description cfw_g_id threads version clones)
@@ -431,7 +436,7 @@
   (print "clear-cmt-assembly started")
   (print (time (clear-cmt-assembly cfw_g_id threads version) 1))
   (print "clear-cmt-assembly completed")
-  (set! assembly_id (get-assembly-id cfw_g_id threads version))
+  (set! assembly_id (get-assembly-id cfw_g_id threads version clones))
   (set! cfw_group_id cfw_g_id)
   (set! threads (use-threads threads))
   (newline)
@@ -1856,7 +1861,7 @@
 
 (define (cloneExperiment experiment_id new_name)
   (let*
-      ((new_expt_id (string-append "EXPT_" (query-1-int "select experiment_number.nextval from dual" "NEXTVAL")))
+      ((new_expt_id (string-append "EXPT-" (query-1-int "select experiment_number.nextval from dual" "NEXTVAL")))
        )
     (dbu (string-append
 	  "insert into " asb-prefix "expt_experiment"
@@ -1873,6 +1878,47 @@
 	  "   "(sqlQuote new_name) 
 	  "   from "
 	  "   "	  asb-prefix "expt_trial where expt_id=" (sqlQuote experiment_id)))
+
+;;describe v4_expt_trial_thread
+;; Name				 Null?	  Type
+;; ------------------------------- -------- ----
+;; EXPT_ID			 NOT NULL VARCHAR2(50)
+;; TRIAL_ID			 NOT NULL VARCHAR2(50)
+;; THREAD_ID			 NOT NULL VARCHAR2(50)
+;;
+
+
+    (dbu (string-append
+	  "insert into " asb-prefix "expt_trial_thread"
+	  "   select " 
+	  "   " (sqlQuote new_expt_id) ","
+	  "   " (sqlQuote (string-append new_expt_id ".TRIAL")) ","
+	  "   thread_id"
+	  "   from "
+	  "   "	  asb-prefix "expt_trial_thread where expt_id=" (sqlQuote experiment_id)))
+
+;;SQL> describe v4_expt_trial_org_mult
+;; Name				 Null?	  Type
+;; ------------------------------- -------- ----
+;; EXPT_ID			 NOT NULL VARCHAR2(50)
+;; TRIAL_ID			 NOT NULL VARCHAR2(50)
+;; CFW_ID 			 NOT NULL VARCHAR2(50)
+;; ORG_GROUP_ID			 NOT NULL VARCHAR2(50)
+;; MULTIPLIER				  NUMBER
+;; DESCRIPTION				  VARCHAR2(50)
+;;
+
+    (dbu (string-append
+	  "insert into " asb-prefix "expt_trial_org_mult"
+	  "   select " 
+	  "   " (sqlQuote new_expt_id) ","
+	  "   " (sqlQuote (string-append new_expt_id ".TRIAL")) ","
+	  "   cfw_id,"
+	  "   org_group_id,"
+	  "   multiplier,"
+	  "   description"
+	  "   from "
+	  "   "	  asb-prefix "expt_trial_org_mult where expt_id=" (sqlQuote experiment_id)))
     (dbu (string-append
 	  "insert into " asb-prefix "expt_trial_assembly"
 	  "   select " 
@@ -1941,16 +1987,25 @@
   (let*
       ((assembly_description (string-append "assembly for: " experiment_id))
        (threads 
-	(query-set "select thread_id from v4_expt_trial_thread" "THREAD_ID"))
+	(query-set 
+	 (string-append 
+	  "select thread_id from "
+	  asb-prefix "expt_trial_thread"
+	  "   where expt_id="(sqlQuote experiment_id))
+	 "THREAD_ID"))
        (cfw_group_id 
 	(query-1-string
-	 (string-append "select cfw_group_id from " asb-prefix "expt_experiment where  expt_id=" (sqlQuote experiment_id))
+	 (string-append
+	  "select cfw_group_id from "
+	  asb-prefix "expt_experiment"
+	  "  where  expt_id=" (sqlQuote experiment_id))
 	 "CFW_GROUP_ID"))
        (clones 
 	(query-list (string-append
 		     "select org_group_id, multiplier from "
 		    "   " asb-prefix "EXPT_TRIAL_ORG_MULT" 
 		    "   where multiplier >1"
+		    "   and expt_id=" (sqlQuote experiment_id))
 		    )
 		    '((.getString "ORG_GROUP_ID")(.getInt "MULTIPLIER"))))
        )
@@ -1972,6 +2027,7 @@
    (listif (.contains set "CLASS-3") "CLASS-3")
    (listif (.contains set "CLASS-4") "CLASS-4")
    (listif (.contains set "CLASS-5") "CLASS-5")
-   (listif (.contains set "CLASS-9") "CLASS-9")))
+;;   (listif (.contains set "CLASS-9") "CLASS-9")
+   ))
 
 
