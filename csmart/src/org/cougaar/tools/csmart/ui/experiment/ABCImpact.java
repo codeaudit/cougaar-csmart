@@ -71,7 +71,7 @@ public class ABCImpact
   private static final String gAgentName = "Generator";
   private static final String socFileName = "Society.dat";
   private ABCImpactAgentComponent[] agents;
-  private boolean editable = false;
+  private boolean editable = true;
 
   /**
    * Filter to look for XML files: Return true for such files,
