@@ -36,6 +36,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.cougaar.core.node.Bootstrapper;
+import org.cougaar.util.log.Logger;
+import org.cougaar.util.log.LoggerFactory;
 
 // tools created by this user interface
 
@@ -58,6 +60,7 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
 
 import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
+import java.util.HashMap;
 
 /**
  * Top level CSMART user interface.
@@ -109,6 +112,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   protected static final String HELP_MENU_ITEM = "About Launcher";
 
   //  private static boolean dbMode = false;
+
+  private transient Logger log;
 
   private String[] helpMenuItems = {
     HELP_MENU_ITEM, ABOUT_CSMART_ITEM
@@ -172,6 +177,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   public CSMART() {
     setTitle("CSMART");
+
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
 
     resultDir = initResultDir();
 
@@ -531,7 +538,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       } else if (event.eventType == NamedFrame.Event.REMOVED) {
         JMenuItem menuItem = (JMenuItem) titleToMenuItem.get(event.title);
         if (menuItem == null) {
-          System.err.println("CSMART: No window menu item for " + event.title);
+          if(log.isDebugEnabled()) {
+            log.error("CSMART: No window menu item for " + event.title);
+          }
         } else {
           windowMenu.remove(menuItem);
           titleToMenuItem.remove(event.title);
@@ -543,7 +552,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       } else if (event.eventType == NamedFrame.Event.CHANGED) {
 	JMenuItem menuItem = (JMenuItem)titleToMenuItem.get(event.prevTitle);
         if (menuItem == null) {
-          System.err.println("CSMART: No window menu item for " + event.title);
+          if(log.isDebugEnabled()) {
+            log.error("CSMART: No window menu item for " + event.title);
+          }
         } else {
           windowMenu.remove(menuItem);
           titleToMenuItem.remove(event.prevTitle);
@@ -908,7 +919,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       Constructor constructor = toolClass.getConstructor(paramClasses);
       tool = (JFrame) constructor.newInstance(params);
     } catch (Exception exc) {
-      System.out.println("CSMART: " + exc);
+      if(log.isDebugEnabled()) {
+        log.error("CSMART: " + exc);
+      }
       exc.printStackTrace();
       return null;
     }
@@ -949,6 +962,28 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   
   public static void launch(String[] args) {
     new CSMART();
+  }
+
+  // Logging Methods
+
+  private static LoggerFactory lf;
+  static {
+    lf = LoggerFactory.getInstance();
+//     Map map = new HashMap();
+//     map.put("org.cougaar.core.logging.log4j.rootCategory", "DEBUG, A1");
+//     map.put("org.cougaar.core.logging.log4j.appender.A1", "org.apache.log4j.FileAppender");
+
+    lf.configure(null); // Show I be setting these properties?
+  }
+
+  /**
+   * Used to grab an instance of the Logger
+   *
+   * @param requestor 
+   * @return a <code>Logger</code> value
+   */
+  public static Logger createLogger(Object requestor) {
+    return lf.createLogger(requestor);
   }
 
 }
