@@ -22,12 +22,14 @@
 package org.cougaar.tools.csmart.ui.console;
 
 import org.cougaar.tools.csmart.experiment.Experiment;
+import org.cougaar.tools.csmart.experiment.XMLExperiment;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
 import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.util.log.Logger;
 
 import javax.swing.*;
@@ -60,6 +62,7 @@ import java.util.Observer;
  */
 public class CSMARTConsoleView extends JFrame implements Observer {
   private HostConfigurationBuilder hostConfiguration = null;
+  private Component hostConfigComponent = null;
   private transient Logger log;
   private ConsoleDesktop desktop;
   private CSMARTConsoleModel model;
@@ -70,6 +73,9 @@ public class CSMARTConsoleView extends JFrame implements Observer {
   private JToggleButton attachButton;
   private JMenuItem attachMenuItem; // same as attachButton
   private JMenuItem addGLSMenuItem; // call addGLSWindow
+  private JMenuItem findHostMenuItem;
+  private JMenuItem findNodeMenuItem;
+  private JMenuItem findAgentMenuItem;
   private JToggleButton runButton;
   private JToggleButton stopButton;
   private JPanel buttonPanel; // contains status buttons
@@ -93,6 +99,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
 
   // top level menus and menu items
   private static final String FILE_MENU = "File";
+  private static final String OPEN_MENU_ITEM = "Load Society XML";
   private static final String EXIT_MENU_ITEM = "Close";
   private static final String VIEW_MENU = "View";
   private static final String SET_VIEW_SIZE_MENU_ITEM = "Set View Size...";
@@ -294,19 +301,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
 
     // if have experiment,
     // create internal frame for host/node/agent configuration
-    Experiment experiment = model.getExperiment();
-    if (experiment != null) {
-      hostConfiguration = new HostConfigurationBuilder(experiment, null);
-      hostConfiguration.update(); // display configuration
-      hostConfiguration.addHostTreeSelectionListener(myTreeListener);
-      JInternalFrame jif = new JInternalFrame("Configuration",
-                                              true, false, true, true);
-      jif.getContentPane().add(hostConfiguration);
-      jif.setSize(660, 400);
-      jif.setLocation(0, 0);
-      jif.setVisible(true);
-      desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
-    }
+    createHostConfiguration();
     panel.add(desktop,
               new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
                                      GridBagConstraints.WEST,
@@ -316,10 +311,40 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     return panel;
   }
 
+  private void createHostConfiguration() {
+    Experiment experiment = model.getExperiment();
+    if (experiment != null) {
+      if(hostConfigComponent != null) {
+        desktop.remove(hostConfigComponent);
+      }
+      hostConfiguration = new HostConfigurationBuilder(experiment, null);
+      hostConfiguration.update(); // display configuration
+      hostConfiguration.addHostTreeSelectionListener(myTreeListener);
+      JInternalFrame jif = new JInternalFrame("Configuration",
+                                              true, false, true, true);
+      jif.getContentPane().add(hostConfiguration);
+      jif.setSize(660, 400);
+      jif.setLocation(0, 0);
+      jif.setVisible(true);
+      hostConfigComponent = jif;
+      desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
+    }
+  }
+
   private JMenuBar createMenu() {
     // top level menus
     JMenu fileMenu = new JMenu(FILE_MENU);
-    fileMenu.setToolTipText("Exit this tool.");
+    fileMenu.setToolTipText("Console Operations");
+
+    JMenuItem openMenuItem = new JMenuItem(OPEN_MENU_ITEM);
+    openMenuItem.setToolTipText("Load in an XML Society to run.");
+    openMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        openMenuItem_actionPerformed(e);
+      }
+    });
+    fileMenu.add(openMenuItem);
+
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.setToolTipText("Exit this tool.");
     exitMenuItem.addActionListener(new ActionListener() {
@@ -346,32 +371,28 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     viewMenu.add(filterMenuItem);
 
     JMenu findMenu = new JMenu(FIND_MENU);
-    JMenuItem findHostMenuItem = new JMenuItem(FIND_HOST_MENU_ITEM);
+    findHostMenuItem = new JMenuItem(FIND_HOST_MENU_ITEM);
     findHostMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         hostConfiguration.findHost();
       }
     });
     findMenu.add(findHostMenuItem);
-    JMenuItem findNodeMenuItem = new JMenuItem(FIND_NODE_MENU_ITEM);
+    findNodeMenuItem = new JMenuItem(FIND_NODE_MENU_ITEM);
     findNodeMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         hostConfiguration.findNode();
       }
     });
     findMenu.add(findNodeMenuItem);
-    JMenuItem findAgentMenuItem = new JMenuItem(FIND_AGENT_MENU_ITEM);
+    findAgentMenuItem = new JMenuItem(FIND_AGENT_MENU_ITEM);
     findAgentMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         hostConfiguration.findAgent();
       }
     });
     findMenu.add(findAgentMenuItem);
-    if (model.getExperiment() == null) {
-      findHostMenuItem.setEnabled(false);
-      findNodeMenuItem.setEnabled(false);
-      findAgentMenuItem.setEnabled(false);
-    }
+    enableFindOptions();
 
     JMenu notifyMenu = new JMenu(NOTIFY_MENU);
     JMenuItem setNotifyMenuItem = new JMenuItem(SET_NOTIFY_MENU_ITEM);
@@ -523,6 +544,37 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     menuBar.add(appServerMenu);
     menuBar.add(helpMenu);
     return menuBar;
+  }
+
+  private void enableFindOptions() {
+    if (model.getExperiment() == null) {
+      findHostMenuItem.setEnabled(false);
+      findNodeMenuItem.setEnabled(false);
+      findAgentMenuItem.setEnabled(false);
+    } else {
+      findHostMenuItem.setEnabled(true);
+      findNodeMenuItem.setEnabled(true);
+      findAgentMenuItem.setEnabled(true);
+    }
+  }
+
+  private void openMenuItem_actionPerformed(ActionEvent e) {
+    JFileChooser chooser = new JFileChooser();
+    int option = chooser.showOpenDialog(this);
+    if (option == JFileChooser.APPROVE_OPTION) {
+      GUIUtils.timeConsumingTaskStart(this);
+
+      XMLExperiment exp = new XMLExperiment(chooser.getSelectedFile());
+      model.setExperiment(exp);
+      GUIUtils.timeConsumingTaskEnd(this);
+
+//      Document doc = ComponentDataXML.createXMLDocument(exp.getExperiment());
+//      try {
+//        XMLUtils.writeXMLFile(new File("/tmp/"), doc, "dump.xml");
+//      } catch (IOException e1) {
+//        e1.printStackTrace();
+//      }
+    }
   }
 
   /**
@@ -792,14 +844,18 @@ public class CSMARTConsoleView extends JFrame implements Observer {
 
     // when Console is a part of CSMART
     // this removes the window from the list that CSMART maintains
-    if (e instanceof ActionEvent) {
-      NamedFrame.getNamedFrame().removeFrame(this);
+    if(!model.isCSMARTNull()) {
+      if (e instanceof ActionEvent) {
+        NamedFrame.getNamedFrame().removeFrame(this);
+      }
+      dispose();
     } else {
       if (log.isDebugEnabled()) {
         log.debug("Not doing a removeFrame: event was " + e);
       }
+      dispose(); // dispose of this instance (should clean up all instances in console)
+      System.exit(0);
     }
-    dispose(); // dispose of this instance (should clean up all instances in console)
   }
 
   /**
@@ -872,6 +928,11 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     } else if (arg instanceof String &&
                ((String)arg).startsWith("NODE_STATE")) {
       updateButtons();
+    } else if (arg.equals(CSMARTConsoleModel.NEW_EXPERIMENT)) {
+      initButtons();
+      createHostConfiguration();
+      updateASControls();
+      enableFindOptions();
     }
   }
 
@@ -936,6 +997,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     boolean haveRunning = false;
     boolean haveStopping = false;
     boolean haveStopped = false;
+
     ArrayList nodeModels = model.getNodeModels();
     for (int i = 0; i < nodeModels.size(); i++) {
       NodeModel nodeModel = (NodeModel)nodeModels.get(i);
@@ -1211,8 +1273,10 @@ public class CSMARTConsoleView extends JFrame implements Observer {
         return; // ignore selecting if it's not a node
       String nodeName =
           ((ConsoleTreeObject) treeNode.getUserObject()).getName();
-      displayNodeFrame(nodeName);
-      selectStatusButton(nodeName);
+      if(model.getNodeModel(nodeName) != null) {
+        displayNodeFrame(nodeName);
+        selectStatusButton(nodeName);
+      }
     }
   };
 
