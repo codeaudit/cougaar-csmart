@@ -88,7 +88,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   protected static final String ABOUT_DOC = "../help/about-csmart.html";
   protected static final String HELP_MENU_ITEM = "Help";
 
-  private boolean dbMode = false;
+  private static boolean dbMode = false;
 
   private String[] helpMenuItems = {
     HELP_MENU_ITEM, ABOUT_CSMART_ITEM
@@ -125,6 +125,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   public CSMART() {
     setTitle("CSMART");
+    CSMART.inDBMode(true);
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
     JMenu fileMenu = new JMenu(FILE_MENU);
@@ -196,8 +197,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * Check to see if CSMART is running in the CMT-DB connected mode
    * @return a <code>boolean</code> whether have a valid CMT database connection
    */
-  public boolean inDBMode() {
-    return inDBMode(false);
+  public static boolean inDBMode() {
+    return CSMART.inDBMode(false);
   }
   
   /**
@@ -207,10 +208,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * @param checkConnection a <code>boolean</code> indicating whether to re-check the database connection
    * @return a <code>boolean</code>, true if there is a valid CMT DB connection
    */
-  public boolean inDBMode(boolean checkConnection) {
+  public static boolean inDBMode(boolean checkConnection) {
     if (checkConnection)
-      dbMode = DBUtils.isValidDBConnection();
-    return dbMode;
+      CSMART.dbMode = DBUtils.isValidDBConnection();
+    return CSMART.dbMode;
   }
   
   public void saveWorkspace() {
