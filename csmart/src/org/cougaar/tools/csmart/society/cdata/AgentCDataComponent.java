@@ -138,7 +138,7 @@ public class AgentCDataComponent
 
         Object[] parameters = childCData[i].getParameters();
         for (int j = 0; j < parameters.length; j++) 
-          component.addProperty(ComponentBase.PROP_PARAM + j, (String)parameters[j]);
+          component.addProperty(ComponentBase.PROP_PARAM + j, parameters[j]);
         container.addChild(component);
       }
     }
