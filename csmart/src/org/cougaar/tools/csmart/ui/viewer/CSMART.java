@@ -21,11 +21,8 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-import java.awt.Frame;
+import java.awt.*;
 import java.awt.event.*;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.GridLayout;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.net.URL;
@@ -79,6 +76,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   // define strings here so we can easily change them
   private static final String FILE_MENU = "File";
   private static final String NEW_MENU_ITEM = "Open Workspace...";
+  private static final String DBCONFIG_MENU_ITEM = "Configure Database";
   private static final String EXIT_MENU_ITEM = "Exit";
   private static final String WINDOW_MENU = "Window";
   private static final String HELP_MENU = "Help";
@@ -88,7 +86,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   protected static final String ABOUT_DOC = "../help/about-csmart.html";
   protected static final String HELP_MENU_ITEM = "Help";
 
-  private static boolean dbMode = false;
+  //  private static boolean dbMode = false;
 
   private String[] helpMenuItems = {
     HELP_MENU_ITEM, ABOUT_CSMART_ITEM
@@ -123,9 +121,18 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     "PA.gif"
   };
 
+  // used for database
+  static JDialog dbConfigDialog = null;
+  static JTextField dbConfigField;
+  static JTextField dbNameField;
+  static JPasswordField dbPasswordField;
+  static String dbConfig = "jdbc:oracle:thin:@eiger.alpine.bbn.com:1521:alp";
+  static String dbName = "society_config";
+  static String dbPassword = "s0ciety_c0nfig";
+
   public CSMART() {
     setTitle("CSMART");
-    CSMART.inDBMode(true);
+    //    CSMART.inDBMode(true);
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
     JMenu fileMenu = new JMenu(FILE_MENU);
@@ -133,11 +140,18 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     JMenuItem newMenuItem = new JMenuItem(NEW_MENU_ITEM);
     newMenuItem.addActionListener(this);
     newMenuItem.setToolTipText("Create a new workspace.");
-
+    fileMenu.add(newMenuItem);
+    JMenuItem dbConfigMenuItem = new JMenuItem(DBCONFIG_MENU_ITEM);
+    dbConfigMenuItem.setToolTipText("Configure the database.");
+    dbConfigMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+	dbConfigMenuItem_actionPerformed();
+      }
+    });
+    fileMenu.add(dbConfigMenuItem);
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.addActionListener(this);
     exitMenuItem.setToolTipText("Exit");
-    fileMenu.add(newMenuItem);
     fileMenu.add(exitMenuItem);
 
     windowMenu = new JMenu(WINDOW_MENU);
@@ -194,12 +208,104 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   }
 
   /**
+   * Display dialog that allows user to configure the database.
+   */
+
+  private void dbConfigMenuItem_actionPerformed() {
+    if (dbConfigDialog != null) {
+      dbConfigDialog.setVisible(true);
+      return;
+    }
+    JPanel panel = new JPanel(new GridBagLayout());
+    int x = 0;
+    int y = 0;
+    dbConfigField = new JTextField(dbConfig);
+    dbNameField = new JTextField(dbName);
+    dbPasswordField = new JPasswordField(dbPassword);
+    panel.add(new JLabel("Database:"),
+              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.NONE,
+                                     new Insets(10, 0, 5, 5),
+                                     0, 0));
+    panel.add(dbConfigField,
+              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.HORIZONTAL,
+                                     new Insets(10, 0, 5, 0),
+                                     0, 0));
+    x = 0;
+    panel.add(new JLabel("User:"),
+              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.NONE,
+                                     new Insets(10, 0, 5, 5),
+                                     0, 0));
+    panel.add(dbNameField,
+              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.HORIZONTAL,
+                                     new Insets(10, 0, 5, 0),
+                                     0, 0));
+    x = 0;
+    panel.add(new JLabel("Password:"),
+              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.NONE,
+                                     new Insets(10, 0, 5, 5),
+                                     0, 0));
+    panel.add(dbPasswordField,
+              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.HORIZONTAL,
+                                     new Insets(10, 0, 5, 0),
+                                     0, 0));
+    
+    dbConfigDialog = new JDialog(this, "Database Configuration", true);
+    dbConfigDialog.getContentPane().setLayout(new BorderLayout());
+    dbConfigDialog.getContentPane().add(panel, BorderLayout.CENTER);
+    JPanel buttonPanel = new JPanel();
+    JButton okButton = new JButton("OK");
+    okButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        dbConfig = dbConfigField.getText();
+        dbName = dbNameField.getText();
+        dbPassword = new String(dbPasswordField.getPassword());
+        dbConfigDialog.setVisible(false);
+      }
+    });
+    buttonPanel.add(okButton);
+    JButton cancelButton = new JButton("Cancel");
+    cancelButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        dbConfigDialog.setVisible(false);
+      }
+    });
+    buttonPanel.add(cancelButton);
+    dbConfigDialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+    dbConfigDialog.setSize(400, 200);
+    dbConfigDialog.setVisible(true);
+  }
+
+  public static String getDatabaseConfiguration() {
+    return dbConfig;
+  }
+
+  public static String getDatabaseUserName() {
+    return dbName;
+  }
+
+  public static String getDatabaseUserPassword() {
+    return dbPassword;
+  }
+
+  /**
    * Check to see if CSMART is running in the CMT-DB connected mode
    * @return a <code>boolean</code> whether have a valid CMT database connection
    */
-  public static boolean inDBMode() {
-    return CSMART.inDBMode(false);
-  }
+  //  public static boolean inDBMode() {
+  //    return CSMART.inDBMode(false);
+  //  }
   
   /**
    * Check to see if CSMART is running in the CMT-DB connected mode, rechecking
@@ -208,13 +314,13 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * @param checkConnection a <code>boolean</code> indicating whether to re-check the database connection
    * @return a <code>boolean</code>, true if there is a valid CMT DB connection
    */
-  public static boolean inDBMode(boolean checkConnection) {
-    if (checkConnection) {
-      CSMART.dbMode = DBUtils.isValidDBConnection();
-      System.out.println("CSMART DB MODE: " + CSMART.dbMode);
-    }
-    return CSMART.dbMode;
-  }
+//    public static boolean inDBMode(boolean checkConnection) {
+//      if (checkConnection) {
+//        CSMART.dbMode = DBUtils.isValidDBConnection();
+//        System.out.println("CSMART DB MODE: " + CSMART.dbMode);
+//      }
+//      return CSMART.dbMode;
+//    }
   
   public void saveWorkspace() {
     organizer.save();

@@ -34,6 +34,7 @@ import javax.swing.event.*;
 
 import org.cougaar.tools.csmart.ui.component.AgentComponent;
 import org.cougaar.tools.csmart.ui.component.ComponentName;
+import org.cougaar.tools.csmart.ui.component.CompositeName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.HostComponent;
 import org.cougaar.tools.csmart.ui.component.NodeComponent;
@@ -41,6 +42,7 @@ import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.configuration.ConsoleDNDTree;
 import org.cougaar.tools.csmart.ui.configuration.ConsoleTreeObject;
+import org.cougaar.tools.csmart.ui.console.NodeArgumentDialog;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
 import org.cougaar.tools.csmart.ui.util.Util;
@@ -59,6 +61,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   DNDTree hostTree;
   DNDTree nodeTree;
   DNDTree agentTree;
+  String nameServerHostName = "";
   // menu items for popup menu in hostTree
   private static final String NEW_HOST_MENU_ITEM = "New Host";
   private static final String NEW_NODE_MENU_ITEM = "New Node";
@@ -230,8 +233,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     };
     nodeTree.setCellEditor(nodeEditor);
     nodeTree.setExpandsSelectedPaths(true);
-    //    addUnassignedNodesFromExperiment();
-    //    nodeTree.getModel().addTreeModelListener(this);
     JScrollPane nodeTreeScrollPane = new JScrollPane(nodeTree);
     nodeTreeScrollPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
     bottomPane.setTopComponent(nodeTreeScrollPane);
@@ -298,18 +299,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     };
     agentTree.setCellEditor(agentEditor);
     agentTree.setExpandsSelectedPaths(true);
-    //    addUnassignedAgentsFromExperiment();
     JScrollPane agentTreeScrollPane = new JScrollPane(agentTree);
     agentTreeScrollPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
     bottomPane.setBottomComponent(agentTreeScrollPane);
     hostPane.setBottomComponent(bottomPane);
-
-
-    // fully expand trees
-    //    expandTree(hostTree);
-    //    expandTree(nodeTree);
-    //    expandTree(agentTree);
-
     setLayout(new BorderLayout());
     add(hostPane, BorderLayout.CENTER);
     hostPane.setDividerLocation(100);
@@ -428,6 +421,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       NodeComponent[] nodes = hostComponent.getNodes();
       for (int j = 0; j < nodes.length; j++) {
 	NodeComponent nodeComponent = nodes[j];
+        addDefaultPropertiesToNode((ConfigurableComponent)nodeComponent);
 	cto = new ConsoleTreeObject(nodeComponent);
 	DefaultMutableTreeNode nodeTreeNode = 
 	  new DefaultMutableTreeNode(cto, true);
@@ -512,6 +506,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     Iterator iter = unassignedNodes.iterator();
     while (iter.hasNext()) {
       NodeComponent node = (NodeComponent)iter.next();
+      addDefaultPropertiesToNode((ConfigurableComponent)node);
       ConsoleTreeObject cto = new ConsoleTreeObject(node);
       DefaultMutableTreeNode newNodeTreeNode = 
 	new DefaultMutableTreeNode(cto, true);
@@ -649,6 +644,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       return;
     DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
     NodeComponent nodeComponent = experiment.addNode(nodeName);
+    addDefaultPropertiesToNode((ConfigurableComponent)nodeComponent);
     DefaultMutableTreeNode newNode =
       new DefaultMutableTreeNode(new ConsoleTreeObject(nodeComponent));
     model.insertNodeInto(newNode,
@@ -758,6 +754,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	hostComponent.addNode((NodeComponent)cto.getComponent());
       }
     }
+    setNameServerHostName(); // potentially update name server host
     //    setRunButtonEnabled();
   }
 
@@ -854,6 +851,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	hostComponent.removeNode(nodeComponent);
       }
     }
+    setNameServerHostName(); // potentially update name server host
     //    setRunButtonEnabled();
   }
 
@@ -888,10 +886,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   /**
-   * TreeModelListener interface -- unused.
+   * Called if user edits the name of a host.
    */
 
   public void treeNodesChanged(TreeModelEvent e) {
+    Object source = e.getSource();
+    if (hostTree.getModel().equals(source))
+      setNameServerHostName();
   }
 
   /**
@@ -1036,14 +1037,30 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void cmdLineNodeMenuItem_actionPerformed(JTree tree) {
-    String cmdLineArgs = getPropertyOfNode(tree, "Command Line Arguments");
-    String s = (String)JOptionPane.showInputDialog(this,
-                                           "Enter Command Line Arguments",
-                                           "Command Line Arguments",
-                                           JOptionPane.QUESTION_MESSAGE,
-                                           null, null, cmdLineArgs);
-    if (s != null && s.length() != 0) 
-      setPropertyOfNode(tree, "CmdLineArgs", s);
+//      String cmdLineArgs = getPropertyOfNode(tree, "Command Line Arguments");
+//      String s = (String)JOptionPane.showInputDialog(this,
+//                                             "Enter Command Line Arguments",
+//                                             "Command Line Arguments",
+//                                             JOptionPane.QUESTION_MESSAGE,
+//                                             null, null, cmdLineArgs);
+//      if (s != null && s.length() != 0) 
+//        setPropertyOfNode(tree, "CmdLineArgs", s);
+    ArrayList names = new ArrayList();
+    ArrayList values = new ArrayList();
+    NodeArgumentDialog dialog = new NodeArgumentDialog();
+    DefaultMutableTreeNode selectedNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
+    ConfigurableComponent component = 
+      (ConfigurableComponent)cto.getComponent();
+    Iterator i = component.getPropertyNames();
+    while (i.hasNext()) {
+      CompositeName name = (CompositeName)i.next();
+      names.add(name);
+      values.add(component.getProperty(name).getValue());
+    }
+    dialog.setArguments(names, values);
+    dialog.setVisible(true);
   }
 
   /**
@@ -1079,6 +1096,54 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   public void removeHostTreeSelectionListener(TreeSelectionListener listener) {
     hostTree.removeTreeSelectionListener(listener);
+  }
+
+  // find first server host and use that as name server
+  private void setNameServerHostName() {
+    String newNameServerHostName = "";
+    HostComponent[] hosts = experiment.getHosts();
+    for (int i = 0; i < hosts.length; i++) {
+      NodeComponent[] nodes = hosts[i].getNodes();
+      for (int j = 0; j < nodes.length; j++) {
+	AgentComponent[] agents = nodes[j].getAgents();
+	// skip nodes that have no agents
+	if (agents == null || agents.length == 0)
+	  continue;
+        newNameServerHostName = hosts[i].getShortName();
+        break;
+      }
+    }
+    // set new server host name in all nodes
+    if (!newNameServerHostName.equals(nameServerHostName)) {
+      nameServerHostName = newNameServerHostName;
+      NodeComponent[] nodes = experiment.getNodes();
+      for (int i = 0; i < nodes.length; i++) {
+        ConfigurableComponent node = (ConfigurableComponent)nodes[i];
+        node.addProperty("org.cougaar.name.server",
+                         nameServerHostName + ":8888:5555");
+      }
+    }
+  }
+
+  private void addDefaultPropertiesToNode(ConfigurableComponent node) {
+    // note that this is overwritten with a unique name in the console
+    // when running without a database
+    node.addProperty("org.cougaar.node.name", node.getShortName());
+    String nameServerPorts = "8888:5555";
+    node.addProperty("org.cougaar.tools.server.nameserver.ports", 
+                     nameServerPorts);
+    node.addProperty("org.cougaar.name.server", 
+                     nameServerHostName + ":" + nameServerPorts);
+    node.addProperty("org.cougaar.control.port", "8484");
+    if (experiment.isInDatabase()) {
+      node.addProperty("org.cougaar.configuration.database",
+                       CSMART.getDatabaseConfiguration());
+      node.addProperty("org.cougaar.configuration.user", 
+                       CSMART.getDatabaseUserName());
+      node.addProperty("org.cougaar.configuration.password",
+                       CSMART.getDatabaseUserPassword());
+      node.addProperty("org.cougaar.experiment.id", experiment.getTrialID());
+    }
   }
 
   private DefaultTreeModel createModel(final Experiment experiment, DefaultMutableTreeNode node, boolean askKids) {

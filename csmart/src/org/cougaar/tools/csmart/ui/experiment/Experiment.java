@@ -66,6 +66,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   // Host/Node, Node/Agent would be 2, for example
   private List configAssemblyIDs = new ArrayList();
 
+  private boolean inDatabase = false;
+
   public Experiment(String name, SocietyComponent[] societyComponents,
 		    ImpactComponent[] impacts, MetricComponent[] metrics)
   {
@@ -83,6 +85,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     super(name);
     this.expID = expID;
     this.trialID = trialID;
+    inDatabase = true;
     System.out.println("Experiment: " + expID + " Trial: " + trialID);
   }
 
@@ -597,10 +600,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   public String getExperimentID() {
-    if (CSMART.inDBMode()) {
-      // FIXME:
-      // This should save unsaved pieces of the configuration to the database,
-      // create the appropriate trials/experiments, then return the ID
+    if (inDatabase) {
       return expID;
     } else {
       return null;
@@ -608,10 +608,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   public String getTrialID() {
-    if (CSMART.inDBMode()) {
-      // FIXME:
-      // This should save unsaved pieces of the configuration to the database,
-      // create the appropriate trials/experiments, then return the ID
+    if (inDatabase) {
       return trialID;
     } else {
       return null;
@@ -628,8 +625,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes) {
     // The given set of nodes is potentially fewer than the full set in the society
     // Note the ugly this parameter...
-    if (CSMART.inDBMode()) {
-      // FIXME!!!
+    if (inDatabase) {
       // Send a config writer that only writes LeafComponentData
       return new LeafOnlyConfigWriter(getComponents(), nodes, this);
     }
@@ -971,6 +967,27 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     hasValidTrials = true;
     return (Trial[])trials.toArray(new Trial[trials.size()]);
   }
+
+  /**
+   * Indicates whether or not the experiment is in the database (or should
+   * be written to the database for new experiments).
+   * @param db true if experiment is, or should be, in database
+   */
+
+  public void setInDatabase(boolean db) {
+    inDatabase = db;
+  }
+
+  /**
+   * Indicates whether or not the experiment is in the database (or should
+   * be written to the database for new experiments).
+   * @return boolean true if experiment is, or should be, in database
+   */
+  
+  public boolean isInDatabase() {
+    return inDatabase;
+  }
+
 } // end of Experiment.java
 
 

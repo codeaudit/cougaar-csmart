@@ -98,7 +98,6 @@ public class CSMARTConsole extends JFrame {
   private static final String NOTIFY_MENU = "Notify";
   private static final String NOTIFY_MENU_ITEM = "Notify When...";
   private static final String EXIT_MENU_ITEM = "Exit";
-  private static final String DBCONFIG_MENU_ITEM = "Configure Database";
   private static final String HELP_DOC = "help.html";
   private static final String ABOUT_CSMART_ITEM = "About CSMART";
   private static final String ABOUT_DOC = "../help/about-csmart.html";
@@ -125,15 +124,6 @@ public class CSMARTConsole extends JFrame {
   // node whose status lamp is selected
   // set only when pop-up menu is displayed
   private String selectedNodeName;
-
-  // used for database
-  static JDialog dbConfigDialog = null;
-  static JTextField dbConfigField;
-  static JTextField dbNameField;
-  static JPasswordField dbPasswordField;
-  String dbConfig = "jdbc:oracle:thin:@eiger.alpine.bbn.com:1521:alp";
-  String dbName = "society_config";
-  String dbPassword = "s0ciety_c0nfig";
 
   Legend legend; // the node status lamp legend
 
@@ -164,14 +154,6 @@ public class CSMARTConsole extends JFrame {
     // top level menus
     JMenu fileMenu = new JMenu(FILE_MENU);
     fileMenu.setToolTipText("Save configuration or exit.");
-    JMenuItem dbConfigMenuItem = new JMenuItem(DBCONFIG_MENU_ITEM);
-    dbConfigMenuItem.setToolTipText("Configure the database.");
-    dbConfigMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-	dbConfigMenuItem_actionPerformed();
-      }
-    });
-    fileMenu.add(dbConfigMenuItem);
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.setToolTipText("Exit this tool.");
     exitMenuItem.addActionListener(new ActionListener() {
@@ -411,86 +393,6 @@ public class CSMARTConsole extends JFrame {
     pack();
     setSize(700, 600);
     setVisible(true);
-  }
-
-  /**
-   * Display dialog that allows user to configure the database.
-   */
-
-  private void dbConfigMenuItem_actionPerformed() {
-    if (dbConfigDialog != null) {
-      dbConfigDialog.setVisible(true);
-      return;
-    }
-    JPanel panel = new JPanel(new GridBagLayout());
-    int x = 0;
-    int y = 0;
-    dbConfigField = new JTextField(dbConfig);
-    dbNameField = new JTextField(dbName);
-    dbPasswordField = new JPasswordField(dbPassword);
-    panel.add(new JLabel("Database:"),
-              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.NONE,
-                                     new Insets(10, 0, 5, 5),
-                                     0, 0));
-    panel.add(dbConfigField,
-              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.HORIZONTAL,
-                                     new Insets(10, 0, 5, 0),
-                                     0, 0));
-    x = 0;
-    panel.add(new JLabel("User:"),
-              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.NONE,
-                                     new Insets(10, 0, 5, 5),
-                                     0, 0));
-    panel.add(dbNameField,
-              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.HORIZONTAL,
-                                     new Insets(10, 0, 5, 0),
-                                     0, 0));
-    x = 0;
-    panel.add(new JLabel("Password:"),
-              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.NONE,
-                                     new Insets(10, 0, 5, 5),
-                                     0, 0));
-    panel.add(dbPasswordField,
-              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.HORIZONTAL,
-                                     new Insets(10, 0, 5, 0),
-                                     0, 0));
-    
-    dbConfigDialog = new JDialog(this, "Database Configuration", true);
-    dbConfigDialog.getContentPane().setLayout(new BorderLayout());
-    dbConfigDialog.getContentPane().add(panel, BorderLayout.CENTER);
-    JPanel buttonPanel = new JPanel();
-    JButton okButton = new JButton("OK");
-    okButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        dbConfig = dbConfigField.getText();
-        dbName = dbNameField.getText();
-        dbPassword = new String(dbPasswordField.getPassword());
-        dbConfigDialog.setVisible(false);
-      }
-    });
-    buttonPanel.add(okButton);
-    JButton cancelButton = new JButton("Cancel");
-    cancelButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        dbConfigDialog.setVisible(false);
-      }
-    });
-    buttonPanel.add(cancelButton);
-    dbConfigDialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-    dbConfigDialog.setSize(400, 200);
-    dbConfigDialog.setVisible(true);
   }
 
   /**
@@ -1070,7 +972,7 @@ public class CSMARTConsole extends JFrame {
 
     // Can't change the name of the Nodes when running
     // from the database, cause it needs to load those names
-    if (! CSMART.inDBMode()) {
+    if (!experiment.isInDatabase()) {
       uniqueNodeName = nodeName + currentTrial;
     }
     
@@ -1113,14 +1015,16 @@ public class CSMARTConsole extends JFrame {
     properties.put("org.cougaar.name.server", 
 		   nameServerHostName + ":" + nameServerPorts);
     properties.put("org.cougaar.control.port", Integer.toString(DEFAULT_PORT));
-    if (!CSMART.inDBMode()) {
+    if (!experiment.isInDatabase()) {
       properties.put("org.cougaar.filename", uniqueNodeName + ".ini");
     } else {
-      properties.put("org.cougaar.configuration.database", dbConfig);
-      properties.put("org.cougaar.configuration.user", dbName);
-      properties.put("org.cougaar.configuration.password", dbPassword);
+      properties.put("org.cougaar.configuration.database", 
+                     CSMART.getDatabaseConfiguration());
+      properties.put("org.cougaar.configuration.user", 
+                     CSMART.getDatabaseUserName());
+      properties.put("org.cougaar.configuration.password", 
+                     CSMART.getDatabaseUserPassword());
       properties.put("org.cougaar.experiment.id", experiment.getTrialID());
-                     //                     "\"SMALL-135-TRANS|TRIAL-A\"");
     }
     // set configuration file names in nodesToRun
     for (int i = 0; i < nodesToRun.length; i++) 
@@ -1128,7 +1032,7 @@ public class CSMARTConsole extends JFrame {
 				nodesToRun[i].getShortName() + currentTrial);
 
     ConfigurationWriter configWriter = null;
-    if (!CSMART.inDBMode()) {
+    if (!experiment.isInDatabase()) {
       configWriter = experiment.getConfigurationWriter(nodesToRun);
     }
 

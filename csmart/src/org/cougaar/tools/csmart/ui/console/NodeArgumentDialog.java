@@ -74,7 +74,7 @@ public class NodeArgumentDialog extends JDialog {
     pack();
   }
 
-  private void setArguments(ArrayList names, ArrayList values) {
+  public void setArguments(ArrayList names, ArrayList values) {
     this.names = names;
     this.values =  values;
     argTable.setForeground(Color.black);
