@@ -627,10 +627,15 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     // Note the ugly this parameter...
     if (inDatabase) {
       // Send a config writer that only writes LeafComponentData
-      return new LeafOnlyConfigWriter(getComponents(), nodes, this);
+      try {
+        return new DBConfigWriter(getComponents(), nodes, this);
+      } catch (Exception e) {
+        e.printStackTrace();
+        return null;
+      }
+    } else {
+      return new ExpConfigWriterNew(getComponents(), nodes, this);
     }
-
-    return new ExpConfigWriterNew(getComponents(), nodes, this);
   }
 
   /**
