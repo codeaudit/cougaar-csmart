@@ -768,7 +768,7 @@ public abstract class ConfigurableComponent
               ((ConfigurableComponent)getChild(nextChildIndex++)).getPropertyNames();
           }
           pendingName = (CompositeName) currentIterator.next();
-          if (pendingName != null && getProperty(pendingName) == null) {
+          if (pendingName != null && getProperty(pendingName) == nullProperty) {
             pendingName = null;
           }
         }
@@ -807,7 +807,7 @@ public abstract class ConfigurableComponent
                 ((ConfigurableComponent)getChild(nextChildIndex++)).getProperties();
             }
             pendingProp = (Property) currentIterator.next();
-            if (pendingProp != null) {
+            if (pendingProp == nullProperty) {
               pendingProp = null;
             }
           }
