@@ -175,7 +175,7 @@ public class AgentDBComponent
   }
 
   private void initDBProperties() throws IOException {
-    dbp = DBProperties.readQueryFile(DBUtils.QUERY_FILE);
+    dbp = DBProperties.readQueryFile(DBUtils.QUERY_FILE, "csmart");
   }
 
   // Get the class (ie, SimpleAgent) for the Agent from the DB

@@ -153,7 +153,7 @@ public class ExportExperimentHelper {
     String password;
     Connection conn = null;
     try {	
-      dbProps = DBProperties.readQueryFile("CSMART.q");
+      dbProps = DBProperties.readQueryFile("CSMART.q", "csmart");
       database = dbProps.getProperty("database");
       username = dbProps.getProperty("username");
       password = dbProps.getProperty("password");

@@ -240,7 +240,7 @@ public class TreeViewer extends JFrame {
 
     Properties props = new Properties(defaults);
     // Get the debug file.
-    ConfigFinder cf = ConfigFinder.getInstance();
+    ConfigFinder cf = ConfigFinder.getInstance("csmart");
     try {
       props.load(new FileInputStream(cf.locateFile("debug.properties")));
     } catch(Exception e) {

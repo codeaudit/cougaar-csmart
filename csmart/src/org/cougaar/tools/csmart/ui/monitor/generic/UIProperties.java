@@ -75,7 +75,7 @@ public class UIProperties {
     setDefaults(defaults);
     // define new properties from config file; default to defaults
     properties = new Properties(defaults);
-    ConfigFinder configFinder = ConfigFinder.getInstance();
+    ConfigFinder configFinder = ConfigFinder.getInstance("csmart");
     File file = configFinder.locateFile("ui.properties");
     if (file != null) {
       try {
@@ -131,7 +131,7 @@ public class UIProperties {
 
   public void saveDefaults() {
     setDefaults(properties);
-    ConfigFinder configFinder = new ConfigFinder();
+    ConfigFinder configFinder = ConfigFinder.getInstance("csmart");
     File file = configFinder.locateFile("ui.properties");
     if (file == null) 
       file = new File("ui.properties");

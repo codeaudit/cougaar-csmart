@@ -46,7 +46,6 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.ServletResponse;
 import org.cougaar.tools.csmart.ui.util.ServletResult;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.PropertyTree;
 import org.cougaar.util.log.Logger;
 

@@ -124,7 +124,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   private Vector getServletList() {
     Vector vec = null;
 
-    ConfigFinder cf = ConfigFinder.getInstance();
+    ConfigFinder cf = ConfigFinder.getInstance("csmart");
     File inputFile = null;
     try {
       inputFile = cf.locateFile("servlets.txt");

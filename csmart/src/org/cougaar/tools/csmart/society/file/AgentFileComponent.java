@@ -31,7 +31,6 @@ import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
-import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.log.Logger;
 
 import java.util.Iterator;

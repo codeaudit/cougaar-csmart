@@ -72,7 +72,7 @@ public class FileParseUtil {
       if (! input.exists()) {
 	// Try the ConfigFinder
 	// FIXME: On windows, maybe we need to use SocietyFinder?
-	input = ConfigFinder.getInstance().locateFile(filename);
+	input = ConfigFinder.getInstance("csmart").locateFile(filename);
       }
       if (input != null && input.exists()) {
 // 	if (log.isDebugEnabled()) {

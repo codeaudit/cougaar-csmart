@@ -13,6 +13,10 @@ User's Guide for usage.
 This directory also contains several configuration directories and files:
 
   common/:
+	CSMART.q: Main file of queries used by CSMART
+	CMT.q: Queries used by CSMART to generate 1AD societies
+	PopulateDb.q: Queries used by CSMART to save experiments
+	(optional: recipeQueries.q: User created file of custom recipe queries.)
 	servlets.txt for use with CSMART.  Also
 	a logging properties file for use with the CSMART UI. 
 

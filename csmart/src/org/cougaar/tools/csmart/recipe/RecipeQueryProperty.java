@@ -62,7 +62,7 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
 
     // Get the last modified date of the recipeQueries file.
     // If it's the same now as it was before, dont re-read
-    File rqfile = ConfigFinder.getInstance().locateFile(RecipeComponent.RECIPE_QUERY_FILE);
+    File rqfile = ConfigFinder.getInstance("csmart").locateFile(RecipeComponent.RECIPE_QUERY_FILE);
     long newMod = 0l;
     if (rqfile != null) {
       try {
@@ -87,9 +87,9 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
 	  if (log.isDebugEnabled()) {
 	    log.debug("Re-reading query files.");
 	  }
-	  dbp = DBProperties.reReadQueryFile(PDbBase.QUERY_FILE);
+	  dbp = DBProperties.reReadQueryFile(PDbBase.QUERY_FILE, "csmart");
 	} else
-	  dbp = DBProperties.readQueryFile(PDbBase.QUERY_FILE);
+	  dbp = DBProperties.readQueryFile(PDbBase.QUERY_FILE, "csmart");
       } catch (IOException ioe) {
 	if (log.isDebugEnabled()) {
 	  log.debug("Couldn't read " + PDbBase.QUERY_FILE);
@@ -102,7 +102,7 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
       // the values previously added
       try {
 	// Add to the basic PopDb.q the queries in recipeQueries.q
-	dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
+	dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE, "csmart");
 	rQFileLastMod = newMod;
       } catch (IOException e) {
 	if (log.isDebugEnabled()) {

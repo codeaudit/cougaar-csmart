@@ -598,7 +598,7 @@ public class CMT {
       Statement stmt = dbConnection.createStatement();
       try {
 	if(dbp==null)
-	  dbp = DBProperties.readQueryFile(QUERY_FILE);
+	  dbp = DBProperties.readQueryFile(QUERY_FILE, "csmart");
 	String query = dbp.getQuery(queryName, substitutions);
 	if (qLog.isDebugEnabled()) {
 	  qLog.debug("getNextId: "+query);

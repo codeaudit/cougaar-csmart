@@ -70,7 +70,7 @@ public class XMLUtils {
       // Try to open the file in an input stream. Note it may not exist!
       InputStream is = null;
       try {
-	is = ConfigFinder.getInstance().open(filename);
+	is = ConfigFinder.getInstance("csmart").open(filename);
       } catch (IOException ioe) {
 	if (log.isWarnEnabled()) {
 	  log.warn("Could not open " + filename + " for reading: " + ioe);

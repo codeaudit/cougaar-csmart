@@ -205,7 +205,7 @@ csmart-db.load-mysql-tables.sql
 If modifying or eliminating columns for a given table,  the user should verify that the 
 respective header file contained in csmart/data/database/headers/
 remains valid. Be sure to edit the 
-corresponding .q files in configs/common, and possibly the code that uses them.
+corresponding .q files in csmart/data/common, and possibly the code that uses them.
 
 
 

@@ -100,10 +100,10 @@ public class PDbBase {
     createLogger();
     if (logQueries)
       pwlog = new PrintWriter(new FileWriter(getLogName()));
-    dbp = DBProperties.readQueryFile(QUERY_FILE);
+    dbp = DBProperties.readQueryFile(QUERY_FILE, "csmart");
 
     // When was the RQ file last modified?
-    File rqfile = ConfigFinder.getInstance().locateFile(RecipeComponent.RECIPE_QUERY_FILE);
+    File rqfile = ConfigFinder.getInstance("csmart").locateFile(RecipeComponent.RECIPE_QUERY_FILE);
     long newMod = 0l;
     if (rqfile != null) {
       try {
@@ -123,11 +123,11 @@ public class PDbBase {
 	  if (log.isDebugEnabled()) {
 	    log.debug("Doing forced reread of query files.");
 	  }
-	  dbp = DBProperties.reReadQueryFile(QUERY_FILE);
+	  dbp = DBProperties.reReadQueryFile(QUERY_FILE, "csmart");
 	}
 
 	// This next line _always_ re-parses the query file.
-	dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
+	dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE, "csmart");
 	rQFileLastMod = newMod;
       } catch (FileNotFoundException e) {
 	// This is normal if a user has no separate recipe query file.

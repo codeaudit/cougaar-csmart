@@ -6,6 +6,9 @@ This is a minor patch release, preparing for future work.
 - Disabled the Society Monitor's Topology view. It used the old
   Topology service, which is being removed.
 - Began work on support for viewing XML society definitions.
+- Moved CSMART related .q files to csmart/data/common. The preferred
+  location for recipeQueries.q is now csmart/data/common. However,
+  files in the old CIP/configs/common _will_ still be found.
 
 Release 10.0:
 This is a major Cougaar release, incorporating all previous fixes plus

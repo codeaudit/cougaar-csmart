@@ -120,7 +120,7 @@ public class DBUtils {
 
     if(isValidRCFile()) {
       try {
- 	dbProps = DBProperties.readQueryFile(QUERY_FILE);
+ 	dbProps = DBProperties.readQueryFile(QUERY_FILE, "csmart");
 	substitutions.put(":assembly_type", "CMT");
 	try {
 	  String dbtype = dbProps.getDBType();
@@ -188,7 +188,7 @@ public class DBUtils {
 
     if(isValidRCFile()) {
       try {	
-	dbProps = DBProperties.readQueryFile(queryFile);
+	dbProps = DBProperties.readQueryFile(queryFile, "csmart");
 	database = dbProps.getProperty("database");
 	username = dbProps.getProperty("username");
 	password = dbProps.getProperty("password");
@@ -276,7 +276,7 @@ public class DBUtils {
 
     if(isValidRCFile()) {
       try {
-	dbProps = DBProperties.readQueryFile(qFile);
+	dbProps = DBProperties.readQueryFile(qFile, "csmart");
 	result = dbProps.getQuery(query, substitutions);
       } catch(IOException e) {}      
     }
@@ -294,7 +294,7 @@ public class DBUtils {
 
     if(isValidRCFile()) {
       try {	
-	dbProps = DBProperties.readQueryFile(QUERY_FILE);
+	dbProps = DBProperties.readQueryFile(QUERY_FILE, "csmart");
 	String dbtype = dbProps.getDBType();
 	return (dbtype != null && dbtype.equals("mysql"));
       } catch(IOException e) {}      

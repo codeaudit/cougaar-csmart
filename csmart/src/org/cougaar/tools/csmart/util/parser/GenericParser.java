@@ -64,7 +64,7 @@ public abstract class GenericParser implements Parser {
    * @see Parser
    */         
   public void load(String filename) throws IOException {
-    InputStream ins = ConfigFinder.getInstance().open(filename);
+    InputStream ins = ConfigFinder.getInstance("csmart").open(filename);
 
     in = new BufferedReader( new InputStreamReader(ins));     
   }

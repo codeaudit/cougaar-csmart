@@ -112,13 +112,14 @@ when building your recipe?
   Did you name the recipe "recipeQuery<Something>"? All recipe queries
   must start with "recipeQuery", case sensitive.
 
-  Did you put the recipe query in CIP/configs/common/PopulateDb.q? If
+  Did you put the recipe query in CIP/csmart/data/common/PopulateDb.q? If
   so, have you since updated you Cougaar installation (over-writing
   any queries you included there?)
 
   Otherwise, did you put the recipe query in a file called
   recipeQueries.q? Is that file someplace on the ConfigPath (ie
-  CIP/configs/common or the directory from which you launched CSMART)?
+  CIP/csmart/data/common or CIP/configs/common or the directory from
+  which you launched CSMART)?
   It must be to be found.
 
   If you put the query in any other file, it will not be found.

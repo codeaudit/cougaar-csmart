@@ -102,12 +102,12 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
   }
 
   /**
-   * Gets an instance of the <code>ConfigFinder</code>
+   * Gets an instance of the <code>ConfigFinder</code> for the CSMART module
    *
    * @return a valid <code>ConfigFinder</code> instance
    */
   public ConfigFinder getConfigFinder() {
-    return ConfigFinder.getInstance();
+    return ConfigFinder.getInstance("csmart");
   }
 
   /**

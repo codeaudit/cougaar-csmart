@@ -271,7 +271,7 @@ public class ComplexRecipeBase extends RecipeBase
   private void initFromDatabase() {
     if(assemblyId != null) {
       try {
-        dbp = DBProperties.readQueryFile(DBUtils.QUERY_FILE);
+        dbp = DBProperties.readQueryFile(DBUtils.QUERY_FILE, "csmart");
       } catch (IOException ioe) {
         if(log.isErrorEnabled()) {
           log.error("IO Exception reading Query File", ioe);
