@@ -34,8 +34,8 @@ LOAD DATA INFILE ':cip/csmart/data/database/new/csv/lib_pg_attribute.csv.tmp'
     IGNORE 1 LINES
     (PG_ATTRIBUTE_LIB_ID,PG_NAME,ATTRIBUTE_NAME,ATTRIBUTE_TYPE,AGGREGATE_TYPE);
 
-LOAD DATA INFILE ':cip/csmart/data/database/new/csv/oplan.csv.tmp'
-    INTO TABLE oplan
+LOAD DATA INFILE ':cip/csmart/data/database/new/csv/lib_oplan.csv.tmp'
+    INTO TABLE lib_oplan
     FIELDS
         TERMINATED BY ','
         OPTIONALLY ENCLOSED BY '"'

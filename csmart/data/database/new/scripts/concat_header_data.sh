@@ -29,5 +29,5 @@ cat $HEADER_PATH/lib_pg_attribute_header.csv $DATA_PATH/lib_pg_attribute_data.cs
 
 cat $HEADER_PATH/lib_organization_header.csv $DATA_PATH/lib_organization_data.csv > $CSV_PATH/lib_organization.csv
 cat $HEADER_PATH/oplan_agent_attr_header.csv $DATA_PATH/oplan_agent_attr_data.csv > $CSV_PATH/oplan_agent_attr.csv
-cat $HEADER_PATH/oplan_header.csv $DATA_PATH/oplan_data.csv > $CSV_PATH/oplan.csv
+cat $HEADER_PATH/lib_oplan_header.csv $DATA_PATH/lib_oplan_data.csv > $CSV_PATH/lib_oplan.csv
 cat $HEADER_PATH/alploc_header.csv $DATA_PATH/alploc_data.csv > $CSV_PATH/alploc.csv

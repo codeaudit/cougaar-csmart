@@ -26,5 +26,5 @@ COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\new\headers\lib_pg_attribute
 
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\new\headers\lib_organization_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\new\raw_data\lib_organization_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\new\csv\lib_organization.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\new\headers\oplan_agent_attr_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\new\raw_data\oplan_agent_attr_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\new\csv\oplan_agent_attr.csv
-COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\new\headers\oplan_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\new\raw_data\oplan_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\new\csv\oplan.csv
+COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\new\headers\lib_oplan_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\new\raw_data\lib_oplan_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\new\csv\lib_oplan.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\new\headers\alploc_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\new\raw_data\alploc_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\new\csv\alploc.csv

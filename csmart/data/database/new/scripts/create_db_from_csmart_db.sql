@@ -40,9 +40,9 @@ OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY ",\n" FROM asb_oplan_agent_attr
 WHERE ASSEMBLY_ID = 'CMT-1AD-TRANS-CFW-GRP{ST1359}';
 
--- oplan
+-- lib_oplan
 SELECT DISTINCT OPLAN_ID,OPERATION_NAME,PRIORITY,C0_DATE
-INTO OUTFILE ":cip/csmart/data/database/new/raw_data/oplan_data.csv" 
+INTO OUTFILE ":cip/csmart/data/database/new/raw_data/lib_oplan_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM asb_oplan

@@ -88,10 +88,10 @@ CREATE TABLE alploc(
 ;
 
 ## 
-## TABLE: oplan 
+## TABLE: lib_oplan 
 ##
 
-CREATE TABLE oplan(
+CREATE TABLE lib_oplan(
     OPLAN_ID          VARCHAR(50)    BINARY NOT NULL DEFAULT '',
     OPERATION_NAME    VARCHAR(50)    BINARY DEFAULT NULL,
     PRIORITY          VARCHAR(50)    BINARY DEFAULT NULL,

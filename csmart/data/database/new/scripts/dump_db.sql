@@ -35,12 +35,12 @@ FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM oplan_agent_attr;
 
--- oplan
+-- lib_oplan
 SELECT DISTINCT OPLAN_ID,OPERATION_NAME,PRIORITY,C0_DATE
-INTO OUTFILE ":cip/csmart/data/database/new/raw_data/oplan_data.csv" 
+INTO OUTFILE ":cip/csmart/data/database/new/raw_data/lib_oplan_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY ",\n" FROM oplan;
+LINES TERMINATED BY ",\n" FROM lib_oplan;
 
 -- alploc
 SELECT DISTINCT ALPLOC_CODE,LOCATION_NAME,LATITUDE,LONGITUDE,INSTALLATION_TYPE_CODE
