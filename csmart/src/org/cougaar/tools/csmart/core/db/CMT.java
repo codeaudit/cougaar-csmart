@@ -21,6 +21,12 @@
 
 package org.cougaar.tools.csmart.core.db;
 
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,19 +38,15 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.Connection;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.swing.*;
-import java.io.IOException;
-import org.cougaar.util.Parameters;
-import org.cougaar.util.DBProperties;
-import org.cougaar.util.DBConnectionPool;
-
 import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.DBConnectionPool;
+import org.cougaar.util.DBProperties;
+import org.cougaar.util.Parameters;
+import org.cougaar.util.log.Logger;
 
 /**
  * Methods for constructing a society in the configuration database' assembly
@@ -101,7 +103,19 @@ public class CMT {
     else return "";
   }
   
+  /**
+   * Constructs an Assembly ID, based on the GroupID and the 
+   * selected threads.  <br>
+   * A final constructed Assembly ID will look like: <br>
+   * CMT-<i>GroupId</i>{<i>thread numbers</i>}<i>clonset</i>
+   *
+   * @param cfwGroupId 
+   * @param threads 
+   * @param clones 
+   * @return a <code>String</code> value
+   */
   public static String getAssemblyID(String cfwGroupId, String[] threads, Map clones){
+
     String threadIDs = "";
     for (int i=0;i<threads.length;i++){threadIDs=threadIDs+tabbrev(threads[i]);}
     String cloneCTs = "";
@@ -110,6 +124,33 @@ public class CMT {
     return "CMT-"+cfwGroupId+"{"+threadIDs+"}"+cloneCTs;
   }
   
+  public static String getDescription(String cfwGroupId, String[] threads) {
+    String name = cfwGroupId.substring(0, cfwGroupId.indexOf("-TRANS"));
+    String threadIDs = "";
+    for (int i=0;i<threads.length;i++) {
+      threadIDs=threadIDs+tabbrev(threads[i]);
+    }
+
+    return name + prettyThreads(cfwGroupId, threadIDs);
+  }
+
+  private static String prettyThreads(String name, String threads) {
+    String result = "";
+
+    if(Pattern.compile("-STUB").matcher(name).find()) {
+      result = " Threads ";
+    } else {
+      result = " TRANSCOM, Threads ";
+    }
+    
+    result = result + threads.charAt(2);
+    for(int i=3; i < threads.length(); i++) {
+      result = result + ", " + threads.charAt(i);
+    }
+
+    return result;
+  }
+
   static void clearCMTasb(String assembly_id){
     Set unusedAssemblies=DBUtils.querySet("unusedAssemblies",new HashMap(), QUERY_FILE);
     if(unusedAssemblies.contains(assembly_id)){
@@ -236,7 +277,7 @@ public class CMT {
   }
   
   static void createBaseExperiment(String expt_name, String cfw_group_id){
-    String cmtASB = createCMTasb(expt_name, cfw_group_id ,getAllThreads(),new HashMap());
+    String cmtASB = createCMTasb(cfw_group_id ,getAllThreads(),new HashMap());
     createCSMARTExperiment(expt_name, cfw_group_id, cmtASB);
   }
   
@@ -282,11 +323,12 @@ public class CMT {
     return experimentName;
   }
 
-  static String createCMTasb(String assembly_description,String cfw_g_id,String[] threads, Map clones){
+  static String createCMTasb(String cfw_g_id,String[] threads, Map clones){
     Logger qLog = CSMART.createLogger("queries");
 
     clearUnusedCMTassemblies();
     String assembly_id = getAssemblyID(cfw_g_id, threads, clones);
+
     if (hasRows(asbPrefix+"asb_assembly", "assembly_id", DBUtils.sqlQuote(assembly_id))){
       if (qLog.isDebugEnabled()) {
 	qLog.debug("Not creating new assembly for: "+assembly_id+" which is already in the DB");
@@ -310,7 +352,7 @@ public class CMT {
 	// this query is legal in both Oracle and mySQL
 	DBUtils.dbUpdate("insertASBAssembly",
 		 DBUtils.addSubs(DBUtils.addSubs(new HashMap(),":assembly_id",DBUtils.sqlQuote(assembly_id)),
-			 ":assembly_description",DBUtils.sqlQuote(assembly_description)), QUERY_FILE);
+			 ":assembly_description",DBUtils.sqlQuote(getDescription(cfw_g_id, threads))), QUERY_FILE);
 	
 	DBUtils.executeQuerySet("addNewBaseAgentAlibComponents",subs, QUERY_FILE);
 	Iterator i=clones.keySet().iterator();
@@ -383,26 +425,30 @@ public class CMT {
       DBUtils.executeQuerySet("addCSMARTAssembly",subs, QUERY_FILE);
     }
   }
-  
-  static String addNodeAssignments(Map nodeTable ,String assemblyName) {
-    addCSMARTAssembly(assemblyName,assemblyName);
-    Map subs = new HashMap();
-    subs.put(":assembly_id",assemblyName);
+
+  // Commented out until proved needed.  If uncommented, description
+  // must be fixed to use the getDescription(..) method.
+
+//   static String addNodeAssignments(Map nodeTable ,String assemblyName) {
+
+//     addCSMARTAssembly(assemblyName,assemblyName);
+//     Map subs = new HashMap();
+//     subs.put(":assembly_id",assemblyName);
     
-    Iterator nt = nodeTable.keySet().iterator();
-    while(nt.hasNext()){
-      String nodename = (String)nt.next();
-      Iterator at = ((Set)nodeTable.get(nodename)).iterator();
-      while(at.hasNext()){
-	subs = new HashMap();
-	subs.put(":assembly_id",assemblyName);
-	subs.put(":nodename",nodename);
-	subs.put(":agentname",(String)at.next());
-	DBUtils.executeQuerySet("addNodeAssignments",subs, QUERY_FILE);
-      }
-    }
-    return assemblyName;
-  }
+//     Iterator nt = nodeTable.keySet().iterator();
+//     while(nt.hasNext()){
+//       String nodename = (String)nt.next();
+//       Iterator at = ((Set)nodeTable.get(nodename)).iterator();
+//       while(at.hasNext()){
+// 	subs = new HashMap();
+// 	subs.put(":assembly_id",assemblyName);
+// 	subs.put(":nodename",nodename);
+// 	subs.put(":agentname",(String)at.next());
+// 	DBUtils.executeQuerySet("addNodeAssignments",subs, QUERY_FILE);
+//       }
+//     }
+//     return assemblyName;
+//   }
   
   static String addMachineAssignments(Map machineTable ,String assemblyName) {
     Iterator mt = machineTable.keySet().iterator();
@@ -642,9 +688,8 @@ public class CMT {
     threads.add("THEATER-TRANS");
     String cfw_group_id = DBUtils.query1String("updateCMTAssemblyCFW_GROUP_ID",subs, QUERY_FILE);
     Map clones = DBUtils.queryHT("updateCMTAssemblyClones",subs, QUERY_FILE);
-    String assembly_description = "assembly for: "+experiment_id;
     
-    String assembly_id = createCMTasb(assembly_description,cfw_group_id,orderThreads(threads), clones);
+    String assembly_id = createCMTasb(cfw_group_id,orderThreads(threads), clones);
     
     subs.put(":assembly_id",assembly_id);
     // this query is legal in both Oracle and mySQL
