@@ -67,10 +67,15 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   JPopupMenu hostAgentMenu;
   JPopupMenu nodeRootMenu;
   JPopupMenu nodeNodeMenu;
+  JPopupMenu nodeAgentMenu;
+  JPopupMenu agentAgentMenu;
   JPopupMenu viewOnlyMenu;
   JMenuItem cmdLineNodeMenuItem;
   JMenuItem cmdLineNodeInHostMenuItem;
   JMenuItem newNodeInHostMenuItem;
+  public JMenuItem showComponentsHostMenuItem;
+  public JMenuItem showComponentsNodeMenuItem;
+  public JMenuItem showComponentsAgentMenuItem;
   DNDTree hostTree;
   DNDTree nodeTree;
   DNDTree agentTree;
@@ -125,7 +130,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     // tree of hosts and assigned nodes and agents
     DefaultMutableTreeNode root = 
       new DefaultMutableTreeNode(new ConsoleTreeObject("Hosts", 
-		       "org.cougaar.tools.csmart.experiment.HostComponent"));
+		       HostComponent.class.getName()));
     // setting "askAllowsChildren" forces empty nodes that can have
     // children to be displayed as "folders" rather than leaf nodes
     DefaultTreeModel model = createModel(experiment, root, true);
@@ -273,11 +278,11 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
 
-    JMenuItem showComponentsMenuItem = 
+    showComponentsHostMenuItem = 
       new JMenuItem(SHOW_COMPONENTS_MENU_ITEM);
-    showComponentsMenuItem.addActionListener(new ActionListener() {
+    showComponentsHostMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          showAgentComponents();
+          showAgentComponents(hostTree);
         }
       });
 
@@ -296,8 +301,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostNodeMenu.add(cmdLineNodeInHostMenuItem);
     hostNodeMenu.add(globalCmdLineAction);
     hostNodeMenu.add(deleteNodeInHostMenuItem);
+    hostNodeMenu.add(showComponentsHostMenuItem);
 
-    hostAgentMenu.add(showComponentsMenuItem);
+    hostAgentMenu.add(showComponentsHostMenuItem);
 
     Action viewArgumentsAction = new AbstractAction(DISPLAY_ARGS_ACTION) {
         public void actionPerformed(ActionEvent e) {
@@ -324,7 +330,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     JSplitPane bottomPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     // tree of unassigned nodes
     ConsoleTreeObject cto = new ConsoleTreeObject("Nodes (unassigned)", 
-                 "org.cougaar.tools.csmart.experiment.NodeComponent");
+                 NodeComponent.class.getName());
     root = new DefaultMutableTreeNode(cto, true);
     model = createModel(experiment, root, true);
     nodeTree = new ConsoleDNDTree(model);
@@ -371,6 +377,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     // popup menu for creating and deleting nodes
     nodeRootMenu = new JPopupMenu();
     nodeNodeMenu = new JPopupMenu();
+    nodeAgentMenu = new JPopupMenu();
     JMenuItem newNodeMenuItem = new JMenuItem(NEW_NODE_MENU_ITEM);
     newNodeMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -406,10 +413,23 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	deleteNodesFromTree(nodeTree);
       }
     });
+
+    showComponentsNodeMenuItem = 
+      new JMenuItem(SHOW_COMPONENTS_MENU_ITEM);
+    showComponentsNodeMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          showAgentComponents(nodeTree);
+        }
+      });
+
+
     nodeNodeMenu.add(describeNodeMenuItem);
     nodeNodeMenu.add(cmdLineNodeMenuItem);
     nodeNodeMenu.add(globalCmdLineAction);
     nodeNodeMenu.add(deleteNodeMenuItem);
+    nodeNodeMenu.add(showComponentsNodeMenuItem);
+
+    nodeAgentMenu.add(showComponentsNodeMenuItem);
 
     // attach a mouse listener to the node tree to display menu 
     MouseListener nodeTreeMouseListener = new MouseAdapter() {
@@ -427,10 +447,36 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
     // tree of unassigned agents
     cto = new ConsoleTreeObject("Agents (unassigned)", 
-		"org.cougaar.tools.csmart.society.AgentComponent");
+		AgentComponent.class.getName());
     root = new DefaultMutableTreeNode(cto, true);
     model = createModel(experiment, root, true);
     agentTree = new ConsoleDNDTree(model);
+
+    // attach a mouse listener to the agent tree to display menu 
+    MouseListener agentTreeMouseListener = new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        if (e.isPopupTrigger()) displayAgentTreeMenu(e);
+      }
+      public void mousePressed(MouseEvent e) {
+        if (e.isPopupTrigger()) displayAgentTreeMenu(e);
+      }
+      public void mouseReleased(MouseEvent e) {
+        if (e.isPopupTrigger()) displayAgentTreeMenu(e);
+      }
+    };
+    agentTree.addMouseListener(agentTreeMouseListener);
+
+    showComponentsAgentMenuItem = 
+      new JMenuItem(SHOW_COMPONENTS_MENU_ITEM);
+    showComponentsAgentMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          showAgentComponents(agentTree);
+        }
+      });
+
+    agentAgentMenu = new JPopupMenu();
+    agentAgentMenu.add(showComponentsAgentMenuItem);
+
     // cell editor returns false; can't edit agent names or root name
     DefaultCellEditor agentEditor = new DefaultCellEditor(new JTextField()) {
       public boolean isCellEditable(EventObject e) {
@@ -749,7 +795,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Displays different menus if pointing to root, host or node.
    * If pointing to different types of nodes, does not display a menu.
    */
-
   private void displayHostTreeMenu(MouseEvent e) {
     // the path to the node the mouse is pointing at
     TreePath selPath = hostTree.getPathForLocation(e.getX(), e.getY());
@@ -788,6 +833,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
       if (haveHosts) {
         newNodeInHostMenuItem.setEnabled(false);
+	showComponentsHostMenuItem.setEnabled(false);
         if (hostTree.isEditable())
           hostHostMenu.show(hostTree, e.getX(), e.getY());
         else
@@ -795,6 +841,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         return;
       } else if (haveNodes) {
         cmdLineNodeInHostMenuItem.setEnabled(false);
+	showComponentsHostMenuItem.setEnabled(false);
         if (hostTree.isEditable())
           hostNodeMenu.show(hostTree, e.getX(), e.getY());
         else
@@ -821,12 +868,15 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         else
           viewOnlyMenu.show(hostTree, e.getX(), e.getY());
       } else if (selected.isNode()) {
+	// Allow showAgentComponents here!
         cmdLineNodeInHostMenuItem.setEnabled(true);
+	showComponentsHostMenuItem.setEnabled(true);
         if (hostTree.isEditable())
           hostNodeMenu.show(hostTree, e.getX(), e.getY());
         else
           viewOnlyMenu.show(hostTree, e.getX(), e.getY());
       } else if (selected.isAgent()) {
+	showComponentsHostMenuItem.setEnabled(true);
         hostAgentMenu.show(hostTree, e.getX(), e.getY());
       }
     }
@@ -836,7 +886,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Display global command line arguments.
    * If a node is selected, also display command line arguments for that node.
    */
-
   private void displayArguments(Component c) {
     if (!(c instanceof JTree))
       return;
@@ -910,7 +959,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Display the popup menus for the node tree, either the node menu
    * or the root menu.
    */
-
   private void displayNodeTreeMenu(MouseEvent e) {
     // the path to the node the mouse is pointing at
     TreePath selPath = nodeTree.getPathForLocation(e.getX(), e.getY());
@@ -937,6 +985,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       // disable menu command to set individual node command line arguments
       if (haveNodes) {
         cmdLineNodeMenuItem.setEnabled(false);
+        showComponentsNodeMenuItem.setEnabled(false);
         if (nodeTree.isEditable())
           nodeNodeMenu.show(nodeTree, e.getX(), e.getY());
         else
@@ -957,11 +1006,49 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         else
           viewOnlyMenu.show(nodeTree, e.getX(), e.getY());
       } else if (selected.isNode()) {
+	// allow showAgentComponents here
+	// Also, what if it's the Agent inside the Host?
         cmdLineNodeMenuItem.setEnabled(true);
+        showComponentsNodeMenuItem.setEnabled(true);
         if (nodeTree.isEditable())
           nodeNodeMenu.show(nodeTree, e.getX(), e.getY());
         else
           viewOnlyMenu.show(nodeTree, e.getX(), e.getY());
+      } else if (selected.isAgent()) {
+        showComponentsNodeMenuItem.setEnabled(true);
+	nodeAgentMenu.show(nodeTree, e.getX(), e.getY());
+      }
+    }
+  }
+
+  /**
+   * Display the popup menus for the aget tree, either the agentt menu
+   * or none.
+   */
+  private void displayAgentTreeMenu(MouseEvent e) {
+    // the path to the agent the mouse is pointing at
+    TreePath selPath = agentTree.getPathForLocation(e.getX(), e.getY());
+    if (selPath == null)
+      return;
+
+    // if the mouse is pointing at a selected node
+    // and all selected nodes are of the same type, then act on all of them
+    TreePath[] selectedPaths = agentTree.getSelectionPaths();
+    if (agentTree.isPathSelected(selPath) && selectedPaths.length > 1) {
+      // Don't allow multiple actions at once
+    } else {
+      // set the selected node to be the node the mouse is pointing at
+      agentTree.setSelectionPath(selPath);
+      DefaultMutableTreeNode selNode =
+        (DefaultMutableTreeNode)selPath.getLastPathComponent();
+      ConsoleTreeObject selected =
+        (ConsoleTreeObject)selNode.getUserObject();
+      // display popup menu
+      if (selected.isRoot()) {
+	// no menu for the root node
+      } else if (selected.isAgent()) {
+        showComponentsAgentMenuItem.setEnabled(true);
+	agentAgentMenu.show(agentTree, e.getX(), e.getY());
       }
     }
   }
@@ -969,10 +1056,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * Display agent components for the agent in the selected node.
    */
-
-  private void showAgentComponents() {
+  private void showAgentComponents(JTree tree) {
     DefaultMutableTreeNode selectedNode =
-      (DefaultMutableTreeNode)hostTree.getSelectionPath().getLastPathComponent();
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
     String agentName = cto.getName();
     JOptionPane.showMessageDialog(this, 
