@@ -59,6 +59,10 @@ public class TableSorter extends AbstractTableModel implements TableModelListene
     log = CSMART.createLogger(this.getClass().getName());
   }
 
+  public TableModel getModel() {
+    return model;
+  }
+
   private int compareRowsByColumn(int row1, int row2, int column) {
     Class type = model.getColumnClass(column);
     TableModel data = model;
