@@ -43,7 +43,6 @@ public class ConsoleFontChooser extends JDialog {
   private String NOTIFY = "Notify";
   private static final String STANDARDOUT = "Standard Out";
   private static final String ERRORMSGS = "Standard Error";
-  private static final String HEARTBEAT = "Heartbeat";
   private static final String NODECREATION = "Node Creation";
   private static final String CLUSTERADD = "Cluster Addition";
   private static final String IDLENESS = "Idleness";
@@ -115,7 +114,6 @@ public class ConsoleFontChooser extends JDialog {
     msgTypesCB.addItem(SELECTONE);
     msgTypesCB.addItem(STANDARDOUT);
     msgTypesCB.addItem(ERRORMSGS);
-    msgTypesCB.addItem(HEARTBEAT);
     msgTypesCB.addItem(NODECREATION);
     msgTypesCB.addItem(CLUSTERADD);
     msgTypesCB.addItem(IDLENESS);

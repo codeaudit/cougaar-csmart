@@ -90,17 +90,14 @@ public class ConsoleNodeListener implements OutputListener {
     // create our attributes
     // stdout	0,0,0 (black)
     // stderr	192,64,64 (dark red)
-    // Idle, Heartbeat	205,205,205 (light gray)
     // Node created, Node destroyed, Cluster Added	64,64,192 (dark blue)
-    atts = new SimpleAttributeSet[4];
+    atts = new SimpleAttributeSet[3];
     atts[0] = new SimpleAttributeSet();
     StyleConstants.setForeground(atts[0], Color.black);
     atts[1] = new SimpleAttributeSet();
     StyleConstants.setForeground(atts[1], new Color(192, 64, 64));
     atts[2] = new SimpleAttributeSet();
-    StyleConstants.setForeground(atts[2], new Color(205, 205, 205));
-    atts[3] = new SimpleAttributeSet();
-    StyleConstants.setForeground(atts[3], new Color(64, 64, 192));
+    StyleConstants.setForeground(atts[2], new Color(64, 64, 192));
   }
 
   private void createLogger() {
@@ -273,8 +270,6 @@ public class ConsoleNodeListener implements OutputListener {
     case NodeEvent.STANDARD_OUT:
     case NodeEvent.STANDARD_ERR:
       return nodeEvent.getMessage();
-    case NodeEvent.HEARTBEAT:
-      return "@";
     default:
       return nodeEvent.toString();
     }
@@ -291,10 +286,8 @@ public class ConsoleNodeListener implements OutputListener {
       return atts[0];
     case NodeEvent.STANDARD_ERR:
       return atts[1];
-    case NodeEvent.HEARTBEAT:
-      return atts[2];
     default:
-      return atts[3];
+      return atts[2];
     }
   }
 

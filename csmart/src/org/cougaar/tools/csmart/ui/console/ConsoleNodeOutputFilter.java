@@ -35,7 +35,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
   private static final String NODECREATION = "Node Created";
   private static final String NODEDESTROYED = "Node Destroyed";
   private static final String IDLENESS = "Idle";
-  private static final String HEARTBEAT = "Heartbeat";
   private final String OFF = "Off";
   private final String ON = "On";
   Box box = new Box(BoxLayout.Y_AXIS);
@@ -49,8 +48,7 @@ public class ConsoleNodeOutputFilter extends JDialog {
   private JCheckBox createCB;
   private JCheckBox destroyCB;
   private JCheckBox idlenessCB;
-  private JCheckBox heartbeatCB;
-  boolean[] msgArray = { false, false, false, false, false, false, false };
+  boolean[] msgArray = { false, false, false, false, false, false };
   private boolean allSelected = true;
 
   public ConsoleNodeOutputFilter(Frame parent,
@@ -71,7 +69,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
           msgArray[NodeEvent.PROCESS_CREATED] = createCB.isSelected();
           msgArray[NodeEvent.PROCESS_DESTROYED] = destroyCB.isSelected();
           msgArray[NodeEvent.IDLE_UPDATE] = idlenessCB.isSelected();
-          msgArray[NodeEvent.HEARTBEAT] = heartbeatCB.isSelected();
         }
         setVisible(false);
       }
@@ -110,8 +107,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
     destroyCB.addActionListener(unselectAllCB);
     idlenessCB = new JCheckBox(IDLENESS);
     idlenessCB.addActionListener(unselectAllCB);
-    heartbeatCB = new JCheckBox(HEARTBEAT);
-    heartbeatCB.addActionListener(unselectAllCB);
     int x = 0;
     int y = 0;
     msgTypesPanel.add(allCB,
@@ -144,11 +139,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
 					  GridBagConstraints.WEST,
 					  GridBagConstraints.HORIZONTAL,
 					  new Insets(0, 0, 0, 0), 0, 0));
-    msgTypesPanel.add(heartbeatCB,
-		   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
-					  GridBagConstraints.WEST,
-					  GridBagConstraints.HORIZONTAL,
-					  new Insets(0, 0, 0, 0), 0, 0));
     box.add(msgTypesPanel);
 
     filterPanel.add(buttonPanel, BorderLayout.SOUTH);
@@ -162,7 +152,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
       createCB.setSelected(msgArray[NodeEvent.PROCESS_CREATED]);
       destroyCB.setSelected(msgArray[NodeEvent.PROCESS_DESTROYED]);
       idlenessCB.setSelected(msgArray[NodeEvent.IDLE_UPDATE]);
-      heartbeatCB.setSelected(msgArray[NodeEvent.HEARTBEAT]);
     }
     setSize(225, 300);
     // make dialog display over the middle of the caller's frame
@@ -214,7 +203,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
         createCB.setSelected(false);
         destroyCB.setSelected(false);
         idlenessCB.setSelected(false);
-        heartbeatCB.setSelected(false); 
       }
     }
   };
