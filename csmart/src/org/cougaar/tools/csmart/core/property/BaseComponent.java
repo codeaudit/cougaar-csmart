@@ -129,6 +129,8 @@ public interface BaseComponent extends ComposableComponent, Serializable {
   Iterator getPropertyNames();
   
 
+  Iterator getProperties();
+
   /**
    * Returns a <code>Iterator</code> of all local property names for this component.
    *
