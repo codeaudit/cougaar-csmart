@@ -2240,10 +2240,21 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     ExperimentXML xmlWriter = new ExperimentXML();
 
     File resultDir = getResultDirectory();
-    // if user didn't specify results directory, save in local directory
+    // if user didn't specify results directory, save in defult results directory
+    // FIXME: This should use the CSMART global setting
+    // CSMART.getResultDir() would do it if the experiment had access
+    // to this...
     if (resultDir == null) {
-      resultDir = new File(".");
+      String resultDirName = ".";
+      try {
+	resultDirName = System.getProperty("org.cougaar.install.path");
+      } catch (RuntimeException e) {
+	// just use current directory
+	resultDirName = ".";
+      }
+      resultDir = new File(resultDirName + File.separatorChar + "results");
     }
+
     Trial trial = getTrials()[0];
     String dirname = resultDir.getAbsolutePath() + File.separatorChar + 
       getExperimentName() + File.separatorChar +
