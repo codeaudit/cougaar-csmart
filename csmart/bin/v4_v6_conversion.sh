@@ -27,8 +27,8 @@ fi
 
 mv $1 oldfile.sql
 
-sed s/v4_// oldfile.sql > midfile.sql
-sed s/v6_// midfile.sql > $1
+sed s/v4_//g oldfile.sql > midfile.sql
+sed s/v6_//g midfile.sql > $1
 
 rm oldfile.sql
 rm midfile.sql
