@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -24,6 +24,7 @@ package org.cougaar.tools.csmart.ui.monitor.xml;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.table.TableModel;
@@ -73,8 +74,13 @@ public class XMLFrame extends CSMARTFrame {
 
   public static CSMARTGraph createGraph(File f) {
      XMLUtils xmlUtils = new XMLUtils();
-     Document doc = xmlUtils.loadXMLFile(f);
-     if(doc == null) return null;
+     Document doc = null;
+    try {
+      xmlUtils.loadXMLFile(f);
+    } catch (FileNotFoundException e) {
+      System.out.println("Error loading file: " + f.getName());
+    }
+    if(doc == null) return null;
      Vector nodeObjects = new Vector();
      createNode(nodeObjects, doc.getDocumentElement(),(XMLNode)null);
      CSMARTGraph graph = new CSMARTGraph(nodeObjects,
@@ -138,7 +144,7 @@ public class XMLFrame extends CSMARTFrame {
           name.equals("host")) {
         newNode = new XMLNode(node);
       } else if (name.equals("node")) {
-        String nodeName = 
+        String nodeName =
           ((node.getAttributes()).getNamedItem("name")).getNodeValue();
         newNode = new XMLNode(node);
         if (parent != null)
@@ -214,7 +220,7 @@ public class XMLFrame extends CSMARTFrame {
           //          System.out.println(attributeNode.getNodeName() + " " +
           //                             attributeNode.getNodeValue());
           properties.put(String.valueOf(index) + "-" +
-                         attributeNode.getNodeName(), 
+                         attributeNode.getNodeName(),
                          attributeNode.getNodeValue());
         }
       }
