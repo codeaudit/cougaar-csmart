@@ -1,3 +1,8 @@
+2001-10-17  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java (Repository):
+	Avoid duplicate relationships. Fix :cmt_type: substitution.
+
 2001-10-16  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* TestPopulateDb.java (Repository):
