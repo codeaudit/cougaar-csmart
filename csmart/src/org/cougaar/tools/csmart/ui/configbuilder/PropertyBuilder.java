@@ -39,7 +39,6 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 public class PropertyBuilder extends JFrame implements ActionListener {
   private PropertyEditorPanel propertyEditor;
   private ModifiableComponent configComponent;
-  private boolean isEditable; // remember if society was editable on entering
   private static final String FILE_MENU = "File";
   private static final String EXIT_MENU_ITEM = "Exit";
   private static final String SAVE_DB_MENU_ITEM = "Save To Database";
@@ -57,7 +56,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
 
   private JMenuItem saveMenuItem;
 
-  public PropertyBuilder(ModifiableComponent society) {
+  public PropertyBuilder(ModifiableComponent mc) {
     // initialize menus and gui panels
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
@@ -88,8 +87,8 @@ public class PropertyBuilder extends JFrame implements ActionListener {
       }
     });
 
-    setConfigComponent(society);
-    propertyEditor = new PropertyEditorPanel(configComponent);
+    setConfigComponent(mc);
+    propertyEditor = new PropertyEditorPanel(configComponent, true);
     getContentPane().setLayout(new BorderLayout());
     getContentPane().add(propertyEditor, BorderLayout.CENTER);
 
@@ -98,9 +97,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   }
 
   private void exit() {
-    // before exiting, restore society's editability
-    if (isEditable)
-      configComponent.setEditable(isEditable);
+    configComponent.setEditable(true);
   }
 
   public void actionPerformed(ActionEvent e) {
@@ -166,13 +163,14 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   }
 
   public void reinit(ModifiableComponent newModifiableComponent) {
+    configComponent.setEditable(true);
     setConfigComponent(newModifiableComponent);
     propertyEditor.reinit(configComponent);
   }
 
   private void setConfigComponent(ModifiableComponent newConfigComponent) {
     configComponent = newConfigComponent;
-    isEditable = configComponent.isEditable();
+    configComponent.setEditable(false);
     saveMenuItem.setEnabled(configComponent instanceof RecipeComponent);
   }
 

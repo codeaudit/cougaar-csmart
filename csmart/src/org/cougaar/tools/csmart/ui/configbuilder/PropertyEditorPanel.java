@@ -74,7 +74,10 @@ public class PropertyEditorPanel extends JPanel
   ModifiableComponent[] compsToConfig = null; // support an array of things to edit/view
   ModifiableComponent componentToConfigure = null;
 
-  public PropertyEditorPanel(ModifiableComponent configComp) {
+  public PropertyEditorPanel(ModifiableComponent configComp, 
+                             boolean isEditable) {
+    // caller decides if this panel should allow editing
+    this.isEditable = isEditable;
     // create the configComp panel
     configCompPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     setLayout(new BorderLayout());
@@ -82,7 +85,6 @@ public class PropertyEditorPanel extends JPanel
     componentToConfigure = configComp;
     compsToConfig = new ModifiableConfigurableComponent[1];
     compsToConfig[0] = configComp;
-    isEditable = componentToConfigure.isEditable();
     setModifiableConfigurableComponent();
   }
 
@@ -91,22 +93,16 @@ public class PropertyEditorPanel extends JPanel
    *
    * @param configComps a <code>ModifiableConfigurableComponent[]</code> array of components to edit - usually really just to vie
    */
-  public PropertyEditorPanel(ModifiableComponent[] configComps) {
+  public PropertyEditorPanel(ModifiableComponent[] configComps,
+                             boolean isEditable) {
+    // caller decides if this panel should allow editing
+    this.isEditable = isEditable;
     // create the configComp panel
     configCompPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     setLayout(new BorderLayout());
     add(configCompPanel, BorderLayout.CENTER);
     compsToConfig = configComps;
     componentToConfigure = configComps[0];
-    isEditable = true;
-    // FIXME: This will make _all_ the components non-editable afterwards
-    // if any of them was non-editable. This might be wrong.
-    for (int i = 0; i < configComps.length; i++) {
-      if (! (configComps[i].isEditable())) {
-	isEditable = false;
-	break;
-      }
-    }
     setModifiableConfigurableComponent();
   }
 
@@ -115,16 +111,9 @@ public class PropertyEditorPanel extends JPanel
    * to edit a different configComp.
    */
   public void reinit(ModifiableComponent newModifiableConfigurableComponent) {
-    // restore editable flag on previous configComp
-    if (isEditable) {
-      for (int i = 0; i < compsToConfig.length; i++) {
-	compsToConfig[i].setEditable(isEditable);
-      }
-    }
     componentToConfigure = newModifiableConfigurableComponent;
     compsToConfig = new ModifiableConfigurableComponent[1];
     compsToConfig[0] = componentToConfigure;
-    isEditable = newModifiableConfigurableComponent.isEditable();
     setModifiableConfigurableComponent();
   }
 
@@ -175,10 +164,6 @@ public class PropertyEditorPanel extends JPanel
   }
 
   private void setModifiableConfigurableComponent() {
-    // configComp isn't editable while this tool is editing it
-    for (int i = 0; i < compsToConfig.length; i++) {
-      compsToConfig[i].setEditable(false);
-    }
     if (tree != null)
       configCompPanel.remove(tree);
     // create tree and model before adding to it
