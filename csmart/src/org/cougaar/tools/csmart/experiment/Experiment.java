@@ -955,36 +955,48 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       experimentCopy = new Experiment(uniqueName, expID, trialID);
     else
       experimentCopy = new Experiment(uniqueName);
+
+    // FIXME: Unset the experiment and trial IDs? I think so...
+    experimentCopy.expID = null;
+    experimentCopy.trialID = null;
+
     Properties newProps = experimentCopy.getDefaultNodeArguments();
     newProps.clear();
     newProps.putAll(getDefaultNodeArguments());
 
-    // Copy the society component
-    ModifiableComponent society = getSocietyComponent();
-    if (society != null) {
-      ModifiableComponent copiedSocietyComponent = null;
+//     // Copy the society component
+//     ModifiableComponent society = getSocietyComponent();
+//     if (society != null) {
+//       ModifiableComponent copiedSocietyComponent = null;
 
-      // FIXME: USe a name based on the original society!!
-      //      copiedSocietyComponent = society.copy("Society for " + uniqueName);
-      copiedSocietyComponent = society.copy(society.getShortName() + " copy");
-      if (copiedSocietyComponent != null) {
-        // FIXME: Must save the copied society to the DB? I think the 
-	// society does it for me...
-        experimentCopy.addComponent(copiedSocietyComponent);
-      }
-    }
+//       // FIXME: USe a name based on the original society!!
+//       //      copiedSocietyComponent = society.copy("Society for " + uniqueName);
+//       copiedSocietyComponent = society.copy(society.getShortName() + " copy");
+//       if (copiedSocietyComponent != null) {
+//         // FIXME: Must save the copied society to the DB? I think the 
+// 	// society does it for me...
+//         experimentCopy.addComponent(copiedSocietyComponent);
+//       }
+//     }
+
+    // Don't copy the society.
+    experimentCopy.addComponent(getSocietyComponent());
     
     // Copy the recipe components
     for (int i = 0; i < getRecipeComponentCount(); i++) {
       ModifiableComponent mc = getRecipeComponent(i);
-      ModifiableComponent copiedComponent = null;
-      // FIXME: USe a name based on the original recipe!!
-      //      copiedComponent = mc.copy("Recipe for " + uniqueName);
-      copiedComponent = mc.copy(mc.getShortName() + " copy");
-      if (copiedComponent != null) {
-        experimentCopy.addComponent(copiedComponent);
-      }
+//       ModifiableComponent copiedComponent = null;
+//       // FIXME: USe a name based on the original recipe!!
+//       //      copiedComponent = mc.copy("Recipe for " + uniqueName);
+//       copiedComponent = mc.copy(mc.getShortName() + " copy");
+//       if (copiedComponent != null) {
+//         experimentCopy.addComponent(copiedComponent);
+//       }
+
+      // Don't copy recipes either
+      experimentCopy.addComponent(mc);
     }
+
     // copy hosts
     HostComponent[] hosts = getHostComponents();
     HostComponent[] nhosts = new HostComponent[hosts.length];
