@@ -428,16 +428,45 @@ public class Organizer extends JScrollPane {
     JFileChooser chooser = 
       new JFileChooser(SocietyFinder.getInstance().getPath());
     chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-    int result = chooser.showDialog(this, "OK");
-    if (result != JFileChooser.APPROVE_OPTION)
-      return null;
+    File file = null;
     SocietyComponent sc = null;
-    File file = chooser.getSelectedFile();
+    while (file == null) {
+      int result = chooser.showDialog(this, "OK");
+      if (result != JFileChooser.APPROVE_OPTION)
+	return null;
+      file = chooser.getSelectedFile();
+    }
+    // The file they select needs to be on the config path
+    // or else you get an exception!
+    // Can we fix that by perhaps in SocietyFinder passing
+    // in the full path to the file?
+    // FIXME!!!
+
     // create society from agent files or single node file
     String name = "";
     if (file.isDirectory()) {
+      // If I added this directory to the org.cougaar.config.path
+      // and if I could force a recalc of the static
+      // default config finder, or have other users
+      // recreate the configfinder - do a new, then I'd be OK.
+//       String occp = System.getProperty("org.cougaar.config.path");
+//       log.debug("occp is: " + occp);
+//       if (occp.endsWith("\\;")) {
+// 	  System.setProperty("org.cougaar.config.path", occp + file.getPath() + "\\;");
+//       } else {
+// 	  System.setProperty("org.cougaar.config.path", occp + file.getPath() + ";");
+//       }
+//       log.debug("After mucking occp is: " + System.getProperty("org.cougaar.config.path"));
       String[] filenames =
         SocietyFinder.getInstance().getAgentFilenames(file);
+
+      if (filenames == null || filenames.length == 0) {
+	// Found no Agents
+	if (log.isWarnEnabled()) {
+	  log.warn("Found no agent in dir " + file.getPath());
+	}
+	return null;
+      }
       name =
         (String)JOptionPane.showInputDialog(this, "Enter Society Name",
                                             "Society Name",
