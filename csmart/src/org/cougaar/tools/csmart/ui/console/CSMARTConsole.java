@@ -328,7 +328,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 		      new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
 					     GridBagConstraints.WEST,
 					     GridBagConstraints.HORIZONTAL,
-					     new Insets(10, 0, 5, 0),
+                                             new Insets(5, 0, 0, 0),
 					     0, 0));
     final JLabel trialTimeLabel = new JLabel("Trial: 00:00:00");
     final JLabel experimentTimeLabel = new JLabel("Experiment: 00:00:00");
@@ -343,7 +343,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 		      new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
 					     GridBagConstraints.WEST,
 					     GridBagConstraints.HORIZONTAL,
-					     new Insets(10, 0, 10, 0),
+                                             new Insets(0, 0, 0, 0),
 					     0, 0));
     
     descriptionPanel.add(Box.createRigidArea(HGAP10));
@@ -354,7 +354,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	      new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
 				     GridBagConstraints.WEST,
 				     GridBagConstraints.HORIZONTAL,
-				     new Insets(10, 10, 10, 10),
+                                     new Insets(0, 10, 2, 10),
 				     0, 0));
 
     // set up trial and experiment timers
@@ -382,7 +382,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	      new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
 				     GridBagConstraints.WEST,
 				     GridBagConstraints.HORIZONTAL,
-				     new Insets(10, 10, 10, 10),
+                                     new Insets(0, 10, 0, 10),
 				     0, 0));
 
     statusButtons = new ButtonGroup();
@@ -396,7 +396,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     jif.setSize(300, 300);
     jif.setLocation(0, 0);
     jif.setVisible(true);
-    System.out.println("Added configuration");
     desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
     PropertyEditorPanel trialViewer = 
       new PropertyEditorPanel(experiment.getComponentsAsArray());
@@ -405,7 +404,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     jif.setSize(300, 300);
     jif.setLocation(10, 10);
     jif.setVisible(true);
-    System.out.println("Added trial viewer");
     desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
 
     //    configTabbedPane.add("Configuration", hostConfiguration);
@@ -426,7 +424,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	      new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
 				     GridBagConstraints.WEST,
 				     GridBagConstraints.BOTH,
-				     new Insets(10, 10, 10, 10),
+                                     new Insets(0, 0, 0, 0),
 				     0, 0));
 
     getContentPane().add(panel);
