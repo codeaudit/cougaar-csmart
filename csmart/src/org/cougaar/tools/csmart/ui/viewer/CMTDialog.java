@@ -34,6 +34,7 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 
 import org.cougaar.tools.csmart.ui.console.ExperimentDB;
+import org.cougaar.tools.csmart.societies.database.DBUtils;
 
 public class CMTDialog extends JDialog {
   // thread names displayed for user
@@ -70,6 +71,8 @@ public class CMTDialog extends JDialog {
     this.experimentId = experimentId;
     this.trialId = ExperimentDB.getTrialId(experimentId);
     JPanel panel = new JPanel(new BorderLayout());
+
+    // Panel for threads
     JPanel bottomPanel = new JPanel(new GridBagLayout());
     bottomPanel.setBorder(LineBorder.createGrayLineBorder());
     int x = 0;
@@ -84,6 +87,10 @@ public class CMTDialog extends JDialog {
     leftIndent = leftIndent + 5;
     for (int i = 0; i < ULThreads.length; i++) {
       JCheckBox cb = new JCheckBox(ULThreads[i]);
+      
+      if (DBUtils.isMySQL())
+	cb.setEnabled(false); // MySQL DB
+      
       ULThreadCheckBoxes.add(cb);
       boolean sel = ExperimentDB.isULThreadSelected(trialId, ULDBThreads[i]);
       cb.setSelected(sel);
@@ -112,6 +119,10 @@ public class CMTDialog extends JDialog {
     for (int i = 0; i < nGroupNames; i++) {
       String groupName = (String)groupNames[i];
       JCheckBox groupCB = new JCheckBox(groupName);
+      
+      if (DBUtils.isMySQL())
+	groupCB.setEnabled(false); // MySQL DB
+      
       boolean sel = ExperimentDB.isGroupSelected(trialId, groupName);
       groupCheckBoxes.add(groupCB);
       originalGroupSelected.add(new Boolean(sel));
@@ -158,6 +169,9 @@ public class CMTDialog extends JDialog {
                                        0, 0));
       x = 0;
     }
+    panel.add(bottomPanel, BorderLayout.CENTER);
+
+    // Buttons panel
     JPanel buttonPanel = new JPanel();
     JButton okButton = new JButton("OK");
     okButton.addActionListener(new ActionListener() {
@@ -173,7 +187,6 @@ public class CMTDialog extends JDialog {
     });
     buttonPanel.add(okButton);
     buttonPanel.add(cancelButton);
-    panel.add(bottomPanel, BorderLayout.CENTER);
     panel.add(buttonPanel, BorderLayout.SOUTH);
     getContentPane().add(panel);
     pack();
