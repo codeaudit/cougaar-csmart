@@ -129,7 +129,7 @@
 		        <formatter type="plain" />
 			<batchtest>				
 				<fileset dir="${testbuild}">
-				    <include name="**/*Test*.class" />
+				    <include name="**/*Test.class" />
 				</fileset>  				
 			</batchtest> 
 <!--			<test name="Regress" /> -->
