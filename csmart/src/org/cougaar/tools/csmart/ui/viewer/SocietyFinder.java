@@ -198,7 +198,7 @@ public final class SocietyFinder {
     // First, see if the file can be opened as is
     try {
       File url = new File(aURL);
-      System.out.println("Trying "+url+": ");
+      //System.out.println("Trying "+url+": ");
       InputStream is = url.toURL().openStream();
       System.err.println("Found it. File " + aURL + " is " + url);
       if (is != null)
@@ -216,7 +216,7 @@ public final class SocietyFinder {
       URL base = (URL) configPath.get(i);
       try {
         URL url = new URL(base, aURL);
-        System.out.println("Trying "+url+": ");
+        //System.out.println("Trying "+url+": ");
         InputStream is = url.openStream();
         if (is == null) continue; // Don't return null
         System.out.println("Found it. File " + aURL + " is " + url);
