@@ -46,6 +46,8 @@ public class ABCSociety
   public static final Integer PROP_LEVELCOUNT_DFLT = new Integer(3);
   public static final String PROP_LEVELCOUNT_DESC = "Number of Levels in the Society";
 
+  public static final String[] PROP_TASKVERB_DFLT = {"Supply500MREs"};
+  
   /** Properties defined in other files **/
   public static final String PROP_TASKVERB = ABCTask.PROP_TASKVERB;
   public static final String PROP_STARTTIME = ABCAgent.PROP_STARTTIME;
@@ -185,7 +187,7 @@ public class ABCSociety
     });
     propNumbProviders.setToolTip(ABCAgent.PROP_NUMBPROVIDERS_DESC);
 
-    propTaskVerb = addProperty(PROP_TASKVERB, ABCTask.PROP_TASKVERB_DFLT);
+    propTaskVerb = addProperty(PROP_TASKVERB, PROP_TASKVERB_DFLT);
     propTaskVerb.setToolTip(ABCTask.PROP_TASKVERB_DESC);
 
     buildDefaultCommunity();

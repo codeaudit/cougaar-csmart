@@ -148,8 +148,16 @@ Assets or Organizations.<br>
 
 <a NAME="tasklevel"><h2>The Tasks Level</h2></a>
 
-The Task level contains 1 or more children.  (Currently only one is 
-supported.) Each child represents a specific task verb that agent should generate.  (Note: Only Customer agents generate Tasks.)  <br>
+The Tasks level contains one property:
+<li>Number of Tasks                       [Long, 0 - MAX]</li>
+
+The 'Number of Tasks' specifics the number of tasks known to this agent.  Changing this number
+increments the number of tasks within the task file.  When new tasks are added, it is the responsiblity
+of the CSMART user to add a 'Task Verb' to the newly created task.  By default, the 'Task Verb' is
+empty. <br>
+
+The Task level contains 1 or more children.  
+Each child represents a specific task verb that agent should generate.  (Note: Only Customer agents generate Tasks.)  <br>
 
 Each task consists of the following properties:<ul>
 <li>Chaos Factor            [ Integer, 0 - MAX ]</li>

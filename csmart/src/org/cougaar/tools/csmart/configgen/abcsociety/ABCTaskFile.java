@@ -34,6 +34,12 @@ public class ABCTaskFile
   public static final String PROP_TASKFILENAME = "Task File Name";
   public static final String PROP_TASKFILENAME_DESC = "Name of the Task File";
 
+  public static final String PROP_TASKCOUNT = "Number of Tasks";
+  public static final String PROP_TASKCOUNT_DESC = "Number of Tasks know by this agent";
+  public static final Long   PROP_TASKCOUNT_DFLT = new Long(1);
+
+  private Property propTaskCount;
+
   ABCTaskFile() {
     this("Task File");
   }
@@ -46,6 +52,36 @@ public class ABCTaskFile
    * Initializes all Properties.
    */
   public void initProperties() {
+    propTaskCount = addProperty(PROP_TASKCOUNT, PROP_TASKCOUNT_DFLT);
+    propTaskCount.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
+	public void propertyValueChanged(PropertyEvent e) {
+	  updateTaskCount((Long)e.getProperty().getValue());
+	  }
+      });
+    propTaskCount.setToolTip(PROP_TASKCOUNT_DESC);
+  }
+
+  private void updateTaskCount(Long taskCount) {
+    long count = taskCount.longValue();
+
+    if(count == 0) {
+      // Remove all Tasks.
+      while(getChildCount() != 0) {
+	removeChild(getChildCount() -1);
+      }
+    } else if( count > getChildCount() ) {
+      long newRules = count - getChildCount();
+      
+      for(int i=0; i < newRules; i++) {
+	ABCTask task = new ABCTask("NewTask" + i);
+	task.initProperties();
+	addChild(task);
+      }
+    } else if( count < getChildCount() ) {
+      while(getChildCount() != count) {
+	removeChild(getChildCount() -1 );
+      }
+    }
   }
 
   /**

@@ -406,9 +406,9 @@ public class ABCCommunity
       task.initProperties();
       task.getProperty(PROP_TASKVERB).setValue(tt);
       int demand = ((Integer)getProperty(PROP_DEMAND).getValue()).intValue();
-      task.getProperty(ABCTask.PROP_RATE).setValue(new Integer(factor * demand));
+      task.getProperty(ABCTask.PROP_RATE).setValue(new Long(factor * demand));
       task.getProperty(ABCTask.PROP_VITAL).setValue(new Double(vital));
-      task.getProperty(ABCTask.PROP_DURATION).setValue(new Integer(duration));
+      task.getProperty(ABCTask.PROP_DURATION).setValue(new Long(duration));
       task.getProperty(ABCTask.PROP_CHAOS).setValue(new Integer(chaos));
       taskFile.addChild(task);
     }

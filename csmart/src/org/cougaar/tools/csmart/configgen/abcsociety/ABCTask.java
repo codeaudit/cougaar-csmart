@@ -29,7 +29,7 @@ public class ABCTask
 
   /** Properties associated with a Task **/
   public static final String PROP_TASKVERB = "Task Verb";
-  public static final String[] PROP_TASKVERB_DFLT = {"Supply500MREs"};
+  public static final String PROP_TASKVERB_DFLT = "";
 
   public static final String PROP_TASKVERB_DESC = "Task Verb used through out the Society";
 
@@ -109,10 +109,10 @@ public class ABCTask
   public String getConfigLine() {
     return (String)propWorldState.getValue() + ", " +
       (String)propTaskVerb.getValue() + ", " +
-      (String)((Integer)propRate.getValue()).toString() + ", " +
+      (String)((Long)propRate.getValue()).toString() + ", " +
       (String)((Integer)propChaos.getValue()).toString() + ", " +
       (String)((Double)propVital.getValue()).toString() + ", " +
-      (String)((Integer)propDuration.getValue()).toString();
+      (String)((Long)propDuration.getValue()).toString();
   }
 }
 

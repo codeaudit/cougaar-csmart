@@ -24,7 +24,7 @@ public class ABCAllocationRule
 
   /** Defines a Tasktype Property **/
   public static final String PROP_TASKVERB = ABCTask.PROP_TASKVERB;
-  public static final String[] PROP_TASKVERB_DFLT = ABCTask.PROP_TASKVERB_DFLT;
+  public static final String PROP_TASKVERB_DFLT = ABCTask.PROP_TASKVERB_DFLT;
   public static final String PROP_TASKVERB_DESC = ABCTask.PROP_TASKVERB_DESC;
 
   /** Defines a Role Property **/
