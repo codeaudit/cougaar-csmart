@@ -56,7 +56,7 @@ REM configuration is coming is listed _first_, and certainly before any
 REM common directories.
 SET MYCONFIG="%COUGAAR_INSTALL_PATH%/csmart/data/common/\;"
 
-SET MYPROPERTIES=%MYDOMAINS% -Dorg.cougaar.system.path=%COUGAAR3RDPARTY% -Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH% -Duser.timezone=GMT -Dorg.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0
+SET MYPROPERTIES=%MYDOMAINS% -Dorg.cougaar.system.path=%COUGAAR3RDPARTY% -Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH% -Duser.timezone=GMT -Dorg.cougaar.planning.ldm.lps.ComplainingLP.level=0
 
 SET MYPROPERTIES=%MYPROPERTIES% -Dorg.cougaar.config.path=%MYCONFIG% -Dcsmart.log.severity=%MYLOG% -Dorg.cougaar.class.path=%LIBPATHS%
 
