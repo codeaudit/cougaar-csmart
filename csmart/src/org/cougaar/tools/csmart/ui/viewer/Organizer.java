@@ -1132,11 +1132,9 @@ public class Organizer extends JScrollPane {
     }
   } // end of newRecipe
 
-  private RecipeComponent createMet(String name, Class cls) {
+  private RecipeComponent createRecipeComponent(String name, Class cls) {
     try {
       Constructor constructor = cls.getConstructor(constructorArgTypes);
-      //  	Recipe recipe =
-      //  	  (Recipe) constructor.newInstance(new String[] {name});
       RecipeComponent recipe =
 	(RecipeComponent) constructor.newInstance(new String[] {name});
       recipe.initProperties();
@@ -1299,7 +1297,7 @@ public class Organizer extends JScrollPane {
     DbRecipe dbRecipe = getDatabaseRecipe(recipeId);
     if (dbRecipe == null) return;
     dbRecipe.name = recipeName;
-    RecipeComponent mc = createMet(dbRecipe.name, dbRecipe.cls);
+    RecipeComponent mc = createRecipeComponent(dbRecipe.name, dbRecipe.cls);
     setRecipeComponentProperties(dbRecipe, mc);
     addRecipeToWorkspace(mc, node);
   }
@@ -1696,7 +1694,7 @@ public class Organizer extends JScrollPane {
       Iterator metIter = recipes.iterator();
       while (metIter.hasNext()) {
         DbRecipe dbRecipe = (DbRecipe) metIter.next();
-        RecipeComponent mc = createMet(dbRecipe.name, dbRecipe.cls);
+        RecipeComponent mc = createRecipeComponent(dbRecipe.name, dbRecipe.cls);
         setRecipeComponentProperties(dbRecipe, mc);
         experiment.addRecipe(mc);
         if (!recipeNames.contains(mc.getRecipeName())) {
@@ -2279,7 +2277,7 @@ public class Organizer extends JScrollPane {
   
   public RecipeComponent copyRecipe(RecipeComponent recipe, Object context) {
     // FIXME!!!!
-    RecipeComponent recipeCopy = createMet(generateRecipeName(recipe.getRecipeName()), recipe.getClass());
+    RecipeComponent recipeCopy = createRecipeComponent(generateRecipeName(recipe.getRecipeName()), recipe.getClass());
     recipe.copy(recipeCopy);
     //public Recipe copyRecipe(Recipe recipe, Object context) {
     // Fixme: once only recipes are components,
