@@ -251,11 +251,31 @@ public class ULSocietyFrame extends CSMARTFrame {
     Vector selectedElements = graph.getSelectedElements();
     if (selectedElements == null)
       return;
+    // get all nodes related to the selected nodes
+    // recursively by the first relationship
     Vector relatedElements = getRelatedElements(selectedElements, rel1);
+    // get all nodes related to the selected nodes
+    // recursively by the second relationship
     Vector addl = getRelatedElements(selectedElements, rel2);
     for (int i = 0; i < addl.size(); i++) 
       if (!relatedElements.contains(addl.elementAt(i)))
 	relatedElements.add(addl.elementAt(i));
+    // remove all nodes with no relationships
+    for (int i = 0; i < relatedElements.size(); i++) {
+      Element element = (Element)relatedElements.elementAt(i);
+      if (element instanceof Node) {
+        Enumeration edges = ((Node)element).edgeElements();
+        boolean hasEdges = false;
+        while (edges.hasMoreElements()) {
+          if (relatedElements.contains(edges.nextElement())) {
+            hasEdges = true;
+            break;
+          }
+        }
+        if (!hasEdges)
+          relatedElements.remove(i--);
+      }
+    }
     if (relatedElements.size() == 0)
       return;
     graph.select(relatedElements);
@@ -272,49 +292,68 @@ public class ULSocietyFrame extends CSMARTFrame {
    */
 
   private Vector getRelatedElements(Vector elements, String relationship) {
-    for (int i = 0; i < elements.size(); i++) {
-      Element element = (Element)elements.elementAt(i);
+    Vector myElements = (Vector)elements.clone();
+    for (int i = 0; i < myElements.size(); i++) {
+      Element element = (Element)myElements.elementAt(i);
       // remove any subgraphs (in particular the whole graph)
       if (element instanceof Subgraph) {
-	elements.remove(i--);
+	myElements.remove(i--);
 	continue;
       }
       // remove edges, as we only want the ones that match relationship
       if (element instanceof Edge) {
-	elements.remove(i--);
+	myElements.remove(i--);
 	continue;
       }
     }
-    for (int i = 0; i < elements.size(); i++) {
-      Element element = (Element)elements.elementAt(i);
+    for (int i = 0; i < myElements.size(); i++) {
+      Element element = (Element)myElements.elementAt(i);
       if (!(element instanceof Node))
 	continue;
       Node node = (Node)element;
+      // for each node
+      // get the names of the nodes that have the specified relationship
       Vector otherNodeNames = 
 	getAttributeValuesWithSuffix(node, relationship);
+      // get all the original node's edges
       Enumeration edges = node.edgeElements();
+      // the relationship determines whether we should look
+      // for the other nodes at the heads or tails of edges
+      boolean getTails = false;
+      if (relationship.endsWith("Superior") ||
+          relationship.endsWith("Customer"))
+        getTails = true;
       while (edges.hasMoreElements()) {
 	Edge edge = (Edge)edges.nextElement();
 	if (edge.getHead().equals(node)) {
-	  if (otherNodeNames.contains(getOrganizationName(edge.getTail()))) {
-	    if (!elements.contains(edge))
-	      elements.add(edge);
+          // if the original node was at the head
+          // if the tail node is in the related node names
+          // and we're getting tails
+          // then add the tail node and the edge to it
+	  if (otherNodeNames.contains(getOrganizationName(edge.getTail())) &&
+              getTails) {
+	    if (!myElements.contains(edge)) 
+	      myElements.add(edge);
 	    Node tail = edge.getTail();
-	    if (!elements.contains(tail))
-	      elements.add(tail);
+	    if (!myElements.contains(tail)) 
+	      myElements.add(tail);
 	  }
-	} else if (edge.getTail().equals(node)) {
+	} else if (edge.getTail().equals(node) && !getTails) {
+          // if the original node was at the tail
+          // and we're getting heads
+          // if the head node is in the related node names
+          // then add the head node and the edge to it
 	  if (otherNodeNames.contains(getOrganizationName(edge.getHead()))) {
-	    if (!elements.contains(edge)) 
-	      elements.add(edge);
+	    if (!myElements.contains(edge)) 
+	      myElements.add(edge);
 	    Node head = edge.getHead();
-	    if (!elements.contains(head)) 
-	      elements.add(head);
+	    if (!myElements.contains(head))
+	      myElements.add(head);
 	  }
 	}
       }
     }
-    return elements;
+    return myElements;
   }
 
   /**
