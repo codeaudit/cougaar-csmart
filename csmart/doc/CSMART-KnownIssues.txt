@@ -31,13 +31,13 @@ CSMART contains a few known issues:
   from CVS, try using Cygwin. See bug #1321.
 
 * MySQL cannot load data across network drives, causing errors
-  creating the database in some circumstances. See bug# 1257.
+  creating the database in some circumstances. If you are loading data
+  across a network drive, use the "local" option to the MySQL data
+  load script (load_1ad_mysql.sh). You must have MySQL server version 3.23.49
+  or better to use this option.
 
 * CSMART will not prevent Agent or Node names with illegitimate characters,
   as it should. Bug # 1477
-
-* The Console (Experiment Controller) kills Nodes sequentially which
-  is sometimes slow. Bug 1416.
 
 * If you export 2 experiments from different databases using the
   included experiment export script, then import both into the same

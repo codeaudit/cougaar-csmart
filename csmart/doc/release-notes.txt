@@ -5,18 +5,21 @@ This release includes bug fixes and feature enhancements to support UL
 fall integration not available in time for the 9.4 release. In
 particular, this release changes the database table names, and the
 Plugins used in the default society configurations, so that they use
-the UL Adaptive Logistics Plugins. You should reload your database.
+the UL Adaptive Logistics Plugins. You should reload your database (entirely).
 
 - Renamed mysqldump.9.2.txt to mysqldump.txt. Also added new tables to
   this dump that are required by new adaptive logistics Plugins.
 - Database table names have been shorted, removing extraneous v4 and
-  v6 prefixes. Recipe or experiment exports must be processed to
+  v6 prefixes. Recipe or experiment exports MUST be processed to
   remove the "v4_" from the beginning of table names. Use the script
-  provided in csmart/bin to do so.
+  provided in csmart/bin to do so (v4_v6_conversion.[bat/sh]).
 - Removed use of old logistics Plugins in the included 1AD societies,
   replacing them with the new, adaptive Plugins. After reloading your
   CSMART database, you must include the new adaptive jar file in your
   CIP/lib.
+- Updated the domain data in the CSMART database to avoid some
+  errors (bug 1531). You must reload the .sql file you get from unzipping
+  Domain-MySQL.ZIP (see the Install instructions).
 - Adding additional servlets is no longer possible via the Servlet
   Insertion Recipe. To add additional servlets, use the Specific
   Insertion Recipe. (Bug 1521)
@@ -52,9 +55,10 @@ Asset=true in component AGG-Agent
   / become disconnected, and have re-appeared) and choose to "attach"
   to them, at which point CSMART will allow monitoring these Nodes as
   though CSMART had started them originally. Note that if your CSMART
-  process dies, all Nodes will continue to run. You must either
-  restart your AppServers, or use CSMART to connect to the AppServers
-  and kill the Nodes.
+  process dies (or you kill it without stopping your society), all
+  Nodes will continue to run. You must either restart your AppServers,
+  or use CSMART to connect to the AppServers and kill the Nodes. This
+  fixes bugs 997, 1022, and partially addresses 1028. !!!!FIXME!!!!!
 - The menu items in the Organizer and Experiment Builder have been
   split up, for ease of use. No functionality has changed. (Bug 1581)
 - You may now import a communities.xml file into your experiment (bug
@@ -64,11 +68,22 @@ Asset=true in component AGG-Agent
   (bug 1453, also courtesty of Mobile Intelligence, Inc).
 - Database load scripts are now generated
   from ER/Studio files, which themselves are available in the
-  csmart/data/database directory. This change is transparent to the
-  user.
+  csmart/data/database/db_src directory (with screenshots in 
+  csmart/data/database/doc). This change is transparent to the user.
 - Bug 1596: OrgAssets created using the AgentInsertionRecipe were
   missing the ClusterPG and ItemIdentificationPG, resulting in runtime
   Exceptions.
+- When dragging Hosts or Nodes onto a community in the Community
+  editor, show only the resulting Agents in the Community, not the
+  Nodes or Hosts. Bug 1578.
+- Community View now shows communities collapsed initially (bug 1522).
+- Allow loading multiple recipes from the database at once. Also allow
+  dragging multiple recipes at once into an Experiment. (Bug 932)
+- Allow viewing contents of an Agent from the Experiment Builder (bug
+  1470).
+- Console's window showing Agent contents will now show the load
+  priority of the component, and will also show the components in the
+  Node Agent.
 - Speed up stopping a run, by talking to each node in parallel (bug
   1416).
 - Experiment export scripts now export communities correctly (bug 1563).
@@ -83,7 +98,21 @@ Asset=true in component AGG-Agent
   that of the Node.
 - When configuring a Society from scratch in the Configuration
   Builder, give the user an editable drop-down of all known Plugins or
-  Binders in the database, not just those in the Society so far (bug 1443).
+  Binders in the database, not just those in the Society so far (bug
+  1443).
+- If Topology servlet not loaded, show only one error dialog (not one
+  per Agent). Bug 1585.
+- Try to find the correct port for the GLSInitServlet, possibly using
+  https. Bug 1560.
+- MySQL load scripts now work on networked drives if you have MySQL
+  server 3.23.49 or better and use the new "local" option to the .sh
+  script. (bug 1257)
+- Handle dragging in Host and Nodes and Agents consistently in the
+  Community Editor (bug 1523).
+- Keep node log files up-to-date (bug 931).
+- Keep Node Info windows a little smaller and add scrollbars (bug
+  1525)
+- Extra checks to avoid disturbing base assemblies (bug 1554)
 
 Release 9.4:
 This release constitutes the last major Cougaar release for this
