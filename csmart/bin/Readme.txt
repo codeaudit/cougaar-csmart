@@ -147,3 +147,9 @@ export-recipe.[sh/bat]
 	 [Password] [MySQL Config DB database name] [Optional: MySQL
 	 DB host name]
 
+v4_v6_conversion.[sh/bat]
+        Removes all occurences of table names in the named file that are 
+        prefixed with v4 or v6 and replaces them with non prefixed table 
+        names.
+
+        Usage: v4_v6_conversion.sh [Filename To Convert]
