@@ -56,6 +56,14 @@ public class ExperimentHost
       createLogger();
   }
 
+  public boolean equals(Object o) {
+    if(o instanceof ExperimentHost) {
+      return getShortName().equals(((ExperimentHost)o).getShortName());
+    } else {
+      return false;
+    }
+  }
+
   private void createLogger() {
       log = CSMART.createLogger(this.getClass().getName());    
   }
