@@ -55,8 +55,7 @@ public class AssetFileComponent
   public static final String PROP_UIC = "UIC";
   public static final String PROP_UIC_DESC = "UIC of the Asset";
 
-  private Property propAssetType;
-  private Property propAssetClass;
+ private Property propAssetClass;
   private Property propUniqueID;
   private Property propUnitName;
   private Property propUIC;
@@ -96,27 +95,21 @@ public class AssetFileComponent
       aad = callback.getAgentAssetData();
     }
 
-    // This will be an int, need to convert.
-    propAssetType = addProperty(PROP_TYPE, new Integer(aad.getType()));
-    propAssetType.setToolTip(PROP_TYPE_DESC);
-
     propAssetClass = addProperty(PROP_CLASS, aad.getAssetClass());
     propAssetClass.setToolTip(PROP_CLASS_DESC);
 
-    if(aad.getUniqueID() != null) {
-      propUniqueID = addProperty(PROP_UID, aad.getUniqueID());
-      propUniqueID.setToolTip(PROP_UID_DESC);
-    }
+    String uniqueId = (aad.getUniqueID() != null) ? aad.getUniqueID() : "";
+    propUniqueID = addProperty(PROP_UID, uniqueId);
+    propUniqueID.setToolTip(PROP_UID_DESC);
+
     
     // Unit name is allowed to be null, if it is, give an empty string.
     String unitname = (aad.getUnitName() == null) ? "" : aad.getUnitName();
     propUnitName = addProperty(PROP_UNITNAME, unitname);
     propUnitName.setToolTip(PROP_UNITNAME_DESC);
     
-    if(aad.getUIC() != null) {
-      propUIC = addProperty(PROP_UIC, aad.getUIC());
-      propUIC.setToolTip(PROP_UIC_DESC);
-    }
+    propUIC = addProperty(PROP_UIC, (aad.getUIC() != null) ? aad.getUIC() : "");
+    propUIC.setToolTip(PROP_UIC_DESC);
 
     addPropGroups(aad);
     addRelationships(aad.getRelationshipData());
@@ -129,7 +122,6 @@ public class AssetFileComponent
 
   public ComponentData addComponentData(ComponentData data) {
     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
-    assetData.setType(((Integer)propAssetType.getValue()).intValue());
     assetData.setAssetClass((String)propAssetClass.getValue());
     assetData.setUniqueID((String)propUniqueID.getValue());
     assetData.setUnitName((String)propUnitName.getValue());
@@ -144,9 +136,10 @@ public class AssetFileComponent
         for(int i=0; i < container.getChildCount(); i++) {
           RelationshipBase rel = (RelationshipBase) container.getChild(i);
           RelationshipData rData = new RelationshipData();
-          rData.setType((String)rel.getProperty(PROP_TYPE).getValue());
+          rData.setType((String)rel.getProperty(RelationshipBase.PROP_TYPE).getValue());
           rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
           rData.setItem((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
+          rData.setTypeId((String)rel.getProperty(RelationshipBase.PROP_TYPEID).getValue());
           assetData.addRelationship(rData);
         }
       }
