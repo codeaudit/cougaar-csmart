@@ -68,7 +68,7 @@ LIBPATHS="${LIBPATHS}${SEP}${COUGAAR_INSTALL_PATH}/lib/core.jar"
 # Third party jars are in COUGAAR3RDPARTY
 # Which is usually COUGAAR_INSTALL_PATH/sys
 # you must add the MySQL jar file here if you want to use it
-LIBPATHS="${LIBPATHS}${SEP}${COUGAAR3RDPARTY}/xerces.jar${SEP}${COUGAAR3RDPARTY}/grappa1_2_bbn.jar${SEP}${COUGAAR3RDPARTY}/jcchart451K.jar${SEP}${COUGAAR3RDPARTY}/oracle12.zip"
+LIBPATHS="${LIBPATHS}${SEP}${COUGAAR3RDPARTY}/xerces.jar${SEP}${COUGAAR3RDPARTY}/grappa1_2_bbn.jar${SEP}${COUGAAR3RDPARTY}/jcchart451K.jar${SEP}${COUGAAR3RDPARTY}/oracle12.zip${SEP}${COUGAAR3RDPARTY}/log4j.jar"
     
 if [ "$COUGAAR_DEV_PATH" != "" ] ; then
     LIBPATHS="${COUGAAR_DEV_PATH}${SEP}${LIBPATHS}"
