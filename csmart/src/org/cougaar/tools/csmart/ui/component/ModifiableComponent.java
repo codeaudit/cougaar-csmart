@@ -27,7 +27,6 @@ import java.net.URL;
  * The interface for ConfigurableComponents that can be modified from
  * a society.
  **/
-
 public interface ModifiableComponent {
   /**
    * Add a listener for non-property changes to the society. E.g.
@@ -42,19 +41,15 @@ public interface ModifiableComponent {
    **/
   void removeModificationListener(ModificationListener l);
 
-
   /**
    * Returns whether or not the society can be edited.
    * @return true if society can be edited and false otherwise
    */
-
   public boolean isEditable();
 
   /**
    * Set whether or not the society can be edited.
    * @param editable true if society is editable and false otherwise
    */
-
   public void setEditable(boolean editable);
-  
 }

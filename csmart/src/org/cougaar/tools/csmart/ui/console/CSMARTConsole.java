@@ -1113,9 +1113,9 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * Creating a new File from the filename works because acceptFile
    * just looks at the filename.
    */
-
   private boolean isMetricFile(String filename) {
     File thisFile = new java.io.File(filename);
+    // FIXME!!! Add stuff to check metrics too!!!
     int n = experiment.getSocietyComponentCount();
     for (int i = 0; i < n; i++) {
       SocietyComponent societyComponent = experiment.getSocietyComponent(i);
@@ -1130,7 +1130,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * Read remote files and copy to directory specified by experiment.
    */
-
   private void copyMetricsFiles(HostServesClient hostInfo,
 				String dirname) {
     char[] cbuf = new char[1000];

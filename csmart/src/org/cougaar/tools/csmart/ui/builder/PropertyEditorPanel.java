@@ -45,6 +45,9 @@ import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 
+/**
+ * Panel that holds the PropertyEditor for editing the properties of a <code>ModifiableConfigurableComponent</code>
+ */
 public class PropertyEditorPanel extends JPanel 
   implements ActionListener, PropertiesListener, PropertyListener,
   TreeSelectionListener, HyperlinkListener {
@@ -74,7 +77,6 @@ public class PropertyEditorPanel extends JPanel
    * Set configComp component to edit; used to re-use a running editor
    * to edit a different configComp.
    */
-
   public void reinit(ModifiableConfigurableComponent newModifiableConfigurableComponent) {
     // restore editable flag on previous configComp
     if (isEditable)
@@ -87,7 +89,6 @@ public class PropertyEditorPanel extends JPanel
   /**
    * ActionListener interface.
    */
-
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     Property p = (Property)componentToProperty.get(source);
@@ -111,7 +112,6 @@ public class PropertyEditorPanel extends JPanel
    * of the class specified in property.getClass() and use that object
    * to set the property value.
    */
-
   private void setValueInProperty(Property p, Object value) {
     try {
       if (value instanceof String && value.toString().equals("")) {
@@ -189,7 +189,6 @@ public class PropertyEditorPanel extends JPanel
    * Make a tree from the property names in the selected configurable
    * component.
    */
-
   private DefaultMutableTreeNode makeTree() {
     SortedSet names = new TreeSet(componentToConfigure.getPropertyNamesList());
     for (Iterator i = names.iterator(); i.hasNext(); ) {
@@ -203,7 +202,6 @@ public class PropertyEditorPanel extends JPanel
    * Display user interface components for property names.
    * Called when user makes a selection in the tree.
    */
-
   private void displayComponents(Collection propertyNames) {
     for (Iterator i = propertyNames.iterator(); i.hasNext(); ) {
       CompositeName propName = (CompositeName) i.next();
@@ -216,7 +214,6 @@ public class PropertyEditorPanel extends JPanel
   /**
    * Add user interface component for a property.
    */
-
   private void addComponentForProperty(Property property) {
     propertyTable.addProperty(property);
     // don't add yourself as listener until problem with changing propery
@@ -236,7 +233,6 @@ public class PropertyEditorPanel extends JPanel
    * to the current display, otherwise the user interface component
    * is created whent the parent property name is selected from the tree.
    */
-
   public void propertyAdded(PropertyEvent e) {
     Property prop = e.getProperty();
     CompositeName name = prop.getName();
@@ -256,7 +252,6 @@ public class PropertyEditorPanel extends JPanel
    * Remove the user interface component for the property and remove the
    * property from the tree.
    */
-
   public void propertyRemoved(PropertyEvent e) {
     Property prop = e.getProperty();
     CompositeName name = prop.getName();
@@ -278,7 +273,6 @@ public class PropertyEditorPanel extends JPanel
   /**
    * Add a property to a tree, first adding its ancestors if necessary.
    */
-
   private boolean addPropertyName(CompositeName name) {
     PropertyTreeNode node = findPropertyNode(name.getPrefix(), true);
     return node.addPropertyName(name);
@@ -330,7 +324,6 @@ public class PropertyEditorPanel extends JPanel
   /**
    * Remove user interface component for a property, if it exists.
    */
-
   private void removeComponentForProperty(Property property) {
     propertyTable.removeProperty(property);
     property.removePropertyListener(this);
@@ -344,7 +337,6 @@ public class PropertyEditorPanel extends JPanel
    * or (for aspects of the property other than the value), handle
    * the change (i.e. new label, default value, class or allowed values).
    */
-
   public void propertyValueChanged(PropertyEvent e) {
     Property p = e.getProperty();
     p.removePropertyListener(this);
@@ -390,7 +382,6 @@ public class PropertyEditorPanel extends JPanel
    * displayed.
    * @param event the tree selection event
    */
-
   public void valueChanged(TreeSelectionEvent event) {
     TreePath path = event.getPath();
     if (path == null) return;
