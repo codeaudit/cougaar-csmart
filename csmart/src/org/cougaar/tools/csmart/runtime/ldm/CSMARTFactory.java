@@ -36,7 +36,7 @@ import org.cougaar.planning.ldm.asset.*;
 
 import org.cougaar.tools.csmart.runtime.ldm.asset.*;
 import org.cougaar.tools.csmart.runtime.ldm.event.*;
-import org.cougaar.tools.csmart.plugin.CSMARTPlugIn;
+import org.cougaar.tools.csmart.runtime.plugin.CSMARTPlugIn;
 import org.cougaar.tools.csmart.util.*;
 
 /**
