@@ -233,7 +233,7 @@ running CSMART.<br>
 contains the "java.Xbootclasspath/p" argument, which is now
 required (without this you will see a message like "Fatal error
 java.lang.NoSuchMethodException: newInstanceFromDesc"). In addition, 
-Cougaar Nodes should be run using the JDK Hotspot Server VM, not the
+some Cougaar Nodes (particularly those running an AggAgent) should be run using the JDK Hotspot Server VM, not the
 Client VM that comes with the JRE. To do so, your AppServer properties
 file must include the java.server argument, and JDK_HOME/bin must be
 early in your Path. The corresponding error indicates something like:
