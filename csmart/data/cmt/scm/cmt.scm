@@ -10,7 +10,20 @@
 (set! asb-prefix "V4_")
 (set! refDBConnection #null)
 
+(set! all-threads '(STRATEGIC-TRANS THEATER-TRANS CLASS-1 CLASS-3 CLASS-4 CLASS-5 CLASS-8 CLASS-9))
+(set! 135threads '(STRATEGIC-TRANS THEATER-TRANS CLASS-1 CLASS-3 CLASS-5))
+(set! 1thread '(STRATEGIC-TRANS THEATER-TRANS CLASS-1))
+(set! 3thread '(STRATEGIC-TRANS THEATER-TRANS CLASS-3))
+(set! 5thread  '(STRATEGIC-TRANS THEATER-TRANS CLASS-5))
 
+ ;; temporary hack for testing
+;;(set! cfw_group_id "3ID-CFW-GRP-A")
+(set! cfw_group_id "SMALL-3ID-CFW-GRP")
+(set! assembly_description "small-3ID,all threads, no clones")
+;;(set! threads all-threads)
+(set! threads 3thread)
+(set! version "-8")
+(set! clones ())
 
 ;; for BBN Eiger access
 (define (use-eiger user password)
@@ -65,7 +78,7 @@
 
 (define (with-query-jdbc query ex)
   (let((q query))
-    (println (string-append "(with-query-jdbc " query " " ex))
+    ;;(println (string-append "(with-query-jdbc " query " " ex))
     (let* ((stmt (createStatement (getrefDBConnection)))
 	   (rs (.executeQuery stmt query))
 	   (answer (ex rs)))
@@ -360,11 +373,6 @@
     )
   )
 
-(set! all-threads '(STRATEGIC-TRANS THEATER-TRANS CLASS-1 CLASS-3 CLASS-4 CLASS-5 CLASS-8 CLASS-9))
-(set! 135threads '(STRATEGIC-TRANS THEATER-TRANS CLASS-1 CLASS-3 CLASS-5))
-(set! 1thread '(STRATEGIC-TRANS THEATER-TRANS CLASS-1))
-(set! 3thread '(STRATEGIC-TRANS THEATER-TRANS CLASS-3))
-(set! 5thread  '(STRATEGIC-TRANS THEATER-TRANS CLASS-5))
 
 (define (tabbrev thread)
   (cond
@@ -1147,7 +1155,7 @@
     "op.operation_name as OPERATION_NAME,"
     "op.priority as PRIORITY,"
     "op.c0_date as C0_DATE"
-    " from " cfw_prefix "cfw_oplan op,"
+    " from " cfw-prefix "cfw_oplan op,"
     "   " cfw-prefix "cfw_group_member gm"
     "   where gm.cfw_id=op.cfw_id"
     "   and op.oplan_id in " oplan_ids
@@ -1194,14 +1202,7 @@
   )
 
 
- ;; temporary hack for testing
-;;(set! cfw_group_id "3ID-CFW-GRP-A")
-(set! cfw_group_id "SMALL-3ID-CFW-GRP")
-(set! assembly_description "small-3ID,all threads, no clones")
-;;(set! threads all-threads)
-(set! threads 3thread)
-(set! version "-8")
-(set! clones ())
+
 
 (define (voc)
   (let
@@ -1294,6 +1295,15 @@
 		     do-entry
 		     )
     ht))
+
+
+(define (removeTrial experiment_id trial_id)
+  (let((x ()))
+    (dbu (string-append "delete from  V4_EXPT_TRIAL_ASSEMBLY   where trial_id="(sqlQuote trial_id)))
+    (dbu (string-append "delete from  V4_EXPT_TRIAL   where trial_id="(sqlQuote trial_id)))
+    ))
+
+
 ;;describe V4_EXPT_TRIAL
 ;;
 ;; Name				 Null?	  Type
@@ -1387,40 +1397,43 @@
 	(.put ht (.getString rs "DESCRIPTION")(.getString rs "CFW_GROUP_ID"))
 	(do-entry rs))))
     (with-query-jdbc (string-append 
-		      "select  DESCRIPTION,CFW_GROUP_ID from " cfw_prefix "CFW_GROUP")
+		      "select  DESCRIPTION,CFW_GROUP_ID from " cfw-prefix "CFW_GROUP")
 		     do-entry
 		     )
     ht))
 
 
 (define (getOrganizationGroups experiment_id)
-  String[] names = {
-      "Third Infantry Division",
-      "2nd Brigade"
-    };
-    return names;
-
   (let
-      ((st #null))
+      ((ht (Hashtable.)))
     (define (do-entry rs)
       (cond
        ((.next rs)
-	(set! st (.getString rs "CFW_GROUP_ID"))
+	(.put ht (.getString rs "DESCRIPTION")(.getString rs "ORG_GROUP_ID"))
 	)))
-;;    (with-query-jdbc (string-append 
-;;		      "select CFW_GROUP_ID from " 
-;;		      asb_prefix "EXPT_EXPERIMENT exp,"
-;;		      cfw-prefix "CFW_GROUP_MEMBER gm,"
-;;		      cfw-prefix "CFW_ORG_GROUP og"
-;;		      "   where exp.experiment_id="(sqlQuote experiment_id)
-;;		      "   and exp.cfw_group_id =gm.cfw_group_id"
-;;		      "   and og.cfw_id=gm.cfw_id")
-;;		     do-entry
-;;		     )
-    (.put ht "Third Infantry Division" "Third Infantry Division")
-    (.put ht "2nd Brigade" "2nd Brigade")
+    (with-query-jdbc (string-append 
+		      "select og.ORG_GROUP_ID, og.DESCRIPTION from " 
+		      asb-prefix "EXPT_EXPERIMENT exp,"
+		      cfw-prefix "CFW_GROUP_MEMBER gm,"
+		      cfw-prefix "CFW_ORG_GROUP og"
+		      "   where exp.expt_id="(sqlQuote experiment_id)
+		      "   and og.description like '%CLONABLE%'"
+		      "   and exp.cfw_group_id =gm.cfw_group_id"
+		      "   and og.cfw_id=gm.cfw_id")
+		     do-entry
+		     )
+;;    (.put ht "Third Infantry Division" "Third Infantry Division")
+;;    (.put ht "2nd Brigade" "2nd Brigade")
     ht)
   )
+
+;;describe v4_expt_trial_thread
+;; Name				 Null?	  Type
+;; ------------------------------- -------- ----
+;; EXPT_ID			 NOT NULL VARCHAR2(50)
+;; TRIAL_ID			 NOT NULL VARCHAR2(50)
+;; THREAD_ID			 NOT NULL VARCHAR2(50)
+;;
 
 (define (isULThreadSelected trial_id thread_id)
   (let
@@ -1430,23 +1443,36 @@
        ((.next rs)
 	(set! threadSelected #t)
 	)))
-;;    (with-query-jdbc (string-append 
-;;		      "select THREAD_ID from " 
-;;		      asb_prefix "trial_thread tt"
-;;		      "   where tt.trial_id"(sqlQuote trial_id)
-;;		      "   and tt.thread_id="(sqlQuote thread_id)
-;;		      )
-;;		     do-entry
-;;		     )
-    #f
+    (with-query-jdbc (string-append 
+		      "select THREAD_ID from " 
+		      asb-prefix "trial_thread tt"
+		      "   where tt.trial_id"(sqlQuote trial_id)
+		      "   and tt.thread_id="(sqlQuote thread_id)
+		      )
+		     do-entry
+		     )
+    threadSelected
     ))
 
 (define (setULThreadSelected  trial_id,thread_name, selected) 
   (if
    selected
+  (cond
+     ;; don't insert twice
+     ((= 0 (dbu (string-append
+		 "update " asb-prefix "EXPT_EXPERIMENT set expt_id = expt_id  where EXPT_ID = "
+		 (sqlQuote experiment_id))))
+      (dbu (string-append 
+	    "insert into " asb-prefix
+	    "EXPT_EXPERIMENT values ("
+	    (sqlQuote experiment_id)","
+	    (sqlQuote experiment_id)","
+	    (sqlQuote experiment_id)","
+	    (sqlQuote cfw_group_id)")"))
+      ))
    (string-append 
     "select THREAD_ID from " 
-    asb_prefix "trial_thread tt"
+    asb-prefix "trial_thread tt"
     "   where tt.trial_id"(sqlQuote trial_id)
     "   and tt.thread_id="(sqlQuote thread_id)
     )))
@@ -1472,7 +1498,120 @@
   ()
 )
 
+(define (setSocietyTemplate experiment_id cfw_group_id)
+  (cond
+     ;; don't insert twice
+     ((= 0 (dbu (string-append
+		 "update " asb-prefix "EXPT_EXPERIMENT set expt_id = expt_id  where EXPT_ID = "
+		 (sqlQuote experiment_id))))
+      (dbu (string-append 
+	    "insert into " asb-prefix
+	    "EXPT_EXPERIMENT values ("
+	    (sqlQuote experiment_id)","
+	    (sqlQuote experiment_id)","
+	    (sqlQuote experiment_id)","
+	    (sqlQuote cfw_group_id)")"))
+      ))
+  (dbu (string-append 
+	    "update " asb-prefix "EXPT_EXPERIMENT"
+	    " set cfw_group_id= " (sqlQuote cfw_group_id)
+	    " where expt_id=" (sqlQuote experiment_id)))
+  experiment_id
+  )
 
+;;describe V4_ASB_COMPONENT_HIERARCHY
+;; Name				 Null?	  Type
+;; ------------------------------- -------- ----
+;; ASSEMBLY_ID			 NOT NULL VARCHAR2(50)
+;; COMPONENT_ALIB_ID		 NOT NULL VARCHAR2(150)
+;; PARENT_COMPONENT_ALIB_ID	 NOT NULL VARCHAR2(150)
+;; INSERTION_ORDER			  NUMBER
+;;
 
+(define (addNodeAssignments nodeTable assemblyName)
+  (let
+      ((assembly_id assemblyName))
+    (for-each*
+     (lambda (nodeName)
+       (for-each*
+	(lambda (agentName)
+	  (cond
+	   ;; don't insert twice
+	   ((= 0 (dbu (string-append
+		       "update " asb-prefix "ASB_COMPONENT_HIERARCHY a set assembly_id = assembly_id"
+		       "   where assembly_id = " (sqlQuote assembly_id) 
+		       "   and exists ("
+		       "   select assembly_id"
+		       "   from "
+		       "   " asb-prefix "ASB_COMPONENT_HIERARCHY b,"
+		       "   " asb-prefix "ALIB_COMPONENT node,"
+		       "   " asb-prefix "ALIB_COMPONENT agent,"
+		       "   where"
+		       "   node.COMPONENT_NAME="(sqlQuote nodeName)
+		       "   and agent.COMPONENT_NAME="(sqlQuote agentName)
+		       "   b.component_alib_id=agent.component_alib_id"
+		       "   b.parent_component_alib_id=node.component_alib_id"
+		       ")")))
+	    (dbu (string-append 
+		  "insert into " asb-prefix "update " asb-prefix "ASB_COMPONENT_HIERARCHY"
+		  "   select " (sqlQuote assembly_id) ",agent.component_alib_id,node.component_alib_id,0"
+		  "   from "
+		  "   " asb-prefix "ASB_COMPONENT_HIERARCHY b,"
+		  "   " asb-prefix "ALIB_COMPONENT node,"
+		  "   " asb-prefix "ALIB_COMPONENT agent,"
+		  "   where"
+		  "   node.COMPONENT_NAME="(sqlQuote nodeName)
+		  "   and agent.COMPONENT_NAME="(sqlQuote agentName)
+		  "   b.component_alib_id=agent.component_alib_id"
+		  "   b.parent_component_alib_id=node.component_alib_id"
+		  ")"))
+	    ))
+	  )
+	(.get nodeTable nodeName)))
+     (.keySet nodeTable)))
+  )
 
+(define (addMachineAssignments machineTable assemblyName)
+  (let
+      ((assembly_id assemblyName))
+    (for-each*
+     (lambda (machineName)
+       (for-each*
+	(lambda (nodeName)
+	  (cond
+	   ;; don't insert twice
+	   ((= 0 (dbu (string-append
+		       "update " asb-prefix "ASB_COMPONENT_HIERARCHY a set assembly_id = assembly_id"
+		       "   where assembly_id = " (sqlQuote assembly_id) 
+		       "   and exists ("
+		       "   select assembly_id"
+		       "   from "
+		       "   " asb-prefix "ASB_COMPONENT_HIERARCHY b,"
+		       "   " asb-prefix "ALIB_COMPONENT machine,"
+		       "   " asb-prefix "ALIB_COMPONENT node,"
+		       "   where"
+		       "   machine.COMPONENT_NAME="(sqlQuote machineName)
+		       "   and node.COMPONENT_NAME="(sqlQuote nodeName)
+		       "   b.component_alib_id=node.component_alib_id"
+		       "   b.parent_component_alib_id=machine.component_alib_id"
+		       ")")))
+	    (dbu (string-append 
+		  "insert into " asb-prefix "update " asb-prefix "ASB_COMPONENT_HIERARCHY"
+		  "   select " (sqlQuote assembly_id) ",node.component_alib_id,machine.component_alib_id,0"
+		  "   from "
+		  "   " asb-prefix "ASB_COMPONENT_HIERARCHY b,"
+		  "   " asb-prefix "ALIB_COMPONENT machine,"
+		  "   " asb-prefix "ALIB_COMPONENT node,"
+		  "   where"
+		  "   machine.COMPONENT_NAME="(sqlQuote machineName)
+		  "   and node.COMPONENT_NAME="(sqlQuote nodeName)
+		  "   b.component_alib_id=node.component_alib_id"
+		  "   b.parent_component_alib_id=machine.component_alib_id"
+		  ")"))
+	    ))
+	  )
+	(.get machineTable machineName)))
+     (.keySet machineTable))
+    assemblyName)
+  )
 
