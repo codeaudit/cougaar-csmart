@@ -27,10 +27,11 @@ import javax.swing.*;
 import java.net.URL;
 import java.sql.SQLException;
 
-import org.cougaar.tools.csmart.ui.Browser;
-import org.cougaar.tools.csmart.core.property.ModifiableComponent;
-import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.db.PDbBase;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.experiment.Experiment;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
@@ -57,10 +58,12 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   };
 
   private JMenuItem saveMenuItem;
+  private CSMART csmart;
   private transient Logger log;
 
-  public PropertyBuilder(ModifiableComponent mc) {
+  public PropertyBuilder(CSMART csmart, ModifiableComponent mc) {
     log = CSMART.createLogger(this.getClass().getName());
+    this.csmart = csmart;
     // initialize menus and gui panels
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
@@ -140,23 +143,21 @@ public class PropertyBuilder extends JFrame implements ActionListener {
                                         JOptionPane.INFORMATION_MESSAGE);
           return;
         case PDbBase.RECIPE_STATUS_DIFFERS:
-          int answer =
-            JOptionPane.showConfirmDialog(this,
-                                          "Recipe "
-                                          + rc.getRecipeName()
-                                          + " already in database. Overwrite?",
-                                          "Recipe Exists",
-                                          JOptionPane.OK_CANCEL_OPTION,
-                                          JOptionPane.WARNING_MESSAGE);
-          if (answer != JOptionPane.OK_OPTION) return;
+          // save the recipe, so workspace is consistent with database
           break;
         case PDbBase.RECIPE_STATUS_ABSENT:
           break;                // Just write it
         }
         rc.saveToDatabase();
+        if (!silently)
+          JOptionPane.showMessageDialog(this,
+                                        "Recipe written successfully.",
+                                        "Recipe Written",
+                                        JOptionPane.INFORMATION_MESSAGE);
+        String experimentNames = getExperiments(rc);
         JOptionPane.showMessageDialog(this,
-                                      "Recipe written successfully.",
-                                      "Recipe Written",
+                                      "To update recipe in these experiments, save the experiments to the database:\n" + experimentNames,
+                                      "Experiments Using This Recipe",
                                       JOptionPane.INFORMATION_MESSAGE);
       } catch (Exception sqle) {
         if(log.isErrorEnabled()) {
@@ -168,8 +169,25 @@ public class PropertyBuilder extends JFrame implements ActionListener {
                                       JOptionPane.ERROR_MESSAGE);
       }
     }
+  }
 
+  // get names of all experiments in workspace that contain the recipe
 
+  private String getExperiments(RecipeComponent rc) {
+    StringBuffer sbuf = new StringBuffer();
+    Experiment[] experiments = csmart.getExperimentsInWorkspace();
+    for (int i = 0; i < experiments.length; i++) {
+      RecipeComponent[] recipes = experiments[i].getRecipes();
+      for (int j = 0; j < recipes.length; j++) {
+        if (recipes[j].equals(rc)) {
+          if (sbuf.length() != 0)
+            sbuf.append(", ");
+          sbuf.append(experiments[i].getExperimentName());
+          break;
+        }
+      }
+    }
+    return sbuf.toString();
   }
 
   public void reinit(ModifiableComponent newModifiableComponent) {
