@@ -90,7 +90,7 @@ public abstract class SocietyBase
   }
 
   private void createLogger() {
-    log = CSMART.createLogger(this.getClass().getName());
+    log = CSMART.createLogger("org.cougaar.tools.csmart.society.SocietyBase");
   }
 
   /**
