@@ -243,21 +243,16 @@ public class BasicMetric extends ModifiableConfigurableComponent
     if (metricRelate == null) 
       return;
     // Only add the relationship if its not already there
-    RelationshipData[] relats = data.getRelationshipData();
+    RelationshipData[] relats = data.getAgentAssetData().getRelationshipData();
     for (int i = 0; i < relats.length; i++) {
       if (relats[i].equals(metricRelate))
 	return;
     }
-    data.addRelationship(metricRelate);
+    data.getAgentAssetData().addRelationship(metricRelate);
   }
   
   public ComponentData modifyComponentData(ComponentData data) {
-    // Just do the addComponentData thing again. That method
-    // is careful not to do things twice.
-    // This ensures that everything is set up.
-    // However, the numProviders may not be correct.
-    numAgs2 = 0;
-    data = addComponentData(data);
+       numAgs2 = 0;
 
     // OK, now set numAgs2 val in the numProviders slot
     // First, find the MetricsInitializer Plugin
@@ -269,18 +264,29 @@ public class BasicMetric extends ModifiableConfigurableComponent
     }
     
     // Then, reset the value of the first parameter
-    init.setParameter(0, new Integer(numAgs2));
+    //    init.setParameter(0, new Integer(numAgs2));
 
+   
     return data;
   }
 
   private ComponentData findInitializer(ComponentData data) {
     // Find the plugin with the Metrics initializer plugin
     ComponentData[] children = data.getChildren();
-    for (int i = 0; i < data.childCount(); i++) {
-      if (children[i].getName().equals(MetricsInitializerPlugIn_name))
-	return children[i];
+
+    while(!children[0].getType().equals(ComponentData.AGENT)) {
+      children = children[0].getChildren();
     }
+
+    for(int j=0; j < children.length; j++) {
+      ComponentData[] plugins = children[j].getChildren();
+      for (int i = 0; i < plugins.length; i++) {
+	if (plugins[i].getName().equals(MetricsInitializerPlugIn_name)) {
+	  return children[j];
+	}
+      }
+    }
+
     return null;
   }
 
