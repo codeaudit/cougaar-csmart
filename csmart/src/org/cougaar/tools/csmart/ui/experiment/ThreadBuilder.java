@@ -67,10 +67,10 @@ public class ThreadBuilder extends JPanel {
 
   private void updateDisplay() {
     removeAll(); // remove previous components
-    if (!DBUtils.dbMode ||
+    if (experiment == null || !DBUtils.dbMode ||
         !ExperimentDB.isExperimentNameInDatabase(experiment.getExperimentName())) {
       setLayout(new BorderLayout());
-      add(new JLabel("Experiment is not in database; no thread information is available.", SwingConstants.CENTER), BorderLayout.CENTER);
+      add(new JLabel("Experiment is not in database or otherwise has no thread information available.", SwingConstants.CENTER), BorderLayout.CENTER);
         return;
     }
     String experimentId = experiment.getExperimentID();

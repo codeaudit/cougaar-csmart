@@ -28,6 +28,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.db.DBConflictHandler;
@@ -282,8 +283,15 @@ public class ExperimentBuilder extends JFrame {
     hcb = 
       new HostConfigurationBuilder(experiment, this);
     tabbedPane.add("Configurations", hcb);
-    threadBuilder = new ThreadBuilder(experiment);
+
+    // Only need to add the ThreadBuilder if there are threads
+    if (DBUtils.containsCMTAssembly(experiment.getExperimentID())) {
+      threadBuilder = new ThreadBuilder(experiment);
+    } else {
+      threadBuilder = new ThreadBuilder(null);
+    }
     tabbedPane.add("Threads", threadBuilder);
+
     // only display trial builder for non-database experiments
     //    trialBuilder = new TrialBuilder(experiment);
     //    tabbedPane.add("Trials", trialBuilder);
