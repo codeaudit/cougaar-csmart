@@ -74,7 +74,7 @@ public class ArgValueTest extends TestCase {
     ArgValue av1 = new ArgValue("Value1:val1", ":");
     ArgValue av2 = new ArgValue("Value1:val1", ":");
 
-    assert("Test equals()", av1.equals(av2));
+    assertTrue("Test equals()", av1.equals(av2));
   }
 
   public static Test suite() {
