@@ -1885,6 +1885,10 @@ public class PopulateDb extends PDbBase {
       // Only save into the hierarchy components that have a parent
       if (parent != null) {
 
+	// FIXME: This check looks for AlibIds only - that is, it assumes that Alib
+	// IDs are unique under a parent already. Ideally it would check
+	// for type, class, and arguments instead.
+
 	// Is given component in runtime hierarchy?
 	String cchq = dbp.getQuery("checkComponentHierarchy", substitutions);
 // 	if (log.isDebugEnabled()) {
