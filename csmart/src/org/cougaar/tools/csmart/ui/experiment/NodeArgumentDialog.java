@@ -77,9 +77,9 @@ public class NodeArgumentDialog extends JDialog {
             //Ignore extra messages.
             if (e.getValueIsAdjusting()) return;
                     
-            ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-            if (!lsm.isSelectionEmpty()) {
-              int selectedRow = lsm.getMinSelectionIndex();
+            ListSelectionModel lsm2 = (ListSelectionModel)e.getSource();
+            if (!lsm2.isSelectionEmpty()) {
+              int selectedRow = lsm2.getMinSelectionIndex();
               Object o = argTable.getModel().getValueAt(selectedRow, 2);
               if (o.equals("*"))
                 deleteButton.setEnabled(false);
