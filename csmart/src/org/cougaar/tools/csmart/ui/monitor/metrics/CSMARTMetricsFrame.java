@@ -78,7 +78,7 @@ public class CSMARTMetricsFrame extends JFrame implements ActionListener
     this.metrics = new CSMARTMetrics(names, data);
     myFrame = this;
     init();
-    //saveMenuItem.setEnabled(false);
+    saveMenuItem.setEnabled(this.metrics.inputFile != null);
   }
 
   public CSMARTMetricsFrame(String title, File f) {
@@ -88,7 +88,7 @@ public class CSMARTMetricsFrame extends JFrame implements ActionListener
     this.metrics = new CSMARTMetrics(f);
     myFrame = this;
     init();
-    saveMenuItem.setEnabled(false);
+    saveMenuItem.setEnabled(this.metrics.inputFile != null);
   }
 
   private void init() {
@@ -172,7 +172,7 @@ public class CSMARTMetricsFrame extends JFrame implements ActionListener
 
     if (command.equals(SAVE_AS_MENU_ITEM)) {
       metrics.saveAsMetrics();
-      //saveMenuItem.setEnabled(metrics.hasOutputFile());
+      saveMenuItem.setEnabled(metrics.inputFile != null);
       return;
     }
 

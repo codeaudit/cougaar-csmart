@@ -88,6 +88,7 @@ public class CSMARTMetrics extends JPanel {
 	new ObjectInputStream(new FileInputStream(f));
       chartDataTableModel = (TableModel)ois.readObject();
       namearray = (String[])ois.readObject();
+      inputFile = f;
     } catch( Exception e) {
       if(log.isErrorEnabled()) {
         log.error("CSMARTMetrics: Could not read the file.", e);
@@ -220,6 +221,11 @@ public class CSMARTMetrics extends JPanel {
   public void saveAsMetrics() {
     JFileChooser jfc = 
       new JFileChooser(System.getProperty("org.cougaar.install.path"));
+
+    if (inputFile != null && inputFile.exists())
+      jfc.setSelectedFile(inputFile);
+
+    jfc.setDialogTitle("Save Metrics data in file...");
     ExtensionFileFilter filter;
     String[] filters = { "mtr" };
     filter = new ExtensionFileFilter(filters, "Tasks Metric files");
