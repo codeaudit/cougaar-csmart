@@ -37,8 +37,8 @@ import javax.swing.tree.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
@@ -61,9 +61,6 @@ import org.cougaar.tools.server.rmi.ClientCommunityController;
 import org.cougaar.util.Parameters;
 
 public class CSMARTConsole extends JFrame {
-  // org.cougaar.control.port; port for contacting applications server
-  public static final int APP_SERVER_DEFAULT_PORT = 8484;
-  public static final String NAME_SERVER_PORTS = "8888:5555";
   public static final String COMMAND_ARGUMENTS = "Command$Arguments";
   private static final String[] emptyStringArray = {};
   // number of characters displayed in the node output window
@@ -1100,7 +1097,7 @@ public class CSMARTConsole extends JFrame {
   }
 
   public static int getAppServerPort(Properties properties) {
-    int port = APP_SERVER_DEFAULT_PORT;
+    int port = Experiment.APP_SERVER_DEFAULT_PORT;
     if (properties == null)
       return port;
     try {
@@ -1155,9 +1152,8 @@ public class CSMARTConsole extends JFrame {
     for (int i = 0; i < nodesToRun.length; i++) {
       NodeComponent nodeComponent = nodesToRun[i];
       // set configuration file name
-      ((ConfigurableComponent)nodeComponent).addProperty(
-                  "ConfigurationFileName",
-                  nodeComponent.getShortName() + currentTrial);
+      nodeComponent.addProperty("ConfigurationFileName",
+                                nodeComponent.getShortName() + currentTrial);
       String hostName = hostsToRunOn[i];
       final String nodeName = nodeComponent.getShortName();
       // create an unique node name to circumvent server problems

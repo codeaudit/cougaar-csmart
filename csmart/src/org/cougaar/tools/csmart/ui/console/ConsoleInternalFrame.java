@@ -41,7 +41,7 @@ import com.klg.jclass.chart.JCChart;
 
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 
 import org.cougaar.tools.csmart.experiment.HostComponent;
@@ -130,7 +130,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     // get host component by getting the experiment and 
     // searching its hosts for one with this node.
     experiment = 
-      (Experiment)getPropertyValue((ComponentProperties)node, "Experiment");
+      (Experiment)getPropertyValue(node, "Experiment");
     HostComponent[] hosts = experiment.getHosts();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
@@ -354,7 +354,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   public void displayAbout() {
     final ArrayList agentNames = 
-      (ArrayList)getPropertyValue((ComponentProperties)node, "AgentNames");
+      (ArrayList)getPropertyValue(node, "AgentNames");
     JPanel aboutPanel = new JPanel();
     aboutPanel.setLayout(new GridBagLayout());
     int x = 0;
@@ -439,7 +439,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel((String)getPropertyValue((ComponentProperties)host, "MachineType")),
+    aboutPanel.add(new JLabel((String)getPropertyValue(host, "MachineType")),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
@@ -452,7 +452,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel((String)getPropertyValue((ComponentProperties)host, "Location")),
+    aboutPanel.add(new JLabel((String)getPropertyValue(host, "Location")),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
@@ -465,7 +465,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel((String)getPropertyValue((ComponentProperties)host, "Description")),
+    aboutPanel.add(new JLabel((String)getPropertyValue(host, "Description")),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
@@ -478,7 +478,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel((String)getPropertyValue((ComponentProperties)node, "Description")),
+    aboutPanel.add(new JLabel((String)getPropertyValue(node, "Description")),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
@@ -580,15 +580,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                   JOptionPane.PLAIN_MESSAGE);
   }
 
-  // helper method for about panel
-//    private Object getPropertyValue(ConfigurableComponent component, String name) {
-//      Property prop = component.getProperty(new ComponentName(component, name));
-//      if (prop == null)
-//        return null;
-//      return prop.getValue();
-//    }
-
-  private Object getPropertyValue(ComponentProperties component, String name) {
+  private Object getPropertyValue(BaseComponent component, String name) {
     Property prop = component.getProperty(name);
     if (prop == null)
       return null;
