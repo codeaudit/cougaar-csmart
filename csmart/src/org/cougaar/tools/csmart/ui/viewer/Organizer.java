@@ -60,6 +60,7 @@ public class Organizer extends JScrollPane {
   private static final String EXPT_ASSEM_QUERY = "queryExperiment";
   private static final String EXPT_TRIAL_QUERY = "queryTrials";
   private static final String EXPT_NODE_QUERY = "queryNodes";
+  private static final String EXPT_HOST_QUERY = "queryHosts";
 
   private static final long UPDATE_DELAY = 5000L;
 
@@ -1478,6 +1479,31 @@ public class Organizer extends JScrollPane {
     return nodes;
   }
 
+  // Currently the passed in args are not used however I expect
+  // this to change very soon.
+  private ArrayList getHosts(String trialId, String assemblyMatch) {
+    ArrayList hosts = new ArrayList();
+    try {
+      Connection conn = DBUtils.getConnection();
+      Map substitutions = new HashMap();
+      substitutions.put(":trial_id", trialId);
+      substitutions.put(":assemblyMatch", assemblyMatch);
+      Statement stmt = conn.createStatement();
+      String query = DBUtils.getQuery(EXPT_HOST_QUERY, substitutions);
+      ResultSet rs = stmt.executeQuery(query);
+      while(rs.next()) {
+        hosts.add(rs.getString(1));
+      }
+      rs.close();
+      stmt.close();
+      conn.close();
+    } catch (SQLException se) {      
+      System.out.println("Caught SQL exception: " + se);
+      se.printStackTrace();
+    }
+    return hosts;
+  }
+
   private void addAgents(Experiment experiment,
                          ArrayList nodes,
                          AgentComponent[] agents,
@@ -1537,6 +1563,7 @@ public class Organizer extends JScrollPane {
     String assemblyMatch = getAssemblyMatch(assemblyIds);
     // get nodes for trial
     ArrayList nodes = getNodes(trialId, assemblyMatch);
+    ArrayList hosts = getHosts(trialId, assemblyMatch);
     CMTSociety soc = null;
     if (assemblyIds.size() != 0) {
       soc = new CMTSociety(assemblyIds);      
@@ -1554,6 +1581,12 @@ public class Organizer extends JScrollPane {
     experiment.addSocietyComponent((SocietyComponent)soc);
     // Add all Nodes.
     addAgents(experiment, nodes, soc.getAgents(), trialId, assemblyMatch);
+    // Add all Hosts.
+    Iterator hostIter = hosts.iterator();
+    while (hostIter.hasNext()) {
+      experiment.addHost((String)hostIter.next());
+    }
+    
     workspace.setSelection(newNode);
   }
 
