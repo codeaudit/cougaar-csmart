@@ -11,7 +11,10 @@ CSMART contains a few known issues:
   console freezing up.
 
 * We have seen occasional Swing exceptions while running an Experiment
-  in the console. This is being reported to Sun. See bug #1104.
+  in the console. This is being reported to Sun. See bug #1104. Other
+  JDK related bugs include 1300 (large workspace window), 1433
+  (infinite AWT loop using console), 1439 (exception closing a tool
+  while a drop-down list is open).
 
 * Windows users creating societies from new-style INI files must put
   the directory containing those files on the org.cougaar.config.path
@@ -24,6 +27,15 @@ CSMART contains a few known issues:
 
 * MySQL cannot load data across network drives, causing errors
   creating the database in some circumstances. See bug# 1257.
+
+* Although it is forbidden by Cougaar, CSMART may sometimes allow
+  users to create 2 Agents with the same name in a society, or an
+  Agent with the same name as a Node (bug 1474). In addition, CSMART
+  will not prevent Agent or Node names with illegitimate characters,
+  as it should. Bug # 1477
+
+* The Console (Experiment Controller) kills Nodes sequentially which
+  is sometimes slow. Bug 1416.
 
 For up to date information on these and other CSMART issues see:
 http://www.cougaar.org/bugs
