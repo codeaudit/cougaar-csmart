@@ -78,7 +78,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public static final String TIMEZONE = "user.timezone";
   public static final String AGENT_STARTTIME = "org.cougaar.agent.startTime";
   public static final String COMPLAININGLP_LEVEL = 
-    "org.cougaar.planning.ldm.lps.ComplainingLp.level";  
+    "org.cougaar.planning.ldm.lps.ComplainingLP.level";  
   public static final String TRANSPORT_ASPECTS = "org.cougaar.message.transport.aspects";
   public static final String CONTROL_PORT = "org.cougaar.control.port";
   public static final String CONFIG_DATABASE = "org.coguaar.configuration.database";
