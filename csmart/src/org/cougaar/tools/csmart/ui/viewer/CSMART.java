@@ -409,6 +409,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     return (Experiment[])runningExperiments.toArray(new Experiment[runningExperiments.size()]);
   }
 
+  public Experiment[] getExperimentsInWorkspace() {
+    return organizer.getExperiments();
+  }
+
   private void enableConfigurationTool(boolean enable) {
     ((JButton)toolBar.getComponentAtIndex(0)).setEnabled(enable);
   }
@@ -563,9 +567,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   public void runBuilder(ModifiableComponent cc, 
                          boolean alwaysNew) {
     // note that cc is guaranteed non-null when this is called
-    Class[] paramClasses = { ModifiableComponent.class };
-    Object[] params = new Object[1];
-    params[0] = cc;
+    Class[] paramClasses = { CSMART.class, ModifiableComponent.class };
+    Object[] params = new Object[2];
+    params[0] = this;
+    params[1] = cc;
     createTool(CONFIGURATION_BUILDER, PropertyBuilder.class, 
 	       alwaysNew, cc.getShortName(), (ModifiableComponent)cc,
 	       paramClasses, params);
@@ -600,11 +605,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     // if this experiment is being edited, then don't edit again
     if (isExperimentInEditor(experiment))
       return;
-    // if the experiment is being run, it can't be edited
-    //    if (experiment.isRunInProgress()) {
-    //      Object[] options = { "View", "Copy", "Cancel" };
-    //      experiment = queryUser(experiment, options);
-    //    } else if (!experiment.isEditable()) {
     if (!experiment.isEditable()) {
       // otherwise editability can be overwritten
       Object[] options = { "Edit", "View", "Copy", "Cancel" };

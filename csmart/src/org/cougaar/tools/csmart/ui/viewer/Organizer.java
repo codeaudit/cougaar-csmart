@@ -445,6 +445,26 @@ public class Organizer extends JScrollPane {
     return newNode;
   }
 
+  /**
+   * Get experiments from workspace.
+   * @return Experiment[] array of experiments in workspace
+   */
+
+  public Experiment[] getExperiments() {
+    ArrayList experiments = new ArrayList();
+    Enumeration nodes = root.depthFirstEnumeration(); 
+    while (nodes.hasMoreElements()) {
+      DefaultMutableTreeNode node = 
+        (DefaultMutableTreeNode)nodes.nextElement();
+      if (node.isLeaf()) {
+        Object o = node.getUserObject();
+        if (o instanceof Experiment) 
+          experiments.add(o);
+      }
+    }
+    return (Experiment[])experiments.toArray(new Experiment[experiments.size()]);
+  }
+
   ///////////////////////////////////
   // New Societies
   //////////////////////////////////
