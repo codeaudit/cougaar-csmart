@@ -248,7 +248,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       addWindowListener(new WindowAdapter() {
 	public void windowClosing(WindowEvent e) {
 	  closeSubWindows();
-	  experiment.removeExperimentListener(listener);
+          if (experiment != null)
+            experiment.removeExperimentListener(listener);
 	}
       });
     }
