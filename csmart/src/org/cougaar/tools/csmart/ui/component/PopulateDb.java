@@ -64,7 +64,7 @@ public class PopulateDb {
     private Connection dbConnection;
     private Statement stmt;
     private Map propertyInfos = new HashMap();
-    private Set readOnlyComponents = new HashSet();
+    private Set preexistingItems = new HashSet();
     private Set writableComponents = new HashSet();
     private boolean writeEverything = false;
     private boolean debug = false;
@@ -363,15 +363,21 @@ public class PopulateDb {
         executeUpdate(stmt, dbp.getQuery(COPY_CMT_ASSEMBLIES, substitutions));
     }
 
-    public void addWritableComponent(ComponentData data) {
-        writableComponents.add(data);
-    }
-
-    public void setReadOnlyComponents(ComponentData data) {
-        readOnlyComponents.add(data);
+    public void setPreexistingItems(ComponentData data) {
+        preexistingItems.add(data);
+        for (int i = 0, n = data.parameterCount(); i < n; i++) {
+            preexistingItems.add(data.getParameter(i));
+        }
+        AgentAssetData aad = data.getAgentAssetData();
+        if (aad != null) {
+            for (int i = 0, n = aad.getRelationshipCount(); i < n; i++) {
+                RelationshipData rd = aad.getRelationship(i);
+                preexistingItems.add(rd);
+            }
+        }
         ComponentData[] children = data.getChildren();
         for (int i = 0; i < children.length; i++) {
-            setReadOnlyComponents(children[i]);
+            setPreexistingItems(children[i]);
         }
     }
 
@@ -469,7 +475,7 @@ public class PopulateDb {
      * describing the host-node-agent assignments and to write a
      * different assembly describing the effect of impacts an metrics.
      * Both types of assemblies have agent-node assigments. The
-     * distinction is made using the readOnlyComponents Set.
+     * distinction is made using the preexistingItems Set.
      * Components in this set are either part of the CMT assembly
      * (which we don't touch) or are part of the CSMART assembly if
      * they involve agent-node assignments
@@ -614,7 +620,7 @@ public class PopulateDb {
     }
 
     private boolean isAdded(ComponentData data) {
-        if (readOnlyComponents.contains(data)) return false;
+        if (preexistingItems.contains(data)) return false;
         return true;
     }
 
@@ -662,6 +668,10 @@ public class PopulateDb {
         if (componentType.equals(ComponentData.AGENT)) {
             String agentName = data.getName();
             return sqlQuote(agentName);
+        }
+        if (componentType.equals(ComponentData.NODE)) {
+            String nodeName = data.getName();
+            return sqlQuote(nodeName);
         }
         ComponentData parent = data.getParent();
         return sqlQuote(data.getType() + "|" + getFullName(data));
