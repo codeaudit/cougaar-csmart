@@ -552,9 +552,12 @@
     "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
     "go.org_id as COMPONENT_ALIB_ID,"
     "go.org_id as COMPONENT_LIB_ID,"
-    "0 as  CLONE_SET_ID"
-    "   from " cfw-prefix "cfw_group_org go"
+    "0 as  CLONE_SET_ID,"
+    "ac.component_name as COMPONENT_NAME"
+    "   from " cfw-prefix "cfw_group_org go,"
+    "   " asb-prefix "alib_component ac"
     "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+    "   and ac.component_alib_id=go.org_id"
     "   and not exists (select component_alib_id from " asb-prefix "asb_agent aa"
     "   where aa.component_alib_id=go.org_id"
     "   and aa.assembly_id="(sqlQuote assembly_id)")")))
@@ -567,20 +570,21 @@
 	   (string-append
 	    "insert into " asb-prefix "asb_agent "
 	    "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
-	    "(clone_set_id || '-' || ogom.org_id) as COMPONENT_ALIB_ID,"
+	    "(cs.clone_set_id || '-' || ogom.org_id) as COMPONENT_ALIB_ID,"
 	    "ogom.org_id as COMPONENT_LIB_ID,"
-	    "clone_set_id as  CLONE_SET_ID"
+	    "cs.clone_set_id as  CLONE_SET_ID,"
+	    "ac.component_name as COMPONENT_NAME"
 	    "   from "    cfw-prefix "cfw_org_group_org_member ogom,"
+	    "   " asb-prefix "alib_component ac,"
 	    "   " asb-prefix "lib_clone_set cs"
 	    "   where ogom.org_group_id="(sqlQuote org_group_id)
+	    "   and ac.component_alib_id=(cs.clone_set_id || '-' || ogom.org_id)"
 	    "   and cs.clone_set_id>0 and cs.clone_set_id<"n
 	    "   and not exists (select component_alib_id from " asb-prefix "asb_agent aa"
-	    "   where aa.component_alib_id=(clone_set_id || '-' || ogom.org_id)"
+	    "   where aa.component_alib_id=(cs.clone_set_id || '-' || ogom.org_id)"
 	    "   and aa.assembly_id="(sqlQuote assembly_id)")"))
 	  1)
 	 ))
-
-
 
 (define (add-agent-alib-components cfw_g_id threads clones)
   (print (time (add-new-base-agent-alib-components cfw_group_id threads)1))
@@ -594,8 +598,6 @@
 	    clones
 	    )
   )
-
-
 
 (define (get-base-agent-alib-component-sql cfw_group_id threads)
   (string-append 
@@ -1507,18 +1509,21 @@
 	(do-entry rs)
 	)))
     (with-query-jdbc (string-append 
-		      "select og.ORG_GROUP_ID, og.DESCRIPTION from " 
+		      "select distinct ogom.ORG_GROUP_ID, og.DESCRIPTION from " 
 		      asb-prefix "EXPT_EXPERIMENT exp,"
 		      cfw-prefix "CFW_GROUP_MEMBER gm,"
-		      cfw-prefix "CFW_ORG_GROUP og"
+		      cfw-prefix "CFW_ORG_GROUP og,"
+		      cfw-prefix "CFW_ORG_GROUP_ORG_MEMBER ogom"
 		      "   where exp.expt_id="(sqlQuote experiment_id)
-		      "   and og.description like '%CLONABLE%'"
 		      "   and exp.cfw_group_id =gm.cfw_group_id"
-		      "   and og.cfw_id=gm.cfw_id")
+		      "   and ogom.cfw_id=gm.cfw_id"
+		      "   and og.org_group_id=ogom.org_group_id"
+		      "   and og.description like '%CLONABLE%'"
+		      )
 		     do-entry
 		     )
-;;    (.put ht "Third Infantry Division" "Third Infantry Division")
-;;    (.put ht "2nd Brigade" "2nd Brigade")
+    ;;    (.put ht "Third Infantry Division" "Third Infantry Division")
+    ;;    (.put ht "2nd Brigade" "2nd Brigade")
     ht)
   )
 
@@ -1660,13 +1665,15 @@
     "   " asb-prefix "EXPT_EXPERIMENT exp,"
     "   " asb-prefix "EXPT_TRIAL et,"
     "   " cfw-prefix "CFW_GROUP_MEMBER gm,"
-    "   " cfw-prefix "CFW_ORG_GROUP og"
+    "   " cfw-prefix "CFW_ORG_GROUP og,"
+    "   " cfw-prefix "CFW_ORG_GROUP_ORG_MEMBER ogom"
     "   where et.trial_id="(sqlQuote trial_id)
     "   and exp.expt_id=et.expt_id"
     "   and exp.cfw_group_id =gm.cfw_group_id"
-    "   and og.cfw_id=gm.cfw_id"
+    "   and ogom.cfw_id=gm.cfw_id"
+    "   and ogom.org_group_id=og.org_group_id"
     "   and og.description="(sqlQuote group_name))
-   "ORG_GROUP_ID"))  
+   "ORG_GROUP_ID"))
 
 (define (setGroupSelected trial_id group_name selected)
   (let
@@ -1679,9 +1686,8 @@
 	    "delete from " 
 	    asb-prefix "EXPT_TRIAL_ORG_MULT om"
 	    "   where om.trial_id="(sqlQuote trial_id)
-	    "   and om.org_group_id in"
-	    "   (select from " cfw-prefix "CFW_ORG_GROUP og,")
-	   )))
+	    "   and om.org_group_id ="(sqlQuote group_id)
+	   ))))
      (selected
       (dbu (string-append
 	    "insert into " asb-prefix "EXPT_TRIAL_ORG_MULT"
