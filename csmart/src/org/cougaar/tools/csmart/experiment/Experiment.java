@@ -79,6 +79,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   // Define some Node Args
   public static final String EXPERIMENT_ID = "org.cougaar.experiment.id";
   public static final String PERSISTENCE_ENABLE = "org.cougaar.core.persistence.enable";
+  public static final String PERSIST_CLEAR = "org.cougaar.core.pesistence.clear";
   public static final String TIMEZONE = "user.timezone";
   public static final String AGENT_STARTTIME = "org.cougaar.agent.startTime";
   public static final String COMPLAININGLP_LEVEL = 
@@ -91,9 +92,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public static final String ENV_DISPLAY = "env.DISPLAY";
 
   public static final String BOOTSTRAP_CLASS = "java.class.name";
+
   
   // Define some Defaults
   public static final String PERSISTENCE_DFLT = "false";
+  public static final String PERSIST_CLEAR_DFLT = "true";
   public static final String TIMEZONE_DFLT = "GMT";
   public static final String AGENT_STARTTIME_DFLT = "08/10/2005";
   public static final String COMPLAININGLP_LEVEL_DFLT = "0";
@@ -231,6 +234,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       new ReadOnlyProperties(Collections.singleton(EXPERIMENT_ID));
     createObserver();
     defaultNodeArguments.put(PERSISTENCE_ENABLE, PERSISTENCE_DFLT);
+    // By default we clear any existing persistence deltas when we
+    // start a run.
+    defaultNodeArguments.put(PERSIST_CLEAR, PERSIST_CLEAR_DFLT);
     defaultNodeArguments.put(TIMEZONE, TIMEZONE_DFLT);
     defaultNodeArguments.put(AGENT_STARTTIME, AGENT_STARTTIME_DFLT);
     defaultNodeArguments.put(COMPLAININGLP_LEVEL, COMPLAININGLP_LEVEL_DFLT);
