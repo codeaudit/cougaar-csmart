@@ -38,7 +38,7 @@ CREATE TABLE tempcopy.v4_lib_mod_recipe_arg AS
 -- If necessary
 UPDATE tempcopy.v4_lib_mod_recipe_arg
    SET ARG_VALUE = LEFT(CONCAT(ARG_VALUE, '-:recipeName'),50)
-  WHERE ARG_NAME = 'Assembly Id'
+  WHERE ARG_NAME = 'Assembly Id';
 
 ------------------------------------------
 -- Now grab the assembly contents for this recipe

@@ -143,7 +143,7 @@ REPLACE INTO tempcopy.v4_alib_component2
  -- update assembly_id arg_value here
 UPDATE tempcopy.v4_lib_mod_recipe_arg
    SET ARG_VALUE = LEFT(CONCAT(ARG_VALUE, '-:exptName'),50)
-  WHERE ARG_NAME = 'Assembly Id'
+  WHERE ARG_NAME = 'Assembly Id';
 
 -- Must also copy all the entries in the assembly tables for the assemblies
 -- with the appropriate recipe_lib_ids
@@ -365,7 +365,6 @@ REPLACE INTO tempcopy.community_entity_attribute
    AB.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE
   FROM
    community_entity_attribute AB,
-   community_attribute AB,
      v4_lib_mod_recipe_arg AA,
      v4_expt_trial_mod_recipe ER,
      v4_expt_trial ET,
