@@ -22,29 +22,31 @@
 package org.cougaar.tools.csmart.ui.servlet;
 
 import java.io.ObjectOutputStream;
-import java.io.PrintStream;
+import java.io.IOException;
 import java.net.URL;
-import java.util.*;
 
-import java.io.*;
-import java.util.Collections;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.Vector;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
 
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
-import org.cougaar.planning.ldm.asset.*;
-import org.cougaar.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.asset.CommunityPG;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.plan.HasRelationships;
 
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames; 
 import org.cougaar.util.PropertyTree;
 import org.cougaar.util.UnaryPredicate;
-
-import java.io.ObjectOutputStream;
 
 /**
  * Expects no input
@@ -141,7 +143,7 @@ public class CommunityProviderServlet
       
       // need try/catch here or caller sends exceptions to client as html
       try {
-	System.out.println("PSP_CommunityProvider received query..........");
+	System.out.println("CSMART_CommunityProviderServlet received query..........");
 	StringBuffer buf = HttpUtils.getRequestURL(request);
 	Vector collection = getSelfInformation(buf);
 	//out.print(collection);
@@ -150,7 +152,7 @@ public class CommunityProviderServlet
 	p.writeObject(collection);
 	System.out.println("Sent cluster urls");
       } catch (Exception e) {
-	System.out.println("PSP_CommunityProvider Exception: " + e);
+	System.out.println("CSMART_CommunityProviderServlet Exception: " + e);
 	e.printStackTrace();
       }
     }
@@ -191,18 +193,17 @@ public class CommunityProviderServlet
       PropertyTree properties = new PropertyTree();
       properties.put(PropertyNames.UID_ATTR, getUIDAsString(asset.getUID()));
       //      String name = asset.getItemIdentificationPG().getNomenclature();
-      // THIS METHOD OF ACCESSING AGENT NAME MUST MATCH HOW OTHER PSPS
-      // (ESPECIALLY PSP_PLAN) ACCESS THE AGENT NAME SO COMPARISONS
+      // THIS METHOD OF ACCESSING AGENT NAME MUST MATCH HOW OTHER ServletS
+      // (ESPECIALLY CSMART_PlanServlet) ACCESS THE AGENT NAME SO COMPARISONS
       // CAN BE MADE AT THE CLIENT
       String name = support.getEncodedAgentName();
-      //String name = psc.getServerPlugInSupport().getClusterIDAsString(); 
       properties.put(PropertyNames.AGENT_NAME, name);
       CommunityPG communityPG = asset.getCommunityPG(new Date().getTime());
       String communityName = null;
       if (communityPG != null) {
 	Collection communities = communityPG.getCommunities();
 	if (communities.size() > 1) 
-	  System.out.println("PSP_CommunityProvider: WARNING: handling agents in multiple communities is not implemented.");
+	  System.out.println("CSMART_CommunityProviderServlet: WARNING: handling agents in multiple communities is not implemented.");
 	Iterator i = communities.iterator();
 	while (i.hasNext()) {
 	  communityName = (String)i.next();
@@ -227,35 +228,7 @@ public class CommunityProviderServlet
   private static final String getUIDAsString(final UID uid) {
     return
       ((uid != null) ? uid.toString() : "null");
-  }
-  
-  /**
-   * The UISubscriber interface.
-   * This PSP doesn't care if subscriptions change
-   * because it treats each request as a new request.
-   
-  public void subscriptionChanged(Subscription subscription) {
-  }
-  */
-  public boolean returnsXML()
-  {
-    return false;
-  }
-  
-  public boolean returnsHTML() 
-  {
-    return false;
-  }
-
-  /**  Any PlanServiceProvider must be able to provide DTD of its
-   *  output IFF it is an XML PSP... ie.  returnsXML() == true;
-   *  or return null
-   **/
-
-  public String getDTD() 
-  {
-    return null;
-  }
+  }    
   }
 }
 
