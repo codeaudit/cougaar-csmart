@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.Connection;
+import javax.swing.*;
 import java.io.IOException;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.DBProperties;
@@ -500,16 +501,31 @@ public class CMT {
      */
 
     public static void deleteExperiment(String experiment_id) {
-	String expt_id = sqlQuote(experiment_id);
-	deleteItems(asbPrefix+"expt_trial_assembly", "expt_id", expt_id);
-	deleteItems(asbPrefix+"expt_trial_thread", "expt_id", expt_id);
-	deleteItems(asbPrefix+"expt_trial_org_mult", "expt_id", expt_id);
-	deleteItems(asbPrefix+"expt_trial_metric_prop", "trial_id", sqlQuote(experiment_id+".TRIAL"));
-	deleteItems(asbPrefix+"expt_trial_metric", "trial_id", sqlQuote(experiment_id+".TRIAL"));
-	deleteItems(asbPrefix+"expt_trial_mod_recipe", "trial_id", sqlQuote(experiment_id+".TRIAL"));
-	deleteItems(asbPrefix+"expt_trial", "expt_id", expt_id);
-	deleteItems(asbPrefix+"expt_experiment", "expt_id", expt_id);
-	clearUnusedCMTassemblies();
+	boolean doIt = true;
+	if(experiment_id.equals("EXPT_TRANS")){
+	    doIt=false;
+	    int response = 
+		JOptionPane.showConfirmDialog(null,
+					      "You seem to be trying to delete the base experiment -- do you REALLY want to do this?",
+					      "Confirm Delete",
+					      JOptionPane.YES_NO_OPTION);
+      
+	    if (response == JOptionPane.YES_OPTION) {
+		doIt = true;
+	    }
+	}
+
+	if(doIt){
+	    String expt_id = sqlQuote(experiment_id);
+	    deleteItems(asbPrefix+"expt_trial_assembly", "expt_id", expt_id);
+	    deleteItems(asbPrefix+"expt_trial_thread", "expt_id", expt_id);
+	    deleteItems(asbPrefix+"expt_trial_org_mult", "expt_id", expt_id);
+	    deleteItems(asbPrefix+"expt_trial_metric_prop", "trial_id", sqlQuote(experiment_id+".TRIAL"));
+	    deleteItems(asbPrefix+"expt_trial_metric", "trial_id", sqlQuote(experiment_id+".TRIAL"));
+	    deleteItems(asbPrefix+"expt_trial", "expt_id", expt_id);
+	    deleteItems(asbPrefix+"expt_experiment", "expt_id", expt_id);
+	    clearUnusedCMTassemblies();
+	}
     }
 
 
