@@ -229,6 +229,11 @@ public class AssetDBComponent
 	  // But default back to the ALIB_ID if necessary
 	  // FIXME: Look up these PG IDs
 	  String cID = getPGVal("ClusterPG|MessageAddress", supported);
+
+	  // HACK for the 10.0 transition from ClusterIdentifier->MA
+	  if (cID == null)
+	    cID = getPGVal("ClusterPG|ClusterIdentifier", supported);
+
 	  if (cID == null || cID.equals(""))
 	    cID = supported;
 
@@ -385,6 +390,19 @@ public class AssetDBComponent
             pgAttrName = rs.getString(2);
             pgAttrType = rs.getString(3);
             pgAggregateType = rs.getString(4);
+
+	    // HACK: Updating DB on fly, replacing CI with MA
+	    if (pgAttrName.equals("ClusterIdentifier")) {
+	      // Create the single instance of the correct MA version
+	      // Have I already done so?
+	      PGAttr mapg = (PGAttr)pgAttributes.get("ClusterPG|MessageAddress");
+	      if (mapg == null) {
+		pgAttributes.put("ClusterPG|MessageAddress",
+				 new PGAttr("ClusterPG","MessageAddress",
+				 "MessageAddress","SINGLE"));
+	      }
+	    }
+
 	    // AMH: Moved this put inside the while loop,
 	    // otherwise apparently only the last value get stored
 	    pgAttributes.put((String)pgAttrLibIds.get(i),
@@ -464,6 +482,14 @@ public class AssetDBComponent
    */
   private void addPGAttributeData(String attrLibId, Object value,
                                   Timestamp startDate, Timestamp endDate) {
+    // HACK: 10.0 change of CI for MA
+    if (attrLibId.equals("ClusterPG|ClusterIdentifier")) {
+      attrLibId = "ClusterPG|MessageAddress";
+      if (log.isWarnEnabled()) {
+	log.warn("ClusterIdentifier obsolete. Replacing with MessageAddress.");
+      }
+    }
+
     PGAttr pgAttr = (PGAttr)pgAttributes.get(attrLibId);
     PropGroupData pgd = (PropGroupData)propertyGroups.get(pgAttr.getName());
     if (pgd == null) {
@@ -471,6 +497,7 @@ public class AssetDBComponent
       propertyGroups.put(pgAttr.getName(), pgd);
     }
     PGPropData pgPropData = new PGPropData();
+
     pgPropData.setName(pgAttr.getAttrName());
     String aggregateType = pgAttr.getAggregateType();
     if (aggregateType.equals("SINGLE"))
