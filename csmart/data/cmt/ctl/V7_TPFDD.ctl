@@ -1,29 +1,15 @@
 options (
   skip=1)
 load
---  infile 'V7_TPFDD.csv'
-into table V7_TPFDD
+--  infile 'V5_CFW_OPLAN_OG_ATTR.csv'
+into table VV_CFW_OPLAN_OG_ATTR
   insert
   fields
-  (RLN                     char terminated by ',' optionally enclosed by '"',
-   SERVICE_CODE            char terminated by ',' optionally enclosed by '"',
-   UIC                     char terminated by ',' optionally enclosed by '"',
-   ULC                     char terminated by ',' optionally enclosed by '"',
-   UTC                     char terminated by ',' optionally enclosed by '"',
-   UNIT_NAME               char terminated by ',' optionally enclosed by '"',
-   DESCRIPTION             char terminated by ',' optionally enclosed by '"',
-   NUM_PAX                 char terminated by ',' optionally enclosed by '"',
-   ORIGIN_GEOLOC           char terminated by ',' optionally enclosed by '"',
-   ORIGIN_NAME             char terminated by ',' optionally enclosed by '"',
-   POE_GEOLOC              char terminated by ',' optionally enclosed by '"',
-   POE_NAME                char terminated by ',' optionally enclosed by '"',
-   POD_GEOLOC              char terminated by ',' optionally enclosed by '"',
-   POD_NAME                char terminated by ',' optionally enclosed by '"',
-   DEST_GEOLOC             char terminated by ',' optionally enclosed by '"',
-   DEST_NAME               char terminated by ',' optionally enclosed by '"',
-   RLD_ORIGIN              char terminated by ',' optionally enclosed by '"',
-   ALD_POE                 char terminated by ',' optionally enclosed by '"',
-   EAD_POD                 char terminated by ',' optionally enclosed by '"',
-   LAD_POD                 char terminated by ',' optionally enclosed by '"',
-   RDD_DEST                char terminated by ',' optionally enclosed by '"'
+  (CFW_ID                  char terminated by ',' optionally enclosed by '"',
+   OPLAN_ID                char terminated by ',' optionally enclosed by '"',
+   ORG_GROUP_ID            char terminated by ',' optionally enclosed by '"',
+   START_CDAY              char terminated by ',' optionally enclosed by '"',
+   ATTRIBUTE_NAME          char terminated by ',' optionally enclosed by '"',
+   END_CDAY                char terminated by ',' optionally enclosed by '"',
+   ATTRIBUTE_VALUE         char terminated by ',' optionally enclosed by '"'
   )
