@@ -298,7 +298,7 @@ public class Organizer extends JScrollPane {
       };
 
   protected AbstractAction newRecipeBuiltInAction =
-    new AbstractAction("Built In") {
+    new AbstractAction("From Template") {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.newRecipe();
 	}
