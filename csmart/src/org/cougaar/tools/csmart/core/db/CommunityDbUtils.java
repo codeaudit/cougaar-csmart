@@ -208,17 +208,20 @@ public class CommunityDbUtils {
       substitutions.put(":assembly_match:", assemblyMatch);
     Hashtable community_attrs = getDataFromCommunityTable(assemblyID, conn, substitutions);
 
+    Hashtable community_entities = null;
     if(community_attrs.size() == 0) {
+      // No communities for this Assembly
       try {
 	if (conn != null)
 	  conn.close();
       } catch (SQLException e) {
 	log.error("try to close connection to database", e.fillInStackTrace());
       }
-      return false;
+      // Don't bother looking up the entities
+      community_entities = new Hashtable();
+    } else {
+      community_entities = getDataFromEntityTable(assemblyID, conn, substitutions);
     }
-
-    Hashtable community_entities = getDataFromEntityTable(assemblyID, conn, substitutions);
 
     try {
       if (conn != null)
@@ -227,7 +230,14 @@ public class CommunityDbUtils {
       log.error("try to close connection to database", e.fillInStackTrace());
     }
 
-    return writeXmlFile(rfile, community_attrs, community_entities);
+    boolean res = writeXmlFile(rfile, community_attrs, community_entities);
+
+    // Must close the file
+    try {
+      rfile.close();
+    } catch (IOException ioe) {}
+
+    return res;
   }
 
   /**
@@ -288,15 +298,14 @@ public class CommunityDbUtils {
       st = conn.createStatement();
       List communityNames = getAllCommunities(st, substitutions);
 
-      for(int i=0; i<communityNames.size(); i++)
+      for (int i=0; i<communityNames.size(); i++)
       {
         Hashtable entities = new Hashtable(); //save all entities
         String name = (String)communityNames.get(i);
         substitutions.put(":community_id", name);
         List entityNames = getAllEntities(name, st, substitutions); //all entity names
 
-        for(int j=0; j<entityNames.size(); j++)
-        {
+        for(int j=0; j<entityNames.size(); j++) {
           String entityName = (String)entityNames.get(j);
           substitutions.put(":entity_id", entityName);
           List attrs = new ArrayList(); //save attritures of this entity
@@ -362,7 +371,7 @@ public class CommunityDbUtils {
           }
         }
         rfile.write("  </Community>\n".getBytes());
-      }
+      } // end of loop over communities
 
       rfile.write("</Communities>\n".getBytes());
       return true;
@@ -436,7 +445,8 @@ public class CommunityDbUtils {
 
     if(communityNames.size() == 0)
     {
-      log.error("Invalid assemblyID");
+      if (log.isDebugEnabled()) 
+	log.debug("No communities for assembly");
     }
     return communityNames;
   }
