@@ -80,9 +80,6 @@ public class ABCSociety
   private List hosts = new ArrayList();
   private List nodes = new ArrayList();
 
-  // FileFilter for metrics:
-  private static FileFilter metricsFileFilter = new ScalabilityMetricsFileFilter();
-
   public ABCSociety() {
     this("ABC Society");
   }
@@ -537,7 +534,7 @@ public class ABCSociety
    * @return file filter to get metrics files for this experiment
    */
   public FileFilter getResultFileFilter() {
-    return metricsFileFilter;
+    return null;
   }
 
   /**
