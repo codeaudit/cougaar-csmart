@@ -12,12 +12,13 @@ really want to run a PSP.
 - New ServletGroupInsertion recipe for inserting sets of servlets
 - Default inclusion of basic servlets with built-in experiments
 - Use new Cougaar Logging Service
-- New Servlet based GLS / Oplan UIs
+- New Servlet based GLS / Oplan UI within console
+- Updated build script to Ant1.4.1
+- New File menu items for easy access
+- Basic version information written to log file, available from Help menu
 - Disabled built-in societies, pending full database support
 - Due to above, experiments with multiple trials are temporarily
 disabled
-- Updated build script to Ant1.4.1
-- New File menu items for easy access
 
 Release v8.8.0
 This release represents all of the fixes made during integration on
