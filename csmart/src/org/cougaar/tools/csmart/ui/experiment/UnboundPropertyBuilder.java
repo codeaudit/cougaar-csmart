@@ -83,6 +83,7 @@ public class UnboundPropertyBuilder extends JPanel {
   };
   
   private Action[] societiesActions = {
+    // FIXME: Why do we allow doing this?
     new AbstractAction(REMOVE_MENU_ITEM + " Society") {
       public void actionPerformed(ActionEvent e) {
         removeAllChildren(societies);
@@ -183,9 +184,12 @@ public class UnboundPropertyBuilder extends JPanel {
     for (int i = 0; i < popupActions.length; i++) {
       popupMenu.add(popupActions[i]);
     }
-    for (int i = 0; i < societiesActions.length; i++) {
-      societiesMenu.add(societiesActions[i]);
-    }
+    // Actions on societies - this allows removing all societies
+    // from an Experiment. Why do we permit this?
+    // This possibility is not documented.
+//     for (int i = 0; i < societiesActions.length; i++) {
+//       societiesMenu.add(societiesActions[i]);
+//     }
     for (int i = 0; i < recipesActions.length; i++) {
       recipesMenu.add(recipesActions[i]);
     }
