@@ -98,7 +98,7 @@ public class ExperimentTree extends DNDTree {
     }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
     public void setSelection(TreeNode treeNode) {

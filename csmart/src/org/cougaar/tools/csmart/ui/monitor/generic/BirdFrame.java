@@ -74,7 +74,7 @@ public class BirdFrame extends JFrame implements ChangeListener {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
 

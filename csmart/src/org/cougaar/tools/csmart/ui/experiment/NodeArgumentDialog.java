@@ -144,7 +144,7 @@ public class NodeArgumentDialog extends JDialog {
   }
 
   public void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**

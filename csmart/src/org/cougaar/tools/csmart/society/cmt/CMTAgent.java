@@ -101,7 +101,7 @@ public class CMTAgent
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.society.cmt");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void initProperties() {

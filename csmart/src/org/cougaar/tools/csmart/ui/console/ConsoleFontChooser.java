@@ -193,7 +193,7 @@ public class ConsoleFontChooser extends JDialog {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   // implement these methods to return the values the user selects

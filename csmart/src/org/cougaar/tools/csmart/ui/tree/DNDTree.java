@@ -61,7 +61,7 @@ public abstract class DNDTree
 
   public DNDTree(DefaultTreeModel model) {
     super(model);
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.tree");
+    log = CSMART.createLogger(this.getClass().getName());
     // make tree editable by default; drag checks the isEditable flag
     setEditable(true); 
     setUI(new SpecialMetalTreeUI());

@@ -52,7 +52,7 @@ public class CyberAttackEventImpl extends RealWorldEventImpl
   
   private class ImpMod implements ImpactModel {
     
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.event");
+    Logger log = CSMART.createLogger(this.getClass().getName());
 
     public Iterator getImpact(Society world, IEFactory theIEF) {
       

@@ -55,7 +55,7 @@ public class ObjectReleaseQueue {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void degradeReleaseRate(

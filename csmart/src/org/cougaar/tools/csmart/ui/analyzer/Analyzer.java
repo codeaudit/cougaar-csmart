@@ -122,7 +122,7 @@ public class Analyzer extends JFrame implements ActionListener {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void reinit(Experiment experiment) {

@@ -175,7 +175,7 @@ public class Organizer extends JScrollPane {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   ///////////////////////////////////////  

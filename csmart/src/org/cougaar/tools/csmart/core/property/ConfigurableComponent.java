@@ -180,7 +180,7 @@ public abstract class ConfigurableComponent
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.core.property");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public abstract void initProperties();

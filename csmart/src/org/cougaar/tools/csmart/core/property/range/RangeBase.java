@@ -40,7 +40,7 @@ public class RangeBase {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.core.property.range");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public int compareTo(Object o) {

@@ -41,7 +41,7 @@ public class Util {
    */
 
   public static String getPath(String filename) {
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.util");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.util.Util");
     ConfigFinder configFinder = ConfigFinder.getInstance();
     File file = configFinder.locateFile(filename);
     String path = null;

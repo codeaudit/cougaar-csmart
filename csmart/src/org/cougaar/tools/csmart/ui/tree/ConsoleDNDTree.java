@@ -81,7 +81,7 @@ public class ConsoleDNDTree extends DNDTree {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.tree");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   protected boolean supportsMultiDrag() {

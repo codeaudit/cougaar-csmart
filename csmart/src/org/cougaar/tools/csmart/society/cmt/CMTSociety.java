@@ -73,7 +73,7 @@ public class CMTSociety
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.society.cmt");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   private void readObject(ObjectInputStream ois)

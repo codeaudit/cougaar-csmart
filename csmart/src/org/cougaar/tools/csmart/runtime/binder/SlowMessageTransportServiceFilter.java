@@ -64,7 +64,7 @@ public class SlowMessageTransportServiceFilter
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.log.binder");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   protected Class getBinderClass(Object child) {
@@ -180,7 +180,7 @@ public class SlowMessageTransportServiceFilter
 
       public SlowMessageTransportFilteringServiceBroker(ServiceBroker sb) {
         super(sb);
-        log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
+        log = CSMART.createLogger(this.getClass().getName());
         if (log.isDebugEnabled()) {
           log.debug("created smtfsb with "+sb);
         }

@@ -59,7 +59,7 @@ public class AgentQueryProperty extends ConfigurableComponentProperty {
 
   private static Set getAvailableQueries() {
     String query = null;
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.recipe");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.recipe.AgentQueryProperty");
 
     if (availableQueries == null) {
       availableQueries = new HashSet();

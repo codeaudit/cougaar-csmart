@@ -66,7 +66,7 @@ public class SimpleKEventImpl extends KineticEventImpl
   
   private class ImpMod implements ImpactModel {
 
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
+    Logger log = CSMART.createLogger(this.getClass().getName());
 
     public Iterator getImpact(Society world, IEFactory theIEF) {
       ArrayList iEvents = new ArrayList();

@@ -52,7 +52,7 @@ public class ScalabilityXPlugIn
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.society.scalability");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void initProperties() {

@@ -76,7 +76,7 @@ public abstract class RealWorldEventImpl extends DirectiveImpl
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.event");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**

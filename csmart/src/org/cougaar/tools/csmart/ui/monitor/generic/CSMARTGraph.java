@@ -100,7 +100,7 @@ public class CSMARTGraph extends Graph
 
   private void initGraph() {
     // create logger here so it's done for all the constructors
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+    log = CSMART.createLogger(this.getClass().getName());
     Grappa.usePrintList = true; // limit the number of attributes written
     // the hashtable has to contain the attributes that will be written
     // but the associated values in the hashtable aren't used
@@ -148,7 +148,7 @@ public class CSMARTGraph extends Graph
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
 
@@ -225,7 +225,7 @@ public class CSMARTGraph extends Graph
    */
   public static CSMARTGraph createGraphFromDotFile(File f) {
     InputStream input = null;
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph");
     try {
       input = new FileInputStream(f);
     } catch(FileNotFoundException fnf) {
@@ -339,7 +339,7 @@ public class CSMARTGraph extends Graph
 
   private static Color stringToColor(String s) {
     StringTokenizer st = new StringTokenizer(s, ",");
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph");
     if (st.countTokens() < 3) {
       if(log.isDebugEnabled()) {
         log.warn("CSMARTGraph: WARNING: Can't parse color: " + s);

@@ -362,7 +362,7 @@ public class AllocatorPlugIn
    * And finaly DeadlineTimer Events, in case an allocation took too long.
    */
   public void setupSubscriptions() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    log = CSMART.createLogger(this.getClass().getName());
 
     if (log.isDebugEnabled()) {
       log.debug(" entering setupSubscriptions");
@@ -1763,7 +1763,7 @@ public class AllocatorPlugIn
      */
     private final String task;
 
-    private transient Logger log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    private transient Logger log = CSMART.createLogger(this.getClass().getName());
     /**
      * String for the single required asset role, or a Collection of 
      *   Strings for multiple (UNION) required roles.

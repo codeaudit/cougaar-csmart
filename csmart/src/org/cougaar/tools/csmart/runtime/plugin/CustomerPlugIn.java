@@ -121,7 +121,7 @@ public class CustomerPlugIn extends CSMARTPlugIn {
    *
    */
   public void setupSubscriptions() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    log = CSMART.createLogger(this.getClass().getName());
 
     if (log.isDebugEnabled()) {
       log.debug("setupSubscriptions:" + this + ":Entering");

@@ -59,7 +59,7 @@ public class ULCommunityTableModel extends AbstractTableModel {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.community");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public int getColumnCount() { 

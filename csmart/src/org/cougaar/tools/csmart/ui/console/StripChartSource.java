@@ -67,7 +67,7 @@ public class StripChartSource extends JCDefaultDataSource implements Runnable {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**

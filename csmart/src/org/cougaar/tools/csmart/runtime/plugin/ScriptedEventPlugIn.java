@@ -75,7 +75,7 @@ public class ScriptedEventPlugIn
    * It parses the given XML events file, and sends one event per entry.<br>
    */
   public void setupSubscriptions() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    log = CSMART.createLogger(this.getClass().getName());
 
     if (log.isDebugEnabled()) {
       log.debug("setupSubscriptions:" + this + ":Entering");

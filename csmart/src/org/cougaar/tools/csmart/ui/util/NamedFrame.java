@@ -84,7 +84,7 @@ public class NamedFrame extends Observable {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.util");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**

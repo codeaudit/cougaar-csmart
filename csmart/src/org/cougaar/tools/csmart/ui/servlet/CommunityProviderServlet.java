@@ -72,7 +72,7 @@ public class CommunityProviderServlet
   public CommunityProviderServlet(SimpleServletSupport support) {
     super();
     this.support = support;
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.servlet");
+    log = CSMART.createLogger(this.getClass().getName());
     if ( !  ( "/CSMART_CommunityProviderServlet".equals(support.getPath()) ) ) {
       System.out.println("Error in servlet path: " + support.getPath());
     }

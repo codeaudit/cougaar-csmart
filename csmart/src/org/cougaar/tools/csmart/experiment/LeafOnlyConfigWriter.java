@@ -196,6 +196,13 @@ public class LeafOnlyConfigWriter {
     return files;
   }
 
+  /**
+   * Describe <code>writeFile</code> method here.
+   *
+   * @param filename 
+   * @param out 
+   * @exception Exception if an error occurs
+   */
   public void writeFile(String filename, OutputStream out) throws Exception {
     // find the file, the write it.
     ComponentData[] nodes = theSoc.getChildren();
@@ -405,6 +412,6 @@ public class LeafOnlyConfigWriter {
   } // end of writeLeafData  
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
+    log = CSMART.createLogger(this.getClass().getName());
   }  
 }

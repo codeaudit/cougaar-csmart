@@ -103,7 +103,7 @@ public class ConsoleNodeListener implements NodeEventListener {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void setIdleChart(JCChart chart, ChartDataModel dataModel) {

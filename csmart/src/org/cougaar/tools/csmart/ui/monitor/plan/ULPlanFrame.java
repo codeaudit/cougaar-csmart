@@ -69,7 +69,7 @@ public class ULPlanFrame extends CSMARTFrame {
     setProperties();
     this.filter = filter;
     this.graph = graph;
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.plan");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void customize() {

@@ -101,7 +101,7 @@ public class CapacityChartImpl implements CapacityChart {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public long getTime() {
@@ -240,7 +240,7 @@ public class CapacityChartImpl implements CapacityChart {
 
     private transient Logger log;
       public RootCapacityChartImpl() {
-        log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
+        log = CSMART.createLogger(this.getClass().getName());
       }
 
       public long getTime() {

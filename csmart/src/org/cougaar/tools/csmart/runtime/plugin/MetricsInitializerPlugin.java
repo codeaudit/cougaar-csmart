@@ -147,7 +147,7 @@ public class MetricsInitializerPlugin
   
   public void setupSubscriptions() 
   {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    log = CSMART.createLogger(this.getClass().getName());
     Vector params = getParameters() != null ? new Vector(getParameters()) : null;
 
     if ((params.size() < 2) ||

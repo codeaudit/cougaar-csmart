@@ -59,7 +59,7 @@ public class CommunityTimePhasedData extends TimePhasedData {
   }
   
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.core.cdata");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**

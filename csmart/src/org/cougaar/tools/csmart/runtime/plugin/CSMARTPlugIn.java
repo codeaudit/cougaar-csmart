@@ -77,7 +77,7 @@ public abstract class CSMARTPlugIn
   // constructor
   //
   public CSMARTPlugIn() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**
@@ -387,7 +387,7 @@ public abstract class CSMARTPlugIn
    */
   protected class SyncAlarm implements Alarm {
 
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    Logger log = CSMART.createLogger(this.getClass().getName());
 
     private final long expTime;
 
@@ -468,7 +468,7 @@ public abstract class CSMARTPlugIn
    */
   protected class DelayPublishAlarm implements Alarm {
 
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    Logger log = CSMART.createLogger(this.getClass().getName());
 
     private static final byte EXPIRED        = 0;
     public  static final byte PUBLISH_ADD    = 1;

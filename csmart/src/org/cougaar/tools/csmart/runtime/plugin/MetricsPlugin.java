@@ -246,7 +246,7 @@ public class MetricsPlugin
           
   public void setupSubscriptions()
   {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    log = CSMART.createLogger(this.getClass().getName());
     // Is this necessary?
     // This asset, in this plugin, is only used to be the place
     // control tasks are allocated to

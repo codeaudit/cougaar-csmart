@@ -94,7 +94,7 @@ public class PropertyEditorPanel extends JPanel
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**

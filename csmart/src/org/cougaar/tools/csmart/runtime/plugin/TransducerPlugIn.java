@@ -84,7 +84,7 @@ public class TransducerPlugIn extends CSMARTPlugIn {
    * and subscribe to RealWorldEvents
    */
   public void setupSubscriptions() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    log = CSMART.createLogger(this.getClass().getName());
 
     world = new Society();
     theIEF = new IEFactory(theCSMARTF);

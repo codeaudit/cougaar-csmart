@@ -172,7 +172,7 @@ public class CSMARTConsole extends JFrame {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**
@@ -1686,7 +1686,7 @@ public class CSMARTConsole extends JFrame {
     JRadioButton allButton = new JRadioButton("All");
     JRadioButton sizeButton = new JRadioButton("Buffer Size");
     JTextField sizeTF = new JTextField(8);
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.CSMARTConsole");
     if (currentViewSize == -1) {
       allButton.setSelected(true);
       sizeButton.setSelected(false);

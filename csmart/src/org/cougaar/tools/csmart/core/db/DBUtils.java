@@ -188,7 +188,7 @@ public class DBUtils {
     String username;
     String password;
     Connection conn = null;
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
 
     if(isValidRCFile()) {
       try {	
@@ -389,7 +389,7 @@ public class DBUtils {
     if (!execute)
       return;
     String dbQuery = "";
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     Logger qLog = CSMART.createLogger("queries");
 
     try {
@@ -429,7 +429,7 @@ public class DBUtils {
    */
   static int deleteItems(String table, String column, String val, String qFile){
     String dbQuery = "delete from "+ table.toUpperCase() +" where "+column+"="+val;
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     Logger qLog = CSMART.createLogger("queries");
 
     int count=0;
@@ -470,7 +470,7 @@ public class DBUtils {
    */
   static Set querySet(String query, Map substitutions, String qFile){
     String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     Set s = new HashSet();
     try {
       Connection conn = DBUtils.getConnection(qFile);
@@ -505,7 +505,7 @@ public class DBUtils {
    */
   static SortedMap queryHT(String query, Map substitutions, String qFile){
     String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     Connection conn = null;
     Map ht = new TreeMap();
     try {
@@ -550,7 +550,7 @@ public class DBUtils {
    */
   static String query1String(String query, Map substitutions, String qFile){
     String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
 
     String res = null;
     try {

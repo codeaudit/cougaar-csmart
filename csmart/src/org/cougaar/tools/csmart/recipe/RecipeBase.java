@@ -64,7 +64,7 @@ public abstract class RecipeBase
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.recipe");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public String getRecipeName() {

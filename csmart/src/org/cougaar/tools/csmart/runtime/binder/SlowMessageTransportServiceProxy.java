@@ -72,7 +72,7 @@ public class SlowMessageTransportServiceProxy
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void degradeReleaseRate(
@@ -132,7 +132,7 @@ public class SlowMessageTransportServiceProxy
       List inBuf = new ArrayList();
       List outBuf = new ArrayList();
       Logger log = 
-        CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
+        CSMART.createLogger(this.getClass().getName());
 
       while (true) {
 

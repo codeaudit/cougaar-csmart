@@ -62,7 +62,7 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
   
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.core.cdata");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public String getType() {

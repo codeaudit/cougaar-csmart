@@ -48,7 +48,7 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**
@@ -212,7 +212,7 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
   public static void main(String[] args) {
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
     AttributeSet a = new javax.swing.text.SimpleAttributeSet();
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console.ConsoleStyledDocument");
     // with MAX_CHARACTER = 5 this prints:
     // abc, abcde, fghij, vwxyz
     doc.setBufferSize(5);

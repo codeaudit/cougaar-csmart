@@ -66,7 +66,7 @@ public class ABCImpactPlugin extends SimplePlugIn {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**

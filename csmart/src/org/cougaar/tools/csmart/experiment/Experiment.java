@@ -139,7 +139,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   private void setDefaultNodeArguments() {
@@ -592,7 +592,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         if (thisHost.equals(nameServerHost)) {
           newNameServer = oldNameServer;
           if(log.isDebugEnabled()) {
-            log.debug("Keeping " + nameServerHost);
+            log.debug("Keeping Name Server: " + nameServerHost);
           }
           break hostLoop;       // Use existing nameserver definition
         }

@@ -81,7 +81,7 @@ public class CSMARTMetrics extends JPanel {
   }
 
   public CSMARTMetrics(File f) {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.metrics");
+    log = CSMART.createLogger(this.getClass().getName());
     try {
       ObjectInputStream ois = 
 	new ObjectInputStream(new FileInputStream(f));
@@ -98,7 +98,7 @@ public class CSMARTMetrics extends JPanel {
   }
 
   public CSMARTMetrics(ArrayList names, ArrayList data ) {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.metrics");
+    log = CSMART.createLogger(this.getClass().getName());
     createTableModel(names, data);
     init();
   }

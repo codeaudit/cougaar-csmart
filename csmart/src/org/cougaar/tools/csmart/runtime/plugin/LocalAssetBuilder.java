@@ -87,7 +87,7 @@ public class LocalAssetBuilder
    * must be listed <u>FIRST</u> in the "*.INI" file!.
    */
   public void setupSubscriptions() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    log = CSMART.createLogger(this.getClass().getName());
     List pv = getParameters() != null ? new ArrayList(getParameters()) : null;
     int pvSize = ((pv != null) ? pv.size() : 0);
     if (pvSize > 0) {

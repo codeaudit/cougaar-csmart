@@ -56,7 +56,7 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void initProperties() {

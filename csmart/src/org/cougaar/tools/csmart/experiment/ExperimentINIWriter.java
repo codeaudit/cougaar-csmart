@@ -61,7 +61,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public ExperimentINIWriter(List components, NodeComponent[] nodesToWrite, Experiment exp) {

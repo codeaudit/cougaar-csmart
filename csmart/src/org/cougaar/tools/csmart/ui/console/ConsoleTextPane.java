@@ -73,7 +73,7 @@ public class ConsoleTextPane extends JTextPane {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   private void highlightSearchString(int startOffset, int endOffset) {
@@ -269,7 +269,7 @@ public class ConsoleTextPane extends JTextPane {
 
   // for testing, print keymap with recursion
   static void printKeymap(javax.swing.text.Keymap m, int indent) {
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console.ConsoleTextPane");
     javax.swing.KeyStroke[] k = m.getBoundKeyStrokes();
     for (int i = 0; i < k.length; i++) {
       for (int j = 0; j < indent; j++)

@@ -54,7 +54,7 @@ public abstract class PropertyBase implements Property {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.core.property");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public final ConfigurableComponent getConfigurableComponent() {

@@ -226,7 +226,7 @@ public class CMTDialog extends JDialog {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   private void ok_actionPerformed() {

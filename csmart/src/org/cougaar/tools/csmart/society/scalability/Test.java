@@ -33,7 +33,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class Test {
     public static void test1() {
-      Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.scalability");
+      Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.scalability.Test");
         ScalabilityXSociety society = new ScalabilityXSociety("test1");
         society.getProperty(ScalabilityXSociety.PROP_LEVELCOUNT).setValue(new Integer(3));
         society.getProperty(ScalabilityXSociety.PROP_AGENTCOUNT)

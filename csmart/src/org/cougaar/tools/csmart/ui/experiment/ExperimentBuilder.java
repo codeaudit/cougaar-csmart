@@ -299,7 +299,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   private void setExperiment(Experiment newExperiment) {

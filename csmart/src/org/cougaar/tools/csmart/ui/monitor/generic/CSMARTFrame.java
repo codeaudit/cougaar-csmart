@@ -176,7 +176,7 @@ public class CSMARTFrame extends JFrame implements ActionListener
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**

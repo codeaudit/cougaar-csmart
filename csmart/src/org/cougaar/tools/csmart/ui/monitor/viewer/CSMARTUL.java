@@ -258,7 +258,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**
@@ -271,7 +271,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private static void setHostToMonitor() {
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer.CSMARUL");
     ArrayList potentialHosts = new ArrayList();
     ArrayList potentialNodes = new ArrayList();
     HostComponent[] hosts = experiment.getHosts();
@@ -494,7 +494,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private static void getAgentURL() {
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL");
 
     if (csmart != null) 
       setExperimentToMonitor();
@@ -537,7 +537,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private static void setURLToMonitor() {
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL");
     JTextField tf = 
       new JTextField(ClientServletUtil.makeURL("localhost", agentPort));
     JPanel panel = new JPanel();
@@ -666,7 +666,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
                                             ArrayList parameterValues,
                                             int limit) {
 
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL");
 
     ServletResult servletResult =
       ClientServletUtil.getCollectionFromAgents(agentURLs, servletName,
@@ -735,7 +735,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private static void processOrganizationAssets(Collection orgAssets) {
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL");
 
     communityToAgents = new Hashtable();
     agentToCommunity = new Hashtable();

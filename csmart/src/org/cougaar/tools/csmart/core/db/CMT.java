@@ -140,7 +140,7 @@ public class CMT {
   }
   
   static boolean hasRows(String dbQuery){
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.CMT");
 
     ResultSet rs = null;
     try {
@@ -178,7 +178,7 @@ public class CMT {
   
   static String sqlListFromQuery (String query, Map substitutions) {
     Logger qLog = CSMART.createLogger("queries");
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.CMT");
 
     if (qLog.isDebugEnabled()){
       qLog.debug("\nsqlListFromQuery "+query);

@@ -1070,7 +1070,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   }
 
   private void createLog() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   private void readObject(ObjectInputStream ois)

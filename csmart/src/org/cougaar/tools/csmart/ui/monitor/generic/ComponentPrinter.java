@@ -49,7 +49,7 @@ public class ComponentPrinter implements Printable, Pageable {
 
 
     public ComponentPrinter(JComponent component, String jobName) {
-      log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+      log = CSMART.createLogger(this.getClass().getName());
 	this.component = component;
 	job = PrinterJob.getPrinterJob();
 	if (job == null) {

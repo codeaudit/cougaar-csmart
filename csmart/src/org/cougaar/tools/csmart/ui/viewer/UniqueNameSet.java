@@ -37,7 +37,7 @@ public class UniqueNameSet extends HashSet {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void init(Object[] things, Method getNameMethod) {

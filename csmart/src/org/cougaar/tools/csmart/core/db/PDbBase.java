@@ -430,7 +430,7 @@ public class PDbBase {
     }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
     protected void finalize() {

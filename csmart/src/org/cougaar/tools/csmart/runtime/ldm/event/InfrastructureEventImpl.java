@@ -87,7 +87,7 @@ public class InfrastructureEventImpl
   }
 
   private void createLogger() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.event");
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   // setters and getters

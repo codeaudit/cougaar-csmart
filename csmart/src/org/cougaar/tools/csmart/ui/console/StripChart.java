@@ -45,7 +45,7 @@ public class StripChart extends JCChart {
 
   public StripChart() {
     super(JCChart.PLOT);
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
+    Logger log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void init(ChartDataModel data) {

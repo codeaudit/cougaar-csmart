@@ -162,7 +162,7 @@ public final class ThreadUtils {
       int limit,
       Map agentToUIDs) {
 
-    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer.ThreadUtils");
 
     boolean hasLimit = (limit >= 0);
     int remainingLimit = limit;
