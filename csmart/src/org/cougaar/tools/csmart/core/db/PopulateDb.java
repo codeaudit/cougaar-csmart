@@ -941,6 +941,7 @@ public class PopulateDb extends PDbBase {
     String assemblyIdPrefix = idType + "-";
     substitutions.put(":assembly_id_pattern:", assemblyIdPrefix + "____");
     substitutions.put(":assembly_type:", idType);
+    substitutions.put(":assembly_desc:", idType + " assembly");
     assemblyId = getNextId("queryMaxAssemblyId", assemblyIdPrefix);
     substitutions.put(":assembly_id:", assemblyId);
     substitutions.put(":trial_id:", trialId);
