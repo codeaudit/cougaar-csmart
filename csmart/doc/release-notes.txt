@@ -5,7 +5,8 @@ This release constitues the last major Cougaar release for this
 calendar year.  This release includes some database schema changes,
 and a new communities editing tool. It also includes numerous
 usability improvements, and incorporates all of the changes made after
-the official 9.2.2 patch release along that branch. In particular,
+the official 9.2.2 patch release along that branch (see the
+9.2.2.1 release notes, below). In particular,
 this includes the new ability to export to XML the host-node-agent
 (HNA) mapping for an experiment, for preservation when upgrading or
 re-loading a CSMART database for example, and then re-importing
@@ -37,26 +38,27 @@ mysql -f -u [user] -p[pw] [db] < mysqldump.9.2.txt
 - Changed label for using built-in recipes to say "From
   Template" for clarity - no functionality changed. (bug 1469)
 - Added the CommunityPlugin to all regular Agents in base 1AD CSMART
-  Experiments. You no longer need to add it to your Agents. However, you
-  must still add it to any NodeAgents where you want to do community work.
+  Experiments. You no longer need to add it to your domain Agents. However, you
+  must still add it to any NodeAgents or newly added Agents where you
+  want to do community work.
 - In addition, note that the default configs/common/LDMDomains.ini now
   loads the Community Domain, so no recipe is required to do so.
 - If a drop-down list is open (ie in the Configuration
   Builder) and you kill that window, you get an NPE. This appears to be
   a JDK bug, and will be logged as a warning. (bug 1439)
-- CSMART code changes to correctly handle various database IDs. (bug
+- CSMART code was modified to correctly handle various database IDs. (bug
   1465). This solves the "duplicate plugin" problem for the UL
   Adaptive Logistics team.
-- Bug 533: Improved javadoc to include @property tags
-- Bug 789: Add the Cougaar javadoc Parameters.html to the Experiment
+- Bug 533: Improved javadoc to include @property tags.
+- Bug 789: Added the Cougaar javadoc Parameters.html to the Experiment
   Builder Help menu for ideas on some Node Properties to set.
-- Lay out the Host Configuration Builder horizontally, for ease of use
+- The Host Configuration Builder is now laid out horizontally, for ease of use
   (bug 1447).
-- Bug 1441: Restrict recipe arguments that need to be positive to a
+- Bug 1441: Restricted recipe arguments that need to be positive to a
   positive range.
 - Bug 1474 (partial fix): Allow Nodes and Hosts to have same name, but
   not Nodes and Agents.
-- Bug 1446: Include the JDBC URL for the CSMART DB in the version
+- Bug 1446: Included the JDBC URL for the CSMART DB in the version
   information printed on error and at startup. And re-enable it on the
   Help menu under Show Version.
 - Bug 1414: Dis-allow creating new recipes, etc inside experiments, etc.
@@ -80,12 +82,6 @@ mysql -f -u [user] -p[pw] [db] < mysqldump.9.2.txt
 Release 9.2.2.1:
 This point release along the 9.2.2 branch includes some last minute
 additions for the June Ultra*Log integration. Changes include:
-- Bug 1457: Allow Nodes to contain non-Agents when dumping HNA maps to XML.
-- Bug 1428: The drop-down list of recipe queries when configuring a
-  recipe now refreshes to add new queries added to your
-  recipeQueries.q file while running CSMART. Note that deleted /
-  renamed queries will still appear, as they are still available for
-  use by recipes during this run of CSMART.
 - Bug 1363: Allow user to export an Experiment's Host-Node-Agent
   mapping to an XML file, from a menu item in the Experiment
   Builder. This file can then be imported, also from the File menu, on
@@ -99,18 +95,24 @@ additions for the June Ultra*Log integration. Changes include:
   as part of the ID, to ensure uniqueness.
 - Bug 1351: Read components in insertion order from DB, to ensure
   specified load order is preserved.
-- Bug 1408: Remove setPreferredSize call so scroll bars in Properties
-  pane of Experiment Builder work again.
+- Bug 1428: The drop-down list of recipe queries when configuring a
+  recipe now refreshes to add new queries added to your
+  recipeQueries.q file while running CSMART. Note that deleted /
+  renamed queries will still appear, as they are still available for
+  use by recipes during this run of CSMART.
+- Bug 1364 (partial fix): Add Dos version of recipe export script
+  (export-recipe.bat)
+- Bug 1399: Node Info window, when you click on the agent name, now
+  shows you _all_ sub-components, not just Plugins.
 - Bug 1387: Allow ComponentTypeProperty to accept any component type
   (aka insertion point). This fixes the bug that prevented
   SpecificInsertionRecipes from adding components at non-standard
   insertion points.
 - Bug 1396: Disable the un-used ImpactsLP in the CSMARTDomain. By
   disabling it, we avoid using the CSMART logger un-necessarily.
-- Bug 1364 (partial fix): Add Dos version of recipe export script
-  (export-recipe.bat)
-- Bug 1399: Node Info window, when you click on the agent name, now
-  shows you _all_ sub-components, not just Plugins.
+- Bug 1457: Allow Nodes to contain non-Agents when dumping HNA maps to XML.
+- Bug 1408: Remove setPreferredSize call so scroll bars in Properties
+  pane of Experiment Builder work again.
 - Bug 1377: Copying / saving AgentInsertionRecipe without an OrgAsset
   or ServletGroupInsertionRecipe with an extra servlet added caused
   NPEs. This fix avoids those errors, without however solving the
