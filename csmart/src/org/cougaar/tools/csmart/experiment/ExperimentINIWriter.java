@@ -476,6 +476,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
             writer.println(quote(rel.getRole()));
           } else if(assetData.isTPOrg()){
             // To Do: Deals with Realtionship.ini file
+	    // FIXME!!!!!
           } else {
             throw new RuntimeException("Asset Data Type Must be set: Entity, Org or TPOrg");
           }
@@ -513,7 +514,18 @@ public class ExperimentINIWriter implements ConfigurationWriter {
           }
 
 	  writer.print(propData.getName() + " ");
-	  writer.print(propData.getType());
+
+	  // This is ugly!
+	  if (propData.getName().equals("HomeLocation")) {
+	    writer.print("GeolocLocation");
+	  } else if (propData.getType().equals("COLLECTION")) {
+	    writer.print("Collection");
+	  } else if (propData.getType().equals("LIST")) {
+	    writer.print("List");
+	  } else {	  
+	    writer.print(propData.getType());
+	  }
+
 	  if(propData.isListType()) {
 	    writer.print("<" + propData.getSubType() + ">");
 	    writer.print(" " + quote(((PGPropMultiVal)propData.getValue()).toString()));
