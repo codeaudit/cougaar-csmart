@@ -36,6 +36,8 @@ public class RelationshipTimePhasedData extends TimePhasedData {
 
   public RelationshipTimePhasedData() {
     super();
+    setStartTime("");
+    setStopTime("");
   }
 
   /** 
