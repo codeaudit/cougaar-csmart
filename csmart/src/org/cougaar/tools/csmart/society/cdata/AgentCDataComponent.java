@@ -34,6 +34,7 @@ import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.society.AgentBase;
+import org.cougaar.tools.csmart.society.ComponentBase;
 
 /**
  * Create a ConfigurableComponent which represents an Agent
@@ -65,6 +66,7 @@ public class AgentCDataComponent
 
     addBinders();
     addPlugins();
+    addComponents();
     addAssetData();
   }
 
@@ -81,7 +83,7 @@ public class AgentCDataComponent
         BinderBase binder = new BinderBase(childCData[i].getName(),
                                            childCData[i].getClassName());
         binder.initProperties();
-	binder.setBinderType(childCData[i].getType());
+	binder.setComponentType(childCData[i].getType());
         Object[] parameters = childCData[i].getParameters();
         for (int j = 0; j < parameters.length; j++) 
           binder.addProperty(BinderBase.PROP_PARAM + j, (String)parameters[j]);
@@ -112,6 +114,32 @@ public class AgentCDataComponent
   }
 
     // FIXME: Add misc components -- how do I find the type though?
+  protected void addComponents() {
+    // add plugins
+    ContainerBase container = new ContainerBase("Other Components");
+    container.initProperties();
+    addChild(container);
+
+    ComponentData[] childCData = cdata.getChildren();
+    for (int i = 0; i < childCData.length; i++) {
+      if (childCData[i].getType().equals(ComponentData.PLUGIN) ||
+	  childCData[i].getType().equals(ComponentData.AGENTBINDER) ||
+	  ! childCData[i].getParent().getType().equals(ComponentData.AGENT)) {
+	// not added here
+      } else {
+        ComponentBase plugin = new ComponentBase(childCData[i].getName(),
+                                           childCData[i].getClassName(), childCData[i].getType());
+        plugin.initProperties();
+	plugin.setComponentType(childCData[i].getType());
+        Object[] parameters = childCData[i].getParameters();
+        for (int j = 0; j < parameters.length; j++) 
+          plugin.addProperty(ComponentBase.PROP_PARAM + j, (String)parameters[j]);
+        container.addChild(plugin);
+      }
+    }
+
+  }
+
 
   protected void addAssetData() {
     // add asset data components
