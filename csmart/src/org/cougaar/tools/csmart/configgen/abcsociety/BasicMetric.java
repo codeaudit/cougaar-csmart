@@ -243,6 +243,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
     if (metricRelate == null) 
       return;
     // Only add the relationship if its not already there
+    AgentAssetData aad = data.getAgentAssetData();
     RelationshipData[] relats = data.getAgentAssetData().getRelationshipData();
     for (int i = 0; i < relats.length; i++) {
       if (relats[i].equals(metricRelate))
