@@ -86,6 +86,10 @@ public class GenericComponentData implements ComponentData {
     this.children.add(child);
   }
 
+  public void addChild(int index, ComponentData child) {
+    this.children.add(index, child);
+  }
+
   public void setChild(int index, ComponentData child) {
     this.children.set(index, child);
   }
