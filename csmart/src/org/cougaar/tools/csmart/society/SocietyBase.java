@@ -92,6 +92,31 @@ public abstract class SocietyBase
     return getShortName();
   }
 
+  public void setName(String newName) {
+    if (newName == null || newName.equals("") || newName.equals(getSocietyName())) 
+      return;
+
+    boolean temp = modified;
+    String oldname = getSocietyName();
+    super.setName(newName);
+    if (getAssemblyId() != null) {
+      // do the DB save that is necessary
+      try {
+	PopulateDb.changeSocietyName(getAssemblyId(), newName);
+      } catch (Exception e) {
+	if (log.isErrorEnabled()) {
+	  log.error("setName exception changing name from " + getSocietyName() + " to " + newName + " for assembly " + getAssemblyId(), e);
+	}
+	// On error, mark the society as modified
+	temp = true;
+      }
+    } else {
+      // Couldnt do the save ourselves, so mark the society as modified
+      temp = true;
+    }
+    modified = temp;
+  }
+
   /**
    * Returns the agents in this Society
    * @return an array of <code>AgentComponent</code> objects
