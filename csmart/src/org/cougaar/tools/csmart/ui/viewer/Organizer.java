@@ -1016,7 +1016,7 @@ public class Organizer extends JScrollPane {
     SocietyComponent society = (SocietyComponent)node.getUserObject();
     if (!society.isEditable()) {
       int result = JOptionPane.showConfirmDialog(this,
-						 "Society has been or is being; delete anyway?",
+						 "Society has been or is being used; delete anyway?",
 						 "Society Not Editable",
 						 JOptionPane.YES_NO_OPTION,
 						 JOptionPane.WARNING_MESSAGE);
