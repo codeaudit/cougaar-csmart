@@ -1009,7 +1009,10 @@ public class Organizer extends JScrollPane {
   }
 
   public void deleteExperiment() {
-    DefaultMutableTreeNode node = getSelectedNode();
+    deleteExperimentInNode(getSelectedNode());
+  }
+
+  public void deleteExperimentInNode(DefaultMutableTreeNode node) {
     if (node == null) return;
     Experiment experiment = (Experiment)node.getUserObject();
     if (!experiment.isEditable()) {
@@ -1060,7 +1063,10 @@ public class Organizer extends JScrollPane {
   }
 
   public void deleteRecipe() {
-    DefaultMutableTreeNode node = getSelectedNode();
+    deleteRecipeInNode(getSelectedNode());
+  }
+
+  private void deleteRecipeInNode(DefaultMutableTreeNode node) {
     if (node == null) return;
     model.removeNodeFromParent(node);
     RecipeComponent rc = (RecipeComponent) node.getUserObject();
@@ -1089,7 +1095,11 @@ public class Organizer extends JScrollPane {
     }
     recipeNames.remove(rc.getRecipeName());
   }
-  
+
+  /**
+   * Delete folder and recursively delete all its contents.
+   */
+
   public void deleteFolder() {
     DefaultMutableTreeNode node = getSelectedNode();
     if (node == root) return;
@@ -1100,8 +1110,77 @@ public class Organizer extends JScrollPane {
                                     "Delete Folder",
                                     JOptionPane.OK_CANCEL_OPTION,
                                     JOptionPane.PLAIN_MESSAGE);
-    if (reply == JOptionPane.OK_OPTION)
+    if (reply != JOptionPane.OK_OPTION)
+      return;
+
+    // if this folder is empty, just delete it
+    if (node.isLeaf()) {
       model.removeNodeFromParent(node);
+      return;
+    }
+
+    // make a list of nodes to delete
+    // because we can't delete nodes while traversing the tree
+    ArrayList nodesToDelete = new ArrayList();
+    Enumeration nodes = node.breadthFirstEnumeration();
+    nodes.nextElement(); // skip the first node which is this node
+    while (nodes.hasMoreElements()) {
+      DefaultMutableTreeNode childNode =
+        (DefaultMutableTreeNode)nodes.nextElement();
+      // if a node is a leaf, add it to the list to delete
+      if (childNode.isLeaf())
+        nodesToDelete.add(childNode);
+    }
+    // delete the leaf nodes and user objects
+    for (int i = 0; i < nodesToDelete.size(); i++) {
+      DefaultMutableTreeNode nodeToDelete =
+        (DefaultMutableTreeNode)nodesToDelete.get(i);
+      Object o = nodeToDelete.getUserObject();
+      if (o instanceof Experiment)
+        deleteExperimentInNode(nodeToDelete);
+      else if (o instanceof RecipeComponent)
+        deleteRecipeInNode(nodeToDelete);
+      else if (o instanceof String) // an empty folder
+        model.removeNodeFromParent(nodeToDelete); // just delete the tree node
+      // TODO: delete societies
+    }
+    // now we're left with the experiments the user decided not to delete
+    // and the folder(s) containing them, but we need to
+    // recursively delete the folder(s) that are empty or contain only
+    // empty folders
+    if (node.isLeaf())
+      model.removeNodeFromParent(node);
+    else
+      deleteEmptyFolders(node);
+  }
+
+  /**
+   * Recursively delete empty folders or folders containing only
+   * empty folders, starting with the given node.
+   */
+
+  private void deleteEmptyFolders(DefaultMutableTreeNode node) {
+    ArrayList nodesToDelete = new ArrayList();
+    Enumeration nodes = node.depthFirstEnumeration();
+    nodes.nextElement(); // skip the first node which is the start node
+    while (nodes.hasMoreElements()) {
+      DefaultMutableTreeNode childNode =
+        (DefaultMutableTreeNode)nodes.nextElement();
+      // if a node is a folder and a leaf, add it to the list to delete
+      Object o = childNode.getUserObject();
+      if (o instanceof String && childNode.isLeaf())
+        nodesToDelete.add(childNode);
+    }
+    for (int i = 0; i < nodesToDelete.size(); i++)
+      model.removeNodeFromParent((DefaultMutableTreeNode)nodesToDelete.get(i));
+    // if folder is now empty, just delete it
+    if (node.isLeaf()) {
+      model.removeNodeFromParent(node);
+      return;
+    }
+    // if we deleted any nodes, then scan the tree again
+    if (nodesToDelete.size() != 0)
+      deleteEmptyFolders(node);
   }
 
   /**
@@ -1312,6 +1391,10 @@ public class Organizer extends JScrollPane {
     workspace.addTreeSelectionListener(listener);
   }
   
+  public void addTreeModelListener(TreeModelListener listener) {
+    model.addTreeModelListener(listener);
+  }
+
   ///////////////////////////////////////
   // Restore (read from file) and save workspace.
   ///////////////////////////////////////

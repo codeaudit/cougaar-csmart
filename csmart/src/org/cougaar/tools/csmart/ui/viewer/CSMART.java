@@ -53,6 +53,8 @@ import javax.swing.JOptionPane;
 
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -93,7 +95,7 @@ import java.io.ObjectInputStream;
  * build, test, control, monitor and analyze
  * a society.
  */
-public class CSMART extends JFrame implements ActionListener, Observer, TreeSelectionListener {
+public class CSMART extends JFrame implements ActionListener, Observer, TreeSelectionListener, TreeModelListener {
   private static Organizer organizer;
   private static JFileChooser workspaceFileChooser;
   private static ArrayList runningExperiments = new ArrayList();
@@ -340,6 +342,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     getContentPane().add("North", toolBar);
     organizer = new Organizer(this);
     organizer.addTreeSelectionListener(this);
+    organizer.addTreeModelListener(this);
     getContentPane().add("Center", organizer);
 
     for (int i = 0; i < views.length; i++) {
@@ -436,8 +439,31 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   }
 
   /**
+   * TreeModelListener interface.
+   * Listen on organizer tree for nodes inserted/removed events
+   * and enable appropriate tools.
+   */
+
+  public void treeNodesInserted(TreeModelEvent e) {
+    enableCSMARTTools();
+  }
+
+  public void treeNodesRemoved(TreeModelEvent e) {
+    enableCSMARTTools();
+  }
+
+  public void treeStructureChanged(TreeModelEvent e) {
+    enableCSMARTTools();
+  }
+
+  public void treeNodesChanged(TreeModelEvent e) {
+    // don't care about these
+  }
+
+  /**
    * Called on initialization, when a selection changes in the Organizer,
-   * or when the configuration builder, experiment builder, or console
+   * when nodes are added or removed in the Organizer tree, or
+   * when the configuration builder, experiment builder, or console
    * start or stop.
    * If an experiment is selected, then enable the 
    * experiment builder, unless it's already being edited.
@@ -830,13 +856,13 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         for (int i = 0; i < societies.length; i++)
           components.add(societies[i]);
       // if no recipes or societies, then try to create a society
-      if (components.size() == 0) {
-	organizer.addSociety();
-	societies = organizer.getSelectedSocieties();
-        if (societies != null)
-          for (int i = 0; i < societies.length; i++)
-            components.add(societies[i]);
-      }
+//        if (components.size() == 0) {
+//  	organizer.addSociety();
+//  	societies = organizer.getSelectedSocieties();
+//          if (societies != null)
+//            for (int i = 0; i < societies.length; i++)
+//              components.add(societies[i]);
+//        }
       if (components.size() == 1)
 	runBuilder((ModifiableComponent)components.get(0), false);
       else if (components.size() > 1) {
