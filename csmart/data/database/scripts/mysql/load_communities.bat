@@ -60,16 +60,16 @@ ECHO Cannot find %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\commu
 ECHO You must place the community csv files you are trying to load in the 
 ECHO %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql directory.
 GOTO L_END
-:L_4
 
-
-IF NOT "%4" == "" GOTO L_5 
-SET asbly_id=COMM-DEFAULT_CONFIG
-GOTO L_6
 :L_5
+
+IF NOT "%4" == "" GOTO L_6 
+SET asbly_id=COMM-DEFAULT_CONFIG
+GOTO L_7
+:L_6
 SET asbly_id=%4
 
-:L_6
+:L_7
 
 REM First write the basic script to a file, with the CIP
 ECHO s/:cip/%COUGAAR_INSTALL_PATH%/g > cip.txt
