@@ -432,7 +432,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     for (int i = 0; i < getRecipeComponentCount(); i++) {
       comps.add(getRecipeComponent(i));
     }
-    comps.add(getSocietyComponent());
+    if (getSocietyComponent() != null)
+      comps.add(getSocietyComponent());
     return comps;
   }
 
@@ -604,13 +605,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     List experimentValues = new ArrayList();
     // Get Society Components.
     ModifiableComponent comp = getSocietyComponent();
-    List propertyNames = comp.getPropertyNamesList();
-    for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
-      Property property = comp.getProperty((CompositeName)j.next());
-      List values = property.getExperimentValues();
-      if (values != null && values.size() != 0) {
-        properties.add(property);
-        experimentValues.add(values);
+    List propertyNames = null;
+    if (comp != null) {
+      propertyNames = comp.getPropertyNamesList();
+      for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
+        Property property = comp.getProperty((CompositeName)j.next());
+        List values = property.getExperimentValues();
+        if (values != null && values.size() != 0) {
+          properties.add(property);
+          experimentValues.add(values);
+        }
       }
     }
 
@@ -681,6 +685,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
     // Get Society Components
     ModifiableComponent comp = getSocietyComponent();
+    if (comp == null)
+      return 1; // always assume one trial
     Iterator names = comp.getPropertyNames();
     while (names.hasNext()) {
       Property property = comp.getProperty((CompositeName)names.next());
@@ -895,10 +901,12 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
     // Copy the society component
     ModifiableComponent society = getSocietyComponent();
-    ModifiableComponent copiedSocietyComponent = null;
-    copiedSocietyComponent = society.copy("Society for " + uniqueName);
-    if (copiedSocietyComponent != null)
-      experimentCopy.addComponent(copiedSocietyComponent);
+    if (society != null) {
+      ModifiableComponent copiedSocietyComponent = null;
+      copiedSocietyComponent = society.copy("Society for " + uniqueName);
+      if (copiedSocietyComponent != null)
+        experimentCopy.addComponent(copiedSocietyComponent);
+    }
     
     // Copy the recipe components
     for (int i = 0; i < getRecipeComponentCount(); i++) {
@@ -1464,6 +1472,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
       PopulateDb pdb = null;
       SocietyComponent sc = getSocietyComponent();
+      if (sc == null) {
+        if (log.isErrorEnabled()) 
+          log.error("Experiment has no society; cannot save it to database.");
+        return;
+      }
       if (sc instanceof SocietyFileComponent ||
           sc instanceof SocietyUIComponent) {
 	// Created with a SocietyFileComponent
@@ -1620,7 +1633,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       componentWasRemoved |= soc.componentWasRemoved();
       // Note that no current component returns true here
     }
-
     return componentWasRemoved;
   }
 
@@ -1791,13 +1803,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public boolean hasUnboundProperties() {
     // First handle Societies
     ModifiableComponent comp = getSocietyComponent();
-    List propertyNames = comp.getPropertyNamesList();
-    for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
-      Property property = comp.getProperty((CompositeName)j.next());
-      if (! property.isValueSet()) {
-        List values = property.getExperimentValues();
-        if (values == null || values.size() == 0) {
-          return true;
+    List propertyNames = null;
+    if (comp != null) {
+      propertyNames = comp.getPropertyNamesList();
+      for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
+        Property property = comp.getProperty((CompositeName)j.next());
+        if (! property.isValueSet()) {
+          List values = property.getExperimentValues();
+          if (values == null || values.size() == 0) {
+            return true;
+          }
         }
       }
     }
