@@ -1032,9 +1032,7 @@ public class CSMARTConsole extends JFrame {
 				nodesToRun[i].getShortName() + currentTrial);
 
     ConfigurationWriter configWriter = null;
-    if (!experiment.isInDatabase()) {
-      configWriter = experiment.getConfigurationWriter(nodesToRun);
-    }
+    configWriter = experiment.getConfigurationWriter(nodesToRun);
 
     // create the node
     try {
