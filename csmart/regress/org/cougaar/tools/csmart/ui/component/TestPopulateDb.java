@@ -506,7 +506,7 @@ public class TestPopulateDb extends TestCase {
                     plugin.setParent(agent);
                     agent.addChild(plugin);
                 }
-                pdb.populateCSMI(agent, 1f);
+                pdb.populateCSMI(agent);
             }
         }
         pdb.close();
