@@ -410,12 +410,12 @@ public class AgentInsertionRecipe extends RecipeBase
     }
     assetData.addPropertyGroup(createTypeIdentificationPG());
 
-    createClusterPG();
+    assetData.addPropertyGroup(createClusterPG());
 //     if (((Boolean)propOrgAsset.getValue()).booleanValue()) {
 //       assetData.addPropertyGroup(createClusterPG());
 //     }
 
-    createItemIdentificationPG();
+    assetData.addPropertyGroup(createItemIdentificationPG());
 
 //     if (((Boolean)propItemPG.getValue()).booleanValue()) {
 //       assetData.addPropertyGroup(createItemIdentificationPG());
