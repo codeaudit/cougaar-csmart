@@ -96,20 +96,24 @@ public class GenericComponentData implements ComponentData, Serializable {
   public void setChildren(ComponentData[] child) {
     this.children.clear();
     for(int i=0; i < child.length; i++) {
-      this.children.add(child[i]);
+      if (child[i] != null)
+	this.children.add(child[i]);
     }
   }
 
   public void addChild(ComponentData child) {
-    this.children.add(child);
+    if (child != null)
+      this.children.add(child);
   }
 
   public void addChild(int index, ComponentData child) {
-    this.children.add(index, child);
+    if (child != null)
+      this.children.add(index, child);
   }
 
   public void setChild(int index, ComponentData child) {
-    this.children.set(index, child);
+    if (child != null)
+      this.children.set(index, child);
   }
 
   public int childCount() {
@@ -121,6 +125,8 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void addChildDefaultLoc(ComponentData comp) {
+    if (comp == null)
+      return;
     // Binders will be inserted before other items
     // at the same level.
     // Components that are .equals with other items already
