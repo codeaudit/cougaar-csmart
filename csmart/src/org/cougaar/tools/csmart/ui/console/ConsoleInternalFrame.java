@@ -495,7 +495,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           0, 0));
     x = 0;
     // display -D options
-    aboutPanel.add(new JLabel("-D Options:"),
+    aboutPanel.add(new JLabel("-D Options (in CSMART):"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.NONE,
@@ -552,7 +552,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
-    aboutPanel.add(new JLabel("Agents:"),
+    aboutPanel.add(new JLabel("Agents (initial configuration):"),
                    new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.NONE,
@@ -564,7 +564,11 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    JList agentsList = new JList(agentNames.toArray());
+    JList agentsList = null;
+    if (agentNames == null)
+      agentsList = new JList();
+    else
+      agentsList = new JList(agentNames.toArray());
     agentsList.setBackground(aboutPanel.getBackground());
     agentsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     agentsList.addListSelectionListener(new ListSelectionListener() {
