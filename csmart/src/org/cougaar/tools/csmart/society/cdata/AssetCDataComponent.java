@@ -36,6 +36,7 @@ import org.cougaar.tools.csmart.society.AssetComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PropGroupBase;
 import org.cougaar.tools.csmart.society.RelationshipBase;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.TimeSpan;
 import java.util.Date;
 
@@ -154,7 +155,7 @@ public class AssetCDataComponent
 	  if (rel != null) {
 	    if (rel.getProperty(RelationshipBase.PROP_TYPE) == null) {
 	      if (log.isErrorEnabled()) {
-		log.error(this + " got null relationship type for " + data.getName() + " in rel #" + i);
+		log.error(this + " using CSMART " + CSMART.writeDebug() + " got null relationship type for " + data.getName() + " in rel #" + i + " with role=" + rel.getProperty(RelationshipBase.PROP_ROLE) + ", ItemId=" + rel.getProperty(RelationshipBase.PROP_ITEM) + ", please report this on bug# 1304");
 	      }
 	    } else {
 	      rData.setType((String)rel.getProperty(RelationshipBase.PROP_TYPE).getValue());
