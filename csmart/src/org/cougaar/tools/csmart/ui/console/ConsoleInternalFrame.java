@@ -86,6 +86,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String CONTROL_MENU = "Control";
   private static final String START_ACTION = "Restart";
   private static final String MOVE_ACTION = "Move";
+  private static final String ATTACH_ACTION = "(Re)-attach";
+  private static final String DETACH_ACTION = "Detach";
   private static final String STOP_ACTION = "Kill";
   private static final String STACK_TRACE_ACTION = "Stack Trace";
 
@@ -107,6 +109,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private Action notifyNextAction;
   private Action startAction;
   private Action stopAction;
+  private Action attachAction;
+  private Action detachAction;
   private JRadioButton statusButton;
   private String logFileName;
   private ConsoleNodeOutputFilter filter;
@@ -277,18 +281,46 @@ public class ConsoleInternalFrame extends JInternalFrame {
     };
     startAction.setEnabled(false);
     controlMenu.add(startAction);
+
     Action moveAction = new AbstractAction(MOVE_ACTION) {
       public void actionPerformed(ActionEvent e) {
+	// FIXME
       }
     };
     moveAction.setEnabled(false);
     controlMenu.add(moveAction);
+
+    attachAction = new AbstractAction(ATTACH_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+	// FIXME
+	// This would try to attach to a running process, if there is one
+	// It should only be enabled after the user hit detach, usually
+	detachAction.setEnabled(true);
+	attachAction.setEnabled(false);
+      }
+    };
+    attachAction.setEnabled(false);
+    controlMenu.add(attachAction);
+
+    detachAction = new AbstractAction(DETACH_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+	// FIXME
+	// This would kill the listener, without disposing of the window,
+	// or stopping the Node
+	detachAction.setEnabled(false);
+	attachAction.setEnabled(true);
+      }
+    };
+    detachAction.setEnabled(false);
+    controlMenu.add(detachAction);
+
     stopAction = new AbstractAction(STOP_ACTION) {
       public void actionPerformed(ActionEvent e) {
         stop_actionPerformed();
       }
     };
     controlMenu.add(stopAction);
+
     Action traceAction = new AbstractAction(STACK_TRACE_ACTION) {
       public void actionPerformed(ActionEvent e) {
         trace_actionPerformed();
