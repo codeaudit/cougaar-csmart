@@ -23,7 +23,11 @@ package org.cougaar.tools.csmart.ui.experiment;
 
 import java.awt.Component;
 import java.awt.event.*;
+import java.io.File;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.net.MalformedURLException;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -42,8 +46,6 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.util.log.Logger;
-import java.io.ObjectInputStream;
-import java.io.IOException;
 
 public class ExperimentBuilder extends JFrame {
   private static final String FILE_MENU = "File";
@@ -59,6 +61,15 @@ public class ExperimentBuilder extends JFrame {
   private static final String FIND_AGENT_MENU_ITEM = "Find Agent...";
   private static final String HELP_MENU = "Help";
   protected static final String HELP_DOC = "help.html";
+  private static final String PROPERTIES_MENU_ITEM = "Cougaar Properties";
+  protected static String PROPERTIES_DOC = "doc"+ File.separatorChar + "api" + File.separatorChar + "Parameters.html";
+  static {
+    if (System.getProperty("org.cougaar.install.path").endsWith(File.separator))
+      PROPERTIES_DOC = System.getProperty("org.cougaar.install.path") + PROPERTIES_DOC;
+    else
+      PROPERTIES_DOC = System.getProperty("org.cougaar.install.path") + File.separatorChar + PROPERTIES_DOC;
+  }
+
   protected static final String ABOUT_CSMART_ITEM = "About CSMART";
   protected static final String ABOUT_DOC = "/org/cougaar/tools/csmart/ui/help/about-csmart.html";
   protected static final String HELP_MENU_ITEM = "About Experiment Builder";
@@ -94,6 +105,25 @@ public class ExperimentBuilder extends JFrame {
   private Action helpAction = new AbstractAction(HELP_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
 	URL help = (URL)this.getClass().getResource(HELP_DOC);
+	if (help != null)
+	  Browser.setPage(help);
+      }
+    };
+  private Action propertiesAction = new AbstractAction(PROPERTIES_MENU_ITEM) {
+      // Warning: The Parameters.html file is only available
+      // if you have the Cougaar Javadoc ZIP file installed
+      // in your COUGAAR_INSTALL_PATH.
+      // In addition, it includes some SCRIPT tags that make things
+      // look ugly in the HTML renderer Browser uses.
+      public void actionPerformed(ActionEvent e) {
+	URL help = null;
+	try {
+	  File f = new File(PROPERTIES_DOC);
+	  if (f.exists())
+	    help = f.toURI().toURL();
+	} catch (IllegalArgumentException iae) {
+	} catch (MalformedURLException mue) {
+	}
 	if (help != null)
 	  Browser.setPage(help);
       }
@@ -162,6 +192,7 @@ public class ExperimentBuilder extends JFrame {
 
   private Action[] helpActions = {
     helpAction,
+    propertiesAction,
     aboutAction
   };
 
