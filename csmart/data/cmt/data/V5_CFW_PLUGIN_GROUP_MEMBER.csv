@@ -18,7 +18,6 @@ CFW_ID,PLUGIN_GROUP_ID,PLUGIN_CLASS,PLUGIN_CLASS_ORDER,BLANK
 3ID-CFW,InventoryManagement,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0, 
 3ID-CFW,InventoryPolicy,org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn,1, 
 3ID-CFW,LDMSQLAssets,org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn,0, 
-3ID-CFW,NCAPolicy,mil.darpa.log.alpine.blackjack.plugins.LimitResourcesPolicyPlugIn,1, 
 3ID-CFW,NCAPolicy,org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn,0, 
 3ID-CFW,Org,org.cougaar.mlm.plugin.organization.OrgReportPlugIn,1, 
 3ID-CFW,Org,org.cougaar.mlm.plugin.organization.OrgDataPlugIn,0, 

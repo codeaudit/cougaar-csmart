@@ -33,7 +33,6 @@ TRANSCOM-CFW,GLMTrans_TRANSCOM,org.cougaar.glm.trans.plugins.TranscomVishnuPlugI
 1AD-CFW,InventoryManagement,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0, 
 1AD-CFW,InventoryPolicy,org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn,1, 
 1AD-CFW,LDMSQLAssets,org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn,0, 
-1AD-CFW,NCAPolicy,mil.darpa.log.alpine.blackjack.plugins.LimitResourcesPolicyPlugIn,1, 
 1AD-CFW,NCAPolicy,org.cougaar.mlm.plugin.ldm.XMLPolicyPlugIn,0, 
 1AD-CFW,Org,org.cougaar.mlm.plugin.organization.OrgDataPlugIn,0, 
 1AD-CFW,Org,org.cougaar.mlm.plugin.organization.OrgReportPlugIn,1, 

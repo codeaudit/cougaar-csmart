@@ -2,7 +2,6 @@ PLUGIN_CLASS,DESCRIPTION,BLANK
 mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,Inventory Management PlugIn, 
 mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn,Provides MEI asset prototypes & PGs from database, 
 mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn,Provides Part asset prototypes & PGs from database, 
-mil.darpa.log.alpine.blackjack.plugins.LimitResourcesPolicyPlugIn,Puts up a GUI ro edit the Limit Resources Policy, 
 mil.darpa.log.alpine.blackjack.plugins.SubsistenceConsumerLDMPlugIn,Subsistence Consumer LDM, 
 mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,Subsistence Inventory Manager, 
 mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn,Subsistence LDM, 
