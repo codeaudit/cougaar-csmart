@@ -1,5 +1,17 @@
 CSMART Release Notes
 
+Release 9.4.1:
+This release includes bug fixes and feature enhancements to support UL
+fall integration not available in time for the 9.4 release.
+
+- Renamed mysqldump.9.2.txt to mysqldump.txt (the content has not changed).
+- All Nodes, by default, include the persistence argument (in the
+  Experiment Builder's Global Command Line Arguments dialog) that clears
+  all persistence information on startup. This is not a functionality
+  change, but makes clear the previous behavior. In order to restart
+  Nodes using previous persistence information, change the value of
+  this Argument from "true" to "false". (bug 1504)
+
 Release 9.4:
 This release constitues the last major Cougaar release for this
 calendar year.  This release includes some database schema changes,
