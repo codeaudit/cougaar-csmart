@@ -1095,30 +1095,27 @@ public class CSMARTConsole extends JFrame {
     nodePanes.put(nodeName, stdoutPane);
 
     NodeEventFilter filter = new NodeEventFilter(10);
+
+    // note that these properties augment any properties that
+    // are passed to the server in a properties file on startup
     Properties properties = new Properties();
     properties.put("org.cougaar.node.name", uniqueNodeName);
     String nameServerPorts = "8888:5555";
-    properties.put("org.cougaar.tools.server.nameserver.ports", nameServerPorts);
+    properties.put("org.cougaar.tools.server.nameserver.ports", 
+                   nameServerPorts);
     properties.put("org.cougaar.name.server", 
 		   nameServerHostName + ":" + nameServerPorts);
-    String regName = DEFAULT_SERVER_NAME;
-    properties.put("org.cougaar.tools.server.name", DEFAULT_SERVER_NAME);
     int port = 8484;
-    String[] args = new String[4];
-
-    // FIXME!!!
-    // There are new & better ways to run the server and give it parameters
-    // So use them....
-    if (! CSMART.inDBMode()) {
-      args[0] = "-f";
-      args[1] = uniqueNodeName + ".ini";
-    } else {
-      args[0] = "-X"; // ExperimentID to run
-      args[1] = experiment.getExperimentID();
+    if (!CSMART.inDBMode()) 
+      properties.put("org.cougaar.filename", uniqueNodeName + ".ini");
+    else {
+      properties.put("org.cougaar.configuration.database", dbConfig);
+      properties.put("org.cougaar.configuration.user", dbName);
+      properties.put("org.cougaar.configuration.password", dbPassword);
+      properties.put("org.cougaar.experiment.id", 
+                     experiment.getExperimentID());
     }
-    
-    args[2] = "-controlPort";
-    args[3] = Integer.toString(port);
+    properties.put("org.cougaar.control.port", Integer.toString(port));
     // set configuration file names in nodesToRun
     for (int i = 0; i < nodesToRun.length; i++) 
       ((ConfigurableComponent)nodesToRun[i]).addProperty("ConfigurationFileName", 
@@ -1146,7 +1143,7 @@ public class CSMARTConsole extends JFrame {
     // create the node
     try {
       HostServesClient hsc = communitySupport.getHost(hostName, port);
-      NodeServesClient nsc = hsc.createNode(uniqueNodeName, properties, args, 
+      NodeServesClient nsc = hsc.createNode(uniqueNodeName, properties, null,
       					    listener, filter, configWriter);
       if (nsc != null)
 	runningNodes.put(nodeComponent, nsc);
