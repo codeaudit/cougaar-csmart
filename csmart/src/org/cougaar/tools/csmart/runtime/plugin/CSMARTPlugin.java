@@ -622,7 +622,7 @@ public abstract class CSMARTPlugin
         }
       }
     } finally {
-      getBlackboardService().closeTransaction(false);
+      getBlackboardService().closeTransactionDontReset();
     }
   }
 
@@ -656,7 +656,7 @@ public abstract class CSMARTPlugin
       }
       //doExecute = true;
     } finally {
-      getBlackboardService().closeTransaction(true);
+      getBlackboardService().closeTransaction();
     }
   }
 
