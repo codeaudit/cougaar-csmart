@@ -195,7 +195,7 @@ public class PopulateDb {
         stmt = dbConnection.createStatement();
         this.exptId = exptId;
         this.trialId = trialId;
-        substitutions.put(":cmt_type", cmtType);
+        substitutions.put(":cmt_type:", cmtType);
         if (createNew) {
             cloneTrial(hnaType, trialId, experimentName);
             writeEverything = true;
@@ -205,6 +205,14 @@ public class PopulateDb {
         }
         hnaAssemblyId = addAssembly(hnaType);
         csmAssemblyId = addAssembly(csmType);
+        setAssemblyMatch();
+    }
+
+    private void setAssemblyMatch() {
+        substitutions.put(":assembly_match:",
+                          "in (select assembly_id from v4_expt_trial_assembly where trial_id = '"
+                          + trialId
+                          + "')");
     }
 
     public String getExperimentId() {
@@ -517,6 +525,7 @@ public class PopulateDb {
         substitutions.put(":component_lib_id:", getComponentLibId(data));
         substitutions.put(":agent_org_prototype:", sqlQuote(assetData.getAssetClass()));
         if (isAdded) {
+            // finish populating a new agent
             executeUpdate(stmt, dbp.getQuery(INSERT_AGENT_ORG, substitutions));
             PropGroupData[] pgs = assetData.getPropGroups();
             for (int i = 0; i < pgs.length; i++) {
