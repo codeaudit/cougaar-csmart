@@ -129,7 +129,6 @@ public abstract class DNDTree
     if (target != null) {
       if (target.getAllowsChildren()) {
         int action = isDroppable(possibleFlavors, target);
-//          System.out.println("Action is " + action);
         // if can't drop on the target, see if you can drop on its parent
         if (action == DnDConstants.ACTION_NONE) {
           target = (DefaultMutableTreeNode)target.getParent();
@@ -161,8 +160,12 @@ public abstract class DNDTree
 
   private boolean isAllowed(DataFlavor[] possibleFlavors, 
                             DefaultMutableTreeNode target) {
-    return target.getAllowsChildren() &&
-      (isDroppable(possibleFlavors, target) == DnDConstants.ACTION_MOVE);
+    if (target.getAllowsChildren()) {
+      int result = isDroppable(possibleFlavors, target);
+      return (result == DnDConstants.ACTION_MOVE ||
+              result == DnDConstants.ACTION_COPY);
+    } else
+      return false;
   }
 
   /**
