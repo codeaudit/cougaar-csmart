@@ -35,6 +35,6 @@ public class ComponentName extends MultiName implements CompositeName {
 
   protected CompositeName getParentName() {
     if (component == null) return null;
-    return component.getName();
+    return component.getFullName();
   }
 }

@@ -20,6 +20,8 @@ import java.io.Serializable;
  */
 
 public interface ComponentProperties extends Serializable {
+  String getShortName();
+  CompositeName getFullName();
     /**
      * Initialize the properties of a new instance. All components
      * implementing this interface should delay the initialization of
@@ -32,3 +34,4 @@ public interface ComponentProperties extends Serializable {
     void addPropertiesListener(PropertiesListener l);
     void removePropertiesListener(PropertiesListener l);
 }
+

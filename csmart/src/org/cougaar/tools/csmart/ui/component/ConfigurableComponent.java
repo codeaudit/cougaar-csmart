@@ -167,9 +167,18 @@ public abstract class ConfigurableComponent
     finishNameChange();
   }
 
-  public CompositeName getName() {
+  //  public CompositeName getName() {
+  //    return myName;
+  //  }
+
+  public String getShortName() {
+    return getFullName().last().toString();
+  }
+
+  public CompositeName getFullName() {
     return myName;
   }
+
 
   /**
    * Add a child to this component.
@@ -225,7 +234,7 @@ public abstract class ConfigurableComponent
 
     for(int i=0; i < getChildCount(); i++) {
       cc = getChild(i);
-      if(cc.getName().equals(childName)){
+      if(cc.getFullName().equals(childName)){
 	break;
       }
     }
@@ -401,7 +410,7 @@ public abstract class ConfigurableComponent
   private UnaryPredicate localPropertyNamePredicate = new UnaryPredicate() {
     public boolean execute(Object o) {
       CompositeName pName = (CompositeName) o;
-      CompositeName cName = getName();
+      CompositeName cName = getFullName();
       return pName.size() == cName.size() + 1 && pName.startsWith(cName);
     }
   };
@@ -595,6 +604,6 @@ public abstract class ConfigurableComponent
   }
 
   public String toString() {
-    return getName().last().toString();
+    return getShortName();
   }
 }

@@ -78,7 +78,7 @@ public class TestGUI
             if (treeModel != null) treeModel.nodeStructureChanged(this);
         }
         public String toString() {
-            return component.getName().toString();
+            return component.getFullName().toString();
         }
         public Enumeration children() {
             return new Enumeration() {
@@ -286,7 +286,7 @@ public class TestGUI
                 System.err.println("Property "
                                    + name
                                    + " not found in "
-                                   + c.getName());
+                                   + c.getFullName());
                 continue;
             }
             prop.addPropertyListener(this);
