@@ -934,7 +934,7 @@ public class CSMART extends JFrame {
     try {
       props.load(new FileInputStream(cf.locateFile("debug.properties")));
     } catch(Exception e) {
-      System.err.println("Could not read debug properties file, using defaults");
+      System.err.println("CSMART.java Could not read debug properties file, using defaults.");
     }
 
     lf.configure(props);
