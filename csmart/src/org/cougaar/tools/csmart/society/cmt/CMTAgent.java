@@ -225,6 +225,9 @@ public class CMTAgent
   }
 
   public ComponentData addComponentData(ComponentData data) {
+//     if(log.isDebugEnabled()) {
+//       log.debug("In CMTAgent addComponentData");
+//     }
     // The incoming data is an agent
     String name = data.getName();
     int dotPos = name.lastIndexOf('.');
@@ -282,6 +285,9 @@ public class CMTAgent
 	    //if (data.getChildIndex(plugin) < 0)
 	    // then add
 	    // else, data.setChild(index, plugin)
+//             if(log.isDebugEnabled()) {
+//               log.debug("Add Plugin: " + plugin.getName());
+//             }
             data.addChild(plugin);
           } // end of loop over plugins to add
           rs.close();

@@ -65,6 +65,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
   }
 
   public ExperimentINIWriter(List components, NodeComponent[] nodesToWrite, Experiment exp) {
+    createLogger();
     this.nodesToWrite = nodesToWrite;
     this.components = components;
     theSoc = new GenericComponentData();
@@ -335,6 +336,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
   private void writeChildrenOfComp(PrintWriter writer, File configDir, ComponentData comp) throws IOException {
     if (comp == null || comp.childCount() == 0)
       return;
+
     ComponentData[] children = comp.getChildren();
     for (int i = 0; i < children.length; i++) {
       if (writer != null) {
@@ -367,6 +369,9 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.println("[ PlugIns ]");
       // loop over the children - but what if one is not a PLUGIN?
       // This does no type checking, and writes out all the children here
+//       if(log.isDebugEnabled()) {
+//         log.debug("Agent: " + ac.getName() + " has " + ac.childCount() + " Children");
+//       }
       writeChildrenOfComp(writer, configDir, (ComponentData)ac);
       writer.println();
       writer.println("[ Policies ]");

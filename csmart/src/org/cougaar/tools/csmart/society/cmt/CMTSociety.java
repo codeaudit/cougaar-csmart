@@ -42,6 +42,9 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 
 import org.cougaar.tools.csmart.core.db.DBUtils;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
 
 /**
  * A Society created from the CFW portion of the CSMART configuration
@@ -61,10 +64,23 @@ public class CMTSociety
 
   private List assemblyID;
   private Map substitutions;
+  private transient Logger log;
 
   public CMTSociety(String name, List assemblyID) {
     super(name);
     this.assemblyID = assemblyID;
+    createLogger();
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.society.cmt");
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
   public void initProperties() {
@@ -190,6 +206,9 @@ public class CMTSociety
   }
 
   public ComponentData addComponentData(ComponentData data) {
+//     if(log.isDebugEnabled()) {
+//       log.debug("In CMTSociety addComponent");
+//     }
     ComponentData[] children = data.getChildren();
 
     for(int i=0; i < children.length; i++) {
