@@ -48,6 +48,8 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.AssetComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PluginBase;
+import org.cougaar.tools.csmart.society.BinderBase;
+import org.cougaar.tools.csmart.society.AgentBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 
@@ -58,7 +60,7 @@ import org.cougaar.util.log.Logger;
  * @see SocietyDBComponent
  */
 public class AgentDBComponent
-  extends ModifiableConfigurableComponent 
+  extends AgentBase 
   implements AgentComponent, Serializable 
 {
 
@@ -159,8 +161,11 @@ public class AgentDBComponent
       }
     }
 
+    // FIXME: What about the Agent class?
+
+    addBinders();
     addPlugins();
-    addAssetDataComponents();
+    addAssetData();
   }
 
   private void initDBProperties() throws IOException {
@@ -194,101 +199,6 @@ public class AgentDBComponent
     return orgClass;
   }
 
-  // Take the ComponentData for an Agent to which
-  // we are adding some data.
-//    private ComponentData addAssetData(ComponentData data) {
-//      AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
-
-//      assetData.setType(AgentAssetData.ORG);
-
-//      String orgClass = queryOrgClass();
-//      assetData.setAssetClass(orgClass);
-    
-//      // Get list of assemblies for use in query, ignoring CMT assemblies
-//      String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
-
-//      if (assemblyMatch != null) {
-//        substitutions.put(":assemblyMatch", assemblyMatch);
-//        substitutions.put(":agent_name", name);
-
-//        // Add all Relationship data
-//        try {
-//          Connection conn = DBUtils.getConnection();
-//          try {
-//            Statement stmt = conn.createStatement();	
-//            String query = DBUtils.getQuery(QUERY_AGENT_RELATIONS, substitutions);
-	
-//            ResultSet rs = stmt.executeQuery(query);
-//            while(rs.next()) {
-//              RelationshipData rd = new RelationshipData();
-//              String supported = rs.getString(1);
-//              String role = rs.getString(2);
-//              Timestamp startDate = rs.getTimestamp(3);
-//              Timestamp endDate = rs.getTimestamp(4);
-//  	    // what about rd.setType()? Probably to Supporting for most things?
-//  	    // except for some to Superior?
-//              rd.setSupported(supported);
-//              rd.setRole(role);
-//              if (startDate != null) {
-//                rd.setStartTime(startDate.getTime());
-//              }
-//              if (endDate != null) rd.setEndTime(endDate.getTime());
-//              assetData.addRelationship(rd);
-//            }
-//            rs.close();
-//            stmt.close();
-
-//          } finally {
-//            conn.close();
-//          }
-//        } catch (Exception e) {
-//          if(log.isErrorEnabled()) {
-//            log.error("Exception", e);
-//          }
-//          throw new RuntimeException("Error" + e);
-//        }
-//      }
-
-//      // FIXME: Add in other property groups!!
-    
-//      // Note: This really does a SET, so it correctly
-//      // replaces the old data, if any, with the new
-//      data.addAgentAssetData(assetData);
-
-//      return data;
-//    }
-
-  /**
-   * Adds all relevent <code>ComponentData</code> for this agent.
-   * This method will not perform any modifications, only additions.
-   *
-   * @see ComponentData
-   * @param data Pointer to the global <code>ComponentData</code> object.
-   * @return a <code>ComponentData</code> value
-   */
-  public ComponentData addComponentData(ComponentData data) {
-    Iterator iter = ((Collection)getDescendentsOfClass(ContainerBase.class)).iterator();
-    while(iter.hasNext()) {
-      ContainerBase container = (ContainerBase)iter.next();
-      if(container.getShortName().equals("Plugins")) {
-        for(int i=0; i < container.getChildCount(); i++) {
-          PluginBase plugin = (PluginBase) container.getChild(i);
-          plugin.addComponentData(data);
-        }
-      }
-    }
-
-    // Process AssetData
-    iter = 
-      ((Collection)getDescendentsOfClass(AssetComponent.class)).iterator();
-    while(iter.hasNext()) {
-      AssetComponent asset = (AssetComponent)iter.next();
-      asset.addComponentData(data);
-    }
-
-    return data;
-  }
-
   private void readObject(ObjectInputStream ois)
     throws IOException, ClassNotFoundException
   {
@@ -297,7 +207,7 @@ public class AgentDBComponent
     createLogger();
   }
 
-  private void addPlugins() {
+  protected void addPlugins() {
     ContainerBase container = new ContainerBase("Plugins");
     container.initProperties();
     addChild(container);
@@ -314,6 +224,7 @@ public class AgentDBComponent
     try {
       Connection conn = DBUtils.getConnection();
       String query = "";
+      substitutions.put(":comp_type:", ComponentData.PLUGIN);
       try {
         Statement stmt = conn.createStatement();	
         query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
@@ -328,7 +239,7 @@ public class AgentDBComponent
           PluginBase plugin = new PluginBase(pluginName, pluginClassName);
           plugin.initProperties();
           String alibId =rs.getString(2);
-          // does this need to be preserved in the plugin?
+          // does this need to be preserved in the plugin? FIXME
           // plugin.setAlibID(alibId);
           substitutions.put(":comp_alib_id", alibId);
           substitutions.put(":comp_id", rs.getString(3));
@@ -356,7 +267,68 @@ public class AgentDBComponent
     }
   }
 
-  private void addAssetDataComponents() {
+  protected void addBinders() {
+    ContainerBase container = new ContainerBase("Binders");
+    container.initProperties();
+    addChild(container);
+
+    // Grab all non-CMT assemblies. Why?
+    //    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
+    String assemblyMatch = DBUtils.getListMatch(assemblyID);
+    if (assemblyMatch != null) {
+      substitutions.put(":assemblyMatch", assemblyMatch);
+      substitutions.put(":agent_name", name);
+    }
+
+    // Get Binder Names, class names, and parameters
+    try {
+      Connection conn = DBUtils.getConnection();
+      String query = "";
+      substitutions.put(":comp_type:", ComponentData.AGENTBINDER);
+      try {
+        Statement stmt = conn.createStatement();	
+        query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
+        if(log.isDebugEnabled()) {
+          log.debug("Query: " + query);
+        }
+
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          String binderClassName = rs.getString(1);
+          String binderName = rs.getString(4);
+          BinderBase binder = new BinderBase(binderName, binderClassName);
+          binder.initProperties();
+	  //binder.setBinderType(ComponentData.AGENTBINDER);
+          String alibId =rs.getString(2);
+          // does this need to be preserved in the binder?
+          // binder.setAlibID(alibId);
+          substitutions.put(":comp_alib_id", alibId);
+          substitutions.put(":comp_id", rs.getString(3));
+          Statement stmt2 = conn.createStatement();
+          String query2 = dbp.getQuery(QUERY_PLUGIN_ARGS, substitutions);
+          ResultSet rs2 = stmt2.executeQuery(query2);
+          while (rs2.next()) {
+            String arg = rs2.getString(1);
+            binder.addParameter(arg);
+          }
+          rs2.close();
+          stmt2.close();
+          container.addChild(binder);
+        } // end of loop over binders to add
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("Exception", e);
+      }
+      throw new RuntimeException("Error" + e);
+    }
+  }
+
+  protected void addAssetData() {
     BaseComponent asset = 
       (BaseComponent)new AssetDBComponent(name, assemblyID);
     asset.initProperties();
