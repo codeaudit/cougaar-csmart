@@ -1734,6 +1734,14 @@ public class PopulateDb extends PDbBase {
     }
     boolean added = false;
 
+    // Null Assembly ID is really bad
+    if (hnaAssemblyId == null) {
+      if (log.isErrorEnabled()) {
+	log.error("popHNA: null HNA assembly ID? Can't save", new Throwable());
+      }
+      return false;
+    }
+
     try {
       // Incrementally save
       // so that later recipes have the benefit
@@ -1776,6 +1784,16 @@ public class PopulateDb extends PDbBase {
     if (log.isDebugEnabled()) {
       log.debug("populateCSMI saving into " + csmiAssemblyId);
     }
+
+    // A null Assembly at this point is a bad thing.
+    // Dont try to save into it.
+    if (csmiAssemblyId == null) {
+      if (log.isErrorEnabled()) {
+	log.error("popCSMI had null CSMI assembly ID. Will not save.", new Throwable());
+      }
+      return false;
+    }
+
     return populate(data, 1f, csmiAssemblyId);
   }
 
@@ -1796,11 +1814,19 @@ public class PopulateDb extends PDbBase {
     // For storing the old cmtAssid if we have to change it
     String oldid = null;
 
+    if (cmtAssemblyId == null) {
+      if (log.isErrorEnabled()) {
+	log.error("popCSA: Null CMT AssemblyID? Cant do much.", new Throwable());
+      }
+      return false;
+    }
+
     // If this is saving an Experiment, we create a CSA assembly:
     if (exptId != null && trialId != null) {
       if (log.isDebugEnabled()) {
 	log.debug("populateCSA creating new soc def CSA for trial " + trialId);
       }
+
       // reset the flag noticing that something was modified while saving
       componentWasRemoved = false;
 
@@ -1810,14 +1836,13 @@ public class PopulateDb extends PDbBase {
       // Delete any existing CSA / CMT in runtime for this experiment, completely if necc
       cleanOldRuntimeSocietyAssemblies();
 
-      // Must also delete any CSMI assembly that exists so far. We won't be using one.
+      // Must also delete any CSMI assembly that exists so far. 
+      // Although I suppose we _might_ end up using one -- if we got called here
+      // earlier due to some bug, whatever is there is suspect
+      // Only partially clean it out (not out of asb_assembly)
       if (csmiAssemblyId != null) {
-	removeRuntimeAssembly(csmiAssemblyId);
-	if (! isAssemblyUsed(csmiAssemblyId))
-	  cleanAssembly(csmiAssemblyId);
+	cleanAssembly(csmiAssemblyId, true);
 
-	// FIXME: Do I need to create a new one?
-	csmiAssemblyId = null;
       }
 
       // FIXME: What if a recipe modified the Agents in use? Must I
