@@ -1961,6 +1961,8 @@ public class CSMARTGraph extends Graph
     
     // run the dot file through the dot utility to produce a directed graph
     //    String command = "dot.exe " + dotPathname;
+    if (dotExecutable == null)
+      setupDotPath();
     String command = dotExecutable + ' ' + dotPathname;
     
     //    System.out.println("Starting: " + command + " at: " + 
