@@ -176,14 +176,14 @@ public class PopulateDb {
      * @param assemblyId is used to identify all components added to
      * the database.
      **/
-    public PopulateDb(String cmtType, String hnaType, String csmType,
+    public PopulateDb(String cmtType, String hnaType, String csmiType,
                       String experimentName,
                       String exptId, String trialId, boolean createNew)
         throws SQLException, IOException
     {
         if (cmtType == null) throw new IllegalArgumentException("null cmtType");
         if (hnaType == null) throw new IllegalArgumentException("null hnaType");
-        if (csmType == null) throw new IllegalArgumentException("null csmType");
+        if (csmiType == null) throw new IllegalArgumentException("null csmiType");
         if (exptId == null) throw new IllegalArgumentException("null exptId");
         if (trialId == null) throw new IllegalArgumentException("null trialId");
         log = new PrintWriter(new FileWriter("PopulateDbQuery.log"));
@@ -212,11 +212,11 @@ public class PopulateDb {
             cloneTrial(hnaType, trialId, experimentName);
             writeEverything = true;
         } else {
-            cleanTrial(csmType, trialId);
+            cleanTrial(cmtType, hnaType, csmiType, trialId);
             writeEverything = false;
         }
         hnaAssemblyId = addAssembly(hnaType);
-        csmAssemblyId = addAssembly(csmType);
+        csmAssemblyId = addAssembly(csmiType);
         setAssemblyMatch();
     }
 
@@ -251,11 +251,13 @@ public class PopulateDb {
      * Clean out a trial by removing all assemblies except the CMT and
      * idType assemblies
      **/
-    private void cleanTrial(String csmType, String oldTrialId)
+    private void cleanTrial(String cmtType, String hnaType, String csmiType, String oldTrialId)
         throws SQLException
     {
         substitutions.put(":trial_id:", oldTrialId);
-        substitutions.put(":csm_id_pattern:", csmType + "-____");
+        substitutions.put(":cmt_type:", cmtType);
+        substitutions.put(":hna_type:", hnaType);
+        substitutions.put(":csmi_type:", csmiType);
         executeUpdate(dbp.getQuery(CLEAN_TRIAL_ASSEMBLY, substitutions));
     }
 
