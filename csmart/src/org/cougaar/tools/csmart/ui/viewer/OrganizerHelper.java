@@ -46,7 +46,6 @@ import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.recipe.ComplexRecipeBase;
 import org.cougaar.tools.csmart.recipe.RecipeBase;
-import org.cougaar.tools.csmart.recipe.db.ComplexRecipeDbComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
@@ -319,7 +318,6 @@ public class OrganizerHelper {
         if (mc == null) {
           mc = createRecipe(dbRecipe.name, dbRecipe.cls);
           setRecipeComponentProperties(dbRecipe, mc);
-          System.out.println("Calling save!");
           mc.saveToDatabase();
         }
         AgentComponent[] recagents = mc.getAgents(); 
@@ -794,11 +792,9 @@ public class OrganizerHelper {
 
     while(rs.next()) {
     if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
-      System.out.println("We have a ComplexRecipe!");
       // Query the Assembly Table for the correct data.
       break;
     } else {
-      System.out.println("We do not have a ComplexRecipe! (" + rs.getString(1) + ")");
       dbRecipe.props.put(rs.getString(1), rs.getString(2));
     }
     }
@@ -831,7 +827,29 @@ public class OrganizerHelper {
               }
               return null;
             }
-            rc = new ComplexRecipeDbComponent(rs.getString(2), getRecipeAssembly(conn, substitutions));
+
+            Constructor con = null;
+            try {
+              Class cls = Class.forName(rs.getString(3));
+              Class[] args = {String.class, String.class};
+              con = cls.getConstructor(new Class[] {String.class, String.class});
+              
+            } catch(Exception e) {
+              if(log.isErrorEnabled()) {
+                log.error("Error constructing recipe from database.  Load Failed.", e);
+              }
+              return null;
+            }
+            
+            try {
+              rc = (RecipeComponent) con.newInstance(new Object[] {rs.getString(2), getRecipeAssembly(conn, substitutions)});
+            } catch(Exception ee) {
+              if(log.isErrorEnabled()) {
+                log.error("Error creating recipe instance", ee);
+              }
+              return null;
+            }
+//             new ComplexRecipeBase(rs.getString(2), getRecipeAssembly(conn, substitutions));
             rc.initProperties();
             return rc;
           } else {
@@ -839,17 +857,16 @@ public class OrganizerHelper {
               log.debug("Creating Simple Recipe from Database");
             }
             try {
-              DbRecipe dbRecipe = 
-                new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
+              DbRecipe dbRecipe = new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
               getRecipeProperties(dbRecipe, conn, substitutions);
-            dbRecipe.name = recipeName;
-            rc = organizer.getRecipe(dbRecipe.name);
-            if (rc == null) {
-              rc = createRecipe(dbRecipe.name, dbRecipe.cls);
-              setRecipeComponentProperties(dbRecipe, rc);
-              rc.saveToDatabase();
-            }
-            return rc;
+              dbRecipe.name = recipeName;
+              rc = organizer.getRecipe(dbRecipe.name);
+              if (rc == null) {
+                rc = createRecipe(dbRecipe.name, dbRecipe.cls);
+                setRecipeComponentProperties(dbRecipe, rc);
+                rc.saveToDatabase();
+              }
+              return rc;
             } catch (ClassNotFoundException cnfe) {
               if(log.isErrorEnabled()) {
                 log.error("for recipe", cnfe);
