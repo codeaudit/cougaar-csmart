@@ -214,6 +214,10 @@ public class CSMARTConsole extends JFrame {
   private static int asPollInterval = 30000;
   private transient volatile java.util.Timer asPollTimer = null;
 
+  // Boolean checked by main CSMART UI in WindowListener to see
+  // if user canceled the Exit
+  public boolean dontClose = false;
+
   /**
    * Create and show console GUI.
    * Experiment may be null.
@@ -2194,10 +2198,77 @@ public class CSMARTConsole extends JFrame {
   
   // When user hits Exit
   private void exitMenuItem_actionPerformed(AWTEvent e) {
-    // don't stop experiments when exiting the console
-    //    stopExperiments();
-    // kill any node output listeners that this instance of CSMART started
-    appServerSupport.killListeners();
+    // Put up a window, giving three options:
+    // 1) Kill listeners, not Nodes (default)
+    // 2) Kill attached Nodes (old behavior)
+    // 3) Cancel (return to Console, if possible)
+
+    dontClose = false;
+
+    // If nothing is attached, don't display this dialog
+    boolean justExit = false;
+    synchronized (runningNodesLock) {
+      if (runningNodes.isEmpty()) 
+	justExit = true;
+    } // end synchronized
+
+    if (! justExit) {
+      JPanel exitPanel = new JPanel(new GridBagLayout());
+      int x = 0;
+      int y = 0;
+      JLabel instr = new JLabel("Exit Console: Detach from Nodes (leaving them running), kill the Nodes, or Cancel?\n");
+      JRadioButton detachButton = new JRadioButton("Detach from Society but leave running (default)");
+      JRadioButton killButton = new JRadioButton("Stop all Attached Nodes (old behavior)");
+      detachButton.setSelected(true);
+      killButton.setSelected(false);
+      
+      ButtonGroup exitButtonGroup = new ButtonGroup();
+      exitButtonGroup.add(detachButton);
+      exitButtonGroup.add(killButton);
+
+      exitPanel.add(instr,
+		    new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+					   GridBagConstraints.WEST,
+					   GridBagConstraints.NONE,
+					   new Insets(10, 0, 5, 5),
+					   0, 0));
+      exitPanel.add(detachButton,
+		    new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+					   GridBagConstraints.WEST,
+					   GridBagConstraints.NONE,
+					   new Insets(10, 0, 5, 5),
+					   0, 0));
+      exitPanel.add(killButton,
+		    new GridBagConstraints(x, y, 1, 1, 0.0, 0.0,
+					   GridBagConstraints.WEST,
+					   GridBagConstraints.NONE,
+					   new Insets(0, 0, 5, 5),
+					   0, 0));
+      
+      int result = JOptionPane.showConfirmDialog(null,
+						 exitPanel,
+						 "Exit Console",
+						 JOptionPane.OK_CANCEL_OPTION,
+						 JOptionPane.QUESTION_MESSAGE,
+						 null);
+      if (result == JOptionPane.CANCEL_OPTION) {
+	//  User wants to return to the console?
+	// Set boolean for CSMART main UI to check
+	dontClose = true;
+	return;
+      }
+      
+      if (killButton.isSelected()) {
+	abortButton_actionPerformed();
+	// don't stop experiments when exiting the console
+	//    stopExperiments();
+      } else {
+	// this is what this method does now
+	// kill any node output listeners that this instance of CSMART started
+	appServerSupport.killListeners();
+	updateControls(false);
+      }
+    }
 
     // Stop polling the Appservers
     if (asPollTimer != null) {
@@ -2209,7 +2280,6 @@ public class CSMARTConsole extends JFrame {
       monitorAppServerTask.cancel();
     }
 
-    updateControls(false);
     // this is set when entering the console and must be cleared on exit
     if (experiment != null)
       experiment.setRunInProgress(false);
