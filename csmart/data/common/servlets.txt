@@ -10,7 +10,7 @@ CompletionServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.pl
 
 # For the data grabber
 HierarchyServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.mlm.ui.psp.transit.HierarchyServlet,/hierarchy
-DataGathererServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.mlm.ui.psp.transit.DataGathererServlet,/datagatherer
+DataGathererServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.mlm.ui.servlet.DataGathererServlet,/datagatherer
 
 # Allows loading arbitrary components
 LoaderServletComponent,org.cougaar.planning.servlet.LoaderServletComponent,/load
