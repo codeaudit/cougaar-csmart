@@ -893,6 +893,12 @@ public abstract class ConfigurableComponent
     while(iter.hasNext()) {
       CompositeName name = (CompositeName)iter.next();
       Property myProp = getProperty(name);
+      if (myProp == null) {
+	if (log.isErrorEnabled()) {
+	  log.error("Null property " + name.toString() + " copying from " + this.getFullName().toString(), new Throwable());
+	}
+	continue;
+      }
       // compose the correct name for the property
       // name must be prepended by new society name
       String s = name.last().toString();
@@ -900,8 +906,9 @@ public abstract class ConfigurableComponent
       Property hisProp = result.getProperty(hisPropName);
       if (hisProp == null) {
 	if (log.isErrorEnabled()) {
-	  log.error("Report bug 1377: Using " + CSMART.writeDebug() + " couldn't find " + hisPropName.toString() + " in " + result.getFullName().toString() + " copying from " + name.toString() + " in " + this.getFullName().toString());
+	  log.error("Report bug 1377: Using " + CSMART.writeDebug() + " couldn't find " + hisPropName.toString() + " in " + result.getFullName().toString() + " copying from " + name.toString() + " in " + this.getFullName().toString(), new Throwable());
 	}
+	// FIXME: Try creating it?
       } else {
 	try {
 	  // if have experimental values, then copy those
@@ -924,7 +931,7 @@ public abstract class ConfigurableComponent
 	  }
 	} catch (InvalidPropertyValueException e) {
 	  if(log.isErrorEnabled()) {
-	    log.error("Caught InvalidPropertyValueException: " + getClass().getName() + e);
+	    log.error("Caught InvalidPropertyValueException: " + getClass().getName(), e);
 	  }
 	}
       } // end of else block
