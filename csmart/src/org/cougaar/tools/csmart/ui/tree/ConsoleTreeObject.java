@@ -27,8 +27,7 @@ import java.io.IOException;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
 import java.awt.datatransfer.DataFlavor;
 
@@ -36,9 +35,9 @@ public class ConsoleTreeObject implements Serializable {
   String name;
   private boolean root = false;
   private Class allowedClass = null;
-  ComponentProperties component;
+  BaseComponent component;
 
-  public ConsoleTreeObject(ComponentProperties component) {
+  public ConsoleTreeObject(BaseComponent component) {
     name = component.toString();
     this.component = component;
   }
@@ -65,9 +64,8 @@ public class ConsoleTreeObject implements Serializable {
 
   public void setName(String name) {
     this.name = name;
-    if (component != null) {
-      ((ConfigurableComponent)component).setName(name);
-    }
+    if (component != null) 
+      component.setName(name);
   }
   
   public String toString() {
@@ -76,7 +74,7 @@ public class ConsoleTreeObject implements Serializable {
     return component.toString();
   }
 
-  public ComponentProperties getComponent() {
+  public BaseComponent getComponent() {
     return component;
   }
 
