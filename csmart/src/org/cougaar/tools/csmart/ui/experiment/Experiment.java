@@ -33,8 +33,8 @@ import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 import org.cougaar.tools.server.ConfigurationWriter;
-import org.cougaar.core.society.Node;
-import org.cougaar.core.cluster.ClusterImpl;
+import org.cougaar.core.node.Node;
+import org.cougaar.core.agent.ClusterImpl;
 
 /**
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
@@ -105,11 +105,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   private void setDefaultNodeArguments() {
     defaultNodeArguments = new ReadOnlyProperties(Collections.singleton("org.cougaar.experiment.id"));
-    defaultNodeArguments.put("org.cougaar.core.cluster.persistence.enable", "false");
+    defaultNodeArguments.put("org.cougaar.core.persistence.enable", "false");
     defaultNodeArguments.put("user.timezone", "GMT");
-    defaultNodeArguments.put("org.cougaar.core.cluster.startTime", "08/10/2005");
+    defaultNodeArguments.put("org.cougaar.core.agent.startTime", "08/10/2005");
     defaultNodeArguments.put("csmart.log.severity", "PROBLEM");
-    defaultNodeArguments.put("org.cougaar.domain.planning.ldm.lps.ComplainingLP.level",
+    defaultNodeArguments.put("org.cougaar.planning.ldm.lps.ComplainingLP.level",
                              "0");
     defaultNodeArguments.put("org.cougaar.message.transport.aspects",
                              "org.cougaar.core.mts.StatisticsAspect");

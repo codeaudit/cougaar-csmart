@@ -22,10 +22,10 @@ package org.cougaar.tools.csmart.ldm.event;
 
 import java.io.Serializable;
 
-import org.cougaar.core.cluster.Publishable;
-import org.cougaar.core.society.UniqueObject;
-import org.cougaar.core.society.UID;
-import org.cougaar.domain.planning.ldm.plan.Directive;
+import org.cougaar.core.blackboard.Publishable;
+import org.cougaar.core.util.UniqueObject;
+import org.cougaar.core.util.UID;
+import org.cougaar.planning.ldm.plan.Directive;
 
 import org.cougaar.tools.csmart.Constants;
 

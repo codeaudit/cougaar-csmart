@@ -27,14 +27,14 @@
 
 package org.cougaar.tools.csmart.ldm.asset;
 
-import org.cougaar.domain.planning.ldm.measure.*;
-import org.cougaar.domain.planning.ldm.asset.*;
-import org.cougaar.domain.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.measure.*;
+import org.cougaar.planning.ldm.asset.*;
+import org.cougaar.planning.ldm.plan.*;
 import java.util.*;
 
 
 
-public interface SimpleInventoryPG extends PropertyGroup, org.cougaar.domain.planning.ldm.dq.HasDataQuality {
+public interface SimpleInventoryPG extends PropertyGroup, org.cougaar.planning.ldm.dq.HasDataQuality {
 
   long consume(long time);
   long getStartTime();
@@ -93,7 +93,7 @@ final class Null_SimpleInventoryPG
   }
 
   public boolean hasDataQuality() { return false; }
-  public org.cougaar.domain.planning.ldm.dq.DataQuality getDataQuality() { return null; }
+  public org.cougaar.planning.ldm.dq.DataQuality getDataQuality() { return null; }
 }
 
 /** Future PG implementation for SimpleInventoryPG **/
@@ -152,7 +152,7 @@ final class Future
   public synchronized boolean hasDataQuality() {
     return (_real!=null) && _real.hasDataQuality();
   }
-  public synchronized org.cougaar.domain.planning.ldm.dq.DataQuality getDataQuality() {
+  public synchronized org.cougaar.planning.ldm.dq.DataQuality getDataQuality() {
     return (_real==null)?null:(_real.getDataQuality());
   }
 

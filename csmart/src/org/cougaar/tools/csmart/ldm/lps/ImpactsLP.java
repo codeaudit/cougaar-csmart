@@ -23,16 +23,16 @@ package org.cougaar.tools.csmart.ldm.lps;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.cougaar.core.cluster.LogPlanLogicProvider;
-import org.cougaar.core.cluster.MessageLogicProvider;
-import org.cougaar.core.cluster.EnvelopeLogicProvider;
-import org.cougaar.core.cluster.ClusterServesLogicProvider;
-import org.cougaar.core.cluster.LogPlanServesLogicProvider;
-import org.cougaar.core.cluster.ClusterIdentifier;
-import org.cougaar.core.cluster.EnvelopeTuple;
-import org.cougaar.core.cluster.SubscriberException;
-import org.cougaar.core.society.UniqueObject;
-import org.cougaar.domain.planning.ldm.plan.Directive;
+import org.cougaar.core.blackboard.LogPlanLogicProvider;
+import org.cougaar.core.blackboard.MessageLogicProvider;
+import org.cougaar.core.blackboard.EnvelopeLogicProvider;
+import org.cougaar.core.agent.ClusterServesLogicProvider;
+import org.cougaar.core.blackboard.LogPlanServesLogicProvider;
+import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.blackboard.EnvelopeTuple;
+import org.cougaar.core.blackboard.SubscriberException;
+import org.cougaar.core.util.UniqueObject;
+import org.cougaar.planning.ldm.plan.Directive;
 
 import org.cougaar.tools.csmart.ldm.event.RealWorldEvent;
 import org.cougaar.tools.csmart.ldm.event.InfrastructureEvent;

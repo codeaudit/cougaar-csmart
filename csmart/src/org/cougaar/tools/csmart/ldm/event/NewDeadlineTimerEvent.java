@@ -20,8 +20,8 @@
  */
 package org.cougaar.tools.csmart.ldm.event;
 
-import org.cougaar.domain.planning.ldm.plan.PlanElement;
-import org.cougaar.core.cluster.ClusterIdentifier;
+import org.cougaar.planning.ldm.plan.PlanElement;
+import org.cougaar.core.agent.ClusterIdentifier;
 
 /**
  * A timer that appears when some deadline has been reached.  It refers,

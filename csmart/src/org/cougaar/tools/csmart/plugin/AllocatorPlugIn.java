@@ -36,21 +36,21 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
-import org.cougaar.core.cluster.IncrementalSubscription;
+import org.cougaar.core.blackboard.IncrementalSubscription;
 import org.cougaar.core.plugin.Annotation;
 import org.cougaar.core.plugin.util.PlugInHelper;
 
-import org.cougaar.domain.planning.ldm.asset.Asset;
-import org.cougaar.domain.planning.ldm.asset.Entity;
-import org.cougaar.domain.planning.ldm.asset.EntityPG;
-import org.cougaar.domain.planning.ldm.plan.Allocation;
-import org.cougaar.domain.planning.ldm.plan.AllocationResult;
-import org.cougaar.domain.planning.ldm.plan.AspectType;
-import org.cougaar.domain.planning.ldm.plan.AuxiliaryQueryType;
-import org.cougaar.domain.planning.ldm.plan.Disposition;
-import org.cougaar.domain.planning.ldm.plan.PlanElement;
-import org.cougaar.domain.planning.ldm.plan.Role;
-import org.cougaar.domain.planning.ldm.plan.Task;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.asset.Entity;
+import org.cougaar.planning.ldm.asset.EntityPG;
+import org.cougaar.planning.ldm.plan.Allocation;
+import org.cougaar.planning.ldm.plan.AllocationResult;
+import org.cougaar.planning.ldm.plan.AspectType;
+import org.cougaar.planning.ldm.plan.AuxiliaryQueryType;
+import org.cougaar.planning.ldm.plan.Disposition;
+import org.cougaar.planning.ldm.plan.PlanElement;
+import org.cougaar.planning.ldm.plan.Role;
+import org.cougaar.planning.ldm.plan.Task;
 
 import org.cougaar.util.UnaryPredicate;
 import org.cougaar.util.StringUtility;
@@ -913,10 +913,10 @@ public class AllocatorPlugIn
       // for all assets
       for (int j = 0; j < nAssets; j++) {
 	// These assets are either LocalAsset's
-	// or org.cougaar.domain.glm.mlm.ldm.asset.Organization's
+	// or org.cougaar.glm.mlm.ldm.asset.Organization's
 	// or Entity's
-	// at any rate, they are all org.cougaar.domain.planning.ldm.asset.Asset's
-	org.cougaar.domain.planning.ldm.asset.Asset assetJ = (org.cougaar.domain.planning.ldm.asset.Asset)assetList.get(j);
+	// at any rate, they are all org.cougaar.planning.ldm.asset.Asset's
+	org.cougaar.planning.ldm.asset.Asset assetJ = (org.cougaar.planning.ldm.asset.Asset)assetList.get(j);
 	
         // if asset matches the "template" rule
         if (templateRuleI.matches(assetJ)) {

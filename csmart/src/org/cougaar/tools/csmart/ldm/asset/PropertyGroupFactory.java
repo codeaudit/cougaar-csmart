@@ -27,14 +27,14 @@
 
 package org.cougaar.tools.csmart.ldm.asset;
 
-import org.cougaar.domain.planning.ldm.measure.*;
-import org.cougaar.domain.planning.ldm.asset.*;
-import org.cougaar.domain.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.measure.*;
+import org.cougaar.planning.ldm.asset.*;
+import org.cougaar.planning.ldm.plan.*;
 import java.util.*;
 
 
 
-public class PropertyGroupFactory extends org.cougaar.domain.planning.ldm.asset.PropertyGroupFactory {
+public class PropertyGroupFactory extends org.cougaar.planning.ldm.asset.PropertyGroupFactory {
   // brand-new instance factory
   public static NewSimpleInventoryPG newSimpleInventoryPG() {
     return new SimpleInventoryPGImpl();

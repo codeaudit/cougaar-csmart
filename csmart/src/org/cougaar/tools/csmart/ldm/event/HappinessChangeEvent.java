@@ -23,12 +23,12 @@ package org.cougaar.tools.csmart.ldm.event;
 
 import java.io.Serializable;
 
-import org.cougaar.core.society.UID;
-import org.cougaar.core.society.UniqueObject;
+import org.cougaar.core.util.UID;
+import org.cougaar.core.util.UniqueObject;
 
-import org.cougaar.core.cluster.Publishable;
-import org.cougaar.core.cluster.ClusterIdentifier;
-import org.cougaar.domain.planning.ldm.plan.PlanElement;
+import org.cougaar.core.blackboard.Publishable;
+import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.planning.ldm.plan.PlanElement;
 
 /**
  * Interface that handles HappinessChangeEvents.   <br><br>

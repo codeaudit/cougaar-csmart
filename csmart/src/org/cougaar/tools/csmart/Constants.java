@@ -102,13 +102,13 @@ public final class Constants {
     String SUPERIOR_SUFFIX = "Superior";
     String SUBORDINATE_SUFFIX = "Subordinate";
 
-    org.cougaar.domain.planning.ldm.plan.RelationshipType SUPERIOR = 
-      org.cougaar.domain.planning.ldm.plan.RelationshipType.create(SUPERIOR_SUFFIX, SUBORDINATE_SUFFIX);
+    org.cougaar.planning.ldm.plan.RelationshipType SUPERIOR = 
+      org.cougaar.planning.ldm.plan.RelationshipType.create(SUPERIOR_SUFFIX, SUBORDINATE_SUFFIX);
 
     String PROVIDER_SUFFIX = "Provider";
     String CUSTOMER_SUFFIX = "Customer";
-    org.cougaar.domain.planning.ldm.plan.RelationshipType PROVIDER = 
-      org.cougaar.domain.planning.ldm.plan.RelationshipType.create(PROVIDER_SUFFIX, CUSTOMER_SUFFIX);
+    org.cougaar.planning.ldm.plan.RelationshipType PROVIDER = 
+      org.cougaar.planning.ldm.plan.RelationshipType.create(PROVIDER_SUFFIX, CUSTOMER_SUFFIX);
   }
 
   // Pre-define some Roles to ensure our relationships come out OK
@@ -123,45 +123,45 @@ public final class Constants {
     }
 
     static {
-      org.cougaar.domain.planning.ldm.plan.Role.create("Self", "Self");
-      org.cougaar.domain.planning.ldm.plan.Role.create("", RelationshipType.SUPERIOR);
-      org.cougaar.domain.planning.ldm.plan.Role.create("Food", RelationshipType.PROVIDER);
-      org.cougaar.domain.planning.ldm.plan.Role.create("SubsistenceSupply", RelationshipType.PROVIDER);
-      org.cougaar.domain.planning.ldm.plan.Role.create("Subsistence", RelationshipType.PROVIDER);
-      org.cougaar.domain.planning.ldm.plan.Role.create("Supply", RelationshipType.PROVIDER);
+      org.cougaar.planning.ldm.plan.Role.create("Self", "Self");
+      org.cougaar.planning.ldm.plan.Role.create("", RelationshipType.SUPERIOR);
+      org.cougaar.planning.ldm.plan.Role.create("Food", RelationshipType.PROVIDER);
+      org.cougaar.planning.ldm.plan.Role.create("SubsistenceSupply", RelationshipType.PROVIDER);
+      org.cougaar.planning.ldm.plan.Role.create("Subsistence", RelationshipType.PROVIDER);
+      org.cougaar.planning.ldm.plan.Role.create("Supply", RelationshipType.PROVIDER);
     }
     
-    public static final org.cougaar.domain.planning.ldm.plan.Role SELF = 
-      org.cougaar.domain.planning.ldm.plan.Role.getRole("Self");
+    public static final org.cougaar.planning.ldm.plan.Role SELF = 
+      org.cougaar.planning.ldm.plan.Role.getRole("Self");
 
-    public static final org.cougaar.domain.planning.ldm.plan.Role SUPERIOR = 
-      org.cougaar.domain.planning.ldm.plan.Role.getRole(RelationshipType.SUPERIOR_SUFFIX);
-    public static final org.cougaar.domain.planning.ldm.plan.Role SUBORDINATE =
-      org.cougaar.domain.planning.ldm.plan.Role.getRole(RelationshipType.SUBORDINATE_SUFFIX);
-   public static final org.cougaar.domain.planning.ldm.plan.Role FOODPROVIDER = 
-      org.cougaar.domain.planning.ldm.plan.Role.getRole("Food" + 
+    public static final org.cougaar.planning.ldm.plan.Role SUPERIOR = 
+      org.cougaar.planning.ldm.plan.Role.getRole(RelationshipType.SUPERIOR_SUFFIX);
+    public static final org.cougaar.planning.ldm.plan.Role SUBORDINATE =
+      org.cougaar.planning.ldm.plan.Role.getRole(RelationshipType.SUBORDINATE_SUFFIX);
+   public static final org.cougaar.planning.ldm.plan.Role FOODPROVIDER = 
+      org.cougaar.planning.ldm.plan.Role.getRole("Food" + 
                                 RelationshipType.PROVIDER_SUFFIX);
-    public static final org.cougaar.domain.planning.ldm.plan.Role FOODCUSTOMER = 
-      org.cougaar.domain.planning.ldm.plan.Role.getRole("Food" + 
+    public static final org.cougaar.planning.ldm.plan.Role FOODCUSTOMER = 
+      org.cougaar.planning.ldm.plan.Role.getRole("Food" + 
                                 RelationshipType.CUSTOMER_SUFFIX);
-    public static final org.cougaar.domain.planning.ldm.plan.Role SUPPLYPROVIDER = 
-      org.cougaar.domain.planning.ldm.plan.Role.getRole("Supply" + 
+    public static final org.cougaar.planning.ldm.plan.Role SUPPLYPROVIDER = 
+      org.cougaar.planning.ldm.plan.Role.getRole("Supply" + 
                                 RelationshipType.PROVIDER_SUFFIX);
-    public static final org.cougaar.domain.planning.ldm.plan.Role SUPPLYCUSTOMER = 
-      org.cougaar.domain.planning.ldm.plan.Role.getRole("Supply" + 
+    public static final org.cougaar.planning.ldm.plan.Role SUPPLYCUSTOMER = 
+      org.cougaar.planning.ldm.plan.Role.getRole("Supply" + 
                                 RelationshipType.CUSTOMER_SUFFIX);
 
-   public static final org.cougaar.domain.planning.ldm.plan.Role SUBSISTENCEPROVIDER = 
-      org.cougaar.domain.planning.ldm.plan.Role.getRole("Subsistence" + 
+   public static final org.cougaar.planning.ldm.plan.Role SUBSISTENCEPROVIDER = 
+      org.cougaar.planning.ldm.plan.Role.getRole("Subsistence" + 
                                 RelationshipType.PROVIDER_SUFFIX);
-    public static final org.cougaar.domain.planning.ldm.plan.Role SUBSISTENCECUSTOMER = 
-      org.cougaar.domain.planning.ldm.plan.Role.getRole("Subsistence" + 
+    public static final org.cougaar.planning.ldm.plan.Role SUBSISTENCECUSTOMER = 
+      org.cougaar.planning.ldm.plan.Role.getRole("Subsistence" + 
                                 RelationshipType.CUSTOMER_SUFFIX);
-   public static final org.cougaar.domain.planning.ldm.plan.Role SUBSISTENCESUPPLYPROVIDER = 
-      org.cougaar.domain.planning.ldm.plan.Role.getRole("SubsistenceSupply" + 
+   public static final org.cougaar.planning.ldm.plan.Role SUBSISTENCESUPPLYPROVIDER = 
+      org.cougaar.planning.ldm.plan.Role.getRole("SubsistenceSupply" + 
                                 RelationshipType.PROVIDER_SUFFIX);
-    public static final org.cougaar.domain.planning.ldm.plan.Role SUBSISTENCESUPPLYCUSTOMER = 
-      org.cougaar.domain.planning.ldm.plan.Role.getRole("SubsistenceSupply" + 
+    public static final org.cougaar.planning.ldm.plan.Role SUBSISTENCESUPPLYCUSTOMER = 
+      org.cougaar.planning.ldm.plan.Role.getRole("SubsistenceSupply" + 
                                 RelationshipType.CUSTOMER_SUFFIX);
   }
   

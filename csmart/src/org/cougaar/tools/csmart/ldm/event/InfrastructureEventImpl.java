@@ -23,9 +23,9 @@ package org.cougaar.tools.csmart.ldm.event;
 
 import java.util.Iterator;
 
-import org.cougaar.domain.planning.ldm.plan.DirectiveImpl;
-import org.cougaar.core.cluster.ClusterIdentifier;
-import org.cougaar.core.society.UID;
+import org.cougaar.planning.ldm.plan.DirectiveImpl;
+import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.util.UID;
 
 import org.cougaar.tools.csmart.util.EarthConstants;
 

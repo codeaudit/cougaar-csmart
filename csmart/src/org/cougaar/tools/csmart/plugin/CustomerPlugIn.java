@@ -26,13 +26,13 @@ import java.util.Iterator;
 import java.util.Enumeration;
 import java.io.IOException;
 
-import org.cougaar.core.cluster.IncrementalSubscription;
-import org.cougaar.core.cluster.Subscription;
+import org.cougaar.core.blackboard.IncrementalSubscription;
+import org.cougaar.core.blackboard.Subscription;
 import org.cougaar.core.plugin.Annotation;
 import org.cougaar.core.plugin.util.PlugInHelper;
-import org.cougaar.domain.planning.ldm.asset.Asset;
-import org.cougaar.domain.planning.ldm.plan.*;
-import org.cougaar.domain.planning.ldm.predicate.PlanElementPredicate;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.predicate.PlanElementPredicate;
 import org.cougaar.util.UnaryPredicate;
 
 import org.cougaar.tools.csmart.ldm.CSMARTFactory;

@@ -26,7 +26,7 @@ package org.cougaar.tools.csmart.ui.component;
  */
 public class AgentComponentData extends GenericComponentData {
 
-  private static final String defClassName = "org.cougaar.core.cluster.ClusterImpl";
+  private static final String defClassName = "org.cougaar.core.agent.ClusterImpl";
 
   /** Default Constructor **/
   public AgentComponentData() {

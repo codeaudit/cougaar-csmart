@@ -21,17 +21,17 @@
 
 package org.cougaar.tools.csmart.plugin;
 
-import org.cougaar.domain.planning.ldm.DomainService;
-import org.cougaar.domain.planning.ldm.RootFactory;
+import org.cougaar.core.service.DomainService;
+import org.cougaar.core.domain.RootFactory;
 
-import org.cougaar.core.blackboard.BlackboardService;
+import org.cougaar.core.service.BlackboardService;
 import org.cougaar.core.component.ServiceRevokedListener;
 import org.cougaar.core.component.ServiceRevokedEvent;
-import org.cougaar.core.cluster.Alarm;
-import org.cougaar.core.cluster.Subscription;
-import org.cougaar.core.cluster.ClusterIdentifier;
+import org.cougaar.core.agent.service.alarm.Alarm;
+import org.cougaar.core.blackboard.Subscription;
+import org.cougaar.core.agent.ClusterIdentifier;
 import org.cougaar.core.plugin.ComponentPlugin;
-import org.cougaar.core.society.UID;
+import org.cougaar.core.util.UID;
 
 import org.cougaar.tools.csmart.ldm.CSMARTFactory;
 import org.cougaar.tools.csmart.util.*;

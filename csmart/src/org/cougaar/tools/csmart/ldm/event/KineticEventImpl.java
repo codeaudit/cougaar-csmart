@@ -20,7 +20,7 @@
  */
 package org.cougaar.tools.csmart.ldm.event;
 
-import org.cougaar.core.society.UID;
+import org.cougaar.core.util.UID;
 
 /**
  * We need this class for symmetry. See subclasses.

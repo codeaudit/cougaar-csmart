@@ -20,16 +20,16 @@
  */
 package org.cougaar.tools.csmart.ldm.event;
 
-import org.cougaar.domain.planning.ldm.plan.PlanElement;
-import org.cougaar.core.society.UID;
-import org.cougaar.core.cluster.ClusterIdentifier;
+import org.cougaar.planning.ldm.plan.PlanElement;
+import org.cougaar.core.util.UID;
+import org.cougaar.core.agent.ClusterIdentifier;
 
 /**
  * Indicates the change in customer satisfaction due to the linked
  * <code>PlanElement</code>'s result.<br>
  *
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
- * @see org.cougaar.domain.planning.ldm.plan.PlanElement
+ * @see org.cougaar.planning.ldm.plan.PlanElement
  * @see org.cougaar.tools.csmart.plugin.CustomerPlugIn
  */
 public class HappinessChangeEventImpl implements NewHappinessChangeEvent {

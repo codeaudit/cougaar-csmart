@@ -20,8 +20,8 @@
  */
 package org.cougaar.tools.csmart.ldm.event;
 
-import org.cougaar.core.cluster.ClusterIdentifier;
-import org.cougaar.domain.planning.ldm.Factory;
+import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.domain.Factory;
 
 import org.cougaar.tools.csmart.ldm.CSMARTFactory;
 import org.cougaar.tools.csmart.ldm.event.NewInfrastructureEvent;

@@ -21,8 +21,8 @@
 
 package org.cougaar.tools.csmart.ui.psp;
 
-import org.cougaar.core.cluster.CollectionSubscription;
-import org.cougaar.core.cluster.Subscription;
+import org.cougaar.core.blackboard.CollectionSubscription;
+import org.cougaar.core.blackboard.Subscription;
 import org.cougaar.util.UnaryPredicate;
 
 import org.cougaar.lib.planserver.HttpInput;

@@ -20,13 +20,13 @@
  */
 package org.cougaar.tools.csmart.plugin;
 
-import org.cougaar.core.cluster.IncrementalSubscription;
-import org.cougaar.core.cluster.Alarm;
+import org.cougaar.core.blackboard.IncrementalSubscription;
+import org.cougaar.core.agent.service.alarm.Alarm;
 import org.cougaar.core.plugin.SimplePlugIn;
 import org.cougaar.core.plugin.util.PlugInHelper;
 
-import org.cougaar.domain.planning.ldm.asset.*;
-import org.cougaar.domain.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.asset.*;
+import org.cougaar.planning.ldm.plan.*;
 
 import org.cougaar.util.UnaryPredicate;
 

@@ -20,7 +20,7 @@
  */
 package org.cougaar.tools.csmart.util;
 
-import org.cougaar.domain.planning.ldm.plan.Location;
+import org.cougaar.planning.ldm.plan.Location;
 
 /**
  * A <code>Location</code> with a name and a position, as a <code>LatLonPoint</code>

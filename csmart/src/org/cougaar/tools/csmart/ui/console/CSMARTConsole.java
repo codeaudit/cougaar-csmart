@@ -1171,7 +1171,7 @@ public class CSMARTConsole extends JFrame {
       } else
         properties.setProperty("org.cougaar.experiment.id", 
                                experiment.getTrialID());
-      properties.setProperty("org.cougaar.core.cluster.persistence.clear",
+      properties.setProperty("org.cougaar.core.persistence.clear",
                              "true");
       // create a status button
       NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
@@ -1345,7 +1345,7 @@ public class CSMARTConsole extends JFrame {
     CommunityServesClient communitySupport = new ClientCommunityController();
     HostServesClient hostServer = null;
     Properties properties = getNodeMinusD(nodeComponent);
-    properties.remove("org.cougaar.core.cluster.persistence.clear");
+    properties.remove("org.cougaar.core.persistence.clear");
     String[] args = getNodeArguments(nodeComponent);
     // get host component by searching hosts for one with this node.
     String hostName = null;

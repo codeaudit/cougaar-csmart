@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
-import org.cougaar.core.cluster.ClusterIdentifier;
+import org.cougaar.core.agent.ClusterIdentifier;
 
 import org.cougaar.tools.csmart.util.LatLonPoint;
 import org.cougaar.tools.csmart.util.NamedLocation;

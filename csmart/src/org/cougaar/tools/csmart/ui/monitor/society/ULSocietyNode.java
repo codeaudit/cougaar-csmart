@@ -23,7 +23,7 @@ package org.cougaar.tools.csmart.ui.monitor.society;
 
 import java.util.*;
 
-import org.cougaar.core.society.UID;
+import org.cougaar.core.util.UID;
 import org.cougaar.tools.csmart.ui.monitor.generic.NodeObject;
 import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;

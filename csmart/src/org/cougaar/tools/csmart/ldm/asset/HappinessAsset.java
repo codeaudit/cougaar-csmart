@@ -21,7 +21,7 @@
 
 /* @generated Thu Oct 18 13:27:06 EDT 2001 from D:\cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartAssets.def - DO NOT HAND EDIT */
 package org.cougaar.tools.csmart.ldm.asset;
-import org.cougaar.domain.planning.ldm.asset.*;
+import org.cougaar.planning.ldm.asset.*;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.IOException;
@@ -40,7 +40,7 @@ public class HappinessAsset extends CSMARTAsset {
     myHappinessPG=null;
   }
 
-  /** For infrastructure only - use org.cougaar.domain.planning.ldm.Factory.copyInstance instead. **/
+  /** For infrastructure only - use org.cougaar.core.domain.Factory.copyInstance instead. **/
   public Object clone() throws CloneNotSupportedException {
     HappinessAsset _thing = (HappinessAsset) super.clone();
     if (myHappinessPG!=null) _thing.setHappinessPG(myHappinessPG.lock());

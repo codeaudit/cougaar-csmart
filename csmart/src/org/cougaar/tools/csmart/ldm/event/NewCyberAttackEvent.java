@@ -20,7 +20,7 @@
  */
 package org.cougaar.tools.csmart.ldm.event;
 
-import org.cougaar.core.cluster.ClusterIdentifier;
+import org.cougaar.core.agent.ClusterIdentifier;
 
 /**
  * Create a new <code>CyberAttackEvent</code>.

@@ -19,7 +19,7 @@
  * </copyright>
  */
 package org.cougaar.tools.csmart.ldm.event;
-import org.cougaar.core.cluster.ClusterIdentifier;
+import org.cougaar.core.agent.ClusterIdentifier;
 
 /**
  * Event modelling attacks to the information infrastructure of a system.

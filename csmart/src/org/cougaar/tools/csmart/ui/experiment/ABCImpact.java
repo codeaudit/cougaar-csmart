@@ -475,7 +475,7 @@ public class ABCImpact
 
     private boolean generator = false;
 
-    private String agentClass_name = "org.cougaar.core.cluster.ClusterImpl";
+    private String agentClass_name = "org.cougaar.core.agent.ClusterImpl";
     private String planServer_name = "org.cougaar.lib.planserver.PlanServerPlugIn";
     private String scriptedEvent_name = "org.cougaar.tools.csmart.plugin.ScriptedEventPlugIn";
     private String transducer_name = "org.cougaar.tools.csmart.plugin.TransducerPlugIn";

@@ -31,8 +31,8 @@ import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
 
-import org.cougaar.core.cluster.ClusterIdentifier;
-import org.cougaar.core.society.UID;
+import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.util.UID;
 import org.cougaar.util.UnaryPredicate;
 
 import org.cougaar.tools.csmart.util.LatLonPoint;

@@ -22,7 +22,7 @@ package org.cougaar.tools.csmart.binder;
 
 import java.util.List;
 
-import org.cougaar.core.society.Message;
+import org.cougaar.core.mts.Message;
 
 /**
  * An implementation of <tt>MessageReleaseScheduler</tt>.

@@ -23,15 +23,15 @@ package org.cougaar.tools.csmart.ldm;
 
 import java.util.*;
 
-import org.cougaar.domain.planning.ldm.Domain;
-import org.cougaar.domain.planning.ldm.Factory;
-import org.cougaar.domain.planning.ldm.LDMServesPlugIn;
-import org.cougaar.core.cluster.LogPlan;
-import org.cougaar.core.cluster.BlackboardServesLogicProvider;
-import org.cougaar.core.cluster.LogPlanServesLogicProvider;
-import org.cougaar.core.cluster.ClusterServesLogicProvider;
-import org.cougaar.core.cluster.XPlanServesBlackboard;
-import org.cougaar.core.cluster.LogicProvider;
+import org.cougaar.core.domain.Domain;
+import org.cougaar.core.domain.Factory;
+import org.cougaar.core.domain.LDMServesPlugIn;
+import org.cougaar.core.blackboard.LogPlan;
+import org.cougaar.core.blackboard.BlackboardServesLogicProvider;
+import org.cougaar.core.blackboard.LogPlanServesLogicProvider;
+import org.cougaar.core.agent.ClusterServesLogicProvider;
+import org.cougaar.core.blackboard.XPlanServesBlackboard;
+import org.cougaar.core.agent.LogicProvider;
 
 import org.cougaar.tools.csmart.Constants;
 import org.cougaar.tools.csmart.ldm.lps.*;

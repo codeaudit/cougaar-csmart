@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 import org.cougaar.util.EmptyIterator;
-import org.cougaar.core.society.UID;
+import org.cougaar.core.util.UID;
 
 import org.cougaar.tools.csmart.Constants;
 import org.cougaar.tools.csmart.util.*;

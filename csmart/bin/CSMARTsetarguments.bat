@@ -35,9 +35,9 @@ REM Users may want to customize the MYLOG level set below
 
 REM Domains are now usually defined by the config file LDMDomains.ini
 REM But you may still use properties if you wish.
-REM SET MYDOMAINS=-Dorg.cougaar.domain.alp=org.cougaar.domain.glm.GLMDomain
+REM SET MYDOMAINS=-Dorg.cougaar.domain.alp=org.cougaar.glm.GLMDomain
 SET MYDOMAINS=
-SET MYCLASSES=org.cougaar.core.society.Node
+SET MYCLASSES=org.cougaar.core.node.Node
 
 REM Set the log level for the CSMART logging facilitiy
 REM Options in increasing order of verbosity are: SEVERE, PROBLEM, DEBUG, VERBOSE, or VERY_VERBOSE

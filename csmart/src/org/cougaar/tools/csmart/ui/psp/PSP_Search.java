@@ -25,13 +25,17 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
 
-import org.cougaar.core.cluster.*;
-import org.cougaar.core.society.UID;
-import org.cougaar.core.society.UniqueObject;
+import org.cougaar.core.agent.*;
+import org.cougaar.core.domain.*;
+import org.cougaar.core.blackboard.*;
+import org.cougaar.core.mts.Message;
+import org.cougaar.core.mts.MessageAddress;
+import org.cougaar.core.util.UID;
+import org.cougaar.core.util.UniqueObject;
 import org.cougaar.core.util.*;
-import org.cougaar.domain.planning.ldm.asset.Asset;
-import org.cougaar.domain.planning.ldm.asset.AssetGroup;
-import org.cougaar.domain.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.asset.AssetGroup;
+import org.cougaar.planning.ldm.plan.*;
 import org.cougaar.lib.planserver.*;
 import org.cougaar.util.*;
 

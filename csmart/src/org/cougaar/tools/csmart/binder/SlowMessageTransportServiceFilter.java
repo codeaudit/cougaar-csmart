@@ -24,7 +24,11 @@ import java.util.List;
 
 import org.cougaar.core.component.*;
 import org.cougaar.core.agent.*;
-import org.cougaar.core.society.*;
+import org.cougaar.core.domain.*;
+import org.cougaar.core.blackboard.*;
+import org.cougaar.core.mts.Message;
+import org.cougaar.core.mts.MessageAddress;
+import org.cougaar.core.node.*;
 import org.cougaar.core.mts.*;
 
 /**

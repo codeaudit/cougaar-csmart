@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cougaar.core.plugin.SimplePlugIn;
-import org.cougaar.domain.planning.ldm.asset.Asset;
-import org.cougaar.domain.planning.ldm.plan.Role;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.plan.Role;
 import org.cougaar.util.UnaryPredicate;
 
 import org.cougaar.tools.csmart.ldm.asset.*;

@@ -30,15 +30,19 @@ import java.net.URLConnection;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import org.cougaar.core.cluster.*;
-import org.cougaar.core.society.UID;
-import org.cougaar.core.society.UniqueObject;
+import org.cougaar.core.agent.*;
+import org.cougaar.core.domain.*;
+import org.cougaar.core.blackboard.*;
+import org.cougaar.core.mts.Message;
+import org.cougaar.core.mts.MessageAddress;
+import org.cougaar.core.util.UID;
+import org.cougaar.core.util.UniqueObject;
 import org.cougaar.core.util.*;
-import org.cougaar.domain.planning.ldm.asset.Asset;
-import org.cougaar.domain.planning.ldm.asset.AssetGroup;
-import org.cougaar.domain.planning.ldm.asset.TypeIdentificationPG;
-import org.cougaar.domain.planning.ldm.measure.AbstractMeasure;
-import org.cougaar.domain.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.asset.AssetGroup;
+import org.cougaar.planning.ldm.asset.TypeIdentificationPG;
+import org.cougaar.planning.ldm.measure.AbstractMeasure;
+import org.cougaar.planning.ldm.plan.*;
 import org.cougaar.lib.planserver.*;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.util.*;
@@ -84,7 +88,7 @@ public final class TranslateUtils {
   /**
    * Translate the given <code>Object</code>s into an equivalent
    * <code>PropertyTree</code>.  The Object must be an instance of
-   * org.cougaar.core.society.UniqueObject or this will return null.
+   * org.cougaar.core.util.UniqueObject or this will return null.
    *
    * @param o an Object to convert into a PropertyTree
    * @param agent the name of the Agent (ClusterIdentifier) for this Object

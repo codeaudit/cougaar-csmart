@@ -49,7 +49,7 @@ public class ABCAgentTest extends TestCase {
 
 // //     assertEquals("Test Type", ComponentData.AGENT, data.getType());
 // //     assertEquals("Test Name", agent.getFullName().toString(), data.getName());
-// //     assertEquals("Test Class", "org.cougaar.core.cluster.ClusterImpl", data.getClassName());
+// //     assertEquals("Test Class", "org.cougaar.core.agent.ClusterImpl", data.getClassName());
 // //     assertEquals("Test Number of PlugIns", 6, data.childCount());
 //   }
 
@@ -60,10 +60,10 @@ public class ABCAgentTest extends TestCase {
 
 //     ComponentData gc = (ComponentData)children[0];
 
-//     assertEquals("Test AssetData", "org.cougaar.domain.planning.plugin.AssetDataPlugIn", gc.getName());
+//     assertEquals("Test AssetData", "org.cougaar.planning.plugin.AssetDataPlugIn", gc.getName());
 
 //     gc = (ComponentData)children[1];
-//     assertEquals("Test AssetReport", "org.cougaar.domain.planning.plugin.AssetReportPlugIn", gc.getName());
+//     assertEquals("Test AssetReport", "org.cougaar.planning.plugin.AssetReportPlugIn", gc.getName());
 
 //     gc = (ComponentData)children[2];
 //     assertEquals("Test CustomerPlugIn", "org.cougaar.tools.csmart.plugin.CustomerPlugIn" , gc.getName());

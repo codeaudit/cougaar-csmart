@@ -25,10 +25,10 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import org.cougaar.core.cluster.Subscription;
-import org.cougaar.core.society.UID;
-import org.cougaar.domain.planning.ldm.asset.*;
-import org.cougaar.domain.planning.ldm.plan.*;
+import org.cougaar.core.blackboard.Subscription;
+import org.cougaar.core.util.UID;
+import org.cougaar.planning.ldm.asset.*;
+import org.cougaar.planning.ldm.plan.*;
 
 import org.cougaar.lib.planserver.*;
 

@@ -23,14 +23,14 @@
 /** Abstract Asset Skeleton implementation
  * Implements default property getters, and additional property
  * lists.
- * Intended to be extended by org.cougaar.domain.planning.ldm.asset.Asset
+ * Intended to be extended by org.cougaar.planning.ldm.asset.Asset
  **/
 
 package org.cougaar.tools.csmart.ldm.asset;
 
-import org.cougaar.domain.planning.ldm.measure.*;
-import org.cougaar.domain.planning.ldm.asset.*;
-import org.cougaar.domain.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.measure.*;
+import org.cougaar.planning.ldm.asset.*;
+import org.cougaar.planning.ldm.plan.*;
 import java.util.*;
 
 
@@ -38,7 +38,7 @@ import java.io.Serializable;
 import java.beans.PropertyDescriptor;
 import java.beans.IndexedPropertyDescriptor;
 
-public abstract class AssetSkeleton extends org.cougaar.domain.planning.ldm.asset.Asset {
+public abstract class AssetSkeleton extends org.cougaar.planning.ldm.asset.Asset {
 
   protected AssetSkeleton() {}
 

@@ -26,13 +26,13 @@
 
 package org.cougaar.tools.csmart.ldm.asset;
 
-import org.cougaar.domain.planning.ldm.measure.*;
-import org.cougaar.domain.planning.ldm.asset.*;
-import org.cougaar.domain.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.measure.*;
+import org.cougaar.planning.ldm.asset.*;
+import org.cougaar.planning.ldm.plan.*;
 import java.util.*;
 
 
 
 
-public interface NewHappinessPG extends HappinessPG, NewPropertyGroup, org.cougaar.domain.planning.ldm.dq.HasDataQuality {
+public interface NewHappinessPG extends HappinessPG, NewPropertyGroup, org.cougaar.planning.ldm.dq.HasDataQuality {
 }

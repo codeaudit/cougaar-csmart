@@ -24,9 +24,9 @@ package org.cougaar.tools.csmart.ldm.event;
 import java.io.Serializable;
 import java.util.List;
 
-import org.cougaar.core.cluster.Publishable;
-import org.cougaar.core.society.UniqueObject;
-import org.cougaar.domain.planning.ldm.plan.Directive;
+import org.cougaar.core.blackboard.Publishable;
+import org.cougaar.core.util.UniqueObject;
+import org.cougaar.planning.ldm.plan.Directive;
 
 /**
  * Parent class for External world events with which to stress

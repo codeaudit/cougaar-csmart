@@ -95,8 +95,8 @@ include permission to drop tables. See your database administrator.
 - If once running you the the following exception in the Node output
   stream, you are using a MySQL database without the Cougaar domain
   database installed in database "cougaar":
-org.cougaar.core.society.InitializerServiceException: java.sql.SQLException: General error: Table 'cougaar.geoloc' doesn't exist
-	at org.cougaar.core.society.DBInitializerServiceProvider$InitializerServiceImpl.translateAttributeValue(DBInitializerServiceProvider.java:485)
+org.cougaar.core.node.InitializerServiceException: java.sql.SQLException: General error: Table 'cougaar.geoloc' doesn't exist
+	at org.cougaar.core.node.DBInitializerServiceProvider$InitializerServiceImpl.translateAttributeValue(DBInitializerServiceProvider.java:485)
 
 - If on start you get an error:
    Table cougaar.V4_EXPT_EXPERIMENT doesn't exist on Unix, then you

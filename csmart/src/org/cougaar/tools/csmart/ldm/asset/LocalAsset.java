@@ -21,7 +21,7 @@
 
 /* @generated Thu Oct 18 13:27:05 EDT 2001 from D:\cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartAssets.def - DO NOT HAND EDIT */
 package org.cougaar.tools.csmart.ldm.asset;
-import org.cougaar.domain.planning.ldm.asset.*;
+import org.cougaar.planning.ldm.asset.*;
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.IOException;
@@ -42,7 +42,7 @@ public class LocalAsset extends CSMARTAsset {
     mySimpleInventoryPG=null;
   }
 
-  /** For infrastructure only - use org.cougaar.domain.planning.ldm.Factory.copyInstance instead. **/
+  /** For infrastructure only - use org.cougaar.core.domain.Factory.copyInstance instead. **/
   public Object clone() throws CloneNotSupportedException {
     LocalAsset _thing = (LocalAsset) super.clone();
     if (myRolesPG!=null) _thing.setRolesPG(myRolesPG.lock());

@@ -20,32 +20,32 @@
  */
 package org.cougaar.tools.csmart.plugin;
 
-import org.cougaar.core.blackboard.BlackboardMetricsService;
-import org.cougaar.core.cluster.IncrementalSubscription;
-import org.cougaar.core.cluster.ClusterIdentifier;
-import org.cougaar.core.cluster.DirectiveMessage;
+import org.cougaar.core.service.BlackboardMetricsService;
+import org.cougaar.core.blackboard.IncrementalSubscription;
+import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.blackboard.DirectiveMessage;
 import org.cougaar.core.component.ServiceRevokedListener;
 import org.cougaar.core.component.ServiceRevokedEvent;
-import org.cougaar.core.mts.MessageStatisticsService;
-import org.cougaar.core.mts.MessageWatcherService;
+import org.cougaar.core.service.MessageStatisticsService;
+import org.cougaar.core.service.MessageWatcherService;
 import org.cougaar.core.mts.MessageTransportWatcher;
-import org.cougaar.core.society.NodeMetricsService;
-import org.cougaar.core.society.MessageAddress;
-import org.cougaar.core.society.Message;
+import org.cougaar.core.service.NodeMetricsService;
+import org.cougaar.core.mts.MessageAddress;
+import org.cougaar.core.mts.Message;
 
-import org.cougaar.domain.planning.ldm.PrototypeRegistryService;
+import org.cougaar.core.service.PrototypeRegistryService;
 
-import org.cougaar.domain.planning.ldm.asset.Asset;
-import org.cougaar.domain.planning.ldm.asset.AbstractAsset;
-import org.cougaar.domain.planning.ldm.plan.AllocationResult;
-import org.cougaar.domain.planning.ldm.plan.AspectType;
-import org.cougaar.domain.planning.ldm.plan.Allocation;
-import org.cougaar.domain.planning.ldm.plan.Directive;
-import org.cougaar.domain.planning.ldm.plan.Notification;
-import org.cougaar.domain.planning.ldm.plan.PlanElement;
-import org.cougaar.domain.planning.ldm.plan.Role;
-import org.cougaar.domain.planning.ldm.plan.Task;
-import org.cougaar.domain.planning.ldm.plan.Verb;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.asset.AbstractAsset;
+import org.cougaar.planning.ldm.plan.AllocationResult;
+import org.cougaar.planning.ldm.plan.AspectType;
+import org.cougaar.planning.ldm.plan.Allocation;
+import org.cougaar.planning.ldm.plan.Directive;
+import org.cougaar.planning.ldm.plan.Notification;
+import org.cougaar.planning.ldm.plan.PlanElement;
+import org.cougaar.planning.ldm.plan.Role;
+import org.cougaar.planning.ldm.plan.Task;
+import org.cougaar.planning.ldm.plan.Verb;
 
 import org.cougaar.util.UnaryPredicate;
 

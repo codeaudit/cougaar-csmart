@@ -24,7 +24,7 @@ package org.cougaar.tools.csmart.ui.monitor.viewer;
 //import att.grappa.GrappaConstants;
 
 import org.cougaar.util.ConfigFinder;
-import org.cougaar.core.society.UID;
+import org.cougaar.core.util.UID;
 
 import org.cougaar.tools.csmart.ui.component.CompositeName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
@@ -63,7 +63,7 @@ import java.net.URL;
 import java.util.*;
 import javax.swing.*;
 import org.cougaar.tools.csmart.ui.Browser;
-import org.cougaar.core.society.Bootstrapper;
+import org.cougaar.core.node.Bootstrapper;
 
 /**
  * The user interface for the CSMART Society.

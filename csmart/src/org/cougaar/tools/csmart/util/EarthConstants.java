@@ -32,7 +32,7 @@ package org.cougaar.tools.csmart.util;
  * <i>Map Projection --A Working Manual</i><br>
  *
  * Some routines taken from <a href="http://www.cougaar.org">Cougaar</a>
- * and the class <code>org.cougaar.domain.glm.util.GeoUtils</code><br>
+ * and the class <code>org.cougaar.glm.util.GeoUtils</code><br>
  *
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  */
@@ -46,7 +46,7 @@ public final class EarthConstants {
   public final static transient float equatorialRadiusMeters = 6378137.0f;
   public final static transient float equatorialCircumferenceMeters = EarthConstants.TWO_PI * EarthConstants.equatorialRadiusMeters;
   
-  // from org.cougaar.domain.glm.util, by Ken A:
+  // from org.cougaar.glm.util, by Ken A:
   // Modified to remove reliance on other Cougaar classes
   /**
    * Compute great-circle distance (expressed as float Kilometers)

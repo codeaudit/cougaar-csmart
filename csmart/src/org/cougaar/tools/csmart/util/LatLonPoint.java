@@ -20,9 +20,9 @@
  */
 package  org.cougaar.tools.csmart.util;
 
-import org.cougaar.domain.planning.ldm.plan.Location;
-import org.cougaar.domain.planning.ldm.measure.Latitude;
-import org.cougaar.domain.planning.ldm.measure.Longitude;
+import org.cougaar.planning.ldm.plan.Location;
+import org.cougaar.planning.ldm.measure.Latitude;
+import org.cougaar.planning.ldm.measure.Longitude;
 
 import java.io.*;
 

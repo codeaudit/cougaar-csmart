@@ -26,8 +26,8 @@ import java.util.Iterator;
 
 import org.cougaar.util.EmptyIterator;
 
-import org.cougaar.core.society.UID;
-import org.cougaar.core.cluster.ClusterIdentifier;
+import org.cougaar.core.util.UID;
+import org.cougaar.core.agent.ClusterIdentifier;
 
 import org.cougaar.tools.csmart.util.ArgValue;
 import org.cougaar.tools.csmart.Constants;

@@ -98,16 +98,16 @@ public class ScalabilityXAgent
   public static final String PROP_ASSETCOUNT = "Asset Count";
   public static final Object PROP_ASSETCOUNT_DFLT = one;
 
-  private String agentClassName = "org.cougaar.core.cluster.ClusterImpl";
+  private String agentClassName = "org.cougaar.core.agent.ClusterImpl";
   private List supporting = new ArrayList();
   private ScalabilityXAgent superior;
   private int level;
   private int agentIndex;
 
   private static final String OrgRTDataPlugIn_name =
-    "org.cougaar.domain.mlm.plugin.organization.OrgRTDataPlugIn";
+    "org.cougaar.mlm.plugin.organization.OrgRTDataPlugIn";
   private static final String OrgReportPlugIn_name =
-    "org.cougaar.domain.mlm.plugin.organization.OrgReportPlugIn";
+    "org.cougaar.mlm.plugin.organization.OrgReportPlugIn";
   private static final String ScalabilityAllocatorPlugIn_name =
     "org.cougaar.tools.scalability.scalability.ScalabilityAllocatorPlugIn";
   private static final String ScalabilityDummyLoadPlugIn_name =

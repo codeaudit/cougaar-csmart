@@ -27,9 +27,9 @@
 
 package org.cougaar.tools.csmart.ldm.asset;
 
-import org.cougaar.domain.planning.ldm.measure.*;
-import org.cougaar.domain.planning.ldm.asset.*;
-import org.cougaar.domain.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.measure.*;
+import org.cougaar.planning.ldm.asset.*;
+import org.cougaar.planning.ldm.plan.*;
 import java.util.*;
 
 
@@ -71,10 +71,10 @@ public class SimpleInventoryPGImpl extends java.beans.SimpleBeanInfo
   }
 
   public boolean hasDataQuality() { return false; }
-  public org.cougaar.domain.planning.ldm.dq.DataQuality getDataQuality() { return null; }
+  public org.cougaar.planning.ldm.dq.DataQuality getDataQuality() { return null; }
 
   // static inner extension class for real DataQuality Support
-  public final static class DQ extends SimpleInventoryPGImpl implements org.cougaar.domain.planning.ldm.dq.NewHasDataQuality {
+  public final static class DQ extends SimpleInventoryPGImpl implements org.cougaar.planning.ldm.dq.NewHasDataQuality {
    public DQ() {
     super();
    }
@@ -82,17 +82,17 @@ public class SimpleInventoryPGImpl extends java.beans.SimpleBeanInfo
     super(original);
    }
    public Object clone() { return new DQ(this); }
-   private transient org.cougaar.domain.planning.ldm.dq.DataQuality _dq = null;
+   private transient org.cougaar.planning.ldm.dq.DataQuality _dq = null;
    public boolean hasDataQuality() { return (_dq!=null); }
-   public org.cougaar.domain.planning.ldm.dq.DataQuality getDataQuality() { return _dq; }
-   public void setDataQuality(org.cougaar.domain.planning.ldm.dq.DataQuality dq) { _dq=dq; }
+   public org.cougaar.planning.ldm.dq.DataQuality getDataQuality() { return _dq; }
+   public void setDataQuality(org.cougaar.planning.ldm.dq.DataQuality dq) { _dq=dq; }
    private void writeObject(ObjectOutputStream out) throws IOException {
     out.defaultWriteObject();
-    if (out instanceof org.cougaar.core.cluster.persist.PersistenceOutputStream) out.writeObject(_dq);
+    if (out instanceof org.cougaar.core.persist.PersistenceOutputStream) out.writeObject(_dq);
    }
    private void readObject(ObjectInputStream in) throws ClassNotFoundException, IOException {
     in.defaultReadObject();
-    if (in instanceof org.cougaar.core.cluster.persist.PersistenceInputStream) _dq=(org.cougaar.domain.planning.ldm.dq.DataQuality)in.readObject();
+    if (in instanceof org.cougaar.core.persist.PersistenceInputStream) _dq=(org.cougaar.planning.ldm.dq.DataQuality)in.readObject();
    }
     
     private final static PropertyDescriptor properties[]=new PropertyDescriptor[1];
@@ -214,7 +214,7 @@ public class SimpleInventoryPGImpl extends java.beans.SimpleBeanInfo
     return SimpleInventoryPGImpl.this.toString(verbose);
   }
   public final boolean hasDataQuality() { return SimpleInventoryPGImpl.this.hasDataQuality(); }
-  public final org.cougaar.domain.planning.ldm.dq.DataQuality getDataQuality() { return SimpleInventoryPGImpl.this.getDataQuality(); }
+  public final org.cougaar.planning.ldm.dq.DataQuality getDataQuality() { return SimpleInventoryPGImpl.this.getDataQuality(); }
     public Class getPrimaryClass() {
       return primaryClass;
     }

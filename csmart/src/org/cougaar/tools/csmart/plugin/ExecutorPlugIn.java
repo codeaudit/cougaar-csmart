@@ -25,14 +25,14 @@ import java.util.Enumeration;
 
 import org.cougaar.util.UnaryPredicate;
 
-import org.cougaar.core.cluster.IncrementalSubscription;
+import org.cougaar.core.blackboard.IncrementalSubscription;
 
-import org.cougaar.domain.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.asset.Asset;
 
-import org.cougaar.domain.planning.ldm.plan.Allocation;
-import org.cougaar.domain.planning.ldm.plan.AllocationResult;
-import org.cougaar.domain.planning.ldm.plan.AspectType;
-import org.cougaar.domain.planning.ldm.plan.AuxiliaryQueryType;
+import org.cougaar.planning.ldm.plan.Allocation;
+import org.cougaar.planning.ldm.plan.AllocationResult;
+import org.cougaar.planning.ldm.plan.AspectType;
+import org.cougaar.planning.ldm.plan.AuxiliaryQueryType;
 
 import org.cougaar.tools.csmart.ldm.asset.LocalAsset;
 import org.cougaar.tools.csmart.ldm.asset.SimpleInventoryPG;

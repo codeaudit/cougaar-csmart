@@ -20,8 +20,8 @@
  */
 package org.cougaar.tools.csmart.ldm.event;
 
-import org.cougaar.domain.planning.ldm.plan.NewDirective;
-import org.cougaar.domain.planning.ldm.plan.Plan;
+import org.cougaar.planning.ldm.plan.NewDirective;
+import org.cougaar.planning.ldm.plan.Plan;
 
 /**
  * Modifiable <code>InfrastructureEvent</code> interface that should only

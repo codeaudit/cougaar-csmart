@@ -20,18 +20,18 @@
  */
 package org.cougaar.tools.csmart.ldm.event;
 
-import org.cougaar.core.society.UID;
-import org.cougaar.core.cluster.ClusterIdentifier;
+import org.cougaar.core.util.UID;
+import org.cougaar.core.agent.ClusterIdentifier;
 
-import org.cougaar.domain.planning.ldm.plan.Aggregation;
-import org.cougaar.domain.planning.ldm.plan.Allocation;
-import org.cougaar.domain.planning.ldm.plan.AllocationResult;
-import org.cougaar.domain.planning.ldm.plan.AssetTransfer;
-import org.cougaar.domain.planning.ldm.plan.AuxiliaryQueryType;
-import org.cougaar.domain.planning.ldm.plan.Disposition;
-import org.cougaar.domain.planning.ldm.plan.Expansion;
-import org.cougaar.domain.planning.ldm.plan.PlanElement;
-import org.cougaar.domain.planning.ldm.plan.Task;
+import org.cougaar.planning.ldm.plan.Aggregation;
+import org.cougaar.planning.ldm.plan.Allocation;
+import org.cougaar.planning.ldm.plan.AllocationResult;
+import org.cougaar.planning.ldm.plan.AssetTransfer;
+import org.cougaar.planning.ldm.plan.AuxiliaryQueryType;
+import org.cougaar.planning.ldm.plan.Disposition;
+import org.cougaar.planning.ldm.plan.Expansion;
+import org.cougaar.planning.ldm.plan.PlanElement;
+import org.cougaar.planning.ldm.plan.Task;
 
 /**
  * A timer that appears when some deadline has been reached.  It refers,

@@ -20,7 +20,7 @@
  */
 package org.cougaar.tools.csmart.ldm.plugin.transducer;
 
-import org.cougaar.core.cluster.ClusterIdentifier;
+import org.cougaar.core.agent.ClusterIdentifier;
 
 import org.cougaar.tools.csmart.util.*;
 

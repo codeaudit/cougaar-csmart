@@ -23,7 +23,7 @@
 
 package=org.cougaar.tools.csmart.ldm.asset
 
-factoryExtends=org.cougaar.domain.planning.ldm.asset.PropertyGroupFactory
+factoryExtends=org.cougaar.planning.ldm.asset.PropertyGroupFactory
 
 [RolesPG]
 doc=a list of roles for LocalAssets to specify their capabilities

@@ -21,7 +21,7 @@
 
 /* @generated Thu Oct 18 13:27:06 EDT 2001 from D:\cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartAssets.def - DO NOT HAND EDIT */
 package org.cougaar.tools.csmart.ldm.asset;
-import org.cougaar.domain.planning.ldm.asset.EssentialAssetFactory;
+import org.cougaar.planning.ldm.asset.EssentialAssetFactory;
 
 public class AssetFactory extends EssentialAssetFactory {
   public static String[] assets = {

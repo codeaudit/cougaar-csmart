@@ -24,15 +24,15 @@ package org.cougaar.tools.csmart.ldm;
 import java.util.*;
 import java.io.InputStream;
 
-import org.cougaar.core.cluster.ClusterContext;
-import org.cougaar.core.cluster.ClusterIdentifier;
-import org.cougaar.core.cluster.ClusterServesPlugIn;
-import org.cougaar.core.cluster.UIDServer;
-import org.cougaar.core.society.UID;
-import org.cougaar.domain.planning.ldm.Factory;
-import org.cougaar.domain.planning.ldm.RootFactory;
-import org.cougaar.domain.planning.ldm.LDMServesPlugIn;
-import org.cougaar.domain.planning.ldm.asset.*;
+import org.cougaar.core.agent.ClusterContext;
+import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.agent.ClusterServesPlugIn;
+import org.cougaar.core.service.UIDServer;
+import org.cougaar.core.util.UID;
+import org.cougaar.core.domain.Factory;
+import org.cougaar.core.domain.RootFactory;
+import org.cougaar.core.domain.LDMServesPlugIn;
+import org.cougaar.planning.ldm.asset.*;
 
 import org.cougaar.tools.csmart.ldm.asset.*;
 import org.cougaar.tools.csmart.ldm.event.*;

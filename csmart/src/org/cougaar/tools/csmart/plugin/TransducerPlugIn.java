@@ -31,7 +31,7 @@ import java.util.Enumeration;
 import org.cougaar.util.UnaryPredicate;
 import org.cougaar.util.EmptyIterator;
 
-import org.cougaar.core.cluster.IncrementalSubscription;
+import org.cougaar.core.blackboard.IncrementalSubscription;
 
 import org.cougaar.tools.csmart.ldm.plugin.transducer.Society;
 import org.cougaar.tools.csmart.ldm.plugin.transducer.Agent;

@@ -35,7 +35,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import org.cougaar.core.society.Bootstrapper;
+import org.cougaar.core.node.Bootstrapper;
 import org.cougaar.util.Parameters;
 
 import org.cougaar.tools.csmart.societies.database.DBUtils;

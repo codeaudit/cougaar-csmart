@@ -23,9 +23,9 @@ package org.cougaar.tools.csmart.plugin;
 import java.util.*;
 
 import org.cougaar.core.component.ServiceBroker;
-import org.cougaar.core.cluster.ClusterIdentifier;
-import org.cougaar.core.cluster.Subscription;
-import org.cougaar.core.cluster.IncrementalSubscription;
+import org.cougaar.core.agent.ClusterIdentifier;
+import org.cougaar.core.blackboard.Subscription;
+import org.cougaar.core.blackboard.IncrementalSubscription;
 import org.cougaar.core.plugin.SimplePlugIn;
 import org.cougaar.util.UnaryPredicate;
 

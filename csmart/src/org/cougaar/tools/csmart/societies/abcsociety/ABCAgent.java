@@ -28,7 +28,7 @@ import java.util.Collections;
 
 import org.cougaar.tools.csmart.ui.component.*;
 
-import org.cougaar.domain.planning.ldm.plan.Role;
+import org.cougaar.planning.ldm.plan.Role;
 
 /**
  * Defines an Agent within an ABC Society.
@@ -77,7 +77,7 @@ public class ABCAgent
   public static final Long PROP_STOPTIME_DFLT = new Long(40000);
   public static final String PROP_STOPTIME_DESC = "Stop Time for Tasks";
   
-  private static final String agentClassName = "org.cougaar.core.cluster.ClusterImpl";
+  private static final String agentClassName = "org.cougaar.core.agent.ClusterImpl";
 
   /** Full names of all plugins **/
   private static final String CustomerPlugIn_name =
@@ -91,9 +91,9 @@ public class ABCAgent
   private static final String AssetBuilderPlugIn_name =
     "org.cougaar.tools.csmart.plugin.LocalAssetBuilder";
   private static final String AssetDataPlugIn_name =
-    "org.cougaar.domain.planning.plugin.AssetDataPlugIn";
+    "org.cougaar.planning.plugin.AssetDataPlugIn";
   private static final String AssetReportPlugIn_name =
-    "org.cougaar.domain.planning.plugin.AssetReportPlugIn";
+    "org.cougaar.planning.plugin.AssetReportPlugIn";
 
   private Property propDistance;
   private Property propDirection;

@@ -24,8 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.cougaar.core.mts.*;
-import org.cougaar.core.society.Message;
-import org.cougaar.core.society.MessageAddress;
+import org.cougaar.core.mts.Message;
+import org.cougaar.core.mts.MessageAddress;
 
 
 /**
