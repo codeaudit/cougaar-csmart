@@ -59,7 +59,7 @@ public class TestGUI
     private MyTableModel model = new MyTableModel();
     private JTable view = new JTable(model);
     private JScrollPane detail = new JScrollPane(view);
-    private TreeNode root;
+  //    private TreeNode root;
     private DefaultTreeModel treeModel = null;
     private JTree tree = new JTree();
 
@@ -230,9 +230,9 @@ public class TestGUI
         return renderValue(cls, allowed);
     }
 
-    private static String renderObjectArray(Class cls, Object ary) {
-        return renderArray(ary, new ObjectArrayElementRenderer(cls));
-    }
+//     private static String renderObjectArray(Class cls, Object ary) {
+//         return renderArray(ary, new ObjectArrayElementRenderer(cls));
+//     }
 
     private static String renderArray(Object ary, ArrayElementRenderer renderer) {
         StringBuffer buf = new StringBuffer();
