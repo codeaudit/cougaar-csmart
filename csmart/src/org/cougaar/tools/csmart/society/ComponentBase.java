@@ -20,12 +20,14 @@
  */
 package org.cougaar.tools.csmart.society;
 
+import java.util.Iterator;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyAlias;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 
 /**
  * ComponentBase is the basic implementation for editing & configuring
@@ -72,7 +74,7 @@ public class ComponentBase
   }
 
   private void createLogger() {
-    log = CSMART.createLogger(this.getClass().getName());
+    log = CSMART.createLogger("org.cougaar.tools.csmart.society.ComponentBase");
   }
 
   /**
@@ -94,8 +96,12 @@ public class ComponentBase
    * @return a <code>ComponentData</code> value
    */
   public ComponentData addComponentData(ComponentData data) {
+    if(log.isDebugEnabled()) {
+      log.debug("Adding ComponentData for: " + data.getName());
+    }
+
     // Warning: This assumes it has been handed the component in
-    // which to add itself
+    // which to add itself    
     if (data.getType() != ComponentData.AGENT && data.getType() != ComponentData.NODE) {
       if (log.isErrorEnabled()) {
 	log.error("Asked to add to non Agent/Node: " + data);
@@ -128,10 +134,37 @@ public class ComponentBase
     self.setParent(data);
 
     self.setClassName(getComponentClassName());
-    for(int i=0; i < nParameters; i++) {
-      if (getProperty(PROP_PARAM + i) != null)
-	self.addParameter(getProperty(PROP_PARAM + i).getValue());
+
+    Iterator names = getSortedLocalPropertyNames();
+    while (names.hasNext()) {
+      CompositeName cname = (CompositeName) names.next();
+      String name = cname.toString();
+      if (log.isDebugEnabled()) {
+        log.debug("Looking at property " + name);
+      }
+      if (name.indexOf(PROP_PARAM) != -1) {
+        if (log.isDebugEnabled()) {
+          log.debug("Found parameter " + name);
+        }
+        self.addParameter(getProperty(cname).getValue());
+      }
     }
+        
+//     for(int i=0; i < nParameters; i++) {
+//       // getLocalPropertyNames
+//       // Iterate through them, looking for PROP_PARAM
+//       // when get one, store it in hash by the number in it?
+//       // Then with the count, create an array of that size,
+//       // stick the items from the hash in the array, and do
+//       // self.setParameters...
+//       if (getProperty(PROP_PARAM + i) != null) {
+//         if(log.isDebugEnabled()) {
+//           log.debug("Adding Parameter: " + PROP_PARAM + i +
+//                     " Value: " + getProperty(PROP_PARAM + i).getValue());
+//         }
+// 	self.addParameter(getProperty(PROP_PARAM + i).getValue());
+//       }
+//     }
 
 
     if (alreadyAdded(data, self)) {
@@ -188,13 +221,18 @@ public class ComponentBase
 	  if (kid.parameterCount() == self.parameterCount()) {
 	    // Then we better compare the parameters in turn.
 	    // As soon as we find one that differs, were OK.
-	    for (int j = 0; j < nParameters; j++) {
+	    for (int j = 0; j < kid.parameterCount(); j++) {
 	      if (! kid.getParameter(j).equals(self.getParameter(j))) {
 		isdiff = true;
 		break;
 	      }
 	    } // loop over params
-	    // If we get here, we compared all the parameters.
+	    // If we get here, we finished comparing the parameters
+            // Either cause we broke out, and isdiff is true
+            // Or we completely compared the child, and it is
+            // identical.
+            // If we did not mark this child as different,
+            // then return true - it is the same
 	    if (! isdiff)
 	      return true;
 	  } // check param count
