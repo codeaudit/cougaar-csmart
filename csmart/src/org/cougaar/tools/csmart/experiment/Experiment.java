@@ -1688,12 +1688,27 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
     // then give everyone a chance to modify what they've collectively produced
     List components = getComponents();
-    for (int i = 0, n = components.size(); i < n; i++) {
-      BaseComponent soc = (BaseComponent) components.get(i);
-      soc.modifyComponentData(completeSociety);
+    try {
+      PopulateDb pdb = new PopulateDb(getExperimentID(), trialID);
+      for (int i = 0, n = components.size(); i < n; i++) {
+	BaseComponent soc = (BaseComponent) components.get(i);
+	if (log.isDebugEnabled()) {
+	  log.debug("dumpINIs letting comps modify. comp: " + soc.getShortName());
+	}
+	// FIXME: Recipes typically need to do DB queries
+	// in order to do these insertions correctly,
+	// so need the version of modify that takes a pdb called.
+	soc.modifyComponentData(completeSociety, pdb);
+      }
+      
+      pdb.close();
+    } catch (Exception e) {
+      if (log.isErrorEnabled()) {
+	log.error("dumpINIFiles error with pdb", e);
+      }
     }
 
-    ExperimentINIWriter cw = new ExperimentINIWriter(completeSociety);
+    ExperimentINIWriter cw = new ExperimentINIWriter(completeSociety); 
     File resultDir = getResultDirectory();
     // if user didn't specify results directory, save in local directory
     if (resultDir == null) {
