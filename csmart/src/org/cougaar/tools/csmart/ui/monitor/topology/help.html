@@ -9,8 +9,17 @@
 
 <h2>Topology Table</h2>
 This table displays the host, node, agent, and incarnation number for each
-agent in the society.  The incarnation number is the number of times that
-the node has been started (or restarted); it is initially one.  Additional information supplied by the agent is shown in additional columns.
+agent in the society, as it changes during the run of a society.  The incarnation number is the number of times that
+the node has been started (or restarted); it is initially one.
+Additional information supplied by the agent is shown in additional
+columns. This view is useful for viewing moving Agents and Agent
+restarts. The data displayed here can be manually refreshed (via the
+"Refresh" button or the View menu option), or continuously (by setting
+the Refresh Interval from the View menu).<br>
+The left-hand pane shows a complete table of the topology information
+fro the society, as available from the TopologyService. The right-hand
+pane shows the same information as a tree.
+
 <h3>Sorting</h3>
 The table columns can be sorted alphabetically or numerically by clicking
 the left mouse button on the column header.  For reverse ordering, hold the Shift key.
@@ -27,6 +36,10 @@ The tree also displays the host, node, and agent.  The incarnation number and an
 File: Close - Close the window.
 <li>
 View: Refresh - Contact the society to obtain the current locations of agents and display the new information in the table and tree.  The "Refresh" button at the bottom of the display does the same thing.
+<li>
+View: Refresh Interval - Set this interval to non-0 to specify the
+interval between automatic updates to the data displayed in this
+view. This is an alternative to manually refreshing the display.
 <li>
 Help: Help - Display this document.
 <li>
