@@ -33,7 +33,7 @@ open (CREATE_TABLES_OUT, ">".$filename_root.".create-tables.sql");
 open (CREATE_INDEXES_OUT,">".$filename_root.".create-indexes.sql");
 open (CREATE_FKEYS_OUT,  ">".$filename_root.".create-fkeys.sql");
 
-# Copy all lines from ALL_DDL_IN to CREATE_TABLES_OUT
+# Copy all lines from ALL_DDL_IN to CREATE_TABLES_OUT, CREATE_INDEXES_OUT and CREATE_FKEYS_OUT
 print "sql_mode: ",$sql_mode,"\n";
 while (<ALL_DDL_IN>) {
 	$input_line = $_ ;
@@ -52,7 +52,7 @@ while (<ALL_DDL_IN>) {
 		else {
 			if (substr($input_line,0,12) eq "CREATE INDEX") {
 				$length = length($input_line);
-				$remainder = substr($input_line,13,$length-15);
+				$remainder = substr($input_line,13,$length-14);
 				($index_name, $etc) = split(' ',$remainder,2);
 				$output_line = "CREATE INDEX ".$index_prefix.$index_name." ".$etc.";\n";
 			}
