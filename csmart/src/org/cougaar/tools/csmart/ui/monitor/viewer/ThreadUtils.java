@@ -315,6 +315,7 @@ public final class ThreadUtils {
       List uids,
       int limit) {
     // FIXME Use secure mode if necessary!!!
+    // Perhaps AgentMapping needs a http/https flag?
     String agentURL = ClientServletUtil.makeURL(am.getHost(agentName),
                                                 am.getPort(agentName));
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
