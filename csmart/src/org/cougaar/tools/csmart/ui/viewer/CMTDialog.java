@@ -94,6 +94,10 @@ public class CMTDialog extends JDialog {
     leftIndent = leftIndent + 5;
     for (int i = 0; i < ULThreads.length; i++) {
       JCheckBox cb = new JCheckBox(ULThreads[i]);
+
+      // Class 4 is disabled this year
+      if (ULThreads[i].indexOf('4') != -1)
+	cb.setEnabled(false);
       
 //        if (DBUtils.isMySQL())
 //  	cb.setEnabled(false); // MySQL DB
