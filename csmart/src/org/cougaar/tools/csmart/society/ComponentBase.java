@@ -174,38 +174,10 @@ public class ComponentBase
       return data;
     }
 
-    self.setName(uniqueName(data, self));
+    self.setName(GenericComponentData.getSubComponentUniqueName(data, self));
 
     data.addChildDefaultLoc(self);
     return data;
-  }
-
-  // Helper method: Uniquely name a component for inclusion in 
-  // the given parent. Name is <parent name>|<class name>
-  // But if that is taken, try adding the first parameter
-  // If that too is taken, add the current number
-  // of children in the parent, ie the index at which
-  // this will likely be added
-  // Note: This method does not _set_ the name, only
-  // creates and returns it.
-  protected String uniqueName(ComponentData parent, ComponentData self) {
-    ComponentData[] children = parent.getChildren();
-    String cname = parent.getName() + "|" + getComponentClassName();
-    boolean addedparam = false;
-    for (int i = 0; i < children.length; i++) {
-      ComponentData kid = children[i];
-      if (kid.getName().equals(cname)) {
-	// OK, must at least add a paramter if it has one
-	if (getProperty(PROP_PARAM+0) != null && ! addedparam) {
-	    cname = cname + "|" + getProperty(PROP_PARAM+0).getValue();
-	    addedparam = true;
-	} else {
-	  // OK, no params. Add a number? Maybe the others do have a param?
-	  cname = cname + children.length;
-	}
-      }
-    }
-    return cname;
   }
 
   // Helper method: Does the given parent already contain a component

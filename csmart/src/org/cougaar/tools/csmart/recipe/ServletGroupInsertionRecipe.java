@@ -310,16 +310,10 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 	    for (int j = 0; j < arguments.length; j++) 
 	      plugin.addParameter(arguments[j]);
 
-	    // Component name is the class of the servlet plus its first
-	    // argument, or a number if none
-	    if (arguments.length > 0) {
-	      plugin.setName(servlet.getClassname().substring(servlet.getClassname().lastIndexOf('.')+1) + "-" + arguments[0]);
-	    } else {
-	      plugin.setName(servlet.getClassname() + (i+1));
-	    }
             plugin.setClassName(servlet.getClassname());
             plugin.setParent(data);
             plugin.setOwner(this);
+	    plugin.setName(GenericComponentData.getSubComponentUniqueName(data, plugin));
             data.addChildDefaultLoc(plugin);
           }
         }
@@ -331,13 +325,6 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 	    String newcls = (String)propNewServlets[i].getValue();
 	    // How many args does the servlet have
 	    int numargs = ((Integer)propNewServletNumArgs[i].getValue()).intValue();
-	    // Component name is the class of the servlet plus its first
-	    // argument, or a number if none
-	    if (numargs > 0) {
-	      comp.setName(newcls.substring(newcls.lastIndexOf('.')+1) + "-" +  ((String)propNewServletArgs[i][0].getValue()));
-	    } else {
-	      comp.setName(newcls +(i+1));
-	    }
             comp.setClassName(newcls);
             comp.setParent(data);
             comp.setOwner(this);
@@ -345,6 +332,9 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 	    // For each arg it has, write it out
 	    for (int j = 0; j < numargs; j++)
 	      comp.addParameter((String)propNewServletArgs[i][j].getValue());
+
+	    comp.setName(GenericComponentData.getSubComponentUniqueName(data, comp));
+
             data.addChildDefaultLoc(comp);
         }
       }
