@@ -18,9 +18,6 @@ This directory contains several configuration sub-directories:
      properties files, including CSMART specific settings. Use these as
      examples in setting up your own machine to run the server.
  
- simpleParser.dat
- xmlParserTest.xml - Test scripts used for development
-
   rwe-scripts/
 		This includes several XML files specifying RealWorldEvents for
 		use with the ABC Impacts. Edit the included files to
