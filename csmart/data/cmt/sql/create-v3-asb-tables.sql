@@ -133,15 +133,6 @@ alter table V3_ASB_OPLAN_AGENT_ATTR add constraint PK_V3_ASB_OPLAN_AGENT_ATTR
 
 -- EXPT DB
 
-drop table V3_EXPT_ASSEMBLY;
-create table V3_EXPT_ASSEMBLY (
-    EXPT_ID                 VARCHAR2(50),   -- PK
-    ASSEMBLY_ID             VARCHAR2(50),   -- PK
-    DESCRIPTION             VARCHAR2(200)
-    );
-alter table V3_EXPT_ASSEMBLY add constraint PK_V3_EXPT_ASSEMBLY
-    primary key (EXPT_ID,ASSEMBLY_ID);
-
 drop table V3_EXPT_EXPERIMENT;
 create table V3_EXPT_EXPERIMENT (
     EXPT_ID                 VARCHAR2(50),   -- PK
@@ -149,6 +140,25 @@ create table V3_EXPT_EXPERIMENT (
     );
 alter table V3_EXPT_EXPERIMENT add constraint PK_V3_EXPT_EXPERIMENT
     primary key (EXPT_ID);
+
+drop table V3_EXPT_TRIAL;
+create table V3_EXPT_TRIAL (
+    EXPT_ID                 VARCHAR2(50),   -- PK
+    TRIAL_ID                VARCHAR2(50),   -- PK
+    DESCRIPTION             VARCHAR2(200)
+    );
+alter table V3_EXPT_TRIAL add constraint PK_V3_EXPT_TRIAL
+    primary key (EXPT_ID,TRIAL_ID);
+
+drop table V3_EXPT_TRIAL_ASSEMBLY;
+create table V3_EXPT_TRIAL_ASSEMBLY (
+    EXPT_ID                 VARCHAR2(50),   -- PK
+    TRIAL_ID                VARCHAR2(50),   -- PK
+    ASSEMBLY_ID             VARCHAR2(50),   -- PK
+    DESCRIPTION             VARCHAR2(200)
+    );
+alter table V3_EXPT_TRIAL_ASSEMBLY add constraint PK_V3_EXPT_TRIAL_ASSEMBLY
+    primary key (EXPT_ID,TRIAL_ID,ASSEMBLY_ID);
 
 -- LIB DB
 
