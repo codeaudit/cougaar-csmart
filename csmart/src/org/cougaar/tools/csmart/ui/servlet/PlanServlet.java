@@ -21,13 +21,18 @@
  
 package org.cougaar.tools.csmart.ui.servlet;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
 
 import org.cougaar.util.UnaryPredicate;
@@ -35,8 +40,14 @@ import org.cougaar.util.UnaryPredicate;
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
-import org.cougaar.planning.ldm.asset.*;
-import org.cougaar.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.asset.Asset;
+
+import org.cougaar.planning.ldm.plan.PlanElement;
+import org.cougaar.planning.ldm.plan.Task;
+import org.cougaar.planning.ldm.plan.HasRelationships;
+import org.cougaar.planning.ldm.plan.Workflow;
+import org.cougaar.planning.ldm.plan.Expansion;
+
 import org.cougaar.tools.csmart.runtime.ldm.event.HappinessChangeEvent;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.psp.TranslateUtils;
@@ -44,7 +55,7 @@ import org.cougaar.tools.csmart.ui.psp.TranslateUtils;
 
 
 /**
- * This PSP traverses Tasks and related objects (plan elements, assets,
+ * This Servlet traverses Tasks and related objects (plan elements, assets,
  * workflows) and HappinessChangeEvents and returns information on them.
  * The information is encoded in name/value pairs stored in PropertyTree
  * objects which are serialized to the client.
@@ -113,10 +124,10 @@ public class PlanServlet
     // limit on number of PropertyTrees to return; see javadocs above.
     static int limit = Integer.MAX_VALUE;
  
-    /* since "MetricProvider" is a static inner class, here
+    /* since "PlanProvider" is a static inner class, here
      * we hold onto the support API.
      *
-     * this makes it clear that MetricProvider only uses
+     * this makes it clear that PlanProvider only uses
      * the "support" from the outer class.
      */    
     static SimpleServletSupport support;
@@ -143,7 +154,7 @@ public class PlanServlet
     
 
  /**
-   * This is the main PSP method called by the infrastructure in response
+   * This is the main Servlet method called by the infrastructure in response
    * to receiving a request from a client.
    * Get all the plan objects, ignoring those the client specifies,
    * and return their properties to the client in a serialized PropertyTree.
@@ -176,8 +187,6 @@ public class PlanServlet
      * all its related objects (planelements, workflows, assets) or
      * for a HappinessChangeEvent.
      * 
-     * @see PlanPSPState see javadocs for "pspState.limit" and 
-     *   "pspState.ignore*" details
      */
     private static List getObjects() {
       
