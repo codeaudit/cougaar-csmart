@@ -54,7 +54,7 @@ public class CMT {
     public static final String QUERY_FILE = "CMT.q";
     public static final String ASSEMBLYID_QUERY = "queryAssemblyID";
     public static final String asbPrefix="V4_";
-    public static boolean traceQueries = true;
+    public static boolean traceQueries = false;
 
     // SHOULD REVISE CODE TO USE SINGLE dbp INSTANCE FOR ALL QUERIES
     protected static DBProperties dbp = null;
@@ -285,8 +285,10 @@ public class CMT {
 	clearUnusedCMTassemblies();
 	String assembly_id = getAssemblyID(cfw_g_id, threads, clones);
 	if (hasRows(asbPrefix+"asb_assembly", "assembly_id", sqlQuote(assembly_id))){
+	  if (traceQueries) {
 	    System.out.println("Not creating new assembly for: "+assembly_id+" which is already in the DB");
-	    return assembly_id;
+	  }
+	  return assembly_id;
 	} else {
 	    String sqlThreads = sqlThreads(threads);
 	    Map subs = new HashMap();
@@ -579,16 +581,22 @@ public class CMT {
 		if(dbp==null)
 		    dbp = DBProperties.readQueryFile(QUERY_FILE);
                 String query = dbp.getQuery(queryName, substitutions);
-		System.out.println("getNextId: "+query);
+		if (traceQueries) {
+		  System.out.println("getNextId: "+query);
+		}
 		ResultSet rs = stmt.executeQuery(query);
                 try {
                     if (rs.next()) {
                         String maxId = rs.getString(1);
                         if (maxId != null) {
                             int n = format.parse(maxId).intValue();
-  			    System.out.println("getNextId: n="+n+", maxId ="+maxId);
+			    if (traceQueries) {
+			      System.out.println("getNextId: n="+n+", maxId ="+maxId);
+			    }
                             id = format.format(n + 1);
-  			    System.out.println("getNextId: id="+id);
+			    if (traceQueries) {
+			      System.out.println("getNextId: id="+id);
+			    }
                         }
                     }
                 } finally {
