@@ -358,9 +358,11 @@ public class ABCAgent
 	writer.print("\"");
       } // end of printing Collection of Roles
       writer.println();
-      //writer.println();
-      //writer.println("[CommunityPG]");
-      //writer.println("Communitites Collection<String> \"Cambridge, MA\"");
+      writer.println();
+      writer.println("[CommunityPG]");
+      writer.println("TimeSpan TimeSpan \"\"");
+      writer.print("Communities    Collection<String> ");
+      writer.println("\"" + getName().get(1).toString() + "\"");
     } 
     finally {
       writer.close();
