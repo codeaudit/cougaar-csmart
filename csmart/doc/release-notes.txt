@@ -1,5 +1,8 @@
 CSMART Release Notes
 
+Release 9.3:
+- Solved bug 1304 & related 1279.
+
 Release 9.2.1:
 - Multiple bug fixes
 - Note that changes to the default AppServer properties file to use

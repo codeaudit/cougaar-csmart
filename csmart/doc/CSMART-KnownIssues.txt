@@ -18,13 +18,8 @@ CSMART contains a few known issues:
 * Running a node on a multiprocessor machines may result in the CSMART
   console freezing up.
 
-* There are a couple NPEs that can occur but we have not been able to
-  reproduce. If you see an error message mentioning a bug #, please
-  report on Bugzilla what you saw. Some users manage to avoid these by
-  setting the doWorkspace flag to false (see the CSMART startup scripts).
-
 * We have seen occasional Swing exceptions while running an Experiment
-  in the console. See bug #1104.
+  in the console. This is being reported to Sun. See bug #1104.
 
 * Windows users creating societies from new-style INI files must put
   the directory containing those files on the org.cougaar.config.path
