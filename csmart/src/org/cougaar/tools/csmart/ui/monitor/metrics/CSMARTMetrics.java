@@ -98,6 +98,7 @@ public class CSMARTMetrics extends JPanel {
   }
 
   public CSMARTMetrics(ArrayList names, ArrayList data ) {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.metrics");
     createTableModel(names, data);
     init();
   }
