@@ -47,7 +47,7 @@ if [ $os = "Linux" -o $os = "SunOS" ]; then SEP=":"; fi
     
 # To run without the Bootstrapper, set org.cougaar.useBootstrapper=false
 
-MYCLASSPATH="${COUGAAR_INSTALL_PATH}/lib/core.jar"
+MYCLASSPATH="${COUGAAR_INSTALL_PATH}/lib/core.jar:{$COUGAAR_INSTALL_PATH}/lib/util.jar:{$COUGAAR_INSTALL_PATH}/lib/bootstrap.jar"
 
 DEVPATH=""
 if [ "$COUGAAR_DEV_PATH" != "" ] ; then
@@ -75,4 +75,4 @@ if [ "$COUGAAR_DEV_PATH" != "" ]; then
    echo java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
 fi
 
-exec java $javaargs org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
+exec java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
