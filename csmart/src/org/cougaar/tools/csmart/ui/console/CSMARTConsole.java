@@ -1178,7 +1178,13 @@ public class CSMARTConsole extends JFrame {
       } else
         properties.setProperty("org.cougaar.experiment.id", 
                                experiment.getTrialID());
-      properties.setProperty("org.cougaar.core.persistence.clear",
+
+      //Don't override if it's already set
+      if (properties.getProperty("org.cougaar.core.persistence.clear") 
+          == null) {
+        properties.setProperty("org.cougaar.core.persistence.clear",
+                               "true");
+      }
                              "true");
       // create a status button
       NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
