@@ -107,12 +107,12 @@ public class CMTDialog extends JDialog {
                                              0, 0));
     }
     leftIndent = leftIndent - 5;
-//     bottomPanel.add(new JLabel("Select Organization Groups:"),
-//               new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
-//                                      GridBagConstraints.WEST,
-//                                      GridBagConstraints.NONE,
-//                                      new Insets(0, leftIndent, 0, 0),
-//                                      0, 0));
+    bottomPanel.add(new JLabel("Select Organization Groups:"),
+              new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.NONE,
+                                     new Insets(0, leftIndent, 0, 0),
+                                     0, 0));
     leftIndent = leftIndent + 5;
     Map groupNameToId = ExperimentDB.getOrganizationGroups(experimentId);
     Set groups = groupNameToId.keySet();
