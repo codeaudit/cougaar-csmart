@@ -988,11 +988,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * @param requestor 
    * @return a <code>Logger</code> value
    */
-  public static Logger createLogger(Object requestor) {
-    //    System.out.println("using requestor");
-    return lf.createLogger(requestor);
-  }
-
   public static Logger createLogger(String name) {
     return lf.createLogger(name);
   }
