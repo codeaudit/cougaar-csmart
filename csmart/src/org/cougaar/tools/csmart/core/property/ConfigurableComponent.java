@@ -678,7 +678,7 @@ public abstract class ConfigurableComponent
     Object oldValue = getMyProperties().remove(prop.getName());
     if (oldValue == null) { // was someone else's property, ignore
       if (log.isErrorEnabled())
-        log.error("", new Throwable("Attempting to remove non-local property: " + prop.getName()));
+        log.error("", new Throwable("Attempting to remove non-local property: " + prop.getName() + " from " + getFullName().toString()));
       return;
     }
     firePropertyRemoved(prop);
