@@ -19,7 +19,7 @@ occasionally).
 Showing a Society Monitor Graph
 -- If you get an error about inability to find dot, or to determine
 your OS, then you should make sure that dot.exe or dot-l386 are
-installed in CIP/sys. Use dot.exe on Windows, dot-l386 on Solaris or
+installed in CIP/csmart/bin. Use dot.exe on Windows, dot-l386 on Solaris or
 Linux (may also work on other Unix variants, not supported). If you
 believe you are running one of thos OSes, and get an error message
 claiming your OS was not understood, please submit a bug including the

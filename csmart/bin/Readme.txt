@@ -64,10 +64,10 @@ dot.exe
 dot-l386
         For the AT&T GraphViz package, for doing layout.  "dot.exe" is for
         DOS/WIN machines, "dot-l386" is for Linux.  Used by the CSMART
-	EventGraph UI. These are available from the
-	csmart-3rdparty.zip file, or from cougaar-support.zip. The
-	usual location is CIP/sys, by CIP/csmart/bin is the next usual
-	location. You can also get these files from the ABC website
+	EventGraph UI. These are also available from the
+	csmart-3rdparty.zip file, or from cougaar.zip. The
+	usual location is CIP/csmart/bin, alternatives like CIP/sys
+	and CIP/bin also work. You can also get these files from the ABC website
         (http://ABCTestBed.bbn.com) or the AT&T GraphViz site.
 	
 Monitor

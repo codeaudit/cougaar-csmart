@@ -110,7 +110,7 @@ public class CSMARTGraph extends Graph
 
   /**
    * Figure out the path to the dot executable
-   * We look for it in CIP/sys, CIP/csmart/bin, CIP/bin, and CIP/csmart/lib
+   * We look for it in CIP/csmart/bin, CIP/sys, CIP/bin, CIP/csmart/data and CIP/csmart/lib
    * in that order.<br>
    * We expect the file to be dot.exe on Windows, else dot-l386.<br>
    * That is what we look for first. However, if we don't find it,
@@ -126,11 +126,12 @@ public class CSMARTGraph extends Graph
     // Win: Windows NT, Linux: Linux, Solaris: SunOS
     String os = (String)System.getProperty("os.name");
     String[] dotNames = {"dot.exe", "dot-l386", "dot-L386", "dot"};
-    String[] dotPaths = new String[4];
-    dotPaths[0] = System.getProperty("org.cougaar.install.path") + File.separatorChar + "sys" + File.separatorChar;
-    dotPaths[1] = System.getProperty("org.cougaar.install.path") + File.separatorChar + "csmart" + File.separatorChar + "bin" + File.separatorChar;
+    String[] dotPaths = new String[5];
+    dotPaths[0] = System.getProperty("org.cougaar.install.path") + File.separatorChar + "csmart" + File.separatorChar + "bin" + File.separatorChar;
+    dotPaths[1] = System.getProperty("org.cougaar.install.path") + File.separatorChar + "sys" + File.separatorChar;
     dotPaths[2] = System.getProperty("org.cougaar.install.path") + File.separatorChar + "bin" + File.separatorChar;
-    dotPaths[3] = System.getProperty("org.cougaar.install.path") + File.separatorChar + "csmart" + File.separatorChar + "lib" + File.separatorChar;
+    dotPaths[3] = System.getProperty("org.cougaar.install.path") + File.separatorChar + "csmart" + File.separatorChar + "data" + File.separatorChar;
+    dotPaths[4] = System.getProperty("org.cougaar.install.path") + File.separatorChar + "csmart" + File.separatorChar + "lib" + File.separatorChar;
 
     String dotName = "dot.exe";
     if (os.equals("Linux") || os.equals("SunOS")) {
@@ -162,7 +163,7 @@ public class CSMARTGraph extends Graph
     } // end of dotNames loop	
 
     if (dotFile == null || ! dotFile.exists()) {
-      System.err.println("CSMARTGraph: Could not find dot executable: " + dotName + " (the version used for your OS, " + os + ").\n Make sure it is in CIP/sys, CIP/csmart/bin, CIP/bin, or CIP/csmart/lib.");
+      System.err.println("CSMARTGraph: Could not find dot executable: " + dotName + " (the version used for your OS, " + os + ").\n Make sure it is in CIP/csmart/bin, CIP/sys, CIP/bin, CIP/csmart/data or CIP/csmart/lib.");
       System.exit(-1);
     }
   } // end of setupDotPath
