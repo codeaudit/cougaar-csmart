@@ -66,9 +66,6 @@ public interface ComponentData {
    */
   public void setName(String name);
   
-  /** Class type of the component **/
-  /** ie: ClusterImpl for Agent **/
-
   /** 
    * Gets the class for this component
    * (ClusterImpl for Agent components)
@@ -105,14 +102,14 @@ public interface ComponentData {
   public void addChild(ComponentData child);
   
   /**
-   * Adds a child component at the specified index.
+   * Sets a child component at the specified index, replacing the current value.
    *
    * @param index position to add new child component.
    * @param ComponentData child component.
    * @throws IndexOutOfBoundsException if the index is out of range
    *            (index &lt; 0 || index &gt; size()).
    */
-  public void addChild(int index, ComponentData child);
+  public void setChild(int index, ComponentData child);
 
   /**
    * Returns count of all children.
@@ -143,14 +140,14 @@ public interface ComponentData {
   public void addParameter(Object param);
 
   /**
-   * Adds a Parameter at a specific index.
+   * Sets a Parameter at a specific index, replacing the current value
    *
-   * @param index Index to add new parameter
+   * @param index Index to set new parameter value
    * @param param New Parameter for this component.
    * @throws IndexOutOfBoundsException if the index is out of range
    *            (index &lt; 0 || index &gt; size()).
    */
-  public void addParameter(int index, Object param);
+  public void setParameter(int index, Object param);
 
   /**
    * Returns a count of all parameters
@@ -206,14 +203,14 @@ public interface ComponentData {
   public void setLeafComponents(LeafComponentData[] leaves);
 
   /**
-   * Adds a leaf component at the given index.
+   * Sets a leaf component at the given index, replacting the current component
    *
    * @param index Index of the leaf component
    * @param LeafComponentData new leaf for this component.
    * @throws IndexOutOfBoundsException if the index is out of range
    *            (index &lt; 0 || index &gt; size()).
    */
-  public void addLeafComponent(int index, LeafComponentData leaf);
+  public void setLeafComponent(int index, LeafComponentData leaf);
 
   /**
    * Adds a single leaf component to this component
@@ -246,13 +243,13 @@ public interface ComponentData {
   public void setTimePhasedData(TimePhasedData[] data);
 
   /**
-   * Adds a TimePhasedData object to this component at
-   * the given index.
+   * Sets a TimePhasedData object to this component at
+   * the given index, replacing the current value
    *
-   * @param index Location in array to add TimePhased object
+   * @param index Location in array to replace TimePhased object
    * @param data TimePhased object to add to component
    */
-  public void addTimePhasedData(int index, TimePhasedData data);
+  public void setTimePhasedData(int index, TimePhasedData data);
 
   /**
    * Adds a TimePhasedData object to this component.
@@ -268,7 +265,8 @@ public interface ComponentData {
    */
   public int timePhasedCount();
 
-}
+} // end of ComponentData.java
+
 
 
 
