@@ -350,8 +350,9 @@ Thus you may choose to configure your database in one of three ways: <br><br>
 <li>
 
 <p> To run from XML, you will need any required application /
-domain data, and new "refconfig" data. (This
-is used in place of the CSMART configuration data at runtime.)  You will need to:
+domain data, and you may need the new "refconfig" data. (This
+is used in place of the CSMART configuration data at runtime by some
+societies, though not by the tutorials or minitestconfig.)  You will need to:
 <ul>
   <li>Load the xml-refconfig data into a database, using the procedures
   outlined above.</li>
@@ -565,7 +566,7 @@ installation using
   <li>Launch the simple "MiniNode":
        <pre>
        cd $COUGAAR_INSTALL_PATH/configs/minitestconfig
-       ../../bin/Node MiniNode
+       ../../bin/XSLNode MiniNode.xml MiniNode
        </pre>
     You should see some UI popups and various output messages to your
     console.</li><p>
