@@ -679,20 +679,21 @@ installation using
     <ol>
     <li>Select "Default Workspace". This is where experiments and societies are stored.</li><p>
 
-    <li>Right-click, select "New Experiment", then select "From Database" to load a pre-configured experiment.</li><p>
+    <li>Right-click, select "New Experiment".</li><p>
 
-    <li>Select an experiment, "TINY-1AD-TRANS-STUB" is a simple place to start.  You may be prompted to pick a unique name for your experiment. Then a UI to select "Threads &amp; Groups" will popup.</li><p>
+    <li>Select an experiment, "TINY-1AD-TRANS" is a simple place to start.   Then a UI to select "Threads &amp; Groups" will popup.</li><p>
 
     <li>Configure the "Threads &amp; Groups".  In this screen, you may
     modify the set of threads (military classes of supply) which the
     society will process.  Note however, that you <em>must</em> select
-    at least one thread.  For a simple test, select "class 1"
+    at least one thread.  For a simple test, select "Class 1"
     (food).</li><p>
 
-    <li>Select "Yes" to modify the experiment.  Give the modified
-      experiment a name, such as "My Test", then click "Yes" to save
+    <li>Give the experiment a name, such as "My Test", then click "Yes" to save
       your modified name.  Your experiment name, "My Test", is added
-      to the list in the "Default Workspace".</li><p>
+      to the list in the "Default Workspace".  A recipe, Default Servlets is also
+      added to the workspace.  This recipe defines the servlets that are a default
+      part of this experiment.</li><p>
     </ol>
   </li><p>
 
@@ -731,7 +732,7 @@ installation using
          recipe for an Experiment" notes.</li><p>
 
        <li>Drag the "My Metric" onto the "Recipes" folder of the
-         "Properties" panel.</li><p>
+         "Properties" panel, from the Default Workspace.</li><p>
 
        </li>The recipe is now associated with the experiment.</li><p>
        </ol>
@@ -742,7 +743,7 @@ installation using
       window to make it larger, which will facilitate the following
       steps.</li><p>
 
-    <li>Select "TRANSCOM_NODE" from the middle ("Nodes") panel.</li><p>
+    <li>Select "GLM_TRANS" from the middle ("Nodes") panel.</li><p>
 
     <li>Select the following seven Agents from the bottom ("Agents") panel.
       Use the control-key to select multiple Agents:
@@ -771,7 +772,7 @@ installation using
       full host name or the IP address -- sometimes the DNS lookup
       causes problems.</li><p>
 
-    <li>Drag both "TRANSCOM-NODE" and "1AD-Tiny" onto your host
+    <li>Drag both "GLM_TRANS" and "1AD-TINY" onto your host
       entry of the top ("Hosts") panel.  If you were testing a
       multi-machine configuration then you would drag the Nodes onto
       multiple hosts.</li><p>
@@ -782,8 +783,9 @@ installation using
     the Node you want to modify. From the pop-up menu, select the
     "Command Line Argument" option. A new window appears, listing all
     of the command line arguments which you can edit, or to which you
-    can add. Note: Be careful of editing the existing arguments unless
-    you know what you are doing.</li>  
+    can add.<br><br>
+    <b>Note:</b> Be careful of editing the existing arguments unless
+    you know what you are doing.</li><p>  
 
     <li>On the top menu, select "File", then "Save".  The configuration
       is saved to the database under the experiment name you provided,
@@ -807,14 +809,13 @@ installation using
       that will run Nodes.  See the above installation guide for the
       AppServer.  The AppServer starts with a "Server running" message.</li><p>
 
-    <li>Click on the "Run" button.  A new "Select Results" UI is
-    created.</li><p>
+    <li>Click on the "Run" button.</li><p>
 
     <li>At this point the AppServer will print out a "Create Node"
       debugging message.  This output can be ignored.</li><p>
 
     <li>Three minimized icons are created in the "Experiment Controller"
-      window; one for each host and one for the GLSInit Servlet.  Click on both 
+      window; one for each host and one for the GLS Servlet.  Double Click on both 
       Node Windows to see the Node output.  These output panels can be streched 
       to 80 columns to
       make viewing easier.  Log files of the output are written to
@@ -826,16 +827,16 @@ installation using
     <li>In the output panels you should see a "@NODE_CREATED" message,
       followed by the 
       <a href="http://www.cougaar.org">Cougaar</a>
-      build identification.  Refer to the
-      SMALL-135 documentation for further details.</li><p>
+      build identification.</li><p>
 
     <li>Troubleshooting: If the run immediately ended and failed, check the AppServer's output
       for details of the command line that was attempted.  Sometimes one can
       debug the configuration by cutting &amp; pasting the command line into a
       console window.  Double-check your "server/bin/server.props".</li><p>
 
-    <li>Click on the GLSInit Window in the Experiment Controller.
+    <li>Double Click on the GLS Window in the Experiment Controller.
       <pre>
+        - click on "Connect"
         - click on "Publish OPlan"
         - wait about 10 seconds (output in the Node windows slows)
         - click on "Send GLS Root"
