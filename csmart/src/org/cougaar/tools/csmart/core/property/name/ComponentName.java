@@ -22,7 +22,7 @@
 package org.cougaar.tools.csmart.core.property.name;
 
 import java.util.Vector;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 
 /**
  * The name in the namespace of a configurable component.
@@ -30,18 +30,18 @@ import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 public class ComponentName extends MultiName implements CompositeName {
   static final long serialVersionUID = -4393441897050449170L;
 
-  private ConfigurableComponent component;
+  private BaseComponent component;
 
-  public ComponentName(ConfigurableComponent cc, String name) {
+  public ComponentName(BaseComponent cc, String name) {
     super(new SimpleName(name));
     component = cc;
   }
 
-  public void setComponent(ConfigurableComponent cc) {
+  public void setComponent(BaseComponent cc) {
     component = cc;
   }
 
-  public ConfigurableComponent getConfigurableComponent() {
+  public BaseComponent getConfigurableComponent() {
     return component;
   }
 
