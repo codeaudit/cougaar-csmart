@@ -100,9 +100,8 @@ public class OrganizerHelper {
       
       if(id != null) {
         String societyName = DBUtils.getSocietyName(id);
-        soc = new SocietyDBComponent(societyName, assemblyIds);
+        soc = new SocietyDBComponent(societyName, id);
         soc.initProperties();
-        soc.setAssemblyId(id);
       } else {
         soc = null;
       }
@@ -682,6 +681,7 @@ public class OrganizerHelper {
       SocietyComponent sc = 
         (SocietyComponent) constructor.newInstance(new String[] {name});
       sc.initProperties();
+      sc.saveToDatabase();
       return sc;
     } catch (Exception e) {
       if (log.isErrorEnabled()) {

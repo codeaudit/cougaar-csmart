@@ -656,7 +656,7 @@ public class Organizer extends JScrollPane {
       experiment.removeSocietyComponent();
       SocietyComponent societyCopy = (SocietyComponent)society.copy(newName);
       experiment.addSocietyComponent(societyCopy);
-      societyCopy.saveToDatabase();
+
       addSocietyToWorkspace(societyCopy, parentNode);
     } else {
       societyNames.add(newName);
@@ -769,6 +769,12 @@ public class Organizer extends JScrollPane {
       if (experimentName == null)
         return;
     }
+
+    // Does this experiment use a CMT assembly for configuration?
+    // If so, use the CMTDialog
+    // Otherwise, just do the load (which is now done through the CMTDialog)
+    // Note: CMTDialog creates a CMTSociety -- should it be creating
+    // a SocietyDBComponent?
 
     if(log.isDebugEnabled()) {
       log.debug("Experiment Id: " + experimentId);
@@ -945,8 +951,9 @@ public class Organizer extends JScrollPane {
     // save society copy
     GUIUtils.timeConsumingTaskStart(organizer);
     try {
-      new Thread("DuplicateRecipe") {
+      new Thread("DuplicateSociety") {
         public void run() {
+	    // Check the return value?
             societyCopy.saveToDatabase();
             GUIUtils.timeConsumingTaskEnd(organizer);
         }

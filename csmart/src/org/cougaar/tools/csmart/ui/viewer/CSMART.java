@@ -617,6 +617,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       cdata.setName(cdata.getName() + " Society");
       cc = new SocietyCDataComponent(cdata);
       cc.initProperties();
+
+      // Save this new society:
+      ((SocietyComponent)cc).saveToDatabase();
       // put the new society in the copy of the experiment
       experimentCopy.addSocietyComponent((SocietyComponent)cc);
       // also put the new society in the workspace
