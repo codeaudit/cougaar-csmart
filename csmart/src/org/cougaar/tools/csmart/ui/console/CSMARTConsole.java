@@ -1185,7 +1185,7 @@ public class CSMARTConsole extends JFrame {
         properties.setProperty("org.cougaar.core.persistence.clear",
                                "true");
       }
-                             "true");
+
       // create a status button
       NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
 
