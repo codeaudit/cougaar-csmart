@@ -26,8 +26,23 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.cougaar.tools.csmart.ui.component.*;
-
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.PropertyAdapter;
+import org.cougaar.tools.csmart.core.property.PropertyAlias;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
+import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
+import org.cougaar.tools.csmart.core.cdata.PropGroupData;
+import org.cougaar.tools.csmart.core.cdata.LeafComponentData;
+import org.cougaar.tools.csmart.core.cdata.PGPropData;
+import org.cougaar.tools.csmart.core.cdata.PGPropMultiVal;
+import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
+import org.cougaar.tools.csmart.core.cdata.RelationshipData;
+import org.cougaar.tools.csmart.core.property.range.IntegerRange;
 import org.cougaar.planning.ldm.plan.Role;
 
 /**

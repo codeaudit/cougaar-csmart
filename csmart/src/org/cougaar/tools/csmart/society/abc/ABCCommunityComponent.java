@@ -27,6 +27,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.range.StringRange;
+import org.cougaar.tools.csmart.core.property.range.IntegerRange;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
 /**
  * <PRE>
  * Define a community with the following properties:

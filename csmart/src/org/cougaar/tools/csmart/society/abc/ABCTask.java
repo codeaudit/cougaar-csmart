@@ -20,7 +20,13 @@
  */
 package org.cougaar.tools.csmart.society.abc;
 
-import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyAlias;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.property.range.DoubleRange;
+import org.cougaar.tools.csmart.core.property.range.LongRange;
+import org.cougaar.tools.csmart.core.property.range.IntegerRange;
 
 import java.io.*;
 import java.util.Collections;

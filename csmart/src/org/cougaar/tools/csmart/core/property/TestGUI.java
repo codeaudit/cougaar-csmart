@@ -40,6 +40,9 @@ import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.lang.reflect.Array;
 
+import org.cougaar.tools.csmart.core.property.range.Range;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
 public class TestGUI
     extends JPanel
     implements PropertyListener, TreeSelectionListener

@@ -19,10 +19,13 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.recipe;
 
 import java.net.URL;
 
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import java.net.URL;
 
@@ -34,8 +37,8 @@ import java.net.URL;
  */
 public interface RecipeComponent extends ModifiableComponent, ComponentProperties {
 
-  final String CLASS_NAME_PROP = "recipe_class_name";
-  final String RECIPE_QUERY_FILE= "recipeQueries.q";
+  String CLASS_NAME_PROP = "recipe_class_name";
+  String RECIPE_QUERY_FILE= "recipeQueries.q";
 
   void setName(String newName);
 

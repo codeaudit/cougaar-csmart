@@ -47,6 +47,9 @@ import org.cougaar.util.UnaryPredicate;
 
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.name.SimpleName;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
 
 /**
  * For each property, define:

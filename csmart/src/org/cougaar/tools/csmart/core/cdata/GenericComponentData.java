@@ -24,6 +24,8 @@ package org.cougaar.tools.csmart.core.cdata;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+
 /**
  * Generic Component Data.
  * All components, except for Agent components can use

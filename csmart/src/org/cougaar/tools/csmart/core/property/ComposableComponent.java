@@ -24,6 +24,8 @@ package org.cougaar.tools.csmart.core.property;
 import java.io.Serializable;
 import java.util.Collection;
 
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
 /**
  * Interface that defines all component, parent and child operations. 
  */

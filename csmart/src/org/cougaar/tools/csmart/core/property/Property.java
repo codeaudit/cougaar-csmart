@@ -28,6 +28,8 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.net.URL;
 
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
 /**
  * Every property has these attributes:
  * name, propertyClass, label, defaultValue, value, allowedValues, 

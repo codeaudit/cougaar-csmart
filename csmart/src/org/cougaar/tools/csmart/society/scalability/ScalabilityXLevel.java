@@ -20,9 +20,18 @@
  */
 package org.cougaar.tools.csmart.society.scalability;
 
-import org.cougaar.tools.csmart.ui.component.*;
 import java.util.*;
 import java.io.Serializable;
+
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentListener;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.PropertyAlias;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.core.property.PropertyListener;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
 
 /**
  * ConfigurableComponent to manage the agents at a single level. Such

@@ -23,7 +23,11 @@ package org.cougaar.tools.csmart.society.scalability;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import org.cougaar.tools.csmart.ui.component.*;
+
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyAlias;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
 
 public class ScalabilityXPlugIn
   extends ConfigurableComponent

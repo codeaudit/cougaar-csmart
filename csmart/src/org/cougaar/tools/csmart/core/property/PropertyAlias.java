@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Set;
 import java.net.URL;
 
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.core.property.name.ComponentName;
+
 /**
  * Defines a property in terms of another. Only the name is changed.
  * Additionally, other properties can be added and their values will

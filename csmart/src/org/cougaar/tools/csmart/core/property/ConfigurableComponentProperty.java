@@ -21,6 +21,9 @@
 
 package org.cougaar.tools.csmart.core.property;
 
+import org.cougaar.tools.csmart.core.property.name.ComponentName;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
 import java.util.List;
 import java.util.Set;
 

@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.ui.society;
+package org.cougaar.tools.csmart.society;
 
 import java.io.File;
 import java.io.FileFilter;

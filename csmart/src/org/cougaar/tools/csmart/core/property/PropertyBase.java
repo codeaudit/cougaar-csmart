@@ -28,6 +28,8 @@ import java.util.Collections;
 import java.net.URL;
 import java.io.*;
 
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
 public abstract class PropertyBase implements Property {
     private transient List listeners = null;
     ConfigurableComponent component;

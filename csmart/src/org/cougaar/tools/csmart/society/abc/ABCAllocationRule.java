@@ -20,7 +20,8 @@
  */
 package org.cougaar.tools.csmart.society.abc;
 
-import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.Property;
 
 import java.io.*;
 import java.lang.StringBuffer;

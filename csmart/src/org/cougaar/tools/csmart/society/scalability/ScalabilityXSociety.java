@@ -34,9 +34,20 @@ import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.InvalidPropertyValueException;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.PropertyAlias;
+import org.cougaar.tools.csmart.core.property.PropertyHelper;
+import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
 
 /**
  * Create configuration files to run an COUGAAR society with given
