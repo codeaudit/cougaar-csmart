@@ -4,7 +4,7 @@
 -- Project :      CSMART Database
 -- Author :       M. Kappler & J. Berliner
 --
--- Date Created : Tuesday, July 02, 2002 11:08:24
+-- Date Created : Tuesday, July 09, 2002 16:57:59
 -- Target DBMS : Oracle 8
 --
 
@@ -15,7 +15,7 @@
 
 CREATE TABLE alib_component(
     COMPONENT_ALIB_ID    VARCHAR2(150)    NOT NULL,
-    COMPONENT_NAME       VARCHAR2(100),
+    COMPONENT_NAME       VARCHAR2(150),
     COMPONENT_LIB_ID     VARCHAR2(150)    NOT NULL,
     COMPONENT_TYPE       VARCHAR2(50),
     CLONE_SET_ID         NUMBER           NOT NULL,
@@ -33,7 +33,7 @@ CREATE TABLE asb_agent(
     COMPONENT_ALIB_ID    VARCHAR2(150)    NOT NULL,
     COMPONENT_LIB_ID     VARCHAR2(150),
     CLONE_SET_ID         NUMBER,
-    COMPONENT_NAME       VARCHAR2(50),
+    COMPONENT_NAME       VARCHAR2(150),
     CONSTRAINT pk_asb_agent PRIMARY KEY (ASSEMBLY_ID, COMPONENT_ALIB_ID)
 ) 
 ;
@@ -1046,6 +1046,12 @@ CREATE INDEX reflib_organization16 ON cfw_org_list(ORG_ID)
 CREATE INDEX refcfw_instance17 ON cfw_org_list(CFW_ID)
 ;
 -- 
+-- INDEX: reflib_org_group20 
+--
+
+CREATE INDEX reflib_org_group20 ON cfw_org_og_relation(ORG_GROUP_ID)
+;
+-- 
 -- INDEX: reflib_role_ref31 
 --
 
@@ -1062,12 +1068,6 @@ CREATE INDEX reflib_organization52 ON cfw_org_og_relation(ORG_ID)
 --
 
 CREATE INDEX refcfw_instance53 ON cfw_org_og_relation(CFW_ID)
-;
--- 
--- INDEX: reflib_org_group20 
---
-
-CREATE INDEX reflib_org_group20 ON cfw_org_og_relation(ORG_GROUP_ID)
 ;
 -- 
 -- INDEX: refcfw_org_list47 
