@@ -23,7 +23,10 @@ package org.cougaar.tools.csmart.society;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Iterator;
+
 import org.cougaar.core.agent.ClusterImpl;
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -34,19 +37,15 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.util.log.Logger;
-
 
 /**
- * SocietyComponentCreator.java
- *
+ * Get a ComponentData tree for a Society, plus helper methods.
  *
  * Created: Thu Mar 28 11:35:40 2002
  *
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  * @version 1.0
  */
-
 public class SocietyComponentCreator {
 
   public static final String PROP_PREFIX = "PROP$";

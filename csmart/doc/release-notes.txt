@@ -107,6 +107,10 @@ save behavior (bug 2002).
 - Bug 2105: Print a separate CSMART build time, as well as the core
   build time, to support updating just the CSMART jar without the
   rest of core.
+- Bug 2097: When hitting configure on an experiment and editing that
+  society, agents could be duplicated. In addition, various agent
+  comparisons were slow.
+- Avoid complaints if a community entity type has trailing whitespace.
 
 Release 9.4.1.1:
 This release includes bug fixes to support the Fall 2002 Ultra*Log

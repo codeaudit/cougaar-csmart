@@ -729,6 +729,7 @@ public class CommunityPanel extends JPanel {
     for (int i = 0; i < entityNames.size(); i++) {
       String entityName = (String)entityNames.get(i);
       String entityType = CommunityDBUtils.getEntityType(entityName, experiment.getCommAsbID());
+      entityType = entityType.trim();
       if (entityType.equalsIgnoreCase("Community"))
 	entityType = "Community";
       else if (entityType.equalsIgnoreCase("Agent"))

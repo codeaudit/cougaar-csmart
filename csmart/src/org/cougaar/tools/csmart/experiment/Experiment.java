@@ -1048,7 +1048,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     }
 
     // copy hosts
-    HostComponent[] hosts = getHostComponents();
+    // Use special version of it that doesnt do the
+    // Node/Agent reconciliation, since we dont
+    // care for this purpose
+    HostComponent[] hosts = getHostComponentsNoReconcile();
     HostComponent[] nhosts = new HostComponent[hosts.length];
     for (int i = 0; i < hosts.length; i++) {
       // FIXME: instead to nhosts[i] = hosts[i].copy();
@@ -1060,7 +1063,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       // FIXME: What about other Host fields? OS, etc?
       // -- answer - see above fixme
     }
+
     // copy nodes
+    // Note that this will update the NameServer host, and do exactly
+    // one Node/Agent reconciliation 
     NodeComponent[] nodes = getNodeComponents();
     NodeComponent[] nnodes = new NodeComponent[nodes.length];
     for (int i = 0; i < nodes.length; i++) {
@@ -1127,7 +1133,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     // copy the results directory; results from the copied experiment
     // will be stored in this directory under the copied experiment name
     experimentCopy.setResultDirectory(getResultDirectory());
-    
+
+    // FIXME: Maybe copy now needs a Node/Agent reconciliation?
+    //experimentCopy.getNodeComponents();
 
     // Fixme: Grab comm info from orig expt & resave under new asbID
     // and attach that new ID to this Expt
@@ -1378,10 +1386,19 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     }
   }
 
+  /**
+   * Get the Hosts in this experiment. 
+   * As a side effect, reconcile the Node/Agent mapping, if the experiment
+   * is marked as modified.
+   **/
   public HostComponent[] getHostComponents() {
     if(modified) {
-      getNodesInner();
+      reconcileNodeAgentMapping();
     }
+    return (HostComponent[]) hosts.toArray(new HostComponent[hosts.size()]);
+  }
+
+  public HostComponent[] getHostComponentsNoReconcile() {
     return (HostComponent[]) hosts.toArray(new HostComponent[hosts.size()]);
   }
 
@@ -1450,7 +1467,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       }
     }
 
+    // This does the NodeAgent reconcilation, if the experiment is modified
     HostComponent[] hosts = getHostComponents();
+
   hostLoop:
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
@@ -1471,7 +1490,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     if (newNameServer == null) newNameServer = dfltNameServer;
 
     // set new server in all nodes
-    NodeComponent[] nodes = getNodesInner();
+    // Do not, again, reconcile NodeAgent mapping
+    // This method doesnt care, and if the experiment is modified, getHostComponents
+    // above already does it
+    NodeComponent[] nodes = getNodesInner(false);
     for (int i = 0; i < nodes.length; i++) {
       NodeComponent node = nodes[i];
       Properties arguments = node.getArguments();
@@ -1567,15 +1589,20 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
   /**
-   * Reconcile agents in nodes with agents in society,
-   * so that if a society has been reconfigured such that
-   * it no longer contains some agents, those agents are also
-   * removed from the nodes.
+   * Get the Nodes in this Experiment. 
+   * As a side-effect, ensure that the NameServer Host property
+   * is set correctly, and ensure that the Node/Agent mapping
+   * is up-to-date.
    */
   public NodeComponent[] getNodeComponents() {
-    NodeComponent[] result = getNodesInner();
+    // Note that as a side-effect, this will also
+    // reconcile the node/agent mapping, if the experiment is modified
     updateNameServerHostName(); // Be sure this is update-to-date
-    return result;
+
+    // Since we just did the reconciliation if the experiment is modified,
+    // only do it here if the experiment is _not_ modified
+    // -- I know, shouldnt need to, but this preserves current functionality closer
+    return getNodesInner(! isModified());
   }
 
   private boolean nodeExists(String name) {
@@ -1609,16 +1636,59 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
   private NodeComponent[] getNodesInner() {
+//     if (log.isDebugEnabled())
+//       log.debug("getNodesInner");
+    return getNodesInner(isModified());
+  }
+
+  private NodeComponent[] getNodesInner(boolean check) {
+//     if (log.isDebugEnabled())
+//       log.debug("getNodesInner(" + check + ")");
+
+    if (check)
+      reconcileNodeAgentMapping();
+    
+    return (NodeComponent[]) nodes.toArray(new NodeComponent[nodes.size()]);
+  }
+
+  // Ensure only Agents in the Experiment are assigned
+  // to Nodes, and that all Agents assigned to Nodes are the objects
+  // given by the society & recipes
+  // Note that this takes a little time
+  private void reconcileNodeAgentMapping() {
+    //     if (log.isDebugEnabled())
+    //       log.debug("reconcileNodeAgentMapping", new Throwable());
+    if (log.isDebugEnabled())
+      log.debug("reconcileNodeAgentMapping");
+    
     List agents = getAgentsList();
+    if (nodes == null)
+      return;
     for (Iterator i = nodes.iterator(); i.hasNext(); ) {
       NodeComponent nc = (NodeComponent) i.next();
       AgentComponent[] nodeAgent = nc.getAgents();
       for (int j = 0; j < nodeAgent.length; j++) {
-	if (!agents.contains(nodeAgent[j]))
+	int index = agents.indexOf(nodeAgent[j]);
+	if (index < 0) {
+	  //	if (!agents.contains(nodeAgent[j]))
 	  nc.removeAgent(nodeAgent[j]);
+	} else {
+	  // Find the agent in the agents list which is .equals
+
+	  // We're never going to find a second Agent with this
+	  // name on a Node. So no need to keep it in the list
+	  // of Agents in the Experiment we compare against
+
+	  AgentComponent ag = (AgentComponent) agents.remove(index);
+	  // if its not ==, remove it from the Node, and re-add it
+	  // to ensure only the correct object in use
+	  if (ag != null && ag != nodeAgent[j]) {
+	    nc.removeAgent(nodeAgent[j]);
+	    nc.addAgent(ag);
+	  }
+	}
       }
     }
-    return (NodeComponent[]) nodes.toArray(new NodeComponent[nodes.size()]);
   }
 
   // returns a collection of all agents written.
@@ -1644,13 +1714,15 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       log.debug("Adding: " + nc.getName() + " to " + parent.getName());
     }
     parent.addChild(nc);
+
+    // Now get the Agents on this Node
     AgentComponent[] agents = node.getAgents();
     if (agents != null && agents.length > 0) {
       for (int j = 0; j < agents.length; j++) {
         generateAgentComponent(agents[j], nc, parent.getOwner());
-//         if(log.isDebugEnabled()) {
-//           log.debug("Remember Agent: " + agents[j].getShortName());
-//         }
+//          if(log.isDebugEnabled()) {
+//            log.debug("Remember Agent: " + agents[j].getFullName().toString());
+//          }
         writtenAgents.add(agents[j]);
       }
     }
@@ -1720,7 +1792,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
                              ComponentData parent, 
                              ConfigurableComponent owner) {
     if(log.isDebugEnabled()) {
-      log.debug("Adding Agent: " + agent.getShortName() + " To " + parent.getName());
+      log.debug("Adding Agent: " + agent.getFullName().toString() + " To " + parent.getName());
     }
 
     AgentComponentData ac = new AgentComponentData();
@@ -1806,7 +1878,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       if (log.isInfoEnabled()) {
 	log.info("Saving experiment " + getExperimentName() + " to database");
       }
-      updateNameServerHostName(); // Be sure this is up-to-date
+
+      // Don't do this here -- it gets done by generateHNACData
+      //      updateNameServerHostName(); // Be sure this is up-to-date
       List components = getComponents();
 
       boolean componentWasRemoved = false;
@@ -1880,9 +1954,12 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       // assemblies (CSMI, CSHNA)
 
       // Gather the HostNodeAgent stuff
+      // This will call updateNameServerHostName, 
+      // and take care of reconciling the Node/Agent mapping
       generateHNACDATA();
       if(log.isErrorEnabled() && completeSociety == null) {
         log.error("save: Society Data is null!");
+	// FIXME: Throw an exception to pop out at this point?
       }
 
       // Problem: Societies from files store _tons_ of properties
@@ -1930,7 +2007,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       // then give everyone a chance to modify what they've collectively produced
       for (int i = 0, n = components.size(); i < n; i++) {
         BaseComponent soc = (BaseComponent) components.get(i);
+
+	if (log.isDebugEnabled())
+	  log.debug("saveToDb: About to apply mods by " + soc.getShortName());
         soc.modifyComponentData(completeSociety, pdb);
+
         if (soc.componentWasRemoved()) {
 	  if (log.isDebugEnabled()) {
 	    log.debug("save: After modifying CDATA by comp " + soc.getShortName() + ", got a removed.");
@@ -2041,8 +2122,17 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   private void generateHNACDATA() {
     Set savedNodes = new HashSet();
     Set savedAgents = new HashSet();
-    NodeComponent[] nodesToWrite = getNodeComponents();
+
+    // getNodeComponents calls getNodesInner which should
+    // reconcile old Agents & new Agents
+    updateNameServerHostName();
+    // Force a reconciliation, once, even if the Experiment says it is not
+    // modified -- just to be safe
+    NodeComponent[] nodesToWrite = getNodesInner(! isModified());
     AgentComponent[] agentsToWrite = getAgents();
+
+    if (log.isDebugEnabled())
+      log.debug("genHNA has " + agentsToWrite.length + " Agents to write");
 
     completeSociety = new GenericComponentData();
 
@@ -2053,12 +2143,12 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     completeSociety.setParent(null);
     addDefaultNodeArguments(completeSociety);
 
-    // For each node, create a GenericComponentData, and add it to the society
-    for (Iterator i = hosts.iterator(); i.hasNext(); ) {
-      ExperimentHost host = (ExperimentHost) i.next();
+    // For each host, add it to the society, and recurse for each of its nodes
+    for (Iterator iter = hosts.iterator(); iter.hasNext(); ) {
+      ExperimentHost host = (ExperimentHost) iter.next();
       ComponentData hc = new GenericComponentData();
       if(log.isDebugEnabled()) {
-        log.debug("Processing Host: " + host.getShortName());
+	log.debug("Processing Host: " + host.getShortName());
       }
       hc.setType(ComponentData.HOST);
       hc.setName(host.getShortName());
@@ -2069,28 +2159,49 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       completeSociety.addChild(hc);
       NodeComponent[] nodes = host.getNodes();
       for (int j = 0; j < nodes.length; j++) {
-        savedAgents.addAll(generateNodeComponent(nodes[j], hc));
-        savedNodes.add(nodes[j]);
+	savedAgents.addAll(generateNodeComponent(nodes[j], hc));
+	savedNodes.add(nodes[j]);
       }
     }
+
+//     if (log.isDebugEnabled())
+//       log.debug("genHNA: After adding assigned nodes, # saved Agents: " + savedAgents.size());
+
+    // For each un-assigned Node, add it, and recurse for the Agents
     for (int i = 0; i < nodesToWrite.length; i++) {
       if (savedNodes.contains(nodesToWrite[i])) continue;
       savedAgents.addAll(generateNodeComponent(nodesToWrite[i], completeSociety));
       savedNodes.add(nodesToWrite[i]);
     }
+
+//     if (log.isDebugEnabled())
+//       log.debug("genHNA: After adding UN-assigned nodes, # saved Agents: " + savedAgents.size() + ", agentsToWrite is now: " + agentsToWrite.length);
+
+    // For each unassigned Agent, add it
     for (int i = 0; i < agentsToWrite.length; i++) {
       if (savedAgents.contains(agentsToWrite[i])) {
 	if (log.isDebugEnabled()) {
-	  log.debug("getHNA Already wrote Agent: " + agentsToWrite[i].getShortName());
+	  log.debug("genHNA Already wrote Agent: " + agentsToWrite[i].getShortName());
 	}
         continue;
+      } else {
+
+	// print out the FullName().toString() of all the savedAgents.
+
+	if(log.isDebugEnabled()) {
+// 	  log.debug("genHNA: Apparently haven't yet saved " + agentsToWrite[i]);
+// 	  int j = 0;
+// 	  for (Iterator ags = savedAgents.iterator(); ags.hasNext(); j++) {
+// 	    AgentComponent ag = (AgentComponent)ags.next();
+// 	    log.debug("savedAgent[" + j + "]: " + ag.getFullName().toString());
+// 	  }
+
+	  log.debug("genHNA Writing Agent[" + i + "]: " + agentsToWrite[i].getFullName().toString());
+	}
+	generateAgentComponent(agentsToWrite[i], completeSociety, this);
+	savedAgents.add(agentsToWrite[i]);
       }
-      if(log.isDebugEnabled()) {
-        log.debug("getHNA Writing Agent: " + agentsToWrite[i].getShortName());
-      }
-      generateAgentComponent(agentsToWrite[i], completeSociety, this);
-      savedAgents.add(agentsToWrite[i]);
-    }
+    } // end of loop over AgentsToWrite, to catch unassigned Agents
     
     // Uncomment for very verbose output setting up HNA mapping
 //     if (log.isDebugEnabled()) 
@@ -2160,6 +2271,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       // use it though. Basically, you can only use
       // it if you don't need a DB query to know what to do.
       soc.addComponentData(completeSociety);
+
+//       if (log.isDebugEnabled())
+// 	log.debug("askToAdd: now complete is: " + completeSociety);
+
+
       // Components can notice here if they had to remove
       // a component (or, I suppose, modify)
       componentWasRemoved |= soc.componentWasRemoved();
@@ -2184,7 +2300,14 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       return false;
     generateHNACDATA();
 
+//     if (log.isDebugEnabled())
+//       log.debug("generatecompleteSoc: after genHNA have: " + completeSociety);
+
     boolean mods = askComponentsToAddCDATA();
+
+//     if (log.isDebugEnabled())
+//       log.debug("generatecompleteSoc: after askToAdd have: " + completeSociety);
+
     return mods |= allowModifyCData();
   }
 
@@ -2218,6 +2341,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	} catch (SQLException e) {}
       }
     }
+
+//     if (log.isDebugEnabled())
+//       log.debug("end of allowModify: complete is now: " + completeSociety);
+
     return componentModified;
   }
 
@@ -2567,7 +2694,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
   /**
    * Adds all children to the Node.
-   *
    *
    * @param children All new children for the node.
    * @param node Node to add children to.

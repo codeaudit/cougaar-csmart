@@ -430,23 +430,4 @@ public class AgentDBComponent
     asset.initProperties();
     addChild(asset);
   }
-
-
-  /**
-   * Tests equality for agents.
-   * Agents are equal if they have the same short name.
-   * @param o Object to test for equality.
-   * @return returns true if the object is an AgentComponent with same name
-   */
-  public boolean equals(Object o) {
-    if (o instanceof AgentComponent) {
-      AgentComponent that = (AgentComponent)o;
-      if (!this.getShortName().equals(that.getShortName())  ) {
-	return false;
-      }     
-      return true;
-    }
-    return false;
-  }
-
 }

@@ -56,6 +56,8 @@ public class ExperimentHost
   }
 
   public boolean equals(Object o) {
+    if (this == o)
+      return true;
     if(o instanceof ExperimentHost) {
       return getShortName().equals(((ExperimentHost)o).getShortName());
     } else {

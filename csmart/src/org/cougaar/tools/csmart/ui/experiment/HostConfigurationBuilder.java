@@ -574,6 +574,14 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostTree.setEditable(isEditable);
     nodeTree.setEditable(isEditable);
     agentTree.setEditable(isEditable);
+
+    // This next set of operations is time-consuming. Lots of looping
+    // over all Hosts, Nodes, Agents, and string compares and things.
+    // Slow!
+
+    if (log.isDebugEnabled())
+      log.debug("update: About to add Host, Nodes, Agents");
+
     // get hosts, agents and nodes from experiment
     addHostsFromExperiment();
     // create new host components for hosts named in config file
@@ -582,6 +590,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     addUnassignedNodesFromExperiment();
     // add unassigned agents to agents tree
     addUnassignedAgentsFromExperiment();
+
+    if (log.isDebugEnabled())
+      log.debug("update: Finished adding Hosts, Nodes, Agents");
+
     // fully expand trees
     expandTree(hostTree);
     expandTree(nodeTree);
@@ -594,7 +606,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * Remove all children from a tree; called in update.
    */
-
   private void removeAllChildren(JTree tree) {
     DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
     DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
@@ -606,7 +617,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Fully expand the tree; called in initialization
    * so that the initial view of the tree is fully expanded.
    */
-
   private void expandTree(JTree tree) {
     Enumeration nodes = 
       ((DefaultMutableTreeNode)tree.getModel().getRoot()).depthFirstEnumeration();
@@ -620,7 +630,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * Add hosts and their nodes and agents from an experiment.
    */
-
   private void addHostsFromExperiment() {
     DefaultMutableTreeNode root = 
       (DefaultMutableTreeNode)hostTree.getModel().getRoot();
@@ -656,7 +665,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * Create host components for hosts read from a text file.
    */
-
   private void addHostsFromFile() {
     // this may silently fail, but that's ok, cause the file is optional
     String pathName = Util.getPath("hosts.txt");
@@ -714,8 +722,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private void addUnassignedNodesFromExperiment() {
     Set unassignedNodes;
     unassignedNodes = new TreeSet(dbBaseComponentComparator);
-    HostComponent[] hosts = experiment.getHostComponents();
+    // This _will_ do a Node/Agent reconciliation
     NodeComponent[] nodes = experiment.getNodeComponents();
+    // so this does not need to
+    HostComponent[] hosts = experiment.getHostComponentsNoReconcile();
     unassignedNodes.addAll(Arrays.asList(nodes));
     for (int i = 0; i < hosts.length; i++)
       unassignedNodes.removeAll(Arrays.asList(hosts[i].getNodes()));
@@ -805,12 +815,15 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     Set unassignedAgents;
     unassignedAgents = new TreeSet(dbBaseComponentComparator);
     AgentComponent[] agents = experiment.getAgents();
+    // This will do a Node/Agent comparison
     NodeComponent[] nodes = experiment.getNodeComponents();
+    // this must then do a lot of agent name comparisons
     unassignedAgents.addAll(Arrays.asList(agents));
     for (int i = 0; i < nodes.length; i++) {
       //      System.out.println("Remove all in: " + nodes[i].getShortName() +
       //                         nodes[i].getAgents().length);
       List assignedAgents = Arrays.asList(nodes[i].getAgents());
+      // this too does a lot of agent name comparisons
       unassignedAgents.removeAll(assignedAgents);
     }
     DefaultTreeModel model = (DefaultTreeModel)agentTree.getModel();
@@ -950,7 +963,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * Add new host to host tree.
    */
-
   public void createHost() {
     String hostName = null;
     while (true) {
@@ -1206,7 +1218,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * Listener for deleting nodes from host tree.
    */
-
   private void deleteNodesFromTree(JTree tree) {
     TreePath[] selectedPaths = tree.getSelectionPaths();
     for (int i = 0; i < selectedPaths.length; i++) 
@@ -1217,7 +1228,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * Delete node component from either host or unassigned nodes tree.
    */
-
   private void deleteNodeFromTree(JTree tree, TreePath path) {
     DefaultMutableTreeNode selectedNode = 
       (DefaultMutableTreeNode)path.getLastPathComponent();
@@ -1259,7 +1269,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Called when user drags nodes on to the host or node tree;
    * dispatches to a tree specific method.
    */
-
   public void treeNodesInserted(TreeModelEvent e) {
     Object source = e.getSource();
     if (hostTree.getModel().equals(source)) {
@@ -1281,7 +1290,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * i.e. both the add and remove of the configurable component
    * are done on the "inserted" message and the "removed message" is ignored.
    */
-
   private void treeNodesInsertedInHostTree(TreePath path, Object[] children) {
     BaseComponent component = getComponentFromPath(path);
     if (component instanceof NodeComponent) 
@@ -1296,7 +1304,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Remove node component from host component 
    * when nodes are dragged onto the Unassigned Nodes tree.
    */
-
   private void treeNodesInsertedInNodeTree(TreePath path, Object[] children) {
     BaseComponent component = getComponentFromPath(path);
     if (component == null) { // add nodes to Unassigned Nodes tree
@@ -1318,7 +1325,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * when agents are dragged onto the Unassigned Agents tree.
    * Just remove agents from previous node component.
    */
-
   private void treeNodesInsertedInAgentTree(Object[] children) {
     for (int i = 0; i < children.length; i++) {
       AgentComponent agent = 
@@ -1334,7 +1340,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Tell host component to add node components.
    * Remove node components from previous host component.
    */
-
   private void addNodesToHost(HostComponent hostComponent,
                               Object[] newChildren) {
     for (int i = 0; i < newChildren.length; i++) {
@@ -1356,7 +1361,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Tell node component to add agent components.
    * Remove agent components from previous node component.
    */
-
   private void addAgentsToNode(NodeComponent nodeComponent,
 			       Object[] newChildren) {
     for (int i = 0; i < newChildren.length; i++) {
@@ -1378,7 +1382,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Called when user drags nodes off the host or node tree;
    * does nothing as updating the components is done at insertion.
    */
-
   public void treeNodesRemoved(TreeModelEvent e) {
   }
 
@@ -1387,7 +1390,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Does nothing because the host or node is updated
    * in the tree model when the user makes the change.
    */
-
   public void treeNodesChanged(TreeModelEvent e) {
 //      Object source = e.getSource();
 //      // handle user editing the name of a host in the host tree
@@ -1420,7 +1422,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * TreeModelListener interface -- unused.
    */
-
   public void treeStructureChanged(TreeModelEvent e) {
   }
   
@@ -1430,7 +1431,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * This just takes care of the tree; the treeNodesRemoved method
    * updates the Society and Node components.
    */
-
   public void deleteHost() {
     TreePath[] selectedPaths = hostTree.getSelectionPaths();
     for (int i = 0; i < selectedPaths.length; i++) {
@@ -1463,7 +1463,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * Helper method to get value of property of selected node in specified tree.
    */
-
   private String getPropertyOfNode(JTree tree, String name) {
     DefaultMutableTreeNode selectedNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
@@ -1479,7 +1478,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Helper method to set value of property of selected nodes 
    * in specified tree.
    */
-
   private void setPropertyOfNode(JTree tree, String name, String value) {
     TreePath[] selectedPaths = tree.getSelectionPaths();
     for (int i = 0; i < selectedPaths.length; i++) {
@@ -1530,7 +1528,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Get description of nodes from user and set in all nodes
    * selected in the host or node trees.
    */
-
   public void setNodeDescription() {
     boolean askedUser = false;
     String description = "";
@@ -1609,7 +1606,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * Pop-up input dialog to get global command line arguments from user.
    */
-
   public void setGlobalCommandLine() {
     experiment.updateNameServerHostName(); // Be sure this is up-do-date
     NodeArgumentDialog dialog = 
@@ -1624,7 +1620,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   /**
    * Select a node in the host tree.
    */
-
   public void selectNodeInHostTree(String nodeName) {
     selectNodeInTree(hostTree, HostComponent.class, nodeName);
   }
@@ -1712,6 +1707,11 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     for (int i = 0; i < trees.length; i++)
       if (selectNodeInTree(trees[i], components[0].getClass(), (String)answer))
         return;
+
+    // If get here, couldnt find it.
+    // say something?
+    if (log.isWarnEnabled())
+      log.warn("findWorker couldnt find " + label + ": " + (String)answer);
   }
 
   public void findHost() {
@@ -1749,7 +1749,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * else in the host tree is selected.
    * @return true if the Host Tree root and only that is selected
    */
-
   public boolean isHostTreeRootSelected() {
     return isOnlyRootSelected(hostTree);
   }
@@ -1759,7 +1758,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * else in that tree is selected.
    * @return true if the Node Tree root and only that is selected
    */
-
   public boolean isNodeTreeRootSelected() {
     return isOnlyRootSelected(nodeTree);
   }
@@ -1790,7 +1788,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * if at least one Host, and only Hosts are selected, else returns null.
    * @return array of tree nodes representing Hosts
    */
-
   public DefaultMutableTreeNode[] getSelectedHostsInHostTree() {
     return getSelectedItemsInTree(hostTree, HostComponent.class);
   }
@@ -1800,7 +1797,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * if at least one Node, and only Nodes are selected, else returns null.
    * @return array of tree nodes representing Nodes
    */
-
   public DefaultMutableTreeNode[] getSelectedNodesInHostTree() {
     return getSelectedItemsInTree(hostTree, NodeComponent.class);
   }
@@ -1810,7 +1806,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * if at least one Node, and only Nodes are selected, else returns null.
    * @return array of tree nodes representing Nodes
    */
-
   public DefaultMutableTreeNode[] getSelectedNodesInNodeTree() {
     return getSelectedItemsInTree(nodeTree, NodeComponent.class);
   }

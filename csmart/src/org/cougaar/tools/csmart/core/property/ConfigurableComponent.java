@@ -1454,6 +1454,8 @@ public abstract class ConfigurableComponent
     }
   }
 
+  // Note: ConfigurableComponent has no .equals method. Should it?
+
   public String toString() {
     return getShortName();
   }

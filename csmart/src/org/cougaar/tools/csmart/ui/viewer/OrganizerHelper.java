@@ -536,8 +536,12 @@ public class OrganizerHelper {
   private void mapNodesToHosts(Experiment experiment, 
 			       String assemblyMatch ) {
 
+    // Note that getNodeC will do a node/agent reconcile,
+    // and getHostC will do it again
+    // As a result, loading an experiment from the DB, does a lot
+    // of work trying to match Agents
     NodeComponent[] nodeComponents = experiment.getNodeComponents();
-    HostComponent[] hostComponents = experiment.getHostComponents();
+    HostComponent[] hostComponents = experiment.getHostComponentsNoReconcile();
     String query = null;
     try {
       Connection conn = DBUtils.getConnection();

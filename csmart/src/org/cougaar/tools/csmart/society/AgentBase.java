@@ -206,6 +206,12 @@ public abstract class AgentBase
    * @return returns true if the object is an AgentComponent with same name
    */
   public boolean equals(Object o) {
+//     if (log.isDebugEnabled())
+//       log.debug(this + ": AgentBase.equals with other: " + o);
+
+    if (this == o)
+      return true;
+
     if (o instanceof AgentComponent) {
       AgentComponent that = (AgentComponent)o;
       if (!this.getShortName().equals(that.getShortName())  ) {

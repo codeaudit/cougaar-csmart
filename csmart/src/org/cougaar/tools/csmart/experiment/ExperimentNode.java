@@ -68,6 +68,8 @@ public class ExperimentNode
   }
 
   public boolean equals(Object o) {
+    if (this == o)
+      return true;
     if(o instanceof ExperimentNode) {
       return getShortName().equals(((ExperimentNode)o).getShortName());
     } else {
