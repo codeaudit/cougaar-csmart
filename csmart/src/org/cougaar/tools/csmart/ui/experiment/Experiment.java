@@ -310,30 +310,42 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       ModifiableConfigurableComponent copiedSC = organizer.copyComponent(sc, context);
       experimentCopy.addComponent(copiedSC);
     }
-
-
+    // copy hosts
     HostComponent[] hosts = getHosts();
+    HostComponent[] nhosts = new HostComponent[hosts.length];
     for (int i = 0; i < hosts.length; i++) {
-      HostComponent nhost = experimentCopy.addHost(hosts[i].getFullName().toString());
-      nhost.setServerPort(hosts[i].getServerPort());
-      nhost.setMonitoringPort(hosts[i].getMonitoringPort());
+      nhosts[i] = experimentCopy.addHost(hosts[i].getShortName().toString());
+      nhosts[i].setServerPort(hosts[i].getServerPort());
+      nhosts[i].setMonitoringPort(hosts[i].getMonitoringPort());
+    }
+    // copy nodes
+    NodeComponent[] nodes = getNodes();
+    NodeComponent[] nnodes = new NodeComponent[nodes.length];
+    for (int i = 0; i < nodes.length; i++) 
+      nnodes[i] = experimentCopy.addNode(nodes[i].getShortName().toString());
+    // reconcile hosts-nodes-agents
+    AgentComponent[] nagents = experimentCopy.getAgents();
+    NodeComponent nnode = null;
+    for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] onodes = hosts[i].getNodes();
+      // for each of the old nodes, find the corresponding new node
       for (int j = 0; j < onodes.length; j++) {
-	NodeComponent nnode = experimentCopy.addNode(onodes[j].getFullName().toString());
-	AgentComponent[] oagents = onodes[j].getAgents();
-        // compare short names only, as full names may be different
-	for (int x=0; x < oagents.length; x++) {
-          AgentComponent[] nagents = experimentCopy.getAgents();
-          for (int y=0; y < nagents.length; y++ ) {
-            if (nagents[y].getShortName().equals(oagents[x].getShortName())) {
-              nnode.addAgent(nagents[y]);
-            } 
+        for (int k = 0; k < nnodes.length; k++) {
+          if (nnodes[k].getShortName().equals(onodes[j].getShortName())) {
+              nnode = nnodes[k];
+              // add new node to new host
+              nhosts[i].addNode(nnode);
+              break;
           }
-	}	      
-	nhost.addNode(nnode);
+        }
+        // add new agents to new node
+        AgentComponent[] oagents = onodes[j].getAgents();
+        for (int x = 0; x < oagents.length; x++) 
+          for (int y = 0; y < nagents.length; y++) 
+            if (nagents[y].getShortName().equals(oagents[x].getShortName()))
+              nnode.addAgent(nagents[y]);
       }
     }
-
     // copy the results directory; results from the copied experiment
     // will be stored in this directory under the copied experiment name
     experimentCopy.setResultDirectory(getResultDirectory());
