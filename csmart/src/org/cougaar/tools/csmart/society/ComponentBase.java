@@ -126,12 +126,12 @@ public class ComponentBase
 
     // Warning: This assumes it has been handed the component in
     // which to add itself    
-    if (data.getType() != ComponentData.AGENT && data.getType() != ComponentData.NODE) {
-      if (log.isErrorEnabled()) {
-	log.error("Asked to add to non Agent/Node: " + data);
-      }
-      return data;
-    }
+//     if (data.getType() != ComponentData.AGENT && data.getType() != ComponentData.NODE) {
+//       if (log.isErrorEnabled()) {
+// 	log.error("Asked to add to non Agent/Node: " + data);
+//       }
+//       return data;
+//     }
 
     // Create a new componentdata
     // set the type, etc appropriately
@@ -202,6 +202,76 @@ public class ComponentBase
     data.addChildDefaultLoc(self);
     return data;
   }
+
+
+  public ComponentData modifyComponentData(ComponentData data) {
+    if(log.isDebugEnabled()) {
+      log.debug("Adding ComponentData for: " + data.getName());
+    }
+
+    // Warning: This assumes it has been handed the component in
+    // which to add itself    
+    if (data.getType() != ComponentData.AGENT && data.getType() != ComponentData.NODE) {
+      if (log.isErrorEnabled()) {
+	log.error("Asked to add to non Agent/Node: " + data);
+      }
+      return data;
+    }
+
+    // Create a new componentdata
+    // set the type, etc appropriately
+    // set self as the owner
+    // set data as the parent
+    // add self to data
+    ComponentData self = new GenericComponentData();
+
+    // We don't try to translate the component type here
+    // because that might cause a modification,
+    // which isn't the intent at this point
+    self.setType(getComponentType());
+
+    self.setOwner(this);
+    self.setParent(data);
+
+    self.setClassName(getComponentClassName());
+    self.setPriority(getPriority());
+    self.setAlibID(getAlibID());
+    self.setLibID(getLibID());
+
+    Iterator names = getSortedLocalPropertyNames();
+    while (names.hasNext()) {
+      CompositeName cname = (CompositeName) names.next();
+      String name = cname.toString();
+//       if (log.isDebugEnabled()) {
+//         log.debug("Looking at property " + name);
+//       }
+      if (name.indexOf(PROP_PARAM) != -1) {
+        if (log.isDebugEnabled()) {
+          log.debug("Found parameter " + name);
+        }
+        self.addParameter(getProperty(cname).getValue());
+      }
+    }        
+
+    if (GenericComponentData.alreadyAdded(data, self)) {
+      if (log.isDebugEnabled()) {
+	log.debug(data.getName() + " already has component " + self);
+      }
+      return data;
+    }
+
+    if(getAlibID() != null) {
+      self.setName(getAlibID());
+      self.setName(GenericComponentData.getSubComponentUniqueName(data, self));
+    } else {
+      self.setName(GenericComponentData.getSubComponentUniqueName(data, self));
+    }
+        
+    data.addChildDefaultLoc(self);
+
+    return data;
+  }
+
 
   public String getFolderLabel() {
     return folderLabel;
