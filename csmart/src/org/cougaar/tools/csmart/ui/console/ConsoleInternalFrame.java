@@ -371,15 +371,19 @@ public class ConsoleInternalFrame extends JInternalFrame {
    * Colloquially the "Node Info" window.
    */
   public void displayAbout() {
+
     // clone the agent names so we don't modify them when we add the NodeAgent
     ArrayList agentNames = 
       (ArrayList)console.getNodePropertyValue(nodeName, "AgentNames");
-    if (agentNames == null)
-      agentNames = new ArrayList();
-    else
+
+    // If got no Agent Names, that probably means
+    // we have no configuration info for the Node,
+    // so we won't display that portion of 
+    // the info window
+    if (agentNames != null) {
       agentNames = (ArrayList)agentNames.clone();
-    // Add the NodeAgent as the first Agent in the list
-    agentNames.add(0, nodeName);
+      agentNames.add(0, nodeName);
+    }
 
     JPanel aboutPanel = new JPanel();
     aboutPanel.setLayout(new GridBagLayout());
@@ -567,50 +571,54 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
     x = 0;
 
-    // Now the contents of the Node
-    aboutPanel.add(new JLabel("Agents (initial configuration):"),
-                   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
-                                          GridBagConstraints.WEST,
-                                          GridBagConstraints.NONE,
-                                          new Insets(0, 0, 5, 5),
-                                          0, 0));
-    aboutPanel.add(new JLabel("(select for more information)"),
-                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                          GridBagConstraints.WEST,
-                                          GridBagConstraints.NONE,
-                                          new Insets(0, 0, 5, 5),
-                                          0, 0));
-
-    // Put together the list of Agents in the Node
-    JList agentsList = null;
-    if (agentNames == null)
-      agentsList = new JList();
-    else
-      agentsList = new JList(agentNames.toArray());
-    agentsList.setBackground(aboutPanel.getBackground());
-
-    // Allow user to select an Agent in the list and get the detailed
-    // contents of that Agent in a pop-up window
-    agentsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    agentsList.addListSelectionListener(new ListSelectionListener() {
-      public void valueChanged(ListSelectionEvent e) {
-        if (e.getValueIsAdjusting())
-          return;
-        JList myagentsList = (JList)e.getSource();
-        String agentName = (String)myagentsList.getSelectedValue();
-        if (agentName != null)
-          displayPlugins(agentName);
-      }
-    });
-
-    JScrollPane jspAgents = new JScrollPane(agentsList);
-    jspAgents.setMinimumSize(new Dimension(50, 50));
-    aboutPanel.add(jspAgents,
-                   new GridBagConstraints(x, y++, 1, 1, 1.0, 1.0,
-                                          GridBagConstraints.WEST,
-                                          GridBagConstraints.BOTH,
-                                          new Insets(0, 0, 5, 0),
-                                          0, 0));
+    // Only show initial configuration info if we had some
+    if (agentNames != null) {
+      // Now the contents of the Node
+      aboutPanel.add(new JLabel("Agents (initial configuration):"),
+		     new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+					    GridBagConstraints.WEST,
+					    GridBagConstraints.NONE,
+					    new Insets(0, 0, 5, 5),
+					    0, 0));
+      aboutPanel.add(new JLabel("(select for more information)"),
+		     new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+					    GridBagConstraints.WEST,
+					    GridBagConstraints.NONE,
+					    new Insets(0, 0, 5, 5),
+					    0, 0));
+      
+      // Put together the list of Agents in the Node
+      JList agentsList = null;
+      if (agentNames == null)
+	agentsList = new JList();
+      else
+	agentsList = new JList(agentNames.toArray());
+      agentsList.setBackground(aboutPanel.getBackground());
+      
+      // Allow user to select an Agent in the list and get the detailed
+      // contents of that Agent in a pop-up window
+      agentsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+      agentsList.addListSelectionListener(new ListSelectionListener() {
+	  public void valueChanged(ListSelectionEvent e) {
+	    if (e.getValueIsAdjusting())
+	      return;
+	    JList myagentsList = (JList)e.getSource();
+	    String agentName = (String)myagentsList.getSelectedValue();
+	    if (agentName != null)
+	      displayPlugins(agentName);
+	  }
+	});
+      
+      JScrollPane jspAgents = new JScrollPane(agentsList);
+      jspAgents.setMinimumSize(new Dimension(50, 50));
+      aboutPanel.add(jspAgents,
+		     new GridBagConstraints(x, y++, 1, 1, 1.0, 1.0,
+					    GridBagConstraints.WEST,
+					    GridBagConstraints.BOTH,
+					    new Insets(0, 0, 5, 0),
+					    0, 0));
+    } // end of block to show configuration info
+    
     JOptionPane.showMessageDialog(this, aboutPanel, 
                                   "Information: " + nodeName +
                                   " (" + hostName + ")",
@@ -765,7 +773,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
    * Enable restart command after nodeStopped message has been received
    * by the node listener.
    */
-
   public void enableRestart(boolean enable) {
     startAction.setEnabled(enable);
     stopAction.setEnabled(!enable);
