@@ -113,15 +113,6 @@ public abstract class RecipeBase
     this.name = name;
   }
 
-  /**
-   *
-   * @return <description>
-   */
-  public String getRecipeName()
-  {    
-    return this.name;
-  }
-
   public Property addBooleanProperty(String name, String dflt) {
     Property tmp = addProperty(name, dflt);
     HashSet boolSet = new HashSet();
