@@ -29,6 +29,7 @@ import java.util.*;
 
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.StringUtility;
+import org.cougaar.tools.csmart.util.FileParseUtil;
 
 /**
  * Most of this was taken from ConfigFinder.  ConfigFinder is used
@@ -157,6 +158,28 @@ public final class SocietyFinder {
         return url.getFile();
     }
     return ".";
+  }
+
+
+  /**
+   * Return names of all agent files in the specified directory.
+   * Currently searches all files whose names end with ".ini" for
+   * the pattern: [ Cluster ]
+   * @param File directory to search
+   * @return string array of agent filenames
+   */
+
+  public String[] getAgentFilenames(File directory) {
+    File[] files = directory.listFiles();
+    ArrayList agentFilenames = new ArrayList(files.length);
+    for (int i = 0; i < files.length; i++) {
+      String name = files[i].getName();
+      if (!name.endsWith(".ini"))
+        continue;
+      if (FileParseUtil.containsPattern(name, "\\[ Cluster \\]"))
+        agentFilenames.add(name);
+    }
+    return (String[])agentFilenames.toArray(new String[agentFilenames.size()]);
   }
 
 }

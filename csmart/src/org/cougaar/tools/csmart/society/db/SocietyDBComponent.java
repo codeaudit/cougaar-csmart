@@ -66,6 +66,11 @@ public class SocietyDBComponent
   public SocietyDBComponent(String name, List assemblyID) {
     super(name);
     this.assemblyID = assemblyID;
+    createLogger();
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public void initProperties() {
@@ -144,6 +149,13 @@ public class SocietyDBComponent
     ModifiableComponent sc = new SocietyDBComponent(name, assemblyIDs);
     sc.initProperties();
     return sc;
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
 }

@@ -169,4 +169,18 @@ public class RelationshipData implements Serializable {
      return this.supported;
    }
 
+  /**
+   * For debugging, get contents of relationship data.
+   * @return String fields in relationship data
+   */
+  public String toString() {
+    StringBuffer sb = new StringBuffer(300);
+    sb.append("Type: " + type);
+    sb.append(" Role: " + role);
+    sb.append(" Item: " + item);
+    sb.append(" Start Time: " + startTime);
+    sb.append(" End Time: " + endTime);
+    sb.append(" Supported: " + supported);
+    return sb.toString();
+  }
 }

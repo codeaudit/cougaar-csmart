@@ -34,13 +34,41 @@ public class SocietyFileComponent
 
   private String name;
   private ComponentDescription[] desc;
+  private String[] filenames = null;
+
+  /**
+   * Construct a society from a single file which
+   * enumerates the agents in the society.
+   * The names of files that define individual agents are assumed
+   * to be of the form: <agentname>.ini
+   * @param filename the name of the file that enumerates the agents
+   */
 
   public SocietyFileComponent(String filename) {
     super(filename);
     this.name = filename;
   }
 
+  /**
+   * Construct a society from files, each of which defines
+   * an agent in the society.
+   * @param name the name of the society
+   * @param filenames the names of the files that define the agents
+   */
+
+  public SocietyFileComponent(String name, String[] filenames) {
+    super(name);
+    this.filenames = filenames;
+  }
+
   public void initProperties() {
+    if (filenames == null)
+      initFromSingleFile();
+    else
+      initFromMultiFiles();
+  }
+
+  private void initFromSingleFile() {
     String filename = name;
     if(log.isDebugEnabled()) {
       log.debug("Parse File: " + filename);
@@ -57,7 +85,22 @@ public class SocietyFileComponent
       agent.initProperties();
       addChild(agent);
     }
+  }
 
+  private void initFromMultiFiles() {
+    for (int i = 0; i < filenames.length; i++) {
+      if(log.isDebugEnabled()) {
+        log.debug("Parse File: " + filenames[i]);
+      }
+      String agentName = filenames[i];
+      if (agentName.endsWith(".ini"))
+        agentName = agentName.substring(0, agentName.length()-4);
+      AgentComponent agent = 
+        (AgentComponent)new AgentFileComponent(agentName, 
+                                               "org.cougaar.core.agent.ClusterImpl");
+      agent.initProperties();
+      addChild(agent);
+    }
   }
 
 }

@@ -57,7 +57,7 @@ import org.cougaar.tools.csmart.recipe.ParameterInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.society.cmt.CMTSociety;
+//import org.cougaar.tools.csmart.society.cmt.CMTSociety;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -502,18 +502,33 @@ public class Organizer extends JScrollPane {
     // display file chooser to allow user to select file that defines society
     JFileChooser chooser = 
       new JFileChooser(SocietyFinder.getInstance().getPath());
-    int result = chooser.showOpenDialog(this);
-    if (result != JFileChooser.APPROVE_OPTION ||
-        chooser.getSelectedFile().isDirectory())
+    chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+    //    int result = chooser.showOpenDialog(this);
+    int result = chooser.showDialog(this, "OK");
+    if (result != JFileChooser.APPROVE_OPTION)
       return null;
-    String name = chooser.getSelectedFile().getName();
-    // create society using file name
-    SocietyComponent sc = helper.createSociety(name, 
-                                               SocietyFileComponent.class);
+    SocietyComponent sc = null;
+    File file = chooser.getSelectedFile();
+    // create society from agent files or single node file
+    String name = "";
+    if (file.isDirectory()) {
+      String[] filenames =
+        SocietyFinder.getInstance().getAgentFilenames(file);
+      name =
+        (String)JOptionPane.showInputDialog(this, "Enter Society Name",
+                                            "Society Name",
+                                            JOptionPane.QUESTION_MESSAGE,
+                                            null, null, name);
+      if (name == null) return null; 
+      sc = helper.createSociety(name, filenames, SocietyFileComponent.class);
+    } else {
+      sc = helper.createSociety(file.getName(), SocietyFileComponent.class);
+      name = file.getName();
+      if (name.endsWith(".ini"))
+        name = name.substring(0, name.length()-4);
+    }
     if (sc == null)
       return null;
-    if (name.endsWith(".ini"))
-      name = name.substring(0, name.length()-4);
     // if name is not unique, then get an unique name for the society
     while (societyNames.contains(name)) {
       name = societyNames.generateName(name);

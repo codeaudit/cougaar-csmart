@@ -33,21 +33,22 @@ import java.sql.Timestamp;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.DBConnectionPool;
 
-import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
-import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.PropertyEvent;
-
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
-
+import org.cougaar.tools.csmart.core.db.DBUtils;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.society.ContainerBase;
+import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * A single Agent in a <code>SocietyDBComponent</code>, 
@@ -120,12 +121,6 @@ public class AgentDBComponent
 			     }
 			   });
 
-//     propCategory = addProperty(PROP_COMPONENT_CATEGORY, componentCategory,
-// 			   new ConfigurableComponentPropertyAdapter() {
-// 			     public void PropertyValueChanged(PropertyEvent e) {
-// 			     }
-// 			   });
-
     try {
       initDBProperties();
     } catch (IOException ioe) {
@@ -133,11 +128,13 @@ public class AgentDBComponent
         log.error("Exception", ioe);
       }
     }
+
+    addPlugins();
+    addAssetDataComponents();
   }
 
   private void initDBProperties() throws IOException {
     dbp = DBProperties.readQueryFile(DBUtils.QUERY_FILE);
-    //    dbp.setDebug(true);
   }
 
   private String queryOrgClass() {
@@ -323,7 +320,66 @@ public class AgentDBComponent
     createLogger();
   }
 
-  
+  private void addPlugins() {
+    ContainerBase container = new ContainerBase("Plugins");
+    container.initProperties();
+    addChild(container);
+
+    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
+    if (assemblyMatch != null) {
+      substitutions.put(":assemblyMatch", assemblyMatch);
+      substitutions.put(":agent_name", name);
+    }
+
+    // Get Plugin Names, class names, and parameters
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+        Statement stmt = conn.createStatement();	
+        String query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          String pluginClassName = rs.getString(1);
+          String pluginName = rs.getString(4);
+          PluginBase plugin = new PluginBase(pluginName, pluginClassName);
+          plugin.initProperties();
+          String alibId =rs.getString(2);
+          // does this need to be preserved in the plugin?
+          // plugin.setAlibID(alibId);
+          substitutions.put(":comp_alib_id", alibId);
+          substitutions.put(":comp_id", rs.getString(3));
+          Statement stmt2 = conn.createStatement();
+          String query2 = dbp.getQuery(QUERY_PLUGIN_ARGS, substitutions);
+          ResultSet rs2 = stmt2.executeQuery(query2);
+          while (rs2.next()) {
+            String arg = rs2.getString(1);
+            plugin.addParameter(arg);
+          }
+          rs2.close();
+          stmt2.close();
+          container.addChild(plugin);
+        } // end of loop over plugins to add
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("Exception", e);
+      }
+      throw new RuntimeException("Error" + e);
+    }
+  }
+
+  private void addAssetDataComponents() {
+    BaseComponent asset = 
+      (BaseComponent)new AssetDBComponent(name, assemblyID);
+    asset.initProperties();
+    addChild(asset);
+  }
+
+
   /**
    * Tests equality for agents.
    * Agents are equal if they have the same short name.

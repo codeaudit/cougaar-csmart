@@ -108,7 +108,7 @@ public class AgentFileComponent
   private void addAssetData() {
     BaseComponent asset = (BaseComponent)new AssetFileComponent(filename);
     asset.initProperties();
-    addChild((ConfigurableComponent)asset);
+    addChild(asset);
   }
 
   private void addPlugins() {
@@ -133,11 +133,8 @@ public class AgentFileComponent
         new PluginBase(name, desc[i].getClassname());
       plugin.initProperties();
       Iterator iter = ComponentConnector.getPluginProps(desc[i]);
-      int pCount = 0;
-      while(iter.hasNext()) {
+      while(iter.hasNext()) 
         plugin.addParameter((String)iter.next());
-        pCount++;
-      }
       container.addChild(plugin);
     }
   }

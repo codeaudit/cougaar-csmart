@@ -596,16 +596,7 @@ public class PropertyEditorPanel extends JPanel
 
     AssetComponent asset = (AssetComponent)new AssetUIComponent();
     createTreeNode(asset, agentNode);
-    Property p = asset.addProperty(AssetComponent.PROP_TYPE, "");
-    p.setToolTip(AssetComponent.PROP_TYPE_DESC);
-    p = asset.addProperty(AssetComponent.PROP_CLASS, "");
-    p.setToolTip(AssetComponent.PROP_CLASS_DESC);
-    p = asset.addProperty(AssetComponent.PROP_UID, "");
-    p.setToolTip(AssetComponent.PROP_UID_DESC);
-    p = asset.addProperty(AssetComponent.PROP_UNITNAME, "");
-    p.setToolTip(AssetComponent.PROP_UNITNAME_DESC);
-    p = asset.addProperty(AssetComponent.PROP_UIC, "");
-    p.setToolTip(AssetComponent.PROP_UIC_DESC);
+    asset.initProperties();
     agentComponent.addChild(asset);
   }
 

@@ -42,7 +42,8 @@ import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.society.cmt.CMTSociety;
+//import org.cougaar.tools.csmart.society.cmt.CMTSociety;
+import org.cougaar.tools.csmart.society.db.SocietyDBComponent;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import java.io.IOException;
@@ -81,9 +82,11 @@ public class OrganizerHelper {
     // get nodes for trial
     ArrayList nodes = getNodes(trialId, assemblyMatch);
     ArrayList hosts = getHosts(trialId, assemblyMatch);
-    CMTSociety soc = null;
+    //    CMTSociety soc = null;
+    SocietyDBComponent soc = null;
     if (assemblyIds.size() != 0) {
-      soc = new CMTSociety(experimentName, assemblyIds);      
+      //      soc = new CMTSociety(experimentName, assemblyIds);      
+      soc = new SocietyDBComponent(experimentName, assemblyIds);
       soc.initProperties();
     } else { // We need to create a new trial.
       // Need to have the experiment id, trial id, and multiplicity
@@ -614,13 +617,15 @@ public class OrganizerHelper {
 //     }
 //   }
 
-  private static Class[] constructorArgTypes = {String.class};
+  private static Class[] singleStringConstructor = {String.class};
+
+  private static Class[] multiConstructor = {String.class, String[].class};
 
   public RecipeComponent createRecipe(String name, Class cls) {
     createLogger();
     
     try {
-      Constructor constructor = cls.getConstructor(constructorArgTypes);
+      Constructor constructor = cls.getConstructor(singleStringConstructor);
       RecipeComponent recipe =
   	(RecipeComponent) constructor.newInstance(new String[] {name});
       recipe.initProperties();
@@ -646,12 +651,16 @@ public class OrganizerHelper {
     }
   }
 
-  // Create a new built-in society.
+  /**
+   * Create a new society from a node file which enumerates
+   * the names of the agents in the society.
+   */
+
   public SocietyComponent createSociety(String name, Class cls) {
     createLogger();
     
     try {
-      Constructor constructor = cls.getConstructor(constructorArgTypes);
+      Constructor constructor = cls.getConstructor(singleStringConstructor);
       SocietyComponent sc = 
         (SocietyComponent) constructor.newInstance(new String[] {name});
       sc.initProperties();
@@ -663,6 +672,32 @@ public class OrganizerHelper {
       return null;
     }
   }
+
+  /**
+   * Create a society from files, each of which defines an agent.
+   * @param name the name of the society
+   * @param filenames the names of files, each of which defines an agent
+   * @param cls the class to create
+   */
+
+  public SocietyComponent createSociety(String name, String[] filenames, 
+                                        Class cls) {
+    createLogger();
+    
+    try {
+      Constructor constructor = cls.getConstructor(multiConstructor);
+      SocietyComponent sc = 
+        (SocietyComponent) constructor.newInstance(new Object[] {name, filenames});
+      sc.initProperties();
+      return sc;
+    } catch (Exception e) {
+      if (log.isErrorEnabled()) {
+	log.error("Exception creating society " + name + " of class " + cls.toString(), e);
+      }
+      return null;
+    }
+  }
+
   
   // Class for holding name/Class pairs in UIs
   // TODO: this is defined in Organizer as well
