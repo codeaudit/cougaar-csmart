@@ -1163,6 +1163,11 @@ public class Organizer extends JScrollPane {
     if (newName == null)
       return null;
     final RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
+
+    // If we got an error copying the recipe, don't try to save it
+    if (recipeCopy == null)
+      return null;
+
     GUIUtils.timeConsumingTaskStart(organizer);
     try {
       new Thread("DuplicateRecipe") {
@@ -1854,6 +1859,8 @@ public class Organizer extends JScrollPane {
 
   private DefaultMutableTreeNode addRecipeToWorkspace(RecipeComponent recipe,
 						      DefaultMutableTreeNode node) {
+    if (recipe == null)
+      return null;
     DefaultMutableTreeNode newNode = 
       new DefaultMutableTreeNode(recipe, false);
     addNode(node, newNode);
