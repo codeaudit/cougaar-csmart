@@ -55,15 +55,18 @@ public class AssetFileComponent
   public static final String PROP_UIC = "UIC";
   public static final String PROP_UIC_DESC = "UIC of the Asset";
 
- private Property propAssetClass;
+  private Property propAssetClass;
   private Property propUniqueID;
   private Property propUnitName;
   private Property propUIC;
   private String filename;
-
-  public AssetFileComponent(String filename) {
+  private String clusterName;
+  private int iniFormat;
+  
+  public AssetFileComponent(String filename, String clusterName) {
     super("AssetData");
     this.filename = filename;
+    this.clusterName = clusterName;
   }
 
   /**
@@ -95,6 +98,7 @@ public class AssetFileComponent
       aad = callback.getAgentAssetData();
     }
 
+    this.iniFormat = aad.getIniFormat();
     propAssetClass = addProperty(PROP_CLASS, aad.getAssetClass());
     propAssetClass.setToolTip(PROP_CLASS_DESC);
 
@@ -108,7 +112,7 @@ public class AssetFileComponent
     propUnitName = addProperty(PROP_UNITNAME, unitname);
     propUnitName.setToolTip(PROP_UNITNAME_DESC);
     
-    propUIC = addProperty(PROP_UIC, (aad.getUIC() != null) ? aad.getUIC() : "UIC/" + aad.getClusterID());
+    propUIC = addProperty(PROP_UIC, (aad.getUIC() != null) ? aad.getUIC() : "UIC/" + clusterName);
     propUIC.setToolTip(PROP_UIC_DESC);
 
     addPropGroups(aad);
@@ -122,6 +126,7 @@ public class AssetFileComponent
 
   public ComponentData addComponentData(ComponentData data) {
     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
+    assetData.setIniFormat(this.iniFormat);
     assetData.setAssetClass((String)propAssetClass.getValue());
     assetData.setUniqueID((String)propUniqueID.getValue());
     assetData.setUnitName((String)propUnitName.getValue());
@@ -138,7 +143,7 @@ public class AssetFileComponent
           RelationshipData rData = new RelationshipData();
           rData.setType((String)rel.getProperty(RelationshipBase.PROP_TYPE).getValue());
           rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
-          rData.setItem((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
+          rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
           rData.setTypeId((String)rel.getProperty(RelationshipBase.PROP_TYPEID).getValue());
           rData.setSupported((String)rel.getProperty(RelationshipBase.PROP_SUPPORTED).getValue());
           assetData.addRelationship(rData);
