@@ -68,4 +68,6 @@ cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/lib_thread_header.csv $
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/oplan_activity_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/oplan_activity_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/oplan_activity.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/oplan_loc_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/oplan_loc_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/oplan_loc.csv
 cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/tpfdd_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/tpfdd_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/tpfdd.csv
+cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/community_entity_attribute_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/community_entity_attribute_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/community_entity_attribute.csv
+cat ${COUGAAR_INSTALL_PATH}/csmart/data/database/headers/community_attribute_header.csv ${COUGAAR_INSTALL_PATH}/csmart/data/database/raw_data/community_attribute_data.csv > ${COUGAAR_INSTALL_PATH}/csmart/data/database/csv/community_attribute.csv
 

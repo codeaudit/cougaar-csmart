@@ -1539,3 +1539,51 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/tpfdd.csv'
     IGNORE 1 LINES
     (RLN,SERVICE_CODE,UIC,ULC,UTC,UNIT_NAME,DESCRIPTION,NUM_PAX,ORIGIN_GEOLOC,ORIGIN_NAME,POE_GEOLOC,POE_NAME,POD_GEOLOC,POD_NAME,DEST_GEOLOC,DEST_NAME,RLD_ORIGIN,ALD_POE,EAD_POD,LAD_POD,RDD_DEST);
 
+#
+# Table structure for table 'community_entity_attribute'
+#
+
+DROP TABLE IF EXISTS community_entity_attribute;
+CREATE TABLE community_entity_attribute (
+  COMMUNITY_ID varchar(100) binary NOT NULL default '',
+  ENTITY_ID varchar(100) binary NOT NULL default '',
+  ATTRIBUTE_ID varchar(100) binary NOT NULL default '',
+  ATTRIBUTE_VALUE varchar(100) binary NOT NULL default '',
+  PRIMARY KEY (COMMUNITY_ID,ENTITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE),
+  KEY COMMUNITY_ID (COMMUNITY_ID),
+  KEY ENTITY_ID (ENTITY_ID),
+  KEY ATTRIBUTE_ID (ATTRIBUTE_ID),
+  KEY ATTRIBUTE_VALUE (ATTRIBUTE_VALUE)
+) TYPE=MyISAM;
+
+LOAD DATA INFILE ':cip/csmart/data/database/csv/community_entity_attribute.csv'
+    INTO TABLE community_entity_attribute
+    FIELDS
+        TERMINATED BY ','
+        OPTIONALLY ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (COMMUNITY_ID,ENTITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE);
+
+#
+# Table structure for table 'community_attribute'
+#
+
+DROP TABLE IF EXISTS community_attribute;
+CREATE TABLE community_attribute (
+  COMMUNITY_ID varchar(100) binary NOT NULL default '',
+  ATTRIBUTE_ID varchar(100) binary NOT NULL default '',
+  ATTRIBUTE_VALUE varchar(100) binary NOT NULL default '',
+  PRIMARY KEY (COMMUNITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE),
+  KEY COMMUNITY_ID (COMMUNITY_ID),
+  KEY ATTRIBUTE_ID (ATTRIBUTE_ID),
+  KEY ATTRIBUTE_VALUE (ATTRIBUTE_VALUE)
+) TYPE=MyISAM;
+
+LOAD DATA INFILE ':cip/csmart/data/database/csv/community_attribute.csv'
+    INTO TABLE community_attribute
+    FIELDS TERMINATED BY ','
+    OPTIONALLY ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (COMMUNITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE);

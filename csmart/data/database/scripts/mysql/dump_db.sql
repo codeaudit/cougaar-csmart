@@ -388,3 +388,14 @@ FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY "\n" FROM v6_tpfdd;
 
+SELECT COMMUNITY_ID,ENTITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/community_entity_attribute_data.csv" 
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"' 
+LINES TERMINATED BY "\n" FROM community_entity_attribute;
+
+SELECT COMMUNITY_ID,ATTRIBUTE_ID,ATTRIBUTE_VALUE 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/community_attribute_data.csv" 
+FIELDS TERMINATED BY ',' 
+OPTIONALLY ENCLOSED BY '"' 
+LINES TERMINATED BY "\n" FROM community_attribute;
