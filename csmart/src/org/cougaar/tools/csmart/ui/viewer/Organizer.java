@@ -740,7 +740,7 @@ public class Organizer extends JScrollPane {
     Experiment experiment;
     if (o instanceof SocietyComponent) {
       SocietyComponent sc = (SocietyComponent) o;
-      String name = "Temp Experiment for  " + sc.getSocietyName();
+      String name = "Temp Experiment for " + sc.getSocietyName();
       name = experimentNames.generateName(name);
       experiment = new Experiment(name,
 				  new SocietyComponent[] {sc},
