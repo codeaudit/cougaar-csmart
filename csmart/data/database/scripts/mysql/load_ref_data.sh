@@ -20,7 +20,7 @@
 #  PERFORMANCE OF THE COUGAAR SOFTWARE.
 # </copyright>
 
-# Load the Configuration data contained in csmart/data/database/csv
+# Load the RefConfiguration data contained in csmart/data/database/ref-csv
 # This data comes with the distribution.
 # You may also move the original data aside, and "dump" the data from a database
 # for sharing, or editing and reloading
@@ -31,7 +31,7 @@
 # and use the optional "local" argument.
 
 if [ "x$3" = "x" ]; then
-  echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] [local]"
+  echo "Usage: load_ref_data.sh [RefConfig DB Username] [Password] [MySQL RefConfig DB database name] [local]"
   echo "         -- use the 'local' keyword if running across a networked"
   echo "            drive. You must have MySQL v3.23.49 or better to use"
   echo "            the local option."
@@ -40,7 +40,7 @@ fi
 
 if [ "x$COUGAAR_INSTALL_PATH" = "x" ] ; then
   echo "You must set COUGAAR_INSTALL_PATH to the root of your Cougaar install."
-  echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] [local]"
+  echo "Usage: load_ref_data.sh [RefConfig DB Username] [Password] [MySQL RefConfig DB database name] [local]"
   echo "         -- use the 'local' keyword if running across a networked"
   echo "            drive. You must have MySQL v3.23.49 or better to use"
   echo "            the local option."
