@@ -102,9 +102,12 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     }
     menuBar.add(helpMenu);
 
+    setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
-	exit();
+        if(!PropertyBuilder.this.getGlassPane().isVisible()) {
+          exit();
+        }
       }
     });
 

@@ -303,9 +303,12 @@ public class ExperimentBuilder extends JFrame {
     pack();
     setSize(650, 400);
 
+    setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
-	exit();
+        if(!ExperimentBuilder.this.getGlassPane().isVisible()) {
+          exit();
+        }
       }
     });
     show();
@@ -397,22 +400,22 @@ public class ExperimentBuilder extends JFrame {
   private void saveHelper(boolean force) {
     if (force || experiment.isModified()) {
       final Component c = this;
-      GUIUtils.timeConsumingTaskStart(c);
       GUIUtils.timeConsumingTaskStart(csmart);
+      GUIUtils.timeConsumingTaskStart(c);
       try {
 	new Thread("Save") {
 	  public void run() {
 	    experiment.saveToDb(saveToDbConflictHandler);
-	    GUIUtils.timeConsumingTaskEnd(c);
 	    GUIUtils.timeConsumingTaskEnd(csmart);
+	    GUIUtils.timeConsumingTaskEnd(c);
 	  }
 	}.start();
       } catch (RuntimeException re) {
 	if(log.isErrorEnabled()) {
 	  log.error("Error saving experiment: ", re);
 	}
-	GUIUtils.timeConsumingTaskEnd(c);
         GUIUtils.timeConsumingTaskEnd(csmart);
+	GUIUtils.timeConsumingTaskEnd(c);
       }
     }
   }

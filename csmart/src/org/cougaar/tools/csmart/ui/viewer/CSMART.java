@@ -311,7 +311,9 @@ public class CSMART extends JFrame {
     // if user closes this window, quit
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
-	exit();
+        if(!CSMART.this.getGlassPane().isVisible()) {
+          exit();
+        }
       }
     });
 
@@ -690,8 +692,10 @@ public class CSMART extends JFrame {
     final JFrame frameArg = tool;
     tool.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
-	NamedFrame.getNamedFrame().removeFrame(frameArg);
-	frameArg.dispose();
+        if(!frameArg.getGlassPane().isVisible()) {
+          NamedFrame.getNamedFrame().removeFrame(frameArg);
+          frameArg.dispose();
+        }
       }
     });
   }
