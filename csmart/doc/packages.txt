@@ -7,25 +7,8 @@ highlighting key classes and interfaces.
    All CSMART classes fall under this root package.
  -- runtime
     This is where plugins, Assets, and other society runtime pieces
-   go. In particular, the built-in ABC society's runtime components
-   are defined here, as are pieces for the Basic Metric.
+   go. In particular, the Basic Metric pieces are here.
    
-   -- binder
-      CSMART binder related code (Binder is used by Impacts)
-
-   -- ldm
-    -- asset
-	All CSMART/ABC Assets
-    -- event
-        All CSMART/ABC Events
-    -- lps
-        All CSMART/ABC LP's
-    -- plugin
-      -- customer
-          Customer Plugin specific classes
-      -- transducer
-          Transducer Plugin specific classes
-
    -- plugin
       All CSMART Plugins, including those supporting the Basic Metric.
 
@@ -36,9 +19,6 @@ highlighting key classes and interfaces.
 	are also interface/classes for Agents
 	(AgentComponent/AgentBase), Plugins
 	(PluginComponent/PluginBase), etc.)
-    -- abc
-        This package contains all classes to represent an ABC
-	Society. (currently disabled)
     -- cdata
         This package contains classes to generate a Society from a 
         complete ComponentData structure (ie when you hit Configure on
@@ -49,15 +29,12 @@ highlighting key classes and interfaces.
 	originally created).
     -- file
         This package contains all classes to represent a Society created from INI Files.
-    -- scalability
-        This package contains all classes to represent a Scalability
-	society (currently disabled).
     -- ui
         This package contains all classes to represent a society
 	completely created from the UI.
 
  -- recipe
-     All classes about recipes (including metrics and impacts). This
+     All classes about recipes (including metrics). This
      includes the root interface by which the UI refers to recipes
      (RecipeComponent) and the base class that all recipes use
      (RecipeBase). In addition, RecipeList is used to list recipes
@@ -160,4 +137,4 @@ highlighting key classes and interfaces.
  -- util
       Various utility classes
     -- parser
-      Various parsers required by CSMART/ABC
+      Various parsers required by CSMART

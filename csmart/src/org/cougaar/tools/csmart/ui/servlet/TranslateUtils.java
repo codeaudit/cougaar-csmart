@@ -72,8 +72,6 @@ import org.cougaar.util.PropertyTree;
 
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 
-import org.cougaar.tools.csmart.runtime.ldm.event.HappinessChangeEvent;
-
 /**
  * Translate <code>UniqueObject</code>s to <code>PropertyTree</code>s.
  */
@@ -135,47 +133,7 @@ public final class TranslateUtils {
       (uo instanceof PlanElement) ?  toPropertyTree((PlanElement)uo, agent) :
       (uo instanceof       Asset) ?  toPropertyTree(      (Asset)uo, agent) :
       (uo instanceof    Workflow) ?  toPropertyTree(   (Workflow)uo, agent) :
-      (uo instanceof    HappinessChangeEvent) ?  toPropertyTree(   (HappinessChangeEvent)uo, agent) :
       null;
-  }
-
-  public static PropertyTree toPropertyTree(HappinessChangeEvent hce, String agent) {
-    PropertyTree pt = 
-      toBasicPropertyTree(PropertyNames.EVENT_HAPPINESS_CHANGE,
-			  getUIDAsString(hce.getUID()),
-			  agent);
-
-    // Add HCE specific fields
-    // include:
-    // Really want to cut this to 2 significant digits
-    pt.put(PropertyNames.EVENT_RATING, new Float((int)(1000 * hce.getRating()) / 100.0));
-    pt.put(PropertyNames.EVENT_DELTA, new Float((int)(1000 * hce.getRating()) / 100.0));
-    // EVENT_RATING -- float getRating()
-    // EVENT_RATING_DESCRIPTION getRegarding.getEstimatedResult().auxiliaryQuery....???
-    // EVENT_REGARDING PlanElement getRegarding()
-    pt.put(PropertyNames.EVENT_REGARDING, getUIDAsString(hce.getRegarding().getUID()));
-
-    // Also add the PlanElement it points to!
-    // FIXME!!!
-
-    // EVENT_PUBLISHER String getPublisher()
-    pt.put(PropertyNames.EVENT_PUBLISHER, hce.getPublisher());
-
-    // EVENT_SOURCE MessageAddress getSource()
-    pt.put(PropertyNames.EVENT_SOURCE, trimAngles(hce.getSource().toString()));
-
-    // EVENT_DESCRIPTION String getDescription()
-    pt.put(PropertyNames.EVENT_DESCRIPTION, hce.getDescription());
-
-    // EVENT_CUMULATIVE double getCurrentHappiness()
-    //    pt.put(PropertyNames.EVENT_CUMULATIVE, new Double((int)(1000 * hce.getCurrentHappiness()) / 100.0));
-    pt.put(PropertyNames.EVENT_CUMULATIVE, hce.getCurrentHappiness() + "");
-    // long getTime()
-    // EVENT_TIME_COMPLETED long getTimeCompleted()
-    pt.put(PropertyNames.EVENT_TIME_COMPLETED, new Long(hce.getTimeCompleted()));
-
-    // EVENT_TYPE "Happiness"
-    return pt;
   }
 
   /**

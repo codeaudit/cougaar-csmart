@@ -52,7 +52,6 @@ import org.cougaar.planning.ldm.plan.HasRelationships;
 import org.cougaar.planning.ldm.plan.PlanElement;
 import org.cougaar.planning.ldm.plan.Task;
 import org.cougaar.planning.ldm.plan.Workflow;
-import org.cougaar.tools.csmart.runtime.ldm.event.HappinessChangeEvent;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.servlet.TranslateUtils;
 import org.cougaar.util.UnaryPredicate;
@@ -61,7 +60,7 @@ import org.cougaar.util.log.Logger;
 /**
  * <p>
  * This Servlet traverses Tasks and related objects (plan elements, assets,
- * workflows) and HappinessChangeEvents and returns information on them.
+ * workflows) and returns information on them.
  * The information is encoded in name/value pairs stored in PropertyTree. <br>
  *
  * <p>
@@ -162,8 +161,7 @@ public class PlanServlet
 	    return
 	      (o instanceof Task || 
 	       o instanceof PlanElement ||
-	       o instanceof Asset ||
-	       o instanceof HappinessChangeEvent);
+	       o instanceof Asset);
 	  }
 	};
     }
@@ -200,8 +198,7 @@ public class PlanServlet
     
     /**
      * Returns a vector of PropertyTree for either a Task and
-     * all its related objects (planelements, workflows, assets) or
-     * for a HappinessChangeEvent.
+     * all its related objects (planelements, workflows, assets)
      * @return List
      */
     private List getObjects() {

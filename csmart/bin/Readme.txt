@@ -57,12 +57,6 @@ dot-l386
         such as $COUGAAR_INSTALL_PATY/sys and $COUGAAR_INSTALL_PATH/bin 
         also work. You can also get these files from the  GraphViz site.
 	
-CSMARTNode
-CSMARTsetarguments.bat
-        Old startup-scripts for running "ABC Societies" from ".INI" files.
-        Most users should not run these files.
-	
-
 copy-experiment.sh
 [Helper file: copyASB.sql]
 	Script to copy a complete CSMART database experiment, under a

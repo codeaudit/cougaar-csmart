@@ -40,7 +40,6 @@ public class Regress extends TestSuite {
 
   public static Test suite() {
     TestSuite csmartTests = new TestSuite();
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.util.parser.ParserTest.class));
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.util.parser.SimpleParserTest.class));
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.util.ArgValueTest.class));    
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.name.ComponentNameTest.class));
@@ -65,7 +64,6 @@ public class Regress extends TestSuite {
 
     // This is broken currently, cause of missing .q files and such
     //    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.db.TestPopulateDb.class));    
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.society.abc.ABCAgentTest.class));
     // Leave this commented out for now - needs a UI, so nightly build
     // may have trouble....
     //    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.console.ConsoleTextPaneTest.class));    

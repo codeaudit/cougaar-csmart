@@ -1,3 +1,0 @@
-# <WorldState>, <TaskType>, <Rate>, <Deviation>, <Vitality>, <Duration>
-PEACE, TASK_A, 5, 3, 0.6, 300000
-PEACE, TASK_B, 2, 2, 0.3, 25000

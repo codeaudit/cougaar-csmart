@@ -639,14 +639,6 @@ public class SearchServlet
 	    ws.push(pe.getTask());
 	    break;
 	  }
-	case ITEM_TYPE_OTHER:
-	  {
-	    // Add in something for HCEs to point to PlanElements?
-	    if (uo instanceof org.cougaar.tools.csmart.runtime.ldm.event.HappinessChangeEvent) {
-	      ws.push(((org.cougaar.tools.csmart.runtime.ldm.event.HappinessChangeEvent)uo).getRegarding());
-	    }
-	    break;
-	  }
 	default:
 	  // ignore
 	  break;

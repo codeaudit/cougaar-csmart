@@ -497,15 +497,6 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
     finds the appropriate file. Note that the home directory is
     preferred, for easy upgrade to newer Cougaar versions.</li><p>
 
-  <li>If you plan to run CSMART with metrics (BasicMetric CSMART recipe),
-    which is common, you must modify "configs/common/LDMDomains.ini"
-    to include the CSMART domain (otherwise the CSMART domain is not required).  Append this line to the end
-    of the file:
-       <pre>
-      csmart=org.cougaar.tools.csmart.runtime.ldm.CSMARTDomain
-       </pre>
-    An example "LDMDomains.ini" is kept in "csmart/data/common".</li><p>
-
   <li>(Optional) Metrics also require the installation of a JNI (native-code) 
     library.  See "scalability/bin/Install.txt" for details.  If you do
     not install these libraries then Metrics will be unable to gather some

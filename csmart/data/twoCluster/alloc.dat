@@ -1,3 +1,0 @@
-config, 0.5, 50, 60, 150, 5400
-rule, TASK_A, SubsistenceProvider
-rule, TASK_B, FoodProvider

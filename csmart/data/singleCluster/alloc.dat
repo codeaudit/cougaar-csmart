@@ -1,5 +1,0 @@
-# Allocation rules, in order
-# The list of rules after the task verb is an ANDed list of
-# roles an Asset must have for the Task to be allocated to that asset
-TASK_A, ROLE_A
-TASK_B, ROLE_B
