@@ -37,7 +37,7 @@ public class GenericComponentData implements ComponentData {
   private ArrayList children = null;
   private ArrayList parameters = null;
   private ConfigurableComponent parent = null;
-  private ConfigurableComponent owner = null;
+  transient private ConfigurableComponent owner = null;
   private ArrayList leafComponents = null;
   private ArrayList timePhasedData = null;
 
