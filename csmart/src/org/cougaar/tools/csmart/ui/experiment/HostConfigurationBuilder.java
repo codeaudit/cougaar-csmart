@@ -739,11 +739,12 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void treeNodesInserted(TreeModelEvent e) {
-    //    System.out.println("CSMARTConsole: treeNodesInserted");
     Object source = e.getSource();
-    if (hostTree.getModel().equals(source))
+    if (hostTree.getModel().equals(source)) {
+      //      System.out.println("Tree Node Inserted: " +
+      //             ((ConsoleTreeObject)((DefaultMutableTreeNode)e.getTreePath().getLastPathComponent()).getUserObject()).getName());
       treeNodesInsertedInHostTree(e);
-    else if (nodeTree.getModel().equals(source))
+    } else if (nodeTree.getModel().equals(source))
       treeNodesInsertedInNodeTree(e);
     experimentBuilder.setModified(true);
   }
@@ -756,10 +757,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Notify node component if agents are added to a node in the host tree.
    * Note that if nodes are dragged on to a host,
    * then this gets called on both the host tree node and the node tree node.
-   * TODO: if you drag a node between two hosts in the tree,
+   * If you drag a node between two hosts in the tree,
    * then this is called once for each agent in the dragged node with 
    * e.getTreePath identifying the dragged node 
    * (see workaround nodeComponentHasAgent)
+   * If you drag a host within the host tree,
+   * then this is called once for each node in the dragged node 
+   * (see workaround hostComponentHasNode)
    */
 
   private void treeNodesInsertedInHostTree(TreeModelEvent e) {
@@ -775,13 +779,16 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     } else if (cto.isHost()) {
       // nodes were dragged on to a host
       // tell the host that nodes were added
+      // or, the host was dragged, do nothing
       HostComponent hostComponent = (HostComponent)cto.getComponent();
       Object[] newChildren = e.getChildren();
       for (int i = 0; i < newChildren.length; i++) {
 	DefaultMutableTreeNode treeNode =
 	  (DefaultMutableTreeNode)newChildren[i];
 	cto = (ConsoleTreeObject)treeNode.getUserObject();
-	hostComponent.addNode((NodeComponent)cto.getComponent());
+        NodeComponent nodeComponent = (NodeComponent)cto.getComponent();
+        if (!hostComponentHasNode(hostComponent, nodeComponent))
+          hostComponent.addNode(nodeComponent);
       }
     }
     setNameServerHostName(); // potentially update name server host
@@ -822,7 +829,22 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   /**
-   * TODO: remove this workaround
+   * Check if a host has a node before telling it about a new one.
+   * Workaround for bug that causes treeNodesInsertedInHostTree to
+   * be called when hosts are moved within the host tree.
+   */
+
+  private boolean hostComponentHasNode(HostComponent host,
+                                       NodeComponent node) {
+    NodeComponent[] nodes = host.getNodes();
+    for (int i = 0; i < nodes.length; i++) {
+      if (nodes[i].equals(node))
+	return true;
+    }
+    return false;
+  }
+
+  /**
    * Check if a node has an agent before telling it about a new one.
    * Workaround for bug that causes treeNodesInsertedInHostTree to
    * be called when agents are moved within the tree.
@@ -845,9 +867,11 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   public void treeNodesRemoved(TreeModelEvent e) {
     Object source = e.getSource();
-    if (hostTree.getModel().equals(source))
+    if (hostTree.getModel().equals(source)) {
+      //      System.out.println("Tree Node Removed: " +
+      //             ((ConsoleTreeObject)((DefaultMutableTreeNode)e.getTreePath().getLastPathComponent()).getUserObject()).getName());
       treeNodesRemovedFromHostTree(e);
-    else if (nodeTree.getModel().equals(source))
+    } else if (nodeTree.getModel().equals(source))
       treeNodesRemovedFromNodeTree(e);
     experimentBuilder.setModified(true);
   }
