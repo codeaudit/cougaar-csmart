@@ -732,7 +732,7 @@ public class Organizer extends JScrollPane {
       experimentNames.add(experiment.getExperimentName());
       experiment.addModificationListener(myModificationListener);
     }
-    csmart.runExperimentBuilder(experiment, false, true);
+    csmart.runExperimentBuilder(experiment, false, openForEditing);
   }
   
   private void startConsole(DefaultMutableTreeNode node) {
@@ -997,7 +997,7 @@ public class Organizer extends JScrollPane {
     SocietyComponent society = (SocietyComponent)node.getUserObject();
     if (!society.isEditable()) {
       int result = JOptionPane.showConfirmDialog(this,
-						 "Society is in use; delete anyway?",
+						 "Society has been or is being; delete anyway?",
 						 "Society Not Editable",
 						 JOptionPane.YES_NO_OPTION,
 						 JOptionPane.WARNING_MESSAGE);
@@ -1026,7 +1026,7 @@ public class Organizer extends JScrollPane {
     else {
       if (!component.isEditable()) {
 	int result = JOptionPane.showConfirmDialog(this,
-						   "Component is in use; delete anyway?",
+						   "Component has been or is being used; delete anyway?",
 						   "Component Not Editable",
 						   JOptionPane.YES_NO_OPTION,
 						   JOptionPane.WARNING_MESSAGE);
