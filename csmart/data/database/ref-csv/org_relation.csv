@@ -1,1 +1,6 @@
 ROLE,SUPPORTING_ORG_ID,SUPPORTED_ORG_ID,START_DATE,END_DATE,
+"Subordinate","1BDE","3ID","1969-12-31 19:00:00",\N,
+"Subordinate","3-69-ARBN","1BDE","1969-12-31 19:00:00",\N,
+"StrategicTransportationProvider","3ID","1BDE","1969-12-31 19:00:00",\N,
+"StrategicTransportationProvider","3ID","3-69-ARBN","1969-12-31 19:00:00",\N,
+"StrategicTransportationProvider","MCCGlobalMode","3ID","1969-12-31 19:00:00",\N,
