@@ -57,7 +57,6 @@ public class ComplexRecipeBase extends RecipeBase
   protected String assemblyId = null;
   protected String oldAssemblyId = null;
   private boolean saveInProgress = false;
-  protected boolean modified = true;
 
   private Property propAssemblyId;
 
@@ -129,34 +128,10 @@ public class ComplexRecipeBase extends RecipeBase
       }
     }
 
-    // Now save to the recipe tables.
-    boolean result = false;
-    PDbBase pdbb = null;
-    try {
-      propAssemblyId.setVisible(true);
-      pdbb = new PDbBase();
-      pdbb.insureLibRecipe(this);
-      result = true;
-    } catch (Exception sqle) {
-      if(log.isErrorEnabled()) {
-        log.error("Exception", sqle);
-      }
-      result = false;
-    } finally {
-      try {
-	if (pdbb != null)
-	  pdbb.close();
-      } catch (Exception sqle) {
-	if(log.isErrorEnabled()) {
-	  log.error("Exception", sqle);
-	}
-      }
-    }
+    propAssemblyId.setVisible(true);
+    ret &= super.saveToDatabase();
     propAssemblyId.setVisible(false);
-    modified = false;
-    saveInProgress = false;
-    // tell listeners society is now saved
-    fireModification(new ModificationEvent(this, RECIPE_SAVED));
+    
     return ret;
   }
 
