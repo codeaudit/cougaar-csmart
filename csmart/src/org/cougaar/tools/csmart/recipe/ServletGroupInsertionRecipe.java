@@ -71,7 +71,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   private static final String PROP_TARGET_AGENT_QUERY_DESC = 
     "The query name for selecting agents to which to add servlets.";
 
-  private static final String PROP_NEW_SERVLETS_COUNT = "Number of New Servlets";
+  private static final String PROP_NEW_SERVLETS_COUNT = "_Number of New Servlets";
   private static final Integer PROP_NEW_SERVLETS_COUNT_DFLT = new Integer(0);
   private static final Integer PROP_NEW_SERVLETS_ARG_COUNT_DFLT = new Integer(2);
   private static final String PROP_NEW_SERVLETS_COUNT_DESC = "Number of servlets to be added that are not listed above.";
