@@ -27,7 +27,7 @@ import org.cougaar.tools.csmart.ui.viewer.Organizer;
 
 import org.cougaar.tools.server.ConfigurationWriter;
 
-import java.io.File;
+// import java.io.File;
 import java.io.FileFilter;
 import java.io.Serializable;
 import java.lang.reflect.Array;
@@ -65,15 +65,6 @@ public class ABCSociety
   public static final String PROP_TASKVERB = ABCTask.PROP_TASKVERB;
   public static final String PROP_STARTTIME = ABCAgent.PROP_STARTTIME;
   public static final String PROP_STOPTIME = ABCAgent.PROP_STOPTIME;
-
-//   // Props for metrics:
-//   public static final String PROP_NUMBPROVIDERS = ABCAgent.PROP_NUMBPROVIDERS;
-//   public static final String PROP_SAMPLEINTERVAL = ABCAgent.PROP_SAMPLEINTERVAL;
-//   public static final String PROP_STARTDELAY = ABCAgent.PROP_STARTDELAY;
-//   public static final String PROP_MAXNUMBSAMPLES = ABCAgent.PROP_MAXNUMBSAMPLES;
-//   public static final String PROP_INITIALIZER = ABCAgent.PROP_INITIALIZER;
-//   // End of props for metrics
-
   
   private boolean isRunning = false;
   private boolean editable = true;
@@ -83,14 +74,6 @@ public class ABCSociety
   private Property propStartTime;
   private Property propStopTime;
   private Property propTaskVerb;
-
-//   // Props for metrics
-//   private Property propInitializer;
-//   private Property propSampleInterval;
-//   private Property propNumbProviders;
-//   private Property propStartDelay;
-//   private Property propMaxSamples;
-//   // End of props for metrics
 
   private HashMap  commPerLevel = new HashMap(25);
 
@@ -130,7 +113,6 @@ public class ABCSociety
 	public void propertyValueChanged(PropertyEvent e) {
 	  if(((Integer)e.getProperty().getValue()).intValue() < 1) {
 	    propLevelCount.setValue(e.getPreviousValue());
-	    //JOptionPane.showMessageDialog(this, "Value must be > 0; reseting to previous value.");
 	  } else {
 	    changeSociety();
 	  }
@@ -143,7 +125,6 @@ public class ABCSociety
       	public void propertyValueChanged(PropertyEvent e) {
 	  if(((Integer)e.getProperty().getValue()).intValue() < 1) {
 	    propCommunityCount.setValue(e.getPreviousValue());
-	    //JOptionPane.showMessageDialog(this, "Value must be > 0; reseting to previous value.");
 	  } else if( ((Integer)e.getProperty().getValue()).intValue() < ((Integer)propLevelCount.getValue()).intValue()) {
 	    // Community count should be equal to or greater than level count.
 	    propCommunityCount.setValue(e.getPreviousValue());
@@ -168,50 +149,10 @@ public class ABCSociety
     });
     propStopTime.setToolTip(ABCAgent.PROP_STOPTIME_DESC);
 
-//     // Stuff for metrics:
-//     propInitializer = addProperty(PROP_INITIALIZER, ABCAgent.PROP_INITIALIZER_DFLT,
-//                                 new ConfigurableComponentPropertyAdapter() {
-// 	public void propertyValueChanged(PropertyEvent e) {
-// 	}
-//     });
-//     propInitializer.setToolTip(ABCAgent.PROP_INITIALIZER_DESC);
-
-//     propSampleInterval = addProperty(PROP_SAMPLEINTERVAL, ABCAgent.PROP_SAMPLEINTERVAL_DFLT,
-//                                 new ConfigurableComponentPropertyAdapter() {
-// 	public void propertyValueChanged(PropertyEvent e) {
-// 	}
-//     });
-//     propSampleInterval.setToolTip(ABCAgent.PROP_SAMPLEINTERVAL_DESC);
-
-//     propMaxSamples = addProperty(PROP_MAXNUMBSAMPLES, ABCAgent.PROP_MAXNUMBSAMPLES_DFLT,
-//                                 new ConfigurableComponentPropertyAdapter() {
-// 	public void propertyValueChanged(PropertyEvent e) {
-// 	}
-//     });
-//     propMaxSamples.setToolTip(ABCAgent.PROP_MAXNUMBSAMPLES_DESC);
-
-//     propStartDelay = addProperty(PROP_STARTDELAY, ABCAgent.PROP_STARTDELAY_DFLT,
-//                                 new ConfigurableComponentPropertyAdapter() {
-// 	public void propertyValueChanged(PropertyEvent e) {
-// 	}
-//     });
-//     propStartDelay.setToolTip(ABCAgent.PROP_STARTDELAY_DESC);
-
-//     propNumbProviders = addProperty(PROP_NUMBPROVIDERS, ABCAgent.PROP_NUMBPROVIDERS_DFLT,
-//                                 new ConfigurableComponentPropertyAdapter() {
-// 	public void propertyValueChanged(PropertyEvent e) {
-// 	}
-//     });
-//     propNumbProviders.setToolTip(ABCAgent.PROP_NUMBPROVIDERS_DESC);
-//     // End of stuff for metrics
-
     propTaskVerb = addProperty(PROP_TASKVERB, PROP_TASKVERB_DFLT);
     propTaskVerb.setToolTip(ABCTask.PROP_TASKVERB_DESC);
 
     buildDefaultCommunity();
-
-//     // For metrics:
-//     addInitializer();
   }
   
   /**
@@ -344,19 +285,11 @@ public class ABCSociety
     for(int i=1; i <= newLevels; i++) {
       int count = 0;
       int communitiesForLevel = ((Integer) commPerLevel.get(new Integer(i))).intValue();
-      //      System.out.println("Count = " + count + " Communities for level: " + communitiesForLevel);
       while(count < communitiesForLevel) {
-	//	System.out.println("Level == " + i);
 	ABCCommunity child = new ABCCommunity(i, crntCommunity);
 	addChild(child);
 	child.addPropertiesListener(this);
 	addPropertyAlias(child, propTaskVerb, PROP_TASKVERB);
-// 	// Stuff for metrics:
-// 	addPropertyAlias(child, propSampleInterval, PROP_SAMPLEINTERVAL);
-// 	addPropertyAlias(child, propMaxSamples, PROP_MAXNUMBSAMPLES);
-// 	addPropertyAlias(child, propStartDelay, PROP_STARTDELAY);
-// 	addPropertyAlias(child, propNumbProviders, PROP_NUMBPROVIDERS);
-// 	// End of stuff for metrics
 	addPropertyAlias(child, propStartTime, PROP_STARTTIME);
 	addPropertyAlias(child, propStopTime, PROP_STOPTIME);
 
@@ -366,13 +299,11 @@ public class ABCSociety
 	externalProviders = new String[getChildCount()];
 	int index = 0;
 	Iterator iter = ((Collection)getDescendentsOfClass(ABCCommunity.class)).iterator();
-	//	System.out.println("Community: " + child.getName().toString());
 	while(iter.hasNext()) {
 	  ABCCommunity comm = (ABCCommunity)iter.next();
 	  String provider = comm.getExternalProviderName();
 	  int level = comm.getLevel();
 	  if(level == (child.getLevel() - 1)) {
-	    //	    System.out.println("Adding: " + provider);
 	    externalProviders[index++] = provider;
 	  } else {
 	    //	    System.out.println("Skipping: " + provider + ": My Level = " + child.getLevel() + ": " + level);
@@ -382,40 +313,11 @@ public class ABCSociety
 	if(externalProviders != null) {
 	  setSupplies(child, externalProviders);
 	}
-
-// 	// Stuff for metrics:
-// 	if(i == 1 && count == 0 ) {
-// 	  propInitializer.setValue(child.getProperty(ABCCommunity.PROP_FIRSTAGENT).getValue());
-// 	}
-// 	// Hide this value from the GUI, it should never been seen by the user.
-// 	setPropertyVisible(child.getProperty(ABCCommunity.PROP_FIRSTAGENT), false);
-// 	// End of stuff for metrics
-
 	count++;
 	crntCommunity++;
       }
     }
-//     // These are for metrics:
-//     propNumbProviders.setValue(new Long(getCommunityCount() * 4L));
-//     setPropertyVisible(propInitializer, false);
-//     addInitializer();
-//     // end of stuff for metrics
-
   }
-
-  // This is just for metrics...
-  /**
-   * Adds an Initializer to all communities
-   * The initializer is an agent name from a community
-   * that all other agents within the society reference
-   * for metrics collection.
-   */
-//   private void addInitializer() {
-//     for(int i=0; i < getChildCount(); i++) {
-//       ABCCommunity comm = (ABCCommunity)getChild(i);
-//       comm.addAliasInitializer(propInitializer);
-//     }
-//   }
 
   /**
    * Constructs a default ABC Society
@@ -434,12 +336,6 @@ public class ABCSociety
 	addChild(child);
 	child.addPropertiesListener(this);
 	addPropertyAlias(child, propTaskVerb, PROP_TASKVERB);
-// 	// Stuff for metrics:
-// 	addPropertyAlias(child, propSampleInterval, PROP_SAMPLEINTERVAL); 
-// 	addPropertyAlias(child, propMaxSamples, PROP_MAXNUMBSAMPLES);
-// 	addPropertyAlias(child, propStartDelay, PROP_STARTDELAY);
-// 	addPropertyAlias(child, propNumbProviders, PROP_NUMBPROVIDERS);
-// 	// end of stuff for metrics
 	addPropertyAlias(child, propStartTime, PROP_STARTTIME);
 	addPropertyAlias(child, propStopTime, PROP_STOPTIME);
 
@@ -503,24 +399,10 @@ public class ABCSociety
 	if(externalProviders != null) {
 	  setSupplies(child, externalProviders);
 	}
-
-// 	// This is for metrics:
-// 	if(i == 1 && count == 0 ) {
-// 	  propInitializer.setValue(child.getProperty(ABCCommunity.PROP_FIRSTAGENT).getValue());
-// 	}
-	// Hide this value from the GUI, it should never been seen by the user.
-	//setPropertyVisible(child.getProperty(ABCCommunity.PROP_FIRSTAGENT), false);
-	// End of stuff for metrics
-
 	count++;
 	crntCommunity++;
       }
-    }
-    
-//     // These are for metrics:
-//     propNumbProviders.setValue(new Long(getCommunityCount() * 4L));
-//     setPropertyVisible(propInitializer, false);
-//     setPropertyVisible(propNumbProviders, false);
+    }    
   }
 
   /**
@@ -552,18 +434,6 @@ public class ABCSociety
 	agent.getProperty(ABCAgent.PROP_SUPPLIES).setValue(newSupplies);
 	break;
       }
-    }
-  }
-
-  /**
-   * Generates all ini files for every community
-   *
-   * @param File directory to place ini files in.
-   */
-  public void generateIniFiles(File configDir) {
-    for(int i=0; i < getChildCount(); i ++) {
-      ABCCommunity c = (ABCCommunity)getChild(i);
-      c.generateIniFiles(configDir);
     }
   }
 
@@ -693,12 +563,12 @@ public class ABCSociety
     return false;
   }
 
-  /**
-   * Get a configuration writer for this society.
-   */
-  public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes, String nodeFileAddition) {
-    return new ABCConfigurationWriter(this, nodes, nodeFileAddition);
-  }
+//   /**
+//    * Get a configuration writer for this society.
+//    */
+//   public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes, String nodeFileAddition) {
+//     return new ABCConfigurationWriter(this, nodes, nodeFileAddition);
+//   }
 
   public ComponentProperties copy(ComponentProperties result) {
     result = super.copy(result);
@@ -709,35 +579,9 @@ public class ABCSociety
     return result;
   }
 
-
-//   public void processData(ComponentData data) {
-//     ComponentData[] children = data.getChildren();
-
-//     // This seams like it can be more efficient.
-//     for(int i=0; i < children.length; i++) {
-//       ComponentData child = children[i];
-//       if(child.getType() == ComponentData.AGENT) {
-
-// 	Iterator iter = ((Collection)getDescendentsOfClass(ABCAgent.class)).iterator();
-
-// 	while(iter.hasNext()) {
-// 	  ABCAgent agent = (ABCAgent)iter.next();
-// 	  if(child.getName().equals(agent.getFullName().toString())) {
-// 	    child.setOwner(this);
-// 	    agent.addComponentData(child);
-// 	  }
-// 	}		
-//       } else {
-// 	// Process it's children.
-// 	processData(child);
-//       }      
-//     }
-//   }
-
   public ComponentData addComponentData(ComponentData data) {
     ComponentData[] children = data.getChildren();
 
-    // This seams like it can be more efficient.
     for(int i=0; i < children.length; i++) {
       ComponentData child = children[i];
       if(child.getType() == ComponentData.AGENT) {
@@ -753,17 +597,16 @@ public class ABCSociety
 	}		
       } else {
 	// Process it's children.
-	//processData(child);
 	addComponentData(child);
       }      
     }
-
-    //    processData(data);
 
     return data;
   }
 
   public ComponentData modifyComponentData(ComponentData data) {
+    ComponentData[] children = data.getChildren();
+
     return data;
   }
 

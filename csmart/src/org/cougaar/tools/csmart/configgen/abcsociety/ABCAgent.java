@@ -76,34 +76,6 @@ public class ABCAgent
   public static final String PROP_STOPTIME = "Stop Time";
   public static final Long PROP_STOPTIME_DFLT = new Long(40000);
   public static final String PROP_STOPTIME_DESC = "Stop Time for Tasks";
-
-  /** Metrics Properties Definitions **/
-
-  /** Number of Metrics Providers Property Definitions **/
-  public static final String PROP_NUMBPROVIDERS = "Metrics: Number of Providers";
-  public static final Integer PROP_NUMBPROVIDERS_DFLT = new Integer(0);
-  public static final String PROP_NUMBPROVIDERS_DESC = "Number of Agents providing metrics";
-
-  /** Sample Interval Property Definitions **/
-  public static final String PROP_SAMPLEINTERVAL = "Metrics: Sample Interval";
-  public static final Integer PROP_SAMPLEINTERVAL_DFLT = new Integer(10);
-  public static final String PROP_SAMPLEINTERVAL_DESC = "Sample Interval to collect metrics";
-
-  /** Start Delay Property Definitions **/
-  public static final String PROP_STARTDELAY = "Metrics: Start Delay";
-  public static final Integer PROP_STARTDELAY_DFLT = new Integer(0);
-  public static final String PROP_STARTDELAY_DESC = "Delay to wait before metric collection";
-
-  /** Maximum Number of Samples Property Definitions **/
-  public static final String PROP_MAXNUMBSAMPLES = "Metrics: Maximum Number of Samples";
-  public static final Integer PROP_MAXNUMBSAMPLES_DFLT = new Integer(20);
-  public static final String PROP_MAXNUMBSAMPLES_DESC = "Number of metric samples to collect";
-
-  /** Metrics Initiailzer Property Definitions **/
-  public static final String PROP_INITIALIZER = "Metrics: Initializer PlugIn";
-  public static final String PROP_INITIALIZER_DFLT = "";
-  public static final String PROP_INITIALIZER_DESC = "Name of the Metric Initialization plugin";
-
   
   private static final String agentClassName = "org.cougaar.core.cluster.ClusterImpl";
 
@@ -128,8 +100,8 @@ public class ABCAgent
     "org.cougaar.domain.planning.plugin.AssetReportPlugIn";
   // HACK: Always include this PlugIn for ABCImpacts, even though
   // only need it if using such an impact in our experiment
-  private static final String ABCImpactPlugIn_name =
-    "org.cougaar.tools.csmart.plugin.ABCImpactPlugin";
+//   private static final String ABCImpactPlugIn_name =
+//     "org.cougaar.tools.csmart.plugin.ABCImpactPlugin";
 
   private Property propDistance;
   private Property propDirection;
@@ -190,76 +162,6 @@ public class ABCAgent
     addStandardPlugIns();
   }
 
-//   /**
-//    * Writes the agent ini file to the sepcified directory.
-//    *
-//    * @param File Directory to place ini file
-//    * @throws IOException if the file cannot be created
-//    */
-//   public void writeIniFile(File configDir) throws IOException {
-
-//     File iniFile = new File(configDir, getFullName() + ".ini");
-//     PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
-
-//     try {
-//       writer.println("# $id$");
-//       writer.println("[ Cluster ]");
-//       writer.println("class = " + agentClassName);
-//       writer.println("uic = \"" + getFullName().toString() + "\"");
-//       writer.println("cloned = false");
-//       writer.println();
-//       writer.println("[ PlugIns ]");
-//       writer.println("plugin = " + AssetDataPlugIn_name);
-//       writer.println("plugin = " + AssetReportPlugIn_name);
-
-// //       // Add the initializer plugin if this is the Initializer Agent.
-// //       if(getFullName().toString().equals(getProperty(PROP_INITIALIZER).getValue())) {
-// // 	ABCPlugIn init = new ABCPlugIn("MetricsInitializer", MetricsInitializerPlugIn_name);
-// // 	addChild(init);
-// // 	init.initProperties();
-// // 	addPropertyAlias(init, getProperty(PROP_NUMBPROVIDERS));
-// // 	addPropertyAlias(init, getProperty(PROP_SAMPLEINTERVAL));
-// // 	addPropertyAlias(init, getProperty(PROP_STARTDELAY));
-// // 	addPropertyAlias(init, getProperty(PROP_MAXNUMBSAMPLES));
-// // 	writer.println(init.getConfigLine());
-// //       }
-      
-//       // Add all other plugins
-//       for(int i=0, n = getChildCount(); i < n; i++) {
-// 	if(getChild(i) instanceof ABCPlugIn) {
-// 	  ABCPlugIn plugin = (ABCPlugIn) getChild(i);
-// 	  writer.println(plugin.getConfigLine());
-// 	}
-//       }
-
-//       writer.println("plugin = " + PlanServerPlugIn_name);
-//       // HACK: Add this PlugIn always, though only used if have an ABCImpact
-//       // in the society
-//       //      writer.println("plugin = " + ABCImpactPlugIn_name);
-//       writer.println();
-//       writer.println("[ Policies ]");
-//       writer.println();
-//       writer.println("[ Permission ]");
-//       writer.println();
-//       writer.println("[ AuthorizedOperation ]");
-//     }
-//     finally {
-//       writer.close();
-//     }
-    
-//     // Write any other associated data files.
-//     writeDataFiles(configDir);
-//   }
-
-  /**
-   * Returns the configuration line:   <br>
-   * cluster = <agent name>
-   *
-   * @return configuration line for this agent
-   */
-  public String getConfigLine() {
-    return "cluster = " + getFullName();
-  }
 
   /**
    * Adds a new alias property to this agent.  An aliased property
@@ -278,109 +180,72 @@ public class ABCAgent
     return p;
   }
 
+  /**
+   * Builds the <code>ComponentData</code> structure for this
+   * agent.  The data strucutre contains all information about
+   * this agent required by the server to run.
+   *
+   * @param data a <code>ComponentData</code> value
+   * @return a <code>ComponentData</code> value
+   */
+  public ComponentData addComponentData(ComponentData data) {
 
-//   /**
-//    * Writes on the Prototype-ini.dat file for this agent.
-//    *
-//    * @param File The directory to write the file to.
-//    */
-// //   public void writePrototypeIniFile(File configDir) throws IOException {
-// //     File taskFile = new File(configDir, getFullName().toString() + "-prototype-ini.dat");
-// //     PrintWriter writer = new PrintWriter(new FileWriter(taskFile));
+    // Add Asset Data PlugIn
+    GenericComponentData plugin = new GenericComponentData();
+    plugin.setType(ComponentData.PLUGIN);
+    plugin.setParent(data);
+    plugin.setName(AssetDataPlugIn_name);
+    plugin.setOwner(this);
+    data.addChild(plugin);
+
+    // Add Asset Report PlugIn
+    plugin = new GenericComponentData();
+    plugin.setType(ComponentData.PLUGIN);
+    plugin.setParent(data);
+    plugin.setOwner(this);
+    plugin.setName(AssetReportPlugIn_name);
+    data.addChild(plugin);
+
+    for(int i = 0 ; i < getChildCount(); i++) {
+      if(getChild(i) instanceof ABCPlugIn) {
+	ABCPlugIn pg = (ABCPlugIn) getChild(i);
+	plugin = new GenericComponentData();
+	plugin.setOwner(this);
+	plugin.setParent(data);
+	plugin.setType(ComponentData.PLUGIN);
+	data.addChild(pg.addComponentData(plugin));
+      }	
+    }
+
+    plugin = new GenericComponentData();
+    plugin.setType(ComponentData.PLUGIN);
+    plugin.setParent(data);
+    plugin.setOwner(this);
+    plugin.setName(PlanServerPlugIn_name);
+    data.addChild(plugin);
+
+    // Add data file leaves.
+    data = createLeafComponents(data);
+
+    data = addAssetData(data);
+
+    return data;
+  }
+
   
-//   public void writePrototypeIniFile(PrintWriter writer, String initializer) {
-
-//     try {
-//       writer.println("[Prototype] Entity");
-//       writer.println();
-//       writer.println("[Relationship]");
-//       writer.println("#Role     ItemIdentification      TypeIdentification     Cluster   Start    End");
-//       Iterator iter = getAllRoles().iterator();
-//       while(iter.hasNext()) {
-// 	String role = (String)iter.next();
-// 	String[] supplies = (String[])getProperty(PROP_SUPPLIES).getValue();
-// 	for(int i=0; i < supplies.length; i++) {
-// 	  String type = supplies[i].substring(supplies[i].lastIndexOf(".")+1);
-// 	  writer.println("\"" + role + "\"  \"" + supplies[i].trim() + "\"  \"" + type + "\" \"" + supplies[i].trim() 
-// 			 + "\" \"\" \"\"");	  
-// 	}
-
-// // 	// Add MetricPlugin Role.
-// // 	String initializer = (String)getProperty(PROP_INITIALIZER).getValue();
-// 	writer.println("\"MetricsControlProvider\"  \"" + initializer +
-// 		       "\"  \"" + initializer.substring(initializer.lastIndexOf(".")+1) + 
-// 		       "\"  \"" + initializer + "\"  \"\"  \"\"");
-//       }
-//       writer.println();
-//       writer.println("[ItemIdentificationPG]");
-//       writer.println("ItemIdentification String \"" + getFullName().toString() + "\"");
-//       // Make these next two be Community#.Customer/Provider#
-//       // maybe getName().get(1).toString() or getName().get(1).toString() + "." + getName().get(2).toString()
-//       writer.println("Nomenclature String \"" + getFullName().get(1).toString() + "." + getFullName().get(2).toString() + "\"");
-//       writer.println("AlternateItemIdentification String \"" + getFullName().get(1).toString() + "." + getFullName().get(2).toString() + "\"");
-//       //      writer.println("Nomenclature String \"" + getName().get(2).toString() + "\"");
-//       //      writer.println("AlternateItemIdentification String \"" + getName().get(2).toString() + "\"");
-//       writer.println();
-//       writer.println("[TypeIdentificationPG]");
-//       writer.println("TypeIdentification String \"" + getFullName().get(2).toString() + "\"");
-//       writer.println("Nomenclature String \"" + getFullName().get(2).toString() + "\"");
-//       writer.println("AlternateTypeIdentification String \"" + getFullName().get(2).toString() + "\"");
-//       writer.println();
-//       writer.println("[ClusterPG]");
-//       writer.println("ClusterIdentifier ClusterIdentifier \"" + getFullName().toString() + "\"");
-//       writer.println();
-//       writer.println("[EntityPG]");
-//       writer.print("Roles Collection<Role> ");
-//       // Only print the quoted collection of roles if there are any
-//       if (! getAllRoles().isEmpty()) {
-// 	iter = getAllRoles().iterator();
-// 	String role = null;
-// 	// No comma before the first role
-// 	if (iter.hasNext()) {
-// 	  role = (String)iter.next();
-// 	  // If this agent is a customer, dont write this as having provider roles
-// 	  // say it has the customer equivalent
-// 	  if (type.equalsIgnoreCase("customer")) {
-// //  	    if (role.endsWith("rovider"))
-// //  	      role = Role.getRole(role).getConverse().getName();
-// 	    // For now, just skip writing out the role
-// 	    while (role.endsWith("rovider") && iter.hasNext())
-// 	      role = (String)iter.next();
-// 	    if (role.endsWith("rovider"))
-// 	      role = null;
-// 	  }
-// 	  if (role != null) {
-// 	    writer.print("\"");
-// 	    writer.print(role);
-// 	  }
-// 	}
-// 	// For all subsequent roles, do a comma, a space, then the role
-// 	while(iter.hasNext()) {
-// 	  role = (String)iter.next();
-// 	  // If this agent is a customer, dont write this as having provider roles
-// 	  // say it has the customer equivalent
-// 	  if (type.equalsIgnoreCase("customer"))
-// 	    if (role.endsWith("rovider"))
-// 	      //	      role = Role.getRole(role).getConverse().getName();
-// 	      continue;
-// 	  writer.print(", " + role);
-// 	  //	writer.print(" \"" + iter.next() + "\" ");
-// 	}
-// 	// close the list of roles with quotes
-// 	writer.print("\"");
-//       } // end of printing Collection of Roles
-//       writer.println();
-//       writer.println();
-//       writer.println("[CommunityPG]");
-//       writer.println("TimeSpan TimeSpan \"\"");
-//       writer.print("Communities    Collection<String> ");
-//       writer.println("\"" + getFullName().get(1).toString() + "\"");
-//     } 
-//     finally {
-//       writer.close();
-//     }    
-//   }
-
+  /**
+   * Performs any modifications to the ComponentData structure.  
+   * <code>addComponentData</code> sets all the data for this agent,
+   * once all agents add their data, <code>modifyComponentData</code>
+   * is called for every agent to perform any last minute modifications
+   * before the structure is handed off to the server.
+   *
+   * @param data ComponentData structure with previously set values.
+   * @return a <code>ComponentData</code> value
+   */
+  public ComponentData modifyComponentData(ComponentData data) {
+    return data;
+  }
 
 
   /** Private Methods **/
@@ -468,30 +333,6 @@ public class ABCAgent
     setPropertyVisible(childProp, false);
     return childProp;
   }
-
-
-  /** 
-   * Writes all required datafiles.
-   * 
-   * @param File directory to write data files to
-   */
-  private void writeDataFiles(File configDir) {
-    for(int i=0; i < getChildCount(); i ++) {
-      if(getChild(i) instanceof ABCTaskFile) {
-	try {
-	  ((ABCTaskFile) getChild(i)).writeTaskFile(configDir);
-	} catch(IOException e) {System.out.println("Exception writing task file");}
-      } else if(getChild(i) instanceof ABCLocalAsset) {
-	try {
-	  ((ABCLocalAsset) getChild(i)).writeAssetFile(configDir);
-	} catch(IOException e) {}
-      } else if(getChild(i) instanceof ABCAllocation) {
-	try {
-	  ((ABCAllocation) getChild(i)).writeAllocationFile(configDir);
-	} catch(IOException e) {}
-      }
-    }
-  }    
 
   private ComponentData createLeafComponents(ComponentData data) {
     StringBuffer sb = null;
@@ -653,7 +494,7 @@ public class ABCAgent
     return pgData;
   }
 
-  public ComponentData addAssetData(ComponentData data) {
+  private ComponentData addAssetData(ComponentData data) {
     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
 
     assetData.setType(AgentAssetData.ENTITY);
@@ -690,52 +531,5 @@ public class ABCAgent
     return data;
   }
 
-  public ComponentData addComponentData(ComponentData data) {
-
-    // Add Asset Data PlugIn
-    GenericComponentData plugin = new GenericComponentData();
-    plugin.setType(ComponentData.PLUGIN);
-    plugin.setParent(data);
-    plugin.setName(AssetDataPlugIn_name);
-    plugin.setOwner(this);
-    data.addChild(plugin);
-
-    // Add Asset Report PlugIn
-    plugin = new GenericComponentData();
-    plugin.setType(ComponentData.PLUGIN);
-    plugin.setParent(data);
-    plugin.setOwner(this);
-    plugin.setName(AssetReportPlugIn_name);
-    data.addChild(plugin);
-
-    for(int i = 0 ; i < getChildCount(); i++) {
-      if(getChild(i) instanceof ABCPlugIn) {
-	ABCPlugIn pg = (ABCPlugIn) getChild(i);
-	plugin = new GenericComponentData();
-	plugin.setOwner(this);
-	plugin.setParent(data);
-	plugin.setType(ComponentData.PLUGIN);
-	data.addChild(pg.addComponentData(plugin));
-      }	
-    }
-
-    plugin = new GenericComponentData();
-    plugin.setType(ComponentData.PLUGIN);
-    plugin.setParent(data);
-    plugin.setOwner(this);
-    plugin.setName(PlanServerPlugIn_name);
-    data.addChild(plugin);
-
-    // Add data file leaves.
-    data = createLeafComponents(data);
-
-    data = addAssetData(data);
-
-    return data;
-  }
-
-  public ComponentData modifyComponentData(ComponentData data) {
-    return data;
-  }
 
 }
