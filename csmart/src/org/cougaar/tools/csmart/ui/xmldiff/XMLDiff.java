@@ -4,10 +4,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.NamedNodeMap;
-import org.cougaar.tools.csmart.util.XMLUtils;
-import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
+import org.apache.xerces.parsers.DOMParser;
+import org.xml.sax.InputSource;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
@@ -16,22 +17,26 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Collections;
 import java.util.Enumeration;
 
 /**
- * Created by IntelliJ IDEA.
- * User: travers
- * Date: Apr 9, 2003
- * Time: 2:19:41 PM
- * To change this template use Options | File Templates.
+ * Compares XML files that define societies.
+ * Ignores hosts and nodes; compares only agents.
+ * Agent name suffixes (following the first, optional dot) are ignored.
+ * Compares component attributes (excluding name) and
+ * component arguments.
+ * To run outside of cougaar environment, ensure that
+ * your classpath includes xerces.jar and this class.
  */
 public class XMLDiff extends JFrame {
   private JTree leftTree;
   private JTree rightTree;
-  private XMLUtils utils = new XMLUtils();
   private JTextField leftFileNameField;
   private JTextField rightFileNameField;
   private JSplitPane splitPane;
@@ -135,12 +140,10 @@ public class XMLDiff extends JFrame {
   }
 
   private String getFile() {
-    String filter = "xml";
-    String title = "XML";
     JFileChooser chooser = new JFileChooser(System.getProperty("org.cougaar.install.path"));
-    chooser.setDialogTitle("Select " + title + " File");
-    String[] filters = { filter };
-    ExtensionFileFilter extensionFilter = new ExtensionFileFilter(filters, title + " File");
+    chooser.setDialogTitle("Select XML File");
+    ExtensionFileFilter extensionFilter =
+      new ExtensionFileFilter("xml", "XML File (xml)");
     chooser.addChoosableFileFilter(extensionFilter);
     if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
       return null;
@@ -159,7 +162,7 @@ public class XMLDiff extends JFrame {
     int lastIndex = societyName.lastIndexOf("/");
     if (lastIndex != -1)
       societyName = societyName.substring(lastIndex+1);
-    Document doc = utils.loadXMLFile(filename);
+    Document doc = loadXMLFile(filename);
     Node societyNode = doc.getFirstChild();
     societyName =
       societyNode.getAttributes().getNamedItem("name").getNodeValue();
@@ -211,6 +214,41 @@ public class XMLDiff extends JFrame {
       addComponents(prefix + "-" + agentName, agentNode, agentTreeNode);
     }
     return tree;
+  }
+
+  /**
+   * Taken from csmart.util.XMLUtils so this class can be
+   * independent of cougaar.
+   * @param filename name of file to read
+   * @return  XML Document or null
+   */
+
+  private Document loadXMLFile(String filename) {
+    if (filename == null || filename.equals(""))
+      return null;
+    try {
+      InputStream is = null;
+      try {
+        is = new FileInputStream(filename);
+      } catch (IOException ioe) {
+        System.out.println("Could not open " + filename + " for reading: " + ioe);
+        return null;
+      }
+      if (is == null) {
+        System.out.println("Could not open " + filename + " for reading.");
+        return null;
+      }
+      DOMParser parser = new DOMParser();
+      parser.parse(new InputSource(is));
+      return parser.getDocument();
+    } catch (org.xml.sax.SAXParseException spe) {
+      System.out.println("Parse exception Parsing file: " + filename + " " + spe);
+    } catch (org.xml.sax.SAXException se) {
+      System.out.println("SAX exception Parsing file: " + filename + " " + se);
+    } catch (Exception e) {
+      System.out.println("Exception Parsing file: " + filename + " " + e);
+    }
+    return null;
   }
 
   /**
@@ -382,6 +420,18 @@ public class XMLDiff extends JFrame {
   }
 
   /**
+   * Marks a node and all its children as different
+   * (i.e. unique to its tree).
+   * @param node node to mark as different
+   */
+  private void markDifferent(DefaultMutableTreeNode node) {
+    setDifferent(node);
+    Enumeration children = node.depthFirstEnumeration();
+    while (children.hasMoreElements())
+      setDifferent((DefaultMutableTreeNode)children.nextElement());
+  }
+
+  /**
    * Sets a flag indicating that the node is different
    * (i.e. unique to its tree).
    * @param node node that is different
@@ -441,14 +491,6 @@ public class XMLDiff extends JFrame {
       compareAttributes(prefix, leftComponentNode, rightComponentNode);
       compareArguments(prefix, leftComponentNode, rightComponentNode);
     }
-  }
-
-
-  private void markDifferent(DefaultMutableTreeNode node) {
-    setDifferent(node);
-    Enumeration children = node.depthFirstEnumeration();
-    while (children.hasMoreElements())
-      setDifferent((DefaultMutableTreeNode)children.nextElement());
   }
 
   /**
@@ -571,7 +613,19 @@ public class XMLDiff extends JFrame {
     XMLDiff xmlDiff = new XMLDiff();
   }
 
-  // the user object encapsulated in a tree node
+  /**
+   *
+   * INNER CLASSES
+   *
+   */
+
+
+  /**
+   * UserObject
+   * The user object that is encapsulated in a tree node.
+   * It includes the name and a flag indicating whether it's different
+   * (i.e. in one tree, but not the other).
+   */
   class UserObject {
     String name;
     boolean different;
@@ -602,7 +656,8 @@ public class XMLDiff extends JFrame {
     }
   }
 
-    /**
+  /**
+   * MyTreeCellRenderer
    * Custom tree cell renderer.
    * Display nodes which are the same in black and which are
    * different (i.e. in one tree but not the other) in gray.
@@ -630,5 +685,56 @@ public class XMLDiff extends JFrame {
       }
       return c;
     }
+  }
+
+  /**
+   * ExtensionFileFilter
+   * A filter on the JFileChooser to display only xml files.
+   * Code taken from cougaar package so this class can be independent of cougaar.
+   */
+
+  public class ExtensionFileFilter extends FileFilter {
+    String filterExtension;
+    String description;
+
+    public ExtensionFileFilter(String extension, String description) {
+      filterExtension = extension;
+      this.description = description;
+    }
+
+    /**
+     * Return true if this file should be shown in the directory pane,
+     * false if it shouldn't.
+     * Files that begin with "." are ignored.
+     */
+    public boolean accept(File f) {
+      if (f != null) {
+        if (f.isDirectory())
+          return true;
+        String extension = getExtension(f);
+        if (extension != null && filterExtension.equals(extension))
+          return true;
+      }
+      return false;
+    }
+
+    private String getExtension(File f) {
+      if (f != null) {
+        String filename = f.getName();
+        int i = filename.lastIndexOf('.');
+        if (i > 0 && i < filename.length()-1) {
+          return filename.substring(i+1).toLowerCase();
+        };
+      }
+      return null;
+    }
+
+    /**
+     * Returns the human readable description of this filter.
+     */
+    public String getDescription() {
+      return description;
+    }
+
   }
 }
