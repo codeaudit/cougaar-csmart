@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 1997-2001 BBNT Solutions, LLC
+ *  Copyright 1997-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,12 @@ import java.io.ObjectOutputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
+import java.util.List;
+import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -51,9 +56,7 @@ import org.cougaar.planning.ldm.plan.Expansion;
 
 import org.cougaar.tools.csmart.runtime.ldm.event.HappinessChangeEvent;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
-import org.cougaar.tools.csmart.ui.psp.TranslateUtils;
-
-
+import org.cougaar.tools.csmart.ui.servlet.TranslateUtils;
 
 /**
  * This Servlet traverses Tasks and related objects (plan elements, assets,
@@ -78,22 +81,20 @@ public class PlanServlet
 		    HttpServletRequest request,
 		    HttpServletResponse response) throws IOException, ServletException
   {
-     // create a new "PlanProvider" context per request
+    // create a new "PlanProvider" context per request
     PlanProvider pi = new PlanProvider(support);
     pi.execute(request, response);  
   }
-  
-  
+ 
   public void doPut(
-		     HttpServletRequest request,
-		     HttpServletResponse response) throws IOException, ServletException
+		    HttpServletRequest request,
+		    HttpServletResponse response) throws IOException, ServletException
   {
     
     // create a new "PlanProvider" context per request
     PlanProvider pi = new PlanProvider(support);
     pi.execute(request, response);  
   }
-  
 
   /**
    * Captures the URL parameters.
@@ -114,7 +115,6 @@ public class PlanServlet
    */
   private static class PlanProvider {
 
-    
     /* flags set by the client to control what objects are returned */
     static boolean ignorePlanElements = false;
     static boolean ignoreWorkflows = false;
@@ -154,14 +154,12 @@ public class PlanServlet
 	};
     }
     
-    
     /**
      * This is the main Servlet method called by the infrastructure in response
      * to receiving a request from a client.
      * Get all the plan objects, ignoring those the client specifies,
      * and return their properties to the client in a serialized PropertyTree.
      */
-    
     public void execute(HttpServletRequest request, 
 			HttpServletResponse response) throws IOException
     {
@@ -170,19 +168,18 @@ public class PlanServlet
       try{
 	parseParams(request);
 	
-      List ret = getObjects();
-      if (ret!=null)
-	{
-	  ObjectOutputStream p = new ObjectOutputStream(out);
-	  p.writeObject(ret);
-	  System.out.println("Sent Objects");
-	}
+	List ret = getObjects();
+	if (ret!=null)
+	  {
+	    ObjectOutputStream p = new ObjectOutputStream(out);
+	    p.writeObject(ret);
+	    System.out.println("Sent Objects");
+	  }
       } catch (Exception e) {
 	System.out.println("PlanServlet Exception: " + e);
 	e.printStackTrace(); 
       }
     }
-    
     
     /**
      * Returns a vector of PropertyTree for either a Task and
@@ -253,7 +250,7 @@ public class PlanServlet
 	    ret.add(wObj);
 	    
 	    if (++retSize >= maxRetSize) {
-            // reached our limit
+	      // reached our limit
 	      break;
 	    }
 	  }
@@ -301,24 +298,24 @@ public class PlanServlet
       }
     }
 
-  /**
-   * Given a <code>Map</code> of (name, value) pairs, call back 
-   * to the given <code>ParamVisitor</code>'s "setParam(name,value)"
-   * method.
-   *
-   * @see ParamVisitor inner-class defined at the end of this class
-   */
-  public static void parseParams(
-				 Map m) {
-    Iterator iter = m.entrySet().iterator();
-    while (iter.hasNext()) {
-      Map.Entry me = (Map.Entry)iter.next();
-      String key = me.getKey().toString();
-      String[] value_array = (String[])me.getValue();
-      String value = value_array[0];
-      setParams(key, value);      
+    /**
+     * Given a <code>Map</code> of (name, value) pairs, call back 
+     * to the given <code>ParamVisitor</code>'s "setParam(name,value)"
+     * method.
+     *
+     * @see ParamVisitor inner-class defined at the end of this class
+     */
+    public static void parseParams(
+				   Map m) {
+      Iterator iter = m.entrySet().iterator();
+      while (iter.hasNext()) {
+	Map.Entry me = (Map.Entry)iter.next();
+	String key = me.getKey().toString();
+	String[] value_array = (String[])me.getValue();
+	String value = value_array[0];
+	setParams(key, value);      
+      }
     }
-  }
     
     /**
      * Sets "objects to ignore" variables from

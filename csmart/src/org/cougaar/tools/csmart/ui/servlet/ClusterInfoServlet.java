@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -56,11 +56,10 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 /**
- * This Servlet gathers information about clusters and their relationships.
+ * This Servlet gathers information about agents and their relationships.
  * The information is encoded in name/value pairs stored in PropertyTree
  * objects which are serialized to the client.
  */
-
 public class ClusterInfoServlet 
   extends HttpServlet 
 {
@@ -107,9 +106,7 @@ public class ClusterInfoServlet
     /*
      * parameters from the URL:
      */
-    
     ServletOutputStream out; 
-    
     
     /* since "ClusterInfo" is a static inner class, here
      * we hold onto the support API.
@@ -126,7 +123,7 @@ public class ClusterInfoServlet
     /**
      * This is the main Servlet method called by the infrastructure in response
      * to receiving a request from a client.
-     * Get information about this cluster and its relationships
+     * Get information about this agent and its relationships
      * and return these to the client in a serialized PropertyTree.
      */
     public void execute(  HttpServletRequest request, 
@@ -156,7 +153,7 @@ public class ClusterInfoServlet
 	  {
 	    ObjectOutputStream p = new ObjectOutputStream(out);
 	    p.writeObject(collection);
-	    System.out.println("Sent cluster urls");
+	    System.out.println("Sent agent urls");
 	    //out.print(collection);
 	  }
       } catch (Exception e) {
@@ -167,13 +164,12 @@ public class ClusterInfoServlet
     
     
     /**
-     * Get information about this cluster by getting assets that:
+     * Get information about this agent by getting assets that:
      * are instances of HasRelationships and
      * have a community property group and
      * have a cluster property group
      * and isLocal
      */
-    
     private static UnaryPredicate getSelfPred() {
       return new UnaryPredicate() {
 	  public boolean execute(Object o) {
@@ -190,12 +186,11 @@ public class ClusterInfoServlet
     }
     
     /**
-     * Get information about this cluster including community name,
+     * Get information about this agent including community name,
      * roles and relationships.
      * Returns a vector which contains a single PropertyTree which contains the
-     * properties for this cluster.
+     * properties for this agent.
      */
-    
     private Vector getSelfInformation() { 
       Collection container = 
 	support.queryBlackboard(getSelfPred());
@@ -262,7 +257,7 @@ public class ClusterInfoServlet
 	    Object oi = locSchedEn.nextElement();
 	    if (!(oi instanceof LocationScheduleElement)) {
 	      continue;
-          }
+	    }
 	    LocationScheduleElement lse = (LocationScheduleElement)oi;
 	    Location loc = lse.getLocation();
 	    if (!(loc instanceof LatLonPoint)) {
@@ -271,7 +266,7 @@ public class ClusterInfoServlet
 	    LatLonPoint lseLoc = (LatLonPoint)loc;
 	    if ((lseLoc.getLatitude() == null) ||
 		(lseLoc.getLongitude() == null)) {
-            continue;
+	      continue;
 	    }
 	    properties.put(PropertyNames.ORGANIZATION_LOCATION_ELEMENT_START_TIME + "_" + locNumber,
 			   new Long(lse.getStartTime()));
@@ -296,7 +291,7 @@ public class ClusterInfoServlet
 	}
 	int nProperties = properties.size();
 	results.add(properties);
-    }
+      }
       return results;
     }
     

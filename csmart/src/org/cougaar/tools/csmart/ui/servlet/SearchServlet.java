@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 1997-2001 BBNT Solutions, LLC
+ *  Copyright 1997-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -29,7 +29,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import java.net.URLEncoder;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -42,7 +51,16 @@ import org.cougaar.core.util.UID;
 import org.cougaar.planning.ldm.asset.Asset;
 import org.cougaar.planning.ldm.asset.AssetGroup;
 
-import org.cougaar.planning.ldm.plan.*;
+import org.cougaar.planning.ldm.plan.Aggregation;
+import org.cougaar.planning.ldm.plan.Allocation;
+import org.cougaar.planning.ldm.plan.AssetTransfer;
+import org.cougaar.planning.ldm.plan.Composition;
+import org.cougaar.planning.ldm.plan.Disposition;
+import org.cougaar.planning.ldm.plan.Expansion;
+import org.cougaar.planning.ldm.plan.MPTask;
+import org.cougaar.planning.ldm.plan.PlanElement;
+import org.cougaar.planning.ldm.plan.Task;
+import org.cougaar.planning.ldm.plan.Workflow;
 
 import org.cougaar.core.agent.ClusterIdentifier;
 import org.cougaar.core.util.UniqueObject;
@@ -51,9 +69,8 @@ import org.cougaar.util.UnaryPredicate;
 
 import org.cougaar.tools.csmart.ui.servlet.TranslateUtils;
 
-
 /**
- * PSP that searches the Blackboard for all <code>UniqueObjects</code> that
+ * Servlet that searches the Blackboard for all <code>UniqueObjects</code> that
  * are connected to a given <code>Set</code> of <code>UID</code>s.
  * <p>
  * The user specifies:<ul>
@@ -189,6 +206,7 @@ public class SearchServlet
 	  };
 	ServletUtil.parseParams(vis, m);
       }
+
       // read attached data if there  (e.g. from PUT)
       int len = req.getContentLength();
       if (len > 0) {
@@ -211,7 +229,6 @@ public class SearchServlet
 	}
       }
     }
-    
     
     /**
      * Main Servlet Method. Parses parameters, searches through them, returning
@@ -238,7 +255,7 @@ public class SearchServlet
 	  startUIDs.add(tmpuid);
 	}
       } catch (Exception e) {
-	System.err.println("Unable to parse parameters:");
+	System.err.println("SearchServlet: Unable to parse parameters:");
 	e.printStackTrace();
 	
 	// handle as "null" search set
@@ -255,7 +272,7 @@ public class SearchServlet
 		 isDown,
 		 limit);
       } catch (RuntimeException e) {
-	System.err.println("Unable to search for data:");
+	System.err.println("SearchServlet: Unable to search for data:");
 	e.printStackTrace();
 	
 	// send back a null
@@ -283,13 +300,12 @@ public class SearchServlet
 			l);
 	}
       } catch (Exception e) {
-	System.err.println("Unable to send response back:");
+	System.err.println("SearchServlet: Unable to send response back:");
 	e.printStackTrace();
       }
       
       // done!
     }
-    
     
     /**
      * Reply with a serialized List of PropertyTrees.
@@ -306,15 +322,14 @@ public class SearchServlet
       List retL = TranslateUtils.toPropertyTrees(l, cid.toString());
       
       try {
-	
 	if (retL != null ){
 	  // serialize back to the user
 	  ObjectOutputStream p = new ObjectOutputStream(out);
 	  p.writeObject(retL);
-	  System.out.println("Sent Objects");  
+	  System.out.println("SearchServlet: Sent Objects");  
 	}
       } catch (Exception e) {
-	System.out.println("PlanServlet Exception: " + e);
+	System.out.println("SearchServlet Exception: " + e);
 	e.printStackTrace(); 
       }
     }
@@ -402,7 +417,6 @@ public class SearchServlet
       
       out.flush();
     }
-
     
     /** 
      * Get the Set of UIDs specified by the POSTed data.
@@ -437,7 +451,6 @@ public class SearchServlet
       // return the Set of UIDs
       return toSet;
     }
-  
   
     /**
      * Find all the UniqueObjects that have UIDs in the given Set.
@@ -661,7 +674,7 @@ public class SearchServlet
 				 Set startUIDSet,
 				 int limit) {
     
-      // get this Cluster's identifier
+      // get this Agent's identifier
       ClusterIdentifier localCID =
 	support.getAgentIdentifier();
     
@@ -676,7 +689,7 @@ public class SearchServlet
       WorkStack ws = new WorkStack();
       Set findUIDSet = new HashSet(startUIDSet);
     
-    search_up_loop:
+      search_up_loop:
       while (!(findUIDSet.isEmpty())) {
       
 	if (VERBOSE) {
@@ -765,7 +778,6 @@ public class SearchServlet
       ws.toCollection(toL);
       return toL;
     }
-  
   
     /**
      * Search "worklist" data structure to traverse a UniqueObject graph.
@@ -955,8 +967,5 @@ public class SearchServlet
 	return ITEM_TYPE_OTHER;
       }
     }
-
-
- 
   }
 }

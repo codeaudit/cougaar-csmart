@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,6 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-
 package org.cougaar.tools.csmart.ui.servlet;
 
 import javax.servlet.ServletException;
@@ -44,17 +43,16 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 /**
- * This Servlet expects no input, and returns the URLs of all the clusters
+ * This Servlet expects no input, and returns the URLs of all the agents
  * as a serialized object which is a Vector of Strings.
- * It is used by the CSMARTUL applications to obtain the URLs of the clusters.
- * <pre>
+ * It is used by the CSMARTUL application to obtain the URLs of the agents.
+ * <pre/>
  * Invoke as: CMART_ClusterProviderServlet
  * Returns: URLs, serialized Vector of Strings
  * </pre>
  */
-
 public class ClusterProviderServlet 
-extends HttpServlet
+  extends HttpServlet
 {
   private SimpleServletSupport support;
   
@@ -81,7 +79,6 @@ extends HttpServlet
     cp.execute(request, response);  
   }
   
-  
   /**
    * This inner class does all the work.
    * <p>
@@ -97,7 +94,6 @@ extends HttpServlet
     /*
      * parameters from the URL:
      */
-    
     ServletOutputStream out; 
 
     /* since "ClusterProvider" is a static inner class, here
@@ -128,11 +124,11 @@ extends HttpServlet
       // create a URL parameter visitor
       ServletUtil.ParamVisitor vis = 
         new ServletUtil.ParamVisitor() {
-          public void setParam(String name, String value) {
-	    /* There is no mode, as it only returns the list of agent
-	     * names, so do nothing but set up for parameter parsing.   
-	     */	  
-	  }
+	    public void setParam(String name, String value) {
+	      /* There is no mode, as it only returns the list of agent
+	       * names, so do nothing but set up for parameter parsing.   
+	       */	  
+	    }
 	  };
       
       // visit the URL parameters
@@ -154,7 +150,7 @@ extends HttpServlet
 	// send the urls to the client
 	ObjectOutputStream p = new ObjectOutputStream(out);
 	p.writeObject(urls);
-	System.out.println("Sent cluster urls");
+	System.out.println("Sent agent urls");
       } catch (Exception e) {
 	System.out.println("Exception: " + e);
       }
@@ -163,7 +159,6 @@ extends HttpServlet
     /**
      * helper methods
      **/
-    
     public void getAllNamesAndUrls(Vector urls, Vector names, String url, boolean sortByName) {
       if (urls == null) {
 	return;
@@ -198,7 +193,6 @@ extends HttpServlet
      *  output IFF it is an XML PSP... ie.  returnsXML() == true;
      *  or return null
      **/
-    
     public String getDTD()
     {
       return null;

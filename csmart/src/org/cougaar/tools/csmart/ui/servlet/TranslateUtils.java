@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 1997-2001 BBNT Solutions, LLC
+ *  Copyright 1997-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -23,27 +23,54 @@ package org.cougaar.tools.csmart.ui.servlet;
 
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
-import java.io.*;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
 import java.text.SimpleDateFormat;
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 import org.cougaar.core.agent.ClusterIdentifier;
-import org.cougaar.core.blackboard.*;
 import org.cougaar.core.mts.Message;
 import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.util.UID;
 import org.cougaar.core.util.UniqueObject;
-import org.cougaar.core.util.*;
 import org.cougaar.planning.ldm.asset.Asset;
 import org.cougaar.planning.ldm.asset.AssetGroup;
 import org.cougaar.planning.ldm.asset.TypeIdentificationPG;
 import org.cougaar.planning.ldm.measure.AbstractMeasure;
-import org.cougaar.planning.ldm.plan.*;
+
+import org.cougaar.planning.ldm.plan.Aggregation;
+import org.cougaar.planning.ldm.plan.Allocation;
+import org.cougaar.planning.ldm.plan.AllocationforCollections;
+import org.cougaar.planning.ldm.plan.AllocationResult;
+import org.cougaar.planning.ldm.plan.AssetAssignment;
+import org.cougaar.planning.ldm.plan.AssetTransfer;
+import org.cougaar.planning.ldm.plan.AspectType;
+import org.cougaar.planning.ldm.plan.AuxiliaryQueryType;
+import org.cougaar.planning.ldm.plan.Composition;
+import org.cougaar.planning.ldm.plan.Disposition;
+import org.cougaar.planning.ldm.plan.Expansion;
+import org.cougaar.planning.ldm.plan.ItineraryElement;
+import org.cougaar.planning.ldm.plan.Location;
+import org.cougaar.planning.ldm.plan.LocationScheduleElement;
+import org.cougaar.planning.ldm.plan.LocationRangeScheduleElement;
+import org.cougaar.planning.ldm.plan.MPTask;
+import org.cougaar.planning.ldm.plan.PlanElement;
+import org.cougaar.planning.ldm.plan.PrepositionalPhrase;
+import org.cougaar.planning.ldm.plan.Schedule;
+import org.cougaar.planning.ldm.plan.ScheduleElement;
+import org.cougaar.planning.ldm.plan.Task;
+import org.cougaar.planning.ldm.plan.Workflow;
+
+import org.cougaar.util.PropertyTree;
+
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
-import org.cougaar.util.*;
 
 import org.cougaar.tools.csmart.runtime.ldm.event.HappinessChangeEvent;
 
@@ -67,7 +94,6 @@ public final class TranslateUtils {
    *
    * @return a List of non-null PropertyTrees; list may be empty, but is not null
    */
-
   public static List toPropertyTrees(List objects, String agent) {
     int n = ((objects != null) ? objects.size() : 0);
     if (n <= 0) {
@@ -93,7 +119,6 @@ public final class TranslateUtils {
    *
    * @return a PropertyTree, or null if an error occurred
    */
-
   public static PropertyTree toPropertyTree(Object o, String agent) {
     return
       (o instanceof UniqueObject) ?  toPropertyTree((UniqueObject)o, agent) :
@@ -104,7 +129,6 @@ public final class TranslateUtils {
    * Return property trees for Tasks, PlanElements, Assets and Workflows.
    * If object is not one of these, then returns null.
    */
-
   public static PropertyTree toPropertyTree(UniqueObject uo, String agent) {
     return
       (uo instanceof        Task) ?  toPropertyTree(       (Task)uo, agent) :
@@ -160,7 +184,6 @@ public final class TranslateUtils {
    * @param agent the name of the agent
    * @param a non-null PropertyTree
    */
-
   public static PropertyTree toPropertyTree(Task task, String agent) {
     PropertyTree pt = 
       toBasicPropertyTree(PropertyNames.TASK_OBJECT,
@@ -393,7 +416,6 @@ public final class TranslateUtils {
   /**
    * Create property tree with properties that all objects have.
    */
-
   private static PropertyTree toBasicPropertyTree(String objectType,
 						  String UID,
 						  String agent) {
@@ -405,8 +427,8 @@ public final class TranslateUtils {
   }
 
   private static void addAllocationEndTime(PropertyTree properties,
-				    String propertyName,
-				    AllocationResult result) {
+					   String propertyName,
+					   AllocationResult result) {
     if (result.isDefined(AspectType.END_TIME)) {
       properties.put(propertyName,
 		     Double.toString(result.getValue(AspectType.END_TIME)));
@@ -414,8 +436,8 @@ public final class TranslateUtils {
   }
 
   private static void addAllocationReason(PropertyTree properties,
-				   String propertyName,
-				   AllocationResult result) {
+					  String propertyName,
+					  AllocationResult result) {
     if (! result.isSuccess()) {
       try {
 	String s = result.auxiliaryQuery(AuxiliaryQueryType.FAILURE_REASON);
@@ -426,15 +448,15 @@ public final class TranslateUtils {
     }
   }
 
-    /**
-     * This always returns the property tree for an asset.
-     * In most cases, non-local agent assets should be ignored;
-     * this is the responsibility of the caller.
-     * The agent in the property tree returned is always the agent in which
-     * this code is executing.
-     * Assets with clusterPG also return an ASSET_CLUSTER
-     * which is the cluster ID in asset.getClusterPG().getClusterIdentifier
-     */
+  /**
+   * This always returns the property tree for an asset.
+   * In most cases, non-local agent assets should be ignored;
+   * this is the responsibility of the caller.
+   * The agent in the property tree returned is always the agent in which
+   * this code is executing.
+   * Assets with clusterPG also return an ASSET_CLUSTER
+   * which is the cluster ID in asset.getClusterPG().getClusterIdentifier
+   */
 
   public static PropertyTree toPropertyTree(Asset asset, String agent) {
     PropertyTree pt = 
@@ -492,8 +514,8 @@ public final class TranslateUtils {
           result = readMethod.invoke(assetProperty, null);
         } catch (Exception ex2) {
           System.err.println(
-              "TranslateUtils: Unable to get asset property["+i+"]["+j+"]: "+
-              ex2);
+			     "TranslateUtils: Unable to get asset property["+i+"]["+j+"]: "+
+			     ex2);
           continue;
         }
         if (result != null) {
@@ -523,7 +545,7 @@ public final class TranslateUtils {
    * but the code in PSP_PlanView handles additional cases.
    */
   private static String getPrepositionalObjectDescription(
-      Object indirectObject) {
+							  Object indirectObject) {
     if (indirectObject == null) {
       return "null";
     }
@@ -546,7 +568,7 @@ public final class TranslateUtils {
           sb.append(nomenclature);
       }
       sb.append(" (asset type=" + asset.getClass().getName() +
-          ", asset uid=" + getUIDAsString(asset.getUID()) + ")");
+		", asset uid=" + getUIDAsString(asset.getUID()) + ")");
       return sb.toString();
     }
     // SCHEDULE
@@ -599,6 +621,7 @@ public final class TranslateUtils {
     if (schedule.isEmpty()) {
       return sb.toString();
     }
+
     // schedule elements
     sb.append(" Elements:");
     Enumeration elements = schedule.getAllScheduleElements();
@@ -627,8 +650,6 @@ public final class TranslateUtils {
     }
     return sb.toString();
   }
-
-
 
   private static SimpleDateFormat myDateFormat = 
     new SimpleDateFormat("MM_dd_yyyy_h:mma");

@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,6 @@ import org.cougaar.util.UnaryPredicate;
  * Expects no input
  * Returns agent name and community name from Entity object
  */
-
 public class CommunityProviderServlet 
   extends HttpServlet
 {
@@ -97,7 +96,6 @@ public class CommunityProviderServlet
     /*
      * parameters from the URL:
      */
-    
     ServletOutputStream out; 
 
     /* since "ClusterProvider" is a static inner class, here
@@ -112,14 +110,12 @@ public class CommunityProviderServlet
     public CommunityProvider(SimpleServletSupport support) {
       this.support = support;
     }
-    
    
-  /**
-   * Called when a request is received from a client.
-   * Get the POST data; parse the request; get the objects
-   * that match the request; send them to the client.
-   */
-    
+    /**
+     * Called when a request is received from a client.
+     * Get the POST data; parse the request; get the objects
+     * that match the request; send them to the client.
+     */
     public void execute( HttpServletRequest request, 
 			 HttpServletResponse response) throws IOException, ServletException 
     {
@@ -140,7 +136,6 @@ public class CommunityProviderServlet
       // visit the URL parameters
       ServletUtil.parseParams(vis, request);
       
-      
       // need try/catch here or caller sends exceptions to client as html
       try {
 	System.out.println("CSMART_CommunityProviderServlet received query..........");
@@ -150,85 +145,83 @@ public class CommunityProviderServlet
 	
 	ObjectOutputStream p = new ObjectOutputStream(out);
 	p.writeObject(collection);
-	System.out.println("Sent cluster urls");
+	System.out.println("Sent agent urls");
       } catch (Exception e) {
 	System.out.println("CSMART_CommunityProviderServlet Exception: " + e);
 	e.printStackTrace();
       }
     }
 
-  /**
-   * Get object which describes this cluster and its community.
-   */
-  
-  private static UnaryPredicate getSelfPred() {
-    return new UnaryPredicate() {
-	public boolean execute(Object obj) {
-	  if (obj instanceof Asset) {
-	    Asset asset = (Asset)obj;
-	    if ((asset instanceof HasRelationships) &&
-		((HasRelationships)asset).isLocal() &&
-		asset.hasClusterPG())
-	      return true;
+    /**
+     * Get object which describes this agent and its community.
+     */
+    private static UnaryPredicate getSelfPred() {
+      return new UnaryPredicate() {
+	  public boolean execute(Object obj) {
+	    if (obj instanceof Asset) {
+	      Asset asset = (Asset)obj;
+	      if ((asset instanceof HasRelationships) &&
+		  ((HasRelationships)asset).isLocal() &&
+		  asset.hasClusterPG())
+		return true;
+	    }
+	    return false;
 	  }
-	  return false;
-	}
-      };
-  }
-    
-  /**
-   * Get cluster and community name for this cluster.
-   * Returns a vector which contains a single PropertyTree which contains the
-   * properties for this cluster.
-   */
-  
-  private Vector getSelfInformation(StringBuffer buf) {
-    Collection container = 
-      support.queryBlackboard(getSelfPred());
-    Iterator iter = container.iterator();
-    Vector results = new Vector(1);
-    int n = 0; // unique index for relationships
-    while (iter.hasNext()) {
-      Asset asset = (Asset)iter.next();
-      PropertyTree properties = new PropertyTree();
-      properties.put(PropertyNames.UID_ATTR, getUIDAsString(asset.getUID()));
-      //      String name = asset.getItemIdentificationPG().getNomenclature();
-      // THIS METHOD OF ACCESSING AGENT NAME MUST MATCH HOW OTHER ServletS
-      // (ESPECIALLY CSMART_PlanServlet) ACCESS THE AGENT NAME SO COMPARISONS
-      // CAN BE MADE AT THE CLIENT
-      String name = support.getEncodedAgentName();
-      properties.put(PropertyNames.AGENT_NAME, name);
-      CommunityPG communityPG = asset.getCommunityPG(new Date().getTime());
-      String communityName = null;
-      if (communityPG != null) {
-	Collection communities = communityPG.getCommunities();
-	if (communities.size() > 1) 
-	  System.out.println("CSMART_CommunityProviderServlet: WARNING: handling agents in multiple communities is not implemented.");
-	Iterator i = communities.iterator();
-	while (i.hasNext()) {
-	  communityName = (String)i.next();
-	  break;
-	}
-      } else {
-	communityName = "COUGAAR";
-      }
-      if (communityName != null)
-	properties.put(PropertyNames.AGENT_COMMUNITY_NAME, communityName);
-      
-      // reconstruct url
-      String url = buf.toString();
-      //URL url = psc.lookupURL(psc.getServerPlugInSupport().getClusterIDAsString());
-      if (url != null)
-	properties.put(PropertyNames.AGENT_URL, url.toString());
-      results.add(properties);
+	};
     }
-    return results;
-  }
-  
-  private static final String getUIDAsString(final UID uid) {
-    return
-      ((uid != null) ? uid.toString() : "null");
-  }    
+    
+    /**
+     * Get agent and community name for this agent.
+     * Returns a vector which contains a single PropertyTree which contains the
+     * properties for this agent.
+     */
+    private Vector getSelfInformation(StringBuffer buf) {
+      Collection container = 
+	support.queryBlackboard(getSelfPred());
+      Iterator iter = container.iterator();
+      Vector results = new Vector(1);
+      int n = 0; // unique index for relationships
+      while (iter.hasNext()) {
+	Asset asset = (Asset)iter.next();
+	PropertyTree properties = new PropertyTree();
+	properties.put(PropertyNames.UID_ATTR, getUIDAsString(asset.getUID()));
+	//      String name = asset.getItemIdentificationPG().getNomenclature();
+	// THIS METHOD OF ACCESSING AGENT NAME MUST MATCH HOW OTHER ServletS
+	// (ESPECIALLY CSMART_PlanServlet) ACCESS THE AGENT NAME SO COMPARISONS
+	// CAN BE MADE AT THE CLIENT
+	String name = support.getEncodedAgentName();
+	properties.put(PropertyNames.AGENT_NAME, name);
+	CommunityPG communityPG = asset.getCommunityPG(new Date().getTime());
+	String communityName = null;
+	if (communityPG != null) {
+	  Collection communities = communityPG.getCommunities();
+	  if (communities.size() > 1) 
+	    System.out.println("CSMART_CommunityProviderServlet: WARNING: handling agents in multiple communities is not implemented.");
+	  Iterator i = communities.iterator();
+	  while (i.hasNext()) {
+	    communityName = (String)i.next();
+	    break;
+	  }
+	} else {
+	  communityName = "COUGAAR";
+	}
+	if (communityName != null)
+	  properties.put(PropertyNames.AGENT_COMMUNITY_NAME, communityName);
+      
+	// reconstruct url
+	String url = buf.toString();
+	//URL url = psc.lookupURL(psc.getServerPlugInSupport().getClusterIDAsString());
+	if (url != null)
+	  properties.put(PropertyNames.AGENT_URL, url.toString());
+	results.add(properties);
+      }
+      return results;
+    }
+    
+    private static final String getUIDAsString(final UID uid) {
+      return
+	((uid != null) ? uid.toString() : "null");
+    }    
   }
 }
 
