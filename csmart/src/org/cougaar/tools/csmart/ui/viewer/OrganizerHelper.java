@@ -215,7 +215,7 @@ public class OrganizerHelper {
       if (log.isDebugEnabled()) {
 	log.debug("createExpt got new comm asb based on old expt " + origExperimentId + " of " + commAsb);
       }
-    } else if (origExperimentId != null && origExperimentId.equals(experiment)) {
+    } else if (origExperimentId != null && origExperimentId.equals(experimentId)) {
       if (log.isDebugEnabled()) {
 	log.debug("createExpt had no orig or orig same as this. Try reading previous comm ASB from db");
       }
@@ -271,8 +271,8 @@ public class OrganizerHelper {
 
     // If somehow still have no comm ASB, create a new one
     if (experiment.getCommAsbID() == null) {
-      if (log.isDebugEnabled()) {
-	log.debug("createExpt somehow still no Comm ASB. Create a new one");
+      if (log.isInfoEnabled()) {
+	log.info("createExpt somehow still no Comm ASB. Create a new one. OrigExptID: " + origExperimentId + ", exptID: " + experimentId);
       }
       PopulateDb pdbc = null;
       String commAsb = null;
