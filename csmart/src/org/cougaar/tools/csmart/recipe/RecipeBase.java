@@ -38,6 +38,7 @@ import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.range.BooleanRange;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
@@ -53,9 +54,6 @@ import org.cougaar.tools.csmart.core.db.PDbBase;
 public abstract class RecipeBase 
   extends ModifiableConfigurableComponent 
   implements RecipeComponent, PropertiesListener  {
-
-  protected static final String TRUE = "True";
-  protected static final String FALSE = "False";
 
   protected transient Logger log;
 
@@ -82,12 +80,12 @@ public abstract class RecipeBase
     getEventListenerList().remove(ModificationListener.class, l);
   }
 
-  public Property addBooleanProperty(String name, String dflt) {
-    Property tmp = addProperty(name, dflt);
-    HashSet boolSet = new HashSet();
-    boolSet.add(new StringRange(TRUE));
-    boolSet.add(new StringRange(FALSE));
-    tmp.setAllowedValues(boolSet);
+  public Property addBooleanProperty(String name, boolean dflt) {
+    Property tmp = addProperty(name, new Boolean(dflt));
+    HashSet booleanSet = new HashSet();
+    booleanSet.add(new BooleanRange(false));
+    booleanSet.add(new BooleanRange(true));
+    tmp.setAllowedValues(booleanSet);
     return tmp;
   }
 

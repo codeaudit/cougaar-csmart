@@ -63,10 +63,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   private static final String BACKUP_DESCRIPTION = 
     "ServletGroupInsertionRecipe provides a method for adding groups of servlets into an experiment";
 
-  private static final String TRUE = "True";
-  private static final String FALSE = "False";
-
-  private static final String PROP_SERVLETS_DFLT = "False";
+  private static final boolean PROP_SERVLETS_DFLT = false;
   private static final String PROP_SERVLETS_DESC = "The complete list of all available Servlets";
 
   private static final String PROP_TARGET_AGENT_QUERY = "Target Agent Selection Query";
@@ -106,7 +103,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 
     if (servletList != null) {
       for (int i=0; i < servletList.size(); i++) {
-        propServlets[i] = addBooleanProperty(((ServletListRecord)servletList.elementAt(i)).getName(),PROP_SERVLETS_DFLT);
+        propServlets[i] = addBooleanProperty(((ServletListRecord)servletList.elementAt(i)).getName(), PROP_SERVLETS_DFLT);
         ((Property)propServlets[i]).setToolTip(PROP_SERVLETS_DESC);
       }
     }
@@ -301,7 +298,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
       if (propServlets != null) {
         for(int i=0; i < propServlets.length; i++) {
 	  ServletListRecord servlet = (ServletListRecord)servletList.elementAt(i);
-          if (((Property)propServlets[i]).getValue().toString().equals(TRUE)) {
+          if (((Boolean)(propServlets[i].getValue())).booleanValue()) {
             GenericComponentData plugin = new GenericComponentData();
             plugin.setType(ComponentData.PLUGIN);
 

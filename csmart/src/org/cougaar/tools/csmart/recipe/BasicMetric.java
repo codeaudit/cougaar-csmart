@@ -86,27 +86,27 @@ public class BasicMetric extends RecipeBase
   private Property propTVerb;
   
   public static final String PROP_BBSERV = "Blackboard Statistics Service On";
-  public static final String PROP_BBSERV_DFLT = FALSE;
+  public static final boolean PROP_BBSERV_DFLT = false;
   public static final String PROP_BBSERV_DESC = "Turn Blackboard metrics collection on or off";
   private Property propBBServ;
   
   public static final String PROP_PRSERV = "Prototype Registry Service On";
-  public static final String PROP_PRSERV_DFLT = FALSE;
+  public static final boolean PROP_PRSERV_DFLT = false;
   public static final String PROP_PRSERV_DESC = "Turn Prototype Registry metrics on or off";
   private Property propPRServ;
   
   public static final String PROP_NODESERV = "Node Metrics Service On";
-  public static final String PROP_NODESERV_DFLT = FALSE;
+  public static final boolean PROP_NODESERV_DFLT = false;
   public static final String PROP_NODESERV_DESC = "Turn Node metrics on or off";
   private Property propNodeServ;  
   
   public static final String PROP_MSTATSSERV = "Message Stats Service On";
-  public static final String PROP_MSTATSSERV_DFLT = FALSE;
+  public static final boolean PROP_MSTATSSERV_DFLT = false;
   public static final String PROP_MSTATSSERV_DESC = "Turn Message Transport metrics on or off";
   private Property propMStatsServ;  
   
   public static final String PROP_MWATCHSERV = "Message Watcher Service On";
-  public static final String PROP_MWATCHSERV_DFLT = FALSE;
+  public static final boolean PROP_MWATCHSERV_DFLT = false;
   public static final String PROP_MWATCHSERV_DESC = "Turn Message Watcher on or off";
   private Property propMWatchServ;
   
@@ -241,19 +241,21 @@ public class BasicMetric extends RecipeBase
     // Why can't I find it by name? Cause it's hidden?
     plugin.addParameter(propResultsDir.getValue()); // dir for Results files
     plugin.addParameter(getProperty(PROP_TVERB).getValue()); // Task Verb to search for
-    plugin.addParameter((getProperty(PROP_BBSERV).getValue().equals(TRUE)) ? 
-                        new Integer(1) : new Integer(0));
-    plugin.addParameter((getProperty(PROP_PRSERV).getValue().equals(TRUE)) ? 
-                        new Integer(1) : new Integer(0));
-    plugin.addParameter((getProperty(PROP_NODESERV).getValue().equals(TRUE)) ? 
-                        new Integer(1) : new Integer(0));
-    plugin.addParameter((getProperty(PROP_MSTATSSERV).getValue().equals(TRUE)) ? 
-                        new Integer(1) : new Integer(0));
-    plugin.addParameter((getProperty(PROP_MWATCHSERV).getValue().equals(TRUE)) ? 
-                        new Integer(1) : new Integer(0));
+    addParameter(plugin, PROP_BBSERV);
+    addParameter(plugin, PROP_PRSERV);
+    addParameter(plugin, PROP_NODESERV);
+    addParameter(plugin, PROP_MSTATSSERV);
+    addParameter(plugin, PROP_MWATCHSERV);
 
     // Add the plugin such that it replaces any previous version
     data.addChildDefaultLoc(plugin);
+  }
+
+  private void addParameter(GenericComponentData plugin, String name) {
+    if (((Boolean)(getProperty(name).getValue())).booleanValue())
+      plugin.addParameter(new Integer(1));
+    else
+      plugin.addParameter(new Integer(0));
   }
 
   private void addRelationship(AgentComponentData data) {

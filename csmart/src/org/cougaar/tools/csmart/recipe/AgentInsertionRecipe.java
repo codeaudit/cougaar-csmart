@@ -91,12 +91,12 @@ public class AgentInsertionRecipe extends RecipeBase
   private static final String PROP_ALTTYPEID_DESC = "Alternate Type Identification";
 
   private static final String PROP_ORGASSET = "Include Org Asset";
-  private static final String PROP_ORGASSET_DFLT = TRUE;
+  private static final boolean PROP_ORGASSET_DFLT = true;
   private static final String PROP_ORGASSET_DESC = 
     "Specifies if this agent should contain an Org Asset";
 
   private static final String PROP_ITEMPG = "Include Item Identification PG";
-  private static final String PROP_ITEMPG_DFLT = TRUE;
+  private static final boolean PROP_ITEMPG_DFLT = true;
   private static final String PROP_ITEMPG_DESC = 
     "Specifies if this agent should contain an Item Identification PG";
 
@@ -146,7 +146,7 @@ public class AgentInsertionRecipe extends RecipeBase
     propOrgAsset = addBooleanProperty(PROP_ORGASSET, PROP_ORGASSET_DFLT);
     propOrgAsset.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
         public void propertyValueChanged(PropertyEvent e) {
-          updateOrgParameters((String)e.getProperty().getValue());
+          updateOrgParameters((Boolean)e.getProperty().getValue());
         }
       });
     propOrgAsset.setToolTip(PROP_ORGASSET_DESC);
@@ -179,8 +179,8 @@ public class AgentInsertionRecipe extends RecipeBase
     return prop;
   }
 
-  private void updateOrgParameters(String val) {
-    boolean show = (val.equals(TRUE)) ? true : false;
+  private void updateOrgParameters(Boolean val) {
+    boolean show = val.booleanValue();
 
     if(!show && propRelations != null && propRelations.length > 0) {
       for(int i=0; i < propRelations.length; i++) {
@@ -337,11 +337,11 @@ public class AgentInsertionRecipe extends RecipeBase
     }
     assetData.addPropertyGroup(createTypeIdentificationPG());
 
-    if ((propOrgAsset.getValue().toString().equals(TRUE))) {
+    if (((Boolean)propOrgAsset.getValue()).booleanValue()) {
       assetData.addPropertyGroup(createClusterPG());
     }
 
-    if ((propItemPG.getValue().toString().equals(TRUE))) {
+    if (((Boolean)propItemPG.getValue()).booleanValue()) {
       assetData.addPropertyGroup(createItemIdentificationPG());
     }
 
@@ -446,8 +446,7 @@ public class AgentInsertionRecipe extends RecipeBase
     public ComponentData addComponentData(ComponentData data) {
       if (this.getShortName().equals(data.getName())) {
 
-        if ((propOrgAsset.getValue().toString().equals(TRUE))) {
-          
+        if (((Boolean)propOrgAsset.getValue()).booleanValue()) {
           // Add the OrgRTData plugin.
           ComponentData plugin = new GenericComponentData();
           plugin.setType(ComponentData.PLUGIN);
