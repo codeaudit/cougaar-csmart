@@ -133,22 +133,22 @@ public class ConsoleDNDTree extends DNDTree {
       cto = (ConsoleTreeObject) userObject;
       for (int i = 0; i < flavors.length; i++) {
         if (cto.allowsDataFlavor(flavors[i])) {
-          if(log.isDebugEnabled()) {
-            log.debug(cto + " allows " + flavors[i]);
-          }
+//           if(log.isDebugEnabled()) {
+//             log.debug(cto + " allows " + flavors[i]);
+//           }
           return DnDConstants.ACTION_MOVE;
         }
-        if(log.isDebugEnabled()) {
-          log.debug(cto + " disallows " + flavors[i]);
-        }
+//         if(log.isDebugEnabled()) {
+//           log.debug(cto + " disallows " + flavors[i]);
+//         }
       }
-      if(log.isDebugEnabled()) {
-        log.debug(cto + " accepts none of the flavors");
-      }
+//       if(log.isDebugEnabled()) {
+//         log.debug(cto + " accepts none of the flavors");
+//       }
     } else {
-      if(log.isDebugEnabled()) {
-        log.debug(target + " has type " + userObject.getClass());
-      }
+//       if(log.isDebugEnabled()) {
+//         log.debug(target + " has type " + userObject.getClass());
+//       }
     }
     return DnDConstants.ACTION_NONE;
   }

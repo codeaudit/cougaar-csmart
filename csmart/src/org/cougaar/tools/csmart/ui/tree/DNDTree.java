@@ -147,20 +147,20 @@ public abstract class DNDTree
         target = (DefaultMutableTreeNode) target.getParent();
 	if (target.getAllowsChildren()) {
           int action = isDroppable(possibleFlavors, target);
-          if(log.isDebugEnabled()) {
-            log.debug("Action is " + action);
-          }
+//           if(log.isDebugEnabled()) {
+//             log.debug("Action is " + action);
+//           }
           return action;
 	} else {
-          if(log.isDebugEnabled()) {
-            log.debug(target + " disallows children");
-          }
+//           if(log.isDebugEnabled()) {
+//             log.debug(target + " disallows children");
+//           }
 	}
       }
     } else {
-      if(log.isDebugEnabled()) {
-        log.debug("no target here");
-      }
+//       if(log.isDebugEnabled()) {
+//         log.debug("no target here");
+//       }
     }
     return DnDConstants.ACTION_NONE;
   }
@@ -258,9 +258,9 @@ public abstract class DNDTree
         dragSourceNodes[i] =
           (DefaultMutableTreeNode) paths[i].getLastPathComponent();
       }
-      if(log.isDebugEnabled()) {
-       log.debug("Multi-drag " + dragSourceNodes.length + " nodes");
-      }
+//       if(log.isDebugEnabled()) {
+//        log.debug("Multi-drag " + dragSourceNodes.length + " nodes");
+//       }
       Transferable draggableObject =
         makeDraggableObject(new DMTNArray(dragSourceNodes));
       dragSource.startDrag(event, DragSource.DefaultMoveDrop, 
@@ -291,9 +291,9 @@ public abstract class DNDTree
    */
 
   public void dragDropEnd (DragSourceDropEvent event) {
-    if(log.isDebugEnabled()) {
-     log.debug("drop action = " + event.getDropAction());
-    }
+//     if(log.isDebugEnabled()) {
+//      log.debug("drop action = " + event.getDropAction());
+//     }
     if (event.getDropSuccess()
         && event.getDropAction() == DnDConstants.ACTION_MOVE)
       removeElement();
@@ -319,9 +319,9 @@ public abstract class DNDTree
    */
 
   public void dragEnter (DragSourceDragEvent event) {
-      if(log.isDebugEnabled()) {
-        log.debug( " drag source listener dragEnter");
-      }
+//       if(log.isDebugEnabled()) {
+//         log.debug( " drag source listener dragEnter");
+//       }
   }
 
   /**
@@ -330,9 +330,9 @@ public abstract class DNDTree
    */
 
   public void dragOver (DragSourceDragEvent event) {
-      if(log.isDebugEnabled()) {
-        log.debug( "dragExit");
-      }
+//       if(log.isDebugEnabled()) {
+//         log.debug( "dragExit");
+//       }
   }
 
   /**
@@ -341,9 +341,9 @@ public abstract class DNDTree
    */
 
   public void dragExit (DragSourceEvent event) {
-    if(log.isDebugEnabled()) {
-    log.debug( "dragExit");
-    }
+//     if(log.isDebugEnabled()) {
+//     log.debug( "dragExit");
+//     }
   }
 
   /**
@@ -352,9 +352,9 @@ public abstract class DNDTree
    */
    
   public void dropActionChanged ( DragSourceDragEvent event) {
-      if(log.isDebugEnabled()) {
-        log.debug( "dropActionChanged"); 
-      }
+//       if(log.isDebugEnabled()) {
+//         log.debug( "dropActionChanged"); 
+//       }
   }
 
   /**
@@ -408,9 +408,9 @@ public abstract class DNDTree
    */
 
   public void dragExit (DropTargetEvent event) {
-      if(log.isDebugEnabled()) {
-        log.debug( "dragExit");
-      }
+//       if(log.isDebugEnabled()) {
+//         log.debug( "dragExit");
+//       }
   }
 
   /**
