@@ -44,6 +44,26 @@ public class PGPropMultiVal implements Serializable {
   }
 
   /**
+   * Creates a new <code>PGPropMultiVal</code> instance with the given values.
+   * Note that the values must be <code>String</code>s ar <code>ArgValue</code>s
+   *
+   * @param newValues an <code>Object[]</code> array of values
+   */
+//   public PGPropMultiVal(Object[] newValues) {
+//     this.values = new ArrayList();
+//     this.setValues(newValues);
+//   }
+
+  public PGPropMultiVal(Object newValues) {
+    if (newValues instanceof List)
+      this.values = (List)newValues;
+    else if (newValues.getClass().isArray()) {
+      this.values = new ArrayList();
+      this.setValues((Object[])newValues);
+    }
+  }
+
+  /**
    * Sets all values for this Property
    *
    * @param Object[] array of values
@@ -51,9 +71,10 @@ public class PGPropMultiVal implements Serializable {
   public void setValues(Object[] newValues) {
     this.values.clear();
     for(int i=0; i < newValues.length; i++) {
-      if(!(newValues[i] instanceof String) ||
+      if(!(newValues[i] instanceof String) &&
          !(newValues[i] instanceof ArgValue)) {
-        throw new RuntimeException("Value must be a String or ArgValue ["+ newValues[i]+"]");
+        throw new RuntimeException("Value must be a String or ArgValue ["+ newValues[i]+"],, but is a " + newValues[i].getClass().toString());
+	//newValues[i] = newValues[i].toString();
       }
       this.values.add(newValues[i]);
     }
