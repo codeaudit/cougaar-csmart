@@ -32,7 +32,9 @@ public class TestPopulateDb extends TestCase {
     public static final String AGENT_CLASS = ClusterImpl.class.getName();
     public static final String AGENT_INSERTION_POINT = "Node.AgentManager.Agent";
     public static final String AGENT_TYPE = "agent";
-    public static final String ASSEMBLY_PREFIX = "REGRESSION_";
+    public static final String CMT_TYPE = "REGRESSION_CMT";
+    public static final String CSMART_TYPE = "REGRESSION_CSMART";
+    public static final String CSM_TYPE = "REGRESSION_CSM";
     public static final String DATABASE = "org.cougaar.configuration.database";
     public static final String DELETE_ALIB_COMPONENT = "deleteAlibComponent";
     public static final String DELETE_ASSEMBLY = "deleteAssembly";
@@ -150,7 +152,7 @@ public class TestPopulateDb extends TestCase {
 
     private PopulateDb pdb;
     private DBProperties dbp;
-    private String assemblyId;
+    private String cmtAssemblyId;
     private String exptId;
     private String trialId;
     private ServiceProvider initializerServiceProvider;
@@ -222,8 +224,8 @@ public class TestPopulateDb extends TestCase {
             insertTestTrial(dbConnection);
             insertTestAssembly(dbConnection);
             dbConnection.commit();
-            pdb = new PopulateDb(ASSEMBLY_PREFIX, exptId, trialId);
-            assemblyId = pdb.getAssemblyId();
+            pdb = new PopulateDb(CMT_TYPE, CSMART_TYPE, CMT_TYPE,
+                                 exptId, trialId, false);
             pdb.setDebug(true);
         } finally {
             dbConnection.close();
@@ -250,7 +252,9 @@ public class TestPopulateDb extends TestCase {
      * Insert a regression assembly with the next higher number
      **/
     private void insertTestAssembly(Connection dbConnection) throws SQLException {
-        substitutions.put(":assembly_id", assemblyId);
+        MessageFormat cmtAssemblyIdFormat = new MessageFormat(CMT_TYPE + "_" + "{0,number,0000}");
+        cmtAssemblyId = getNextId(dbConnection, QUERY_MAX_ASSEMBLY, cmtAssemblyIdFormat);
+        substitutions.put(":assembly_id", cmtAssemblyId);
         substitutions.put(":description", "TestPopulateDb " + new Date().toString());
         Statement stmt = dbConnection.createStatement();
         executeUpdate(stmt, dbp.getQuery(INSERT_ASSEMBLY, substitutions));
