@@ -51,6 +51,7 @@ public class AgentComponentData extends GenericComponentData {
    * @param String[] array of roles
    */
   public void setRoles(String[] newRoles) {
+    roles.clear();
     for(int i=0; i < newRoles.length; i++) {
       roles.add(newRoles[i]);
     }
@@ -66,14 +67,14 @@ public class AgentComponentData extends GenericComponentData {
   }
 
   /**
-   * Adds a role for this Agent
+   * Sets a role for this Agent, replacing the previous role at this index
    *
    * @param int index for role
-   * @param String role
+   * @param String role to replace with
    */
-  public void addRole(int index, String role) 
+  public void setRole(int index, String role) 
                               throws IndexOutOfBoundsException{
-    this.roles.add(index, role);
+    this.roles.set(index, role);
   }
 
   /**
@@ -82,7 +83,7 @@ public class AgentComponentData extends GenericComponentData {
    * @return roles
    */
   public String[] getRoles() {
-    return (String[])roles.toArray(new String[0]);
+    return (String[])roles.toArray(new String[roles.size()]);
   }
 
   /**
@@ -109,6 +110,7 @@ public class AgentComponentData extends GenericComponentData {
    * @param CommunityTimePhasedData[] Array of Community objects
    */
   public void setCommunityData(CommunityTimePhasedData[] communities) {
+    this.communities.clear();
     for(int i=0; i < communities.length; i++) {
       this.communities.add(communities[i]);
     }
@@ -124,14 +126,15 @@ public class AgentComponentData extends GenericComponentData {
   }
 
   /**
-   * Adds a community for this Agent
+   * Sets a community for this Agent, replacing the previous community
+   * at this location.
    *
    * @param int index for community
    * @param CommunityTimePhasedData community
    */
-  public void addCommunity(int index, CommunityTimePhasedData community) 
+  public void setCommunity(int index, CommunityTimePhasedData community) 
                      throws IndexOutOfBoundsException {
-    this.communities.add(index, community);
+    this.communities.set(index, community);
   }
 
   /**
@@ -158,7 +161,7 @@ public class AgentComponentData extends GenericComponentData {
    * @return CommunityTimePhasedData
    */
   public CommunityTimePhasedData[] getCommunityData() {
-    return (CommunityTimePhasedData[]) communities.toArray(new CommunityTimePhasedData[0]);
+    return (CommunityTimePhasedData[]) communities.toArray(new CommunityTimePhasedData[communities.size()]);
   }
 
   /**
@@ -167,6 +170,7 @@ public class AgentComponentData extends GenericComponentData {
    * @param RelationshipTimePhasedData[] array of relationship objects.
    */
   public void setRelationshipData(RelationshipTimePhasedData[] relationships) {
+    this.relationships.clear();
     for(int i=0; i < relationships.length; i++) {
       this.relationships.add(relationships[i]);
     }
@@ -182,14 +186,15 @@ public class AgentComponentData extends GenericComponentData {
   }
 
   /**
-   * Adds a relationship for this Agent
+   * Sets a relationship for this Agent, replacing the previous relationship
+   * at this index.
    *
    * @param int index for relationship
    * @param RelationshipTimePhasedData  relationship
    */
-  public void addRelationship(int index, RelationshipTimePhasedData relationship) 
+  public void setRelationship(int index, RelationshipTimePhasedData relationship) 
                         throws IndexOutOfBoundsException {
-    this.relationships.add(index, relationship);
+    this.relationships.set(index, relationship);
   }
 
   /**
@@ -216,6 +221,6 @@ public class AgentComponentData extends GenericComponentData {
    * @return RelationshipTimePhasedData
    */
   public RelationshipTimePhasedData[] getRelationshipData() {
-    return (RelationshipTimePhasedData[])relationships.toArray(new RelationshipTimePhasedData[0]);
+    return (RelationshipTimePhasedData[])relationships.toArray(new RelationshipTimePhasedData[relationships.size()]);
   }
 }

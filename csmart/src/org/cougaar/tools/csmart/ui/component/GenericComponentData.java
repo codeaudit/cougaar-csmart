@@ -73,7 +73,7 @@ public class GenericComponentData implements ComponentData {
   }
 
   public ComponentData[] getChildren() {
-    return (ComponentData[])children.toArray(new ComponentData[0]);
+    return (ComponentData[])children.toArray(new ComponentData[children.size()]);
   }
 
   public void setChildren(ComponentData[] child) {
@@ -86,8 +86,8 @@ public class GenericComponentData implements ComponentData {
     this.children.add(child);
   }
 
-  public void addChild(int index, ComponentData child) {
-    this.children.add(index, child);
+  public void setChild(int index, ComponentData child) {
+    this.children.set(index, child);
   }
 
   public int childCount() {
@@ -99,6 +99,7 @@ public class GenericComponentData implements ComponentData {
   }
 
   public void setParameters(Object[] params) {
+    this.parameters.clear();
     for(int i=0; i < params.length; i++) {
       this.parameters.add(params[i]);
     }    
@@ -108,8 +109,8 @@ public class GenericComponentData implements ComponentData {
     this.parameters.add(param);
   }
 
-  public void addParameter(int index, Object param) {
-    this.parameters.add(index, param);
+  public void setParameter(int index, Object param) {
+    this.parameters.set(index, param);
   }
 
   public int parameterCount() {
@@ -133,10 +134,11 @@ public class GenericComponentData implements ComponentData {
   }
 
   public LeafComponentData[] getLeafComponents() {
-    return (LeafComponentData[]) leafComponents.toArray(new LeafComponentData[0]);
+    return (LeafComponentData[]) leafComponents.toArray(new LeafComponentData[leafComponents.size()]);
   }
 
   public void setLeafComponents(LeafComponentData[] leaves) {
+    leafComponents.clear();
     for(int i = 0 ; i < leaves.length; i++) {
       leafComponents.add(leaves[i]);
     }
@@ -146,8 +148,8 @@ public class GenericComponentData implements ComponentData {
     leafComponents.add(leaf);
   }
 
-  public void addLeafComponent(int index, LeafComponentData leaf) {
-    leafComponents.add(index, leaf);
+  public void setLeafComponent(int index, LeafComponentData leaf) {
+    leafComponents.set(index, leaf);
   }
 
   public int leafCount() {
@@ -174,17 +176,18 @@ public class GenericComponentData implements ComponentData {
   }
 
   public TimePhasedData[] getTimePhasedData() {
-    return (TimePhasedData[]) timePhasedData.toArray(new TimePhasedData[0]);
+    return (TimePhasedData[]) timePhasedData.toArray(new TimePhasedData[timePhasedData.size()]);
   }
 
   public void setTimePhasedData(TimePhasedData[] data) {
+    timePhasedData.clear();
     for(int i = 0 ; i < data.length; i++) {
       timePhasedData.add(data[i]);
     }
   }
 
-  public void addTimePhasedData(int index, TimePhasedData data) {
-    timePhasedData.add(index, data);
+  public void setTimePhasedData(int index, TimePhasedData data) {
+    timePhasedData.set(index, data);
   }
 
   public void addTimePhasedData(TimePhasedData data) {
