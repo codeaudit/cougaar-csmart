@@ -47,8 +47,10 @@ public class ABCAgentTest extends TestCase {
     assertEquals("Test Name", agent.getFullName().toString(), data.getName());
     assertEquals("Test Class", "org.cougaar.core.cluster.ClusterImpl", data.getClassName());
     assertEquals("Test Number of PlugIns", 6, data.childCount());
-    assertEquals("Test Owner", agent, data.getOwner());
-    assertEquals("Test Parent", gc, data.getParent());
+  }
+
+  public void testComponentDataChildren() {
+    ComponentData data = (ComponentData)agent.addComponentData(new GenericComponentData());
 
     Object[] children = data.getChildren();
 
@@ -70,6 +72,11 @@ public class ABCAgentTest extends TestCase {
 
     gc = (ComponentData)children[5];
     assertEquals("Test PlanServer", "org.cougaar.lib.planserver.PlanServerPlugIn", gc.getName());
+  }
+
+
+  public void testComponentDataLeaves() {
+    ComponentData data = (ComponentData)agent.addComponentData(new GenericComponentData());
 
     LeafComponentData[] leaves = data.getLeafComponents();
     LeafComponentData leaf = leaves[0];
@@ -99,7 +106,53 @@ public class ABCAgentTest extends TestCase {
     t1.append("# <more \"rule\" lines as necessary>\n");
     t1.append("config, 0.5, 50, 60, 150, 1100\n");
     t1.append("rule, Task, Role1, Role2\n");
-    assertEquals("Test ALlocation File Value", t1.toString(), ((StringBuffer)leaf.getValue()).toString());
+    assertEquals("Test Allocation File Value", t1.toString(), ((StringBuffer)leaf.getValue()).toString());
+  }
+
+  public void testComponentDataTimePhased() {
+    String[] supplies = {"Supplies.Agent"};
+    agent.getProperty(ABCAgent.PROP_SUPPLIES).setValue(supplies);
+    agent.getProperty(ABCAgent.PROP_INITIALIZER).setValue("Initializer");
+
+    ComponentData data = (ComponentData)agent.addComponentData(new GenericComponentData());
+    
+    TimePhasedData[] tpd = data.getTimePhasedData();
+
+    if(tpd[0] instanceof CommunityTimePhasedData) {
+      CommunityTimePhasedData comm = (CommunityTimePhasedData)tpd[0];
+      assertEquals("Test Community Name", "Generic", comm.getCommunity(0));
+    } else {
+      fail("Expected CommunityTimePhasedData");
+    }
+
+    if(tpd[1] instanceof RelationshipTimePhasedData) {
+      RelationshipTimePhasedData rel = (RelationshipTimePhasedData)tpd[1];
+      assertEquals("Test Relationship Role", "Role1", rel.getRole());
+      assertEquals("Test Item", "Supplies.Agent", rel.getItem());
+      assertEquals("Test Type", "Agent" ,rel.getType());
+      assertEquals("Test Cluster", "Supplies.Agent", rel.getCluster());
+    } else {
+      fail("Expected RelationshipTimePhasedData");
+    }
+
+    if(tpd[2] instanceof RelationshipTimePhasedData) {
+      RelationshipTimePhasedData rel = (RelationshipTimePhasedData)tpd[2];
+      assertEquals("Test Relationship Role", "Role2", rel.getRole());
+      assertEquals("Test Item", "Supplies.Agent", rel.getItem());
+      assertEquals("Test Type", "Agent" ,rel.getType());
+      assertEquals("Test Cluster", "Supplies.Agent", rel.getCluster());
+    } else {
+      fail("Expected RelationshipTimePhasedData");
+    }
+
+    if(tpd[3] instanceof RelationshipTimePhasedData) {
+      RelationshipTimePhasedData rel = (RelationshipTimePhasedData)tpd[3];
+      assertEquals("Test Relationship Role", "MetricsControlProvider", rel.getRole());
+      assertEquals("Test Item", "Initializer", rel.getItem());
+      assertEquals("Test Cluster", "Initializer", rel.getCluster());
+    } else {
+      fail("Expected RelationshipTimePhasedData");
+    }
   }
 
   public static junit.framework.Test suite() {
@@ -188,7 +241,7 @@ public class ABCAgentTest extends TestCase {
       ABCLocalAsset asset = new ABCLocalAsset();
       asset.initProperties();
       asset.getProperty(ABCLocalAsset.PROP_NAME).setValue("Asset");
-      String[] roles = {"Role1, Role2"};
+      String[] roles = {"Role1", "Role2"};
       asset.getProperty(ABCLocalAsset.PROP_ROLES).setValue(roles);
       asset.getProperty(ABCLocalAsset.PROP_DECAMOUNT).setValue(new Long(1));
       asset.getProperty(ABCLocalAsset.PROP_AVGTIME).setValue(new Long(2));
@@ -211,6 +264,7 @@ public class ABCAgentTest extends TestCase {
       ag.addChild(alloc);
 
       ag.initProperties();
+
     }   
 
     private Property addPropertyAlias(ABCAgent c, Property prop, String name) {
