@@ -650,20 +650,29 @@ public class CMT {
 	dbUpdate("updateCMTAssembly",subs);
     }
 
-
     /*
      * Deletes the given experiment from the database. 
      * Gets rid of the trial and associated other data.
      * Does not get rid of the CMT assembly or other assemblies.
      */
-
     public static void deleteExperiment(String experiment_id, String experiment_name) {
 	boolean doIt = true;
-	if(experiment_id.equals("EXPT_TRANS")){
-	    doIt=false;
+	
+	// HACK: Avoid deleting base experiments
+	String[] baseExpts = new String[] {"EXPT_TRANS","TINY_1AD_TRANS_STUB","FULL-1AD-TRANS","TINY-1AD-TRANS","SMALL_1AD_TRANS","FULL-1AD-TRANS-STUB"};
+	for (int i = 0; i < baseExpts.length; i++) {
+	  if (experiment_id.equals(baseExpts[i])) {
+	    doIt = false;
+	    break;
+	  }
+	}
+	
+	if (doIt == false) {
+	  //	if(experiment_id.equals("EXPT_TRANS")){
+	  //doIt=false;
 	    int response = 
 		JOptionPane.showConfirmDialog(null,
-					      "You seem to be trying to delete the base experiment -- do you REALLY want to do this?",
+					      "You seem to be trying to delete a base experiment -- do you REALLY want to do this?",
 					      "Confirm Delete",
 					      JOptionPane.YES_NO_OPTION);
       
@@ -674,6 +683,7 @@ public class CMT {
 
 	if (!doIt)
 	    return;
+
 	String expt_id = sqlQuote(experiment_id);
 	String trial_id = sqlQuote(getTrialId(experiment_id));
         String society_id = sqlQuote("society|" + experiment_name);
@@ -794,6 +804,8 @@ public class CMT {
 		Statement stmt = conn.createStatement();	
 		ResultSet rs = stmt.executeQuery(dbQuery);
 		while (rs.next()) {
+		  // Null first string, (like expt name), kills stuff
+		  if (rs.getString(1) != null)
 		    ht.put(rs.getString(1),rs.getString(2));
 		}
 		rs.close();
