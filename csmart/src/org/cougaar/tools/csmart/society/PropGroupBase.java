@@ -62,7 +62,13 @@ public class PropGroupBase
     while(iter.hasNext()) {
       PGPropData data = (PGPropData)iter.next();
       // Compose Name of Name and Type. 
-      String name = data.getName() + "  (" + data.getType() + ")";
+      String name;
+      if(data.getSubType() == null || data.getSubType().equals("")) {
+        name = data.getName() + "  (" + data.getType() + ")";
+      } else {
+        name = data.getName() + " ("+ data.getSubType() + ")";
+      }
+
       propProperties[i++] = addProperty(name, data.getValue());
     }
   }
@@ -86,14 +92,32 @@ public class PropGroupBase
     return name.substring(name.indexOf("(")+1, name.indexOf(")"));
   }
 
+  private PGPropData getProp(String name) {
+    PGPropData[] props = pgd.getProperties();
+    for(int i=0; i < props.length; i++) {
+      if(props[i].getName().equals(name)) {
+        return props[i];
+      }
+    }
+    return null;
+  }
+
   public PropGroupData getPropGroupData() {
         PropGroupData pgData = new PropGroupData(this.getShortName());
-    
+
         for(int i=0; i < propProperties.length; i++) {
           Property prop = propProperties[i];
+          PGPropData oldPG = getProp(getName(prop));
           PGPropData pg = new PGPropData();
-          pg.setName(getName(prop));
-          pg.setType(getType(prop));
+          if(oldPG != null) {
+            pg.setName(oldPG.getName());
+            pg.setType(oldPG.getType());
+            pg.setSubType(oldPG.getSubType());
+          } else {
+            pg.setName(getName(prop));
+            pg.setType(getType(prop));
+          }
+
           pg.setValue(prop.getValue());
           pgData.addProperty(pg);
         }
