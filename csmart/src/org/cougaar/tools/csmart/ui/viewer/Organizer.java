@@ -1322,6 +1322,7 @@ public class Organizer extends JScrollPane {
     if (result != JOptionPane.OK_OPTION)
       return;
     String experimentName = (String)cb.getSelectedItem();
+    String originalExperimentName = experimentName;
     String experimentId = (String)experimentNamesMap.get(experimentName);
     // produce an unique name for CSMART if necessary
     if (experimentNames.contains(experimentName)) {
@@ -1338,7 +1339,8 @@ public class Organizer extends JScrollPane {
     final String trialId = dialog.getTrialId();
     if (trialId == null)
       return;
-    createCMTExperiment(node, dialog.getExperimentName(),
+    createCMTExperiment(node, originalExperimentName,
+                        dialog.getExperimentName(),
                         dialog.getExperimentId(), trialId, dialog.isCloned());
   }
 
@@ -1524,6 +1526,7 @@ public class Organizer extends JScrollPane {
         String nodeName = (String)iter.next();
         nodeComponent = experiment.addNode(nodeName);
         substitutions.put(":parent_name", nodeName);
+        substitutions.put(":comp_alib_id", nodeName);
         // Get args of the node
         Properties nodeProps = nodeComponent.getArguments();
         getComponentArguments(stmt, substitutions, nodeProps);
@@ -1693,6 +1696,7 @@ public class Organizer extends JScrollPane {
    */
 
   private void createCMTExperiment(DefaultMutableTreeNode node,
+                                   String originalExperimentName,
                                    String experimentName,
                                    String experimentId,
                                    String trialId,
@@ -1721,7 +1725,7 @@ public class Organizer extends JScrollPane {
     setDefaultNodeArguments(experiment, assemblyMatch,
                             ComponentData.SOCIETY
                             + "|"
-                            + experimentName);
+                            + originalExperimentName);
     experiment.setCloned(isCloned);
     List recipes = checkForRecipes(trialId, experimentId);
     if (recipes.size() != 0) {
