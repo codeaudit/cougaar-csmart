@@ -215,8 +215,8 @@ public abstract class ConfigurableComponent
   }
 
   public void removeAllChildren() {
-    for (int i = 0; i < getChildCount(); i++) {
-      removeChild(getChild(i));
+    while(getChildCount() != 0) {
+      removeChild(getChildCount() - 1);
     }
   }
 
