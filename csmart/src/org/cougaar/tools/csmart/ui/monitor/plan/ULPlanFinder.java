@@ -513,7 +513,7 @@ public class ULPlanFinder extends JDialog {
       assetPanel.setLayout(new GridBagLayout());
       TitledBorder assetTitledBorder = new TitledBorder("Asset");
       assetPanel.setBorder(assetTitledBorder);
-      JLabel assetClusterLabel = new JLabel("Asset Cluster :");
+      JLabel assetClusterLabel = new JLabel("Asset Agent :");
       assetClusterCB = new JComboBox();
       assetClusterCB.addItem(ALL);
       Vector assetClusters = graph.getValuesOfAttribute(PropertyNames.ASSET_CLUSTER);
@@ -1120,7 +1120,7 @@ public class ULPlanFinder extends JDialog {
         allocationPanel.setLayout(new GridBagLayout());
         TitledBorder allocTitledBorder = new TitledBorder("Allocation");
         allocationPanel.setBorder(allocTitledBorder);
-        JLabel allocToClusterLabel = new JLabel("To Cluster :");
+        JLabel allocToClusterLabel = new JLabel("To Agent :");
 
         allocToClusterCB = new JComboBox();
         allocToClusterCB.addItem(ALL);
@@ -1145,7 +1145,7 @@ public class ULPlanFinder extends JDialog {
           allocAssetUIDCB.addItem(allocAssetUIDs.elementAt(i));
         allocAssetUIDCB.addActionListener(disableFindNext);
 
-        JLabel allocRemoteClusterUIDLabel = new JLabel("Remote Cluster UID :");
+        JLabel allocRemoteClusterUIDLabel = new JLabel("Remote Agent UID :");
         allocRemoteClusterUIDCB = new JComboBox();
         allocRemoteClusterUIDCB.addItem(ALL);
         Vector allocRemoteClusterUIDs = graph.getValuesOfAttribute(PropertyNames.ALLOCATION_REMOTE_CLUSTER_UID);

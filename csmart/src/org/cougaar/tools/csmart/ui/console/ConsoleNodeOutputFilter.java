@@ -34,7 +34,7 @@ public class ConsoleNodeOutputFilter extends JDialog {
   private static final String ERRORMSGS = "Standard Error";
   private static final String NODECREATION = "Node Created";
   private static final String NODEDESTROYED = "Node Destroyed";
-  private static final String CLUSTERADD = "Cluster Added";
+  private static final String CLUSTERADD = "Agent Added";
   private static final String IDLENESS = "Idle";
   private static final String HEARTBEAT = "Heartbeat";
   private final String OFF = "Off";

@@ -45,7 +45,6 @@ public class ULPlanFilter {
   // order these as they should appear in the filter
   private static final String[] PLAN_OBJECT_TYPES = { 
     PropertyNames.PLAN_ELEMENT_OBJECT,
-    PropertyNames.DIRECT_OBJECT,
     PropertyNames.WORKFLOW_OBJECT,
     PropertyNames.ASSET_OBJECT
   };
@@ -558,18 +557,6 @@ public class ULPlanFilter {
       if (objectType == null) {
         showNames.addElement(nodeName);
 	continue;
-      }
-      // special case direct objects
-      // TODO: if an asset is a direct object and also
-      // the object of an allocation, then treating it as simply
-      // a direct object is incorrect
-      if (objectType.equals(PropertyNames.ASSET_OBJECT)) {
-	String isDirectObject =
-	  (String)node.getAttributeValue(PropertyNames.ASSET_IS_DIRECT_OBJECT);
-        //	if (isDirectObject == null)
-        //	  continue;
-	if (isDirectObject != null && isDirectObject.equals("true"))
-	  objectType = PropertyNames.DIRECT_OBJECT;
       }
       if (ignoreObjectTypes.contains(objectType))
 	ignoreNames.addElement(nodeName);

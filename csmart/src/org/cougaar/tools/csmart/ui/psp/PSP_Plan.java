@@ -135,6 +135,8 @@ implements PlanServiceProvider, UISubscriber {
 
       // scan object
       if (planObject instanceof Asset) {
+        if (pspState.ignoreAssets)
+          continue;
         Asset asset = (Asset)planObject;
         if ((asset.hasClusterPG()) &&
             (asset instanceof HasRelationships) &&
@@ -201,8 +203,8 @@ implements PlanServiceProvider, UISubscriber {
   public static class PlanPSPState extends PSPState {
     // flags set by the client to control what objects are returned
     public boolean ignorePlanElements = false;
-    public boolean ignoreDirectObjects = false;
     public boolean ignoreWorkflows = false;
+    public boolean ignoreAssets = false;
 
     // limit on number of PropertyTrees to return; see javadocs above.
     public int limit = Integer.MAX_VALUE;
@@ -215,7 +217,7 @@ implements PlanServiceProvider, UISubscriber {
     }
 
     /**
-     * Sets planObjectsToIgnore from
+     * Sets "objects to ignore" variables from
      * string in URL predicated with ?ignorePlanObjects
      */
 
@@ -228,10 +230,10 @@ implements PlanServiceProvider, UISubscriber {
             String s = st.nextToken();
             if (s.equals(PropertyNames.PLAN_ELEMENT_OBJECT)) {
               ignorePlanElements = true;
-            } else if (s.equals(PropertyNames.DIRECT_OBJECT)) {
-              ignoreDirectObjects = true;
             } else if (s.equals(PropertyNames.WORKFLOW_OBJECT)) {
               ignoreWorkflows = true;
+            } else if (s.equals(PropertyNames.ASSET_OBJECT)) {
+              ignoreAssets = true;
             }
           }
         } catch (Exception e) {

@@ -675,9 +675,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     String PSPId = PSP_PLAN;
     String filterValue = filter.getIgnoreObjectTypes();
     int filterLimit  = filter.getNumberOfObjects();
-    boolean filteringDirectObjects =
-      ((filterValue != null) &&
-       (filterValue.indexOf(PropertyNames.DIRECT_OBJECT) >= 0));
     String baseURL =
       PSPId + "?" +
       PropertyNames.PLAN_OBJECTS_TO_IGNORE +
@@ -739,14 +736,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       // end for debugging
 
     }
-    //    System.out.println("Duplicates: " + nDuplicates);
-
-    // if not filtering out direct objects, then handle their links specially
-    if (!(filteringDirectObjects)) {
-      nodeObjects = processDirectObjects(nodeObjects);
-    }
-
-    // only create popup if objects were found?
+    // only create popup if objects were found
     if (nodeObjects.size() != 0) {
       Window w = 
 	(Window)new ULPlanFrame(NamedFrame.PLAN, 
@@ -756,168 +746,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       myWindows.add(w);
     }
   }
-
-  /** Set up links from task to direct object
-   *  only if task's parent(s) does not have the same direct object
-   *  or task has no children.
-   *  Helper for makePlanGraph.
-   */
-
-  private Vector processDirectObjects(Vector nodeObjects) {
-    // create task to direct object links
-    for (int i = 0; i < nodeObjects.size(); i++) {
-      ULPlanNode node = (ULPlanNode)nodeObjects.elementAt(i);
-      PropertyTree properties = node.getProperties();
-      String objectType = (String)properties.get(PropertyNames.OBJECT_TYPE);
-      if (!objectType.equals(PropertyNames.TASK_OBJECT))
-	continue;
-      String directObjectUID = 
-	(String)properties.get(PropertyNames.TASK_DIRECT_OBJECT_UID);
-      if (directObjectUID == null)
-	continue;
-      if (!parentsHaveDirectObject(node, directObjectUID, nodeObjects)) 
-	node.addOutgoingLink(directObjectUID);
-      else if (hasNoChildren(node.getUID(), nodeObjects)) 
-	node.addOutgoingLink(directObjectUID);
-    }
-    // if any direct object has no links, then remove it
-    for (int i = 0; i < nodeObjects.size(); i++) {
-      ULPlanNode node = (ULPlanNode)nodeObjects.elementAt(i);
-      PropertyTree properties = node.getProperties();
-      String objectType = (String)properties.get(PropertyNames.OBJECT_TYPE);
-      if (objectType.equals(PropertyNames.ASSET_OBJECT)) {
-	String s = 
-	  (String)properties.get(PropertyNames.ASSET_IS_DIRECT_OBJECT);
-	if (s != null && s.equals("true")) {
-          // ACK! N^2 operation!
-	  if (isOrphan(node.getUID(), nodeObjects)) {
-	    try {
-	      nodeObjects.remove(i);
-	    } catch (Exception e) {
-	      System.out.println("CSMARTUL: Error removing node: " + e);
-	    }
-	    i--;
-	  }
-	}
-      }
-    }
-    return nodeObjects;
-  }
-
-  /**
-   * Helper function for processing plan objects.
-   * If the parents of the specified node have the specified
-   * direct object, then return true.
-   *  Helper for makePlanGraph.
-   */
-
-  private boolean parentsHaveDirectObject(ULPlanNode node, 
-					  String directObjectUID,
-					  Vector nodeObjects) {
-    PropertyTree properties = node.getProperties();
-    Object parents = properties.get(PropertyNames.TASK_PARENT_UID);
-    if (parents == null)
-      return false;
-    if (parents instanceof String) {
-      ULPlanNode parentNode = findNode((String)parents, nodeObjects);
-      if (parentNode == null)
-	return false;
-      PropertyTree parentProperties = parentNode.getProperties();
-      String parentDirectObjectUID = 
-	(String)parentProperties.get(PropertyNames.TASK_DIRECT_OBJECT_UID);
-      if (parentDirectObjectUID == null) 
-	return false;
-      if (parentDirectObjectUID.equals(directObjectUID)) 
-	return true;
-      else
-	return false;
-    } else if (parents instanceof Vector) {
-      Vector parentUIDs = (Vector)parents;
-      for (int j = 0; j < parentUIDs.size(); j++) {
-	ULPlanNode parentNode = 
-	  findNode((String)parentUIDs.elementAt(j), nodeObjects);
-	if (parentNode == null) 
-	  return false;
-	PropertyTree parentProperties = parentNode.getProperties();
-	String parentDirectObjectUID = 
-	  (String)parentProperties.get(PropertyNames.TASK_DIRECT_OBJECT_UID);
-	if (!parentDirectObjectUID.equals(directObjectUID))
-	  return false;
-      } // end parents loop
-      return true; // all parents have same direct object
-    }
-    return false; // shouldn't reach here
-  }
-
-  /**
-   * Helper function for processing plan object graphs.
-   * Returns true if a ULPlanNode for a task has no children,
-   * i.e. no other ULPlanNode has it as a parent.
-   * Helper for makePlanGraph.
-   */
-
-  private boolean hasNoChildren(String UID, Vector nodeObjects) {
-    for (int i = 0; i < nodeObjects.size(); i++) {
-      ULPlanNode node = (ULPlanNode)nodeObjects.elementAt(i);
-      PropertyTree properties = node.getProperties();
-      String objectType = (String)properties.get(PropertyNames.OBJECT_TYPE);
-      if (!objectType.equals(PropertyNames.TASK_OBJECT))
-	continue;
-      Object parents = properties.get(PropertyNames.TASK_PARENT_UID);
-      if (parents == null)
-	continue;
-      if (parents instanceof String) {
-	if (UID.equals(parents))
-	  return false;
-      } else if (parents instanceof Vector) {
-	Vector parentUIDs = (Vector)parents;
-	for (int j = 0; j < parentUIDs.size(); j++) 
-	  if (UID.equals(parentUIDs.elementAt(j)))
-	    return false;
-      }
-    }
-    return true;
-  }
-
-  /** 
-   * Find the ULPlanNode with the specified UID.
-   * Helper for makePlanGraph.
-   */
-
-  private ULPlanNode findNode(String UID, Vector nodeObjects) {
-    for (int i = 0; i < nodeObjects.size(); i++) {
-      ULPlanNode node = (ULPlanNode)nodeObjects.elementAt(i);
-      String nodeUID = node.getUID();
-      if (nodeUID.equals(UID))
-	return node;
-    }
-    return null;
-  }
-
-
-  /** 
-   * If specified direct object node has no task pointing to it
-   * then return true.
-   * Helper for makePlanGraph.
-   */
-
-  private boolean isOrphan(String UID, Vector nodeObjects) {
-    for (int i = 0; i < nodeObjects.size(); i++) {
-      ULPlanNode node = (ULPlanNode)nodeObjects.elementAt(i);
-      PropertyTree properties = node.getProperties();
-      String objectType = (String)properties.get(PropertyNames.OBJECT_TYPE);
-      if (!objectType.equals(PropertyNames.TASK_OBJECT))
-	continue;
-      String directObjectUID = 
-	(String)properties.get(PropertyNames.TASK_DIRECT_OBJECT_UID);
-      if (directObjectUID != null)
-	if (directObjectUID.equals(UID))
-	  return false;
-    }
-    return true;
-  }
-
-  // END PROCESSING PLAN OBJECTS
 
   /**
    * Called to make a thread graph directly from the launcher window.

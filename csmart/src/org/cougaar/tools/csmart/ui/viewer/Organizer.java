@@ -1798,22 +1798,7 @@ public class Organizer extends JScrollPane {
     List agents = new ArrayList();  
 
     List recipes = checkForRecipes(trialId, experimentId);
-    if (recipes.size() != 0) {
-      Iterator metIter = recipes.iterator();
-      while (metIter.hasNext()) {
-        DbRecipe dbRecipe = (DbRecipe) metIter.next();
-        RecipeComponent mc = createRecipeComponent(dbRecipe.name, dbRecipe.cls);
-        setRecipeComponentProperties(dbRecipe, mc);
-        AgentComponent[] recagents = mc.getAgents(); 
-        if (recagents != null && recagents.length > 0) {
-          agents.addAll(Arrays.asList(recagents));
-        }      
-        experiment.addRecipe(mc);
-        if (!recipeNames.contains(mc.getRecipeName())) {
-          addRecipeToWorkspace(mc, node);
-        }
-      }
-    }
+    
     AgentComponent[] socagents = soc.getAgents();
     if (socagents!= null && socagents.length > 0) {
       for (int i = 0; i < socagents.length; i++) {
@@ -1822,6 +1807,29 @@ public class Organizer extends JScrollPane {
       }
       agents.addAll(Arrays.asList(socagents));
     }
+
+    if (recipes.size() != 0) {
+      Iterator metIter = recipes.iterator();
+      while (metIter.hasNext()) {
+        DbRecipe dbRecipe = (DbRecipe) metIter.next();
+        RecipeComponent mc = createRecipeComponent(dbRecipe.name, dbRecipe.cls);
+        setRecipeComponentProperties(dbRecipe, mc);
+        AgentComponent[] recagents = mc.getAgents(); 
+        if (recagents != null && recagents.length > 0) {
+	  // Only add in agents that aren't already there
+	  for (int i = 0; i < recagents.length; i++) {
+	    if (! agents.contains(recagents[i]) )
+	      agents.add(recagents[i]);
+	  }
+	  //          agents.addAll(Arrays.asList(recagents));
+        }      
+        experiment.addRecipe(mc);
+        if (!recipeNames.contains(mc.getRecipeName())) {
+          addRecipeToWorkspace(mc, node);
+        }
+      }
+    }
+
     AgentComponent[] allagents = (AgentComponent[])agents.toArray(new AgentComponent[agents.size()]); 
 
     experiment.addSocietyComponent((SocietyComponent)soc);

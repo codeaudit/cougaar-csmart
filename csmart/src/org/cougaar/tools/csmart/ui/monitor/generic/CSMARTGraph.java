@@ -1145,9 +1145,9 @@ public class CSMARTGraph extends Graph
 	  try {
 	    edge = new Edge(this, inEdge.getTail(), outEdge.getHead());
 	  } catch (Exception e) {
-	    System.out.println("Couldn't create edge from: " +
-			       inEdge.getTail() + " " +
-			       outEdge.getHead() + " " + e);
+//  	    System.out.println("Couldn't create edge from: " +
+//  			       inEdge.getTail() + " " +
+//  			       outEdge.getHead() + " " + e);
 	    continue;
 	  }
 	  edge.setAttribute(GrappaConstants.STYLE_ATTR, gs);
@@ -1224,9 +1224,9 @@ public class CSMARTGraph extends Graph
 	  try {
 	    edge = new Edge(this, inEdge.getTail(), outEdge.getHead());
 	  } catch (Exception e) {
-	    System.out.println("Couldn't create edge from: " +
-			       inEdge.getTail() + " " +
-			       outEdge.getHead() + " " + e);
+//  	    System.out.println("Couldn't create edge from: " +
+//  			       inEdge.getTail() + " " +
+//  			       outEdge.getHead() + " " + e);
 	    continue;
 	  }
 	  edge.setAttribute(GrappaConstants.STYLE_ATTR, gs);
@@ -1574,9 +1574,9 @@ public class CSMARTGraph extends Graph
 	try {
 	  edge = new Edge(this, lastNode, node);
 	} catch (RuntimeException e) {
-	    System.out.println("Couldn't create edge from: " +
-			       lastNode + " " +
-			       node + " " + e);
+//  	    System.out.println("Couldn't create edge from: " +
+//  			       lastNode + " " +
+//  			       node + " " + e);
 	    continue;
 	}
  	edge.setAttribute(INVISIBLE_ATTRIBUTE, "true");

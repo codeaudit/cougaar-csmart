@@ -45,8 +45,6 @@ public class PropertyNames {
   public static final String PLAN_ELEMENT_OBJECT = "Plan_Element";
   public static final String TASK_OBJECT = "Task";
   public static final String WORKFLOW_OBJECT = "Workflow";
-  // pseudo-type, actually an asset that is the direct object of a task
-  public static final String DIRECT_OBJECT = "Direct_Object";
   // names for Event properties
   public static final String EVENT_ASSET_LABEL = "Asset";
   public static final String EVENT_ASSET_TYPE = "Asset_Type";
@@ -138,9 +136,9 @@ public class PropertyNames {
   // names for Allocation properties
   public static final String ALLOCATION_ASSET_UID = "Asset_UID";
   public static final String ALLOCATION_LOCAL_ORG_UID = "Allocated_to_Local_Organization";
-  public static final String ALLOCATION_TO_CLUSTER = "Allocated_to_Cluster";
+  public static final String ALLOCATION_TO_CLUSTER = "Allocated_to_Agent";
   public static final String ALLOCATION_TASK_UID = "Allocation_Task_UID";
-  public static final String ALLOCATION_REMOTE_CLUSTER_UID = "Remote_Cluster_UID";
+  public static final String ALLOCATION_REMOTE_CLUSTER_UID = "Remote_Agent_UID";
   // names for AssetTransfer properties
   public static final String ASSET_TRANSFER_ASSET_UID = "Asset_Transfer_Asset_UID";
   public static final String ASSET_TRANSFER_ASSIGNEE_UID = "Assignee_UID";
@@ -157,10 +155,9 @@ public class PropertyNames {
   public static final String ASSET_DESC = "Asset_Description";
   public static final String ASSET_GROUP_ASSETS = "Asset_Group_Asset";
   public static final String ASSET_GROUP_NAME = "Asset_Group_Name";
-  public static final String ASSET_IS_DIRECT_OBJECT = "Is_Direct_Object";
   public static final String ASSET_NAME = "Asset_Name";
   public static final String ASSET_PROPERTY = "Asset_Property";
-  public static final String ASSET_CLUSTER = "Asset_Cluster";
+  public static final String ASSET_CLUSTER = "Asset_Agent";
   // names for Task properties
   public static final String TASK_DIRECT_OBJECT_UID = "Direct_Object_UID";
   public static final String TASK_END_TIME = "Task_End_Time";
