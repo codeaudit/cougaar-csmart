@@ -45,19 +45,36 @@ public class AgentQueryProperty extends ConfigurableComponentProperty {
 
     private static Set availableQueries = null;
 
-    public AgentQueryProperty(ConfigurableComponent c, String name, Object value) {
+  /**
+   * Creates a new <code>AgentQueryProperty</code> instance.
+   *
+   * @param c <code>ConfigurableComponent</code> the Property belongs to
+   * @param name Name of the <code>ConfigurableComponentProperty</code>
+   * @param value Value for the Property
+   */
+  public AgentQueryProperty(ConfigurableComponent c, String name, Object value) {
         super(c, name, value);
 	setPropertyClass(StringRange.class);
     }
 
-    public Set getAllowedValues() {
-      return null;
-    }
-
-    public void setValue(Object newValue) {
-      super.setValue(newValue);
-    }
-
+  /**
+   * Gets all AllowedValues for this ComponentProperty
+   *
+   * @return null
+   */
+  public Set getAllowedValues() {
+    return null;
+  }
+  
+  /**
+   * Sets the value of this Property
+   *
+   * @param newValue The new property value
+   */
+  public void setValue(Object newValue) {
+    super.setValue(newValue);
+  }
+  
   private static Set getAvailableQueries() {
     String query = null;
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.recipe.AgentQueryProperty");
@@ -90,5 +107,4 @@ public class AgentQueryProperty extends ConfigurableComponentProperty {
     }   
     return availableQueries;
   }
-
 }
