@@ -42,6 +42,7 @@ import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.society.AgentBase;
 import org.cougaar.tools.csmart.society.BinderBase;
+import org.cougaar.tools.csmart.society.ComponentBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
@@ -143,7 +144,41 @@ public class AgentFileComponent
         if (index != -1)
           name = name.substring(index+1);
         BinderBase binder = 
-          new BinderBase(name, desc[i].getClassname());
+          new BinderBase(name, desc[i].getClassname(), insertionPoint);
+        binder.initProperties();
+        
+        // FIXME: Must I change ComponentConnector in some way here?
+        Iterator iter = ComponentConnector.getPluginProps(desc[i]);
+        while(iter.hasNext()) 
+          binder.addParameter((String)iter.next());
+        container.addChild(binder);
+      }
+    }
+  }
+
+  protected void addComponents() {
+    ContainerBase container = new ContainerBase("Other Components");
+    container.initProperties();
+    addChild(container);
+
+    ComponentDescription[] desc = 
+      ComponentConnector.parseFile(filename);
+    for (int i=0; i < desc.length; i++) {
+      String name = desc[i].getName();
+      String insertionPoint = desc[i].getInsertionPoint();
+      if(log.isDebugEnabled()) {
+        log.debug("Insertion Point: " + insertionPoint);
+      }
+
+      if(! insertionPoint.endsWith(".Binder") && ! insertionPoint.endsWith(".Plugin")) {
+        if(log.isDebugEnabled()) {
+          log.debug("Create Component: " + name);
+        }
+        int index = name.lastIndexOf('.');
+        if (index != -1)
+          name = name.substring(index+1);
+        ComponentBase binder = 
+          new ComponentBase(name, desc[i].getClassname(), insertionPoint);
         binder.initProperties();
         
         // FIXME: Must I change ComponentConnector in some way here?
