@@ -21,7 +21,6 @@ org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn,Generic Universal 
 org.cougaar.domain.mlm.plugin.ldm.GetOplanPlugIn,Redeems the Oplan coupon, 
 org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,Creates assets based on results of an SQL query, 
 org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn,Reads the Oplan from the DROP_RELATIONSHIP table, 
-org.cougaar.domain.mlm.plugin.ldm.XMLOPlanPlugIn,Reads the Oplan from an XML file, 
 org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,An instance of an LDMPlugIn that reads a Cluster's, 
 org.cougaar.domain.mlm.plugin.organization.GLSAllocatorPlugIn,Expands GLS task for each subordinate and allocate, 
 org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,Expands GLS task, 

@@ -11,7 +11,7 @@ CFW_ID,PLUGIN_GROUP_ID,PLUGIN_CLASS,PLUGIN_CLASS_ORDER,BLANK
 3ID-CFW,GLS,org.cougaar.domain.mlm.plugin.ldm.GetOplanPlugIn,2, 
 3ID-CFW,GLS,org.cougaar.domain.mlm.plugin.organization.GLSAllocatorPlugIn,1, 
 3ID-CFW,GLS,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0, 
-3ID-CFW,GLSInit,org.cougaar.domain.mlm.plugin.ldm.XMLOPlanPlugIn,0, 
+3ID-CFW,GLSInit,org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn,0, 
 3ID-CFW,GLSInit,org.cougaar.domain.mlm.plugin.organization.GLSAllocatorPlugIn,4, 
 3ID-CFW,GLSInit,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,3, 
 3ID-CFW,GLSInit,org.cougaar.domain.mlm.plugin.organization.GLSGUIInitPlugIn,1, 

@@ -33,7 +33,6 @@ org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn,BASE,GenericUniver
 org.cougaar.domain.mlm.plugin.ldm.GetOplanPlugIn,BASE,RedeemstheOplancoupon, 
 org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,BASE,CreatesassetsbasedonresultsofanSQLquery, 
 org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn,BASE,ReadstheOplanfromtheDROP_RELATIONSHIPtable, 
-org.cougaar.domain.mlm.plugin.ldm.XMLOPlanPlugIn,BASE,ReadstheOplanfromanXMLfile, 
 org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,BASE,AninstanceofanLDMPlugInthatreadsaCluster's, 
 org.cougaar.domain.mlm.plugin.organization.GLSAllocatorPlugIn,BASE,ExpandsGLStaskforeachsubordinateandallocate, 
 org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,BASE,ExpandsGLStask, 
