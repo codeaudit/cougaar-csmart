@@ -32,7 +32,9 @@ import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
+import org.cougaar.tools.csmart.ui.tree.DMTNArray;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -40,29 +42,29 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 public class OrganizerTree extends DNDTree {
   private transient Logger log;
 
-  public static final DataFlavor folderFlavor =
+  public static final CSMARTDataFlavor folderFlavor =
     new CSMARTDataFlavor(DefaultMutableTreeNode.class,
-                         null,
+                         DefaultMutableTreeNode.class,
                          OrganizerTree.class,
                          "Folder");
   public static final CSMARTDataFlavor societyFlavor =
     new CSMARTDataFlavor(SocietyComponent.class,
-                         null,
+                         SocietyComponent.class,
                          OrganizerTree.class,
                          "Society");
   public static final CSMARTDataFlavor recipeFlavor =
     new CSMARTDataFlavor(RecipeComponent.class,
-                         null,
+                         RecipeComponent.class,
                          OrganizerTree.class,
                          "Recipe");
   public static final CSMARTDataFlavor experimentFlavor =
     new CSMARTDataFlavor(Experiment.class,
-                         null,
+                         Experiment.class,
                          OrganizerTree.class,
                          "Experiment");
   public static final CSMARTDataFlavor componentFlavor =
     new CSMARTDataFlavor(ModifiableComponent.class,
-                         null,
+                         ModifiableComponent.class,
                          OrganizerTree.class,
                          "Modifiable Component");
 
@@ -115,6 +117,51 @@ public class OrganizerTree extends DNDTree {
   }
 
   /**
+   * Support for an array of nodes being transferred.
+   * Note this assumes that all nodes being dragged contain the
+   * same type of user object.
+   */
+  private static class MyArrayTransferable implements Transferable {
+    private DMTNArray nodes;
+    private CSMARTDataFlavor[] flavors;
+
+    public MyArrayTransferable(DMTNArray nodes) {
+      this.nodes = nodes;
+      Object theUserData = nodes.nodes[0].getUserObject();
+      if (theUserData == null) throw new IllegalArgumentException("null userObject");
+      if (theUserData instanceof String)
+        flavors = new CSMARTDataFlavor[] {folderFlavor};
+      else if (theUserData instanceof SocietyComponent)
+        flavors = new CSMARTDataFlavor[] {societyFlavor};
+      else if (theUserData instanceof RecipeComponent)
+        flavors = new CSMARTDataFlavor[] {recipeFlavor};
+      else if (theUserData instanceof Experiment)
+        flavors = new CSMARTDataFlavor[] {experimentFlavor};
+      else if (theUserData instanceof ModifiableComponent)
+        flavors = new CSMARTDataFlavor[] {componentFlavor};
+      else
+        throw new IllegalArgumentException("Unknown node");
+    }
+    public synchronized Object getTransferData(DataFlavor flavor) {
+      if (flavor instanceof CSMARTDataFlavor) {
+        CSMARTDataFlavor cflavor = (CSMARTDataFlavor) flavor;
+        for (int i = 0; i < flavors.length; i++) {
+          if (ConsoleTreeObject.flavorEquals(cflavor, flavors[i])) {
+            return nodes;
+          } 
+        }
+      }
+      return null;
+    }
+    public synchronized DataFlavor[] getTransferDataFlavors() {
+      return flavors;
+    }
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+      return flavors[0].equals(flavor);
+    }
+  }
+
+  /**
    * Construct a tree from which objects can be dragged and dropped,
    * and which is used to represent the workspace containing experiments,
    * societies, recipes, etc.
@@ -151,6 +198,8 @@ public class OrganizerTree extends DNDTree {
     if (o instanceof DefaultMutableTreeNode) {
       DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
       return new MyTransferable(node);
+    } else if (o instanceof DMTNArray) {
+      return new MyArrayTransferable((DMTNArray)o);
     }
     throw new IllegalArgumentException("Not a DefaultMutableTreeNode");
   }
@@ -226,15 +275,31 @@ public class OrganizerTree extends DNDTree {
         return DnDConstants.ACTION_NONE;
       }
     }
-    // the data being added
+    if (data == null) {
+      if(log.isErrorEnabled()) {
+        log.error("Attempting to add null dropped element");
+      }
+      return DnDConstants.ACTION_NONE;
+    }
+    if (data instanceof DMTNArray) {
+      DMTNArray nodes = (DMTNArray) data;
+      for (int i = 0; i < nodes.nodes.length; i++) 
+        addElement(nodes.nodes[i], target, before);
+    } else 
+      addElement(data, target, before);
+    return action;
+  }
+
+  private void addElement(Object data,
+                          DefaultMutableTreeNode target,
+                          DefaultMutableTreeNode before) {
     Object userData = data;
     boolean allowsChildren = false;
-    // if the data being added is a tree node, then extract the user data
-    if (data instanceof DefaultMutableTreeNode) {
+    // if data being added is a tree node, extract the user data
+    if (data instanceof DefaultMutableTreeNode)
       userData = ((DefaultMutableTreeNode)data).getUserObject();
-      if (userData instanceof String || userData instanceof Experiment)
-        allowsChildren = true;
-    }
+    if (userData instanceof String || userData instanceof Experiment)
+      allowsChildren = true;
     // create a new tree node for the transferred data
     DefaultMutableTreeNode newNode =
       new DefaultMutableTreeNode(userData, allowsChildren);
@@ -247,7 +312,7 @@ public class OrganizerTree extends DNDTree {
     }
     // put the new tree node into the target
     model.insertNodeInto(newNode, target, ix);
-    // if the data being transferred is a tree node, then add its children
+    // add the children of the source, if any
     if (data instanceof DefaultMutableTreeNode) {
       DefaultMutableTreeNode source = (DefaultMutableTreeNode)data;
       int n = source.getChildCount();
@@ -257,7 +322,16 @@ public class OrganizerTree extends DNDTree {
       for (int i = 0; i < n; i++) 
         model.insertNodeInto(children[i], newNode, i);
     }
+    // select the newly created node
     selectNode(newNode);
-    return action;  // Always MOVE
   }
+
+  /**
+   * Overwrites DNDTree supportsMultiDrag to support multi-drag.
+   * @return boolean returns true
+   */
+  protected boolean supportsMultiDrag() {
+    return true;
+  }
+
 }

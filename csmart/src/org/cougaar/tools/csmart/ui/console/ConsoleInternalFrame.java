@@ -368,9 +368,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
    * Display information about node in pop-up dialog. Colloquially the "Node Info" window.
    */
   public void displayAbout() {
+    // clone the agent names so we don't modify them when we add the NodeAgent
     ArrayList agentNames = 
-      (ArrayList)getPropertyValue(node, "AgentNames");
-
+      (ArrayList)((ArrayList)getPropertyValue(node, "AgentNames")).clone();
     if (agentNames == null)
       agentNames = new ArrayList();
 

@@ -35,6 +35,7 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.ui.console.*;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
+import org.cougaar.tools.csmart.ui.tree.DMTNArray;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -192,73 +193,120 @@ public class ExperimentTree extends DNDTree {
                         DefaultMutableTreeNode target,
                         DefaultMutableTreeNode before) {
     DataFlavor[] flavors = t.getTransferDataFlavors();
+    // perhaps isDroppable should more rigorously check all the
+    // transferables, as it stands, the next addElement method
+    // does checks for individual elements when an array of them is added
     int action = isDroppable(flavors, target);
     if (action == DnDConstants.ACTION_NONE)
       return DnDConstants.ACTION_NONE;
     DataFlavor flavor = flavors[0];
+    Object data = null;
     try {
-      DefaultMutableTreeNode root =
-        (DefaultMutableTreeNode) model.getRoot();
-      if (target == root) {
-        for (int i = 0, n = root.getChildCount(); i < n; i++) {
-          DefaultMutableTreeNode node =
-            (DefaultMutableTreeNode) root.getChildAt(i);
-          Object o = node.getUserObject();
-          if (SOCIETIES.equals(o) && flavor == societyFlavor
-              || RECIPES.equals(o) && flavor == recipeFlavor) {
-            target = node;
-          } else {
-            return DnDConstants.ACTION_NONE;
-          }
-        }
-      }
-      // if we're adding a recipe that adds an agent that's
-      // in the experiment, then reject the recipe
-      Object userData = t.getTransferData(flavor);
-      if (userData instanceof RecipeComponent) {
-        if (!checkAdd((RecipeComponent)userData))
-          return DnDConstants.ACTION_NONE;
-      }
-      if (userData instanceof ModifiableComponent) {
-        ModifiableComponent mcc = (ModifiableComponent) userData;
-        if (!mcc.isEditable() && mcc.hasUnboundProperties())
-          return DnDConstants.ACTION_NONE;
-        // check for duplicates, if not dragging from same tree
-        String thisClassName = getClass().getName();
-        if (flavor instanceof CSMARTDataFlavor &&
-            !((CSMARTDataFlavor)flavor).getSourceClassName().equals(thisClassName)) {
-          String newName = mcc.getShortName();
-          int ix = target.getChildCount();
-          for (int i = 0; i < ix; i++) {
-            DefaultMutableTreeNode childNode = 
-              (DefaultMutableTreeNode)target.getChildAt(i);
-            Object targetChildData = childNode.getUserObject();
-            if (targetChildData instanceof ModifiableComponent &&
-                ((ModifiableComponent)targetChildData).getShortName().equals(newName)) 
-              return DnDConstants.ACTION_NONE;
-          }
-        }
-      }
-      DefaultMutableTreeNode node = 
-        new DefaultMutableTreeNode(userData, false);
-      int ix = target.getChildCount();
-      if (before != null) {
-        ix = model.getIndexOfChild(target, before);
-      }
-      if(log.isDebugEnabled()) {
-        log.debug("Insert into " + target
-                  + " at " + ix
-                  + " before " + before);
-      }
-      model.insertNodeInto(node, target, ix);
-      selectNode(node);
+      data = t.getTransferData(flavors[0]);
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Exception", e);
+        log.error("Exception adding dropped element:", e);
+        return DnDConstants.ACTION_NONE;
       }
-      action = DnDConstants.ACTION_NONE;
     }
+    if (data == null) {
+      if(log.isErrorEnabled()) {
+        log.error("Attempting to add null dropped element");
+      }
+      return DnDConstants.ACTION_NONE;
+    }
+    if (data instanceof DMTNArray) {
+      DMTNArray nodes = (DMTNArray) data;
+      for (int i = 0; i < nodes.nodes.length; i++) 
+        addElement(nodes.nodes[i].getUserObject(), flavor, target, before);
+    } else 
+      addElement(data, flavor, target, before);
     return action;
+  }
+
+  /**
+   * Add the element; this does some additional checks which may
+   * reject the element.  In particular, this checks each element
+   * when adding an array of elements.
+   */
+  private void addElement(Object userData,
+                          DataFlavor flavor,
+                          DefaultMutableTreeNode target,
+                          DefaultMutableTreeNode before) {
+    DefaultMutableTreeNode root =
+      (DefaultMutableTreeNode) model.getRoot();
+    // if target is root, try to find the right place to drop the element
+    if (target == root) {
+      for (int i = 0, n = root.getChildCount(); i < n; i++) {
+        DefaultMutableTreeNode node =
+          (DefaultMutableTreeNode) root.getChildAt(i);
+        Object o = node.getUserObject();
+        if (SOCIETIES.equals(o) && userData instanceof SocietyComponent) {
+          target = node;
+          before = null;
+          break;
+        } else if (RECIPES.equals(o) && userData instanceof RecipeComponent) {
+          target = node;
+          before = null;
+          break;
+        }
+      }
+      if (target == root)
+        return; // no place to put the new element
+    }
+    // make sure we don't add a recipe to the societies or vice versa
+    if (target.getUserObject().equals(SOCIETIES) && 
+        userData instanceof RecipeComponent) {
+      return;
+    }
+    if (target.getUserObject().equals(RECIPES) && 
+        userData instanceof SocietyComponent) {
+      return;
+    }
+    // don't add more than one society
+    if (target.getUserObject().equals(SOCIETIES) && 
+        target.getChildCount() > 0) {
+      return;
+    }
+    // if we're adding a recipe that adds an agent that's
+    // in the experiment, then reject the recipe
+    if (userData instanceof RecipeComponent) {
+      if (!checkAdd((RecipeComponent)userData))
+        return;
+    }
+    if (userData instanceof ModifiableComponent) {
+      ModifiableComponent mcc = (ModifiableComponent) userData;
+      if (!mcc.isEditable() && mcc.hasUnboundProperties())
+        return;
+      // check for duplicates, if not dragging from same tree
+      String thisClassName = getClass().getName();
+      if (flavor instanceof CSMARTDataFlavor &&
+          !((CSMARTDataFlavor)flavor).getSourceClassName().equals(thisClassName)) {
+        String newName = mcc.getShortName();
+        int ix = target.getChildCount();
+        for (int i = 0; i < ix; i++) {
+          DefaultMutableTreeNode childNode = 
+            (DefaultMutableTreeNode)target.getChildAt(i);
+          Object targetChildData = childNode.getUserObject();
+          if (targetChildData instanceof ModifiableComponent &&
+              ((ModifiableComponent)targetChildData).getShortName().equals(newName)) 
+            return;
+        }
+      }
+    }
+    DefaultMutableTreeNode node = 
+      new DefaultMutableTreeNode(userData, false);
+    int ix = target.getChildCount();
+    if (before != null) {
+      ix = model.getIndexOfChild(target, before);
+    }
+    if(log.isDebugEnabled()) {
+      log.debug("Insert into " + target
+                + " at " + ix
+                + " before " + before);
+    }
+    model.insertNodeInto(node, target, ix);
+    selectNode(node);
   }
 
   private boolean checkAdd(RecipeComponent rc) {

@@ -64,6 +64,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   JPopupMenu hostRootMenu;
   JPopupMenu hostHostMenu;
   JPopupMenu hostNodeMenu;
+  JPopupMenu hostAgentMenu;
   JPopupMenu nodeRootMenu;
   JPopupMenu nodeNodeMenu;
   JPopupMenu viewOnlyMenu;
@@ -92,6 +93,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   public static final String HOST_TYPE_MENU_ITEM = "Type...";
   public static final String HOST_LOCATION_MENU_ITEM = "Location...";
   public static final String DISPLAY_ARGS_ACTION = "Display Command Line Arguments";
+  private static final String SHOW_COMPONENTS_MENU_ITEM = "Show Components";
   private JPanel hostConfigurationBuilder;
   // map agent component to node component
   private Hashtable agentToNode = new Hashtable();
@@ -195,6 +197,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostRootMenu = new JPopupMenu();
     hostHostMenu = new JPopupMenu();
     hostNodeMenu = new JPopupMenu();
+    hostAgentMenu = new JPopupMenu();
     viewOnlyMenu = new JPopupMenu();
 
     JMenuItem newHostMenuItem = new JMenuItem(NEW_HOST_MENU_ITEM);
@@ -270,6 +273,14 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
 
+    JMenuItem showComponentsMenuItem = 
+      new JMenuItem(SHOW_COMPONENTS_MENU_ITEM);
+    showComponentsMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          showAgentComponents();
+        }
+      });
+
     // init pop-up menus
     hostRootMenu.add(newHostMenuItem);
     hostRootMenu.add(globalCmdLineAction);
@@ -285,6 +296,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostNodeMenu.add(cmdLineNodeInHostMenuItem);
     hostNodeMenu.add(globalCmdLineAction);
     hostNodeMenu.add(deleteNodeInHostMenuItem);
+
+    hostAgentMenu.add(showComponentsMenuItem);
 
     Action viewArgumentsAction = new AbstractAction(DISPLAY_ARGS_ACTION) {
         public void actionPerformed(ActionEvent e) {
@@ -813,7 +826,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
           hostNodeMenu.show(hostTree, e.getX(), e.getY());
         else
           viewOnlyMenu.show(hostTree, e.getX(), e.getY());
-      } 
+      } else if (selected.isAgent()) {
+        hostAgentMenu.show(hostTree, e.getX(), e.getY());
+      }
     }
   } 
 
@@ -949,6 +964,21 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
           viewOnlyMenu.show(nodeTree, e.getX(), e.getY());
       }
     }
+  }
+
+  /**
+   * Display agent components for the agent in the selected node.
+   */
+
+  private void showAgentComponents() {
+    DefaultMutableTreeNode selectedNode =
+      (DefaultMutableTreeNode)hostTree.getSelectionPath().getLastPathComponent();
+    ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
+    String agentName = cto.getName();
+    JOptionPane.showMessageDialog(this, 
+                                  new AgentInfoPanel(experiment, agentName),
+                                  "Information: " + agentName,
+                                  JOptionPane.PLAIN_MESSAGE);
   }
 
   /**

@@ -333,30 +333,42 @@ public class UnboundPropertyBuilder extends JPanel {
     experiment.setRecipeComponents(recipeAry);
     experiment.invalidateTrials(); // and force experiment to recreate trials
   }
+
   /**
-   * Display the correct popup menu.
-   * Don't display popup for Societies folder or for the individual
-   * society.  The only option on these popup folders is to delete
-   * the society, and that is not allowed.
+   * Display the correct popup menu for "Societies", "Recipes" or 
+   * one or more recipes.
+   * If multiple objects are selected, 
+   * then, if they're not all recipes, then select 
+   * the one the mouse is pointing at.
    */
   private void doPopup(MouseEvent e) {
-    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
-    if (selPath == null) return;
-    // set the selected node to be the node the mouse is pointing at
-    tree.setSelectionPath(selPath);
-    DefaultMutableTreeNode popupNode =
-      (DefaultMutableTreeNode) selPath.getLastPathComponent();
-    Object o = popupNode.getUserObject();
-    if (o instanceof SocietyComponent) {
-    } else if (o instanceof RecipeComponent) {
-      popupMenu.show(tree, e.getX(), e.getY());
-    } else if (o instanceof Experiment) {
-      popupMenu.show(tree, e.getX(), e.getY());
-    } else if (popupNode == societies) {
-      societiesMenu.show(tree, e.getX(), e.getY());
-    } else if (popupNode == recipes) {
-      recipesMenu.show(tree, e.getX(), e.getY());
+    TreePath[] selectionPaths = tree.getSelectionPaths();
+    if (selectionPaths == null)
+      return;
+    boolean haveRecipes = false;
+    for (int i = 0; i < selectionPaths.length; i++) {
+      DefaultMutableTreeNode node =
+	(DefaultMutableTreeNode) selectionPaths[i].getLastPathComponent();
+      if (node.getUserObject() instanceof RecipeComponent)
+        haveRecipes = true;
+      else {
+        haveRecipes = false;
+        break;
+      }
     }
+    if (!haveRecipes) {
+      TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+      // set the selected node to be the node the mouse is pointing at
+      tree.setSelectionPath(selPath);
+      DefaultMutableTreeNode popupNode =
+        (DefaultMutableTreeNode) selPath.getLastPathComponent();
+      Object o = popupNode.getUserObject();
+      if (popupNode == societies)
+        societiesMenu.show(tree, e.getX(), e.getY());
+      else if (popupNode == recipes)
+        recipesMenu.show(tree, e.getX(), e.getY());
+    } else
+      popupMenu.show(tree, e.getX(), e.getY());
   }
 
   /**
