@@ -557,6 +557,30 @@ public class Organizer extends JScrollPane {
     workspace.setSelectionPath(new TreePath(root.getPath())); 
     DefaultMutableTreeNode newNode = newSociety();
   }
+
+  public void addSociety(SocietyComponent sc) {
+    String name = sc.getSocietyName();
+    // if name is not unique, then get an unique name for the society
+    while (societyNames.contains(name)) {
+      name = societyNames.generateName(name);
+      name = 
+        (String)JOptionPane.showInputDialog(this, "Enter Society Name",
+                                            "Society Name Not Unique",
+                                            JOptionPane.QUESTION_MESSAGE,
+                                            null, null, name);
+      if (name == null) return; // TODO: delete society to clean up
+    }
+    societyNames.add(name);
+    sc.setName(name); 
+    // add society as sibling of experiment
+    DefaultMutableTreeNode parentNode = null;
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node != null)
+      parentNode = (DefaultMutableTreeNode)node.getParent();
+    DefaultMutableTreeNode newNode = 
+      addSocietyToWorkspace(sc, (DefaultMutableTreeNode)parentNode);
+    workspace.setSelection(newNode);
+  }
   
   private DefaultMutableTreeNode addSocietyToWorkspace(SocietyComponent sc,
 						       DefaultMutableTreeNode node) {

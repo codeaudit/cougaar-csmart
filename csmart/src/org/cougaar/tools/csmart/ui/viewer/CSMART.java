@@ -555,8 +555,14 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     }
   }
 
-  // the rest of this is methods to launch the various tools
-  // within CSMART
+  /**
+   * Run configuration builder.
+   * If this is called on an experiment, copy the experiment,
+   * create a new society (SocietyCDataComponent), 
+   * remove the society and any recipes from the experiment copy,
+   * and put the new society in the experiment.
+   */
+
   public void runBuilder(ModifiableComponent cc, 
                          boolean alwaysNew) {
     // note that cc is guaranteed non-null when this is called
@@ -564,13 +570,26 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     Object[] params = new Object[2];
     params[0] = this;
     if (cc instanceof Experiment) {
-      // create component data from experiment
-      // then create society from the component data
-      //      cc = ((Experiment)cc).getSocietyComponent();
       Experiment experiment = (Experiment)cc;
+      // copy the original experiment and put the copy in the workspace
+      Experiment experimentCopy = organizer.copyExperiment(experiment);
+      // remove all the components from the copy
+      SocietyComponent sc = experimentCopy.getSocietyComponent();
+      if (sc != null)
+        experimentCopy.removeComponent(sc);
+      RecipeComponent[] recipes = experimentCopy.getRecipes();
+      for (int i = 0; i < recipes.length; i++)
+        experimentCopy.removeRecipe(recipes[i]);
+      // create a new society based on the society component data
+      // in the original experiment
       ComponentData cdata = experiment.getSocietyComponentData();
+      cdata.setName(cdata.getName() + " Society");
       cc = new SocietyCDataComponent(cdata);
       cc.initProperties();
+      // put the new society in the copy of the experiment
+      experimentCopy.addSocietyComponent((SocietyComponent)cc);
+      // also put the new society in the workspace
+      organizer.addSociety((SocietyComponent)cc);
     }
     params[1] = cc;
     createTool(CONFIGURATION_BUILDER, PropertyBuilder.class, 

@@ -94,7 +94,7 @@ public class PropGroupBase
           PGPropData pg = new PGPropData();
           pg.setName(getName(prop));
           pg.setType(getType(prop));
-          pg.setValue((String)prop.getValue());
+          pg.setValue(prop.getValue());
           pgData.addProperty(pg);
         }
     

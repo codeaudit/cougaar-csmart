@@ -655,7 +655,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     public int compare(Object o1, Object o2) {
       BaseComponent c1 = (BaseComponent) o1;
       BaseComponent c2 = (BaseComponent) o2;
-
+      //      System.out.println("dbBaseComponentComparator:" +
+      //                         c1.getShortName() + ";" +
+      //                         c2.getShortName() + ";" +
+      //                         c1.getShortName().compareTo(c2.getShortName()));
       return c1.getShortName().compareTo(c2.getShortName());
     }
   };
@@ -676,13 +679,41 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Add unassigned agents to unassigned agents tree.
    */
   private void addUnassignedAgentsFromExperiment() {
+//      // get all agents in the experiment and put them in unassigned list
+//      AgentComponent[] agents = experiment.getAgents();
+//      ArrayList unassignedAgentNames = new ArrayList();
+//      ArrayList unassignedAgents = new ArrayList();
+//      unassignedAgents.addAll(Arrays.asList(agents));
+//      for (int i = 0; i < agents.length; i++) {
+//        System.out.println("Adding:" + agents[i].getShortName() + ".");
+//        unassignedAgentNames.add(agents[i].getShortName());
+//      }
+//      NodeComponent[] nodes = experiment.getNodes();
+//      // get agents in each node and take them out of the unassigned list
+//      for (int i = 0; i < nodes.length; i++) {
+//        AgentComponent[] agentsInNodes = nodes[i].getAgents();
+//        for (int j = 0; j < agentsInNodes.length; j++) {
+//          BaseComponent agentInNode = agentsInNodes[j];
+//          System.out.println("Checking:" + agentInNode.getShortName() + ".");
+//          int index = unassignedAgentNames.indexOf(agentInNode.getShortName());
+//          if (index != -1) {
+//            System.out.println("Removing");
+//            unassignedAgentNames.remove(index);
+//            unassignedAgents.remove(index);
+//          }
+//        }
+//      }
     Set unassignedAgents;
     unassignedAgents = new TreeSet(dbBaseComponentComparator);
     AgentComponent[] agents = experiment.getAgents();
     NodeComponent[] nodes = experiment.getNodes();
     unassignedAgents.addAll(Arrays.asList(agents));
-    for (int i = 0; i < nodes.length; i++)
-      unassignedAgents.removeAll(Arrays.asList(nodes[i].getAgents()));
+    for (int i = 0; i < nodes.length; i++) {
+      //      System.out.println("Remove all in: " + nodes[i].getShortName() +
+      //                         nodes[i].getAgents().length);
+      List assignedAgents = Arrays.asList(nodes[i].getAgents());
+      unassignedAgents.removeAll(assignedAgents);
+    }
     DefaultTreeModel model = (DefaultTreeModel)agentTree.getModel();
     DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
     Iterator iter = unassignedAgents.iterator();

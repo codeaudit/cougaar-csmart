@@ -34,6 +34,7 @@ import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.PGPropData;
+import org.cougaar.tools.csmart.core.cdata.PGPropMultiVal;
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.db.DBUtils;
@@ -253,25 +254,34 @@ public class AssetDBComponent
                            new PGAttr(pgName, pgAttrName, 
                                       pgAttrType, pgAggregateType));
         }
-        // get pg values for each property group
+        // get values for each attribute in each property group
+        PGPropMultiVal multiValueData = null;
         for (int i = 0; i < pgAttrLibIds.size(); i++) {
-          substitutions.put(":pgAttrLibId", (String)pgAttrLibIds.get(i));
+          String pgAttrLibId = (String)pgAttrLibIds.get(i);
+          substitutions.put(":pgAttrLibId", pgAttrLibId);
+          PGAttr pgAttr = (PGAttr)pgAttributes.get(pgAttrLibId);
+          String attrType = pgAttr.getAttrType();
+          String aggregateType = pgAttr.getAggregateType();
           query = DBUtils.getQuery(QUERY_PG_VALUES, substitutions);
           rs = stmt.executeQuery(query);
           while (rs.next()) {
-            if (pgAggregateType.equals("SINGLE")) {
-              if (pgAttrType.equals("String")) {
-                pgValue = rs.getString(1);
-                pgStartDate = rs.getTimestamp(2);
-                pgEndDate = rs.getTimestamp(3);
-                addPropertyGroup((String)pgAttrLibIds.get(i),
-                                 pgValue, pgStartDate, pgEndDate);
-              } else
-                System.out.println("AssetDBComponent: not implemented: " +
-                                   pgAttrType);
-            } else
-              System.out.println("AssetDBComponent: not implemented: " +
-                                 pgAggregateType);
+            if (aggregateType.equals("SINGLE")) {
+              pgValue = rs.getString(1);
+              pgStartDate = rs.getTimestamp(2);
+              pgEndDate = rs.getTimestamp(3);
+              addPGAttributeData(pgAttrLibId, pgValue, pgStartDate, pgEndDate);
+            } else {
+              pgValue = rs.getString(1);
+              pgStartDate = rs.getTimestamp(2);
+              pgEndDate = rs.getTimestamp(3);
+              if (multiValueData == null) 
+                multiValueData = new PGPropMultiVal();
+              multiValueData.addValue(pgValue);
+            }
+          }
+          if (multiValueData != null) {
+            addPGAttributeData(pgAttrLibId, multiValueData, null, null);
+            multiValueData = null;
           }
         }
         rs.close();
@@ -287,7 +297,6 @@ public class AssetDBComponent
     }
     // after creating all the property group data
     // create the property groups, initialize them and add them as children
-    // these steps must be done just once per property group
     Iterator propGroupData = propertyGroups.values().iterator();
     while (propGroupData.hasNext()) {
       PropGroupData pgd = (PropGroupData)propGroupData.next();
@@ -298,14 +307,13 @@ public class AssetDBComponent
   }
 
   /**
-   * Adds a property group by creating PropGroupData and PGPropData
-   * for each property group and attribute respectively;
-   * then creates a PropGroupBase object from this data,
-   * and adds it as a child of this component.
+   * Creates PropGroupData and PGPropData
+   * for each property group and attribute respectively.
+   * TODO: save start and end dates?
    */
 
-  private void addPropertyGroup(String attrLibId, String value,
-                                Timestamp startDate, Timestamp endDate) {
+  private void addPGAttributeData(String attrLibId, Object value,
+                                  Timestamp startDate, Timestamp endDate) {
     PGAttr pgAttr = (PGAttr)pgAttributes.get(attrLibId);
     PropGroupData pgd = (PropGroupData)propertyGroups.get(pgAttr.getName());
     if (pgd == null) {
@@ -314,7 +322,11 @@ public class AssetDBComponent
     }
     PGPropData pgPropData = new PGPropData();
     pgPropData.setName(pgAttr.getAttrName());
-    pgPropData.setType(pgAttr.getAttrType());
+    String aggregateType = pgAttr.getAggregateType();
+    if (aggregateType.equals("SINGLE"))
+      pgPropData.setType(pgAttr.getAttrType());
+    else
+      pgPropData.setType(aggregateType, pgAttr.getAttrType());
     pgPropData.setValue(value);
     pgd.addProperty(pgPropData);
   }
