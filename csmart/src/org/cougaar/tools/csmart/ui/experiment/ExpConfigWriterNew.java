@@ -152,7 +152,7 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
       LeafComponentData leaf = leaves[i];
       if (leaf == null)
 	continue;
-      if (leaf.getType() != LeafComponentData.FILE) {
+      if (!leaf.getType().equals(LeafComponentData.FILE)) {
 	System.err.println("Got unknown LeafComponent type: " + leaf.getType());
 	continue;
       }
@@ -172,9 +172,7 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
   private void writeNodeFile(File configDir, ComponentData nc) throws IOException {
    Object[] parameters = nc.getParameters();
    String configFileName = (String)parameters[0] + ".ini";
-   System.out.println("Config file: " + configFileName);
    PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, configFileName)));
-   System.out.println("Print writer is: " + writer);
     try {
     // loop over children
     // if there are binder or such, do those
