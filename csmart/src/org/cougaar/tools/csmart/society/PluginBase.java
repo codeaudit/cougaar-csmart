@@ -69,10 +69,17 @@ public class PluginBase
    * @return a <code>ComponentData</code> value
    */
   public ComponentData addComponentData(ComponentData data) {
-    data.setName(getPluginClassName());
+    data.setClassName(getPluginClassName());
     for(int i=0; i < nParameters; i++) {
       data.addParameter(getProperty(PROP_PARAM + i).getValue());
     }
+
+    if(nParameters > 0) {
+      data.setName(getPluginClassName() + getProperty(PROP_PARAM+0).getValue());
+    } else {
+      data.setName(getPluginClassName());
+    }
+
     return data;
   }
 
