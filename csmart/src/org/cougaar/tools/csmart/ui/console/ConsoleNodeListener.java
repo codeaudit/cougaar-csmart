@@ -89,7 +89,7 @@ public class ConsoleNodeListener implements OutputListener {
     // create our attributes
     // stdout	0,0,0 (black)
     // stderr	192,64,64 (dark red)
-    // Node created, Node destroyed, Cluster Added	64,64,192 (dark blue)
+    // Node created, Node destroyed, Agent Added	64,64,192 (dark blue)
     atts = new SimpleAttributeSet[3];
     atts[0] = new SimpleAttributeSet();
     StyleConstants.setForeground(atts[0], Color.black);

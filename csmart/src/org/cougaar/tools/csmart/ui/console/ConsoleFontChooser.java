@@ -45,7 +45,7 @@ public class ConsoleFontChooser extends JDialog {
   private static final String STANDARDOUT = "Standard Out";
   private static final String ERRORMSGS = "Standard Error";
   private static final String NODECREATION = "Node Creation";
-  private static final String CLUSTERADD = "Cluster Addition";
+  private static final String AGENTADD = "Agent Addition";
   private static final String IDLENESS = "Idleness";
   private static final String NODEDESTROYED = "Node Destroyed";
 
@@ -116,7 +116,7 @@ public class ConsoleFontChooser extends JDialog {
     msgTypesCB.addItem(STANDARDOUT);
     msgTypesCB.addItem(ERRORMSGS);
     msgTypesCB.addItem(NODECREATION);
-    msgTypesCB.addItem(CLUSTERADD);
+    msgTypesCB.addItem(AGENTADD);
     msgTypesCB.addItem(IDLENESS);
     msgTypesCB.addItem(NODEDESTROYED);
     msgTypesCB.addItem(SEARCH);

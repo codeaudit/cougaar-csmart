@@ -238,7 +238,7 @@ public final class TranslateUtils {
         AllocationforCollections ac = (AllocationforCollections)alloc;
         Task at = (Task)ac.getAllocationTask();
         if (at != null) {
-          pt.put(PropertyNames.ALLOCATION_TO_CLUSTER,
+          pt.put(PropertyNames.ALLOCATION_TO_AGENT,
 		 trimAngles(at.getDestination().toString()));
           pt.put(PropertyNames.ALLOCATION_TASK_UID,
 		 at.getUID().toString());
@@ -248,7 +248,7 @@ public final class TranslateUtils {
 	       getUIDAsString(asset.getUID()));
       } else {
         Task task = alloc.getTask();
-        pt.put(PropertyNames.ALLOCATION_REMOTE_CLUSTER_UID,
+        pt.put(PropertyNames.ALLOCATION_REMOTE_AGENT_UID,
 	       trimAngles(task.getDestination().toString()));
         pt.put(PropertyNames.ALLOCATION_LOCAL_ORG_UID, 
 	       getUIDAsString(asset.getUID()));
@@ -260,7 +260,7 @@ public final class TranslateUtils {
     return pt;
   }
 
-  // Some things, like ClusterID.toString(), have these ugly angle brackets
+  // Some things, like AgentID.toString(), have these ugly angle brackets
   public static String trimAngles(String input) {
     if (input == null)
       return input;
@@ -320,7 +320,7 @@ public final class TranslateUtils {
     pt.put(PropertyNames.ASSET_TRANSFER_ASSIGNEE_UID,
 	   getUIDAsString(atr.getAssignee().getUID()));
 
-    // get assignor, which is a cluster id
+    // get assignor, which is a agent id
     pt.put(PropertyNames.ASSET_TRANSFER_ASSIGNOR,
 	   trimAngles(atr.getAssignor().toString()));
 
@@ -412,8 +412,8 @@ public final class TranslateUtils {
    * this is the responsibility of the caller.
    * The agent in the property tree returned is always the agent in which
    * this code is executing.
-   * Assets with clusterPG also return an ASSET_CLUSTER
-   * which is the cluster ID in asset.getClusterPG().getMessageAddress
+   * Assets with clusterPG also return an ASSET_AGENT
+   * which is the agent ID in asset.getClusterPG().getMessageAddress
    */
 
   public static PropertyTree toPropertyTree(Asset asset, String agent) {
@@ -423,7 +423,7 @@ public final class TranslateUtils {
 			  agent);
     pt.put(PropertyNames.ASSET_KEY, trimAngles(asset.getKey().toString()));
     if (asset.hasClusterPG())
-      pt.put(PropertyNames.ASSET_CLUSTER,
+      pt.put(PropertyNames.ASSET_AGENT,
 	     trimAngles(asset.getClusterPG().getMessageAddress().toString()));
 
     String className = asset.getClass().getName();
@@ -532,7 +532,7 @@ public final class TranslateUtils {
     if (indirectObject instanceof Schedule) {
       return getScheduleDescription((Schedule)indirectObject);
     }
-    // CLUSTERIDENTIFIER
+    // MESSAGEADDRESS (aka AgentIdentifier)
     if (indirectObject instanceof MessageAddress) {
       return trimAngles(indirectObject.toString());
     }

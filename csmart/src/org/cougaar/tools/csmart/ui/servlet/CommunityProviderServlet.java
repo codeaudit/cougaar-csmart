@@ -174,7 +174,7 @@ public class CommunityProviderServlet
 	p.writeObject(collection);
 
         if(log.isDebugEnabled()) {
-          log.debug("Sent cluster urls");
+          log.debug("Sent agent urls");
         }
 
       } catch (Exception e) {
