@@ -130,9 +130,9 @@ extra files that the society will need at runtime (OPLAN related
 files, files to create NSN Assets, etc). These files must be available
 on your org.cougaar.config.path as specified in your AppServer
 server.props file on each machine on which you will run part of this
-society. For example, to run small-135 through CSMART, you will still
+society. For example, to run minitestconfig through CSMART, you will still
 have to have available on your org.cougaar.config.path the various
-'.xml' files found in CIP/configs/examples/small-135, but your society will not
+files found in CIP/configs/minitestconfig, but your society will not
 use the '.dat' or '.ini' files. 
 
 - If while running minitestconfig you get an error

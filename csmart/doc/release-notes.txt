@@ -1,12 +1,20 @@
 CSMART Release Notes
 
 Release 10.4:
-This release includes a major reworking on the Console.
+This release includes a major reworking of the Console, new 
+option to run the console stand-alone from XML files, and a
+new XML society viewing tool. Additionally,
+UltraLog specific configuration information has been removed. CSMART
+no longer comes with the so-called 1AD societies by default.
+
+The console rework included:
 - Broke up the Console into Model and View.
 - Seperated out the knowledge of Nodes into their own classes,
   also Model and View.
 - Fixed buttons to prevent unknown button states.
 - The complete refactoring fixed bugs: 1946, 2640, 1626, 1639, 2321, 1637.
+
+
 - Added a new tool, Viewer, (under ui/organization) for viewing and validating
   XML based societies (description follows).
 
@@ -40,6 +48,8 @@ either a CSV file or an XML file (using the commands on the File menu).
 If the results are written to an XML file, then that file can be used
 as input to the ruby rules to produce a runnable society.
 
+
+More details on the console rework:
 The Experiment Console can now run stand alone, using the appropiate CONSOLE
 script in the bin directory.
 
@@ -49,6 +59,9 @@ XML parameters are setup correctly.  At the very least, the XML configuration ca
 be viewed in the Configuration Window.  This is a read only display.
 
 To load in an XML file Use the new item in the file menu: "Load XML Society".
+
+
+
 
 Release 10.3:
 This patch release includes updates to various 1AD configurations, and

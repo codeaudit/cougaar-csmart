@@ -123,6 +123,8 @@ highlighting key classes and interfaces.
       -- viewer
           Gif files and the Society Monitor UI (CSMARTUL).
 
+    -- organization
+        This contains the XML society viewer and validator tool.
     -- servlet
        Servlets used in the Society Monitor
     -- tree
