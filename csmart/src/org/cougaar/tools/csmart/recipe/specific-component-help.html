@@ -1,0 +1,87 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <title>Specific Component Recipe</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
+
+<h1>Specific Component Recipe</h1>
+
+A Specific Component Recipe contains the following parameters:
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#CLASS_NAME">Class Name</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#COMPONENT_NAME">Component Name</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#NUMB_ARGS">Number of Arguments</a></td>
+	  <td>Integer</td>
+	  <td>0..MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#TARGET_QUERY">Target Component Selection Query</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#TYPE">Type of Insertion</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+    </table>  
+    <br><br>
+Plus zero or more of the following, depending on the Number of Arguments:
+<br><br>
+    <table width="400">
+	<tr>
+	  <td><a href="#VALUE">Value X</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+    </table>
+    <br><br>
+
+Specific components can be added to a society, such as a plugin in an agent, or
+a new binder.  Creating a Specific Component specifying this new addition is
+an easy way to quickly modify your society configuration.
+<br><br>
+<a name="CLASS_NAME"><h3>Class Name</h3></a>
+Class Name of the Component.<br>
+<b><i>Example:</i> org.cougaar.tools.csmart.SamplePlugin</b>
+
+<a name="COMPONENT_NAME"><h3>Component Name</h3></a>
+Complete Name of the Component.<br>
+<i>Usually, this is the same value as Class Name</i>
+
+<a name="NUMB_ARGS"><h3>Number of Arguments</h3></a>
+Specifies the number of arguments required for this component.
+Modification of this value creates new <a href="#VALUE">parameters</a>
+used to specify the values of each argument.
+ 
+<a name="TARGET_QUERY"><h3>Target Component Selection Query</h3></a>
+Specifies a defined query in a .q file.  This query is used to
+selected the exact components that should be modified with this
+recipe.
+
+<a name="TYPE"><h3>Type Of Insertion</h3></a>
+Specifies the type of component, for example: plugin
+
+<a name="VALUE"><h3>Value <i>X</i></h3></a>
+There will be one value parameter for every Argument added with the
+Number of Arguments paramter.  This value specifies the value
+of the argument required for the component.
+
+</body>
+</html>
