@@ -71,9 +71,11 @@ SET MYCONFIGPATH=-Dorg.cougaar.config.path="%COUGAAR_INSTALL_PATH%/csmart/data/c
 REM Edit the following line to reflect your local installation
 REM This is used by the Performance Analyzer
 SET MYEXCEL=-Dorg.cougaar.tools.csmart.excelpath="C:\Program Files\Microsoft Office\Office\excel.exe"
+REM Number of milliseconds to wait after starting each node
+SET MYDELAY=-Dorg.cougaar.tools.csmart.startdelay=10000
 
 @ECHO ON
 
-java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %MYEXCEL% -classpath %LIBPATHS% org.cougaar.tools.csmart.ui.viewer.CSMART
+java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %MYEXCEL% %MYDELAY% -classpath %LIBPATHS% org.cougaar.tools.csmart.ui.viewer.CSMART
 
 :L_END
