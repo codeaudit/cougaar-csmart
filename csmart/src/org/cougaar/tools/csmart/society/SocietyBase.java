@@ -280,6 +280,8 @@ public abstract class SocietyBase
     ois.defaultReadObject();
     createLogger();
     installListeners();
+    isRunning = false;
+    saveInProgress = false;
   }
 
   /**
