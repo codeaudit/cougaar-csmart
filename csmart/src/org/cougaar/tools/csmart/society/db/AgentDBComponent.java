@@ -32,6 +32,7 @@ import java.sql.Timestamp;
 
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.DBConnectionPool;
+import org.cougaar.util.log.Logger;
 
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
@@ -51,7 +52,6 @@ import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.society.AgentBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.util.log.Logger;
 
 /**
  * A single Agent in a <code>SocietyDBComponent</code>, 
@@ -228,9 +228,9 @@ public class AgentDBComponent
       try {
         Statement stmt = conn.createStatement();	
         query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
-        if(log.isDebugEnabled()) {
-          log.debug("Query: " + query);
-        }
+//         if(log.isDebugEnabled()) {
+//           log.debug("Query: " + query);
+//         }
 
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
@@ -288,9 +288,9 @@ public class AgentDBComponent
       try {
         Statement stmt = conn.createStatement();	
         query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
-        if(log.isDebugEnabled()) {
-          log.debug("Query: " + query);
-        }
+//         if(log.isDebugEnabled()) {
+//           log.debug("Query: " + query);
+//         }
 
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
