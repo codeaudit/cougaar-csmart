@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -48,6 +48,9 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
+/**
+ * Helper functions for manipulating objects in the Organizer
+ */
 public class OrganizerHelper {
   private static final String EXPT_DESC_QUERY = "queryExptDescriptions";
   private static final String EXPT_ASSEM_QUERY = "queryExperiment";
@@ -61,12 +64,10 @@ public class OrganizerHelper {
   private DBConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(null);
 
-
   /**
    * Create an experiment.
    * @return Experiment the new experiment or null if any error
    */
-
   public Experiment createExperiment(String originalExperimentName,
                                      String experimentName,
                                      String experimentId,
@@ -87,7 +88,7 @@ public class OrganizerHelper {
     } else { // We need to create a new trial.
       // Need to have the experiment id, trial id, and multiplicity
       // for the call that will generate the assembly here.
-      if(log.isDebugEnabled()) {
+      if(log.isWarnEnabled()) {
         log.warn("No assemblies for: " + experimentId + " " + trialId);
       }
       return null; // creating an experiment from scratch not implemented yet
@@ -152,13 +153,12 @@ public class OrganizerHelper {
       if (!ExperimentDB.isExperimentNameInDatabase(experimentName))
 	experiment.saveToDb(saveToDbConflictHandler);
     } catch (RuntimeException e) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("RuntimeException", e);
       }
     }
     return experiment;
   }
-
 
   private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
@@ -167,7 +167,6 @@ public class OrganizerHelper {
   /**
    * Get assembly ids for trial.
    */
-
   private ArrayList getTrialAssemblyIds(String experimentId, String trialId) {
     ArrayList assemblyIds = new ArrayList();
     String query = null;
@@ -186,9 +185,8 @@ public class OrganizerHelper {
       rs.close();
       stmt.close();
     } catch (SQLException se) {
-      if(log.isDebugEnabled()) {
-        log.error("Caught SQL exception getting Trial pieces: " + query + ": " + se);
-        se.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Caught SQL exception getting Trial pieces: " + query, se);
       }
     }
     return assemblyIds;
@@ -212,7 +210,7 @@ public class OrganizerHelper {
     }
     // Avoid ugly exceptions if got no assemblies:
     if (assemblyIDs.size() < 1) {
-      if(log.isDebugEnabled()) {
+      if(log.isWarnEnabled()) {
         log.warn("Got no assemblies!");
       }
       assemblyMatch.append("''");
@@ -224,7 +222,6 @@ public class OrganizerHelper {
   /**
    * Get nodes for a trial.
    */
-
   private ArrayList getNodes(String trialId, String assemblyMatch) {
     ArrayList nodes = new ArrayList();
     String query = null;
@@ -246,9 +243,8 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();
     } catch (SQLException se) {      
-      if(log.isDebugEnabled()) {
-        log.error("Caught SQL exception getting Nodes " + query + ": " + se);
-        se.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Caught SQL exception getting Nodes " + query, se);
       }
     }
     return nodes;
@@ -276,9 +272,8 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();
     } catch (SQLException se) {      
-      if(log.isDebugEnabled()) {
-        log.error("Caught SQL exception getting hosts: " + query + ": " + se);
-        se.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Caught SQL exception getting hosts: " + query, se);
       }
     }
     return hosts;
@@ -301,9 +296,8 @@ public class OrganizerHelper {
         conn.close();
       }
     } catch (SQLException se) {
-      if(log.isDebugEnabled()) {
-        log.error("Caught SQL exception setting NodeArgs: " + se);
-      se.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Caught SQL exception setting NodeArgs", se);
       }
     }
   }
@@ -347,9 +341,8 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      if(log.isDebugEnabled()) {
-        log.error("Caught SQL exception getting HN map " + query + ": " + se);
-        se.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Caught SQL exception getting HN map " + query, se);
       }
     }
   }
@@ -405,9 +398,8 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      if(log.isDebugEnabled()) {
-        log.error("Caught SQL exception getting agents " + query + ": " + se);
-        se.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Caught SQL exception getting agents " + query, se);
       }
     }
   }
@@ -477,9 +469,8 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();
     } catch (SQLException se) {      
-      if(log.isDebugEnabled()) {
-        log.error("Caught SQL exception gettin compArgs " + query + ": " + se);
-        se.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Caught SQL exception gettin compArgs " + query, se);
       }
     }
   }
@@ -504,8 +495,8 @@ public class OrganizerHelper {
           getRecipeProperties(dbRecipe, conn, substitutions);
           recipeList.add(dbRecipe);
         } catch (ClassNotFoundException cnfe) {
-          if(log.isDebugEnabled()) {
-            log.error(cnfe + ": for recipe");
+          if(log.isErrorEnabled()) {
+            log.error("for recipe", cnfe);
           }
         }
       }
@@ -513,9 +504,8 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      if(log.isDebugEnabled()) {
-        log.error("Caught SQL exception getting recipes " + query + ": " + se);
-        se.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Caught SQL exception getting recipes " + query, se);
       }
     }    
     
@@ -538,9 +528,8 @@ public class OrganizerHelper {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      if(log.isDebugEnabled()) {
-        log.error("Caught SQL exception getting recipe names " + query + ": " + se);
-        se.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Caught SQL exception getting recipe names " + query, se);
       }
     }    
     
@@ -581,12 +570,12 @@ public class OrganizerHelper {
             setRecipeComponentProperties(dbRecipe, rc);
             return rc;
           } catch (ClassNotFoundException cnfe) {
-            if(log.isDebugEnabled()) {
-              log.error(cnfe + ": for recipe");
+            if(log.isErrorEnabled()) {
+              log.error("for recipe", cnfe);
             }
           }
         }
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Recipe not found: " + recipeId);
         }
         rs.close();
@@ -595,9 +584,8 @@ public class OrganizerHelper {
         conn.close();
       }
     } catch (SQLException se) {
-      if(log.isDebugEnabled()) {
-        log.error("Caught SQL exception gettin DBRecipe " + query + ": " + se);
-        se.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Caught SQL exception gettin DBRecipe " + query, se);
       }
     }    
     return null;
@@ -611,7 +599,7 @@ public class OrganizerHelper {
         String propValue = (String) dbRecipe.props.get(propName);
         Property prop = rc.getProperty(propName);
         if (prop == null) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("Unknown property: " + propName + "=" + propValue);
           }
         } else {
@@ -622,7 +610,9 @@ public class OrganizerHelper {
           prop.setValue(value);
         }
       } catch (Exception e) {
-        e.printStackTrace();
+	if (log.isErrorEnabled()) {
+	  log.error("Exception setting recipe component properties", e);
+	}
       }
     }
   }
@@ -637,7 +627,9 @@ public class OrganizerHelper {
       recipe.initProperties();
       return recipe;
     } catch (Exception e) {
-      e.printStackTrace();
+      if (log.isErrorEnabled()) {
+	log.error("Exception creating recipe " + name + " of class " + cls.toString(), e);
+      }
       return null;
     }
   }
@@ -646,7 +638,6 @@ public class OrganizerHelper {
    * Delete the named recipe from the database.
    * @param name the name of the recipe to delete
    */
-
   public void deleteRecipe(String name) throws Exception {
     PDbBase pdb = new PDbBase();
     try {
@@ -665,7 +656,9 @@ public class OrganizerHelper {
       sc.initProperties();
       return sc;
     } catch (Exception e) {
-      e.printStackTrace();
+      if (log.isErrorEnabled()) {
+	log.error("Exception creating society " + name + " of class " + cls.toString(), e);
+      }
       return null;
     }
   }
