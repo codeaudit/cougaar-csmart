@@ -89,13 +89,13 @@ public class ABCCommunity
   public static final String PROP_STARTTIME = ABCAgent.PROP_STARTTIME;
   public static final String PROP_STOPTIME = ABCAgent.PROP_STOPTIME;
 
-  // Stuff for metrics:
-  public static final String PROP_NUMBPROVIDERS = ABCAgent.PROP_NUMBPROVIDERS;
-  public static final String PROP_SAMPLEINTERVAL = ABCAgent.PROP_SAMPLEINTERVAL;
-  public static final String PROP_STARTDELAY = ABCAgent.PROP_STARTDELAY;
-  public static final String PROP_MAXNUMBSAMPLES = ABCAgent.PROP_MAXNUMBSAMPLES;
-  public static final String PROP_INITIALIZER = ABCAgent.PROP_INITIALIZER;
-  // End of stuff for metrics
+//   // Stuff for metrics:
+//   public static final String PROP_NUMBPROVIDERS = ABCAgent.PROP_NUMBPROVIDERS;
+//   public static final String PROP_SAMPLEINTERVAL = ABCAgent.PROP_SAMPLEINTERVAL;
+//   public static final String PROP_STARTDELAY = ABCAgent.PROP_STARTDELAY;
+//   public static final String PROP_MAXNUMBSAMPLES = ABCAgent.PROP_MAXNUMBSAMPLES;
+//   public static final String PROP_INITIALIZER = ABCAgent.PROP_INITIALIZER;
+//   // End of stuff for metrics
   
 
   /** Name of the Customer Agent **/
@@ -217,8 +217,8 @@ public class ABCCommunity
     propLongitude.setToolTip(PROP_LONGITUDE_DESC);
     propLongitude.setAllowedValues(Collections.singleton(new FloatRange(-180.0F, 180.0F)));
 
-    // Prop for metrics:
-    propFirstAgent = addProperty(PROP_FIRSTAGENT, new String(""));
+//     // Prop for metrics:
+//     propFirstAgent = addProperty(PROP_FIRSTAGENT, new String(""));
   }
 
   /**
@@ -269,8 +269,8 @@ public class ABCCommunity
 				 C1_DFLT_DURATION, C1_DFLT_VITAL, C1_DFLT_CHAOS,
 				 C1_DFLT_DISTANCE, C1_DFLT_DIRECTION, roles);
     
-    // This next line is specific to metrics
-    propFirstAgent.setValue(c1);
+//     // This next line is specific to metrics
+//     propFirstAgent.setValue(c1);
     
     String c2 = addCustomerAgent(DEFAULT_CUSTOMER_NAME, 2, C2_DFLT_FACTOR,
 				 C2_DFLT_DURATION, C2_DFLT_VITAL, C2_DFLT_CHAOS,
@@ -444,12 +444,12 @@ public class ABCCommunity
     addPropertyAlias(agent, getProperty(PROP_STARTTIME), PROP_STARTTIME);
     addPropertyAlias(agent, getProperty(PROP_STOPTIME), PROP_STOPTIME);
 
-    // These are for metrics:
-    addPropertyAlias(agent, getProperty(PROP_SAMPLEINTERVAL), PROP_SAMPLEINTERVAL);
-    addPropertyAlias(agent, getProperty(PROP_MAXNUMBSAMPLES), PROP_MAXNUMBSAMPLES);
-    addPropertyAlias(agent, getProperty(PROP_STARTDELAY), PROP_STARTDELAY);
-    addPropertyAlias(agent, getProperty(PROP_NUMBPROVIDERS), PROP_NUMBPROVIDERS);
-    // End of stuff for metrics
+//     // These are for metrics:
+//     addPropertyAlias(agent, getProperty(PROP_SAMPLEINTERVAL), PROP_SAMPLEINTERVAL);
+//     addPropertyAlias(agent, getProperty(PROP_MAXNUMBSAMPLES), PROP_MAXNUMBSAMPLES);
+//     addPropertyAlias(agent, getProperty(PROP_STARTDELAY), PROP_STARTDELAY);
+//     addPropertyAlias(agent, getProperty(PROP_NUMBPROVIDERS), PROP_NUMBPROVIDERS);
+//     // End of stuff for metrics
 
     agent.initProperties();
     agent.getProperty(PROP_DISTANCE).setValue(new Integer(distance));
@@ -467,20 +467,20 @@ public class ABCCommunity
     return addProperty(new PropertyAlias(this, name, prop));
   }
 
-  // This is for metrics!!!
-  /**
-   * Adds a property alias for the Metric Initializer
-   *
-   * @param Metric Initializer property
-   */
-  public void addAliasInitializer(Property prop) {
-    Property myProp = addAliasProperty(prop, PROP_INITIALIZER);
-    for(int i=0; i < getChildCount(); i++) {
-      ABCAgent agent = (ABCAgent)getChild(i);
-      addPropertyAlias(agent, myProp, PROP_INITIALIZER);
-    }
-    setPropertyVisible(myProp, false);
-  }
+//   // This is for metrics!!!
+//   /**
+//    * Adds a property alias for the Metric Initializer
+//    *
+//    * @param Metric Initializer property
+//    */
+//   public void addAliasInitializer(Property prop) {
+//     Property myProp = addAliasProperty(prop, PROP_INITIALIZER);
+//     for(int i=0; i < getChildCount(); i++) {
+//       ABCAgent agent = (ABCAgent)getChild(i);
+//       addPropertyAlias(agent, myProp, PROP_INITIALIZER);
+//     }
+//     setPropertyVisible(myProp, false);
+//   }
 
 
   /**

@@ -509,7 +509,7 @@ public class ABCSociety
 // 	  propInitializer.setValue(child.getProperty(ABCCommunity.PROP_FIRSTAGENT).getValue());
 // 	}
 	// Hide this value from the GUI, it should never been seen by the user.
-	setPropertyVisible(child.getProperty(ABCCommunity.PROP_FIRSTAGENT), false);
+	//setPropertyVisible(child.getProperty(ABCCommunity.PROP_FIRSTAGENT), false);
 	// End of stuff for metrics
 
 	count++;
