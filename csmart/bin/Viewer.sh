@@ -35,4 +35,4 @@ MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common
 
 javaargs="$MYPROPERTIES $MYCONFIGPATH -cp $MYCLASSPATH"
 
-exec java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.viewer.TreeViewer
+exec java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.organization.Viewer

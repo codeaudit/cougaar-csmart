@@ -36,7 +36,7 @@ set MYCLASSPATH = "${COUGAAR_INSTALL_PATH}/lib/bootstrap.jar"
 
 set javaargs="$MYPROPERTIES $MYCONFIGPATH -cp $MYCLASSPATH"
 
-exec java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.viewer.TreeViewer
+exec java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.organization.Viewer
 
 
 
