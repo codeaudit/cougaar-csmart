@@ -51,10 +51,6 @@ public abstract class GenericParser implements Parser {
    * @see Parser
    */         
   public void load(String filename) throws IOException {
-    ConfigFinder cf = new ConfigFinder();
-
-    cf = ConfigFinder.getInstance();
-
     InputStream ins = ConfigFinder.getInstance().open(filename);
 
     in = new BufferedReader( new InputStreamReader(ins));     
