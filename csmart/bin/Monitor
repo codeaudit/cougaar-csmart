@@ -44,7 +44,7 @@ set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/bootstrap.jar
 #set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/csmart.jar:${COUGAAR_INSTALL_PATH}/lib/server.jar"
 
 # Third party jars are in CIP/sys
-#set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/sys/xerces.jar:${COUGAAR_INSTALL_PATH}/sys/grappa1_2.jar:${COUGAAR_INSTALL_PATH}/sys/jcchart.jar"
+#set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/sys/xercesImpl.jar:${COUGAAR_INSTALL_PATH}/sys/xml-apis.jar:${COUGAAR_INSTALL_PATH}/sys/grappa1_2.jar:${COUGAAR_INSTALL_PATH}/sys/jcchart.jar"
 
 set DEVPATH = ""
 if ($?COUGAAR_DEV_PATH) then
