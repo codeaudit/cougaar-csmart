@@ -30,10 +30,12 @@ import org.cougaar.tools.server.ConfigurationWriter;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -63,12 +65,16 @@ public class ABCSociety
   public static final String PROP_TASKVERB = ABCTask.PROP_TASKVERB;
   public static final String PROP_STARTTIME = ABCAgent.PROP_STARTTIME;
   public static final String PROP_STOPTIME = ABCAgent.PROP_STOPTIME;
+
+  // Props for metrics:
   public static final String PROP_NUMBPROVIDERS = ABCAgent.PROP_NUMBPROVIDERS;
   public static final String PROP_SAMPLEINTERVAL = ABCAgent.PROP_SAMPLEINTERVAL;
   public static final String PROP_STARTDELAY = ABCAgent.PROP_STARTDELAY;
   public static final String PROP_MAXNUMBSAMPLES = ABCAgent.PROP_MAXNUMBSAMPLES;
   public static final String PROP_INITIALIZER = ABCAgent.PROP_INITIALIZER;
+  // End of props for metrics
 
+  
   private boolean isRunning = false;
   private boolean editable = true;
 
@@ -77,17 +83,21 @@ public class ABCSociety
   private Property propStartTime;
   private Property propStopTime;
   private Property propTaskVerb;
+
+  // Props for metrics
   private Property propInitializer;
   private Property propSampleInterval;
   private Property propNumbProviders;
   private Property propStartDelay;
   private Property propMaxSamples;
+  // End of props for metrics
 
   private HashMap  commPerLevel = new HashMap(25);
 
   private List hosts = new ArrayList();
   private List nodes = new ArrayList();
 
+  // FileFilter for metrics:
   private static FileFilter metricsFileFilter = new ScalabilityMetricsFileFilter();
 
   private Property addProperty(String name, Object value, PropertyListener l) {
@@ -164,6 +174,7 @@ public class ABCSociety
     });
     propStopTime.setToolTip(ABCAgent.PROP_STOPTIME_DESC);
 
+    // Stuff for metrics:
     propInitializer = addProperty(PROP_INITIALIZER, ABCAgent.PROP_INITIALIZER_DFLT,
                                 new ConfigurableComponentPropertyAdapter() {
 	public void propertyValueChanged(PropertyEvent e) {
@@ -198,12 +209,14 @@ public class ABCSociety
 	}
     });
     propNumbProviders.setToolTip(ABCAgent.PROP_NUMBPROVIDERS_DESC);
+    // End of stuff for metrics
 
     propTaskVerb = addProperty(PROP_TASKVERB, PROP_TASKVERB_DFLT);
     propTaskVerb.setToolTip(ABCTask.PROP_TASKVERB_DESC);
 
     buildDefaultCommunity();
 
+    // For metrics:
     addInitializer();
   }
   
@@ -343,10 +356,12 @@ public class ABCSociety
 	addChild(child);
 	child.addPropertiesListener(this);
 	addPropertyAlias(child, propTaskVerb, PROP_TASKVERB);
+	// Stuff for metrics:
 	addPropertyAlias(child, propSampleInterval, PROP_SAMPLEINTERVAL);
 	addPropertyAlias(child, propMaxSamples, PROP_MAXNUMBSAMPLES);
 	addPropertyAlias(child, propStartDelay, PROP_STARTDELAY);
 	addPropertyAlias(child, propNumbProviders, PROP_NUMBPROVIDERS);
+	// End of stuff for metrics
 	addPropertyAlias(child, propStartTime, PROP_STARTTIME);
 	addPropertyAlias(child, propStopTime, PROP_STOPTIME);
 
@@ -373,22 +388,27 @@ public class ABCSociety
 	  setSupplies(child, externalProviders);
 	}
 
+	// Stuff for metrics:
 	if(i == 1 && count == 0 ) {
 	  propInitializer.setValue(child.getProperty(ABCCommunity.PROP_FIRSTAGENT).getValue());
 	}
 	// Hide this value from the GUI, it should never been seen by the user.
 	setPropertyVisible(child.getProperty(ABCCommunity.PROP_FIRSTAGENT), false);
+	// End of stuff for metrics
 
 	count++;
 	crntCommunity++;
       }
     }
+    // These are for metrics:
     propNumbProviders.setValue(new Long(getCommunityCount() * 4L));
     setPropertyVisible(propInitializer, false);
     addInitializer();
+    // end of stuff for metrics
 
   }
 
+  // This is just for metrics...
   /**
    * Adds an Initializer to all communities
    * The initializer is an agent name from a community
@@ -419,10 +439,12 @@ public class ABCSociety
 	addChild(child);
 	child.addPropertiesListener(this);
 	addPropertyAlias(child, propTaskVerb, PROP_TASKVERB);
+	// Stuff for metrics:
 	addPropertyAlias(child, propSampleInterval, PROP_SAMPLEINTERVAL); 
 	addPropertyAlias(child, propMaxSamples, PROP_MAXNUMBSAMPLES);
 	addPropertyAlias(child, propStartDelay, PROP_STARTDELAY);
 	addPropertyAlias(child, propNumbProviders, PROP_NUMBPROVIDERS);
+	// end of stuff for metrics
 	addPropertyAlias(child, propStartTime, PROP_STARTTIME);
 	addPropertyAlias(child, propStopTime, PROP_STOPTIME);
 
@@ -487,16 +509,20 @@ public class ABCSociety
 	  setSupplies(child, externalProviders);
 	}
 
+	// This is for metrics:
 	if(i == 1 && count == 0 ) {
 	  propInitializer.setValue(child.getProperty(ABCCommunity.PROP_FIRSTAGENT).getValue());
 	}
 	// Hide this value from the GUI, it should never been seen by the user.
 	setPropertyVisible(child.getProperty(ABCCommunity.PROP_FIRSTAGENT), false);
+	// End of stuff for metrics
 
 	count++;
 	crntCommunity++;
       }
     }
+    
+    // These are for metrics:
     propNumbProviders.setValue(new Long(getCommunityCount() * 4L));
     setPropertyVisible(propInitializer, false);
     setPropertyVisible(propNumbProviders, false);
@@ -624,7 +650,6 @@ public class ABCSociety
    * manually terminated).
    * @param flag indicating whether or not the society is running
    */
-
   public void setRunning(boolean isRunning) {
     this.isRunning = isRunning;
   }
@@ -636,7 +661,6 @@ public class ABCSociety
    * and the copy can be edited.
    * @return true if society is running and false otherwise
    */
-
   public boolean isRunning() {
     return isRunning;
   }
@@ -645,13 +669,98 @@ public class ABCSociety
    * Return a deep copy of the society.
    * @return society component created
    */
-
   public SocietyComponent copy(Organizer organizer, Object context) {
-    // TODO: implement SocietyComponent copy
-    System.out.println("WARNING: ABCSociety copy not implemented yet.");
-    return null;
+    String societyName = organizer.generateSocietyName(getSocietyName());
+    ABCSociety result = new ABCSociety(societyName);
+    result.initProperties();
+
+    // set the level & community count properties explicitly
+    Property propLevelCount = result.getProperty(PROP_LEVELCOUNT);
+    propLevelCount.setValue(getProperty(PROP_LEVELCOUNT).getValue());
+    Property propCommCount = result.getProperty(PROP_COMMUNITYCOUNT);
+    propCommCount.setValue(getProperty(PROP_COMMUNITYCOUNT).getValue());
+    result.changeSociety();
+
+    // Handle other top-level properties.
+    Property propStartTime = result.getProperty(PROP_STARTTIME);
+    propStartTime.setValue(getProperty(PROP_STARTTIME).getValue());
+    Property propStopTime = result.getProperty(PROP_STOPTIME);
+    propStopTime.setValue(getProperty(PROP_STOPTIME).getValue());
+    //    Property propInitializer = result.getProperty(PROP_INITIALIZER);
+    //  propInitializer.setValue(getProperty(PROP_INITIALIZER).getValue());
+    Property propSampleInterval = result.getProperty(PROP_SAMPLEINTERVAL);
+    propSampleInterval.setValue(getProperty(PROP_SAMPLEINTERVAL).getValue());
+    Property propMaxSamples = result.getProperty(PROP_MAXNUMBSAMPLES);
+    propMaxSamples.setValue(getProperty(PROP_MAXNUMBSAMPLES).getValue());
+    Property propStartDelay = result.getProperty(PROP_STARTDELAY);
+    propStartDelay.setValue(getProperty(PROP_STARTDELAY).getValue());
+//      Property propNumbProviders = result.getProperty(PROP_NUMBPROVIDERS);
+//      propNumbProviders.setValue(getProperty(PROP_NUMBPROVIDERS).getValue());
+    Property propTaskVerb = result.getProperty(PROP_TASKVERB);
+    propTaskVerb.setValue(getProperty(PROP_TASKVERB).getValue());
+    
+//      // Then get all the children that are Communities
+//      Iterator iter = ((Collection)getDescendentsOfClass(ABCCommunity.class)).iterator();
+//      //	System.out.println("Community: " + child.getName().toString());
+//      while(iter.hasNext()) {
+//        ABCCommunity comm = (ABCCommunity)iter.next();
+//        ComponentName rcname = new ComponentName(result.getShortName(), comm.getFullName().toString().substring(getSocietyName().length()));
+//        ABCCommunity rcomm = (ABCCommunity)result.getChild(rcname);
+//        comm.copySelf(rcomm);
+//      }
+    
+    // For each, do their local properties
+    // Then for each agent, do its local properties
+    // then for each plugin, do its local properties.
+    
+    // then copy every other property
+    for (Iterator i = getPropertyNames(); i.hasNext(); ) {
+      CompositeName name = (CompositeName) i.next();
+      Property myProp = getProperty(name);
+      if (myProp == propLevelCount) continue;
+      if (myProp == propCommCount) continue;
+      // compose the correct name for the property
+      // name must be prepended by new society name
+      String s = name.toString();
+      ComponentName hisPropName = 
+	new ComponentName(result, s.substring(societyName.length()));
+      Property hisProp = result.getProperty(hisPropName);
+      if (hisProp == null) {
+	// This happens on just about all the properties. Note
+	// That the toString on the name _looks_ OK. So what is the problem?
+	System.err.println("ABCSociety: No prop named: " + hisPropName);
+	continue;
+      } else {
+	// This happens for the ones I already explicitly changed, so I hardly care.
+	System.err.println("ABCSociety: Got OK prop: " + hisPropName);
+      }
+      try {
+	// if have experimental values, then copy those
+	// else copy the property value
+	if (myProp.getExperimentValues() != null) {
+	  List experimentValues = myProp.getExperimentValues();
+	  Object newValue = Array.newInstance(myProp.getPropertyClass(),
+					      experimentValues.size());
+	  for (int j = 0; j < experimentValues.size(); j++)
+	    Array.set(newValue, j,
+		      PropertyHelper.validateValue(myProp, 
+						   experimentValues.get(j)));
+	  hisProp.setExperimentValues(Arrays.asList((Object[])newValue));
+	  hisProp.setValue(null); // no specific value
+	} else {
+	  Object o = PropertyHelper.validateValue(myProp, myProp.getValue());
+	  if (o != null)
+	    hisProp.setValue(o);
+	}
+      } catch (InvalidPropertyValueException e) {
+	System.out.println("ABCSociety: " + e);
+      }
+    }
+    
+    return (SocietyComponent)result;
   }
 
+  // Change this to get getOutputFileFilter or something like that?
   /**
    * Return a file filter which can be used to fetch
    * the metrics files for this experiment.
