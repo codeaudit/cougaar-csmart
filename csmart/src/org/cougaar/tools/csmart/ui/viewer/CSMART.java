@@ -491,7 +491,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 			 boolean openForEditing) {
     if (!cc.isEditable() && openForEditing) {
       int result = JOptionPane.showConfirmDialog(this,
-				    "Component is not editable; create copy?",
+				    cc.getShortName() + " is not editable; create copy?",
 				    "Component Not Editable",
 				    JOptionPane.YES_NO_OPTION,
 				    JOptionPane.WARNING_MESSAGE);
@@ -529,7 +529,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 				   boolean openForEditing) {
     if (!experiment.isEditable() && openForEditing) {
       int result = JOptionPane.showConfirmDialog(this,
-				    "Experiment is not editable; create copy?",
+				    experiment.getShortName() + " is not editable; create copy?",
 				    "Experiment Not Editable",
 				    JOptionPane.YES_NO_OPTION,
 				    JOptionPane.WARNING_MESSAGE);

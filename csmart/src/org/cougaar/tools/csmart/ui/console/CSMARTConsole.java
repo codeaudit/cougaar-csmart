@@ -116,9 +116,9 @@ public class CSMARTConsole extends JFrame {
   private static final String ABOUT_CONSOLE_ITEM = "About Experiment Controller";
   private static final String ABOUT_CSMART_ITEM = "About CSMART";
   private static final String LEGEND_MENU_ITEM = "Legend";
-
+  protected static final String ABOUT_DOC = "/org/cougaar/tools/csmart/ui/help/about-csmart.html";
   private static final String HELP_DOC = "help.html";
-  private static final String ABOUT_DOC = "../help/about-csmart.html";
+
 
   // for pop-up menu on node status buttons
   private static final String ABOUT_ACTION = "Info";

@@ -592,9 +592,27 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void newHostMenuItem_actionPerformed(ActionEvent e) {
-    String hostName = JOptionPane.showInputDialog("New host name: ");
-    if (hostName == null || hostName.length() == 0)
-      return;
+    String hostName = null;
+    while (true) {
+      hostName = JOptionPane.showInputDialog("New host name: ");
+      if (hostName == null || hostName.length() == 0)
+        return;
+      HostComponent[] hc = experiment.getHosts();
+      boolean isUnique = true;
+      for (int i = 0; i < hc.length; i++) 
+        if (hostName.equals(hc[i].getShortName())) {
+          isUnique = false;
+          break;
+        }
+      if (isUnique)
+        break;
+      int ok = JOptionPane.showConfirmDialog(this,
+                                             "Use an unique name",
+                                             "Host Name Not Unique",
+                                             JOptionPane.OK_CANCEL_OPTION,
+                                             JOptionPane.ERROR_MESSAGE);
+      if (ok != JOptionPane.OK_OPTION) return;
+    }
     DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
     DefaultMutableTreeNode hostTreeRoot = 
       (DefaultMutableTreeNode)model.getRoot();
@@ -1155,6 +1173,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void save() {
+    if (!experiment.isInDatabase())
+      return;
     if (modified)
       saveHelper();
     else
@@ -1166,7 +1186,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void exit() {
-    if (modified)
+    if (modified && experiment.isInDatabase())
       saveHelper();
   }
 
