@@ -89,6 +89,31 @@ public interface ComponentData extends Serializable {
   void setClassName(String className);
 
   /**
+   * Gets the Priority for this Component
+   *
+   * @see org.cougaar.core.component.ComponentDescription
+   * @return The Components Priority
+   */
+  String getPriority();
+
+  /**
+   * Sets the Priority for this component.
+   *
+   * @see org.cougaar.core.component.ComponentDescription
+   * @param priority Components Priority
+   */
+  void setPriority(String priority);
+
+  /**
+   * Sets the Priority for this component based
+   * on onr of the predefined values in <code>ComponentDescription</code>
+   *
+   * @see org.cougaar.core.component.ComponentDescription
+   * @param priority 
+   */
+  void setPriority(int priority);
+
+  /**
    * Gets all children of this component.
    *
    * @return ComponentData[] of children.
