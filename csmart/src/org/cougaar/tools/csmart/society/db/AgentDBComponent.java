@@ -267,90 +267,19 @@ public class AgentDBComponent
    * @return a <code>ComponentData</code> value
    */
   public ComponentData addComponentData(ComponentData data) {
-    // The incoming data is an agent
-    String name = data.getName();
-    int dotPos = name.lastIndexOf('.');
-    if (dotPos >= 0) {
-      name = name.substring(dotPos + 1);
-    }
-
-    // FIXME!!!
-    // Why should this re-read from the database?
-    // Why not use all the properties we just filled in?
-
-    String assemblyMatch = DBUtils.getListMatch(assemblyID);
-    //    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
-    if (assemblyMatch != null) {
-      substitutions.put(":assemblyMatch", assemblyMatch);
-
-      substitutions.put(":agent_name", name);
-
-      data.setAlibID((String)propComponentID.getValue());
-      // could do data.setChildren(new ComponentData[0]);
-      // this ensures all the stuff I add is new, which
-      // it should be
-
-      // Get Plugin Names
-      try {
-        Connection conn = DBUtils.getConnection();
-        try {
-          Statement stmt = conn.createStatement();	
-          String query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
-	  
-          ResultSet rs = stmt.executeQuery(query);
-          while(rs.next()) {
-            GenericComponentData plugin = new GenericComponentData();
-            String pluginClassName = rs.getString(1);
-            String pluginName = rs.getString(4);
-            plugin.setType(ComponentData.PLUGIN);
-            plugin.setClassName(pluginClassName);
-            plugin.setParent(data);
-            plugin.setOwner(this);
-            plugin.setName(pluginName);	  
-            String alibId =rs.getString(2);
-            plugin.setAlibID(alibId);
-            substitutions.put(":comp_alib_id", alibId);
-            substitutions.put(":comp_id", rs.getString(3));
-            Statement stmt2 = conn.createStatement();
-            String query2 = dbp.getQuery(QUERY_PLUGIN_ARGS, substitutions);
-            ResultSet rs2 = stmt2.executeQuery(query2);
-            while (rs2.next()) {
-              String arg = rs2.getString(1);
-              plugin.addParameter(arg);
-            }
-            rs2.close();
-            stmt2.close();
-
-	    // This blindly adds the plugin.
-	    // In this case, this is OK, cause the CMTAgents
-	    // Only fill in stuff for CMT assembly agents,
-	    // and are the first ones to be run
-	    // In general however, this should do:
-	    //if (data.getChildIndex(plugin) < 0)
-	    // then add
-	    // else, data.setChild(index, plugin)
-//             if(log.isDebugEnabled()) {
-//               log.debug("Add Plugin: " + plugin.getName());
-//             }
-            data.addChild(plugin);
-          } // end of loop over plugins to add
-          rs.close();
-          stmt.close();
-
-        } finally {
-          conn.close();
+    Iterator iter = ((Collection)getDescendentsOfClass(ContainerBase.class)).iterator();
+    while(iter.hasNext()) {
+      ContainerBase container = (ContainerBase)iter.next();
+      if(container.getShortName().equals("Plugins")) {
+        for(int i=0; i < container.getChildCount(); i++) {
+          PluginBase plugin = (PluginBase) container.getChild(i);
+          plugin.addComponentData(data);
         }
-      } catch (Exception e) {
-        if(log.isErrorEnabled()) {
-          log.error("Exception", e);
-        }
-        throw new RuntimeException("Error" + e);
       }
     }
-    //    data = addAssetData(data);
 
     // Process AssetData
-    Iterator iter = 
+    iter = 
       ((Collection)getDescendentsOfClass(AssetComponent.class)).iterator();
     while(iter.hasNext()) {
       AssetComponent asset = (AssetComponent)iter.next();
@@ -384,9 +313,14 @@ public class AgentDBComponent
     // Get Plugin Names, class names, and parameters
     try {
       Connection conn = DBUtils.getConnection();
+      String query = "";
       try {
         Statement stmt = conn.createStatement();	
-        String query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
+        query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
+        if(log.isDebugEnabled()) {
+          log.debug("Query: " + query);
+        }
+
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
           String pluginClassName = rs.getString(1);
