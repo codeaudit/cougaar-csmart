@@ -53,7 +53,12 @@ public class Organizer extends JScrollPane {
   private static final String DEFAULT_FILE_NAME = "Default Workspace.bin";
   
   private static final String FRAME_TITLE = "CSMART Launcher";
-  
+
+  private static final String EXPT_DESC_QUERY = "queryExptDescriptions";
+  private static final String EXPT_ASSEM_QUERY = "queryExperiment";
+  private static final String EXPT_TRIAL_QUERY = "queryTrials";
+  private static final String EXPT_NODE_QUERY = "queryNodes";
+
   private static final long UPDATE_DELAY = 5000L;
 
   private boolean updateNeeded = false;
@@ -65,6 +70,9 @@ public class Organizer extends JScrollPane {
   private DefaultMutableTreeNode root;
   DefaultTreeModel model;
   private OrganizerTree workspace;
+
+  private Map dbExptMap = new HashMap();
+  private Map dbTrialMap = new HashMap();
 
   // The societies which can be created in CSMART
   private Object[] socComboItems = {
@@ -862,12 +870,14 @@ public class Organizer extends JScrollPane {
 	substitutions.put(":assembly_type", "CMT");
 	Connection conn = DBUtils.getConnection();
 	Statement stmt = conn.createStatement();
-	String query = DBUtils.getQuery(DBUtils.ASSEMBLYID_QUERY, substitutions);
+	String query = DBUtils.getQuery(EXPT_DESC_QUERY, substitutions);
 	ResultSet rs = stmt.executeQuery(query);
 	while(rs.next()) {
-	  String result = rs.getString(1);
-	  if(result != null) {
-	    tmpNames.add(result);
+	  String exptID = rs.getString(1);
+	  String description = rs.getString(2);
+	  if(description != null && exptID != null) {
+	    dbExptMap.put(description, exptID);
+	    tmpNames.add(description);
 	  }
 	}
 	rs.close();
@@ -1302,6 +1312,11 @@ public class Organizer extends JScrollPane {
 
   private DefaultMutableTreeNode newExperimentFromDatabase(DefaultMutableTreeNode node) {
     Collection experimentNames = null;
+    Map substitutions = new HashMap();
+    Collection trialNames = new ArrayList();
+    ArrayList assemblyIDs = new ArrayList();
+    ArrayList nodes = new ArrayList();
+
     experimentNames = getExperimentNamesFromDB();
     if (experimentNames == null)
       return null;
@@ -1313,17 +1328,101 @@ public class Organizer extends JScrollPane {
                                                 null);
     if (answer == null)
       return null;
-    try {
-      // TODO EXPERIMENT DATABASE: create experiment from database, given experiment name
-      Experiment experiment = new Experiment((String)answer);
-      DefaultMutableTreeNode newNode =
-	addExperimentToWorkspace(experiment, node);
-      workspace.setSelection(newNode);
-      return newNode;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
+
+    // Now, query for the Trial Name.
+    if(csmart.inDBMode()) {
+      try {
+	substitutions.put(":expt_id", (String)dbExptMap.get(answer));
+	Connection conn = DBUtils.getConnection();
+	Statement stmt = conn.createStatement();
+	String query = DBUtils.getQuery(EXPT_TRIAL_QUERY, substitutions);
+	ResultSet rs = stmt.executeQuery(query);
+	while(rs.next()) {
+	  String id = rs.getString(1);
+	  String desc = rs.getString(2);
+	  trialNames.add(desc);
+	  dbTrialMap.put(desc, id);
+	}
+	  rs.close();
+	  stmt.close();
+
+	  if (trialNames == null) {
+	    conn.close();
+	    return null;
+	  }
+	  Object trial = JOptionPane.showInputDialog(this, "Select Trial",
+						     "Select Trial",
+						     JOptionPane.QUESTION_MESSAGE,
+						     null,
+						     trialNames.toArray(),
+						     null);
+
+	  if (trial == null) {
+	    conn.close();
+	    return null;
+	  }
+
+	  // Get the assembly ID's associated with this experiment and trial.
+	  substitutions.put(":trial_id", (String)dbTrialMap.get(trial));
+	  stmt = conn.createStatement();
+	  query = DBUtils.getQuery(EXPT_ASSEM_QUERY, substitutions);
+	  rs = stmt.executeQuery(query);
+	  while(rs.next()) {
+	    assemblyIDs.add(rs.getString(1));
+	  }
+	  rs.close();
+	  stmt.close();
+
+	  StringBuffer assemblyMatch = new StringBuffer();
+	  assemblyMatch.append("in (");
+	  Iterator iter = assemblyIDs.iterator();
+	  boolean first = true;
+	  while (iter.hasNext()) {
+	    String val = (String)iter.next();
+	    if (first) {
+	      first = false;
+	    } else {
+	      assemblyMatch.append(", ");
+	    }
+	    assemblyMatch.append("'");
+	    assemblyMatch.append(val);
+	    assemblyMatch.append("'");
+	  }
+	  assemblyMatch.append(")");
+      
+	  substitutions.put(":assemblyMatch", assemblyMatch.toString());
+
+	  stmt = conn.createStatement();
+	  query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
+	  rs = stmt.executeQuery(query);
+	  while(rs.next()) {
+	    nodes.add(rs.getString(1));
+	  }
+	  rs.close();
+	  stmt.close();
+
+	  conn.close();
+      } catch (SQLException se) {
+	System.out.println("Caught SQL exception: " + se);
+	se.printStackTrace();
+      }   
     }
+
+    CMTSociety soc = new CMTSociety(assemblyIDs);
+    soc.initProperties();
+    Experiment experiment = new Experiment((String)answer, (String)dbExptMap.get(answer));
+    DefaultMutableTreeNode newNode =
+      addExperimentToWorkspace(experiment, node);
+    experiment.addSocietyComponent((SocietyComponent)soc);
+
+    Iterator iter = nodes.iterator();
+    while(iter.hasNext()) {
+      experiment.addNode((String)iter.next());
+    }
+
+    workspace.setSelection(newNode);
+    return newNode;
+
   }
 
   private DefaultMutableTreeNode newExperiment(DefaultMutableTreeNode node) {
