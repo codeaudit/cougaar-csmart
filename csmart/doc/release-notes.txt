@@ -1,5 +1,18 @@
 CSMART Release Notes
 
+Release 9.2:
+- New ability to load societies from INI files
+- New UIs to edit societies within CSMART
+- Infrastructure support for recipes that do removal / modifications
+- New ability to create a society from the recipe/society combination in an experiment
+- Configuration database cleanup, and load process changes (see
+InstallAndTest.html)
+- Fixes to improve accuracy of debug output INI files
+- Fix support for adding Node Binders with recipes
+- Add support for adding plugins, binders to Node Agents via recipes
+- Move to JDK1.4
+- Bug fixes
+
 Release 9.0:
 - The CSMART required Cougaar 3rd party jar file: grappa1_2_bbn.jar has been changed 
   to grappa1_2.jar. The BBN modifications in the prior jar are now included in the 
