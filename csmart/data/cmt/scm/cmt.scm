@@ -4,7 +4,7 @@
 (load "build/compile.scm")
 (import "java.util.Date")
 
-(set! cfw-prefix "V1_")
+(set! cfw-prefix "V5_")
 (set! asb-prefix "V4_")
 
 
@@ -324,12 +324,19 @@
 
 (define (clear-cmt-assembly cfw_g_id threads version)
   (set! assembly_id (get-assembly-id cfw_g_id threads version))
-  (dbu (string-append "delete from " asb-prefix "asb_component_hierarchy where assembly_id = " (sqlQuote assembly_id)))
-  (dbu (string-append "delete from " asb-prefix "asb_agent_pg_attr where assembly_id = " (sqlQuote assembly_id)))
-  (dbu (string-append "delete from " asb-prefix "asb_agent_relation where assembly_id = " (sqlQuote assembly_id)))
-  (dbu (string-append "delete from " asb-prefix "asb_component_arg where assembly_id = " (sqlQuote assembly_id)))
+  (print (list (string-append "delete from " asb-prefix "asb_component_hierarchy where assembly_id = " (sqlQuote assembly_id))
+	       (dbu (string-append "delete from " asb-prefix "asb_component_hierarchy where assembly_id = " (sqlQuote assembly_id)))))
+  (print (list (string-append "delete from " asb-prefix "asb_agent where assembly_id = " (sqlQuote assembly_id))
+	       (dbu (string-append "delete from " asb-prefix "asb_agent where assembly_id = " (sqlQuote assembly_id)))))
+  (print (list (string-append "delete from " asb-prefix "asb_agent_pg_attr where assembly_id = " (sqlQuote assembly_id))
+	       (dbu (string-append "delete from " asb-prefix "asb_agent_pg_attr where assembly_id = " (sqlQuote assembly_id)))))
+  (print (list (string-append "delete from " asb-prefix "asb_agent_relation where assembly_id = " (sqlQuote assembly_id))
+	       (dbu (string-append "delete from " asb-prefix "asb_agent_relation where assembly_id = " (sqlQuote assembly_id)))))
+  (print (list (string-append "delete from " asb-prefix "asb_component_arg where assembly_id = " (sqlQuote assembly_id))
+	       (dbu (string-append "delete from " asb-prefix "asb_component_arg where assembly_id = " (sqlQuote assembly_id)))))
   ;;(dbu (string-append "delete from " asb-prefix "alib_component"))
-  (dbu (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id)))
+  (print (list (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id))
+	       (dbu (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id)))))
   )
 
 (define (use-threads tlist)
@@ -364,7 +371,7 @@
 				   "{" (apply string-append (map tabbrev threads)) "}")))
 
 
-(define (create-cmt-asb assembly_description cfw_g_id threads version)
+(define (create-cmt-asb assembly_description cfw_g_id threads version clones)
   ;; intentionally setting a global variable for debugging purposes
   (print "clear-cmt-assembly started")
   (print (time (clear-cmt-assembly cfw_g_id threads version) 1))
@@ -372,9 +379,7 @@
   (set! assembly_id (get-assembly-id cfw_g_id threads version))
   (set! cfw_group_id cfw_g_id)
   (set! threads (use-threads threads))
-  (print "update_cmt_lib_items started")
-  (print (time (update_cmt_lib_items cfw_g_id threads) 1))
-  (print "update_cmt_lib_items completed")
+  (newline)
   (cond
    ((= 0 (dbu (string-append
 	       "update " asb-prefix "asb_assembly set assembly_id = assembly_id where assembly_id = "
@@ -385,29 +390,193 @@
 	  "'CMT',"
 	  (sqlQuote assembly_description)")"))
     (print (string-append "inserted assembly_id " assembly_id " into " asb-prefix "ASB_ASSEMBLY table"))))
-  (print "")
+
+  (newline)
+  (print "add-agent-alib-components started")
+  (add-agent-alib-components cfw_g_id threads clones)
+  (print "add-agent-alib-components completed")
+
+  (newline)
+  (print "add-base-asb-agents started")
+  (print (time (add-base-asb-agents  cfw_group_id assembly_id)1))
+  (print "add-base-asb-agents completed")
+
+  (newline)
+  (print "add-cloned-asb-agents started")
+  (for-each (lambda (clone-inst)
+	      (add-cloned-asb-agents 
+	       (first clone-inst)
+	       (second clone-inst) assembly_id)
+	      )
+	    clones)
+  (print "add-cloned-asb-agents completed")
+
+  (newline)
+  ;; this must occur AFTER the asb_agents table is filled in, to allow for handling multiplicity
+  (print "add-new-plugin-alib-components started")
+  (add-new-plugin-alib-components cfw_group_id assembly_id threads)
+  (print "add-new-plugin-alib-components completed")
+  
+  (newline)
   (print "add-plugin-asb-component-hierarchy started")
   (print (time (add-plugin-asb-component-hierarchy assembly_id cfw_group_id threads) 1))
   (print "add-plugin-asb-component-hierarchy completed")
-  (print "")
+  
+  (newline)
   (print "add-agent-name-component-arg started")
   (print (time (add-agent-name-component-arg assembly_id cfw_group_id threads) 1))
   (print "add-agent-name-component-arg completed")
-  (print "")
+  (newline)
   (print "add-asb-agent-pg-attr started")
   (print (time (add-asb-agent-pg-attr assembly_id cfw_group_id threads) 1))
   (print "add-asb-agent-pg-attr completed")
-  (print "")
-  (print "add-asb-agent-relation started")
-  (print (time (add-asb-agent-relation assembly_id cfw_group_id threads)1))
-  (print "add-asb-agent-relation completed")
-  (print "")
-  (print "add-asb-agent-hierarchy-relation started")
-  (print (time (add-asb-agent-hierarchy-relation assembly_id cfw_group_id threads)1))
-  (print "add-asb-agent-hierarchy-relation completed")
+  (newline)
+  (print "add-all-asb-agent-relations started")
+  (add-all-asb-agent-relations assembly_id cfw_group_id threads)
+  (print "add-all-asb-agent-relations completed")
+  (newline)
+  (print "add-all-asb-agent-hierarchy-relations started")
+  (add-all-asb-agent-hierarchy-relations assembly_id cfw_group_id threads)
+  (print "add-all-asb-agent-hierarchy-relations completed")
   (add-plugin-args assembly_id cfw_group_id threads)
   "done"
   )
+
+(define (add-base-asb-agents cfw_group_id assembly_id)
+  (dbu 
+   (string-append
+    "insert into " asb-prefix "asb_agent "
+    "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
+    "go.org_id as COMPONENT_ALIB_ID,"
+    "go.org_id as COMPONENT_LIB_ID,"
+    "0 as  CLONE_SET_ID"
+    "   from " cfw-prefix "cfw_group_org go"
+    "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+    "   and not exists (select component_alib_id from " asb-prefix "asb_agent aa"
+    "   where aa.component_alib_id=go.org_id"
+    "   and aa.assembly_id="(sqlQuote assembly_id)")")))
+
+
+(define (add-cloned-asb-agents org_group_id n assembly_id)
+  (print (list 'add-cloned-asb-agents org_group_id n assembly_id))
+  (print (time
+	  (dbu
+	   (string-append
+	    "insert into " asb-prefix "asb_agent "
+	    "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
+	    "(clone_set_id || '-' || ogom.org_id) as COMPONENT_ALIB_ID,"
+	    "ogom.org_id as COMPONENT_LIB_ID,"
+	    "clone_set_id as  CLONE_SET_ID"
+	    "   from "    cfw-prefix "cfw_org_group_org_member ogom,"
+	    "   " asb-prefix "clone_set cs"
+	    "   where ogom.org_group_id="(sqlQuote org_group_id)
+	    "   and cs.clone_set_id>0 and cs.clone_set_id<"n
+	    "   and not exists (select component_alib_id from " asb-prefix "asb_agent aa"
+	    "   where aa.component_alib_id=(clone_set_id || '-' || ogom.org_id)"
+	    "   and aa.assembly_id="(sqlQuote assembly_id)")"))
+	  1)
+	 ))
+
+
+
+(define (add-agent-alib-components cfw_g_id threads clones)
+  (print (time (add-new-base-agent-alib-components cfw_group_id threads)1))
+  (for-each (lambda (clone-inst)
+	      (print (time
+		      (add-new-cloned-agent-alib-components 
+		       (first clone-inst)
+		       (second clone-inst)
+		       threads)
+		     1)))
+	    clones
+	    )
+  )
+
+
+
+(define (get-base-agent-alib-component-sql cfw_group_id threads)
+  (string-append 
+   "select distinct go.org_id as COMPONENT_ALIB_ID,"
+   ;;"org.org_name as COMPONENT_NAME,"   not according to Ray -- the name is the Agent name -- same as the component_alib_id
+   "org.org_id as COMPONENT_NAME,"
+   "org.org_id as COMPONENT_LIB_ID,"
+   "'agent' as COMPONENT_TYPE,"
+   "0 as  CLONE_SET_ID"
+   " from " cfw-prefix "cfw_group_org go,"
+   " " cfw-prefix "lib_organization org"
+   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and go.org_id =org.org_id"
+   "   and go.org_id not in (select component_alib_id from " asb-prefix "alib_component)"
+   ;;"   order by go.org_id,(pl.plugin_class_order+(5 * pg.plugin_group_order))"
+   )
+  )
+
+(define (add-new-base-agent-alib-components cfw_group_id threads)
+  (dbu
+   (string-append 
+    "insert into " asb-prefix "alib_component "
+    (get-base-agent-alib-component-sql cfw_group_id threads))))
+
+
+(define (get-cloned-agent-alib-component-sql org_group_id n threads)
+  (string-append
+   "select distinct "
+   "(clone_set_id || '-' || ogom.org_id) as COMPONENT_ALIB_ID,"
+   "(clone_set_id || '-' || ogom.org_id) as COMPONENT_NAME,"
+   "ogom.org_id as COMPONENT_LIB_ID,"
+   "'agent' as COMPONENT_TYPE,"
+   "clone_set_id as  CLONE_SET_ID"
+   "   from " cfw-prefix "cfw_org_group_org_member ogom,"
+   "   " asb-prefix "clone_set cs"
+   "   where ogom.org_group_id="(sqlQuote org_group_id)
+   "   and cs.clone_set_id>0 and cs.clone_set_id<"n
+   "   and (clone_set_id || '-' || ogom.org_id) not in (select component_alib_id from " asb-prefix "alib_component)")
+  )
+
+(define (add-new-cloned-agent-alib-components org_group_id n threads)
+  (print(list 'add-new-cloned-agent-alib-components org_group_id n threads))
+  (dbu
+   (string-append 
+    "insert into " asb-prefix "alib_component "
+    (get-cloned-agent-alib-component-sql org_group_id n threads))))
+
+(define (get-plugin-alib-component-sql cfw_group_id assembly_id threads)
+  ;; go through the agents in this assembly to fill in agent/plugin components in the alib
+  (string-append 
+   "select distinct"
+   "(aa.component_alib_id || '|' ||  pl.plugin_class) as COMPONENT_ALIB_ID,"
+   "(aa.component_alib_id || '|' ||  pl.plugin_class) as COMPONENT_NAME,"
+   "'plugin'  || '|' || pl.plugin_class AS component_lib_id,"
+   "'plugin' AS COMPONENT_TYPE,"
+   "0 as  CLONE_SET_ID"
+   " from " asb-prefix "ASB_AGENT aa,"
+   cfw-prefix "cfw_group_member gm,"
+   cfw-prefix "cfw_org_orgtype ot,"
+   cfw-prefix "cfw_orgtype_plugin_grp pg,"
+   cfw-prefix "cfw_plugin_group_member pl,"
+   cfw-prefix "lib_plugin_thread pth"
+   "   where gm.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and aa.assembly_id=" (sqlQuote assembly_id)
+   "   and aa.component_lib_id=ot.org_id"
+   "   and gm.cfw_id=ot.cfw_id"
+   "   and ot.orgtype_id=pg.orgtype_id"
+   "   and gm.cfw_id=pg.cfw_id"
+   "   and pg.plugin_group_id = pl.plugin_group_id"
+   "   and gm.cfw_id=pg.cfw_id"
+   ;; safety "   and ('plugin'  || '|' || pl.plugin_class) in (select component_lib_id from " asb-prefix "lib_component)"
+   "   and pth.plugin_class=pl.plugin_class"
+   "   and pth.thread_id in " threads
+   "   and (aa.component_alib_id || '|' ||  pl.plugin_class) not in (select component_alib_id from " asb-prefix "alib_component)"
+   )
+  )  
+
+(define (add-new-plugin-alib-components cfw_group_id assembly_id threads)
+  (dbu
+   (string-append 
+    "insert into " asb-prefix "alib_component "
+    (get-plugin-alib-component-sql cfw_group_id assembly_id threads))))
+
+
 ;;select '3ID-135-CMT'as ASSEMBLY_ID,'3ID-135-CMT'|| '|' ||  pl.plugin_class AS COMPONENT_ID,
 ;;pl.plugin_class as COMPONENT_NAME,
 ;;null as PARENT_COMPONENT_ID,
@@ -427,35 +596,72 @@
 ;;
 (define (get-plugin-asb-component-hierarchy-sql assembly_id cfw_group_id threads)
   (string-append 
-   "select distinct " (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
-   "go.org_id || '|' ||  pl.plugin_class AS COMPONENT_ALIB_ID,"
-   "go.org_id as PARENT_COMPONENT_ALIB_ID,"
+   "select distinct"
+   (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
+   "(aa.component_alib_id || '|' ||  pl.plugin_class) as COMPONENT_ALIB_ID,"
+   "aa.component_alib_id as PARENT_COMPONENT_ALIB_ID,"
    "(pl.plugin_class_order+(5* pg.plugin_group_order)) as INSERTION_ORDER"
 
-   " from " cfw-prefix "cfw_group_org go,"
-   cfw-prefix "cfw_org_orgtype ot,"
+   " from " asb-prefix "ASB_AGENT aa,"
    cfw-prefix "cfw_group_member gm,"
+   cfw-prefix "cfw_org_orgtype ot,"
    cfw-prefix "cfw_orgtype_plugin_grp opg,"
    cfw-prefix "lib_plugin_group pg,"
    cfw-prefix "cfw_plugin_group_member pl,"
    cfw-prefix "lib_plugin_thread pth"
-   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
-   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
-   
-   "   and go.org_id =ot.org_id"
-   "   and gm.cfw_id=ot.cfw_id"
+   "   where gm.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and aa.assembly_id=" (sqlQuote assembly_id)
+   "   and aa.component_lib_id=ot.org_id"
 
+   "   and gm.cfw_id=ot.cfw_id"
    "   and ot.orgtype_id=opg.orgtype_id"
-   "   and gm.cfw_id=opg.cfw_id"
 
    "   and pg.plugin_group_id = pl.plugin_group_id"
    "   and pg.plugin_group_id = opg.plugin_group_id"
-   "   and ('plugin'  || '|' || pl.plugin_class) in (select component_lib_id from " asb-prefix "lib_component)"
+   "   and gm.cfw_id=opg.cfw_id"
+   ;; safety "   and ('plugin'  || '|' || pl.plugin_class) in (select component_lib_id from " asb-prefix "lib_component)"
    "   and pth.plugin_class=pl.plugin_class"
    "   and pth.thread_id in " threads
-   ;;"   order by go.org_id,(pl.plugin_class_order+(5 * pg.plugin_group_order))"
+   "   and not exists "
+   "   (select component_alib_id from " asb-prefix "asb_component_hierarchy ach"
+   "    where ach.assembly_id="(sqlQuote  assembly_id)
+   "   and ach.component_alib_id=(aa.component_alib_id || '|' ||  pl.plugin_class)"
+   "   and ach.parent_component_alib_id=aa.component_alib_id)"
    )
-  )
+)
+
+;;  (string-append 
+;;   "select distinct " (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
+;;   "go.org_id || '|' ||  pl.plugin_class AS COMPONENT_ALIB_ID,"
+;;   "go.org_id as PARENT_COMPONENT_ALIB_ID,"
+;;   "(pl.plugin_class_order+(5* pg.plugin_group_order)) as INSERTION_ORDER"
+;;
+;;   " from " cfw-prefix "cfw_group_org go,"
+;;   cfw-prefix "cfw_org_orgtype ot,"
+;;   cfw-prefix "cfw_group_member gm,"
+;;   cfw-prefix "cfw_orgtype_plugin_grp opg,"
+;;   cfw-prefix "lib_plugin_group pg,"
+;;   cfw-prefix "cfw_plugin_group_member pl,"
+;;   cfw-prefix "lib_plugin_thread pth"
+;;   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+;;   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
+;;   
+;;   "   and go.org_id =ot.org_id"
+;;   "   and gm.cfw_id=ot.cfw_id"
+;;
+;;   "   and ot.orgtype_id=opg.orgtype_id"
+;;   "   and gm.cfw_id=opg.cfw_id"
+;;
+;;   "   and pg.plugin_group_id = pl.plugin_group_id"
+;;   "   and pg.plugin_group_id = opg.plugin_group_id"
+;;   "   and ('plugin'  || '|' || pl.plugin_class) in (select component_lib_id from " asb-prefix "lib_component)"
+;;   "   and pth.plugin_class=pl.plugin_class"
+;;   "   and pth.thread_id in " threads
+;;   ;;"   order by go.org_id,(pl.plugin_class_order+(5 * pg.plugin_group_order))"
+;;   )
+;;  )
+
+  
 
 (define (add-plugin-asb-component-hierarchy assembly_id cfw_group_id threads)
   (dbu
@@ -463,103 +669,34 @@
     "insert into " asb-prefix "asb_component_hierarchy "
     (get-plugin-asb-component-hierarchy-sql assembly_id cfw_group_id threads))))
 
-
-
-(define (update_cmt_lib_items cfw_g_id threads)
-  (add-new-plugin-alib-component cfw_group_id  threads)
-  (add-new-agent-alib-component cfw_group_id threads))
-
-
-(define (get-agent-alib-component-sql cfw_group_id threads)
-  (string-append 
-   "select distinct go.org_id as COMPONENT_ALIB_ID,"
-   "org.org_name as COMPONENT_NAME,"
-   "org.org_id as COMPONENT_LIB_ID,"
-   "'agent' as COMPONENT_TYPE,"
-   "0 as  CLONE_SET_ID"
-   " from " cfw-prefix "cfw_group_org go,"
-   " " cfw-prefix "lib_organization org,"
-   " " asb-prefix "lib_component comp"
-   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
-   "   and go.org_id =org.org_id"
-   "   and org.org_id=comp.component_lib_id"
-   "   and go.org_id not in (select component_alib_id from " asb-prefix "alib_component)"
-   ;;"   order by go.org_id,(pl.plugin_class_order+(5 * pg.plugin_group_order))"
-   )
-  )
-
-(define (add-new-agent-alib-component cfw_group_id threads)
-  (dbu
-   (string-append 
-    "insert into " asb-prefix "alib_component "
-    (get-agent-alib-component-sql cfw_group_id threads))))
-
-
-(define (get-plugin-alib-component-sql cfw_group_id threads)
-  (string-append 
-   "select distinct go.org_id || '|' ||  pl.plugin_class AS COMPONENT_ALIB_ID,"
-   "go.org_id || '|' ||  pl.plugin_class as COMPONENT_NAME,"
-   "'plugin'  || '|' || pl.plugin_class AS component_lib_id,"
-   "'plugin' AS COMPONENT_TYPE,"
-   "0 as  CLONE_SET_ID"
-   " from " cfw-prefix "cfw_group_org go,"
-   cfw-prefix "cfw_org_orgtype ot,"
-   cfw-prefix "cfw_group_member gm,"
-   cfw-prefix "cfw_orgtype_plugin_grp pg,"
-   cfw-prefix "cfw_plugin_group_member pl,"
-   cfw-prefix "lib_plugin_thread pth"
-   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
-   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
-
-   "   and go.org_id =ot.org_id"
-   "   and gm.cfw_id=ot.cfw_id"
-
-   "   and ot.orgtype_id=pg.orgtype_id"
-   "   and gm.cfw_id=pg.cfw_id"
-
-   "   and pg.plugin_group_id = pl.plugin_group_id"
-   "   and gm.cfw_id=pg.cfw_id"
-   "   and go.org_id || '|' ||  pl.plugin_class not in (select component_alib_id from " asb-prefix "alib_component)"
-   "   and ('plugin'  || '|' || pl.plugin_class) in (select component_lib_id from " asb-prefix "lib_component)"
-   "   and pth.plugin_class=pl.plugin_class"
-   "   and pth.thread_id in " threads
-   )
-  )
-
-(define (add-new-plugin-alib-component cfw_group_id threads)
-  (dbu
-   (string-append 
-    "insert into " asb-prefix "alib_component "
-    (get-plugin-alib-component-sql cfw_group_id threads))))
-
-
 (define (get-asb-agent-pg-attr-sql assembly_id cfw_group_id threads)
   (string-append 
    "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
-   "go.org_id AS COMPONENT_ALIB_ID,"
+   "aa.component_alib_id as COMPONENT_ALIB_ID,"
    "pga.pg_attribute_lib_id as PG_ATTRIBUTE_LIB_ID,"
    "pga.attribute_value as ATTRIBUTE_VALUE,"
    "pga.attribute_order as ATTRIBUTE_ORDER,"
    "pga.start_date as START_DATE,"
    "pga.end_date as END_DATE"
 
-
-   "   from " cfw-prefix "cfw_group_org go,"
+   "   from "
+   asb-prefix "ASB_AGENT aa,"
    "   " cfw-prefix "cfw_group_member gm,"
    "   " cfw-prefix "cfw_org_pg_attr pga,"
+   ;; lpga is for filtering out dirty data -- fix this soon RJB
    "   " asb-prefix "lib_pg_attribute lpga"
 
-   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   where aa.assembly_id=" (sqlQuote assembly_id)
    "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
 
-   "   and go.org_id =pga.org_id"
+   "   and aa.component_lib_ID=pga.org_id"
    "   and gm.cfw_id =pga.cfw_id"
    "   and lpga.pg_attribute_lib_id=pga.pg_attribute_lib_id"
 
    "   and not exists "
    "   (select assembly_id from " asb-prefix "asb_agent_pg_attr px"
    "     where px.assembly_id="(sqlQuote assembly_id)
-   "     and px.component_alib_id=go.org_id"
+   "     and px.component_alib_id=aa.component_alib_id"
    "     and px.pg_attribute_lib_id=pga.pg_attribute_lib_id"
    "     and px.start_date=pga.start_date)"
    )
@@ -571,53 +708,178 @@
     "insert into " asb-prefix "asb_agent_pg_attr "
     (get-asb-agent-pg-attr-sql assembly_id cfw_group_id threads))))
 
-
-
-(define (get-asb-agent-relation-sql assembly_id cfw_group_id threads)
+(define (get-asb-agent-relation-to-cloneset-sql assembly_id cfw_group_id threads)
   (string-append 
    "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
    "orgrel.role as ROLE,"
-   "orgrel.org_id as SUPPORTING_COMPONENT_ALIB_ID,"
-   "ogom.org_id as SUPPORTED_COMPONENT_ALIB_ID,"
+   "supporting_org.component_alib_id as SUPPORTING_COMPONENT_ALIB_ID,"
+   "supported_org.component_alib_id as SUPPORTED_COMPONENT_ALIB_ID,"
    "orgrel.start_date as START_DATE,"
    "orgrel.end_date as END_DATE"
-
-
    "   from"
-   "   " cfw-prefix "cfw_group_org go,"
-   "   " cfw-prefix "cfw_group_member gm,"
+   "   " asb-prefix "asb_agent supported_org,"
+   "   " asb-prefix "asb_agent supporting_org,"
    "   " cfw-prefix "cfw_org_og_relation orgrel,"
-;;   "   " cfw-prefix "lib_role_thread thread,"
    "   " cfw-prefix "cfw_org_group_org_member ogom"
 
-
-   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
-   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
-
-   "   and go.org_id = orgrel.org_id"
-   "   and gm.cfw_id = orgrel.cfw_id"
-   "   and ogom.cfw_id = orgrel.cfw_id"
+   "   where"
+   "   orgrel.cfw_id in (select cfw_id from   " cfw-prefix "cfw_group_member where cfw_group_id="(sqlQuote  cfw_group_id)")"
+   "   and supported_org.assembly_id="(sqlQuote assembly_id)
+   "   and supporting_org.assembly_id="(sqlQuote assembly_id)
+   "   and supporting_org.component_lib_id=orgrel.org_id"
+   "   and ogom.cfw_id=orgrel.cfw_id"
    "   and ogom.org_group_id = orgrel.org_group_id"
-   
-   ;; role threads
-;;   "   and orgrel.role=thread.role"
-;;   "   and thread.thread_id in " threads
- 
+   "   and supported_org.component_lib_id=ogom.org_id"
+   "   and supporting_org.clone_set_id=supported_org.clone_set_id"
+
    "   and not exists "
    "   (select assembly_id from " asb-prefix "asb_agent_relation ar"
    "     where ar.assembly_id="(sqlQuote assembly_id)
-   "     and ar.supporting_component_alib_id=orgrel.org_id"
-   "     and ar.supported_component_alib_id =ogom.org_id"
+;;   "     and ar.supporting_component_alib_id=orgrel.org_id"
+   "     and ar.supported_component_alib_id =supported_org.component_alib_id"
    "     and ar.role=orgrel.role"
    "     and ar.start_date=orgrel.start_date)"
    )
   )
 
-(define (add-asb-agent-relation assembly_id cfw_group_id threads)
+(define (add-asb-agent-relation-to-cloneset assembly_id cfw_group_id threads)
   (dbu
    (string-append 
     "insert into " asb-prefix "asb_agent_relation "
-    (get-asb-agent-relation-sql assembly_id cfw_group_id threads))))
+    (get-asb-agent-relation-to-cloneset-sql assembly_id cfw_group_id threads))))
+
+(define (get-asb-agent-relation-to-base-sql assembly_id cfw_group_id threads)
+  (string-append 
+   "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
+   "orgrel.role as ROLE,"
+   "supporting_org.component_alib_id as SUPPORTING_COMPONENT_ALIB_ID,"
+   "supported_org.component_alib_id as SUPPORTED_COMPONENT_ALIB_ID,"
+   "orgrel.start_date as START_DATE,"
+   "orgrel.end_date as END_DATE"
+   "   from"
+   "   " asb-prefix "asb_agent supported_org,"
+   "   " asb-prefix "asb_agent supporting_org,"
+   "   " cfw-prefix "cfw_org_og_relation orgrel,"
+   "   " cfw-prefix "cfw_org_group_org_member ogom"
+
+   "   where"
+   "   orgrel.cfw_id in (select cfw_id from   " cfw-prefix "cfw_group_member where cfw_group_id="(sqlQuote  cfw_group_id)")"
+   "   and supported_org.assembly_id="(sqlQuote assembly_id)
+   "   and supporting_org.assembly_id="(sqlQuote assembly_id)
+   "   and supporting_org.component_lib_id=orgrel.org_id"
+   "   and ogom.cfw_id=orgrel.cfw_id"
+   "   and ogom.org_group_id = orgrel.org_group_id"
+   "   and supported_org.component_lib_id=ogom.org_id"
+   "   and supporting_org.clone_set_id=0"
+
+   "   and not exists "
+   "   (select assembly_id from " asb-prefix "asb_agent_relation ar"
+   "     where ar.assembly_id="(sqlQuote assembly_id)
+;;   "     and ar.supporting_component_alib_id=orgrel.org_id"
+   "     and ar.supported_component_alib_id =supported_org.component_alib_id"
+   "     and ar.role=orgrel.role"
+   "     and ar.start_date=orgrel.start_date)"
+   )
+  )
+
+(define (add-asb-agent-relation-to-base assembly_id cfw_group_id threads)
+  (dbu
+   (string-append 
+    "insert into " asb-prefix "asb_agent_relation "
+    (get-asb-agent-relation-to-base-sql assembly_id cfw_group_id threads))))
+
+(define (add-all-asb-agent-relations assembly_id cfw_group_id threads)
+  ;; add the relations to the agents in the same cloneset
+  (print (time (add-asb-agent-relation-to-cloneset assembly_id cfw_group_id threads)1))
+  ;;  only if there are no relations of a given type within the cloneset,
+  ;;   add relations from supported org (in the cloneset) to the org in cloneset 0
+  (print (time (add-asb-agent-relation-to-base assembly_id cfw_group_id threads) 1)))
+
+
+(define (get-asb-agent-hierarchy-relation-to-cloneset-sql assembly_id cfw_group_id threads)
+  (string-append 
+   "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
+   "'Subordinate' as ROLE,"
+   "supporting_org.component_alib_id as SUPPORTING_COMPONENT_ALIB_ID,"
+   "supported_org.component_alib_id as SUPPORTED_COMPONENT_ALIB_ID,"
+   "to_date('1-JAN-2001') as START_DATE,"
+   "null as END_DATE"
+
+   "   from"
+   "   " asb-prefix "asb_agent supported_org,"
+   "   " asb-prefix "asb_agent supporting_org,"
+   "   " cfw-prefix "cfw_org_hierarchy oh"
+
+
+   "   where"
+   "   oh.cfw_id in (select cfw_id from   " cfw-prefix "cfw_group_member where cfw_group_id="(sqlQuote  cfw_group_id)")"
+   "   and supported_org.assembly_id="(sqlQuote assembly_id)
+   "   and supporting_org.assembly_id="(sqlQuote assembly_id)
+   "   and oh.org_id=supporting_org.component_lib_id"
+   "   and oh.superior_org_id=supported_org.component_lib_id"
+   "   and supporting_org.clone_set_id=supported_org.clone_set_id"
+   "   and not exists"
+   "   (select assembly_id from " asb-prefix "asb_agent_relation ar"
+   "     where ar.assembly_id="(sqlQuote assembly_id)
+   "     and ar.supporting_component_alib_id=supporting_org.component_alib_id"
+;;   "     and ar.supported_component_alib_id =oh.superior_org_id"
+   "     and ar.role='Subordinate'"
+   "     and ar.start_date=to_date('1-JAN-2001'))"
+   )
+  )
+
+(define (add-asb-agent-hierarchy-relation-to-cloneset assembly_id cfw_group_id threads)
+  (dbu
+   (string-append 
+    "insert into " asb-prefix "asb_agent_relation "
+    (get-asb-agent-hierarchy-relation-to-cloneset-sql assembly_id cfw_group_id threads))))
+
+(define (get-asb-agent-hierarchy-relation-to-base-sql assembly_id cfw_group_id threads)
+  (string-append 
+   "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
+   "'Subordinate' as ROLE,"
+   "supporting_org.component_alib_id as SUPPORTING_COMPONENT_ALIB_ID,"
+   "supported_org.component_alib_id as SUPPORTED_COMPONENT_ALIB_ID,"
+   "to_date('1-JAN-2001') as START_DATE,"
+   "null as END_DATE"
+
+   "   from"
+   "   " asb-prefix "asb_agent supported_org,"
+   "   " asb-prefix "asb_agent supporting_org,"
+   "   " cfw-prefix "cfw_org_hierarchy oh"
+
+
+   "   where"
+   "   oh.cfw_id in (select cfw_id from   " cfw-prefix "cfw_group_member where cfw_group_id="(sqlQuote  cfw_group_id)")"
+   "   and supported_org.assembly_id="(sqlQuote assembly_id)
+   "   and supporting_org.assembly_id="(sqlQuote assembly_id)
+   "   and oh.org_id=supporting_org.component_lib_id"
+   "   and oh.superior_org_id=supported_org.component_lib_id"
+   "   and supported_org.clone_set_id=0"
+   "   and not exists"
+   "   (select assembly_id from " asb-prefix "asb_agent_relation ar"
+   "     where ar.assembly_id="(sqlQuote assembly_id)
+   "     and ar.supporting_component_alib_id=supporting_org.component_alib_id"
+   ;;   "     and ar.supported_component_alib_id =oh.superior_org_id"
+   "     and ar.role='Subordinate'"
+   "     and ar.start_date=to_date('1-JAN-2001'))"
+   )
+  )
+
+
+(define (add-asb-agent-hierarchy-relation-to-base assembly_id cfw_group_id threads)
+  (dbu
+   (string-append 
+    "insert into " asb-prefix "asb_agent_relation "
+    (get-asb-agent-hierarchy-relation-to-base-sql assembly_id cfw_group_id threads))))
+
+
+(define (add-all-asb-agent-hierarchy-relations assembly_id cfw_group_id threads)
+  (print (time (add-asb-agent-hierarchy-relation-to-cloneset assembly_id cfw_group_id threads)1))
+  (print (time (add-asb-agent-hierarchy-relation-to-base assembly_id cfw_group_id threads)1))
+)
+
+
 
 
 (define (get-asb-agent-hierarchy-relation-sql assembly_id cfw_group_id threads)
@@ -679,24 +941,22 @@
 (define (get-agent-name-component-arg-sql assembly_id cfw_group_id threads)
   (string-append 
    "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
-   "org_alib.component_alib_id as COMPONENT_ALIB_ID,"
-   "org_alib.component_name as ARGUMENT,"
+   "aa.component_alib_id as COMPONENT_ALIB_ID,"
+   "aa.component_alib_id as ARGUMENT,"
    "0 as ARGUMENT_ORDER"
 
    " from"
-   "   " asb-prefix "asb_component_hierarchy ch,"
-   "   " asb-prefix "alib_component org_alib"
+   "   " asb-prefix "asb_agent aa"
 
    "   where"
-   "   org_alib.component_type='agent'"
-   "   and ch.parent_component_alib_id=org_alib.component_alib_id"
+   "   aa.assembly_id=" (sqlQuote assembly_id)
 
    "   and not exists ("
    "   select assembly_id from " asb-prefix "asb_component_arg aca"
    "   where"
    "   assembly_id="(sqlQuote assembly_id)
-   "   and aca.component_alib_id=org_alib.component_alib_id"
-   "   and aca.argument=org_alib.component_name"
+   "   and aca.component_alib_id=aa.component_alib_id"
+   "   and aca.argument=aa.component_alib_id"
    ")"
    )
   )
@@ -719,7 +979,7 @@
    " from"
    "   " asb-prefix "asb_component_hierarchy ch,"
    "   " asb-prefix "alib_component plugin_alib,"
-   "   " asb-prefix "alib_component org_alib,"
+   "   " asb-prefix "asb_agent org_agent,"
    "   " cfw-prefix "cfw_context_plugin_arg cpa,"
    "   " cfw-prefix "lib_plugin_arg pa,"
    "   " cfw-prefix "lib_plugin_arg_thread pat,"
@@ -727,14 +987,14 @@
 
    "   where"
    "   gm.cfw_group_id=" (sqlQuote  cfw_group_id)
-   "   and org_alib.component_type='agent'"
+   "   and ch.assembly_id="(sqlQuote assembly_id)
    "   and plugin_alib.component_type='plugin'"
-   "   and ch.parent_component_alib_id=org_alib.component_alib_id"
+   "   and ch.parent_component_alib_id=org_agent.component_alib_id"
    "   and ch.component_alib_id=plugin_alib.component_alib_id"
    "   and cpa.cfw_id=gm.cfw_id"
    "   and pa.argument is not null"
 
-   "   and cpa.org_context = parent_component_alib_id"
+   "   and cpa.org_context = org_agent.component_lib_id"
    "   and pa.plugin_arg_id=cpa.plugin_arg_id"
    "   and ('plugin' || '|' || pa.plugin_class)=plugin_alib.component_lib_id"
    "   and pa.plugin_arg_id=pat.plugin_arg_id"
@@ -755,8 +1015,6 @@
     (get-plugin-agent-asb-component-arg-sql assembly_id cfw_group_id threads))))
 
 
-(get-plugin-orgtype-asb-component-arg-sql assembly_id cfw_group_id (use-threads threads))
-
 (define (get-plugin-orgtype-asb-component-arg-sql assembly_id cfw_group_id threads)
   (string-append 
    "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
@@ -767,7 +1025,7 @@
    " from"
    "   " asb-prefix "asb_component_hierarchy ch,"
    "   " asb-prefix "alib_component plugin_alib,"
-   "   " asb-prefix "alib_component org_alib,"
+   "   " asb-prefix "asb_agent org_agent,"
    "   " cfw-prefix "cfw_context_plugin_arg cpa,"
    "   " cfw-prefix "cfw_org_orgtype ot,"
    "   " cfw-prefix "lib_plugin_arg pa,"
@@ -776,11 +1034,12 @@
 
    "   where"
    "   gm.cfw_group_id=" (sqlQuote  cfw_group_id)
-   "   and ch.parent_component_alib_id=org_alib.component_alib_id"
+   "   and ch.assembly_id="(sqlQuote assembly_id)
+   "   and ch.parent_component_alib_id=org_agent.component_alib_id"
    "   and ch.component_alib_id=plugin_alib.component_alib_id"
    "   and cpa.cfw_id=gm.cfw_id"
    "   and ot.cfw_id=gm.cfw_id"
-   "   and ot.org_id=org_alib.component_lib_id"
+   "   and ot.org_id=org_agent.component_lib_id"
    "   and pa.argument is not null"
 
    "   and cpa.org_context = ot.orgtype_id"
@@ -793,6 +1052,7 @@
    "   where"
    "   assembly_id="(sqlQuote assembly_id)
    "   and aca.component_alib_id=ch.component_alib_id"
+   "   and aca.argument_order=pa.argument_order"
    ")"
    )
   )
@@ -814,7 +1074,7 @@
    " from"
    "   " asb-prefix "asb_component_hierarchy ch,"
    "   " asb-prefix "alib_component plugin_alib,"
-   "   " asb-prefix "alib_component org_alib,"
+   "   " asb-prefix "asb_agent org_agent,"
    "   " cfw-prefix "cfw_context_plugin_arg cpa,"
    "   " cfw-prefix "lib_plugin_arg pa,"
    "   " cfw-prefix "lib_plugin_arg_thread pat,"
@@ -822,7 +1082,8 @@
 
    "   where"
    "   gm.cfw_group_id=" (sqlQuote  cfw_group_id)
-   "   and ch.parent_component_alib_id=org_alib.component_alib_id"
+   "   and ch.assembly_id="(sqlQuote assembly_id)
+   "   and ch.parent_component_alib_id=org_agent.component_alib_id"
    "   and ch.component_alib_id=plugin_alib.component_alib_id"
    "   and cpa.cfw_id=gm.cfw_id"
    "   and pa.argument is not null"
@@ -855,27 +1116,25 @@
   (string-append 
    "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
    "ooa.oplan_id as OPLAN_ID,"
-   "org_alib.component_alib_id as COMPONENT_ALIB_ID,"
-   "org_alib.component_alib_id as COMPONENT_ID,"
+   "aa.component_alib_id as COMPONENT_ALIB_ID,"
+   "aa.component_alib_id as COMPONENT_ID,"
    "ooa.start_cday as START_CDAY,"
    "ooa.attribute_name as ATTRIBUTE_NAME,"
    "ooa.end_cday as END_CDAY,"
    "ooa.attribute_value as ATTRIBUTE_VALUE"
 
    "   from"
-   "   " asb-prefix "asb_component_hierarchy ch,"
-   "   " asb-prefix "alib_component org_alib,"
+   "   " asb-prefix "asb_agetn aa,"
    "   " cfw-prefix "cfw_group_member gm,"
    "   " cfw-prefix "cfw_oplan_og_attr ooa,"
    "   " cfw-prefix "cfw_org_group_org_member ogom"
 
    "   where"
    "   gm.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and aa.assembly_id="(sqlQuote assembly_id)
    "   and ooa.cfw_id=gm.cfw_id"
    "   and ogom.cfw_id=gm.cfw_id"
-   "   and ch.parent_component_alib_id=org_alib.component_alib_id"
-   "   and org_alib.component_type='agent'"
-   "   and ogom.org_id=org_alib.component_lib_id"
+   "   and ogom.org_id=aa.component_lib_id"
    "   and ooa.org_group_id=ogom.org_group_id"
    "   and ooa.oplan_id in "  oplan_ids
 
@@ -884,8 +1143,8 @@
    "   (select assembly_id from " asb-prefix "asb_oplan_agent_attr ar"
    "     where ar.assembly_id="(sqlQuote assembly_id)
    "     and ar.oplan_id=ooa.oplan_id"
-   "     and ar.component_alib_id=org_alib.component_alib_id"
-   "     and ar.component_id=org_alib.component_alib_id"
+   "     and ar.component_alib_id=aa.component_alib_id"
+   "     and ar.component_id=aa.component_alib_id"
    "     and ar.start_cday=ooa.start_cday"
    "     and ar.attribute_name=ooa.attribute_name)"
    )
@@ -916,51 +1175,6 @@
    (string-append 
     "insert into " asb-prefix "asb_oplan_agent_attr "
     (get-asb-oplan-agent-attr-sql assembly_id cfw_group_id threads))))
-
-
-
-
-
-
-
-
-
-
-
-;; may not be needed
-(define (get-plugin-lib-component-sql assembly_id cfw_group_id threads)
-  (string-append 
-   "select distinct pl.plugin_class AS component_lib_id,"
-   "'plugin' AS COMPONENT_TYPE,"
-   " pl.plugin_class AS component_class"
-   " from " cfw-prefix "cfw_group_org go,"
-   cfw-prefix "cfw_org_orgtype ot,"
-   cfw-prefix "cfw_group_member gm,"
-   cfw-prefix "cfw_orgtype_plugin_grp pg,"
-   cfw-prefix "cfw_plugin_group_member pl,"
-   cfw-prefix "lib_plugin_thread pth"
-   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
-   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
-
-   "   and go.org_id =ot.org_id"
-   "   and gm.cfw_id=ot.cfw_id"
-
-   "   and ot.orgtype_id=pg.orgtype_id"
-   "   and gm.cfw_id=pg.cfw_id"
-
-   "   and pg.plugin_group_id = pl.plugin_group_id"
-   "   and gm.cfw_id=pg.cfw_id"
-   "   and go.org_id || '|' ||  pl.plugin_class not in (select component_alib_id from " asb-prefix "alib_component)"
-   "   and pth.plugin_class=pl.plugin_class"
-   "   and pth.thread_id in " threads
-   )
-  )
-;; may not be needed
-(define (add-new-plugin-lib-component assembly_id cfw_group_id threads)
-  (dbu
-   (string-append 
-    "insert into " asb-prefix "lib_component "
-    (get-plugin-lib-component-sql assembly_id cfw_group_id threads))))
 
 
 ;; testing code
@@ -997,7 +1211,7 @@
 (set! assembly_id "ASB1")
 (set! assembly_description "test assembly 1")
 (set! threads all-threads)
-(set! version "-1")
+(set! version "-5")
 
 (define (voc)
   (let
@@ -1058,4 +1272,3 @@
    ;;"   order by go.org_id,(pl.plugin_class_order+(5 * pg.plugin_group_order))"
    )
   )
-
