@@ -270,6 +270,7 @@ public class PopulateDb {
         substitutions.put(":expt_id_pattern:", exptIdPrefix + "____");
         substitutions.put(":expt_type:", idType);
         substitutions.put(":expt_name:", experimentName);
+        substitutions.put(":description:", experimentName);
         DecimalFormat exptIdFormat =
             new DecimalFormat(exptIdPrefix + "0000");
         ResultSet rs =
@@ -290,8 +291,6 @@ public class PopulateDb {
         }
         if (exptId == null) exptId = exptIdFormat.format(1);
         substitutions.put(":expt_id:", exptId);
-        substitutions.put(":description:", exptId);
-        substitutions.put(":name:", exptId);
         executeUpdate(dbp.getQuery(INSERT_EXPT_ID, substitutions));
     }
 
