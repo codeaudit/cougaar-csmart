@@ -14,6 +14,7 @@ import java.io.File;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.*;
@@ -47,6 +48,11 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   SocietyComponent societyComponent;
   Experiment experiment;
   int currentTrial; // index of currently running trial in experiment
+  long startTrialTime; // in msecs
+  long startExperimentTime;
+  DecimalFormat myNumberFormat;
+  javax.swing.Timer trialTimer;
+  javax.swing.Timer experimentTimer;
   boolean userStoppedTrials = false;
   Hashtable runningNodes; // maps NodeComponents to NodeServesClient
   Hashtable oldNodes; // store old charts till next experiment is started
@@ -58,12 +64,15 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   // gui controls
   JTabbedPane tabbedPane;
   ButtonGroup statusButtons;
-  JButton runButton;
-  JButton stopButton;
-  JButton abortButton;
+  JToggleButton runButton;
+  JToggleButton stopButton;
+  JToggleButton abortButton;
+  JLabel trialNameLabel;
+  JProgressBar trialProgressBar; // indicates how many trials have been run
   JMenuItem historyMenuItem; // enabled only if experiment is running
   JPanel buttonPanel; // contains status buttons
   public static Dimension HGAP10 = new Dimension(10,1);
+  public static Dimension HGAP5 = new Dimension(5,1);
   public static Dimension VGAP30 = new Dimension(1,30);
   Border loweredBorder = new CompoundBorder(new SoftBevelBorder(SoftBevelBorder.LOWERED), new EmptyBorder(5,5,5,5));
 
@@ -97,6 +106,11 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   // used for log file name
   private static DateFormat fileDateFormat =
                   new SimpleDateFormat("yyyyMMddHHmmss");
+  private static DateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
+  private static final int MSECS_PER_SECOND = 1000;
+  private static final int MSECS_PER_MINUTE = 60000;
+  private static final int MSECS_PER_HOUR = 3600000;
 
   /**
    * Create and show console GUI.
@@ -197,61 +211,137 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     menuBar.add(helpMenu);
     getRootPane().setJMenuBar(menuBar);
 
-    // create right top panel which contains
-    // description and start/stop buttons
-    // and status buttons
-    JPanel panel = createVerticalPanel(true);
-    JPanel descriptionPanel = createHorizontalPanel(false);
-    // placeholder for description
+    // create panel which contains
+    // description panel, status button panel, and tabbed panes
+    JPanel panel = new JPanel(new GridBagLayout());
+
+    // descriptionPanel contains society name, trial name, control buttons
+    JPanel descriptionPanel = createHorizontalPanel(true);
+    descriptionPanel.add(Box.createRigidArea(VGAP30));
+    descriptionPanel.add(Box.createRigidArea(HGAP10));
     descriptionPanel.add(new JLabel(cc.getSocietyName()));
-    runButton = new JButton("Run");
+    descriptionPanel.add(Box.createRigidArea(HGAP5));
+    descriptionPanel.add(new JLabel("Trial: "));
+    descriptionPanel.add(Box.createRigidArea(HGAP5));
+    trialNameLabel = new JLabel("");
+    descriptionPanel.add(trialNameLabel);
+    descriptionPanel.add(Box.createRigidArea(HGAP10));
+    
+    runButton = new JToggleButton("Run");
     runButton.setToolTipText("Start running experiments.");
     runButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	runButton_actionPerformed(e);
       }
     });
-    descriptionPanel.add(Box.createRigidArea(HGAP10));
-    descriptionPanel.add(Box.createRigidArea(VGAP30));
+    runButton.setFocusPainted(false);
     descriptionPanel.add(runButton);
+    descriptionPanel.add(Box.createRigidArea(HGAP5));
     
-    stopButton = new JButton("Stop");
+    stopButton = new JToggleButton("Stop");
     stopButton.setToolTipText("Stop running experiments when the current experiment completes.");
     stopButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	stopButton_actionPerformed(e);
       }
     });
+    stopButton.setFocusPainted(false);
     descriptionPanel.add(stopButton);
+    descriptionPanel.add(Box.createRigidArea(HGAP5));
 
-    abortButton = new JButton("Abort");
+    abortButton = new JToggleButton("Abort");
     abortButton.setToolTipText("Stop experiment now and discard results.");
     abortButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	abortButton_actionPerformed(e);
       }
     });
+    abortButton.setFocusPainted(false);
     descriptionPanel.add(abortButton);
+
+    // create progress panel for progress bar and trial and experiment times
+    trialProgressBar = new JProgressBar(0, experiment.getTrialCount());
+    trialProgressBar.setValue(0);
+    trialProgressBar.setStringPainted(true);
+    JPanel progressPanel = new JPanel(new GridBagLayout());
+    progressPanel.add(trialProgressBar,
+		      new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
+					     GridBagConstraints.WEST,
+					     GridBagConstraints.HORIZONTAL,
+					     new Insets(10, 0, 5, 0),
+					     0, 0));
+    final JLabel trialTimeLabel = new JLabel("Trial: 00:00:00");
+    final JLabel experimentTimeLabel = new JLabel("Experiment: 00:00:00");
+    myNumberFormat = new DecimalFormat("00");
+
+    // create trial progress panel for time labels
+    JPanel trialProgressPanel = createHorizontalPanel(false);
+    trialProgressPanel.add(trialTimeLabel);
+    trialProgressPanel.add(Box.createRigidArea(HGAP5));
+    trialProgressPanel.add(experimentTimeLabel);
+    progressPanel.add(trialProgressPanel,
+		      new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
+					     GridBagConstraints.WEST,
+					     GridBagConstraints.HORIZONTAL,
+					     new Insets(10, 0, 10, 0),
+					     0, 0));
+    
     descriptionPanel.add(Box.createRigidArea(HGAP10));
-    panel.add(descriptionPanel);
-    // create status button panel, initially empty
-    buttonPanel = createHorizontalPanel(false);
+    descriptionPanel.add(progressPanel);
+    descriptionPanel.add(Box.createRigidArea(HGAP10));
+    // add description panel to top panel
+    panel.add(descriptionPanel, 
+	      new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
+				     GridBagConstraints.WEST,
+				     GridBagConstraints.HORIZONTAL,
+				     new Insets(10, 10, 10, 10),
+				     0, 0));
+
+    // set up trial and experiment timers
+    trialTimer = 
+      new javax.swing.Timer(1000, new ActionListener() {
+	public void actionPerformed(ActionEvent e) {
+	  trialTimeLabel.setText(getElapsedTimeLabel("Trial: ",
+						     startTrialTime));
+	}
+      });
+    experimentTimer = 
+      new javax.swing.Timer(1000, new ActionListener() {
+	public void actionPerformed(ActionEvent e) {
+	  experimentTimeLabel.setText(getElapsedTimeLabel("Experiment: ", 
+						   startExperimentTime));
+	}
+      });
+    // create status button panel, initially with no buttons
+    buttonPanel = createHorizontalPanel(true);
+    buttonPanel.add(Box.createRigidArea(HGAP10));
     buttonPanel.add(new JLabel("Node Status"));
     buttonPanel.add(Box.createRigidArea(HGAP10));
     buttonPanel.add(Box.createRigidArea(VGAP30));
-    panel.add(buttonPanel);
+    panel.add(buttonPanel,
+	      new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
+				     GridBagConstraints.WEST,
+				     GridBagConstraints.HORIZONTAL,
+				     new Insets(10, 10, 10, 10),
+				     0, 0));
+
     statusButtons = new ButtonGroup();
 
     // create tabbed panes, tabs are added dynamically
     tabbedPane = new JTabbedPane();
     tabbedPane.addChangeListener(this);
-    panel.add(tabbedPane);
+    panel.add(tabbedPane,
+	      new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
+				     GridBagConstraints.WEST,
+				     GridBagConstraints.BOTH,
+				     new Insets(10, 10, 10, 10),
+				     0, 0));
 
     getContentPane().add(panel);
 
     // enable run button if have experiment with at least one host, node,
     // and agent
-    setRunButtonEnabled();
+    initRunButton();
     stopButton.setEnabled(false);
     abortButton.setEnabled(false);
 
@@ -289,14 +379,13 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * Create a panel whose components are layed out horizontally.
    */
 
-  private JPanel createHorizontalPanel(boolean threeD) {
+  private JPanel createHorizontalPanel(boolean makeBorder) {
     JPanel p = new JPanel();
     p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
     p.setAlignmentY(TOP_ALIGNMENT);
     p.setAlignmentX(LEFT_ALIGNMENT);
-    if(threeD) {
-      p.setBorder(loweredBorder);
-    }
+    if (makeBorder)
+      p.setBorder(LineBorder.createGrayLineBorder());
     return p;
   }
 
@@ -338,7 +427,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * one node to run.
    */
 
-  private void setRunButtonEnabled() {
+  private void initRunButton() {
     HostComponent[] hosts = experiment.getHosts();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
@@ -385,10 +474,15 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       (String[])hostsToUse.toArray(new String[hostsToUse.size()]);
     if (hostsToRunOn.length > 0) 
       nameServerHostName = hostsToRunOn[0];
+
+    // this state should be detected earlier and the run button disabled
     if (!haveMoreTrials()) {
+      System.out.println("CSMARTConsole: WARNING: no more trials to run");
+      runButton.setSelected(false);
       runButton.setEnabled(false);
       return; // nothing to run
     }
+
     setTrialValues();
     if (nodesToRun.length != 0) {
       createNodes();
@@ -415,12 +509,15 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   }
 
   /**
-   * Set the trial values in the corresponding properties.
+   * Set the trial values in the corresponding properties,
+   * and update the trial guis.
    */
 
   private void setTrialValues() {
-    currentTrial++; // starts with 1
+    currentTrial++;  // starts with 0
     Trial trial = experiment.getTrials()[currentTrial];
+    trialNameLabel.setText(trial.getShortName());
+    trialProgressBar.setValue(currentTrial+1);
     Property[] properties = trial.getParameters();
     Object[] values = trial.getValues();
     for (int i = 0; i < properties.length; i++) 
@@ -436,6 +533,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    */
 
   public void stopButton_actionPerformed(ActionEvent e) {
+    stopButton.setSelected(true); // indicate stopping
+    stopButton.setEnabled(false); // disable until experiment stops
     // determine if societies in an experiment are self terminating
     //    Experiment experiment = csmart.getExperiment();
     // if user selects another experiment in the organizer, ignore it!
@@ -479,6 +578,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    */
   public void abortButton_actionPerformed(ActionEvent e) {
     stopAllNodes();
+    abortButton.setSelected(false);
   }
 
   /**
@@ -513,6 +613,9 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       runningNodes.remove(nodeComponent);
     }
     updateExperimentControls(experiment, false);
+    trialTimer.stop();
+    if (!haveMoreTrials())
+      experimentTimer.stop();
   }
 
   // Kill any existing tabbed panes or history charts
@@ -553,8 +656,17 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     //    hostTree.setEditable(!isRunning);
     //    nodeTree.setEditable(!isRunning);
     //    agentTree.setEditable(!isRunning);
-    runButton.setEnabled(!isRunning);
+
+    // if not running, enable the run button, and don't select it
+    // if running, disable the run button and select it
+    runButton.setEnabled(!isRunning && haveMoreTrials());
+    runButton.setSelected(isRunning);
+    //    runButton.setEnabled(true);
+
+    // if running, enable the stop button and don't select it
+    // if not running, disable the stop button and don't select it
     stopButton.setEnabled(isRunning);
+    stopButton.setSelected(false);
     abortButton.setEnabled(isRunning);
     historyMenuItem.setEnabled(isRunning);
   }
@@ -577,17 +689,24 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     // run the next trial and update the gui controls
     if (runningNodes.isEmpty()) {
       updateExperimentControls(experiment, false);
+      trialTimer.stop();
       if (haveMoreTrials()) {
 	if (!userStoppedTrials) {
-	  setTrialValues();
 	  destroyOldNodes(); // destroy old guis before starting new ones
+	  setTrialValues();
 	  createNodes();
 	  String firstNodeName = nodesToRun[0].getShortName();
 	  selectTabbedPane(firstNodeName);
 	  selectStatusButton(firstNodeName);
-	} 
-      } else
+	} else { // user stopped trials, allow them to run the next one
+	  runButton.setSelected(false);
+	}
+      } else { // experiment is done
 	runButton.setEnabled(false);
+	runButton.setSelected(false);
+	trialTimer.stop();
+	experimentTimer.stop();
+      }
     }
   }
 
@@ -858,6 +977,16 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     tabbedPane.add(nodeName, stdoutPane);
     addStatusButton(statusButton);
     updateExperimentControls(experiment, true);
+    startTimers();
+  }
+
+  private void startTimers() {
+    startTrialTime = new Date().getTime();
+    trialTimer.start();
+    if (currentTrial == 0) {
+      startExperimentTime = new Date().getTime();
+      experimentTimer.start();
+    }
   }
 
   /**
@@ -900,11 +1029,29 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   public void describeMenuItem_actionPerformed(ActionEvent e) {
   }
 
+  public String getElapsedTimeLabel(String prefix, long startTime) {
+    long now = new Date().getTime();
+    long timeElapsed = now - startTime;
+    long hours = timeElapsed / MSECS_PER_HOUR;
+    timeElapsed = timeElapsed - (hours * MSECS_PER_HOUR);
+    long minutes = timeElapsed / MSECS_PER_MINUTE;
+    timeElapsed = timeElapsed - (minutes * MSECS_PER_MINUTE);
+    long seconds = timeElapsed / MSECS_PER_SECOND;
+    StringBuffer sb = new StringBuffer(20);
+    sb.append(prefix);
+    sb.append(myNumberFormat.format(hours));
+    sb.append(":");
+    sb.append(myNumberFormat.format(minutes));
+    sb.append(":");
+    sb.append(myNumberFormat.format(seconds));
+    return sb.toString();
+  }
+
   public static void main(String[] args) {
     CSMARTConsole console = new CSMARTConsole(null);
     // for debugging, create our own society
     SocietyComponent sc = (SocietyComponent)new org.cougaar.tools.csmart.scalability.ScalabilityXSociety();
     console.setSocietyComponent(sc);
   }
-  
+
 }
