@@ -138,11 +138,11 @@ public class AssetDBComponent
           RelationshipData rData = new RelationshipData();
 	  if (rel == null) {
 	    if (log.isErrorEnabled()) {
-	      log.error("Please report seeing Bug 1304: Null RelationshipBase at child spot # " + i + " out of " + container.getChildCount() + " for Asset " + assetData.getUnitName() + " and agent " + agentName + " in assembly " + assemblyID, new Throwable());
+	      log.error("Please report seeing Bug 1304: Null RelationshipBase at child spot # " + i + " out of " + container.getChildCount() + " for Agent " + agentName + " in assembly " + assemblyID, new Throwable());
 	    }
 	  } else if (rel.getProperty(RelationshipBase.PROP_TYPE) == null) {
 	    if (log.isErrorEnabled()) {
-	      log.error("Please report seeing Bug 1304: Null Relationship type for relationship at child spot #" + i + " out of " + container.getChildCount() + " for Asset " + assetData.getUnitName() + " and agent " + agentName + " in assembly " + assemblyID, new Throwable());
+	      log.error("Please report seeing Bug 1304: Null Relationship type for relationship at child spot #" + i + " out of " + container.getChildCount() + " for Agent " + agentName + " in assembly " + assemblyID + " where relationship role=" + rel.getProperty(RelationshipBase.PROP_ROLE) + ", and ItemID=" + rel.getProperty(RelationshipBase.PROP_ITEM) + ", and supported=" + rel.getProperty(RelationshipBase.PROP_SUPPORTED), new Throwable());
 	    }
 	  } else {
 	    // Bug 1304 is an NPE in the next line
