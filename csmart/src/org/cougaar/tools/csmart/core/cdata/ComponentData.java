@@ -28,7 +28,7 @@ import java.io.Serializable;
 
 /**
  * Interface that contains all data
- * associated with an UltraLog component.
+ * associated with a Cougaar component.
  */
 public interface ComponentData extends Serializable {
 

@@ -286,9 +286,8 @@ public class CMTDialog extends JDialog {
   }
 
   /**
-   * Returns true if any UltraLog thread was selected and false otherwise.
+   * Returns true if any logistics supply thread was selected and false otherwise.
    */
-
   public boolean isULThreadSelected() {
     int n = ULThreads.length;
     for (int i = 0; i < n; i++) {
