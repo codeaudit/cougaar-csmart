@@ -28,16 +28,9 @@ import java.util.Collection;
 
 import org.cougaar.tools.server.ConfigurationWriter;
 
-import org.cougaar.tools.csmart.ui.component.NodeComponent;
-import org.cougaar.tools.csmart.ui.component.AgentComponent;
-import org.cougaar.tools.csmart.ui.component.SocietyComponent;
-import org.cougaar.tools.csmart.ui.component.ImpactComponent;
-import org.cougaar.tools.csmart.ui.component.GenericComponentData;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
-import org.cougaar.tools.csmart.ui.component.ComponentData;
-import org.cougaar.tools.csmart.ui.component.ComponentProperties;
-import org.cougaar.tools.csmart.ui.component.AgentComponentData;
-import org.cougaar.tools.csmart.ui.component.LeafComponentData;
+import org.cougaar.tools.csmart.ui.component.*;
+
 
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.configgen.abcsociety.ABCAgent;
@@ -124,7 +117,11 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
     // do fancy stuff based on type here??? FIXME!!
     return param.toString();
   }
-  
+
+  private String quote(String string) {
+    return "\"" + string + "\"";
+  }
+
   private void writeChildLine(PrintWriter writer, ComponentData me) throws IOException {
     writer.print(me.getName());
     if (me.parameterCount() == 0) {
@@ -290,31 +287,108 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
   private void writePrototypeINI(File configDir, AgentComponentData agent) throws IOException {
     PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, agent.getName() + "-prototype-ini.dat")));
 
-    if(agent.getOwner() instanceof ABCSociety) {
+    AgentAssetData assetData = agent.getAgentAssetData();
+
+    try {
+      writer.print("[Prototype] ");
+      writer.println(assetData.getAssetClass());
+      writer.println();
+
+      if(!assetData.isEntity()) {
+	writer.print("[UniqueId] ");
+	writer.println(quote(assetData.getUniqueID()));
+	writer.println();
+
+	if(assetData.getUnitName() != null) {
+	  writer.print("[UnitName] ");
+	  writer.println(assetData.getUnitName());
+	  writer.println();
+	}
+	
+	writer.print("[UIC] ");
+	writer.println(quote(assetData.getUIC()));
+	writer.println();
+      }
       
-      ABCSociety soc = (ABCSociety)agent.getOwner();
-
-      Iterator iter = ((Collection)soc.getDescendentsOfClass(ABCAgent.class)).iterator();
+      // Write Relationships.
+      Iterator iter = assetData.getRelationshipIterator();
+      writer.println("[Relationship]");
       while(iter.hasNext()) {
-	ABCAgent ag = (ABCAgent)iter.next();
-	String name = ag.getFullName().toString();
-	if(name.equals(agent.getName())) {
-	  ag.writePrototypeIniFile(writer, metricsInitializer);
-	}
-      }
-    } else if(agent.getOwner() instanceof ScalabilityXSociety) {
-      ScalabilityXSociety soc = (ScalabilityXSociety)agent.getOwner();
+	RelationshipData rel = (RelationshipData)iter.next();
 
-      Iterator iter = ((Collection)soc.getDescendentsOfClass(ScalabilityXAgent.class)).iterator();
-      while(iter.hasNext()) {
-	ScalabilityXAgent ag = (ScalabilityXAgent)iter.next();
-	String name = ag.getFullName().toString();
-	if(name.equals(agent.getName())) {
-	  ag.writePrototypeIniFile(writer);
+	if(assetData.isEntity()) {	  
+	  writer.print(quote(rel.getRole()) + "  ");
+	  writer.print(quote(rel.getItem()) + "  ");
+	  writer.print(quote(rel.getType()) + "  ");
+	  writer.print(quote(rel.getCluster()) + "  ");
+	  writer.print(quote(rel.getStartTime()) + "  ");
+	  writer.println(quote(rel.getStopTime()));
+	} else if(assetData.isOrg()) {
+	  writer.print(quote(rel.getType()) + " ");
+	  writer.print(quote(rel.getCluster()) + " ");
+	  writer.println(quote(rel.getRole()));
+	} else if(assetData.isTPOrg()){
+	  // To Do: Deals with Realtionship.ini file
+	} else {
+	  throw new RuntimeException("Asset Data Type Must be set: Entity, Org or TPOrg");
 	}
+      }		    
+      
+      writer.println();
+
+      iter = assetData.getPropGroupsIterator();
+      while(iter.hasNext()) {
+	PropGroupData pgData = (PropGroupData)iter.next();
+
+	writer.println("[" + pgData.getName() + "]");
+	Iterator iter2 = pgData.getPropertiesIterator();	
+	while(iter2.hasNext()) {
+	  PGPropData propData = (PGPropData)iter2.next();
+	  writer.print(propData.getName() + " ");
+	  writer.print(propData.getType());
+	  if(propData.isListType()) {
+	    writer.print("<" + propData.getSubType() + ">");
+	    writer.print(" " + quote(((PGPropMultiVal)propData.getValue()).toString()));
+	    writer.println();
+	  } else {
+	    writer.println(" " + quote((String)propData.getValue()));
+	  }
+	}
+	writer.println();
       }
+
+    } finally {
+      writer.close();
     }
 
+
+
+
+
+//     if(agent.getOwner() instanceof ABCSociety) {
+      
+//       ABCSociety soc = (ABCSociety)agent.getOwner();
+
+//       Iterator iter = ((Collection)soc.getDescendentsOfClass(ABCAgent.class)).iterator();
+//       while(iter.hasNext()) {
+// 	ABCAgent ag = (ABCAgent)iter.next();
+// 	String name = ag.getFullName().toString();
+// 	if(name.equals(agent.getName())) {
+// 	  ag.writePrototypeIniFile(writer, metricsInitializer);
+// 	}
+//       }
+//     } else if(agent.getOwner() instanceof ScalabilityXSociety) {
+//       ScalabilityXSociety soc = (ScalabilityXSociety)agent.getOwner();
+
+//       Iterator iter = ((Collection)soc.getDescendentsOfClass(ScalabilityXAgent.class)).iterator();
+//       while(iter.hasNext()) {
+// 	ScalabilityXAgent ag = (ScalabilityXAgent)iter.next();
+// 	String name = ag.getFullName().toString();
+// 	if(name.equals(agent.getName())) {
+// 	  ag.writePrototypeIniFile(writer);
+// 	}
+//       }
+//     }
   }
 
   public String toString() {
