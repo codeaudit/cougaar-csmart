@@ -230,7 +230,8 @@ very similar for WinNT.
   society). Note that the user must have select, insert, update, create,
   delete, and drop priviledges on the configuration database.
        <pre>
-       $ mysql
+       $ mysql -u root -p
+	[supply root password set during installation]
        mysql&gt; grant all on mycoug.* to myname@"localhost" identified by 'mypass';
        mysql&gt; exit;
       </pre>
@@ -241,7 +242,7 @@ very similar for WinNT.
 
   <li>Once you have imported the CMT MySQL datafile, be sure to follow
   the same steps to import the Cougaar domain plugin MySQL database
-  (from CIP/dbms/mysql/mysqldump.8.6.txt). You may load this data into
+  (from CIP/dbms/data/mysql/mysqldump.8.6.txt). You may load this data into
   the same database as the CSMART data, or a different one, as you
   prefer. Just be sure to build your "cougaar.rc" file appropriately.
   Note that importing this database requires loading 2 files at least,
