@@ -28,6 +28,7 @@ import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.*;
 
+import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
@@ -87,10 +88,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private static final String[] variationSchemes = {
     VARY_ONE_DIMENSION, VARY_TWO_DIMENSION, VARY_SEQUENTIAL, VARY_RANDOM };
   private String variationScheme = variationSchemes[0];
-  private boolean editable = true;
-  private boolean runnable = true;
+  private boolean overrideEditable = false;
   //  private boolean cloned = false;
   private transient boolean editInProgress = false;
+  private transient boolean runInProgress = false;
 
   private String expID = null; // An Experiment has a single ExpID
   private String trialID = null;
@@ -141,15 +142,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
                              NAME_SERVER_PORTS);
     defaultNodeArguments.put("org.cougaar.control.port", 
                              Integer.toString(APP_SERVER_DEFAULT_PORT));
-    if (isInDatabase()) {
-      defaultNodeArguments.put("org.cougaar.configuration.database", 
-                               Parameters.findParameter(DBUtils.DATABASE));
-      defaultNodeArguments.put("org.cougaar.configuration.user", 
-                               Parameters.findParameter(DBUtils.USER));
-      defaultNodeArguments.put("org.cougaar.configuration.password", 
-                               Parameters.findParameter(DBUtils.PASSWORD));
-      defaultNodeArguments.setReadOnlyProperty("org.cougaar.experiment.id", getTrialID());
-    }
+    defaultNodeArguments.put("org.cougaar.configuration.database", 
+                             Parameters.findParameter(DBUtils.DATABASE));
+    defaultNodeArguments.put("org.cougaar.configuration.user", 
+                             Parameters.findParameter(DBUtils.USER));
+    defaultNodeArguments.put("org.cougaar.configuration.password", 
+                             Parameters.findParameter(DBUtils.PASSWORD));
+    defaultNodeArguments.setReadOnlyProperty("org.cougaar.experiment.id", getTrialID());
     try {
       defaultNodeArguments
         .put("env.DISPLAY", InetAddress.getLocalHost().getHostName() +
@@ -245,7 +244,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public RecipeComponent[] getRecipes() {
     return (RecipeComponent[])recipes.toArray(new RecipeComponent[recipes.size()]);
   }
-  public ModifiableComponent getComponent(int i) {
+  private ModifiableComponent getComponent(int i) {
     // What a hack!!!
     if (i < getSocietyComponentCount())
       return (ModifiableComponent)getSocietyComponent(i);
@@ -259,84 +258,102 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return getShortName();
   }
 
+  /**
+   * Set edit in progress.  Used by UI tools to indicate that an
+   * experiment is being edited.  Note that this is distinct from
+   * setting the editability flag, which indicates whether the experiment
+   * can ever be edited.
+   */
+
   public void setEditInProgress(boolean newEditInProgress) {
     editInProgress = newEditInProgress;
   }
 
   /**
+   * Set run in progress.  Used by UI tools to indicate that an
+   * experiment is being run.  Note that this is distinct from
+   * setting the runnability flag, which indicates whether the experiment
+   * can ever be run.
+   */
+
+  public void setRunInProgress(boolean newRunInProgress) {
+    runInProgress = newRunInProgress;
+  }
+
+  /**
+   * Return whether or not experiment is being edited.
+   * Note that the experiment may be viewed (but not edited) in an editor,
+   * even if this flag is not set.
+   * @return boolean whether or not experiment is being edited
+   */
+
+  public boolean isEditInProgress() {
+    return editInProgress;
+  }
+
+  /**
+   * Return whether or not experiment is being run.
+   * @return boolean whether or not experiment is being run
+   */
+
+  public boolean isRunInProgress() {
+    return runInProgress;
+  }
+
+  /**
+   * Returns true if user could override editability.
+   */
+
+  /**
    * Returns true if experiment is editable: 
-   * it is not being edited, 
-   * it is not being controlled by the console (regardless of whether
-   * or not it has started running),
-   * it has no saved data,
-   * and all of its societies are editable.
-   * @return true if experiement is editable, false otherwise
+   * it has no trial results, and
+   * it's not being edited or run
+   * The first condition can be overridden using the setEditable method.
+   * @return true if experiment is editable, false otherwise
    */
   public boolean isEditable() {
-    if (editable && !editInProgress) {
-      // make sure that societies are editable too
-      // FIXME: Really? What if one component is never editable?
-//        for (int i = 0; i < getComponentCount(); i++)
-//  	if (!((ModifiableConfigurableComponent)getComponent(i)).isEditable())
-//  	  return false;
+    if (editInProgress || runInProgress)
+      return false;
+    if (overrideEditable)
       return true;
+    else
+      return !hasResults();
+  }
+
+  private boolean hasResults() {
+    Trial[] trials = getTrials();
+    for (int i = 0; i < trials.length; i++) {
+      TrialResult[] results = trials[i].getTrialResults();
+      if (results.length != 0) 
+        return true;
     }
     return false;
   }
 
   /**
-   * Set whether or not the experiment can be edited.
-   * @param editable true if experiment is editable and false otherwise
+   * Make an experiment editable even if
+   * it has experiment results.
    */
   public void setEditable(boolean editable) {
-    if (editable == this.editable) return;
-    this.editable = editable;
+    if (editable == overrideEditable) return; // no change
+    overrideEditable = editable;
     //    System.err.println("new editable " + editable);
-    for (int i = 0; i < getComponentCount(); i++)
-      getComponent(i).setEditable(editable);
+    //    for (int i = 0; i < getComponentCount(); i++)
+    //      getComponent(i).setEditable(editable);
     fireModification();
   }
 
   /**
-   * Get whether or not experiment is runnable.  An experiment is 
-   * runnable whenever it's not being edited, if it is fully defined.<br>
+   * Return whether or not experiment is runnable.  An experiment is runnable:
+   * if it has a host-node-agent mapping, and
+   * it has no unbound properties, and
+   * it's not being edited or run
    * @return whether or not an experiment is runnable
    */
   public boolean isRunnable() {
-    if (! hasConfiguration() || hasUnboundProperties()) {
-      //System.err.println("Experiment runnable: " + runnable);
-      //if (! hasConfiguration())
-	//System.err.println("Experiment does not have a complete config");
-      //if (hasUnboundProperties())
-	//System.err.println("Experiment has unbound props");
+    if (!hasConfiguration() || hasUnboundProperties())
       return false;
-    }
-    //System.err.println("Experiment.isRunnable returning: " + runnable);
-    return runnable && !editInProgress;
-  }
-
-  /**
-   * Set whether or not experiment is runnable.  An experiment is 
-   * runnable whenever it's not being edited.
-   * @param runnable whether or not an experiment is runnable
-   */
-  public void setRunnable(boolean runnable) {
-    if (runnable == this.runnable) return;
-    this.runnable = runnable;
-    fireModification();
-  }
-
-  /**
-   * Returns true if any society in the experiment is running, false otherwise.
-   * Running experiments are not editable, but they can be copied,
-   * and the copy can be edited.
-   * @return true if experiment is running, false otherwise
-   */
-  public boolean isRunning() {
-    for (int i = 0; i < societies.size(); i++)
-      if (((SocietyComponent)societies.get(i)).isRunning())
-	return true;
-    return false;
+    return !editInProgress && !runInProgress;
   }
 
   /**
@@ -1042,7 +1059,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   /**
    * If the experiment has at least one host with at least one node
    * with at least one agent, that is a configuration.
-   * FIXME: This method is still buggy
    *
    * @return a <code>boolean</code> true if it has a configured agent
    */
@@ -1050,9 +1066,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (hosts.isEmpty() || nodes.isEmpty() || getAgents() == null || getAgents().length == 0) {
       return false;
     }
-    // An experiment has a configuration if it has at least one host
-    // which has at least one Node
-    // which has at least one Agent
     HostComponent[] hosts = getHosts();
     for (int i = 0; i < hosts.length; i++) {
       if (hosts[i] == null)
@@ -1290,27 +1303,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     hasValidTrials = true;
     return (Trial[])trials.toArray(new Trial[trials.size()]);
   }
-
-  /**
-   * Indicates whether or not the experiment is in the database (or should
-   * be written to the database for new experiments).
-   * @param db true if experiment is, or should be, in database
-   */
-
-  public void setInDatabase(boolean db) {
-    inDatabase = db;
-  }
-
-  /**
-   * Indicates whether or not the experiment is in the database (or should
-   * be written to the database for new experiments).
-   * @return boolean true if experiment is, or should be, in database
-   */
-  
-  public boolean isInDatabase() {
-    return inDatabase;
-  }
-
 
   /**
    * Get component data for the society in the experiment.
