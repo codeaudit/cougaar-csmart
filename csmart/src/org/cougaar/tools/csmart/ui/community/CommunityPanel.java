@@ -309,7 +309,7 @@ public class CommunityPanel extends JPanel {
         DefaultMutableTreeNode node =
           (DefaultMutableTreeNode)path.getLastPathComponent();
         if (node.getUserObject() instanceof CommunityTreeObject) {
-          CommunityTreeObject cto = (CommunityTreeObject)node.getUserObject();
+	  //          CommunityTreeObject cto = (CommunityTreeObject)node.getUserObject();
           // TODO: check if name is unique
           String newName = (String)getCellEditorValue();
 	  boolean uniq = isCommNameUnique(newName);

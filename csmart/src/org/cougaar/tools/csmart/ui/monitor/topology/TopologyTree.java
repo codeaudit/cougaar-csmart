@@ -66,7 +66,6 @@ public class TopologyTree extends JTree {
     Hashtable hosts = new Hashtable();
     Hashtable nodes = new Hashtable();
     for (int i = 0; i < values.size(); i++) {
-      ArrayList row = new ArrayList();
       StringTokenizer st = new StringTokenizer((String)values.get(i), ",");
       if (st.countTokens() < 3) {
         continue;

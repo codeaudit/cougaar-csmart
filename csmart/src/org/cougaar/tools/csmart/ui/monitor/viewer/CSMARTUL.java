@@ -273,8 +273,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
   private static void setHostToMonitor() {
     Logger log = CSMART.createLogger(CSMARTUL.class.getName());
-    ArrayList potentialHosts = new ArrayList();
-    ArrayList potentialNodes = new ArrayList();
     HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
@@ -325,10 +323,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    * Used only if this tool is run standalone (outside of CSMART).
    * @see NamedFrame#addFrame
    */
-
   public void update(Observable o, Object arg) {
     if (o instanceof NamedFrame) {
-      NamedFrame namedFrame = (NamedFrame) o;
+      //      NamedFrame namedFrame = (NamedFrame) o;
       NamedFrame.Event event = (NamedFrame.Event) arg;
       if (event.eventType == NamedFrame.Event.ADDED) {
         JMenuItem menuItem = new JMenuItem(event.title);
@@ -495,9 +492,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    * Query user for agent URL if running multiple experiments
    * or not running under CSMART.
    */
-
   private static void getAgentURL() {
-    Logger log = CSMART.createLogger(CSMARTUL.class.getName());
+    //    Logger log = CSMART.createLogger(CSMARTUL.class.getName());
 
     if (csmart != null) 
       setExperimentToMonitor();
@@ -508,7 +504,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   /**
    * If running under csmart, ask user for experiment to monitor.
    */
-
   private static void setExperimentToMonitor() {
     // ask user to select experiment from running experiments
     Experiment[] exp = CSMART.getRunningExperiments();

@@ -141,8 +141,8 @@ public class AgentDBComponent
    */
   public void initProperties() {
     super.initProperties();
-    String componentID = name;
-    String componentCategory = "agent";
+//     String componentID = name;
+//     String componentCategory = "agent";
     propName = addProperty(PROP_AGENT_NAME, name,
 			   new ConfigurableComponentPropertyAdapter() {
 			     public void PropertyValueChanged(PropertyEvent e) {

@@ -964,8 +964,8 @@ public class PropertyEditorPanel extends JPanel
   private void addRelationship() {
     Vector relationships = new Vector();
 
-    DefaultMutableTreeNode selNode =
-      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+//     DefaultMutableTreeNode selNode =
+//       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     // relationship configurable components are created from relationship data
     RelationshipData relData = new RelationshipData();
 

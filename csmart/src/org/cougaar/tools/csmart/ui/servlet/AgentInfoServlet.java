@@ -284,7 +284,6 @@ public class AgentInfoServlet
 	if (((locSchedPG = asset.getLocationSchedulePG()) != null) &&
 	    ((locSched = locSchedPG.getSchedule()) != null) &&
 	    (!(locSched.isEmpty()))) {
-	  List locPTs = new ArrayList();
 	  Enumeration locSchedEn = locSched.getAllScheduleElements();
 	  boolean includeStartEndTime = false;
 	  int locNumber = 0;
@@ -324,7 +323,6 @@ public class AgentInfoServlet
 	    includeStartEndTime = false;
 	  }
 	}
-	int nProperties = properties.size();
 	results.add(properties);
       }
       return results;

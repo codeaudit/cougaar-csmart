@@ -37,7 +37,6 @@ import org.cougaar.util.log.Logger;
 
 /**
  * Display graph representing arbitrary objects.
- * @property os.arch used to find correct version of dot.exe
  * @property os.name also used in finding dot.exe
  * @property org.cougaar.install.path Used to locate the executable, and to locate a place to save graphs
  */
@@ -168,7 +167,7 @@ public class CSMARTGraph extends Graph
     if (dotExecutable != null)
       return;
     // Win: x86, Linux: i386, Solaris: sparc
-    String arch = (String)System.getProperty("os.arch");
+    //    String arch = (String)System.getProperty("os.arch");
     // Win: Windows NT, Linux: Linux, Solaris: SunOS
     String os = (String)System.getProperty("os.name");
     String[] dotNames = {"dot.exe", "dot-l386", "dot-L386", "dot"};

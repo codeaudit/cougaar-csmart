@@ -212,7 +212,7 @@ public class CommunityProviderServlet
 	support.queryBlackboard(getSelfPred());
       Iterator iter = container.iterator();
       Vector results = new Vector(1);
-      int n = 0; // unique index for relationships
+      //      int n = 0; // unique index for relationships
       while (iter.hasNext()) {
 	Asset asset = (Asset)iter.next();
 	PropertyTree properties = new PropertyTree();

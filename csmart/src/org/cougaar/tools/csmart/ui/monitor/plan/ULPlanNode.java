@@ -119,8 +119,8 @@ public class ULPlanNode implements NodeObject {
       }
     } else if (objectType.equals(PropertyNames.PLAN_ELEMENT_OBJECT)) {
       label = (String)properties.get(PropertyNames.PLAN_ELEMENT_TYPE);
-      String taskUID = 
-	(String)properties.get(PropertyNames.PLAN_ELEMENT_TASK_UID);
+//       String taskUID = 
+// 	(String)properties.get(PropertyNames.PLAN_ELEMENT_TASK_UID);
       //      bidirectionalLinks = new Vector(1);
       //      bidirectionalLinks.addElement(taskUID);
       outgoingLinks = new Vector();
@@ -160,7 +160,7 @@ public class ULPlanNode implements NodeObject {
 	  incomingLinks.addElement(parent);
 	}
       } else if (taskType.equals(PropertyNames.MPTASK)) {
-	Object o = properties.get(PropertyNames.TASK_PARENT_UID);
+// 	Object o = properties.get(PropertyNames.TASK_PARENT_UID);
 	ArrayList parentUIDs = 
 	  (ArrayList)properties.get(PropertyNames.TASK_PARENT_UID);
 	incomingLinks = new Vector(parentUIDs);

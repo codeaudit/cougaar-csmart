@@ -119,7 +119,7 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       // special case, the string is larger than the buffer
       // just insert the end of the string
       if (len >= bufferSize) {
-        int tmp = len-bufferSize;
+	//        int tmp = len-bufferSize;
         remove(0, getLength() - bufferSize);
         return;
       }

@@ -972,7 +972,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   private boolean isHostNameUnique(String name) {
     HostComponent[] hc = experiment.getHostComponents();
-    boolean isUnique = true;
     for (int i = 0; i < hc.length; i++) 
       if (name.equalsIgnoreCase(hc[i].getShortName()))
         return false;
@@ -1579,7 +1578,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     experiment.updateNameServerHostName(); // Be sure this is up-do-date
     ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
     NodeComponent nodeComponent = (NodeComponent)cto.getComponent();
-    Vector data = new Vector();
     // node component level properties
     NodeArgumentDialog dialog =
       new NodeArgumentDialog("Node " + nodeComponent.getShortName()

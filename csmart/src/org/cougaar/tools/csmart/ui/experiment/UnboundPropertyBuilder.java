@@ -362,7 +362,6 @@ public class UnboundPropertyBuilder extends JPanel {
       tree.setSelectionPath(selPath);
       DefaultMutableTreeNode popupNode =
         (DefaultMutableTreeNode) selPath.getLastPathComponent();
-      Object o = popupNode.getUserObject();
       if (popupNode == societies)
         societiesMenu.show(tree, e.getX(), e.getY());
       else if (popupNode == recipes)
@@ -376,8 +375,8 @@ public class UnboundPropertyBuilder extends JPanel {
    */
   private void removeAllChildren(DefaultMutableTreeNode parent) {
     for (int i = 0; i < parent.getChildCount(); i++) {
-      DefaultMutableTreeNode node = 
-	(DefaultMutableTreeNode)parent.getChildAt(i);
+//       DefaultMutableTreeNode node = 
+// 	(DefaultMutableTreeNode)parent.getChildAt(i);
       // make removed society component editable again
 //        Object userObject = node.getUserObject();
 //        if (userObject != null &&

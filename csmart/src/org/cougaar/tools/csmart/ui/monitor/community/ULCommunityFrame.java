@@ -123,8 +123,7 @@ public class ULCommunityFrame extends CSMARTFrame {
     JPanel clusterPanel = new JPanel();
     clusterPanel.setBorder(new TitledBorder("Communities"));
     clusterPanel.setLayout(new BoxLayout(clusterPanel, BoxLayout.Y_AXIS));
-    int x = 0;
-    int y = 0;
+
     JComboBox cb = 
       new JComboBox(new LegendComboBoxModel(graph.getNodeColors()));
     cb.setRenderer(new LegendRenderer());

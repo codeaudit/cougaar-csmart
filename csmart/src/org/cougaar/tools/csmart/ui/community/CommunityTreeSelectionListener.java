@@ -51,7 +51,6 @@ public class CommunityTreeSelectionListener implements TreeSelectionListener {
       return;
     CommunityTreeObject cto = (CommunityTreeObject)node.getUserObject();
     String name = cto.toString();
-    String query = null;
     if (cto.isRoot())
       return; // ignore selecting root
     // node is a community; display information for a community 
