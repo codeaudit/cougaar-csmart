@@ -242,7 +242,7 @@ public class ABCImpact
     ComponentData data = new GenericComponentData();
 
     data.setType(ComponentData.NODEBINDER);
-    data.setName("Node.Agent.Binder");
+    data.setName("Node.AgentManager.Binder");
     data.setClassName(BinderClass_name);
     data.addParameter(propSamplesPerSecond.getValue());
     data.addParameter(propInMsgsPerSecond.getValue());
@@ -385,6 +385,7 @@ public class ABCImpact
 	// Process it.
 	if(child.getName().equals(generatorAgent.getFullName().toString())) {
 	  // Found Generator
+	  // FIXME: Create a new agent and replace the old one with this one
 	  child.setOwner(this);
 	  child = generatorAgent.addComponentData(child);
 	  // Add the society.dat and xml file as leaves of the generator.
@@ -392,6 +393,7 @@ public class ABCImpact
 	  child.addLeafComponent(createSocietyLeaf());
 	} else if(child.getName().equals(transducerAgent.getFullName().toString())) {
 	  // Found Transducer
+	  // FIXME: Create a new agent and replace the old one with this one
 	  child.setOwner(this);
 	  child = transducerAgent.addComponentData(child);
 	} else {
@@ -424,7 +426,7 @@ public class ABCImpact
     for(int i=0; i < children.length; i++) {
       ComponentData child = children[i];
       if(child.getType() == ComponentData.NODE) {
-	child.addChild(0, createBinderComponentData());
+	child.addChildDefaultLoc(createBinderComponentData());
       } else {
 	addBinder(child);
       }
@@ -443,7 +445,7 @@ public class ABCImpact
 	   !child.getName().equals(transducerAgent.getFullName().toString())) {
 
 	  // Add ImpactPlugin to the Agent.
-	  child.addChild(getImpactPlugIn(child));
+	  child.addChildDefaultLoc(getImpactPlugIn(child));
 	}
       } else {
 	// Process it's children.

@@ -26,6 +26,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Set;
+import java.util.ArrayList;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.util.DBProperties;
 
@@ -178,6 +179,8 @@ public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
         GenericComponentData comp = new GenericComponentData();
         comp.setName(vals[0]);
         comp.setType(vals[1]);
+	if (comp.getType().equals("binder"))
+	  comp.setType(ComponentData.AGENTBINDER);
         comp.setClassName(vals[2]);
         rowData = pdb.executeQueryForComponent(propInsertionComponentArgQuery.getValue().toString(), comp);
         for (int i = 0; i < rowData.length; i++) {
@@ -194,9 +197,13 @@ public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
         }
         comp.setParent(data);
         comp.setOwner(this);
-        data.addChild(comp);
+	
+	// Add this component, replacing any existing copy,
+	// and ensuring binders go before others
+	data.addChildDefaultLoc(comp);
       }
     }
+	
     if (data.childCount() > 0) {
       // for each child, call this same method.
       ComponentData[] children = data.getChildren();

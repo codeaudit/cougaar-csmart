@@ -39,6 +39,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   private static final String FILE_MENU = "File";
   private static final String SAVE_MENU_ITEM = "Save";
   private static final String SAVE_AS_MENU_ITEM = "Save As...";
+  private static final String DUMP_INI_ITEM = "Debug: Dump .ini files";
   private static final String EXIT_MENU_ITEM = "Close";
   private static final String FIND_MENU = "Find";
   private static final String FIND_HOST_MENU_ITEM = "Find Host...";
@@ -86,6 +87,11 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
         saveAs();
       }
     },
+    new AbstractAction(DUMP_INI_ITEM) {
+	public void actionPerformed(ActionEvent e) {
+	  dumpINIs();
+	}
+      },
     new AbstractAction(EXIT_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
 	exit();
@@ -304,6 +310,11 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     saveHelper();
   }
 
+  // Dump out the ini files for the first trial to the local results directory
+  private void dumpINIs() {
+    experiment.dumpINIFiles();
+  }
+  
   private void saveHelper() {
     modified = false;
     final Component c = this;

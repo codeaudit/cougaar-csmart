@@ -945,22 +945,37 @@ public class PopulateDb extends PDbBase {
      * alib id.
      **/
     public String getComponentAlibId(ComponentData data) {
+      // This relies on being able to find the ancestors
+      // for plugins and binders, which you cant always do
+      // FIXME!!
         if (data == null) return null;
         String result = data.getAlibID();
         if (result == null) {
             String componentType = data.getType();
             if (componentType.equals(ComponentData.PLUGIN)) {
-                String agentName =
-                    findAncestorOfType(data, ComponentData.AGENT).getName();
+	      ComponentData anc = findAncestorOfType(data, ComponentData.AGENT);
+	      if (anc == null) {
+		return data.getName();
+	      } else {
+                String agentName = anc.getName();
                 result = agentName + "|" + data.getClassName();
+	      }
             } else if (componentType.equals(ComponentData.NODEBINDER)) {
-              String nodeName =
-                findAncestorOfType(data, ComponentData.NODE).getName();
-              result = nodeName + "|" + data.getClassName();
+	      ComponentData anc = findAncestorOfType(data, ComponentData.NODE);
+	      if (anc == null) {
+		return data.getName();
+	      } else {
+		String nodeName = anc.getName();
+		result = nodeName + "|" + data.getClassName();
+	      }
             } else if (componentType.equals(ComponentData.AGENTBINDER)) {
-                String agentName =
-                    findAncestorOfType(data, ComponentData.AGENT).getName();
+	      ComponentData anc = findAncestorOfType(data, ComponentData.AGENT);
+	      if (anc == null) {
+		return data.getName();
+	      } else {
+                String agentName = anc.getName();
                 result = agentName + "|" + data.getClassName();
+	      }
             } else if (componentType.equals(ComponentData.SOCIETY)) {
                 result = ComponentData.SOCIETY + "|" + data.getName();
             } else {

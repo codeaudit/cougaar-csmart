@@ -269,7 +269,8 @@ public class BasicMetric extends ModifiableConfigurableComponent
     plugin.addParameter(getProperty(PROP_MAXNUMBSAMPLES).getValue()); // maxSamples
     plugin.setParent(data);
     plugin.setOwner(this);
-    data.addChild(plugin);
+    // Add the plugin such that it replaces any previous version
+    data.addChildDefaultLoc(plugin);
     return plugin;
   }
 
@@ -297,7 +298,9 @@ public class BasicMetric extends ModifiableConfigurableComponent
     plugin.addParameter(getProperty(PROP_NODESERV).getValue()); // Turn on/off Node Metrics Serv
     plugin.addParameter(getProperty(PROP_MSTATSSERV).getValue()); // Turn on/off Msg Stats Serv, def. on
     plugin.addParameter(getProperty(PROP_MWATCHSERV).getValue()); // Turn on/off MsgWatcher Serv
-    data.addChild(plugin);
+
+    // Add the plugin such that it replaces any previous version
+    data.addChildDefaultLoc(plugin);
   }
 
   private void addRelationship(AgentComponentData data) {
@@ -308,6 +311,8 @@ public class BasicMetric extends ModifiableConfigurableComponent
     if (aad == null) return;    // No agent asset data available
     RelationshipData[] relats = aad.getRelationshipData();
     for (int i = 0; i < relats.length; i++) {
+      // FIXME: This should be equals based on the Role not the agent
+      // Or rather, we must be careful....
       if (relats[i].equals(metricRelate))
 	return;
     }

@@ -143,6 +143,8 @@ public class CMTAgent
     return orgClass;
   }
 
+  // Take the ComponentData for an Agent to which
+  // we are adding some data.
   private ComponentData addAssetData(ComponentData data) {
     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
 
@@ -170,7 +172,8 @@ public class CMTAgent
             String role = rs.getString(2);
             Timestamp startDate = rs.getTimestamp(3);
             Timestamp endDate = rs.getTimestamp(4);
-
+	    // what about rd.setType()? Probably to Supporting for most things?
+	    // except for some to Superior?
             rd.setSupported(supported);
             rd.setRole(role);
             if (startDate != null) {
@@ -190,6 +193,11 @@ public class CMTAgent
         throw new RuntimeException("Error" + e);
       }
     }
+
+    // FIXME: Add in other property groups!!
+    
+    // Note: This really does a SET, so it correctly
+    // replaces the old data, if any, with the new
     data.addAgentAssetData(assetData);
 
     return data;
@@ -202,7 +210,13 @@ public class CMTAgent
     Iterator iter = assemblyID.iterator();
     boolean first = true;
     while (iter.hasNext()) {
+      // If this assembly is not a CMT assembly, skip it?
+      // FIXME
       String val = (String)iter.next();
+      if (! val.startsWith("CMT")) {
+	// not a CMT assembly. Skip it
+	continue;
+      }
       if (first) {
         first = false;
       } else {
@@ -217,7 +231,7 @@ public class CMTAgent
   }
 
   public ComponentData addComponentData(ComponentData data) {
-
+    // The incoming data is an agent
     String name = data.getName();
     int dotPos = name.lastIndexOf('.');
     if (dotPos >= 0) {
@@ -231,6 +245,9 @@ public class CMTAgent
       substitutions.put(":agent_name", name);
 
       data.setAlibID((String)propComponentID.getValue());
+      // could do data.setChildren(new ComponentData[0]);
+      // this ensures all the stuff I add is new, which
+      // it should be
 
       // Get Plugin Names
       try {
@@ -238,7 +255,7 @@ public class CMTAgent
         try {
           Statement stmt = conn.createStatement();	
           String query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
-	
+	  
           ResultSet rs = stmt.executeQuery(query);
           while(rs.next()) {
             GenericComponentData plugin = new GenericComponentData();
@@ -262,8 +279,17 @@ public class CMTAgent
             }
             rs2.close();
             stmt2.close();
+
+	    // This blindly adds the plugin.
+	    // In this case, this is OK, cause the CMTAgents
+	    // Only fill in stuff for CMT assembly agents,
+	    // and are the first ones to be run
+	    // In general however, this should do:
+	    //if (data.getChildIndex(plugin) < 0)
+	    // then add
+	    // else, data.setChild(index, plugin)
             data.addChild(plugin);
-          }
+          } // end of loop over plugins to add
           rs.close();
           stmt.close();
 
@@ -286,5 +312,18 @@ public class CMTAgent
     ois.defaultReadObject();
     initDBProperties();
   }
+
   
+  public boolean equals(Object o) {
+    if (o instanceof AgentComponent) {
+      AgentComponent that = (AgentComponent)o;
+//        System.out.println(this + " has short name " + this.getShortName());
+//        System.out.println("Compared to " + that + " which has short name " + that.getShortName());
+      if (!this.getShortName().equals(that.getShortName())  ) {
+	return false;
+      }     
+      return true;
+    }
+    return false;
+  }
 } // end of CMTAgent.java

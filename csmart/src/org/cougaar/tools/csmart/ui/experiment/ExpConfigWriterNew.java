@@ -53,13 +53,17 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
   // Remove when prototypes are fixed.
   private String metricsInitializer = null;
 
+  public ExpConfigWriterNew(ComponentData theSoc) {
+    this.theSoc = theSoc;
+  }
+  
   public ExpConfigWriterNew(List components, NodeComponent[] nodesToWrite, Experiment exp) {
     this.nodesToWrite = nodesToWrite;
     this.components = components;
     theSoc = new GenericComponentData();
     theSoc.setType(ComponentData.SOCIETY);
     theSoc.setName(exp.getExperimentName()); // this should be experiment: trial FIXME
-    theSoc.setClassName(""); // leave this out? FIXME
+    theSoc.setClassName("java.lang.Object"); // leave this out? FIXME
     theSoc.setOwner(exp); // the experiment
     theSoc.setParent(null);
     // For each node, create a GenericComponentData, and add it to the society
@@ -75,7 +79,8 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
       soc.addComponentData(theSoc);
     }
     // Then give everyone a chance to modify what they've collectively produced
-    for (int i = components.size() - 1; i >= 0; i--) {
+    //    for (int i = components.size() - 1; i >= 0; i--) {
+    for (int i = 0; i < components.size(); i++) {
       ComponentProperties soc = (ComponentProperties) components.get(i);
       soc.modifyComponentData(theSoc);
     }    
@@ -91,7 +96,11 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
       nc.setParent(theSoc);
       ComponentName name = 
 	  new ComponentName((ConfigurableComponent)nodesToWrite[i], "ConfigurationFileName");
-      nc.addParameter(((ComponentProperties)nodesToWrite[i]).getProperty(name).getValue().toString());
+      try {
+	nc.addParameter(((ComponentProperties)nodesToWrite[i]).getProperty(name).getValue().toString());
+      } catch (NullPointerException e) {
+	nc.addParameter(nc.getName() + ".ini");
+      }
       theSoc.addChild(nc);
       addAgents(nodesToWrite[i], nc);
     }
@@ -114,11 +123,54 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
   public void writeConfigFiles(File configDir) throws IOException {
     // Call writeNodeFile for each of the nodes in theSoc.
     ComponentData[] nodes = theSoc.getChildren();
+    writeSocietyFile(configDir, theSoc);
     for (int i = 0; i < theSoc.childCount(); i++) {
-      writeNodeFile(configDir, nodes[i]);
+      if (nodes[i].getType().equals(ComponentData.HOST)) {
+	writeHostFile(configDir, nodes[i]);
+	for (int j = 0; j < nodes[i].childCount(); j++) {
+	  writeNodeFile(configDir, nodes[i].getChildren()[j]);
+	}
+      } else {
+	writeNodeFile(configDir, nodes[i]);
+      }
     }
   }
 
+  private void writeHostFile(File configDir, ComponentData hc) throws IOException {
+    if (hc.childCount() == 0) {
+      // host has no Nodes. Skip it
+      return;
+    }
+    String configFileName = hc.getName() + ".txt";
+    PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, configFileName)));
+    try {
+      ComponentData[] children = hc.getChildren();
+      for (int i = 0; i < hc.childCount(); i++) {
+	writer.print(children[i].getType() + " = ");
+	writeChildLine(writer, children[i]);
+      }
+    } catch (Exception e) {
+      System.out.println("Error writing config file: " + e);
+    }
+    finally {
+      writer.close();
+    }    
+  }
+  
+  private void writeSocietyFile(File configDir, ComponentData hc) throws IOException {
+    String configFileName = hc.getName() + ".txt";
+    PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, configFileName)));
+    try {
+      writer.print("society = ");
+      writeChildLine(writer, hc);
+    } catch (Exception e) {
+      System.out.println("Error writing config file: " + e);
+    }
+    finally {
+      writer.close();
+    }    
+  }
+  
   private String writeParam(Object param) {
     // do fancy stuff based on type here??? FIXME!!
     return param.toString();
@@ -129,8 +181,11 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
   }
 
   private void writeChildLine(PrintWriter writer, ComponentData me) throws IOException {
-    writer.print(me.getName());
-    if (me.parameterCount() == 0) {
+    if (me.getType().equals(ComponentData.SOCIETY) || me.getType().equals(ComponentData.AGENT) || me.getType().equals(ComponentData.HOST) || me.getClassName() == null)
+      writer.print(me.getName());
+    else 
+      writer.print(me.getClassName());
+    if (me.parameterCount() == 0 || me.getType().equals(ComponentData.AGENT)) {
       writer.println();
       return;
     }
@@ -163,6 +218,7 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
 	writer.println(leaf.getValue().toString());
       } catch (Exception e) {
 	System.out.println("Error writing config file: " + e);
+	e.printStackTrace();
       }
       finally {
 	writer.close();
@@ -171,8 +227,16 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
   } // end of writeLeafData  
   
   private void writeNodeFile(File configDir, ComponentData nc) throws IOException {
+    if (nc.childCount() == 0) {
+      // node has no agents or binders. skip it
+      return;
+    }
    Object[] parameters = nc.getParameters();
-   String configFileName = (String)parameters[0] + ".ini";
+   String configFileName = nc.getName() + ".ini";
+   if (parameters.length > 0)
+     configFileName = (String)parameters[0];
+   if (! configFileName.endsWith(".ini"))
+     configFileName = configFileName + ".ini";
    PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, configFileName)));
     try {
     // loop over children
@@ -223,9 +287,11 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
 	  // Write the children of this agent if there are any
 	  // write the leaf components of this agent
 	  writeAgentFile(configDir, (AgentComponentData)children[i]);
-	} else if (!children[i].getType().equals(ComponentData.NODEBINDER) 
-                   || !children[i].getType().equals(ComponentData.AGENTBINDER)) {
-	  System.err.println("Got a child of a Node that wasn't an Agent: " + children[i]);
+	} else if (children[i].getType().equals(ComponentData.NODEBINDER)) {
+	} else {
+//  	} else if (!children[i].getType().equals(ComponentData.NODEBINDER) 
+//                     || !children[i].getType().equals(ComponentData.AGENTBINDER)) {
+	  System.err.println("Got a child of a Node that wasn't an Agent or Node Binder: " + children[i]);
 	}
       }
       writer.println();
@@ -238,6 +304,7 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
       writer.println("[ AuthorizedOperation ]");
     } catch (Exception e) {
       System.out.println("Error writing config file: " + e);
+      e.printStackTrace();
     }
     finally {
       writer.close();
@@ -250,7 +317,13 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
     ComponentData[] children = comp.getChildren();
     for (int i = 0; i < children.length; i++) {
       if (writer != null) {
-	writer.print(children[i].getType() + " = ");
+	if (children[i].getType().equals(ComponentData.AGENTBINDER)) {
+	  writer.print("Node.AgentManager.Agent.PluginManager.Binder = ");
+	} else if (children[i].getType().equals(ComponentData.NODEBINDER)) {
+	  writer.print("Node.AgentManager.Binder = ");
+	} else {
+	  writer.print(children[i].getType() + " = ");
+	}
 	writeChildLine(writer, children[i]);
       }
       // Could one of these guys have children?
@@ -282,6 +355,7 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
       writer.println("[ AuthorizedOperation ]");
     } catch (Exception e) {
       System.out.println("Error writing config file: " + e);
+      e.printStackTrace();
     }
     finally {
       writer.close();
@@ -295,19 +369,25 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
   } // end of writeAgentFile
   
   private void writePrototypeINI(File configDir, AgentComponentData agent) throws IOException {
-    PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, agent.getName() + "-prototype-ini.dat")));
-
     AgentAssetData assetData = agent.getAgentAssetData();
 
+    if (assetData == null) {
+      // No Asset info available
+      return;
+    }
+
+    PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, agent.getName() + "-prototype-ini.dat")));
     try {
       writer.print("[Prototype] ");
       writer.println(assetData.getAssetClass());
       writer.println();
 
       if(!assetData.isEntity()) {
-	writer.print("[UniqueId] ");
-	writer.println(quote(assetData.getUniqueID()));
-	writer.println();
+	if (assetData.getUniqueID() != null) {
+	  writer.print("[UniqueId] ");
+	  writer.println(quote(assetData.getUniqueID()));
+	  writer.println();
+	}
 
 	if(assetData.getUnitName() != null) {
 	  writer.print("[UnitName] ");

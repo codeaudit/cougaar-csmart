@@ -109,6 +109,7 @@ public class ParameterInsertionRecipe extends ModifiableConfigurableComponent
       ComponentData[] children = data.getChildren();
       for (int i=0; i < children.length; i++ ) {        
         if (children[i].getName().equals(pluginAlib)) {
+	  // FIXME: Make sure this parameter isnt already there?
           children[i].addParameter(propParameter.getValue().toString());
           break;
         }        

@@ -236,7 +236,7 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
 
   public AgentComponent[] getAgents() {
     initAgents();
-    Collection agents = getDescendentsOfClass(InsertAgentComponent.class);    
+    Collection agents = getDescendentsOfClass(AgentComponent.class);    
     return (AgentComponent[]) agents.toArray(new AgentComponent[agents.size()]);
   }
 
@@ -246,20 +246,33 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
     for(int i=0; i < children.length; i++) {
       ComponentData child = children[i];
       if(child.getType() == ComponentData.AGENT) {
-        Iterator iter = ((Collection)getDescendentsOfClass(InsertAgentComponent.class)).iterator();
+        Iterator iter = ((Collection)getDescendentsOfClass(AgentComponent.class)).iterator();
 
         while(iter.hasNext()) {
-          InsertAgentComponent agent = (InsertAgentComponent)iter.next();
+          AgentComponent agent = (AgentComponent)iter.next();
           if(child.getName().equals(agent.getShortName().toString())) {
-            child.setClassName((String)propClassName.getValue());
-            child.setOwner(this);            
-            child.addParameter(agent.getShortName().toString());
-            child = addAssetData(child);
-            agent.addComponentData(child);
+	    // This is the same agent: replace the old with the new
+	    // to ensure get all new values
+	    ComponentData nchild = new AgentComponentData();
+	    nchild.setName(child.getName());
+            nchild.setClassName((String)propClassName.getValue());
+            nchild.setOwner(this);            
+            nchild.addParameter(agent.getShortName().toString());
+	    nchild.setAlibID(child.getAlibID());
+
+	    // FIXME: what about the alib ids for the plugins?
+	    // Is it OK to try to over-write?
+            nchild = addAssetData(nchild);
+            nchild = agent.addComponentData(nchild);
+
+	    // Replace the existing AgentComponentData
+	    // with a new one, to ensure we replace all values
+	    data.setChild(i, nchild);
           }
         }
       } else {
-        addComponentData(child);
+	// Recurse in case of hosts / nodes
+        data = addComponentData(child);
       }
     }
     return data;
@@ -272,7 +285,7 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   private ComponentData addAssetData(ComponentData data) {
     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
 
-    System.out.println("Adding Asset Data");
+    //System.out.println("Adding Asset Data");
     assetData.setType(AgentAssetData.ORG);
     assetData.setAssetClass(propAssetClass.getValue().toString());
     assetData.setUniqueID("UTC/RTOrg");
@@ -306,7 +319,7 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   private PropGroupData createClusterPG() {
     PropGroupData pgd = new PropGroupData(PropGroupData.CLUSTER);
 
-    System.out.println("Creating ClusterPG");
+    //System.out.println("Creating ClusterPG");
     
     PGPropData pgData = new PGPropData();
     pgData.setName("ClusterIdentifier");
@@ -320,7 +333,7 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   private PropGroupData createTypeIdentificationPG() {
     PropGroupData pgd = new PropGroupData(PropGroupData.TYPE_IDENTIFICATION);
 
-    System.out.println("Creating TypeIDPG");
+    //System.out.println("Creating TypeIDPG");
     
     // Add Type Identification
     PGPropData pgData = new PGPropData();
@@ -349,7 +362,7 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   private PropGroupData createItemIdentificationPG() {
     PropGroupData pgd = new PropGroupData(PropGroupData.ITEM_IDENTIFICATION);
 
-    System.out.println("Creating itemIdentificationPG");
+    //System.out.println("Creating itemIdentificationPG");
     PGPropData pgData = new PGPropData();
     pgData.setName("ItemIdentification");
     pgData.setType("String");
@@ -452,7 +465,12 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
         plugin.setClassName(pluginClass_name);
         plugin.setOwner(this);
         plugin.addParameter(propPSPParameter.getValue().toString());
-        data.addChild(plugin);
+	// If this agent doesn't already have a plugin with this name, add it
+	// Otherwise, replace the existing plugin with this name, with a new one
+	if (data.getChildIndex(plugin) < 0)
+	  data.addChild(plugin);
+	else
+	  data.setChild(data.getChildIndex(plugin), plugin);
       
         if ((propOrgAsset.getValue().toString().equals(TRUE))) {
           
@@ -481,7 +499,7 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
         // for each child, call this same method.
         ComponentData[] children = data.getChildren();
         for (int i = 0; i < children.length; i++) {
-          addComponentData(children[i]);
+          data = addComponentData(children[i]);
         }
       }
       return data;
@@ -582,9 +600,11 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
 //     }
 
     public boolean equals(Object o) {
-      if (o instanceof InsertAgentComponent) {
-        InsertAgentComponent that = (InsertAgentComponent)o;
-        if (!this.getFullName().equals(that.getFullName())  ) {
+      if (o instanceof AgentComponent) {
+        AgentComponent that = (AgentComponent)o;
+//  	System.out.println(this + " has short name " + this.getShortName());
+//  	System.out.println("Compared to " + that + " which has short name " + that.getShortName());
+        if (!this.getShortName().equals(that.getShortName())  ) {
           return false;
         }     
         return true;

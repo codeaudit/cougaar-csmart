@@ -78,6 +78,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   private boolean inDatabase = false;
 
+  private ComponentData theWholeSoc = null;
+
   public Experiment(String name, SocietyComponent[] societyComponents,
 		    RecipeComponent[] recipes)
   {
@@ -816,11 +818,58 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       }
       pdb.setModRecipes(recipes);
       pdb.close();
+      theWholeSoc = theSoc;
     } catch (Exception sqle) {
       sqle.printStackTrace();
     }
   }
 
+  // Dump out the INI files for the first trial to
+  // the local results directory for that trial
+  public void dumpINIFiles() {
+    ExpConfigWriterNew cw = null;
+    if (inDatabase) {
+      if (theWholeSoc == null) {
+	// write it to the db
+	// FIXME!!
+	System.out.println("Save experiment first.");
+	return;
+      } 
+      cw = new ExpConfigWriterNew(theWholeSoc);
+    } else {
+      cw = new ExpConfigWriterNew(getComponents(), getNodes(), this);
+    }
+    
+    File resultDir = getResultDirectory();
+    // if user didn't specify results directory, save in local directory
+    if (resultDir == null) {
+      resultDir = new File(".");
+    }
+    Trial trial = getTrials()[0];
+    String dirname = resultDir.getAbsolutePath() + File.separatorChar + 
+      getExperimentName() + File.separatorChar +
+      trial.getShortName() + File.separatorChar +
+      "INIFiles-dump";
+    File f = null;
+    try {
+      f = new File(dirname);
+      // guarantee that directories exist
+      if (!f.exists() && !f.mkdirs() && !f.exists()) 
+	f = new File(".");
+    } catch (Exception e) {
+      System.out.println("Couldn't create results directory: " + e);
+    }
+    if (f != null) {
+      try {
+	System.out.println("Writing ini files to " + f.getAbsolutePath() + "...");
+	cw.writeConfigFiles(f);
+      } catch (Exception e) {
+	System.err.println("Couldn't write ini files: " + e);
+	e.printStackTrace();
+      }
+    }
+  }
+  
   private void addDefaultNodeArguments(ComponentData theSoc) {
     Properties props = getDefaultNodeArguments();
     for (Iterator i = props.entrySet().iterator(); i.hasNext(); ) {

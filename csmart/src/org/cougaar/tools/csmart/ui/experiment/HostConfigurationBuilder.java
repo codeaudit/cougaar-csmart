@@ -35,6 +35,7 @@ import javax.swing.event.*;
 import org.cougaar.tools.csmart.ui.component.AgentComponent;
 import org.cougaar.tools.csmart.ui.component.ComponentName;
 import org.cougaar.tools.csmart.ui.component.ComponentProperties;
+import org.cougaar.tools.csmart.ui.component.SimpleName;
 import org.cougaar.tools.csmart.ui.component.CompositeName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.HostComponent;
@@ -627,7 +628,20 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     public int compare(Object o1, Object o2) {
       ConfigurableComponent c1 = (ConfigurableComponent) o1;
       ConfigurableComponent c2 = (ConfigurableComponent) o2;
-      return c1.getFullName().compareTo(c2.getFullName());
+
+      // In general, agent names from built in societies are complex
+      // and those from the db are short - they just start with "Combo"
+      // as components, but in runtime that is dropped
+      // The complex ones should be compared in full,
+      // while the DB ones should only be compared in short versions
+      // And Nodes are also short only
+      // Failing to compare only the short names when using DB societies
+      // results in agents erroneously appearing 2x, once unassigned
+      if (c1 instanceof NodeComponent || c2 instanceof NodeComponent || c1.getFullName().startsWith(new SimpleName("Combo")) || c2.getFullName().startsWith(new SimpleName("Combo")))
+	return c1.getShortName().compareTo(c2.getShortName());
+      else
+	return c1.getFullName().compareTo(c2.getFullName());
+	
     }
   };
 

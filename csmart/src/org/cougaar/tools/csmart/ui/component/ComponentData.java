@@ -124,12 +124,32 @@ public interface ComponentData extends Serializable {
   void setChild(int index, ComponentData child);
 
   /**
+   * Get the index of the child component (using .equals to find it)
+   * Return -1 if not present
+   *
+   * @param child a <code>ComponentData</code> to find by name
+   * @return an <code>int</code> array index, -1 if not present
+   */
+  int getChildIndex(ComponentData child);
+  
+  /**
    * Returns count of all children.
    *
    * @return child count
    */
   int childCount();
 
+  /**
+   * Add a child to its default location:
+   * Binders go before any agents / plugins.
+   * Components go after other components of the same type.
+   * Also, the given component replaces any existing component
+   * of the same name.
+   *
+   * @param comp a <code>ComponentData</code> to add / update
+   */
+  public void addChildDefaultLoc(ComponentData comp);
+  
   /**
    * Gets all parameters associated with this component.
    *

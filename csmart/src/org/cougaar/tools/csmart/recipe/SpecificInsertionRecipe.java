@@ -173,8 +173,8 @@ public class SpecificInsertionRecipe extends ModifiableConfigurableComponent
       }
       comp.setParent(data);
       comp.setOwner(this);
-      data.addChild(comp);
-      System.out.println("Inserted " + comp + " into " + data.getName());
+      data.addChildDefaultLoc(comp);
+      //      System.out.println("Inserted " + comp + " into " + data.getName());
     }
     if (data.childCount() > 0) {
       // for each child, call this same method.

@@ -102,6 +102,104 @@ public class GenericComponentData implements ComponentData, Serializable {
     return children.size();
   }
 
+  public int getChildIndex(ComponentData child) {
+    return this.children.indexOf(child);
+  }
+
+  public void addChildDefaultLoc(ComponentData comp) {
+    // Binders will be inserted before other items
+    // at the same level.
+    // Components that are .equals with other items already
+    // there will replace the existing versions
+    //System.out.println("Adding comp: " + comp + " to " + this.getName());
+    ComponentData[] dkids = this.getChildren();
+    int lastbinder = -1; // last binder
+    int firstother = -1; // -1 if no kids or first is after
+    // last binder
+    // else index of first other
+    for (int i = 0; i < dkids.length; i++) {
+      ComponentData kid = dkids[i];
+      if (this.getType().equals(ComponentData.NODE)) {
+	if (kid.getType().equals(ComponentData.AGENT)) {
+	  //System.out.println("Got an agent at index: " + i);
+	  if (firstother < 0)
+	    firstother = i;
+	} else if (kid.getType().equals(ComponentData.NODEBINDER)) {
+	  //System.out.println("Got a nodebinder at index: " + i);
+	  lastbinder = i;
+	}
+      } else if (this.getType().equals(ComponentData.AGENT)) {
+	if (kid.getType().equals(ComponentData.PLUGIN)) {
+	  //System.out.println("Got a plugin at index: " + i);
+	  if (firstother < 0)
+	    firstother = i;	      
+	} else if (kid.getType().equals(ComponentData.AGENTBINDER)) {
+	  //System.out.println("Got an agentbinder at index: " + i);
+	  lastbinder = i;
+	}
+      }
+    } // end of loop over kids of this data item
+    // Now lastbinder points to the last binder.
+    // I use lastbinder+1
+    
+    // If this is a binder
+    if (comp.getType().equals(ComponentData.NODEBINDER) || comp.getType().equals(ComponentData.AGENTBINDER)) {
+      //System.out.println("Comp being added is a binder");
+      // see if it is in node/agent at all
+      if (this.getChildIndex(comp) >= 0) {
+	//System.out.println("Which is already present");
+	// if it is there
+	// see if there are any agents/plugins before it
+	if (firstother < this.getChildIndex(comp)) {
+	  //System.out.println("and comes after some other items it should precede");
+	  // if there are, must remove it and later add it
+	  // Its easiest to do a complete fix
+	  // FIXME: This shuffles all the other binders,
+	  // when maybe they're intentionally placed where they are?
+	  ArrayList dkidsnew = new ArrayList();
+	  for (int i = 0; i < dkids.length; i++) {
+	    // First add all the binders
+	    if (dkids[i].getType().equals(comp.getType())) {
+	      if (i == this.getChildIndex(comp)) {
+		dkidsnew.add(comp);
+	      } else {
+		dkidsnew.add(dkids[i]);
+	      }
+	      dkids[i] = null;
+	    }
+	  } // end of loop to add binders
+	  for (int i = 0; i < dkids.length; i++) {
+	    if (dkids[i] != null)
+	      dkidsnew.add(dkids[i]);
+	  } // end of loop to add others
+	  this.setChildren((ComponentData [])dkidsnew.toArray(new ComponentData[dkidsnew.size()]));
+	} else {
+	  //System.out.println(".. replaceing old version with new");
+	  // else all agents/plugins are after it. Replace old with new
+	  this.setChild(this.getChildIndex(comp), comp);
+	}
+      } else {
+	//System.out.println("Which is not yet present. Adding at index: " + (lastbinder + 1));
+	// else if it is not there at all, insert it after last binder
+	this.addChild(lastbinder + 1, comp);
+      }
+    } else {
+      //System.out.println("Adding a non binder");
+      // else if its an agent or a plugin
+      // see if it is there at all
+      if (this.getChildIndex(comp) >= 0) {
+	//System.out.println("Which is already present");
+	// if it is, do this.setChild(its index>, comp)
+	this.setChild(this.getChildIndex(comp), comp);
+      } else {
+	//System.out.println("Which is not yet present");
+	// else (it is not there), do this.addChild(comp)
+	// FIXME: Maybe this should add it after the last item not its type?
+	this.addChild(comp);
+      }
+    } // finished handling non binders
+  }
+  
   public Object[] getParameters() {
     return parameters.toArray();
   }
@@ -224,6 +322,16 @@ public class GenericComponentData implements ComponentData, Serializable {
 
   public String getAlibID() {
     return aLibID;
+  }
+
+  public boolean equals(Object o) {
+    if (o instanceof GenericComponentData) {
+      GenericComponentData that = (GenericComponentData)o;
+      if (this.getName().equals(that.getName())) {
+	return true;
+      }
+    }
+    return false;
   }
 
 }

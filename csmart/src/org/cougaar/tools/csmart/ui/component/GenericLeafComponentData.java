@@ -94,4 +94,14 @@ public class GenericLeafComponentData implements LeafComponentData, Serializable
   public void setValue(Object val) {
     this.value = val;
   }
+
+  public boolean equals(Object o) {
+    if (o instanceof GenericLeafComponentData) {
+      GenericLeafComponentData that = (GenericLeafComponentData)o;
+      if (this.getName().equals(that.getName())) {
+	return true;
+      }
+    }
+    return false;
+  }
 }
