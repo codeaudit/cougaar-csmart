@@ -781,6 +781,7 @@ public class OrganizerHelper {
     return recipes;
   }
 
+  // This must match PDbBase.isRecipeEqual
   private void getRecipeProperties(DbRecipe dbRecipe, 
                                    Connection conn, 
                                    Map substitutions) throws SQLException
