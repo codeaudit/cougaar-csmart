@@ -112,6 +112,10 @@ public class PrototypeParser {
     BufferedReader input = null;
     Reader fileStream = null;
     AgentAssetData aad = new AgentAssetData(null);
+    if(log.isDebugEnabled()) {
+      log.debug("Setting INI Format to: OLD_FORMAT");
+    }
+    aad.setIniFormat(AgentAssetData.OLD_FORMAT);
 
     try {
       fileStream = 
@@ -139,13 +143,13 @@ public class PrototypeParser {
           if(log.isDebugEnabled()) {
             log.debug("AgentAssetData Class: " + aad.getAssetClass());
           }
+          if(assetClassName.equals("Entity")) {
+            aad.setType(AgentAssetData.ENTITY);
+          }
           newVal = tokens.nextToken();
           continue;
         }
         if (dataItem.equals("[Relationship]")) {
-          if(log.isDebugEnabled()) {
-            log.debug("Parsing Relationship");
-          }
           newVal = fillRelationships(newVal, tokens, aad);
           continue;
         }
@@ -177,9 +181,6 @@ public class PrototypeParser {
           continue;
         }
         if (dataItem.startsWith("[")) {
-          if(log.isDebugEnabled()) {
-            log.debug("Parsing Item [");
-          }
           // We've got a property or capability
            newVal = setPropertyForAsset(dataItem, newVal, tokens, aad);
           continue;
@@ -221,23 +222,16 @@ public class PrototypeParser {
   protected int fillRelationships(int newVal, StreamTokenizer tokens,
                                   AgentAssetData aad) throws IOException {
 
-    if(log.isDebugEnabled()) {
-      log.debug("Entering fillRelationships");
-    }
-
     RelationshipData rd = null;
 
     newVal = tokens.nextToken();
     while ((newVal != StreamTokenizer.TT_EOF) &&
            (!tokens.sval.substring(0,1).equals("["))) {
 
-      String roleName = "";
-      String itemId = "";
-      String typeId = "";
-      String otherClusterId = "";
-      long start = getDefaultStartTime();
-      long end = getDefaultEndTime();
-          
+      String type = "";
+      String supportedCluster = "";
+      String role = ""; 
+
       for (int i = 0; i < 3; i++) {
         if ((tokens.sval.length()) > 0  &&
             (tokens.sval.substring(0,1).equals("["))) {
@@ -247,75 +241,32 @@ public class PrototypeParser {
             
         switch (i) {
         case 0:
-          roleName = tokens.sval.trim();
-          if(log.isDebugEnabled()) {
-            log.debug("fillRelationships: roleName = " + roleName);
-          }
+          type = tokens.sval.trim();
           break;
 
         case 1:
-          otherClusterId = tokens.sval.trim();
-          if(log.isDebugEnabled()) {
-            log.debug("fillRelationships: otherClusterId = " + otherClusterId);
-          }
+          supportedCluster = tokens.sval.trim();
           break;
 
         case 2:
-          typeId = tokens.sval.trim();
-          if(log.isDebugEnabled()) {
-            log.debug("fillRelationships: typeId = " + typeId);
-          }
-          break;
-          
-        case 3:
-          itemId = tokens.sval.trim();
-          if(log.isDebugEnabled()) {
-            log.debug("fillRelationships: itemId = " + itemId);
-          }
-          break;
-
-        case 4:
-          if (!tokens.sval.equals("")) {
-            try {
-              start = parseDate(tokens.sval);
-            } catch (java.text.ParseException pe) {
-              if(log.isErrorEnabled()) {
-                log.error("Unable to parse: " + tokens.sval + 
-                                 ". Start time defaulting to " + 
-                                 getDefaultStartTime(), pe);
-              }
-            }
-          }
-          break;
-
-        case 5:
-          if (!tokens.sval.equals("")) {
-            try {
-              end = parseDate(tokens.sval);
-            } catch (java.text.ParseException pe) {
-              if(log.isErrorEnabled()) {
-                log.error("Unable to parse: " + tokens.sval + 
-                          ". End time defaulting to " + 
-                          getDefaultEndTime(), pe);
-                
-              }
-            }
-          }
+          role = tokens.sval.trim();
           break;
         }
         newVal = tokens.nextToken();
       }
-      //FIXME!!!!!  
+      // This attempts to fix a problem with the
+      // ini files.
+      if(type.equalsIgnoreCase("Superior")) {
+        role = "Subordinate";
+      }
       rd = new RelationshipData();
-      rd.setType(roleName);
-      rd.setTypeId(otherClusterId);
-      rd.setRole(typeId);
-
-      //      rd.setItem(itemId);
-      //      rd.setRole(roleName);
-      //      rd.setSupported(otherClusterId);
-      rd.setStartTime(start);
-      rd.setEndTime(end);
+      rd.setType(type);
+      rd.setRole(role);
+      rd.setSupported(supportedCluster);
+      if(log.isDebugEnabled()) {
+        log.debug("New Relationship: type: \"" + type + "\" Role: \"" + role +
+                  "\" Supported: \"" + supportedCluster + "\"");
+      }
       aad.addRelationship(rd);
     } //while
     return newVal;
@@ -345,22 +296,13 @@ public class PrototypeParser {
             && !(tokens.sval.substring(0,1).equals("["))) {
           propData = new PGPropData();
           propData.setName(member);
-          if(log.isDebugEnabled()) {
-            log.debug("Name: " + propData.getName());
-          }
           newVal = tokens.nextToken();
           String dataType = tokens.sval;
           newVal = tokens.nextToken();
           propData.setType(getType(dataType));
-          if(log.isDebugEnabled()) {
-            log.debug(propertyName + " Type: " + propData.getType());
-          }
           String subType = getSubType(dataType);
           if(subType != null) {
             propData.setSubType(subType);
-            if(log.isDebugEnabled()) {
-              log.debug(propertyName + " Subtype: " + subType);
-            }
           }
           propData.setValue(getValue(parseArgs(dataType, tokens.sval)));
 
@@ -387,9 +329,6 @@ public class PrototypeParser {
 
   private Object getValue(Object arg) {
     if(arg instanceof Collection) {
-      if(log.isDebugEnabled()) {
-        log.debug("MultiVal");
-      }
       Iterator iter = ((Collection)arg).iterator();
       PGPropMultiVal multi = new PGPropMultiVal();
       while(iter.hasNext()) {
@@ -402,9 +341,6 @@ public class PrototypeParser {
   }
 
   private PropGroupData setTypeIdentificationPG() {
-    if(log.isDebugEnabled()) {
-      log.debug("Added TypeIdentification");
-    }
     PropGroupData pgData = new PropGroupData(PropGroupData.TYPE_IDENTIFICATION);
     PGPropData propData = new PGPropData();
     propData.setName("TypeIdentification");
@@ -463,9 +399,6 @@ public class PrototypeParser {
   }
 
   private PropGroupData setCommunityPG() {
-    if(log.isDebugEnabled()) {
-      log.debug("Added CommunityPG");
-    }
     PropGroupData pgData = new PropGroupData(PropGroupData.COMMUNITY);
     PGPropData propData = new PGPropData();
     propData.setName("TimeSpan");
@@ -492,10 +425,6 @@ public class PrototypeParser {
   protected int setAssignmentPG(int newVal, 
                                 StreamTokenizer tokens,
                                 AgentAssetData aad) {
-
-    if(log.isDebugEnabled()) {
-      log.debug("Entering setAssignmentForOrganization");
-    }
 
     PropGroupData pgData = new PropGroupData(PropGroupData.ASSIGNMENT);
     PGPropData propData = null;
@@ -552,9 +481,6 @@ public class PrototypeParser {
       Vector l = org.cougaar.util.StringUtility.parseCSV(arg);
       for (Iterator it = l.iterator(); it.hasNext();) {
         c.add((String)parseE(etype, (String)it.next()));
-      }
-      if(log.isDebugEnabled()) {
-        log.debug("Collection Size: " + c.size());
       }
       return c;
     } else if ((i = type.indexOf("/")) >= 0) {
