@@ -39,7 +39,7 @@ public class Browser extends JFrame implements HyperlinkListener {
   private Logger log;
 
   private JTextPane text = new JTextPane() {
-      protected void scrollToReference(String ref) {
+      public void scrollToReference(String ref) {
 	super.scrollToReference(ref);
 	selectReference(ref);
       }
