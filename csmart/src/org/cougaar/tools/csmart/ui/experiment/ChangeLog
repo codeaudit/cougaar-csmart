@@ -2,3 +2,5 @@
 
 	* Experiment.java (Repository):
 	Adapt to method name change in PopulateDb.
+	(Repository):
+	Build ComponentData structure including hosts.
