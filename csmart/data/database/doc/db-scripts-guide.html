@@ -1,0 +1,69 @@
+<html>
+<head>
+<title>CSMART - ER-Studio/Database Scripts Documentation </title>
+</head>
+<body bgcolor="white">
+
+<p>
+<center><h2>CSMART - ER-Studio/Database Scripts Documentation</h2></center>
+<p>
+<p>
+Relational diagrams of the tables contained in the configuration database are contained in csmart/data/database/doc:<br>
+      <pre>
+     <a href="csmart-asb.jpg">Assembly tables</a><br>
+     <a href="csmart-cfw.jpg">CFW tables</a>
+      </pre>
+
+The CSMART configuration database in installed from a set of scripts located in csmart/data/database/scripts/mysql/sql.  These scripts are automatically generated from the database manipulation program ER-Studio.  
+<p>
+  'csmart/data/database/db_src/csmart-db.DM1' is the ER-Studio source file.  Opening this file in ER-Studio provides you with a Logical Model View as well as a Physical Model view. Schema changes are made to the Logical Model View.  These views can be seen in the below 2 screen shots of the assembly tables and cfw tables portions of the database, respectively:
+      <pre>
+     <a href="images/ers-log-model-view-asb.gif">Logical Model View - ASB</a><br>
+     <a href="images/ers-log-model-view-cfw.gif">Logical Model View - CFW</a>
+      </pre>
+After making any necessary schema changes to the Logical Model View, it is necessary to delete the previously existing Physical Model that is saved in the original .DM1 file as it is no longer valid.
+      <pre>
+     <a href="images/ers-delete-previous-physical-model.gif">Delete Previous Physical Model</a>
+      </pre>
+You are now ready to generate a new physical model of the database.  The default selections made by ER-Studio in steps 1 through 8 to generate the physical model of the database do not need to be changed.
+      <pre>
+     <a href="images/ers-generate-physical-model.gif">Generate Physical Model</a><br>
+     <a href="images/ers-generate-physical-model-1-of-8.gif">Generate Physical Model - Page 1 of 8</a><br>
+     <a href="images/ers-generate-physical-model-2-of-8.gif">Generate Physical Model - Page 2 of 8</a><br>
+     <a href="images/ers-generate-physical-model-3-of-8.gif">Generate Physical Model - Page 3 of 8</a><br>
+     <a href="images/ers-generate-physical-model-4-of-8.gif">Generate Physical Model - Page 4 of 8</a><br>
+     <a href="images/ers-generate-physical-model-5-of-8.gif">Generate Physical Model - Page 5 of 8</a><br>
+     <a href="images/ers-generate-physical-model-6-of-8.gif">Generate Physical Model - Page 6 of 8</a><br>
+     <a href="images/ers-generate-physical-model-7-of-8.gif">Generate Physical Model - Page 7 of 8</a><br>
+     <a href="images/ers-generate-physical-model-8-of-8.gif">Generate Physical Model - Page 8 of 8</a><br>
+     <a href="images/ers-generate-physical-model-complete.gif">Generate Physical Model - Completion</a>
+      </pre>
+Once the physical model is generated, you can generate the sql script that is ultimately used to create the csmart configuration database loading scripts. This script is named csmart-db.sql and is located in csmart/data/database/db_src.
+      <pre>
+     <a href="images/ers-generate-database.gif">Generate Database</a><br>
+     <a href="images/ers-generate-database-1-of-6.gif">Generate Database - Step 1 of 6</a><br>
+     <a href="images/ers-generate-database-2-of-6.gif">Generate Database - Step 2 of 6</a><br>
+     <a href="images/ers-generate-database-3-of-6.gif">Generate Database - Step 3 of 6</a><br>
+     <a href="images/ers-generate-database-4-of-6.gif">Generate Database - Step 4 of 6</a><br>
+     Note:  In Step 5 You must change the default selections. There are two changes: 
+               1) Uncheck Default Table Stored Procedure
+               2) Don't generate Defined Stored Procedures <br>
+     <a href="images/ers-generate-database-5-of-6.gif">Generate Database - Step 5 of 6</a><br>
+     <a href="images/ers-generate-database-6-of-6.gif">Generate Database - Step 6 of 6</a><br>
+     <a href="images/ers-generate-database-save-sql.gif">Generate Database - Save SQL</a><br>
+      </pre>
+To update the relational diagrams included in csmart/data/database/doc for the assembly and cfw tables respectively, you can export the images from ER-Studio as follows:
+      <pre>
+     <a href="images/ers-generate-asb-jpg-1-of-2.gif">Export Image - ASB Relational Diagram Step 1 of 2</a><br>
+     <a href="images/ers-generate-asb-jpg-2-of-2.gif">Export Image - ASB Relational Diagram Step 2 of 2</a><br>
+     <a href="images/ers-generate-cfw-jpg-1-of-2.gif">Export Image - CFW Relational Diagram Step 1 of 2</a><br>
+     <a href="images/ers-generate-cfw-jpg-2-of-2.gif">Export Image - CFW Relational Diagram Step 2 of 2</a>
+      </pre>
+The final step is to save the new DM1 file.
+      <pre>
+     <a href="images/ers-save-dm1.gif">Save DM1 Datafile</a><br>
+      </pre>
+
+</body>
+</html>
+
