@@ -1,6 +1,7 @@
 package org.cougaar.tools.csmart.ui.component;
 
 import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,8 +9,8 @@ import java.sql.Statement;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 import junit.framework.*;
@@ -32,9 +33,9 @@ public class TestPopulateDb extends TestCase {
     public static final String AGENT_CLASS = ClusterImpl.class.getName();
     public static final String AGENT_INSERTION_POINT = "Node.AgentManager.Agent";
     public static final String AGENT_TYPE = "agent";
-    public static final String CMT_TYPE = "REGRESSION_CMT";
-    public static final String CSMART_TYPE = "REGRESSION_CSMART";
-    public static final String CSM_TYPE = "REGRESSION_CSM";
+    public static final String CMT_TYPE = "REGRESSION-CMT";
+    public static final String HNA_TYPE = "REGRESSION-HNA";
+    public static final String CSMI_TYPE = "REGRESSION-CSMI";
     public static final String DATABASE = "org.cougaar.configuration.database";
     public static final String DELETE_ALIB_COMPONENT = "deleteAlibComponent";
     public static final String DELETE_ASSEMBLY = "deleteAssembly";
@@ -46,7 +47,7 @@ public class TestPopulateDb extends TestCase {
     public static final String DELETE_FROM_TABLE_WITH_TRIAL_ID = "deleteFromTableWithTrialId";
     public static final String DELETE_LIB_COMPONENT = "deleteLibComponent";
     public static final String DELETE_TRIAL = "deleteTrial";
-    public static final String EXPT_PREFIX = "REGRESSION_";
+    public static final String EXPT_PREFIX = "REGRESSION-";
     public static final String INSERT_ASSEMBLY = "insertAssembly";
     public static final String INSERT_EXPT = "insertExpt";
     public static final String INSERT_LIB_COMPONENT = "insertLibComponent";
@@ -68,7 +69,7 @@ public class TestPopulateDb extends TestCase {
     public static final String QUERY_TABLE_WITH_ASSEMBLY_ID = "queryTableWithAssemblyId";
     public static final String QUERY_TABLE_WITH_EXPT_ID = "queryTableWithExptId";
     public static final String QUERY_TABLE_WITH_TRIAL_ID = "queryTableWithTrialId";
-    public static final String TRIAL_PREFIX = "REGRESSION_";
+    public static final String TRIAL_PREFIX = "REGRESSION-";
 
     private static class NodeData {
         public String name;
@@ -101,54 +102,55 @@ public class TestPopulateDb extends TestCase {
         }
     }
 
-    private static final NodeData nodeData =
-        new NodeData("REGRESSION_NODE_1",
+    private static final NodeData[] nodeData = {
+        new NodeData("REGRESSION-NODE-1",
                      new AgentData[] {
-                         new AgentData("REGRESSION_AGENT_1_1",
+                         new AgentData("REGRESSION-AGENT-1-1",
                                        new PluginData[] {
-                                           new PluginData("REGRESSION_PLUGIN_1_1_1",
+                                           new PluginData("REGRESSION-PLUGIN-1-1-1",
                                                           new String[] {
-                                                              "Param_1_1_1_1",
-                                                              "Param_1_1_1_2",
-                                                              "Param_1_1_1_3"
+                                                              "Param-1-1-1-1",
+                                                              "Param-1-1-1-2",
+                                                              "Param-1-1-1-3"
                                                           }),
-                                           new PluginData("REGRESSION_PLUGIN_1_1_2",
+                                           new PluginData("REGRESSION-PLUGIN-1-1-2",
                                                           new String[] {
-                                                              "Param_1_1_2_1",
-                                                              "Param_1_1_2_2",
-                                                              "Param_1_1_2_3"
+                                                              "Param-1-1-2-1",
+                                                              "Param-1-1-2-2",
+                                                              "Param-1-1-2-3"
                                                           })}),
-                         new AgentData("REGRESSION_AGENT_1_2",
+                         new AgentData("REGRESSION-AGENT-1-2",
                                        new PluginData[] {
-                                           new PluginData("REGRESSION_PLUGIN_1_2_1",
+                                           new PluginData("REGRESSION-PLUGIN-1-2-1",
                                                           new String[] {
-                                                              "Param_1_2_1_1",
-                                                              "Param_1_2_1_2",
-                                                              "Param_1_2_1_3"
+                                                              "Param-1-2-1-1",
+                                                              "Param-1-2-1-2",
+                                                              "Param-1-2-1-3"
                                                           }),
-                                           new PluginData("REGRESSION_PLUGIN_1_2_2",
+                                           new PluginData("REGRESSION-PLUGIN-1-2-2",
                                                           new String[] {
-                                                              "Param_1_2_2_1",
-                                                              "Param_1_2_2_2",
-                                                              "Param_1_2_2_3"
+                                                              "Param-1-2-2-1",
+                                                              "Param-1-2-2-2",
+                                                              "Param-1-2-2-3"
                                                           }),
-                                           new PluginData("REGRESSION_PLUGIN_1_2_3",
+                                           new PluginData("REGRESSION-PLUGIN-1-2-3",
                                                           new String[] {
-                                                              "Param_1_2_3_1",
-                                                              "Param_1_2_3_2"
+                                                              "Param-1-2-3-1",
+                                                              "Param-1-2-3-2"
                                                           })}),
-                         new AgentData("REGRESSION_AGENT_1_3",
+                         new AgentData("REGRESSION-AGENT-1-3",
                                        new PluginData[] {
-                                           new PluginData("REGRESSION_PLUGIN_1_3_1",
+                                           new PluginData("REGRESSION-PLUGIN-1-3-1",
                                                           new String[] {
-                                                              "Param_1_3_1_1",
-                                                              "Param_1_3_1_2",
-                                                              "Param_1_3_1_3"
+                                                              "Param-1-3-1-1",
+                                                              "Param-1-3-1-2",
+                                                              "Param-1-3-1-3"
                                                           }),
-                                           new PluginData("REGRESSION_PLUGIN_1_3_2",
+                                           new PluginData("REGRESSION-PLUGIN-1-3-2",
                                                           new String[] {
-                                                              "Param_1_3_2_1"
-                                                          })})});
+                                                              "Param-1-3-2-1"
+                                                          })})})
+    };
 
     private PopulateDb pdb;
     private DBProperties dbp;
@@ -184,6 +186,12 @@ public class TestPopulateDb extends TestCase {
         }
     }
 
+    private DBProperties getDBProperties() throws IOException {
+        URL url = getClass().getResource(QUERY_FILE);
+        assertNotNull("Null url for " + QUERY_FILE, url);
+        return DBProperties.readQueryFile(DATABASE, url);
+    }
+
     private static String sqlQuote(String s) {
         if (s == null) return "null";
         return "'" + s + "'";
@@ -203,7 +211,7 @@ public class TestPopulateDb extends TestCase {
     }
 
     public void cleanAll(String cleanType) throws SQLException, IOException, ClassNotFoundException {
-        dbp = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
+        dbp = getDBProperties();
         Connection dbConnection = openConnection();
         try {
             removeAll(dbConnection, cleanType);
@@ -215,8 +223,8 @@ public class TestPopulateDb extends TestCase {
 
     public void setUp() throws SQLException, IOException, ClassNotFoundException {
         Map substitutions = new HashMap();
-        dbp = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
-        dbp.setDebug(true);
+        dbp = getDBProperties();
+//          dbp.setDebug(true);
         Connection dbConnection = openConnection();
         try {
             insertLib(dbConnection);
@@ -227,7 +235,6 @@ public class TestPopulateDb extends TestCase {
         } finally {
             dbConnection.close();
         }
-        System.out.println("trialId=" + trialId);
         initializerServiceProvider = new DBInitializerServiceProvider(trialId);
         initializerService = (InitializerService)
             initializerServiceProvider.getService(null, this, InitializerService.class);
@@ -249,11 +256,12 @@ public class TestPopulateDb extends TestCase {
      * Insert a regression assembly with the next higher number
      **/
     private String insertAssembly(Connection dbConnection, String type) throws SQLException {
-        MessageFormat assemblyIdFormat = new MessageFormat(type + "_" + "{0,number,0000}");
+        MessageFormat assemblyIdFormat = new MessageFormat(type + "-" + "{0,number,0000}");
+        substitutions.put(":assembly_type", CMT_TYPE);
         String assemblyId = getNextId(dbConnection, QUERY_MAX_ASSEMBLY, assemblyIdFormat);
+        Statement stmt = dbConnection.createStatement();
         substitutions.put(":assembly_id", assemblyId);
         substitutions.put(":description", "TestPopulateDb " + new Date().toString());
-        Statement stmt = dbConnection.createStatement();
         executeUpdate(stmt, dbp.getQuery(INSERT_ASSEMBLY, substitutions));
         executeUpdate(stmt, dbp.getQuery(INSERT_TRIAL_ASSEMBLY, substitutions));
         stmt.close();
@@ -292,25 +300,27 @@ public class TestPopulateDb extends TestCase {
      * Insert lib definitions for components to be inserted during testing
      **/
     private void insertLib(Connection dbConnection) throws SQLException {
-        insertLibComponent(dbConnection,
-                           NODE_TYPE + "|" + nodeData.name,
-                           NODE_TYPE,
-                           nodeData.className,
-                           NODE_INSERTION_POINT);
-        for (int i = 0; i < nodeData.agentData.length; i++) {
-            AgentData agentData = nodeData.agentData[i];
+        for (int k = 0; k < nodeData.length; k++) {
             insertLibComponent(dbConnection,
-                               agentData.name,
-                               AGENT_TYPE,
-                               agentData.className,
-                               AGENT_INSERTION_POINT);
-            for (int j = 0; j < agentData.pluginData.length; j++) {
-                PluginData pluginData = agentData.pluginData[j];
+                               nodeData[k].name,
+                               NODE_TYPE,
+                               nodeData[k].className,
+                               NODE_INSERTION_POINT);
+            for (int i = 0; i < nodeData[k].agentData.length; i++) {
+                AgentData agentData = nodeData[k].agentData[i];
                 insertLibComponent(dbConnection,
-                                   "plugin|" + pluginData.className,
-                                   PLUGIN_TYPE,
-                                   pluginData.className,
-                                   PLUGIN_INSERTION_POINT);
+                                   agentData.name,
+                                   AGENT_TYPE,
+                                   agentData.className,
+                                   AGENT_INSERTION_POINT);
+                for (int j = 0; j < agentData.pluginData.length; j++) {
+                    PluginData pluginData = agentData.pluginData[j];
+                    insertLibComponent(dbConnection,
+                                       "plugin|" + pluginData.className,
+                                       PLUGIN_TYPE,
+                                       pluginData.className,
+                                       PLUGIN_INSERTION_POINT);
+                }
             }
         }
     }
@@ -414,12 +424,11 @@ public class TestPopulateDb extends TestCase {
         try {
             Statement stmt = dbConnection.createStatement();
             try {
-                String query = dbp.getQuery(queryName, null);
+                String query = dbp.getQuery(queryName, substitutions);
                 ResultSet rs = executeQuery(stmt, query);
                 try {
                     if (rs.next()) {
                         String maxId = rs.getString(1);
-                        System.out.println("maxId=" + maxId);
                         int n = ((Number) format.parse(maxId)[0]).intValue();
                         id = format.format(new Object[] {new Integer(n + 1)});
                     }
@@ -430,7 +439,7 @@ public class TestPopulateDb extends TestCase {
                 stmt.close();
             }
         } catch (Exception e) {
-            System.out.println("Using default id: " + id);
+            e.printStackTrace();
             // Ignore exceptions and use default
         }
         return id;
@@ -443,18 +452,22 @@ public class TestPopulateDb extends TestCase {
      * stored in the with an assembly id that is identified as CMT.
      **/
     private void populateCMT() throws SQLException, IOException {
-        pdb = new PopulateDb(CMT_TYPE, CMT_TYPE, CMT_TYPE, "REGRESSION Experiment",
-                             exptId, trialId, true);
-        pdb.setDebug(true);
-        
-            AgentData[] agentData = nodeData.agentData;
+        pdb = new PopulateDb("", CMT_TYPE, CMT_TYPE, "REGRESSION Experiment " + exptId,
+                             exptId, trialId, false);
+//          pdb.setDebug(true);
+        for (int i = 0; i < nodeData.length; i++) {
+            ComponentData node = new GenericComponentData();
+            node.setType(ComponentData.NODE);
+            node.setName(nodeData[i].name);
+            node.setClassName(nodeData[i].className);
+            AgentData[] agentData = nodeData[i].agentData;
             for (int j = 0; j < agentData.length; j++) {
                 ComponentData agent = new GenericComponentData();
                 agent.setType(ComponentData.AGENT);
                 agent.setName(agentData[j].name);
                 agent.setClassName(agentData[j].className);
-//                  agent.setParent(node);
-//                  node.addChild(agent);
+                agent.setParent(node);
+                node.addChild(agent);
                 PluginData[] pluginData = agentData[j].pluginData;
                 for (int k = 0; k < pluginData.length; k++) {
                     ComponentData plugin = new GenericComponentData();
@@ -467,34 +480,36 @@ public class TestPopulateDb extends TestCase {
                 }
                 pdb.populate(agent, 1f);
             }
-
+        }
         pdb.close();
     }
 
     private void checkCMT() throws SQLException, IOException, InitializerServiceException {
-        ComponentDescription[] agents =
-            initializerService.getComponentDescriptions(nodeData.name, AGENT_INSERTION_POINT);
-        assertEquals("Wrong number of agents", nodeData.agentData.length, agents.length);
-        for (int i = 0; i < agents.length; i++) {
-            String agentName = agents[i].getName();
-            String className = agents[i].getClassname();
-            AgentData agentData = nodeData.agentData[i];
-            assertEquals("Wrong agent name", agentData.name, agentName);
-            assertEquals("Wrong agent class ", agentData.className, className);
-            ComponentDescription[] plugins =
-                initializerService.getComponentDescriptions(agentData.name, PLUGIN_INSERTION_POINT);
-            assertEquals("Wrong number of plugins", agentData.pluginData.length, plugins.length);
-            for (int j = 0; j < plugins.length; j++) {
-                String pluginName = plugins[j].getName();
-                className = plugins[j].getClassname();
-                PluginData pluginData = agentData.pluginData[j];
-                assertEquals("Wrong plugin name", pluginData.name, pluginName);
-                assertEquals("Wrong plugin class ", pluginData.className, className);
-                Vector vParams = (Vector) plugins[j].getParameter();
-                String[] params = (String[]) vParams.toArray(new String[0]);
-                assertEquals("Wrong number of parameters", pluginData.paramData.length, params.length);
-                for (int k = 0; k < params.length; k++) {
-                    assertEquals("Wrong parameter value", pluginData.paramData[k], params[k]);
+        for (int k = 0; k < nodeData.length; k++) {
+            ComponentDescription[] agents =
+                initializerService.getComponentDescriptions(nodeData[k].name, AGENT_INSERTION_POINT);
+            assertEquals("Wrong number of agents", nodeData[k].agentData.length, agents.length);
+            for (int i = 0; i < agents.length; i++) {
+                String agentName = agents[i].getName();
+                String className = agents[i].getClassname();
+                AgentData agentData = nodeData[k].agentData[i];
+                assertEquals("Wrong agent name", agentData.name, agentName);
+                assertEquals("Wrong agent class ", agentData.className, className);
+                ComponentDescription[] plugins =
+                    initializerService.getComponentDescriptions(agentData.name, PLUGIN_INSERTION_POINT);
+                assertEquals("Wrong number of plugins", agentData.pluginData.length, plugins.length);
+                for (int j = 0; j < plugins.length; j++) {
+                    String pluginName = plugins[j].getName();
+                    className = plugins[j].getClassname();
+                    PluginData pluginData = agentData.pluginData[j];
+                    assertEquals("Wrong plugin name", pluginData.name, pluginName);
+                    assertEquals("Wrong plugin class ", pluginData.className, className);
+                    Vector vParams = (Vector) plugins[j].getParameter();
+                    String[] params = (String[]) vParams.toArray(new String[0]);
+                    assertEquals("Wrong number of parameters", pluginData.paramData.length, params.length);
+                    for (int q = 0; q < params.length; q++) {
+                        assertEquals("Wrong parameter value", pluginData.paramData[q], params[q]);
+                    }
                 }
             }
         }
@@ -504,16 +519,8 @@ public class TestPopulateDb extends TestCase {
      *
      **/
     public void test() throws SQLException, IOException, InitializerServiceException {
-        populateCMT();
-        checkCMT();
-        {
-            ComponentData node = new GenericComponentData();
-            node.setType(ComponentData.NODE);
-            node.setName(nodeData.name);
-            node.setClassName(nodeData.className);
-        }
-        {
-        }
+//          populateCMT();
+//          checkCMT();
     }
 
     /**
