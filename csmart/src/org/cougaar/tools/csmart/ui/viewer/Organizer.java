@@ -1008,7 +1008,11 @@ public class Organizer extends JScrollPane {
       return;
     String recipeName = (String)cb.getSelectedItem();
     String recipeId = (String) recipeNamesHT.get(recipeName);
-    recipeName = recipeNames.getUniqueName(recipeName, false);
+    if (recipeNames.contains(recipeName))
+      recipeName = recipeNames.getUniqueName(recipeName, false);
+    else
+      recipeName = recipeNames.getUniqueName(recipeName, true);
+    //    recipeName = recipeNames.getUniqueName(recipeName, false);
     if (recipeName == null)
       return;
     // get name from user
