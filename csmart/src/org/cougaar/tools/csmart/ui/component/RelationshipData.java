@@ -35,6 +35,7 @@ public class RelationshipData implements Serializable {
   private String item = null;
   private String startTime = null;
   private String stopTime = null;
+  private String relationship = null;
 
   public RelationshipData() {
     setStartTime("");
@@ -113,4 +114,12 @@ public class RelationshipData implements Serializable {
     return stopTime;
   }
   
+  public void setRelationship(String relationship) {
+     this.relationship = relationship;
+   }
+ 
+   public String getRelationship() {
+     return this.relationship;
+   }
+
 }
