@@ -353,9 +353,20 @@ public class PrototypeParser {
     return newVal;
   }
 
+  // Grab only the GeolocCode= piece, not any other fields. All those must be looked
+  // up in the GEOLOC table anyhow.
   private String parseHomeLocation(String argument) {
-    return argument.substring(0, argument.indexOf(","));
-//     return argument.substring(argument.indexOf("=")+1, argument.indexOf(","));
+    int ind = argument.indexOf("GeolocCode=");
+    if (ind == -1) {
+      if (log.isWarnEnabled())
+	log.warn("Found no GeolocCode in HomeLocation");
+      return "";
+    }
+    String narg = argument.substring(ind);
+    if (narg.indexOf(",") != -1)
+      return narg.substring(0, narg.indexOf(","));
+    else
+      return narg;
   }
 
   private Object getValue(Object arg) {
