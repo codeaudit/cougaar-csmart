@@ -194,6 +194,15 @@ public class ABCImpact
 
   }
 
+  /**
+   * Gets the name of the html help file for this component.
+   *
+   * @return an <code>URL</code> value
+   */
+  public URL getDescription() {
+    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
+  }
+
   public String getImpactName() {
     return name;
   }

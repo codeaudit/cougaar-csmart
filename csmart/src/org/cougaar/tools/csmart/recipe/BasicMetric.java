@@ -213,6 +213,15 @@ public class BasicMetric extends RecipeBase
     propMWatchServ.setToolTip(PROP_MWATCHSERV_DESC);
 
   }
+
+  /**
+   * Gets the name of the html help file for this component.
+   *
+   * @return an <code>URL</code> value
+   */
+  public URL getDescription() {
+    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
+  }
   
   public String getMetricName() {
     return getShortName();

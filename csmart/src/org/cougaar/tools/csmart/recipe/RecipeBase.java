@@ -47,9 +47,6 @@ public abstract class RecipeBase
   extends ModifiableConfigurableComponent 
   implements RecipeComponent, PropertiesListener  {
 
-  protected static final String DESCRIPTION_RESOURCE_NAME = 
-    "No Description Available";
-
   protected boolean editable = true;
   protected String name = null;
 
@@ -61,10 +58,10 @@ public abstract class RecipeBase
    *
    * @return <description>
    */
-  public URL getDescription()
-  {
-    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
-  }
+//   public URL getDescription()
+//   {
+//     return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
+//   }
 
   /**
    *

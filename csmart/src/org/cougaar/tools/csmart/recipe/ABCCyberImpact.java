@@ -25,6 +25,7 @@ import java.io.Serializable;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import java.net.URL;
 
 public class ABCCyberImpact
   extends RecipeBase
@@ -102,6 +103,15 @@ public class ABCCyberImpact
 				 }
 			       });
     propDuration.setToolTip(PROP_DURATION_DESC);
+  }
+
+  /**
+   * Gets the name of the html help file for this component.
+   *
+   * @return an <code>URL</code> value
+   */
+  public URL getDescription() {
+    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
   }
 
   public StringBuffer getXML() {

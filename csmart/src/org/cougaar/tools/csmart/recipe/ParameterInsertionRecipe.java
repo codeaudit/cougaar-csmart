@@ -79,6 +79,15 @@ public class ParameterInsertionRecipe extends RecipeBase
 
   }
 
+  /**
+   * Gets the name of the html help file for this component.
+   *
+   * @return an <code>URL</code> value
+   */
+  public URL getDescription() {
+    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
+  }
+
   private Property addRecipeQueryProperty(String name, String dflt) {
     Property prop = addProperty(new RecipeQueryProperty(this, name, dflt));
     prop.setPropertyClass(String.class);
