@@ -97,7 +97,7 @@ public class CSMARTMetricsFrame extends JFrame implements ActionListener
     
     JScrollPane jsp = new JScrollPane();
     jsp.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-    jsp.getViewport().setBackingStoreEnabled(true);
+    jsp.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 
     getContentPane().add(jsp, "East");
 
