@@ -81,16 +81,12 @@ alter table V3_ASB_COMPONENT_NODE add constraint PK_V3_ASB_COMPONENT_NODE
     primary key (ASSEMBLY_ID,COMPONENT_ID);
 
 drop table V3_ASB_MACHINE;
-create table V3_ASB_MACHINE ( -- Move to LIB?
+create table V3_ASB_MACHINE (
     ASSEMBLY_ID             VARCHAR2(50),   -- PK
-    MACHINE_ID              VARCHAR2(50),   -- PK
-    MACHINE_NAME            VARCHAR2(50),
-    IP_ADDRESS              VARCHAR2(50),
-    OPERATING_SYSTEM        VARCHAR2(50),
-    DESCRIPTION             VARCHAR2(100)
+    MACHINE_LIB_ID          VARCHAR2(50)    -- PK
     );
 alter table V3_ASB_MACHINE add constraint PK_V3_ASB_MACHINE
-    primary key (ASSEMBLY_ID,MACHINE_ID);
+    primary key (ASSEMBLY_ID,MACHINE_LIB_ID);
 
 drop table V3_ASB_NODE;
 create table V3_ASB_NODE (
@@ -106,10 +102,10 @@ drop table V3_ASB_NODE_MACHINE;
 create table V3_ASB_NODE_MACHINE (
     ASSEMBLY_ID             VARCHAR2(50),   -- PK
     NODE_ID                 VARCHAR2(50),   -- PK
-    MACHINE_ID              VARCHAR2(50)    -- PK
+    MACHINE_LIB_ID          VARCHAR2(50)    -- PK
     );
 alter table V3_ASB_NODE_MACHINE add constraint PK_V3_ASB_NODE_MACHINE
-    primary key (ASSEMBLY_ID,NODE_ID,MACHINE_ID);
+    primary key (ASSEMBLY_ID,NODE_ID,MACHINE_LIB_ID);
 
 drop table V3_ASB_OPLAN;
 create table V3_ASB_OPLAN (
@@ -192,6 +188,17 @@ create table V3_LIB_COMPONENT_ARG (         -- 80 rows; not for run time use
     );
 alter table V3_LIB_COMPONENT_ARG add constraint PK_V3_LIB_COMPONENT_ARG
     primary key (COMPONENT_LIB_ID,ARGUMENT);
+
+drop table V3_LIB_MACHINE;
+create table V3_LIB_MACHINE (
+    MACHINE_LIB_ID          VARCHAR2(50),   -- PK
+    MACHINE_NAME            VARCHAR2(50),
+    IP_ADDRESS              VARCHAR2(50),
+    OPERATING_SYSTEM        VARCHAR2(50),
+    DESCRIPTION             VARCHAR2(100)
+    );
+alter table V3_LIB_MACHINE add constraint PK_V3_LIB_MACHINE
+    primary key (MACHINE_LIB_ID);
 
 drop table V3_LIB_OPLAN_AGENT_ATTR_REF;
 create table V3_LIB_OPLAN_AGENT_ATTR_REF (
