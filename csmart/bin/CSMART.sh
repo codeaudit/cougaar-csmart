@@ -48,9 +48,11 @@ if [ $os = "Linux" -o $os = "SunOS" ]; then SEP=":"; fi
 # To run without the Bootstrapper, set org.cougaar.useBootstrapper=false
 
 MYCLASSPATH="${COUGAAR_INSTALL_PATH}/lib/core.jar"
-    
+
+DEVPATH=""
 if [ "$COUGAAR_DEV_PATH" != "" ] ; then
     MYCLASSPATH="${COUGAAR_DEV_PATH}${SEP}${MYCLASSPATH}"
+    DEVPATH="-Dorg.cougaar.class.path=${COUGAAR_DEV_PATH}"
 fi
     
 # The performance analyzer uses Excel. To use it or an equivalent,
@@ -62,7 +64,7 @@ MYMEMORY="-Xms100m -Xmx300m"
 # The delay between starting nodes, in milliseconds
 MYDELAY="-Dorg.cougaar.tools.csmart.startdelay=0"
 
-MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY"
+MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY $DEVPATH"
 
 # Set the config path to include the basic CSMART config files first
 MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
