@@ -32,12 +32,18 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.*;
 import java.lang.reflect.Constructor;
+import java.sql.SQLException;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.ResultSet;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.experiment.ABCImpact;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
-import org.cougaar.tools.csmart.configgen.abcsociety.ABCSociety;
+import org.cougaar.tools.csmart.societies.abcsociety.ABCSociety;
+import org.cougaar.tools.csmart.societies.cmt.CMTSociety;
 import org.cougaar.tools.csmart.ui.experiment.*;
-import org.cougaar.tools.csmart.configgen.abcsociety.BasicMetric;
+import org.cougaar.tools.csmart.societies.abcsociety.BasicMetric;
+import org.cougaar.tools.csmart.societies.database.DBUtils;
 
 /**
  * The Organizer holds all the component a user creates
@@ -49,7 +55,7 @@ public class Organizer extends JScrollPane {
   private static final String FRAME_TITLE = "CSMART Launcher";
   
   private static final long UPDATE_DELAY = 5000L;
-  
+
   private boolean updateNeeded = false;
   
   private long nextUpdate = 0L;
@@ -63,7 +69,7 @@ public class Organizer extends JScrollPane {
   // The societies which can be created in CSMART
   private Object[] socComboItems = {
     new ComboItem("Scalability", ScalabilityXSociety.class),
-    new ComboItem("ABC", ABCSociety.class)
+    new ComboItem("ABC", ABCSociety.class),
   };
 
   // The impacts which can be created in CSMART
@@ -848,7 +854,27 @@ public class Organizer extends JScrollPane {
 
   private Collection getSocietyNamesFromDB() {
     ArrayList tmpNames = new ArrayList(10);
-    tmpNames.add("small-135");
+    Map substitutions = new HashMap();
+
+    if(DBUtils.isValidDBConnection()) {
+      try {
+	substitutions.put(":assembly_type", "CMT");
+	Connection conn = DBUtils.getConnection();
+	Statement stmt = conn.createStatement();
+	String query = DBUtils.getQuery(DBUtils.ASSEMBLYID_QUERY, substitutions);
+	ResultSet rs = stmt.executeQuery(query);
+	while(rs.next()) {
+	  String result = rs.getString(1);
+	  if(result != null) {
+	    tmpNames.add(result);
+	  }
+	}
+	rs.close();
+	stmt.close();
+	conn.close();
+      } catch (SQLException se) {}   
+    }
+
     return tmpNames;
   }
 
@@ -899,7 +925,8 @@ public class Organizer extends JScrollPane {
     } else {
       // create a society from a database
       // answer is the society name obtained from the database
-      //      sc = SocietyComponent.createFromDatabase(answer);
+      sc = CMTSociety.loadCMTSociety((String)answer);    
+      sc.initProperties();
     }
     if (sc == null)
       return null;
@@ -909,15 +936,15 @@ public class Organizer extends JScrollPane {
   }
 
   private SocietyComponent createSoc(String name, Class cls) {
-      try {
-	Constructor constructor = cls.getConstructor(constructorArgTypes);
-	SocietyComponent sc = (SocietyComponent) constructor.newInstance(new String[] {name});
-	sc.initProperties();
-	return sc;
-      } catch (Exception e) {
-	e.printStackTrace();
-	return null;
-      }
+    try {
+      Constructor constructor = cls.getConstructor(constructorArgTypes);
+      SocietyComponent sc = (SocietyComponent) constructor.newInstance(new String[] {name});
+      sc.initProperties();
+      return sc;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
   
   private DefaultMutableTreeNode addSocietyToWorkspace(SocietyComponent sc,
@@ -1099,14 +1126,6 @@ public class Organizer extends JScrollPane {
       
       // Special case code for ABC Impacts:
       File xmlfile = null; // to read in
-//       if (item.name.equals("ABCImpact")) {
-// 	// Use a fileChooser to get the name of the file
-// 	// if we had some other directory to start from,
-// 	// we could pass in that parameter
-// 	xmlfile = ABCImpact.getImpactFile(null, this);
-// 	if (xmlfile == null)
-// 	  return;
-//       }
       while (true) {
 	name = (String) JOptionPane.showInputDialog(this, "Enter Impact Name",
 						    "Name Impact",
@@ -1128,9 +1147,6 @@ public class Organizer extends JScrollPane {
       DefaultMutableTreeNode newNode =
 	addImpactToWorkspace(impact, node);
       workspace.setSelection(newNode);
-      // If this is an ABCImpact, set the XML File as specified above
-//       if (xmlfile != null && impact instanceof ABCImpact)
-// 	((ABCImpact)impact).setFile(xmlfile);
     }
   }
 
