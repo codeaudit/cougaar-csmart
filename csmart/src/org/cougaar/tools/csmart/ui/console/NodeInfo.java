@@ -39,9 +39,8 @@ public final class NodeInfo {
   private final Properties properties;
   private final List args;
 
-  public NodeInfo(RemoteHost appServer,
-                  String nodeName, String hostName, 
-                  Properties properties, List args) {
+  public NodeInfo(final RemoteHost appServer, final String nodeName, final String hostName,
+                  final Properties properties, final List args) {
     this.appServer = appServer;
     this.nodeName = nodeName;
     this.hostName = hostName;
@@ -67,5 +66,30 @@ public final class NodeInfo {
 
   public List getArgs() {
     return args;
+  }
+
+  public boolean equals(final Object o) {
+    if (this == o) return true;
+    if (!(o instanceof NodeInfo)) return false;
+
+    final NodeInfo nodeInfo = (NodeInfo) o;
+
+    if (!appServer.equals(nodeInfo.appServer)) return false;
+    if (!args.equals(nodeInfo.args)) return false;
+    if (!hostName.equals(nodeInfo.hostName)) return false;
+    if (!nodeName.equals(nodeInfo.nodeName)) return false;
+    if (!properties.equals(nodeInfo.properties)) return false;
+
+    return true;
+  }
+
+  public int hashCode() {
+    int result;
+    result = appServer.hashCode();
+    result = 29 * result + nodeName.hashCode();
+    result = 29 * result + hostName.hashCode();
+    result = 29 * result + properties.hashCode();
+    result = 29 * result + args.hashCode();
+    return result;
   }
 }
