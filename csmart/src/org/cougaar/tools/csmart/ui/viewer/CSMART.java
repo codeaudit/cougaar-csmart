@@ -203,6 +203,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
           organizer.newSociety();
         }
       });
+    newSocietyMenuItem.setEnabled(false); // disable creating built-in societies
     fileMenu.add(newSocietyMenuItem);
     newFolderMenuItem = new JMenuItem("New Folder");
     newFolderMenuItem.addActionListener(new ActionListener() {
@@ -361,7 +362,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
           if (organizer.getSelectedNode().isRoot()) {
             newExperimentMenu.setEnabled(true);
             newRecipeMenu.setEnabled(true);
-            newSocietyMenuItem.setEnabled(true);
+            //            newSocietyMenuItem.setEnabled(true);
             newFolderMenuItem.setEnabled(true);
             renameMenuItem.setEnabled(true);
             deleteExperimentFromDatabaseMenuItem.setEnabled(true);
@@ -405,7 +406,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
           } else if (selObject instanceof String) {
             newExperimentMenu.setEnabled(true);
             newRecipeMenu.setEnabled(true);
-            newSocietyMenuItem.setEnabled(true);
+            //            newSocietyMenuItem.setEnabled(true);
             newFolderMenuItem.setEnabled(true);
             deleteMenuItem.setEnabled(true);
             renameMenuItem.setEnabled(true);

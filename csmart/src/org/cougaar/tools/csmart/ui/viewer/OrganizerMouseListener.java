@@ -41,12 +41,18 @@ public class OrganizerMouseListener extends MouseAdapter {
   private JPopupMenu rootMenu = new JPopupMenu();
   
   // Define actions for use on menus
+  private Action newSocietyAction = new AbstractAction("New Society") {
+      public void actionPerformed(ActionEvent e) {
+        organizer.newSociety();
+      }
+    };
   private Action[] rootAction = {
-    new AbstractAction("New Society") {
-	public void actionPerformed(ActionEvent e) {
-	  organizer.newSociety();
-	}
-      },
+//      new AbstractAction("New Society") {
+//  	public void actionPerformed(ActionEvent e) {
+//  	  organizer.newSociety();
+//  	}
+//        },
+    newSocietyAction,
     new AbstractAction("New Folder") {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.newFolder();
@@ -186,11 +192,12 @@ public class OrganizerMouseListener extends MouseAdapter {
       }
   };
   private Action[] treeAction = {
-    new AbstractAction("New Society") {
-	public void actionPerformed(ActionEvent e) {
-          organizer.newSociety();
-	}
-      },
+    newSocietyAction,
+//      new AbstractAction("New Society") {
+//  	public void actionPerformed(ActionEvent e) {
+//            organizer.newSociety();
+//  	}
+//        },
     new AbstractAction("New Recipe") {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.newRecipe();
@@ -217,6 +224,7 @@ public class OrganizerMouseListener extends MouseAdapter {
                                 OrganizerTree workspace) {
     this.organizer = organizer;
     this.workspace = workspace;
+    newSocietyAction.setEnabled(false); // disable creatin builtin societies
     JMenu newExperimentMenu = new JMenu("New Experiment");
     for (int i = 0; i < newExperimentActions.length; i++) {
       newExperimentMenu.add(newExperimentActions[i]);
