@@ -583,10 +583,11 @@ public class CSMARTGraph extends Graph
 	  try {
 	    edge = new Edge(this, tailNode, node);
 	  } catch (RuntimeException e) {
-	    System.out.println("Couldn't create edge from: " +
-			       tailNode.getName() + " " +
-			       node.getName() + " " + e);
-	    continue;
+	    // we'll probably get exceptions for duplicate edges, so ignore
+//  	    System.out.println("Couldn't create edge from: " +
+//  			       tailNode.getName() + " " +
+//  			       node.getName() + " " + e);
+  	    continue;
 	  }
 	  edge.setAttribute(GrappaConstants.TIP_ATTR, 
 			    (tailNode.getAttributeValue(PropertyNames.UID_ATTR)).toString() +
@@ -604,9 +605,10 @@ public class CSMARTGraph extends Graph
 	try {
 	  edge = new Edge(this, node, headNode);
 	} catch (RuntimeException e) {
-	  System.out.println("Couldn't create edge from: " +
-			     node.getName() + " " +
-			     headNode.getName() + " " + e);
+	    // we'll probably get exceptions for duplicate edges, so ignore
+          //	  System.out.println("Couldn't create edge from: " +
+          //			     node.getName() + " " +
+          //			     headNode.getName() + " " + e);
 	  continue;
 	}
 	edge.setAttribute(GrappaConstants.TIP_ATTR, 
@@ -632,9 +634,10 @@ public class CSMARTGraph extends Graph
 	  try {
 	    edge = new Edge(this, node, headNode);
 	  } catch (RuntimeException e) {
-	    System.out.println("Couldn't create edge from: " +
-			       node.getName() + " " +
-			       headNode.getName() + " " + e);
+	    // we'll probably get exceptions for duplicate edges, so ignore
+            //	    System.out.println("Couldn't create edge from: " +
+            //			       node.getName() + " " +
+            //			       headNode.getName() + " " + e);
 	    continue;
 	  }
 	  edge.setAttribute(GrappaConstants.TIP_ATTR, 
@@ -653,9 +656,10 @@ public class CSMARTGraph extends Graph
 	try {
 	  edge = new Edge(this, tailNode, node);
 	} catch (RuntimeException e) {
-	  System.out.println("Couldn't create edge from: " +
-			     tailNode.getName() + " " +
-			     node.getName() + " " + e);
+          // we'll probably get exceptions for duplicate edges, so ignore
+          //	  System.out.println("Couldn't create edge from: " +
+          //			     tailNode.getName() + " " +
+          //			     node.getName() + " " + e);
 	  continue;
 	}
 	edge.setAttribute(GrappaConstants.TIP_ATTR, 

@@ -989,11 +989,21 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       for (Iterator keyIter = keys.iterator(); keyIter.hasNext(); ) {
 	String key = (String)keyIter.next();
 	if (key.startsWith(PropertyNames.ORGANIZATION_RELATED_TO)) {
+          String relationship = key.substring(key.lastIndexOf('_')+1);
 	  String relatedToName = (String)properties.get(key);
 	  String relatedToUID = (String)nameToUID.get(relatedToName);
-	  if (relatedToUID != null)
-	    node.addBidirectionalLink(relatedToUID);
-	}
+          // this creates duplicate links but grappa catches them; see csmartgraph
+	  if (relatedToUID != null) {
+            if (relationship.endsWith("Customer") || 
+                relationship.endsWith("Superior"))
+              node.addIncomingLink(relatedToUID);
+            else if (relationship.endsWith("Provider") ||
+                     relationship.endsWith("Subordinate"))
+              node.addOutgoingLink(relatedToUID);
+            else
+              System.out.println("Unknown relationship: " + relatedToName);
+          }
+        }
       }
     }
     if (nodeObjects.size() != 0) {

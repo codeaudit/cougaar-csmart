@@ -46,7 +46,8 @@ public class ULSocietyNode implements NodeObject {
   String distortion = "0";
   String orientation = "0";
   PropertyTree properties;
-  Vector bidirectionalLinks;
+  Vector incomingLinks;
+  Vector outgoingLinks;
 
   /**
    * Create a NodeObject from a PropertyTree based on an AssetEvent.
@@ -64,7 +65,8 @@ public class ULSocietyNode implements NodeObject {
 		   "Agent " + 
 		   (String)properties.get(PropertyNames.ORGANIZATION_NAME));
     this.properties = properties;
-    bidirectionalLinks = new Vector();
+    incomingLinks = new Vector();
+    outgoingLinks = new Vector();
   }
 
   public String getUID() {
@@ -118,19 +120,25 @@ public class ULSocietyNode implements NodeObject {
   }
 
   public Vector getIncomingLinks() {
-    return null;
+    return incomingLinks;
+  }
+
+  public void addIncomingLink(String UID) {
+    if (!incomingLinks.contains(UID))
+      incomingLinks.addElement(UID);
   }
 
   public Vector getOutgoingLinks() {
-    return null;
+    return outgoingLinks;
+  }
+
+  public void addOutgoingLink(String UID) {
+    if (!outgoingLinks.contains(UID))
+      outgoingLinks.addElement(UID);
   }
 
   public Vector getBidirectionalLinks() {
-    return bidirectionalLinks;
-  }
-
-  public void addBidirectionalLink(String UID) {
-    bidirectionalLinks.addElement(UID);
+    return null;
   }
 
   /**
@@ -139,9 +147,6 @@ public class ULSocietyNode implements NodeObject {
 
   private void setNodeShapeParameters() {
     shape = "ellipse";
-  }
-
-  public void addOutgoingLink(String UID) {
   }
 
   public boolean isVisible() {
