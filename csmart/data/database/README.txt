@@ -43,6 +43,11 @@ Sub-directories:
                                   The script calls the mysql script 
                                   'dump_mysql_db.sql' as well as the 
                                   'concat_header_data.sh' script.
+
+                                  NOTE: The database user must have the 'File'
+                                  privilege in the mysql database in order to 
+                                  run this script.  See csmart/doc/InstallandTest.html 
+                                  for information on setting this privilege.
                 
                 dump_mysql_db.sql - SQL script that generates a '.csv' file
                                   for each table in the configuration database.
