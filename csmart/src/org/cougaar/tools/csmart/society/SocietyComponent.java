@@ -24,12 +24,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.net.URL;
 
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 /**
  * The interface for adding and removing nodes from a society.
  */
-public interface SocietyComponent extends ModifiableComponent, ComponentProperties {
+public interface SocietyComponent extends ModifiableComponent {
 
   void setName(String newName);
 
@@ -92,4 +91,5 @@ public interface SocietyComponent extends ModifiableComponent, ComponentProperti
    * @see org.cougaar.tools.server.NodeEvent
    */
   boolean isSelfTerminating();
+
 }

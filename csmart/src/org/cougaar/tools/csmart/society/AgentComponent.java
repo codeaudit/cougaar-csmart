@@ -23,7 +23,7 @@ package org.cougaar.tools.csmart.society;
 import java.io.File;
 import java.io.IOException;
 
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 
 /**
  * A simple interface implemented by configurable components 
@@ -31,5 +31,5 @@ import org.cougaar.tools.csmart.core.property.ComponentProperties;
  * They can write their line in the Node.ini file,
  * and can write their own Agent ini File.
  */
-public interface AgentComponent extends ComponentProperties {
+public interface AgentComponent extends BaseComponent {
 }

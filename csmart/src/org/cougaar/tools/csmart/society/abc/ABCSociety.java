@@ -23,14 +23,13 @@ package org.cougaar.tools.csmart.society.abc;
 import org.cougaar.tools.csmart.Constants;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.tools.server.ConfigurationWriter;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.experiment.HostComponent;
@@ -416,7 +415,7 @@ public class ABCSociety
    * @param result society component to copy
    * @return a <code>ComponentProperties</code> value
    */
-  public ComponentProperties copy(ComponentProperties result) {
+  public BaseComponent copy(BaseComponent result) {
     result = super.copy(result);
     // Try to get the PROP_SUPPLIES and PROP_INITIALIZER properties
     // reset to have the new society name in them
