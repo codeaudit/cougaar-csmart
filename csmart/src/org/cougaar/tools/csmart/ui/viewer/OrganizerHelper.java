@@ -161,7 +161,8 @@ public class OrganizerHelper {
   }
 
   private void createLogger() {
-    log = CSMART.createLogger(this.getClass().getName());
+    if (log == null)
+      log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**
@@ -513,6 +514,8 @@ public class OrganizerHelper {
   }
 
   public Map getRecipeNamesFromDatabase() {
+    createLogger();
+    
     Map recipes = new TreeMap();
     String query = null;
     try {
@@ -551,6 +554,8 @@ public class OrganizerHelper {
 
   public RecipeComponent getDatabaseRecipe(String recipeId,
                                            String recipeName) {
+    createLogger();
+    
     String query = null;
     try {
       Connection conn = DBUtils.getConnection();
@@ -620,6 +625,8 @@ public class OrganizerHelper {
   private static Class[] constructorArgTypes = {String.class};
 
   public RecipeComponent createRecipe(String name, Class cls) {
+    createLogger();
+    
     try {
       Constructor constructor = cls.getConstructor(constructorArgTypes);
       RecipeComponent recipe =
@@ -649,6 +656,8 @@ public class OrganizerHelper {
 
   // Create a new built-in society.
   public SocietyComponent createSociety(String name, Class cls) {
+    createLogger();
+    
     try {
       Constructor constructor = cls.getConstructor(constructorArgTypes);
       SocietyComponent sc = 
