@@ -190,7 +190,7 @@ public class AgentInsertionRecipe extends RecipeBase
     setPropertyVisible(propAssetClass, show);
     setPropertyVisible(propNomenclature, show);
     setPropertyVisible(propType, show);
-    setPropertyVisible(propAltType, show);
+    setPropertyVisible(propAltTypeId, show);
 
     if(!show && propRelations != null && propRelations.length > 0) {
       for(int i=0; i < propRelations.length; i++) {
