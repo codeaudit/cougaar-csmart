@@ -32,7 +32,7 @@ import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 
 /**
- * User interface that supports building a society.
+ * User interface that supports building a configurable component.
  */
 public class PropertyBuilder extends JFrame implements ActionListener {
   private PropertyEditorPanel propertyEditor;
