@@ -411,8 +411,10 @@ public class PropertyEditorPanel extends JPanel
     for (Iterator i = component.getLocalPropertyNames(); i.hasNext(); ) {
       CompositeName propName = (CompositeName) i.next();
       Property property = component.getProperty(propName);
-      if (property != null) 
+      if (property != null) {
+        node.addPropertyName(propName);
         addTableEntryForProperty(property);
+      }
     }
   }
 
@@ -486,7 +488,8 @@ public class PropertyEditorPanel extends JPanel
     CompositeName name = prop.getName();
     if (node.removePropertyName(name)) {
       TreePath path = tree.getSelectionPath();
-      if (path == null) return;
+      if (path == null)
+        return;
       PropertyTreeNode selectedNode = 
         (PropertyTreeNode)path.getLastPathComponent();
       if (selectedNode.equals(node)) {
@@ -689,7 +692,8 @@ public class PropertyEditorPanel extends JPanel
     ModifiableComponent cc = 
       (ModifiableComponent)nodeToComponent.get(selNode);
     Object parent = cc.getParent();
-    ((ModifiableComponent)parent).removeChild(cc);
+    if (parent != null && parent instanceof ModifiableComponent)
+      ((ModifiableComponent)parent).removeChild(cc);
     // remove agent and subnodes from the tree
     removeTreeNodes(selNode);
   }
