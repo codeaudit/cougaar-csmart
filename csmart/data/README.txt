@@ -8,10 +8,6 @@ is the MySQL compatible datafile "CMT-MySQL.ZIP", for use in creating
 a MySQL configuration database. See csmart/doc/InstallandTest.html or the 
 User's Guide for usage.
 
-In addition, the file create-dummy-dual.sql contains SQL commands the
-must be issued on MySQL databases for use with CSMART. See
-csamrt/doc/InstallandTest.html for details.
-
 This directory contains several configuration sub-directories:
 
   common/:
