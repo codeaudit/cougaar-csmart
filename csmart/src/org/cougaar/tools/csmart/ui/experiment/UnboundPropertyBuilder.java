@@ -181,6 +181,15 @@ public class UnboundPropertyBuilder extends JPanel {
     model.insertNodeInto(metrics, root, 2);
     model.setAsksAllowsChildren(true);
     tree = new ExperimentTree(model);
+    // cell editor always returns false so that user can't edit cell names
+    // using tree.setCellEditor(null) doesn't work
+    DefaultCellEditor myEditor = new DefaultCellEditor(new JTextField()) {
+      public boolean isCellEditable(EventObject e) {
+	return false;
+      }
+    };
+    tree.setCellEditor(myEditor);
+
     tree.setExpandsSelectedPaths(true);
     tree.setRootVisible(false);
     tree.expandNode(societies);
