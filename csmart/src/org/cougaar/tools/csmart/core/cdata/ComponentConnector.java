@@ -141,6 +141,7 @@ public class ComponentConnector {
       data = new GenericComponentData();
       data.setType(type);
       data.setName(desc.getName());
+      data.setPriority(ComponentDescription.priorityToString(desc.getPriority()));
       Vector v = (Vector)desc.getParameter();
       for(int i=0; i < v.size(); i++) {
         data.addParameter(v.get(i));
