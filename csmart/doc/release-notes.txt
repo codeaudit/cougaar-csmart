@@ -14,8 +14,8 @@ re-loading a CSMART database for example, and then re-importing
 
 In detail:
 - Domain database has been updated. To get the latest data, reload the
-  mysqldump.9.2.txt file (found in dbmsq/data/mysql), using a command like:
-mysql -f -u [user] -p[pw] [db] < mysqldump.9.2.txt
+  mysqldump.txt file (found in dbmsq/data/mysql), using a command like:
+mysql -f -u [user] -p[pw] [db] < mysqldump.txt
 - Configuration database schema has changed. To support the UL
   Adaptive Logistics thread, the configuration CFW database now supports
   multiple plugins of the same class in the same Agent. If you plan to
