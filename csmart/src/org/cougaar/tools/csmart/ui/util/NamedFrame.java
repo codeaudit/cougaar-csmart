@@ -51,7 +51,7 @@ public class NamedFrame extends Observable {
   public static final String METRICS = "Metrics";
   public static final String TOPOLOGY = "Topology";
 
-  private static Hashtable titleToFrame = new Hashtable();
+  private static transient Hashtable titleToFrame = new Hashtable();
   private static String titles[] = {
     COMMUNITY,
     AGENT,
@@ -67,7 +67,8 @@ public class NamedFrame extends Observable {
   };
   private static int index[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }; // used for common titles
 
-  private static NamedFrame singleton = null;
+  // If CSMART dies do not store the info on what windows are open
+  private static transient NamedFrame singleton = null;
 
   private transient Logger log;
 
@@ -98,8 +99,10 @@ public class NamedFrame extends Observable {
    * @param title frame title
    * @param frame the frame
    */
-
   public String addFrame(String title, JFrame frame) {
+    if (titleToFrame == null)
+      titleToFrame = new Hashtable();
+
     // number commonly used titles
     for (int i = 0; i < titles.length; i++) {
       if (title.equals(titles[i])) {
@@ -120,10 +123,14 @@ public class NamedFrame extends Observable {
   }
 
   public JFrame getFrame(String title) {
+    if (titleToFrame == null)
+      titleToFrame = new Hashtable();
     return (JFrame) titleToFrame.get(title);
   }
 
   public JFrame getToolFrame(String toolTitle) {
+    if (titleToFrame == null)
+      titleToFrame = new Hashtable();
     Enumeration titles = titleToFrame.keys();
     while (titles.hasMoreElements()) {
       String title = (String)titles.nextElement();
@@ -134,6 +141,8 @@ public class NamedFrame extends Observable {
   }
 
   public JFrame getToolFrame(String toolTitle, String societyName) {
+    if (titleToFrame == null)
+      titleToFrame = new Hashtable();
     String newTitle = toolTitle + ": " + societyName;
     Enumeration titles = titleToFrame.keys();
     while (titles.hasMoreElements()) {
@@ -160,8 +169,9 @@ public class NamedFrame extends Observable {
    * Remove a frame and notify observers.
    * @param frame the frame to remove
    */
-
   public void removeFrame(JFrame frame) {
+    if (titleToFrame == null)
+      titleToFrame = new Hashtable();
     //    String s = removeTitleColon(frame.getTitle());
     String s = frame.getTitle();
     titleToFrame.remove(s);
