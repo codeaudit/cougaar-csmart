@@ -48,7 +48,7 @@ public class UIProperties {
   public static final String DEFAULT_COLOR_CLUSTER5 = "224,238,238"; // azure2
   public static final String DEFAULT_COLOR_CLUSTER6 = "30,144,25"; // dodgerblue
   // must match highest DEFAULT_COLOR_CLUSTER 
-  public static final int DEFAULT_MAX_COLOR = 10; // number of cluster colors
+  public static final int DEFAULT_MAX_COLOR = 6; // number of cluster colors
 
   public static final String DEFAULT_COLOR_CLUSTER_ATTACKER = "155,205,155"; // darkseagreen3
   public static final String DEFAULT_COLOR_CLUSTER_FIREWALL = "238,180,34"; // goldenrod2
@@ -162,6 +162,7 @@ public class UIProperties {
     defaults.setProperty("color.cluster.4", DEFAULT_COLOR_CLUSTER4);
     defaults.setProperty("color.cluster.5", DEFAULT_COLOR_CLUSTER5);
     defaults.setProperty("color.cluster.6", DEFAULT_COLOR_CLUSTER6);
+    defaults.setProperty("color.cluster.max", String.valueOf(DEFAULT_MAX_COLOR));
     
     // Metric Defaults.
     defaults.setProperty("metric.line.size", DEFAULT_GRAPH_LINE_SIZE);
