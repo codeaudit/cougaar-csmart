@@ -84,7 +84,6 @@ public class ComponentConnector {
 
   public static ComponentDescription[] parseFile(String filename) {
     ComponentDescription[] desc = null;
-    String containerInsertionPoint = "";
 
     Logger log = 
      CSMART.createLogger("org.cougaar.tools.csmart.core.cdata.ComponentConnector");
@@ -101,7 +100,7 @@ public class ComponentConnector {
       InputStream in = SocietyFinder.getInstance().open(filename);
       //InputStream in = ConfigFinder.getInstance().open(filename);
       try { 
-        desc = INIParser.parse(in, containerInsertionPoint);
+        desc = INIParser.parse(in);
       } finally {
         in.close();
       }
