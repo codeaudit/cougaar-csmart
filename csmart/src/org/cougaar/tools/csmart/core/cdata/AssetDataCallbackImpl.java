@@ -21,6 +21,8 @@
 package org.cougaar.tools.csmart.core.cdata;
 
 import org.cougaar.planning.plugin.asset.AssetDataCallback;
+import org.cougaar.planning.ldm.asset.NewPropertyGroup;
+import org.cougaar.planning.ldm.asset.PropertyGroup;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.TimeSpan;
@@ -53,7 +55,6 @@ import java.util.Iterator;
 public class AssetDataCallbackImpl implements AssetDataCallback {
   private AgentAssetData assetData = null;
   private DateFormat myDateFormat = DateFormat.getInstance();
-  private PropGroupData propGroup = null;
   private transient Logger log = null;
   private String clusterName;
   /**
@@ -139,11 +140,11 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
    * @param propGroupName Name of the new property group
    * @exception Exception if an error occurs
    */
-  public void createPropertyGroup(String propGroupName) throws Exception {
+  public NewPropertyGroup createPropertyGroup(String propGroupName) throws Exception {
     if(log.isDebugEnabled()) {
       log.debug("Create PropertyGroup: " + propGroupName);
     }
-    propGroup = new PropGroupData(propGroupName);
+    return new PropGroupData(propGroupName);
   }
 
   /**
@@ -240,7 +241,9 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
    * @param type Type of <code>PGPropData</code>
    * @param arguments Arguments for the <code>PGPropData</code>
    */
-  public void callSetter(String setterName, String type, Object[] arguments) {
+  public void callSetter(NewPropertyGroup propertyGroup, String setterName, 
+			 String type, Object[] arguments) {
+    PropGroupData propGroup = (PropGroupData) propertyGroup;
     String name = setterName.substring(3);
 
     if(log.isWarnEnabled() && arguments.length > 1) {
@@ -331,7 +334,8 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
    * This method is required by the callback
    *
    */
-  public void addPropertyToAsset() {
+  public void addPropertyToAsset(PropertyGroup propertyGroup) {
+    PropGroupData propGroup = (PropGroupData) propertyGroup;
     if(log.isDebugEnabled()) {
       log.debug("Adding Property group: "+propGroup.getName()+" to asset");
     }

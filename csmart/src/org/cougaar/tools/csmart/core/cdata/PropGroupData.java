@@ -25,6 +25,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.cougaar.planning.ldm.asset.NewPropertyGroup;
+import org.cougaar.planning.ldm.asset.PropertyGroup;
+
 // FIXME: An extension of this would be time-phased
 // However, there the set of properties would be the same, but the
 // values would differ in different time-spans.
@@ -40,7 +43,7 @@ import java.util.List;
  * it has a list of properties. These properties are instances of
  * <code>PGPropData</code>
  **/
-public class PropGroupData implements Serializable {
+public class PropGroupData implements Serializable, NewPropertyGroup {
 
   /** Common PG class names **/
   public static final String ITEM_IDENTIFICATION = "ItemIdentificationPG";
@@ -194,4 +197,71 @@ public class PropGroupData implements Serializable {
     }
     return buf.toString();
   }
+
+  //Stub NewPropertyGroup implementation
+  
+  public Object clone() throws CloneNotSupportedException {
+    throw new CloneNotSupportedException();
+  }
+
+  /** Unlock the PropertyGroup by returning an object which
+   * has setter methods that side-effect this object.
+   * The key must be == the key that locked the property
+   * in the first place or an Exception is thrown.
+   * @exception IllegalAccessException
+   **/
+  public NewPropertyGroup unlock(Object key) {
+    return null;
+  }
+
+  /** lock a property by returning an immutable object which
+   * has a private view into the original object.
+   * If key == null, the result is a locked object which cannot be unlocked.
+   **/
+  public PropertyGroup lock(Object key) {
+    return null;
+  }
+
+  /** alias for lock(null)
+   **/
+  public PropertyGroup lock() {
+    return null;
+  }
+
+  /** Convenience method. equivalent to clone();
+   **/
+  public PropertyGroup copy() {
+    try {
+      return (PropertyGroup) clone();
+    } catch (CloneNotSupportedException cnse) { return null;}
+  }
+
+
+  /** returns the class of the main property interface for this 
+   * property group.  
+   **/
+  public Class getPrimaryClass() {
+    return this.getClass();
+  }
+
+  /** @return the method name on an asset to retrieve the PG **/
+  public String getAssetGetMethod() {
+    return "get" + name;
+  }
+
+  /** @return the method name on an asset to set the PG **/
+  public String getAssetSetMethod() {
+    return "set" + name;
+  }
+    
+
+  // DataQuality
+  /** @return true IFF the instance not only supports DataQuality
+   * queries (e.g. is instanceof HasDataQuality), but getDataQuality()
+   * will return non-null.
+   **/
+  public boolean hasDataQuality() {
+    return false;
+  }
+
 } // end of PropGroupData.java
