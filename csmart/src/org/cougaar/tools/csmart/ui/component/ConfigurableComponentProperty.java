@@ -10,6 +10,7 @@
 
 package org.cougaar.tools.csmart.ui.component;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -28,7 +29,7 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
   private Object defaultValue;
   private Object value;
   private Set allowedValues;
-  private Set experimentValues;
+  private List experimentValues;
 
   /**
    * Construct a Property with default values based on the name and value
@@ -122,12 +123,12 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
     }
   }
 
-  public Set getExperimentValues() {
+  public List getExperimentValues() {
     return experimentValues;
   }
 
-  public void setExperimentValues(Set experimentValues) {
-    Set old = this.experimentValues;
+  public void setExperimentValues(List experimentValues) {
+    List old = this.experimentValues;
     this.experimentValues = experimentValues;
     try {
       fireOtherChanged(old, PropertyEvent.EXPERIMENTVALUES_CHANGED);
@@ -156,3 +157,4 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
     return value != null;
   }
 }
+

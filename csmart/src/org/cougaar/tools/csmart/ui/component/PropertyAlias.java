@@ -68,7 +68,7 @@ public class PropertyAlias extends PropertyBase implements Property, PropertyLis
     prop.setValue(value);
   }
 
-  public void setExperimentValues(Set experimentValues) {
+  public void setExperimentValues(List experimentValues) {
     prop.setExperimentValues(experimentValues);
   }
 
@@ -96,7 +96,7 @@ public class PropertyAlias extends PropertyBase implements Property, PropertyLis
     return prop.getValue();
   }
 
-  public Set getExperimentValues() {
+  public List getExperimentValues() {
     return prop.getExperimentValues();
   }
 

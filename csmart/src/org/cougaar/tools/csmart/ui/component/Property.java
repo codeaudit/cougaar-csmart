@@ -12,6 +12,7 @@ package org.cougaar.tools.csmart.ui.component;
 
 import java.util.Set;
 import java.util.Iterator;
+import java.util.List;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.net.URL;
@@ -34,8 +35,8 @@ public interface Property extends Serializable {
     void setDefaultValue(Object defaultValue);
     Object getValue();
     void setValue(Object value);
-    Set getExperimentValues();
-    void setExperimentValues(Set experimentValues);
+    List getExperimentValues();
+    void setExperimentValues(List experimentValues);
     Set getAllowedValues();
     void setAllowedValues(Set allowedValues);
     boolean isValueSet();

@@ -39,8 +39,8 @@ public abstract class PropertyBase implements Property {
     public abstract void setDefaultValue(Object defaultValue);
     public abstract Object getValue();
     public abstract void setValue(Object value);
-    public abstract Set getExperimentValues();
-    public abstract void setExperimentValues(Set experimentValues);
+    public abstract List getExperimentValues();
+    public abstract void setExperimentValues(List experimentValues);
     public abstract Set getAllowedValues();
     public abstract void setAllowedValues(Set allowedValues);
     public abstract boolean isValueSet();
