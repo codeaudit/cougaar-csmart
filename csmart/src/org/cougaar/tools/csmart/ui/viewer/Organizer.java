@@ -114,11 +114,11 @@ public class Organizer extends JScrollPane {
 	  newSociety(popupNode);
 	}
       },
-    new AbstractAction("New Recipe") {
-	public void actionPerformed(ActionEvent e) {
-	  newRecipe(popupNode);
-	}
-      },
+//      new AbstractAction("New Recipe") {
+//  	public void actionPerformed(ActionEvent e) {
+//  	  newRecipe(popupNode);
+//  	}
+//        },
     new AbstractAction("New Folder") {
 	public void actionPerformed(ActionEvent e) {
 	  newFolder(popupNode);
@@ -302,6 +302,11 @@ public class Organizer extends JScrollPane {
     new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
 	  renameRecipe(popupNode);
+	}
+      },
+    new AbstractAction("Save to Database") {
+	public void actionPerformed(ActionEvent e) {
+	  saveRecipe(popupNode);
 	}
       }
   };
@@ -1201,17 +1206,87 @@ public class Organizer extends JScrollPane {
   private void deleteRecipe(DefaultMutableTreeNode node) {
     if (node == null) return;
     model.removeNodeFromParent(node);
-    recipeNames.remove(((RecipeComponent) node.getUserObject()).getRecipeName());
+    RecipeComponent rc = (RecipeComponent) node.getUserObject();
+    try {
+      PDbBase pdb = new PDbBase();
+      try {
+        if (pdb.recipeExists(rc) == PDbBase.RECIPE_STATUS_EXISTS) {
+          int answer =
+            JOptionPane.showConfirmDialog(this,
+                                          "Delete recipe from database?",
+                                          "Delete Recipe",
+                                          JOptionPane.YES_NO_OPTION);
+          if (answer == JOptionPane.YES_OPTION) {
+            pdb.removeLibRecipe(rc);
+          }
+        }
+      } finally {
+        pdb.close();
+      }
+    } catch (Exception e) {
+      JOptionPane.showMessageDialog(this,
+                                    "An exception occurred deleting the recipe from the database",
+                                    "Error Writing Database",
+                                    JOptionPane.ERROR_MESSAGE);
+    }
+    recipeNames.remove(rc.getRecipeName());
+  }
+  
+  private void saveRecipe(DefaultMutableTreeNode node) {
+    if (node == null) return;
+    RecipeComponent rc = (RecipeComponent) node.getUserObject();
+    saveRecipe(rc);
+  }
+
+  private void saveRecipe(RecipeComponent rc) {
+    try {
+      PDbBase pdb = new PDbBase();
+      switch (pdb.recipeExists(rc)) {
+      case PDbBase.RECIPE_STATUS_EXISTS:
+        JOptionPane.showMessageDialog(this,
+                                      "The recipe is already in the database with the same values.",
+                                      "Write Not Needed",
+                                      JOptionPane.INFORMATION_MESSAGE);
+        return;
+      case PDbBase.RECIPE_STATUS_DIFFERS:
+        int answer =
+          JOptionPane.showConfirmDialog(this,
+                                        "Recipe "
+                                        + rc.getRecipeName()
+                                        + " already in database. Overwrite?",
+                                        "Recipe Exists",
+                                        JOptionPane.OK_CANCEL_OPTION,
+                                        JOptionPane.WARNING_MESSAGE);
+        if (answer != JOptionPane.OK_OPTION) return;
+        break;
+      case PDbBase.RECIPE_STATUS_ABSENT:
+        break;                // Just write it
+      }
+      pdb.replaceLibRecipe(rc);
+      JOptionPane.showMessageDialog(this,
+                                    "Recipe written successfully.",
+                                    "Recipe Written",
+                                    JOptionPane.INFORMATION_MESSAGE);
+    } catch (Exception sqle) {
+      sqle.printStackTrace();
+      JOptionPane.showMessageDialog(this,
+                                    "An exception occurred writing the recipe to the database",
+                                    "Error Writing Database",
+                                    JOptionPane.ERROR_MESSAGE);
+    }
   }
 
   // CAUTION: this runs in a non-swing thread
   private void selectRecipeFromDatabase(DefaultMutableTreeNode node) {
     Map recipeNamesHT = getRecipeNamesFromDatabase();
-    if (recipeNamesHT == null) {
+    Set dbRecipeNames = recipeNamesHT.keySet();
+    if (dbRecipeNames.isEmpty()) {
+      JOptionPane.showMessageDialog(this,
+                                    "There are no recipes in the database",
+                                    "No Database Recipes",
+                                    JOptionPane.INFORMATION_MESSAGE);
       return;
     }
-    Set dbRecipeNames = recipeNamesHT.keySet();
-    if (dbRecipeNames.isEmpty()) return;
     JComboBox cb = new JComboBox(dbRecipeNames.toArray());
     cb.setEditable(false);
     JPanel panel = new JPanel();
@@ -1226,12 +1301,15 @@ public class Organizer extends JScrollPane {
     String recipeName = (String)cb.getSelectedItem();
     String recipeId = (String) recipeNamesHT.get(recipeName);
     // produce an unique name for CSMART if necessary
-//      if (recipeNames.contains(recipeName)) {
-//        recipeNames.addAll(dbRecipeNames); // Also avoid other database names
-//        recipeName = getUniqueRecipeName(recipeName);
-//        if (recipeName == null)
-//          return;
-//      }
+    if (recipeNames.contains(recipeName)) {
+      JOptionPane.showMessageDialog(null,
+                                    "There is already a recipe named "
+                                    + recipeName
+                                    + " in your workspace.\nDelete or rename it first.",
+                                    "Recipe Exists",
+                                    JOptionPane.ERROR_MESSAGE);
+      return;
+    }
     DbRecipe dbRecipe = getDatabaseRecipe(recipeId);
     if (dbRecipe == null) return;
     dbRecipe.name = recipeName;
