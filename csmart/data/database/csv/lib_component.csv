@@ -30,5 +30,4 @@ COMPONENT_LIB_ID,COMPONENT_TYPE,COMPONENT_CLASS,INSERTION_POINT,DESCRIPTION,BLAN
 "plugin|org.cougaar.mlm.plugin.sample.MCCAggregatorPlugin","plugin","org.cougaar.mlm.plugin.sample.MCCAggregatorPlugin","Node.AgentManager.Agent.PluginManager.Plugin","Added plugin",
 "plugin|org.cougaar.mlm.plugin.sample.MCCAllocatorPlugin","plugin","org.cougaar.mlm.plugin.sample.MCCAllocatorPlugin","Node.AgentManager.Agent.PluginManager.Plugin","Added plugin",
 "society|Experiment for minitestconfig","society","java.lang.Object","Society","Added society",
-"host|localhost","host","","Host","Added host",
 "MiniNode","node","org.cougaar.core.node.Node","Node","Added node",
