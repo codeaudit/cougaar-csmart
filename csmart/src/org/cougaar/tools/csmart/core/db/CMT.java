@@ -168,6 +168,11 @@ public class CMT {
     DBUtils.deleteItems(asbPrefix+"asb_oplan_agent_attr", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_oplan", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_assembly", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);    
+
+    // Added community tables to those that get cleaned out
+    DBUtils.deleteItems("community_attribute", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);    
+    DBUtils.deleteItems("community_entity_attribute", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);    
+
   }
 
   static boolean hasRows (String query,Map substitutions ) {
@@ -267,6 +272,11 @@ public class CMT {
       throw new RuntimeException("Error" + e);
     }
   }
+
+  // The way selectable threads are named in the DB
+  public static final String[] ULDBThreads = {
+    "CLASS-1", "CLASS-3", "CLASS-4", "CLASS-5", "CLASS-9"
+  };
   
   static Set allThreads = new HashSet();
   static String[] getAllThreads(){
@@ -761,6 +771,7 @@ public class CMT {
     String trial_id = DBUtils.sqlQuote(getTrialId(experiment_id));
     String society_id = DBUtils.sqlQuote("society|" + experiment_name);
     ArrayList queries = new ArrayList();
+
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_assembly", "expt_id", expt_id));
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_config_assembly", "expt_id", expt_id));
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_thread", "expt_id", expt_id));
@@ -769,7 +780,10 @@ public class CMT {
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial", "expt_id", expt_id));
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_experiment", "expt_id", expt_id));
     DBUtils.executeQueries(queries, QUERY_FILE);
+
+    // Despite the name, this deletes all unused assemblies, including COMM, CSA, CMT, etc.
     clearUnusedCMTassemblies();
+
   }
   
 } // end of CMT.java
