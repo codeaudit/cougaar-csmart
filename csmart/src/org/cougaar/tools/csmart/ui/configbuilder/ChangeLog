@@ -1,3 +1,36 @@
+2002-01-24  travers@dhcp077-232.bbn.com  <travers@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/PropertyBuilder.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/PropertyEditorPanel.java:
+	The PropertyBuilder sets and clears the isEditable flag on the component
+	being edited.  The PropertyEditorPanel just reads the flag to determine
+	whether or not to enable editing.
+
+2002-01-14  travers@dhcp077-232.bbn.com  <travers@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/PropertyBuilder.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/PropertyEditorPanel.java:
+	Use ModifiableComponent interface instead of ModifiableConfigurableComponent class.
+
+2002-01-14  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/PropertyBuilder.java:
+	Fixed some imports.
+
+2002-01-11  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/PropertyBuilder.java:
+	Removed main method that was used as a test harness.
+	It will now be part of a unit test.
+
+2002-01-09  Aaron Helsinger  <ahelsing@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/PropertyTreeNode.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/PropertyEditorPanel.java:
+	More repackaging related fixes to imports, etc
+
+2002-01-09  Brian Krisler  <bkrisler@dhcp077-232.bbn.com>
+
+	* /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/ChangeLog, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/help.html, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/PropertyBuilder.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/PropertyEditorPanel.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/PropertyTable.java, /cvs/alp/internal/csmart/src/org/cougaar/tools/csmart/ui/configbuilder/PropertyTreeNode.java:
+	new package
+
 2001-11-14  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* PropertyTable.java:
