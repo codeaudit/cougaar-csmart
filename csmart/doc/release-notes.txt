@@ -50,6 +50,9 @@ Asset=true in component AGG-Agent
   this recipe, all Agents and Node Agents will get the Community
   Plugin, allowing full Community and ABA support in all Agents and
   Nodes by default (bug 1587).
+- The menu items in the Organizer and Experiment Builder have been
+  split up, for ease of use. No functionality has changed. (Bug 1581)
+- Speed up stopping a run, by talking to each node in parallel (bug 1416).
 
 Release 9.4:
 This release constitutes the last major Cougaar release for this
