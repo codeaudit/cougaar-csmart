@@ -32,6 +32,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DefaultEditorKit;
 
 import com.klg.jclass.chart.JCChart;
@@ -483,19 +484,38 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
-//      aboutPanel.add(new JLabel("Command Line Args:"),
-//                     new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-//                                            GridBagConstraints.WEST,
-//                                            GridBagConstraints.NONE,
-//                                            new Insets(0, 0, 5, 5),
-//                                            0, 0));
-//      aboutPanel.add(new JLabel((String)getPropertyValue((ConfigurableComponent)node, "CmdLineArgs")),
-//                     new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-//                                            GridBagConstraints.WEST,
-//                                            GridBagConstraints.HORIZONTAL,
-//                                            new Insets(0, 0, 5, 0),
-//                                            0, 0));
-//      x = 0;
+    aboutPanel.add(new JLabel("Command Line Arguments:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 5, 5),
+                                          0, 0));
+    // display table of command line arguments
+    Vector data = new Vector();
+    Properties properties = node.getArguments();
+    Enumeration propertyNames = properties.propertyNames();
+    while (propertyNames.hasMoreElements()) {
+      String name = (String)propertyNames.nextElement();
+      Vector row = new Vector(2);
+      row.add(name);
+      row.add(properties.getProperty(name));
+      data.add(row);
+    }
+    Vector columnNames = new Vector(2);
+    columnNames.add("Name");
+    columnNames.add("Value");
+    JTable argTable = new JTable(new DefaultTableModel(data, columnNames));
+    argTable.getTableHeader().setReorderingAllowed(false);
+    argTable.setColumnSelectionAllowed(false);
+    argTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    argTable.setPreferredScrollableViewportSize(new Dimension(50, 100));
+    aboutPanel.add(new JScrollPane(argTable),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(0, 0, 5, 0),
+                                          0, 0));
+    x = 0;
     aboutPanel.add(new JLabel("Agents:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
