@@ -1519,14 +1519,19 @@ public class Organizer extends JScrollPane {
       Statement stmt = conn.createStatement();
       NodeComponent nodeComponent = null;
       while(iter.hasNext()) {
+        String query;
+        ResultSet rs;
         String nodeName = (String)iter.next();
         nodeComponent = experiment.addNode(nodeName);
+        substitutions.put(":parent_name", nodeName);
+        // Get args of the node
+        Properties nodeProps = nodeComponent.getArguments();
+        getComponentArguments(stmt, substitutions, nodeProps);
         // Query All Agents for each node.
         // Loop Query for every node.
-        substitutions.put(":parent_name", nodeName);
-        String query = DBUtils.getQuery("queryComponents", substitutions);
+        query = DBUtils.getQuery("queryComponents", substitutions);
 	//        System.out.println("Organizer: Get agents: " + query);
-        ResultSet rs = stmt.executeQuery(query);
+        rs = stmt.executeQuery(query);
         while(rs.next()) {
           // Find AgentComponent.
           String aName = rs.getString(1);
@@ -1546,6 +1551,25 @@ public class Organizer extends JScrollPane {
       System.err.println("Caught SQL exception: " + se);
       se.printStackTrace();
     }
+  }
+
+  private void getComponentArguments(Statement stmt,
+                                     Map substitutions,
+                                     Properties props)
+    throws SQLException
+  {
+    String query = DBUtils.getQuery("queryComponentArgs", substitutions);
+    ResultSet rs = stmt.executeQuery(query);
+    while (rs.next()) {
+      String arg = rs.getString(1);
+      if (arg.startsWith("-D")) {
+        int equalsIx = arg.indexOf('=', 2);
+        String pname = arg.substring(2, equalsIx);
+        String value = arg.substring(equalsIx + 1);
+        props.setProperty(pname, value);
+      }
+    }
+    rs.close();
   }
 
   private List checkForRecipes(String trialId, String exptId) {
@@ -1692,6 +1716,12 @@ public class Organizer extends JScrollPane {
     }
     Experiment experiment = new Experiment((String)experimentName, 
                                            experimentId, trialId);
+    // The following is ugly
+    
+    setDefaultNodeArguments(experiment, assemblyMatch,
+                            ComponentData.SOCIETY
+                            + "|"
+                            + experimentName);
     experiment.setCloned(isCloned);
     List recipes = checkForRecipes(trialId, experimentId);
     if (recipes.size() != 0) {
@@ -1717,6 +1747,29 @@ public class Organizer extends JScrollPane {
     }
     mapNodesToHosts(experiment, assemblyMatch);
     workspace.setSelection(addExperimentToWorkspace(experiment, node));
+  }
+
+  private void setDefaultNodeArguments(Experiment experiment,
+                                       String assemblyMatch,
+                                       String socAlibId)
+  {
+    Properties props = experiment.getDefaultNodeArguments();
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+        Statement stmt = conn.createStatement();
+        Map substitutions = new HashMap();
+        substitutions.put(":assemblyMatch", assemblyMatch);
+        substitutions.put(":comp_alib_id", socAlibId);
+        getComponentArguments(stmt, substitutions, experiment.getDefaultNodeArguments());
+        stmt.close();
+      } finally {
+        conn.close();
+      }
+    } catch (SQLException se) {
+      System.err.println("Caught SQL exception: " + se);
+      se.printStackTrace();
+    }
   }
 
   /**
