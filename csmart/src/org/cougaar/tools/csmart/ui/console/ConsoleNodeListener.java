@@ -399,6 +399,15 @@ public class ConsoleNodeListener implements NodeEventListener {
   }
 
   /**
+   * Get the log file.
+   * @return the log file
+   */
+
+  public Writer getLogFile() {
+    return logFile;
+  }
+
+  /**
    * Flush and close the log file.
    */
 

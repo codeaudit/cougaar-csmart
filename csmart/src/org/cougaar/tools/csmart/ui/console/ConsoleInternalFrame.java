@@ -56,6 +56,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String DISPLAY_MENU = "Display";
   private static final String DISPLAY_ACTION = "Set Screen Buffer Size...";
   private static final String DISPLAY_ALL_ACTION = "Display All";
+  private static final String NOTIFY_MENU = "Notify";
+  private static final String NOTIFY_ACTION = "Notify When...";
   private static int openFrameCount = 0;
   private static final int xOffset = 30, yOffset = 30;
   private NodeComponent node;
@@ -65,6 +67,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private Action searchNextAction;
   private HostComponent host;
   private String hostName;
+  private String notifyCondition;
 
   public ConsoleInternalFrame(NodeComponent node, 
                               ConsoleNodeListener listener,
@@ -155,6 +158,13 @@ public class ConsoleInternalFrame extends JInternalFrame {
       }
     };
     searchMenu.add(searchNextAction);
+    JMenu notifyMenu = new JMenu(NOTIFY_MENU);
+    Action notifyAction = new AbstractAction(NOTIFY_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+	notify_actionPerformed();
+      }
+    };
+    notifyMenu.add(notifyAction);
     JMenu statusMenu = new JMenu(STATUS_MENU);
     Action historyAction = new AbstractAction(HISTORY_ACTION) {
       public void actionPerformed(ActionEvent e) {
@@ -167,7 +177,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     menuBar.add(displayMenu);
     menuBar.add(statusMenu);
     menuBar.add(searchMenu);
-    //    menuBar.add(notifyMenu);
+    menuBar.add(notifyMenu);
     getRootPane().setJMenuBar(menuBar);
     initKeyMap(consoleTextPane);
     openFrameCount++;
@@ -374,6 +384,25 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   public void displayAll_actionPerformed() {
     setBufferSize(-1);
+  }
+
+  /**
+   * Notify (by coloring status button) when the specified
+   * output is received on this node.
+   */
+
+  public void notify_actionPerformed() {
+    String s = 
+      (String)JOptionPane.showInputDialog(this,
+                                          "Notify if node writes:",
+                                          "Notification",
+                                          JOptionPane.QUESTION_MESSAGE,
+                                          null, null, notifyCondition);
+    if (s == null || s.length() == 0)
+      notifyCondition = null;
+    else
+      notifyCondition = s;
+    listener.setNotifyCondition(notifyCondition);
   }
 
   private void setBufferSize(int n) {

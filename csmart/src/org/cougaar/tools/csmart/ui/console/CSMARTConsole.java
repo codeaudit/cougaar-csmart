@@ -341,6 +341,7 @@ public class CSMARTConsole extends JFrame {
 
     // create tabbed panes for configuration information (not editable)
     hostConfiguration = new HostConfigurationBuilder(experiment);
+    hostConfiguration.update(); // set host configuration to display 1st trial
     JInternalFrame jif = new JInternalFrame("Configuration",
                                             true, false, true, true);
     jif.getContentPane().add(hostConfiguration);
@@ -874,12 +875,12 @@ public class CSMARTConsole extends JFrame {
    * unset the property values used, and update the gui.
    */
   private void trialFinished() {
+    trialTimer.stop();
     Collection c = nodeListeners.values();
     for (Iterator i = c.iterator(); i.hasNext(); )
       ((ConsoleNodeListener)i.next()).closeLogFile();
-    nodeListeners.clear();
-    trialTimer.stop();
     saveResults();
+    nodeListeners.clear();
     updateExperimentControls(experiment, false);
   }
 
@@ -1201,9 +1202,29 @@ public class CSMARTConsole extends JFrame {
   /**
    * Create a log file name which is of the form:
    * agent name + date + .log
+   * Create it in the results directory if possible.
    */
   private String getLogFileName(String agentName) {
-    return agentName + fileDateFormat.format(runStart) + ".log";
+    String filename = agentName + fileDateFormat.format(runStart) + ".log";
+    File resultDir = experiment.getResultDirectory();
+    // if user didn't specify results directory, save in local directory
+    if (resultDir == null)
+      return filename; 
+    Trial trial = experiment.getTrials()[currentTrial];
+    String dirname = resultDir.getAbsolutePath() + File.separatorChar + 
+      experiment.getExperimentName() + File.separatorChar +
+      trial.getShortName() + File.separatorChar +
+      "Results-" + fileDateFormat.format(runStart);
+    try {
+      File f = new File(dirname);
+      // guarantee that directories exist
+      if (!f.exists() && !f.mkdirs() && !f.exists()) 
+	return filename;
+    } catch (Exception e) {
+      System.out.println("Couldn't create results directory: " + e);
+      return filename;
+    }
+    return dirname + File.separatorChar + filename;
   }
 
   /**
