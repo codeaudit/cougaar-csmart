@@ -79,6 +79,8 @@ public class ConsoleNodeListener implements OutputListener {
     // can write to the end of the file, not losing data
     this.logFile = new BufferedWriter(new FileWriter(logFileName, true));
 
+    // FIXME (problem Mark Barger saw once) test to make sure logFile will be writable
+
     // save the document that contains node output
     this.doc = doc;
 
@@ -206,8 +208,10 @@ public class ConsoleNodeListener implements OutputListener {
         } while (++i < n);
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error("Exception writing to log file: ", e);
+          log.error("Exception writing to Node log file " + logFileName + ": ", e);
         }
+	// FIXME: Is there any way to recover? Perhaps flush the log file,
+	// and then re-open it?
       }
     }
 
