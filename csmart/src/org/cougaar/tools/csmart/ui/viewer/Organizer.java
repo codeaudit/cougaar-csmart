@@ -959,6 +959,9 @@ public class Organizer extends JScrollPane {
   }
   
   public SocietyComponent copySociety(SocietyComponent society) {
+    // FIXME: When societies are added back in, this will need to
+    // be modified so that they are saved in the database.  See
+    // copyRecipe() for an example.
     String newName = generateSocietyName(society.getSocietyName());
     SocietyComponent societyCopy = (SocietyComponent)society.copy(newName);
 
@@ -988,7 +991,22 @@ public class Organizer extends JScrollPane {
     DefaultMutableTreeNode node = 
       (DefaultMutableTreeNode)findNode(recipe).getParent();
     String newName = generateRecipeName(recipe.getRecipeName());
-    RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
+    final RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
+    GUIUtils.timeConsumingTaskStart(organizer);
+    try {
+      new Thread("DuplicateRecipe") {
+        public void run() {
+            recipeCopy.saveToDatabase();
+            GUIUtils.timeConsumingTaskEnd(organizer);
+        }
+      }.start();
+    } catch (RuntimeException re) {
+      if(log.isErrorEnabled()) {
+        log.error("Runtime exception duplicating recipe", re);
+      }
+      GUIUtils.timeConsumingTaskEnd(organizer);
+    }
+    
     workspace.setSelection(addRecipeToWorkspace(recipeCopy, node));
     return recipeCopy;
   }

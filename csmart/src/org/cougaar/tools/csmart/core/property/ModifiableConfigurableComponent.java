@@ -36,7 +36,6 @@ public abstract class ModifiableConfigurableComponent
 {
 
   protected boolean editable = false;
-  private transient Logger log;
 
   /**
    * Creates a new <code>ModifiableConfigurableComponent</code> instance.
@@ -45,7 +44,6 @@ public abstract class ModifiableConfigurableComponent
    */
   protected ModifiableConfigurableComponent(String name) {
     super(name);
-    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**
@@ -116,6 +114,7 @@ public abstract class ModifiableConfigurableComponent
       ModifiableComponent component = 
 	(ModifiableComponent) constructor.newInstance(new String[] {name});
       component.initProperties();
+      component = (ModifiableComponent)this.copy(component);
       return component;
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
@@ -124,5 +123,4 @@ public abstract class ModifiableConfigurableComponent
       return null;
     }
   }
-
 }

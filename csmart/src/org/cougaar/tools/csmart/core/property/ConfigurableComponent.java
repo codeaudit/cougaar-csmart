@@ -79,7 +79,7 @@ public abstract class ConfigurableComponent
 
   private PropertiesListener myPropertiesListener = new MyPropertiesListener();
 
-  private transient Logger log;
+  protected transient Logger log;
 
   private class MyPropertiesListener
     implements PropertiesListener, ConfigurableComponentListener
