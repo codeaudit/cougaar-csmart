@@ -387,8 +387,8 @@
 	 (string-append
 	  "select assembly_id from "
 	  asb-prefix "asb_assembly aa"
-	  "   where aa.assembly_type='CMT'"
-	  "   and aa.assembly_id not in"
+	  ;;"   where aa.assembly_type='CMT'"
+	  "   where aa.assembly_id not in"
 	  "   (select assembly_id from "
 	  asb-prefix "expt_trial_assembly)"
 	  )
