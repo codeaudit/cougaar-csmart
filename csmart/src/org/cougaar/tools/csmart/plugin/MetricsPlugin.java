@@ -12,9 +12,7 @@ package org.cougaar.tools.csmart.plugin;
 
 import org.cougaar.core.cluster.IncrementalSubscription;
 import org.cougaar.core.cluster.ClusterIdentifier;
-import org.cougaar.core.cluster.MetricsSnapshot;
 import org.cougaar.core.plugin.SimplePlugIn;
-import org.cougaar.core.society.MessageStatistics;
 import org.cougaar.domain.planning.ldm.asset.*;
 import org.cougaar.domain.planning.ldm.plan.*;
 
@@ -61,10 +59,10 @@ public class MetricsPlugin
   private Set completedPlanElements = new HashSet();
   private PrintWriter writer;
 
+  boolean started = false;
+  
   static NumberFormat timeFormat = new DecimalFormat("0.000 seconds");
   static NumberFormat memoryFormat = new DecimalFormat("0.000 MBi");
-
-  private MetricsSnapshot mstats = new MetricsSnapshot();
 
   // This plugin only wants the statistics gathering tasks.
   private IncrementalSubscription myTasks;
@@ -254,10 +252,15 @@ public class MetricsPlugin
    *
    */
   private void startStatistics() {
+    if (started)
+      return;
+    started = true;
     startTime = System.currentTimeMillis();
     startCPU = CpuClock.cpuTimeMillis();
+
     // This forces the MessageStatistics to be reset
-    getMetricsSnapshot(mstats, true);
+    // Deprecated...
+    //    getMetricsSnapshot(mstats, true);
 //      System.out.println("Statistics start " + ourCluster);
 
     // Write out column headers in output file
@@ -294,13 +297,15 @@ public class MetricsPlugin
     // Note that most of these values are cumulative, with the
     // exception of the message statistics if you
     // supply "true"
-    for (int i = 0; i < 5; i++) {
-      try {
-	mstats = getMetricsSnapshot(mstats, true);
-	break;
-      } catch (java.util.ConcurrentModificationException e) {
-      }
-    }
+
+    // Deprecated....
+//      for (int i = 0; i < 5; i++) {
+//        try {
+//  	mstats = getMetricsSnapshot(mstats, true);
+//  	break;
+//        } catch (java.util.ConcurrentModificationException e) {
+//        }
+//      }
     // This includes:
     // long time -- already present here
     // int directivesIn (metrics must be turned on in cluster)
@@ -335,10 +340,10 @@ public class MetricsPlugin
     long currentTime = System.currentTimeMillis();
     // compare with mstats.time
     // Runtime.getRuntime().gc();
-    // long totalMemory = Runtime.getRuntime().totalMemory();
-    long totalMemory = mstats.totalMemory;
-    // long freeMemory = Runtime.getRuntime().freeMemory();
-    long freeMemory = mstats.freeMemory;
+    long totalMemory = Runtime.getRuntime().totalMemory();
+    //long totalMemory = mstats.totalMemory;
+    long freeMemory = Runtime.getRuntime().freeMemory();
+    //long freeMemory = mstats.freeMemory;
     long usedMemory = totalMemory - freeMemory;
     long elapsedTime = currentTime - startTime;
     long cpu = CpuClock.cpuTimeMillis();
@@ -356,25 +361,25 @@ public class MetricsPlugin
     writer.print(totalMemory/(1024.0*1024.0));
     
     writer.print("\t");
-    if (mstats.averageMessageQueueLength == -1) {
+    //    if (mstats.averageMessageQueueLength == -1) {
       writer.print("0.0");
-    } else {
-      writer.print(mstats.averageMessageQueueLength);
-    }
+//      } else {
+//        writer.print(mstats.averageMessageQueueLength);
+//      }
     
     writer.print("\t");
-    if (mstats.totalMessageBytes == -1) {
+    //    if (mstats.totalMessageBytes == -1) {
       writer.print("0.0");
-    } else {
-      writer.print(mstats.totalMessageBytes);
-    }
+//      } else {
+//        writer.print(mstats.totalMessageBytes);
+//      }
     
     writer.print("\t");
-    if (mstats.totalMessageCount == -1) {
+    //    if (mstats.totalMessageCount == -1) {
       writer.print("0.0");
-    } else {
-      writer.print(mstats.totalMessageCount);
-    }
+//      } else {
+//        writer.print(mstats.totalMessageCount);
+//      }
     
     writer.print("\t");
     writer.print(deltaPlanElementCount);
@@ -384,9 +389,12 @@ public class MetricsPlugin
 	      "CPU          : " + timeFormat.format(cpuTime/1000.0) + "\n" + 
 	      "Used Memory  : " + memoryFormat.format(usedMemory/(1024.0*1024.0)) + "\n" + 
 	      "Total Memory : " + memoryFormat.format(totalMemory/(1024.0*1024.0)) + "\n" + 
-	      "Message Queue: " + mstats.averageMessageQueueLength + "\n" + 
-	      "Message Bytes: " + mstats.totalMessageBytes + "\n" + 
-	      "Message Count: " + mstats.totalMessageCount + "\n" + 
+//  	      "Message Queue: " + mstats.averageMessageQueueLength + "\n" + 
+//  	      "Message Bytes: " + mstats.totalMessageBytes + "\n" + 
+//  	      "Message Count: " + mstats.totalMessageCount + "\n" + 
+	      "Message Queue: 0.0\n" + 
+	      "Message Bytes: 0.0\n" + 
+	      "Message Count: 0.0\n" + 
 	      "Tasks Done   : " + deltaPlanElementCount);
     }
     // Flush the writer?
