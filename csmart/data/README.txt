@@ -4,7 +4,7 @@ See "csmart/doc/CSMART-README.txt" for an overview of CSMART
 and instructions on how to install and configure CSMART.
 
 The most important file for CSMART users in this directory,
-is the MySQL compatible datafile "CMT-MYSQL.txt", for use in creating 
+is the MySQL compatible datafile "CMT-MySQL.ZIP", for use in creating 
 a MySQL configuration database. See csmart/doc/InstallandTest.html or the 
 User's Guide for usage.
 

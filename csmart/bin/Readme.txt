@@ -11,8 +11,8 @@ This directory contains scripts for building and running CSMART.
 
 All scripts in this directory assume that the environment variable
 COUGAAR_INSTALL_PATH has been set appropriately, as in:
-     COUGAAR_INSTALL_PATH=/opt/alp
-     (where this directory is /opt/alp/csmart/bin)
+     COUGAAR_INSTALL_PATH=/opt/cougaar
+     (where this directory is /opt/cougaar/csmart/bin)
 
 A platform-specific version of "dot.exe" from AT&T is required for
 graph layout.  The current Cougaar release comes with both the Win and

@@ -31,7 +31,7 @@
 # Users may want to customize the MYLOG level set below
     
 # Environment variables
-# COUGAAR_INSTALL_PATH = the head of the alp install.
+# COUGAAR_INSTALL_PATH = the head of the Cougaar install.
 # COUGAAR3RDPARTY = a directory containing 3rd party jar files
 #
 # COUGAAR bootstrapping classpath will be:
@@ -40,7 +40,7 @@
 #
 # once running, jar files will be searched for in (in order):
 #  -Dorg.cougaar.class.path 	like classpath
-#  $CLASSPATH		(alp bootstrapping path from above)
+#  $CLASSPATH		(Cougaar bootstrapping path from above)
 #  $COUGAAR_INSTALL_PATH/lib/*
 #  $COUGAAR_INSTALL_PATH/plugins/*
 #  -Dorg.cougaar.system.path=$COUGAAR3RDPARTY
