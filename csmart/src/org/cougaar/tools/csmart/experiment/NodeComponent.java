@@ -25,6 +25,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.society.AgentComponent;
+
 /**
  * The interface for adding and removing nodes from a society.
  */

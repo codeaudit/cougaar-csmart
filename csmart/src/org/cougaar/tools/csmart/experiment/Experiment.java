@@ -27,7 +27,26 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.*;
-import org.cougaar.tools.csmart.ui.component.*;
+
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModificationListener;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.ModificationEvent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.name.ComponentName;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
+import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
+
+import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;

@@ -24,6 +24,8 @@ package org.cougaar.tools.csmart.experiment;
 import java.io.File;
 import java.io.IOException;
 
+import org.cougaar.tools.csmart.core.property.ComponentProperties;
+
 /**
  * The interface for adding and removing hosts from a society.
  */

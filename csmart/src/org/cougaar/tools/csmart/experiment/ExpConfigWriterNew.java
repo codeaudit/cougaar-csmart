@@ -31,11 +31,12 @@ import java.text.DateFormat;
 import org.cougaar.tools.server.ConfigurationWriter;
 
 import org.cougaar.tools.csmart.experiment.Experiment;
-import org.cougaar.tools.csmart.ui.component.*;
 
-
-import org.cougaar.tools.csmart.ui.component.ComponentName;
+import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.core.cdata.*;
 import org.cougaar.tools.csmart.society.abc.ABCAgent;
 import org.cougaar.tools.csmart.society.abc.ABCSociety;
 import org.cougaar.tools.csmart.society.scalability.ScalabilityXAgent;

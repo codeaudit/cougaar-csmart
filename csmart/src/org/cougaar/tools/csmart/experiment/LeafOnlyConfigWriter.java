@@ -29,10 +29,16 @@ import java.util.Collection;
 import org.cougaar.tools.server.ConfigurationWriter;
 
 import org.cougaar.tools.csmart.experiment.Experiment;
-import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.society.AgentComponent;
 
-import org.cougaar.tools.csmart.ui.component.ComponentName;
+import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ComponentProperties;
+
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
+import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
+import org.cougaar.tools.csmart.core.cdata.LeafComponentData;
 
 import java.io.PrintWriter;
 import java.io.FileWriter;

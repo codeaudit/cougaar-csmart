@@ -21,12 +21,14 @@
 
 package org.cougaar.tools.csmart.experiment;
 
-import org.cougaar.tools.csmart.ui.component.*;
 import java.util.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.Property;
 
 /**
  * Maintains information about a host and generates the
