@@ -851,7 +851,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private void displayPlugIns(String agentName) {
     ComponentData societyComponentData = experiment.getSocietyComponentData();
     if (societyComponentData == null) {
-      if(log.isDebugEnabled()) {
+      if(log.isWarnEnabled()) {
         log.warn("ConsoleInternalFrame: Need to save experiment");
       }
       return;

@@ -61,7 +61,7 @@ public class NodeArgumentDialog extends JDialog {
             if (rowIndex != -1 && colIndex != -1)
               model.setValueAt(((JTextField)c).getText(), rowIndex, colIndex);
           } else
-            if(log.isDebugEnabled()) {
+            if(log.isErrorEnabled()) {
               log.error("Unexpected editor class: " + c.getClass());
             }
         returnValue = JOptionPane.OK_OPTION;
@@ -208,7 +208,7 @@ public class NodeArgumentDialog extends JDialog {
       in = new FileInputStream(chooser.getSelectedFile());
       properties.load(in);
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Exception reading properties file: " + e);
       }
       return;

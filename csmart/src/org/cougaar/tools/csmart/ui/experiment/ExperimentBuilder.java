@@ -419,7 +419,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
         }
       }.start();
     } catch (RuntimeException re) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Error saving experiment: " + re);
       }
       GUIUtils.timeConsumingTaskEnd(c);

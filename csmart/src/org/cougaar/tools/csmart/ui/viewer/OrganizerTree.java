@@ -179,9 +179,8 @@ public class OrganizerTree extends DNDTree {
                 selectNode(node);
                 return action;  // Always MOVE
             } catch (Exception e) {
-              if(log.isDebugEnabled()) {
+              if(log.isErrorEnabled()) {
                 log.error("Caught an exception", e);
-                e.printStackTrace();
               }
             }
         }

@@ -83,9 +83,8 @@ public class ConsoleTextPane extends JTextPane {
       searchHighlightReference =
         highlighter.addHighlight(startOffset, endOffset, searchHighlight);
     } catch (BadLocationException ble) {
-      if(log.isDebugEnabled()) {
-        log.error("Bad location exception: " + ble.offsetRequested() +
-                  " " + ble);
+      if(log.isErrorEnabled()) {
+        log.error("Bad location exception: " + ble.offsetRequested(), ble);
       }
     }
   }
@@ -97,9 +96,8 @@ public class ConsoleTextPane extends JTextPane {
       notifyHighlightReference =
         highlighter.addHighlight(startOffset, endOffset, notifyHighlight);
     } catch (BadLocationException ble) {
-      if(log.isDebugEnabled()) {
-      log.error("Bad location exception: " + ble.offsetRequested() +
-                " " + ble);
+      if(log.isErrorEnabled()) {
+      log.error("Bad location exception: " + ble.offsetRequested(), ble);
       }
     }
   }
@@ -110,9 +108,8 @@ public class ConsoleTextPane extends JTextPane {
       Rectangle r = modelToView(startOffset);
       scrollRectToVisible(r);
     } catch (BadLocationException ble) {
-      if(log.isDebugEnabled()) {
-        log.error("Bad location exception: " + ble.offsetRequested() +
-                  " " + ble);
+      if(log.isErrorEnabled()) {
+        log.error("Bad location exception: " + ble.offsetRequested(), ble);
       }
     }
   }
@@ -152,9 +149,8 @@ public class ConsoleTextPane extends JTextPane {
       }
       displayHighlightedText(startOffset, endOffset);
     } catch (BadLocationException ble) {
-      if(log.isDebugEnabled()) {
-        log.error("Bad location exception: " + ble.offsetRequested() +
-                  " " + ble);
+      if(log.isErrorEnabled()) {
+        log.error("Bad location exception: " + ble.offsetRequested(), ble);
       }
       return false;
     }
@@ -343,9 +339,8 @@ public class ConsoleTextPane extends JTextPane {
           statusButton.setStatus(NodeStatusButton.STATUS_NOTIFY);
         }
       } catch (BadLocationException ble) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error(ble.toString());
-          ble.printStackTrace();
         }
       }
     }

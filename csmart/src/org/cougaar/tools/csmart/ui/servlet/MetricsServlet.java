@@ -182,9 +182,8 @@ public class MetricsServlet
 	  //System.out.println("Sent Objects");  
 	}
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("CSMART_MetricsServlet Exception", e);
-          e.printStackTrace();
         }
       }
     }

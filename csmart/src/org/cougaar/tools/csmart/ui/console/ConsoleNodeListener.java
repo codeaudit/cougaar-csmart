@@ -133,9 +133,8 @@ public class ConsoleNodeListener implements NodeEventListener {
     try {
       ret = Double.parseDouble(idle);
     } catch (NumberFormatException e) {
-      if(log.isDebugEnabled()) {
-        log.error("Couldn't parse that idle string");
-        e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Couldn't parse that idle string", e);
       }
     }
     return ret;
@@ -160,9 +159,8 @@ public class ConsoleNodeListener implements NodeEventListener {
     try {
       ret = Long.parseLong(time);
     } catch (NumberFormatException e) {
-      if(log.isDebugEnabled()) {
-        log.error("Couldn't parse that time string");
-        e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Couldn't parse that time string", e);
       }
     }
     return ret;
@@ -189,7 +187,7 @@ public class ConsoleNodeListener implements NodeEventListener {
           nLogEvents = 0;
         }
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Exception writing to log file: " + e);
         }
       }
@@ -255,7 +253,7 @@ public class ConsoleNodeListener implements NodeEventListener {
           }
         } while (++i < n);
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Exception writing to log file: " + e);
         }
       }
@@ -412,7 +410,7 @@ public class ConsoleNodeListener implements NodeEventListener {
       try {
         logFile.close();
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Exception closing log file: " + e);
         }
       }
@@ -431,7 +429,7 @@ public class ConsoleNodeListener implements NodeEventListener {
         doc.fillFromLogFile(logFileName);
         logFile = new BufferedWriter(new FileWriter(logFileName, true));
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error(e.toString());
         }
       }

@@ -501,8 +501,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       } else if (event.eventType == NamedFrame.Event.REMOVED) {
         JMenuItem menuItem = (JMenuItem) titleToMenuItem.get(event.title);
         if (menuItem == null) {
-          if(log.isDebugEnabled()) {
-            log.error("CSMART: No window menu item for " + event.title);
+          if(log.isWarnEnabled()) {
+            log.warn("CSMART: No window menu item for " + event.title);
           }
         } else {
           windowMenu.remove(menuItem);
@@ -517,8 +517,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       } else if (event.eventType == NamedFrame.Event.CHANGED) {
 	JMenuItem menuItem = (JMenuItem)titleToMenuItem.get(event.prevTitle);
         if (menuItem == null) {
-          if(log.isDebugEnabled()) {
-            log.error("CSMART: No window menu item for " + event.title);
+          if(log.isWarnEnabled()) {
+            log.warn("CSMART: No window menu item for " + event.title);
           }
         } else {
           windowMenu.remove(menuItem);
@@ -674,7 +674,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     // TODO: we get here if the user is editing an experiment
     // the isRunnable flag is off, but we don't detect it
     if (!experiment.isRunnable()) {
-      if (log.isDebugEnabled())
+      if (log.isWarnEnabled())
         log.warn("CSMART: WARNING: experiment is not runnable");
       enableConsoleTool(false);
       return;
@@ -940,7 +940,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       Constructor constructor = toolClass.getConstructor(paramClasses);
       tool = (JFrame) constructor.newInstance(params);
     } catch (Exception exc) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("CSMART: " + exc);
       }
       exc.printStackTrace();

@@ -575,7 +575,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
       hostFile.close();
     } catch (IOException e) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Error during read/open from file: " + pathName + 
                            " " + e.toString());
       }
@@ -874,7 +874,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private void newNodeInTree(JTree tree) {
     TreePath path = tree.getSelectionPath();
     if (path == null) {
-      if(log.isDebugEnabled()) {
+      if(log.isWarnEnabled()) {
       log.warn("HostConfigurationBuilder newNodeInTree called with null path; ignoring");
       }
       return;

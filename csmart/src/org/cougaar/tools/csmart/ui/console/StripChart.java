@@ -85,7 +85,7 @@ public class StripChart extends JCChart {
     try {
       yTitle.setRotation(ChartText.DEG_270);
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("StripChart: " + e);
       }
     }

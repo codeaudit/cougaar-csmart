@@ -161,9 +161,8 @@ public class PropertyEditorPanel extends JPanel
       }
       p.setValue(value);
     } catch (InvalidPropertyValueException e) {
-      if(log.isDebugEnabled()) {
-        log.error("PropertyBuilder: can't set value in property: " + e);
-        e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("PropertyBuilder: can't set value in property: ", e);
       }
     }
   }

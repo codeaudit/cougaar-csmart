@@ -48,7 +48,7 @@ public class Util {
     try {
       path = file.getCanonicalPath();
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Could not find: " + filename);
       }
     }

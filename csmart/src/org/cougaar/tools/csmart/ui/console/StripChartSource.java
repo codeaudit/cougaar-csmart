@@ -140,7 +140,7 @@ public class StripChartSource extends JCDefaultDataSource implements Runnable {
 	addValue((System.currentTimeMillis() % 100)*.01,
 		 System.currentTimeMillis());
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("StripChartSource: " + e);
         }
       }

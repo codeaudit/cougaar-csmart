@@ -47,9 +47,8 @@ public class UniqueNameSet extends HashSet {
         String name = (String) getNameMethod.invoke(things[i], noArgs);
         add(name);
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
-          log.error("Reading: " + things[i]);
-          e.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Reading: " + things[i], e);
         }
       }
     }

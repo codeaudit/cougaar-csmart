@@ -199,9 +199,8 @@ public class PlanServlet
 	    
 	  }
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
-          log.debug("PlanServlet Exception: " + e);
-          e.printStackTrace(); 
+        if(log.isErrorEnabled()) {
+          log.error("PlanServlet Exception: ", e);
         }
       }
     }
@@ -367,7 +366,7 @@ public class PlanServlet
             }
           }
         } catch (Exception e) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("Illegal parameter: "+name+"="+value);
           }
         }
@@ -378,7 +377,7 @@ public class PlanServlet
             limit = Integer.MAX_VALUE;
           }
         } catch (Exception e) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("Illegal parameter: "+name+"="+value);
           }
         }

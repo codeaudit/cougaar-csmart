@@ -155,23 +155,22 @@ public class Analyzer extends JFrame implements ActionListener {
       Parameters.findParameter("org.cougaar.tools.csmart.excelpath");
     
     if (excel == null || excel.equals("")) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Excel location not specified");
       }
       return;
     }
     
     String[] cmds = { excel, "" };
-    if(log.isDebugEnabled()) {
+    if(log.isInfoEnabled()) {
       log.info("Launching excel from: " + cmds[0]);
     }
     cmds[1] = filePathName;
     try {
       process = Runtime.getRuntime().exec(cmds);
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error("Analyzer: exception: " + e);
-        e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Analyzer: exception: ", e);
       }
     }
   }

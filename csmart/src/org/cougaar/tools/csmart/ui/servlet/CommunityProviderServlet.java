@@ -172,9 +172,8 @@ public class CommunityProviderServlet
         }
 
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("CSMART_CommunityProviderServlet Exception", e);
-          e.printStackTrace();
         }
       }
     }
@@ -223,7 +222,7 @@ public class CommunityProviderServlet
 	if (communityPG != null) {
 	  Collection communities = communityPG.getCommunities();
 	  if (communities.size() > 1) 
-            if(log.isDebugEnabled()) {
+            if(log.isWarnEnabled()) {
               log.warn("CSMART_CommunityProviderServlet: WARNING: " + 
                        "handling agents in multiple communities is not implemented.");
             }

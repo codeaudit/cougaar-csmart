@@ -65,9 +65,8 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       // clear document
       remove(0, getLength());
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error(e.toString());
-        e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception clearing output window", e);
       }
     }
     // read log file contents into document
@@ -75,7 +74,7 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
     try {
       reader = new BufferedReader(new FileReader(logFileName));
     } catch (FileNotFoundException fnfe) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error(fnfe.toString());
       }
     }
@@ -88,11 +87,11 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
           break;
       }
     } catch (IOException ioe) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error(ioe.toString());
       }
     } catch (BadLocationException ble) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error(ble.toString());
       }
     }
@@ -133,10 +132,9 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
         remove(0, tmp);
       }
     } catch (BadLocationException ble) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Bad location exception: " + ble +
-                           " " + ble.offsetRequested());
-        ble.printStackTrace();
+                           " " + ble.offsetRequested(), ble);
       }
     }
   }
@@ -172,7 +170,7 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
 //        // clear document
 //        remove(0, getLength());
 //      } catch (Exception e) {
-//       if(log.isDebugEnabled()) {
+//       if(log.isErrorEnabled()) {
 //         log.error(e.toString());
 //         e.printStackTrace();
 //       }
@@ -194,15 +192,15 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
 //          }
 //        }
 //      } catch (FileNotFoundException fnfe) {
-//        if(log.isDebugEnabled()) {
+//        if(log.isErrorEnabled()) {
 //          log.error(fnfe.toString());
 //        }
 //      } catch (IOException ioe) {
-//           if(log.isDebugEnabled()) {
+//           if(log.isErrorEnabled()) {
 //             log.error(ioe.toString());
 //           }
 //      } catch (BadLocationException ble) {
-//        if(log.isDebugEnabled()) {
+//        if(log.isErrorEnabled()) {
 //           log.error(ble.toString());
 //         }
 //      }
@@ -252,9 +250,8 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       }
       logFile.close();
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error(e.toString());
-        e.printStackTrace();
       }
     }
   }
