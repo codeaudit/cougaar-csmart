@@ -760,7 +760,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         return null;
       }
     } else {
-      return new ExpConfigWriterNew(getComponents(), nodes, this);
+      return new ExperimentINIWriter(getComponents(), nodes, this);
     }
   }
 
@@ -847,7 +847,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   // Dump out the INI files for the first trial to
   // the local results directory for that trial
   public void dumpINIFiles() {
-    ExpConfigWriterNew cw = null;
+    ExperimentINIWriter cw = null;
     if (inDatabase) {
       if (theWholeSoc == null) {
 	// write it to the db
@@ -855,9 +855,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 	System.out.println("Save experiment first.");
 	return;
       } 
-      cw = new ExpConfigWriterNew(theWholeSoc);
+      cw = new ExperimentINIWriter(theWholeSoc);
     } else {
-      cw = new ExpConfigWriterNew(getComponents(), getNodes(), this);
+      cw = new ExperimentINIWriter(getComponents(), getNodes(), this);
     }
     
     File resultDir = getResultDirectory();
