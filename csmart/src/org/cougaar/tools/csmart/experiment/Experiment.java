@@ -1033,10 +1033,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
             if (nagents[y].getShortName().equals(oagents[x].getShortName()))
               nnode.addAgent(nagents[y]);
 
-	// Record which Nodes we've copied the Agents for
+	// Record which Nodes we've (potentially) copied the Agents for
 	nNodesCopied.add(nnode);
-      }
-    }
+      } // loop over old old nodes on original Host
+    } // loop over original hosts
 
     // FIXME: What about if orig Experiment had Agents assigned to a Node
     // that was not assigned to a host - is that mapping lost?
@@ -1045,20 +1045,24 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       if (! nNodesCopied.contains(nnodes[i])) {
 	// We may need to copy the old node-agent mapping onto this new node
 	AgentComponent[] oagents = nodes[i].getAgents();
-	if (log.isDebugEnabled() && oagents.length > 0) {
-	  log.debug("copy: Found node whose Agent mapping may not have been copied: " + nnodes[i]);
-	}
-	for (int j = 0; j < oagents.length; j++)
-	  for (int k = 0; k < nagents.length; k++)
+// 	if (log.isDebugEnabled() && oagents.length > 0) {
+// 	  log.debug("copy: Found node whose Agent mapping may not have been copied: " + nnodes[i] + " and old Node " + nodes[i]);
+// 	}
+	for (int j = 0; j < oagents.length; j++) {
+// 	  if (log.isDebugEnabled()) {
+// 	    log.debug("Looking at Agent " + oagents[j].getShortName() + " on old Node");
+// 	  }
+	  for (int k = 0; k < nagents.length; k++) {
 	    if (nagents[k].getShortName().equals(oagents[j].getShortName())) {
 	      if (log.isDebugEnabled()) {
-		log.debug("copy: Putting ne Agent " + nagents[k].getShortName() + " on new Node " + nnodes[i].getShortName());
+		log.debug("copy: Putting new Agent " + nagents[k].getShortName() + " on new Node " + nnodes[i].getShortName());
 	      }
 	      nnodes[i].addAgent(nagents[k]);
-	    }
-
-      }
-    }
+	    } // Found Agent match
+	  } // loop over new agents
+	} // loop over old agents on old Node
+      } // block to deal with uncopied Node
+    } // loop over new nodes
     // copy the results directory; results from the copied experiment
     // will be stored in this directory under the copied experiment name
     experimentCopy.setResultDirectory(getResultDirectory());
