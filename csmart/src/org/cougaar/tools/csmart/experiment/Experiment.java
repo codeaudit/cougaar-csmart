@@ -1501,6 +1501,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
         log.error("save: Society Data is null!");
       }
 
+      // Problem: Societies from files store _tons_ of properties
+      // on the Agents. This is most of the society definition, in fact.
+      // It appears that these end up changing (somehow),
+      // between saves. So this can throw that IllegalArgumentException
+      // FIXME!!!!
       // Save what we have so far in the CSHNA assembly
       pdb.populateHNA(completeSociety);
 
@@ -1533,10 +1538,18 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	  }
           pdb.populateCSA(completeSociety);
         }
-	// Incrementally save
-	// so that later recipes have the benefit
-	// of the earlier modifications
-        pdb.populateCSMI(completeSociety);
+
+	try {
+	  // Incrementally save
+	  // so that later recipes have the benefit
+	  // of the earlier modifications
+	  pdb.populateCSMI(completeSociety);
+	} catch (IllegalArgumentException iae) {
+	  if (log.isInfoEnabled()) {
+	    log.info("Caught iae " + iae.toString() + " while saving modifications. Must redo as a CSA");
+	  }
+	  pdb.populateCSA(completeSociety);
+	}
       }
       pdb.setModRecipes(recipes);
 
