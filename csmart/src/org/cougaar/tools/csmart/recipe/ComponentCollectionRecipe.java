@@ -65,7 +65,7 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
   implements Serializable
 {
   private static final String DESCRIPTION_RESOURCE_NAME = 
-    "component-recipe-description.html";
+    "collection-recipe-description.html";
 
   private Property propTargetComponent;
 
