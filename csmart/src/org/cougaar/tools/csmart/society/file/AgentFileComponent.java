@@ -27,6 +27,7 @@ import java.util.Iterator;
 
 import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.util.log.Logger;
+import org.cougaar.util.ConfigFinder;
 
 import org.cougaar.tools.csmart.core.cdata.ComponentConnector;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -77,10 +78,15 @@ public class AgentFileComponent
   }
 
   protected void addAssetData() {
-    BaseComponent asset = 
-      (BaseComponent)new AssetFileComponent(filename, getShortName());
-    asset.initProperties();
-    addChild(asset);
+    String assetFile = filename.substring(0, filename.indexOf('.'));
+    assetFile = assetFile + "-prototype-ini.dat";
+    // Check to see if the file exists before we do anything!
+    if(ConfigFinder.getInstance().locateFile(assetFile) != null) {
+      BaseComponent asset = 
+        (BaseComponent)new AssetFileComponent(filename, getShortName());
+      asset.initProperties();
+      addChild(asset);
+    }
   }
 
   protected void addPlugins() {
