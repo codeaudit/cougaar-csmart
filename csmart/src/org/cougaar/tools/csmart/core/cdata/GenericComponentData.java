@@ -482,10 +482,19 @@ public class GenericComponentData implements ComponentData, Serializable {
 	return cname;
       else 
 	return self.getClassName();
-      
-    if (cname == null)
-      cname = parent.getName() + "|" + self.getClassName();
+     
+    String type = self.getType();
 
+    // Create a default component name if necessary
+    if (cname == null) 
+      cname = self.getClassName();
+    
+    // Either way, ensure the name starts with the parent name
+    // for things that arent Nodes or Agents,
+    // cause PopulateDb will assume so in creating Alib IDs
+    if (type != null && ! type.equals(ComponentData.NODE) && ! type.equals(ComponentData.AGENT) && ! cname.startsWith(parent.getName() + "|"))
+      cname = parent.getName() + "|" + cname;
+    
     ComponentData[] children = parent.getChildren();
     if (children == null)
       return cname;
