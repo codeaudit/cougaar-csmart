@@ -297,12 +297,26 @@ public class CommunityPanel extends JPanel {
           CommunityTreeObject cto = (CommunityTreeObject)node.getUserObject();
           // TODO: check if name is unique
           String newName = (String)getCellEditorValue();
+	  boolean uniq = isCommNameUnique(newName);
+	  if (! uniq)
+	    return uniq;
           return super.stopCellEditing();
         } 
         return false;
       }
     };
 
+  private boolean isCommNameUnique(String name) {
+    if (name == null || name.equals(""))
+      return false;
+    ArrayList communityNames = CommunityDBUtils.getCommunitiesForExperiment(experiment.getCommAsbID());
+    if (communityNames == null || communityNames.isEmpty())
+      return true;
+    if (communityNames.contains(name))
+      return false;
+    else
+      return true;
+  }
 
   private void displayCommunityTreeMenu(MouseEvent e) {
     int x = e.getX();
@@ -329,9 +343,14 @@ public class CommunityPanel extends JPanel {
 
   private void createCommunity() {
     String communityName = JOptionPane.showInputDialog("New community name: ");
-    if (communityName == null || communityName.length() == 0)
-      return;
-    // TODO: check that name is unique
+    while (true) {
+      if (communityName == null || communityName.length() == 0)
+	return;
+      if (isCommNameUnique(communityName))
+	break;
+      communityName = JOptionPane.showInputDialog("New Unique community name: ");
+    }
+
     String[] communityTypes = new String[] { "Domain", "Robustness", "Security", "Restart" };
     JComboBox cb = new JComboBox(communityTypes);
     cb.setEditable(true);
@@ -630,6 +649,15 @@ public class CommunityPanel extends JPanel {
     for (int i = 0; i < entityNames.size(); i++) {
       String entityName = (String)entityNames.get(i);
       String entityType = CommunityDBUtils.getEntityType(entityName, experiment.getCommAsbID());
+      if (entityType.equalsIgnoreCase("Community"))
+	entityType = "Community";
+      else if (entityType.equalsIgnoreCase("Agent"))
+	entityType = "Agent";
+      else {
+	if (log.isDebugEnabled()) {
+	  log.debug("addToTree got unknown type " + entityType + " for " + entityName + " in comm " + communityName);
+	}
+      }
       DefaultMutableTreeNode newNode = 
         communityTree.addNode(node, entityName, entityType, communityName);
       if (entityType.equals("Community"))
