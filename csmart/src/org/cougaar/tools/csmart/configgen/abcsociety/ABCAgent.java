@@ -498,6 +498,22 @@ public class ABCAgent
     }
   }    
 
+  private ComponentData createLeafComponents(ComponentData data) {
+    StringBuffer sb = null;
+
+    for(int i=0; i < getChildCount(); i ++) {
+      if(getChild(i) instanceof ABCTaskFile) {
+	data.addLeafComponent(((ABCTaskFile) getChild(i)).createTaskFileLeaf());
+      } else if(getChild(i) instanceof ABCLocalAsset) {
+	data.addLeafComponent(((ABCLocalAsset) getChild(i)).createAssetFileLeaf());
+      } else if(getChild(i) instanceof ABCAllocation) {
+	data.addLeafComponent(((ABCAllocation) getChild(i)).createAllocationLeaf());
+      }
+    }    
+
+    return data;
+  }
+
 
   /**
    * Returns a list of all known roles for all allocations.
@@ -519,4 +535,59 @@ public class ABCAgent
     }
     return rlist;
   }
+  
+  public ComponentData addComponentData(ComponentData data) {
+    data.setType(ComponentData.AGENT);
+    data.setName(getFullName().toString());
+    data.setClassName(agentClassName);
+
+    // Add Asset Data PlugIn
+    GenericComponentData plugin = new GenericComponentData();
+    plugin.setType(ComponentData.PLUGIN);
+    plugin.setParent(this);
+    plugin.setName(AssetDataPlugIn_name);
+    data.addChild(plugin);
+
+    // Add Asset Report PlugIn
+    plugin = new GenericComponentData();
+    plugin.setType(ComponentData.PLUGIN);
+    plugin.setParent(this);
+    plugin.setName(AssetReportPlugIn_name);
+    data.addChild(plugin);
+
+    if(getFullName().toString().equals(getProperty(PROP_INITIALIZER).getValue())) {
+      ABCPlugIn init = new ABCPlugIn("MetricsInitializer", MetricsInitializerPlugIn_name);
+      addChild(init);
+      init.initProperties();
+      addPropertyAlias(init, getProperty(PROP_NUMBPROVIDERS));
+      addPropertyAlias(init, getProperty(PROP_SAMPLEINTERVAL));
+      addPropertyAlias(init, getProperty(PROP_STARTDELAY));
+      addPropertyAlias(init, getProperty(PROP_MAXNUMBSAMPLES));
+
+      data.addChild(init.addComponentData(new GenericComponentData()));
+    }
+
+    for(int i = 0 ; i < getChildCount(); i++) {
+      if(getChild(i) instanceof ABCPlugIn) {
+	ABCPlugIn pg = (ABCPlugIn) getChild(i);
+	data.addChild(pg.addComponentData(new GenericComponentData()));
+      }	
+    }
+
+    plugin = new GenericComponentData();
+    plugin.setType(ComponentData.PLUGIN);
+    plugin.setParent(this);
+    plugin.setName(PlanServerPlugIn_name);
+    data.addChild(plugin);
+
+    // Add data file leaves.
+    data = createLeafComponents(data);
+
+    return data;
+  }
+
+  public ComponentData modifyComponentData(ComponentData data) {
+    return data;
+  }
+
 }

@@ -91,7 +91,7 @@ public class ABCLocalAsset
   private Property propRoles;
 
   ABCLocalAsset() {
-    this("LocalAsssets");
+    this("LocalAssets");
   }
 
   ABCLocalAsset(String name) {
@@ -168,4 +168,19 @@ public class ABCLocalAsset
       writer.close();
     }
   }			     
+
+  public LeafComponentData createAssetFileLeaf() {
+    GenericLeafComponentData lcd = new GenericLeafComponentData();
+    StringBuffer sb = new StringBuffer();
+    
+    sb.append("# [name], [dec amt], [avg time], [inv_stdev], [time_stdev], [roles]\n");
+    sb.append(getConfigLine() + "\n");
+
+    lcd.setName((String)getProperty(PROP_ASSETFILENAME).getValue());
+    lcd.setType(LeafComponentData.FILE);
+    lcd.setValue(sb);
+
+    return (LeafComponentData) lcd;
+  }
+
 }

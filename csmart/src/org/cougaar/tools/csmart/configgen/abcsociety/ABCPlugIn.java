@@ -76,4 +76,17 @@ public class ABCPlugIn
     }
     return buf.substring(0);
   }
+
+  public ComponentData addComponentData(ComponentData data) {
+    data.setName(getPlugInClassName());
+
+    for(int i=0; i < nParameters; i++) {
+      data.addParameter(getProperty(PROP_PARAM + i).getValue());
+    }
+    return data;
+  }
+
+  public ComponentData modifyComponentData(ComponentData data) {
+    return data;
+  }
 }

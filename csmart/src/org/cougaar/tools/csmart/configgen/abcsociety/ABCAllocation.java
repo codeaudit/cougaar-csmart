@@ -220,4 +220,25 @@ public class ABCAllocation
       writer.close();
     }
   }
+  
+  public LeafComponentData createAllocationLeaf() {
+    GenericLeafComponentData lcd = new GenericLeafComponentData();
+    StringBuffer sb = new StringBuffer();
+    
+    sb.append("# [config, <fSuccess>, <tResp> (, <tAlloc>, <tTrans>, <tTry>)]\n");
+    sb.append("# [[rule, ] <task>, <role> (, <role>)*]\n");
+    sb.append("# <more \"rule\" lines as necessary>\n");
+    sb.append(getConfigLine() + "\n");
+    for(int i=0; i < getChildCount(); i++) {
+      ABCAllocationRule rule = (ABCAllocationRule)getChild(i);
+      sb.append(rule.getConfigLine() + "\n");
+    }
+
+    lcd.setName((String)getProperty(PROP_ALLOCFILENAME).getValue());
+    lcd.setType(LeafComponentData.FILE);
+    lcd.setValue(sb);
+    
+    return (LeafComponentData)lcd;
+  }
+
 }

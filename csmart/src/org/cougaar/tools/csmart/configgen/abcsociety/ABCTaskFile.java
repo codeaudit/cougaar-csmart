@@ -117,4 +117,21 @@ public class ABCTaskFile
       writer.close();
     }
   }
+
+  public LeafComponentData createTaskFileLeaf() {
+    GenericLeafComponentData lcd = new GenericLeafComponentData();
+    StringBuffer sb = new StringBuffer();
+
+    sb.append("# <WorldState>, <TaskVerb>, <Rate>, <Chaos>, <Vitality>, <Duration> \n");
+    for(int i=0; i < getChildCount(); i++) {
+      sb.append(((ABCTask)getChild(i)).getConfigLine() + "\n");
+    }    
+
+    lcd.setName((String)getProperty(PROP_TASKFILENAME).getValue());
+    lcd.setType(LeafComponentData.FILE);
+    lcd.setValue(sb);
+
+    return (LeafComponentData)lcd;
+  }
+
 }
