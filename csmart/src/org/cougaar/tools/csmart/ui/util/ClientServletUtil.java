@@ -46,6 +46,7 @@ public class ClientServletUtil {
     "CSMART_CommunityProviderServlet";
   public static final String AGENT_INFO_SERVLET = 
     "CSMART_AgentInfoServlet";
+  public static final String AGENT_PROVIDER_SERVLET = "agents?all&text";
   public static final String PLAN_SERVLET = "CSMART_PlanServlet";
   public static final String SEARCH_SERVLET = "CSMART_SearchServlet";
   public static final String METRICS_SERVLET = "CSMART_MetricsServlet";
@@ -60,7 +61,7 @@ public class ClientServletUtil {
    */
 
   public static Vector getAgentURLs(String URLString) throws Exception {
-    String urlSpec = URLString + "/agents?all&text";
+    String urlSpec = URLString + "/" + ClientServletUtil.AGENT_PROVIDER_SERVLET;
     URL url = new URL(urlSpec);
     URLConnection connection = url.openConnection();
     connection.setDoInput(true);
