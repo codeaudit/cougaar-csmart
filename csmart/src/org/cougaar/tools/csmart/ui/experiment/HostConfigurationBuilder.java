@@ -765,10 +765,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void treeNodesInserted(TreeModelEvent e) {
+    //    System.out.println("Tree Node Inserted: " +
+    //             ((ConsoleTreeObject)((DefaultMutableTreeNode)e.getTreePath().getLastPathComponent()).getUserObject()).getName());
     Object source = e.getSource();
     if (hostTree.getModel().equals(source)) {
-      //      System.out.println("Tree Node Inserted: " +
-      //             ((ConsoleTreeObject)((DefaultMutableTreeNode)e.getTreePath().getLastPathComponent()).getUserObject()).getName());
       treeNodesInsertedInHostTree(e);
     } else if (nodeTree.getModel().equals(source))
       treeNodesInsertedInNodeTree(e);
@@ -892,10 +892,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void treeNodesRemoved(TreeModelEvent e) {
+    //    System.out.println("Tree Node Removed: " +
+    //                       ((ConsoleTreeObject)((DefaultMutableTreeNode)e.getTreePath().getLastPathComponent()).getUserObject()).getName());
     Object source = e.getSource();
     if (hostTree.getModel().equals(source)) {
-      //      System.out.println("Tree Node Removed: " +
-      //             ((ConsoleTreeObject)((DefaultMutableTreeNode)e.getTreePath().getLastPathComponent()).getUserObject()).getName());
       treeNodesRemovedFromHostTree(e);
     } else if (nodeTree.getModel().equals(source))
       treeNodesRemovedFromNodeTree(e);
@@ -971,6 +971,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void treeNodesChanged(TreeModelEvent e) {
+    //    System.out.println("Tree Node Changed: " +
+    //                       ((ConsoleTreeObject)((DefaultMutableTreeNode)e.getTreePath().getLastPathComponent()).getUserObject()).getName());
     Object source = e.getSource();
     if (hostTree.getModel().equals(source))
       setNameServerHostName();
@@ -1119,13 +1121,12 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void cmdLineNodeMenuItem_actionPerformed(JTree tree) {
-    Vector names = new Vector();
-    Vector values = new Vector();
     DefaultMutableTreeNode selectedNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
     NodeComponent nodeComponent = (NodeComponent)cto.getComponent();
     Vector data = new Vector();
+    // node component level properties
     Properties properties = nodeComponent.getArguments();
     Enumeration propertyNames = properties.propertyNames();
     NodeArgumentDialog dialog =
@@ -1156,22 +1157,63 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       newArgv.add(args);
       newData.add(newArgv);
     }
-    Properties newProps = new Properties(experiment.getDefaultNodeArguments());
+//      // this wipes out the node specific properties!!!
+//      // experiment default arguments
+//      Properties newProps = new Properties(experiment.getDefaultNodeArguments());
+//      // for each of the entries from the dialog
+//      for (int i = 0; i < newData.size(); i++) {
+//        Vector row = (Vector) newData.get(i);
+//        String name = (String) row.get(0);
+//        // get the new, old and default (experiment level) values
+//        String newValue = (String) row.get(1);
+//        String oldValue = properties.getProperty(name);
+//        String dfltValue = newProps.getProperty(name);
+//        // if the new value is not the same as the old value
+//        // then the experiment was modified and must be saved
+//        if (!newValue.equals(oldValue)) {
+//          System.out.println("modified " + name + ": new=" + newValue + ", old=" + oldValue);
+//          experimentBuilder.setModified(true);
+//          // if the new value is not equal to the default value
+//          // then add the new value to the node specific properties
+//          if (!newValue.equals(dfltValue)) {
+//            newProps.setProperty(name, newValue);
+//          }
+//        }
+//      }
+//      // sets the node component's arguments to be the experiment
+//      // default arguments plus any changed node arguments
+//      // wiping out the unchanged node arguments
+//      nodeComponent.setArguments(newProps);
+
+    // the original property names
+    Set oldKeys = new HashSet(properties.keySet());
+    // for each of the entries from the dialog
     for (int i = 0; i < newData.size(); i++) {
       Vector row = (Vector) newData.get(i);
       String name = (String) row.get(0);
+      // get the new and old values
       String newValue = (String) row.get(1);
       String oldValue = properties.getProperty(name);
-      String dfltValue = newProps.getProperty(name);
-      if (!newValue.equals(oldValue)) {
-        System.out.println("modified " + name + ": new=" + newValue + ", old=" + oldValue);
+      if (oldValue == null) {
+        // if this is a new property, then add it
+        properties.setProperty(name, newValue);
         experimentBuilder.setModified(true);
-        if (!newValue.equals(dfltValue)) {
-          newProps.setProperty(name, newValue);
-        }
-      }
+        //        System.out.println("new=" + newValue);
+      } else if (!newValue.equals(oldValue)) {
+        // if the new value is not the same as the old value
+        // then the experiment was modified and must be saved
+        //        System.out.println("modified " + name + 
+        //                           ": new=" + newValue + ", old=" + oldValue);
+        experimentBuilder.setModified(true);
+        properties.setProperty(name, newValue);
+      } 
+      oldKeys.remove(name);
     }
-    nodeComponent.setArguments(newProps);
+    // remove properties whose keys weren't found in the table
+    for (Iterator i = oldKeys.iterator(); i.hasNext(); ) {
+      experimentBuilder.setModified(true);
+      properties.remove(i.next());
+    }
   }
 
   /**
@@ -1216,12 +1258,14 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       if (name.equals("")) continue;
       String newValue = (String) row.get(1);
       String oldValue = properties.getProperty(name);
+      // if the new value is not the old value, then set the new value
       if (!newValue.equals(oldValue)) {
         experimentBuilder.setModified(true);
         properties.setProperty(name, newValue);
       }
       oldKeys.remove(name);
     }
+    // remove properties whose keys weren't found in the table
     for (Iterator i = oldKeys.iterator(); i.hasNext(); ) {
       experimentBuilder.setModified(true);
       properties.remove(i.next());

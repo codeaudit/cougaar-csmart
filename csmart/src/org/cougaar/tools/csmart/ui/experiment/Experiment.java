@@ -684,6 +684,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       theSoc.setClassName("java.lang.Object"); // Must not be null
       theSoc.setOwner(this); // the experiment
       theSoc.setParent(null);
+      // TODO: shouldn't we get this experiment's arguments?
+      // they may have been changed from the defaults
       addDefaultNodeArguments(theSoc);
       PopulateDb pdb =
         new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),

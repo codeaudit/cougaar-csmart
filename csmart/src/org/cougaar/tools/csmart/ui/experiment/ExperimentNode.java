@@ -55,8 +55,7 @@ public class ExperimentNode
   }
 
   /**
-   * Adds default arguments to a node, if and only if, there are
-   * no arguments on the node.
+   * Adds node name as an argument to the node.
    */
 
   private void addDefaultArgumentsToNode(String nodeName) {

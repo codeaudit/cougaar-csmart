@@ -28,9 +28,6 @@ import javax.swing.border.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.Vector;
 
-// TODO: add listeners to the table so that we can detect a change
-// without the user having to enter a carriage-return
-
 public class NodeArgumentDialog extends JDialog {
   JTable argTable;
   DefaultTableModel nodeArgTableModel;
