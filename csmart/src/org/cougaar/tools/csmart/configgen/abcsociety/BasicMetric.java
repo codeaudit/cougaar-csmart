@@ -222,7 +222,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
   private void addInitPICD(ComponentData data) {
     GenericComponentData plugin = new GenericComponentData();
     plugin.setType(ComponentData.PLUGIN);
-    plugin.setName("MetricInitializerPlugin");
+    plugin.setName(MetricsInitializerPlugIn_name);
     plugin.setClassName(MetricsInitializerPlugIn_name);
     plugin.addParameter(new Integer(numAgents)); // numProviders
     plugin.addParameter(getProperty(PROP_SAMPLEINTERVAL).getValue()); // sampleInterval
