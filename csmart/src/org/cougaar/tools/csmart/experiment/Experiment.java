@@ -86,7 +86,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public static final String PERSISTENCE_ENABLE = "org.cougaar.core.persistence.enable";
   public static final String PERSIST_CLEAR = "org.cougaar.core.persistence.clear";
   public static final String TIMEZONE = "user.timezone";
-  public static final String AGENT_STARTTIME = "org.cougaar.agent.startTime";
+  public static final String AGENT_STARTTIME = "org.cougaar.core.agent.startTime";
   public static final String COMPLAININGLP_LEVEL = 
     "org.cougaar.planning.ldm.lps.ComplainingLP.level";  
   public static final String CONTROL_PORT = "org.cougaar.control.port";
