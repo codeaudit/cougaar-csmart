@@ -1213,6 +1213,7 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_group.csv.tmp'
 DROP TABLE IF EXISTS v6_lib_plugin_ref;
 CREATE TABLE v6_lib_plugin_ref (
   PLUGIN_ID varchar(100) binary NOT NULL default '',
+  PLUGIN_CLASS varchar(100) binary default NULL,
   DESCRIPTION varchar(100) binary default NULL,
   UNIQUE KEY PK_V6_LIB_PLUGIN_REF (PLUGIN_ID)
 ) TYPE=MyISAM;
@@ -1224,7 +1225,7 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_ref.csv.tmp'
         OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
-    (PLUGIN_ID,DESCRIPTION);
+    (PLUGIN_ID,PLUGIN_CLASS,DESCRIPTION);
 
 #
 # Table structure for table 'v6_lib_plugin_thread'
