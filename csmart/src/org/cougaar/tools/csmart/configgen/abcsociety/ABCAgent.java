@@ -283,7 +283,6 @@ public class ABCAgent
    * Writes on the Prototype-ini.dat file for this agent.
    *
    * @param File The directory to write the file to.
-   * @throws IOException if the file cannot be created.
    */
 //   public void writePrototypeIniFile(File configDir) throws IOException {
 //     File taskFile = new File(configDir, getFullName().toString() + "-prototype-ini.dat");
