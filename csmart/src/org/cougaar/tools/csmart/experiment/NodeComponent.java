@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -37,7 +37,7 @@ public interface NodeComponent extends BaseComponent {
    * @param newName the new name for the node
    */
   void rename(String newName);
-  
+
   /**
    * Add an agent to the node.
    * @param agent the agent to add
@@ -62,6 +62,10 @@ public interface NodeComponent extends BaseComponent {
   /**
    * Set arguments.
    */
+
+  void setArguments(Properties args);
+
+  void addArgument(String name, Object value);
 
   /**
    * Get arguments.
