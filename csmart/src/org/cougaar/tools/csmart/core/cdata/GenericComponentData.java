@@ -52,6 +52,7 @@ public class GenericComponentData implements ComponentData, Serializable {
   private ArrayList timePhasedData = null;
   private AgentAssetData assetData = null;
   private String aLibID = null;
+  private String libID = null;
 
   private transient Logger log;
 
@@ -381,6 +382,8 @@ public class GenericComponentData implements ComponentData, Serializable {
     buf.append("Name: " + getName());
     buf.append(", Type: " + getType());
     buf.append(", Class: " + getClassName());
+    buf.append(", AlibID: " + getAlibID());
+    buf.append(", libID: " + getLibID());
     buf.append(", Priority: " + getPriority());
     if (owner != null) {
       buf.append(", Owner: " + getOwner());
@@ -424,6 +427,14 @@ public class GenericComponentData implements ComponentData, Serializable {
 
   public String getAlibID() {
     return aLibID;
+  }
+
+  public void setLibID(String libID) {
+    this.libID = libID;
+  }
+
+  public String getLibID() {
+    return libID;
   }
 
   private void readObject(ObjectInputStream ois)
