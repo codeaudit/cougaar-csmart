@@ -310,35 +310,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       ModifiableConfigurableComponent copiedSC = organizer.copyComponent(sc, context);
       experimentCopy.addComponent(copiedSC);
     }
-    
-//      // Remove this once Recipe stuff is fixed!!!!
-//      for (int i = 0; i < recipes.size(); i++) {
-//        Recipe recipe = (Recipe)recipes.get(i);
-//        Recipe copiedRecipe = organizer.copyRecipe(recipe, context);
-//        experimentCopy.addRecipe(copiedRecipe);
-//      }
 
-    // What about copying Hosts & Nodes????
-    NodeComponent[] nodes = getNodes();
-    for (int i = 0; i < nodes.length; i++) {
-      NodeComponent nnode = experimentCopy.addNode(nodes[i].getFullName().toString());
-      AgentComponent[] agents = nodes[i].getAgents();
-      for (int j = 0; j < agents.length; j++) {
-	// add not the old agent but the new one
-	// with the same name?
-	// FIXME!!!
-	AgentComponent[] nags = experimentCopy.getAgents();
-	CompositeName tail = new SimpleName(agents[j].getFullName().toString().substring(agents[j].getFullName().getPrefix(0).toString().length()));
-	for (int k = 0; k < nags.length; k++) {
-	  if (nags[k].getFullName().endsWith(tail)) {
-	    nnode.addAgent(nags[k]);
-	    break;
-	  }
-	}
-	//nnode.addAgent(agents[j]);
-	// remove the agent from the list of those in the agents tree?
-      }
-    }
 
     HostComponent[] hosts = getHosts();
     for (int i = 0; i < hosts.length; i++) {
@@ -347,18 +319,18 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       nhost.setMonitoringPort(hosts[i].getMonitoringPort());
       NodeComponent[] onodes = hosts[i].getNodes();
       for (int j = 0; j < onodes.length; j++) {
-	// add not the old node but the new one
-	// with the same name?
-	// FIXME!!!
-	NodeComponent[] nnodes = experimentCopy.getNodes();
-	for (int k = 0; k < nnodes.length; k++) {
-	  if (nnodes[k].getFullName().equals(onodes[j].getFullName())) {
-	    nhost.addNode(nnodes[k]);
-	    break;
-	  }
-	}
-	//nhost.addNode(onodes[j]);
-	// remove the node from the list of those in the Nodes tree?
+	NodeComponent nnode = experimentCopy.addNode(onodes[j].getFullName().toString());
+	AgentComponent[] oagents = onodes[j].getAgents();
+	for (int x=0; x < oagents.length; x++) {
+	    AgentComponent[] nagents = experimentCopy.getAgents();
+	    for (int y=0; y < nagents.length; y++ ) {
+		if (nagents[y].getFullName().equals(oagents[x].getFullName())) {
+		    nnode.addAgent(nagents[y]);
+		}
+	    }
+	}	      
+	nhost.addNode(nnode);
+	break;
       }
     }
 
