@@ -7,7 +7,7 @@
 
 <h1>Parameter Insertion Recipe</h1>
 Parameter Insertion Recipes allow users the ability to add a parameter
-to a plugin.<br>
+to one or more plugins (or other components), specified by Name.<br>
 A Parameter Insertion Recipe contains the following parameters:
     <h2>Component Fields</h2>
     <table width="400">
@@ -34,17 +34,20 @@ A Parameter Insertion Recipe contains the following parameters:
     </table>  
     <br><br>
 
-Parameters can be added to any Plugin (that accepts parameters) in any Agent.
+Parameters can be added to any component (that accepts parameters) in any Agent.
 Creating a Parameter Insertion is an easy way to quickly modify your Agent configuration.
 <br><br>
 <a name="AGENT_QUERY"><h3>Agent Query</h3></a>
-Query String for Agents to insert Plugin with in Parameter<br>
+Query String for Agents in which to find components to modify.<br>
 
 <a name="PLUGIN_NAME"><h3>Plugin Name</h3></a>
-Complete Name of the Plugin.<br>
+Complete Name of the Plugin (or other component). This could be the full class of the
+Plugin, or &lt;plugin class&gt;|&lt;first argument to plugin&gt;, or
+other custom component name if you named it yourself. Note that _all_
+matching components will get this additional parameter.<br>
 
 <a name="PARAM"><h3>Parameter</h3></a>
-New Parameter to insert in the specified Plugin
+New Parameter to add as the last parameter to all matching components.
  
 </body>
 </html>

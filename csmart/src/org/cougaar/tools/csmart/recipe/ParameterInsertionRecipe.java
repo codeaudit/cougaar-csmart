@@ -39,15 +39,15 @@ public class ParameterInsertionRecipe extends RecipeBase
   private static final String DESCRIPTION_RESOURCE_NAME 
     = "parameter-insertion-recipe-description.html";
   private static final String BACKUP_DESCRIPTION = 
-    "ParameterInsertionRecipe provides a method for inserting new Parameters into a Plugin";
+    "ParameterInsertionRecipe provides a method for inserting new Parameters into a Component";
 
   private static final String PROP_QUERY = "Agent Query";
   private static final String PROP_QUERY_DFLT = "";
-  private static final String PROP_QUERY_DESC = "Query for agents to update Plugin parameters";
+  private static final String PROP_QUERY_DESC = "Query for Agents to whose components to add a parameter";
 
   private static final String PROP_PLUGINNAME = "Plugin Name";
   private static final String PROP_PLUGINNAME_DFLT = "";
-  private static final String PROP_PLUGINNAME_DESC = "Name of the Plugin to add Parameter to";
+  private static final String PROP_PLUGINNAME_DESC = "Name of the Plugin(s) to add a Parameter to";
 
   private static final String PROP_PARAMETER = "Parameter";
   private static final String PROP_PARAMETER_DFLT = "";
@@ -60,7 +60,7 @@ public class ParameterInsertionRecipe extends RecipeBase
   private boolean editable = true;
 
   public ParameterInsertionRecipe() {
-    super("Paramter Insertion Recipe");
+    super("Parameter Insertion Recipe");
   }
 
   public ParameterInsertionRecipe(String name) {
@@ -127,7 +127,7 @@ public class ParameterInsertionRecipe extends RecipeBase
                       pluginAlib + " on child " + children[i].toString());
           }
           children[i].addParameter(propParameter.getValue().toString());
-          break;
+          continue;
         } else if (children[i].getClassName().equals(propPluginName.getValue().toString())) {
           if(log.isDebugEnabled()) {
             log.debug("Got match for plugin class: " + children[i].toString());
@@ -136,7 +136,7 @@ public class ParameterInsertionRecipe extends RecipeBase
 	  // which do I do? This currently does the first only
 	  // FIXME: Make sure this parameter isnt already there?
           children[i].addParameter(propParameter.getValue().toString());
-          break;
+          continue;
         } else if (children[i].getName().equals(propPluginName.getValue().toString())) {
           if(log.isDebugEnabled()) {
             log.debug("Got match for plugin name: " + children[i].toString());
@@ -145,7 +145,7 @@ public class ParameterInsertionRecipe extends RecipeBase
 	  // which do I do? This currently does the first only
 	  // FIXME: Make sure this parameter isnt already there?
           children[i].addParameter(propParameter.getValue().toString());
-          break;
+          continue;
         } else if (children[i].getName().equals(data.getName() + "|" + propPluginName.getValue().toString())) {
           if(log.isDebugEnabled()) {
             log.debug("Got match for plugin name with parent name in front: " + children[i].toString());
@@ -154,7 +154,7 @@ public class ParameterInsertionRecipe extends RecipeBase
 	  // which do I do? This currently does the first only
 	  // FIXME: Make sure this parameter isnt already there?
           children[i].addParameter(propParameter.getValue().toString());
-          break;
+          continue;
 	  // Here is the broken original version....
 //  	} else if (children[i].getName().equals(pluginAlib)) {
 //           if(log.isDebugEnabled()) {
