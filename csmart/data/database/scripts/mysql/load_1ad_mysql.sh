@@ -46,12 +46,12 @@ echo $COUGAAR_INSTALL_PATH | tr '\\' '/' > newcip.txt
 sed s/:cip/$(cat newcip.txt | sed 's/\//\\\//g')/ $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/load_db.sql > load_mysql_db_new.sql
 rm newcip.txt
 
-if [ ! -e "sedscr.sh" ]; then
+if [ ! -e "$COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sedscr.sh" ]; then
     echo "Cannot find $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sedscr.sh"
     exit
 else
     #Replace potential '\r\n' combo in all .csv files with only '\n' to match load script
-    sedscr.sh $COUGAAR_INSTALL_PATH/csmart/data/database/csv/*.csv
+    $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sedscr.sh $COUGAAR_INSTALL_PATH/csmart/data/database/csv/*.csv
 fi
 
 echo "Loading '.csv' files to database."
