@@ -148,29 +148,29 @@ public class SocietyDBComponent
     return false;
   }
 
-  public ModifiableComponent copy(String name) {
-    // FIXME: I'd like to do the normal copy,
-    // but my children only get created in initproperties
-    // if I have an assemblyId, and by reading from the DB, so I don't
-    // know if it would work
-    //ModifiableComponent component = super.copy(name);
-    if (log.isDebugEnabled()) {
-      log.debug("Copying society " + this.getSocietyName() + " with assembly " + getAssemblyId() + " into new name " + name);
-    }
-    String assemblyID = getAssemblyId();
-    ModifiableComponent sc = new SocietyDBComponent(name, assemblyID);
-    sc.initProperties();
+//   public ModifiableComponent copy(String name) {
+//     // FIXME: I'd like to do the normal copy,
+//     // but my children only get created in initproperties
+//     // if I have an assemblyId, and by reading from the DB, so I don't
+//     // know if it would work
+//     //ModifiableComponent component = super.copy(name);
+//     if (log.isDebugEnabled()) {
+//       log.debug("Copying society " + this.getSocietyName() + " with assembly " + getAssemblyId() + " into new name " + name);
+//     }
+//     String assemblyID = getAssemblyId();
+//     ModifiableComponent sc = new SocietyDBComponent(name, assemblyID);
+//     sc.initProperties();
 
-    // If I re-init from DB, it is not modified, per se.
-    // But we're putting it under a new assembly ID, and not saving it
-    // so to that extent, it is modified.
-    // Otherwise, set to the old value (= this.modified)
-    ((SocietyBase)sc).modified = true;
-    ((SocietyBase)sc).oldAssemblyId = assemblyID;
-    ((SocietyBase)sc).setAssemblyId(null); // so it will save under new ID
+//     // If I re-init from DB, it is not modified, per se.
+//     // But we're putting it under a new assembly ID, and not saving it
+//     // so to that extent, it is modified.
+//     // Otherwise, set to the old value (= this.modified)
+//     ((SocietyBase)sc).modified = true;
+//     ((SocietyBase)sc).oldAssemblyId = assemblyID;
+//     ((SocietyBase)sc).setAssemblyId(null); // so it will save under new ID
 
-    return sc;
-  }
+//     return sc;
+//   }
 
   private void readObject(ObjectInputStream ois)
     throws IOException, ClassNotFoundException

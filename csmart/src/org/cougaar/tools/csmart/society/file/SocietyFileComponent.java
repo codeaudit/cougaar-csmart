@@ -152,43 +152,43 @@ public class SocietyFileComponent
     }
   }
 
-  /**
-   * Copies this component.
-   * @param name Name to use in the copy
-   * @return a <code>ModifiableComponent</code> which is a copy of this object
-   */
-  public ModifiableComponent copy(String name) {
-    if (log.isDebugEnabled()) {
-      log.debug("Copying society " + this.getSocietyName() + " with assembly " + getAssemblyId() + " into new name " + name);
-    }
-    ModifiableComponent societyCopy; 
+//   /**
+//    * Copies this component.
+//    * @param name Name to use in the copy
+//    * @return a <code>ModifiableComponent</code> which is a copy of this object
+//    */
+//   public ModifiableComponent copy(String name) {
+//     if (log.isDebugEnabled()) {
+//       log.debug("Copying society " + this.getSocietyName() + " with assembly " + getAssemblyId() + " into new name " + name);
+//     }
+//     ModifiableComponent societyCopy; 
 
-    // FIXME: I'd like to just call the parent, But I'm not
-    // sure it would work. When the super calls initProperties
-    // it will try to re-parse from files
-    // The only way to stop that would be between the constructor
-    // and the initProperties, to set that flag
-    // But even then, the children agents wouldnt exist to
-    // be copied...
-    //societyCopy = super.copy(name);
-    if (filenames != null)
-      societyCopy = new SocietyFileComponent(name, filenames);
-    else 
-      societyCopy = new SocietyFileComponent(singleFilename, name);
+//     // FIXME: I'd like to just call the parent, But I'm not
+//     // sure it would work. When the super calls initProperties
+//     // it will try to re-parse from files
+//     // The only way to stop that would be between the constructor
+//     // and the initProperties, to set that flag
+//     // But even then, the children agents wouldnt exist to
+//     // be copied...
+//     //societyCopy = super.copy(name);
+//     if (filenames != null)
+//       societyCopy = new SocietyFileComponent(name, filenames);
+//     else 
+//       societyCopy = new SocietyFileComponent(singleFilename, name);
 
-    societyCopy.initProperties();
+//     societyCopy.initProperties();
 
-    // If I re-init from files, it is not modified, per se.
-    // But we're putting it under a new assembly ID, and not saving it
-    // so to that extent, it is modified.
-    // Otherwise, set to the old value (= this.modified)
-    ((SocietyBase)societyCopy).modified = true;
+//     // If I re-init from files, it is not modified, per se.
+//     // But we're putting it under a new assembly ID, and not saving it
+//     // so to that extent, it is modified.
+//     // Otherwise, set to the old value (= this.modified)
+//     ((SocietyBase)societyCopy).modified = true;
 
-    // copy the assembly ID - the one under which this societies'
-    // data is currently in the DB, but must be copied
-    ((SocietyBase)societyCopy).oldAssemblyId = getAssemblyId();
+//     // copy the assembly ID - the one under which this societies'
+//     // data is currently in the DB, but must be copied
+//     ((SocietyBase)societyCopy).oldAssemblyId = getAssemblyId();
 
-    return societyCopy;
-  }
+//     return societyCopy;
+//   }
 
 }
