@@ -101,7 +101,6 @@ public class ReadOnlyProperties extends Properties implements Serializable {
     if (isReadOnly(key)) return null;
     Object o = get(key);
     if (o != null && o.equals(val)) return val; // no change
-    //        System.out.println("Putting property: " + key);
     fireChange();
     return super.put(key, val);
   }
@@ -124,8 +123,7 @@ public class ReadOnlyProperties extends Properties implements Serializable {
   
   public Object remove(Object key) {
     if (isReadOnly(key)) return null;
-    if (!super.contains(key)) return null; // no change
-        //        System.out.println("Removing: " + key);
+    if (!super.containsKey(key)) return null; // no change
     fireChange();
     return super.remove(key);
   }
