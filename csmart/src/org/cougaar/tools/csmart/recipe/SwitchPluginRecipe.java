@@ -49,11 +49,21 @@ public class SwitchPluginRecipe extends RecipeBase
   private static final String PROP_NEW_CLASS_DFLT = "";
   private static final String PROP_NEW_CLASS_DESC = "New Plugin Class";
 
+  private static final String PROP_TYPE = "Component Type";
+  private static final String PROP_TYPE_DFLT = ComponentData.PLUGIN;
+  private static final String PROP_TYPE_DESC = "Insertion point or type of component to swap";
+
   private Property propOldPluginClass;
   private Property propNewPluginClass;
+  private Property propCompType;
+
+  // FIXME: Make t
+  private String compType = ComponentData.PLUGIN;
 
   private static final String DESCRIPTION_RESOURCE_NAME = 
     "switch-plugin-recipe-description.html";
+
+  private boolean compRemoved = false;
 
   public SwitchPluginRecipe (){
     this("Switch Plugin Recipe");
@@ -69,6 +79,9 @@ public class SwitchPluginRecipe extends RecipeBase
 
     propNewPluginClass = addProperty(PROP_NEW_CLASS, PROP_NEW_CLASS_DFLT);
     propNewPluginClass.setToolTip(PROP_NEW_CLASS_DESC);
+
+    propCompType = addProperty(PROP_TYPE, PROP_TYPE_DFLT);
+    propCompType.setToolTip(PROP_TYPE_DESC);
   }
 
   /**
@@ -81,11 +94,74 @@ public class SwitchPluginRecipe extends RecipeBase
   }
 
   public ComponentData addComponentData(ComponentData data) {
+    // Reset compRemoved flag
+    compRemoved = false;
     return data;
   }
 
+  // Find all Components of type Plugin - btw, this thing should
+  // be extended to do any type really - and do a setClass.
+  // Must also modify the AlibId and Name appropriately
   public ComponentData modifyComponentData(ComponentData data) {
+    if (propOldPluginClass == null || propOldPluginClass.getValue() == null || propOldPluginClass.getValue().toString().equals(""))
+      return data;
+    if (propNewPluginClass == null || propNewPluginClass.getValue() == null || propNewPluginClass.getValue().toString().equals(""))
+      return data;
+
+    String oldClass = propOldPluginClass.getValue().toString();
+    String newClass = propNewPluginClass.getValue().toString();
+    if (oldClass.equals(newClass))
+      return data;
+
+    // Set the type were looking for
+    String type;
+    if (propCompType != null && propCompType.getValue() != null)
+      type = propCompType.getValue().toString();
+    else
+      return data;
+    if (type.equals(""))
+      return data;
+
+    // If the user typed in the full insertion point of a common one, use the shorthand
+    if (type.equalsIgnoreCase("Node.AgentManager.Agent"))
+      type = ComponentData.AGENT;
+    else if (type.equalsIgnoreCase("Node.AgentManager.Binder")) 
+      type = ComponentData.NODEBINDER;
+    else if (type.equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Binder"))
+      type = ComponentData.AGENTBINDER;
+    else if (type.equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Plugin"))
+      type = ComponentData.PLUGIN;
+
+    // Is this the type we're looking for?
+    if (data.getType().equals(type)) {
+      // Is it the right class?
+      if (data.getClassName().equals(oldClass)) {
+
+	// FIXME!!!
+	// Change AlibID
+	// Change Name
+	// Then change classname
+	data.setClassName(newClass);
+
+	// Mark the fact we did a modification
+	compRemoved = true;
+      }
+    }
+
+    // Now recurse down each of the children
+    if (data.childCount() > 0) {
+      // for each child, call this same method.
+      ComponentData[] children = data.getChildren();
+      for (int i = 0; i < children.length; i++) {
+	modifyComponentData(children[i]);
+      }
+    }
+      
     return data;
+  } // end of modifyComponentData
+
+  public boolean componentWasRemoved() {
+    return compRemoved;
   }
 
 }// SwitchPluginRecipe
