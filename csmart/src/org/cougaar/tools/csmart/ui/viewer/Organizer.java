@@ -1679,7 +1679,14 @@ public class Organizer extends JScrollPane {
       // if name is unique in CSMART
       if (!experimentNames.contains(name)) {
         // ensure that name is not in the database
-        if (ExperimentDB.isExperimentNameInDatabase(name)) {
+        boolean inDatabase = false;
+        // if can't reach database, just assume that name is ok
+        try {
+          inDatabase = ExperimentDB.isExperimentNameInDatabase(name);
+        } catch (RuntimeException e) {
+          System.out.println(e);
+        }
+        if (inDatabase) {
           int answer = JOptionPane.showConfirmDialog(this,
                      "This name is in the database; use an unique name",
                                                  "Experiment Name Not Unique",

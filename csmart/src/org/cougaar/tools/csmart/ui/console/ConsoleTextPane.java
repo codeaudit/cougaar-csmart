@@ -53,6 +53,7 @@ public class ConsoleTextPane extends JTextPane {
   Object notifyHighlightReference;
   NodeStatusButton statusButton;
   int notifyCount;
+  MyDocumentListener docListener = null;
 
   public ConsoleTextPane(ConsoleStyledDocument doc, 
                          NodeStatusButton statusButton) {
@@ -153,12 +154,17 @@ public class ConsoleTextPane extends JTextPane {
    */
 
   public void setNotifyCondition(String s) {
-    if (s == null)
+    if (s == null) {
+      doc.removeDocumentListener(docListener);
+      docListener = null;
       notifyCondition = s;
-    else {
+    } else {
       notifyCondition = s.toLowerCase();
       notifyCount = 0;
-      doc.addDocumentListener(new MyDocumentListener());
+      if (docListener == null) {
+        docListener = new MyDocumentListener();
+        doc.addDocumentListener(docListener);
+      }
     }
   }
 

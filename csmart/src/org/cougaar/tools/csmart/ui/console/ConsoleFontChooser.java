@@ -39,7 +39,7 @@ public class ConsoleFontChooser extends JDialog {
   private String SEARCH = "Search";
   private String NOTIFY = "Notify";
   private static final String STANDARDOUT = "Standard Out";
-  private static final String ERRORMSGS = "Error Messages";
+  private static final String ERRORMSGS = "Standard Error";
   private static final String HEARTBEAT = "Heartbeat";
   private static final String NODECREATION = "Node Creation";
   private static final String CLUSTERADD = "Cluster Addition";
@@ -78,6 +78,13 @@ public class ConsoleFontChooser extends JDialog {
       }
     });
     buttonPanel.add(applyButton);
+    JButton dismissButton = new JButton("Dismiss");
+    dismissButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        setVisible(false);
+      }
+    });
+    buttonPanel.add(dismissButton);
     JButton cancelButton = new JButton("Cancel");
     cancelButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {

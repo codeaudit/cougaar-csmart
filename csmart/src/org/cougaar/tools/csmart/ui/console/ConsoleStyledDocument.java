@@ -93,6 +93,8 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
    */
 
   public void appendString(String s, AttributeSet a) {
+    if (s == null || s.length() == 0)
+      return;
     try {
       super.insertString(getLength(), s, a);
       if (bufferSize == -1) // display everything, no limit on buffer size

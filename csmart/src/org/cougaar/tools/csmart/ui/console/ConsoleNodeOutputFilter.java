@@ -31,7 +31,7 @@ import org.cougaar.tools.server.NodeEvent;
 public class ConsoleNodeOutputFilter extends JDialog {
   private static final String ALL = "All";
   private static final String STANDARDOUT = "Standard Out";
-  private static final String ERRORMSGS = "Error Messages";
+  private static final String ERRORMSGS = "Standard Error";
   private static final String NODECREATION = "Node Creation";
   private static final String NODEDESTROYED = "Node Destroyed";
   private static final String CLUSTERADD = "Cluster Addition";
@@ -62,8 +62,19 @@ public class ConsoleNodeOutputFilter extends JDialog {
     // ok and cancel buttons panel
     JPanel buttonPanel = new JPanel();
     JButton okButton = new JButton("OK");
+    // only update the filter if the user selects "OK"
     okButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        allSelected = allCB.isSelected();
+        if (!allSelected) {
+          msgArray[NodeEvent.STANDARD_OUT] = standardCB.isSelected();
+          msgArray[NodeEvent.STANDARD_ERR] = errorCB.isSelected();
+          msgArray[NodeEvent.NODE_CREATED] = createCB.isSelected();
+          msgArray[NodeEvent.NODE_DESTROYED] = destroyCB.isSelected();
+          msgArray[NodeEvent.CLUSTER_ADDED] = clusterAddCB.isSelected();
+          msgArray[NodeEvent.IDLE_UPDATE] = idlenessCB.isSelected();
+          msgArray[NodeEvent.HEARTBEAT] = heartbeatCB.isSelected();
+        }
         setVisible(false);
       }
     });
@@ -203,26 +214,6 @@ public class ConsoleNodeOutputFilter extends JDialog {
 					  new Insets(0, 0, 0, 0), 0, 0));
     box.add(msgTypesPanel);
 
-    // Buffer Events Panel
-    JPanel bufferEventsPanel = new JPanel();
-    bufferEventsPanel.setLayout(new GridBagLayout());
-    TitledBorder bufferEventsTitledBorder = new TitledBorder("Buffer Events");
-    Font font = bufferEventsTitledBorder.getTitleFont();
-    Font titleFont = font.deriveFont(Font.ITALIC);
-    bufferEventsTitledBorder.setTitleFont(titleFont);
-    bufferEventsPanel.setBorder(bufferEventsTitledBorder);
-    allButton = new JRadioButton("All");
-    sizeButton = new JRadioButton("Buffer Size");
-    allButton.setSelected(true);
-    ButtonGroup bufferButtonGroup = new ButtonGroup();
-    bufferButtonGroup.add(allButton);
-    bufferButtonGroup.add(sizeButton);
-    sizeTF = new JTextField(15);
-    bufferEventsPanel.add(allButton);
-    bufferEventsPanel.add(sizeButton);
-    bufferEventsPanel.add(sizeTF);
-    box.add(bufferEventsPanel);
-
     filterPanel.add(buttonPanel, BorderLayout.SOUTH);
     filterPanel.add(box, BorderLayout.CENTER);
     getContentPane().add(filterPanel);
@@ -286,27 +277,20 @@ public class ConsoleNodeOutputFilter extends JDialog {
 
   ActionListener allCBSelected = new ActionListener() {
     public void actionPerformed(ActionEvent e) {
-      allSelected = true;
-      standardCB.setSelected(false);
-      msgArray[NodeEvent.STANDARD_OUT]=true;
-      errorCB.setSelected(false);
-      msgArray[NodeEvent.STANDARD_ERR]=true;
-      createCB.setSelected(false);
-      msgArray[NodeEvent.NODE_CREATED]=true;
-      destroyCB.setSelected(false);
-      msgArray[NodeEvent.NODE_DESTROYED]=true;
-      clusterAddCB.setSelected(false);
-      msgArray[NodeEvent.CLUSTER_ADDED]=true;
-      idlenessCB.setSelected(false);
-      msgArray[NodeEvent.IDLE_UPDATE]=true;
-      heartbeatCB.setSelected(false); 
-      msgArray[NodeEvent.HEARTBEAT]=true;
+      if (allCB.isSelected()) {
+        standardCB.setSelected(false);
+        errorCB.setSelected(false);
+        createCB.setSelected(false);
+        destroyCB.setSelected(false);
+        clusterAddCB.setSelected(false);
+        idlenessCB.setSelected(false);
+        heartbeatCB.setSelected(false); 
+      }
     }
   };
   
   ActionListener unselectAllCB = new ActionListener() {
     public void actionPerformed(ActionEvent e) {
-      allSelected = false;
       if (allCB.isSelected())
       allCB.setSelected(false);
     }

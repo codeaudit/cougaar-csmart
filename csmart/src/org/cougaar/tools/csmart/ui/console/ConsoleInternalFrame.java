@@ -95,8 +95,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
     this.statusButton = statusButton;
     this.logFileName = logFileName;
     consoleTextPane = (ConsoleTextPane)pane.getViewport().getView();
-    filter = new ConsoleNodeOutputFilter();
-    listener.setFilter(filter);
+    //    filter = new ConsoleNodeOutputFilter();
+    //    listener.setFilter(filter);
     // get host component by getting the experiment and 
     // searching its hosts for one with this node.
     Experiment experiment = 
@@ -177,6 +177,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
       }
     };
     displayMenu.add(filterAction);
+    filterAction.setEnabled(false);
     JMenu searchMenu = new JMenu(SEARCH_MENU);
     searchAction = new AbstractAction(SEARCH_ACTION) {
       public void actionPerformed(ActionEvent e) {

@@ -54,6 +54,8 @@ import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
 public class CSMARTConsole extends JFrame {
   // must match port used in org.cougaar.tools.server package
   private static final int DEFAULT_PORT = 8484;
+  // number of characters displayed in the node output window
+  private static final int DEFAULT_VIEW_SIZE = 50000;
   CSMART csmart; // top level viewer, gives access to save method, etc.
   HostConfigurationBuilder hostConfiguration;
   CommunityServesClient communitySupport;
@@ -78,6 +80,8 @@ public class CSMARTConsole extends JFrame {
   Hashtable nodeListeners; // ConsoleNodeListener referenced by node name
   Hashtable nodePanes;     // ConsoleTextPane referenced by node name
   String notifyCondition; // if this appears in node stdout, notify user
+  int viewSize = DEFAULT_VIEW_SIZE; // number of characters in node view
+  ConsoleNodeOutputFilter displayFilter;
 
   // gui controls
   ButtonGroup statusButtons;
@@ -93,25 +97,29 @@ public class CSMARTConsole extends JFrame {
   private static Dimension VGAP30 = new Dimension(1,30);
 
   // top level menus and menu items
-//    private static final String FILE_MENU = "File";
-//    private static final String VIEW_MENU = "View";
-//    private static final String SHOW_ENTIRE_LOG_MENU_ITEM = "Show Entire Log";
-//    private static final String SET_VIEW_SIZE_MENU_ITEM = "Set View Size";
-//    private static final String FILTER_MENU_ITEM = "Filter...";
-//    private static final String FORMAT_MENU_ITEM = "Format...";
-
-  private static final String NOTIFY_MENU = "Notify";
-  private static final String HELP_MENU_ITEM = "Help";
   private static final String FILE_MENU = "File";
   private static final String EXIT_MENU_ITEM = "Exit";
+  private static final String VIEW_MENU = "View";
+  private static final String SHOW_LOG_MENU_ITEM = "Show Entire Log";
+  private static final String SET_VIEW_SIZE_MENU_ITEM = "Set View Size";
+  private static final String FILTER_MENU_ITEM = "Filter...";
+  private static final String FORMAT_MENU_ITEM = "Format...";
+  private static final String NOTIFY_MENU = "Notify";
+  private static final String SET_NOTIFY_MENU_ITEM = "Set Notification...";
+  private static final String VIEW_NOTIFY_MENU_ITEM = "View Notification";
+  private static final String REMOVE_NOTIFY_MENU_ITEM = "Remove All Notifications";
+  private static final String CLEAR_ALERTS_MENU_ITEM = "Clear All Notification Alerts";
+
   private static final String HELP_MENU = "Help";
-  private static final String NOTIFY_MENU_ITEM = "Notify When...";
-  private static final String HELP_DOC = "help.html";
+  private static final String ABOUT_CONSOLE_ITEM = "About Experiment Controller";
   private static final String ABOUT_CSMART_ITEM = "About CSMART";
-  private static final String ABOUT_DOC = "../help/about-csmart.html";
   private static final String LEGEND_MENU_ITEM = "Legend";
-  private static final String STATUS_MENU = "Status";
-  private static final String RESET_STATUS_MENU_ITEM = "Reset";
+
+  private static final String HELP_DOC = "help.html";
+  private static final String ABOUT_DOC = "../help/about-csmart.html";
+
+  //  private static final String STATUS_MENU = "Status";
+  //  private static final String RESET_STATUS_MENU_ITEM = "Reset";
  
   // for pop-up menu on node status buttons
   private static final String ABOUT_MENU = "About";
@@ -160,7 +168,7 @@ public class CSMARTConsole extends JFrame {
 
     // top level menus
     JMenu fileMenu = new JMenu(FILE_MENU);
-    fileMenu.setToolTipText("Save configuration or exit.");
+    fileMenu.setToolTipText("Exit this tool.");
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.setToolTipText("Exit this tool.");
     exitMenuItem.addActionListener(new ActionListener() {
@@ -170,8 +178,70 @@ public class CSMARTConsole extends JFrame {
     });
     fileMenu.add(exitMenuItem);
 
+    JMenu viewMenu = new JMenu(VIEW_MENU);
+    JMenuItem viewMenuItem = new JMenuItem(SHOW_LOG_MENU_ITEM);
+    viewMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+      }
+    });
+    viewMenuItem.setEnabled(false); // disabled cause of Swing error
+    viewMenu.add(viewMenuItem);
+    JMenuItem viewSizeMenuItem = new JMenuItem(SET_VIEW_SIZE_MENU_ITEM);
+    viewSizeMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        viewSizeMenuItem_actionPerformed();
+      }
+    });
+    viewMenu.add(viewSizeMenuItem);
+    viewMenu.addSeparator();
+    JMenuItem filterMenuItem = new JMenuItem(FILTER_MENU_ITEM);
+    filterMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        filterMenuItem_actionPerformed();
+      }
+    });
+    viewMenu.add(filterMenuItem);
+    JMenuItem formatMenuItem = new JMenuItem(FORMAT_MENU_ITEM);
+    formatMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        formatMenuItem_actionPerformed();
+      }
+    });
+    viewMenu.add(formatMenuItem);
+
+    JMenu notifyMenu = new JMenu(NOTIFY_MENU);
+    JMenuItem setNotifyMenuItem = new JMenuItem(SET_NOTIFY_MENU_ITEM);
+    setNotifyMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        setNotifyMenuItem_actionPerformed();
+      }
+    });
+    notifyMenu.add(setNotifyMenuItem);
+    JMenuItem viewNotifyMenuItem = new JMenuItem(VIEW_NOTIFY_MENU_ITEM);
+    viewNotifyMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        viewNotifyMenuItem_actionPerformed();
+      }
+    });
+    notifyMenu.add(viewNotifyMenuItem);
+    JMenuItem removeNotifyMenuItem = new JMenuItem(REMOVE_NOTIFY_MENU_ITEM);
+    removeNotifyMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        removeNotifyMenuItem_actionPerformed();
+      }
+    });
+    notifyMenu.add(removeNotifyMenuItem);
+    notifyMenu.addSeparator();
+    JMenuItem clearAlertsMenuItem = new JMenuItem(CLEAR_ALERTS_MENU_ITEM);
+    clearAlertsMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        clearAlertsMenuItem_actionPerformed();
+      }
+    });
+    notifyMenu.add(clearAlertsMenuItem);
+
     JMenu helpMenu = new JMenu(HELP_MENU);
-    JMenuItem helpMenuItem = new JMenuItem(HELP_MENU_ITEM);
+    JMenuItem helpMenuItem = new JMenuItem(ABOUT_CONSOLE_ITEM);
     helpMenuItem.addActionListener(new ActionListener() {
 	public void actionPerformed(ActionEvent e) {
 	  URL help = (URL)this.getClass().getResource(HELP_DOC);
@@ -198,29 +268,11 @@ public class CSMARTConsole extends JFrame {
       });
     helpMenu.add(legendMenuItem);
     
-    JMenu notifyMenu = new JMenu(NOTIFY_MENU);
-    JMenuItem notifyMenuItem = new JMenuItem(NOTIFY_MENU_ITEM);
-    notifyMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        notifyMenuItem_actionPerformed();
-      }
-    });
-    notifyMenu.add(notifyMenuItem);
-
-    JMenu statusMenu = new JMenu(STATUS_MENU);
-    JMenuItem resetStatusMenuItem = new JMenuItem(RESET_STATUS_MENU_ITEM);
-    resetStatusMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        resetStatusMenuItem_actionPerformed();
-      }
-    });
-    statusMenu.add(resetStatusMenuItem);
-
     JMenuBar menuBar = new JMenuBar();
     menuBar.add(fileMenu);
-    menuBar.add(helpMenu);
+    menuBar.add(viewMenu);
     menuBar.add(notifyMenu);
-    menuBar.add(statusMenu);
+    menuBar.add(helpMenu);
     getRootPane().setJMenuBar(menuBar);
 
     // create panel which contains
@@ -528,39 +580,6 @@ public class CSMARTConsole extends JFrame {
       if (e.isPopupTrigger()) doPopup(e);
     }
   };
-
-  /**
-   * Notify (by coloring status button) when the specified
-   * output is received on any node.
-   */
-
-  private void notifyMenuItem_actionPerformed() {
-    String s = 
-      (String)JOptionPane.showInputDialog(this,
-                                          "Notify if any node writes:",
-                                          "Notification",
-                                          JOptionPane.QUESTION_MESSAGE,
-                                          null, null, notifyCondition);
-    if (s == null || s.length() == 0)
-      notifyCondition = null;
-    else
-      notifyCondition = s;
-    JInternalFrame[] frames = desktop.getAllFrames();
-    for (int i = 0; i < frames.length; i++) 
-      if (frames[i] instanceof ConsoleInternalFrame) {
-        Component[] components = frames[i].getContentPane().getComponents();
-        for (int j = 0; j < components.length; j++) {
-          if (components[j] instanceof JScrollPane) {
-            JScrollPane jsp = (JScrollPane)components[j];
-            Component c = jsp.getViewport().getView();
-            if (c instanceof ConsoleTextPane) {
-              ((ConsoleTextPane)c).setNotifyCondition(notifyCondition);
-              break;
-            }
-          }
-        }
-      }
-  }
 
   /**
    * Enable run button if experiment has at least one host that has at least
@@ -1017,6 +1036,8 @@ public class CSMARTConsole extends JFrame {
     }
     if (notifyCondition != null)
       textPane.setNotifyCondition(notifyCondition);
+    if (displayFilter != null)
+      ((ConsoleNodeListener)listener).setFilter(displayFilter);
     nodeListeners.put(nodeName, listener);
     nodePanes.put(nodeName, textPane);
 
@@ -1283,6 +1304,7 @@ public class CSMARTConsole extends JFrame {
   /**
    * Action listeners for top level menus.
    */
+
   private void exitMenuItem_actionPerformed(AWTEvent e) {
     stopExperiments();
     updateExperimentControls(experiment, false);
@@ -1297,10 +1319,137 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
+   * Set size of screen buffer for node output.
+   */
+
+  private void viewSizeMenuItem_actionPerformed() {
+    JPanel bufferEventsPanel = new JPanel();
+    JRadioButton allButton = new JRadioButton("All");
+    JRadioButton sizeButton = new JRadioButton("Buffer Size");
+    allButton.setSelected(false);
+    ButtonGroup bufferButtonGroup = new ButtonGroup();
+    bufferButtonGroup.add(allButton);
+    bufferButtonGroup.add(sizeButton);
+    JTextField sizeTF = new JTextField(String.valueOf(viewSize));
+    bufferEventsPanel.add(allButton);
+    bufferEventsPanel.add(sizeButton);
+    bufferEventsPanel.add(sizeTF);
+
+    int result = JOptionPane.showConfirmDialog(this,
+                                    bufferEventsPanel,
+                                    "Node View",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.QUESTION_MESSAGE,
+                                    null);
+    if (result == JOptionPane.CANCEL_OPTION)
+      return;
+    if (allButton.isSelected()) {
+      viewSize = -1;
+    } else {
+      try {
+        viewSize = Integer.parseInt(sizeTF.getText());
+      } catch (NumberFormatException e) {
+      }
+    }
+    Enumeration textPanes = nodePanes.elements();
+    while (textPanes.hasMoreElements()) {
+      JTextPane textPane = (JTextPane)textPanes.nextElement();
+      ((ConsoleStyledDocument)textPane.getStyledDocument()).setBufferSize(viewSize);
+    }
+  }
+
+  /**
+   * Set filtering (what node output is displayed) for all nodes.
+   * TODO: overwrites any filters on individual node panes; is this
+   * what we want (i.e. the last filter set either here or in the node
+   * output frame is the filter used)
+   */
+
+  private void filterMenuItem_actionPerformed() {
+    displayFilter = new ConsoleNodeOutputFilter();
+    displayFilter.setVisible(true);
+    Enumeration listeners = nodeListeners.elements();
+    while (listeners.hasMoreElements()) {
+      ConsoleNodeListener listener = 
+        (ConsoleNodeListener)listeners.nextElement();
+      listener.setFilter(displayFilter);
+    }
+  }
+
+  /**
+   * Set formatting (font size, style, color) for all nodes.
+   */
+
+  private void formatMenuItem_actionPerformed() {
+    ConsoleFontChooser cfc = new ConsoleFontChooser();
+    cfc.setVisible(true);
+    System.out.println("Font Chooser not implemented yet");
+  }
+
+  /**
+   * Notify (by coloring status button) when the specified
+   * output is received on any node.
+   */
+
+  private void setNotifyMenuItem_actionPerformed() {
+    String s = 
+      (String)JOptionPane.showInputDialog(this,
+                                          "Notify if any node writes:",
+                                          "Notification",
+                                          JOptionPane.QUESTION_MESSAGE,
+                                          null, null, notifyCondition);
+    if (s == null || s.length() == 0)
+      notifyCondition = null;
+    else
+      notifyCondition = s;
+  }
+
+  /**
+   * Set notification in all text panes.
+   * Called to set or reset notification.
+   */
+
+  private void setNotification() {
+    Enumeration textPanes = nodePanes.elements();
+    while (textPanes.hasMoreElements()) {
+      ConsoleTextPane textPane = (ConsoleTextPane)textPanes.nextElement();
+      textPane.setNotifyCondition(notifyCondition);
+    }
+  }
+
+  /**
+   * Display notification string.
+   */
+
+  private void viewNotifyMenuItem_actionPerformed() {
+    if (notifyCondition == null)
+      JOptionPane.showConfirmDialog(this,
+                                    "No notification set.",
+                                    "Notification",
+                                    JOptionPane.PLAIN_MESSAGE,
+                                    JOptionPane.OK_OPTION);
+    else 
+      JOptionPane.showConfirmDialog(this,
+              "Notify if any node writes: " + notifyCondition,
+                                    "Notification",
+                                    JOptionPane.PLAIN_MESSAGE,
+                                    JOptionPane.OK_OPTION);
+  }
+
+  /**
+   * Remove all notifications.
+   */
+
+  private void removeNotifyMenuItem_actionPerformed() {
+    notifyCondition = null;
+    setNotification();
+  }
+
+  /**
    * Reset status for all nodes. Resets the "notify" position
    * in the text pane and resets the error flag of the node status button.
    */
-  private void resetStatusMenuItem_actionPerformed() {
+  private void clearAlertsMenuItem_actionPerformed() {
     Enumeration textPanes = nodePanes.elements();
     while (textPanes.hasMoreElements()) {
       ConsoleTextPane textPane = (ConsoleTextPane)textPanes.nextElement();
