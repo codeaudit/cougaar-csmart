@@ -32,6 +32,7 @@ CFW_ID,PLUGIN_GROUP_ID,PLUGIN_ID,PLUGIN_CLASS_ORDER,BLANK
 "1AD-CFW","NCAPolicy","org.cougaar.mlm.plugin.ldm.XMLPolicyPlugin",0.000000000000000000000000000000
 "1AD-CFW","Org","org.cougaar.mlm.plugin.organization.OrgDataPlugin",0.000000000000000000000000000000
 "1AD-CFW","Org","org.cougaar.mlm.plugin.organization.OrgReportPlugin",1.000000000000000000000000000000
+"1AD-CFW","Community","org.cougaar.community.CommunityPlugin",0.000000000000000000000000000000
 "1AD-CFW","PartsAssets","mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugin",0.000000000000000000000000000000
 "1AD-CFW","PolicyTransfer","org.cougaar.mlm.plugin.generic.PropagationPlugin",0.000000000000000000000000000000
 "1AD-CFW","PrepoAssets","org.cougaar.mlm.plugin.xml.XMLPrototypeProviderPlugin",0.000000000000000000000000000000
