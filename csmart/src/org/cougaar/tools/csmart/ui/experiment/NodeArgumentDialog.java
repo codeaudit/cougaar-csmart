@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.ui.experiment;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.File;
 import java.io.FileInputStream;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -214,7 +215,6 @@ public class NodeArgumentDialog extends JDialog {
    * JOptionPane.OK_OPTION, JOptionPane.CANCEL_OPTION, 
    * JOptionPane.CLOSED_OPTION
    */
-
   public int getValue() {
     return returnValue;
   }
@@ -223,7 +223,6 @@ public class NodeArgumentDialog extends JDialog {
    * Update the properties from the table.
    * @return true if any modifications, false otherwise
    */
-
   public boolean updateProperties() {
     boolean isModified = model.updateProperties();
     String s = getArguments();
@@ -238,7 +237,6 @@ public class NodeArgumentDialog extends JDialog {
   /**
    * Set the arguments displayed in the dialog.
    */
-
   private void setArguments(String arguments) {
     args.setText(arguments);
   }
@@ -246,7 +244,6 @@ public class NodeArgumentDialog extends JDialog {
   /**
    * Get the arguments displayed in the dialog.
    */
-
   private String getArguments() {
     return args.getText();
   }
@@ -261,13 +258,19 @@ public class NodeArgumentDialog extends JDialog {
     if (dirName == null)
       dirName = ".";
     JFileChooser chooser = new JFileChooser(dirName);
+    chooser.setDialogTitle("Select Java Properties file to apply");
     int result = chooser.showOpenDialog(this);
     if (result != JFileChooser.APPROVE_OPTION)
       return;
+
+    File sel = chooser.getSelectedFile();
+    if (sel == null || ! sel.canRead() || sel.isDirectory())
+      return;
+
     FileInputStream in = null;
     Properties properties = new Properties();
     try {
-      in = new FileInputStream(chooser.getSelectedFile());
+      in = new FileInputStream(sel);
       properties.load(in);
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
