@@ -186,30 +186,30 @@ public class NodeModel extends Observable {
       dirname = ".";
     }
 
-    RemoteHost appServer = this.getInfo().getAppServer();
-//    if (appServer != null && !contactedAS.contains(appServer) && appServerSupport.isValidRemoteHost(appServer)) {
-//      contactedAS.add(remoteAppServer);
-//      RemoteFileSystem remoteFS = null;
-//      try {
-//        remoteFS = remoteAppServer.getRemoteFileSystem();
-//      } catch (Exception e) {
-//        final String host = ni.hostName;
-//        SwingUtilities.invokeLater(new Runnable() {
-//          public void run() {
-////		JOptionPane.showMessageDialog(this,
-////		      "Cannot save results.  Unable to access filesystem for " +
-////		      host + ".",
-////		      "Unable to access file system",
-////		      JOptionPane.WARNING_MESSAGE);
-//          }
-//        });
-//        if (log.isErrorEnabled())
-//          log.error("saveResults failed to get filesystem on " + ni.hostName + ": ", e);
-//        // Tell appServerSupport to see if the host is legit
-//        appServerSupport.haveNewNodes();
-//      }
-//      copyResultFiles(remoteFS, dirname);
-//    }
+    RemoteHost appServer = getInfo().getAppServer();
+    RemoteFileSystem remoteFS = null;
+    try {
+      remoteFS = appServer.getRemoteFileSystem();
+    } catch (Exception e) {
+      if (log.isErrorEnabled())
+        log.error("saveResults failed to get filesystem on " + 
+                  getInfo().getHostName() + ": ", e);
+      remoteFS = null;
+    }
+    if (remoteFS == null) {
+      final String host = getInfo().getHostName();
+      SwingUtilities.invokeLater(new Runnable() {
+          public void run() {
+            JOptionPane.showMessageDialog(null,
+                  "Cannot save results.  Unable to access filesystem for " +
+                                          host + ".",
+                                          "Unable to access file system",
+                                          JOptionPane.WARNING_MESSAGE);
+          }
+        });
+    } else {
+      copyResultFiles(remoteFS, dirname);
+    }
   }
 
   /**

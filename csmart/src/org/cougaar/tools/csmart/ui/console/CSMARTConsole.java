@@ -278,8 +278,8 @@ public class CSMARTConsole extends JFrame {
       // display dialog when new nodes are first detected
       monitorAppServerTask = new TimerTask() {
         public void run() {
-          if (appServerSupport.haveNewNodes())
-            JOptionPane.showMessageDialog(null, "There are new nodes!");
+          //          if (appServerSupport.haveNewNodes())
+          //            JOptionPane.showMessageDialog(null, "There are new nodes!");
           // If there are no AppServers,
           // disable the View and Delete and Kill All menu items
           // and the attach Button
@@ -486,46 +486,46 @@ public class CSMARTConsole extends JFrame {
   }
 
   private void updateASControls() {
-    if (appServerSupport.haveValidAppServers()) {
+//     if (appServerSupport.haveValidAppServers()) {
 
-      displayMenuItem.setEnabled(true);
-      deleteMenuItem.setEnabled(true);
-      if (appServerSupport.thereAreRunningNodes()) {
-        if (glsClient == null)
-          addGLSMenuItem.setEnabled(true);
-        else {
-          // Bug 2258 workaround
-          //	  addGLSMenuItem.setEnabled(false);
-          if (log.isInfoEnabled())
-            log.info("Bug 2258 workaround. Have Valid AppServers & running nodes. But glsClient is non-null. Enabling menu item anyhow.");
-          addGLSMenuItem.setEnabled(true);
-        }
+//       displayMenuItem.setEnabled(true);
+//       deleteMenuItem.setEnabled(true);
+//       if (appServerSupport.thereAreRunningNodes()) {
+//         if (glsClient == null)
+//           addGLSMenuItem.setEnabled(true);
+//         else {
+//           // Bug 2258 workaround
+//           //	  addGLSMenuItem.setEnabled(false);
+//           if (log.isInfoEnabled())
+//             log.info("Bug 2258 workaround. Have Valid AppServers & running nodes. But glsClient is non-null. Enabling menu item anyhow.");
+//           addGLSMenuItem.setEnabled(true);
+//         }
 
-        killAllMenuItem.setEnabled(true);
-        attachButton.setEnabled(true);
-        attachMenuItem.setEnabled(true);
-      } else {
-        // Bug 2258 workaround
-        //	addGLSMenuItem.setEnabled(false);
-        if (log.isInfoEnabled())
-          log.info("Bug 2258 workaround. Have valid AppServers but no running nodes. Enabling menu item anyhow. (BTW, glsClient " + ((glsClient == null) ? "is null" : "is non null") + ")");
-        addGLSMenuItem.setEnabled(true);
-        attachButton.setEnabled(false);
-        attachMenuItem.setEnabled(false);
-        killAllMenuItem.setEnabled(false);
-      }
-    } else {
-      attachButton.setEnabled(false);
-      attachMenuItem.setEnabled(false);
-      displayMenuItem.setEnabled(false);
-      deleteMenuItem.setEnabled(false);
-      killAllMenuItem.setEnabled(false);
-      // Bug 2258 work-around
-      //      addGLSMenuItem.setEnabled(false);
-      if (log.isInfoEnabled())
-        log.info("Bug 2258 workaround. Do not have valid appservers. (BTW, glsClient " + ((glsClient == null) ? "is null" : "is non null") + ")");
-      addGLSMenuItem.setEnabled(true);
-    }
+//         killAllMenuItem.setEnabled(true);
+//         attachButton.setEnabled(true);
+//         attachMenuItem.setEnabled(true);
+//       } else {
+//         // Bug 2258 workaround
+//         //	addGLSMenuItem.setEnabled(false);
+//         if (log.isInfoEnabled())
+//           log.info("Bug 2258 workaround. Have valid AppServers but no running nodes. Enabling menu item anyhow. (BTW, glsClient " + ((glsClient == null) ? "is null" : "is non null") + ")");
+//         addGLSMenuItem.setEnabled(true);
+//         attachButton.setEnabled(false);
+//         attachMenuItem.setEnabled(false);
+//         killAllMenuItem.setEnabled(false);
+//       }
+//     } else {
+//       attachButton.setEnabled(false);
+//       attachMenuItem.setEnabled(false);
+//       displayMenuItem.setEnabled(false);
+//       deleteMenuItem.setEnabled(false);
+//       killAllMenuItem.setEnabled(false);
+//       // Bug 2258 work-around
+//       //      addGLSMenuItem.setEnabled(false);
+//       if (log.isInfoEnabled())
+//         log.info("Bug 2258 workaround. Do not have valid appservers. (BTW, glsClient " + ((glsClient == null) ? "is null" : "is non null") + ")");
+//       addGLSMenuItem.setEnabled(true);
+//     }
   }
 
   private void initGui() {
@@ -2503,7 +2503,7 @@ public class CSMARTConsole extends JFrame {
           if (log.isErrorEnabled())
             log.error("saveResults failed to get filesystem on " + ni.getHostName() + ": ", e);
           // Tell appServerSupport to see if the host is legit
-          appServerSupport.haveNewNodes();
+          //          appServerSupport.haveNewNodes();
           continue;
         }
         copyResultFiles(remoteFS, dirname);

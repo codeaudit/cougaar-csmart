@@ -447,11 +447,9 @@ public class CSMARTConsoleView extends JFrame implements Observer {
         // Put up a dialog with the current interval.
         // If the user changes the interval, cancel the current timer
         // and create a new one
-//        int res = getNewASPollInterval();
-//        if (res != asPollInterval) {
-//          asPollInterval = res;
-//          resetASPoller();
-//        }
+        int interval = getNewASPollInterval();
+        if (interval != 0)
+          model.resetASPoller(interval);
       }
     });
     pollIntervalMenuItem.setToolTipText("Change Delay Between Checking for New Application Servers");
@@ -507,13 +505,82 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     return menuBar;
   }
 
-  //TODO: Make this update listener based.
-  private void updateASControls() {
-    if (model.getAppServerSupport().haveValidAppServers()) {
+  /**
+   * Get new App Server polling interval from user.
+   * A value of 0 means the user entered an invalid value or cancelled.
+   */
+  private int getNewASPollInterval() {
+    if (log.isDebugEnabled()) {
+      log.debug("Getting new ASPoll Interval");
+    }
+    JPanel pollPanel = new JPanel(new GridBagLayout());
+    int x = 0;
+    int y = 0;
+    pollPanel.add(new JLabel("Interval in milliseconds between polls for live AppServers (0 to not poll):"),
+                  new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                         GridBagConstraints.WEST,
+                                         GridBagConstraints.NONE,
+                                         new Insets(10, 0, 5, 5),
+                                         0, 0));
+    JTextField pollField =
+        new JTextField(7);
+    pollField.setText(String.valueOf(model.getASPollInterval()));
+    pollPanel.add(pollField,
+                  new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                         GridBagConstraints.WEST,
+                                         GridBagConstraints.HORIZONTAL,
+                                         new Insets(10, 0, 5, 0),
+                                         0, 0));
+    int result = JOptionPane.showConfirmDialog(null, pollPanel,
+                                               "Polling Interval",
+                                               JOptionPane.OK_CANCEL_OPTION);
+    if (result != JOptionPane.OK_OPTION)
+      return 0;
+    String s = pollField.getText().trim();
+    if (s == null || s.length() == 0) {
+      return 0;
+    } else {
+      int res = 0;
+      try {
+        res = Integer.parseInt(s);
+      } catch (NumberFormatException e) {
+      }
+      if (res < 0)
+        return 0;
+      return res;
+    }
+  }
 
+  /**
+   * If there are AppServers, 
+   * then enable the delete and refresh app server controls.
+   * If there are AppServers with unattached nodes,
+   * then enable the attach controls.
+   * If there are AppServers with attached nodes,
+   * then enable the "kill" menu.
+   */
+
+  private void updateASControls() {
+    if (model.getAppServers().size() == 0) {
+      displayMenuItem.setEnabled(false);
+      deleteMenuItem.setEnabled(false);
+    } else {
       displayMenuItem.setEnabled(true);
       deleteMenuItem.setEnabled(true);
-      if (model.getAppServerSupport().thereAreRunningNodes()) {
+    }
+    if (model.getUnattachedNodes().size() == 0) {
+      attachButton.setEnabled(false);
+      attachMenuItem.setEnabled(false);
+    } else {
+      attachButton.setEnabled(true);
+      attachMenuItem.setEnabled(true);
+    }
+    if (model.getAttachedNodes().size() == 0) {
+      killAllMenuItem.setEnabled(false);
+    } else {
+      killAllMenuItem.setEnabled(true);
+    }
+    // TODO: determine when to enable/disable GLSMenuItem      
 //        if (glsClient == null)
 //          addGLSMenuItem.setEnabled(true);
 //        else {
@@ -524,31 +591,6 @@ public class CSMARTConsoleView extends JFrame implements Observer {
 //          addGLSMenuItem.setEnabled(true);
 //        }
 
-        killAllMenuItem.setEnabled(true);
-        attachButton.setEnabled(true);
-        attachMenuItem.setEnabled(true);
-      } else {
-        // Bug 2258 workaround
-        //	addGLSMenuItem.setEnabled(false);
-//        if (log.isInfoEnabled())
-//          log.info("Bug 2258 workaround. Have valid AppServers but no running nodes. Enabling menu item anyhow. (BTW, glsClient " + ((glsClient == null) ? "is null" : "is non null") + ")");
-        addGLSMenuItem.setEnabled(true);
-        attachButton.setEnabled(false);
-        attachMenuItem.setEnabled(false);
-        killAllMenuItem.setEnabled(false);
-      }
-    } else {
-      attachButton.setEnabled(false);
-      attachMenuItem.setEnabled(false);
-      displayMenuItem.setEnabled(false);
-      deleteMenuItem.setEnabled(false);
-      killAllMenuItem.setEnabled(false);
-      // Bug 2258 work-around
-      //      addGLSMenuItem.setEnabled(false);
-//      if (log.isInfoEnabled())
-//        log.info("Bug 2258 workaround. Do not have valid appservers. (BTW, glsClient " + ((glsClient == null) ? "is null" : "is non null") + ")");
-      addGLSMenuItem.setEnabled(true);
-    }
   }
 
   // TODO: Make this initRun listener based.
@@ -760,7 +802,10 @@ public class CSMARTConsoleView extends JFrame implements Observer {
 
     }
 
-    if(arg.equals(CSMARTConsoleModel.APP_SERVERS_CHANGED)) {
+    if(arg.equals(CSMARTConsoleModel.APP_SERVERS_CHANGED) ||
+       arg.equals(CSMARTConsoleModel.APP_SERVER_ADDED) ||
+       arg.equals(CSMARTConsoleModel.APP_SERVER_DELETED) ||
+       arg.equals(CSMARTConsoleModel.NODE_ADDED)) {
       updateASControls();
     }
   }

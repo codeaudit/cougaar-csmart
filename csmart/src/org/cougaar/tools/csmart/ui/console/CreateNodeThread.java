@@ -63,36 +63,24 @@ public class CreateNodeThread extends SwingWorker {
    * Does RMI, so may block on the network.
    */
   private void createNode() {
-
-    String experimentName = "Experiment";
-
     // Create the process description, then the proccess
+    String name = model.getInfo().getNodeName();
     try {
-      // VMT:if CSMART is already listening on the node, then we shouldn't get here
-      // we can't attach to a node to which we're already listening
-      // is there any other way we can get here?
-      //      String procName = appServerSupport.getProcessName(experimentName, model.getInfo().getNodeName());
-
-      // Check that a process with description desc is not already running, else modify process name
-      //      while (appServerSupport.isProcessNameUsed(procName)) {
-      //        if (log.isDebugEnabled()) {
-      //          log.debug("ctNodes: process with name " + procName + " already running");
-      //        }
-      //        procName = procName + "1";
-      //      }
-      String procName = model.getInfo().getNodeName();
-      ProcessDescription desc = new ProcessDescription(procName, "csmart",
-                                 model.getInfo().getProperties(),
-                                 model.getInfo().getArgs());
-
-      RemoteListenableConfig conf = new RemoteListenableConfig(model.getListener(),
-                                     CSMART.getNodeListenerId(), null, model.getOutputPolicy());
+      ProcessDescription desc = 
+        new ProcessDescription(name, "csmart",
+                               model.getInfo().getProperties(),
+                               model.getInfo().getArgs());
+      RemoteListenableConfig conf = 
+        new RemoteListenableConfig(model.getListener(),
+                                   CSMART.getNodeListenerId(), 
+                                   null, model.getOutputPolicy());
 
       // Next line does the actual creation -- including RMI stuff that could take a while
       remoteNode = model.getInfo().getAppServer().createRemoteProcess(desc, conf);
 
       if (log.isDebugEnabled()) {
-        log.debug("Adding listener: " + CSMART.getNodeListenerId() + " for: " + procName);
+        log.debug("Adding listener: " + CSMART.getNodeListenerId() + 
+                  " for: " + name);
       }
       success = true;
     } catch (Exception e) {

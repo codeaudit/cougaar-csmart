@@ -29,6 +29,9 @@ public class CSMARTConsoleModel extends Observable {
   public static final String NEW_NODE_VIEW = "New Node View";
   public static final String SELECT_GLS_INIT = "Select GLS" ;
   public static final String APP_SERVERS_REFRESH = "App Servers Refresh";
+  public static final String APP_SERVER_ADDED = "App Server Added";
+  public static final String APP_SERVER_DELETED = "App Server Deleted";
+  public static final String NODE_ADDED = "Node Added";
 
   public static final int APP_SERVER_DEFAULT_PORT = 8484;
 
@@ -74,6 +77,7 @@ public class CSMARTConsoleModel extends Observable {
   private Hashtable nodeModels;    // Hashtable of all node name to node models mappings.
   private Hashtable nodeViews;
   private Hashtable nodeToAppServer; // maps node name to AppServerDesc
+  private AppServerList appServers;// known app servers; array of AppServerDesc
 
   public CSMARTConsoleModel() {
     this(null, null);
@@ -95,8 +99,10 @@ public class CSMARTConsoleModel extends Observable {
     this.runningNodes = new Hashtable(5);
     this.nodeModels = new Hashtable(5);
     this.nodeToAppServer = new Hashtable(5);
+    this.appServers = new AppServerList();
     //this.resultDirectory = makeResultDirectory();
     createLogger();
+    resetASPoller(asPollInterval); // start polling app servers
   }
 
   private void createLogger() {
@@ -245,18 +251,37 @@ public class CSMARTConsoleModel extends Observable {
             log.error("Null trial ID for experiment!");
           }
           // get the app server to use
-          RemoteHost appServer = appServerSupport.addAppServerForExperiment(hostName, properties);
-          if (appServer == null) {
+          int port = getAppServerPort(properties);
+          requestAppServerAdd(hostName, port);
+          AppServerDesc appServerDesc = getAppServer(hostName, port);
+          if (appServerDesc == null) {
             continue;
           }
-
-          NodeInfo info = new NodeInfo(appServer, nodeName, hostName, 
+          NodeInfo info = new NodeInfo(appServerDesc.appServer, 
+                                       nodeName, hostName, 
                                        properties, args);
           this.nodeModels.put(nodeName, new NodeModel(info, this));
         }
       }
     }
   }
+
+  public static int getAppServerPort(Properties properties) {
+    int port = Experiment.APP_SERVER_DEFAULT_PORT;
+    if (properties == null)
+      return port;
+    try {
+      String tmp = properties.getProperty(Experiment.CONTROL_PORT);
+      if (tmp != null)
+        port = Integer.parseInt(tmp);
+    } catch (NumberFormatException nfe) {
+      // use default port
+    }
+    if (port < 1)
+      port = Experiment.APP_SERVER_DEFAULT_PORT;
+    return port;
+  }
+
 
   /**
    * Checks to see if the Console is currently attached to
@@ -499,10 +524,16 @@ public class CSMARTConsoleModel extends Observable {
     return this.appServerSupport;
   }
 
-  // Cancel any old AppServer poller
-  // Then, if the currently desired interval is not 0,
-  // Start up a new Timer to poll for new AppServers ever x milliseconds
-  public void resetASPoller() {
+  public int getASPollInterval() {
+    return asPollInterval;
+  }
+
+  /**
+   * Cancel old AppServer poller if any.
+   * If new interval is greater than 0,
+   * start a new timer to poll every interval milliseconds.
+   */
+  public void resetASPoller(int newInterval) {
     if (asPollTimer != null) {
       if (log.isDebugEnabled()) {
         log.debug("Canceling old ASPoller timer");
@@ -517,17 +548,10 @@ public class CSMARTConsoleModel extends Observable {
       }
 
       // contact known app servers periodically to get lists of their nodes
-      // display dialog when new nodes are first detected
+      // and update controls when new nodes detected
       monitorAppServerTask = new TimerTask() {
         public void run() {
-          if (appServerSupport.haveNewNodes())
-            JOptionPane.showMessageDialog(null, "There are new nodes!");
-          // If there are no AppServers,
-          // disable the View and Delete and Kill All menu items
-          // and the attach Button
-          setChanged();
-          notifyObservers(APP_SERVERS_CHANGED);
-          noticeIfServerDead();
+          appServerSupport.refreshAppServers();
         }
       };
 
@@ -671,55 +695,6 @@ public class CSMARTConsoleModel extends Observable {
       if (log.isDebugEnabled())
         log.debug("markNodeDead disabling restart for node " + nodeName);
       frame.enableRestart(false);
-    }
-  }
-
-  // Get from the user the new interval in milliseconds
-  // between polls for new AppServers to contact
-  // Return the newly desired value.
-  // Note that the new value is _not_ put in the static variable -
-  // the caller must do that
-  private int getNewASPollInterval() {
-    if (log.isDebugEnabled()) {
-      log.debug("Getting new ASPoll Interval");
-    }
-    JPanel pollPanel = new JPanel(new GridBagLayout());
-    int x = 0;
-    int y = 0;
-    pollPanel.add(new JLabel("Interval in milliseconds between polls for live AppServers (0 to not poll):"),
-                  new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                         GridBagConstraints.WEST,
-                                         GridBagConstraints.NONE,
-                                         new Insets(10, 0, 5, 5),
-                                         0, 0));
-    JTextField pollField =
-        new JTextField(7);
-    pollField.setText(String.valueOf(asPollInterval));
-    pollPanel.add(pollField,
-                  new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-                                         GridBagConstraints.WEST,
-                                         GridBagConstraints.HORIZONTAL,
-                                         new Insets(10, 0, 5, 0),
-                                         0, 0));
-    x = 0;
-    int result = JOptionPane.showConfirmDialog(null, pollPanel,
-                                               "Polling Interval",
-                                               JOptionPane.OK_CANCEL_OPTION);
-    if (result != JOptionPane.OK_OPTION)
-      return asPollInterval;
-    String s = pollField.getText().trim();
-
-    if (s == null || s.length() == 0) {
-      return 0;
-    } else {
-      int res = asPollInterval;
-      try {
-        res = Integer.parseInt(s);
-      } catch (NumberFormatException e) {
-      }
-      if (res < 0)
-        return asPollInterval;
-      return res;
     }
   }
 
@@ -917,21 +892,27 @@ public class CSMARTConsoleModel extends Observable {
   }
 
   // New Application Server Support
+  // We maintain a list of known app servers
+  // and a hashtable of node-to-appServer mappings.
+  // The separate list of app Servers is needed
+  // because we may have app Servers that do not have nodes.
 
   /**
-   * User selected "add app server" menu item.
+   * User selected "add app server" menu item or
+   * we're creating a node that specified this app server.
    * Notify AppServerSupport.
    */
   public void requestAppServerAdd(String hostName, int port) {
+    setChanged();
     notifyObservers(new AppServerRequest(hostName, port, 
                                          AppServerRequest.ADD));
   }
 
   /**
-   * Return array list of AppServerDesc of known app servers.
+   * Called by AppServerSupport to update add an app server.
    */
-  public ArrayList getAppServers() {
-    return new ArrayList(nodeToAppServer.keySet());
+  public void addAppServer(AppServerDesc desc) {
+    appServers.add(desc);
   }
 
   /**
@@ -939,7 +920,30 @@ public class CSMARTConsoleModel extends Observable {
    */
   public void addNodeToAppServerMapping(String name,
                                         AppServerDesc appServerDesc) {
+    if (nodeToAppServer.get(name) == null) {
+      setChanged();
+      notifyObservers(NODE_ADDED);
+    }
+    boolean newAppServer = true;
+    Collection servers = nodeToAppServer.values();
+    for (Iterator i = servers.iterator(); i.hasNext();) {
+      AppServerDesc serverDesc = (AppServerDesc)i.next();
+      if (appServerDesc.hostName.equals(serverDesc.hostName) &&
+          appServerDesc.port == serverDesc.port)
+        newAppServer = false;
+    }
+    if (newAppServer) {
+      setChanged();
+      notifyObservers(APP_SERVER_ADDED);
+    }
     nodeToAppServer.put(name, appServerDesc);
+  }
+
+  /**
+   * Return array list of AppServerDesc of known app servers.
+   */
+  public ArrayList getAppServers() {
+    return appServers;
   }
 
   /**
@@ -950,29 +954,43 @@ public class CSMARTConsoleModel extends Observable {
   }
 
   /**
-   * Delete app server; just remove entries for this app server.
+   * Get app server on this host and port.
    */
-  public void appServerDelete(String hostName, int port) {
-    Enumeration nodes = nodeToAppServer.keys();
-    while (nodes.hasMoreElements()) {
-      String node = (String)nodes.nextElement();
-      AppServerDesc appServerDesc = getAppServer(node);
-      if (appServerDesc.hostName.equals(hostName) &&
-          appServerDesc.port == port) {
-        nodeToAppServer.remove(node);
+  public AppServerDesc getAppServer(String hostName, int port) {
+    for (int i = 0; i < appServers.size(); i++) {
+      AppServerDesc desc = (AppServerDesc)appServers.get(i);
+      if (desc.hostName.equals(hostName) &&
+          desc.port == port) {
+        return desc;
       }
     }
+    return null;
   }
 
   /**
-   * Refresh app servers; notify AddServerSupport.
+   * Delete app server; just remove entries for this app server.
    */
-  public void refreshAppServers() {
-    notifyObservers(APP_SERVERS_REFRESH);
+  public void appServerDelete(AppServerDesc appServerDesc) {
+    Enumeration nodes = nodeToAppServer.keys();
+    while (nodes.hasMoreElements()) {
+      String node = (String)nodes.nextElement();
+      AppServerDesc desc = getAppServer(node);
+      if (desc.hostName.equals(appServerDesc.hostName) &&
+          desc.port == appServerDesc.port) {
+        nodeToAppServer.remove(node);
+        setChanged();
+        notifyObservers(APP_SERVER_DELETED);
+      }
+    }
+    appServers.remove(appServerDesc);
   }
 
-  public ArrayList getUnattachedNodes() {
-    return appServerSupport.getUnattachedNodes();
+  /**
+   * Refresh app servers; notify AppServerSupport.
+   */
+  public void refreshAppServers() {
+    setChanged();
+    notifyObservers(APP_SERVERS_REFRESH);
   }
 
   /**
@@ -993,5 +1011,36 @@ public class CSMARTConsoleModel extends Observable {
     nodeModels.put(name, nodeModel);
   }
 
+  /**
+   * Get list of nodes to which CSMART is not attached.
+   */
+  public ArrayList getUnattachedNodes() {
+    return appServerSupport.getUnattachedNodes();
+  }
+
+  /**
+   * Get list of nodes to which CSMART is attached.
+   */
+  public ArrayList getAttachedNodes() {
+    return new ArrayList(nodeToAppServer.keySet());
+  }
+
+  /**
+   * Add an unique app server to the list of known app servers.
+   * This assumes that there is one app server per host & port.
+   */
+  class AppServerList extends ArrayList {
+    public void add(AppServerDesc descToAdd) {
+      if (descToAdd == null) return;
+      for (int i = 0; i < size(); i++) {
+        AppServerDesc desc = (AppServerDesc)get(i);
+        if (descToAdd.hostName.equals(desc.hostName) &&
+            descToAdd.port == desc.port) {
+          return;
+        }
+      }
+      super.add(descToAdd);
+    }
+  }
 
 }

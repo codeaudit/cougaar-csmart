@@ -782,6 +782,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   private void restart_actionPerformed() {
     startAction.setEnabled(false);
+    // TODO: restart node using the AppServer in the node's NodeInfo object
     RemoteProcess newRemoteNode = console.restartNode(nodeName);
     if (newRemoteNode != null) {
       remoteNode = newRemoteNode;
