@@ -21,51 +21,56 @@
 
 package org.cougaar.tools.csmart.ui.configbuilder;
 
+
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.*;
-import java.util.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.URL;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
-
-import org.cougaar.util.log.Logger;
-
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.PropertyHelper;
 import org.cougaar.tools.csmart.core.property.PropertyListener;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.recipe.CompleteAgentRecipe;
+import org.cougaar.tools.csmart.recipe.ComplexRecipeComponent;
+import org.cougaar.tools.csmart.recipe.ComponentCollectionRecipe;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.recipe.RecipeQueryProperty;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.AssetComponent;
-import org.cougaar.tools.csmart.society.ComponentBase;
-import org.cougaar.tools.csmart.society.MiscComponent;
 import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.society.BinderComponent;
+import org.cougaar.tools.csmart.society.ComponentBase;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.ContainerComponent;
+import org.cougaar.tools.csmart.society.MiscComponent;
 import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.society.PluginComponent;
 import org.cougaar.tools.csmart.society.PropGroupBase;
@@ -80,8 +85,8 @@ import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 import org.cougaar.tools.csmart.ui.util.ComboDialog;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.tools.csmart.recipe.RecipeComponent;
-import org.cougaar.tools.csmart.recipe.ComplexRecipeComponent;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.recipe.ComplexRecipeBase;
 
 /**
  * Panel that holds the PropertyEditor for editing the properties of a <code>ModifiableConfigurableComponent</code>. <br>
@@ -101,8 +106,11 @@ public class PropertyEditorPanel extends JPanel
   JPopupMenu propertyGroupsMenu;
   JPopupMenu relationshipsMenu;
   JPopupMenu baseComponentMenu;
+  JPopupMenu baseRecipeComponentMenu;
   JPopupMenu agentMenu;
   JPopupMenu completeAgentMenu;
+  JPopupMenu componentCollectionRecipeMenu;
+
   DefaultMutableTreeNode root;
   PropertyTable propertyTable = null;
   JScrollPane tableScrollPane;
@@ -201,12 +209,34 @@ public class PropertyEditorPanel extends JPanel
           removeBaseComponent();
         }
       };
+  private AbstractAction addTargetAction =
+    new AbstractAction("Override Parent Target") {
+      public void actionPerformed(ActionEvent e) {
+        addTarget(true);
+      }
+    };
+
+  private AbstractAction addRecipeParameterAction =
+    new AbstractAction("Add Parameter") {
+      public void actionPerformed(ActionEvent e) {
+        addPropGroupParameter(true);
+      }
+    };
+
   private Object[] societyMenuItems = {
     addAgentAction
   };
   private Object[] completeAgentMenuItems = {
     addAgentAction
   };
+  private Object[] componentCollectionRecipeMenuItems = {
+    addAgentAction,
+//     addBinderAction,
+    addPluginAction,
+//     addRelationshipAction,
+//     addPropertyGroupAction
+  };
+
   private Object[] bindersMenuItems = {
     addBinderAction
   };
@@ -229,6 +259,12 @@ public class PropertyEditorPanel extends JPanel
     addParameterAction,
     deleteAction
   };
+  private Object[] baseRecipeComponentMenuItems = {
+    addTargetAction,
+    addParameterAction,
+    deleteAction
+  };
+
   private Object[] agentMenuItems = {
     deleteAction
   };
@@ -314,7 +350,9 @@ public class PropertyEditorPanel extends JPanel
     // create popup menus to be displayed in tree
     societyMenu = new JPopupMenu();
     completeAgentMenu = new JPopupMenu();
+    componentCollectionRecipeMenu = new JPopupMenu();
     baseComponentMenu = new JPopupMenu();
+    baseRecipeComponentMenu = new JPopupMenu();
     agentMenu = new JPopupMenu();
     bindersMenu = new JPopupMenu();
     componentsMenu = new JPopupMenu();
@@ -326,8 +364,12 @@ public class PropertyEditorPanel extends JPanel
       societyMenu.add((Action)societyMenuItems[i]);
     for (int i = 0; i < completeAgentMenuItems.length; i++)
       completeAgentMenu.add((Action)completeAgentMenuItems[i]);
+    for (int i = 0; i < componentCollectionRecipeMenuItems.length; i++)
+      componentCollectionRecipeMenu.add((Action)componentCollectionRecipeMenuItems[i]);
     for (int i = 0; i < baseComponentMenuItems.length; i++)
       baseComponentMenu.add((Action)baseComponentMenuItems[i]);
+    for (int i = 0; i < baseRecipeComponentMenuItems.length; i++)
+      baseRecipeComponentMenu.add((Action)baseRecipeComponentMenuItems[i]);
     for (int i = 0; i < agentMenuItems.length; i++)
       agentMenu.add((Action)agentMenuItems[i]);
     for (int i = 0; i < bindersMenuItems.length; i++)
@@ -634,11 +676,18 @@ public class PropertyEditorPanel extends JPanel
       agentMenu.show(tree, x, y);
     else if (o instanceof RelationshipComponent)
       agentMenu.show(tree, x, y);
-    else if (o instanceof ComplexRecipeComponent)
-      completeAgentMenu.show(tree, x, y);
-    else if (o instanceof BaseComponent)
-      baseComponentMenu.show(tree, x, y);
-    else if (log.isErrorEnabled())
+    else if (o instanceof ComplexRecipeComponent) {
+      if (o instanceof CompleteAgentRecipe) 
+        completeAgentMenu.show(tree, x, y);
+      else if (o instanceof ComponentCollectionRecipe)
+        componentCollectionRecipeMenu.show(tree, x, y);
+    } else if (o instanceof BaseComponent) {
+      // Need to see if the Parent is a ComponentCollectionRecipe.
+      if (nodeToComponent.get(selPath.getParentPath().getLastPathComponent()) instanceof ComponentCollectionRecipe) 
+        baseRecipeComponentMenu.show(tree, x, y);
+      else
+        baseComponentMenu.show(tree, x, y);
+    } else if (log.isErrorEnabled())
       log.error("No menu for component of class: " + o);
   }
 
@@ -943,12 +992,12 @@ public class PropertyEditorPanel extends JPanel
   private void setParameters(ModifiableComponent pg, int pgIndex) {
     switch (pgIndex) {
     case ITEM_IDENTIFICATION:
-      pg.addProperty("ItemIdentification", "");
-      pg.addProperty("Nomenclature", "");
-      pg.addProperty("AlternateItemIdentification", "");
+      pg.addProperty("ItemIdentification (String)", "");
+      pg.addProperty("Nomenclature (String)", "");
+      pg.addProperty("AlternateItemIdentification (String)", "");
       break;
     case TYPE_IDENTIFICATION:
-      pg.addProperty("TypeIdentification", "UTC/RTOrg");
+      pg.addProperty("TypeIdentification (String)", "UTC/RTOrg");
       break;
     case CLUSTER:
       // type is enclosed in parens and appended to name
@@ -958,7 +1007,7 @@ public class PropertyEditorPanel extends JPanel
       break;
     case COMMUNITY:
       pg.addProperty("TimeSpan (TimeSpan)", "");
-      pg.addProperty("Communities", "");
+      pg.addProperty("Communities (??)", "");
       break;
     case MILITARYORG:
       break;
@@ -987,6 +1036,7 @@ public class PropertyEditorPanel extends JPanel
     addParameter(true);
   }
 
+  
   private void addParameter(boolean getName) {
     DefaultMutableTreeNode selNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
@@ -1008,6 +1058,17 @@ public class PropertyEditorPanel extends JPanel
       if (name.length() == 0) return;
     }
     
+    String type = "";
+    if (cc instanceof PropGroupComponent) {
+      type =
+        (String)JOptionPane.showInputDialog(this, "Enter Parameter Type",
+                                            "Parameter Type",
+                                            JOptionPane.QUESTION_MESSAGE,
+                                            null, null, "String");
+      type = type.trim();
+      name = name + " (" + type + ")";
+    }
+
     String value =
       (String)JOptionPane.showInputDialog(this, "Enter Parameter Value",
                                           "Parameter Value",
@@ -1017,11 +1078,77 @@ public class PropertyEditorPanel extends JPanel
     value = value.trim(); // trim white space
     if (value.length() == 0) return;
 
-    if (getName)
+    if (getName) {
       cc.addProperty(name, value);
-    else
+    } else {
       cc.addProperty(generateName((ConfigurableComponent)cc), value);
+    }
   }
+
+
+  private void addPropGroupParameter() {
+    addPropGroupParameter(true);
+  }
+
+  private void addPropGroupParameter(boolean getName) {
+    DefaultMutableTreeNode selNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    ModifiableComponent cc = 
+      (ModifiableComponent)nodeToComponent.get(selNode);
+
+    if (cc instanceof MiscComponent)
+      getName = false;
+
+    String name = "";
+    if (getName) {
+      name =
+	(String)JOptionPane.showInputDialog(this, "Enter Parameter Name",
+					    "Parameter Name",
+					    JOptionPane.QUESTION_MESSAGE,
+					    null, null, name);
+      if (name == null) return;
+      name = name.trim(); // trim white space
+      if (name.length() == 0) return;
+    }
+
+    String type = "";
+    type = 
+      (String)JOptionPane.showInputDialog(this, "Enter Parameter Type",
+                                          "Parameter Type",
+                                          JOptionPane.QUESTION_MESSAGE,
+                                          null, null, type);
+    type = type.trim();
+    name = name + "   (" + type + ")";
+
+    String value =
+      (String)JOptionPane.showInputDialog(this, "Enter Parameter Value",
+                                          "Parameter Value",
+                                          JOptionPane.QUESTION_MESSAGE,
+                                          null, null, "");
+    if (value == null) return;
+    value = value.trim(); // trim white space
+    if (value.length() == 0) return;
+
+    if (getName) {
+      cc.addProperty(name, value);
+    } else {
+      cc.addProperty(generateName((ConfigurableComponent)cc), value);
+    }
+  }
+
+  private void addTarget() {
+    addTarget(true);
+  }
+
+  private void addTarget(boolean getName) {
+    DefaultMutableTreeNode selNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    ModifiableConfigurableComponent cc = 
+      (ModifiableConfigurableComponent)nodeToComponent.get(selNode);
+    cc.addProperty(new RecipeQueryProperty(cc, ComplexRecipeBase.PROP_TARGET_COMPONENT_QUERY, "recipeQuerySelectNothing"));
+    cc.getProperty(ComplexRecipeBase.PROP_TARGET_COMPONENT_QUERY).setPropertyClass(String.class);
+  }
+
 
   private String generateName(ConfigurableComponent cc) {
     // get all properties
@@ -1042,7 +1169,7 @@ public class PropertyEditorPanel extends JPanel
     }
     // generate next highest numbered name
     lastParamNumber++;
-    String name = "param-" + String.valueOf(lastParamNumber);
+    String name = "param-" + String.valueOf(lastParamNumber);    
     return name;
   }
 
