@@ -181,7 +181,7 @@ the machine on which it is running.  Displays the name of the log
 file, which can be easily cut and pasted into a text editor.  Displays
 the host location and description and the node description; this
 information can be added to the host and node in the Experiment
-Builder.</li>
+Builder. Also shows the command line arguments and agents configured to run on the Node.</li>
 <li>Machine CPU Usage: Displays CPU usage for all processes on the machine on which the node is running.  (This information is not supported for Windows machines.)</li>
 <li>Node CPU Usage: Displays CPU usage for the Node's processes and child processes.  (This information is not displayed for Windows machines.)</li>
 <li>Utilization History: Displays a graph of the relative load at the node, over time.</li>
@@ -202,7 +202,11 @@ Builder.</li>
 </ul>
 <li>Control</li>
 <ul>
-<li>Stack Trace: Causes the node to print a stack trace; this is displayed in the standard output in the node window.  (This is not supported for Windows machines.)</li>
+<li>Stack Trace: Causes the node to print a stack trace; this is
+displayed in the standard output in the node window.  (This is not
+supported for Windows machines.)</li>
+<li>Kill: Kill the selected Node.</li>
+<li>Restart: Restart the Node, if it has died.  If you have persistence turned on, the Node will start where it left off.</li>
 </ul>
 <li>Notify: These menu items are the same as in the Experiment Controller menus, but set notifications for the specific node.  See <a href=#Notify>Notify menu.</a></li>
 <ul>
