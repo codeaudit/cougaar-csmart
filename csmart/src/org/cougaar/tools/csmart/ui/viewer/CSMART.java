@@ -932,7 +932,6 @@ public class CSMART extends JFrame {
    * Displays a file chooser, initted
    * to the cougaar install path, for the user to choose a directory.
    */
-
   private void setResultDir() {
     JFileChooser chooser = new JFileChooser(getResultDirName());
     chooser.setDialogTitle("Select directory for results");
@@ -952,6 +951,15 @@ public class CSMART extends JFrame {
       return;
 
     resultDir = chooser.getSelectedFile();
+  }
+
+  /**
+   * Set the new global result file. Used when reading a workspace file.
+   **/
+  public void setResultFile(String fileName) {
+    if (fileName == null)
+      return;
+    resultDir = new File(fileName);
   }
 
   /**

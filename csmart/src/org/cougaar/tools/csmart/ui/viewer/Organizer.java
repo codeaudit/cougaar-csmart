@@ -930,8 +930,12 @@ public class Organizer extends JScrollPane {
   // Select items from database
   ///////////////////////////////////
 
-  protected void selectExperimentFromDatabase() {
-    boolean haveCMTAssembly = false;
+  /**
+   * Prompt the user for an experiment to load from the database.
+   * Return an array with 2 string: experiment name and ID.
+   * Note that the return is null if the user cancels the operation in any way.
+   **/
+  protected String[] selectExperimentFromDBToLoad() {
     Map experimentNamesMap = ExperimentDB.getExperimentNames();
     Set keys = experimentNamesMap.keySet();
     JComboBox cb = new JComboBox(keys.toArray(new String[keys.size()]));
@@ -944,17 +948,40 @@ public class Organizer extends JScrollPane {
                                     JOptionPane.OK_CANCEL_OPTION,
                                     JOptionPane.PLAIN_MESSAGE);
     if (result != JOptionPane.OK_OPTION)
-      return;
+      return null;
     String experimentName = (String)cb.getSelectedItem();
-    final String originalExperimentName = experimentName;
-    String experimentId = (String)experimentNamesMap.get(experimentName);
     // if the CSMART workspace contains an experiment with this name,
     // then force the user to select a new unique name
     if (experimentNames.contains(experimentName)) {
       experimentName = generateExperimentName(experimentName, false);
       if (experimentName == null)
-        return;
+        return null;
     }
+
+    String[] res = new String[2];
+    res[0] = experimentName;
+    res[1] = (String)experimentNamesMap.get(experimentName);
+    return res;
+  }
+
+  /**
+   * Prompt the user for an experiment to load, then create it from the database,
+   * and put it in the workspace.
+   **/
+  protected void selectExperimentFromDatabase() {
+    String[] res = selectExperimentFromDBToLoad();
+    if (res == null)
+      return;
+    selectGivenExperimentFromDatabase(res[0], res[1]);
+  }
+
+  /**
+   * Take the given experiment name and ID, and use them to try to load
+   * an experiment from the database and add them to the workspace.
+   **/
+  protected void selectGivenExperimentFromDatabase(String experimentName, String experimentId) {
+    boolean haveCMTAssembly = false;
+    final String originalExperimentName = experimentName;
     // Does this experiment use a CMT assembly for configuration?
     // If so, use the CMTDialog
     // Otherwise, just do the load (which is now done through the CMTDialog)
@@ -2273,16 +2300,32 @@ public class Organizer extends JScrollPane {
     if(log.isDebugEnabled()) {
       log.debug("Saving to: " + fileName);
     }
+
+    // AH: Start at turning this instead into an XML file....
+    String testfile = fileName + ".xml";
+
     if (!fileName.endsWith(".bin"))
       fileName = fileName + ".bin";
     try {
+      // Write out the workspace as an XML file
+      OrganizerXML oxml = new OrganizerXML();
+      try {
+	oxml.writeXMLFile(new File("."), oxml.createXMLDocument(root, csmart.getResultDir().getPath()), testfile);
+      } catch (IOException ioe) {
+	if(log.isErrorEnabled()) {
+	  log.error("Caught an Exception trying to write Organizer XML File", ioe);
+	}
+      }
+
+      // But for now, also write it out in serialized object form....
       File f = new File(fileName);
       ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(f)));
-            try {
-	      oos.writeObject(root);
-            } finally {
-	      oos.close();
-            }
+      try {
+	oos.writeObject(root);
+      } finally {
+	oos.close();
+      }
+
     } catch (Exception ioe) {
       if (log.isErrorEnabled()) {
 	log.error("Organizer error saving workspace", ioe);

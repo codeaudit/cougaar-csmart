@@ -1062,6 +1062,25 @@ public class OrganizerHelper {
     }
   }
 
+
+  /**
+   * Load a recipe by name. Note that the returned recipe may be null
+   * if no such recipe exists.
+   *
+   * @param name a <code>String</code> recipe name to try to load from teh DB
+   * @return a <code>RecipeComponent</code> with that name from the DB, possibly null if none found
+   */
+  protected RecipeComponent loadRecipeNamed(String name) {
+    if (name == null || name.trim().equals(""))
+      return null;
+    // First, get any recipe assembly ID for the Recipe
+    Map names = getRecipeNamesFromDatabase();
+    String recipeId = (String)names.get(name);
+    if (recipeId == null || recipeId.trim().equals(""))
+      return null;
+    return getDatabaseRecipe(recipeId, name);
+  }
+
   /**
    * Delete the named recipe from the database.
    * @param name the name of the recipe to delete
