@@ -1,6 +1,6 @@
 CSMART contains a few known issues:
 
-* In configurable components, the Societies Task Verb currently does nothing.
+* In configurable components for the ABC Society, the Societies Task Verb currently does nothing.
   The purpose is for a future feature that will centralize input of all
   new tasks.  Currently, you must type the Verb everywhere it is required. 
 

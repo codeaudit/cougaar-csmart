@@ -110,6 +110,35 @@ org.cougaar.core.society.InitializerServiceException: java.sql.SQLException: Gen
 An alternate cause, is that you do not have a current MySQL Server
 (3.23.45 or greater for Unix)
 
+- If you get the following exception, you have an invalid cougaar.rc file or
+  cougaar.rc file conflicts (Running a server on Windows and Linux).
+
+SQLException query: SELECT A.COMPONENT_NAME COMPONENT_NAME, C.COMPONENT_CLASS 
+COMPONENT_CLASS, A.COMPONENT_ALIB_ID COMPONENT_ID, C.INSERTION_POINT, 
+H.INSERTION_ORDER INSERTION_ORDER FROM V4_ALIB_COMPONENT P INNER JOIN 
+V4_ASB_COMPONENT_HIERARCHY H ON P.COMPONENT_ALIB_ID = H.PARENT_COMPONENT_ALIB_ID 
+INNER JOIN V4_ALIB_COMPONENT A ON A.COMPONENT_ALIB_ID = H.COMPONENT_ALIB_ID 
+INNER JOIN V4_LIB_COMPONENT C ON C.COMPONENT_LIB_ID = A.COMPONENT_LIB_ID WHERE 
+H.ASSEMBLY_ID in () AND C.INSERTION_POINT LIKE 'Node.AgentManager.%' AND 
+INSTR(SUBSTRING(C.INSERTION_POINT, LENGTH('Node.AgentManager.') + 
+1), '.') = 0 AND P.COMPONENT_NAME = 'SMALL_1AD' ORDER BY INSERTION_ORDER
+java.sql.SQLException: Syntax error or access violation: 
+You have an error in your SQL syntax near ') AND C.INSERTION_POINT LIKE 
+'Node.AgentManager.%' AND INSTR(SUBSTRING(C.INSERTI' at line 1
+
+- If you get a Verify Error when running that contains the plugin:
+  mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn
+  then your server props contains the line:
+  org.cougaar.classpath=...SRA_IMComponentModel.jar
+  comment this out if you are NOT running with SRA
+  
+  If you get a Verify Error when running that contains the plugin:
+  com.sra.ul.bpdt.exec.inventory.BPDTInventoryPlugIn
+  then your server props does not contain the line:
+  org.cougaar.classpath=...SRA_IMComponentModel.jar
+  
+
+  
 Running CSMART
 - Ensure that csmart, planserver, server, grappa, jcchart, xerces,
 glm, and core jar files are all included
@@ -209,7 +238,7 @@ the Experiment Builder, but find that your setting didn't "stick", and
 some other host was used instead:
   Did you add, remove, or reorder the hosts / Nodes after setting this
   property? If you do so, CSMART re-calculates the nameserver host (to
-  be sure the host exists, etc). To get around this, be sure to set
+  be sure the host exists and has a node with an agent, etc). To get around this, be sure to set
   the nameserver host / port _after_ you have set up all the hosts /
   nodes that you want in your experiment.
 

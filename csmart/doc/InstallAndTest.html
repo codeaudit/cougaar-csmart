@@ -222,7 +222,7 @@ very similar for WinNT.
 	to drop the old database first is "drop database
 	mycoug;". However, most scripts will drop the old tables
 	before loading the new, so this is not strictly
-	necessary.</li><p>
+	necessary. Additionally, old databases may be patched by running some included patch scripts. However, if you can afford to blow away an old configuration database that is preferred. The patch scripts to apply are: cl4patch.sql, add-mysql-indexes.sql, and fix-1ad-assid.sql </li><p>
 
   <li>Create a user for accessing the database. Here we create a user
   "myname" with password "mypass" who can only access the database

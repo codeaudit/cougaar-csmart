@@ -20,13 +20,13 @@ society.
 - Save all host, node attributes in database
 
 - Support setting non -D arguments, global -D arguments on Nodes (with
-defaults provided), showing thes in Node info screen on console
+defaults provided), showing these in Node info screen on console, and possibly loading a set of values from a file
 
 - Support a delay between Node launches, default to 0
 
 - Sort hosts, nodes, and support find operations
 
-- Allow user to force edit of a previously run experiment
+- Allow user to force edit of a previously run experiment, or recipe
 
 - Better support for data validation in Config Builder
 
@@ -35,6 +35,10 @@ defaults provided), showing thes in Node info screen on console
 - Support plan view filtering by agent
 
 - Add tab in ExperimentBuilder to show selected threads & groups
+
+- New debug function to write out old style configuration files
+
+- Simple database export and manipulation scripts added
 
 
 Release v8.6.0, Cougaar v8.6.0:
