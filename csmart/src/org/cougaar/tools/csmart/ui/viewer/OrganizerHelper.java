@@ -685,7 +685,7 @@ public class OrganizerHelper {
       return sc;
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
-	log.error("Exception creating society " + name + " of class " + cls.toString(), e);
+	log.error("Exception creating society " + name + " of " + cls.toString(), e);
       }
       return null;
     }
@@ -710,7 +710,7 @@ public class OrganizerHelper {
       return sc;
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
-	log.error("Exception creating society " + name + " of class " + cls.toString(), e);
+	log.error("Exception creating society " + name + " of " + cls.toString(), e);
       }
       return null;
     }
