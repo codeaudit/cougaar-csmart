@@ -1407,7 +1407,9 @@ public class Organizer extends JScrollPane {
         query = DBUtils.getQuery(EXPT_ASSEM_QUERY, substitutions);
         rs = stmt.executeQuery(query);
         while(rs.next()) {
-          assemblyIDs.add(rs.getString(1));
+	  String asmid = rs.getString(1);
+	  System.out.println("Assembly ID: " + asmid);	  
+          assemblyIDs.add(asmid);
         }
         rs.close();
         stmt.close();
@@ -1447,8 +1449,17 @@ public class Organizer extends JScrollPane {
       se.printStackTrace();
     }
 
-    CMTSociety soc = new CMTSociety(assemblyIDs);
-    soc.initProperties();
+    System.out.println("Size: " + assemblyIDs.size());
+
+    CMTSociety soc = null;
+    if (assemblyIDs.size() != 0) {
+      soc = new CMTSociety(assemblyIDs);      
+      soc.initProperties();
+    } else { // We need to create a new trial.
+      // Need to have the experiment id, trial id, and multiplicity
+      // for the call that will generate the assembly here.
+    }
+        
     Experiment experiment = new Experiment((String)experimentName, (String)dbExptMap.get(experimentName), (String)dbTrialMap.get(trial));
     DefaultMutableTreeNode newNode =
       addExperimentToWorkspace(experiment, node);
