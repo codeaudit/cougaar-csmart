@@ -192,10 +192,10 @@ public class AgentInsertionRecipe extends RecipeBase
     // properties, see the "Hack Note" above.
     for(int i=0; i < count; i++) {
       propRelations[i] = addAgentQueryProperty("Relationship " + (i+1), "");
-      ((Property)propRelations[i]).setToolTip("Value for Relationship " + (i+1));
+      ((Property)propRelations[i]).setToolTip("Agent to relate to for Relationship " + (i+1));
 
       propRoles[i] = addProperty("Role " + (i+1), "");
-      ((Property)propRoles[i]).setToolTip("Value for Role " + (i+1));
+      ((Property)propRoles[i]).setToolTip("Role to play for Agent in Relationship " + (i+1));
     }      
   }
 
