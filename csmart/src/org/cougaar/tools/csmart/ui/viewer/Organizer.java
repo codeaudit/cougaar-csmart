@@ -673,7 +673,7 @@ public class Organizer extends JScrollPane {
       experimentNames.add(experiment.getExperimentName());
       experiment.addModificationListener(myModificationListener);
     }
-    csmart.runExperimentBuilder(experiment, false, openForEditing);
+    csmart.runExperimentBuilder(experiment, false, true);
   }
   
   private void startConsole(DefaultMutableTreeNode node) {
@@ -695,11 +695,22 @@ public class Organizer extends JScrollPane {
       experimentNames.add(name);
       experiment.addModificationListener(myModificationListener);
       workspace.setSelection(newNode);
+
     } else if (o instanceof Experiment) {
       experiment = (Experiment) o;
     } else {
       return;
     }
+    // In addition, its possible there are unbound properties!
+    if (experiment.hasUnboundProperties()) {
+      // can't run it without setting these
+      csmart.runExperimentBuilder(experiment, false, true);
+    }
+    // At this point the user may not have created a configuration.
+    if (! experiment.hasConfiguration())
+      experiment.createDefaultConfiguration();
+    // So they really can't run the console quite yet.
+    // We'll create a default configuration for them
     csmart.runConsole(experiment);
   }
   
@@ -1243,8 +1254,11 @@ public class Organizer extends JScrollPane {
     if (node == null) return;
     Experiment experiment = (Experiment)node.getUserObject();
     if (!experiment.isEditable()) {
+      String reason = "has been run";
+      if (experiment.isRunning())
+	reason = "is in use";
       int result = JOptionPane.showConfirmDialog(this,
-						 "Experiment is in use; delete anyway?",
+						 "Experiment " + reason + "; delete anyway?",
 						 "Experiment Not Editable",
 						 JOptionPane.YES_NO_OPTION,
 						 JOptionPane.WARNING_MESSAGE);
@@ -1621,11 +1635,11 @@ public class Organizer extends JScrollPane {
     Experiment experimentCopy = experiment.copy(this, context);
     if (context == null)
       // add copy as sibling of original
-      addExperimentToWorkspace(experimentCopy,
-			       (DefaultMutableTreeNode)findNode(experiment).getParent());
+      workspace.setSelection(addExperimentToWorkspace(experimentCopy,
+			       (DefaultMutableTreeNode)findNode(experiment).getParent()));
     else
-      addExperimentToWorkspace(experimentCopy, 
-			       (DefaultMutableTreeNode)context);
+      workspace.setSelection(addExperimentToWorkspace(experimentCopy, 
+			       (DefaultMutableTreeNode)context));
     return experimentCopy;
   }
   
@@ -1642,10 +1656,10 @@ public class Organizer extends JScrollPane {
     SocietyComponent societyCopy = society.copy(this, context);
     if (context == null)
       // add copy as sibling of original
-      addSocietyToWorkspace(societyCopy, 
-			    (DefaultMutableTreeNode)findNode(society).getParent());
+      workspace.setSelection(addSocietyToWorkspace(societyCopy, 
+			    (DefaultMutableTreeNode)findNode(society).getParent()));
     else
-      addSocietyToWorkspace(societyCopy, (DefaultMutableTreeNode)context);
+      workspace.setSelection(addSocietyToWorkspace(societyCopy, (DefaultMutableTreeNode)context));
     return societyCopy;
   }
   
@@ -1663,10 +1677,10 @@ public class Organizer extends JScrollPane {
     ModifiableConfigurableComponent compCopy = comp;
     if (context == null)
       // add copy as sibling of original
-      addComponentToWorkspace(compCopy, 
-			      (DefaultMutableTreeNode)findNode(comp).getParent());
+      workspace.setSelection(addComponentToWorkspace(compCopy, 
+			      (DefaultMutableTreeNode)findNode(comp).getParent()));
     else
-      addComponentToWorkspace(compCopy, (DefaultMutableTreeNode)context);
+      workspace.setSelection(addComponentToWorkspace(compCopy, (DefaultMutableTreeNode)context));
     return compCopy;
   }
   
@@ -1677,8 +1691,8 @@ public class Organizer extends JScrollPane {
   public ImpactComponent copyImpact(ImpactComponent impact, Object context) {
     ImpactComponent impactCopy = impact.copy(this, context);
     if (context == null)
-      addImpactToWorkspace(impactCopy, (DefaultMutableTreeNode)findNode(impact).getParent());
-    addImpactToWorkspace(impactCopy, (DefaultMutableTreeNode)context);
+      workspace.setSelection(addImpactToWorkspace(impactCopy, (DefaultMutableTreeNode)findNode(impact).getParent()));
+    workspace.setSelection(addImpactToWorkspace(impactCopy, (DefaultMutableTreeNode)context));
     return impactCopy;
   }
   
@@ -1686,9 +1700,10 @@ public class Organizer extends JScrollPane {
   //    MetricComponent metricCopy = metric.copy(this, context);
   public Metric copyMetric(Metric metric, Object context) {
     Metric metricCopy = metric.copy(this, context);
-    addMetricToWorkspace(metricCopy, (DefaultMutableTreeNode)context);
     if (context == null)
-      addMetricToWorkspace(metricCopy, (DefaultMutableTreeNode)findNode(metric).getParent());
+      workspace.setSelection(addMetricToWorkspace(metricCopy, (DefaultMutableTreeNode)findNode(metric).getParent()));
+    else 
+      workspace.setSelection(addMetricToWorkspace(metricCopy, (DefaultMutableTreeNode)context));
     return metricCopy;
   }
   
