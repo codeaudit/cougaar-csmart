@@ -384,9 +384,9 @@ public class OrganizerHelper {
             AgentComponent ac = agents[i];
             if (ac.getShortName().equals(aName)) {
               nodeComponent.addAgent(ac);
-              if(log.isDebugEnabled()) {
-                log.debug("Organizer:  Adding agent named:  " + ac.getShortName());
-              }
+//                if(log.isDebugEnabled()) {
+//                  log.debug("Organizer:  Adding agent named:  " + ac.getShortName());
+//                }
               break;
             }	    
           } 	  
