@@ -817,6 +817,7 @@ public class Organizer extends JScrollPane {
       log.debug("Experiment Id: " + experimentId);
     }
 
+    // Does the experiment have a CMT configuration assembly
     if(DBUtils.containsCMTAssembly(experimentId)) {
       haveCMTAssembly = true;
       // get threads and groups information
@@ -861,21 +862,35 @@ public class Organizer extends JScrollPane {
         GUIUtils.timeConsumingTaskEnd(organizer);
       }
     } else {
-      GUIUtils.timeConsumingTaskStart(organizer);
       final String trialId = ExperimentDB.getTrialId(experimentId);
+      final String expName = experimentName;
+      final String expId = experimentId;
       if (trialId != null) {
-        Experiment experiment =
-          helper.createExperiment(originalExperimentName,
-                                  experimentName,
-                                  experimentId, 
-                                  trialId);
-        if (experiment != null)
-          addExperimentAndComponentsToWorkspace(experiment,
-                                                getSelectedNode());
-      }
-      GUIUtils.timeConsumingTaskEnd(organizer);
-    }
-  }
+	GUIUtils.timeConsumingTaskStart(organizer);
+	try {
+	  new Thread("SelectExperiment") {
+	    public void run() {
+	      // a potentially long process
+	      Experiment experiment =
+		helper.createExperiment(originalExperimentName,
+					expName,
+					expId, 
+					trialId);
+	      if (experiment != null)
+		addExperimentAndComponentsToWorkspace(experiment,
+						      getSelectedNode());
+	      GUIUtils.timeConsumingTaskEnd(organizer);
+	    }
+	  }.start();
+	} catch (RuntimeException re) {
+	  if(log.isErrorEnabled()) {
+	    log.error("Runtime exception creating experiment", re);
+	  }
+	  GUIUtils.timeConsumingTaskEnd(organizer);
+	}
+      } // end of if block
+    } // end of else block
+  } // end of selectExpFromDB
 
   private void addExperimentAndComponentsToWorkspace(Experiment experiment,
                                        DefaultMutableTreeNode node) {
