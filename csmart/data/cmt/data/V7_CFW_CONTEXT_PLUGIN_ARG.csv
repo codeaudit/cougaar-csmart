@@ -1,395 +1,403 @@
 CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PARAMETER_VALUE,PARAMETER_ORDER,THREAD_ID,ORG_ID,NOMENCLATURE,UIC
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|BulkPOL|0, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,BulkPOL,2,BASE,,,
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|PackagedPOL|0, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,PackagedPOL,3,BASE,,,
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|Ammunition|0, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,Ammunition,1,BASE,,,
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|Consumable|0, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,Consumable,4,BASE,,,
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.generic.PropagationPlugIn|forward.xml|0, ,org.cougaar.domain.mlm.plugin.generic.PropagationPlugIn,0,PROPAGATION_RULES,forward.xml,0,BASE,,,
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn|default_allocation_rules.xml|0, ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,default_allocation_rules.xml,0,BASE,,,
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn|093FF.oplan.q|0, ,org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn,0,OPLAN_Q_FILE,093FF.oplan.q,0,BASE,,,
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|LimitResourcesPolicy.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,NCA_POLICY_FILES,LimitResourcesPolicy.ldm.xml,0,BASE,,,
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OffsetDays=7|1, ,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,0,STRAT_TRANS_ARGS,OffsetDays=7,1,BASE,,,
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OriginFile=None|0, ,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,0,STRAT_TRANS_ARGS,OriginFile=None,0,BASE,,,
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn|+PrototypeProvider|1, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn,0,SUBSISTENCE_LDM_ARGS, +PrototypeProvider,1,BASE,,,
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn|subsistence.q|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn,0,SUBSISTENCE_LDM_ARGS,subsistence.q,0,BASE,,,
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceConsumerLDMPlugIn|subsistence.q|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceConsumerLDMPlugIn,0,SUBSISTENCE_CONSUMER_LDM_FILE,subsistence.q,0,BASE,,,
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn|ClassISubsistence|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn,0,SUBSISTENCE_PROJECTION_ARGS,ClassISubsistence,0,BASE,,,
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn|+PrototypeProvider|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn,1,MEILDM_PROCESSOR, +PrototypeProvider,0,BASE,,,
+1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD,,,
+1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD,,,
+1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD,,,
+1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD,,,
+1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD,,,
+1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD,,,
+1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD,,,
+1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD,,,
+1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD,,,
+1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD,,,
+1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD,,,
+1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD,,,
+1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD,,,
+1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD,,,
+1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD,,,
+1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
+1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
+1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
+1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
+1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
+1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
+1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
+1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
+1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
+1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
+1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
+1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
+1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
+1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
+1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
+1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
+1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
+1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
+1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
+1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
+1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
+1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
+1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
+1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
+1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
+1AD-CFW,16-CSG-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,1-AD-DIV-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,21-TSC-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,29-SPTGP-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,37-TRANSGP-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,3-SUPCOM-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,7-CSG-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|BulkPOL|0, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,BulkPOL,2,BASE
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|PackagedPOL|0, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,PackagedPOL,3,BASE
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|Ammunition|0, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,Ammunition,1,BASE
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|Consumable|0, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,Consumable,4,BASE
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.generic.PropagationPlugIn|forward.xml|0, ,org.cougaar.domain.mlm.plugin.generic.PropagationPlugIn,0,PROPAGATION_RULES,forward.xml,0,BASE
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn|default_allocation_rules.xml|0, ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,default_allocation_rules.xml,0,BASE
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn|093FF.oplan.q|0, ,org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn,0,OPLAN_Q_FILE,093FF.oplan.q,0,BASE
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|LimitResourcesPolicy.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,NCA_POLICY_FILES,LimitResourcesPolicy.ldm.xml,0,BASE
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OffsetDays=7|1, ,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,0,STRAT_TRANS_ARGS,OffsetDays=7,1,BASE
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OriginFile=None|0, ,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,0,STRAT_TRANS_ARGS,OriginFile=None,0,BASE
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn|+PrototypeProvider|1, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn,0,SUBSISTENCE_LDM_ARGS, +PrototypeProvider,1,BASE
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn|subsistence.q|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn,0,SUBSISTENCE_LDM_ARGS,subsistence.q,0,BASE
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceConsumerLDMPlugIn|subsistence.q|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceConsumerLDMPlugIn,0,SUBSISTENCE_CONSUMER_LDM_FILE,subsistence.q,0,BASE
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn|ClassISubsistence|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn,0,SUBSISTENCE_PROJECTION_ARGS,ClassISubsistence,0,BASE
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn|+PrototypeProvider|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn,1,MEILDM_PROCESSOR, +PrototypeProvider,0,BASE
 1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn|icisMEI.q|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn,0,MEILDM_FILE,icisMEI.q,0,BASE
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_equip.q|0,,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_equip.q,0,BASE
-
-
-
-1AD-CFW,CORPS-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
-1AD-CFW,CORPS-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
-1AD-CFW,CORPS-ORD-MGR,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-CORPS-ORD-MGR.ldm.xml|1, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-CORPS-ORD-MGR.ldm.xml,1,BASE
-
-1AD-CFW,THEATER-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,3,BASE
-1AD-CFW,THEATER-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,5,BASE
-1AD-CFW,THEATER-ORD-MGR,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-THEATER-ORD-MGR.ldm.xml|1, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-THEATER-ORD-MGR.ldm.xml,1,BASE
-
+1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_equip.q|0, ,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,0,ASSET_FILE,fdm_equip.q,0,BASE
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+SubsistenceInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +SubsistenceInventory,0,BASE
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn|+PrototypeProvider|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn,1,PARTSLDM_PROCESSOR, +PrototypeProvider,0,BASE
+1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn|icisParts.q|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn,0,PARTSLDM_FILE,icisParts.q,0,BASE
 1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,ARBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,ARBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,AVNBDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,AVNBDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,AVNBDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,AVNBDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,AVNBDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,AVNBDE,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
+1AD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
 1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,AVNBN-ATTACK,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,AVNBN-TRANSPORT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,AVNBN-TRANSPORT,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,AVN-RGT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,AVN-RGT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,AVN-RGT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,AVN-RGT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,AVN-RGT,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,AVN-RGT,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,AWR,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Supply|0, ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,0,UNIVERSAL_ALLOCATOR_ARGS,Supply,0,BASE
-
 1AD-CFW,BDE-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,BDE-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,BDE-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,BDE-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,BDE-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,BDE-HQ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,CAVSQDN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CAVSQDN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CAVSQDN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CAVSQDN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CAVSQDN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CAVSQDN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,CONUS-DLA-SUPPLY,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Supply|0, ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,0,UNIVERSAL_ALLOCATOR_ARGS,Supply,0,BASE
-
 1AD-CFW,CONUS-ORD-SUPPLY,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn|IOC_allocation_rules.xml|0, ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,IOC_allocation_rules.xml,0,BASE
 1AD-CFW,CONUS-ORD-SUPPLY,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Supply|0, ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,0,UNIVERSAL_ALLOCATOR_ARGS,Supply,0,BASE
-
 1AD-CFW,CORPS-ARTY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CORPS-ARTY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CORPS-ARTY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CORPS-ARTY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CORPS-ARTY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CORPS-ARTY,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,CORPS-ENGBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CORPS-ENGBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CORPS-ENGBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CORPS-ENGBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CORPS-ENGBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CORPS-ENGBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-CORPS-ENGBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-CORPS-ENGBN.ldm.xml,0,BASE
-
+1AD-CFW,CORPS-ENGBN,org.cougaar.domain.mlm.construction.ConstructionInventoryPlugIn|+ClassIVConstructionMaterialInventory|0, ,org.cougaar.domain.mlm.construction.ConstructionInventoryPlugIn,0,CONSTRUCTION_INVENTORY_ARGS, +ClassIVConstructionMaterialInventory,0,BASE
+1AD-CFW,CORPS-ENGBN,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn|Build_Short_Runway|0, ,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn,0,UNIVERSAL_EXPANDER_ARGS,Build_Short_Runway,0,BASE
+1AD-CFW,CORPS-ENGBN,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn|Build_Small_Tent_City|0, ,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn,0,UNIVERSAL_EXPANDER_ARGS,Build_Small_Tent_City,0,BASE
+1AD-CFW,CORPS-ENGBN,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn|Expand_Runway_Apron|0, ,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn,0,UNIVERSAL_EXPANDER_ARGS,Expand_Runway_Apron,0,BASE
 1AD-CFW,CORPS-FLDSVC-CO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CORPS-FLDSVC-CO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CORPS-FLDSVC-CO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CORPS-FLDSVC-CO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CORPS-FLDSVC-CO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CORPS-FLDSVC-CO,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
-1AD-CFW,CORPS-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
-1AD-CFW,CORPS-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
-1AD-CFW,CORPS-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
-1AD-CFW,CORPS-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
-1AD-CFW,CORPS-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
-1AD-CFW,CORPS-HQ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
+1AD-CFW,CORPS-HQ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|ArmyFeedingPolicy.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,DIV_POLICY_FILES,ArmyFeedingPolicy.ldm.xml,0,BASE
+1AD-CFW,CORPS-HQ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|BasicLoadPolicy.ldm.xml|1, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,DIV_POLICY_FILES,BasicLoadPolicy.ldm.xml,1,BASE
 1AD-CFW,CORPS-MAINTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CORPS-MAINTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CORPS-MAINTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CORPS-MAINTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CORPS-MAINTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CORPS-MAINTBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,CORPS-MAINTCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CORPS-MAINTCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CORPS-MAINTCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CORPS-MAINTCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CORPS-MAINTCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CORPS-MAINTCO,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-CORPS-MAINTCO.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-CORPS-MAINTCO.ldm.xml,0,BASE
-
+1AD-CFW,CORPS-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
+1AD-CFW,CORPS-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
+1AD-CFW,CORPS-ORD-MGR,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-CORPS-ORD-MGR.ldm.xml|1, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-CORPS-ORD-MGR.ldm.xml,1,BASE
 1AD-CFW,CORPS-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CORPS-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CORPS-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CORPS-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CORPS-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CORPS-ORD-MGR,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-CORPS-ORD-MGR.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-CORPS-ORD-MGR.ldm.xml,0,BASE
-
+1AD-CFW,CORPS-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
+1AD-CFW,CORPS-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
+1AD-CFW,CORPS-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
+1AD-CFW,CORPS-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
+1AD-CFW,CORPS-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
+1AD-CFW,CORPS-OTHER,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
+1AD-CFW,CORPS-POL-SUPPLYBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
+1AD-CFW,CORPS-POL-SUPPLYBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
+1AD-CFW,CORPS-POL-SUPPLYBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
+1AD-CFW,CORPS-POL-SUPPLYBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
+1AD-CFW,CORPS-POL-SUPPLYBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
+1AD-CFW,CORPS-POL-SUPPLYBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
 1AD-CFW,CORPS-POL-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CORPS-POL-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CORPS-POL-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CORPS-POL-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CORPS-POL-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CORPS-POL-SUPPLYCO,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-CORPS-POL-SUPPLYCO.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-CORPS-POL-SUPPLYCO.ldm.xml,0,BASE
-
-1AD-CFW,CORPS-REAR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
-1AD-CFW,CORPS-REAR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
-1AD-CFW,CORPS-REAR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
-1AD-CFW,CORPS-REAR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
-1AD-CFW,CORPS-REAR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
-1AD-CFW,CORPS-REAR,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
+1AD-CFW,CORPS-POL-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+FuelsSourcingAllocator|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +FuelsSourcingAllocator,1,BASE
 1AD-CFW,CORPS-RPRPTCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CORPS-RPRPTCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CORPS-RPRPTCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CORPS-RPRPTCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CORPS-RPRPTCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CORPS-RPRPTCO,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-CORPS-RPRPTCO.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-CORPS-RPRPTCO.ldm.xml,0,BASE
-
 1AD-CFW,CORPS-SSCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CORPS-SSCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CORPS-SSCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CORPS-SSCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CORPS-SSCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CORPS-SSCO,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-CORPS-SSCO.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-CORPS-SSCO.ldm.xml,0,BASE
-
+1AD-CFW,CORPS-SSCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+FuelsSourcingAllocator|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +FuelsSourcingAllocator,1,BASE
 1AD-CFW,CORPS-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CORPS-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CORPS-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CORPS-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CORPS-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CORPS-SUPPLYCO,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-CORPS-SUPPLYCO.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-CORPS-SUPPLYCO.ldm.xml,0,BASE
-
 1AD-CFW,CORPS-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CORPS-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CORPS-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CORPS-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CORPS-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CORPS-TCBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
+1AD-CFW,CORPS-TCBN,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Transport|0, ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,0,UNIVERSAL_ALLOCATOR_ARGS,Transport,0,BASE
 1AD-CFW,CSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CSB,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,CSG,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,CSG,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,CSG,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,CSG,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,CSG,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,CSG,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,DASB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,DASB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,DASB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,DASB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,DASB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,DASB,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
-1AD-CFW,DASB,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+SubsistenceInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +SubsistenceInventory,0,BASE
 1AD-CFW,DASB,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-FSB.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-FSB.ldm.xml,0,BASE
-
+1AD-CFW,DASB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+FuelsSourcingAllocator|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +FuelsSourcingAllocator,1,BASE
+1AD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
 1AD-CFW,DISCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,DISCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,DISCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,DISCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,DISCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,DISCOM-HQ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,DIVARTY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,DIVARTY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,DIVARTY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,DIVARTY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,DIVARTY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,DIVARTY,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
-1AD-CFW,DIV-HQ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn|3ID_allocation_rules.xml|0, ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,3ID_allocation_rules.xml,0,BASE
+1AD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,DIV-HQ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn|1AD_allocation_rules.xml|0, ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,IAD_allocation_rules.xml,0,BASE
 1AD-CFW,DIV-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,DIV-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,DIV-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,DIV-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,DIV-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,DIV-HQ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,DIV-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,DIV-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,DIV-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,DIV-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,DIV-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,DIV-OTHER,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
+1AD-CFW,ENGBDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
+1AD-CFW,ENGBDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
+1AD-CFW,ENGBDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
+1AD-CFW,ENGBDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
+1AD-CFW,ENGBDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
+1AD-CFW,ENGBDE,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
 1AD-CFW,ENGBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,ENGBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,ENGBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,ENGBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,ENGBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
-1AD-CFW,ENGBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
+1AD-CFW,ENGBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ENGBN.ldm.xml0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ENGBN.ldm.xml,0,BASE
 1AD-CFW,FABDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,FABDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,FABDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,FABDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,FABDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,FABDE,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,FABN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,FABN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,FABN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,FABN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,FABN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,FABN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,FABTRY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,FABTRY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,FABTRY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,FABTRY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,FABTRY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,FABTRY,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,FSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,FSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,FSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,FSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,FSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,FSB,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-FSB.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-FSB.ldm.xml,0,BASE
-1AD-CFW,FSB,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+SubsistenceInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +SubsistenceInventory,0,BASE
 1AD-CFW,FSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+FuelsSourcingAllocator|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +FuelsSourcingAllocator,1,BASE
-
 1AD-CFW,INFBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,INFBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,INFBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,INFBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,INFBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,INFBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-INFBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-INFBN.ldm.xml,0,BASE
-
 1AD-CFW,MSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,MSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,MSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,MSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,MSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
-1AD-CFW,MSB,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+SubsistenceInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +SubsistenceInventory,0,BASE
 1AD-CFW,MSB,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-MSB.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-MSB.ldm.xml,0,BASE
-
+1AD-CFW,MSB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+FuelsSourcingAllocator|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +FuelsSourcingAllocator,1,BASE
 1AD-CFW,SUPCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,SUPCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,SUPCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,SUPCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,SUPCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,SUPCOM-HQ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
-1AD-CFW,THEATER-HNS,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
-1AD-CFW,THEATER-HNS,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
-1AD-CFW,THEATER-HNS,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
-1AD-CFW,THEATER-HNS,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
-1AD-CFW,THEATER-HNS,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
-1AD-CFW,THEATER-HNS,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
+1AD-CFW,THEATER-HNS,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Supply|0, ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,0,UNIVERSAL_ALLOCATOR_ARGS,Supply,0,BASE
 1AD-CFW,THEATER-MAINTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,THEATER-MAINTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,THEATER-MAINTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,THEATER-MAINTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,THEATER-MAINTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,THEATER-MAINTBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
+1AD-CFW,THEATER-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,3,BASE
+1AD-CFW,THEATER-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,5,BASE
+1AD-CFW,THEATER-ORD-MGR,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-THEATER-ORD-MGR.ldm.xml|1, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-THEATER-ORD-MGR.ldm.xml,1,BASE
 1AD-CFW,THEATER-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,THEATER-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,THEATER-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,THEATER-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,THEATER-ORD-MGR,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,THEATER-ORD-MGR,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-THEATER-ORD-MGR.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-THEATER-ORD-MGR.ldm.xml,0,BASE
-
 1AD-CFW,THEATER-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,THEATER-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,THEATER-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,THEATER-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,THEATER-OTHER,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,THEATER-OTHER,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,THEATER-PERISHABLE-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,THEATER-PERISHABLE-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,THEATER-PERISHABLE-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,THEATER-PERISHABLE-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,THEATER-PERISHABLE-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,THEATER-PERISHABLE-SUPPLYCO,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-THEATER-PERISHABLE-SUPPLYCO.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-THEATER-PERISHABLE-SUPPLYCO.ldm.xml,0,BASE
-
 1AD-CFW,THEATER-POL-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,THEATER-POL-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,THEATER-POL-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,THEATER-POL-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,THEATER-POL-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,THEATER-POL-SUPPLYCO,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-THEATER-POL-SUPPLYCO.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-THEATER-POL-SUPPLYCO.ldm.xml,0,BASE
-
+1AD-CFW,THEATER-POL-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+FuelsSourcingAllocator|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +FuelsSourcingAllocator,1,BASE
 1AD-CFW,THEATER-POL-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,THEATER-POL-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,THEATER-POL-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,THEATER-POL-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,THEATER-POL-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,THEATER-POL-TCBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
+1AD-CFW,THEATER-POL-TCBN,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Transport|0, ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,0,UNIVERSAL_ALLOCATOR_ARGS,Transport,0,BASE
 1AD-CFW,THEATER-SPTGP,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,THEATER-SPTGP,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,THEATER-SPTGP,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,THEATER-SPTGP,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,THEATER-SPTGP,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,THEATER-SPTGP,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,THEATER-SSCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,THEATER-SSCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,THEATER-SSCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,THEATER-SSCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,THEATER-SSCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,THEATER-SSCO,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-THEATER-SSCO.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-THEATER-SSCO.ldm.xml,0,BASE
-
 1AD-CFW,THEATER-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,THEATER-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,THEATER-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,THEATER-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,THEATER-SUPPLYCO,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,THEATER-SUPPLYCO,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-THEATER-SUPPLYCO.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-THEATER-SUPPLYCO.ldm.xml,0,BASE
-
 1AD-CFW,THEATER-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,THEATER-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,THEATER-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,THEATER-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,THEATER-TCBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,THEATER-TCBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
+1AD-CFW,THEATER-TCBN,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Transport|0, ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,0,UNIVERSAL_ALLOCATOR_ARGS,Transport,0,BASE
 1AD-CFW,THEATER-TRANSGP,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,THEATER-TRANSGP,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,THEATER-TRANSGP,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,THEATER-TRANSGP,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,THEATER-TRANSGP,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,THEATER-TRANSGP,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
 1AD-CFW,TSC,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,TSC,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,TSC,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
 1AD-CFW,TSC,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,TSC,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,TSC,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-
-
-
-
-
-
-
-
-
-TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, 
-TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, 
-TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,
-TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, 
-TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.GenericVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, 
+TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.pkg.glmtrans.plugins.base.GLMTransOneToManyExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.pkg.glmtrans.plugins.TranscomVishnuPlugIn|envFile=GLMT.TRANSCOM.env.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.lib.plugin.UTILLdmXMLPlugIn|ldmFile=GLMT.TRANSCOM.ldm.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.GenericVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, ,,,,,,
 TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, 
 TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, 
 TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|defaultFormat=GLMT.ShipPacker.dff.xml|1, 
@@ -398,166 +406,4 @@ TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.TransportAlloc
 TRANSCOM-CFW,TRANSCOM-TheaterGround,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.Transport.env.xml|0, 
 TRANSCOM-CFW,TRANSCOM-TheaterGround,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, 
 TRANSCOM-CFW,TRANSCOM-TheaterGround,org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.Transport.env.xml|0, 
-TRANSCOM-STUB-CFW,TRANSCOM-HQ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Transport|0, ,,,,,,
-TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.pkg.glmtrans.plugins.base.GLMTransOneToManyExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,
-TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.pkg.glmtrans.plugins.TranscomVishnuPlugIn|envFile=GLMT.TRANSCOM.env.xml|0, ,,,,,,
-TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.lib.plugin.UTILLdmXMLPlugIn|ldmFile=GLMT.TRANSCOM.ldm.xml|0, ,,,,,,
-
-
-1AD-CFW,1-AD-DIV-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,3-SUPCOM-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,16-CSG-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,7-CSG-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,21-TSC-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,29-SPTGP-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,37-TRANSGP-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-
-
-
-1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
-1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
-1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
-1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
-1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
-1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
-1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
-1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
-1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
-1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
-1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
-1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
-1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
-1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
-1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
-1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
-1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
-1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
-1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
-1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
-1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
-1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
-1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
-1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
-
-
-,,,,,,,,,
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn|+PrototypeProvider|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn,1,MEILDM_PROCESSOR, +PrototypeProvider,0,BASE
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn|icisMEI.q|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugIn,0,MEILDM_FILE,icisMEI.q,0,BASE
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn|+PrototypeProvider|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn,1,PARTSLDM_PROCESSOR, +PrototypeProvider,0,BASE
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn|icisParts.q|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugIn,0,PARTSLDM_FILE,icisParts.q,0,BASE
-1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+SubsistenceInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +SubsistenceInventory,0,BASE
-1AD-CFW,10-ENGBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-BN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-2BDE-BN.ldm.xml,0,BASE
-1AD-CFW,1-41-FABN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-BN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-2BDE-BN.ldm.xml,0,BASE
-1AD-CFW,2-7-INFBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-BN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-2BDE-BN.ldm.xml,0,BASE
-1AD-CFW,3-FSB,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-FSB.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-2BDE-FSB.ldm.xml,0,BASE
-1AD-CFW,3ID-HHC,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|ArmyFeedingPolicy.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,DIV_POLICY_FILES,ArmyFeedingPolicy.ldm.xml,0,BASE
-1AD-CFW,3ID-HHC,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|BasicLoadPolicy.ldm.xml|1, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,DIV_POLICY_FILES,BasicLoadPolicy.ldm.xml,1,BASE
-1AD-CFW,3ID-OTHER,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,BASE
-1AD-CFW,BDE-HHC,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,BASE
-1AD-CFW,CORPS-MAINT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,BASE
-1AD-CFW,FUTURE,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Supply|0, ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,0,UNIVERSAL_ALLOCATOR_ARGS,Supply,0,BASE
-1AD-CFW,IBCT-OTHER,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,BASE
-1AD-CFW,IBCT-SPTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
-1AD-CFW,IBCT-SPTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|3, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,3,BASE
-1AD-CFW,IBCT-SPTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|7, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,7,BASE
-1AD-CFW,IBCT-SPTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+FuelsSourcingAllocator|2, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +FuelsSourcingAllocator,2,BASE
-1AD-CFW,IBCT-SPTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|5, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,5,BASE
-1AD-CFW,IBCT-SPTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|Ammunition_inv=FSB_ammunition.inv|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS,Ammunition_inv=FSB_ammunition.inv,1,BASE
-1AD-CFW,IBCT-SPTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|BulkPOL_inv=FSB_bulkpol.inv|4, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS,BulkPOL_inv=FSB_bulkpol.inv,4,BASE
-1AD-CFW,IBCT-SPTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|Consumable_inv=FSB_consumable.inv|8, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS,Consumable_inv=FSB_consumable.inv,8,BASE
-1AD-CFW,IBCT-SPTBN,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|PackagedPOL_inv=FSB_packagedpol.inv|6, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS,PackagedPOL_inv=FSB_packagedpol.inv,6,BASE
-1AD-CFW,IBCT-SPTBN,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+SubsistenceInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +SubsistenceInventory,0,BASE
-1AD-CFW,IBCT-SPTBN,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-FSB.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-FSB.ldm.xml,0,BASE
-1AD-CFW,IBCT-SPTBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,1,ADD
-1AD-CFW,IBCT-SPTBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|2, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,2,ADD
-1AD-CFW,IBCT-SPTBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|4, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,4,ADD
-1AD-CFW,IBCT-SPTBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|5, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,5,ADD
-1AD-CFW,IBCT-SPTBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|3, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,3,ADD
-1AD-CFW,IBCT-SPTBN,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,MATERIEL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+SubsistenceInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +SubsistenceInventory,0,BASE
-1AD-CFW,MATERIEL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|-ClassISubsistenceTransport|1, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, -ClassISubsistenceTransport,1,BASE
-1AD-CFW,MATERIEL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|ClassISubsistence_inv=CSB-HHD_classisubsistence.inv|2, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS,ClassISubsistence_inv=CSB-HHD_classisubsistence.inv,2,BASE
-1AD-CFW,MATERIEL-SUPPLY,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-MATERIEL-SUPPLY.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-MATERIEL-SUPPLY.ldm.xml,0,BASE
-1AD-CFW,MATERIEL-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,1,ADD
-1AD-CFW,MATERIEL-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|3, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,3,ADD
-1AD-CFW,MATERIEL-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|4, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,4,ADD
-1AD-CFW,MATERIEL-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|2, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,2,ADD
-1AD-CFW,MATERIEL-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,MEDICAL,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-1AD-CFW,MEDICAL,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,1,ADD
-1AD-CFW,MEDICAL,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,MEDICAL-SUPPLY,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-MATERIEL-SUPPLY.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-MATERIEL-SUPPLY.ldm.xml,0,BASE
-1AD-CFW,MEDICAL-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,1,ADD
-1AD-CFW,MEDICAL-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,OTHER,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,BASE
-1AD-CFW,POL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,1,BASE
-1AD-CFW,POL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLTransport|2, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLTransport,2,BASE
-1AD-CFW,POL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|4, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,4,BASE
-1AD-CFW,POL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLTransport|5, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLTransport,5,BASE
-1AD-CFW,POL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -AmmunitionInventory,0,BASE
-1AD-CFW,POL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-ConsumableInventory|7, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -ConsumableInventory,7,BASE
-1AD-CFW,POL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|8, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,8,BASE
-1AD-CFW,POL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|BulkPOL_inv=POLSPLY_bulkpol.inv|3, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS,BulkPOL_inv=POLSPLY_bulkpol.inv,3,BASE
-1AD-CFW,POL-SUPPLY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|PackagedPOL_inv=POLSPLY_packagedpol.inv|6, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS,PackagedPOL_inv=POLSPLY_packagedpol.inv,6,BASE
-1AD-CFW,POL-SUPPLY,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-MATERIEL-SUPPLY.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-MATERIEL-SUPPLY.ldm.xml,0,BASE
-1AD-CFW,POL-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,1,ADD
-1AD-CFW,POL-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|3, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,3,ADD
-1AD-CFW,POL-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|4, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,4,ADD
-1AD-CFW,POL-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|2, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,2,ADD
-1AD-CFW,POL-SUPPLY,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,SPTGP-HHC,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,BASE
-1AD-CFW,SPTGP-UNIT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,BASE
-1AD-CFW,SUPPLY-SOURCE,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn|trans_router.xml|0, ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,trans_router.xml,0,BASE
-1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.construction.ConstructionInventoryPlugIn|+ClassIVConstructionMaterialInventory|0, ,org.cougaar.domain.mlm.construction.ConstructionInventoryPlugIn,0,CONSTRUCTION_INVENTORY_ARGS, +ClassIVConstructionMaterialInventory,0,BASE
-1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.construction.ConstructionProjectionPlugIn|-ClassIVConstructionMaterialSupplyTasks|0, ,org.cougaar.domain.mlm.construction.ConstructionProjectionPlugIn,0,CONSTRUCTION_PROJECTION_ARGS, -ClassIVConstructionMaterialSupplyTasks,0,BASE
-1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn|Build_Short_Runway|1, ,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn,0,UNIVERSAL_EXPANDER_ARGS,Build_Short_Runway,1,BASE
-1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn|Build_Small_Tent_City|2, ,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn,0,UNIVERSAL_EXPANDER_ARGS,Build_Small_Tent_City,2,BASE
-1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn|Expand_Runway_Apron|0, ,org.cougaar.domain.mlm.plugin.generic.UniversalExpanderPlugIn,0,UNIVERSAL_EXPANDER_ARGS,Expand_Runway_Apron,0,BASE
-1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-Construction.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-Construction.ldm.xml,0,BASE
-1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,1,ADD
-1AD-CFW,THEATER-CONSTRUCTION,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-1AD-CFW,THEATER-TRANSPORT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,BASE
-1AD-CFW,THEATER-TRANSPORT,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Transport|0, ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,0,UNIVERSAL_ALLOCATOR_ARGS,Transport,0,BASE
-1AD-CFW,THEATER-TRANSPORT-VISHNU,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,BASE
-1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
-1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|1, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,1,BASE
-1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLTransport|2, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLTransport,2,BASE
-1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|7, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,7,BASE
-1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|4, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,4,BASE
-1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLTransport|5, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLTransport,5,BASE
-1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|8, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,8,BASE
-1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|BulkPOL_inv=TCBN-HHC_bulkpol.inv|3, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS,BulkPOL_inv=TCBN-HHC_bulkpol.inv,3,BASE
-1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|PackagedPOL_inv=TCBN-HHC_packagedpol.inv|6, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS,PackagedPOL_inv=TCBN-HHC_packagedpol.inv,6,BASE
-1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+ClassISubsistenceTransport|1, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +ClassISubsistenceTransport,1,BASE
-1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|+SubsistenceInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS, +SubsistenceInventory,0,BASE
-1AD-CFW,TRANS-TERMINAL,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn|ClassISubsistence_inv=TCBN-HHC_classisubsistence.inv|2, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,0,SUBSISTENCE_INVENTORY_ARGS,ClassISubsistence_inv=TCBN-HHC_classisubsistence.inv,2,BASE
-1AD-CFW,TRANS-TERMINAL,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|1, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,1,ADD
-1AD-CFW,TRANS-TERMINAL,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|3, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,3,ADD
-1AD-CFW,TRANS-TERMINAL,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|4, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,4,ADD
-1AD-CFW,TRANS-TERMINAL,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|2, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,2,ADD
-1AD-CFW,TRANS-TERMINAL,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
-,,,,,,,,,
+TRANSCOM-STUB-CFW,TRANSCOM-HQ,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Transport|0, 
