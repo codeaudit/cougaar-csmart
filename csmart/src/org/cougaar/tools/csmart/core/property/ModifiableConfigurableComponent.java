@@ -117,7 +117,7 @@ public abstract class ModifiableConfigurableComponent
         ls[i].modified(event);
       } catch (RuntimeException re) {
         if(log.isErrorEnabled()) {
-          log.error("Exception", re);
+          log.error("Exception telling listener about modification", re);
         }
       }
     }
@@ -136,7 +136,7 @@ public abstract class ModifiableConfigurableComponent
       return component;
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Exception", e);
+        log.error("Exception copying configurable component", e);
       }
       return null;
     }
