@@ -48,15 +48,23 @@ DROP TABLE TEMPTAB;
 ------ to take the old plugin class (drop-down?) and the new one (check if its already there?)
 
 -- V4_ASB_COMPONENT_ARG table
-
 UPDATE V4_ASB_COMPONENT_ARG SET COMPONENT_ALIB_ID = 
   CONCAT(SUBSTRING(COMPONENT_ALIB_ID,1,INSTR(COMPONENT_ALIB_ID,'|')),':newP')
 WHERE COMPONENT_ALIB_ID LIKE '%|:oldP'
   AND ASSEMBLY_ID = ':assID';
 
 -- V4_ASB_COMPONENT_HIERARCHY
-UPDATE V4_ASB_COMPONENT_HIERARCHY SET COMPONENT_ALIB_ID = 
+UPDATE IGNORE V4_ASB_COMPONENT_HIERARCHY SET COMPONENT_ALIB_ID = 
   CONCAT(SUBSTRING(COMPONENT_ALIB_ID,1,INSTR(COMPONENT_ALIB_ID,'|')),':newP')
+WHERE COMPONENT_ALIB_ID LIKE '%|:oldP'
+      AND ASSEMBLY_ID = ':assID';
+
+-- If users try to replace 2 plugins with one
+-- (as in both AntsInventory and ConstructionInventory with BPDTInventory)
+-- then the second run will not replace the original plugin
+-- in the above update, due to the primary key.
+-- So we delete any remaining instances with this command.
+DELETE FROM V4_ASB_COMPONENT_HIERARCHY
 WHERE COMPONENT_ALIB_ID LIKE '%|:oldP'
       AND ASSEMBLY_ID = ':assID';
 
