@@ -39,7 +39,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+
+import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.Reflect;
+import org.cougaar.util.TimeSpan;
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.core.agent.ClusterIdentifier;
+
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -48,14 +55,11 @@ import org.cougaar.tools.csmart.core.cdata.PGPropMultiVal;
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.util.ConfigFinder;
-import org.cougaar.util.Reflect;
-import org.cougaar.util.TimeSpan;
-import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
 
 
 /**
- * PrototypeParser.java
+ * PrototypeParser: Parse Agent AssetData files
  *
  *
  * Created: Thu Feb 21 13:36:49 2002
@@ -63,7 +67,6 @@ import org.cougaar.util.log.Logger;
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  * @version 1.0
  */
-
 public class PrototypeParser {
 
   private Logger log;
@@ -123,7 +126,8 @@ public class PrototypeParser {
       File tryfile = new File(filename);
       if (! tryfile.exists()) {
 	fileStream = 
-	  new InputStreamReader(ConfigFinder.getInstance().open(filename));
+	  //	  new InputStreamReader(ConfigFinder.getInstance().open(filename));
+	  new InputStreamReader(SocietyFinder.getInstance().open(filename));
       } else {
 	fileStream = new FileReader(tryfile);
       }
