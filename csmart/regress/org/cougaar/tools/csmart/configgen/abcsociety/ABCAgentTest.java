@@ -162,23 +162,9 @@ public class ABCAgentTest extends TestCase {
     public static final String PROP_STARTTIME = ABCAgent.PROP_STARTTIME;
     public static final String PROP_STOPTIME = ABCAgent.PROP_STOPTIME;
 
-    // Props for metrics:
-    public static final String PROP_NUMBPROVIDERS = ABCAgent.PROP_NUMBPROVIDERS;
-    public static final String PROP_SAMPLEINTERVAL = ABCAgent.PROP_SAMPLEINTERVAL;
-    public static final String PROP_STARTDELAY = ABCAgent.PROP_STARTDELAY;
-    public static final String PROP_MAXNUMBSAMPLES = ABCAgent.PROP_MAXNUMBSAMPLES;
-    public static final String PROP_INITIALIZER = ABCAgent.PROP_INITIALIZER;
-
     private Property propStartTime;
     private Property propStopTime;
     private Property propTaskVerb;
-
-    // Props for metrics
-    private Property propInitializer;
-    private Property propSampleInterval;
-    private Property propNumbProviders;
-    private Property propStartDelay;
-    private Property propMaxSamples;
 
     public GenericComponent() {
       super("Generic");
@@ -187,23 +173,13 @@ public class ABCAgentTest extends TestCase {
     public void initProperties() {
       propStartTime = addProperty(PROP_STARTTIME, new Integer(0));
       propStopTime = addProperty(PROP_STOPTIME, new Integer(10));
-      propInitializer = addProperty(PROP_INITIALIZER, "Init");
-      propSampleInterval = addProperty(PROP_SAMPLEINTERVAL, new Integer(10));
-      propStartDelay = addProperty(PROP_STARTDELAY, new Integer(0));
-      propMaxSamples = addProperty(PROP_MAXNUMBSAMPLES, new Integer(10));
-      propNumbProviders = addProperty(PROP_NUMBPROVIDERS, new Integer(2));
       propTaskVerb = addProperty(PROP_TASKVERB, "Test");      
 
       ABCAgent ag = new ABCAgent("Community", "Type", 0);
       addChild(ag);      
       addPropertyAlias(ag, propTaskVerb, PROP_TASKVERB);
-      addPropertyAlias(ag, propSampleInterval, PROP_SAMPLEINTERVAL); 
-      addPropertyAlias(ag, propMaxSamples, PROP_MAXNUMBSAMPLES);
-      addPropertyAlias(ag, propStartDelay, PROP_STARTDELAY);
-      addPropertyAlias(ag, propNumbProviders, PROP_NUMBPROVIDERS);
       addPropertyAlias(ag, propStartTime, PROP_STARTTIME);
       addPropertyAlias(ag, propStopTime, PROP_STOPTIME);
-      addPropertyAlias(ag, propInitializer, PROP_INITIALIZER);
 
       ABCTaskFile taskfile = new ABCTaskFile("Tasks");
       taskfile.initProperties();
