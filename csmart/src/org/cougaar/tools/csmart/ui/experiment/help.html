@@ -19,12 +19,16 @@ the Configuration Builder) will be displayed.
 You will then be able
 to specify a set of experimental trials varying the values of those properties.
 You may also add External Impacts to subject the
-running society to, or Experimental Metrics to collect. To add an external
-impact or metric to your experiment, create one in your workspace organizer,
-and drag it into the appropriate folder here. Note however that currently
-all societies use the same hard-wired set of metrics. To tune how those
-metrics are collected, use the society-specific parameters. Additionally,
-the only choice for an Impact with any functionality is the &quot;ABC Impact&quot;
+running society to, or Experimental Metrics to collect. To add a recipe
+to your experiment, create one in your workspace organizer,
+and drag it into the appropriate folder here. 
+<br>
+<b>Metric Recipe Note:</b> 
+All societies use the same hard-wired set of metrics. To tune how those
+metrics are collected, use the society-specific parameters. 
+<br>
+<b>Impact Recipe Note:</b>
+The only choice for an Impact with any functionality is the &quot;ABC Impact&quot;
 type. This impact only works in part, and cannot effect a society. This
 will be possible with the next patch release of Cougaar core, which will
 have the necessary Binder support. This impact must be configured by creating
@@ -42,13 +46,17 @@ parameters, the set of impacts and metrics to be collected, and the specific
 hardware to be used. Associated with a trial may also be some metrics results.
 Note that experiments from databases cannot currently be modified to produce
 multiple trials.
-<h3>Impacts</h3>
+<h2>Recipes</h2>
+An experiment an contain any number of recipes.  Recipes are defined modifications
+to a specific society.
+
+<h3>Impact Recipes</h3>
 Use the Experiment Builder to include a set of simulated external impacts
 in your experiment. To do so, create a new ABC Impact in the workspace
 organizer, and drag it into the Impacts folder. 
 <br>For details on the ABC Impact external impacts, and creating your own
 external impacts, see the Users' Guide.
-<h3>Metrics</h3>
+<h3>Metrics Recipes</h3>
 Using the Experiment Builder, CSMART users will be able to specify the
 exact set of run-time performance measurements which they wish to collect
 during their experiment, when to collect them, and from which points in
@@ -72,6 +80,10 @@ Additional Impacts and Metrics will be available in a future release.
 for a given experiment. Currently, all societies record the same metrics.
 The details of when the societies record those numbers are controlled from
 the Configuration Builder tool.
+<h3>Component Recipes</h3>
+Component Recipes provide the ability to add a new component to a specific set
+of agents within a society.  For more information on Component Recipies,
+see the documentation for a specific Component Recipe.
 <br>&nbsp;
 <h3>Using the Experiment Builder</h3>
 The following explains usage of each of the tabbed panes:
