@@ -239,4 +239,6 @@ public class DBUtils {
       
     return false;
   }
+
+  public static boolean dbMode = DBUtils.isValidDBConnection();
 }
