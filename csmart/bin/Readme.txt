@@ -12,7 +12,7 @@ COUGAAR_INSTALL_PATH has been set appropriately, as in:
 
 A platform-specific version of "dot.exe" from AT&T is required for
 graph layout. See csmart/data/CSMART-Install.txt for information on
-getting this file.
+getting this file, and install location.
 
 All files named CSMARTNode, CSMARTsetlibpath.bat and
 CSMARTsetarguments.bat are to be copied into COUGAAR_INSTALL_PATH/bin
@@ -61,14 +61,15 @@ build.xml
 	ANT build script. ANT is available at http://jakarta.apache.org/ant
 
 dot.exe
-dot-L386
+dot-l386
         For the AT&T GraphViz package, for doing layout.  "dot.exe" is for
-        DOS/WIN machines, "dot-L386" is for Linux and should be renamed 
-        "dot.exe".  Used by the CSMART EventGraph UI.  These are not 
-        kept in CVS and should be fetched off the ABC website
-        (http://ABCTestBed.bbn.com), the AT&T GraphViz site, or from
-	the csmart-3rdparty.zip file
-
+        DOS/WIN machines, "dot-l386" is for Linux.  Used by the CSMART
+	EventGraph UI. These are available from the
+	csmart-3rdparty.zip file, or from cougaar-support.zip. The
+	usual location is CIP/sys, by CIP/csmart/bin is the next usual
+	location. You can also get these files from the ABC website
+        (http://ABCTestBed.bbn.com) or the AT&T GraphViz site.
+	
 Monitor
 Monitor.bat - Scripts for running the CSMART Society Monitor tool
 standalone, to view the conents of an arbitrary Cougaar

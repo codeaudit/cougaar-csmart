@@ -4,19 +4,27 @@ These instructions for installing CSMART assume some familiarity with
 Cougaar and how to install Cougaar.
 
 A standard installation will begin from the following files:
+1) cougaar.zip - Standard Cougaar build. This will supply you with the
+   CSMART jar file, and CSMART scripts, docs, and data files. Unzip
+   into your Cougaar install path.
+2) csmart-dev.zip -- Source code and Java docs for CSMART. Unzip in
+   your Cougaar install path.
+3) cougaar-support.zip -- Third party jar files and binaries. Includes
+   some CSMART specific required Jars (grappa) and binaries (dot).
+
+(An equivalent, older install would include (on top of a normal Cougaar
+install):
 1) csmart.zip -- a Cougaar module to be installed within your Cougaar
    installation directory.
    Contains startup scripts, data files, and built CSMART code.
    Unzip in your Cougaar install directory.
 2) csmart-3rdparty.zip -- Third party components required for
    CSMART. Unzip in your Cougaar install directory.  Jar files may
-   already be present for base Cougaar. Executables may need to be
-   renamed on Unix systems. See below for details.
+   already be present for base Cougaar. See below for details.
 3) csmart-api.zip -- Javadocs for CSMART. Unzip in your Cougaar
    install directory.
 4) csmart-dev.zip -- Source code for CSMART. Unzip in your Cougaar
-   installation directory.
-
+   installation directory.)
 
 
 Dependencies:
@@ -30,13 +38,14 @@ Latest Cougaar required versions of jcchart (451) and xerces
 grappa1_2_bbn.jar -
     AT&T GraphViz Grappa package version 1.2 for graph rendering,
     including some BBN modifications for performance
-    enhancements. Available in the csamrt-3rdparty.zip file. See the
-    GraphViz site for more information.
+    enhancements. Available in the csmart-3rdparty.zip or
+    cougaar-support.zip files. See the GraphViz site for more
+    information.
   
 dot.exe:
     AT&T GraphViz from http://www.research.att.com/sw/tools/graphviz/
     or http://ABCTestbed.bbn.com.
-    Also available in the csmart-3rdparty.zip file
+    Also available in the csmart-3rdparty.zip and cougaar-support.zip files
 
 Optional: JUnit, Jikes and Ant
 
@@ -59,13 +68,31 @@ every machine where you want to run a Cougaar node from CSMART):
    and Jikes if you wish to use those.)
 1) Install 8.3 version of Cougaar as usual
 -- Install core, contract, planserver, glm, server and other modules
+----- If installing from a normal complete Cougaar install, this also
+gives you CSMART! It supplies CIP/lib/csmart.jar and CIP/csmart module
+with scripts, data files, and documents!
+-- This normal install gives you CIP/scalability/bin with 2 shared
+  libraries. Follow the contained Install instructions, and put the
+  appropriate library on your PATH.
 -- Set the environment variable COUGAAR_INSTALL_PATH (CIP)
--- Put CIP/bin on your PATH, - followed immediately by CIP/csmart/bin!!
-2) Install CSMART Cougaar module as a sub-directory to CIP (by unzipping
-csmart.zip into CIP or from CVS)
-3) Install third party tools, by unzipping csmart-3rdparty.zip in CIP.
--- dot.exe and dot-L386 go in CIP/csmart/bin. On Unix machines, rename
-   dot-L386 to dot.exe
+-- Put CIP/bin on your PATH, - followed immediately by
+CIP/csmart/bin!!
+-- Install Cougaar support libraries (often from cougaar-support.zip,
+by unzipping in CIP).
+---- For CSMART, this must include xerces.jar, jcchart451K.jar,
+   grappa1_2_bbn.jar, dot.exe, and dot-l386, all installed in CIP/sys
+
+Most installers can now jump to step 4. However, if for some reason
+you did not get a complete Cougaar install that included CSMART, the
+following 2 steps are also required:
+2) Install CSMART Cougaar module as a sub-directory to CIP (by
+   unzipping csmart.zip into CIP or from CVS, or by re-extracting the
+   csmart jar file and csmart sub-directory from the main Cougaar
+   build)
+
+3) Install third party tools, by unzipping csmart-3rdparty.zip or
+   cougaar-support.zip in CIP (may already be done).
+-- dot.exe and dot-l386 go in CIP/sys or CIP/csmart/bin. 
 -- AT&T GraphViz jar with BBN mods, grappa1_2_bbn.jar goes in CIP/sys
 -- Standard Cougaar 3rd party jars xerces.jar and jcchart451K.jar go in
    CIP/sys
@@ -73,12 +100,19 @@ Note that the included Society Monitor startup scripts require the use
    of CIP/sys for these third party jar files.
 All other required Cougaar jar files should already be present,
    including core, glm, planserver, server, scalability, and contract
--- Mylib.dll (Win machines) / libmylib.so (i386 Linux) shared library
+-- csmart-3rdparty.zip also includes 2 shared libraries, which you may
+already have if you installed Cougaar from a cougaar.zip, in the
+scalability/bin directory:
+   Mylib.dll (Win machines) / libmylib.so (i386 Linux) shared library
    should go in your path (like CIP/csmart/bin - which must be on your
    path, per Step 1, above), or in the appropriate library loading
    directory for the JRE: jre/bin on Win platforms, jre/lib/i386 on Linux
    i386 systems. This library measures CPU load for metrics collection,
    and is not required.
+
+
+
+Most installers can continue here:      
 4)  Modify the Node startup scripts: CSMART has its own required
    arguments, and some additional jar file.
        (For CSMART there are several additional properties to include.
@@ -129,8 +163,8 @@ instructions.
 If you have problems, see the trouble-shooting guide.
 
 For developers:
-7) Optional: Install csmart source (csmart-dev.zip) and javadocs
-   (csmart-api.zip)
+7) Optional: Install csmart source and javadocs (csmart-dev.zip)
+   (javadocs available in old form in csmart-api.zip)
 8) If you have the source and want to develop it, set COUGAAR_DEV_PATH
    to CIP/csmart/tmpdir
    

@@ -9,7 +9,9 @@ See csmart/bin/README for details on how to run various components, using the su
 See csmart/doc/CSMART-Install.txt for instructions on installing and configuratin CSMART.
 See csmart/data/README.txt for details on the included data files.
 
-CSMART is a Cougaar module, and so should be installed on a core Cougaar installation using the latest version of Cougaar (8.3, build from 7/31/2001 14:05 GMT).
+CSMART is a Cougaar module, and so should be installed on a core
+Cougaar installation using the latest version of Cougaar
+
 Once installed, the script called "CSMART" will start up the CSMART Client.
 Separately, you must install, configure, and start up the Node Server (the "server" module) on each host on
 which you wish CSMART to start up a Cougaar node.
