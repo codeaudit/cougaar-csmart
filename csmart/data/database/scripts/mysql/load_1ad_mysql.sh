@@ -28,7 +28,7 @@
 # Cougaar Install Path must be set
 
 if [ "x$3" = "x" ]; then
-  echo "Usage: load_erstudio_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] "
+  echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] "
   exit
 fi
 
