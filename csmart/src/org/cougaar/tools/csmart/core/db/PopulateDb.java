@@ -2236,8 +2236,16 @@ public class PopulateDb extends PDbBase {
     return result;
   }
 
+  /**
+   * Save out the definition of a Complex Recipe in an RCP assembly
+   */
   public boolean populateRCP(ComponentData data)
     throws SQLException  {
+
+    // FIXME: This needs cleaning up:
+    // a) set cmtAssemblyID
+    // b) delete un-used code
+
     // For storing the old cmtAssid if we have to change it
     String oldid = null;
 
@@ -2289,10 +2297,6 @@ public class PopulateDb extends PDbBase {
 
     return result;
   }
-
-
-
-
 
   /**
    * Force save of component data as new CMT assembly in component_arg and hierachy tables.
