@@ -46,7 +46,9 @@ import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 
 /**
- * Panel that holds the PropertyEditor for editing the properties of a <code>ModifiableConfigurableComponent</code>
+ * Panel that holds the PropertyEditor for editing the properties of a <code>ModifiableConfigurableComponent</code><br>
+ * It will both view a non-editable components, and edit an editable one.<br>
+ * Note that you may in fact view/edit multiple components at once.
  */
 public class PropertyEditorPanel extends JPanel 
   implements ActionListener, PropertiesListener, PropertyListener,
@@ -61,6 +63,7 @@ public class PropertyEditorPanel extends JPanel
   Hashtable propertyToComponent = new Hashtable();
   Hashtable propertyToLabel = new Hashtable();
   boolean isEditable;
+  ModifiableConfigurableComponent[] compsToConfig = null; // support an array of things to edit/view
   ModifiableConfigurableComponent componentToConfigure = null;
 
   public PropertyEditorPanel(ModifiableConfigurableComponent configComp) {
@@ -69,7 +72,33 @@ public class PropertyEditorPanel extends JPanel
     setLayout(new BorderLayout());
     add(configCompPanel, BorderLayout.CENTER);
     componentToConfigure = configComp;
+    compsToConfig = new ModifiableConfigurableComponent[1];
+    compsToConfig[0] = configComp;
     isEditable = componentToConfigure.isEditable();
+    setModifiableConfigurableComponent();
+  }
+
+  /**
+   * Creates a new <code>PropertyEditorPanel</code> instance for a set of components to edit
+   *
+   * @param configComps a <code>ModifiableConfigurableComponent[]</code> array of components to edit - usually really just to vie
+   */
+  public PropertyEditorPanel(ModifiableConfigurableComponent[] configComps) {
+    // create the configComp panel
+    configCompPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    setLayout(new BorderLayout());
+    add(configCompPanel, BorderLayout.CENTER);
+    compsToConfig = configComps;
+    componentToConfigure = configComps[0];
+    isEditable = true;
+    // FIXME: This will make _all_ the components non-editable afterwards
+    // if any of them was non-editable. This might be wrong.
+    for (int i = 0; i < configComps.length; i++) {
+      if (! (configComps[i].isEditable())) {
+	isEditable = false;
+	break;
+      }
+    }
     setModifiableConfigurableComponent();
   }
 
@@ -79,9 +108,14 @@ public class PropertyEditorPanel extends JPanel
    */
   public void reinit(ModifiableConfigurableComponent newModifiableConfigurableComponent) {
     // restore editable flag on previous configComp
-    if (isEditable)
-      componentToConfigure.setEditable(isEditable);
+    if (isEditable) {
+      for (int i = 0; i < compsToConfig.length; i++) {
+	compsToConfig[i].setEditable(isEditable);
+      }
+    }
     componentToConfigure = newModifiableConfigurableComponent;
+    compsToConfig = new ModifiableConfigurableComponent[1];
+    compsToConfig[0] = componentToConfigure;
     isEditable = newModifiableConfigurableComponent.isEditable();
     setModifiableConfigurableComponent();
   }
@@ -134,8 +168,9 @@ public class PropertyEditorPanel extends JPanel
 
   private void setModifiableConfigurableComponent() {
     // configComp isn't editable while this tool is editing it
-    componentToConfigure.setEditable(false); 
-    Iterator names = componentToConfigure.getPropertyNames();
+    for (int i = 0; i < compsToConfig.length; i++) {
+      compsToConfig[i].setEditable(false);
+    }
     if (tree != null)
       configCompPanel.remove(tree);
     // create tree and model before adding to it
@@ -163,6 +198,7 @@ public class PropertyEditorPanel extends JPanel
     rightPanel.add(tableScrollPane);
     // only add description if user can edit the properties
     if (isEditable) {
+      // Just show the description for the first component...
       URL url = componentToConfigure.getDescription();
       if (url != null) {
 	JTextPane pane = new JTextPane();
@@ -180,7 +216,10 @@ public class PropertyEditorPanel extends JPanel
       }
     }
     configCompPanel.setRightComponent(rightPanel);
-    componentToConfigure.addPropertiesListener(this);
+    for (int i = 0; i < compsToConfig.length; i++) {
+      //      componentToConfigure.addPropertiesListener(this);
+      compsToConfig[i].addPropertiesListener(this);
+    }
     configCompPanel.validate();
     configCompPanel.setDividerLocation(200);
   }
@@ -190,7 +229,14 @@ public class PropertyEditorPanel extends JPanel
    * component.
    */
   private DefaultMutableTreeNode makeTree() {
-    SortedSet names = new TreeSet(componentToConfigure.getPropertyNamesList());
+    List props = new ArrayList();
+    // FIXME: This will have trouble if there are more than one property
+    // with the same name
+    for (int i = 0; i < compsToConfig.length; i++) {
+      props.addAll(compsToConfig[i].getPropertyNamesList());
+    }
+    //    SortedSet names = new TreeSet(componentToConfigure.getPropertyNamesList());
+    SortedSet names = new TreeSet(props);
     for (Iterator i = names.iterator(); i.hasNext(); ) {
       CompositeName name = (CompositeName) i.next();
       addPropertyName(name);
@@ -205,11 +251,17 @@ public class PropertyEditorPanel extends JPanel
   private void displayComponents(Collection propertyNames) {
     for (Iterator i = propertyNames.iterator(); i.hasNext(); ) {
       CompositeName propName = (CompositeName) i.next();
-      Property property = componentToConfigure.getProperty(propName);
-      addComponentForProperty(property);
+      for (int j = 0; j < compsToConfig.length; j++) {
+	Property property = compsToConfig[j].getProperty(propName);
+	// FIXME: If there are 2 properties of the same name
+	// this finds only the first instance of it
+	if (property != null) {
+	  addComponentForProperty(property);
+	  break;
+	}
+      }
     }
   }
-
 
   /**
    * Add user interface component for a property.
