@@ -112,33 +112,33 @@ public class XMLExperiment extends ExperimentBase {
   protected void setDefaultNodeArguments() {
     defaultNodeArguments = new ReadOnlyProperties();
     createObserver();
-    defaultNodeArguments.put(PERSISTENCE_ENABLE, PERSISTENCE_DFLT);
-    // By default we clear any existing persistence deltas when we
-    // start a run.
-    defaultNodeArguments.put(PERSIST_CLEAR, PERSIST_CLEAR_DFLT);
-    defaultNodeArguments.put(TIMEZONE, TIMEZONE_DFLT);
-    defaultNodeArguments.put(AGENT_STARTTIME, AGENT_STARTTIME_DFLT);
-    defaultNodeArguments.put(COMPLAININGLP_LEVEL, COMPLAININGLP_LEVEL_DFLT);
-    defaultNodeArguments.put(CONTROL_PORT, Integer.toString(APP_SERVER_DEFAULT_PORT));
+//     defaultNodeArguments.put(PERSISTENCE_ENABLE, PERSISTENCE_DFLT);
+//     // By default we clear any existing persistence deltas when we
+//     // start a run.
+//     defaultNodeArguments.put(PERSIST_CLEAR, PERSIST_CLEAR_DFLT);
+//     defaultNodeArguments.put(TIMEZONE, TIMEZONE_DFLT);
+//     defaultNodeArguments.put(AGENT_STARTTIME, AGENT_STARTTIME_DFLT);
+//     defaultNodeArguments.put(COMPLAININGLP_LEVEL, COMPLAININGLP_LEVEL_DFLT);
+//     defaultNodeArguments.put(CONTROL_PORT, Integer.toString(APP_SERVER_DEFAULT_PORT));
 
-    // By default, we tell the AppServer to ignore connection errors
-    // if CSMART dies, so that the society does _not_ die.
-    defaultNodeArguments.put(AS_SWALLOW_ERRORS, AS_SWALLOW_ERRORS_DFLT);
+//     // By default, we tell the AppServer to ignore connection errors
+//     // if CSMART dies, so that the society does _not_ die.
+//     defaultNodeArguments.put(AS_SWALLOW_ERRORS, AS_SWALLOW_ERRORS_DFLT);
 
-    // Class of Node to run. This is the first argument to the BOOTSTRAP_CLASS
-    // below.
-    defaultNodeArguments.put(CSMARTConsoleModel.COMMAND_ARGUMENTS, DEFAULT_NODE_CLASS);
+//     // Class of Node to run. This is the first argument to the BOOTSTRAP_CLASS
+//     // below.
+//     defaultNodeArguments.put(CSMARTConsoleModel.COMMAND_ARGUMENTS, DEFAULT_NODE_CLASS);
 
-    // Class of bootstrapper to use. The actual class being executed
-    defaultNodeArguments.put(BOOTSTRAP_CLASS, DEFAULT_BOOTSTRAP_CLASS);
+//     // Class of bootstrapper to use. The actual class being executed
+//     defaultNodeArguments.put(BOOTSTRAP_CLASS, DEFAULT_BOOTSTRAP_CLASS);
 
-    try {
-      defaultNodeArguments.put(ENV_DISPLAY, InetAddress.getLocalHost().getHostName() + ":0.0");
-    } catch (UnknownHostException uhe) {
-      if (log.isErrorEnabled()) {
-        log.error("UnknownHost Exception", uhe);
-      }
-    }
+//     try {
+//       defaultNodeArguments.put(ENV_DISPLAY, InetAddress.getLocalHost().getHostName() + ":0.0");
+//     } catch (UnknownHostException uhe) {
+//       if (log.isErrorEnabled()) {
+//         log.error("UnknownHost Exception", uhe);
+//       }
+//     }
   }
 
 //  private static String insertionPointContainer(String insertionPoint) {
@@ -316,8 +316,12 @@ public class XMLExperiment extends ExperimentBase {
     private void addToNode(String type, String value) {
       if (type.equals("class")) {
         nodeComp.addProperty(CSMARTConsoleModel.COMMAND_ARGUMENTS, value);
+        defaultNodeArguments.put(CSMARTConsoleModel.COMMAND_ARGUMENTS, value);
+        System.out.println("Adding: " + CSMARTConsoleModel.COMMAND_ARGUMENTS + " " + value);
       } else if(type.equals("prog_parameter")) {
         nodeComp.addProperty(CSMARTConsoleModel.COMMAND_ARGUMENTS, value);
+        defaultNodeArguments.put(CSMARTConsoleModel.COMMAND_ARGUMENTS, value);
+        System.out.println("Adding: " + CSMARTConsoleModel.COMMAND_ARGUMENTS + " " + value);
       } else if(type.equals("vm_parameter")) {
         if(value.indexOf("=") != -1) {
           String name = value.substring(2, value.indexOf("="));
@@ -326,11 +330,17 @@ public class XMLExperiment extends ExperimentBase {
             XMLExperiment.this.societyFileName = val;
           }
           nodeComp.addArgument(name, val);
+          defaultNodeArguments.put(name, val);
+          System.out.println("Adding: " + name + " " + val);
         } else {
           nodeComp.addArgument(value, "");
+          defaultNodeArguments.put(value, "");
+          System.out.println("Adding: " + value);
         }
       } else if(type.equals("env_parameter")) {
         nodeComp.addProperty(CSMARTConsoleModel.COMMAND_ARGUMENTS, value);
+        defaultNodeArguments.put(CSMARTConsoleModel.COMMAND_ARGUMENTS, value);
+        System.out.println("Adding: " + CSMARTConsoleModel.COMMAND_ARGUMENTS + " " + value);
       }
     }
 
