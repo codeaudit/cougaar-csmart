@@ -37,12 +37,16 @@ GOTO L_END
 
 mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\drop_v4_v6.sql
 
-ECHO Dropping indexes from database tables.
-mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.drop-mysql-indexes.sql
+COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.drop-mysql-tables.sql %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\dropTab.sql
+COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.create-mysql-tables.sql %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\creatTab.sql
+COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.load-mysql-tables.sql %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\loadTab.sql
+COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.create-mysql-indexes.sql %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\creatInd.sql
+
+
 ECHO Dropping tables from database.
-mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.drop-mysql-tables.sql
+mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\dropTab.sql
 ECHO Creating tables in database.
-mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.create-mysql-tables.sql
+mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\creatTab.sql
 
 ECHO Doing sed...
 
@@ -53,10 +57,13 @@ REM Then double the backslashes
 %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe "s/\\/\\\\\\\\/g" cip.txt > script.txt
 
 REM then do the real substitution
-%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe -f script.txt %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.load-mysql-tables.sql > load_mysql_db_new.sql
+%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe -f script.txt %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\loadTab.sql > load_mysql_db_new.sql
 
 DEL cip.txt
 DEL script.txt
+DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\dropTab.sql
+DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\creatTab.sql
+DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\loadTab.sql
 
 FOR %%y in (%COUGAAR_INSTALL_PATH%\csmart\data\database\csv\*.csv) DO COPY %%y %%y.tmp
 
@@ -64,10 +71,11 @@ ECHO Loading '.csv' files to database %3 in user %1
 mysql -u%1 -p%2 %3 < load_mysql_db_new.sql
 
 ECHO Creating indexes in database tables.
-mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.create-mysql-indexes.sql
+mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\creatInd.sql
 
 DEL load_mysql_db_new.sql
 DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\*.tmp
+DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\creatInd.sql
 
 ECHO Done.
 
