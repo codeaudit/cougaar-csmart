@@ -31,6 +31,8 @@ import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * Maintains information about a host and generates the
@@ -78,10 +80,10 @@ public class ExperimentHost
     ArrayList names = (ArrayList)prop.getValue();
     names.add(node.getShortName());
     ExperimentNode sa = (ExperimentNode) node;
-//      if(log.isDebugEnabled()) {
-//        log.debug("ExperimentHost: " + getShortName() +
-//                  " added node: " + node.getShortName());
-//      }
+    if(log.isDebugEnabled()) {
+      log.debug("ExperimentHost: " + getShortName() +
+                " added node: " + node.getShortName());
+    }
     nodes.add(sa);
     fireModification();
   }
@@ -98,10 +100,10 @@ public class ExperimentHost
       if (index != -1)
         names.remove(node.getShortName());
     }
-    //    if(log.isDebugEnabled()) {
-    //      log.debug("ExperimentHost: " + getShortName() +
-    //                 " removed node: " + node.getShortName());
-    //    }
+    if(log.isDebugEnabled()) {
+      log.debug("ExperimentHost: " + getShortName() +
+                " removed node: " + node.getShortName());
+    }
     nodes.remove(node);
     fireModification();
   }
@@ -143,4 +145,11 @@ public class ExperimentHost
     this.monitoringPort = monitoringPort;
   }
 
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+  
 }
