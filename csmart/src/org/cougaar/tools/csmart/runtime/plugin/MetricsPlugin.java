@@ -603,9 +603,9 @@ public class MetricsPlugin
     if (messageStatsService != null) {
       averageMessageQueueLength = messageStatsService.getMessageStatistics(false).averageMessageQueueLength;
       averageMessageQueueLength = (averageMessageQueueLength == -1 ? 0.0 : averageMessageQueueLength);
-      totalMessageBytes = messageStatsService.getMessageStatistics(false).totalMessageBytes;
+      totalMessageBytes = messageStatsService.getMessageStatistics(false).totalSentMessageBytes;
       totalMessageBytes = (totalMessageBytes == -1 ? 0 : totalMessageBytes);
-      totalMessageCount = messageStatsService.getMessageStatistics(false).totalMessageCount;
+      totalMessageCount = messageStatsService.getMessageStatistics(false).totalSentMessageCount;
       totalMessageCount = (totalMessageCount == -1 ? 0 : totalMessageCount);
     }
 
