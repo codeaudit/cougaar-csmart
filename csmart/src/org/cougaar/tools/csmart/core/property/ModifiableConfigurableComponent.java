@@ -32,6 +32,8 @@ public abstract class ModifiableConfigurableComponent
   implements ModifiableComponent
 {
 
+  protected boolean editable = false;
+
   /**
    * Creates a new <code>ModifiableConfigurableComponent</code> instance.
    *
@@ -47,7 +49,7 @@ public abstract class ModifiableConfigurableComponent
    * @return a <code>boolean</code> value
    */
   public boolean isEditable() {
-    return false;
+    return editable;
   }
 
   /**
@@ -56,6 +58,7 @@ public abstract class ModifiableConfigurableComponent
    * @param editable 
    */
   public void setEditable (boolean editable) {
+    this.editable = editable;
   }
   
   /**
