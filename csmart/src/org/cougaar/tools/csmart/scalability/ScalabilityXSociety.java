@@ -33,11 +33,7 @@ import java.util.Set;
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
-import org.cougaar.tools.server.ConfigurationWriter;
 import org.cougaar.tools.csmart.ui.component.*;
-import org.cougaar.tools.csmart.ui.experiment.ExperimentNode;
-import org.cougaar.tools.csmart.ui.viewer.Organizer;
-import org.cougaar.tools.scalability.scalability.*;
 
 /**
  * Create configuration files to run an COUGAAR society with given
@@ -393,7 +389,6 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
    * Returns whether or not the society can be edited.
    * @return true if society can be edited and false otherwise
    */
-
   public boolean isEditable() {
     //    return !isRunning;
     return editable;
@@ -403,7 +398,6 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
    * Set whether or not the society can be edited.
    * @param editable true if society is editable and false otherwise
    */
-
   public void setEditable(boolean editable) {
     this.editable = editable;
   }
@@ -417,7 +411,6 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
    * manually terminated).
    * @param flag indicating whether or not the society is running
    */
-
   public void setRunning(boolean isRunning) {
     this.isRunning = isRunning;
   }
@@ -429,7 +422,6 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
    * and the copy can be edited.
    * @return true if society is running and false otherwise
    */
-
   public boolean isRunning() {
     return isRunning;
   }
@@ -453,7 +445,6 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
     return null;
   }
 
-
   /**
    * Returns whether the society is self terminating or must
    * be manually terminated.
@@ -462,17 +453,8 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
    * @return true if society is self terminating
    * @see org.cougaar.tools.server.NodeEvent
    */
-
   public boolean isSelfTerminating() {
     return true;
-  }
-
-  /**
-   * Get a configuration writer for this society.
-   */
-
-  public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes, String nodeFileAddition) {
-    return new ScalabilityConfigurationWriter(this, nodes, nodeFileAddition);
   }
 
   public ComponentData addComponentData(ComponentData data) {
