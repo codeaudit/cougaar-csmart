@@ -1194,7 +1194,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 //                               newAssemblyName);
 //    }
 
-  private void save() {
+  public void save() {
 //      Hashtable newHostToNodes = new Hashtable();
 //      Hashtable newNodeToAgents = new Hashtable();
 //      setHostNodeAgentMapping(newHostToNodes, newNodeToAgents);
