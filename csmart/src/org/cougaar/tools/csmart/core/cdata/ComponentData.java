@@ -32,9 +32,11 @@ public interface ComponentData extends Serializable {
 
   /** Component Types **/
   String SOCIETY = "society";
+  String ENCLAVE = "enclave";
   String HOST = "host";
   String AGENT = "agent";
   String NODE = "node";
+  String NODEAGENT = "node agent";
   String PLUGIN = "plugin";
   String NODEBINDER = "node binder";
   String AGENTBINDER = "agent binder";
