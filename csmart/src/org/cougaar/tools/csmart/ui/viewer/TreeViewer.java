@@ -1333,6 +1333,7 @@ public class TreeViewer extends JFrame {
         CSVAttributes attrs = getAttributes(org);
         if (attrs != null)
           attrs.appendXML(doc, element);
+        appendSubordinates(doc, element, org);
         appendRoles(doc, element, org);
         appendSupport(doc, element, org);
       }
@@ -1347,6 +1348,21 @@ public class TreeViewer extends JFrame {
         return attrs;
     }
     return null;
+  }
+
+  private void appendSubordinates(Document doc, Element element,
+                                  CSVOrgInfo org) {
+    String name = org.toString();
+    for (int i = 0; i < csvOrgs.size(); i++) {
+      CSVOrgInfo nextOrg = (CSVOrgInfo)csvOrgs.get(i);
+      String superior = 
+        nextOrg.superiorBaseOrgId + "." + nextOrg.superiorSuffix;
+      if (superior.equals(name)) {
+        Element facet = doc.createElement("facet");
+        facet.setAttribute("subordinate", nextOrg.toString());
+        element.appendChild(facet);
+      }
+    }
   }
 
   private void appendRoles(Document doc, Element element,
