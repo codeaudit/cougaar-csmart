@@ -56,8 +56,6 @@ COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\lib_plugin_thread_he
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\lib_role_ref_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\lib_role_ref_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_role_ref.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\lib_role_thread_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\lib_role_thread_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_role_thread.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\lib_thread_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\lib_thread_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_thread.csv
-COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\oplan_activity_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\oplan_activity_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\oplan_activity.csv
-COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\oplan_loc_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\oplan_loc_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\oplan_loc.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\community_entity_attribute_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\community_entity_attribute_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\community_entity_attribute.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\community_attribute_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\community_attribute_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\community_attribute.csv
 

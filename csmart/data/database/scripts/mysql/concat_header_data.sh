@@ -58,8 +58,6 @@ cat $HEADER_PATH/lib_plugin_thread_header.csv $DATA_PATH/lib_plugin_thread_data.
 cat $HEADER_PATH/lib_role_ref_header.csv $DATA_PATH/lib_role_ref_data.csv > $CSV_PATH/lib_role_ref.csv
 cat $HEADER_PATH/lib_role_thread_header.csv $DATA_PATH/lib_role_thread_data.csv > $CSV_PATH/lib_role_thread.csv
 cat $HEADER_PATH/lib_thread_header.csv $DATA_PATH/lib_thread_data.csv > $CSV_PATH/lib_thread.csv
-cat $HEADER_PATH/oplan_activity_header.csv $DATA_PATH/oplan_activity_data.csv > $CSV_PATH/oplan_activity.csv
-cat $HEADER_PATH/oplan_loc_header.csv $DATA_PATH/oplan_loc_data.csv > $CSV_PATH/oplan_loc.csv
 cat $HEADER_PATH/community_entity_attribute_header.csv $DATA_PATH/community_entity_attribute_data.csv > $CSV_PATH/community_entity_attribute.csv
 cat $HEADER_PATH/community_attribute_header.csv $DATA_PATH/community_attribute_data.csv > $CSV_PATH/community_attribute.csv
 

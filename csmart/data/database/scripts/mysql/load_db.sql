@@ -5,7 +5,8 @@ DROP TABLE IF EXISTS v4_lib_machine;
 DROP TABLE IF EXISTS v4_lib_oplan_agent_attr_ref;
 DROP TABLE IF EXISTS v4_lib_optempo_ref;
 DROP TABLE IF EXISTS v6_cfw_org_group_og_member;
-
+DROP TABLE IF EXISTS v6_oplan_activity;
+DROP TABLE IF EXISTS v6_oplan_loc;
 ################################################################
 
 #
@@ -1312,49 +1313,6 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_thread.csv.tmp'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
     (THREAD_ID,DESCRIPTION);
-
-#
-# Table structure for table 'v6_oplan_activity'
-#
-
-DROP TABLE IF EXISTS v6_oplan_activity;
-CREATE TABLE v6_oplan_activity (
-  ORG_GROUP_ID varchar(50) binary default NULL,
-  ACTIVITY_TYPE varchar(50) binary default NULL,
-  OPTEMPO varchar(50) binary default NULL,
-  START_CDAY decimal(68,30) default NULL,
-  END_CDAY decimal(68,30) default NULL
-) TYPE=MyISAM;
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_activity.csv.tmp'
-    INTO TABLE v6_oplan_activity
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (ORG_GROUP_ID,ACTIVITY_TYPE,OPTEMPO,START_CDAY,END_CDAY);
-
-#
-# Table structure for table 'v6_oplan_loc'
-#
-
-DROP TABLE IF EXISTS v6_oplan_loc;
-CREATE TABLE v6_oplan_loc (
-  ORG_GROUP_ID varchar(50) binary default NULL,
-  LOCATION_CODE varchar(50) binary default NULL,
-  START_CDAY decimal(68,30) default NULL,
-  END_CDAY decimal(68,30) default NULL
-) TYPE=MyISAM;
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_loc.csv.tmp'
-    INTO TABLE v6_oplan_loc
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (ORG_GROUP_ID,LOCATION_CODE,START_CDAY,END_CDAY);
 
 #
 # Table structure for table 'community_entity_attribute'
