@@ -140,6 +140,8 @@ Running CSMART
 - Ensure that csmart, servlet, server, grappa, jcchart, xerces,
 glm, and core jar files are all included
 - Ensure that all jar files are from the same build
+- When you get a message at startup on STDOUT that says FATAL [CSMART] - CSMART 9.0.0 built on.....
+This is not an error, but normal operation.
 
 
 Configuring a Scalability Society
