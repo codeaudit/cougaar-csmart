@@ -895,31 +895,37 @@ public abstract class ConfigurableComponent
       String s = name.last().toString();
       ComponentName hisPropName = new ComponentName(result, s);
       Property hisProp = result.getProperty(hisPropName);
-      try {
-	// if have experimental values, then copy those
-	// else copy the property value
-	if (myProp.getExperimentValues() != null) {
-	  List experimentValues = myProp.getExperimentValues();
-	  Object newValue = Array.newInstance(myProp.getPropertyClass(),
-					      experimentValues.size());
-	  for (int j = 0; j < experimentValues.size(); j++)
-	    Array.set(newValue, j,
-		      PropertyHelper.validateValue(myProp, 
-						   experimentValues.get(j)));
-	  hisProp.setExperimentValues(Arrays.asList((Object[])newValue));
-	  hisProp.setValue(null); // no specific value
-	} else {
-	  Object o = PropertyHelper.validateValue(myProp, myProp.getValue());
-	  if (o != null) {
-            hisProp.setValue(o);
-          }
+      if (hisProp == null) {
+	if (log.isErrorEnabled()) {
+	  log.error("Report bug 1377: Using " + CSMART.writeDebug() + " couldn't find " + hisPropName.toString() + " in " + result.getFullName().toString() + " copying from " + name.toString() + " in " + this.getFullName().toString());
 	}
-      } catch (InvalidPropertyValueException e) {
-        if(log.isErrorEnabled()) {
-          log.error("Caught InvalidPropertyValueException: " + getClass().getName() + e);
-        }
-      }
-    }
+      } else {
+	try {
+	  // if have experimental values, then copy those
+	  // else copy the property value
+	  if (myProp.getExperimentValues() != null) {
+	    List experimentValues = myProp.getExperimentValues();
+	    Object newValue = Array.newInstance(myProp.getPropertyClass(),
+						experimentValues.size());
+	    for (int j = 0; j < experimentValues.size(); j++)
+	      Array.set(newValue, j,
+			PropertyHelper.validateValue(myProp, 
+						     experimentValues.get(j)));
+	    hisProp.setExperimentValues(Arrays.asList((Object[])newValue));
+	    hisProp.setValue(null); // no specific value
+	  } else {
+	    Object o = PropertyHelper.validateValue(myProp, myProp.getValue());
+	    if (o != null) {
+	      hisProp.setValue(o);
+	    }
+	  }
+	} catch (InvalidPropertyValueException e) {
+	  if(log.isErrorEnabled()) {
+	    log.error("Caught InvalidPropertyValueException: " + getClass().getName() + e);
+	  }
+	}
+      } // end of else block
+    } // end of loop over properties
 
     // Now, clone my children
     for(int i=0; i < getChildCount(); i++) {
