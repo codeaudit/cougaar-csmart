@@ -878,7 +878,7 @@ public class DBUtils {
   public static Set dbGetExperimentsWithSociety(String societyName) {
     Map substitutions = new HashMap();
     substitutions.put(":societyName", societyName);
-    String dbQuery = DBUtils.getQuery(EXPERIMENT_QUERY, substitutions);
+    String dbQuery = DBUtils.getQuery(EXPERIMENT_SOCIETY_QUERY, substitutions);
     Logger log =
       CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     Set s = new HashSet();
