@@ -35,9 +35,7 @@ public class RecipeList {
   // Add any new recipes to this array.
   private static final NameClassPair[] recipes = {
     new NameClassPair("Basic Metric", BasicMetric.class),
-    new NameClassPair("Component Insertion", ComponentInsertionRecipe.class),
     new NameClassPair("Specific Insertion", SpecificInsertionRecipe.class),
-    new NameClassPair("Agent Insertion", AgentInsertionRecipe.class),
     new NameClassPair("Parameter Insertion", ParameterInsertionRecipe.class),
     new NameClassPair("Servlet Group Insertion", ServletGroupInsertionRecipe.class),
     new NameClassPair("Adaptivity Support", AdaptivitySupportRecipe.class),
