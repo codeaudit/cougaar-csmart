@@ -176,7 +176,13 @@ public class CMT {
     }
 
     private static String sqlListFromQuery (String query, Map substitutions) {
+	if(traceQueries){
+	    System.out.println("\nsqlListFromQuery "+query);
+	}
 	String dbQuery = DBUtils.getQuery(query, substitutions, QUERY_FILE);
+	if(traceQueries){
+	    System.out.println("\nsqlListFromQuery "+dbQuery);
+	}
 	try {
 	    StringBuffer q = new StringBuffer();
 	    Connection conn = DBUtils.getConnection(QUERY_FILE);
