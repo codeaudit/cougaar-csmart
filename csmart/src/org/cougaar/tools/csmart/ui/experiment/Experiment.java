@@ -253,14 +253,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * Notify listeners that experiment was terminated.
    */
   public void experimentStopped() {
-    if (listeners == null)
-      return;
-    for (int i = 0; i < listeners.size(); i++) {
-      ExperimentListener listener = (ExperimentListener)listeners.get(i);
-      listener.experimentTerminated();
+    if (listeners != null) {
+      for (int i = 0; i < listeners.size(); i++) {
+	ExperimentListener listener = (ExperimentListener)listeners.get(i);
+	listener.experimentTerminated();
+      }
     }
     // Tell the Societies in the experiment they are no longer running?
-    // FIXME!!
+    for (int i = 0; i < societies.size(); i++) {
+      ((SocietyComponent)societies.get(i)).setRunning(false);
+    }
   }
 
   /**
@@ -330,7 +332,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
 
     // copy results directory???
-    // FIXME!!
+    experimentCopy.setResultDirectory(getResultDirectory());
     
     return experimentCopy;
   }
@@ -603,7 +605,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return false;
   }
 
-  // FIXME!!! This method is buggy!!!
+  /**
+   * If the experiment has at least one host with at least one node
+   * with at least one agent, that is a configuration.
+   * FIXME: This method is still buggy
+   *
+   * @return a <code>boolean</code> true if it has a configured agent
+   */
   public boolean hasConfiguration() {
     if (hosts.isEmpty() || nodes.isEmpty() || getAgents() == null || getAgents().length == 0) {
       return false;
@@ -627,7 +635,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return false;
   }
   
-  // Assume an experiment with no nodes or hosts
+  /**
+   * Blindly assume the experiment has no hosts or nodes yet.
+   * Create a host for the local host, a Node named Node0, and put
+   * all the agents on that node on that host.
+   */
   public void createDefaultConfiguration() {
     // Check if it already has a node?
     // create one Node
