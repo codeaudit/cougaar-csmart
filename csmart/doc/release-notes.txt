@@ -27,10 +27,9 @@ the name of the machine on which the Node will be running (bug 861)
 - Disconnect GLS UI when society stops to avoid warning (bug 1055)
 - Ensure possible to use Analyzer to view old Experiment results
 - Use lower-case database table names throughout
-- Known issues: There are some very rare NPEs (bugs 1304, 1279). If
-you create a Society from an Experiment that includes recipes, the
-recipe effects are not included correctly (bug 1283). Finally,
-command-line scripts to export/copy experiments & recipes do not work
+- Known issues: There are some very rare NPEs (bugs 1304, 1279). Some
+elements of experiments are not copied - like Node descriptions, etc
+(bug 1076). Finally, command-line scripts to export/copy experiments & recipes do not work
 (bugs 1231, 950).
 
 Release 9.2:
