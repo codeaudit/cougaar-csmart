@@ -281,7 +281,7 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
   }
 
   private String parseHomeLocation(String argument) {
-    return argument.substring(argument.indexOf("=")+1, argument.indexOf(","));
+    return argument.substring(0, argument.indexOf(","));
   }
 
   /**
