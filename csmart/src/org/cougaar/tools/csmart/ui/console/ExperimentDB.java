@@ -22,6 +22,7 @@
 package org.cougaar.tools.csmart.ui.console;
 
 import java.util.Hashtable;
+import java.util.Set;
 import java.io.File;
 import java.io.FileReader;
 import silk.SI;
@@ -70,6 +71,14 @@ public class ExperimentDB {
 
   public static Hashtable getTrialNames(String experimentId) {
       return (Hashtable)call("getTrialNames",experimentId);
+  }
+
+  public static String getTrialId(String experimentId) {
+    Hashtable dbTrialNames = getTrialNames(experimentId);
+    Set trialNamesSet = dbTrialNames.keySet();
+    Object[] trialNames = trialNamesSet.toArray();
+    String trialName = (String)trialNames[0];
+    return (String)dbTrialNames.get(trialName);
   }
 
   /**
@@ -172,6 +181,7 @@ public class ExperimentDB {
    */
 
   public static String cloneExperiment(String experimentId, String newName) {
+    return "";
   }
 
   /**

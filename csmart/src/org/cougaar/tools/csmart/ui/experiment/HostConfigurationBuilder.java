@@ -63,6 +63,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   DNDTree nodeTree;
   DNDTree agentTree;
   String nameServerHostName = "";
+  //  private Hashtable hostToNodes = new Hashtable();
+  //  private Hashtable nodeToAgents = new Hashtable();
   // menu items for popup menu in hostTree
   private static final String NEW_HOST_MENU_ITEM = "New Host";
   private static final String NEW_NODE_MENU_ITEM = "New Node";
@@ -377,6 +379,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
     hostTree.getModel().addTreeModelListener(this);
     nodeTree.getModel().addTreeModelListener(this);
+    //    setHostNodeAgentMapping(hostToNodes, nodeToAgents);
   }
 
   /**
@@ -1148,66 +1151,79 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   /**
-   * Create a hashtable that matches host name (String) to
+   * Fill in a hashtable that matches host name (String) to
    * node names (ArrayList of String),
    * and a hashtable that maps node name (String) to
    * agent names (ArrayList of String).
    */
 
-  public void save() {
-    Hashtable hostToNodes = new Hashtable();
-    HostComponent[] hosts = experiment.getHosts();
-    for (int i = 0; i < hosts.length; i++) {
-      String hostName = hosts[i].getShortName();
-      NodeComponent[] nodeComponents = hosts[i].getNodes();
-      ArrayList nodes = new ArrayList();
-      for (int j = 0; j < nodeComponents.length; j++) {
-        nodes.add(nodeComponents[j].getShortName());
-      }
-      hostToNodes.put(hostName, nodes);
-    }
-    Hashtable nodeToAgents = new Hashtable();
-    NodeComponent[] nodes = experiment.getNodes();
-    for (int i = 0; i < nodes.length; i++) {
-      String nodeName = nodes[i].getShortName();
-      AgentComponent[] agentComponents = nodes[i].getAgents();
-      ArrayList agents = new ArrayList();
-      for (int j = 0; j < agentComponents.length; j++) {
-        agents.add(agentComponents[j].getShortName());
-      }
-      nodeToAgents.put(nodeName, agents);
-    }
-    String assemblyName = 
-      (String)JOptionPane.showInputDialog(this, "Name", "Name",
-                                      JOptionPane.QUESTION_MESSAGE,
-                                      null, null, "");
-    if (assemblyName == null)
-      return;
-    ExperimentDB.addMachineAssignments(hostToNodes, assemblyName);
-    ExperimentDB.addNodeAssignments(nodeToAgents, assemblyName);
-    //    printHashtables(hostToNodes, nodeToAgents);
-  }
+//    public void setHostNodeAgentMapping(Hashtable hostToNodes,
+//                                        Hashtable nodeToAgents) {
+//      HostComponent[] hosts = experiment.getHosts();
+//      for (int i = 0; i < hosts.length; i++) {
+//        String hostName = hosts[i].getShortName();
+//        NodeComponent[] nodeComponents = hosts[i].getNodes();
+//        ArrayList nodes = new ArrayList();
+//        for (int j = 0; j < nodeComponents.length; j++) {
+//          nodes.add(nodeComponents[j].getShortName());
+//        }
+//        hostToNodes.put(hostName, nodes);
+//      }
+//      NodeComponent[] nodes = experiment.getNodes();
+//      for (int i = 0; i < nodes.length; i++) {
+//        String nodeName = nodes[i].getShortName();
+//        AgentComponent[] agentComponents = nodes[i].getAgents();
+//        ArrayList agents = new ArrayList();
+//        for (int j = 0; j < agentComponents.length; j++) {
+//          agents.add(agentComponents[j].getShortName());
+//        }
+//        nodeToAgents.put(nodeName, agents);
+//      }
+//      String assemblyName = 
+//        (String)JOptionPane.showInputDialog(this, "Name", "Name",
+//                                        JOptionPane.QUESTION_MESSAGE,
+//                                        null, null, "");
+//      if (assemblyName == null)
+//        return;
+//      String newAssemblyName =
+//        ExperimentDB.addMachineAssignments(hostToNodes, assemblyName);
+//      ExperimentDB.addNodeAssignments(nodeToAgents, assemblyName);
+//      // need to define a new trial in order to define a new configuration
+//      ExperimentDB.addAssembly(experiment.getExperimentID(),
+//                               experiment.getTrialID(),
+//                               newAssemblyName);
+//    }
 
-  // for debugging
-  private void printHashtables(Hashtable hostToNodes, Hashtable nodeToAgents) {
-    Set s = hostToNodes.keySet();
-    String[] hostNames = (String[])s.toArray(new String[s.size()]);
-    for (int i = 0; i < hostNames.length; i++) {
-      System.out.println("Host name: " + hostNames[i]);
-      ArrayList nodes = (ArrayList)hostToNodes.get(hostNames[i]);
-      Iterator it = nodes.iterator();
-      while (it.hasNext())
-        System.out.println("  " + it.next());
+  private void save() {
+//      Hashtable newHostToNodes = new Hashtable();
+//      Hashtable newNodeToAgents = new Hashtable();
+//      setHostNodeAgentMapping(newHostToNodes, newNodeToAgents);
+//      Utils.updateHostNodeAgentMapping(hostToNodes, nodeToAgents,
+//                                       newHostToNodes, newNodeToAgents);
+    String name = "";
+    Hashtable experimentNamesHT = ExperimentDB.getExperimentNames();
+    Set experimentNameSet = experimentNamesHT.keySet();
+    String[] experimentNames = null;
+    if (experimentNameSet != null)
+      experimentNames = 
+        (String[])experimentNameSet.toArray(new String[experimentNameSet.size()]);
+    while (true) {
+      name = (String) JOptionPane.showInputDialog(this, 
+                                                  "Enter Experiment Name",
+                                                  "Experiment Name",
+                                                  JOptionPane.QUESTION_MESSAGE,
+                                                  null, null, name);
+      if (name == null) return;
+      if (experimentNameSet != null && !experimentNameSet.contains(name)) 
+        break;
+      int answer = JOptionPane.showConfirmDialog(this,
+                                                 "Use an unique name",
+                                                 "Experiment Name Not Unique",
+                                                 JOptionPane.OK_CANCEL_OPTION,
+                                                 JOptionPane.ERROR_MESSAGE);
+      if (answer != JOptionPane.OK_OPTION) return;
     }
-    s = nodeToAgents.keySet();
-    String[] nodeNames = (String[])s.toArray(new String[s.size()]);
-    for (int i = 0; i < nodeNames.length; i++) {
-      System.out.println("Node name: " + nodeNames[i]);
-      ArrayList agents = (ArrayList)nodeToAgents.get(nodeNames[i]);
-      Iterator it = agents.iterator();
-      while (it.hasNext())
-        System.out.println("  " + it.next());
-    }
+    //    experiment.saveToDatabase(name);
   }
 
   private DefaultTreeModel createModel(final Experiment experiment, DefaultMutableTreeNode node, boolean askKids) {

@@ -47,6 +47,7 @@ public class ConsoleTrialDialog extends JDialog {
     "CLASS-1", "CLASS-3", "CLASS-4", "CLASS-5", "CLASS-9"
   };
   private String experimentId;
+  private String experimentName;
   private String trialId;
   private String[] groupNames;
   private ArrayList groupCheckBoxes = new ArrayList();
@@ -56,8 +57,10 @@ public class ConsoleTrialDialog extends JDialog {
   private ArrayList originalGroupSelected = new ArrayList();
   private ArrayList originalGroupMultiplier = new ArrayList();
 
-  public ConsoleTrialDialog(JFrame parent, String experimentId) {
+  public ConsoleTrialDialog(JFrame parent, String experimentName,
+                            String experimentId) {
     super(parent, "Threads and Groups", true); // modal dialog
+    this.experimentName = experimentName;
     this.experimentId = experimentId;
     this.trialId = ExperimentDB.getTrialId(experimentId);
     JPanel panel = new JPanel(new BorderLayout());
@@ -210,7 +213,7 @@ public class ConsoleTrialDialog extends JDialog {
     }
     if (modified) {
       System.out.println("MODIFIED");
-      String name = 
+      String name =
         (String) JOptionPane.showInputDialog(this, "Enter Experiment Name",
                                              "Experiment Name",
                                              JOptionPane.QUESTION_MESSAGE,
@@ -218,17 +221,25 @@ public class ConsoleTrialDialog extends JDialog {
       if (name == null)
         return;
       experimentId = ExperimentDB.cloneExperiment(experimentId, name);
+      // must update CMT assembly if threads or groups modified
+      // this takes a long time
       ExperimentDB.updateCMTAssembly(experimentId);
       trialId = ExperimentDB.getTrialId(experimentId);
+      experimentName = name;
     }
   }
 
   private void cancel_actionPerformed() {
     setVisible(false);
+    trialId = null;
   }
 
   public String getExperimentId() {
     return experimentId;
+  }
+
+  public String getExperimentName() {
+    return experimentName;
   }
 
   public String getTrialId() {
@@ -238,7 +249,7 @@ public class ConsoleTrialDialog extends JDialog {
   public static void main(String[] args) {
     ArrayList trialNames = new ArrayList();
     ConsoleTrialDialog d = 
-      new ConsoleTrialDialog(null, "ExperimentID");
+      new ConsoleTrialDialog(null, "ExperimentName", "ExperimentID");
     d.setVisible(true);
   }
 }

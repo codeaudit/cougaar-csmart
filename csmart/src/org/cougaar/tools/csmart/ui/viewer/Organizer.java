@@ -122,16 +122,16 @@ public class Organizer extends JScrollPane {
 	  newFolder(popupNode);
 	}
       },
-    new AbstractAction("New Experiment") {
-	public void actionPerformed(ActionEvent e) {
-	  newExperiment(popupNode);
-	}
-      },
-    new AbstractAction("Select Experiment from Database") {
-	public void actionPerformed(ActionEvent e) {
-	  selectExperimentFromDatabase(popupNode);
-	}
-      },
+//      new AbstractAction("New Experiment") {
+//  	public void actionPerformed(ActionEvent e) {
+//  	  newExperiment(popupNode);
+//  	}
+//        },
+    //    new AbstractAction("Select Experiment from Database") {
+    //	public void actionPerformed(ActionEvent e) {
+    //	  selectExperimentFromDatabase(popupNode);
+    //	}
+    //      },
     new AbstractAction("New Society") {
 	public void actionPerformed(ActionEvent e) {
 	  newSociety(popupNode);
@@ -147,6 +147,18 @@ public class Organizer extends JScrollPane {
 	  newMetric(popupNode);
 	}
       }
+  };
+  private Action[] newExperimentActions = {
+    new AbstractAction("From Database") {
+	public void actionPerformed(ActionEvent e) {
+	  selectExperimentFromDatabase(popupNode);
+	}
+    },
+    new AbstractAction("Built In") {
+	public void actionPerformed(ActionEvent e) {
+	  newExperiment(popupNode);
+	}
+    }
   };
   private Action[] experimentAction = {
     new AbstractAction("Edit", new ImageIcon(getClass().getResource("EB16.gif"))) {
@@ -337,20 +349,20 @@ public class Organizer extends JScrollPane {
 	  newMetric(popupNode);
 	}
       },
-    new AbstractAction("New Experiment") {
-	public void actionPerformed(ActionEvent e) {
-	  while (! popupNode.getAllowsChildren())
-	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
-	  newExperiment(popupNode);
-	}
-      },
-    new AbstractAction("Select Experiment from Database") {
-	public void actionPerformed(ActionEvent e) {
-	  while (! popupNode.getAllowsChildren())
-	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
-	  selectExperimentFromDatabase(popupNode);
-	}
-      },
+//      new AbstractAction("New Experiment") {
+//  	public void actionPerformed(ActionEvent e) {
+//  	  while (! popupNode.getAllowsChildren())
+//  	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
+//  	  newExperiment(popupNode);
+//  	}
+//        },
+//      new AbstractAction("Select Experiment from Database") {
+//  	public void actionPerformed(ActionEvent e) {
+//  	  while (! popupNode.getAllowsChildren())
+//  	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
+//  	  selectExperimentFromDatabase(popupNode);
+//  	}
+//        },
     new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
 	  renameFolder(popupNode);
@@ -431,6 +443,11 @@ public class Organizer extends JScrollPane {
     for (int i = 0; i < rootAction.length; i++) {
       rootMenu.add(rootAction[i]);
     }
+    JMenu newExperimentMenu = new JMenu("New Experiment");
+    for (int i = 0; i < newExperimentActions.length; i++) {
+      newExperimentMenu.add(newExperimentActions[i]);
+    }
+    rootMenu.add(newExperimentMenu);
     for (int i = 0; i < societyAction.length; i++) {
       societyMenu.add(societyAction[i]);
     }
@@ -449,6 +466,11 @@ public class Organizer extends JScrollPane {
     for (int i = 0; i < treeAction.length; i++) {
       treeMenu.add(treeAction[i]);
     }
+    JMenu newExperimentInTreeMenu = new JMenu("New Experiment");
+    for (int i = 0; i < newExperimentActions.length; i++) {
+      newExperimentInTreeMenu.add(newExperimentActions[i]);
+    }
+    treeMenu.add(newExperimentInTreeMenu);
     workspace.addTreeSelectionListener(mySelectionListener);
     workspace.addAncestorListener(myAncestorListener);
     workspace.addMouseListener(mouseListener);
@@ -874,31 +896,30 @@ public class Organizer extends JScrollPane {
    * Return names of experiment from database.
    */
 
-  private Collection getExperimentNamesFromDB() {
-    ArrayList tmpNames = new ArrayList(10);
-    Map substitutions = new HashMap();
+//    private Collection getExperimentNamesFromDB() {
+//      ArrayList tmpNames = new ArrayList(10);
+//      Map substitutions = new HashMap();
 
-    try {
-      // TODO EXPERIMENT DATABASE: get experiment names from db
-      substitutions.put(":assembly_type", "CMT");
-      Connection conn = DBUtils.getConnection();
-      Statement stmt = conn.createStatement();
-      String query = DBUtils.getQuery(EXPT_DESC_QUERY, substitutions);
-      ResultSet rs = stmt.executeQuery(query);
-      while(rs.next()) {
-        String exptID = rs.getString(1);
-        String description = rs.getString(2);
-        if(description != null && exptID != null) {
-          dbExptMap.put(description, exptID);
-          tmpNames.add(description);
-        }
-      }
-      rs.close();
-      stmt.close();
-      conn.close();
-    } catch (SQLException se) {}   
-    return tmpNames;
-  }
+//      try {
+//        substitutions.put(":assembly_type", "CMT");
+//        Connection conn = DBUtils.getConnection();
+//        Statement stmt = conn.createStatement();
+//        String query = DBUtils.getQuery(EXPT_DESC_QUERY, substitutions);
+//        ResultSet rs = stmt.executeQuery(query);
+//        while(rs.next()) {
+//          String exptID = rs.getString(1);
+//          String description = rs.getString(2);
+//          if(description != null && exptID != null) {
+//            dbExptMap.put(description, exptID);
+//            tmpNames.add(description);
+//          }
+//        }
+//        rs.close();
+//        stmt.close();
+//        conn.close();
+//      } catch (SQLException se) {}   
+//      return tmpNames;
+//    }
 
   /**
    * Create a new society.
@@ -1321,211 +1342,217 @@ public class Organizer extends JScrollPane {
     metricNames.remove(((MetricComponent) node.getUserObject()).getMetricName());
   }
 
-  private DefaultMutableTreeNode selectExperimentFromDatabase(DefaultMutableTreeNode node) {
-    Collection experimentNames = null;
-    Map substitutions = new HashMap();
-    Map agentsNodes = new HashMap();
-    Collection trialNames = new ArrayList();
-    ArrayList assemblyIDs = new ArrayList();
-    ArrayList nodes = new ArrayList();
-    Connection conn = null;
-    Object trial = null;
-    Object experimentName = null;
-    Object societyTemplateName = null;
-    Hashtable societyTemplates = null;
-
-    // select experiment from database or provide a name for a new experiment
-    experimentNames = getExperimentNamesFromDB();
+  private void selectExperimentFromDatabase(DefaultMutableTreeNode node) {
+    // select experiment from database
+    Hashtable experimentNamesHT = ExperimentDB.getExperimentNames();
+    Set experimentNames = experimentNamesHT.keySet();
     if (experimentNames == null)
-      return null;
+      return;
     JComboBox cb = new JComboBox(experimentNames.toArray());
-    cb.setEditable(true);
+    cb.setEditable(false);
     JPanel panel = new JPanel();
-    panel.add(new JLabel("Select Experiment or Enter New Name:"));
+    panel.add(new JLabel("Select Experiment:"));
     panel.add(cb);
     int result = 
-      JOptionPane.showConfirmDialog(null, panel, "New Experiment",
+      JOptionPane.showConfirmDialog(null, panel, "Experiment",
                                     JOptionPane.OK_CANCEL_OPTION,
                                     JOptionPane.PLAIN_MESSAGE);
     if (result != JOptionPane.OK_OPTION)
-      return null;
-    experimentName = cb.getSelectedItem();
-
+      return;
+    String experimentName = (String)cb.getSelectedItem();
+    String experimentId = (String)experimentNamesHT.get(experimentName);
     // if defining new experiment, select society template next
-    if (!((ArrayList)experimentNames).contains(experimentName)) {
-      societyTemplates = ExperimentDB.getSocietyTemplates();
-      Set societyNames = societyTemplates.keySet();
-      JComboBox societyCB = new JComboBox(societyNames.toArray());
-      societyCB.setEditable(false);
-      JPanel societyPanel = new JPanel();
-      societyPanel.add(new JLabel("Select Society Template:"));
-      societyPanel.add(societyCB);
-      result = 
-        JOptionPane.showConfirmDialog(null, societyPanel, "Society Template",
-                                      JOptionPane.OK_CANCEL_OPTION,
-                                      JOptionPane.PLAIN_MESSAGE);
-      if (result != JOptionPane.OK_OPTION)
-        return null;
-      societyTemplateName = societyCB.getSelectedItem();
-    }
+//      if (!((ArrayList)experimentNames).contains(experimentName)) {
+//        societyTemplates = ExperimentDB.getSocietyTemplates();
+//        Set societyNames = societyTemplates.keySet();
+//        JComboBox societyCB = new JComboBox(societyNames.toArray());
+//        societyCB.setEditable(false);
+//        JPanel societyPanel = new JPanel();
+//        societyPanel.add(new JLabel("Select Society Template:"));
+//        societyPanel.add(societyCB);
+//        result = 
+//          JOptionPane.showConfirmDialog(null, societyPanel, "Society Template",
+//                                        JOptionPane.OK_CANCEL_OPTION,
+//                                        JOptionPane.PLAIN_MESSAGE);
+//        if (result != JOptionPane.OK_OPTION)
+//          return null;
+//        societyTemplateName = societyCB.getSelectedItem();
+//      }
 
-    // Now, query for the Trial Name.
+    // get threads and groups information
+    ConsoleTrialDialog dialog = 
+      new ConsoleTrialDialog(csmart, experimentName, experimentId);
+    dialog.setVisible(true);
+    String trialId = dialog.getTrialId();
+    if (trialId == null)
+      return;
+    createCMTExperiment(node, 
+                        dialog.getExperimentName(),
+                        dialog.getExperimentId(),
+                        trialId);
+//      try {
+//        new Thread("") {
+//          public void run() {
+//            createCMTExperiment(node, experimentName,
+//                                assemblyIDs, nodes, agents);
+//          }
+//        }.start();
+//      } catch (RuntimeException e) {
+//      }
+  }
+
+  /**
+   * Add assembly ids for trial.
+   */
+
+  private ArrayList getTrialAssemblyIds(String trialId) {
+    ArrayList assemblyIds = new ArrayList();
     try {
-      substitutions.put(":expt_id", (String)dbExptMap.get(experimentName));
-      conn = DBUtils.getConnection();
+      Connection conn = DBUtils.getConnection();
+      Map substitutions = new HashMap();
+      substitutions.put(":trial_id", trialId);
       Statement stmt = conn.createStatement();
-      String query = DBUtils.getQuery(EXPT_TRIAL_QUERY, substitutions);
+      String query = DBUtils.getQuery(EXPT_ASSEM_QUERY, substitutions);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
-        String id = rs.getString(1);
-        String desc = rs.getString(2);
-        trialNames.add(desc);
-        dbTrialMap.put(desc, id);
+        String asmid = rs.getString(1);
+        System.out.println("Assembly ID: " + asmid);	  
+        assemblyIds.add(asmid);
+        break;
       }
       rs.close();
       stmt.close();
-
-      if (trialNames == null) {
-        conn.close();
-        return null;
-      }
-      // display dialog for selecting existing trial or creating new trial
-      ConsoleTrialDialog dialog =
-        new ConsoleTrialDialog((String)dbExptMap.get(experimentName),
-                               (ArrayList)trialNames);
-      dialog.setVisible(true);
-      trial = dialog.getTrialName();
-      if (trial == null) {
-        conn.close();
-        return null;
-      }
-      // if user chose existing trial
-      // Get the assembly ID's associated with this experiment and trial.
-      if (trialNames.contains(trial)) {
-        substitutions.put(":trial_id", (String)dbTrialMap.get(trial));
-        stmt = conn.createStatement();
-        query = DBUtils.getQuery(EXPT_ASSEM_QUERY, substitutions);
-        rs = stmt.executeQuery(query);
-        while(rs.next()) {
-	  String asmid = rs.getString(1);
-	  System.out.println("Assembly ID: " + asmid);	  
-          assemblyIDs.add(asmid);
-        }
-        rs.close();
-        stmt.close();
-
-        // Query for all Node Names.
-        StringBuffer assemblyMatch = new StringBuffer();
-        assemblyMatch.append("in (");
-        Iterator iter = assemblyIDs.iterator();
-        boolean first = true;
-        while (iter.hasNext()) {
-          String val = (String)iter.next();
-          if (first) {
-            first = false;
-          } else {
-            assemblyMatch.append(", ");
-          }
-          assemblyMatch.append("'");
-          assemblyMatch.append(val);
-          assemblyMatch.append("'");
-        }
-        assemblyMatch.append(")");
-      
-        substitutions.put(":assemblyMatch", assemblyMatch.toString());
-
-        stmt = conn.createStatement();
-        query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
-        rs = stmt.executeQuery(query);
-        while(rs.next()) {
-          nodes.add(rs.getString(1));
-        }
-        rs.close();
-        stmt.close();
-        conn.close();
-      }
-    } catch (SQLException se) {      
+    } catch (SQLException se) {
       System.out.println("Caught SQL exception: " + se);
       se.printStackTrace();
     }
+    return assemblyIds;
+  }
 
-    System.out.println("Size: " + assemblyIDs.size());
-
-    CMTSociety soc = null;
-    if (assemblyIDs.size() != 0) {
-      soc = new CMTSociety(assemblyIDs);      
-      soc.initProperties();
-    } else { // We need to create a new trial.
-      // Need to have the experiment id, trial id, and multiplicity
-      // for the call that will generate the assembly here.
-    }
-        
-    Experiment experiment = new Experiment((String)experimentName, (String)dbExptMap.get(experimentName), (String)dbTrialMap.get(trial));
-    DefaultMutableTreeNode newNode =
-      addExperimentToWorkspace(experiment, node);
-    experiment.addSocietyComponent((SocietyComponent)soc);
-
-    // Add all Nodes.
-    Iterator iter = nodes.iterator();
-    NodeComponent nodeComponent = null;
-
+  private String getAssemblyMatch(ArrayList assemblyIDs) {
     StringBuffer assemblyMatch = new StringBuffer();
     assemblyMatch.append("in (");
-    Iterator iter2 = assemblyIDs.iterator();
+    Iterator iter = assemblyIDs.iterator();
     boolean first = true;
-    while (iter2.hasNext()) {
-      String val = (String)iter2.next();
+    while (iter.hasNext()) {
+      String val = (String)iter.next();
       if (first) {
-	first = false;
+        first = false;
       } else {
-	assemblyMatch.append(", ");
+        assemblyMatch.append(", ");
       }
       assemblyMatch.append("'");
       assemblyMatch.append(val);
       assemblyMatch.append("'");
     }
     assemblyMatch.append(")");
-      
-    substitutions.put(":assemblyMatch", assemblyMatch.toString());
-    substitutions.put(":insertion_point", "Node.AgentManager.Agent");	  
+    return assemblyMatch.toString();
+  }
 
-    AgentComponent[] agents = soc.getAgents();
-    
+  /**
+   * Get nodes for a trial.
+   */
+
+  private ArrayList getNodes(String trialId, String assemblyMatch) {
+    ArrayList nodes = new ArrayList();
     try {
-      conn = DBUtils.getConnection();
+      Connection conn = DBUtils.getConnection();
+      Map substitutions = new HashMap();
+      substitutions.put(":trial_id", trialId);
+      substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
+      String query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
+      ResultSet rs = stmt.executeQuery(query);
+      while(rs.next()) {
+        nodes.add(rs.getString(1));
+      }
+      rs.close();
+      stmt.close();
+      conn.close();
+    } catch (SQLException se) {      
+      System.out.println("Caught SQL exception: " + se);
+      se.printStackTrace();
+    }
+    return nodes;
+  }
 
+  private void addAgents(Experiment experiment,
+                         ArrayList nodes,
+                         AgentComponent[] agents,
+                         String trialId, String assemblyMatch) {
+    Iterator iter = nodes.iterator();
+    try {
+      Connection conn = DBUtils.getConnection();
+      Map substitutions = new HashMap();
+      substitutions.put(":trial_id", trialId);
+      substitutions.put(":assemblyMatch", assemblyMatch);
+      substitutions.put(":insertion_point", "Node.AgentManager.Agent");	  
+      Statement stmt = conn.createStatement();
+      NodeComponent nodeComponent = null;
       while(iter.hasNext()) {
-	String nodeName = (String)iter.next();
-	nodeComponent = experiment.addNode(nodeName);
-
-	// Query All Agents for each node.
-	// Loop Query for every node.
-	substitutions.put(":parent_name", nodeName);
-	String query = DBUtils.getQuery("queryComponents", substitutions);
-	ResultSet rs = stmt.executeQuery(query);
-	while(rs.next()) {
-	  // Find AgentComponent.
-	  String aName = rs.getString(1);
-	  for (int i=0; i < agents.length; i++) {
-	    AgentComponent ac = agents[i];
-	    if (ac.getShortName().equals(aName)) {
-	      nodeComponent.addAgent(ac);
-	      break;
-	    }	    
-	  } 	  
-	}
-	rs.close();
+        String nodeName = (String)iter.next();
+        nodeComponent = experiment.addNode(nodeName);
+        // Query All Agents for each node.
+        // Loop Query for every node.
+        substitutions.put(":parent_name", nodeName);
+        String query = DBUtils.getQuery("queryComponents", substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          // Find AgentComponent.
+          String aName = rs.getString(1);
+          for (int i=0; i < agents.length; i++) {
+            AgentComponent ac = agents[i];
+            if (ac.getShortName().equals(aName)) {
+              nodeComponent.addAgent(ac);
+              break;
+            }	    
+          } 	  
+        }
+        rs.close();
       }
       stmt.close();
-       
-    } catch (SQLException e) {
-      
+      conn.close();   
+    } catch (SQLException se) {
+      System.out.println("Caught SQL exception: " + se);
+      se.printStackTrace();
     }
-    
-    workspace.setSelection(newNode);
-    return newNode;
+  }
 
+
+  /**
+   * Create a CMT society with the specified assembly ids
+   * (which define threads and groups) and
+   * the specified nodes.
+   */
+
+  private void createCMTExperiment(DefaultMutableTreeNode node,
+                                   String experimentName,
+                                   String experimentId,
+                                   String trialId) {
+    System.out.println("Creating society");
+    // get assembly ids for trial
+    ArrayList assemblyIds = getTrialAssemblyIds(trialId);
+    String assemblyMatch = getAssemblyMatch(assemblyIds);
+    // get nodes for trial
+    ArrayList nodes = getNodes(trialId, assemblyMatch);
+    CMTSociety soc = null;
+    if (assemblyIds.size() != 0) {
+      soc = new CMTSociety(assemblyIds);      
+      soc.initProperties();
+    } else { // We need to create a new trial.
+      // Need to have the experiment id, trial id, and multiplicity
+      // for the call that will generate the assembly here.
+      System.out.println("No assemblies for: " + experimentId + " " + trialId);
+      return; // creating an experiment from scratch not implemented yet
+    }
+    Experiment experiment = new Experiment((String)experimentName, 
+                                           experimentId, trialId);
+    DefaultMutableTreeNode newNode =
+      addExperimentToWorkspace(experiment, node);
+    experiment.addSocietyComponent((SocietyComponent)soc);
+    // Add all Nodes.
+    addAgents(experiment, nodes, soc.getAgents(), trialId, assemblyMatch);
+    workspace.setSelection(newNode);
   }
 
 
