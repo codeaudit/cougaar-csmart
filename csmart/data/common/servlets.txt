@@ -26,3 +26,6 @@ CommunityProviderServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cou
 MetricsServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools.csmart.ui.servlet.MetricsServlet,/CSMART_MetricsServlet
 SearchServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools.csmart.ui.servlet.SearchServlet,/CSMART_SearchServlet
 PlanServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools.csmart.ui.servlet.PlanServlet,/CSMART_PlanServlet
+
+# New Topology servlet for Topology SocMon UI
+TopologyServlet,org.cougaar.core.topology.TopologyReaderServlet
