@@ -275,7 +275,6 @@ public abstract class SocietyBase
   {
     ois.defaultReadObject();
     createLogger();
-    modified = false;
     installListeners();
   }
 
