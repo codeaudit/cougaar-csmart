@@ -773,6 +773,7 @@ public class Organizer extends JScrollPane {
   ///////////////////////////////////
 
   protected void selectExperimentFromDatabase() {
+    boolean haveCMTAssembly = false;
     Map experimentNamesMap = ExperimentDB.getExperimentNames();
     Set keys = experimentNamesMap.keySet();
     JComboBox cb = new JComboBox(keys.toArray(new String[keys.size()]));
@@ -805,46 +806,66 @@ public class Organizer extends JScrollPane {
     // Note: CMTDialog creates a CMTSociety -- should it be creating
     // a SocietyDBComponent?
 
+
     if(log.isDebugEnabled()) {
       log.debug("Experiment Id: " + experimentId);
     }
 
-    // get threads and groups information
-    cmtDialog = new CMTDialog(csmart, this, experimentName, experimentId);
-    while (!cmtDialog.isULThreadSelected() && !cmtDialog.wasCancelled()) {
-      JOptionPane.showMessageDialog(this,
-                                    "You must select at least one thread.",
-                                    "No Thread Selected",
-                                    JOptionPane.ERROR_MESSAGE);
+    if(DBUtils.containsCMTAssembly(experimentId)) {
+      haveCMTAssembly = true;
+      // get threads and groups information
       cmtDialog = new CMTDialog(csmart, this, experimentName, experimentId);
+      while (!cmtDialog.isULThreadSelected() && !cmtDialog.wasCancelled()) {
+        JOptionPane.showMessageDialog(this,
+                                      "You must select at least one thread.",
+                                      "No Thread Selected",
+                                      JOptionPane.ERROR_MESSAGE);
+        cmtDialog = new CMTDialog(csmart, this, experimentName, experimentId);
+      }
+      if (cmtDialog.wasCancelled())
+        return;
     }
-    if (cmtDialog.wasCancelled())
-      return;
-
-    GUIUtils.timeConsumingTaskStart(organizer);
-    try {
-      new Thread("SelectExperiment") {
-        public void run() {
-	  // a potentially long process
-          if (cmtDialog.processResults()) {
-	    final String trialId = cmtDialog.getTrialId();
-	    if (trialId != null) {
-	      Experiment experiment =
-		helper.createExperiment(originalExperimentName,
-					cmtDialog.getExperimentName(),
-					cmtDialog.getExperimentId(), 
-					trialId);
-              if (experiment != null)
-                addExperimentAndComponentsToWorkspace(experiment,
-                                                      getSelectedNode());
+    if(haveCMTAssembly) {
+      GUIUtils.timeConsumingTaskStart(organizer);
+      try {
+        new Thread("SelectExperiment") {
+          public void run() {
+            // a potentially long process
+            if (cmtDialog.processResults()) {
+              final String trialId = cmtDialog.getTrialId();
+              if (trialId != null) {
+                Experiment experiment =
+                  helper.createExperiment(originalExperimentName,
+                                          cmtDialog.getExperimentName(),
+                                          cmtDialog.getExperimentId(), 
+                                          trialId);
+                if (experiment != null)
+                  addExperimentAndComponentsToWorkspace(experiment,
+                                                        getSelectedNode());
+              }
             }
+            
+            GUIUtils.timeConsumingTaskEnd(organizer);
           }
-          GUIUtils.timeConsumingTaskEnd(organizer);
-        }
         }.start();
-    } catch (RuntimeException re) {
-      if(log.isErrorEnabled()) {
-        log.error("Runtime exception creating experiment", re);
+      } catch (RuntimeException re) {
+        if(log.isErrorEnabled()) {
+          log.error("Runtime exception creating experiment", re);
+        }
+        GUIUtils.timeConsumingTaskEnd(organizer);
+      }
+    } else {
+      GUIUtils.timeConsumingTaskStart(organizer);
+      final String trialId = ExperimentDB.getTrialId(experimentId);
+      if (trialId != null) {
+        Experiment experiment =
+          helper.createExperiment(originalExperimentName,
+                                  experimentName,
+                                  experimentId, 
+                                  trialId);
+        if (experiment != null)
+          addExperimentAndComponentsToWorkspace(experiment,
+                                                getSelectedNode());
       }
       GUIUtils.timeConsumingTaskEnd(organizer);
     }
@@ -2189,5 +2210,6 @@ public class Organizer extends JScrollPane {
     ois.defaultReadObject();
     createLogger();
   }
+
 
 }
