@@ -35,15 +35,6 @@ GOTO L_END
 
 :L_3
 
-mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\drop_v4_v6.sql
-
-ECHO Dropping indexes from database tables.
-mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.drop-mysql-indexes.sql
-ECHO Dropping tables from database.
-mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.drop-mysql-tables.sql
-ECHO Creating tables in database.
-mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.create-mysql-tables.sql
-
 ECHO Doing sed...
 
 REM First write the basic script to a file, with the CIP
@@ -53,7 +44,7 @@ REM Then double the backslashes
 %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe "s/\\/\\\\\\\\/g" cip.txt > script.txt
 
 REM then do the real substitution
-%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe -f script.txt %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.load-mysql-tables.sql > load_mysql_db_new.sql
+%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe -f script.txt %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\load_db.sql > load_mysql_db_new.sql
 
 DEL cip.txt
 DEL script.txt
@@ -62,9 +53,6 @@ FOR %%y in (%COUGAAR_INSTALL_PATH%\csmart\data\database\csv\*.csv) DO COPY %%y %
 
 ECHO Loading '.csv' files to database %3 in user %1
 mysql -u%1 -p%2 %3 < load_mysql_db_new.sql
-
-ECHO Creating indexes in database tables.
-mysql -u%1 -p%2 %3 < %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\csmart-db.create-mysql-indexes.sql
 
 DEL load_mysql_db_new.sql
 DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\*.tmp
