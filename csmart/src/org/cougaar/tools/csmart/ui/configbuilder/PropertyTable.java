@@ -128,6 +128,11 @@ public class PropertyTable extends JTable {
 
   Model model;
       
+  /**
+   * Create a <code>PropertyTable</code> which is
+   * used to edit or view properties of societies and recipes.
+   * @param isEditable true if component can be edited
+   */
   public PropertyTable(boolean isEditable) {
     model = new Model(isEditable);
     setModel(model);
@@ -139,9 +144,8 @@ public class PropertyTable extends JTable {
    * Set the cell editor to be a combo box or check box if appropriate.
    * @param row row for which to return editor
    * @param column column for which to return editor
-   * @return TableCellEditor editor for the row and column
+   * @return <code>TableCellEditor</code> editor for the row and column
    */
-
   public TableCellEditor getCellEditor(int row, int column) {
     if (column == model.VALUE_COL) {
       Property prop = model.getProperty(row);
@@ -200,6 +204,12 @@ public class PropertyTable extends JTable {
     }
   } // end BooleanRenderer
 
+  /**
+   * Set the cell renderer to be a check box if editing a boolean value.
+   * @param row row for which to return renderer
+   * @param column column for which to return renderer
+   * @return <code>TableCellRenderer</code> renderer for the row and column
+   */
   public TableCellRenderer getCellRenderer(int row, int column) {
     if (column == model.VALUE_COL) {
       Property prop = model.getProperty(row);
@@ -210,14 +220,25 @@ public class PropertyTable extends JTable {
     return super.getCellRenderer(row, column);
   }
 
+  /**
+   * Add a property to the table.
+   * @param <code>Property</code> to add
+   */
   public void addProperty(Property prop) {
     model.addProperty(prop);
   }
 
+  /**
+   * Remove a property from the table.
+   * @param <code>Property</code> to remove
+   */
   public void removeProperty(Property prop) {
     model.removeProperty(prop);
   }
 
+  /**
+   * Remove all properties from the table.
+   */
   public void removeAll() {
     model.clear();
   }
@@ -293,8 +314,10 @@ public class PropertyTable extends JTable {
 
   /** 
    * Override this to install our own focus manager property change listener.
+   * @param row row to edit
+   * @param column column to edit
+   * @param e event passed to super.editCellAt
    */
-
   public boolean editCellAt(int row, int column, EventObject e) {
     if (editorRemover == null) { 
       KeyboardFocusManager fm =

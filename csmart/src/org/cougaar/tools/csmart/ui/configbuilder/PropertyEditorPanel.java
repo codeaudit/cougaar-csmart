@@ -82,7 +82,7 @@ import java.io.ObjectInputStream;
  */
 public class PropertyEditorPanel extends JPanel 
   implements PropertiesListener, PropertyListener,
-  TreeSelectionListener, HyperlinkListener {
+             TreeSelectionListener, HyperlinkListener {
   JSplitPane configCompPanel;
   JTree tree;
   JPopupMenu societyMenu;
@@ -197,6 +197,12 @@ public class PropertyEditorPanel extends JPanel
     deleteAction
   };
 
+  /**
+   * Create a <code>PropertyEditorPanel</code> which is
+   * used to edit or view properties of societies and recipes.
+   * @param c <code>ModifiableComponent</code> to edit or view
+   * @param isEditable true if component can be edited
+   */
   public PropertyEditorPanel(ModifiableComponent c, boolean isEditable) {
     // caller decides if this panel should allow editing
     this.isEditable = isEditable;
@@ -214,14 +220,19 @@ public class PropertyEditorPanel extends JPanel
   }
 
   /**
-   * Set component to edit; used to re-use a running editor
-   * to edit a different component.
+   * Set component to edit or view; used to re-use a running editor
+   * to edit or view a different component.
+   * @param c <code>ModifiableComponent</code> to edit or view
    */
   public void reinit(ModifiableComponent c) {
     componentToConfigure = c;
     init();
   }
 
+  /**
+   * Update the page being displayed in the browser.
+   * @param e <code>HyperlinkEvent</code> containing the URL
+   */
   public void hyperlinkUpdate(HyperlinkEvent e) {
     if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
       Browser.setPage(e.getURL());
@@ -385,11 +396,13 @@ public class PropertyEditorPanel extends JPanel
 
   /**
    * A property was added by the configurable component.
+   * This method is defined in the <code>PropertiesListener</code> interface.
    * Add the property name to the tree.
    * If the parent property name is selected in the tree,
    * then add an user interface component for this property
    * to the current display, otherwise the user interface component
-   * is created whent the parent property name is selected from the tree.
+   * is created when the parent property name is selected from the tree.
+   * @param e <code>PropertyEvent</code> describing the property added
    */
   public void propertyAdded(PropertyEvent e) {
     Property prop = e.getProperty();
@@ -421,12 +434,14 @@ public class PropertyEditorPanel extends JPanel
 
   /**
    * A property was removed by the configurable component.
+   * This method is defined in the <code>PropertiesListener</code> interface.
    * Remove the user interface component for the property and remove the
    * property from the tree, only if the property is found.
    * If we get notified because the property of a child node was removed,
    * this does the right thing -- i.e. it ignores the remove notification
    * because it doesn't find the specified property in the properties
    * for the tree node.
+   * @param e <code>PropertyEvent</code> describing the property removed
    */
   public void propertyRemoved(PropertyEvent e) {
     Property prop = e.getProperty();
@@ -461,13 +476,12 @@ public class PropertyEditorPanel extends JPanel
     listeningOnProperties.remove(property);
   }
 
-
   /**
-   * PropertyListener interface.
+   * The value of a property changed.
+   * This method is defined in the <code>PropertyListener</code> interface.
    * If the configurable component (as opposed to the UI) initiates a change
-   * then set the new value in the user inteface (table)
-   * or (for aspects of the property other than the value), handle
-   * the change (i.e. new label, default value, class or allowed values).
+   * then set the new value in the user inteface (table).
+   * @param e <code>PropertyEvent</code> describing the property changed
    */
   public void propertyValueChanged(PropertyEvent e) {
     Property p = e.getProperty();
@@ -496,6 +510,13 @@ public class PropertyEditorPanel extends JPanel
     listeningOnProperties.add(p);
   }
 
+  /**
+   * Some aspect of a property changed (i.e. new label, default value, 
+   * class or allowed values).
+   * This method is defined in the <code>PropertyListener</code> interface.
+   * Currently not implemented.
+   * @param e <code>PropertyEvent</code> describing the property changed
+   */
   public void propertyOtherChanged(PropertyEvent e) {
     // TODO: handle DEFAULTVALUE_CHANGED, LABEL_CHANGED,
     // CLASS_CHANGED, ALLOWEDVALUES_CHANGED
@@ -511,8 +532,8 @@ public class PropertyEditorPanel extends JPanel
 
   /**
    * If tree selection changes, update list of user interface components
-   * displayed.
-   * @param event the tree selection event
+   * displayed. Part of the <code>TreeSelectionListener</code> interface.
+   * @param event the tree selection event describing the selection change
    */
   public void valueChanged(TreeSelectionEvent event) {
     TreePath path = event.getPath();
