@@ -24,7 +24,7 @@ COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\alib_component_heade
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_agent_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\asb_agent_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\asb_agent.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_agent_pg_attr_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\asb_agent_pg_attr_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\asb_agent_pg_attr.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_agent_relation_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\asb_agent_relation_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\asb_agent_relation.csv
-COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_alploc_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\asb_alploc_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\asb_alploc.csv
+COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\alploc_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\alploc_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\alploc.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_assembly_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\asb_assembly_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\asb_assembly.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_component_arg_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\asb_component_arg_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\asb_component_arg.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_component_hierarchy_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\asb_component_hierarchy_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\asb_component_hierarchy.csv
@@ -47,9 +47,6 @@ COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\lib_component_arg_he
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\lib_mod_recipe_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\lib_mod_recipe_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_mod_recipe.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\lib_mod_recipe_arg_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\lib_mod_recipe_arg_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_mod_recipe_arg.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\lib_pg_attribute_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\lib_pg_attribute_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_pg_attribute.csv
-
-
-COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\cfw_alploc_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\cfw_alploc_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\cfw_alploc.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\cfw_context_plugin_arg_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\cfw_context_plugin_arg_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\cfw_context_plugin_arg.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\cfw_group_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\cfw_group_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\cfw_group.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\cfw_group_org_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\cfw_group_org_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\cfw_group_org.csv

@@ -27,7 +27,7 @@ cat $HEADER_PATH/alib_component_header.csv $DATA_PATH/alib_component_data.csv > 
 cat $HEADER_PATH/asb_agent_header.csv $DATA_PATH/asb_agent_data.csv > $CSV_PATH/asb_agent.csv
 cat $HEADER_PATH/asb_agent_pg_attr_header.csv $DATA_PATH/asb_agent_pg_attr_data.csv > $CSV_PATH/asb_agent_pg_attr.csv
 cat $HEADER_PATH/asb_agent_relation_header.csv $DATA_PATH/asb_agent_relation_data.csv > $CSV_PATH/asb_agent_relation.csv
-cat $HEADER_PATH/asb_alploc_header.csv $DATA_PATH/asb_alploc_data.csv > $CSV_PATH/asb_alploc.csv
+cat $HEADER_PATH/alploc_header.csv $DATA_PATH/alploc_data.csv > $CSV_PATH/alploc.csv
 cat $HEADER_PATH/asb_assembly_header.csv $DATA_PATH/asb_assembly_data.csv > $CSV_PATH/asb_assembly.csv
 cat $HEADER_PATH/asb_component_arg_header.csv $DATA_PATH/asb_component_arg_data.csv > $CSV_PATH/asb_component_arg.csv
 cat $HEADER_PATH/asb_component_hierarchy_header.csv $DATA_PATH/asb_component_hierarchy_data.csv > $CSV_PATH/asb_component_hierarchy.csv
@@ -51,7 +51,6 @@ cat $HEADER_PATH/lib_mod_recipe_header.csv $DATA_PATH/lib_mod_recipe_data.csv > 
 cat $HEADER_PATH/lib_mod_recipe_arg_header.csv $DATA_PATH/lib_mod_recipe_arg_data.csv > $CSV_PATH/lib_mod_recipe_arg.csv
 cat $HEADER_PATH/lib_pg_attribute_header.csv $DATA_PATH/lib_pg_attribute_data.csv > $CSV_PATH/lib_pg_attribute.csv
 
-cat $HEADER_PATH/cfw_alploc_header.csv $DATA_PATH/cfw_alploc_data.csv > $CSV_PATH/cfw_alploc.csv
 cat $HEADER_PATH/cfw_context_plugin_arg_header.csv $DATA_PATH/cfw_context_plugin_arg_data.csv > $CSV_PATH/cfw_context_plugin_arg.csv
 cat $HEADER_PATH/cfw_group_header.csv $DATA_PATH/cfw_group_data.csv > $CSV_PATH/cfw_group.csv
 cat $HEADER_PATH/cfw_group_org_header.csv $DATA_PATH/cfw_group_org_data.csv > $CSV_PATH/cfw_group_org.csv
