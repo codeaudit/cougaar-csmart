@@ -174,8 +174,6 @@ public class ConsoleDNDTree extends DNDTree {
     if (before != null) {       // If before specified, put it there.
       ix = model.getIndexOfChild(target, before);
     }
-    System.out.println("Add element:" + cto.getName() + " to: " +
-                       target.toString());
     model.insertNodeInto(newNode, target, ix);
     int n = source.getChildCount();
     DefaultMutableTreeNode[] children = new DefaultMutableTreeNode[n];

@@ -156,6 +156,16 @@ public abstract class DNDTree
   }
 
   /**
+   * Return true if the target allows this flavor.
+   */
+
+  private boolean isAllowed(DataFlavor[] possibleFlavors, 
+                            DefaultMutableTreeNode target) {
+    return target.getAllowsChildren() &&
+      (isDroppable(possibleFlavors, target) == DnDConstants.ACTION_MOVE);
+  }
+
+  /**
    * A drop has occurred. Determine if the tree can accept the dropped item
    * and if so, insert the item into the tree, otherwise reject the item.
    */
@@ -164,36 +174,18 @@ public abstract class DNDTree
     int action = DnDConstants.ACTION_NONE;
     DefaultMutableTreeNode target = getDropTarget(event.getLocation());
     DefaultMutableTreeNode after = null;
-//      // if the target does not allow children, then drop on its parent
-//      if (target != null && !target.getAllowsChildren()) {
-//        after = target;
-//        target = (DefaultMutableTreeNode) after.getParent();
-//      }
-//      if (target != null) {
-//        Transferable transferable = event.getTransferable();
-//        action = addElement(transferable, target, after);
-//  //        System.out.println("Action " + action);
-//      }
-    if (target != null) {
-      // if the target allows children, but not of this type, 
-      // then drop on the parent, after the original target
-      if (target.getAllowsChildren()) {
-        DataFlavor[] possibleFlavors = event.getCurrentDataFlavors();
-        if (isDroppable(possibleFlavors, target) == DnDConstants.ACTION_NONE) {
-          after = target;
-          target = (DefaultMutableTreeNode)after.getParent();
-        }
+    // allow drop if target allows children of this type
+    // or if an ancestor allows children of this type
+    DataFlavor[] possibleFlavors = event.getCurrentDataFlavors();
+    Transferable transferable = event.getTransferable();
+    while (target != null) {
+      if (isAllowed(possibleFlavors, target)) {
+        action = addElement(transferable, target, after);
+        break;
       } else {
-        // the target does not allow children, so drop on its parent
-        // after the original target
         after = target;
-        target = (DefaultMutableTreeNode) after.getParent();
+        target = (DefaultMutableTreeNode)after.getParent();
       }
-    }
-    if (target != null) {
-      Transferable transferable = event.getTransferable();
-      action = addElement(transferable, target, after);
-      //        System.out.println("Action " + action);
     }
     boolean success;
     switch (action) {
@@ -209,6 +201,7 @@ public abstract class DNDTree
     }
     event.getDropTargetContext().dropComplete(success);
   }
+
 
   /**
    * Decide what, if anything, should be dragged. If multi-drag is

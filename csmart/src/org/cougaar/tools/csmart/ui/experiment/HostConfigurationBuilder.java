@@ -84,6 +84,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   public static final String HOST_TYPE_MENU_ITEM = "Type";
   public static final String HOST_LOCATION_MENU_ITEM = "Location";
   private JPanel hostConfigurationBuilder;
+  // map agent component to node component
+  private Hashtable agentToNode = new Hashtable();
+  // map node component to host component
+  private Hashtable nodeToHost = new Hashtable();
 
   public HostConfigurationBuilder(Experiment experiment, 
                                   ExperimentBuilder experimentBuilder) {
@@ -454,6 +458,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       societyComponent = null;
     hostTree.getModel().removeTreeModelListener(this);
     nodeTree.getModel().removeTreeModelListener(this);
+    agentTree.getModel().removeTreeModelListener(this);
     removeAllChildren(hostTree);
     removeAllChildren(nodeTree);
     removeAllChildren(agentTree);
@@ -482,6 +487,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     expandTree(agentTree);
     hostTree.getModel().addTreeModelListener(this);
     nodeTree.getModel().addTreeModelListener(this);
+    agentTree.getModel().addTreeModelListener(this);
   }
 
   /**
@@ -531,6 +537,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	DefaultMutableTreeNode nodeTreeNode = 
 	  new DefaultMutableTreeNode(cto, true);
 	model.insertNodeInto(nodeTreeNode, hostNode, hostNode.getChildCount());
+        nodeToHost.put(nodeComponent, hostComponent);
 	AgentComponent[] agents = nodeComponent.getAgents();
 	for (int k = 0; k < agents.length; k++) {
 	  AgentComponent agentComponent = agents[k];
@@ -539,6 +546,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	    new DefaultMutableTreeNode(cto, false);
 	  model.insertNodeInto(agentNode, nodeTreeNode,
 			       nodeTreeNode.getChildCount());
+          agentToNode.put(agentComponent, nodeComponent);
 	}
       }
     }
@@ -611,12 +619,12 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     DefaultTreeModel model = (DefaultTreeModel)nodeTree.getModel();
     Iterator iter = unassignedNodes.iterator();
     while (iter.hasNext()) {
-      NodeComponent node = (NodeComponent)iter.next();
-      ConsoleTreeObject cto = new ConsoleTreeObject(node);
+      NodeComponent nodeComponent = (NodeComponent)iter.next();
+      ConsoleTreeObject cto = new ConsoleTreeObject(nodeComponent);
       DefaultMutableTreeNode newNodeTreeNode = 
 	new DefaultMutableTreeNode(cto, true);
       model.insertNodeInto(newNodeTreeNode, root, root.getChildCount());
-      AgentComponent[] agents = node.getAgents();
+      AgentComponent[] agents = nodeComponent.getAgents();
       for (int j = 0; j < agents.length; j++) {
 	AgentComponent agentComponent = agents[j];
 	cto = new ConsoleTreeObject(agentComponent);
@@ -624,6 +632,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	  new DefaultMutableTreeNode(cto, false);
 	model.insertNodeInto(newAgentNode, newNodeTreeNode, 
 			     newNodeTreeNode.getChildCount());
+        agentToNode.put(agentComponent, nodeComponent);
       }
     }
   }
@@ -884,6 +893,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     model.insertNodeInto(newNode,
 			 selectedNode,
 			 selectedNode.getChildCount());
+    if (tree.equals(hostTree)) { // added node to host
+      nodeToHost.put(nodeComponent, selectedNode.getUserObject());
+    }
     tree.scrollPathToVisible(new TreePath(newNode.getPath()));
   }
 
@@ -934,13 +946,20 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     //    setRunButtonEnabled();
   }
 
+  /**
+   * Delete node component from either host or unassigned nodes tree.
+   */
+
   private void deleteNodeFromTree(JTree tree, TreePath path) {
     DefaultMutableTreeNode selectedNode = 
       (DefaultMutableTreeNode)path.getLastPathComponent();
     ConsoleTreeObject nodeCTO = 
       (ConsoleTreeObject)selectedNode.getUserObject();
+    NodeComponent nodeComponent = (NodeComponent)nodeCTO.getComponent();
+    BaseComponent parentComponent =
+      getComponentFromTreeNode((DefaultMutableTreeNode)selectedNode.getParent());
     // get any agents that are descendants of the node being deleted
-    // and return them to the agent tree
+    // and return them to the unassigned agents tree
     DefaultTreeModel agentModel = (DefaultTreeModel)agentTree.getModel();
     DefaultMutableTreeNode root = 
       (DefaultMutableTreeNode)agentModel.getRoot();
@@ -952,11 +971,16 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       if (cto.isAgent()) {
  	agentModel.insertNodeInto(node, root, root.getChildCount());
  	agentTree.scrollPathToVisible(new TreePath(node.getPath()));
+        agentToNode.remove(cto.getComponent());
       }
     }
     DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
     model.removeNodeFromParent(selectedNode);
-    experiment.removeNode((NodeComponent)nodeCTO.getComponent());
+    experiment.removeNode(nodeComponent);
+    if (parentComponent instanceof HostComponent) {
+      nodeToHost.remove(nodeComponent);
+      ((HostComponent)parentComponent).removeNode(nodeComponent);
+    }
   }
 
   /**
@@ -969,13 +993,14 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void treeNodesInserted(TreeModelEvent e) {
-    //    System.out.println("Tree Node Inserted: " +
-    //             ((ConsoleTreeObject)((DefaultMutableTreeNode)e.getTreePath().getLastPathComponent()).getUserObject()).getName());
     Object source = e.getSource();
     if (hostTree.getModel().equals(source)) {
-      treeNodesInsertedInHostTree(e);
-    } else if (nodeTree.getModel().equals(source))
-      treeNodesInsertedInNodeTree(e);
+      treeNodesInsertedInHostTree(e.getTreePath(), e.getChildren());
+    } else if (nodeTree.getModel().equals(source)) {
+      treeNodesInsertedInNodeTree(e.getTreePath(), e.getChildren());
+    } else if (agentTree.getModel().equals(source)) {
+      treeNodesInsertedInAgentTree(e.getChildren());
+    }
     experimentBuilder.setModified(true);
   }
 
@@ -983,189 +1008,111 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Called when user drags nodes on to the host tree (as opposed to
    * creating new nodes from the pop-up menu) or when user drags
    * agents on to a node in the host tree.
-   * Notify society component if nodes are added to the host tree.
+   * Notify host component if nodes are added to the host tree.
    * Notify node component if agents are added to a node in the host tree.
-   * Note that if nodes are dragged on to a host,
-   * then this gets called on both the host tree node and the node tree node.
-   * If you drag a node between two hosts in the tree,
-   * then this is called once for each agent in the dragged node with 
-   * e.getTreePath identifying the dragged node 
-   * (see workaround nodeComponentHasAgent)
-   * If you drag a host within the host tree,
-   * then this is called once for each node in the dragged node 
-   * (see workaround hostComponentHasNode)
+   * This also removes the component from its previous parent,
+   * i.e. both the add and remove of the configurable component
+   * are done on the "inserted" message and the "removed message" is ignored.
    */
 
-  private void treeNodesInsertedInHostTree(TreeModelEvent e) {
-    TreePath path = e.getTreePath(); // parent of the new node
-    DefaultMutableTreeNode changedNode = 
-      (DefaultMutableTreeNode)path.getLastPathComponent();
-    ConsoleTreeObject cto = (ConsoleTreeObject)(changedNode.getUserObject());
-    //    System.out.println("CSMARTConsole: treeNodesInsertedInHostTree: " + cto.toString());
-    // agents were dragged on to a node
-    // tell the node that agents were added 
-    if (cto.isNode()) {
-      addAgentsToNode((NodeComponent)cto.getComponent(), e.getChildren());
-    } else if (cto.isHost()) {
-      // nodes were dragged on to a host
-      // tell the host that nodes were added
-      // or, the host was dragged, do nothing
-      HostComponent hostComponent = (HostComponent)cto.getComponent();
-      Object[] newChildren = e.getChildren();
-      for (int i = 0; i < newChildren.length; i++) {
-	DefaultMutableTreeNode treeNode =
-	  (DefaultMutableTreeNode)newChildren[i];
-	cto = (ConsoleTreeObject)treeNode.getUserObject();
-        NodeComponent nodeComponent = (NodeComponent)cto.getComponent();
-        if (!hostComponentHasNode(hostComponent, nodeComponent))
-          hostComponent.addNode(nodeComponent);
-      }
-    }
-    //    setRunButtonEnabled();
+  private void treeNodesInsertedInHostTree(TreePath path, Object[] children) {
+    BaseComponent component = getComponentFromPath(path);
+    if (component instanceof NodeComponent) 
+      addAgentsToNode((NodeComponent)component, children);
+    else if (component instanceof HostComponent)
+      addNodesToHost((HostComponent)component, children);
   }
 
   /**
-   * Add agent nodes if they were dragged on to the node
-   * tree and the node wasn't dragged on to a host, so that the
-   * node to agent mapping is preserved.
+   * Update agent component to node component mapping
+   * when agents are dragged onto the Unassigned Nodes tree.
+   * Remove node component from host component 
+   * when nodes are dragged onto the Unassigned Nodes tree.
    */
 
-  private void treeNodesInsertedInNodeTree(TreeModelEvent e) {
-    TreePath path = e.getTreePath();
-    DefaultMutableTreeNode changedNode = 
-      (DefaultMutableTreeNode)path.getLastPathComponent();
-    ConsoleTreeObject cto = (ConsoleTreeObject)(changedNode.getUserObject());
-    // agents were dragged on to a node
-    // tell the node that agents were added 
-    if (!cto.isRoot()) 
-      addAgentsToNode((NodeComponent)cto.getComponent(), e.getChildren());
+  private void treeNodesInsertedInNodeTree(TreePath path, Object[] children) {
+    BaseComponent component = getComponentFromPath(path);
+    if (component == null) { // add nodes to Unassigned Nodes tree
+      for (int i = 0; i < children.length; i++) {
+        NodeComponent nodeComponent = 
+          (NodeComponent)getComponentFromTreeNode((DefaultMutableTreeNode)children[i]);
+        HostComponent previousParent = 
+          (HostComponent)nodeToHost.get(nodeComponent);
+        if (previousParent != null)
+          previousParent.removeNode(nodeComponent);
+        nodeToHost.remove(nodeComponent);
+      }
+    } else
+      addAgentsToNode((NodeComponent)component, children);
+  }
+
+  /**
+   * Update agent component to node component mapping
+   * when agents are dragged onto the Unassigned Agents tree.
+   * Just remove agents from previous node component.
+   */
+
+  private void treeNodesInsertedInAgentTree(Object[] children) {
+    for (int i = 0; i < children.length; i++) {
+      AgentComponent agent = 
+        (AgentComponent)getComponentFromTreeNode((DefaultMutableTreeNode)children[i]);
+      NodeComponent previousParent = (NodeComponent)agentToNode.get(agent);
+      if (previousParent != null) 
+        previousParent.removeAgent(agent);
+      agentToNode.remove(agent); // update mapping
+    }
+  }
+
+  /**
+   * Tell host component to add node components.
+   * Remove node components from previous host component.
+   */
+
+  private void addNodesToHost(HostComponent hostComponent,
+                              Object[] newChildren) {
+    for (int i = 0; i < newChildren.length; i++) {
+      NodeComponent nodeComponent = 
+        (NodeComponent)getComponentFromTreeNode((DefaultMutableTreeNode)newChildren[i]);
+      HostComponent previousParent = 
+        (HostComponent)nodeToHost.get(nodeComponent);
+      // ignore moving nodes within the same host
+      if (previousParent != null && previousParent.equals(hostComponent))
+        return;
+      hostComponent.addNode(nodeComponent);
+      if (previousParent != null)
+        previousParent.removeNode(nodeComponent);
+      nodeToHost.put(nodeComponent, hostComponent);
+    }
   }
 
   /**
    * Tell node component to add agent components.
+   * Remove agent components from previous node component.
    */
 
   private void addAgentsToNode(NodeComponent nodeComponent,
 			       Object[] newChildren) {
     for (int i = 0; i < newChildren.length; i++) {
-      DefaultMutableTreeNode treeNode =
-	(DefaultMutableTreeNode)newChildren[i];
-      ConsoleTreeObject cto = (ConsoleTreeObject)treeNode.getUserObject();
-      AgentComponent agentComponent = (AgentComponent)cto.getComponent();
-      if (!nodeComponentHasAgent(nodeComponent, agentComponent))
-	nodeComponent.addAgent(agentComponent);
+      AgentComponent agentComponent = 
+        (AgentComponent)getComponentFromTreeNode((DefaultMutableTreeNode)newChildren[i]);
+      NodeComponent previousParent = 
+        (NodeComponent)agentToNode.get(agentComponent);
+      // ignore moving agents within the same node
+      if (previousParent != null && previousParent.equals(nodeComponent))
+        return;
+      nodeComponent.addAgent(agentComponent);
+      if (previousParent != null) 
+        previousParent.removeAgent(agentComponent);
+      agentToNode.put(agentComponent, nodeComponent); // update mapping
     }
-  }
-
-  /**
-   * Check if a host has a node before telling it about a new one.
-   * Workaround for bug that causes treeNodesInsertedInHostTree to
-   * be called when hosts are moved within the host tree.
-   */
-
-  private boolean hostComponentHasNode(HostComponent host,
-                                       NodeComponent node) {
-    NodeComponent[] nodes = host.getNodes();
-    for (int i = 0; i < nodes.length; i++) {
-      if (nodes[i].equals(node))
-	return true;
-    }
-    return false;
-  }
-
-  /**
-   * Check if a node has an agent before telling it about a new one.
-   * Workaround for bug that causes treeNodesInsertedInHostTree to
-   * be called when agents are moved within the tree.
-   */
-
-  private boolean nodeComponentHasAgent(NodeComponent node,
-					AgentComponent agent) {
-    AgentComponent[] agents = node.getAgents();
-    for (int i = 0; i < agents.length; i++) {
-      if (agents[i].equals(agent))
-	return true;
-    }
-    return false;
   }
 
   /**
    * Called when user drags nodes off the host or node tree;
-   * dispatches to a tree specific method.
+   * does nothing as updating the components is done at insertion.
    */
 
   public void treeNodesRemoved(TreeModelEvent e) {
-    //    System.out.println("Tree Node Removed: " +
-    //                       ((ConsoleTreeObject)((DefaultMutableTreeNode)e.getTreePath().getLastPathComponent()).getUserObject()).getName());
-    Object source = e.getSource();
-    if (hostTree.getModel().equals(source)) {
-      treeNodesRemovedFromHostTree(e);
-    } else if (nodeTree.getModel().equals(source))
-      treeNodesRemovedFromNodeTree(e);
-    experimentBuilder.setModified(true);
-  }
-
-
-  /**
-   * Notify society component if nodes are removed from the host tree.
-   * Notify node component if agents are removed from a node in the host tree.
-   * Note that this is not symmetric with adding nodes to a tree;
-   * i.e. if a node tree node is removed from the hosts tree,
-   * then this is called only on the host tree node.
-   */
-
-  public void treeNodesRemovedFromHostTree(TreeModelEvent e) {
-    TreePath path = e.getTreePath();
-    DefaultMutableTreeNode changedNode = 
-      (DefaultMutableTreeNode)path.getLastPathComponent();
-    ConsoleTreeObject cto = (ConsoleTreeObject)(changedNode.getUserObject());
-    //    System.out.println("CSMARTConsole: treeNodesRemovedFromHostTree: " + cto.toString());
-    // tell the node that agents were removed
-    if (cto.isNode()) {
-      removeAgentsFromNode((NodeComponent)cto.getComponent(), e.getChildren());
-    } else if (cto.isHost()) {
-      // tell the host that nodes were removed
-      HostComponent hostComponent = (HostComponent)cto.getComponent();
-      Object[] removedChildren = e.getChildren();
-      for (int i = 0; i < removedChildren.length; i++) {
-	DefaultMutableTreeNode treeNode =
-	  (DefaultMutableTreeNode)removedChildren[i];
-	cto = (ConsoleTreeObject)treeNode.getUserObject();
-	NodeComponent nodeComponent = (NodeComponent)cto.getComponent();
-	hostComponent.removeNode(nodeComponent);
-      }
-    }
-    //    setRunButtonEnabled();
-  }
-
-  /**
-   * Notify nodes if agents were removed from a node in the
-   * unassigned nodes tree.
-   */
-
-  public void treeNodesRemovedFromNodeTree(TreeModelEvent e) {
-    TreePath path = e.getTreePath();
-    DefaultMutableTreeNode changedNode = 
-      (DefaultMutableTreeNode)path.getLastPathComponent();
-    ConsoleTreeObject cto = (ConsoleTreeObject)(changedNode.getUserObject());
-    // tell the node that agents were removed
-    if (!cto.isRoot())
-      removeAgentsFromNode((NodeComponent)cto.getComponent(), e.getChildren());
-  }
-
-  /**
-   * Tell node component to remove agents from node.
-   */
-
-  private void removeAgentsFromNode(NodeComponent nodeComponent,
-				    Object[] removedChildren) {
-    for (int i = 0; i < removedChildren.length; i++) {
-      DefaultMutableTreeNode treeNode =
-	(DefaultMutableTreeNode)removedChildren[i];
-      ConsoleTreeObject cto = (ConsoleTreeObject)treeNode.getUserObject();
-      AgentComponent agentComponent = (AgentComponent)cto.getComponent();
-      nodeComponent.removeAgent(agentComponent);
-    }
   }
 
   /**
@@ -1603,6 +1550,17 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     return getSelectedItemsInTree(nodeTree, NodeComponent.class);
   }
 
+  private BaseComponent getComponentFromPath(TreePath path) {
+    DefaultMutableTreeNode node =
+      (DefaultMutableTreeNode)path.getLastPathComponent();
+    ConsoleTreeObject cto = (ConsoleTreeObject)(node.getUserObject());
+    return cto.getComponent();
+  }
+
+  private BaseComponent getComponentFromTreeNode(DefaultMutableTreeNode treeNode) {
+    ConsoleTreeObject cto = (ConsoleTreeObject)treeNode.getUserObject();
+    return cto.getComponent();
+  }
 }
 
 

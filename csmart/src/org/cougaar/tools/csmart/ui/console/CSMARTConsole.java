@@ -1149,11 +1149,15 @@ public class CSMARTConsole extends JFrame {
 
 
   private void prepareToCreateNodes() {
+    // first need to set configuration file name property in ALL nodes
+    // as these are all used by each experiment configuration writer
     for (int i = 0; i < nodesToRun.length; i++) {
       NodeComponent nodeComponent = nodesToRun[i];
-      // set configuration file name
       nodeComponent.addProperty("ConfigurationFileName",
                                 nodeComponent.getShortName() + currentTrial);
+    }
+    for (int i = 0; i < nodesToRun.length; i++) {
+      NodeComponent nodeComponent = nodesToRun[i];
       String hostName = hostsToRunOn[i];
       final String nodeName = nodeComponent.getShortName();
       // create an unique node name to circumvent server problems

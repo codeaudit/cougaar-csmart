@@ -35,7 +35,7 @@ public class ConsoleTreeObject implements Serializable {
   String name;
   private boolean root = false;
   private Class allowedClass = null;
-  BaseComponent component;
+  BaseComponent component = null;
 
   public ConsoleTreeObject(BaseComponent component) {
     name = component.toString();
