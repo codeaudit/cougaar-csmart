@@ -1300,13 +1300,6 @@ public class CSMARTConsole extends JFrame {
 	  log.error("Null trial ID for experiment!");
 	}
 
-        //Don't override if it's already set
-        if (properties.getProperty(Experiment.PERSIST_CLEAR) 
-            == null) {
-          properties.setProperty(Experiment.PERSIST_CLEAR,
-                                 "true");
-        }
-
         // create a status button
         NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
 
@@ -1551,6 +1544,9 @@ public class CSMARTConsole extends JFrame {
       }
     }
     Properties properties = getNodeMinusD(nodeComponent, hostName);
+    // WARNING: Some users may find this odd - they may _want_
+    // a restarted node to use persistence information!
+    // Eventually, we should allow this.
     properties.remove(Experiment.PERSIST_CLEAR);
     java.util.List args = getNodeArguments(nodeComponent);
     int remotePort = getAppServerPort(properties);
