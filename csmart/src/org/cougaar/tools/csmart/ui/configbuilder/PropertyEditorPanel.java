@@ -24,8 +24,10 @@ package org.cougaar.tools.csmart.ui.configbuilder;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.Insets;
 import java.awt.event.*;
 import java.util.*;
 import javax.swing.*;
@@ -41,6 +43,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
@@ -55,6 +58,11 @@ import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.society.AgentBase;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.society.ini.INIAgent;
+import org.cougaar.tools.csmart.society.ini.INIAsset;
+import org.cougaar.tools.csmart.society.ini.INIContainer;
+import org.cougaar.tools.csmart.society.ini.INIPlugin;
+import org.cougaar.tools.csmart.society.ini.INIPropGroup;
 import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.util.log.Logger;
@@ -74,6 +82,11 @@ public class PropertyEditorPanel extends JPanel
   JTree tree;
   JPopupMenu societyMenu;
   JPopupMenu agentMenu;
+  JPopupMenu pluginsMenu;
+  JPopupMenu pluginMenu;
+  JPopupMenu assetMenu;
+  JPopupMenu pgMenu;
+  JPopupMenu relationshipsMenu;
   JPopupMenu defaultMenu;
   DefaultMutableTreeNode root;
   PropertyTable propertyTable = null;
@@ -85,9 +98,115 @@ public class PropertyEditorPanel extends JPanel
   boolean isEditable;
   ModifiableComponent[] compsToConfig = null; // support an array of things to edit/view
   ModifiableComponent componentToConfigure = null;
-  TableModelListener myTableModelListener;
   PropertyEditorPanel propertyEditorPanelListener;
   private transient Logger log;
+  // all property groups, including those created by user
+  Vector propertyGroups = null;
+  // well known property groups
+  Object [] wellKnownPropertyGroups = { 
+    PropGroupData.ITEM_IDENTIFICATION,
+    PropGroupData.TYPE_IDENTIFICATION,
+    PropGroupData.CLUSTER,
+    PropGroupData.ENTITY,
+    PropGroupData.COMMUNITY,
+    PropGroupData.MILITARYORG,
+    PropGroupData.ASSIGNMENT,
+    PropGroupData.ORGANIZATION,
+    PropGroupData.MAINTENANCE,
+    PropGroupData.CSSCAPABILITY
+  };
+  // indices for above
+  static final int ITEM_IDENTIFICATION = 0;
+  static final int TYPE_IDENTIFICATION = 1;
+  static final int CLUSTER = 2;
+  static final int ENTITY = 3;
+  static final int COMMUNITY = 4;
+  static final int MILITARYORG = 5;
+  static final int ASSIGNMENT = 6;
+  static final int ORGANIZATION = 7;
+  static final int MAINTENANCE = 8;
+  static final int CSSCAPABILITY = 9;
+
+  // actions for use on popup menus
+  private AbstractAction addAgentAction =
+    new AbstractAction("Add Agent") {
+        public void actionPerformed(ActionEvent e) {
+          addAgent();
+        }
+      };
+  private AbstractAction addPluginAction =
+    new AbstractAction("Add Plugin") {
+        public void actionPerformed(ActionEvent e) {
+          addPlugin();
+        }
+      };
+  private AbstractAction addPropertyGroupAction =
+    new AbstractAction("Add Property Group") {
+        public void actionPerformed(ActionEvent e) {
+          addPropertyGroup();
+        }
+      };
+  private AbstractAction addParameterAction =
+    new AbstractAction("Add Parameter") {
+        public void actionPerformed(ActionEvent e) {
+          addParameter();
+        }
+      };
+  private AbstractAction removeAgentAction =
+    new AbstractAction("Delete") {
+        public void actionPerformed(ActionEvent e) {
+          removeAgent();
+        }
+      };
+  private AbstractAction removePluginAction =
+    new AbstractAction("Delete") {
+        public void actionPerformed(ActionEvent e) {
+          removePlugin();
+        }
+      };
+  private AbstractAction removePropertyGroupAction =
+    new AbstractAction("Delete") {
+        public void actionPerformed(ActionEvent e) {
+          removePropertyGroup();
+        }
+      };
+
+  private Object[] societyMenuItems = {
+    addAgentAction
+  };
+
+  private Object[] agentMenuItems = {
+    addParameterAction,
+    removeAgentAction
+  };
+
+  private Object[] pluginsMenuItems = {
+    addPluginAction
+  };
+
+  private Object[] pluginMenuItems = {
+    addParameterAction,
+    removePluginAction
+  };
+
+  private Object[] assetMenuItems = {
+    addPropertyGroupAction,
+    addParameterAction
+  };
+
+  private Object[] pgMenuItems = {
+    addParameterAction,
+    removePropertyGroupAction
+  };
+
+  private Object[] relationshipsMenuItems = {
+  };
+
+  private Object[] defaultMenuItems = {
+    addParameterAction
+  };
+
+
 
   public PropertyEditorPanel(ModifiableComponent configComp, 
                              boolean isEditable) {
@@ -156,44 +275,30 @@ public class PropertyEditorPanel extends JPanel
     };
     tree.addMouseListener(myMouseListener);
     // create popup menus to be displayed in tree
-    societyMenu = new JPopupMenu(); // add/remove agents
-    agentMenu = new JPopupMenu();   // add/remove plugins
-    defaultMenu = new JPopupMenu(); // add/remove parameters
-    JMenuItem addAgentMenuItem = new JMenuItem("Add Agent");
-    addAgentMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          addAgent();
-        }
-      });
-    societyMenu.add(addAgentMenuItem);
-    JMenuItem removeAgentMenuItem = new JMenuItem("Remove Agent");
-    removeAgentMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          removeAgent();
-        }
-      });
-    societyMenu.add(removeAgentMenuItem);
-    JMenuItem addPluginMenuItem = new JMenuItem("Add Plugin");
-    addPluginMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          addPlugin();
-        }
-      });
-    agentMenu.add(addPluginMenuItem);
-    JMenuItem removePluginMenuItem = new JMenuItem("Remove Plugin");
-    removePluginMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          removePlugin();
-        }
-      });
-    agentMenu.add(removePluginMenuItem);
-    JMenuItem addParameterMenuItem = new JMenuItem("Add Parameter");
-    addParameterMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          addParameter();
-        }
-      });
-    defaultMenu.add(addParameterMenuItem);
+    societyMenu = new JPopupMenu(); // add agent
+    agentMenu = new JPopupMenu();   // delete (agent)
+    pluginsMenu = new JPopupMenu(); // add plugin
+    pluginMenu = new JPopupMenu();  // delete (plugin)
+    assetMenu = new JPopupMenu();   // add property group, add parameter
+    pgMenu = new JPopupMenu();      // delete (property group)
+    defaultMenu = new JPopupMenu(); // add parameter
+    relationshipsMenu = new JPopupMenu(); // add relationship
+    for (int i = 0; i < societyMenuItems.length; i++)
+      societyMenu.add((Action)societyMenuItems[i]);
+    for (int i = 0; i < agentMenuItems.length; i++)
+      agentMenu.add((Action)agentMenuItems[i]);
+    for (int i = 0; i < pluginsMenuItems.length; i++)
+      pluginsMenu.add((Action)pluginsMenuItems[i]);
+    for (int i = 0; i < pluginMenuItems.length; i++)
+      pluginMenu.add((Action)pluginMenuItems[i]);
+    for (int i = 0; i < assetMenuItems.length; i++)
+      assetMenu.add((Action)assetMenuItems[i]);
+    for (int i = 0; i < pgMenuItems.length; i++)
+      pgMenu.add((Action)pgMenuItems[i]);
+    for (int i = 0; i < relationshipsMenuItems.length; i++)
+      relationshipsMenu.add((Action)relationshipsMenuItems[i]);
+    for (int i = 0; i < defaultMenuItems.length; i++)
+      defaultMenu.add((Action)defaultMenuItems[i]);
     configCompPanel.setLeftComponent(new JScrollPane(tree));
     propertyTable = new PropertyTable(isEditable);
     // don't allow user to reorder columns
@@ -201,39 +306,6 @@ public class PropertyEditorPanel extends JPanel
     if (!isEditable) {
       propertyTable.setForeground(Color.gray);
     }
-    // when the table is changed, this listener is notified
-    // if a property was deleted, then remove the property from the
-    // configurable component selected in the tree
-    myTableModelListener = new TableModelListener() {
-        public void tableChanged(TableModelEvent e) {
-          if (e.getType() == TableModelEvent.DELETE) {
-            PropertyTreeNode nodeSelected =
-              (PropertyTreeNode)tree.getSelectionPath().getLastPathComponent();
-            Object o = nodeToComponent.get(nodeSelected);
-            if (o instanceof ConfigurableComponent) {
-              // delete the local property corresponding to the row deleted
-              int rowDeleted = e.getFirstRow();
-              int thisIndex = 0;
-              ConfigurableComponent c = (ConfigurableComponent)o;
-              for (Iterator i = c.getLocalPropertyNames(); i.hasNext(); ) {
-                if (thisIndex == rowDeleted) {
-                  // remove our listener on the component's properties
-                  c.removePropertiesListener(propertyEditorPanelListener);
-                  // remove the property
-                  c.removeProperty(c.getProperty((CompositeName)i.next()));
-                  // add listener back in so we catch any other changes
-                  c.addPropertiesListener(propertyEditorPanelListener);
-                  break;
-                } else {
-                  thisIndex++;
-                  i.next();
-                }
-              }
-            } 
-          }
-        }
-      };
-    propertyTable.getModel().addTableModelListener(myTableModelListener);
     tableScrollPane = new JScrollPane(propertyTable);
     JPanel rightPanel = new JPanel(new BorderLayout());
     rightPanel.add(tableScrollPane);
@@ -272,39 +344,35 @@ public class PropertyEditorPanel extends JPanel
    * component.
    */
 
-  private DefaultMutableTreeNode makeTree() {
+  private void makeTree() {
+    // get the list of configurable components to represent in the tree
     List components = new ArrayList();
-    DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
-    for (int i = 0; i < compsToConfig.length; i++) {
-      BaseComponent component = compsToConfig[i];
-      PropertyTreeNode node = new PropertyTreeNode(component.getFullName());
-      model.insertNodeInto(node, root, root.getChildCount());
-      componentToNode.put(component, node);
-      nodeToComponent.put(node, component);
-      components.add(component);
-    }
-    int i = 0;
-    while (i < components.size()) {
-      BaseComponent component = (BaseComponent)components.get(i);
-      PropertyTreeNode parentNode = 
-        (PropertyTreeNode)componentToNode.get(component);
-      int nChildren = component.getChildCount();
-      for (int j = 0; j < nChildren; j++) {
-        BaseComponent childComponent = component.getChild(j);
-        PropertyTreeNode node = 
-          new PropertyTreeNode(childComponent.getFullName());
-        model.insertNodeInto(node, parentNode, parentNode.getChildCount());
-        componentToNode.put(childComponent, node);
-        nodeToComponent.put(node, childComponent);
-        components.add(childComponent);
+    for (int i = 0; i < compsToConfig.length; i++)
+      components.add(compsToConfig[i]);
+    // for each configurable component
+    for (int i = 0; i < components.size(); i++) {
+      ConfigurableComponent component = 
+        (ConfigurableComponent)components.get(i);
+      // determine where to put component in tree
+      ConfigurableComponent parentComponent = component.getParent();
+      DefaultMutableTreeNode parentNode = root;
+      if (parentComponent != null) {
+        parentNode = 
+          (DefaultMutableTreeNode)componentToNode.get(parentComponent);
+        if (parentNode == null)
+          parentNode = root;
       }
-      i++;
+      // add the component to the tree
+      createTreeNode(component, parentNode);
+      // add its children to the list of components to put in the tree
+      int nChildren = component.getChildCount();
+      for (int j = 0; j < nChildren; j++) 
+        components.add(component.getChild(j));
     }
-    return root;
   }
 
   /**
-   * Display user interface components for property names.
+   * Display user interface components for property names in a table.
    * Called when user makes a selection in the tree.
    */
 
@@ -314,14 +382,14 @@ public class PropertyEditorPanel extends JPanel
       CompositeName propName = (CompositeName) i.next();
       Property property = component.getProperty(propName);
       if (property != null) 
-        addComponentForProperty(property);
+        addTableEntryForProperty(property);
     }
   }
 
   /**
-   * Add user interface component for a property.
+   * Add table entry for a property.
    */
-  private void addComponentForProperty(Property property) {
+  private void addTableEntryForProperty(Property property) {
     propertyTable.addProperty(property);
     property.addPropertyListener(this);
   }
@@ -340,16 +408,21 @@ public class PropertyEditorPanel extends JPanel
    */
   public void propertyAdded(PropertyEvent e) {
     Property prop = e.getProperty();
+    // get the tree node for this property's configurable component
+    ConfigurableComponent cc = prop.getConfigurableComponent();
+    PropertyTreeNode node = (PropertyTreeNode)componentToNode.get(cc);
     CompositeName name = prop.getName();
-    if (addPropertyName(name)) {
+    if (node.addPropertyName(name)) {
       TreePath path = tree.getSelectionPath();
       if (path == null) return;
-      PropertyTreeNode node = (PropertyTreeNode)path.getLastPathComponent();
-      if (name.getPrefix().equals(node.getName())) {
+      // if it's a property of the selected tree node, then display it now
+      PropertyTreeNode selectedNode = 
+        (PropertyTreeNode)path.getLastPathComponent();
+      if (selectedNode.equals(node)) {
         if(log.isDebugEnabled()) {
           log.debug("PropertyBuilder: Property added: " + name);
         }
-        addComponentForProperty(prop);
+        addTableEntryForProperty(prop);
       }
     }
   }
@@ -365,16 +438,19 @@ public class PropertyEditorPanel extends JPanel
    */
   public void propertyRemoved(PropertyEvent e) {
     Property prop = e.getProperty();
+    ConfigurableComponent cc = prop.getConfigurableComponent();
+    PropertyTreeNode node = (PropertyTreeNode)componentToNode.get(cc);
     CompositeName name = prop.getName();
-    if (removePropertyName(name)) {
+    if (node.removePropertyName(name)) {
       TreePath path = tree.getSelectionPath();
       if (path == null) return;
-      PropertyTreeNode node = (PropertyTreeNode)path.getLastPathComponent();
-      if (name.getPrefix().equals(node.getName())) {
+      PropertyTreeNode selectedNode = 
+        (PropertyTreeNode)path.getLastPathComponent();
+      if (selectedNode.equals(node)) {
         if(log.isDebugEnabled()) {
           log.debug("PropertyBuilder: Property removed: " + prop.getName());
         }
-        removeComponentForProperty(prop);
+        removeTableEntryForProperty(prop);
       }
     }
   }
@@ -384,70 +460,9 @@ public class PropertyEditorPanel extends JPanel
    */
 
   /**
-   * Add a property to a tree, first adding its ancestors if necessary.
+   * Remove table entry for a property, if it exists.
    */
-
-  private boolean addPropertyName(CompositeName name) {
-    PropertyTreeNode node = findPropertyNode(name.getPrefix(), true);
-    return node.addPropertyName(name);
-  }
-
-  private PropertyTreeNode findPropertyNode(CompositeName name, boolean create) {
-    MutableTreeNode parentNode;
-    if (name.size() > 1) {
-      parentNode = findPropertyNode(name.getPrefix(), create);
-      if (parentNode == null) return null;
-    } else {
-      parentNode = root;
-    }
-    for (int i = 0, n = parentNode.getChildCount(); i < n; i++) {
-      PropertyTreeNode node = (PropertyTreeNode) parentNode.getChildAt(i);
-      if (name.equals(node.getName())) {
-        return node;
-      }
-    }
-    if (!create) return null;
-
-    // TODO: need to update the node<->component hashtables?
-    // this occurs only when you're adding a property to the tree
-    // and you haven't previously added its parent; does this ever happen?
-    // if not, remove the code
-
-    PropertyTreeNode node = new PropertyTreeNode(name);
-    if (log.isErrorEnabled()) {
-      log.error("PropertyEditorPanel: WARNING: adding new component to tree: " + name);
-    }
-    DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
-    model.insertNodeInto(node, parentNode, parentNode.getChildCount());
-    return node;
-  }
-
-  private boolean removePropertyName(CompositeName name) {
-    PropertyTreeNode node = findPropertyNode(name.getPrefix(), false);
-    if (node != null) {
-      if (node.removePropertyName(name)) {
-        checkRemoveNode(node);
-        return true;
-      }
-    }
-    return false;
-  }
-
-  private void checkRemoveNode(PropertyTreeNode node) {
-    if (node.getPropertyCount() + node.getChildCount() == 0) {
-      DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
-      TreeNode parentNode = node.getParent();
-      model.removeNodeFromParent(node);
-      if (parentNode instanceof PropertyTreeNode) {
-        checkRemoveNode((PropertyTreeNode) parentNode);
-      }
-    }
-  }
-
-  /**
-   * Remove user interface component for a property, if it exists.
-   */
-  private void removeComponentForProperty(Property property) {
+  private void removeTableEntryForProperty(Property property) {
     propertyTable.removeProperty(property);
     property.removePropertyListener(this);
   }
@@ -508,12 +523,9 @@ public class PropertyEditorPanel extends JPanel
     Object o = path.getLastPathComponent();
     if (o instanceof PropertyTreeNode) {
       stopEditing();
-      propertyTable.getModel().removeTableModelListener(myTableModelListener);
       propertyTable.removeAll(); // clear what was displayed
-      propertyTable.getModel().addTableModelListener(myTableModelListener);
-      PropertyTreeNode node = (PropertyTreeNode) o;
-      //      displayComponents(node.getPropertyNames());
-      displayComponents(node);
+      if (event.isAddedPath())   // display parameters for new selection
+        displayComponents((PropertyTreeNode)o);
     }
   }
 
@@ -531,17 +543,27 @@ public class PropertyEditorPanel extends JPanel
     if (selPath == null)
       return;
     tree.setSelectionPath(selPath);
-    // determine what type of node is selected
+    int x = e.getX();
+    int y = e.getY();
+    // show menu for type of node selected
+    // TODO: some of these look for INItypes as well as types
+    // that we create; they should have the same base
     Object o = nodeToComponent.get(selPath.getLastPathComponent());
     if (o instanceof SocietyComponent)
-      // add/remove agents
-      societyMenu.show(tree, e.getX(), e.getY());
-    else if (o instanceof AgentComponent)
-      // add/remove plugins
-      agentMenu.show(tree, e.getX(), e.getY());
+      societyMenu.show(tree, x, y);
+    else if (o instanceof INIAgent || o instanceof AgentBase)
+      agentMenu.show(tree, x, y);
+    else if (o instanceof INIContainer &&
+             ((INIContainer)o).getShortName().equals("Plugins"))
+      pluginsMenu.show(tree, x, y);
+    else if (o instanceof INIAsset)
+      assetMenu.show(tree, x, y);
+    else if (o instanceof INIPlugin)
+      pluginMenu.show(tree, x, y);
+    else if (o instanceof INIPropGroup)
+      pgMenu.show(tree, x, y);
     else
-      // add/remove parameters
-      defaultMenu.show(tree, e.getX(), e.getY());
+      defaultMenu.show(tree, x, y); // add parameter
   }
 
   /**
@@ -549,8 +571,10 @@ public class PropertyEditorPanel extends JPanel
    */
 
   /**
-   * Add a node representing the agent to the society node of the tree.
-   * Initialize the agents properties.
+   * Query the user for the name of the agent.
+   * Create a component for the agent, and a tree node
+   * representing the agent, and add it to the society node in the tree.
+   * Create components and add tree nodes for Plugins and AssetData.
    */
 
   public void addAgent() {
@@ -563,41 +587,290 @@ public class PropertyEditorPanel extends JPanel
 
     DefaultMutableTreeNode selNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-    DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+    ConfigurableComponent society = 
+      (ConfigurableComponent)nodeToComponent.get(selNode);
+    AgentBase agentComponent = new AgentBase(name);
+    // put the node in the tree before adding properties to it
+    PropertyTreeNode agentNode = createTreeNode(agentComponent, selNode);
+    agentComponent.initProperties();
+    society.addChild(agentComponent);
 
-    AgentComponent agentComponent = new AgentBase(name);
-    PropertyTreeNode agentNode = 
-      new PropertyTreeNode(agentComponent.getFullName());
-    agentNode.setLeaf(false);
-    model.insertNodeInto(agentNode, selNode, selNode.getChildCount());
-    componentToNode.put(agentComponent, agentNode);
-    nodeToComponent.put(agentNode, agentComponent);
+    INIContainer pluginContainer = new INIContainer("Plugins");
+    createTreeNode(pluginContainer, agentNode);
+    pluginContainer.initProperties();
+    agentComponent.addChild(pluginContainer);
 
-//      INIContainer pluginContainer = new INIContainer("Plugins");
-//      PropertyTreeNode pluginNode = new PropertyTreeNode("Plugins");
-//      node.setLeaf(false);
-//      model.insertNodeInto(pluginNode, agentNode, 0);
-//      componentToNode.put(pluginContainer, pluginNode);
-//      nodeToComponent.put(pluginNode, pluginContainer);
-
-//      INIContainer assetContainer = new INIContainer("AssetData");
-//      PropertyTreeNode assetNode = new PropertyTreeNode("AssetData");
-//      node.setLeaf(false);
-//      model.insertNodeInto(assetNode, agentNode, 1);
-//      componentToNode.put(agentContainer, agentNode);
-//      nodeToComponent.put(agentNode, agentContainer);
+    INIAsset asset = new INIAsset("");
+    createTreeNode(asset, agentNode);
+    // don't init properties, because this inits properties
+    // from the ini files; ideally INIAsset should be split into a base
+    // and a class that inits from ini files
+    asset.addProperty(INIAsset.PROP_TYPE, "");
+    asset.addProperty(INIAsset.PROP_CLASS, "");
+    asset.addProperty(INIAsset.PROP_UID, "");
+    asset.addProperty(INIAsset.PROP_UNITNAME, "");
+    asset.addProperty(INIAsset.PROP_UIC, "");
+    agentComponent.addChild(asset);
   }
 
   public void removeAgent() {
+    DefaultMutableTreeNode selNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    ConfigurableComponent cc = 
+      (ConfigurableComponent)nodeToComponent.get(selNode);
+    Object parent = cc.getParent();
+    ((ConfigurableComponent)parent).removeChild(cc);
+    // remove agent and subnodes from the tree
+    removeTreeNodes(selNode);
   }
 
   public void addPlugin() {
+    // get plugins from all existing agents
+    Enumeration components = componentToNode.keys();
+    ArrayList pluginNames = new ArrayList();
+    ArrayList pluginClasses = new ArrayList();
+    while (components.hasMoreElements()) {
+      Object o = components.nextElement();
+      if (o instanceof INIPlugin) {
+        INIPlugin plugin = (INIPlugin)o;
+        String name = plugin.getShortName();
+        if (!pluginNames.contains(name)) {
+          pluginNames.add(name);
+          pluginClasses.add(plugin.getPluginClassName());
+        }
+      }
+    }
+    JPanel panel = new JPanel(new GridBagLayout());
+    ArrayList sortedNames = (ArrayList)pluginNames.clone();
+    Collections.sort(sortedNames);
+    JComboBox cb = new JComboBox(sortedNames.toArray());
+    cb.setEditable(true);
+    cb.setPreferredSize(new Dimension(200, 
+                                      (int)cb.getPreferredSize().getHeight()));
+    int x = 0;
+    int y = 0;
+    panel.add(cb,
+              new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.HORIZONTAL,
+                                     new Insets(0, 0, 0, 5), 0, 0));
+    int result = JOptionPane.showConfirmDialog(this, panel, "Plugin",
+                                               JOptionPane.OK_CANCEL_OPTION,
+                                               JOptionPane.PLAIN_MESSAGE);
+    if (result != JOptionPane.OK_OPTION)
+      return;
+    String name = (String)cb.getSelectedItem();
+    name = name.trim();
+    if (name.length() == 0)
+      return;
+    String className = null;
+    //    int index = cb.getSelectedIndex();
+    int index = pluginNames.indexOf(name);
+    if (index > -1 && index < pluginNames.size())
+      className = (String)pluginClasses.get(index);
+    else {
+      className =
+        (String)JOptionPane.showInputDialog(this, "Enter Plugin Class Name",
+                                            "Plugin Class Name",
+                                            JOptionPane.QUESTION_MESSAGE,
+                                            null, null, "");
+      if (className == null) return;
+      className = className.trim(); // trim white space
+      if (className.length() == 0) return;
+    }
+    INIPlugin plugin = new INIPlugin(className, className);
+    DefaultMutableTreeNode selNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    createTreeNode(plugin, selNode);
+    plugin.initProperties();
+    ConfigurableComponent cc = 
+      (ConfigurableComponent)nodeToComponent.get(selNode);
+    cc.addChild(plugin);
   }
 
   public void removePlugin() {
+    DefaultMutableTreeNode selNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    ConfigurableComponent cc = 
+      (ConfigurableComponent)nodeToComponent.get(selNode);
+    Object parent = cc.getParent();
+    ((ConfigurableComponent)parent).removeChild(cc);
+    removeTreeNodes(selNode);
   }
 
+  /**
+   * Create component and tree node for new property group.
+   */
+  // TODO: need to determine how to organize classes so that
+  // classes created from INI files, and 
+  // classes created from database, and
+  // classes created from user edits
+  // share a common base
+  public void addPropertyGroup() {
+    JPanel panel = new JPanel(new GridBagLayout());
+    int x = 0;
+    int y = 0;
+    panel.add(new JLabel("Property Group"),
+              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.NONE,
+                                     new Insets(0, 5, 0, 5), 0, 0));
+    if (propertyGroups == null) {
+      propertyGroups = new Vector(wellKnownPropertyGroups.length);
+      for (int i = 0; i < wellKnownPropertyGroups.length; i++)
+        propertyGroups.add(wellKnownPropertyGroups[i]);
+    }
+    JComboBox cb = new JComboBox(propertyGroups);
+    cb.setEditable(true);
+    cb.setPreferredSize(new Dimension(200, 
+                                      (int)cb.getPreferredSize().getHeight()));
+    panel.add(cb,
+              new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.HORIZONTAL,
+                                     new Insets(0, 0, 0, 5), 0, 0));
+    int result = JOptionPane.showConfirmDialog(this, panel, "Property Group",
+                                               JOptionPane.OK_CANCEL_OPTION,
+                                               JOptionPane.PLAIN_MESSAGE);
+    if (result != JOptionPane.OK_OPTION)
+      return;
+    String pgName = (String)cb.getSelectedItem();
+    int pgIndex = cb.getSelectedIndex();
+    pgName = pgName.trim();
+    if (pgName.length() == 0)
+      return;
+    DefaultMutableTreeNode selNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    INIAsset assetComponent = (INIAsset)nodeToComponent.get(selNode);
+    PropGroupData pgData = new PropGroupData(pgName);
+    INIPropGroup pg = new INIPropGroup(pgData);
+    DefaultMutableTreeNode pgNode = createTreeNode(pg, selNode);
+    pg.initProperties();
+    // for each of the well defined properties
+    // add the appropriate parameters
+    if (pgIndex >= 0 && pgIndex < wellKnownPropertyGroups.length)
+      setParameters(pg, pgIndex);
+    else
+      propertyGroups.add(pgName); // user defined property group
+    assetComponent.addChild(pg);
+    // select the new node
+    tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(pgNode));
+  }
+
+  /**
+   * TODO: will this work, i.e. can you add properties to the property group
+   * or must this use the PropGroupData object
+   */
+
+  private void setParameters(ConfigurableComponent pg, int pgIndex) {
+    switch (pgIndex) {
+    case ITEM_IDENTIFICATION:
+      pg.addProperty("ItemIdentification", "");
+      pg.addProperty("Nomenclature", "");
+      pg.addProperty("AlternateItemIdentification", "");
+      break;
+    case TYPE_IDENTIFICATION:
+      pg.addProperty("TypeIdentification", "UTC/RTOrg");
+      break;
+    case CLUSTER:
+      // TODO: type should be ClusterIdentifier???
+      pg.addProperty("ClusterIdentifier", "");
+      break;
+    case ENTITY:
+      break;
+    case COMMUNITY:
+      // TODO: type should be TimeSpan
+      pg.addProperty("TimeSpan", "");
+      // how do you actually set these as properties?
+      pg.addProperty("Communities", "");
+      break;
+    case MILITARYORG:
+      break;
+    case ASSIGNMENT:
+      break;
+    case ORGANIZATION:
+      break;
+    case MAINTENANCE:
+      break;
+    case CSSCAPABILITY:
+      break;
+    default:
+      break;
+    }
+  }
+
+  public void removePropertyGroup() {
+    DefaultMutableTreeNode selNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    ConfigurableComponent cc = 
+      (ConfigurableComponent)nodeToComponent.get(selNode);
+    Object parent = cc.getParent();
+    ((ConfigurableComponent)parent).removeChild(cc);
+    removeTreeNodes(selNode);
+  }
+
+  /**
+   * Add a parameter to a configurable component.  Invoked when the
+   * user selects a tree node and invokes the "Add Parameter" option from
+   * the pop-up menu.  Note that this simply adds the parameter to the
+   * configurable component corresponding to the tree node.  It relies
+   * on listeners that were previously set up on the configurable components
+   * to update the user interface.
+   */
+
   public void addParameter() {
+    String name =
+      (String)JOptionPane.showInputDialog(this, "Enter Parameter Name",
+                                          "Parameter Name",
+                                          JOptionPane.QUESTION_MESSAGE,
+                                          null, null, "");
+    if (name == null) return;
+    name = name.trim(); // trim white space
+    if (name.length() == 0) return;
+    DefaultMutableTreeNode selNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    ConfigurableComponent cc = 
+      (ConfigurableComponent)nodeToComponent.get(selNode);
+    Property p = cc.addProperty(name, "");
+  }
+
+  /**
+   * Create a tree node for the configurable component,
+   * and add it to the parent tree node.
+   * Also, put the component and the new node in hashtables to facilitate
+   * matching tree nodes to components.
+   * Return the new tree node.
+   */
+
+  private PropertyTreeNode createTreeNode(ConfigurableComponent component,
+                                          DefaultMutableTreeNode parentNode) {
+    PropertyTreeNode newNode = new PropertyTreeNode(component.getFullName());
+    if (component instanceof INIAsset || component instanceof INIContainer)
+      newNode.setLeaf(false);
+    DefaultTreeModel model = (DefaultTreeModel)tree.getModel();        
+    model.insertNodeInto(newNode, parentNode, parentNode.getChildCount());
+    componentToNode.put(component, newNode);
+    nodeToComponent.put(newNode, component);
+    return newNode;
+  }
+
+  /**
+   * Remove node and its children from tree and
+   * remove node and its children from the hashtables.
+   */
+
+  private void removeTreeNodes(DefaultMutableTreeNode nodeToRemove) {
+    Enumeration nodesToRemove = nodeToRemove.depthFirstEnumeration();
+    while (nodesToRemove.hasMoreElements()) {
+      DefaultMutableTreeNode node = 
+        (DefaultMutableTreeNode)nodesToRemove.nextElement();
+      ConfigurableComponent cc = 
+        (ConfigurableComponent)nodeToComponent.get(node);
+      componentToNode.remove(cc);
+      nodeToComponent.remove(node);
+    }
+    DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+    model.removeNodeFromParent(nodeToRemove);
   }
 
   /**
@@ -617,5 +890,53 @@ public class PropertyEditorPanel extends JPanel
     ois.defaultReadObject();
     createLogger();
   }
+
+//    public void addParameter() {
+//      DefaultMutableTreeNode selNode =
+//        (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+//      ConfigurableComponent cc = 
+//        (ConfigurableComponent)nodeToComponent.get(selNode);
+//      JPanel panel = new JPanel(new GridBagLayout());
+//      int x = 0;
+//      int y = 0;
+//      panel.add(new JLabel("Parameter Name:"),
+//                new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+//                                       GridBagConstraints.WEST,
+//                                       GridBagConstraints.NONE,
+//                                       new Insets(0, 5, 0, 5), 0, 0));
+//      JTextField nameField = new JTextField(20);
+//      panel.add(nameField,
+//                new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+//                                       GridBagConstraints.WEST,
+//                                       GridBagConstraints.HORIZONTAL,
+//                                       new Insets(0, 5, 0, 5), 0, 0));
+//      x = 0;
+//      panel.add(new JLabel("Parameter Type:"),
+//                new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+//                                       GridBagConstraints.WEST,
+//                                       GridBagConstraints.NONE,
+//                                       new Insets(0, 5, 0, 5), 0, 0));
+//      Object[] types = { "Integer", "String" };
+//      JComboBox cb = new JComboBox(types);
+//      panel.add(cb,
+//                new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+//                                       GridBagConstraints.WEST,
+//                                       GridBagConstraints.HORIZONTAL,
+//                                       new Insets(0, 5, 0, 5), 0, 0));
+//      int result = JOptionPane.showConfirmDialog(this, panel, "New Parameter",
+//                                                 JOptionPane.OK_CANCEL_OPTION,
+//                                                 JOptionPane.PLAIN_MESSAGE);
+//      if (result != JOptionPane.OK_OPTION)
+//        return;
+//      String name = nameField.getText();
+//      name = name.trim(); // trim white space
+//      if (name == null || name.length() == 0) return;
+//      Property p = cc.addProperty(name, "");
+//      String type = (String)cb.getSelectedItem();
+//      if (type.equals("String"))
+//        p.setPropertyClass(String.class);
+//      else if (type.equals("Integer"))
+//        p.setPropertyClass(Integer.class);
+//    }
 
 }

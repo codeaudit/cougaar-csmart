@@ -36,6 +36,7 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.*;
 import javax.swing.border.EtchedBorder;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.InvalidPropertyValueException;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyHelper;
@@ -93,30 +94,38 @@ public class PropertyTable extends JTable {
         }
         p.setValue(value);
       } catch (InvalidPropertyValueException e) {
-        Object[] goodValues = new TreeSet(p.getAllowedValues()).toArray();
-        JList goodValueList = new JList(goodValues);
-        goodValueList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        Object[] msg = {
-          "Invalid Property Value: " + value,
-          "Use one of the following:",
-          goodValueList
-        };
-        JOptionPane.showMessageDialog(PropertyTable.this,
-                                      msg,
-                                      "Invalid Property Value",
-                                      JOptionPane.ERROR_MESSAGE);
-        int selected = goodValueList.getSelectedIndex();
-        if (selected >= 0) {
-          Range goodRange = (Range) goodValues[selected];
-          if (goodRange.getMinimumValue().equals(goodRange.getMaximumValue())) {
-            p.setValue(goodRange.getMinimumValue());
+        Set allowedValues = p.getAllowedValues();
+        if (allowedValues == null) {
+          JOptionPane.showMessageDialog(PropertyTable.this,
+                                        "Invalid Property Value, must be of class: " + p.getPropertyClass().toString(),
+                                        "Invalid Property Value",
+                                        JOptionPane.ERROR_MESSAGE);
+          return;
+        } else {
+          Object[] goodValues = new TreeSet(allowedValues).toArray();
+          JList goodValueList = new JList(goodValues);
+          goodValueList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+          Object[] msg = {
+            "Invalid Property Value: " + value,
+            "Use one of the following:",
+            goodValueList
+          };
+          JOptionPane.showMessageDialog(PropertyTable.this,
+                                        msg,
+                                        "Invalid Property Value",
+                                        JOptionPane.ERROR_MESSAGE);
+          int selected = goodValueList.getSelectedIndex();
+          if (selected >= 0) {
+            Range goodRange = (Range) goodValues[selected];
+            if (goodRange.getMinimumValue().equals(goodRange.getMaximumValue())) {
+              p.setValue(goodRange.getMinimumValue());
+            }
           }
         }
       }
     }
   } // end Model class
 
-  //  Model model = new Model();
   Model model;
       
   public PropertyTable(boolean isEditable) {
@@ -235,12 +244,18 @@ public class PropertyTable extends JTable {
           }
         };
 
+    /**
+     * Just delete property from configurable component.
+     * Listeners on the configurable components,
+     * in PropertyEditorPanel actually update the UI.
+     */
+
     private AbstractAction deleteAction =
       new AbstractAction("Delete") {
           public void actionPerformed(ActionEvent e) {
             Property prop = model.getProperty(row);
-            if (prop != null) 
-              ((PropertyTable)table).removeProperty(prop);
+            ConfigurableComponent cc = prop.getConfigurableComponent();
+            cc.removeProperty(prop);
           }
         };
 
