@@ -34,6 +34,12 @@ import java.io.IOException;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.DBConnectionPool;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.StringTokenizer;
+import java.util.Date;
 
 /**
  * Static methods for accessing the CSMART configuration database
@@ -51,10 +57,22 @@ public class DBUtils {
   public static final String QUERY_FILE = "CSMART.q";
   public static final String ASSEMBLYID_QUERY = "queryAssemblyID";
 
+  // Flag whether to actually go to DB on queries
+  public static boolean execute = true;
+  public static boolean traceQueries = false; // set to true for more debugging
+  
   public DBUtils() {
   }
 
-
+  /**
+   * Set whether to output debugging output on queries
+   *
+   * @param b a <code>Boolean</code> 
+   */
+  public static void setTraceQueries(Boolean b){
+    traceQueries = b.booleanValue();
+  }  
+  
   /**
    * Determines if a valid RC file exists.  It
    * first checks for <code>$HOME/.cougaarrc</code>
@@ -228,6 +246,11 @@ public class DBUtils {
     return result;
   }
 
+  /**
+   * Does the current cougaarrc file indicate a MySQL database
+   *
+   * @return a <code>boolean</code>, true if the CSMART DB is MySQL
+   */
   public static final boolean isMySQL() {
     DBProperties dbProps;
 
@@ -321,5 +344,389 @@ public class DBUtils {
     return result;
   }
 
+  // Stuff from CMT.java
+  /**
+   * Describe <code>makeDeleteQuery</code> method here.
+   *
+   * @param table a <code>String</code> value
+   * @param column a <code>String</code> value
+   * @param val a <code>String</code> value
+   * @return a <code>String</code> value
+   */
+  static String makeDeleteQuery(String table, String column, String val) {
+    return "delete from "+ table.toUpperCase() +" where "+column+"="+val;
+  }
+  
+  /**
+   * Do a bunch of updates, using the values in the given set for the given
+   * substitution in the given operation 
+   *
+   * @param op a <code>String</code> update to perform
+   * @param subs a <code>String</code> substitution name
+   * @param items a <code>Set</code> of values for the above substitution
+   * @param qFile a <code>String</code> query file name
+   */
+  static void iterateUpdate(String op, String subs, Set items, String qFile){
+    Iterator i = items.iterator();
+    Map m = new HashMap();
+    while (i.hasNext()) {
+      dbUpdate(op,addSubs(m,subs,(String)i.next()), qFile);
+    }
+  }
+  
+  /**
+   * Execute a list of queries (updates, etc).
+   *
+   * @param queries an <code>ArrayList</code> of statements to execute
+   * @param qFile a <code>String</code> query file name
+   */
+  static void executeQueries(ArrayList queries, String qFile) {
+    if (!execute)
+      return;
+    String dbQuery = "";
+    try {
+      Connection conn = DBUtils.getConnection(qFile);
+      try {
+	Statement stmt = conn.createStatement();	
+	for (int i = 0; i < queries.size(); i++) {
+	  dbQuery = (String)queries.get(i);
+	  //          System.out.println("Query: " + dbQuery);
+	  int count = stmt.executeUpdate(dbQuery);
+	  //          System.out.println("Deleted "+count+" items from the database");
+	}
+	stmt.close();
+      } finally {
+	conn.close();
+      }
+    } catch (Exception e) {
+      System.out.println("dbDelete: "+dbQuery);
+      e.printStackTrace();
+      throw new RuntimeException("Error" + e);
+    }
+  } 
+  
+  /**
+   * Delete rows from the given table where the given column has the given value
+   *
+   * @param table a <code>String</code> table name to delete from
+   * @param column a <code>String</code> column name to match on
+   * @param val a <code>String</code> value to look for in that column
+   * @param qFile a <code>String</code> query file name
+   * @return an <code>int</code> number of rows removed
+   */
+  static int deleteItems(String table, String column, String val, String qFile){
+    String dbQuery = "delete from "+ table.toUpperCase() +" where "+column+"="+val;
+    int count=0;
+    try {
+      Connection conn = DBUtils.getConnection(qFile);
+      if(execute){
+	try {
+	  Statement stmt = conn.createStatement();	
+	  //System.out.println("Query: " + dbQuery);
+	  count = stmt.executeUpdate(dbQuery);
+	  //  		    System.out.println("Deleted "+count+" items from the database");
+	  stmt.close();
+	  
+	} finally {
+	  conn.close();
+	}
+      }
+    } catch (Exception e) {
+      System.out.println("dbDelete: "+dbQuery);
+      e.printStackTrace();
+      throw new RuntimeException("Error" + e);
+    }
+    return count;
+  }
+  
+  /**
+   * Execute a query that returns multiple rows of 1 String each
+   *
+   * @param query a <code>String</code> query to execute
+   * @param substitutions a <code>Map</code> of replacements
+   * @param qFile a <code>String</code> query file name
+   * @return a <code>Set</code> of the results
+   */
+  static Set querySet(String query, Map substitutions, String qFile){
+    String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
+    Set s = new HashSet();
+    try {
+      Connection conn = DBUtils.getConnection(qFile);
+      try {
+	Statement stmt = conn.createStatement();	
+	ResultSet rs = stmt.executeQuery(dbQuery);
+	while (rs.next()) {s.add(rs.getString(1));}
+	rs.close();
+	stmt.close();
+      } finally {
+	conn.close();
+      }
+      
+    } catch (Exception e) {
+      System.out.println("querySet: "+dbQuery);
+      e.printStackTrace();
+      throw new RuntimeException("Error" + e);
+    }
+    return s;
+  }
+  
+  /**
+   * Execute a query whose return is a set of rows of 2 values, first
+   * value is a key, second is a value, and these are put into
+   * a Map and returned.
+   *
+   * @param query a <code>String</code> query to execute
+   * @param substitutions a <code>Map</code> of replacements to do
+   * @param qFile a <code>String</code> query file name with DB info
+   * @return a <code>SortedMap</code> of the results
+   */
+  static SortedMap queryHT(String query, Map substitutions, String qFile){
+    String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
+    Connection conn = null;
+    Map ht = new TreeMap();
+    try {
+      conn = DBUtils.getConnection(qFile);
+      if (conn == null) {
+	System.out.println("DBUtils:queryHT: Got no connection");
+	return (SortedMap)ht;
+      }
+      try {
+	Statement stmt = conn.createStatement();	
+	ResultSet rs = stmt.executeQuery(dbQuery);
+	while (rs.next()) {
+	  // Null first string, (like expt name), kills stuff
+	  if (rs.getString(1) != null)
+	    ht.put(rs.getString(1),rs.getString(2));
+	}
+	rs.close();
+	stmt.close();
+      } finally {
+	if (conn != null)
+	  conn.close();
+      }
+      
+    } catch (Exception e) {
+      System.out.println("queryHT: "+dbQuery);
+      e.printStackTrace();
+      throw new RuntimeException("Error" + e);
+    }
+    return (SortedMap)ht;
+  }
+  
+  /**
+   * Execute the given query which returns one String
+   *
+   * @param query a <code>String</code> query that returns one String
+   * @param substitutions a <code>Map</code> of substitutions to make in the query
+   * @param qFile a <code>String</code> query file name with the DB info
+   * @return a <code>String</code> return value from the query
+   */
+  static String query1String(String query, Map substitutions, String qFile){
+    String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
+    
+    String res = null;
+    try {
+      Connection conn = DBUtils.getConnection(qFile);
+      try {
+	Statement stmt = conn.createStatement();	
+	ResultSet rs = stmt.executeQuery(dbQuery);
+	if (rs.next()) {
+	  
+	  res=rs.getString(1);
+	}
+	rs.close();
+	stmt.close();
+      } finally {
+	conn.close();
+      }
+      
+    } catch (Exception e) {
+      System.out.println("query1String: "+dbQuery);
+      e.printStackTrace();
+      throw new RuntimeException("Error" + e);
+    }
+    return res;
+  }
+  
+  /**
+   * Execute the given query which returns one Integer
+   *
+   * @param query a <code>String</code> query that returns one Integer
+   * @param substitutions a <code>Map</code> of substitutions to make in the query
+   * @param qFile a <code>String</code> query file name with the DB info
+   * @return an <code>Integer</code> result of the query
+   */
+  static Integer query1Int(String query, Map substitutions, String qFile){
+    String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
+    Integer res = null;
+    try {
+      Connection conn = DBUtils.getConnection(qFile);
+      try {
+	Statement stmt = conn.createStatement();	
+	ResultSet rs = stmt.executeQuery(dbQuery);
+	if (rs.next()) {
+	  res=new Integer(rs.getInt(1));
+	}
+	rs.close();
+	stmt.close();
+      } finally {
+	conn.close();
+      }
+      
+    } catch (Exception e) {
+      System.out.println("query1Int: "+dbQuery);
+      e.printStackTrace();
+      throw new RuntimeException("Error" + e);
+    }
+    return res;
+  }
+  
+  /**
+   * Add the given subsititution to the given set of subsitutions.
+   * Useful when nesting the substitution addition in a larger command,
+   * because the return is the updated substitution map.
+   *
+   * @param subs a <code>Map</code> of substitutions
+   * @param subName a <code>String</code> subsitution key in query files
+   * @param subItem an <code>Object</code> value to substitute for the key
+   * @return a <code>Map</code> of substitutions, updated
+   */
+  static Map addSubs(Map subs, String subName, Object subItem){
+    subs.put(subName,subItem);
+    return subs;
+  }
+  
+  /**
+   * Execute a set of queries whose name starts with the given base.<br>
+   * Used, for example, where MySQL takes multiple queries to do what
+   * Oracle does in one.
+   *
+   * @param queryBase a <code>String</code> query name root
+   * @param substitutions a <code>Map</code> of subsitutions to make in the query
+   * @param qFile a <code>String</code> query file name
+   */
+  static void executeQuerySet(String queryBase, Map substitutions, String qFile){
+    if (traceQueries){
+      System.out.println("\nexecuteQuerySet "+queryBase);
+    }
+    String qs = null;
+    try{
+      qs = DBUtils.getQuery(queryBase+"Queries", substitutions, qFile);
+    } catch (IllegalArgumentException e)
+      {
+	// this is expected if there is no "Queries" item
+      }
+    String dbQuery=null;
+    if (qs==null){
+      dbQuery = DBUtils.getQuery(queryBase, substitutions, qFile);
+      if (dbQuery != null) {
+	dbExecute(dbQuery, "Execute", qFile);
+      } else {
+	System.out.println("Can't find query - " + queryBase);
+      }
+    } else {
+      StringTokenizer queries = new StringTokenizer(qs);
+      while (queries.hasMoreTokens()) {
+	String queryName = queries.nextToken();
+	dbQuery = DBUtils.getQuery(queryName, substitutions, qFile);
+	if (dbQuery != null) {
+	  dbExecute(dbQuery, "Execute", qFile);
+	} else {
+	  System.out.println("Can't find query - " + queryBase);
+	}
+      }
+    }
+  }
+  
+  /**
+   * Execute the given update, optionally timing it
+   *
+   * @param dbQuery a <code>String</code> query to execute (update/delete/insert...)
+   * @param type a <code>String</code> type of update
+   * @param qFile a <code>String</code> query file name, indicating the DB to use
+   * @return an <code>int</code>, the number of lines affected
+   */
+  public static int dbExecute(String dbQuery, String type, String qFile){
+    int count=0;
+    try {
+      Connection conn = DBUtils.getConnection(qFile);
+      if (traceQueries){
+	System.out.println("\nStarting dbExecute at "+new Date()+"\n\n"+dbQuery);
+      }
+      if (execute){
+	try {
+	  Statement stmt = conn.createStatement();	
+	  count = stmt.executeUpdate(dbQuery);
+	  //  		    System.out.println("db"+type+" "+type+"d "+count+" items in the database"); 
+	  stmt.close();
+	} finally {
+	  conn.close();
+	}
+      }
+    } catch (Exception e) {
+      System.out.println("db"+type+": "+dbQuery);
+      e.printStackTrace();
+      throw new RuntimeException("Error" + e);
+    }
+    if (traceQueries){
+      System.out.println("\nexiting dbExecute with "+count+" at "+new Date());
+    }
+    return count;
+  }
+  
+  /**
+   * Do a db Insertion
+   *
+   * @param query a <code>String</code> query to execute (insert)
+   * @param substitutions a <code>Map</code> of substitutions to make in the query
+   * @param qFile a <code>String</code> query file name, indicating the db to use
+   * @return an <code>int</code>, the number of lines inserted
+   */
+  public static int dbInsert(String query, Map substitutions, String qFile){
+    String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
+    return dbExecute(dbQuery, "Insert", qFile);
+  }
+  
+  /**
+   * Do a db Update
+   *
+   * @param query a <code>String</code> query (update) to execute
+   * @param substitutions a <code>Map</code> of substitutions to make in the query
+   * @param qFile a <code>String</code> query file name, indicating the db to use
+   * @return an <code>int</code>, the number of lines updated
+   */
+  public static int dbUpdate(String query, Map substitutions, String qFile){
+    String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
+    return dbExecute(dbQuery, "Update", qFile);
+  }
+  
+  /**
+   * Do a delete from the database
+   *
+   * @param query a <code>String</code> query (deletion) to execute
+   * @param substitutions a <code>Map</code> of substitutions to make in the query
+   * @param qFile a <code>String</code> query file name, indicating the db to use
+   * @return an <code>int</code>, the number of rows deleted
+   */
+  public static int dbDelete(String query, Map substitutions, String qFile){
+    String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
+    return dbExecute(dbQuery, "Delete", qFile);
+  }
+  
+  /**
+   * Quote any quote marks in the string for use with SQL
+   *
+   * @param s a <code>String</code> to include in a query
+   * @return a <code>String</code> with single-quotes escaped
+   */
+  public static String sqlQuote(String s) {
+    if (s == null) return "null";
+    int quoteIndex = s.indexOf('\'');
+    while (quoteIndex >= 0) {
+      s = s.substring(0, quoteIndex) + "''" + s.substring(quoteIndex + 1);
+      quoteIndex = s.indexOf('\'', quoteIndex + 2);
+    }
+    return "'" + s + "'";
+  }  
 }
 
