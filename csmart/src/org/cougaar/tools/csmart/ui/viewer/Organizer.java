@@ -57,7 +57,6 @@ import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.recipe.BasicMetric;
-import org.cougaar.tools.csmart.recipe.EmptyMetric;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.recipe.ComponentInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe;
@@ -117,7 +116,6 @@ public class Organizer extends JScrollPane {
     new ComboItem("Specific Insertion", SpecificInsertionRecipe.class),
     new ComboItem("Agent Insertion", AgentInsertionRecipe.class),
     new ComboItem("Parameter Insertion", ParameterInsertionRecipe.class),
-    new ComboItem("Empty Metric", EmptyMetric.class),
     new ComboItem("ABCImpact", ABCImpact.class),
     //    new ComboItem("Foo Recipe", org.cougaar.tools.csmart.recipe.FooRecipe.class),
   };
@@ -1076,8 +1074,7 @@ public class Organizer extends JScrollPane {
 				  JOptionPane.QUESTION_MESSAGE,
 				  null,
 				  values,
-				  "Empty Recipe");
-				  //"Mo Recipe");
+				  "Specific Insertion");
     if (answer instanceof ComboItem) {
       ComboItem item = (ComboItem) answer;
       String name = recipeNames.generateName(item.name);
