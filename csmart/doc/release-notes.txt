@@ -1,7 +1,9 @@
 CSMART Release Notes
 
 Release 9.0:
-- The CSMART required Cougaar 3rd party jar file: grappa1_2_bbn.jar has been changed to grappa1_2.jar. The BBN modifications in the prior jar are now included in the standard Grappa jar.
+- The CSMART required Cougaar 3rd party jar file: grappa1_2_bbn.jar has been changed 
+  to grappa1_2.jar. The BBN modifications in the prior jar are now included in the 
+  standard Grappa jar.
 - Repackage and code cleanup for readability
 - Use Servlets instead of PSPs. You must now explicitly add
 a PSP to your society, including adding the PlanServerPlugin, if you
@@ -15,9 +17,10 @@ really want to run a PSP.
 - Due to above, experiments with multiple trials are temporarily
 disabled
 - Updated build script to Ant1.4.1
+- New File menu items for easy access
 
 Release v8.8.0
-This relse represents all of the fixes made during integration on
+This release represents all of the fixes made during integration on
 the 8.6.2 release
 
 Release v8.6.2, Cougaar v8.6.2:
@@ -40,7 +43,8 @@ society.
 - Save all host, node attributes in database
 
 - Support setting non -D arguments, global -D arguments on Nodes (with
-defaults provided), showing these in Node info screen on console, and possibly loading a set of values from a file
+  defaults provided), showing these in Node info screen on console, and possibly 
+  loading a set of values from a file
 
 - Support a delay between Node launches, default to 0
 
