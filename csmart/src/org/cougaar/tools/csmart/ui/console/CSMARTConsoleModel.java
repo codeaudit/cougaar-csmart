@@ -222,6 +222,7 @@ public class CSMARTConsoleModel extends Observable {
       Object key = enum.nextElement();
       NodeView view = new NodeView((NodeModel)nodeModels.get(key));
       this.nodeViews.put(key, view);
+      notifyObservers(view);
     }
   }
 
@@ -691,12 +692,13 @@ public class CSMARTConsoleModel extends Observable {
 //    if (but != null)
 //      but.setStatus(NodeStatusButton.STATUS_NO_ANSWER);
 
-    ConsoleInternalFrame frame = desktop.getNodeFrame(nodeName);
-    if (frame != null) {
-      if (log.isDebugEnabled())
-        log.debug("markNodeDead disabling restart for node " + nodeName);
-      frame.enableRestart(false);
-    }
+// ConsoleInternalFrame is replaced by NodeView
+//    ConsoleInternalFrame frame = desktop.getNodeFrame(nodeName);
+//    if (frame != null) {
+//      if (log.isDebugEnabled())
+//        log.debug("markNodeDead disabling restart for node " + nodeName);
+//      frame.enableRestart(false);
+//    }
   }
 
   /**
@@ -758,14 +760,15 @@ public class CSMARTConsoleModel extends Observable {
     } // end of block to kill Node Listener
 
     // enable restart command on node output window, only if we're not stopping
-    ConsoleInternalFrame frame = null;
-    if (desktop != null)
-      frame = desktop.getNodeFrame(nodeName);
-    if (frame != null && !stopping) {
+    // ConsoleInternalFrame is replaced by NodeView
+    //    ConsoleInternalFrame frame = null;
+    //    if (desktop != null)
+    //      frame = desktop.getNodeFrame(nodeName);
+    //    if (frame != null && !stopping) {
 //       if (log.isDebugEnabled())
 // 	log.debug("nodeStopped enabling restart for node " + nodeName);
-      frame.enableRestart(true);
-    }
+//      frame.enableRestart(true);
+//    }
 
     // ignore condition in which we temporarily have
     // no running nodes while starting

@@ -39,7 +39,7 @@ public class NodeModel extends Observable {
   private NodeStatusButton statusButton;
   private ConsoleStyledDocument doc;
   private ConsoleTextPane textPane;
-  private OutputListener listener;
+  private ConsoleNodeListener listener;
   private String logFileName;
   private String nodeName;
   private Logger log;
@@ -49,7 +49,6 @@ public class NodeModel extends Observable {
   private int viewSize = CSMARTConsoleModel.DEFAULT_VIEW_SIZE; // number of characters in node view
   private boolean notifyOnStandardError = false; // if stderr appears, notify user
   private ConsoleNodeOutputFilter displayFilter;
-  private ConsoleNodeListener nodeListener;
   private boolean running = false;
   private OutputPolicy outputPolicy;
   private CreateNodeThread thread;
@@ -79,7 +78,7 @@ public class NodeModel extends Observable {
   // create a node event listener to get events from the node
   private void createListener() {
     try {
-      nodeListener = new ConsoleNodeListener(this);
+      listener = new ConsoleNodeListener(this);
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
         log.error("Unable to create output for: " + info.getNodeName(), e);
@@ -98,7 +97,7 @@ public class NodeModel extends Observable {
       statusButton.getMyModel().setNotifyOnStandardError(true);
     }
     if (displayFilter != null) {
-      ((ConsoleNodeListener) listener).setFilter(displayFilter);
+      listener.setFilter(displayFilter);
     }
 
 //    nodeListeners.put(info.getNodeName(), listener);
@@ -155,7 +154,7 @@ public class NodeModel extends Observable {
     return textPane;
   }
 
-  public OutputListener getListener() {
+  public ConsoleNodeListener getListener() {
     return listener;
   }
 

@@ -808,6 +808,12 @@ public class CSMARTConsoleView extends JFrame implements Observer {
        arg.equals(CSMARTConsoleModel.NODE_ADDED)) {
       updateASControls();
     }
+
+    if (arg instanceof NodeView) {
+      // TODO: second argument should be node name
+      desktop.add((NodeView)arg, "");
+      return;
+    }
   }
 
   /**
