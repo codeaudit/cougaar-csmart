@@ -314,11 +314,16 @@ public class ExperimentTree extends DNDTree {
     if (recAgents != null && recAgents.length > 0) {
       for (int j=0; j < recAgents.length; j++) {
         if (!experiment.agentNameUnique(recAgents[j].getShortName())) {
-            // Need to remove recipe and inform user.
-            JOptionPane.showMessageDialog(null, 
-                                          "Experiment cannot contain two agents with the same name: " + recAgents[j].getShortName(),
+	  final String dupName = recAgents[j].getShortName();
+	  // Need to remove recipe and inform user.
+	  javax.swing.SwingUtilities.invokeLater(new Runnable() {
+	      public void run() {
+		JOptionPane.showMessageDialog(null, 
+                                          "Experiment cannot contain two agents with the same name: " + dupName,
                                           "Recipe Add Aborted!",
                                           JOptionPane.ERROR_MESSAGE);
+	      }
+	    });
             return false;
         }
       }
