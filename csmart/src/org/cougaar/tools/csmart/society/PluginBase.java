@@ -75,7 +75,7 @@ public class PluginBase
     }
 
     if(nParameters > 0) {
-      data.setName(getPluginClassName() + getProperty(PROP_PARAM+0).getValue());
+      data.setName(getPluginClassName()+"|"+getProperty(PROP_PARAM+0).getValue());
     } else {
       data.setName(getPluginClassName());
     }
