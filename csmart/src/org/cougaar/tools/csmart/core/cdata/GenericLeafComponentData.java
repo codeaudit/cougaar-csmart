@@ -108,7 +108,9 @@ public class GenericLeafComponentData implements LeafComponentData, Serializable
   public boolean equals(Object o) {
     if (o instanceof GenericLeafComponentData) {
       GenericLeafComponentData that = (GenericLeafComponentData)o;
-      if (this.getName().equals(that.getName())) {
+      if (this.getName().equals(that.getName()) && 
+          this.getType().equals(that.getType()) &&
+          this.getValue().equals(that.getValue())) {
 	return true;
       }
     }
