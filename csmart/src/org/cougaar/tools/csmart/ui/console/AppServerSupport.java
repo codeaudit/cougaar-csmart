@@ -202,17 +202,22 @@ public class AppServerSupport {
       RemoteHost appServer = desc.appServer;
       try {
         RemoteProcess node = appServer.getRemoteProcess(name);
-	try {
-	  node.getRemoteListenable().flushOutput();
-	} catch (Exception e) {
-	  if (log.isWarnEnabled()) {
-	    log.warn("killAllProceses: Exception flushing output for " + name, e);
+	if (node != null) {
+	  try {
+	    node.getRemoteListenable().flushOutput();
+	  } catch (Exception e) {
+	    if (log.isWarnEnabled()) {
+	      log.warn("killAllProceses: Exception flushing output for " + name, e);
+	    }
 	  }
+	  if (log.isDebugEnabled()) {
+	    log.debug("About to kill process " + name);
+	  }
+	  node.destroy();
+	} else {
+	  if (log.isWarnEnabled())
+	    log.warn("killAllProcesses: couldn't get remote process " + name);
 	}
-	if (log.isDebugEnabled()) {
-	  log.debug("About to kill process " + name);
-	}
-	node.destroy();
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
           log.error("Exception killing process for " + name + ": ", e);
@@ -242,33 +247,39 @@ public class AppServerSupport {
       RemoteHost appServer = desc.appServer;
       try {
         RemoteProcess node = appServer.getRemoteProcess(name);
-        RemoteListenable rl = node.getRemoteListenable();
-        List listenerNames = rl.list();
-        for (int j = 0; j < listenerNames.size(); j++) {
-          String s = (String)listenerNames.get(j);
-          if (s.equals(CSMART.getNodeListenerId())) {
-	    if (log.isDebugEnabled()) {
-	      log.debug("Killing node listener: " + s +
-				 " for node: " + name);
-	    }
-
-	    try {
-	      rl.flushOutput();
-	    } catch (Exception e) {
-	      if (log.isErrorEnabled()) {
-		log.error("killListener: Exception flushing output for " + name + ": ", e);
+	if (node != null) {
+	  RemoteListenable rl = node.getRemoteListenable();
+	  List listenerNames = rl.list();
+	  for (int j = 0; j < listenerNames.size(); j++) {
+	    String s = (String)listenerNames.get(j);
+	    if (s.equals(CSMART.getNodeListenerId())) {
+	      if (log.isDebugEnabled()) {
+		log.debug("Killing node listener: " + s +
+			  " for node: " + name);
 	      }
-	    }
-	    
-	    try {
-	      rl.removeListener(s);
-	    } catch (Exception e) {
-	      if (log.isErrorEnabled()) {
-		log.error("killListener: Exception killing listener for " + name + ": ", e);
+	      
+	      try {
+		rl.flushOutput();
+	      } catch (Exception e) {
+		if (log.isErrorEnabled()) {
+		  log.error("killListener: Exception flushing output for " + name + ": ", e);
+		}
 	      }
-	    }
-          }
-        }
+	      
+	      try {
+		rl.removeListener(s);
+	      } catch (Exception e) {
+		if (log.isErrorEnabled()) {
+		  log.error("killListener: Exception killing listener for " + name + ": ", e);
+		}
+	      } // end of block to remove listener
+	    } // end of block for a CSMART listener
+	  } // end of loop over listeners
+	} // end of check for non-null RemoteProcess
+	else {
+	  if (log.isWarnEnabled())
+	    log.warn("killListener got null RemoteProcess for " + name);
+	}
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
           log.error("killListener: Exception getting listener for " + name + ": ", e);
@@ -450,12 +461,17 @@ public class AppServerSupport {
   private boolean findListener(RemoteHost appServer, String name) {
     try {
       RemoteProcess node = appServer.getRemoteProcess(name);
-      RemoteListenable rl = node.getRemoteListenable();
-      List listenerNames = rl.list();
-      for (int j = 0; j < listenerNames.size(); j++) {
-        String s = (String)listenerNames.get(j);
-        if (s.equals(CSMART.getNodeListenerId())) 
-          return true;
+      if (node != null) {
+	RemoteListenable rl = node.getRemoteListenable();
+	List listenerNames = rl.list();
+	for (int j = 0; j < listenerNames.size(); j++) {
+	  String s = (String)listenerNames.get(j);
+	  if (s.equals(CSMART.getNodeListenerId())) 
+	    return true;
+	}
+      } else {
+	if (log.isWarnEnabled())
+	  log.warn("findListener got null RemoteProcess from appServer for node " + name);
       }
     } catch (Exception e) {
       if (log.isErrorEnabled()) {

@@ -2288,15 +2288,21 @@ public class CSMARTConsole extends JFrame {
       try {
         remoteNode =
           nodeInfo.appServer.getRemoteProcess(nodeInfo.processName);
-        RemoteListenable rl =
-          remoteNode.getRemoteListenable();
-        if (log.isDebugEnabled())
-	  log.debug("Adding listener: " +
-                           CSMART.getNodeListenerId() +
-                           " for: " +
-                           nodeInfo.processName);
-        rl.addListener(nci.listener, 
-                       CSMART.getNodeListenerId());
+	if (remoteNode != null) {
+	  RemoteListenable rl =
+	    remoteNode.getRemoteListenable();
+	  if (log.isDebugEnabled())
+	    log.debug("Adding listener: " +
+		      CSMART.getNodeListenerId() +
+		      " for: " +
+		      nodeInfo.processName);
+	  rl.addListener(nci.listener, 
+			 CSMART.getNodeListenerId());
+	} else {
+	  if (log.isWarnEnabled())
+	    log.warn("Got null process from AppServer for node to attach to: " + name);
+	  throw new Exception("Null RemoteProcess for " + nodeInfo.processName);
+	}
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
           log.error("Exception attaching to: " + nodeInfo.processName, e);
