@@ -114,21 +114,25 @@ public class AgentFileComponent
       return;
     }
     for (int i=0; i < desc.length; i++) {
-      String name = desc[i].getName();
+      StringBuffer name = new StringBuffer(desc[i].getName());
+      StringBuffer className = new StringBuffer(desc[i].getClassname());
       String insertionPoint = desc[i].getInsertionPoint();
 //       if(log.isDebugEnabled()) {
 //         log.debug("Insertion Point: " + insertionPoint);
 //       }
 
       if(insertionPoint.endsWith("Plugin")) {
-        if(log.isDebugEnabled()) {
-          log.debug("Create Plugin: " + desc[i].getName());
+        int start = 0;
+        if((start = name.indexOf("OrgRTData")) != -1) {
+          name.replace(start, name.lastIndexOf("OrgRT"), "Org");
+          className.replace(className.indexOf("OrgRT"), className.indexOf("OrgRt"), "org");
         }
-        int index = name.lastIndexOf('.');
+
+        int index = name.lastIndexOf(".");
         if (index != -1)
-          name = name.substring(index+1);
+          name.delete(0,index+1);
         PluginBase plugin = 
-          new PluginBase(name, desc[i].getClassname());
+          new PluginBase(name.substring(0), className.substring(0));
         plugin.initProperties();
         Iterator iter = ComponentConnector.getPluginProps(desc[i]);
         while(iter.hasNext()) 
