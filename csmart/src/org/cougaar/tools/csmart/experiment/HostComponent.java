@@ -55,7 +55,7 @@ public interface HostComponent extends BaseComponent {
 
   /**
    * Set the port on which to contact the server on this host.
-   * @param the server port
+   * @param serverPort the server port
    */
   void setServerPort(int serverPort);
 
@@ -68,7 +68,7 @@ public interface HostComponent extends BaseComponent {
 
   /**
    * Set the port on which to monitor nodes running on this host.
-   * @param the monitoring port
+   * @param monitoringPort port on which to monitor nodes
    */
   void setMonitoringPort(int monitoringPort);
 }

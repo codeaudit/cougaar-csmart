@@ -60,7 +60,7 @@ public final class TranslateUtils {
    * <p>
    * Simply uses <tt>toPropertyTree(Object)</tt>.
    *
-   * @param fromL a List of Objects
+   * @param objects a List of Objects
    * @param agent the name of the Agent (MessageAddress) for these Objects; i.e. the name of the agent in which this code is executing
    *
    * @return a List of non-null PropertyTrees; list may be empty, but is not null
@@ -111,9 +111,9 @@ public final class TranslateUtils {
 
   /**
    * Return a PropertyTree for a task.
-   * @param Task the task for which to return a property tree
+   * @param task the task for which to return a property tree
    * @param agent the name of the agent
-   * @param a non-null PropertyTree
+   * @return a non-null PropertyTree
    */
   public static PropertyTree toPropertyTree(Task task, String agent) {
     PropertyTree pt = 

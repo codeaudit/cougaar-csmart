@@ -88,7 +88,7 @@ public class ClientServletUtil {
    * which returns the URLs of all the agents in the society.
    * This may return null or a vector with zero elements;
    * in these cases, appropriate error messages are displayed for the user.
-   * @param URL the URL of the agent to contact
+   * @param URLString the URL of the agent to contact
    * @return vector of String; URLs of agents in society
    */
   public static Vector getAgentURLs(String URLString) throws Exception {

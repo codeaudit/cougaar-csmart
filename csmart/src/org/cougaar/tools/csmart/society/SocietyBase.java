@@ -141,7 +141,7 @@ public abstract class SocietyBase
    * (via the app-server's "create" method)
    * until all nodes are terminated (aborted, self terminated, or
    * manually terminated).
-   * @param flag indicating whether or not the society is running
+   * @param isRunning flag indicating whether or not the society is running
    */
    public void setRunning(boolean isRunning) {
     this.isRunning = isRunning;

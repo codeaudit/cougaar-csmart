@@ -176,10 +176,9 @@ public final class SocietyFinder {
    * Return names of all agent files in the specified directory.
    * Currently searches all files whose names end with ".ini" for
    * the pattern: [ Cluster ]
-   * @param File directory to search
+   * @param directory to search
    * @return string array of agent filenames
    */
-
   public String[] getAgentFilenames(File directory) {
     File[] files = directory.listFiles();
     ArrayList agentFilenames = new ArrayList(files.length);

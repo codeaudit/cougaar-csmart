@@ -53,9 +53,8 @@ public class XMLNode implements NodeObject {
    * Create a NodeObject from a label and properties which were extracted from
    * an XML document by the caller.
    * @param label label for the node
-   * @properties name/value pairs to display in a table associated with this node
+   * @param properties name/value pairs to display in a table associated with this node
    */
-
   public XMLNode(String label, PropertyTree properties) {
     this.label = label;
     this.properties = properties;
@@ -66,9 +65,8 @@ public class XMLNode implements NodeObject {
    * Create a NodeObject from a XML Element.
    * The label is taken from the value of a text node, or the name
    * of an element node, or the value of a name attribute if it exists.
-   * @param Node XML node from which to create a grappa node
+   * @param node XML node from which to create a grappa node
    */
-
   public XMLNode(Node node) {
     // set label
     int nodeType = node.getNodeType();

@@ -223,7 +223,7 @@ public class PropertyTable extends JTable {
 
   /**
    * Add a property to the table.
-   * @param <code>Property</code> to add
+   * @param prop <code>Property</code> to add
    */
   public void addProperty(Property prop) {
     model.addProperty(prop);
@@ -231,7 +231,7 @@ public class PropertyTable extends JTable {
 
   /**
    * Remove a property from the table.
-   * @param <code>Property</code> to remove
+   * @param prop <code>Property</code> to remove
    */
   public void removeProperty(Property prop) {
     model.removeProperty(prop);

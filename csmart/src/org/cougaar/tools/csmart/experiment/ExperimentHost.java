@@ -131,7 +131,7 @@ public class ExperimentHost
 
   /**
    * Set the port on which to contact the server on this host.
-   * @param the server port
+   * @param serverPort
    */
   public void setServerPort(int serverPort) {
     this.serverPort = serverPort;
@@ -147,7 +147,7 @@ public class ExperimentHost
 
   /**
    * Set the port on which to monitor nodes running on this host.
-   * @param the monitoring port
+   * @param monitoringPort on which to monitor nodes
    */
   public void setMonitoringPort(int monitoringPort) {
     this.monitoringPort = monitoringPort;

@@ -191,7 +191,9 @@ public class CommunityDBUtils {
   /**
    * Insert the entity into the database.
    * @param communityId the community
-   * @param communityType the community type
+   * @param entityId the ID of the entity
+   * @param attributeName the attribute to enter
+   * @param attributeValue the value of the new attribute
    * @param assemblyId a <code>String</code> Assembly to limit ourselves to
    */
   public static void insertEntityInfo(String communityId, String entityId,

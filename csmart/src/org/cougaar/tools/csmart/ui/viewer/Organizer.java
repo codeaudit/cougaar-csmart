@@ -1278,10 +1278,9 @@ public class Organizer extends JScrollPane {
    * If the recipe is in an experiment, put the recipe in the workspace
    * as a sibling of the experiment, else put it in the workspace
    * as a sibling of the recipe.
-   * @param society the society to copy
+   * @param recipe the recipe to copy
    * @return RecipeComponent the copied recipe
    */
-
   protected RecipeComponent copyRecipe(RecipeComponent recipe) {
     String newName =
       generateRecipeName(recipe.getRecipeName(), false);

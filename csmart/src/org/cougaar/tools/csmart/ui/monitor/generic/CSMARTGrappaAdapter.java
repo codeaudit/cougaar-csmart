@@ -92,11 +92,10 @@ public class CSMARTGrappaAdapter extends GrappaAdapter {
    * @param modifiers        mouse modifiers when mouse was released
    * @param pressedElem      the element on which the mouse was pressed
    * @param pressedPt        the point at which the mouse was pressed
-   * @param pressedmodifiers mouse modifiers when mouse was pressed
+   * @param pressedModifiers mouse modifiers when mouse was pressed
    * @param outline          the outline box from mouse pressed to released
    * @param panel            the graph panel in which the mouse was released
    */
-
   public void grappaReleased(Subgraph subg, Element elem, GrappaPoint pt, int modifiers, Element pressedElem, GrappaPoint pressedPt, int pressedModifiers, GrappaBox outline, GrappaPanel panel) {
     // get selected elements
     Vector selectedElements = ((CSMARTGraph)subg).getSelectedElements();

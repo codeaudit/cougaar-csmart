@@ -164,7 +164,7 @@ public abstract class AgentBase
   /**
    * Sets the classname for this agent
    *
-   * @param new agent class
+   * @param aClass new agent classname
    */
   public void setAgentClassName(String aClass) {
     if (aClass == null)
@@ -181,7 +181,6 @@ public abstract class AgentBase
       addProperty(PROP_CLASSNAME, aClass);
     }
   }
-
 
   /**
    * Tests equality for agents.
@@ -219,7 +218,6 @@ public abstract class AgentBase
    * Set the internal modified flag (returned by isModified)
    * and fire a modification event.
    */
-
   public void fireModification() {
     modified = true;
     super.fireModification();

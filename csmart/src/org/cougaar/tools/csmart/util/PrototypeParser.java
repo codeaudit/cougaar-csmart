@@ -74,9 +74,7 @@ public class PrototypeParser {
 
 
   /**
-   * Describe <code>parse</code> method here.
-   *
-   * @param data ComponentData for agent
+   * @param agentName name of agent to get data for
    */
   public static AgentAssetData parse(String agentName) {
     PrototypeParser pp = new PrototypeParser();

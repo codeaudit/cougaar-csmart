@@ -1189,9 +1189,8 @@ public class CSMARTGraph extends Graph
   /**
    * Remove specified nodes and their links.
    * Does NOT reconnect remaining nodes.
-   * @param nodes       names of nodes to remove; vector of String
+   * @param nodeNames       names of nodes to remove; vector of Strings
    */
-
   public void removeNamedNodesAndLinks(Vector nodeNames) {
     Vector allNodes = vectorOfElements(GrappaConstants.NODE);
     for (int i = 0; i < allNodes.size(); i++) {
@@ -1609,9 +1608,8 @@ public class CSMARTGraph extends Graph
 
   /**
    * Select (highlight) the given element(node or edge) and de-select others.
-   * @param element the element to select
+   * @param e the element to select
    */
-
   public void select(Element e) {
     clearSelection(); 
     resetColors();
@@ -1624,7 +1622,6 @@ public class CSMARTGraph extends Graph
   /**
    * Select all nodes and edges.
    */
-
   public void selectAll() {
     select(vectorOfElements(GrappaConstants.NODE +
 			    GrappaConstants.EDGE));
@@ -1724,10 +1721,9 @@ public class CSMARTGraph extends Graph
   /**
    * Create the specified number of subgraphs.
    * Creates an invisible node in each subgraph in order to enforce ranking.
-   * @param numberofSubgraphs number of subgraphs to create
+   * @param numberOfSubgraphs number of subgraphs to create
    * @return                  an array of the subgraphs created
    */
-
   public Subgraph[] createRankedSubgraphs(int numberOfSubgraphs) {
     Node lastNode = null;
     Subgraph[] subgraphs = new Subgraph[numberOfSubgraphs];

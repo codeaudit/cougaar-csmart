@@ -60,7 +60,6 @@ public class ArgValue implements Serializable {
    *
    * @param pair a <code>String</code> Containing both Arg and Value
    * @param sep a <code>String</code> that separates Arg and Value
-   * @param len an <code>int</code> of arbitrary value
    */
   public ArgValue(String pair, String sep) {
     // the pair must be split on sep to produce arg and value

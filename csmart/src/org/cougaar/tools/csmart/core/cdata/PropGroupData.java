@@ -119,7 +119,7 @@ public class PropGroupData implements Serializable, NewPropertyGroup {
   /**
    * Sets all properties for this PropertyGroup
    *
-   * @param PGPropData[] array of properties
+   * @param newProperties PGPropData[] array of properties
    */
   public void setProperties(PGPropData[] newProperties) {
     properties.clear();
@@ -131,7 +131,7 @@ public class PropGroupData implements Serializable, NewPropertyGroup {
   /**
    * Adds a property for this PropertyGroup
    *
-   * @param PGPropData property
+   * @param property as PGPropData
    */
   public void addProperty(PGPropData property) {
     this.properties.add(property);
@@ -140,8 +140,8 @@ public class PropGroupData implements Serializable, NewPropertyGroup {
   /**
    * Sets a property for this PropertyGroup, replacing the previous property at this index
    *
-   * @param int index for property
-   * @param PGPropData property to replace with
+   * @param index for property
+   * @param property to replace with
    */
   public void setProperty(int index, PGPropData property) 
                               throws IndexOutOfBoundsException{

@@ -272,9 +272,8 @@ public class UIProperties {
   /**
    * Set the color to use for a agent.
    * @param agentName  the agent for which to set a color
-   * @param return       the color to use for nodes associated with the agent
+   * @param color       the color to use for nodes associated with the agent
    */
-
   public void setAgentColor(String agentName, Color color) {
     String propertyName = "color.agent." + agentName;
     String colorString = color.getRed() + "," + color.getGreen() + "," +

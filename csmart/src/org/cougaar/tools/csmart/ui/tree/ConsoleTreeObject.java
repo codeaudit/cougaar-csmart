@@ -49,10 +49,9 @@ public class ConsoleTreeObject implements Serializable {
 
   /**
    * Constructor for root.
-   * @param the name for the root node
-   * @param allowed class of the children
+   * @param name the name for the root node
+   * @param allowedClassName the allowed class of the children
    */
-
   public ConsoleTreeObject(String name, String allowedClassName) {
     createLogger();
     this.name = name;

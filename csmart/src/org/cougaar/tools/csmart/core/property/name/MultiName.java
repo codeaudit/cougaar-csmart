@@ -99,7 +99,7 @@ public abstract class MultiName implements CompositeName {
 
   /**
    * Test if this name ends with the given name
-   * @param name the name to compare to
+   * @param that the name to compare to
    * @return true if the final elements of this name are equal to
    * the elements of the given name
    **/
@@ -124,11 +124,10 @@ public abstract class MultiName implements CompositeName {
 
   /**
    * Test if this name starts with the given name
-   * @param name the name to compare to
+   * @param that the name to compare to
    * @return true if the initial elements of this name are equal to
    * the elements of the given name
    **/
-
   public boolean startsWith(CompositeName that) {
     int thatSize = that.size();
     int thisSize = size();
@@ -156,9 +155,8 @@ public abstract class MultiName implements CompositeName {
   /**
    * Test two names for equality. Names may be of different classes
    * as long as they are equivalent
-   * @param name to be compared with. Must be a CompositeName.
+   * @param o Object to be compared with. Must be a CompositeName.
    **/
-
   public boolean equals(Object o) {
     if (o == this) return true; // minor optimization
     if (o instanceof CompositeName) {
@@ -167,6 +165,7 @@ public abstract class MultiName implements CompositeName {
     }
     return false;
   }
+
   /**
    * Compare two CompositeNames element by element.
    **/

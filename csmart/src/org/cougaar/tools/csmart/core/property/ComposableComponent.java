@@ -81,7 +81,7 @@ public interface ComposableComponent extends Serializable {
 
   /**
    * Removes a child from this component.
-   * @param index of child to remove.
+   * @param childIndex of child to remove.
    */
   void removeChild(int childIndex);
 

@@ -54,12 +54,10 @@ public interface ModifiableComponent extends BaseComponent {
   void setEditable(boolean editable);
 
   /**
-   * Create a copy of the given component
+   * Create a copy of the component
    * with the given name and return the copy.
    * @param name the name for the copied object
-   * @param mc the component to copy
    * @return the copy
    */
-
   ModifiableComponent copy(String name);
 }

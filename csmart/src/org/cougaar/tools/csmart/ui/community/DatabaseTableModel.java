@@ -169,7 +169,7 @@ public class DatabaseTableModel extends AbstractTableModel {
 
   /**
    * Return all values in the specified column; removes duplicates.
-   * @param column index of column
+   * @param columnIndex of column
    * @return unique values in that column
    */
   public ArrayList getKnownValues(int columnIndex) {
@@ -185,7 +185,7 @@ public class DatabaseTableModel extends AbstractTableModel {
 
   /**
    * Delete the specified row and update the database.
-   * @param rowIndex the index of the row to delete
+   * @param row the index of the row to delete
    */
   public void deleteRow(int row) {
     if (row >= rows.size()) 

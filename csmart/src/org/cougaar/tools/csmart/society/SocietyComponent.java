@@ -24,6 +24,7 @@ import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 
 import java.io.FileFilter;
 import java.net.URL;
+
 /**
  * The interface for adding and removing nodes from a society.
  */
@@ -58,7 +59,7 @@ public interface SocietyComponent extends ModifiableComponent {
    * (via the app-server's "create" method)
    * until all nodes are terminated (aborted, self terminated, or
    * manually terminated).
-   * @param flag indicating whether or not the society is running
+   * @param isRunning flag indicating whether or not the society is running
    */
   void setRunning(boolean isRunning);
 

@@ -47,8 +47,7 @@ public class CommunityTreeObject implements Cloneable {
 
   /**
    * Constructor for root.
-   * @param the label for the root node
-   * @param allowed class of the children
+   * @param label for the root node
    */
   public CommunityTreeObject(String label) {
     this(null, label, "Root", null);

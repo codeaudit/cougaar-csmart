@@ -49,9 +49,8 @@ public class BirdFrame extends JFrame implements ChangeListener {
    * Create a new frame which contains the entire graph.
    * @param title    the title for the new frame
    * @param graph    the graph to display
-   * @param CSMARTFrame the associated graph frame
+   * @param frame the associated graph frame
    */
-
   public BirdFrame(String title, Graph graph, CSMARTFrame frame) {
     super(title);
     createLogger();

@@ -75,7 +75,7 @@ public interface LeafComponentData {
   /**
    * Sets the value of the component.
    *
-   * @param value of the component
+   * @param val value of the component
    */
   void setValue(Object val);
 }

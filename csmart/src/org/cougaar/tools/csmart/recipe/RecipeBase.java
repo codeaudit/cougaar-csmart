@@ -118,7 +118,7 @@ public abstract class RecipeBase
    * Called when a new property has been added to the
    * recipe. 
    *
-   * @param PropertyEvent Event for the new property
+   * @param e Event for the new property
    */
   public void propertyAdded(PropertyEvent e) {
     Property addedProperty = e.getProperty();

@@ -44,11 +44,10 @@ public class OrganizerNameSet extends UniqueNameSet {
    * The databaseCheck method is assumed to be the name of a method
    * in ExperimentDB that takes the component name as an argument
    * and returns a boolean indicating if that name is in the database.
-   * @param prefix a single word prepended to unique objects
+   * @param namePrefix a single word prepended to unique objects
    * @param prompt a single word describing the object to be named
    * @param databaseCheck method name to check for name in database or null
    */
-
   public OrganizerNameSet(String namePrefix, String prompt,
                           String databaseCheck) {
     super(namePrefix);

@@ -51,8 +51,8 @@ public final class EarthConstants {
   /**
    * Compute great-circle distance (expressed as float Kilometers)
    * between two points on globe (expressed as LatLonPoint)
-   * @param LatLonPoint of first point
-   * @param LatLonPoint of second point
+   * @param position1 LatLonPoint of first point
+   * @param position2 LatLonPoint of second point
    * @return double distance in KM of great-circle distance between points
    */
   public static float DistanceBetweenLatLonPoints(LatLonPoint position1,
@@ -68,10 +68,10 @@ public final class EarthConstants {
   /**
    * Compute great-circle distance in KM between two points on globe
    * expressed as latitude and longitude.
-   * @param float latitude of first point (decimal degrees)
-   * @param float longitude of first point (decimal degrees)
-   * @param float latitude of second point (decimal degrees)
-   * @param float longitude of second point (decimal degrees)
+   * @param latitude1 float latitude of first point (decimal degrees)
+   * @param longitude2 float longitude of first point (decimal degrees)
+   * @param latitude2 float latitude of second point (decimal degrees)
+   * @param longitude2 float longitude of second point (decimal degrees)
    * @return float great-circle distance between two points in KM
    */
   public static float DistanceBetweenPoints(float latitude1,

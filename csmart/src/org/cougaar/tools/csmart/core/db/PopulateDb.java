@@ -993,8 +993,9 @@ public class PopulateDb extends PDbBase {
    * Create a new CSA assembly ID, copying the OPLAN info
    * for the given base assembly if any.
    *
-   * @param cmtAsbID a <code>String</code> base society assembly which this will be copied from, possibly null
-   * @param societyName a <code>String</code> name for the new society
+   * @param oldAsbID a <code>String</code> base society assembly which this will be copied from, possibly null
+   * @param name a <code>String</code> name for the new society
+   * @param type of assembly to create
    * @return a <code>String</code> CSA assembly ID
    */
   public String createCSAAssembly(String oldAsbID, String name, String type)

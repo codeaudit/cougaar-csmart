@@ -185,15 +185,13 @@ public class CSMARTFrame extends JFrame implements ActionListener
    * Override to customize the frame in which the graph resides.
    * Add custom menu items and handlers, etc.
    */
-
   protected void customize() {
   }
 
   /**
    * Override to provide table model for displaying node's attributes.
-   * @param Node node for which to display attributes
+   * @param node node for which to display attributes
    */
-
   protected TableModel getAttributeTableModel(Node node) {
     return null;
   }
@@ -205,7 +203,6 @@ public class CSMARTFrame extends JFrame implements ActionListener
    * when user clicks on window close icon, i.e. this equates
    * the window close icon with the CLOSE menu item.
    */
-
   private void init() {
     Grappa.setToolTipText("");
     associatedFrames = new Vector();
@@ -938,6 +935,3 @@ public class CSMARTFrame extends JFrame implements ActionListener
   }
 
 }
-
-
-

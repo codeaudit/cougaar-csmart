@@ -66,7 +66,7 @@ public class PGPropMultiVal implements Serializable {
   /**
    * Sets all values for this Property
    *
-   * @param Object[] array of values
+   * @param newValues Object[] array of values
    */
   public void setValues(Object[] newValues) {
     this.values.clear();
@@ -83,7 +83,7 @@ public class PGPropMultiVal implements Serializable {
   /**
    * Adds a value for this Property
    *
-   * @param String value
+   * @param value for this property
    */
   public void addValue(String value) {
     this.values.add(value);
@@ -92,7 +92,7 @@ public class PGPropMultiVal implements Serializable {
   /**
    * Adds a value for this Property
    *
-   * @param ArgValue value
+   * @param value as an ArgValue
    */
   public void addValue(ArgValue value) {
     this.values.add(value);
@@ -101,8 +101,8 @@ public class PGPropMultiVal implements Serializable {
   /**
    * Sets a value for this Property, replacing the previous value at this index
    *
-   * @param int index for value
-   * @param String value to replace with
+   * @param index for value
+   * @param value to replace with
    */
   public void setValue(int index, String value) 
                               throws IndexOutOfBoundsException{
@@ -112,8 +112,8 @@ public class PGPropMultiVal implements Serializable {
   /**
    * Sets a value for this Property, replacing the previous value at this index
    *
-   * @param int index for value
-   * @param ArgValue value to replace with
+   * @param index for value
+   * @param value as ArgValue to replace with
    */
   public void setValue(int index, ArgValue value) 
                               throws IndexOutOfBoundsException{
