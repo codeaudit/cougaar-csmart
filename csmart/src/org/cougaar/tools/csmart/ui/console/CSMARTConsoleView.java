@@ -2,6 +2,7 @@ package org.cougaar.tools.csmart.ui.console;
 
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 
@@ -16,6 +17,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -381,7 +383,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     displayMenuItem = new JMenuItem(VIEW_APP_SERVER_ITEM);
     displayMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        model.getAppServerSupport().displayAppServers();
+        displayAppServers();
       }
     });
     displayMenuItem.setToolTipText("Display list of Application Servers.");
@@ -390,8 +392,9 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     JMenuItem addMenuItem = new JMenuItem(ADD_APP_SERVER_ITEM);
     addMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        model.getAppServerSupport().addAppServer();
-        updateASControls();
+        //        model.getAppServerSupport().addAppServer();
+        //        updateASControls();
+        addAppServer();
       }
     });
     addMenuItem.setToolTipText("Add an Application Server.");
@@ -400,7 +403,8 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     deleteMenuItem = new JMenuItem(DELETE_APP_SERVER_ITEM);
     deleteMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        model.getAppServerSupport().deleteAppServers();
+        //        model.getAppServerSupport().deleteAppServers();
+        deleteAppServers();
       }
     });
     deleteMenuItem.setToolTipText("Ignore Application Servers.");
@@ -427,10 +431,11 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     JMenuItem refreshMenuItem = new JMenuItem(REFRESH_APP_SERVER_ITEM);
     refreshMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        model.getAppServerSupport().refreshAppServers();
-        updateASControls();
+        //        model.getAppServerSupport().refreshAppServers();
+        //        updateASControls();
         // test the AS
-//        noticeIfServerDead();
+        //        noticeIfServerDead();
+        refreshAppServers();
       }
     });
     refreshMenuItem.setToolTipText("Refresh list of Application Servers");
@@ -712,9 +717,26 @@ public class CSMARTConsoleView extends JFrame implements Observer {
 
   }
 
+  /**
+   * Get a list of unattached nodes and display these to the user.
+   * Message the model to attach to each node.
+   */
   private void attachStateChanged() {
-    model.setAttached(attachButton.getModel().isSelected());
+    //    model.setAttached(attachButton.getModel().isSelected());
+    ArrayList nodes = model.getUnattachedNodes();
+    Object[] selected =
+      Util.getObjectsFromList(null, nodes,
+                              "Attach to Nodes", "Select Nodes:");
+    if (selected != null) {
+      ArrayList sel = new ArrayList(selected.length);
+      for (int i = 0; i < selected.length; i++)
+        model.attachToNode((String)sel.get(i));
+    }
   }
+
+  //  private void attachStateChanged() {
+  //    model.setAttached(attachButton.getModel().isSelected());
+  //  }
 
   private void runStateChanged() {
     model.setRunning(runButton.getModel().isSelected());
@@ -742,4 +764,90 @@ public class CSMARTConsoleView extends JFrame implements Observer {
       updateASControls();
     }
   }
+
+  /**
+   * Query the user for the host and port of the remote app server.
+   * Message the model to try to add this app server.
+   */
+  private void addAppServer() {
+    int port = CSMARTConsoleModel.APP_SERVER_DEFAULT_PORT;
+    JTextField tf = new JTextField("localhost:" + port, 20);
+    JPanel panel = new JPanel();
+    panel.add(new JLabel("Enter HostName:Port:"));
+    panel.add(tf);
+    int result =
+      JOptionPane.showOptionDialog(null, panel, "Add Application Server",
+				   JOptionPane.OK_CANCEL_OPTION,
+				   JOptionPane.PLAIN_MESSAGE,
+				   null, null, null);
+    if (result != JOptionPane.OK_OPTION)
+      return;
+    String s = tf.getText().trim();
+    int index = s.indexOf(':');
+    String hostName = s;
+
+    if (index != -1) {
+      // Then hostname is the part before
+      hostName = s.substring(0, index);
+      hostName = hostName.trim();
+      // But if there's nothing before the colon, use localhost
+      if (hostName.equals(""))
+	hostName = "localhost";
+      // Port is the part after the colon
+      String portString = s.substring(index+1);
+      portString = portString.trim();
+      if (!portString.equals("")) {
+        try {
+          port = Integer.parseInt(portString);
+        } catch (Exception e) {
+          return;
+        }
+        if (port < 1)
+          return;
+      }
+    }
+    // check for duplicates
+    ArrayList appServers = model.getAppServers();
+    for (int i = 0; i < appServers.size(); i++) {
+      AppServerDesc desc = (AppServerDesc)appServers.get(i);
+      if (desc.hostName.equals(hostName) &&
+          desc.port == port) {
+        JOptionPane.showMessageDialog(null,
+                                      "This is a known application server; use Refresh to update information from it.",
+                                      "Known Application Server",
+                                      JOptionPane.INFORMATION_MESSAGE);
+        return;
+      }
+    }
+    model.requestAppServerAdd(hostName, port);
+  }
+  
+  /**
+   * Display a list of known app servers to the user.
+   * Message the model to delete the app servers that the user selects.
+   */
+  private void deleteAppServers() {
+    ArrayList appServers = model.getAppServers();
+    Object[] appServersSelected =
+      Util.getObjectsFromList(null, appServers, "Application Servers",
+                              "Select Application Servers To Ignore:");
+    if (appServersSelected == null) return;
+    for (int i = 0; i < appServersSelected.length; i++) {
+      AppServerDesc appServerDesc = (AppServerDesc)appServersSelected[i];
+      model.appServerDelete(appServerDesc.hostName, appServerDesc.port);
+    }
+  }
+
+  private void refreshAppServers() {
+    model.refreshAppServers();
+  }
+
+  private void displayAppServers() {
+    Util.showObjectsInList(this, 
+                           model.getAppServers(), 
+                           "Application Servers",
+                           "Application Servers");
+  }
+
+
 }

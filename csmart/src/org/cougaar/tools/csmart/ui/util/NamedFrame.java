@@ -53,6 +53,7 @@ public class NamedFrame extends Observable {
   public static final String INV_LEVEL = "Inventory";
   public static final String METRICS = "Metrics";
   //  public static final String TOPOLOGY = "Topology";
+  public static final String XML = "XML";
 
   private static transient Hashtable titleToFrame = new Hashtable();
   private static String titles[] = {
@@ -65,12 +66,12 @@ public class NamedFrame extends Observable {
     HAPPINESS,
     ALLOC_FAILURE,
     INV_LEVEL,
-    METRICS
+    METRICS,
+    XML
     //    METRICS,
     //    TOPOLOGY
   };
-  //  private static int index[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }; // used for common titles
-  private static int index[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }; // used for common titles
+  private static int index[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }; // used for common titles
 
   // If CSMART dies do not store the info on what windows are open
   private static transient NamedFrame singleton = null;

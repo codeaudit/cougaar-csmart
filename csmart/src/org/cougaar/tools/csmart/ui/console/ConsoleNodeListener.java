@@ -456,6 +456,7 @@ public class ConsoleNodeListener implements OutputListener {
    * Close the log file, fill the display with the contents of the log file,
    * and re-open the log file for appending.
    * TODO: update the log file timer task as well
+   * This is never called because of underlying Swing errors.
    */
   public void fillFromLogFile() {
     synchronized (logFileLock) {

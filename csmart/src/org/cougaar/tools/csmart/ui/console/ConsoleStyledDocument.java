@@ -74,6 +74,7 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
    * and re-open log file for appending.
    * Sets screen buffer size to display all output (i.e. no limit).
    * @param logFileName name of the log file from which to fill document
+   * TODO: remove this; it's never used because of underlying Swing errors
    */
   public void fillFromLogFile(String logFileName) {
     AttributeSet a = new javax.swing.text.SimpleAttributeSet();

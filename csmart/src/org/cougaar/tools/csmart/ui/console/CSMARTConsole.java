@@ -242,7 +242,9 @@ public class CSMARTConsole extends JFrame {
     nodeListeners = new Hashtable();
     nodePanes = new Hashtable();
     nodeToNodeInfo = new Hashtable();
-    appServerSupport = new AppServerSupport();
+    //    appServerSupport = new AppServerSupport();
+    // appServerSupport usage is now being done through CSMARTConsoleModel
+    appServerSupport = null;
     if (experiment != null)
       getAppServersFromExperiment();
     initGui();
@@ -642,7 +644,7 @@ public class CSMARTConsole extends JFrame {
     displayMenuItem = new JMenuItem(VIEW_APP_SERVER_ITEM);
     displayMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        appServerSupport.displayAppServers();
+        //        appServerSupport.displayAppServers();
       }
     });
     displayMenuItem.setToolTipText("Display list of Application Servers.");
@@ -651,7 +653,7 @@ public class CSMARTConsole extends JFrame {
     JMenuItem addMenuItem = new JMenuItem(ADD_APP_SERVER_ITEM);
     addMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        appServerSupport.addAppServer();
+        //        appServerSupport.addAppServer();
         updateASControls();
       }
     });
@@ -661,7 +663,7 @@ public class CSMARTConsole extends JFrame {
     deleteMenuItem = new JMenuItem(DELETE_APP_SERVER_ITEM);
     deleteMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        appServerSupport.deleteAppServers();
+        //        appServerSupport.deleteAppServers();
       }
     });
     deleteMenuItem.setToolTipText("Ignore Application Servers.");
@@ -701,10 +703,10 @@ public class CSMARTConsole extends JFrame {
     JMenuItem refreshMenuItem = new JMenuItem(REFRESH_APP_SERVER_ITEM);
     refreshMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        appServerSupport.refreshAppServers();
-        updateASControls();
+        //        appServerSupport.refreshAppServers();
+        //        updateASControls();
         // test the AS
-        noticeIfServerDead();
+        //        noticeIfServerDead();
       }
     });
     refreshMenuItem.setToolTipText("Refresh list of Application Servers");
@@ -2236,17 +2238,17 @@ public class CSMARTConsole extends JFrame {
     attachButton.setSelected(false);
     // Before getting this list, make sure our list of possible
     // things to attach to is up-to-date
-    appServerSupport.refreshAppServers();
+    //    appServerSupport.refreshAppServers();
     ArrayList nodesToAttach = appServerSupport.getNodesToAttach();
-    if (nodesToAttach == null) {
+        if (nodesToAttach == null) {
       // There were no Nodes to attach to
-      JOptionPane.showMessageDialog(this, "No new Nodes to Attach to.",
-                                    "Attach", JOptionPane.PLAIN_MESSAGE);
-      return;
-    } else if (nodesToAttach.isEmpty()) {
+          JOptionPane.showMessageDialog(this, "No new Nodes to Attach to.",
+                                        "Attach", JOptionPane.PLAIN_MESSAGE);
+          return;
+        } else if (nodesToAttach.isEmpty()) {
       // User just selected none to attach to
-      return;
-    }
+          return;
+        }
 
     // Loop over nodes to attach to
     for (int i = 0; i < nodesToAttach.size(); i++) {
@@ -3131,7 +3133,7 @@ public class CSMARTConsole extends JFrame {
         appServerSupport.addAppServerForExperiment(hostName, properties);
       }
     }
-    appServerSupport.refreshAppServers();
+    //    appServerSupport.refreshAppServers();
   }
 
   /**

@@ -11,7 +11,9 @@ import org.cougaar.tools.server.RemoteProcess;
 import org.cougaar.util.log.Logger;
 
 import javax.swing.*;
-import java.awt.*;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.util.*;
 
 /**
@@ -26,6 +28,9 @@ public class CSMARTConsoleModel extends Observable {
   public static final String APP_SERVERS_CHANGED = "App Server State";
   public static final String NEW_NODE_VIEW = "New Node View";
   public static final String SELECT_GLS_INIT = "Select GLS" ;
+  public static final String APP_SERVERS_REFRESH = "App Servers Refresh";
+
+  public static final int APP_SERVER_DEFAULT_PORT = 8484;
 
   private static final String DEFAULT_BOOTSTRAP_CLASS = "org.cougaar.bootstrap.BootStrapper";
   private static final String DEFAULT_NODE_CLASS = "org.cougaar.core.node.Node";
@@ -68,6 +73,7 @@ public class CSMARTConsoleModel extends Observable {
 
   private Hashtable nodeModels;    // Hashtable of all node name to node models mappings.
   private Hashtable nodeViews;
+  private Hashtable nodeToAppServer; // maps node name to AppServerDesc
 
   public CSMARTConsoleModel() {
     this(null, null);
@@ -85,9 +91,10 @@ public class CSMARTConsoleModel extends Observable {
     this.csmart = csmart;
     this.runStart = new Date();
     this.experiment = experiment;
-    this.appServerSupport = new AppServerSupport();
+    this.appServerSupport = new AppServerSupport(this);
     this.runningNodes = new Hashtable(5);
     this.nodeModels = new Hashtable(5);
+    this.nodeToAppServer = new Hashtable(5);
     //this.resultDirectory = makeResultDirectory();
     createLogger();
   }
@@ -229,7 +236,7 @@ public class CSMARTConsoleModel extends Observable {
           // note that these properties augment any properties that
           // are passed to the server in a properties file on startup
           Properties properties = getNodeMinusD(nodeComponent, hostName);
-          java.util.List args = getNodeArguments(nodeComponent);
+          List args = getNodeArguments(nodeComponent);
 
           if (experiment.getTrialID() != null) {
             properties.setProperty(Experiment.EXPERIMENT_ID,
@@ -266,71 +273,71 @@ public class CSMARTConsoleModel extends Observable {
    * @param attached -- The new attached state.
    */
   public void setAttached(boolean attached) {
-    try {
-      attachToNode();
-    } catch (IllegalStateException e) {
-      if (log.isInfoEnabled()) {
-        log.info("Attach Error: " + e.getMessage());
-      }
-      attached = false;
-    }
-    isAttached = attached;
-    setChanged();
-    notifyObservers(TOGGLE_ATTACHED_STATE);
+//     try {
+//       attachToNode();
+//     } catch (IllegalStateException e) {
+//       if (log.isInfoEnabled()) {
+//         log.info("Attach Error: " + e.getMessage());
+//       }
+//       attached = false;
+//     }
+//     isAttached = attached;
+//     setChanged();
+//     notifyObservers(TOGGLE_ATTACHED_STATE);
   }
 
-  public void attachToNode() throws IllegalStateException {
+  //  public void attachToNode() throws IllegalStateException {
 
     // Before getting this list, make sure our list of possible
     // things to attach to is up-to-date
-    appServerSupport.refreshAppServers();
-    ArrayList nodesToAttach = appServerSupport.getNodesToAttach();
-    if (nodesToAttach == null) {
-      throw new IllegalStateException("No new Nodes to Attach to.");
-    } else if (nodesToAttach.isEmpty()) {
-      // User just selected 'None'.
-      return;
-    }
+//     appServerSupport.refreshAppServers();
+//     ArrayList nodesToAttach = appServerSupport.getNodesToAttach();
+//     if (nodesToAttach == null) {
+//       throw new IllegalStateException("No new Nodes to Attach to.");
+//     } else if (nodesToAttach.isEmpty()) {
+//       // User just selected 'None'.
+//       return;
+//     }
 
-    // Loop over nodes to attach to
-    for (int i = 0; i < nodesToAttach.size(); i++) {
-      NodeInfo nodeInfo = (NodeInfo) nodesToAttach.get(i);
-      boolean haveAlready = false;
-      String name = nodeInfo.getNodeName();
-      synchronized (runningNodesLock) {
-        if (runningNodes.get(nodeInfo.getNodeName()) != null) {
-          haveAlready = true;
-        }
-      }
+//     // Loop over nodes to attach to
+//     for (int i = 0; i < nodesToAttach.size(); i++) {
+//       NodeInfo nodeInfo = (NodeInfo) nodesToAttach.get(i);
+//       boolean haveAlready = false;
+//       String name = nodeInfo.getNodeName();
+//       synchronized (runningNodesLock) {
+//         if (runningNodes.get(nodeInfo.getNodeName()) != null) {
+//           haveAlready = true;
+//         }
+//       }
 
-      // Are we already atached to a node of that name?
-      if (haveAlready) {
-        if (log.isDebugEnabled()) {
-          log.debug("Already have attached node of name " + nodeInfo.getNodeName());
-        }
-        // So how do I get the old process name?
-        // FIXME: Use the new NodeInfo.equals() method.
-        NodeModel nm = (NodeModel) nodeModels.get(nodeInfo.getNodeName());
-        if (nm.getInfo().getProcessName().equals(nodeInfo.getProcessName())) {
-          if (log.isDebugEnabled()) {
-            log.debug("They have the same process name: " + nodeInfo.getProcessName());
-          }
-          // FIXME: Maybe compare nodeInfo.properties too?
-          if (log.isDebugEnabled()) {
-            log.debug("Asked to attach to already attached node " + nodeInfo.getNodeName());
-          }
-          continue;
-        } else {
-          // Going to allow attaching
-          // But need to pretend it has a different name or else
-          // I'll have trouble stopping it and whatnot
+//       // Are we already atached to a node of that name?
+//       if (haveAlready) {
+//         if (log.isDebugEnabled()) {
+//           log.debug("Already have attached node of name " + nodeInfo.getNodeName());
+//         }
+//         // So how do I get the old process name?
+//         // FIXME: Use the new NodeInfo.equals() method.
+//         NodeModel nm = (NodeModel) nodeModels.get(nodeInfo.getNodeName());
+//         if (nm.getInfo().getProcessName().equals(nodeInfo.getProcessName())) {
+//           if (log.isDebugEnabled()) {
+//             log.debug("They have the same process name: " + nodeInfo.getProcessName());
+//           }
+//           // FIXME: Maybe compare nodeInfo.properties too?
+//           if (log.isDebugEnabled()) {
+//             log.debug("Asked to attach to already attached node " + nodeInfo.getNodeName());
+//           }
+//           continue;
+//         } else {
+//           // Going to allow attaching
+//           // But need to pretend it has a different name or else
+//           // I'll have trouble stopping it and whatnot
 
-          // Must effectively reset nodeInfo.nodeName
-          name = name + "-attached";
-        }
-      } // end of block to see if this Node already attached
+//           // Must effectively reset nodeInfo.nodeName
+//           name = name + "-attached";
+//         }
+//       } // end of block to see if this Node already attached
 
-      runStart = new Date();
+//       runStart = new Date();
 //      NodeCreationInfo nci = prepareToCreateNode(nodeInfo.appServer,
 //                                                 name,
 //                                                 nodeInfo.hostName,
@@ -401,8 +408,8 @@ public class CSMARTConsoleModel extends Observable {
 //    if (! usingExperiment && experiment != null) {
 //      runButton.setEnabled(true);
 //      runButton.setSelected(false);
-    }
-  }
+//    }
+//  }
 
 
   /**
@@ -884,7 +891,7 @@ public class CSMARTConsoleModel extends Observable {
     return result;
   }
 
-  private java.util.List getNodeArguments(NodeComponent nc) {
+  private List getNodeArguments(NodeComponent nc) {
     Properties props = nc.getArguments();
     String commandArguments =
         props.getProperty(COMMAND_ARGUMENTS);
@@ -904,8 +911,91 @@ public class CSMARTConsoleModel extends Observable {
       result[i] = tokens.nextToken();
     }
 
-    java.util.List l = Arrays.asList(result);
+    List l = Arrays.asList(result);
     return l;
   }
+
+  // New Application Server Support
+
+  /**
+   * User selected "add app server" menu item.
+   * Notify AppServerSupport.
+   */
+  public void requestAppServerAdd(String hostName, int port) {
+    notifyObservers(new AppServerRequest(hostName, port, 
+                                         AppServerRequest.ADD));
+  }
+
+  /**
+   * Return array list of AppServerDesc of known app servers.
+   */
+  public ArrayList getAppServers() {
+    return new ArrayList(nodeToAppServer.keySet());
+  }
+
+  /**
+   * Add node to node-to-appServer mapping.
+   */
+  public void addNodeToAppServerMapping(String name,
+                                        AppServerDesc appServerDesc) {
+    nodeToAppServer.put(name, appServerDesc);
+  }
+
+  /**
+   * Get app server description for a node.
+   */
+  public AppServerDesc getAppServer(String name) {
+    return (AppServerDesc)nodeToAppServer.get(name);
+  }
+
+  /**
+   * Delete app server; just remove entries for this app server.
+   */
+  public void appServerDelete(String hostName, int port) {
+    Enumeration nodes = nodeToAppServer.keys();
+    while (nodes.hasMoreElements()) {
+      String node = (String)nodes.nextElement();
+      AppServerDesc appServerDesc = getAppServer(node);
+      if (appServerDesc.hostName.equals(hostName) &&
+          appServerDesc.port == port) {
+        nodeToAppServer.remove(node);
+      }
+    }
+  }
+
+  /**
+   * Refresh app servers; notify AddServerSupport.
+   */
+  public void refreshAppServers() {
+    notifyObservers(APP_SERVERS_REFRESH);
+  }
+
+  public ArrayList getUnattachedNodes() {
+    return appServerSupport.getUnattachedNodes();
+  }
+
+  /**
+   * Attach to a running node.
+   * Create a node model and add to the list of node models.
+   */
+  public void attachToNode(String name) {
+    RemoteHost appServer = getAppServer(name).appServer;
+    // TODO: I think the only reason to have a processName
+    // (which is the ExperimentName + Node Name)
+    // is to handle multiple experiments
+    // is this needed?
+    String processName = name;
+    // if you're attaching to a node discovered through its app server,
+    // then you know nothing about these
+    String hostName = "";
+    Properties properties = null;
+    List args = null;
+    NodeInfo ni =
+      new NodeInfo(appServer, name, hostName, processName, properties, args);
+    NodeModel nodeModel = new NodeModel(ni, this);
+    // what detects the new node model and contacts it and adds its views?
+    nodeModels.put(name, nodeModel);
+  }
+
 
 }

@@ -231,6 +231,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                              Event.CTRL_MASK));
     // view menu
     JMenu viewMenu = new JMenu(VIEW_MENU);
+    // TODO: Remove this, it's not supported cause of underlying Swing errors
     Action displayLogAction = new AbstractAction(DISPLAY_LOG_ACTION) {
       public void actionPerformed(ActionEvent e) {
         displayLog_actionPerformed();
