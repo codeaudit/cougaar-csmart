@@ -85,7 +85,7 @@ public abstract class ConfigurableComponent
     implements PropertiesListener, ConfigurableComponentListener
   {
     public void propertyAdded(PropertyEvent e) {
-      if (isPropertyVisible(e.getProperty())) {
+      if(e.getProperty().isVisible()) {
         firePropertyAdded(e);
       }
     }
