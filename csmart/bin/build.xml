@@ -161,8 +161,12 @@
 	contain UnicaseRemoteObject-->
 	<!-- command is rmic -g -v1.2 -d destdir -classpath
 	destdir:restofclasspath listoffiles -->
-	<target name="rmic-source" depends="prepare-rmic, prepare" unless="rmic.notRequired" if="has.build">
-	  <rmic base="${build}" stubversion="1.2" verify="true"
+	<target name="rmic-source" depends="prepare-rmic, prepare"
+	unless="rmic.notRequired" if="has.build">
+	<!-- core version does: both versions 1.2 and 1.1, with
+	verify, no debug.
+	That is no stubversion= item -->
+   	  <rmic base="${build}" stubversion="1.2" verify="true"
 	        debug="${build.compiler.debug}" includes="${rmicfiles.list}" >
 	    <classpath>
   	      <path location="${build}" />
@@ -391,10 +395,13 @@
 	<target name="javadocs" depends="prepare, defrunner, clean-docs" description="Create javadocs for this module" if="has.src">
 		<mkdir dir="${build.javadocs}"/>
 		<javadoc packagenames="${packages}"
-		         sourcepath="${src}"
-				 destdir="${build.javadocs}"
+			 sourcepath="${src}"
+			 	 destdir="${build.javadocs}"
 				 author="true"
 				 version="true"
+				 doclet="org.cougaar.tools.javadoc.CougaarDoclet"
+				 docletpath="${lib}/build.jar"
+				 additionalparam="-breakiterator -source 1.4 -tagletpath ${lib}/build.jar -taglet org.cougaar.tools.javadoc.PropertyTaglet -taglet org.cougaar.tools.javadoc.ToDoTaglet"
 				 windowtitle="${UpModule} API"
 				 doctitle="${UpModule} API"
 				 bottom="Copyright &#169; 2002 by BBNT Solutions LLC, all rights reserved.">
@@ -405,8 +412,7 @@
 	<!-- ====================================================================== -->
 	<!-- Zip up the built JavaDocs				          -->
 	<!-- ====================================================================== -->	
-	<target name="zip-docs" depends="javadocs, set-zip-dirs, zip-copy-docs" description="Zip up
-				 built javadocs" if="has.src">
+	<target name="zip-docs" depends="javadocs, set-zip-dirs, zip-copy-docs" description="Zip up built javadocs" if="has.src">
 		<zip zipfile="../${module}-api.zip" basedir="${zipbase}" />
 		<delete dir="${zipdir.javadocs}"/>
 	</target>
