@@ -28,7 +28,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.dnd.*;
 import java.awt.datatransfer.*;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
@@ -55,7 +55,7 @@ public class OrganizerTree extends DNDTree {
                              OrganizerTree.class,
                              "Experiment");
     public static final CSMARTDataFlavor componentFlavor =
-        new CSMARTDataFlavor(ModifiableConfigurableComponent.class,
+        new CSMARTDataFlavor(ModifiableComponent.class,
                              null,
                              OrganizerTree.class,
                              "Modifiable Component");
@@ -76,7 +76,7 @@ public class OrganizerTree extends DNDTree {
                 flavors = new DataFlavor[] {recipeFlavor};
             else if (theData instanceof Experiment)
                 flavors = new DataFlavor[] {experimentFlavor};
-            else if (theData instanceof ModifiableConfigurableComponent)
+            else if (theData instanceof ModifiableComponent)
                 flavors = new DataFlavor[] {componentFlavor};
             else
                 throw new IllegalArgumentException("Unknown node");
@@ -143,11 +143,6 @@ public class OrganizerTree extends DNDTree {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
 	    if (node == getModel().getRoot()) 
 	      return false; // not draggable if it's the root node
-//  	    Object userObject = node.getUserObject();
-//  	    if (userObject != null &&
-//    		(userObject instanceof ModifiableConfigurableComponent) &&
-//    		!((ModifiableConfigurableComponent)userObject).isEditable())
-//  	      return false; // not draggable if it's a non-editable component
 	    return true;
         }
         return false;

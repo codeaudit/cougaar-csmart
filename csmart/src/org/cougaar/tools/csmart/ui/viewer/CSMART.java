@@ -36,9 +36,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.cougaar.core.node.Bootstrapper;
-import org.cougaar.util.Parameters;
-
-import org.cougaar.tools.csmart.core.db.DBUtils;
 
 // tools created by this user interface
 
@@ -48,11 +45,9 @@ import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.experiment.ExperimentBuilder;
 
-import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
@@ -101,7 +96,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   // define strings here so we can easily change them
   private static final String FILE_MENU = "File";
   private static final String NEW_MENU_ITEM = "Open Workspace...";
-  private static final String DBCONFIG_MENU_ITEM = "Configure Database";
   private static final String EXIT_MENU_ITEM = "Exit";
   private static final String WINDOW_MENU = "Window";
   private static final String HELP_MENU = "Help";
@@ -147,15 +141,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     "PA.gif"
   };
 
-  // used for database
-  static JDialog dbConfigDialog = null;
-  static JTextField dbConfigField;
-  static JTextField dbNameField;
-  static JPasswordField dbPasswordField;
-  static String dbConfig;
-  static String dbName;
-  static String dbPassword;
 
+  // TODO: does this get replaced by a simple, new experiment and new recipe?
   // Actions for file menu; enabled dependent on workspace selection
   private Action[] newExperimentActions = {
     new AbstractAction("From Database") {
@@ -187,12 +174,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   public CSMART() {
     setTitle("CSMART");
 
-    // Setup the database parameters.
-    dbConfig = Parameters.findParameter(DBUtils.DATABASE);
-    dbName = Parameters.findParameter(DBUtils.USER);
-    dbPassword = Parameters.findParameter(DBUtils.PASSWORD);
-      
-    //    CSMART.inDBMode(true);
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
     // set-up file menu which includes entries based on workspace selection
@@ -289,15 +270,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         }
       });
     fileMenu.add(saveToDatabaseMenuItem);
-    JMenuItem dbConfigMenuItem = new JMenuItem(DBCONFIG_MENU_ITEM);
-    dbConfigMenuItem.setToolTipText("Configure the database.");
-    dbConfigMenuItem.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-	dbConfigMenuItem_actionPerformed();
-      }
-    });
-    // Don't allow database configuration for now
-    //    fileMenu.add(dbConfigMenuItem);
     fileMenu.addSeparator();
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.addActionListener(this);
@@ -362,6 +334,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * is selected in the organizer.
    */
 
+  // TODO: need to rethink how and what we're going to represent
+  // in the organizer; and to what extent we'll enable/disable
+  // actions based on the selection or state of selection
+
   private MenuListener myMenuListener =
     new MenuListener() {
         public void menuCanceled(MenuEvent e) {
@@ -391,8 +367,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
             return;
           } 
           Object selObject = organizer.getSelectedObject();
-          if (selObject instanceof ModifiableConfigurableComponent) {
-            if (((ModifiableConfigurableComponent)selObject).isEditable()) {
+          if (selObject instanceof ModifiableComponent) {
+            if (((ModifiableComponent)selObject).isEditable()) {
               renameMenuItem.setEnabled(true);
             } else {
               renameMenuItem.setEnabled(false);
@@ -407,20 +383,20 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
             deleteMenuItem.setEnabled(true);
           } else if (selObject instanceof SocietyComponent) {
             configureMenuItem.setEnabled(true);
-            if (((ModifiableConfigurableComponent)selObject).isEditable())
+            if (((ModifiableComponent)selObject).isEditable())
               buildMenuItem.setEnabled(true);
             runMenuItem.setEnabled(true);
             duplicateMenuItem.setEnabled(true);
             deleteMenuItem.setEnabled(true);
           } else if (selObject instanceof RecipeComponent) {
             configureMenuItem.setEnabled(true);
-            if (((ModifiableConfigurableComponent)selObject).isEditable())
+            if (((ModifiableComponent)selObject).isEditable())
               buildMenuItem.setEnabled(true);
             duplicateMenuItem.setEnabled(true);
             deleteMenuItem.setEnabled(true);
             saveToDatabaseMenuItem.setEnabled(true);
-          } else if (selObject instanceof ModifiableConfigurableComponent) {
-            if (((ModifiableConfigurableComponent)selObject).isEditable())
+          } else if (selObject instanceof ModifiableComponent) {
+            if (((ModifiableComponent)selObject).isEditable())
               buildMenuItem.setEnabled(true);
             duplicateMenuItem.setEnabled(true);
             deleteMenuItem.setEnabled(true);
@@ -435,125 +411,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         }
       };
 
-  /**
-   * Display dialog that allows user to configure the database.
-   */
-
-  private void dbConfigMenuItem_actionPerformed() {
-    if (dbConfigDialog != null) {
-      dbConfigDialog.setVisible(true);
-      return;
-    }
-    JPanel panel = new JPanel(new GridBagLayout());
-    int x = 0;
-    int y = 0;
-    dbConfigField = new JTextField(dbConfig);
-    dbNameField = new JTextField(dbName);
-    dbPasswordField = new JPasswordField(dbPassword);
-    panel.add(new JLabel("Database:"),
-              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.NONE,
-                                     new Insets(10, 0, 5, 5),
-                                     0, 0));
-    panel.add(dbConfigField,
-              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.HORIZONTAL,
-                                     new Insets(10, 0, 5, 0),
-                                     0, 0));
-    x = 0;
-    panel.add(new JLabel("User:"),
-              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.NONE,
-                                     new Insets(10, 0, 5, 5),
-                                     0, 0));
-    panel.add(dbNameField,
-              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.HORIZONTAL,
-                                     new Insets(10, 0, 5, 0),
-                                     0, 0));
-    x = 0;
-    panel.add(new JLabel("Password:"),
-              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.NONE,
-                                     new Insets(10, 0, 5, 5),
-                                     0, 0));
-    panel.add(dbPasswordField,
-              new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.HORIZONTAL,
-                                     new Insets(10, 0, 5, 0),
-                                     0, 0));
-    
-    dbConfigDialog = new JDialog(this, "Database Configuration", true);
-    dbConfigDialog.getContentPane().setLayout(new BorderLayout());
-    dbConfigDialog.getContentPane().add(panel, BorderLayout.CENTER);
-    JPanel buttonPanel = new JPanel();
-    JButton okButton = new JButton("OK");
-    okButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        dbConfig = dbConfigField.getText();
-        dbName = dbNameField.getText();
-        dbPassword = new String(dbPasswordField.getPassword());
-        dbConfigDialog.setVisible(false);
-      }
-    });
-    buttonPanel.add(okButton);
-    JButton cancelButton = new JButton("Cancel");
-    cancelButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        dbConfigDialog.setVisible(false);
-      }
-    });
-    buttonPanel.add(cancelButton);
-    dbConfigDialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-    dbConfigDialog.setSize(400, 200);
-    dbConfigDialog.setVisible(true);
-  }
-
-  public static String getDatabaseConfiguration() {
-    return dbConfig;
-  }
-
-  public static String getDatabaseUserName() {
-    return dbName;
-  }
-
-  public static String getDatabaseUserPassword() {
-    return dbPassword;
-  }
-
-  /**
-   * Check to see if CSMART is running in the CMT-DB connected mode
-   * @return a <code>boolean</code> whether have a valid CMT database connection
-   */
-  //  public static boolean inDBMode() {
-  //    return CSMART.inDBMode(false);
-  //  }
-  
-  /**
-   * Check to see if CSMART is running in the CMT-DB connected mode, rechecking
-   * the database connection optionally.
-   *
-   * @param checkConnection a <code>boolean</code> indicating whether to re-check the database connection
-   * @return a <code>boolean</code>, true if there is a valid CMT DB connection
-   */
-//    public static boolean inDBMode(boolean checkConnection) {
-//      if (checkConnection) {
-//        CSMART.dbMode = DBUtils.isValidDBConnection();
-//        System.out.println("CSMART DB MODE: " + CSMART.dbMode);
-//      }
-//      return CSMART.dbMode;
-//    }
-  
-  public void saveWorkspace() {
-    organizer.save();
-  }
-
   public Experiment getExperiment() {
     Experiment[] exp = organizer.getSelectedExperiments();
     if (exp == null || exp.length == 0)
@@ -561,25 +418,20 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     return exp[0];
   }
 
-  public SocietyComponent getSociety() {
-    SocietyComponent[] societies = organizer.getSelectedSocieties();
-    if (societies == null || societies.length == 0)
-      return null;
-    return societies[0];
-  }
-
-  public ModifiableConfigurableComponent getComponent() {
-    ModifiableConfigurableComponent[] comps = organizer.getSelectedComponents();
-    if (comps == null || comps.length == 0)
-      return null;
-    return comps[0];
-  }
+//    public SocietyComponent getSociety() {
+//      SocietyComponent[] societies = organizer.getSelectedSocieties();
+//      if (societies == null || societies.length == 0)
+//        return null;
+//      return societies[0];
+//    }
 
   /**
    * Set which experiment is running.  Called with null when experiment
    * terminates or is terminated.
    * TODO: allow monitor tool to run on saved files when no experiment running?
    */
+  // TODO: determine what checks we want -- do we want to prevent the
+  // user from doing something when an experiment is running?
 
   public void setRunningExperiment(Experiment experiment) {
     runningExperiment = experiment;
@@ -660,9 +512,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     return new JButton(label, icon);
   }
 
-  //  public static NamedFrame getNamedFrame() {
-  //    return NamedFrame.getNamedFrame();
-  //  }
+  /**
+   * Window management for windows launched by CSMART.
+   */
 
   public void update(Observable o, Object arg) {
     if (o instanceof NamedFrame) {
@@ -704,7 +556,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   /**
    * ActionListener interface.
    */
-  public void runBuilder(ModifiableConfigurableComponent cc, 
+  // the rest of this is methods to launch the various tools
+  // within CSMART
+  public void runBuilder(ModifiableComponent cc, 
                          boolean alwaysNew) {
     if (!cc.isEditable()) {
       Object[] options = { "Edit", "View", "Copy", "Cancel" };
@@ -722,35 +576,24 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         cc.setEditable(true);
       } else if (result == 2) {
         // copy it
-        cc = organizer.copyComponent(cc, null);
+        if (cc instanceof RecipeComponent)
+          cc = organizer.copyRecipe((RecipeComponent)cc);
+        else if (cc instanceof SocietyComponent)
+          cc = organizer.copySociety((SocietyComponent)cc);
       } else if (result != 1)
         // user cancelled
         return;
     }
     // note that cc is guaranteed non-null when this is called
-    Class[] paramClasses = { ModifiableConfigurableComponent.class };
+    Class[] paramClasses = { ModifiableComponent.class };
     Object[] params = new Object[1];
     params[0] = cc;
     createTool("Configuration Builder", PropertyBuilder.class, 
-	       alwaysNew, cc.getShortName(), (ModifiableConfigurableComponent)cc,
+	       alwaysNew, cc.getShortName(), (ModifiableComponent)cc,
 	       paramClasses, params);
   }
 
-  /**
-   * If an tree builder is not editing this society,
-   * then start a new tree builder to edit this society.
-   */
-//    private void runMultipleBuilders(ComponentProperties[] comps) {
-//      for (int i = 0; i < comps.length; i++) {
-//        if (! (comps[i] instanceof ModifiableConfigurableComponent))
-//  	continue;
-//        String s = "Configuration Builder: " + comps[i].getShortName();
-//        if (NamedFrame.getNamedFrame().getFrame(s) == null) 
-//  	runBuilder((ModifiableConfigurableComponent)comps[i], true, true);
-//      }
-//    }
-
-  private void runMultipleBuilders(ModifiableConfigurableComponent[] comps) {
+  private void runMultipleBuilders(ModifiableComponent[] comps) {
     for (int i = 0; i < comps.length; i++) {
       String s = "Configuration Builder: " + comps[i].getShortName();
       if (NamedFrame.getNamedFrame().getFrame(s) == null) 
@@ -776,7 +619,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         experiment.setEditable(true);
       } else if (result == 2) {
         // copy it
-        experiment = organizer.copyExperiment(experiment, null);
+        experiment = organizer.copyExperiment(experiment);
       } else if (result != 1)
         // user cancelled
         return;
@@ -922,9 +765,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
             components.add(societies[i]);
       }
       if (components.size() == 1)
-	runBuilder((ModifiableConfigurableComponent)components.get(0), false);
+	runBuilder((ModifiableComponent)components.get(0), false);
       else if (components.size() > 1) {
-	runMultipleBuilders((ModifiableConfigurableComponent[])components.toArray(new ModifiableConfigurableComponent[components.size()]));
+	runMultipleBuilders((ModifiableComponent[])components.toArray(new ModifiableComponent[components.size()]));
       }
     } else if (s.equals(views[1])) {
     } else if (s.equals(views[2])) {
@@ -994,7 +837,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	  if (tool instanceof ExperimentBuilder)
 	    ((ExperimentBuilder)tool).reinit((Experiment)argument);
 	  else if (tool instanceof PropertyBuilder)
-	    ((PropertyBuilder)tool).reinit((ModifiableConfigurableComponent)argument);
+	    ((PropertyBuilder)tool).reinit((ModifiableComponent)argument);
 	  else if (tool instanceof Analyzer)
 	    ((Analyzer)tool).reinit((Experiment)argument);
 	}
@@ -1015,17 +858,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	params = new Object[1];
 	params[0] = this;
       }
-//       Class[] paramClasses = { CSMART.class };
-//       Object[] params = { this };
-//       if (argument != null) {
-// 	paramClasses = new Class[2];
-// 	paramClasses[0] = CSMART.class;
-      // this doesn't work if the argument is a SocietyComponent (it picks up the class, not the interface)
-// 	paramClasses[1] = argument.getClass(); 
-// 	params = new Object[2];
-// 	params[0] = this;
-// 	params[1] = argument;
-//       }
       Constructor constructor = toolClass.getConstructor(paramClasses);
       tool = (JFrame) constructor.newInstance(params);
     } catch (Exception exc) {
