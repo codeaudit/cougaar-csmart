@@ -34,7 +34,7 @@ import java.awt.Insets;
 import javax.swing.*;
 import javax.swing.event.InternalFrameListener;
 
-import org.cougaar.tools.csmart.ui.component.NodeComponent;
+import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.server.NodeServesClient;
 
 public class ConsoleDesktop extends JDesktopPane {

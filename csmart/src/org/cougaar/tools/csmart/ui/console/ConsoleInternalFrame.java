@@ -39,13 +39,13 @@ import javax.swing.text.DefaultEditorKit;
 
 import com.klg.jclass.chart.JCChart;
 
-import org.cougaar.tools.csmart.ui.component.AgentComponentData;
-import org.cougaar.tools.csmart.ui.component.ComponentData;
-import org.cougaar.tools.csmart.ui.component.ComponentProperties;
-import org.cougaar.tools.csmart.ui.component.HostComponent;
-import org.cougaar.tools.csmart.ui.component.NodeComponent;
-import org.cougaar.tools.csmart.ui.component.Property;
-import org.cougaar.tools.csmart.ui.experiment.Experiment;
+import org.cougaar.tools.csmart.society.AgentComponentData;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.experiment.HostComponent;
+import org.cougaar.tools.csmart.experiment.NodeComponent;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
 import org.cougaar.tools.server.CommunityServesClient;
 import org.cougaar.tools.server.rmi.ClientCommunityController;

@@ -29,7 +29,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import org.cougaar.tools.csmart.ui.component.NodeComponent;
+import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.server.NodeEvent;
 import org.cougaar.tools.server.NodeEventListener;
 import org.cougaar.tools.server.NodeServesClient;

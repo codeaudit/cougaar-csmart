@@ -37,14 +37,14 @@ import javax.swing.tree.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
-import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
-import org.cougaar.tools.csmart.ui.builder.PropertyEditorPanel;
+import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
+import org.cougaar.tools.csmart.ui.configbuilder.PropertyEditorPanel;
 import org.cougaar.tools.csmart.ui.component.*;
-import org.cougaar.tools.csmart.ui.configuration.ConsoleTreeObject;
-import org.cougaar.tools.csmart.ui.experiment.Experiment;
+import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
+import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
-import org.cougaar.tools.csmart.ui.experiment.Trial;
-import org.cougaar.tools.csmart.ui.experiment.TrialResult;
+import org.cougaar.tools.csmart.experiment.Trial;
+import org.cougaar.tools.csmart.experiment.TrialResult;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
@@ -1893,7 +1893,7 @@ public class CSMARTConsole extends JFrame {
   public static void main(String[] args) {
     CSMARTConsole console = new CSMARTConsole(null);
     // for debugging, create our own society
-    SocietyComponent sc = (SocietyComponent)new org.cougaar.tools.csmart.scalability.ScalabilityXSociety();
+    SocietyComponent sc = (SocietyComponent)new org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety();
     console.setSocietyComponent(sc);
   }
 
