@@ -136,6 +136,16 @@ public class AssetDBComponent
         for(int i=0; i < container.getChildCount(); i++) {
           RelationshipBase rel = (RelationshipBase) container.getChild(i);
           RelationshipData rData = new RelationshipData();
+	  if (rel == null) {
+	    if (log.isErrorEnabled()) {
+	      log.error("Bug 1304: Null RelationshipBase at child spot # " + i);
+	    }
+	  } else if (rel.getProperty(RelationshipBase.PROP_TYPE) == null) {
+	    if (log.isErrorEnabled()) {
+	      log.error("Bug 1304: Null Relationship type for relationship at child spot #" + i);
+	    }
+	  }
+	  // Bug 1304 is an NPE in the next line
           rData.setType((String)rel.getProperty(RelationshipBase.PROP_TYPE).getValue());
           rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
           rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
