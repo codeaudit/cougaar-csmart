@@ -12,6 +12,9 @@ CompletionServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.pl
 HierarchyServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.planning.HierarchyServlet,/hierarchy
 DataGathererServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.mlm.ui.servlet.DataGathererServlet,/datagatherer
 
+# For the inventory Servlet
+InventoryServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.mlm.ui.psp.xmlservice.InventoryServlet,/inventory
+
 # Allows loading arbitrary components
 LoaderServletComponent,org.cougaar.planning.servlet.LoaderServletComponent,/load
 
