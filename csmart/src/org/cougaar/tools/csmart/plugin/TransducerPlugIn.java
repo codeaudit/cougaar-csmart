@@ -226,15 +226,23 @@ public class TransducerPlugIn extends CSMARTPlugIn {
 	    break;
 	  } else {
 	    // Skip comment lines
-	    if (line.charAt(0) != '#') {
-	      // What about lines of all blanks?
-	      // create a new Agent
-	      Agent newAg = processInputLine(line);
-	      if (newAg != null) {
-		if (log.isApplicable(log.VERBOSE)) {
-		  log.log(this, log.VERBOSE, "parseParameters: " + this + " adding Agent to the world: " + newAg);
+	    try {
+	      if (line.charAt(0) != '#') {
+		// What about lines of all blanks?
+		// create a new Agent
+		Agent newAg = processInputLine(line);
+		if (newAg != null) {
+		  if (log.isApplicable(log.VERBOSE)) {
+		    log.log(this, log.VERBOSE, "parseParameters: " + this + " adding Agent to the world: " + newAg);
+		  }
+		  world.addAgent(newAg);
 		}
-		world.addAgent(newAg);
+	      }
+	    } catch(IndexOutOfBoundsException e) {
+	      if(line.length() == 0) {
+		// Empty line with a CR. This is fin.
+	      } else {
+		System.err.println("Got an expection parsing input file.");
 	      }
 	    }
 	  }
