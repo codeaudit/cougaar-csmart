@@ -62,6 +62,7 @@ import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.tools.csmart.society.ui.SocietyUIComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 import org.cougaar.tools.csmart.experiment.ExperimentHost;
 
@@ -84,6 +85,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public static final String CONFIG_USER = "org.cougaar.configuration.user";
   public static final String CONFIG_PASSWD = "org.cougaar.configuration.password";
   public static final String ENV_DISPLAY = "env.DISPLAY";
+
+  public static final String BOOTSTRAP_CLASS = "java.class.name";
   
   // Define some Defaults
   public static final String PERSISTENCE_DFLT = "false";
@@ -95,6 +98,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   // org.cougaar.control.port; port for contacting applications server
   public static final int APP_SERVER_DEFAULT_PORT = 8484;
   public static final String NAME_SERVER_PORTS = "8888:5555";
+  public static final String DEFAULT_BOOTSTRAP_CLASS = "org.cougaar.bootstrap.Bootstrapper";
+  public static final String DEFAULT_NODE_CLASS = "org.cougaar.core.node.Node";
 
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
   public static final String PROP_PREFIX = "PROP$";
@@ -204,6 +209,12 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     defaultNodeArguments.put(COMPLAININGLP_LEVEL, COMPLAININGLP_LEVEL_DFLT);
     defaultNodeArguments.put(TRANSPORT_ASPECTS, TRANSPORT_ASPECTS_DFLT);
     defaultNodeArguments.put(CONTROL_PORT, Integer.toString(APP_SERVER_DEFAULT_PORT));
+    // Class of Node to run
+    defaultNodeArguments.put(CSMARTConsole.COMMAND_ARGUMENTS, DEFAULT_NODE_CLASS);
+
+    // Class of bootstrapper to use
+    defaultNodeArguments.put(BOOTSTRAP_CLASS, DEFAULT_BOOTSTRAP_CLASS);
+
     if (DBUtils.dbMode) {
       defaultNodeArguments.put(CONFIG_DATABASE, 
 			       Parameters.findParameter(DBUtils.DATABASE));
