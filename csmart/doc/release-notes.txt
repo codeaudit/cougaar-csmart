@@ -11,7 +11,12 @@ reloaded, in particular to reflect the obsolesence of ClusterIdentifier.
   developers should reset COUGAAR_DEV_PATH from csmart/tmpdir to
   csmart/tmp/classes. Additionally, any setting in ~/.ant.properties
   should probably instead be in csmart/module.properties.
-- Removed CSMART Domain. Edit your configs/common/LDMDomains.ini as necessary.
+- Removed CSMART Domain. Edit your configs/common/LDMDomains.ini as
+  necessary.
+- Replace Default Workspace.bin that used to contain serialized
+  objects, with a much simpler and faster Default Workspace.xml - a
+  human-editable file containing just the experiment names. All named
+  experiments will be re-loaded from the database when you restart CSMART.
 - Use SimpleAgent instead of ClusterImpl as default Agent class. The
   provided database csv files have been updated, but ClusterImpl will
   still work just fine.
