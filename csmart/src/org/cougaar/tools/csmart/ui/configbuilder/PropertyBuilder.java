@@ -68,6 +68,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   private transient Logger log;
   private Experiment experiment;
   private ModifiableComponent originalComponent;
+  private boolean componentWasSaved = false;
 
   public PropertyBuilder(CSMART csmart, ModifiableComponent mc, 
                          ModifiableComponent originalComponent,
@@ -107,7 +108,8 @@ public class PropertyBuilder extends JFrame implements ActionListener {
       }
     });
 
-    setConfigComponent(mc);
+    //    setConfigComponent(mc);
+    configComponent = mc;
     propertyEditor = new PropertyEditorPanel(configComponent, true);
     getContentPane().setLayout(new BorderLayout());
     getContentPane().add(propertyEditor, BorderLayout.CENTER);
@@ -124,7 +126,9 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   private void exit() {
     propertyEditor.stopEditing(); // accept any edit in progress
     propertyEditor.exit();
-    if (isModified()) {
+    // if component is modified, or was modified and was saved
+    // update it in the experiment
+    if (isModified() || componentWasSaved) {
       if (experiment != null) {
         if (configComponent instanceof SocietyComponent) {
           SocietyComponent society = (SocietyComponent)configComponent;
@@ -138,8 +142,9 @@ public class PropertyBuilder extends JFrame implements ActionListener {
           CSMART.getOrganizer().replaceComponent(experiment, originalComponent, recipe);
         }
       }
-      saveToDatabase();
     }
+    if (isModified())
+      saveToDatabase();
   }
 
   private boolean isModified() {
@@ -163,6 +168,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
                                       JOptionPane.WARNING_MESSAGE);
       if (answer != JOptionPane.YES_OPTION) return;
     }
+    componentWasSaved = true;
     saveToDatabase(); // force save
   }
 
@@ -221,13 +227,13 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     }
   }
 
-  public void reinit(ModifiableComponent newModifiableComponent) {
-    setConfigComponent(newModifiableComponent);
-    propertyEditor.reinit(configComponent);
-  }
+//    public void reinit(ModifiableComponent newModifiableComponent) {
+//      setConfigComponent(newModifiableComponent);
+//      propertyEditor.reinit(configComponent);
+//    }
 
-  private void setConfigComponent(ModifiableComponent newConfigComponent) {
-    configComponent = newConfigComponent;
-  }
+//    private void setConfigComponent(ModifiableComponent newConfigComponent) {
+//      configComponent = newConfigComponent;
+//    }
 
 }
