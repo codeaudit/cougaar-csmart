@@ -103,6 +103,11 @@ public class CommunityDbUtils {
       return false;
     }
 
+    // loadXMLFile returns null on error
+    if (doc == null) {
+      return false;
+    }
+
     Hashtable calist = new Hashtable(); //table saves communities and their attributes
     Hashtable celist = new Hashtable(); //table saves communities and their entities
     NodeList communities = doc.getElementsByTagName("Community");
