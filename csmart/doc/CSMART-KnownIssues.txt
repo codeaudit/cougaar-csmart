@@ -1,5 +1,10 @@
 CSMART contains a few known issues:
 
+* Export scripts require the -r argument to mysqldump, which is not
+  available in somer older versions of mysql (like 3.23.33). If you
+  want to use the experiment or recipe export scripts, upgrade to
+  the latest version of MySQL 3.23 (bug 1566).
+
 * Society Monitor will warn about an inability to contact Agents in
   which no CSMART Servlets are running. This will usually include all
   Node Agents. While not a bug, it is annoying. See bug # 1241
@@ -28,17 +33,18 @@ CSMART contains a few known issues:
 * MySQL cannot load data across network drives, causing errors
   creating the database in some circumstances. See bug# 1257.
 
-* Although it is forbidden by Cougaar, CSMART may sometimes allow
-  users to create 2 Agents with the same name in a society, or an
-  Agent with the same name as a Node (bug 1474). In addition, CSMART
-  will not prevent Agent or Node names with illegitimate characters,
+* CSMART will not prevent Agent or Node names with illegitimate characters,
   as it should. Bug # 1477
 
 * The Console (Experiment Controller) kills Nodes sequentially which
   is sometimes slow. Bug 1416.
 
-* Some Linux users get an error when loading database scripts. (bug 1257)
-  For a workout, see the bug report.
+* If you export 2 experiments from different databases using the
+  included experiment export script, then import both into the same
+  database, it is possible for these exports to conflict. Bug # 1364
+
+* Do not use a host name of "localhost" or one with "non-standard"
+  characters in it when configuring your Experiment in the Experiment Builder.
 
 For up to date information on these and other CSMART issues see:
 http://www.cougaar.org/bugs
