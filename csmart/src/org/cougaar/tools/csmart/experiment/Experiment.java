@@ -1211,6 +1211,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
   public HostComponent[] getHostComponents() {
+    if(modified) {
+      getNodesInner();
+    }
     return (HostComponent[]) hosts.toArray(new HostComponent[hosts.size()]);
   }
 
