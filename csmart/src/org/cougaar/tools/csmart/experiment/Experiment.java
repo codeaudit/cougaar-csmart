@@ -1601,11 +1601,19 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	// was not previously saved
 	if (! sc.saveToDatabase()) {
 	  if (log.isErrorEnabled()) {
-	    log.error("Failed to save society " + sc.getSocietyName() + " so going to give up.");
+	    log.error("Failed to save society " + sc.getSocietyName() + " so going to give up saving the experiment.");
 	  }
 	  return;
 	}
-      }
+      } else if (sc.isModified()) {
+	// Save the society before trying to save the Experiment
+	if (! sc.saveToDatabase()) {
+	  if (log.isErrorEnabled()) {
+	    log.error("Failed to save society " + sc.getSocietyName() + " so going to give up saving the experiment.");
+	  }
+	  return;
+	}
+      }	
 
       pdb =
 	new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
