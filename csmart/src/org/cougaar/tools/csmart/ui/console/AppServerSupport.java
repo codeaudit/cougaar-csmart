@@ -255,7 +255,7 @@ public class AppServerSupport {
    * Immediately update the node to app server mappings to get any new nodes.
    */
   public void addAppServer() {
-    JTextField tf = new JTextField("", 20);
+    JTextField tf = new JTextField("localhost:8484", 20);
     JPanel panel = new JPanel();
     panel.add(new JLabel("Enter HostName:Port:"));
     panel.add(tf);
@@ -394,6 +394,8 @@ public class AppServerSupport {
    * from this instance of CSMART.
    */
   private String[] getNodesToAttach(ArrayList nodes) {
+    if (nodes == null || nodes.size() == 0)
+      return null;
     Object[] selected = 
       Util.getObjectsFromList(null, nodes, 
                               "Attach to Nodes", "Select Nodes:");
@@ -432,6 +434,8 @@ public class AppServerSupport {
 	processNames.remove(pName);
       }
     }
+    if (processNames.size() == 0)
+      return null;
 
     ArrayList results = new ArrayList();
     String[] attachToNodes = getNodesToAttach(new ArrayList(processNames));
