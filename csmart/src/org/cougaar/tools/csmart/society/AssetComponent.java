@@ -30,10 +30,10 @@ public interface AssetComponent extends ModifiableComponent {
   /** Some default Property Definitions **/
 
   /** Property Type Definition **/
-  String PROP_TYPE = "Asset Type";
+  //  String PROP_TYPE = "Asset Type";
 
   /** Property Type Description Definition **/
-  String PROP_TYPE_DESC = "Type of Asset";
+  //  String PROP_TYPE_DESC = "Type of Asset";
 
   /** Property Class Definition **/
   String PROP_CLASS = "Asset Class";

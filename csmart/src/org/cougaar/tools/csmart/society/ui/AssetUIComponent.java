@@ -43,7 +43,7 @@ public class AssetUIComponent
   extends ModifiableConfigurableComponent
   implements AssetComponent {
 
-  private Property propAssetType;
+  //  private Property propAssetType;
   private Property propAssetClass;
   private Property propUniqueID;
   private Property propUnitName;
@@ -54,8 +54,8 @@ public class AssetUIComponent
   }
 
   public void initProperties() {
-    propAssetType = addProperty(AssetComponent.PROP_TYPE, new Integer(0));
-    propAssetType.setToolTip(PROP_TYPE_DESC);
+    //    propAssetType = addProperty(AssetComponent.PROP_TYPE, new Integer(0));
+    //    propAssetType.setToolTip(PROP_TYPE_DESC);
     propAssetClass = addProperty(AssetComponent.PROP_CLASS, "");
     propAssetClass.setToolTip(PROP_CLASS_DESC);
     propUniqueID = addProperty(AssetComponent.PROP_UID, "");
@@ -73,7 +73,7 @@ public class AssetUIComponent
 
   public ComponentData addComponentData(ComponentData data) {
     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
-    assetData.setType(((Integer)propAssetType.getValue()).intValue());
+    //    assetData.setType(((Integer)propAssetType.getValue()).intValue());
     assetData.setAssetClass((String)propAssetClass.getValue());
     assetData.setUniqueID((String)propUniqueID.getValue());
     assetData.setUnitName((String)propUnitName.getValue());
@@ -88,7 +88,7 @@ public class AssetUIComponent
         for(int i=0; i < container.getChildCount(); i++) {
           RelationshipBase rel = (RelationshipBase) container.getChild(i);
           RelationshipData rData = new RelationshipData();
-          rData.setType((String)rel.getProperty(PROP_TYPE).getValue());
+          rData.setType((String)rel.getProperty(RelationshipBase.PROP_TYPE).getValue());
           rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
           rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
           rData.setTypeId((String)rel.getProperty(RelationshipBase.PROP_TYPEID).getValue());

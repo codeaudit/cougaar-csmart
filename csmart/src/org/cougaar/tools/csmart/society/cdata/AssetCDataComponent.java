@@ -49,10 +49,10 @@ public class AssetCDataComponent
   /** Property Definitions **/
 
   /** Type Property Definition **/
-  public static final String PROP_TYPE = "Asset Type";
+  //  public static final String PROP_TYPE = "Asset Type";
 
   /** Type Description Definition **/
-  public static final String PROP_TYPE_DESC = "Type of Asset";
+  //  public static final String PROP_TYPE_DESC = "Type of Asset";
 
   /** Class Definition **/
   public static final String PROP_CLASS = "Asset Class";
@@ -78,7 +78,7 @@ public class AssetCDataComponent
   /** UID Description Definition **/
   public static final String PROP_UIC_DESC = "UIC of the Asset";
 
-  private Property propAssetType;
+  //  private Property propAssetType;
   private Property propAssetClass;
   private Property propUniqueID;
   private Property propUnitName;
@@ -100,9 +100,9 @@ public class AssetCDataComponent
    */
 
   public void initProperties() {
-    propAssetType = addProperty(PROP_TYPE, 
-                                new Integer(createdFromData.getType()));
-    propAssetType.setToolTip(PROP_TYPE_DESC);
+    //    propAssetType = addProperty(PROP_TYPE, 
+    //                                new Integer(createdFromData.getType()));
+    //    propAssetType.setToolTip(PROP_TYPE_DESC);
     propAssetClass = addProperty(PROP_CLASS, createdFromData.getAssetClass());
     propAssetClass.setToolTip(PROP_CLASS_DESC);
     if (createdFromData.getUniqueID() != null) {
@@ -134,7 +134,7 @@ public class AssetCDataComponent
    */
   public ComponentData addComponentData(ComponentData data) {
     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
-    assetData.setType(((Integer)propAssetType.getValue()).intValue());
+    //    assetData.setType(((Integer)propAssetType.getValue()).intValue());
     assetData.setAssetClass((String)propAssetClass.getValue());
     assetData.setUniqueID((String)propUniqueID.getValue());
     assetData.setUnitName((String)propUnitName.getValue());

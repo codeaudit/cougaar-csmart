@@ -48,16 +48,16 @@ public class AssetFileComponent
   implements AssetComponent {
 
   /** Property Definitions **/
-  public static final String PROP_TYPE = "Asset Type";
-  public static final String PROP_TYPE_DESC = "Type of Asset";
-  public static final String PROP_CLASS = "Asset Class";
-  public static final String PROP_CLASS_DESC = "Class of the Asset";
-  public static final String PROP_UID = "UID";
-  public static final String PROP_UID_DESC = "UID of the Asset";
-  public static final String PROP_UNITNAME = "Unit Name";
-  public static final String PROP_UNITNAME_DESC = "Unit Name of the Asset";
-  public static final String PROP_UIC = "UIC";
-  public static final String PROP_UIC_DESC = "UIC of the Asset";
+//    public static final String PROP_TYPE = "Asset Type";
+//    public static final String PROP_TYPE_DESC = "Type of Asset";
+//    public static final String PROP_CLASS = "Asset Class";
+//    public static final String PROP_CLASS_DESC = "Class of the Asset";
+//    public static final String PROP_UID = "UID";
+//    public static final String PROP_UID_DESC = "UID of the Asset";
+//    public static final String PROP_UNITNAME = "Unit Name";
+//    public static final String PROP_UNITNAME_DESC = "Unit Name of the Asset";
+//    public static final String PROP_UIC = "UIC";
+//    public static final String PROP_UIC_DESC = "UIC of the Asset";
 
   private Property propAssetClass;
   private Property propUniqueID;

@@ -62,19 +62,19 @@ public class AssetDBComponent
   private static final String QUERY_PG_VALUES = "queryPGValues";
 
   /** Property Definitions **/
-  public static final String PROP_TYPE = "Asset Type";
-  public static final String PROP_TYPE_DESC = "Type of Asset";
-  public static final String PROP_CLASS = "Asset Class";
-  public static final String PROP_CLASS_DESC = "Class of the Asset";
-  public static final String PROP_UID = "UID";
-  public static final String PROP_UID_DESC = "UID of the Asset";
-  public static final String PROP_UNITNAME = "Unit Name";
-  public static final String PROP_UNITNAME_DESC = "Unit Name of the Asset";
-  public static final String PROP_UIC = "UIC";
-  public static final String PROP_UIC_DESC = "UIC of the Asset";
+  //  public static final String PROP_TYPE = "Asset Type";
+  //  public static final String PROP_TYPE_DESC = "Type of Asset";
+//    public static final String PROP_CLASS = "Asset Class";
+//    public static final String PROP_CLASS_DESC = "Class of the Asset";
+//    public static final String PROP_UID = "UID";
+//    public static final String PROP_UID_DESC = "UID of the Asset";
+//    public static final String PROP_UNITNAME = "Unit Name";
+//    public static final String PROP_UNITNAME_DESC = "Unit Name of the Asset";
+//    public static final String PROP_UIC = "UIC";
+//    public static final String PROP_UIC_DESC = "UIC of the Asset";
 
   private Map substitutions = new HashMap();
-  private Property propAssetType;
+  //  private Property propAssetType;
   private Property propAssetClass;
   private Property propUniqueID;
   private Property propUnitName;
@@ -92,8 +92,8 @@ public class AssetDBComponent
   }
 
   public void initProperties() {
-    propAssetType = addProperty(PROP_TYPE, new Integer(AgentAssetData.ORG));
-    propAssetType.setToolTip(PROP_TYPE_DESC);
+    //    propAssetType = addProperty(PROP_TYPE, new Integer(AgentAssetData.ORG));
+    //    propAssetType.setToolTip(PROP_TYPE_DESC);
 
     propAssetClass = addProperty(PROP_CLASS, queryOrgClass());
     propAssetClass.setToolTip(PROP_CLASS_DESC);
@@ -121,7 +121,7 @@ public class AssetDBComponent
 
   public ComponentData addComponentData(ComponentData data) {
     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
-    assetData.setType(((Integer)propAssetType.getValue()).intValue());
+    //    assetData.setType(((Integer)propAssetType.getValue()).intValue());
     assetData.setAssetClass((String)propAssetClass.getValue());
     assetData.setUniqueID((String)propUniqueID.getValue());
     assetData.setUnitName((String)propUnitName.getValue());
