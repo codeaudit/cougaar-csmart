@@ -7,6 +7,8 @@ particular, this release changes the database table names, and the
 Plugins used in the default society configurations, so that they use
 the UL Adaptive Logistics Plugins. You should reload your database (entirely).
 
+
+Database changes:
 - Renamed mysqldump.9.2.txt to mysqldump.txt. Also added new tables to
   this dump that are required by new adaptive logistics Plugins.
 - Database table names have been shorted, removing extraneous v4 and
@@ -14,26 +16,28 @@ the UL Adaptive Logistics Plugins. You should reload your database (entirely).
   remove the "v4_" from the beginning of table names. Use the script
   provided in csmart/bin to do so (v4_v6_conversion.[bat/sh]).
 - Removed use of old logistics Plugins in the included 1AD societies,
-  replacing them with the new, adaptive Plugins. After reloading your
-  CSMART database, you must include the new adaptive jar file in your
-  CIP/lib.
+  replacing them with the new, adaptive Plugins (from the Ultra*Log
+  Adaptive Logistics thread). Note that with this change, certain
+  Classes of Supply (Threads) are disabled until next year. After reloading your
+  CSMART database, you must include the new adaptive jar files in your
+  CIP/lib. Also note that you should re-create from scratch any
+  1AD-based societies that you use, to take advantage of the new Plugins.
 - Updated the domain data in the CSMART database to avoid some
   errors (bug 1531). You must reload the .sql file you get from unzipping
   Domain-MySQL.ZIP (see the Install instructions).
-- Adding additional servlets is no longer possible via the Servlet
-  Insertion Recipe. To add additional servlets, use the Specific
-  Insertion Recipe. (Bug 1521)
-- Added a new recipe "Complete Agent" that allows the creation of an Agent
-  including all plugins, relationships and asset data in one GUI
-  configurable recipe.
-- Unsupported feature: INI files dumped from the Experiment Builder
-  now _may_ be runnable, with one small edit. You must edit the Agent
-  INI file that contains the GLSInitServlet, usually named
-  "NCA". Follow the instructions in the comment. Note however that you
-  must have previously saved your Experiment to the database. Again,
-  this functionality is not fully supported.
+- Database load scripts are now generated
+  from ER/Studio files, which themselves are available in the
+  csmart/data/database/db_src directory (with screenshots in 
+  csmart/data/database/doc). This change is transparent to the user.
+- MySQL load scripts now work on networked drives if you have MySQL
+  server 3.23.49 or better and use the new "local" option to the .sh
+  script. (bug 1257)
+
+Other setup changes:
 - Upgraded to latest version of JCChart library (renaming jar file to
   jcchart.jar). Be sure you have the latest cougaar-support.zip
+- As per above, be sure to run the v4_v6_conversion script on any
+  recipe or experiment exports before importing them.
 - Note that since, as of 9.4, Agent Insertion Recipes always include
   an OrgAsset, that if you import such a recipe from a prior release,
   you will see some errors when you load it from the database:
@@ -44,10 +48,31 @@ Asset=true in component AGG-Agent
   You should ignore these errors. But you should then edit your
   recipe, to fill in all the attributes of the Agent and its new
   OrgAsset (bug 1594).
+- We have fixed a bug from version 9.4 that made Agents created with
+  an AgentInsertion recipe give runtime errors. However, as per above,
+  be sure to edit any imported Agent recipes and "toggle" (change, then change back)
+  the name of your Agent, to ensure you get the correct
+  functionality. The problem was missing ClusterPG and
+  ItemIdentificationPGs on the included OrgAsset (bug 1596)
+
+Recipe changes
+- Adding additional servlets is no longer possible via the Servlet
+  Insertion Recipe. To add additional servlets, use the Specific
+  Insertion Recipe. (Bug 1521)
+- Added a new recipe "Complete Agent" that allows the creation of an Agent
+  including all plugins, relationships and asset data in one GUI
+  configurable recipe.  We suggest using this recipe instead of using
+  the AgentInsertionRecipe with multiple SpecificInsertionRecipes to
+  fill out the contents of the Agent.
 - Added a Community Plugin recipe to base experiments. By including
   this recipe, all Agents and Node Agents will get the Community
   Plugin, allowing full Community and ABA support in all Agents and
   Nodes by default (bug 1587).
+- Bug 1596: OrgAssets created using the AgentInsertionRecipe were
+  missing the ClusterPG and ItemIdentificationPG, resulting in runtime
+  Exceptions.
+
+Other major new changes and features:
 - Console (aka Experiment Controller) has new menu items and
   functionality, to support "discovery" of new Nodes that are created
   on an AppServer by a process other than CSMART. By selecting
@@ -69,19 +94,23 @@ Asset=true in component AGG-Agent
   experiment. (Courtesy of Mobile Intelligence, Inc).
 - When dumping out INI files, a communities.xml file is also generated
   (bug 1453, also courtesty of Mobile Intelligence, Inc).
-- Database load scripts are now generated
-  from ER/Studio files, which themselves are available in the
-  csmart/data/database/db_src directory (with screenshots in 
-  csmart/data/database/doc). This change is transparent to the user.
-- Bug 1596: OrgAssets created using the AgentInsertionRecipe were
-  missing the ClusterPG and ItemIdentificationPG, resulting in runtime
-  Exceptions.
+- Unsupported feature: INI files dumped from the Experiment Builder
+  now _may_ be runnable, with one small edit. You must edit the Agent
+  INI file that contains the GLSInitServlet, usually named
+  "NCA". Follow the instructions in the comment. Note however that you
+  must have previously saved your Experiment to the database. Again,
+  this functionality is not fully supported.
+- Console tries hard to find the GLS Servlet (bug 1560). You MUST
+  specify the web server http or https port for the NCA agent through
+  the CSMART Experiment Builder in order for CSMART to accurately find
+  the GLS Init Servlet. If it can't find it, you can specify it explicitly.
 - When dragging Hosts or Nodes onto a community in the Community
   editor, show only the resulting Agents in the Community, not the
   Nodes or Hosts. Bug 1578.
 - Community View now shows communities collapsed initially (bug 1522).
 - Allow loading multiple recipes from the database at once. Also allow
-  dragging multiple recipes at once into an Experiment. (Bug 932)
+  dragging multiple recipes at once into an Experiment. Simply use
+  Ctrl-click or Shift-click to select more than one recipe. (Bug 932)
 - Allow viewing contents of an Agent from the Experiment Builder (bug
   1470).
 - Console's window showing Agent contents will now show the load
@@ -105,11 +134,6 @@ Asset=true in component AGG-Agent
   1443).
 - If Topology servlet not loaded, show only one error dialog (not one
   per Agent). Bug 1585.
-- Try to find the correct port for the GLSInitServlet, possibly using
-  https. Bug 1560.
-- MySQL load scripts now work on networked drives if you have MySQL
-  server 3.23.49 or better and use the new "local" option to the .sh
-  script. (bug 1257)
 - Handle dragging in Host and Nodes and Agents consistently in the
   Community Editor (bug 1523).
 - Keep node log files up-to-date (bug 931).

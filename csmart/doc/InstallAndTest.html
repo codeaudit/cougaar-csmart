@@ -115,7 +115,7 @@ very similar for WinNT) and a MYSQL database.
         <pre>
 	java -server -version
 	</pre>
-    You should see: 
+    You should see something like: 
         <pre>
 java version "1.4.0"
 Java(TM) 2 Runtime Environment, Standard Edition (build 1.4.0-b92)
@@ -177,6 +177,31 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
    These notes highlight a basic installation for MySQL.  You 
    <b>MUST</b> refer to the MySQL documentation for proper
    installation and security documentation!
+   <p><b>Converting from a 9.4 or earlier installation to a 9.4.1 or
+   better installation:</b> The database formats have changed between
+   Cougaar versions 9.4 and 9.4.1. To upgrade, you should:
+   <ol>
+     <li>Export any recipes that you want to save, using the
+     export scripts in csmart/bin (export-recipe.[sh/bat] and exportExperiment.[sh/bat]. Run with
+     no arguments for usage.)</li>
+     <li>From the CSMART Experiment Builder's "Configure" menu, export
+     the host-node-agent (HNA) mapping for your 1AD-based experiments, if
+     you want to save the work of re-assigning Agents to Nodes and
+     Nodes to Hosts. With the new database, the Plugins used in the 1AD-based
+     societies have changed.</li>
+     <li>Re-load, in their entirety, both the CSMART database and the
+     Cougaar domain database, using the below instructions.</li>
+     <li>Run the script v4_v6_conversions.[bat/sh] on each of your
+     export files from above, to remove the now-obsolete "v4_"
+     prefixes from the table names.</>
+     <li>Import your converted recipe or experiment exports into your new database,
+     following the instructions that were given when you created the
+     exports.</li>
+     <li>From CSMART, reconstruct your 1AD-based experiments, if
+     any. In the Experiment Builder, use the "Configure" menu to
+     import your saved host-node-agent (HNA) mappings.</li>
+  </ol>
+  <br>
   <ol>
   <p>
 
@@ -184,7 +209,9 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
     <a href="http://www.mysql.com/">http://www.mysql.com/</a>.
     The latest stable release of version "3.23" will work, but it
     should be 3.23.40 or better.<br><br>
-    <b>Linux Note:</b> <i>Be sure to use 3.23.45 or better.  Earlier versions contain a bug with table name cases.</i><br>
+    <b>Linux Note:</b> <i>Be sure to use 3.23.45 or better, or 3.23.49
+    if you will be running across networked drives. Earlier versions
+    have bugs.</i><br>
     <b>Windows Note:</b> Older releases do not support the "-r"
     argument for mysqldump, which is required if you will be using the
     experiment and recipe export scripts. Check your release by doing
@@ -247,7 +274,7 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
     the old tables in the database first and load 
     the new tables from the .csv files. Windows users are strongly
     urged to install Cygwin and use the provided .sh version of the
-    load script.
+    load script, although it is not required.
 
       <pre>
         $./load_1ad_mysql.sh [db username] [db password] [database name]       
@@ -563,7 +590,12 @@ installation using
     that's running a Node, and in your browser open this URL:
       <a href="http://localhost:8800/tasks">http://localhost:8800/tasks</a>
     This should create an HTML page that can be used to view the contents
-    of an Agent's Blackboard.  Other pages (or servlets) are available. Go to <a href="http://localhost:8800">http://localhost:8800</a> for some basic help, and links to show you the available running servlets. You may also look at the related core <a href="../../doc/details/Servlet.html">servlet documentation</a>, or see the
+    of an Agent's Blackboard.  Other pages (or servlets) are
+    available. Go to <a href="http://localhost:8800">http://localhost:8800</a> 
+    for some basic help, and links to show you the available running
+    servlets. You may also look at the related core <a
+    href="../../doc/details/Servlet.html">servlet documentation</a>,
+    or see the
     <a href="http://www.cougaar.org/documents/pdg.html">Cougaar Developers Guide</a> 
     for further details.</li><p>
 
@@ -589,8 +621,9 @@ installation using
   <ol>
   <p>
 
-  <li>Follow the above <a href="#cougaarInst"
-      >Cougaar installation steps</a> and Cougaar <a href="#cougaarEnv">environment setting</a> steps.</li><p>
+  <li>Follow the above <a href="#cougaarInst">
+      Cougaar installation steps</a> and Cougaar 
+      <a href="#cougaarEnv">environment setting</a> steps.</li><p>
 
   <li>The CSMART Society Monitor is now ready to run by using:
        <pre>
@@ -604,8 +637,8 @@ installation using
     hostname of any host that is running a Node of your society, such
     as: <a href="http://localhost:8800/">http://localhost:8800/</a></li><p>
 
-  <li>See the CSMART on-line documentation or the User's Guide, section 7 for instructions on how to use the various
-    monitor tools.</li><p>
+  <li>See the CSMART on-line documentation or the User's Guide,
+    section 7 for instructions on how to use the various monitor tools.</li><p>
 
   <li>Several of these UIs make use of the 3rd-party 
     <a href="http://www.research.att.com/sw/tools/graphviz">Grappa</a> 
@@ -629,7 +662,8 @@ installation using
    The AppServer is a remote process manager that is used by the CSMART UI to
    create and destroy 
    <a href="http://www.cougaar.org">Cougaar</a>
-   Node processes. You will need one AppServer installation on each host on which you wish to run Cougaar Nodes via CSMART.
+   Node processes. You will need one AppServer installation on each
+   host on which you wish to run Cougaar Nodes via CSMART.
   <p>
   <ol>
   <p>
@@ -654,7 +688,10 @@ installation using
     properties -- if you used directory names other than <tt>/opt/cougaar</tt>,
     then you must modify this file.  You may also set various properties by default.  For
     example, one can alter the logging level by changing a property in the
-    "server.props".  See the "server.props" for details. (Note that you may use a name other than "server.props", in which case you must provide the server startup script with the relative path to your server properties file when you invoke the script.)</li><p>
+    "server.props".  See the "server.props" for details. (Note that
+    you may use a name other than "server.props", in which case you
+    must provide the server startup script with the relative path to
+    your server properties file when you invoke the script.)</li><p>
 
   <li>(Optional) Developers may want to turn on the AppServer "verbose" 
     debugging option, which is set in the "Server" script.  See the "Server"
@@ -670,7 +707,8 @@ installation using
     A host only needs one AppServer running for CSMART to launch one or more
     Nodes on that host, for one or more experiment run.  CSMART communicates
     with multiple host/AppServers to launch and coordinate a distributed
-    experiment.<br>Note that some Cougaar applications will write text files to the directory from which you start the AppServer.</li><p>
+    experiment.<br>Note that some Cougaar applications will write text
+    files to the directory from which you start the AppServer.</li><p>
   </ol>
 </li><p>
 
@@ -690,7 +728,7 @@ installation using
 
   <li>After fully <a href="#cougaarInst">installing</a> Cougaar and
   testing your <a href="#minitest">installation</a> with minitestconfig (and installing a
-  <a href="#dbInst">database</a> if necessary), you are ready for CSMART.</li><p>
+  <a href="#dbInst">database</a>), you are ready for CSMART.</li><p>
   
   <a name="excelPath"></a>
   <li>You may need to modify the supplied "CSMART" or "CSMART.bat" startup script in csmart/bin.  For example, a Java System
@@ -794,9 +832,9 @@ installation using
 
     <li>Give the experiment a name, such as "My Test", then click "Yes" to save
       your modified name.  Your experiment name, "My Test", is added
-      to the list in the "Default Workspace".  Three recipes are also
+      to the list in the "Default Workspace".  Several recipes are also
       added to your workspace. The first, "Default Servlets", defines the servlets that are a default
-      part of this experiment. The other two, "NodeMobilityPlugin" and
+      part of this experiment. Others, "NodeMobilityPlugin" and
       "AgentMobilityPlugin" are used to support Agent Mobility. Note that your society (Agents +
       Plugins), plus these Recipes (and any others you add) are
       displayed twice. Once, within the Experiment to which you have
@@ -873,11 +911,11 @@ installation using
 
     <li>Select "1AD-Tiny" of the middle ("Nodes") panel.</li><p>
 
-    <li>Select the remaining 25 Agents and drag them onto
+    <li>Select the remaining Agents and drag them onto
       "1AD-Tiny".  Use the shift-key to select a range of
       names.</li><p>
 
-    <li>Select your machine's address from the left ("Hosts") panel.  If
+    <li>Select your machine's name from the left ("Hosts") panel.  If
       your machine's name is not present then right-click in the left
       panel to add a new entry.  Make sure that you use either the
       full host name or the IP address -- sometimes the DNS lookup
@@ -898,7 +936,7 @@ installation using
     <b>Note:</b> Be careful of editing the existing arguments unless
     you know what you are doing.</li><p>  
 
-    <li>· You could also edit the Community definitions for this
+    <li>You could also edit the Community definitions for this
     experiment, using the "Communities" tab. We will not do so in this
     example.</li><p>    
 
@@ -911,7 +949,7 @@ installation using
     </ol>
   </li><p>
 
-  <li>To run an experiment (see section 6):
+  <li>To run an experiment (see section 6 of the User's Guide):
 
     <ol>
     <li>Select an experiment from the "Default Workspace".  For this
@@ -926,20 +964,20 @@ installation using
 
     <li>Click on the "Run" button.</li><p>
 
-    <li>At this point the AppServer will print out a "Create Node"
+    <li>At this point the AppServer will print out a "Creating Process"
       debugging message.  This output can be ignored.</li><p>
 
-    <li>Three minimized icons are created in the "Experiment Controller"
-      window; one for each host and one for the GLS Servlet.  Double Click on both 
+    <li>Several minimized icons are created in the "Experiment Controller"
+      window; one for each host and one for the GLS Servlet control interface.  Double Click on both 
       Node Windows to see the Node output.  These output panels can be streched 
-      to 80 columns to
+      wider to
       make viewing easier.  Log files of the output are written to
       the <tt>$CIP/results</tt> directory that you specified. You can set
       notifications to monitor the Node output, filter that output,
       and many other things. See the on-line documentation or section
       6 of the User's Guide for details.</li><p>
 
-    <li>In the output panels you should see a "@NODE_CREATED" message,
+    <li>In the output panels you should see a "PROCESS_CREATED" message,
       followed by the 
       <a href="http://www.cougaar.org">Cougaar</a>
       build identification.</li><p>
@@ -972,22 +1010,24 @@ installation using
         for notes on using the society monitors.</li><p>
         
       <li>Close the "Society Monitor" window when you are done.  Raise the 
-        "Experiment Monitor" window to the front again.</li><p>
+        "Experiment Controller" window to the front again.</li><p>
       </ol>
     </li><p>
 
     <li>Click on the "Stop" button to kill the Nodes and finish the
       experiment run.</li><p>
 
-    <li>The AppServer notes "Node finished &lt;name&gt;".</li><p>
+    <li>The AppServer console window shows "Process finished " (and
+    then some identification. Additionally, each Node output window
+    says "PROCESS_DESTROYED".</li><p>
 
     <li>The AppServer can now be killed by using control-C, or you can
       leave the AppServer running if you are planning another run.</li><p>
 
-    <li>The "Experiment Monitor" colors the Node activity indicators
+    <li>The "Experiment Controller" colors the Node activity indicators
       red, which signals that the experiment has finished.</li><p>
 
-    <li>Close the "Experiment Monitor" window.</li><p>
+    <li>Close the "Experiment Controller" window.</li><p>
   </ol>
   </li>
   
