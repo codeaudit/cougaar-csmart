@@ -290,7 +290,11 @@ public class PopulateDb extends PDbBase {
    * @return a <code>String</code> assembly type
    */
   private String getAssemblyType(String assemblyId) {
-    if (assemblyId.startsWith(realcmtType)) {
+    if (assemblyId == null) {
+      return "null";
+    } else if (assemblyId.equals("")) {
+      return "empty";
+    } else if (assemblyId.startsWith(realcmtType)) {
       return realcmtType;
     } else if (assemblyId.startsWith(csaType)) {
       return csaType;
@@ -920,6 +924,12 @@ public class PopulateDb extends PDbBase {
    * @exception SQLException if an error occurs
    */
   private void addAssemblyToConfig(String assembly_id) throws SQLException {
+    if (assembly_id == null || assembly_id.equals("")) {
+      if (log.isWarnEnabled()) {
+	log.warn("assAsbToConfig got empty assembly " + assembly_id + " for trial trialId");
+      }
+      return;
+    }
     substitutions.put(":assembly_id:", sqlQuote(assembly_id));
     substitutions.put(":trial_id:", trialId);
     substitutions.put(":assembly_type:", getAssemblyType(assembly_id));
@@ -1078,7 +1088,7 @@ public class PopulateDb extends PDbBase {
 	  // And not the current one
 	  // So remove it for this Trial and potentially all
 	  if (log.isDebugEnabled()) {
-	    log.debug("Removing old hna " + assid + " from config for trial " + trialId);
+	    log.debug("fixAsb: Removing old hna " + assid + " from config for trial " + trialId);
 	  }
 	  removeConfigAssembly(assid);
 	  removeRuntimeAssembly(assid);
@@ -1091,7 +1101,7 @@ public class PopulateDb extends PDbBase {
 	} else if (hnaAssemblyId != null) {
 	  // This is the new HNA assembly somehow already there
 	  if (log.isDebugEnabled()) {
-	    log.debug("Found current HNA (" + hnaAssemblyId + ") already in config for trial " + trialId);
+	    log.debug("fixAsb: Found current HNA (" + hnaAssemblyId + ") already in config for trial " + trialId);
 	  }
 	  configHasNewHNA = true;
 	}
@@ -1100,7 +1110,7 @@ public class PopulateDb extends PDbBase {
 	if (cmtAssemblyId != null && ! assid.equals(cmtAssemblyId)) {
 	  // an old CMT assembly still listed somehow. Delete it!
 	  if (log.isWarnEnabled()) {
-	    log.warn("Found unknown CMT assembly " + assid + " in config for trial " + trialId);
+	    log.warn("fixAsb: Found unknown CMT assembly " + assid + " in config for trial " + trialId);
 	  }
 	  removeConfigAssembly(assid);
 	  removeRuntimeAssembly(assid);
@@ -1114,7 +1124,7 @@ public class PopulateDb extends PDbBase {
 	  }
 	} else if (cmtAssemblyId != null) {
 	  if (log.isDebugEnabled()) {
-	    log.debug("Found current CMT cmtAssID (" + cmtAssemblyId + ") in config for trial " + trialId);
+	    log.debug("fixAsb: Found current CMT cmtAssID (" + cmtAssemblyId + ") in config for trial " + trialId);
 	  }
 	  // This is the current CMT society def in the config area. Good.
 	  // But if we also have a diff CSA assembly ID, we don't want
@@ -1124,13 +1134,13 @@ public class PopulateDb extends PDbBase {
 	    // Dont want the cmt assembly ID, this assembly, in the runtime - 
 	    // using the CSA instead
 	    if (log.isDebugEnabled()) {
-	      log.debug("But also have a CSA (" + csaAssemblyId + "), so this CMT better not be in runtime");
+	      log.debug("fixAsb: But also have a CSA (" + csaAssemblyId + "), so this CMT better not be in runtime");
 	    }
 	    removeRuntimeAssembly(assid);
 	    // Remove any CSMI as well...
 	    if (csmiAssemblyId != null) {
 	      if (log.isDebugEnabled()) {
-		log.debug("Since have a CSA we also know we don't want a CSMI in runtime");
+		log.debug("fixAsb: Since have a CSA we also know we don't want a CSMI in runtime");
 	      }
 	      removeRuntimeAssembly(csmiAssemblyId);
 	      removeConfigAssembly(csmiAssemblyId); // should be no-op
@@ -1145,7 +1155,7 @@ public class PopulateDb extends PDbBase {
 	} else {
 	  // Null cmtAssemblyId!!!!
 	  if (log.isWarnEnabled()) {
-	    log.warn("Trial " + trialId + " has null cmtAssemblyId");
+	    log.warn("fixAsb: Trial " + trialId + " has null cmtAssemblyId while examining cmt asb " + assid);
 	  }
 	}
       } else if (assid.startsWith(csaType)) {
@@ -1153,7 +1163,7 @@ public class PopulateDb extends PDbBase {
 	// and if so, fine.
 	if (cmtAssemblyId != null && ! assid.equals(cmtAssemblyId)) {
 	  if (log.isWarnEnabled()) {
-	    log.warn("Got a CSA asb in config (" + assid + ") thats not the society assembly (" + cmtAssemblyId + ") for trial " + trialId);
+	    log.warn("fixAsb: Got a CSA asb in config (" + assid + ") thats not the society assembly (" + cmtAssemblyId + ") for trial " + trialId);
 	  }
 	  // A CSA in configtime that isnt the society definition
 	  removeConfigAssembly(assid);
@@ -1169,12 +1179,12 @@ public class PopulateDb extends PDbBase {
 	} else if (cmtAssemblyId == null) {
 	  // null society def!!!
 	  if (log.isWarnEnabled()) {
-	    log.warn("Null cmtAssemblyID for trial " + trialId);
+	    log.warn("fixAsb: Null cmtAssemblyID for trial " + trialId + " while looking at CSA asb " + assid + " and local csaAssemblyID: " + csaAssemblyId);
 	  }
 	} else {
 	  // This CSA assembly is the society def in config time. Good.
 	  if (log.isDebugEnabled()) {
-	    log.debug("Found the society def CSA (" + assid + ") in config for trial " + trialId);
+	    log.debug("fixAsb: Found the society def CSA (" + assid + ") in config for trial " + trialId);
 	  }
 	  // Note that we now know a CMT asb in runtime would be bad
 	  // But we could still have a CSMI in runtime
@@ -1182,7 +1192,7 @@ public class PopulateDb extends PDbBase {
       } else {
 	// What kind of assembly is this? CSMI? Delete it!
 	if (log.isWarnEnabled()) {
-	  log.warn("Found non CSA/CSHNA/CMT assembly (" + assid + ") in config for trial " + trialId);
+	  log.warn("fixAsb: Found non CSA/CSHNA/CMT assembly (" + assid + ") in config for trial " + trialId);
 	}
 	removeConfigAssembly(assid);
 	
@@ -1235,7 +1245,7 @@ public class PopulateDb extends PDbBase {
 	// This is an HNA assembly ID
 	if (! assid.equals(hnaAssemblyId)) {
 	  if (log.isWarnEnabled()) {
-	    log.warn("Found old HNA (" + assid + ") in runtime for trial " + trialId);
+	    log.warn("fixAsb: Found old HNA (" + assid + ") in runtime for trial " + trialId);
 	  }
 	  // And not the current one
 	  // So remove it for this Trial and potentially all
@@ -1255,7 +1265,7 @@ public class PopulateDb extends PDbBase {
 	} else {
 	  // This is the new HNA assembly already there, as expected
 	  if (log.isDebugEnabled()) {
-	    log.debug("Found current hna (" + assid + ") in run for trial " + trialId);
+	    log.debug("fixAsb: Found current hna (" + assid + ") in run for trial " + trialId);
 	  }
 	}
       } else if (assid.startsWith(realcmtType)) {
@@ -1263,7 +1273,7 @@ public class PopulateDb extends PDbBase {
 	  // an old CMT assembly still listed somehow. Delete it!
 	  
 	  if (log.isWarnEnabled()) {
-	    log.warn("Found a CMT (" + assid + ") in runtime thats not the current society def for trial " + trialId);
+	    log.warn("fixAsb: Found a CMT (" + assid + ") in runtime thats not the current society def for trial " + trialId);
 	  }
 	  removeRuntimeAssembly(assid);
 
@@ -1279,14 +1289,14 @@ public class PopulateDb extends PDbBase {
 	} else {
 	  // This is the current CMT in the runtime area. Fine,
 	  if (log.isDebugEnabled()) {
-	    log.debug("Found current CMT (" + assid + ") in runtime for trial " + trialId);
+	    log.debug("fixAsb: Found current CMT (" + assid + ") in runtime for trial " + trialId);
 	  }
 	  if (csaAssemblyId != null) {
 	    // Have a CSA. That's odd.
 	    // if this is in the runtime, should remove the CMT from the runtime.
 	    if (assemblyInRuntime(csaAssemblyId)) {
 	      if (log.isWarnEnabled()) {
-		log.warn("Found CMT cmtAssId (" + assid + ") in runtime. But also have a CSA (" + csaAssemblyId + ") in runtime, for trial " + trialId + ". Remove the CMT from the runtime.");
+		log.warn("fixAsb: Found CMT cmtAssId (" + assid + ") in runtime. But also have a CSA (" + csaAssemblyId + ") in runtime, for trial " + trialId + ". Remove the CMT from the runtime.");
 	      }
 	      removeRuntimeAssembly(assid);
 	      
@@ -1309,7 +1319,7 @@ public class PopulateDb extends PDbBase {
 	      // if this is not in the runtime, what is it?
 	      // Do I add it?
 	      if (log.isWarnEnabled()) {
-		log.warn("Have CMT cmtAssID (" + cmtAssemblyId + ") in runtime, but also have a CSA which is not in runtime. What is this CSA? Should I remove the CMT and add the CSA? Trial: " + trialId);
+		log.warn("fixAsb: Have CMT cmtAssID (" + cmtAssemblyId + ") in runtime, but also have a CSA which is not in runtime. What is this CSA? Should I remove the CMT and add the CSA? Trial: " + trialId);
 	      }
 	    }
 	  } // end of loop where found CMT in runtime but have a CSA
@@ -1323,7 +1333,7 @@ public class PopulateDb extends PDbBase {
 	  if (! assemblyInConfig(assid)) {
 	    // Otherwise, an error
 	    if (log.isWarnEnabled()) {
-	      log.warn("Found current CMT cmtAssID (" + cmtAssemblyId + ") in runtime but not in config, trial : " + trialId);
+	      log.warn("fixAsb: Found current CMT cmtAssID (" + cmtAssemblyId + ") in runtime but not in config, trial : " + trialId);
 	    }
 	    addAssemblyToConfig(assid);
 	  }
@@ -1339,7 +1349,7 @@ public class PopulateDb extends PDbBase {
 	  // It better also be in config time
 	  if (! assemblyInConfig(cmtAssemblyId)) {
 	    if (log.isInfoEnabled()) {
-	      log.info("Found CSA cmtAssemblyId (" + cmtAssemblyId + ") in runtime but not in config, adding it, trial: " + trialId);
+	      log.info("fixAsb: Found CSA cmtAssemblyId (" + cmtAssemblyId + ") in runtime but not in config, adding it, trial: " + trialId);
 	    }
 	    addAssemblyToConfig(assid);
 	  }
@@ -1390,14 +1400,14 @@ public class PopulateDb extends PDbBase {
 	  // It better not be in config
 	  if (assemblyInConfig(assid)) {
 	    if (log.isWarnEnabled()) {
-	      log.warn("Found non society-def CSA (" + csaAssemblyId + ") in config, must remove, trial: " + trialId);
+	      log.warn("fixAsb: Found non society-def CSA (" + csaAssemblyId + ") in config, must remove, trial: " + trialId);
 	    }
 	    removeConfigAssembly(assid);
 	  }
 	  // Better not be a CMT in runtime
 	  if (assemblyInRuntime(cmtAssemblyId)) {
 	    if (log.isWarnEnabled()) {
-	      log.warn("Have non-orig soc CSA (" + csaAssemblyId + ") in runtime, but also orig CMT/CSA (" + cmtAssemblyId + "), which is wrong. Remove it: trial " + trialId);
+	      log.warn("fixAsb: Have non-orig soc CSA (" + csaAssemblyId + ") in runtime, but also orig CMT/CSA (" + cmtAssemblyId + "), which is wrong. Remove it: trial " + trialId);
 	    }
 	    removeRuntimeAssembly(cmtAssemblyId);
 	  }
@@ -1405,7 +1415,7 @@ public class PopulateDb extends PDbBase {
 	  // or a CSMI in runtime
 	  if (csmiAssemblyId != null && assemblyInRuntime(csmiAssemblyId)) {
 	    if (log.isWarnEnabled()) {
-	      log.warn("Have non-orig soc CSA (" + csaAssemblyId + ") in runtime, but also a CSMI (" + csmiAssemblyId + "), which is wrong. Remove it: trial " + trialId);
+	      log.warn("fixAsb: Have non-orig soc CSA (" + csaAssemblyId + ") in runtime, but also a CSMI (" + csmiAssemblyId + "), which is wrong. Remove it: trial " + trialId);
 	    }
 	    removeRuntimeAssembly(csmiAssemblyId);
 	    removeConfigAssembly(csmiAssemblyId); // should be a no-op
@@ -1422,7 +1432,7 @@ public class PopulateDb extends PDbBase {
       } else if (assid.startsWith(realcsmiType)) {
 	if (! assid.equals(csmiAssemblyId)) {
 	  if (log.isWarnEnabled()) {
-	    log.warn("Got unknown csmi (" + assid + ") in runtime for trial " + trialId);
+	    log.warn("fixAsb: Got unknown csmi (" + assid + ") in runtime for trial " + trialId + " while examining csmi " + assid);
 	  }
 	  // not an expected CSMI. delete it
 	  removeRuntimeAssembly(assid);
@@ -1473,6 +1483,12 @@ public class PopulateDb extends PDbBase {
 	      csmiAssemblyId = null;
 	    } // end of bogus CSMI block
 	  } else {
+	    if (cmtAssemblyId == null) {
+	      if (log.isErrorEnabled()) {
+		log.error("fixAsb has null CSA: " + csaAssemblyId + " + and null cmtAsb: " + cmtAssemblyId + " with csmiAsb " + csmiAssemblyId + " for trial " + trialId);
+	      }
+	      continue;
+	    }
 	    // OK. Have no CSA, just this cmt. It should be in runtime & config
 	    if (! assemblyInConfig(cmtAssemblyId)) {
 	      if (log.isDebugEnabled()) {
