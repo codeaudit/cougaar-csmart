@@ -210,7 +210,7 @@ public class PopulateDb {
         RelationshipData[] relationships = assetData.getRelationshipData();
         for (int i = 0; i < relationships.length; i++) {
             RelationshipData r = relationships[i];
-            if (r.getRelationship().equals(RelationshipData.SUPERIOR)) {
+            if (r.getRole().equals(RelationshipData.SUPERIOR)) {
                 substitutions.put(":role", sqlQuote("Subordinate"));
             } else {
                 substitutions.put(":role", sqlQuote(r.getRole()));
