@@ -630,7 +630,7 @@ public class OrganizerHelper {
             }
           }
         }
-        if(log.isErrorEnabled()) {
+        if(rc == null && log.isErrorEnabled()) {
           log.error("Recipe not found: " + recipeId);
         }
         rs.close();
