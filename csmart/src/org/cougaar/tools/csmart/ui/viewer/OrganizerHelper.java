@@ -159,8 +159,7 @@ public class OrganizerHelper {
         if (mc == null) {
           mc = createRecipe(dbRecipe.name, dbRecipe.cls);
           setRecipeComponentProperties(dbRecipe, mc);
-          ((RecipeBase)mc).resetModified();
-          ((RecipeBase)mc).installListeners();
+          mc.saveToDatabase();
         }
         AgentComponent[] recagents = mc.getAgents(); 
         if (recagents != null && recagents.length > 0) {
@@ -620,8 +619,8 @@ public class OrganizerHelper {
     rs.close();
   }
 
-  public RecipeComponent getDatabaseRecipe(String recipeId,
-                                           String recipeName) {
+  protected RecipeComponent getDatabaseRecipe(String recipeId,
+                                              String recipeName) {
     createLogger();
     
     String query = null;
@@ -644,8 +643,7 @@ public class OrganizerHelper {
             if (rc == null) {
               rc = createRecipe(dbRecipe.name, dbRecipe.cls);
               setRecipeComponentProperties(dbRecipe, rc);
-              ((RecipeBase)rc).resetModified();
-              ((RecipeBase)rc).installListeners();
+              rc.saveToDatabase();
             }
             return rc;
           } catch (ClassNotFoundException cnfe) {
@@ -681,7 +679,7 @@ public class OrganizerHelper {
 
   private static Class[] multiConstructor = {String.class, String[].class};
   
-  public RecipeComponent createRecipe(String name, Class cls) {
+  protected RecipeComponent createRecipe(String name, Class cls) {
     createLogger();
     
     try {

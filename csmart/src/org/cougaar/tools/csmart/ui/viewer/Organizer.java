@@ -180,7 +180,8 @@ public class Organizer extends JScrollPane {
 
   protected AbstractAction buildExperimentAction =
     new AbstractAction(ActionUtil.BUILD_ACTION, 
-                       new ImageIcon(getClass().getResource("EB16.gif"))) {
+                       //                       new ImageIcon(getClass().getResource("EB16.gif"))) {
+                       new ImageIcon(getClass().getResource("Experiment16t.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.startExperimentBuilder();
 	}
@@ -620,12 +621,15 @@ public class Organizer extends JScrollPane {
 				  "Empty Recipe");
     if (answer instanceof NameClassItem) {
       NameClassItem item = (NameClassItem) answer;
-      String name = generateRecipeName(item.name, false);
+      //      String name = generateRecipeName(item.name, false);
+      String name = recipeNames.getUniqueName(item.name, false);
       if (name == null)
         return;
       RecipeComponent recipe = helper.createRecipe(name, item.cls);
-      if (recipe != null)
+      if (recipe != null) {
+        recipe.saveToDatabase();
 	addRecipeToWorkspace(recipe, getSelectedNode());
+      }
     }
   } // end of newRecipe
 
@@ -1004,12 +1008,16 @@ public class Organizer extends JScrollPane {
       return;
     String recipeName = (String)cb.getSelectedItem();
     String recipeId = (String) recipeNamesHT.get(recipeName);
+    recipeName = recipeNames.getUniqueName(recipeName, false);
+    if (recipeName == null)
+      return;
+    // get name from user
     // produce an unique name for CSMART if necessary
-    if (recipeNames.contains(recipeName)) {
-      recipeName = generateRecipeName(recipeName, false);
-      if (recipeName == null)
-        return;
-    }
+//      if (recipeNames.contains(recipeName)) {
+//        recipeName = generateRecipeName(recipeName, false);
+//        if (recipeName == null)
+//          return;
+//      }
     RecipeComponent rc = helper.getDatabaseRecipe(recipeId, recipeName);
     if (rc != null)
       addRecipeToWorkspace(rc, getSelectedNode());
@@ -2049,7 +2057,7 @@ public class Organizer extends JScrollPane {
    * Call update if anything changed.
    */
 
-  ModificationListener myModificationListener = new ModificationListener() {
+  private transient ModificationListener myModificationListener = new ModificationListener() {
       public void modified(ModificationEvent event) {
         DefaultMutableTreeNode changedNode = findNode(event.getSource());
         if (changedNode != null) {

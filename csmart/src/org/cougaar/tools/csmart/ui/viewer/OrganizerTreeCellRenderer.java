@@ -23,6 +23,8 @@ package org.cougaar.tools.csmart.ui.viewer;
 
 import java.awt.Color;
 import java.awt.Component;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -63,17 +65,23 @@ public class OrganizerTreeCellRenderer extends DefaultTreeCellRenderer {
       if (((Experiment)o).isModified()) {
         c.setForeground(Color.red);
       }
-    } else if (organizer.isNodeInUse(node)) {
-      c.setForeground(Color.gray);
+      if (c instanceof JLabel)
+        ((JLabel)c).setIcon(new ImageIcon(getClass().getResource("Experiment20t.gif")));
     } else if (o instanceof SocietyComponent) {
       if (((SocietyComponent)o).isModified()) {
         c.setForeground(Color.red);
       }
+      if (c instanceof JLabel)
+        ((JLabel)c).setIcon(new ImageIcon(getClass().getResource("Society16t.gif")));
     } else if (o instanceof RecipeComponent) {
       if (((RecipeComponent)o).isModified()) {
         c.setForeground(Color.red);
       }
+      if (c instanceof JLabel)
+        ((JLabel)c).setIcon(new ImageIcon(getClass().getResource("Recipe16t.gif")));
     }
+    if (organizer.isNodeInUse(node))
+      c.setForeground(Color.gray);
     return c;
   }
 }

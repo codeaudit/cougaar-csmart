@@ -75,15 +75,18 @@ public class UniqueNameSet extends HashSet {
 
   /**
    * Generate a unique name from the given name by appending
-   * a counter to it.
+   * a bracketed counter to it.
    * @param name the name to use as the base
    * @return a new unique name
    */
   public String generateName(String name) {
     if (contains(name)) {
       String base = name;
+      int index = name.indexOf(" [");
+      if (index != -1)
+        base = name.substring(0, index);
       do {
-        name = base + ++nameCounter;
+        name = base + " [" + ++nameCounter + "]";
       } while (contains(name));
     }
     return name;

@@ -165,7 +165,8 @@ public class CSMART extends JFrame {
 
   private static final String[] iconFilenames = {
     "SB.gif",
-    "EB.gif",
+    "Experiment48t.gif",
+    //    "EB.gif",
     "EC.gif",
     "SM.gif",
     "PA.gif"
