@@ -127,6 +127,10 @@ public class CSMARTConsole extends JFrame {
   private transient Logger log;
   private AppServerSupport appServerSupport;
   private TimerTask monitorAppServerTask;
+  // set this flag when you first run an experiment
+  // it's purpose is to ignore a non-null experiment if you're only
+  // attaching to nodes
+  private boolean usingExperiment = false;
 
   // gui controls
   ButtonGroup statusButtons;
@@ -765,8 +769,10 @@ public class CSMARTConsole extends JFrame {
     }
     destroyOldNodes(); // Get rid of any old stuff before creating the new
     userStoppedTrials = false;
-    if (experiment != null)
+    if (experiment != null) {
+      usingExperiment = true;
       initNodesFromExperiment();
+    }
     runTrial();
   }
 
@@ -869,7 +875,7 @@ public class CSMARTConsole extends JFrame {
       log.debug("runTrial about to setTrialValues");
     }
     runStart = new Date(); // set now, cause it's used in logfilename
-    if (experiment != null)
+    if (experiment != null && usingExperiment)
       setTrialValues();
     nodeCreationInfoList = new ArrayList();
     Collection values = nodeToNodeInfo.values();
@@ -954,7 +960,7 @@ public class CSMARTConsole extends JFrame {
    * should be able to get servlet class to use from client
    */
   private String findServlet() {
-    if (experiment == null)
+    if (experiment == null || !usingExperiment)
       return null;
     ArrayList componentData = new ArrayList();
     ComponentData societyData = experiment.getSocietyComponentData();
@@ -1039,7 +1045,7 @@ public class CSMARTConsole extends JFrame {
   }
 
   private boolean haveMoreTrials() {
-    if (experiment == null)
+    if (experiment == null || !usingExperiment)
       return false;
     else
       return currentTrial < (experiment.getTrialCount()-1);
@@ -1072,7 +1078,7 @@ public class CSMARTConsole extends JFrame {
    * that were used in the trial by setting their value to null.
    */
   private void unsetTrialValues() {
-    if (experiment == null)
+    if (experiment == null || !usingExperiment)
       return;
     if (currentTrial < 0)
       return;
@@ -1215,7 +1221,7 @@ public class CSMARTConsole extends JFrame {
    * are started or stopped.
    */
   private void updateControls(boolean isRunning) {
-    if (experiment != null) {
+    if (experiment != null && usingExperiment) {
       if (!isRunning) {
         experiment.experimentStopped();
         csmart.removeRunningExperiment(experiment);
@@ -1334,7 +1340,7 @@ public class CSMARTConsole extends JFrame {
    * unset the property values used in the experiment.
    */
   private void experimentFinished() {
-    if (experiment != null)
+    if (experiment != null && usingExperiment)
       trialProgressBar.setValue(experiment.getTrialCount() + 1);
     updateControls(false);
     runButton.setSelected(false);
@@ -1501,7 +1507,7 @@ public class CSMARTConsole extends JFrame {
 
     final int interNodeStartDelay = delay;
     String experimentName = "Experiment";
-    if (experiment != null)
+    if (experiment != null && usingExperiment)
       experimentName = experiment.getExperimentName();
 
     // For each Node to create
@@ -1530,17 +1536,14 @@ public class CSMARTConsole extends JFrame {
                                  nci.args);
         RemoteListenableConfig conf =
           new RemoteListenableConfig(nci.listener, 
-                                     nci.outputPolicy);
-
-        // register listener
-        remoteNode = 
+                                     CSMART.getNodeListenerId(), 
+                                     null, nci.outputPolicy);
+        remoteNode =
           nci.remoteAppServer.createRemoteProcess(desc, conf);
-        RemoteListenable rl = remoteNode.getRemoteListenable();
 	if (log.isDebugEnabled())
 	  log.debug("Adding listener: " +
                            CSMART.getNodeListenerId() +
                            " for: " + procName);
-        rl.addListener(nci.listener, CSMART.getNodeListenerId());
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
           log.error("CSMARTConsole: cannot create node: " + 
@@ -1676,8 +1679,8 @@ public class CSMARTConsole extends JFrame {
 
     RemoteProcess remoteNode = null;
     try {
-      String experimentName = "";
-      if (experiment != null)
+      String experimentName = "Experiment";
+      if (experiment != null && usingExperiment)
         experimentName = experiment.getExperimentName();
       String procName = experimentName + "-" + nodeName;
       String groupName = "csmart";
@@ -1687,16 +1690,14 @@ public class CSMARTConsole extends JFrame {
                                properties,
                                args);
       RemoteListenableConfig conf =
-        new RemoteListenableConfig(listener, 
-                                   new OutputPolicy(10));
+        new RemoteListenableConfig(listener, CSMART.getNodeListenerId(),
+                                   null, new OutputPolicy(10));
       remoteNode = 
         remoteAppServer.createRemoteProcess(desc, conf);
-      RemoteListenable rl = remoteNode.getRemoteListenable();
       if (log.isDebugEnabled())
 	log.debug("Adding listener: " +
                          CSMART.getNodeListenerId() +
                          " for: " + procName);
-      rl.addListener(listener, CSMART.getNodeListenerId());
       if (remoteNode != null) {
         synchronized (runningNodesLock) {
           runningNodes.put(nodeName, remoteNode);
@@ -1728,7 +1729,7 @@ public class CSMARTConsole extends JFrame {
   private boolean isResultFile(String filename) {
     File thisFile = new java.io.File(filename);
     // if no experiment, use default filter
-    if (experiment == null) 
+    if (experiment == null || !usingExperiment) 
       return new ResultsFileFilter().accept(thisFile);
     SocietyComponent societyComponent = experiment.getSocietyComponent();
     if (societyComponent != null) {
@@ -1792,7 +1793,7 @@ public class CSMARTConsole extends JFrame {
     if (currentTrial < 0)
       return; // nothing to save
     String dirname = makeResultDirectory();
-    if (experiment != null) {
+    if (experiment != null && usingExperiment) {
       try {
         String myHostName = InetAddress.getLocalHost().getHostName();
         URL url = new URL("file", myHostName, dirname);
@@ -1849,7 +1850,7 @@ public class CSMARTConsole extends JFrame {
     File resultDir = csmart.getResultDir();
     String experimentName = "Experiment";
     String trialName = "Trial 1";
-    if (experiment != null) {
+    if (experiment != null && usingExperiment) {
       resultDir = experiment.getResultDirectory();
       experimentName = experiment.getExperimentName();
       trialName = experiment.getTrials()[currentTrial].getShortName();
@@ -1887,6 +1888,7 @@ public class CSMARTConsole extends JFrame {
     // stop monitoring app servers
     monitorAppServerTask.cancel();
     updateControls(false);
+    // this is set when entering the console and must be cleared on exit
     if (experiment != null)
       experiment.setRunInProgress(false);
     
@@ -2253,7 +2255,7 @@ public class CSMARTConsole extends JFrame {
    * if it exists.
    */
   protected Object getHostPropertyValue(String hostName, String propertyName) {
-    if (experiment == null) return null;
+    if (experiment == null || !usingExperiment) return null;
     HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       String s = hosts[i].getShortName();
@@ -2268,7 +2270,7 @@ public class CSMARTConsole extends JFrame {
    * if it exists.
    */
   protected Object getNodePropertyValue(String nodeName, String propertyName) {
-    if (experiment == null) return null;
+    if (experiment == null || !usingExperiment) return null;
     HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
@@ -2294,7 +2296,7 @@ public class CSMARTConsole extends JFrame {
    */
   protected ArrayList getAgentComponentDescriptions(String nodeName,
                                                     String agentName) {
-    if (experiment == null)
+    if (experiment == null || !usingExperiment)
       return null;
     ComponentData societyComponentData = experiment.getSocietyComponentData();
     if (societyComponentData == null) {

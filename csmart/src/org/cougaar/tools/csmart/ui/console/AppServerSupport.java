@@ -52,10 +52,16 @@ public class AppServerSupport {
   private transient Logger log;
 
   public AppServerSupport() {
+    createLogger();
     remoteHostRegistry = RemoteHostRegistry.getInstance();
     appServers = new AppServerList();
     nodeToAppServer = new Hashtable();
   }
+
+  private void createLogger() {
+    log = CSMART.createLogger(this.getClass().getName());
+  }
+
 
   /**
    * Return a handle on the app server running on the specified host
@@ -305,8 +311,16 @@ public class AppServerSupport {
           System.out.println("Adding app server for: " + name +
                              " " + appServerDesc);
           newNodeToAppServer.put(name, appServerDesc);
-          if (!findListener(appServer, name))
-            haveNewNodes = true;
+          // if the new node is mapped to an
+          // app server on the same machine and port as the old mapping
+          // then don't consider it new, because we've previously discovered it
+          AppServerDesc desc = (AppServerDesc)nodeToAppServer.get(name);
+          if (desc != null &&
+              desc.hostName.equals(appServerDesc.hostName) &&
+              desc.remotePort == appServerDesc.remotePort)
+            continue;
+          else if (!findListener(appServer, name))
+            haveNewNodes = true; 
         }
       }
     }
@@ -380,6 +394,8 @@ public class AppServerSupport {
       return null;
     ArrayList results = new ArrayList();
     String[] attachToNodes = getNodesToAttach(new ArrayList(processNames));
+    if (attachToNodes == null)
+      return null;
     for (int i = 0; i < attachToNodes.length; i++) {
       String processName = attachToNodes[i];
       AppServerDesc desc = (AppServerDesc)nodeToAppServer.get(processName);
