@@ -806,10 +806,13 @@ public abstract class ConfigurableComponent
               currentIterator = 
                 ((ConfigurableComponent)getChild(nextChildIndex++)).getProperties();
             }
-            pendingProp = (Property) currentIterator.next();
-            if (pendingProp == nullProperty) {
+	    
+	    Object nprop = currentIterator.next();
+            if (nprop == nullProperty) {
               pendingProp = null;
-            }
+            } else {
+	      pendingProp = (Property)nprop;
+	    }
           }
           return true;
         }
