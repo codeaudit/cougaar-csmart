@@ -138,6 +138,8 @@ public class ExperimentDB {
   public static void deleteCMTAssembly(String experimentId) {
     String cmtASB = CMT.getAssemblyId(experimentId);
     //    System.out.println("Deleting CMT assembly: "+cmtASB+" for experiment: " +experimentId );
+    // This is only used when the forceRecomputeBox is checked
+    // In such cases though we still don't want to touch a base assembly
     CMT.reallyClearCMTasb(cmtASB);
   }
 } // end of ExperimentDB.java
