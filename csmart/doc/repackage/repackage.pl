@@ -211,7 +211,7 @@ sub check_target_dir {
 # return true when argument names a binary file
 sub isBinary {
     local($_) = @_;
-    /\.(gif|jpg|png|zip|jar)$/;
+    /\.(gif|jpg|png|zip|jar|ZIP|bmp|exe)$/;
 }
 
 # converts the packages of a string
@@ -274,11 +274,13 @@ sub report_stats {
 sub usage {
    print STDERR "Usage: repackage [-mvph] [-d dest] dir pkgdef+
 \t-m  actually move files which match package prefixes.
-\t-v  be verbose.  Print every command executed an report on
+\t-v  be verbose.  Print every command executed and report on
 \t     any files changed.
 \t-p  dont actually do anything - just pretend.
 \t-h  print this message and exit.
 \t-d dest  copy files to new directory dest.
+\tdir The path to your source tree directory
+\tpkgdef+ is typically the .pkg file of package definitions
 ";
     exit 1;
 }
@@ -363,7 +365,5 @@ sub main {
 
     exit 0;
 }
-
-
 
 
