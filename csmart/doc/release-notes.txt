@@ -19,6 +19,8 @@ really want to run a PSP.
 - Disabled built-in societies, pending full database support
 - Due to above, experiments with multiple trials are temporarily
 disabled
+- Results (metrics & log files) directory now defaults to CIP/results,
+and is set from a global file menu, not on a per-experiment basis
 
 Release v8.8.0
 This release represents all of the fixes made during integration on
@@ -134,5 +136,3 @@ Entities (like the ABC Society).
 
 - Old & new CSMART users should see the CSMART-Install document for
   new, simplified installation instructions.
-
-

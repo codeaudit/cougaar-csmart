@@ -133,7 +133,7 @@ You have an error in your SQL syntax near ') AND C.INSERTION_POINT LIKE
 'Node.AgentManager.%' AND INSTR(SUBSTRING(C.INSERTI' at line 1
 
 - If you get a Verify Error when running that contains the plugin:
-  mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn
+  mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugin
   then your server props contains the line:
   org.cougaar.classpath=...SRA_IMComponentModel.jar
   comment this out if you are NOT running with SRA
