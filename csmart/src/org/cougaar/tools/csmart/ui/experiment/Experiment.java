@@ -178,9 +178,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public boolean isEditable() {
     if (editable) {
       // make sure that societies are editable too
-      for (int i = 0; i < getComponentCount(); i++)
-	if (!((ModifiableConfigurableComponent)getComponent(i)).isEditable())
-	  return false;
+      // FIXME: Really? What if one component is never editable?
+//        for (int i = 0; i < getComponentCount(); i++)
+//  	if (!((ModifiableConfigurableComponent)getComponent(i)).isEditable())
+//  	  return false;
       return true;
     }
     return false;
@@ -202,11 +203,15 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @return whether or not an experiment is runnable
    */
   public boolean isRunnable() {
-    //    if (! hasConfiguration() || hasUnboundProperties())
-    if (hasUnboundProperties())
-      // FIXME!!! Restore check of hasConfiguration once it works!!
-    //    if (! hasConfiguration())
-      setRunnable(false);
+    if (! hasConfiguration() || hasUnboundProperties()) {
+      //System.err.println("Experiment runnable: " + runnable);
+      //if (! hasConfiguration())
+	//System.err.println("Experiment does not have a complete config");
+      //if (hasUnboundProperties())
+	//System.err.println("Experiment has unbound props");
+      return false;
+    }
+    //System.err.println("Experiment.isRunnable returning: " + runnable);
     return runnable;
   }
 
@@ -675,7 +680,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 	continue;
       NodeComponent[] nodes = hosts[i].getNodes();
       for (int j = 0; j < nodes.length; j++) {
-	if (nodes[i] == null)
+	if (nodes[j] == null)
 	  continue;
 	AgentComponent[] agents = nodes[j].getAgents();
 	if (agents.length > 0)
