@@ -31,6 +31,7 @@ import org.cougaar.tools.csmart.society.cdata.AgentCDataComponent;
 /**
  * ComplexRecipeCDataComponent.java
  *
+ * Creates a Recipe Component from a <code>ComponentData</code> object.
  *
  * Created: Tue Jun 25 14:14:45 2002
  *
@@ -47,6 +48,10 @@ public class ComplexRecipeCDataComponent extends ComplexRecipeBase {
     this.oldAssemblyId = assemblyId;
   }
 
+  /**
+   * Initialize the recipe component from a ComponentData Object.
+   *
+   */
   public void initProperties() {
     super.initProperties();
 

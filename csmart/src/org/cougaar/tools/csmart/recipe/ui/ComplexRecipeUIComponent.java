@@ -42,6 +42,8 @@ import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 /**
  * ComplexRecipeUIComponent.java
  *
+ * Creates an empty Recipe Component.  This Component
+ * will be populated by the user via the UI.
  *
  * Created: Thu Jun 20 13:52:13 2002
  *

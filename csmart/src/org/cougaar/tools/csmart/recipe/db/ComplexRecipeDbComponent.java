@@ -50,6 +50,8 @@ import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 /**
  * ComplexRecipeBase.java
  *
+ * Creates a ComplexRecipe from the database.
+ * All property initialization is from the database assembly tables.
  *
  * Created: Thu Jun 20 13:52:13 2002
  *
@@ -71,6 +73,10 @@ public class ComplexRecipeDbComponent extends ComplexRecipeBase
     this.assemblyId = assemblyId;
   }
 
+  /**
+   * Initialize Recipe Component from the database using the specified assemblyId
+   *
+   */
   public void initProperties() {
     super.initProperties();
     Map substitutions = new HashMap();
