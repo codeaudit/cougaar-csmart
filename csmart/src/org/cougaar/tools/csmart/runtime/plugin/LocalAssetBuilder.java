@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.cougaar.core.plugin.SimplePlugIn;
+import org.cougaar.core.plugin.SimplePlugin;
 import org.cougaar.planning.ldm.asset.Asset;
 import org.cougaar.planning.ldm.plan.Role;
 import org.cougaar.util.UnaryPredicate;
@@ -64,7 +64,7 @@ import org.cougaar.tools.csmart.util.parser.SimpleParser;
  * </pre>
  */
 public class LocalAssetBuilder
-    extends CSMARTPlugIn {
+    extends CSMARTPlugin {
 
   /**
    * Name of the prototype for LocalAssets.
@@ -76,11 +76,11 @@ public class LocalAssetBuilder
 
   //
   // Could override <tt>load(..)</tt> and get the logger, like 
-  // <tt>CSMARTPlugIn.load(..)</tt>, but for now it's not required.
+  // <tt>CSMARTPlugin.load(..)</tt>, but for now it's not required.
   //
 
   /**
-   * Read params and build the LocalAssets for this Cluster -- This PlugIn 
+   * Read params and build the LocalAssets for this Cluster -- This Plugin 
    * must be listed <u>FIRST</u> in the "*.INI" file!.
    */
   public void setupSubscriptions() {

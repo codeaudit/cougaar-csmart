@@ -44,7 +44,7 @@ import org.cougaar.tools.csmart.runtime.ldm.event.KineticEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.NewSimpleKEvent;
 
 /**
- * The ScriptedEventPlugIn allows real world events to enter the society
+ * The ScriptedEventPlugin allows real world events to enter the society
  * via a script.  Theses events can be AttackEvents or Kinetic events.<br>
  * This plugin will read in an script that gives the list of events and
  * will publish those events with visibility times equal to the time indicated
@@ -53,16 +53,16 @@ import org.cougaar.tools.csmart.runtime.ldm.event.NewSimpleKEvent;
  * of type CYBER or KINETIC. Either way, there are two possible parameters:
  * Intensity and Duration (in milliseconds).<br>
  * There are also 3 or 4 inline attributes. This includes Type, Time (in milliseconds
- * from the start of the PlugIn), and either the ClusterID of the target Agent for a Cyber attack,
+ * from the start of the Plugin), and either the ClusterID of the target Agent for a Cyber attack,
  * or the latitude and longitude center of the kinetic attack.<br>
  *
  * @author <a href="mailto:wfarrell@bbn.com">Wilson Farrell</a>
- * @see CSMARTPlugIn
+ * @see CSMARTPlugin
  */
-public class ScriptedEventPlugIn
-    extends CSMARTPlugIn {
+public class ScriptedEventPlugin
+    extends CSMARTPlugin {
 
-  /** ClusterID of Agent containing the Transducer PlugIn **/
+  /** ClusterID of Agent containing the Transducer Plugin **/
   private ClusterIdentifier transducer;
 
   /**
@@ -78,16 +78,16 @@ public class ScriptedEventPlugIn
     // Load in the config file.
     Vector pv = getParameters() != null ? new Vector(getParameters()) : null;
     if(pv == null ) {
-      throw new RuntimeException("ScriptedEventPlugIn expects parameters, got none");
+      throw new RuntimeException("ScriptedEventPlugin expects parameters, got none");
     }
     
     String eventFileName = (String)pv.elementAt(0);
     if(eventFileName == null) {
-      throw new RuntimeException("ScriptedEventPlugIn expected param[0] to be eventFile name");
+      throw new RuntimeException("ScriptedEventPlugin expected param[0] to be eventFile name");
     }
     String transducerName = (String)pv.elementAt(1);
     if (transducerName == null || transducerName.equals("")) {
-      throw new RuntimeException("ScriptedEventPlugIn expected param[1] to be the name of the Transducer Agent");
+      throw new RuntimeException("ScriptedEventPlugin expected param[1] to be the name of the Transducer Agent");
     }
     transducer = new ClusterIdentifier(transducerName);
     
@@ -320,4 +320,4 @@ public class ScriptedEventPlugIn
    * Execute does nothing.  This plugin doesn't subscribe for any events.
    */
   public void execute() { }
-} // end of ScriptedEventPlugIn.java
+} // end of ScriptedEventPlugin.java

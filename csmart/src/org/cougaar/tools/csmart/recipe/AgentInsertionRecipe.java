@@ -450,18 +450,18 @@ public class AgentInsertionRecipe extends RecipeBase
           // Add the OrgRTData plugin.
           ComponentData plugin = new GenericComponentData();
           plugin.setType(ComponentData.PLUGIN);
-          plugin.setName("org.cougaar.mlm.plugin.organization.OrgDataPlugIn");
+          plugin.setName("org.cougaar.mlm.plugin.organization.OrgDataPlugin");
           plugin.setParent(data);
-          plugin.setClassName("org.cougaar.mlm.plugin.organization.OrgDataPlugIn");
+          plugin.setClassName("org.cougaar.mlm.plugin.organization.OrgDataPlugin");
           plugin.setOwner(this);
           data.addChild(plugin);
 
           // Add the OrgReport plugin.
           plugin = new GenericComponentData();
           plugin.setType(ComponentData.PLUGIN);
-          plugin.setName("org.cougaar.mlm.plugin.organization.OrgReportPlugIn");
+          plugin.setName("org.cougaar.mlm.plugin.organization.OrgReportPlugin");
           plugin.setParent(data);
-          plugin.setClassName("org.cougaar.mlm.plugin.organization.OrgReportPlugIn");
+          plugin.setClassName("org.cougaar.mlm.plugin.organization.OrgReportPlugin");
           plugin.setOwner(this);
           data.addChild(plugin);
         }

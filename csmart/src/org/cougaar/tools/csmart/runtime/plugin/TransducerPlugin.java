@@ -48,7 +48,7 @@ import org.cougaar.tools.csmart.runtime.ldm.event.IEFactory;
  * Each RWE provides a model, which is given a representation of the modeled
  * society.  From that information, the Event calculates all of the resulting
  * InfEs which result.
- * This PlugIn then publishes each of those events.<br>
+ * This Plugin then publishes each of those events.<br>
  * <br>
  * The society model is built from a configuration file, whose name
  * is a parameter to this plugin.
@@ -57,11 +57,11 @@ import org.cougaar.tools.csmart.runtime.ldm.event.IEFactory;
  * </pre><br>
  *
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
- * @see CSMARTPlugIn
+ * @see CSMARTPlugin
  * @see ImpactModel
  * @see InfrastructureEvent
  */
-public class TransducerPlugIn extends CSMARTPlugIn {
+public class TransducerPlugin extends CSMARTPlugin {
   private IncrementalSubscription rweSub;
 
   private Society world = null;
@@ -201,11 +201,11 @@ public class TransducerPlugIn extends CSMARTPlugIn {
   private void parseParameters() {
     Vector pv = getParameters() != null ? new Vector(getParameters()) : null;
     if (pv == null) {
-      throw new RuntimeException("TranducerPlugIn expects parameters, got none");
+      throw new RuntimeException("TranducerPlugin expects parameters, got none");
     }
     String fileName = (String)pv.elementAt(0);
     if (fileName == null) {
-      throw new RuntimeException("TransducerPlugIn expected param[0] to be a data file name, got none");
+      throw new RuntimeException("TransducerPlugin expected param[0] to be a data file name, got none");
     }
 
     // Finished getting parameter.  Now open the file    
@@ -213,7 +213,7 @@ public class TransducerPlugIn extends CSMARTPlugIn {
     try {
       input = getConfigFinder().open(fileName);
     } catch (IOException e) {
-      throw new RuntimeException("TransducerPlugIn unable to open file " + fileName);
+      throw new RuntimeException("TransducerPlugin unable to open file " + fileName);
     }
     
     // Now read the file
@@ -287,6 +287,6 @@ public class TransducerPlugIn extends CSMARTPlugIn {
     // get other fields here
     return new Agent(name, lat, lon);
   } // end of ProcessInputLine
-} // end of TransducerPlugIn
+} // end of TransducerPlugin
 
 

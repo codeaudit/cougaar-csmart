@@ -26,7 +26,7 @@ import org.cougaar.core.component.ServiceBroker;
 import org.cougaar.core.agent.ClusterIdentifier;
 import org.cougaar.core.blackboard.Subscription;
 import org.cougaar.core.blackboard.IncrementalSubscription;
-import org.cougaar.core.plugin.SimplePlugIn;
+import org.cougaar.core.plugin.SimplePlugin;
 import org.cougaar.util.UnaryPredicate;
 
 import org.cougaar.tools.csmart.runtime.ldm.event.InfrastructureEvent;
@@ -42,7 +42,7 @@ import org.cougaar.core.service.LoggingService;
  * @see SlowMessageTransportServiceFilter must be loaded in the Node ini file
  * @see SlowMessageTransportServiceProxyController used to control the I/O
  */
-public class ABCImpactPlugin extends SimplePlugIn {
+public class ABCImpactPlugin extends SimplePlugin {
 
   private LoggingService log;
 

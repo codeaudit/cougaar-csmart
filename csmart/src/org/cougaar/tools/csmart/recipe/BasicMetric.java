@@ -110,9 +110,9 @@ public class BasicMetric extends RecipeBase
   public static final String PROP_MWATCHSERV_DESC = "Turn Message Watcher on or off";
   private Property propMWatchServ;
   
-  private static final String MetricsPlugIn_name =
+  private static final String MetricsPlugin_name =
     "org.cougaar.tools.csmart.runtime.plugin.MetricsPlugin";
-  private static final String MetricsInitializerPlugIn_name =
+  private static final String MetricsInitializerPlugin_name =
     "org.cougaar.tools.csmart.runtime.plugin.MetricsInitializerPlugin";
   private static final String MetricControl_Role = "MetricsControlProvider";
 
@@ -209,8 +209,8 @@ public class BasicMetric extends RecipeBase
   private ComponentData addInitPICD(ComponentData data) {
     GenericComponentData plugin = new GenericComponentData();
     plugin.setType(ComponentData.PLUGIN);
-    plugin.setName(MetricsInitializerPlugIn_name);
-    plugin.setClassName(MetricsInitializerPlugIn_name);
+    plugin.setName(MetricsInitializerPlugin_name);
+    plugin.setClassName(MetricsInitializerPlugin_name);
     plugin.addParameter(new Integer(numAgents)); // numProviders
     plugin.addParameter(getProperty(PROP_SAMPLEINTERVAL).getValue()); // sampleInterval
     plugin.addParameter(getProperty(PROP_STARTDELAY).getValue()); // startDelay
@@ -226,14 +226,14 @@ public class BasicMetric extends RecipeBase
     //Only add this if its not there already
     ComponentData[] children = data.getChildren();
     for (int i = 0; i < data.childCount(); i++) {
-      if (children[i].getName().equals(MetricsPlugIn_name))
+      if (children[i].getName().equals(MetricsPlugin_name))
 	return;
     }
     GenericComponentData plugin = new GenericComponentData();
     plugin.setType(ComponentData.PLUGIN);
     //plugin.setName("MetricPlugin");
-    plugin.setName(MetricsPlugIn_name);
-    plugin.setClassName(MetricsPlugIn_name);
+    plugin.setName(MetricsPlugin_name);
+    plugin.setClassName(MetricsPlugin_name);
     plugin.setParent(data);
     plugin.setOwner(this);
 
@@ -318,10 +318,10 @@ public class BasicMetric extends RecipeBase
 	metricRelate.setItem(data.getName()); // name
 	metricRelate.setType(data.getName().substring(data.getName().lastIndexOf(".") + 1));
 	metricRelate.setSupported(data.getName()); // name
-	// and to the first, add the MetricsInitializerPlugIn
+	// and to the first, add the MetricsInitializerPlugin
 	picd = addInitPICD(data);
       }
-      // for each Agent, add the MetricsPlugIn & the relationship
+      // for each Agent, add the MetricsPlugin & the relationship
       addCollectorCD(data);
       addRelationship((AgentComponentData) data);
     } else if (data.childCount() > 0) {

@@ -29,7 +29,7 @@ import java.io.IOException;
 import org.cougaar.core.blackboard.IncrementalSubscription;
 import org.cougaar.core.blackboard.Subscription;
 import org.cougaar.core.plugin.Annotation;
-import org.cougaar.core.plugin.util.PlugInHelper;
+import org.cougaar.core.plugin.util.PluginHelper;
 import org.cougaar.planning.ldm.asset.Asset;
 import org.cougaar.planning.ldm.plan.*;
 import org.cougaar.planning.ldm.predicate.PlanElementPredicate;
@@ -51,7 +51,7 @@ import org.cougaar.tools.csmart.util.parser.TaskFileParser;
  *
  * @author <a href="mailto: ahelsing@bbn.com">Aaron Helsinger</a>
  */
-public class CustomerPlugIn extends CSMARTPlugIn {
+public class CustomerPlugin extends CSMARTPlugin {
 
   /** Asset containing Happiness Info **/
   private HappinessAsset happiness;
@@ -83,7 +83,7 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 	Task t = ((PlanElement)o).getTask();
 	Annotation annot = t.getAnnotation();
 	if(annot instanceof CustAnnot) {
-	  String id = ((CustAnnot)annot).getPlugInID();
+	  String id = ((CustAnnot)annot).getPluginID();
 	  if (! ((CustAnnot)annot).getHandled())
 	    return (id.equals(getUID().toString()));
 	}
@@ -99,7 +99,7 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 	if(o instanceof Task) {
 	  Annotation annot = ((Task)o).getAnnotation();
 	  if(annot instanceof CustAnnot) {
-	    String id = ((CustAnnot)annot).getPlugInID();
+	    String id = ((CustAnnot)annot).getPluginID();
 	    return( id.equals(getUID().toString()));
 	  }
 	}
@@ -138,7 +138,7 @@ public class CustomerPlugIn extends CSMARTPlugIn {
     Vector pv = getParameters() != null ? new Vector(getParameters()) : null;
     if (pv == null || pv.size() < 3) {
       throw new RuntimeException(
-				 "CustomerPlugIn expects parameters, SIMStartTime, SIMStopTime and TaskFileName.");
+				 "CustomerPlugin expects parameters, SIMStartTime, SIMStopTime and TaskFileName.");
     }
 
     try {
@@ -146,10 +146,10 @@ public class CustomerPlugIn extends CSMARTPlugIn {
       stopSIMTime = Long.parseLong((String)pv.elementAt(1));
     } catch (NumberFormatException nfe) {
       throw new RuntimeException(
-				 "CustomerPlugIn unable to parse Sim start or stop: " + 
+				 "CustomerPlugin unable to parse Sim start or stop: " + 
 				 (String)pv.elementAt(0) + ", " + (String)pv.elementAt(1));
     } catch (ArrayIndexOutOfBoundsException aoe) {
-      throw new RuntimeException("CustomerPlugIn expects parameters: StartSIMTime, StopSIMTime, TaskFileName");
+      throw new RuntimeException("CustomerPlugin expects parameters: StartSIMTime, StopSIMTime, TaskFileName");
     }
  
     double timeDiff = (stopSIMTime - startSIMTime);
@@ -166,7 +166,7 @@ public class CustomerPlugIn extends CSMARTPlugIn {
     String taskFileName = (String)pv.elementAt(2);
     if (taskFileName == null) {
       throw new RuntimeException(
-				 "CustomerPlugIn expected param[0] to be taskFile name");
+				 "CustomerPlugin expected param[0] to be taskFile name");
     }
 
     if (taskFileName.equals("none")) {
@@ -353,7 +353,7 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 
       AllocationResult estR = pe.getEstimatedResult();
       if(estR != null && estR.getConfidenceRating() > 0.9) {
-//       if (PlugInHelper.checkChangeReports(peSub.getChangeReports(pe), 
+//       if (PluginHelper.checkChangeReports(peSub.getChangeReports(pe), 
 // 		             PlanElement.EstimatedResultChangeReport.class)) {
 
 	// Make sure that this is the 
@@ -406,7 +406,7 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 	// This is worth handling
 	AllocationResult estR = pe.getEstimatedResult();
 	if (estR != null && estR.getConfidenceRating() > 0.9) {
-	  //       if (PlugInHelper.checkChangeReports(peSub.getChangeReports(pe), 
+	  //       if (PluginHelper.checkChangeReports(peSub.getChangeReports(pe), 
 	  // 		             PlanElement.EstimatedResultChangeReport.class)) {
 	  
 	  // Estimated Result changed.  Update Customer Happiness.
@@ -592,7 +592,7 @@ public class CustomerPlugIn extends CSMARTPlugIn {
       this.annotation = annotation;
     }
     
-    public String getPlugInID() {
+    public String getPluginID() {
       return this.annotation;
     }
     public void setHandled() {
@@ -603,4 +603,4 @@ public class CustomerPlugIn extends CSMARTPlugIn {
     }
   } // end of CustAnnot class
 
-}// CustomerPlugIn
+}// CustomerPlugin

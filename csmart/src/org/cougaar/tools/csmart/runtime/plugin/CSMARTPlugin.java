@@ -41,10 +41,10 @@ import org.cougaar.util.UnaryPredicate;
 import org.cougaar.core.service.LoggingService;
 
 /**
- * CSMART Base PlugIn. Provide support for publishing after a delay and convenience methods.<br>
+ * CSMART Base Plugin. Provide support for publishing after a delay and convenience methods.<br>
  * Get a hook to the <code>RootFactory</code> and the <code>CSMARTFactory</code>
  */
-public abstract class CSMARTPlugIn
+public abstract class CSMARTPlugin
     extends ComponentPlugin
 {
 
@@ -68,19 +68,19 @@ public abstract class CSMARTPlugIn
   /** Root LDM Factory */
   protected RootFactory theLDMF;
 
-  /** Identifier of PlugIn */
+  /** Identifier of Plugin */
   private UID id = null;
 
   
   // 
   // constructor
   //
-  public CSMARTPlugIn() {
+  public CSMARTPlugin() {
   }
 
   /**
-   * Get the UID for this PlugIn (same as its PlugInAsset)
-   * Only to be called after the PlugIn has been loaded
+   * Get the UID for this Plugin (same as its PluginAsset)
+   * Only to be called after the Plugin has been loaded
    *
    * @return an <code>UID</code> value
    */
@@ -124,7 +124,7 @@ public abstract class CSMARTPlugIn
         "Loaded plugin "+this+" without CSMART Factory? Did you include the csmart domain in configs/common/LDMDomains.ini?");
     }
     
-    // Give each PlugIn a UID to uniquely identify it
+    // Give each Plugin a UID to uniquely identify it
     this.id = theCSMARTF.getNextUID();
   } // end of load()
 
@@ -143,11 +143,11 @@ public abstract class CSMARTPlugIn
 
   /**
    * Wait for <tt>delayMillis</tt> milliseconds of execution time to pass, 
-   * during which time the PlugIn and all other PlugIns in the Cluster will
+   * during which time the Plugin and all other Plugins in the Cluster will
    * wait.
    *
    * In CSMART only the all run in this Thread, so this will
-   * halt all PlugIn activity!
+   * halt all Plugin activity!
    */
   protected void waitMillis(long delayMillis) {
     if (delayMillis <= MINIMUM_DELAY_MILLIS) {
@@ -221,7 +221,7 @@ public abstract class CSMARTPlugIn
   /**
    * Publish-Add the given Object <tt>o</tt> to the LogPlan after waiting 
    * at least <tt>delayMillis</tt> milliseconds of execution time, but 
-   * allow this <code>PlugIn</code> to continue it's execution during 
+   * allow this <code>Plugin</code> to continue it's execution during 
    * this wait.
    * <p>
    * The Plugin can also specify a <code>UnaryPredicate</code> to run
@@ -389,7 +389,7 @@ public abstract class CSMARTPlugIn
    */
   protected class SyncAlarm implements Alarm {
 
-    private LoggingService log = CSMARTPlugIn.this.log;
+    private LoggingService log = CSMARTPlugin.this.log;
 
     private final long expTime;
 
@@ -401,7 +401,7 @@ public abstract class CSMARTPlugIn
         String msg = 
           "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+
           "\n Create \"waitMillis\" Alarm"+
-          "\n PlugIn: "+CSMARTPlugIn.this.toString()+
+          "\n Plugin: "+CSMARTPlugin.this.toString()+
           "\n currTime: "+currentTimeMillis()+
           "\n expTime:  "+expTime+
           "\n notify:  "+super.toString()+
@@ -420,7 +420,7 @@ public abstract class CSMARTPlugIn
           String msg = 
             "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"+
             "\n Expire \"waitMillis\" Alarm"+
-            "\n PlugIn: "+CSMARTPlugIn.this.toString()+
+            "\n Plugin: "+CSMARTPlugin.this.toString()+
             "\n currTime: "+currentTimeMillis()+
             "\n expTime:  "+expTime+
             "\n notify:  "+super.toString()+
@@ -447,7 +447,7 @@ public abstract class CSMARTPlugIn
         "<SyncAlarm ("+super.toString()+
         ") at time "+expTime+
         (expired?" (Expired)":"")+
-        " for "+CSMARTPlugIn.this.toString()+">";
+        " for "+CSMARTPlugin.this.toString()+">";
     }
   }
 
@@ -482,7 +482,7 @@ public abstract class CSMARTPlugIn
 
     private final UnaryPredicate pred;
 
-    private LoggingService log = CSMARTPlugIn.this.log;
+    private LoggingService log = CSMARTPlugin.this.log;
 
     public DelayPublishAlarm(
         byte pubStyle,
@@ -505,7 +505,7 @@ public abstract class CSMARTPlugIn
              "Remove":
              "???")))+
           "\" Alarm"+
-          "\n PlugIn: "+CSMARTPlugIn.this.toString()+
+          "\n Plugin: "+CSMARTPlugin.this.toString()+
           "\n currTime: "+currentTimeMillis()+
           "\n expTime:  "+expTime+
           "\n pred:  "+pred+
@@ -533,7 +533,7 @@ public abstract class CSMARTPlugIn
                "Remove":
                "???")))+
             "\" Alarm"+
-            "\n PlugIn: "+CSMARTPlugIn.this.toString()+
+            "\n Plugin: "+CSMARTPlugin.this.toString()+
             "\n currTime: "+currentTimeMillis()+
             "\n expTime:  "+expTime+
             "\n Object:  "+o.toString()+
@@ -543,7 +543,7 @@ public abstract class CSMARTPlugIn
 //  	if (log.isDebugEnabled()) {
 //  	  log.debug("expire: " + this + " about to get blackboard service");
 //  	}
-        BlackboardService bbs = CSMARTPlugIn.this.getBlackboardService();
+        BlackboardService bbs = CSMARTPlugin.this.getBlackboardService();
 //  	if (log.isDebugEnabled()) {
 //  	  log.debug("expire: " + this + " got blackboard service");
 //  	}
@@ -600,13 +600,13 @@ public abstract class CSMARTPlugIn
       }
       s += 
         " at time ("+expTime+") for "+
-        CSMARTPlugIn.this.toString()+">";
+        CSMARTPlugin.this.toString()+">";
       return s;
     }
   }
 
   //
-  // From org.cougaar.core.plugin.SimplePlugIn
+  // From org.cougaar.core.plugin.SimplePlugin
   //
 
   /** call initialize within an open transaction. **/
@@ -668,5 +668,5 @@ public abstract class CSMARTPlugIn
    **/
   protected abstract void execute();
 
-} // end of CSMARTPlugIn.java
+} // end of CSMARTPlugin.java
 

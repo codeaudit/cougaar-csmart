@@ -98,20 +98,20 @@ public class ABCAgent
   private static final String agentClassName = "org.cougaar.core.agent.ClusterImpl";
 
   /** Full names of all plugins **/
-  private static final String CustomerPlugIn_name =
-    "org.cougaar.tools.csmart.runtime.plugin.CustomerPlugIn";
-  private static final String AllocatorPlugIn_name =
-    "org.cougaar.tools.csmart.runtime.plugin.AllocatorPlugIn";
-  private static final String ExecutorPlugIn_name =
-    "org.cougaar.tools.csmart.runtime.plugin.ExecutorPlugIn";
-  private static final String PlanServerPlugIn_name =
-    "org.cougaar.lib.planserver.PlanServerPlugIn";
-  private static final String AssetBuilderPlugIn_name =
+  private static final String CustomerPlugin_name =
+    "org.cougaar.tools.csmart.runtime.plugin.CustomerPlugin";
+  private static final String AllocatorPlugin_name =
+    "org.cougaar.tools.csmart.runtime.plugin.AllocatorPlugin";
+  private static final String ExecutorPlugin_name =
+    "org.cougaar.tools.csmart.runtime.plugin.ExecutorPlugin";
+  private static final String PlanServerPlugin_name =
+    "org.cougaar.lib.planserver.PlanServerPlugin";
+  private static final String AssetBuilderPlugin_name =
     "org.cougaar.tools.csmart.runtime.plugin.LocalAssetBuilder";
-  private static final String AssetDataPlugIn_name =
-    "org.cougaar.planning.plugin.AssetDataPlugIn";
-  private static final String AssetReportPlugIn_name =
-    "org.cougaar.planning.plugin.AssetReportPlugIn";
+  private static final String AssetDataPlugin_name =
+    "org.cougaar.planning.plugin.AssetDataPlugin";
+  private static final String AssetReportPlugin_name =
+    "org.cougaar.planning.plugin.AssetReportPlugin";
 
   private Property propDistance;
   private Property propDirection;
@@ -176,11 +176,11 @@ public class ABCAgent
     propSupplies.setToolTip(PROP_SUPPLIES_DESC);
 
     if(type.equalsIgnoreCase("provider")) {
-      addProviderPlugIns();
+      addProviderPlugins();
     } else {
-      addCustomerPlugIn();
+      addCustomerPlugin();
     }
-    addStandardPlugIns();
+    addStandardPlugins();
   }
 
 
@@ -211,25 +211,25 @@ public class ABCAgent
    */
   public ComponentData addComponentData(ComponentData data) {
 
-    // Add Asset Data PlugIn
+    // Add Asset Data Plugin
     GenericComponentData plugin = new GenericComponentData();
     plugin.setType(ComponentData.PLUGIN);
     plugin.setParent(data);
-    plugin.setName(AssetDataPlugIn_name);
+    plugin.setName(AssetDataPlugin_name);
     plugin.setOwner(this);
     data.addChild(plugin);
 
-    // Add Asset Report PlugIn
+    // Add Asset Report Plugin
     plugin = new GenericComponentData();
     plugin.setType(ComponentData.PLUGIN);
     plugin.setParent(data);
     plugin.setOwner(this);
-    plugin.setName(AssetReportPlugIn_name);
+    plugin.setName(AssetReportPlugin_name);
     data.addChild(plugin);
 
     for(int i = 0 ; i < getChildCount(); i++) {
-      if(getChild(i) instanceof ABCPlugIn) {
-	ABCPlugIn pg = (ABCPlugIn) getChild(i);
+      if(getChild(i) instanceof ABCPlugin) {
+	ABCPlugin pg = (ABCPlugin) getChild(i);
 	plugin = new GenericComponentData();
 	plugin.setOwner(this);
 	plugin.setParent(data);
@@ -242,7 +242,7 @@ public class ABCAgent
     plugin.setType(ComponentData.PLUGIN);
     plugin.setParent(data);
     plugin.setOwner(this);
-    plugin.setName(PlanServerPlugIn_name);
+    plugin.setName(PlanServerPlugin_name);
     data.addChild(plugin);
 
     // Add data file leaves.
@@ -275,9 +275,9 @@ public class ABCAgent
   /**
    * Adds all plugins required by a Provider
    */
-  private void addProviderPlugIns() {
-    ABCPlugIn plugin;
-    plugin = new ABCPlugIn("LocalAssetBuilder", AssetBuilderPlugIn_name);
+  private void addProviderPlugins() {
+    ABCPlugin plugin;
+    plugin = new ABCPlugin("LocalAssetBuilder", AssetBuilderPlugin_name);
     addChild(plugin);
     plugin.initProperties();
     Property p = null;
@@ -290,7 +290,7 @@ public class ABCAgent
     addPropertyAlias(ABCLocalAsset.PROP_ASSETFILENAME, plugin, (String)p.getValue());
     setPropertyVisible(getProperty(ABCLocalAsset.PROP_ASSETFILENAME), false);
 
-    plugin = new ABCPlugIn("Executor", ExecutorPlugIn_name);
+    plugin = new ABCPlugin("Executor", ExecutorPlugin_name);
     addChild(plugin);
     plugin.initProperties();
   }
@@ -298,10 +298,10 @@ public class ABCAgent
   /**
    * Adds all standard plugins
    */
-  private void addStandardPlugIns() {
-    ABCPlugIn plugin;
+  private void addStandardPlugins() {
+    ABCPlugin plugin;
 
-    plugin = new ABCPlugIn("Allocator", AllocatorPlugIn_name);
+    plugin = new ABCPlugin("Allocator", AllocatorPlugin_name);
     addChild(plugin);
     plugin.initProperties();
     Property p = null;
@@ -319,10 +319,10 @@ public class ABCAgent
   /**
    * Adds a Customer Plugin
    */
-  private void addCustomerPlugIn() {
-    ABCPlugIn plugin;
+  private void addCustomerPlugin() {
+    ABCPlugin plugin;
 
-    plugin = new ABCPlugIn("Customer", CustomerPlugIn_name);
+    plugin = new ABCPlugin("Customer", CustomerPlugin_name);
     addChild(plugin);
     plugin.initProperties();
     addPropertyAlias(PROP_STARTTIME, plugin, getProperty(PROP_STARTTIME).getValue());
@@ -340,13 +340,13 @@ public class ABCAgent
   }
 
 
-  private Property addPropertyAlias(String propName, ABCPlugIn c, Object value) {
+  private Property addPropertyAlias(String propName, ABCPlugin c, Object value) {
     Property ourProp = addProperty(propName, value);
     Property childProp = addPropertyAlias(c, ourProp);
     return ourProp;
   }
 
-  private Property addPropertyAlias(ABCPlugIn c, Property prop) {
+  private Property addPropertyAlias(ABCPlugin c, Property prop) {
     Property childProp = c.addParameter(prop);
     setPropertyVisible(childProp, false);
     return childProp;

@@ -22,8 +22,8 @@ package org.cougaar.tools.csmart.runtime.plugin;
 
 import org.cougaar.core.blackboard.IncrementalSubscription;
 import org.cougaar.core.agent.service.alarm.Alarm;
-import org.cougaar.core.plugin.SimplePlugIn;
-import org.cougaar.core.plugin.util.PlugInHelper;
+import org.cougaar.core.plugin.SimplePlugin;
+import org.cougaar.core.plugin.util.PluginHelper;
 
 import org.cougaar.planning.ldm.asset.*;
 import org.cougaar.planning.ldm.plan.*;
@@ -33,7 +33,7 @@ import org.cougaar.util.UnaryPredicate;
 import java.util.*;
 
 /**
- * MetricsInitializerPlugIn : Launch a number of tasks and wait
+ * MetricsInitializerPlugin : Launch a number of tasks and wait
  * for them to flow through the system, measuring the time and memory
  * expended. We can also open a back door to a controller process to
  * publish the outcome.
@@ -59,7 +59,7 @@ import java.util.*;
  *
  **/
 public class MetricsInitializerPlugin 
-  extends CSMARTPlugIn
+  extends CSMARTPlugin
   implements MetricsConstants
 
 {
@@ -314,7 +314,7 @@ public class MetricsInitializerPlugin
 
   private boolean checkControlTasks(IncrementalSubscription sub) {
     if (sub.hasChanged()) {
-      PlugInHelper.updateAllocationResult(sub);
+      PluginHelper.updateAllocationResult(sub);
       return (checkControlTasks(sub.getAddedList()) ||
               checkControlTasks(sub.getChangedList()));
     }

@@ -30,13 +30,13 @@ import org.cougaar.tools.csmart.runtime.ldm.plugin.transducer.Society;
  * system, in terms of <code>InfrastructureEvent</code>s
  * <br>
  * The model is returned by a <code>RealWorldEvent</code>
- * and used in the <code>TransducerPlugIn</code>
+ * and used in the <code>TransducerPlugin</code>
  * to get a set of <code>InfrastructureEvent</code>s.<br>
  *
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  * @see RealWorldEvent
  * @see InfrastructureEvent
- * @see org.cougaar.tools.csmart.runtime.plugin.TransducerPlugIn
+ * @see org.cougaar.tools.csmart.runtime.plugin.TransducerPlugin
  * @see Society
  */
 public interface ImpactModel {

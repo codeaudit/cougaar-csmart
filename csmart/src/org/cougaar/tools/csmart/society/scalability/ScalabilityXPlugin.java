@@ -33,7 +33,7 @@ import org.cougaar.util.log.Logger;
 import java.io.ObjectInputStream;
 import java.io.IOException;
 
-public class ScalabilityXPlugIn
+public class ScalabilityXPlugin
   extends ConfigurableComponent
   implements Serializable
 {
@@ -45,7 +45,7 @@ public class ScalabilityXPlugIn
 
   private transient Logger log;
 
-  public ScalabilityXPlugIn(String name, String pluginClass) {
+  public ScalabilityXPlugin(String name, String pluginClass) {
     super(name);
     this.pluginClass = pluginClass;
     createLogger();
@@ -58,7 +58,7 @@ public class ScalabilityXPlugIn
   public void initProperties() {
   }
 
-  public String getPlugInClassName() {
+  public String getPluginClassName() {
     return pluginClass;
   }
 
@@ -96,7 +96,7 @@ public class ScalabilityXPlugIn
 //   public String getConfigLine() {
 //     StringBuffer buf = new StringBuffer();
 //     buf.append("plugin = ");
-//     buf.append(getPlugInClassName());
+//     buf.append(getPluginClassName());
 //     buf.append("(");
 //     for (int i = 0; i < nParameters; i++) {
 //       Object param = getProperty(PROP_PARAM + i).getValue();
@@ -110,7 +110,7 @@ public class ScalabilityXPlugIn
 //   }
 
   public ComponentData addComponentData(ComponentData data) {
-    data.setName(getPlugInClassName());
+    data.setName(getPluginClassName());
     
     for(int i=0; i < nParameters; i++) {
       data.addParameter(getProperty(PROP_PARAM + i).getValue());

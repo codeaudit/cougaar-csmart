@@ -58,7 +58,7 @@ public class ABCAgentTest extends TestCase {
 // //     assertEquals("Test Type", ComponentData.AGENT, data.getType());
 // //     assertEquals("Test Name", agent.getFullName().toString(), data.getName());
 // //     assertEquals("Test Class", "org.cougaar.core.agent.ClusterImpl", data.getClassName());
-// //     assertEquals("Test Number of PlugIns", 6, data.childCount());
+// //     assertEquals("Test Number of Plugins", 6, data.childCount());
 //   }
 
 //   public void testComponentDataChildren() {
@@ -68,22 +68,22 @@ public class ABCAgentTest extends TestCase {
 
 //     ComponentData gc = (ComponentData)children[0];
 
-//     assertEquals("Test AssetData", "org.cougaar.planning.plugin.AssetDataPlugIn", gc.getName());
+//     assertEquals("Test AssetData", "org.cougaar.planning.plugin.AssetDataPlugin", gc.getName());
 
 //     gc = (ComponentData)children[1];
-//     assertEquals("Test AssetReport", "org.cougaar.planning.plugin.AssetReportPlugIn", gc.getName());
+//     assertEquals("Test AssetReport", "org.cougaar.planning.plugin.AssetReportPlugin", gc.getName());
 
 //     gc = (ComponentData)children[2];
-//     assertEquals("Test CustomerPlugIn", "org.cougaar.tools.csmart.plugin.CustomerPlugIn" , gc.getName());
+//     assertEquals("Test CustomerPlugin", "org.cougaar.tools.csmart.plugin.CustomerPlugin" , gc.getName());
 
 //     gc = (ComponentData)children[3];
 //     assertEquals("Test Metrics", "org.cougaar.tools.csmart.plugin.MetricsPlugin", gc.getName());
 
 //     gc = (ComponentData)children[4];
-//     assertEquals("Test Allocator", "org.cougaar.tools.csmart.plugin.AllocatorPlugIn", gc.getName());
+//     assertEquals("Test Allocator", "org.cougaar.tools.csmart.plugin.AllocatorPlugin", gc.getName());
 
 //     gc = (ComponentData)children[5];
-//     assertEquals("Test PlanServer", "org.cougaar.lib.planserver.PlanServerPlugIn", gc.getName());
+//     assertEquals("Test PlanServer", "org.cougaar.lib.planserver.PlanServerPlugin", gc.getName());
 //   }
 
 

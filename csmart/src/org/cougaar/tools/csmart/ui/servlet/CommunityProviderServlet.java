@@ -239,7 +239,7 @@ public class CommunityProviderServlet
       
 	// reconstruct url
 	String url = buf.toString();
-	//URL url = psc.lookupURL(psc.getServerPlugInSupport().getClusterIDAsString());
+	//URL url = psc.lookupURL(psc.getServerPluginSupport().getClusterIDAsString());
 	if (url != null)
 	  properties.put(PropertyNames.AGENT_URL, url.toString());
 	results.add(properties);

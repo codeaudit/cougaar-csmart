@@ -576,7 +576,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
         if (e.getValueIsAdjusting())
           return;
         String agentName = (String)agentNames.get(e.getLastIndex());
-        displayPlugIns(agentName);
+        displayPlugins(agentName);
       }
     });
     JScrollPane jspAgents = new JScrollPane(agentsList);
@@ -848,7 +848,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     ((NodeStatusButton)statusButton).clearError();
   }
 
-  private void displayPlugIns(String agentName) {
+  private void displayPlugins(String agentName) {
     ComponentData societyComponentData = experiment.getSocietyComponentData();
     if (societyComponentData == null) {
       if(log.isWarnEnabled()) {
@@ -909,7 +909,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     plugInsList.setBackground(agentInfoPanel.getBackground());
     int x = 0;
     int y = 0;
-    agentInfoPanel.add(new JLabel("PlugIns:"),
+    agentInfoPanel.add(new JLabel("Plugins:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.NONE,

@@ -71,8 +71,8 @@ import org.cougaar.tools.csmart.util.ResultsFileFilter;
  * fanout of all agents at the previous level.
  *
  * The size of the society is characterized by 2 values:
- *   numPlugInsPerAgent -- the number of plugins per agent
- *   numTasksPerPlugIn    -- the number of tasks handled by each
+ *   numPluginsPerAgent -- the number of plugins per agent
+ *   numTasksPerPlugin    -- the number of tasks handled by each
  *                           plugin per root task
  *   numLevels            -- the number of levels
  *

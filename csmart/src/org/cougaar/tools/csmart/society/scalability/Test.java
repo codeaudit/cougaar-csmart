@@ -49,7 +49,7 @@ public class Test {
             }
             c.printLocalProperties(System.out);
         }
-        Collection plugins = society.getDescendentsOfClass(ScalabilityXPlugIn.class);
+        Collection plugins = society.getDescendentsOfClass(ScalabilityXPlugin.class);
         if(log.isDebugEnabled()) {
           log.debug("Plugins:");
         }

@@ -58,7 +58,7 @@ abcold.ABCAllocationRule		abcnew.ABCAllocationRule
 abcold.ABCCommunity			abcnew.ABCCommunity
 #abcold.abchelp.html			abcnew.abchelp.html
 abcold.ABCLocalAsset			abcnew.ABCLocalAsset
-abcold.ABCPlugIn			abcnew.ABCPlugIn
+abcold.ABCPlugin			abcnew.ABCPlugin
 abcold.ABCSociety			abcnew.ABCSociety
 abcold.ABCTask				abcnew.ABCTask
 abcold.ABCTaskFile			abcnew.ABCTaskFile

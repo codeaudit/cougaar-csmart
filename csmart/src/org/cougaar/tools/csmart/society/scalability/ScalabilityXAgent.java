@@ -116,43 +116,43 @@ public class ScalabilityXAgent
   private int level;
   private int agentIndex;
 
-  private static final String OrgRTDataPlugIn_name =
-    "org.cougaar.mlm.plugin.organization.OrgRTDataPlugIn";
-  private static final String OrgReportPlugIn_name =
-    "org.cougaar.mlm.plugin.organization.OrgReportPlugIn";
-  private static final String ScalabilityAllocatorPlugIn_name =
-    "org.cougaar.tools.scalability.scalability.ScalabilityAllocatorPlugIn";
-  private static final String ScalabilityDummyLoadPlugIn_name =
-    "org.cougaar.tools.scalability.scalability.ScalabilityDummyLoadPlugIn";
-  private static final String ScalabilityExpanderPlugIn_name =
-    "org.cougaar.tools.scalability.scalability.ScalabilityExpanderPlugIn";
-  private static final String ScalabilityInitializerPlugIn_name =
-    "org.cougaar.tools.scalability.scalability.ScalabilityInitializerPlugIn";
-  private static final String ScalabilityLDMPlugIn_name =
-    "org.cougaar.tools.scalability.scalability.ScalabilityLDMPlugIn";
-  private static final String ScalabilityLeafPlugIn_name =
-    "org.cougaar.tools.scalability.scalability.ScalabilityLeafPlugIn";
-  private static final String ScalabilityStatisticsPlugIn_name =
-    "org.cougaar.tools.scalability.scalability.ScalabilityStatisticsPlugIn";
-  private static final String ScalabilityConsumerPlugIn_name =
+  private static final String OrgRTDataPlugin_name =
+    "org.cougaar.mlm.plugin.organization.OrgRTDataPlugin";
+  private static final String OrgReportPlugin_name =
+    "org.cougaar.mlm.plugin.organization.OrgReportPlugin";
+  private static final String ScalabilityAllocatorPlugin_name =
+    "org.cougaar.tools.scalability.scalability.ScalabilityAllocatorPlugin";
+  private static final String ScalabilityDummyLoadPlugin_name =
+    "org.cougaar.tools.scalability.scalability.ScalabilityDummyLoadPlugin";
+  private static final String ScalabilityExpanderPlugin_name =
+    "org.cougaar.tools.scalability.scalability.ScalabilityExpanderPlugin";
+  private static final String ScalabilityInitializerPlugin_name =
+    "org.cougaar.tools.scalability.scalability.ScalabilityInitializerPlugin";
+  private static final String ScalabilityLDMPlugin_name =
+    "org.cougaar.tools.scalability.scalability.ScalabilityLDMPlugin";
+  private static final String ScalabilityLeafPlugin_name =
+    "org.cougaar.tools.scalability.scalability.ScalabilityLeafPlugin";
+  private static final String ScalabilityStatisticsPlugin_name =
+    "org.cougaar.tools.scalability.scalability.ScalabilityStatisticsPlugin";
+  private static final String ScalabilityConsumerPlugin_name =
     "org.cougaar.tools.scalability.scalability.ConsumerPlugin";
-  private static final String PlanServerPlugIn_name =
-    "org.cougaar.lib.planserver.PlanServerPlugIn";
+  private static final String PlanServerPlugin_name =
+    "org.cougaar.lib.planserver.PlanServerPlugin";
 
   private static HashMap subscriptionCounts = new HashMap(13);
 
   static {
-    subscriptionCounts.put(OrgRTDataPlugIn_name,              new Integer(0));
-    subscriptionCounts.put(OrgReportPlugIn_name,              new Integer(5));
-    subscriptionCounts.put(ScalabilityAllocatorPlugIn_name,   new Integer(3));
-    subscriptionCounts.put(ScalabilityDummyLoadPlugIn_name,   new Integer(0));
-    subscriptionCounts.put(ScalabilityExpanderPlugIn_name,    new Integer(2));
-    subscriptionCounts.put(ScalabilityInitializerPlugIn_name, new Integer(6));
-    subscriptionCounts.put(ScalabilityLDMPlugIn_name,         new Integer(2));
-    subscriptionCounts.put(ScalabilityLeafPlugIn_name,        new Integer(2));
-    subscriptionCounts.put(ScalabilityStatisticsPlugIn_name,  new Integer(2));
-    subscriptionCounts.put(ScalabilityConsumerPlugIn_name,    new Integer(2));
-    subscriptionCounts.put(PlanServerPlugIn_name,             new Integer(0));
+    subscriptionCounts.put(OrgRTDataPlugin_name,              new Integer(0));
+    subscriptionCounts.put(OrgReportPlugin_name,              new Integer(5));
+    subscriptionCounts.put(ScalabilityAllocatorPlugin_name,   new Integer(3));
+    subscriptionCounts.put(ScalabilityDummyLoadPlugin_name,   new Integer(0));
+    subscriptionCounts.put(ScalabilityExpanderPlugin_name,    new Integer(2));
+    subscriptionCounts.put(ScalabilityInitializerPlugin_name, new Integer(6));
+    subscriptionCounts.put(ScalabilityLDMPlugin_name,         new Integer(2));
+    subscriptionCounts.put(ScalabilityLeafPlugin_name,        new Integer(2));
+    subscriptionCounts.put(ScalabilityStatisticsPlugin_name,  new Integer(2));
+    subscriptionCounts.put(ScalabilityConsumerPlugin_name,    new Integer(2));
+    subscriptionCounts.put(PlanServerPlugin_name,             new Integer(0));
   }
   
   private Property propIndex;   // The property specifying our index at this level
@@ -195,13 +195,13 @@ public class ScalabilityXAgent
         adjustDummyLoad();
       }
     });
-    addStandardPlugIns();
-    addExpanderPlugIn();
-    addLdmPlugIn();
-    addConsumerPlugIn();
-    addDummyLoadPlugIn();
-    addStatisticsPlugIn();
-    if (level == 0) addRootPlugIn();
+    addStandardPlugins();
+    addExpanderPlugin();
+    addLdmPlugin();
+    addConsumerPlugin();
+    addDummyLoadPlugin();
+    addStatisticsPlugin();
+    if (level == 0) addRootPlugin();
 
     adjustAllocators();
     adjustDummyLoad();
@@ -227,7 +227,7 @@ public class ScalabilityXAgent
    * @param component the component to get the property alias
    * @param value the value of the property.
    **/
-  private Property addPropertyAlias(String propName, ScalabilityXPlugIn c, Object value) {
+  private Property addPropertyAlias(String propName, ScalabilityXPlugin c, Object value) {
     Property ourProp = addProperty(propName, value);
     Property childProp = addPropertyAlias(c, ourProp);
     return ourProp;
@@ -238,13 +238,13 @@ public class ScalabilityXAgent
    * @param c the component to get the property alias
    * @param prop one of our properties
    **/
-  private Property addPropertyAlias(ScalabilityXPlugIn c, Property prop) {
+  private Property addPropertyAlias(ScalabilityXPlugin c, Property prop) {
     Property childProp = c.addParameter(prop);
     setPropertyVisible(childProp, false);
     return childProp;
   }
 
-  private void addInvisibleParameter(ScalabilityXPlugIn c, int value, String label) {
+  private void addInvisibleParameter(ScalabilityXPlugin c, int value, String label) {
     Property childProp = c.addParameter(value);
     setPropertyVisible(childProp, false);
     if (label != null) childProp.setLabel(label);
@@ -256,8 +256,8 @@ public class ScalabilityXAgent
     return p;
   }
 
-  private void addRootPlugIn() {
-    ScalabilityXPlugIn plugin = new ScalabilityXPlugIn("ScalabilityInitializer", ScalabilityInitializerPlugIn_name);
+  private void addRootPlugin() {
+    ScalabilityXPlugin plugin = new ScalabilityXPlugin("ScalabilityInitializer", ScalabilityInitializerPlugin_name);
     int childIndex = addChild(plugin);
     plugin.initProperties();
     addInvisibleParameter(plugin, level, "Level");
@@ -283,37 +283,37 @@ public class ScalabilityXAgent
       .setHelp(PROP_MSGBYTESPERTASK_HELP);
   }
 
-  private void addStatisticsPlugIn() {
-    ScalabilityXPlugIn plugin = new ScalabilityXPlugIn("ScalabilityStatistics", ScalabilityStatisticsPlugIn_name);
+  private void addStatisticsPlugin() {
+    ScalabilityXPlugin plugin = new ScalabilityXPlugin("ScalabilityStatistics", ScalabilityStatisticsPlugin_name);
     addChild(plugin);
     plugin.initProperties();
   }
 
-  private void addStandardPlugIns() {
-    ScalabilityXPlugIn plugin;
-    plugin = new ScalabilityXPlugIn("OrgRTData", OrgRTDataPlugIn_name);
+  private void addStandardPlugins() {
+    ScalabilityXPlugin plugin;
+    plugin = new ScalabilityXPlugin("OrgRTData", OrgRTDataPlugin_name);
     addChild(plugin);
     plugin.initProperties();
-    plugin = new ScalabilityXPlugIn("OrgReport", OrgReportPlugIn_name);
+    plugin = new ScalabilityXPlugin("OrgReport", OrgReportPlugin_name);
     addChild(plugin);
     plugin.initProperties();
-    plugin = new ScalabilityXPlugIn("PlanServer", PlanServerPlugIn_name);
+    plugin = new ScalabilityXPlugin("PlanServer", PlanServerPlugin_name);
     addChild(plugin);
     plugin.initProperties();
   }
 
-  private void addExpanderPlugIn() {
-    ScalabilityXPlugIn plugin =
-      new ScalabilityXPlugIn("ScalabilityExpander", ScalabilityExpanderPlugIn_name);
+  private void addExpanderPlugin() {
+    ScalabilityXPlugin plugin =
+      new ScalabilityXPlugin("ScalabilityExpander", ScalabilityExpanderPlugin_name);
     addChild(plugin);
     plugin.initProperties();
     addInvisibleParameter(plugin, level, "Level");
     addPropertyAlias(PROP_EXPANSION, plugin, PROP_EXPANSION_DFLT);
   }
 
-  private void addDummyLoadPlugIn() {
-    ScalabilityXPlugIn dummyLoadChild =
-      new ScalabilityXPlugIn("ScalabilityDummyLoad", ScalabilityDummyLoadPlugIn_name);
+  private void addDummyLoadPlugin() {
+    ScalabilityXPlugin dummyLoadChild =
+      new ScalabilityXPlugin("ScalabilityDummyLoad", ScalabilityDummyLoadPlugin_name);
     addChild(dummyLoadChild);
     dummyLoadChild.initProperties();
     dummyLoadProperty = dummyLoadChild.addParameter(0);
@@ -357,8 +357,8 @@ public class ScalabilityXAgent
     //System.err.println("Now have " + orgAllocators.size() + " org allocators");
     while (leafAllocators.size() < newLeafAllocatorCount) {
       //System.err.println("Adding a leaf Plugin");
-      ScalabilityXPlugIn plugin =
-        new ScalabilityXPlugIn("ScalabilityLeaf", ScalabilityLeafPlugIn_name);
+      ScalabilityXPlugin plugin =
+        new ScalabilityXPlugin("ScalabilityLeaf", ScalabilityLeafPlugin_name);
       int index = leafAllocators.size();
       leafAllocators.add(plugin);
       addChild(plugin);
@@ -371,8 +371,8 @@ public class ScalabilityXAgent
     //System.err.println("About to add org allocators");
     while (orgAllocators.size() < newOrgAllocatorCount) {
       //System.err.println("Have " + orgAllocators.size() + " orgallocs. Adding an org allocator with args: " + (level + 1) + ", " + (orgAllocators.size() + leafAllocators.size()) + ", " + totalAllocatorCount);
-      ScalabilityXPlugIn plugin =
-        new ScalabilityXPlugIn("ScalabilityAllocator", ScalabilityAllocatorPlugIn_name);
+      ScalabilityXPlugin plugin =
+        new ScalabilityXPlugin("ScalabilityAllocator", ScalabilityAllocatorPlugin_name);
       int index = orgAllocators.size() + leafAllocators.size();
       orgAllocators.add(plugin);
       addChild(plugin);
@@ -385,17 +385,17 @@ public class ScalabilityXAgent
     //System.err.println(this.getFullName() + " done adjusting allocators");
   }
 
-  private void addLdmPlugIn() {
-    ScalabilityXPlugIn plugin =
-      new ScalabilityXPlugIn("ScalabilityLDM", ScalabilityLDMPlugIn_name);
+  private void addLdmPlugin() {
+    ScalabilityXPlugin plugin =
+      new ScalabilityXPlugin("ScalabilityLDM", ScalabilityLDMPlugin_name);
     addChild(plugin);
     plugin.initProperties();
     addPropertyAlias(PROP_ASSETCOUNT, plugin, PROP_ASSETCOUNT_DFLT);
   }
 
-  private void addConsumerPlugIn() {
-    ScalabilityXPlugIn plugin =
-      new ScalabilityXPlugIn("ScalabilityConsumer", ScalabilityConsumerPlugIn_name);
+  private void addConsumerPlugin() {
+    ScalabilityXPlugin plugin =
+      new ScalabilityXPlugin("ScalabilityConsumer", ScalabilityConsumerPlugin_name);
     addChild(plugin);
     plugin.initProperties();
     Property prop;
@@ -407,20 +407,20 @@ public class ScalabilityXAgent
     addPropertyAlias(plugin, prop); // max
   }
 
-  public int getNumberOfPlugIns() {
+  public int getNumberOfPlugins() {
     return getChildCount();
   }
 
-  public ScalabilityXPlugIn getPlugIn(int n) {
-    return (ScalabilityXPlugIn) getChild(n);
+  public ScalabilityXPlugin getPlugin(int n) {
+    return (ScalabilityXPlugin) getChild(n);
   }
 
   public int getNumberOfSubscriptions() {
     int sum = 0;
     for (int i = 0, n = getChildCount(); i < n; i++) {
-      ScalabilityXPlugIn plugin = (ScalabilityXPlugIn) getChild(i);
-      String pluginClassName = plugin.getPlugInClassName();
-      if (pluginClassName.equals(ScalabilityDummyLoadPlugIn_name)) {
+      ScalabilityXPlugin plugin = (ScalabilityXPlugin) getChild(i);
+      String pluginClassName = plugin.getPluginClassName();
+      if (pluginClassName.equals(ScalabilityDummyLoadPlugin_name)) {
         sum += plugin.getIntParameter(0);
       } else {
         sum += ((Integer) subscriptionCounts.get(pluginClassName)).intValue();
@@ -443,12 +443,12 @@ public class ScalabilityXAgent
 //       writer.println("uic = \"" + getFullName() + "\"");
 //       writer.println("cloned = false");
 //       writer.println();
-//       writer.println("[ PlugIns ]");
+//       writer.println("[ Plugins ]");
 //       for (int i = 0, n = getChildCount(); i < n; i++) {
-//         ScalabilityXPlugIn plugin = (ScalabilityXPlugIn) getChild(i);
+//         ScalabilityXPlugin plugin = (ScalabilityXPlugin) getChild(i);
 //         writer.println(plugin.getConfigLine());
 //       }
-// //        writer.println("plugin = org.cougaar.lib.planserver.PlanServerPlugIn");
+// //        writer.println("plugin = org.cougaar.lib.planserver.PlanServerPlugin");
 //       writer.println();
 //       writer.println("[ Policies ]");
 //       writer.println();
@@ -598,7 +598,7 @@ public class ScalabilityXAgent
 
     // Add all plugins
     for (int i = 0, n = getChildCount(); i < n; i++) {
-      ScalabilityXPlugIn sxp = (ScalabilityXPlugIn) getChild(i);
+      ScalabilityXPlugin sxp = (ScalabilityXPlugin) getChild(i);
       plugin = new GenericComponentData();
       plugin.setOwner(this);
       plugin.setParent(data);

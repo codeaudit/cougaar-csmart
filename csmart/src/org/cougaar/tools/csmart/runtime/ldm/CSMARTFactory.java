@@ -26,17 +26,17 @@ import java.io.InputStream;
 
 import org.cougaar.core.agent.ClusterContext;
 import org.cougaar.core.agent.ClusterIdentifier;
-import org.cougaar.core.agent.ClusterServesPlugIn;
+import org.cougaar.core.agent.ClusterServesPlugin;
 import org.cougaar.core.service.UIDServer;
 import org.cougaar.core.util.UID;
 import org.cougaar.core.domain.Factory;
 import org.cougaar.core.domain.RootFactory;
-import org.cougaar.core.domain.LDMServesPlugIn;
+import org.cougaar.core.domain.LDMServesPlugin;
 import org.cougaar.planning.ldm.asset.*;
 
 import org.cougaar.tools.csmart.runtime.ldm.asset.*;
 import org.cougaar.tools.csmart.runtime.ldm.event.*;
-import org.cougaar.tools.csmart.runtime.plugin.CSMARTPlugIn;
+import org.cougaar.tools.csmart.runtime.plugin.CSMARTPlugin;
 import org.cougaar.tools.csmart.util.*;
 
 /**
@@ -62,7 +62,7 @@ public class CSMARTFactory
    */
   public CSMARTFactory() { }
   
-  public CSMARTFactory(LDMServesPlugIn ldm) {
+  public CSMARTFactory(LDMServesPlugin ldm) {
     // attach our CSMART domain factories to the root factory
     RootFactory rf = ldm.getFactory();
     rf.addAssetFactory(
@@ -70,7 +70,7 @@ public class CSMARTFactory
     rf.addPropertyGroupFactory(
         new org.cougaar.tools.csmart.runtime.ldm.asset.PropertyGroupFactory());
 
-    ClusterServesPlugIn cspi = (ClusterServesPlugIn)ldm;
+    ClusterServesPlugin cspi = (ClusterServesPlugin)ldm;
     selfClusterId = cspi.getClusterIdentifier();
     myUIDServer = ((ClusterContext)ldm).getUIDServer();
 
@@ -101,7 +101,7 @@ public class CSMARTFactory
    * factory.
    * <p>
    * Note that this counter is not rollback-aware, and therefore
-   * <code>PlugIn</code>s should not examine it!
+   * <code>Plugin</code>s should not examine it!
    */
   public long getNumberOfEvents() {
     return nEvents;
@@ -120,7 +120,7 @@ public class CSMARTFactory
   }
 
   /**
-   * Creates a new <code>DeadlineTimerEvent</code> used by a PlugIn to
+   * Creates a new <code>DeadlineTimerEvent</code> used by a Plugin to
    * inform itself that a deadline has excceeded.
    * <br>
    *

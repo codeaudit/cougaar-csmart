@@ -135,12 +135,12 @@ import org.cougaar.tools.scalability.performance.jni.CpuClock;
  * PrototypeRegistryService, NodeMetricsService, MessageStatsService, and
  * MessageWatcherService. Default is to use only the MessageStatsService<br>
  * <br>
- * @see CSMARTPlugIn
+ * @see CSMARTPlugin
  * @see MetricsConstants
  * @see MetricsInitializerPlugin
  */
 public class MetricsPlugin 
-  extends CSMARTPlugIn
+  extends CSMARTPlugin
   implements MetricsConstants
 {
   public static final String RESULTS_FILENAME_SUFFIX = "_results.txt";
@@ -482,9 +482,9 @@ public class MetricsPlugin
         finishStatistics();
       } else if (verb.equals(Verb_Ready)) {
 	// No need to do anything more. By simply responding to these,
-	// the initializer PlugIn knows the agent is ready
+	// the initializer Plugin knows the agent is ready
 	// so to keep the current functionality, where
-	// the LDMPlugIn is the one who signals when the Agent
+	// the LDMPlugin is the one who signals when the Agent
 	// is ready, comment out the following line
 	//continue;
       }

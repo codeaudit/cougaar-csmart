@@ -39,11 +39,11 @@ import org.cougaar.tools.csmart.runtime.ldm.asset.SimpleInventoryPG;
 import org.cougaar.tools.csmart.Constants;
 
 /**  
- * The ExecutorPlugIn intercepts allocations to local assets, and asks
+ * The ExecutorPlugin intercepts allocations to local assets, and asks
  * the asset to satisfy the request given in the allocation.  The Asset returns
- * false if it could not satisfy the request, and the PlugIn generates a failure
+ * false if it could not satisfy the request, and the Plugin generates a failure
  * response, visible immediately.  Otherwise, it returns the time
- * when the response has completed, some time in the future.  The PlugIn will generate
+ * when the response has completed, some time in the future.  The Plugin will generate
  * a successful allocation result visible at that future time.  <br>Any incoming
  * request that arrives after the first request (including those arriving in the
  * same execute cycle, but later in the Subscription list) will "see" a lower
@@ -53,11 +53,11 @@ import org.cougaar.tools.csmart.Constants;
  * The returned response will have Aspect values for END_TIME.<br>
  * @see org.cougaar.tools.csmart.runtime.ldm.asset.ThermalResourceModelBG
  * @see SimpleInventoryPG
- * @see CSMARTPlugIn
+ * @see CSMARTPlugin
  */
-public class ExecutorPlugIn
-  extends CSMARTPlugIn {
-  // NOTE: This PlugIn is immune to infrastructure hooks currently!
+public class ExecutorPlugin
+  extends CSMARTPlugin {
+  // NOTE: This Plugin is immune to infrastructure hooks currently!
   
   /**
    * Subscription to Allocations.
@@ -111,13 +111,13 @@ public class ExecutorPlugIn
       // This call will immediately decrement the available 
       // resources in the asset.  The returned time is the time 
       // when the request will have been fully satisfied - some
-      // time in the future.  Therefore, if this PlugIn were to 
+      // time in the future.  Therefore, if this Plugin were to 
       // make an additional request at the same time, that 
       // second request would come in _after_ the first, event 
       // though they both happen simultaneously in some sense.
       // And due to chaos, the returned time on the second request 
       // could be earlier than that on the first request.
-      // Note that this makes the PlugIn somewhat non-deterministic
+      // Note that this makes the Plugin somewhat non-deterministic
 
       // Also note the semantics of this call: the Request is 
       // immediate, but the response is delayed.  Therefore, an 
@@ -207,4 +207,4 @@ public class ExecutorPlugIn
 
   } // end of execute()
 
-} // end of ExecutorPlugIn
+} // end of ExecutorPlugin

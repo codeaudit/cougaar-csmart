@@ -26,7 +26,7 @@
 	being saved. In fact, the property values sent to new levels was
 	always from the agentCount array. Majorly broken.
 
-	* ScalabilityXPlugIn.java (Repository): 
+	* ScalabilityXPlugin.java (Repository): 
 	Use new addInvisibleProperty methods for parameters. This are all
 	created and manipulated by the agent component and should not be
 	otherwise invisible.

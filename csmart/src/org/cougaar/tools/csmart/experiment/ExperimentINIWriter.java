@@ -364,7 +364,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.println("uic = \"" + ac.getName() + "\"");
       writer.println("cloned = false");
       writer.println();
-      writer.println("[ PlugIns ]");
+      writer.println("[ Plugins ]");
       // loop over the children - but what if one is not a PLUGIN?
       // This does no type checking, and writes out all the children here
 //       if(log.isDebugEnabled()) {

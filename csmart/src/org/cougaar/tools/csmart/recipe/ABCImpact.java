@@ -50,7 +50,7 @@ import org.cougaar.tools.csmart.society.AgentComponent;
  * be able to modify the Node.ini files as necessary.
  * 
  * @see org.cougaar.tools.csmart.runtime.ldm.event.RealWorldEvent
- * @see org.cougaar.tools.csmart.runtime.plugin.ScriptedEventPlugIn
+ * @see org.cougaar.tools.csmart.runtime.plugin.ScriptedEventPlugin
  */
 public class ABCImpact 
   extends RecipeBase
@@ -376,7 +376,7 @@ public class ABCImpact
     return data;
   }
 
-  private ComponentData getImpactPlugIn(ComponentData data) {
+  private ComponentData getImpactPlugin(ComponentData data) {
     ComponentData gcdata = new GenericComponentData();
     
     gcdata.setType(ComponentData.PLUGIN);
@@ -412,7 +412,7 @@ public class ABCImpact
 	   !child.getName().equals(transducerAgent.getFullName().toString())) {
 
 	  // Add ImpactPlugin to the Agent.
-	  child.addChildDefaultLoc(getImpactPlugIn(child));
+	  child.addChildDefaultLoc(getImpactPlugin(child));
 	}
       } else {
 	// Process it's children.
@@ -443,9 +443,9 @@ public class ABCImpact
     private boolean generator = false;
 
     private String agentClass_name = "org.cougaar.core.agent.ClusterImpl";
-    private String planServer_name = "org.cougaar.lib.planserver.PlanServerPlugIn";
-    private String scriptedEvent_name = "org.cougaar.tools.csmart.runtime.plugin.ScriptedEventPlugIn";
-    private String transducer_name = "org.cougaar.tools.csmart.runtime.plugin.TransducerPlugIn";
+    private String planServer_name = "org.cougaar.lib.planserver.PlanServerPlugin";
+    private String scriptedEvent_name = "org.cougaar.tools.csmart.runtime.plugin.ScriptedEventPlugin";
+    private String transducer_name = "org.cougaar.tools.csmart.runtime.plugin.TransducerPlugin";
 
     public ImpactAgentComponent() {
       this("ImpactAgent", false);

@@ -25,7 +25,7 @@ import java.util.*;
 
 import org.cougaar.core.domain.Domain;
 import org.cougaar.core.domain.Factory;
-import org.cougaar.core.domain.LDMServesPlugIn;
+import org.cougaar.core.domain.LDMServesPlugin;
 import org.cougaar.core.blackboard.LogPlan;
 import org.cougaar.core.blackboard.BlackboardServesLogicProvider;
 import org.cougaar.core.blackboard.LogPlanServesLogicProvider;
@@ -51,7 +51,7 @@ public class CSMARTDomain implements Domain {
    * Create the CSMARTFactory for creating Events and things
    * @return the CSMARTFactory instance
    **/
-  public Factory getFactory(LDMServesPlugIn ldm) {
+  public Factory getFactory(LDMServesPlugin ldm) {
     return new CSMARTFactory(ldm);
   }
 

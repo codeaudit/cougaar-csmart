@@ -38,7 +38,7 @@ import java.util.Comparator;
 
 import org.cougaar.core.blackboard.IncrementalSubscription;
 import org.cougaar.core.plugin.Annotation;
-import org.cougaar.core.plugin.util.PlugInHelper;
+import org.cougaar.core.plugin.util.PluginHelper;
 
 import org.cougaar.planning.ldm.asset.Asset;
 import org.cougaar.planning.ldm.asset.Entity;
@@ -63,10 +63,10 @@ import org.cougaar.tools.csmart.runtime.ldm.asset.RolesPG;
 
 
 /**
- * The <code>AllocatorPlugIn</code> models an Ultra*Log "Allocator" PlugIn.
+ * The <code>AllocatorPlugin</code> models an Ultra*Log "Allocator" Plugin.
  * <p>
- * This PlugIn reads a file of Allocation rules, which is specified as 
- * the first argument to this PlugIn.  These rules associate
+ * This Plugin reads a file of Allocation rules, which is specified as 
+ * the first argument to this Plugin.  These rules associate
  * <code>Task</code> "getVerb()" with a List of Roles, which are
  * matched to Assets (CSMART LocalAsset and Organizations) that have those
  * roles (<code>RolesPG</code>).  The configuration file also can contain
@@ -98,11 +98,11 @@ import org.cougaar.tools.csmart.runtime.ldm.asset.RolesPG;
  * this allocator either 1) successfully allocates, or, 2) fails due
  * to deadlines or no more applicable rules.
  *
- * @see CSMARTPlugIn
+ * @see CSMARTPlugin
  * @see Allocation
  */
-public class AllocatorPlugIn
-    extends CSMARTPlugIn {
+public class AllocatorPlugin
+    extends CSMARTPlugin {
 
   // constant "default" values
   private static final float DEFAULT_SUCCESS_BORDER = 0.5f;
@@ -129,7 +129,7 @@ public class AllocatorPlugIn
   private float successBorder = DEFAULT_SUCCESS_BORDER;
 
   /**
-   * time for this PlugIn to publish a TaskResponse.
+   * time for this Plugin to publish a TaskResponse.
    * my DeadlineExceeded will be for Task's deadline less this
    * to ensure this allocator has time to give the customer an answer.
    */
@@ -143,16 +143,16 @@ public class AllocatorPlugIn
   private boolean useSimpleDeadline = DEFAULT_USE_SIMPLE_DEADLINE;
 
   /**
-   * Time for this PlugIn to publish an Allocation.
+   * Time for this Plugin to publish an Allocation.
    */
   private long allocPubDelay = DEFAULT_ALLOC_PUB_DELAY;
 
   /**
    * The following long section of numbers are used in helping to
    * calculate what the deadline should be on Allocations
-   * that this PlugIn publishes.
+   * that this Plugin publishes.
    *
-   * There are 2 models that this PlugIn can use.  In the Simple Model,
+   * There are 2 models that this Plugin can use.  In the Simple Model,
    * the deadline is reduced only to account for delays in sending answers
    * around, and no attempt is made to accomodate trying multiple
    * allocations.  In the richer model,  The deadline on
@@ -265,7 +265,7 @@ public class AllocatorPlugIn
    * Predicate for our allocations.
    * <p>
    * This could be done by using the "taskP", but for simplicity
-   * we'll check for allocations that this PlugIn
+   * we'll check for allocations that this Plugin
    * generated (i.e. a matching SubscriptionClientName).
    */
   private final UnaryPredicate createAllocationP() {
@@ -275,7 +275,7 @@ public class AllocatorPlugIn
         if (o instanceof Allocation) {
 	  Annotation annot = ((Allocation)o).getAnnotation();
 	  if (annot instanceof MyAnnot) {
-	    String piID = ((MyAnnot)annot).getPlugInID();
+	    String piID = ((MyAnnot)annot).getPluginID();
 	    return (piID == selfPiId);
 	  }
         }
@@ -305,7 +305,7 @@ public class AllocatorPlugIn
   }
 
   /**
-   * My "pretty identifier", which is based upon the PlugIn's 
+   * My "pretty identifier", which is based upon the Plugin's 
    * UID.
    * <p>
    * This is simply ("Allocator ("+getUID())+")") and will prefix
@@ -351,7 +351,7 @@ public class AllocatorPlugIn
 
   /**
    * Parse our rules from the given file, and create our subscriptions.<br>
-   * This PlugIn subscribes to:
+   * This Plugin subscribes to:
    * Asset Creations - to get the possible Assets to allocate to
    * Tasks - to get the Tasks that need to be allocated
    * Allocations - to get AllocationResults that indicate how
@@ -375,14 +375,14 @@ public class AllocatorPlugIn
     }
 
     //
-    // subscribe to the creation of LocalAssets we allocate to.  A PlugIn
+    // subscribe to the creation of LocalAssets we allocate to.  A Plugin
     //   creates the assets, so we must wait one execution cycle to
     //   see any Assets.
     //
     localAssetSub = (IncrementalSubscription)subscribe(localAssetP);
 
     //
-    // subscribe to the creation of org Assets we allocate to.  A PlugIn
+    // subscribe to the creation of org Assets we allocate to.  A Plugin
     //   creates the assets, then sends them via tasks, so they come later
     // and may dribble in
     //
@@ -419,7 +419,7 @@ public class AllocatorPlugIn
    * the initial "template" rule table, plus set the "Delay" and
    * other configuration variables.
    * <p>
-   * The config file name is the single parameter this PlugIn expects.
+   * The config file name is the single parameter this Plugin expects.
    * Then that file is a Comma-Separated-Value file of the following
    * BNF format: 
    * <pre>
@@ -469,7 +469,7 @@ public class AllocatorPlugIn
     if (nparams == 0) {
       // no file specified
       throw new RuntimeException(
-          "Expecting at least one filename as a PlugIn parameter");
+          "Expecting at least one filename as a Plugin parameter");
     }
 
     // initialize the TemplateRule List
@@ -844,7 +844,7 @@ public class AllocatorPlugIn
 	}
 
 	// What about using changeReports? Only works if Executor fixed
-//  	if (! PlugInHelper.checkChangeReports(allocationSub.getChangeReports(alloc), PlanElement.ReportedResultChangeReport.class)) {
+//  	if (! PluginHelper.checkChangeReports(allocationSub.getChangeReports(alloc), PlanElement.ReportedResultChangeReport.class)) {
 //  	  // This Allocation did not change due to a ReportedResult change
 //  	  if (log.isInfoEnabled()) {
 //  	    log.info("execute: " + this + " allocationSub fired but this alloc did not have the ReportedResult change according to the change reports, skipping: " + alloc);
@@ -1020,7 +1020,7 @@ public class AllocatorPlugIn
       // Then we're done. Report the result up the chain.
 
       // This copies the Reported result into the Estimated slot.
-      if (PlugInHelper.updatePlanElement(allocI)) {
+      if (PluginHelper.updatePlanElement(allocI)) {
 
 	// Mark this Allocation as having been handled, such that
 	// I dont try to re-handle it later.
@@ -1028,11 +1028,11 @@ public class AllocatorPlugIn
 	setAllocRuleIndex(allocI, (-1 * (getAllocRuleIndex(allocI) + 100)));
       
 	// Advertise the change
-	// Note that this PlugIn will see this change unless it is careful
+	// Note that this Plugin will see this change unless it is careful
 	// Also, we really out to use the new mechanism for delaying
 	// making the change
 	// The trick being that within that UnaryPredicate, we really want
-	// to use the PlugInHelper again, and only then do the 
+	// to use the PluginHelper again, and only then do the 
 	// setAllocRuleIndex and log.
 	// FIXME!!!
 	publishChangeAfter(allocI, taskRespPubDelay);
@@ -1659,7 +1659,7 @@ public class AllocatorPlugIn
       theLDMF.createAllocation(task.getPlan(), task, 
 		     expandedRules[matchingRuleIndex].getAsset(), estAR, Role.ASSIGNED);
     
-    // Annotate this allocation with myPlugInID and the rule index
+    // Annotate this allocation with myPluginID and the rule index
     alloc.setAnnotation(new MyAnnot(super.toString(), matchingRuleIndex));
 
     // FIXME!!! At some point, must set the taskDeadlineTime here!
@@ -1963,7 +1963,7 @@ public class AllocatorPlugIn
 
   /**
    * Simple implementation of Annotation to hold a String
-   * for use to hold this PlugInID on Allocations
+   * for use to hold this PluginID on Allocations
    * and an int to hold the RuleIndex
    *
    * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
@@ -1984,7 +1984,7 @@ public class AllocatorPlugIn
       this.index = index;
     }
 
-    public String getPlugInID() {
+    public String getPluginID() {
       return annot;
     }
 
@@ -2124,6 +2124,6 @@ public class AllocatorPlugIn
     }
   } // end of ComparableRolesWrapper class
 
-} // End of AllocatorPlugIn
+} // End of AllocatorPlugin
 
 //    For now, no new Task specific Deadlines on Allocation/Task.  Later Allocator must do an Expansion with one child Task with the different deadline, later maybe keep old failed tasks as a way to track state

@@ -27,7 +27,7 @@ import org.cougaar.tools.csmart.core.cdata.ComponentData;
 
 import java.io.Serializable;
 
-public class ABCPlugIn
+public class ABCPlugin
   extends ConfigurableComponent
   implements Serializable
 {
@@ -36,12 +36,12 @@ public class ABCPlugIn
   private String pluginClass;
 
   /**
-   * Creates a new <code>ABCPlugIn</code> instance.
+   * Creates a new <code>ABCPlugin</code> instance.
    *
    * @param name Name of the Plugin Component
    * @param pluginClass Name of the plugin class
    */
-  public ABCPlugIn(String name, String pluginClass) {
+  public ABCPlugin(String name, String pluginClass) {
     super(name);
     this.pluginClass = pluginClass;
   }
@@ -59,7 +59,7 @@ public class ABCPlugIn
    *
    * @return a <code>String</code> value
    */
-  public String getPlugInClassName() {
+  public String getPluginClassName() {
     return pluginClass;
   }
 
@@ -101,7 +101,7 @@ public class ABCPlugIn
   public String getConfigLine() {
     StringBuffer buf = new StringBuffer();
     buf.append("plugin = ");
-    buf.append(getPlugInClassName());
+    buf.append(getPluginClassName());
     if(nParameters != 0 ) {
       buf.append("(");
       for (int i = 0; i < nParameters; i++) {
@@ -123,7 +123,7 @@ public class ABCPlugIn
    * @return a <code>ComponentData</code> value
    */
   public ComponentData addComponentData(ComponentData data) {
-    data.setName(getPlugInClassName());
+    data.setName(getPluginClassName());
 
     for(int i=0; i < nParameters; i++) {
       data.addParameter(getProperty(PROP_PARAM + i).getValue());
