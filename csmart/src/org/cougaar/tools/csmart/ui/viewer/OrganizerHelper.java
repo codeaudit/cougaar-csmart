@@ -21,37 +21,39 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-import java.io.IOException;
+
+
 import java.io.File;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Constructor;
-import java.sql.SQLException;
 import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 import javax.swing.JFileChooser;
-
-import org.cougaar.util.log.Logger;
-
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
-import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
+import org.cougaar.tools.csmart.recipe.ComplexRecipeBase;
 import org.cougaar.tools.csmart.recipe.RecipeBase;
+import org.cougaar.tools.csmart.recipe.db.ComplexRecipeDbComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.db.SocietyDBComponent;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * Helper functions for manipulating objects in the Organizer
@@ -317,6 +319,7 @@ public class OrganizerHelper {
         if (mc == null) {
           mc = createRecipe(dbRecipe.name, dbRecipe.cls);
           setRecipeComponentProperties(dbRecipe, mc);
+          System.out.println("Calling save!");
           mc.saveToDatabase();
         }
         AgentComponent[] recagents = mc.getAgents(); 
@@ -780,6 +783,7 @@ public class OrganizerHelper {
     return recipes;
   }
 
+
   private void getRecipeProperties(DbRecipe dbRecipe, 
                                    Connection conn, 
                                    Map substitutions) throws SQLException
@@ -787,8 +791,16 @@ public class OrganizerHelper {
     Statement stmt = conn.createStatement();
     String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
     ResultSet rs = stmt.executeQuery(query);
+
     while(rs.next()) {
+    if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
+      System.out.println("We have a ComplexRecipe!");
+      // Query the Assembly Table for the correct data.
+      break;
+    } else {
+      System.out.println("We do not have a ComplexRecipe! (" + rs.getString(1) + ")");
       dbRecipe.props.put(rs.getString(1), rs.getString(2));
+    }
     }
     rs.close();
   }
@@ -808,10 +820,28 @@ public class OrganizerHelper {
         query = DBUtils.getQuery("queryRecipe", substitutions);
         ResultSet rs = stmt.executeQuery(query);
         if (rs.next()) {
-          try {
-            DbRecipe dbRecipe = 
-              new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
-            getRecipeProperties(dbRecipe, conn, substitutions);
+          if(isComplexRecipe(conn, substitutions)) {
+            if(log.isDebugEnabled()) {
+              log.debug("Creating Complex Recipe from Database");
+            }
+            String assemblyId = getRecipeAssembly(conn, substitutions);
+            if(assemblyId == null) {
+              if(log.isErrorEnabled()) {
+                log.error("Cannot locate proper assemblyId loading Recipe.  Load Failed");
+              }
+              return null;
+            }
+            rc = new ComplexRecipeDbComponent(rs.getString(2), getRecipeAssembly(conn, substitutions));
+            rc.initProperties();
+            return rc;
+          } else {
+            if(log.isDebugEnabled()) {
+              log.debug("Creating Simple Recipe from Database");
+            }
+            try {
+              DbRecipe dbRecipe = 
+                new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
+              getRecipeProperties(dbRecipe, conn, substitutions);
             dbRecipe.name = recipeName;
             rc = organizer.getRecipe(dbRecipe.name);
             if (rc == null) {
@@ -820,9 +850,10 @@ public class OrganizerHelper {
               rc.saveToDatabase();
             }
             return rc;
-          } catch (ClassNotFoundException cnfe) {
-            if(log.isErrorEnabled()) {
-              log.error("for recipe", cnfe);
+            } catch (ClassNotFoundException cnfe) {
+              if(log.isErrorEnabled()) {
+                log.error("for recipe", cnfe);
+              }
             }
           }
         }
@@ -840,6 +871,67 @@ public class OrganizerHelper {
       }
     }    
     return rc;
+  }
+
+  private boolean isComplexRecipe(Connection conn, Map substitutions) {
+    boolean retVal = false;
+    try {
+      Statement stmt = conn.createStatement();
+      try {
+        String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        
+        // Relys on the fact that a complex recipe will only have 1 parameter
+        // in the Recipe Args table.
+        if(rs.next()) {
+          if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
+            retVal = true;
+          }
+        }
+          rs.close();
+          stmt.close();
+      } catch(SQLException sqle) {
+        if(log.isErrorEnabled()) {
+          log.error("SQLException checking recipe type", sqle);
+        }
+      }
+    } catch (SQLException sqe) {
+      if(log.isErrorEnabled()) {
+        log.error("SQLException checking recipe type", sqe);
+      }
+    }
+    return retVal;
+  }
+
+
+  private String getRecipeAssembly(Connection conn, Map substitutions) {
+    String assemblyId = null;
+    try {
+      Statement stmt = conn.createStatement();
+      try {
+        String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        
+        // Relys on the fact that a complex recipe will only have 1 parameter
+        // in the Recipe Args table.
+        if(rs.next()) {
+      if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
+        assemblyId = rs.getString(2);
+      }
+        }
+        rs.close();
+      } catch(SQLException sqle) {
+        if(log.isErrorEnabled()) {
+          log.error("SQLException getting recipe Assembly Id", sqle);
+        }
+      }
+    } catch (SQLException sqe) {
+      if(log.isErrorEnabled()) {
+        log.error("SQLException getting recipe Assembly Id", sqe);
+      }
+    }
+    
+    return assemblyId;
   }
 
   private void setRecipeComponentProperties(DbRecipe dbRecipe, 
