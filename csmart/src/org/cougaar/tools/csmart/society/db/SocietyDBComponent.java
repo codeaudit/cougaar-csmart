@@ -50,7 +50,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  */
 public class SocietyDBComponent
   extends SocietyBase
-  implements PropertiesListener, Serializable, ModificationListener 
+          implements Serializable
 {
   protected static final String DESCRIPTION_RESOURCE_NAME = "/org/cougaar/tools/csmart/society/society-base-description.html";
   protected static final String BACKUP_DESCRIPTION =
@@ -68,9 +68,9 @@ public class SocietyDBComponent
     createLogger();
   }
 
-  public SocietyDBComponent(String name, String assemblyID) {
+  public SocietyDBComponent(String name, String assemblyId) {
     super(name);
-    super.setAssemblyId(assemblyID);
+    this.assemblyId = assemblyId;
     createLogger();
   }
 
@@ -115,9 +115,9 @@ public class SocietyDBComponent
     }    
   }
 
-  public void modified(ModificationEvent e) {
-    fireModification();
-  }
+//    public void modified(ModificationEvent e) {
+//      fireModification();
+//    }
 
   public void setName(String newName) {
     super.setName(newName);

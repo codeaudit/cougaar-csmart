@@ -33,13 +33,14 @@ import org.cougaar.tools.csmart.society.SocietyBase;
 public class SocietyCDataComponent extends SocietyBase {
   ComponentData cdata;
 
-  protected static final String DESCRIPTION_RESOURCE_NAME = "/org/cougaar/tools/csmart/society/society-base-description.html";
-  protected static final String BACKUP_DESCRIPTION =
-    "A Society: Agents, Binders, Plugins, etc.";
+  public SocietyCDataComponent(ComponentData cdata, String assemblyId) {
+    protected static final String DESCRIPTION_RESOURCE_NAME = "/org/cougaar/tools/csmart/society/society-base-description.html";
+    protected static final String BACKUP_DESCRIPTION =
+      "A Society: Agents, Binders, Plugins, etc.";
 
-  public SocietyCDataComponent(ComponentData cdata) {
     super(cdata.getName());
     this.cdata = cdata;
+    this.assemblyId = assemblyId;
   }
 
   public void initProperties() {

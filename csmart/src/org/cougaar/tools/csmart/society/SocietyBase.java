@@ -38,6 +38,11 @@ import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.core.property.ModificationEvent;
+import org.cougaar.tools.csmart.core.property.ModificationListener;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.society.cdata.SocietyCDataComponent;
@@ -69,6 +74,9 @@ public abstract class SocietyBase
   public String oldAssemblyId;
   public boolean modified = true;
 
+  // modification event
+  public static final int SOCIETY_SAVED = 2;
+
   /**
    * Constructs a <code>SocietyBase</code> object
    * with the given name.
@@ -77,6 +85,7 @@ public abstract class SocietyBase
   public SocietyBase(String name){
     super(name);
     createLogger();
+    installListeners();
   }
 
   private void createLogger() {
@@ -131,9 +140,9 @@ public abstract class SocietyBase
    * Set the assembly id for this Society.
    * @param assemblyId the assembly id for this Society
    */
-  public void setAssemblyId(String assemblyId) {
-    this.assemblyId = assemblyId;
-  }
+  //  public void setAssemblyId(String assemblyId) {
+//    this.assemblyId = assemblyId;
+  //  }
 
   /**
    * Get the assembly id for this Society.
@@ -234,22 +243,22 @@ public abstract class SocietyBase
    *
    * @param PropertyEvent Event for the new property
    */
-  public void propertyAdded(PropertyEvent e) {
-    Property addedProperty = e.getProperty();
-    Property myProperty = getProperty(addedProperty.getName().last().toString());
-    if (myProperty != null) {
-      setPropertyVisible(addedProperty, true);
-    }
-    fireModification();
-  }
+//    public void propertyAdded(PropertyEvent e) {
+//      Property addedProperty = e.getProperty();
+//      Property myProperty = getProperty(addedProperty.getName().last().toString());
+//      if (myProperty != null) {
+//        setPropertyVisible(addedProperty, true);
+//      }
+//      fireModification();
+//    }
 
   /**
    * Called when a property has been removed from the society
    * @param e The <code>PropertyEvent</code> describing the removed property.
    */
-  public void propertyRemoved(PropertyEvent e) {
-    fireModification();
-  }
+//    public void propertyRemoved(PropertyEvent e) {
+//      fireModification();
+//    }
 
   /**
    * Adds any relevent <code>ComponentData</code> for this component.
@@ -292,6 +301,7 @@ public abstract class SocietyBase
   {
     ois.defaultReadObject();
     createLogger();
+    modified = false;
   }
 
   /**
@@ -336,7 +346,8 @@ public abstract class SocietyBase
       PopulateDb pdb = new PopulateDb(oldCMTAsbid, name, currAssID, GUIUtils.createSaveToDbConflictHandler(null));
       pdb.populateCSA(SocietyComponentCreator.getComponentData(this));
       // Set the new CSA assembly ID on the society - get it from the PDB
-      setAssemblyId(pdb.getCMTAssemblyId());
+      //      setAssemblyId(pdb.getCMTAssemblyId());
+      assemblyId = pdb.getCMTAssemblyId();
       // What about fixAssemblies?
       // is it really populateCSA?
       pdb.close();
@@ -347,6 +358,8 @@ public abstract class SocietyBase
       return false;
     }
     modified = false;
+    // tell listeners society is now saved
+    fireModification(new ModificationEvent(this, SOCIETY_SAVED));
     return true;
   }
   
@@ -365,7 +378,7 @@ public abstract class SocietyBase
     //    ModifiableComponent component = super.copy(name);
     ComponentData cdata = SocietyComponentCreator.getComponentData(this);
     cdata.setName(name);
-    SocietyComponent component = new SocietyCDataComponent(cdata);
+    SocietyComponent component = new SocietyCDataComponent(cdata, null);
     component.initProperties();
 
     // Let the new society be marked as saved? That would force
@@ -415,5 +428,61 @@ public abstract class SocietyBase
   // Add my own properties listener?
   // Add my own modification listener & a separate type for
   // society_saved?
+
+  private void installListeners() {
+    //    addModificationListener(myModificationListener);
+    //    addPropertiesListener(myPropertiesListener);
+    addPropertiesListener(this);
+  }
+
+  ModificationListener myModificationListener = 
+    new ModificationListener() {
+        public void modified(ModificationEvent e) {
+          fireModification(); // tell my listeners that I was modified
+        }
+      };
+
+  //  PropertiesListener myPropertiesListener =
+  //    new PropertiesListener() {
+        public void propertyAdded(PropertyEvent e) {
+          Property addedProperty = e.getProperty();
+          Property myProperty = 
+            getProperty(addedProperty.getName().last().toString());
+          if (myProperty != null) {
+            setPropertyVisible(addedProperty, true);
+          }
+          addedProperty.addPropertyListener(myPropertyListener);
+          fireModification();
+        }
+
+        public void propertyRemoved(PropertyEvent e) {
+          e.getProperty().removePropertyListener(myPropertyListener);
+          fireModification();
+        }
+  //      };
+
+  PropertyListener myPropertyListener =
+    new PropertyListener() {
+        public void propertyValueChanged(PropertyEvent e) {
+          fireModification();
+        }
+
+        public void propertyOtherChanged(PropertyEvent e) {
+          fireModification();
+        }
+      };
+
+  /**
+   * Indicate that the society is up-to-date with respect to the database.
+   * Use with caution!  The only reason to reset this flag 
+   * is that when an society is created from the database, its components
+   * are built-up from the database information, and thus the society
+   * appears to be modified.
+   */
+  public void resetModified() {
+    modified = false;
+    // tell listeners society is now saved
+    fireModification(new ModificationEvent(this, SOCIETY_SAVED));
+  }
 
 }// SocietyBase

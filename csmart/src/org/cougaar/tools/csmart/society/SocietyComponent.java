@@ -114,11 +114,11 @@ public interface SocietyComponent extends ModifiableComponent {
    */
   ModifiableComponent copyAndSave(String name);
 
-  /**
-   * Set the assembly id for this Society.
-   * @param assemblyId the assembly id for this Society
-   */
-  void setAssemblyId(String assemblyId);
+//    /**
+//     * Set the assembly id for this Society.
+//     * @param assemblyId the assembly id for this Society
+//     */
+//    void setAssemblyId(String assemblyId);
 
   /**
    * Get the assembly id for this Society.
