@@ -127,6 +127,9 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   // if we modified a component not in the database,
   // save the component
   private void exit() {
+    configComponent.setEditable(true);
+    if (originalComponent != null)
+      originalComponent.setEditable(true);
     propertyEditor.stopEditing(); // accept any edit in progress
     propertyEditor.exit();
     // if component is modified, or was modified and was saved
