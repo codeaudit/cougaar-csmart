@@ -11,7 +11,7 @@ from
 ,   fdm_unit funit
 where
     org.uic like 'W%'
-and org.uic = funit.unit_identifier(+)
+and org.uic = funit.unit_identifier
 order by
     org.org_id
 ;
