@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -21,36 +21,47 @@
 
 package org.cougaar.tools.csmart.ui.monitor.metrics;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.table.*;
-
 import com.klg.jclass.chart.*;
 import com.klg.jclass.util.legend.JCLegend;
 import com.klg.jclass.chart.data.*;
 import com.klg.jclass.util.swing.JCExitFrame;
 
+import org.cougaar.util.log.Logger;
+
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.util.Sorting;
 
-import java.util.Vector;
+import java.io.File;
+import java.io.ObjectInputStream;
+import java.io.FileInputStream;
+import java.io.ObjectOutputStream;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
-import java.util.*;
-import java.io.*;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.util.Vector;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import javax.swing.JFileChooser;
+import javax.swing.JTable;
+import javax.swing.JPanel;
+import javax.swing.table.TableModel;
+import javax.swing.table.DefaultTableModel;
+
+/**
+ * Show a rough graph of Task completion
+ */
 public class CSMARTMetrics extends JPanel {
 
   String[] seriesLabels = {"Completed Tasks", "Unallocated", "Low Confidence Result"};
 
   private transient Logger log;
-
-  //  private static final String PSP_METRICS = "PSP_Metrics.PSP";
-  private static final String PSP_METRICS = "CSMART_MetricsServlet";
 
   Color seriesColors[] = {
     new Color(0x0a, 0x64, 0x0a), // Dark Green
@@ -222,17 +233,17 @@ public class CSMARTMetrics extends JPanel {
   }
 
   public void refresh() {
-    Collection objectsFromPSP = CSMARTUL.getObjectsFromServlet(PSP_METRICS);
-    if (objectsFromPSP == null)
+    Collection objectsFromServlet = CSMARTUL.getObjectsFromServlet(ClientServletUtil.METRICS_SERVLET);
+    if (objectsFromServlet == null)
       return;
       if(log.isDebugEnabled()) {
-        log.info("Received metrics: " + objectsFromPSP.size());
+        log.info("Received metrics: " + objectsFromServlet.size());
       }
 
     ArrayList names = new ArrayList();
     ArrayList data = new ArrayList();
 
-    Iterator iter = objectsFromPSP.iterator();
+    Iterator iter = objectsFromServlet.iterator();
     while(iter.hasNext()) {
       Object obj = iter.next();
       if(obj instanceof String) {
