@@ -186,18 +186,19 @@ public class AgentInsertionRecipe extends RecipeBase
   private void updateOrgParameters(String val) {
     boolean show = (val.equals(TRUE)) ? true : false;
 
+    if(!show && propRelations != null && propRelations.length > 0) {
+      for(int i=0; i < propRelations.length; i++) {
+        removeProperty(propRelations[i]);
+        removeProperty(propRoles[i]);        
+      }
+      propRelationCount.setValue(new Integer(0));
+    }
     setPropertyVisible(propRelationCount, show);
     setPropertyVisible(propAssetClass, show);
     setPropertyVisible(propNomenclature, show);
     setPropertyVisible(propType, show);
     setPropertyVisible(propAltTypeId, show);
 
-    if(!show && propRelations != null && propRelations.length > 0) {
-      for(int i=0; i < propRelations.length; i++) {
-        removeProperty(propRelations[i]);
-        removeProperty(propRoles[i]);
-      }
-    }
   }
 
   private void updateRelationCount(Integer newCount) {
