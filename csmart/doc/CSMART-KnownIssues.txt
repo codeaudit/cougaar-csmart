@@ -18,6 +18,9 @@ CSMART contains a few known issues:
   reproduce. If you see an error message mentioning a bug #, please
   report on Bugzilla what you saw.
 
+* We have seen occasional Swing exceptions while running an Experiment
+  in the console. See bug #1104.
+
 * Some Windows 2000 users corrupted data loading the CSMART
   database. This has not been reproduced.
 
