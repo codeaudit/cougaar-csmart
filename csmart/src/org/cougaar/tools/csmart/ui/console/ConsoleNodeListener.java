@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- *
+ * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- *
+ * 
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -46,97 +46,37 @@ import java.util.TimerTask;
  * This is object called from the AppServer.
  */
 public class ConsoleNodeListener implements OutputListener {
+  private CSMARTConsole console;
   public String nodeName;
   private String logFileName;
   private Writer logFile;
   private SimpleAttributeSet[] atts;
   public NodeStatusButton statusButton;
   private long firsttime = 0l;
+  private boolean haveError = false;
   private ConsoleStyledDocument doc;
   private ConsoleNodeOutputFilter filter = null;
   private Object logFileLock = new Object();
   private int nLogEvents = 0;
   private TimerTask logFlushTask;
   private transient Logger log;
-  private NodeModel nodeModel;
-
-  private boolean haveError = false;
-  private CSMARTConsole console;
-
-  /**
-   *
-    * @param console
-   * @param nodeName
-   * @param logFileName
-   * @param statusButton
-   * @param doc
-   * @throws IOException
-   * @deprecated
-   */
 
   public ConsoleNodeListener(CSMARTConsole console,
-                              String nodeName,
-            String logFileName,
-            NodeStatusButton statusButton,
-                              ConsoleStyledDocument doc) throws IOException {
-
-
-     createLogger();
-     this.console = console;
-     this.nodeName = nodeName;
-
-     // status button for node on console display
-     this.statusButton = statusButton;
-
-     // wrap and capture to a log
-     this.logFileName = logFileName;
-     // Create new log file, always appending to the end - so a Node restart
-     // can write to the end of the file, not losing data
-     this.logFile = new BufferedWriter(new FileWriter(logFileName, true));
-
-     // FIXME (problem Mark Barger saw once) test to make sure logFile will be writable
-
-     // save the document that contains node output
-     this.doc = doc;
-
-     // create our attributes
-     // stdout	0,0,0 (black)
-     // stderr	192,64,64 (dark red)
-     // Node created, Node destroyed, Agent Added	64,64,192 (dark blue)
-     atts = new SimpleAttributeSet[3];
-     atts[0] = new SimpleAttributeSet();
-     StyleConstants.setForeground(atts[0], Color.black);
-     atts[1] = new SimpleAttributeSet();
-     StyleConstants.setForeground(atts[1], new Color(192, 64, 64));
-     atts[2] = new SimpleAttributeSet();
-     StyleConstants.setForeground(atts[2], new Color(64, 64, 192));
-     // write the log file every 5 seconds
-     logFlushTask = new TimerTask() {
-         public void run() {
-           synchronized (logFileLock) {
-             try {
-               logFile.flush();
-             } catch (Exception e) {
-             }
-           }
-         }
-       };
-     new Timer().schedule(logFlushTask, new Date(), 5000);
-   }
-
-
-  public ConsoleNodeListener(NodeModel nodeModel) throws IOException {
+                             String nodeName,
+			     String logFileName, 
+			     NodeStatusButton statusButton,
+                             ConsoleStyledDocument doc) throws IOException {
 
 
     createLogger();
-    this.nodeModel = nodeModel;
-    this.nodeName = nodeModel.getNodeName();
+    this.console = console;
+    this.nodeName = nodeName;
 
     // status button for node on console display
-    this.statusButton = nodeModel.getStatusButton();
-
+    this.statusButton = statusButton;
+			       
     // wrap and capture to a log
-    this.logFileName = nodeModel.getLogFileName();
+    this.logFileName = logFileName;
     // Create new log file, always appending to the end - so a Node restart
     // can write to the end of the file, not losing data
     this.logFile = new BufferedWriter(new FileWriter(logFileName, true));
@@ -144,7 +84,7 @@ public class ConsoleNodeListener implements OutputListener {
     // FIXME (problem Mark Barger saw once) test to make sure logFile will be writable
 
     // save the document that contains node output
-    this.doc = nodeModel.getDoc();
+    this.doc = doc;
 
     // create our attributes
     // stdout	0,0,0 (black)
@@ -159,15 +99,15 @@ public class ConsoleNodeListener implements OutputListener {
     StyleConstants.setForeground(atts[2], new Color(64, 64, 192));
     // write the log file every 5 seconds
     logFlushTask = new TimerTask() {
-      public void run() {
-        synchronized (logFileLock) {
-          try {
-            logFile.flush();
-          } catch (Exception e) {
+        public void run() {
+          synchronized (logFileLock) {
+            try {
+              logFile.flush();
+            } catch (Exception e) {
+            }
           }
         }
-      }
-    };
+      };
     new Timer().schedule(logFlushTask, new Date(), 5000);
   }
 
@@ -196,7 +136,7 @@ public class ConsoleNodeListener implements OutputListener {
     try {
       ret = Double.parseDouble(idle);
     } catch (NumberFormatException e) {
-      if (log.isErrorEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Couldn't parse that idle string", e);
       }
     }
@@ -222,13 +162,13 @@ public class ConsoleNodeListener implements OutputListener {
     try {
       ret = Long.parseLong(time);
     } catch (NumberFormatException e) {
-      if (log.isErrorEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Couldn't parse that time string", e);
       }
     }
     return ret;
   }
-
+  
   /**
    * Called by appserver to stream standard output and standard err
    * to this listener.
@@ -237,8 +177,8 @@ public class ConsoleNodeListener implements OutputListener {
   public void handleOutputBundle(OutputBundle outputBundle) {
     // fix to use the new app-server APIs
     // see the app-server example "GuiConsole"
-    java.util.List l =
-        org.cougaar.tools.server.NodeEventTranslator.toNodeEvents(outputBundle);
+    java.util.List l = 
+      org.cougaar.tools.server.NodeEventTranslator.toNodeEvents(outputBundle); 
     handleAll(l);
   }
 
@@ -258,22 +198,22 @@ public class ConsoleNodeListener implements OutputListener {
       try {
         int i = 0;
         do {
-          NodeEvent nodeEvent = (NodeEvent) nodeEvents.get(i);
-          if (logFile != null)
-            logFile.write(getNodeEventDescription(nodeEvent));
+          NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
+	  if (logFile != null)
+	    logFile.write(getNodeEventDescription(nodeEvent));
           nLogEvents++;
           if (nLogEvents > 100) {
-            if (logFile != null)
-              logFile.flush();
+	    if (logFile != null)
+	      logFile.flush();
             nLogEvents = 0;
           }
         } while (++i < n);
       } catch (Exception e) {
-        if (log.isErrorEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Exception writing to Node log file " + logFileName + ": ", e);
         }
-        // FIXME: Is there any way to recover? Perhaps flush the log file,
-        // and then re-open it?
+	// FIXME: Is there any way to recover? Perhaps flush the log file,
+	// and then re-open it?
       }
     }
 
@@ -293,7 +233,7 @@ public class ConsoleNodeListener implements OutputListener {
   class NodeEventHandler implements Runnable {
     java.util.List nodeEvents = null;
     int n = 0;
-
+      
     public NodeEventHandler(java.util.List nodeEvents) {
       // nodeEvents
       this.nodeEvents = nodeEvents;
@@ -306,49 +246,49 @@ public class ConsoleNodeListener implements OutputListener {
       int nextEventIndex = -1;
       // get the first description which is not an idle update
       for (int i = 0; i < n; i++) {
-        NodeEvent nodeEvent = (NodeEvent) nodeEvents.get(i);
-        int nodeEventType = nodeEvent.getType();
-        if (nodeEventType == NodeEvent.IDLE_UPDATE) {
-          String s = nodeEvent.getMessage();
-          handleIdleUpdate(getIdleness(s), getTimestamp(s));
-        } else {
-          updateStatus(nodeEvent);
-          if (filter != null && !filter.includeEventInDisplay(nodeEvent))
-            continue; // don't append events user isn't interested in
-          prevType = nodeEventType;
-          prevDescription = getNodeEventDescription(nodeEvent);
-          nextEventIndex = i + 1;
-          break;
-        }
+	NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
+	int nodeEventType = nodeEvent.getType();
+	if (nodeEventType == NodeEvent.IDLE_UPDATE) {
+	  String s = nodeEvent.getMessage();
+	  handleIdleUpdate(getIdleness(s), getTimestamp(s));
+	} else {
+	  updateStatus(nodeEvent);
+	  if (filter != null && !filter.includeEventInDisplay(nodeEvent))
+	    continue; // don't append events user isn't interested in
+	  prevType = nodeEventType;
+	  prevDescription = getNodeEventDescription(nodeEvent);
+	  nextEventIndex = i+1;
+	  break;
+	}
       }
 
       if (nextEventIndex == -1)
-        return; // all the events were idle updates or ignored
+	return; // all the events were idle updates or ignored
       // start batching descriptions
       for (int j = nextEventIndex; j < n; j++) {
-        NodeEvent nodeEvent = (NodeEvent) nodeEvents.get(j);
-        int nodeEventType = nodeEvent.getType();
-        String description = getNodeEventDescription(nodeEvent);
-        updateStatus(nodeEvent);
-        if (nodeEventType == NodeEvent.IDLE_UPDATE) {
-          String s = nodeEvent.getMessage();
-          handleIdleUpdate(getIdleness(s), getTimestamp(s));
-        } else if (nodeEventType == prevType) {
-          prevDescription += description;
-        } else {
-          if (filter == null || filter.includeEventTypeInDisplay(prevType)) {
-            if (doc != null)
-              doc.appendString(prevDescription,
-                               getNodeEventStyle(prevType));
-          }
-          prevDescription = description;
-          prevType = nodeEventType;
-        }
+	NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(j);
+	int nodeEventType = nodeEvent.getType();
+	String description = getNodeEventDescription(nodeEvent);
+	updateStatus(nodeEvent);
+	if (nodeEventType == NodeEvent.IDLE_UPDATE) {
+	  String s = nodeEvent.getMessage();
+	  handleIdleUpdate(getIdleness(s), getTimestamp(s));
+	} else if (nodeEventType == prevType) {
+	  prevDescription += description;
+	} else {
+	  if (filter == null || filter.includeEventTypeInDisplay(prevType)) {
+	    if (doc != null)
+	      doc.appendString(prevDescription, 
+			     getNodeEventStyle(prevType));
+	  }
+	  prevDescription = description;
+	  prevType = nodeEventType;
+	}
       }
       if (filter == null || filter.includeEventTypeInDisplay(prevType)) {
-        if (doc != null)
-          doc.appendString(prevDescription,
-                           getNodeEventStyle(prevType));
+	if (doc != null)
+	  doc.appendString(prevDescription,
+			 getNodeEventStyle(prevType));
       }
     }
   }
@@ -358,45 +298,45 @@ public class ConsoleNodeListener implements OutputListener {
    */
   private final String getNodeEventDescription(final NodeEvent nodeEvent) {
     switch (nodeEvent.getType()) {
-      case NodeEvent.STANDARD_OUT:
-      case NodeEvent.STANDARD_ERR:
-        return nodeEvent.getMessage();
-      default:
-        return nodeEvent.toString();
+    case NodeEvent.STANDARD_OUT:
+    case NodeEvent.STANDARD_ERR:
+      return nodeEvent.getMessage();
+    default:
+      return nodeEvent.toString();
     }
   }
 
   /**
-   * Returns attribute set for a style of output:
+   * Returns attribute set for a style of output: 
    * stdout, stderr, heartbeat, or default.
    */
   private final SimpleAttributeSet getNodeEventStyle(final int type) {
     switch (type) {
-      case NodeEvent.STANDARD_OUT:
-        return atts[0];
-      case NodeEvent.STANDARD_ERR:
-        return atts[1];
-      default:
-        return atts[2];
+    case NodeEvent.STANDARD_OUT:
+      return atts[0];
+    case NodeEvent.STANDARD_ERR:
+      return atts[1];
+    default:
+      return atts[2];
     }
   }
 
   private void handleIdleUpdate(double idleTime, long timestamp) {
-    double result = 1 / Math.log(idleTime);
-    result = (result + 1) * 50; // in range 0 to 100
+    double result = 1/Math.log(idleTime);
+    result = (result + 1)*50; // in range 0 to 100
     if (statusButton != null) {
       if (result <= 16)
-        statusButton.getMyModel().setStatus(NodeStatusButton.STATUS_LOW_BUSY);
+	statusButton.setStatus(NodeStatusButton.STATUS_LOW_BUSY);
       else if (result > 16 && result <= 33)
-        statusButton.getMyModel().setStatus(NodeStatusButton.STATUS_MEDIUM_LOW_BUSY);
+	statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_LOW_BUSY);
       else if (result > 33 && result <= 50)
-        statusButton.getMyModel().setStatus(NodeStatusButton.STATUS_MEDIUM_BUSY);
+	statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_BUSY);
       else if (result > 50 && result <= 67)
-        statusButton.getMyModel().setStatus(NodeStatusButton.STATUS_MEDIUM_HIGH_BUSY);
+	statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_HIGH_BUSY);
       else if (result > 67 && result <= 83)
-        statusButton.getMyModel().setStatus(NodeStatusButton.STATUS_HIGH_BUSY);
+	statusButton.setStatus(NodeStatusButton.STATUS_HIGH_BUSY);
       else if (result > 83)
-        statusButton.getMyModel().setStatus(NodeStatusButton.STATUS_BUSY);
+	statusButton.setStatus(NodeStatusButton.STATUS_BUSY);
     }
 
     // reset times to 0. Maybe this looks better?
@@ -404,23 +344,24 @@ public class ConsoleNodeListener implements OutputListener {
       firsttime = timestamp;
       timestamp = 0l;
     }
-
+    
   }
 
   private void updateStatus(NodeEvent nodeEvent) {
     int nodeEventType = nodeEvent.getType();
     if (nodeEventType == NodeEvent.PROCESS_CREATED) {
       if (statusButton != null)
-        statusButton.getMyModel().setStatus(NodeStatusButton.STATUS_NODE_CREATED);
+	statusButton.setStatus(NodeStatusButton.STATUS_NODE_CREATED);
     } else if (nodeEventType == NodeEvent.PROCESS_DESTROYED) {
 //       if (log.isDebugEnabled())
 // 	log.debug("updateStatus with event type PROC_DESTROYED. statButton null? " + (statusButton == null) + ", console null? " + (console == null));
       if (statusButton != null)
-        statusButton.getMyModel().setStatus(NodeStatusButton.STATUS_NODE_DESTROYED);
-        nodeModel.setRunning(false);
+	statusButton.setStatus(NodeStatusButton.STATUS_NODE_DESTROYED);
+      if (console != null)
+	console.nodeStopped(nodeName);
     } else if (nodeEventType == NodeEvent.STANDARD_ERR) {
       if (statusButton != null)
-        statusButton.getMyModel().setStatus(NodeStatusButton.STATUS_STD_ERROR);
+	statusButton.setStatus(NodeStatusButton.STATUS_STD_ERROR);
     }
   }
 
@@ -439,13 +380,13 @@ public class ConsoleNodeListener implements OutputListener {
   public void closeLogFile() {
     synchronized (logFileLock) {
       try {
-        if (logFile != null) {
-          logFile.close();
-          logFile = null;
-        }
+	if (logFile != null) {
+	  logFile.close();
+	  logFile = null;
+	}
         logFlushTask.cancel();
       } catch (Exception e) {
-        if (log.isErrorEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Exception closing log file: ", e);
         }
       }
@@ -456,7 +397,6 @@ public class ConsoleNodeListener implements OutputListener {
    * Close the log file, fill the display with the contents of the log file,
    * and re-open the log file for appending.
    * TODO: update the log file timer task as well
-   * This is never called because of underlying Swing errors.
    */
   public void fillFromLogFile() {
     synchronized (logFileLock) {
@@ -465,7 +405,7 @@ public class ConsoleNodeListener implements OutputListener {
         doc.fillFromLogFile(logFileName);
         logFile = new BufferedWriter(new FileWriter(logFileName, true));
       } catch (Exception e) {
-        if (log.isErrorEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Excetpion", e);
         }
       }
@@ -505,14 +445,16 @@ public class ConsoleNodeListener implements OutputListener {
     // when the Node has stopped
     doc = null;
     filter = null;
-    synchronized (logFileLock) {
+    synchronized(logFileLock) {
       logFile = null;
     }
+    console = null;
     statusButton = null;
   }
 
   private void readObject(ObjectInputStream ois)
-      throws IOException, ClassNotFoundException {
+    throws IOException, ClassNotFoundException
+  {
     ois.defaultReadObject();
     createLogger();
   }

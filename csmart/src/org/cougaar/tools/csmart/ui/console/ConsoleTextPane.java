@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- *
+ * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- *
+ * 
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -56,14 +56,17 @@ public class ConsoleTextPane extends JTextPane {
 
   private transient Logger log;
 
-  public ConsoleTextPane(ConsoleStyledDocument doc, NodeStatusButton statusButton) {
+  public ConsoleTextPane(ConsoleStyledDocument doc, 
+                         NodeStatusButton statusButton) {
     super(doc);
     createLogger();
     this.doc = doc;
     this.statusButton = statusButton;
     highlighter = getHighlighter();
-    searchHighlight = new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
-    notifyHighlight = new DefaultHighlighter.DefaultHighlightPainter(Color.magenta);
+    searchHighlight = 
+      new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
+    notifyHighlight =
+      new DefaultHighlighter.DefaultHighlightPainter(Color.magenta);
   }
 
   private void createLogger() {
@@ -74,7 +77,8 @@ public class ConsoleTextPane extends JTextPane {
     if (searchHighlightReference != null)
       highlighter.removeHighlight(searchHighlightReference);
     try {
-      searchHighlightReference = highlighter.addHighlight(startOffset, endOffset, searchHighlight);
+      searchHighlightReference =
+        highlighter.addHighlight(startOffset, endOffset, searchHighlight);
     } catch (BadLocationException ble) {
       if(log.isErrorEnabled()) {
         log.error("Bad location exception: " + ble.offsetRequested(), ble);
@@ -86,7 +90,8 @@ public class ConsoleTextPane extends JTextPane {
     if (notifyHighlightReference != null)
       highlighter.removeHighlight(notifyHighlightReference);
     try {
-      notifyHighlightReference = highlighter.addHighlight(startOffset, endOffset, notifyHighlight);
+      notifyHighlightReference =
+        highlighter.addHighlight(startOffset, endOffset, notifyHighlight);
     } catch (BadLocationException ble) {
       if(log.isErrorEnabled()) {
       log.error("Bad location exception: " + ble.offsetRequested(), ble);
@@ -123,7 +128,7 @@ public class ConsoleTextPane extends JTextPane {
     s = s.toLowerCase();
     int startOffset = startPosition.getOffset();
     try {
-      String content = getText(startOffset,
+      String content = getText(startOffset, 
                                doc.getEndPosition().getOffset() - startOffset);
       content = content.toLowerCase();
       int index = content.indexOf(s);
@@ -202,7 +207,7 @@ public class ConsoleTextPane extends JTextPane {
   /**
    * Search for and highlight the next instance of the notify string,
    * starting at the end of the last notify string found (or at the
-   * beginning of the screen buffer, if the previous notify string
+   * beginning of the screen buffer, if the previous notify string 
    * was removed from the buffer).
    * Search is case insensitive.
    * @return true if notify string is found and false otherwise
@@ -212,11 +217,11 @@ public class ConsoleTextPane extends JTextPane {
       return worker(notifyCondition, notifyPosition, false);
     return false;
   }
-
+        
   /**
    * Search for the string starting at the current search position or
    * at the beginning of the document, and
-   * highlight it if found.
+   * highlight it if found. 
    * Search is case insensitive.
    * @param s string to search for
    * @return true if string found and false otherwise
@@ -235,14 +240,14 @@ public class ConsoleTextPane extends JTextPane {
 
   /**
    * Search for the "current" string (i.e. the last string specified in
-   * a call to the search method) starting at the end of the last
-   * search string found (or at the beginning of the screen buffer,
-   * if the previous search string was removed from the buffer).
+   * a call to the search method) starting at the end of the last 
+   * search string found (or at the beginning of the screen buffer, 
+   * if the previous search string was removed from the buffer). 
    * Search is case insensitive.
    * @return true if string found and false otherwise
    */
   public boolean searchNext() {
-    if (searchString != null)
+    if (searchString != null) 
       return worker(searchString, searchPosition, true);
     return false;
   }
@@ -269,10 +274,10 @@ public class ConsoleTextPane extends JTextPane {
 
   public static void main(String[] args) {
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
-    javax.swing.text.AttributeSet a =
+    javax.swing.text.AttributeSet a = 
       new javax.swing.text.SimpleAttributeSet();
-    ConsoleTextPane pane =
-      new ConsoleTextPane(doc, new NodeStatusButton(null));
+    ConsoleTextPane pane = 
+      new ConsoleTextPane(doc, new NodeStatusButton((javax.swing.Icon)null));
     doc.setBufferSize(20);
     doc.appendString("abcdefghijklmnopqrstuvw", a);
     // for debugging, print the keymap for this text component
@@ -281,7 +286,7 @@ public class ConsoleTextPane extends JTextPane {
     doc.appendString("now is the time for all good men", a);
     JScrollPane scrollPane = new JScrollPane(pane);
     javax.swing.JDesktopPane desktop = new javax.swing.JDesktopPane();
-    javax.swing.JInternalFrame internalFrame =
+    javax.swing.JInternalFrame internalFrame = 
       new javax.swing.JInternalFrame("", true, false, true, true);
     internalFrame.getContentPane().add(scrollPane);
     internalFrame.setSize(100, 100);
@@ -310,7 +315,7 @@ public class ConsoleTextPane extends JTextPane {
         int index = newContent.indexOf(notifyCondition);
         if (index != -1) {
           notifyCount++;
-          // if there's already a highlighted notify condition,
+          // if there's already a highlighted notify condition, 
           // then don't highlight a new one
           if (notifyPosition != null)
             return;
@@ -319,7 +324,7 @@ public class ConsoleTextPane extends JTextPane {
           int endOffset = startOffset + notifyCondition.length();
           highlightNotifyString(startOffset, endOffset);
           notifyPosition = doc.createPosition(endOffset);
-          statusButton.getMyModel().setStatus(NodeStatusButton.STATUS_NOTIFY);
+          statusButton.setStatus(NodeStatusButton.STATUS_NOTIFY);
         }
       } catch (BadLocationException ble) {
         if(log.isErrorEnabled()) {

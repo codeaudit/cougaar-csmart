@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- *
+ * 
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- *
+ * 
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -111,8 +111,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
    * and information about the node (if node component is non-null).
    * @param nodeName the name of the node
    * @param hostName the name of the host on which the node is running
-   * @param properties arguments specified with "-D"
-   * @param args command line arguments
+   * @param minusDArgs arguments specified with "-D"
+   * @param commandArguments command line arguments
    * @param listener listener for getting standard out/err from AppServer
    * @param pane the pane in which to display standard out/err
    * @param statusButton the status button for this node in the console
@@ -231,7 +231,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                              Event.CTRL_MASK));
     // view menu
     JMenu viewMenu = new JMenu(VIEW_MENU);
-    // TODO: Remove this, it's not supported cause of underlying Swing errors
     Action displayLogAction = new AbstractAction(DISPLAY_LOG_ACTION) {
       public void actionPerformed(ActionEvent e) {
         displayLog_actionPerformed();
@@ -362,13 +361,13 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private void initKeyMap(ConsoleTextPane pane) {
     InputMap im = pane.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
     ActionMap am = pane.getActionMap();
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK),
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Event.CTRL_MASK), 
            FIND_ACTION);
     am.put(FIND_ACTION, findAction);
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_G, Event.CTRL_MASK),
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_G, Event.CTRL_MASK), 
            FIND_NEXT_ACTION);
     am.put(FIND_NEXT_ACTION, findNextAction);
-    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK),
+    im.put(KeyStroke.getKeyStroke(KeyEvent.VK_N, Event.CTRL_MASK), 
            NOTIFY_NEXT_ACTION);
     am.put(NOTIFY_NEXT_ACTION, notifyNextAction);
   }
@@ -378,17 +377,17 @@ public class ConsoleInternalFrame extends JInternalFrame {
   }
 
   /**
-   * Display information about node in pop-up dialog.
+   * Display information about node in pop-up dialog. 
    * Colloquially the "Node Info" window.
    */
   public void displayAbout() {
 
-    ArrayList agentNames =
+    ArrayList agentNames = 
       (ArrayList)console.getNodePropertyValue(nodeName, "AgentNames");
 
     // If got no Agent Names, that probably means
     // we have no configuration info for the Node,
-    // so we won't display that portion of
+    // so we won't display that portion of 
     // the info window
     if (agentNames != null) {
       // clone the agent names so we don't modify them when we add the NodeAgent
@@ -407,7 +406,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(10, 0, 5, 5),
                                           0, 0));
-    String status = ((NodeStatusButton)statusButton).getMyModel().getStatusDescription();
+    String status = ((NodeStatusButton)statusButton).getStatusDescription();
     aboutPanel.add(new JLabel(status),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
@@ -480,7 +479,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel((String)console.getHostPropertyValue(hostName,
+    aboutPanel.add(new JLabel((String)console.getHostPropertyValue(hostName, 
                                                            "MachineType")),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
@@ -494,7 +493,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel((String)console.getHostPropertyValue(hostName,
+    aboutPanel.add(new JLabel((String)console.getHostPropertyValue(hostName, 
                                                            "Location")),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
@@ -508,7 +507,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel((String)console.getHostPropertyValue(hostName,
+    aboutPanel.add(new JLabel((String)console.getHostPropertyValue(hostName, 
                                                            "Description")),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
@@ -522,7 +521,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    aboutPanel.add(new JLabel((String)console.getNodePropertyValue(nodeName,
+    aboutPanel.add(new JLabel((String)console.getNodePropertyValue(nodeName, 
                                              "Description")),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
@@ -602,7 +601,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 					    GridBagConstraints.NONE,
 					    new Insets(0, 0, 5, 5),
 					    0, 0));
-
+      
       // Put together the list of Agents in the Node
       JList agentsList = null;
       if (agentNames == null)
@@ -610,7 +609,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
       else
 	agentsList = new JList(agentNames.toArray());
       agentsList.setBackground(aboutPanel.getBackground());
-
+      
       // Allow user to select an Agent in the list and get the detailed
       // contents of that Agent in a pop-up window
       agentsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -624,7 +623,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 	      displayPlugins(agentName);
 	  }
 	});
-
+      
       JScrollPane jspAgents = new JScrollPane(agentsList);
       jspAgents.setMinimumSize(new Dimension(50, 50));
       aboutPanel.add(jspAgents,
@@ -634,8 +633,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
 					    new Insets(0, 0, 5, 0),
 					    0, 0));
     } // end of block to show configuration info
-
-    JOptionPane.showMessageDialog(this, aboutPanel,
+    
+    JOptionPane.showMessageDialog(this, aboutPanel, 
                                   "Information: " + nodeName +
                                   " (" + hostName + ")",
                                   JOptionPane.PLAIN_MESSAGE);
@@ -647,8 +646,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
     try {
       displayProcessInfo(remoteNode.listProcesses(true));
     } catch (Exception e) {
-      JOptionPane.showConfirmDialog(this,
-                         "This information is not available for this node.",
+      JOptionPane.showConfirmDialog(this, 
+                         "This information is not available for this node.", 
                                     "Information Not Available",
                                     JOptionPane.PLAIN_MESSAGE);
     }
@@ -658,8 +657,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
     try {
       displayProcessInfo(remoteNode.listProcesses(false));
     } catch (Exception e) {
-      JOptionPane.showConfirmDialog(this,
-                         "This information is not available for this node.",
+      JOptionPane.showConfirmDialog(this, 
+                         "This information is not available for this node.", 
                                     "Information Not Available",
                                     JOptionPane.PLAIN_MESSAGE);
     }
@@ -681,7 +680,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     JTable table = new JTable(psInfo, columnNames);
     JScrollPane jsp = new JScrollPane(table);
     table.setPreferredScrollableViewportSize(new Dimension(400, 100));
-    JOptionPane.showConfirmDialog(this, jsp, "Process Status",
+    JOptionPane.showConfirmDialog(this, jsp, "Process Status", 
                                   JOptionPane.PLAIN_MESSAGE);
   }
 
@@ -747,7 +746,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
   }
 
   private void setViewSize_actionPerformed() {
-    ConsoleStyledDocument doc =
+    ConsoleStyledDocument doc = 
       (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
     int viewSize = CSMARTConsole.displayViewSizeDialog(doc.getBufferSize());
     if (viewSize != -2)
@@ -782,7 +781,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   private void restart_actionPerformed() {
     startAction.setEnabled(false);
-    // TODO: restart node using the AppServer in the node's NodeInfo object
     RemoteProcess newRemoteNode = console.restartNode(nodeName);
     if (newRemoteNode != null) {
       remoteNode = newRemoteNode;
@@ -799,8 +797,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
     try {
       remoteNode.dumpThreads();
     } catch (Exception e) {
-      JOptionPane.showConfirmDialog(this,
-                         "This operation is not available for this node.",
+      JOptionPane.showConfirmDialog(this, 
+                         "This operation is not available for this node.", 
                                     "Operation Not Available",
                                     JOptionPane.PLAIN_MESSAGE);
 
@@ -822,7 +820,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                            GridBagConstraints.NONE,
                                            new Insets(10, 0, 5, 5),
                                            0, 0));
-    JTextField notifyField =
+    JTextField notifyField = 
       new JTextField(20);
     notifyField.setText(consoleTextPane.getNotifyCondition());
     notifyPanel.add(notifyField,
@@ -832,22 +830,22 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                            new Insets(10, 0, 5, 0),
                                            0, 0));
     x = 0;
-    JCheckBox stdErrorCB =
-      new JCheckBox("Notify on Standard Error",
-             ((NodeStatusButton)statusButton).getMyModel().getNotifyOnStandardError());
+    JCheckBox stdErrorCB = 
+      new JCheckBox("Notify on Standard Error", 
+             ((NodeStatusButton)statusButton).getNotifyOnStandardError());
     notifyPanel.add(stdErrorCB,
                     new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                            GridBagConstraints.WEST,
                                            GridBagConstraints.NONE,
                                            new Insets(10, 0, 5, 5),
                                            0, 0));
-    int result = JOptionPane.showConfirmDialog(this, notifyPanel,
+    int result = JOptionPane.showConfirmDialog(this, notifyPanel, 
                                                "Notification",
                                                JOptionPane.OK_CANCEL_OPTION);
     if (result != JOptionPane.OK_OPTION)
       return;
     setNotification(notifyField.getText());
-    ((NodeStatusButton)statusButton).getMyModel().setNotifyOnStandardError(stdErrorCB.isSelected());
+    ((NodeStatusButton)statusButton).setNotifyOnStandardError(stdErrorCB.isSelected());
   }
 
   private void setNotification(String s) {
@@ -855,13 +853,13 @@ public class ConsoleInternalFrame extends JInternalFrame {
     if (s != null && s.length() != 0)
       notifyCondition = s;
     consoleTextPane.setNotifyCondition(notifyCondition);
-    ((NodeStatusButton)statusButton).getMyModel().clearError();
+    ((NodeStatusButton)statusButton).clearError();
   }
 
   private void removeNotify_actionPerformed() {
     setNotification(null);
-    ((NodeStatusButton)statusButton).getMyModel().setNotifyOnStandardError(false);
-    ((NodeStatusButton)statusButton).getMyModel().clearError();
+    ((NodeStatusButton)statusButton).setNotifyOnStandardError(false);
+    ((NodeStatusButton)statusButton).clearError();
   }
 
   private void notifyNext_actionPerformed() {
@@ -873,19 +871,19 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   private void resetNotifyAction_actionPerformed() {
     consoleTextPane.clearNotify();
-    ((NodeStatusButton)statusButton).getMyModel().clearError();
+    ((NodeStatusButton)statusButton).clearError();
   }
 
   // Display pop-up with the INI style contents of an Agent listed
   // invoked from window displayed by displayAbout method
   private void displayPlugins(String agentName) {
-    ArrayList entries =
+    ArrayList entries = 
       console.getAgentComponentDescriptions(nodeName, agentName);
     if (entries == null)
       return;
     JList plugInsList = new JList(entries.toArray());
-    JScrollPane jsp =
-      new JScrollPane(plugInsList,
+    JScrollPane jsp = 
+      new JScrollPane(plugInsList, 
                       ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                       ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
     jsp.setPreferredSize(new Dimension(550, 200));
@@ -906,14 +904,14 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
-    JOptionPane.showMessageDialog(this, agentInfoPanel,
+    JOptionPane.showMessageDialog(this, agentInfoPanel, 
                                   "Information: " + agentName,
                                   JOptionPane.PLAIN_MESSAGE);
 
   }
 
   /**
-   * Over-ride standard dispose to ensure everything cleaned up.
+   * Over-ride standard dispose to ensure everything cleaned up. 
    * In particular, clean up the ConsoleNodeListener,
    * and recurse to the TextPane and from there to the document
    **/
@@ -930,7 +928,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
       listener = null;
     }
     if (consoleTextPane != null) {
-//       if (log.isDebugEnabled())
+//       if (log.isDebugEnabled()) 
 // 	log.debug("CInternal had non-null pane to dispose");
       // recurse to the text pane
       // this also recurses to the document
