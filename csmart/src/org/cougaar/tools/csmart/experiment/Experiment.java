@@ -1044,10 +1044,19 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     for (int i = 0; i < nnodes.length; i++) {
       if (! nNodesCopied.contains(nnodes[i])) {
 	// We may need to copy the old node-agent mapping onto this new node
-	if (log.isDebugEnabled()) {
+	AgentComponent[] oagents = nodes[i].getAgents();
+	if (log.isDebugEnabled() && oagents.length > 0) {
 	  log.debug("copy: Found node whose Agent mapping may not have been copied: " + nnodes[i]);
 	}
-	// FIXME!!!
+	for (int j = 0; j < oagents.length; j++)
+	  for (int k = 0; k < nagents.length; k++)
+	    if (nagents[k].getShortName().equals(oagents[j].getShortName())) {
+	      if (log.isDebugEnabled()) {
+		log.debug("copy: Putting ne Agent " + nagents[k].getShortName() + " on new Node " + nnodes[i].getShortName());
+	      }
+	      nnodes[i].addAgent(nagents[k]);
+	    }
+
       }
     }
     // copy the results directory; results from the copied experiment
