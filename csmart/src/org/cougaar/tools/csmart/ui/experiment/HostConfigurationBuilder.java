@@ -34,10 +34,9 @@ import javax.swing.event.*;
 
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.name.SimpleName;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.ExperimentNode;
 import org.cougaar.tools.csmart.experiment.HostComponent;
@@ -601,7 +600,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Add unassigned nodes from experiment to unassigned nodes tree.
    */
   private void addUnassignedNodesFromExperiment() {
-    Set unassignedNodes = new TreeSet(configurableComponentComparator);
+    Set unassignedNodes = new TreeSet(baseComponentComparator);
     HostComponent[] hosts = experiment.getHosts();
     NodeComponent[] nodes = experiment.getNodes();
     unassignedNodes.addAll(Arrays.asList(nodes));
@@ -629,10 +628,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
   }
 
-  private static Comparator configurableComponentComparator = new Comparator() {
+  private static Comparator baseComponentComparator = new Comparator() {
     public int compare(Object o1, Object o2) {
-      ConfigurableComponent c1 = (ConfigurableComponent) o1;
-      ConfigurableComponent c2 = (ConfigurableComponent) o2;
+      BaseComponent c1 = (BaseComponent) o1;
+      BaseComponent c2 = (BaseComponent) o2;
 
       // In general, agent names from built in societies are complex
       // and those from the db are short - they just start with "Combo"
@@ -654,7 +653,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Add unassigned agents to unassigned agents tree.
    */
   private void addUnassignedAgentsFromExperiment() {
-    Set unassignedAgents = new TreeSet(configurableComponentComparator);
+    Set unassignedAgents = new TreeSet(baseComponentComparator);
     AgentComponent[] agents = experiment.getAgents();
     NodeComponent[] nodes = experiment.getNodes();
     unassignedAgents.addAll(Arrays.asList(agents));
@@ -1253,8 +1252,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     DefaultMutableTreeNode selectedNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
-    ConfigurableComponent component = 
-      (ConfigurableComponent)cto.getComponent();
+    BaseComponent component = cto.getComponent();
     Property prop = component.getProperty(new ComponentName(component, name));
     if (prop == null)
       return null;
@@ -1272,8 +1270,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       DefaultMutableTreeNode selectedNode =
         (DefaultMutableTreeNode)selectedPaths[i].getLastPathComponent();
       ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
-      ConfigurableComponent component = 
-        (ConfigurableComponent)cto.getComponent();
+      BaseComponent component = cto.getComponent();
       component.addProperty(name, value);
     }
   }
@@ -1480,7 +1477,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * @param label to use in dialog boxes (i.e. Host, Node, Agent)
    */
 
-  private void findWorker(JTree[] trees, ComponentProperties[] components,
+  private void findWorker(JTree[] trees, BaseComponent[] components,
                           String label) {
     if (components.length == 0) {
       JOptionPane.showMessageDialog(this, "No " + label + "s.");

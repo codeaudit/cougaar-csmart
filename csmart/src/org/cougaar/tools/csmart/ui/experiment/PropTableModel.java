@@ -25,7 +25,7 @@ import javax.swing.table.*;
 import java.util.*;
 import java.lang.reflect.Array;
 
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyHelper;
 import org.cougaar.tools.csmart.core.property.InvalidPropertyValueException;
@@ -34,7 +34,7 @@ import org.cougaar.tools.csmart.core.property.name.CompositeName;
 public class PropTableModel extends PropTableModelBase {
     private Map bindings = new HashMap();
 
-    public void setComponentProperties(ComponentProperties cp) {
+    public void setComponentProperties(BaseComponent cp) {
         for (Iterator i = cp.getPropertyNames(); i.hasNext(); ) {
             Property prop = (Property) cp.getProperty((CompositeName) i.next());
             if (!prop.isValueSet()) {

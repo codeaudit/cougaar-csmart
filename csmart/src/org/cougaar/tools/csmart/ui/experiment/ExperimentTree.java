@@ -28,7 +28,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.dnd.*;
 import java.awt.datatransfer.*;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.ui.console.*;
@@ -51,7 +51,7 @@ public class ExperimentTree extends DNDTree {
                              ExperimentTree.class,
                              "Recipe");
     public static final CSMARTDataFlavor componentFlavor =
-        new CSMARTDataFlavor(ModifiableConfigurableComponent.class,
+        new CSMARTDataFlavor(ModifiableComponent.class,
                              null,
                              ExperimentTree.class,
                              "Modifiable Component");
@@ -66,7 +66,7 @@ public class ExperimentTree extends DNDTree {
             if (theData instanceof RecipeComponent)
 	      //else if (theData instanceof Recipe)
                 flavors = new DataFlavor[] {recipeFlavor};
-            else if (theData instanceof ModifiableConfigurableComponent)
+            else if (theData instanceof ModifiableComponent)
                 flavors = new DataFlavor[] {componentFlavor};
             else
                 throw new IllegalArgumentException("Unknown node");
@@ -187,9 +187,9 @@ public class ExperimentTree extends DNDTree {
                     }
                 }
                 Object userData = t.getTransferData(flavor);
-                if (userData instanceof ModifiableConfigurableComponent) {
-                    ModifiableConfigurableComponent mcc =
-                        (ModifiableConfigurableComponent) userData;
+                if (userData instanceof ModifiableComponent) {
+                    ModifiableComponent mcc =
+                        (ModifiableComponent) userData;
                     if (!mcc.isEditable() && mcc.hasUnboundProperties())
                         return DnDConstants.ACTION_NONE;
                 }

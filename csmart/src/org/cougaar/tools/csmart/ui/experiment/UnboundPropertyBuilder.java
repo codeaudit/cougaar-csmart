@@ -29,9 +29,9 @@ import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
@@ -287,9 +287,9 @@ public class UnboundPropertyBuilder extends JPanel {
   private void displayEditorForNode(DefaultMutableTreeNode node) {
     if (node == null) return;
     Object o = (node.getUserObject());
-    if (o instanceof ModifiableConfigurableComponent) {
+    if (o instanceof BaseComponent) {
       propModel.clear(); // clear out any previous table entries
-      propModel.setComponentProperties((ModifiableConfigurableComponent) o);
+      propModel.setComponentProperties((BaseComponent) o);
       rightPanel.add(propScrollPane, BorderLayout.CENTER);
     }
   }
@@ -354,8 +354,8 @@ public class UnboundPropertyBuilder extends JPanel {
       // make removed society component editable again
       Object userObject = node.getUserObject();
       if (userObject != null &&
-	  userObject instanceof ModifiableConfigurableComponent)
-	((ModifiableConfigurableComponent)userObject).setEditable(true);
+	  userObject instanceof ModifiableComponent)
+	((ModifiableComponent)userObject).setEditable(true);
     }
     parent.removeAllChildren();
     model.nodeStructureChanged(parent);
@@ -379,8 +379,8 @@ public class UnboundPropertyBuilder extends JPanel {
       // make removed society component editable again
       Object userObject = nodes[i].getUserObject();
       if (userObject != null &&
-	  userObject instanceof ModifiableConfigurableComponent)
-	((ModifiableConfigurableComponent)userObject).setEditable(true);
+	  userObject instanceof ModifiableComponent)
+	((ModifiableComponent)userObject).setEditable(true);
     }
     propModel.clear(); // selected items were removed, so clear prop table
   }
