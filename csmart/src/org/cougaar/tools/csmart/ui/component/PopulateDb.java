@@ -630,7 +630,10 @@ public class PopulateDb extends PDbBase {
         if (componentType.equals(ComponentData.PLUGIN)) {
             return sqlQuote(data.getType() + "|" + data.getClassName());
         }
-        if (componentType.equals(ComponentData.BINDER)) {
+        if (componentType.equals(ComponentData.NODEBINDER)) {
+            return sqlQuote(data.getType() + "|" + data.getClassName());
+        }
+        if (componentType.equals(ComponentData.AGENTBINDER)) {
             return sqlQuote(data.getType() + "|" + data.getClassName());
         }
         if (componentType.equals(ComponentData.AGENT)) {
@@ -660,7 +663,10 @@ public class PopulateDb extends PDbBase {
         if (componentType.equals(ComponentData.PLUGIN)) {
             return sqlQuote("Node.AgentManager.Agent.PluginManager.Plugin");
         }
-        if (componentType.equals(ComponentData.BINDER)) {
+        if (componentType.equals(ComponentData.NODEBINDER)) {
+            return sqlQuote("Node.Agent.Binder");
+        }
+        if (componentType.equals(ComponentData.AGENTBINDER)) {
             return sqlQuote("Node.AgentManager.Agent.PluginManager.Binder");
         }
         if (componentType.equals(ComponentData.AGENT)) {
@@ -688,7 +694,9 @@ public class PopulateDb extends PDbBase {
             if (componentType.equals(ComponentData.PLUGIN)) {
                 String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
                 result = agentName + "|" + data.getClassName();
-            } else if (componentType.equals(ComponentData.BINDER)) {
+            } else if (componentType.equals(ComponentData.NODEBINDER)) {
+              result = data.getType() + "|" + data.getClassName();
+            } else if (componentType.equals(ComponentData.AGENTBINDER)) {
                 String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
                 result = agentName + "|" + data.getClassName();
             } else {
