@@ -490,13 +490,13 @@ public class ABCCommunity
    */
   public void generateIniFiles(File configDir) {
 
-    for(int i=0; i < getChildCount(); i++) {
-      ABCAgent aa = (ABCAgent) getChild(i);
-      try {
-	aa.writeIniFile(configDir);
-      } catch(IOException e) {
-	// Need to do something with exceptions here.
-      }
-    }
+//     for(int i=0; i < getChildCount(); i++) {
+//       ABCAgent aa = (ABCAgent) getChild(i);
+//       try {
+// 	//aa.writeIniFile(configDir);
+//       } catch(IOException e) {
+// 	// Need to do something with exceptions here.
+//       }
+//     }
   }
 }

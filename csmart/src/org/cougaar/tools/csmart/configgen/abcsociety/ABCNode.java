@@ -77,29 +77,29 @@ public class ABCNode
   }
 
   public void writeConfigFiles(File configDir) {
-    File nodeFile = new File(configDir, getShortName() + ".ini");
-    PrintWriter writer = null;
-    try {
-      writer = new PrintWriter(new FileWriter(nodeFile));
-      writer.println("[ Clusters ]");
-      for (Iterator ci = agents.iterator(); ci.hasNext(); ) {
-        ABCAgent agent = (ABCAgent) ci.next();
-	agent.writeIniFile(configDir);
-	//	agent.writePrototypeIniFile(configDir);
-        writer.println(agent.getConfigLine());
-      }
-      writer.println();
-      writer.println("[ AlpProcess ]");
-      writer.println();
-      writer.println("[ Policies ]");
-      writer.println();
-      writer.println("[ Permission ]");
-      writer.println();
-      writer.println("[ AuthorizedOperation ]");
-    }
-    catch(IOException e) {}
-    finally {
-      writer.close();
-    }
+//     File nodeFile = new File(configDir, getShortName() + ".ini");
+//     PrintWriter writer = null;
+//     try {
+//       writer = new PrintWriter(new FileWriter(nodeFile));
+//       writer.println("[ Clusters ]");
+//       for (Iterator ci = agents.iterator(); ci.hasNext(); ) {
+//         ABCAgent agent = (ABCAgent) ci.next();
+// 	agent.writeIniFile(configDir);
+// 	//	agent.writePrototypeIniFile(configDir);
+//         writer.println(agent.getConfigLine());
+//       }
+//       writer.println();
+//       writer.println("[ AlpProcess ]");
+//       writer.println();
+//       writer.println("[ Policies ]");
+//       writer.println();
+//       writer.println("[ Permission ]");
+//       writer.println();
+//       writer.println("[ AuthorizedOperation ]");
+//     }
+//     catch(IOException e) {}
+//     finally {
+//       writer.close();
+//     }
   }
 }
