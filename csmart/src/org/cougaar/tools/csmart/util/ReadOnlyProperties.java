@@ -69,6 +69,8 @@ public class ReadOnlyProperties extends Properties implements Serializable {
   }
 
     public void setReadOnlyProperty(String key, String newValue) {
+      Object o = get(key);
+      if (o != null && o.equals(newValue)) return; // no change
         super.put(key, newValue);
         //        System.out.println("Setting read only property: " + key);
         fireChange();
@@ -76,7 +78,7 @@ public class ReadOnlyProperties extends Properties implements Serializable {
 
     public Object setProperty(String key, String newValue) {
       //        System.out.println("Setting property: " + key);
-        fireChange();
+      //        fireChange(); // change is fired in put if necessary
         return super.setProperty(key, newValue);
     }
 
@@ -93,21 +95,27 @@ public class ReadOnlyProperties extends Properties implements Serializable {
 
     public Object put(Object key, Object val) {
         if (isReadOnly(key)) return null;
-        if (val.equals(super.get(key))) return val; // no change
+        Object o = get(key);
+        if (o != null && o.equals(val)) return val; // no change
         //        System.out.println("Putting property: " + key);
         fireChange();
         return super.put(key, val);
     }
 
     public void putAll(Map map) {
+        boolean changeHappened = false;
         for (Iterator entries = map.entrySet().iterator(); entries.hasNext(); ) {
             Map.Entry entry = (Map.Entry) entries.next();
             Object key = entry.getKey();
             if (isReadOnly(key)) continue;
+            Object o = get(key);
+            if (o != null && o.equals(entry.getValue())) continue;
             super.put(key, entry.getValue());
+            changeHappened = true;
         }
         //        System.out.println("Put all");
-        fireChange();
+        if (changeHappened)
+          fireChange();
     }
 
     public Object remove(Object key) {

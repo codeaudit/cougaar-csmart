@@ -178,9 +178,26 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     log = CSMART.createLogger(this.getClass().getName());
   }
 
+  // add an observer to my arguments
+  // if these arguments are modified, then
+  // notify listeners on the experiment that it's modified
+  private transient Observer myObserver = null;
+
+  private void createObserver() {
+    if (myObserver == null) {
+      myObserver = new Observer() {
+        public void update(Observable o, Object arg) {
+          Experiment.this.fireModification();
+        }
+      };
+      defaultNodeArguments.addObserver(myObserver);
+    }
+  }
+
   private void setDefaultNodeArguments() {
     defaultNodeArguments = 
       new ReadOnlyProperties(Collections.singleton(EXPERIMENT_ID));
+    createObserver();
     defaultNodeArguments.put(PERSISTENCE_ENABLE, PERSISTENCE_DFLT);
     defaultNodeArguments.put(TIMEZONE, TIMEZONE_DFLT);
     defaultNodeArguments.put(AGENT_STARTTIME, AGENT_STARTTIME_DFLT);
@@ -568,8 +585,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       return;
     this.trialID = trialID;
     defaultNodeArguments.setReadOnlyProperty(EXPERIMENT_ID, trialID);
-    modified = true;
-    // FIXME: Should this be a fireModification?
+    fireModification();
   }
 
   public String getTrialID() {
@@ -842,8 +858,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     if (this.expID == expID)
       return;
     this.expID = expID;
-    modified = true;
-    // FIXME: Should this be a fireModification()?
+    fireModification();
   }
 
   public String getExperimentID() {
@@ -859,15 +874,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
   public void setResultDirectory(File resultDirectory) {
-    // Dont say it was modified if it wasnt
-    if (this.resultDirectory == null && resultDirectory == null)
-      return;
-    if (this.resultDirectory != null && this.resultDirectory.equals(resultDirectory))
-      return;
     this.resultDirectory = resultDirectory;
-
-    // FIXME: Is this really worth a modification?
-    fireModification();
   }
 
   /**
@@ -1087,7 +1094,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   {
     ois.defaultReadObject();
     createLogger();
-    modified = false;
+    createObserver();
     // reinstall listeners
     if (societyComponent != null)
       installListeners((ModifiableConfigurableComponent)societyComponent);
@@ -1100,6 +1107,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     NodeComponent[] nodeComponents = getNodeComponents();
     for (int i = 0; i < nodeComponents.length; i++)
       installListeners((ModifiableConfigurableComponent)nodeComponents[i]);
+    modified = false;
   }
 
   // Put a bunch of Prop$ as parameters to the given component.
@@ -1519,6 +1527,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @see org.cougaar.tools.csmart.core.db.PopulateDb
    */
   public void saveToDb(DBConflictHandler ch) {
+    System.out.println("Experiment: SAVING TO DATABASE");
     try {
       updateNameServerHostName(); // Be sure this is up-to-date
       List components = getComponents();
@@ -1752,7 +1761,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
   private boolean allowModifyCData() {
     // then give everyone a chance to modify what they've collectively produced
-    boolean modified = false;
+    boolean componentModified = false;
     List components = getComponents();
     try {
       PopulateDb pdb = new PopulateDb(getExperimentID(), trialID);
@@ -1765,7 +1774,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	// in order to do these insertions correctly,
 	// so need the version of modify that takes a pdb called.
 	soc.modifyComponentData(completeSociety, pdb);
-	modified |= soc.componentWasRemoved();
+	componentModified |= soc.componentWasRemoved();
       }
       
       pdb.close();
@@ -1774,7 +1783,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	log.error("dumpINIFiles error with pdb", e);
       }
     }
-    return modified;
+    return componentModified;
   }
 
   ////////////////////////////////////////////
