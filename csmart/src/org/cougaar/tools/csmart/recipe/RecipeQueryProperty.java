@@ -21,26 +21,29 @@
 package org.cougaar.tools.csmart.recipe;
 
 import java.io.IOException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
+
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentProperty;
-import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
-import org.cougaar.util.DBProperties;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+
+import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.DBProperties;
 import org.cougaar.util.log.Logger;
 
 /**
  * Extends ConfigurableComponentProperty in order to override the
  * getAllowedValues method with values obtained from the set of
- * available queries. Also overrides the setValue to insure a good
- * value.
+ * available queries. 
  **/
 public class RecipeQueryProperty extends ConfigurableComponentProperty {
   public RecipeQueryProperty(ConfigurableComponent c, String name, Object value) {
@@ -53,6 +56,9 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
   }
 
   private static Set availableQueries = null;
+
+  // When was the recipeQueries.q file last modified
+  private static long rQFileLastMod = 0l;
 
   private static Set getAvailableQueries() {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.recipe.RecipeQueryProperty");
@@ -68,8 +74,20 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
         }
 
         // Get the user defined queries from recipeQueries.q
+	File rqfile = ConfigFinder.getInstance().locateFile(RecipeComponent.RECIPE_QUERY_FILE);
+	if (rqfile != null) {
+	  try {
+	    rQFileLastMod = rqfile.lastModified();
+	  } catch (SecurityException se) {
+	  }
+	}
+
         try {
-          for (Iterator i = DBProperties.readQueryFile(RecipeComponent.RECIPE_QUERY_FILE).keySet().iterator();
+	  // Must reRead -- calling addQueryFile effectively does that.
+	  // Alternatively, have a reRead method in DBProperties
+	  DBProperties dbp = DBProperties.readQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
+	  dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
+	  for (Iterator i = dbp.keySet().iterator();
                i.hasNext(); ) {
             String s = i.next().toString();
             if (s.startsWith("recipeQuery"))
@@ -77,6 +95,9 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
           }
         } catch (FileNotFoundException e) {
           // this is normal if a user has no separate recipe query file.
+	  if (log.isDebugEnabled()) {
+	    log.debug("No " + RecipeComponent.RECIPE_QUERY_FILE + " to parse.");
+	  }
         }
                 
       } catch (IOException ioe) {
@@ -84,6 +105,58 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
           log.error("Exception", ioe);
         }
         availableQueries = Collections.EMPTY_SET;
+      }
+    } else {
+      if (log.isDebugEnabled()) {
+	log.debug("Not re-reading " + PDbBase.QUERY_FILE);
+      }
+
+      // Get the last modified date of the recipeQueries file.
+      // If it's the same now as it was before, dont re-read
+      File rqfile = ConfigFinder.getInstance().locateFile(RecipeComponent.RECIPE_QUERY_FILE);
+      if (rqfile != null) {
+	long newMod = 0l;
+	try {
+	  newMod = rqfile.lastModified();
+	} catch (SecurityException se) {
+	}
+	// If file wasnt modified, use what we have
+	if (newMod == rQFileLastMod) {
+	  if (log.isDebugEnabled()) {
+	    log.debug("Not re-reading unmodified" + RecipeComponent.RECIPE_QUERY_FILE);
+	  }
+	  return availableQueries;
+	}
+      }
+
+      // Re-read recipeQueries.q, allowing user to edit the query names there
+      try {
+        // Get the user defined queries from recipeQueries.q
+        try {
+	  // Must reRead -- calling addQueryFile effectively does that.
+	  // Alternatively, have a reRead method in DBProperties
+	  DBProperties dbp = DBProperties.readQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
+	  dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
+	  for (Iterator i = dbp.keySet().iterator();
+               i.hasNext(); ) {
+            String s = i.next().toString();
+            if (s.startsWith("recipeQuery")) {
+	      // Add only if not already present
+	      if (! availableQueries.contains(new StringRange(s)))
+		availableQueries.add(new StringRange(s));
+	    }
+          }
+        } catch (FileNotFoundException e) {
+          // this is normal if a user has no separate recipe query file.
+	  if (log.isDebugEnabled()) {
+	    log.debug("No " + RecipeComponent.RECIPE_QUERY_FILE + " to parse.");
+	  }
+        }
+                
+      } catch (IOException ioe) {
+        if(log.isErrorEnabled()) {
+          log.error("Exception", ioe);
+        }
       }
     }
     return availableQueries;
