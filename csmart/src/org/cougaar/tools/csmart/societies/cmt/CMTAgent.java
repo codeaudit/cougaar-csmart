@@ -48,6 +48,7 @@ public class CMTAgent
   private static final String QUERY_PLUGIN_NAME = "queryPluginNames";
   private static final String QUERY_PLUGIN_ARGS = "queryPluginArgs";
   private static final String QUERY_AGENT_RELATIONS = "queryAgentRelationships";
+  private static final String QUERY_AGENT_ASSET_CLASS = "queryAgentAssetClass";
 
   // The tree will not display in the builder
   // if there are no properties so put it's name.
@@ -72,7 +73,7 @@ public class CMTAgent
     this.assemblyID = assemblyID;
   }
   public void initProperties() {
-    String componentID = getShortName();
+    String componentID = name;
     String componentCategory = "agent";
     propName = addProperty(PROP_AGENT_NAME, name,
 			   new ConfigurableComponentPropertyAdapter() {
@@ -113,43 +114,94 @@ public class CMTAgent
     return result;
   }
 
+  private String queryOrgClass() {
+    String orgClass;
+    substitutions.put(":agent_name", name);
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+	Statement stmt = conn.createStatement();	
+	String query = DBUtils.getQuery(QUERY_AGENT_ASSET_CLASS, substitutions);
+	ResultSet rs = stmt.executeQuery(query);
+	rs.next();
+	orgClass = rs.getString(1);	  
+	rs.close();
+	stmt.close();
+
+      } finally {
+	conn.close();
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException("Error" + e);
+    }
+    return orgClass;
+  }
+
   private ComponentData addAssetData(ComponentData data) {
-//     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
+    AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
 
-//     // Is this correct?  Are all agents Entities?
-//     assetData.setType(AgentAssetData.ENTITY);
-//     assetData.setAssetClass("Entity");
+    assetData.setType(AgentAssetData.ORG);
 
-//     // Add all Relationship data
-//     try {
-//       Connection conn = DBUtils.getConnection();
-//       try {
-// 	Statement stmt = conn.createStatement();	
-//         dbp.setDebug(true);
-// 	String query = dbp.getQuery(QUERY_AGENT_RELATIONS, substitutions);
+    String orgClass = queryOrgClass();
+    System.out.println("Org Class: " + orgClass);
+    assetData.setAssetClass(orgClass);
+    StringBuffer assemblyMatch = new StringBuffer();
+    assemblyMatch.append("in (");
+    Iterator iter = assemblyID.iterator();
+    boolean first = true;
+    while (iter.hasNext()) {
+      String val = (String)iter.next();
+      if (first) {
+	first = false;
+      } else {
+	assemblyMatch.append(", ");
+      }
+      assemblyMatch.append("'");
+      assemblyMatch.append(val);
+      assemblyMatch.append("'");
+    }
+    assemblyMatch.append(")");
+
+    substitutions.put(":assemblyMatch", assemblyMatch.toString());
+    substitutions.put(":agent_name", name);
+
+    // Add all Relationship data
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+	Statement stmt = conn.createStatement();	
+	String query = DBUtils.getQuery(QUERY_AGENT_RELATIONS, substitutions);
+	System.out.println(query);
 	
-// 	ResultSet rs = stmt.executeQuery(query);
-// 	while(rs.next()) {
-// 	  GenericComponentData plugin = new GenericComponentData();
-//           String pluginClassName = rs.getString(1);
-// 	  plugin.setType(ComponentData.PLUGIN);
-//           plugin.setClassName(pluginClassName);
-// 	  plugin.setParent(data);
-// 	  plugin.setOwner(this);
-// 	  plugin.setName(pluginClassName);	  
-// 	  plugin.setAlibID(rs.getString(2));
-// 	  data.addChild(plugin);
-// 	}
-// 	rs.close();
-// 	stmt.close();
+	ResultSet rs = stmt.executeQuery(query);
+	while(rs.next()) {
+	  RelationshipData rd = new RelationshipData();
+	  String supported = rs.getString(1);
+	  String role = rs.getString(2);
+	  String startDate = rs.getString(3);
+	  String stopDate = rs.getString(4);
 
-//       } finally {
-// 	conn.close();
-//       }
-//     } catch (Exception e) {
-//       e.printStackTrace();
-//       throw new RuntimeException("Error" + e);
-//     }
+	  rd.setRelationship(supported);
+	  rd.setRole(role);
+	  rd.setStartTime(startDate);
+	  if (stopDate != null) {
+	    rd.setStopTime(stopDate);
+	  }
+	  assetData.addRelationship(rd);
+	}
+	rs.close();
+	stmt.close();
+
+      } finally {
+	conn.close();
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException("Error" + e);
+    }
+
+    data.addAgentAssetData(assetData);
 
     return data;
   }
@@ -157,7 +209,6 @@ public class CMTAgent
 
   public ComponentData addComponentData(ComponentData data) {
 
-    //    System.out.println("Agent: " + data.getName());
     StringBuffer assemblyMatch = null;
     
     String name = data.getName();
@@ -174,7 +225,6 @@ public class CMTAgent
       Connection conn = DBUtils.getConnection();
       try {
 	Statement stmt = conn.createStatement();	
-        dbp.setDebug(true);
 	String query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
 	
 	ResultSet rs = stmt.executeQuery(query);
@@ -193,7 +243,6 @@ public class CMTAgent
 	  ResultSet rs2 = stmt.executeQuery(query2);
 	  while (rs2.next()) {
 	    String arg = rs2.getString(1);
-	    System.out.println("Adding Arg: " + arg);	    
 	    plugin.addParameter(arg);
 	  }
 	  rs2.close();
@@ -211,6 +260,7 @@ public class CMTAgent
       throw new RuntimeException("Error" + e);
     }
 
+    System.out.println("Adding AssetData");    
     data = addAssetData(data);
 
     return data;
