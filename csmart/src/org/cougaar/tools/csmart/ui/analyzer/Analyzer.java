@@ -71,8 +71,9 @@ public class Analyzer extends JFrame implements ActionListener {
 
   /**
    * Display a csv file in excel.
+   * @param csmart Handle to CSMART
+   * @param experiment Handle to the Experiment
    */
-
   public Analyzer(CSMART csmart, Experiment experiment) {
     createLogger();
     this.csmart = csmart;
@@ -125,6 +126,11 @@ public class Analyzer extends JFrame implements ActionListener {
     log = CSMART.createLogger(this.getClass().getName());
   }
 
+  /**
+   * Re-initialize the Experiment
+   *
+   * @param experiment new Experiment
+   */
   public void reinit(Experiment experiment) {
     this.experiment = experiment;
   }
