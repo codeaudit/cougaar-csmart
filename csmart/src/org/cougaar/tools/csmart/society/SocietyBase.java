@@ -21,25 +21,26 @@
 package org.cougaar.tools.csmart.society;
 
 import java.io.FileFilter;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
-
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
-import org.cougaar.tools.csmart.experiment.NodeComponent;
-import org.cougaar.tools.csmart.experiment.HostComponent;
-import org.cougaar.tools.csmart.core.property.PropertyEvent;
-import org.cougaar.tools.csmart.core.property.Property;
 import java.util.List;
 import java.util.ArrayList;
+
 import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.experiment.NodeComponent;
+import org.cougaar.tools.csmart.experiment.HostComponent;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 
 /**
@@ -50,7 +51,6 @@ import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  * @version 1.0
  */
-
 public abstract class SocietyBase 
   extends ModifiableConfigurableComponent
   implements SocietyComponent, PropertiesListener {
