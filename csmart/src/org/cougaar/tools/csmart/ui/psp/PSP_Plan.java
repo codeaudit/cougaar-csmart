@@ -39,7 +39,7 @@ import org.cougaar.planning.ldm.plan.PlanElement;
 import org.cougaar.planning.ldm.plan.Task;
 import org.cougaar.planning.ldm.plan.Workflow;
 import org.cougaar.lib.planserver.*;
-import org.cougaar.tools.csmart.ldm.event.HappinessChangeEvent;
+import org.cougaar.tools.csmart.runtime.ldm.event.HappinessChangeEvent;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.util.*;
 

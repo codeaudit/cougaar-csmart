@@ -47,7 +47,7 @@ import org.cougaar.lib.planserver.*;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.util.*;
 
-import org.cougaar.tools.csmart.ldm.event.HappinessChangeEvent;
+import org.cougaar.tools.csmart.runtime.ldm.event.HappinessChangeEvent;
 
 /**
  * Translate <code>UniqueObject</code>s to <code>PropertyTree</code>s.
