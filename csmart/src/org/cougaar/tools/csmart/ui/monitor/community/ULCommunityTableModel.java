@@ -101,10 +101,10 @@ public class ULCommunityTableModel extends AbstractTableModel {
   private void addAttribute(String name) {
     Attribute a = node.getLocalAttribute(name);
     if (a == null) {
-      if(log.isWarnEnabled()) {
-        log.warn("ULCommunityTableModel: attribute not found: " +
-                 name);
-      }
+//       if(log.isWarnEnabled()) {
+//         log.warn("ULCommunityTableModel: attribute not found: " +
+//                  name);
+//       }
       return;
     }
     names.addElement(name);
