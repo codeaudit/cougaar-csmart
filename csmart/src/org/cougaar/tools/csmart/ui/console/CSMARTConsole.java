@@ -1087,7 +1087,13 @@ public class CSMARTConsole extends JFrame {
     return port;
   }
 
-  private Properties getNodeMinusD(NodeComponent nc) {
+  /**
+   * Get node -d arguments.
+   * @param node for which to get the -d arguments
+   * @return properties the -d arguments
+   */
+
+  public Properties getNodeMinusD(NodeComponent nc) {
     Properties result = new Properties();
     Properties props = nc.getArguments();
     for (Enumeration e = props.propertyNames(); e.hasMoreElements(); ) {

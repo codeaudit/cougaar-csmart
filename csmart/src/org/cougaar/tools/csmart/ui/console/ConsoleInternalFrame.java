@@ -44,6 +44,7 @@ import org.cougaar.tools.csmart.ui.component.HostComponent;
 import org.cougaar.tools.csmart.ui.component.NodeComponent;
 import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
+import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
 import org.cougaar.tools.server.CommunityServesClient;
 import org.cougaar.tools.server.rmi.ClientCommunityController;
 import org.cougaar.tools.server.ConfigurationWriter;
@@ -479,15 +480,16 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
-    aboutPanel.add(new JLabel("Command Line Arguments:"),
+    // display -D options
+    aboutPanel.add(new JLabel("-D Options:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    // display table of command line arguments
+    Properties properties = console.getNodeMinusD(node);
     Vector data = new Vector();
-    Properties properties = node.getArguments();
+    //    Properties properties = node.getArguments();
     Enumeration propertyNames = properties.propertyNames();
     while (propertyNames.hasMoreElements()) {
       String name = (String)propertyNames.nextElement();
@@ -504,7 +506,32 @@ public class ConsoleInternalFrame extends JInternalFrame {
     argTable.setColumnSelectionAllowed(false);
     argTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     argTable.setPreferredScrollableViewportSize(new Dimension(50, 100));
-    aboutPanel.add(new JScrollPane(argTable),
+    JScrollPane jspArgTable = new JScrollPane(argTable);
+    // ensure the layout leaves space for the scrollbar
+    jspArgTable.setMinimumSize(new Dimension(50, 50));
+    aboutPanel.add(jspArgTable,
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(0, 0, 5, 0),
+                                          0, 0));
+    x = 0;
+    aboutPanel.add(new JLabel("Command Line Arguments:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 5, 5),
+                                          0, 0));
+    JTextArea args = new JTextArea(5, 40);
+    Properties props = node.getArguments();
+    String commandArguments =
+      props.getProperty(HostConfigurationBuilder.COMMAND_ARGUMENTS);
+    if (commandArguments == null)
+      commandArguments = "";
+    args.setText(commandArguments);
+    JScrollPane jspArgs = new JScrollPane(args);
+    jspArgs.setMinimumSize(new Dimension(50, 50));
+    aboutPanel.add(jspArgs,
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
@@ -519,7 +546,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           0, 0));
     JList agentsList = new JList(agentNames.toArray());
     agentsList.setBackground(aboutPanel.getBackground());
-    aboutPanel.add(new JScrollPane(agentsList),
+    JScrollPane jspAgents = new JScrollPane(agentsList);
+    jspAgents.setMinimumSize(new Dimension(50, 50));
+    aboutPanel.add(jspAgents,
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
