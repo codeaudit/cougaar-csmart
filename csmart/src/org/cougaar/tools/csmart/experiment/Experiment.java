@@ -131,6 +131,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   private transient boolean editInProgress = false;
   private transient boolean runInProgress = false;
 
+  // The assembly holding community info for this Experiment.
+  private String commAsb = null;
+
   private String expID = null; // An Experiment has a single ExpID
   private String trialID = null;
   // Soon Experiment's Trials will have TrialIDs
@@ -151,6 +154,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   // Constructors
   ////////////////////////////////////////////
 
+  // Organizer uses this to create a new experiment based on a society/recipe
+  // or from the UI
   public Experiment(String name, SocietyComponent societyComponent,
 		    RecipeComponent[] recipes)
   {
@@ -159,13 +164,31 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     setSocietyComponent(societyComponent);
     if (recipes != null)
       setRecipeComponents(recipes);
+
+    // Give it a new empty Comm ASB:
+    PopulateDb pdb = null;
+    try {
+      pdb = new PopulateDb(null, null);
+      commAsb = pdb.getNewCommAssembly();
+    } catch (SQLException sqle) {
+      log.error("constructor failed to get new comm ASB", sqle);
+    } catch (IOException ie) {
+      log.error("constructor failed to get new comm ASB", ie);
+    } finally {
+      try {
+	if (pdb != null)
+	  pdb.close();
+      } catch (SQLException se) {}
+    }
   }
 
+  // Used in copy when not in DB mode
   public Experiment(String name) {
     super(name);
     init();
   }
 
+  // Used in copy when in DB mode or on load from DB
   public Experiment(String name, String expID, String trialID) {
     super(name);
     this.expID = expID;
@@ -926,6 +949,22 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
   /**
+   * get the local variable idea of the community assembly for this
+   * experiment, possibly null
+   */
+  public String getCommAsbID() {
+    return commAsb;
+  }
+
+  /**
+   * (Re) set the local variables idea of the community assembly for 
+   * this experiment, possibly to null
+   */
+  public void setCommAsbID(String id) {
+    this.commAsb = id;
+  }
+
+  /**
    * Returns the name of this component
    *
    * @return a <code>String</code> value
@@ -997,10 +1036,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     for (int i = 0; i < hosts.length; i++) {
       // FIXME: instead to nhosts[i] = hosts[i].copy();
       // and then don't need the following 2 set calls hopefully
-       nhosts[i] = experimentCopy.addHost(hosts[i].getShortName().toString());
-       nhosts[i].setServerPort(hosts[i].getServerPort());
-       nhosts[i].setMonitoringPort(hosts[i].getMonitoringPort());
-       //      hosts[i].copy(nhosts[i]);
+      nhosts[i] = experimentCopy.addHost(hosts[i].getShortName().toString());
+      nhosts[i].setServerPort(hosts[i].getServerPort());
+      nhosts[i].setMonitoringPort(hosts[i].getMonitoringPort());
+      //      hosts[i].copy(nhosts[i]);
       // FIXME: What about other Host fields? OS, etc?
       // -- answer - see above fixme
     }
@@ -1072,6 +1111,29 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     // will be stored in this directory under the copied experiment name
     experimentCopy.setResultDirectory(getResultDirectory());
     
+
+    // Fixme: Grab comm info from orig expt & resave under new asbID
+    // and attach that new ID to this Expt
+    PopulateDb pdb = null;
+    String newAsbid = null;
+    try {
+      pdb = new PopulateDb(expID, trialID);
+      newAsbid = pdb.getNewCommAsbFromExpt(expID, trialID);
+    } catch (SQLException sqle) {
+      log.error("Expt Copy error copying community info", sqle);
+    } catch (IOException ioe) {
+      log.error("Expt Copy error copying community info", ioe);
+    } finally {
+      try {
+	if (pdb != null)
+	  pdb.close();
+      } catch (SQLException se) {}
+    }
+    if (log.isDebugEnabled()) {
+      log.debug("copy: new Expt gets Comm ASB " + newAsbid);
+    }
+    experimentCopy.setCommAsbID(newAsbid);
+
     return experimentCopy;
   }
 
@@ -1226,7 +1288,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       }
     }
   }
-
 
   ////////////////////////////////////////////
   // Host Component Operations.
@@ -1607,6 +1668,40 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    */
   public void saveToDb(DBConflictHandler ch) {
     PopulateDb pdb = null;
+
+    // Make sure we have the Community Assembly stored locally
+    if (commAsb == null) {
+      if (log.isDebugEnabled()) {
+	log.debug("saveToDb had no CommAsb for expt " + expID);
+      }
+      try {
+	// retrieve from db
+	pdb = new PopulateDb(expID, trialID);
+	// set it locally
+	commAsb = pdb.getCommAsbForExpt(expID, trialID);
+	if (commAsb == null) {
+	  if (log.isDebugEnabled()) {
+	    log.debug("saveToDb found no comm asb in DB either");
+	  }
+	  commAsb = pdb.getNewCommAssembly();
+	}
+      } catch (SQLException sqle) {
+	log.error("saveToDb error getting Comm assembly", sqle);
+      } catch (IOException ioe) {
+	log.error("saveToDb error getting Comm assembly", ioe);
+      } finally {
+	try {
+	  if (pdb != null)
+	    pdb.close();
+	} catch (SQLException se) {}
+	pdb = null;
+      }
+    }
+
+    if (log.isDebugEnabled()) {
+      log.debug("saveToDb has commAsb " + commAsb + " for expt " + expID);
+    }
+
     try {
       if (log.isInfoEnabled()) {
 	log.info("Saving experiment " + getExperimentName() + " to database");
@@ -1653,6 +1748,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
       setExperimentID(pdb.getExperimentId());
       setTrialID(pdb.getTrialId()); // sets trial id and -D argument
+
+      // store in the DB the community assembly ID being used
+      pdb.setCommAssemblyId(commAsb);
 
       // Some components will want access to the complete set of Nodes
       // in the society, etc. To get that, they must get back to the
@@ -1975,6 +2073,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     // tables, then must save out what the assembly ID is such 
     // that on load of the INI files we can preserve the OPLAN INFO
 
+    // FIXME: Also, write out the community XML file
+
     // Generate the complete Society
     generateCompleteSociety();
 
@@ -2088,7 +2188,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
         xmlWriter.createExperimentFile(completeSociety, f);
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error("Couldn't write ini files: ", e);
+          log.error("dumpHNA: Couldn't write XML file: ", e);
         }
       }
     }
