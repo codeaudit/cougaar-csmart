@@ -616,7 +616,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * If any society is not self terminating, determine if the experiment
    * is being monitored, and if so, ask the user to confirm the stop. 
    */
-
   public void stopButton_actionPerformed(ActionEvent e) {
     stopButton.setSelected(true); // indicate stopping
     stopButton.setEnabled(false); // disable until experiment stops
@@ -772,7 +771,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * Run the next trial.
    * Update the gui controls.
    */
-
   public void nodeStopped(NodeComponent nodeComponent) {
     oldNodes.put(nodeComponent, runningNodes.get(nodeComponent));
     runningNodes.remove(nodeComponent);
@@ -805,7 +803,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * The trial is finished; stop the timer, save the results,
    * unset the property values used, and update the gui.
    */
-
   private void trialFinished() {
     trialTimer.stop();
     saveResults();
@@ -996,7 +993,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * so that it can update it.
    * Returns true if successful and false otherwise.
    */
-
   private boolean createNode(NodeComponent nodeComponent,
 			     String nodeName, String hostName,
 			     ConfigurationWriter configWriter) {
