@@ -94,7 +94,7 @@ public class PropertyEditorPanel extends JPanel
   JPopupMenu bindersMenu;
   JPopupMenu componentsMenu;
   JPopupMenu pluginsMenu;
-  JPopupMenu assetMenu;
+  //JPopupMenu assetMenu;
   JPopupMenu propertyGroupsMenu;
   JPopupMenu relationshipsMenu;
   JPopupMenu baseComponentMenu;
@@ -209,9 +209,9 @@ public class PropertyEditorPanel extends JPanel
   private Object[] pluginsMenuItems = {
     addPluginAction
   };
-  private Object[] assetMenuItems = {
-    addAssetParameterAction
-  };
+//   private Object[] assetMenuItems = {
+//     addAssetParameterAction
+//   };
   private Object[] propertyGroupsMenuItems = {
     addPropertyGroupAction
   };
@@ -311,7 +311,7 @@ public class PropertyEditorPanel extends JPanel
     bindersMenu = new JPopupMenu();
     componentsMenu = new JPopupMenu();
     pluginsMenu = new JPopupMenu();
-    assetMenu = new JPopupMenu();
+    //    assetMenu = new JPopupMenu();
     propertyGroupsMenu = new JPopupMenu();
     relationshipsMenu = new JPopupMenu();
     for (int i = 0; i < societyMenuItems.length; i++)
@@ -326,8 +326,8 @@ public class PropertyEditorPanel extends JPanel
       componentsMenu.add((Action)componentsMenuItems[i]);
     for (int i = 0; i < pluginsMenuItems.length; i++)
       pluginsMenu.add((Action)pluginsMenuItems[i]);
-    for (int i = 0; i < assetMenuItems.length; i++)
-      assetMenu.add((Action)assetMenuItems[i]);
+//     for (int i = 0; i < assetMenuItems.length; i++)
+//       assetMenu.add((Action)assetMenuItems[i]);
     for (int i = 0; i < propertyGroupsMenuItems.length; i++)
       propertyGroupsMenu.add((Action)propertyGroupsMenuItems[i]);
     for (int i = 0; i < relationshipsMenuItems.length; i++)
@@ -616,7 +616,7 @@ public class PropertyEditorPanel extends JPanel
       else if (name.equals("Property Groups"))
         propertyGroupsMenu.show(tree, x, y);
     } else if (o instanceof AssetComponent)
-      assetMenu.show(tree, x, y);
+      agentMenu.show(tree, x, y);
     else if (o instanceof AgentComponent)
       agentMenu.show(tree, x, y);
     else if (o instanceof RelationshipComponent)
