@@ -666,6 +666,9 @@ public class CSMARTConsole extends JFrame {
    */
 
   private void runButton_actionPerformed() {
+    if (log.isDebugEnabled()) {
+      log.debug("Hit run button");
+    }
     destroyOldNodes(); // Get rid of any old stuff before creating the new
     userStoppedTrials = false;
     // this state should be detected earlier and the run button disabled
@@ -690,12 +693,19 @@ public class CSMARTConsole extends JFrame {
   private ArrayList nodeCreationInfoList;
 
   private void runTrial() {
+    if (log.isDebugEnabled()) {
+      log.debug("runTrial about to setTrialValues");
+    }
     setTrialValues();
     runStart = new Date();
     nodeCreationInfoList = new ArrayList();
     prepareToCreateNodes();
     stopNodeCreation = false;
     startTimers();
+    if (log.isDebugEnabled()) {
+      log.debug("runTrial about to start createNodes thread");
+    }
+
     nodeCreator = new Thread("CreateNodes") {
       public void run() {
         createNodes();
@@ -741,6 +751,9 @@ public class CSMARTConsole extends JFrame {
       }
     };
     starting = true;
+    if (log.isDebugEnabled()) {
+      log.debug("runTrial about to create Nodes");
+    }
     try {
       nodeCreator.start();
     } catch (RuntimeException re) {
@@ -846,7 +859,6 @@ public class CSMARTConsole extends JFrame {
    * Remove any agents that no longer exist.
    * Update the configuration view.
    */
-
   private void setTrialValues() {
     if (currentTrial >= 0)
       unsetTrialValues(); // unset previous trial values
@@ -856,12 +868,20 @@ public class CSMARTConsole extends JFrame {
     trialProgressBar.setValue(currentTrial+1);
     Property[] properties = trial.getParameters();
     Object[] values = trial.getValues();
+    if (log.isDebugEnabled()) {
+      log.debug("setTrialValues about to loop through trial properties to set");
+    }
     for (int i = 0; i < properties.length; i++) {
       if (properties[i].getValue() == null || ! properties[i].getValue().equals(values[i]))
 	properties[i].setValue(values[i]);
     }
-    // assign any unassigned agents 
-    assignUnassignedAgents();
+//     if (log.isDebugEnabled()) {
+//       log.debug("setTrialValues about to assign unassigned Agents");
+//     }
+
+    // assign any unassigned agents (why?!)
+    //    assignUnassignedAgents();
+
     // update host-node-agent panel
     hostConfiguration.update();
   }
@@ -870,7 +890,6 @@ public class CSMARTConsole extends JFrame {
    * Called when trial is finished; unset the property values
    * that were used in the trial by setting their value to null.
    */
-
   private void unsetTrialValues() {
     if (currentTrial < 0)
       return;
@@ -882,8 +901,8 @@ public class CSMARTConsole extends JFrame {
 
   /**
    * Assign any unassigned agents before each trial.
+   * Assigns Agents round-robin to Nodes on Hosts regardless of what else is on those Nodes.
    */
-
   private void assignUnassignedAgents() {
     // get the nodes in the experiment
     // note that this reconciles node agents to society agents,
@@ -894,14 +913,22 @@ public class CSMARTConsole extends JFrame {
     // get all assigned agents
     ArrayList assignedAgents = new ArrayList();
     HostComponent[] hosts = experiment.getHostComponents();
+    if (hosts.length == 0)
+      return; // no hosts to use
+
+    // Get a list of the Nodes actually assigned to a Host and use that.
+    ArrayList assignedNodes = new ArrayList();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodesInHost = hosts[i].getNodes();
       for (int j = 0; j < nodesInHost.length; j++) { 
+	assignedNodes.add(nodesInHost[j]); // another Node to potentially assign to
 	assignedAgents.addAll(Arrays.asList(nodesInHost[j].getAgents()));
       }
     }
     // assign all unassigned agents to nodes    
     int nextNode = 0;
+    // For our array of Nodes, use only those we found assigned to a Host
+    nodes = (NodeComponent[]) assignedNodes.toArray(new NodeComponent[assignedNodes.size()]);
     int nNodes = nodes.length;
     AgentComponent[] agents = experiment.getAgents();
     for (int i = 0; i < agents.length; i++) {
