@@ -680,7 +680,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 	  new ComponentName((ConfigurableComponent) nodesToWrite[i], "ConfigurationFileName");
         nc.addParameter(node.getShortName());
         theSoc.addChild(nc);
-        pdb.addWritableComponent(nc); // Write all node components
         AgentComponent[] agents = node.getAgents();
         if (agents != null && agents.length > 0) {
           for (int j = 0; j < agents.length; j++) {
@@ -705,9 +704,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         System.out.println(soc + ".addComponentData");
         soc.addComponentData(theSoc);
       }
-      pdb.setReadOnlyComponents(theSoc); // All others at this point are readonly
+      pdb.setPreexistingItems(theSoc); // Record these items so additions can be detected
 
-      // Then give everyone a chance to modify what they've collectively produced
+      // then give everyone a chance to modify what they've collectively produced
       for (int i = components.size() - 1; i >= 0; i--) {
         ComponentProperties soc = (ComponentProperties) components.get(i);
         soc.modifyComponentData(theSoc);
