@@ -38,6 +38,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
   private JMenuItem addGLSMenuItem; // call addGLSWindow
   private JToggleButton runButton;
   private JToggleButton stopButton;
+  private JToggleButton invisButton;  // Used to turn off both run and stop button.
   private ButtonGroup runningState;
   private JPanel buttonPanel; // contains status buttons
   private JPopupMenu nodeMenu; // pop-up menu on node status button
@@ -47,9 +48,9 @@ public class CSMARTConsoleView extends JFrame implements Observer {
   private JMenuItem displayMenuItem;
   private JMenuItem killAllMenuItem;
 
-  private static Dimension HGAP10 = new Dimension(10,1);
-  private static Dimension HGAP5 = new Dimension(5,1);
-  private static Dimension VGAP30 = new Dimension(1,30);
+  private static Dimension HGAP10 = new Dimension(10, 1);
+  private static Dimension HGAP5 = new Dimension(5, 1);
+  private static Dimension VGAP30 = new Dimension(1, 30);
 
   // top level menus and menu items
   private static final String FILE_MENU = "File";
@@ -171,6 +172,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     descriptionPanel.add(runButton);
     descriptionPanel.add(Box.createRigidArea(HGAP5));
 
+    invisButton = new JToggleButton("Invisible");
     stopButton = new JToggleButton("Stop");
     stopButton.setToolTipText("Halt experiment at end of current");
     stopButton.addActionListener(new ActionListener() {
@@ -186,6 +188,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     runningState = new ButtonGroup();
     runningState.add(runButton);
     runningState.add(stopButton);
+    runningState.add(invisButton);
 
     // create progress panel for time labels
     // these are referenced elsewhere, so are created even if not displayed
@@ -222,11 +225,11 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     // ensure the layout leaves space for the scrollbar
     jsp.setMinimumSize(new Dimension(100, 50));
     panel.add(jsp,
-        new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
-             GridBagConstraints.WEST,
-             GridBagConstraints.HORIZONTAL,
+              new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.HORIZONTAL,
                                      new Insets(0, 10, 0, 10),
-             0, 0));
+                                     0, 0));
 
     statusButtons = new ButtonGroup();
     nodeMenu = new JPopupMenu();
@@ -264,11 +267,11 @@ public class CSMARTConsoleView extends JFrame implements Observer {
 //      desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
 //    }
     panel.add(desktop,
-        new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
-             GridBagConstraints.WEST,
-             GridBagConstraints.BOTH,
+              new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
+                                     GridBagConstraints.WEST,
+                                     GridBagConstraints.BOTH,
                                      new Insets(0, 0, 0, 0),
-             0, 0));
+                                     0, 0));
     return panel;
   }
 
@@ -552,7 +555,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
   }
 
   /**
-   * If there are AppServers, 
+   * If there are AppServers,
    * then enable the delete and refresh app server controls.
    * If there are AppServers with unattached nodes,
    * then enable the attach controls.
@@ -580,7 +583,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     } else {
       killAllMenuItem.setEnabled(true);
     }
-    // TODO: determine when to enable/disable GLSMenuItem      
+    // TODO: determine when to enable/disable GLSMenuItem
 //        if (glsClient == null)
 //          addGLSMenuItem.setEnabled(true);
 //        else {
@@ -725,12 +728,12 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     if (log.isDebugEnabled()) {
       log.debug("In exitMenuItem_actionPerformed");
     }
-    if(model.haveAttached()) {
+    if (model.haveAttached()) {
       ExitConsole ec = new ExitConsole();
-      if(ec.reallyExit()) {
-        if(ec.getResult().equals(ec.SOCIETY_DETACH)) {
+      if (ec.reallyExit()) {
+        if (ec.getResult().equals(ec.SOCIETY_DETACH)) {
           model.detachFromSociety();
-        } else if( ec.getResult().equals(ec.KILL_NODES)) {
+        } else if (ec.getResult().equals(ec.KILL_NODES)) {
           model.killAllNodes();
         }
       } else {
@@ -767,12 +770,12 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     //    model.setAttached(attachButton.getModel().isSelected());
     ArrayList nodes = model.getUnattachedNodes();
     Object[] selected =
-      Util.getObjectsFromList(null, nodes,
-                              "Attach to Nodes", "Select Nodes:");
+        Util.getObjectsFromList(null, nodes,
+                                "Attach to Nodes", "Select Nodes:");
     if (selected != null) {
       ArrayList sel = new ArrayList(selected.length);
       for (int i = 0; i < selected.length; i++)
-        model.attachToNode((String)sel.get(i));
+        model.attachToNode((String) sel.get(i));
     }
   }
 
@@ -792,20 +795,24 @@ public class CSMARTConsoleView extends JFrame implements Observer {
 
 
   public void update(Observable o, Object arg) {
-    if(arg.equals(CSMARTConsoleModel.TOGGLE_RUNNING_STATE)) {
-      if(runButton.getModel().isEnabled() && !stopButton.getModel().isEnabled()) {
+    if (arg.equals(CSMARTConsoleModel.TOGGLE_RUNNING_STATE)) {
+      if(!model.isRunning()) {
+        invisButton.getModel().setPressed(true);
+      }
+      if (runButton.getModel().isEnabled() &&
+          !stopButton.getModel().isEnabled()) {
         stopButton.getModel().setEnabled(true);
       }
     }
 
-    if(arg.equals(CSMARTConsoleModel.TOGGLE_ATTACHED_STATE)) {
+    if (arg.equals(CSMARTConsoleModel.TOGGLE_ATTACHED_STATE)) {
 
     }
 
-    if(arg.equals(CSMARTConsoleModel.APP_SERVERS_CHANGED) ||
-       arg.equals(CSMARTConsoleModel.APP_SERVER_ADDED) ||
-       arg.equals(CSMARTConsoleModel.APP_SERVER_DELETED) ||
-       arg.equals(CSMARTConsoleModel.NODE_ADDED)) {
+    if (arg.equals(CSMARTConsoleModel.APP_SERVERS_CHANGED) ||
+        arg.equals(CSMARTConsoleModel.APP_SERVER_ADDED) ||
+        arg.equals(CSMARTConsoleModel.APP_SERVER_DELETED) ||
+        arg.equals(CSMARTConsoleModel.NODE_ADDED)) {
       updateASControls();
     }
 
@@ -827,10 +834,10 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     panel.add(new JLabel("Enter HostName:Port:"));
     panel.add(tf);
     int result =
-      JOptionPane.showOptionDialog(null, panel, "Add Application Server",
-				   JOptionPane.OK_CANCEL_OPTION,
-				   JOptionPane.PLAIN_MESSAGE,
-				   null, null, null);
+        JOptionPane.showOptionDialog(null, panel, "Add Application Server",
+                                     JOptionPane.OK_CANCEL_OPTION,
+                                     JOptionPane.PLAIN_MESSAGE,
+                                     null, null, null);
     if (result != JOptionPane.OK_OPTION)
       return;
     String s = tf.getText().trim();
@@ -843,9 +850,9 @@ public class CSMARTConsoleView extends JFrame implements Observer {
       hostName = hostName.trim();
       // But if there's nothing before the colon, use localhost
       if (hostName.equals(""))
-	hostName = "localhost";
+        hostName = "localhost";
       // Port is the part after the colon
-      String portString = s.substring(index+1);
+      String portString = s.substring(index + 1);
       portString = portString.trim();
       if (!portString.equals("")) {
         try {
@@ -860,7 +867,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     // check for duplicates
     ArrayList appServers = model.getAppServers();
     for (int i = 0; i < appServers.size(); i++) {
-      AppServerDesc desc = (AppServerDesc)appServers.get(i);
+      AppServerDesc desc = (AppServerDesc) appServers.get(i);
       if (desc.hostName.equals(hostName) &&
           desc.port == port) {
         JOptionPane.showMessageDialog(null,
@@ -872,7 +879,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
     }
     model.requestAppServerAdd(hostName, port);
   }
-  
+
   /**
    * Display a list of known app servers to the user.
    * Message the model to delete the app servers that the user selects.
@@ -880,11 +887,11 @@ public class CSMARTConsoleView extends JFrame implements Observer {
   private void deleteAppServers() {
     ArrayList appServers = model.getAppServers();
     Object[] appServersSelected =
-      Util.getObjectsFromList(null, appServers, "Application Servers",
-                              "Select Application Servers To Ignore:");
+        Util.getObjectsFromList(null, appServers, "Application Servers",
+                                "Select Application Servers To Ignore:");
     if (appServersSelected == null) return;
     for (int i = 0; i < appServersSelected.length; i++) {
-      AppServerDesc appServerDesc = (AppServerDesc)appServersSelected[i];
+      AppServerDesc appServerDesc = (AppServerDesc) appServersSelected[i];
       model.appServerDelete(appServerDesc);
     }
   }
@@ -894,8 +901,8 @@ public class CSMARTConsoleView extends JFrame implements Observer {
   }
 
   private void displayAppServers() {
-    Util.showObjectsInList(this, 
-                           model.getAppServers(), 
+    Util.showObjectsInList(this,
+                           model.getAppServers(),
                            "Application Servers",
                            "Application Servers");
   }
