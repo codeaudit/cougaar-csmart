@@ -58,10 +58,10 @@ fi
 # The performance analyzer uses Excel. To use it or an equivalent,
 # edit the following property:
 MYEXCEL=-Dorg.cougaar.tools.csmart.excelpath=""
-if [ $SEP=";" ]; then
+#if [ $SEP=";" ]; then
 # I can't make this work
 #    MYEXCEL=-Dorg.cougaar.tools.csmart.excelpath=\"C:/Program\ Files/Microsoft\ Office/Office/excel.exe\"; 
-fi
+#fi
 
 MYMEMORY="-Xms100m -Xmx300m"
 
