@@ -34,8 +34,9 @@ GOTO L_END
 REM Make sure that COUGAAR3RDPARTY is specified
 IF NOT "%COUGAAR3RDPARTY%" == "" GOTO L_3
 REM Unable to find "sys" path for 3rd-party jars
-ECHO COUGAAR3RDPARTY not set!
-GOTO L_END
+REM This is usually COUGAAR_INSTALL_PATH/sys
+ECHO COUGAAR3RDPARTY not set! Defaulting to CIP\sys
+SET COUGAAR3RDPARTY = %COUGAAR_INSTALL_PATH%\sys
 :L_3
 
 REM The following line is optional. Some output files are written to the working directory.
@@ -57,11 +58,11 @@ REM  release of CSMART!
 SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\core.jar
 
 REM Plus these third party jar files, which are in COUGAAR3RDPARTY
+REM You must add the MySQL jar file here if you want it
 SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\xerces.jar
 SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\jcchart451K.jar
 SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\grappa1_2_bbn.jar
 SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\oracle12.zip
-SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\silk.jar
 
 SET MYMEMORY=-Xms100m -Xmx300m
 SET MYPROPERTIES=-Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH%
@@ -69,7 +70,7 @@ SET MYCONFIGPATH=-Dorg.cougaar.config.path="%COUGAAR_INSTALL_PATH%/csmart/data/c
 
 REM Edit the following line to reflect your local installation
 REM This is used by the Performance Analyzer
-SET MYEXCEL=-Dexcel="C:\Program Files\Microsoft Office\Office\excel.exe"
+SET MYEXCEL=-Dorg.cougaar.tools.csmart.excelpath="C:\Program Files\Microsoft Office\Office\excel.exe"
 
 @ECHO ON
 

@@ -57,15 +57,21 @@ set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/server.jar"
 set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/core.jar"
 
 # Third party jars are in COUGAAR3RDPARTY
-set LIBPATHS = "${LIBPATHS}:${COUGAAR3RDPARTY}/xerces.jar:${COUGAAR3RDPARTY}/grappa1_2_bbn.jar:${COUGAAR3RDPARTY}/jcchart451K.jar:${COUGAAR3RDPARTY}/oracle12.zip:${COUGAAR3RDPARTY}/silk.jar"
+# This is usually COUGAAR_INSTALL_PATH/sys
+# You must add the MySQL jar if you will use it
+set LIBPATHS = "${LIBPATHS}:${COUGAAR3RDPARTY}/xerces.jar:${COUGAAR3RDPARTY}/grappa1_2_bbn.jar:${COUGAAR3RDPARTY}/jcchart451K.jar:${COUGAAR3RDPARTY}/oracle12.zip"
     
 # Optionally add a debug/development path
 if ($?COUGAAR_DEV_PATH) then
     set LIBPATHS = "${COUGAAR_DEV_PATH}:${LIBPATHS}"
 endif
+
+# The performance analyzer uses Excel. To use it or an equivalent,
+# edit the following property:
+set MYEXCEL="-Dorg.cougaar.tools.csmart.excelpath=C:/Program Files/Microsoft Office/Office/excel.exe"
     
 set MYMEMORY="-Xms100m -Xmx300m"
-set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH"
+set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL"
 
 # Set the config path to include the basic CSMART config files first
 set MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"

@@ -54,22 +54,28 @@ LIBPATHS="${COUGAAR_INSTALL_PATH}/lib/csmart.jar"
 export LIBPATHS
     
 # The AppServer jar must also be specified
-LIBPATHS="${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/server.jar"
+LIBPATHS="${LIBPATHS}${SEP}${COUGAAR_INSTALL_PATH}/lib/server.jar"
     
 # For now CSMART needs "core.jar" for the Bootstrapper and some
 #  utility classes.  This dependency should be removed in a future
 #  release of CSMART!
-LIBPATHS="${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/core.jar"
+LIBPATHS="${LIBPATHS}${SEP}${COUGAAR_INSTALL_PATH}/lib/core.jar"
 
 # Third party jars are in COUGAAR3RDPARTY
-LIBPATHS="${LIBPATHS}${SEP}${COUGAAR3RDPARTY}/xerces.jar${SEP}${COUGAAR3RDPARTY}/grappa1_2_bbn.jar${SEP}${COUGAAR3RDPARTY}/jcchart451K.jar${SEP}${COUGAAR3RDPARTY}/oracle12.zip${SEP}${COUGAAR3RDPARTY}/silk.jar"
+# Which is usually COUGAAR_INSTALL_PATH/sys
+# you must add the MySQL jar file here if you want to use it
+LIBPATHS="${LIBPATHS}${SEP}${COUGAAR3RDPARTY}/xerces.jar${SEP}${COUGAAR3RDPARTY}/grappa1_2_bbn.jar${SEP}${COUGAAR3RDPARTY}/jcchart451K.jar${SEP}${COUGAAR3RDPARTY}/oracle12.zip"
     
 if [ "$COUGAAR_DEV_PATH" != "" ] ; then
     LIBPATHS="${COUGAAR_DEV_PATH}${SEP}${LIBPATHS}"
 fi
     
+# The performance analyzer uses Excel. To use it or an equivalent,
+# edit the following property:
+MYEXCEL="-Dorg.cougaar.tools.csmart.excelpath=C:/Program Files/Microsoft Office/Office/excel.exe"
+
 MYMEMORY="-Xms100m -Xmx300m"
-MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH"
+MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL"
 
 # Set the config path to include the basic CSMART config files first
 MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
