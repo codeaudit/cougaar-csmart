@@ -165,7 +165,11 @@ public class OrganizerXML extends XMLUtils {
     if (organizer == null)
       return null;
     doc = loadXMLFile(workspacefilename);
-    if (doc == null) return null;
+    if (doc == null) {
+      if (log.isWarnEnabled())
+	log.warn("Not restoring workspace " + workspacefilename);
+      return null;
+    }
     this.organizer = organizer;
 
     return parse(doc.getDocumentElement(), organizer.root);

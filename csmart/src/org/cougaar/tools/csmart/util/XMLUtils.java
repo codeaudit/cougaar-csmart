@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 
 import org.apache.xerces.parsers.DOMParser;
@@ -59,7 +60,7 @@ public class XMLUtils {
    * Loads and parses an XML file into a <code>Document</code>
    *
    * @param filename Name of file to load.
-   * @return a <code>Document</code> value, null on error
+   * @return a <code>Document</code> value, null on error or nonexistent file
    */
   public Document loadXMLFile(String filename) {
     if (filename == null || filename.equals(""))
@@ -67,7 +68,25 @@ public class XMLUtils {
 
     try {
       DOMParser parser = new DOMParser();
-      parser.parse(new InputSource(ConfigFinder.getInstance().open(filename)));
+
+      // Try to open the file in an input stream. Note it may not exist!
+      InputStream is = null;
+      try {
+	is = ConfigFinder.getInstance().open(filename);
+      } catch (IOException ioe) {
+	if (log.isWarnEnabled()) {
+	  log.warn("Could not open " + filename + " for reading: " + ioe);
+	}
+	return null;
+      }
+      if (is == null) {
+	if (log.isWarnEnabled()) {
+	  log.warn("Could not open " + filename + " for reading.");
+	}
+	return null;
+      }
+
+      parser.parse(new InputSource(is));
       return parser.getDocument();
     } catch (org.xml.sax.SAXParseException spe) {
       if (log.isErrorEnabled()) {
