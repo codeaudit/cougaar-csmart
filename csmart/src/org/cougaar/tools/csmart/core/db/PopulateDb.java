@@ -429,7 +429,9 @@ public class PopulateDb extends PDbBase {
     // put this id in runtime & config for this expt/trial
     addAssemblyToConfig(commAssemblyId);
     addAssemblyToRuntime(commAssemblyId);
+
     // Do I want to do this?
+    // Doing it will allow recipes easy access to the Comm Assembly
     //setAssemblyMatch();
   }
 
@@ -2878,8 +2880,8 @@ public class PopulateDb extends PDbBase {
 
   public Set executeQuery(String queryName) throws SQLException {
     Statement stmt = dbConnection.createStatement();
-//     if (log.isDebugEnabled()) {
-//       log.debug("About to do query with name " + queryName + " using subs: " + substitutions + " for expt/trial: " + exptId + "\\" + trialId);
+//     if (log.isInfoEnabled()) {
+//       log.info("About to do query with name " + queryName + " using subs: " + substitutions + " for expt/trial: " + exptId + "\\" + trialId);
 //     }
     ResultSet rs = executeQuery(stmt, dbp.getQuery(queryName, substitutions));
     Set results = new HashSet();
@@ -2941,7 +2943,7 @@ public class PopulateDb extends PDbBase {
   /**
    * Compute difference between DB (using ResultSet columns in order)
    * against the values in the substitutions (must be preset). Return StringBuffer
-   * describing differences, null if none.
+   * describing differences, null if none.  
    *
    * @param rs a <code>ResultSet</code> from the DB as baselines
    * @param keys a <code>String[]</code> set of substitution keys to compare against
@@ -3030,6 +3032,9 @@ public class PopulateDb extends PDbBase {
       String mapLib = data.getLibID();
       String mapType = data.getType();
       String dbtype = rs.getString(3);
+
+      // WARNING: I am not checking the CLONE_SET_ID here, because it is currently unused
+
       if (dbname != null && ! dbname.equals(mapName) && dblibid != null && dblibid.equals(mapLib) && dbtype != null && dbtype.equals(mapType)) {
 	if (log.isInfoEnabled()) {
 	  log.info("insureAlib: Bug 1810: For ALIB ID " + id + " have old name " + dbname + " and new: " + mapName);
@@ -3042,8 +3047,66 @@ public class PopulateDb extends PDbBase {
 	substitutions.put(":component_alib_id:", sqlQuote(id));
 	if (log.isInfoEnabled())
 	  log.info("Adding new ALIB ID " + id);
-	executeUpdate(dbp.getQuery("insertAlibComponent", substitutions));
+
+	// Must check that this new ALIB_ID is not already in the DB!
+	// Otherwise multiple saves of an experiment / recipe might cause Duplicate
+	// Entry errors. I believe this is likely bug 1977
+	// Also do I need / want to reset the name on the data object? (and in substitutions)
+	// I think that is not needed.
+
+	while(true) {
+	  // Is our new ALIB ID already there?
+	  ResultSet rs2 = executeQuery(stmt, dbp.getQuery("checkAlibComponent", substitutions));
+	  if (!rs2.next()) {
+	    if (log.isDebugEnabled())
+	      log.debug("New ALIB ID is OK, will insert");
+	    rs2.close();
+	    executeUpdate(dbp.getQuery("insertAlibComponent", substitutions));
+	    break;
+	  } else {
+	    if (log.isInfoEnabled())
+	      log.info("New ALIB ID already there (bug 1977)!");
+	    dbname = rs2.getString(1);
+	    dblibid = rs2.getString(2);
+	    dbtype = rs2.getString(3);
+	    rs2.close();
+	    if (mapName.equals(dbname) && mapLib.equals(dblibid) && mapType.equals(dbtype)) {
+	      // This is the case of bug 1977 I believe.
+	      if (log.isDebugEnabled())
+		log.debug("2 entries are identical. Just use it");
+	      break;
+	    } else {
+	      // I do not expect this to ever be needed
+	      if (log.isInfoEnabled())
+		log.info("2 entries differ somehow? Need yet another one!");
+	      id = id + "1";
+	      data.setAlibID(id);
+	      substitutions.put(":component_alib_id:", sqlQuote(id));
+	      if (log.isInfoEnabled())
+		log.info("Adding new ALIB ID " + id);
+	    } // end of if/else on identical prev entry for new ALIB ID
+	  } // end of block for looking to see if new ALIB ID already there
+	} // end of while loop to look for the ALIB ID before inserting
+
       } else {
+	// ALIB ID is there, but name, type, and LIB_ID are not all the same.
+	// For an Agent name=lib_id=alib_id, so this should never happen
+	// ditto for a Node
+	// Plugins have an ALIB of the CLASS and the Parent, usually -- and
+	// that is usually the same as the name.
+	// and the LIB_ID has the type and the class.
+	// So if type is diff, LIB_ID is diff probably
+	// if type is same and LIB_ID is diff, then name and ALIB_ID would be diff, so don't expect that
+	// if type is same and LIB_ID is same, then probably
+	// the parent is different -- but then the alib_id would be
+	// different.
+
+	// Basically, unless the name is funny and/or alib_id is funny,
+	// I'd only expect to get here if the type changes
+	// And most components aren't capable of doing that.
+
+	// Perhaps do a check that this is so?
+
 	// Something else is different. Ask user what to do
 	String[] subvars = {
 	  ":component_name:",
@@ -3058,7 +3121,7 @@ public class PopulateDb extends PDbBase {
 	  Object[] msg = {
 	    "You are attempting to redefine alib component: " + id,
 	    diff,
-	    "Do you want to overwrite the definition?"
+	    "Do you want to overwrite the definition (typical)?"
 	  };
 	  if (isOverwrite(msg)) {
 	    String query = dbp.getQuery("updateAlibComponent", substitutions);
@@ -3099,12 +3162,22 @@ public class PopulateDb extends PDbBase {
       if (diff == null) {
 	// Value is ok
       } else if (conflictHandler != null) {
+	// What could have changed?
+	// 1: The class of an Agent
+	// 2: Change a name from being an Agent to a Node
+	// But if class changes or type changes, expect the lib_id to change
+	// and type & insertion point should go together as well
+	// So could check: If both type/insertion dont change/stay
+	// together, warn
+	// If comp not agent/node/?host? and class changed of type
+	// changed, warn
+
 	String id = (String) substitutions.get(":component_lib_id:");
 	String query = dbp.getQuery("updateLibComponent", substitutions);
 	Object[] msg = {
 	  "You are attempting to redefine lib component: " + id,
 	  diff,
-	  "Do you want to overwrite the definition?"
+	  "Do you want to overwrite the definition (typical)?"
 	};
 	if (isOverwrite(msg)) {
 	  executeUpdate(query);
