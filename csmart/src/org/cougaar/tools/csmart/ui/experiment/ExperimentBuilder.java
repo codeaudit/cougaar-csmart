@@ -505,14 +505,18 @@ public class ExperimentBuilder extends JFrame {
   private void saveAs() {
     // get unique name in both database and CSMART or
     // reuse existing name
+    String name = null;
     if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
-      String name = 
+      name = 
         CSMART.getOrganizer().getUniqueExperimentName(experiment.getShortName(), true);
       if (name == null)
         return;
-      experiment.setName(name);
+      experiment.setName(name);      
     }
     saveHelper(false);
+    // reset title on the window here?
+    if (name != null)
+      setTitle(CSMART.EXPERIMENT_BUILDER + ": " + name);
   }
 
   // Dump out the ini files for the first trial to the local results directory
