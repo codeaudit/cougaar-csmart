@@ -10,47 +10,48 @@ mysql -f -u [user] -p[pw] [db] < mysqldump.9.2.txt
   run the Adaptive Logistics society, you must re-load your
   configuration database, following the instructions in
   InstallAndTest.html
-- Added the CommunityPlugin to all regular Agents in base 1AD CSMART Experiments. You no
-  longer need to add it to your Agents. However, you must still add it
-  to any NodeAgents where you want to do community work.
-- In addition, note that the default configs/common/LDMDomains.ini now
-  loads the Community Domain, so no recipe is required to do so.
 - New Communities editing window. This window allows users to easily
   create new Communities with arbitrary attributes, and add Agents (or
   Communities) to those Communities, with arbitrary attributes. All
   community data is stored on a per-experiment basis, and loaded at
   run-time using the standard DBInitializer. To use this editor,
   select the "Communities" tab in the Experiment Builder.
-- CSMART code changes to correctly handle various database IDs. (bug
-  1465)
-- Bug 533: Improved javadoc to include @property tags
-- Bug 1428: Now deleted or renamed queries in recipeQueries.q are
-  reflected in the recipe query drop-down and at save time. Note that,
-  as before, if you remove a query, any recipes that used it will not be
-  invalid and need to be both modified and re-saved.
-- Bug 1469: Changed label for using built-in recipes to say "From
-  Template" for clarity - no functionality changed.
-- Bug 789: Add the Cougaar javadoc Parameters.html to the Experiment
-  Builder Help menu for ideas on some Node Properties to set.
-- Bug 1439: If a drop-down list is open (ie in the Configuration
-  Builder) and you kill that window, you get an NPE. This appears to be
-  a JDK bug, and will be logged as a warning.
-- Bug 1466: Put configuration database url in the version info CSMART prints.
 - Force Agent Insertion recipes to always include an Org Asset. This
   way, all non-Node Agents appear in the CSMART Society Monitor. (bug
   1446)
+- Now deleted or renamed queries in recipeQueries.q are
+  reflected in the recipe query drop-down and at save time. Note that,
+  as before, if you remove a query, any recipes that used it will not be
+  invalid and need to be both modified and re-saved. (bug 1428)
+- Changed label for using built-in recipes to say "From
+  Template" for clarity - no functionality changed. (bug 1469)
+- Added the CommunityPlugin to all regular Agents in base 1AD CSMART
+  Experiments. You no longer need to add it to your Agents. However, you
+  must still add it to any NodeAgents where you want to do community work.
+- In addition, note that the default configs/common/LDMDomains.ini now
+  loads the Community Domain, so no recipe is required to do so.
+- If a drop-down list is open (ie in the Configuration
+  Builder) and you kill that window, you get an NPE. This appears to be
+  a JDK bug, and will be logged as a warning. (bug 1439)
+- CSMART code changes to correctly handle various database IDs. (bug
+  1465). This solves the "duplicate plugin" problem for the UL
+  Adaptive Logistics team.
+- Bug 533: Improved javadoc to include @property tags
+- Bug 789: Add the Cougaar javadoc Parameters.html to the Experiment
+  Builder Help menu for ideas on some Node Properties to set.
 - Lay out the Host Configuration Builder horizontally, for ease of use
   (bug 1447).
 - Bug 1441: Restrict recipe arguments that need to be positive to a
   positive range.
-- Bug 1474 (partial fix): Allow Nodes and Hosts to have same name, but not Nodes and Agents.
+- Bug 1474 (partial fix): Allow Nodes and Hosts to have same name, but
+  not Nodes and Agents.
 - Bug 1446: Include the JDBC URL for the CSMART DB in the version
   information printed on error and at startup. And re-enable it on the
   Help menu under Show Version.
 - Bug 1414: Dis-allow creating new recipes, etc inside experiments, etc.
 - Avoid NPE when doing drag-n-drop (bug 1456).
 - Bug 1464: Ensure that components added via a recipe with a specific
-  name to not conflict with components of same class in the database.
+  name do not conflict with components of same class in the database.
 - Fix an unreported bug causing NPEs on reading a non-Default
   workspace file.
 - Bug 1377: Sort Servlet recipe property names to help avoid
