@@ -122,7 +122,7 @@ public class PGPropData implements Serializable {
     if (type == null)
       return false;
     for (int i = 0; i < listtypes.length; i++) {
-      if (listtypes[i].equals(type))
+      if (listtypes[i].equalsIgnoreCase(type))
 	return true;
     }
     return false;
