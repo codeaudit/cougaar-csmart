@@ -21,8 +21,6 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import org.cougaar.tools.csmart.experiment.Experiment;
-import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.server.ProcessDescription;
 import org.cougaar.tools.server.RemoteHost;
@@ -31,7 +29,9 @@ import org.cougaar.tools.server.RemoteListenable;
 import org.cougaar.tools.server.RemoteProcess;
 import org.cougaar.util.log.Logger;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
+
 import java.util.*;
 
 /**
@@ -42,11 +42,6 @@ import java.util.*;
 public class AppServerSupport implements Observer {
   private RemoteHostRegistry remoteHostRegistry;
   private CSMARTConsoleModel model;
-
-  // this maps the "experiment name-node name" to an AppServerDesc
-  // and provides the app server on which the node is running
-  // note that the same name must be used for the ProcessDescription
-  //  private Hashtable nodeToAppServer;
   private transient Logger log;
 
   public AppServerSupport(CSMARTConsoleModel model) {
@@ -64,14 +59,7 @@ public class AppServerSupport implements Observer {
    * Kill all running processes on all known AppServers.
    */
   public void killAllProcesses() {
-     refreshAppServers();
-     killAllProcessesWorker();
-  }
-
-  /**
-   * Synchronized worker for above
-   */
-  private synchronized void killAllProcessesWorker() {
+    refreshAppServers();
     ArrayList appServers = model.getAppServers();
     for (int i = 0; i < appServers.size(); i++) {
       AppServerDesc desc = (AppServerDesc)appServers.get(i);
@@ -114,13 +102,6 @@ public class AppServerSupport implements Observer {
     */
   public void killListeners() {
     refreshAppServers();
-    killListenerWorker();
-  }
-
-  /**
-   * Synchronized worker for above.
-   */
-  private synchronized void killListenerWorker() {
     ArrayList nodes = model.getAttachedNodes();
     String myListener = CSMART.getNodeListenerId();
     for (int i = 0; i < nodes.size(); i++) {
@@ -250,8 +231,6 @@ public class AppServerSupport implements Observer {
   }
 
   /**
-   * TODO: Needs to be synchronized, cause it's called from a timer
-   * thread and when the user requests.
    * Updates both the App Servers and the nodes they control.
    */
   public void refreshAppServers() {

@@ -76,6 +76,7 @@ public class CSMARTConsoleModel extends Observable {
 
   private Hashtable nodeModels;    // Hashtable of all node name to node models mappings.
   private Hashtable nodeViews;
+  private Object appServerLock = new Object(); // used to lock nodeToAppServer and appServers
   private Hashtable nodeToAppServer; // maps node name to AppServerDesc
   private AppServerList appServers;// known app servers; array of AppServerDesc
 
@@ -912,7 +913,9 @@ public class CSMARTConsoleModel extends Observable {
    * Called by AppServerSupport to update add an app server.
    */
   public void addAppServer(AppServerDesc desc) {
-    appServers.add(desc);
+    synchronized (appServerLock) {
+      appServers.add(desc);
+    }
   }
 
   /**
@@ -920,69 +923,92 @@ public class CSMARTConsoleModel extends Observable {
    */
   public void addNodeToAppServerMapping(String name,
                                         AppServerDesc appServerDesc) {
-    if (nodeToAppServer.get(name) == null) {
+    boolean nodeAdded = false;
+    boolean serverAdded = false;
+    synchronized (appServerLock) {
+      if (nodeToAppServer.get(name) == null) 
+        nodeAdded = true;
+      Collection servers = nodeToAppServer.values();
+      for (Iterator i = servers.iterator(); i.hasNext();) {
+        AppServerDesc serverDesc = (AppServerDesc)i.next();
+        if (appServerDesc.hostName.equals(serverDesc.hostName) &&
+            appServerDesc.port == serverDesc.port) {
+          serverAdded = true;
+          break;
+        }
+      }
+      nodeToAppServer.put(name, appServerDesc);
+    }
+    if (nodeAdded) {
       setChanged();
       notifyObservers(NODE_ADDED);
     }
-    boolean newAppServer = true;
-    Collection servers = nodeToAppServer.values();
-    for (Iterator i = servers.iterator(); i.hasNext();) {
-      AppServerDesc serverDesc = (AppServerDesc)i.next();
-      if (appServerDesc.hostName.equals(serverDesc.hostName) &&
-          appServerDesc.port == serverDesc.port)
-        newAppServer = false;
-    }
-    if (newAppServer) {
+    if (serverAdded) {
       setChanged();
       notifyObservers(APP_SERVER_ADDED);
     }
-    nodeToAppServer.put(name, appServerDesc);
   }
 
   /**
    * Return array list of AppServerDesc of known app servers.
    */
   public ArrayList getAppServers() {
-    return appServers;
+    synchronized (appServerLock) {
+      return appServers;
+    }
   }
 
   /**
    * Get app server description for a node.
    */
   public AppServerDesc getAppServer(String name) {
-    return (AppServerDesc)nodeToAppServer.get(name);
+    AppServerDesc server = null;
+    synchronized (appServerLock) {
+      server = (AppServerDesc)nodeToAppServer.get(name);
+    }
+    return server;
   }
 
   /**
    * Get app server on this host and port.
    */
   public AppServerDesc getAppServer(String hostName, int port) {
-    for (int i = 0; i < appServers.size(); i++) {
-      AppServerDesc desc = (AppServerDesc)appServers.get(i);
-      if (desc.hostName.equals(hostName) &&
-          desc.port == port) {
-        return desc;
+    AppServerDesc foundDesc = null;
+    synchronized (appServerLock) {
+      for (int i = 0; i < appServers.size(); i++) {
+        AppServerDesc desc = (AppServerDesc)appServers.get(i);
+        if (desc.hostName.equals(hostName) &&
+            desc.port == port) {
+          foundDesc = desc;
+          break;
+        }
       }
     }
-    return null;
+    return foundDesc;
   }
 
   /**
    * Delete app server; just remove entries for this app server.
    */
   public void appServerDelete(AppServerDesc appServerDesc) {
-    Enumeration nodes = nodeToAppServer.keys();
-    while (nodes.hasMoreElements()) {
-      String node = (String)nodes.nextElement();
-      AppServerDesc desc = getAppServer(node);
-      if (desc.hostName.equals(appServerDesc.hostName) &&
-          desc.port == appServerDesc.port) {
-        nodeToAppServer.remove(node);
-        setChanged();
-        notifyObservers(APP_SERVER_DELETED);
+    boolean appServerDeleted = false;
+    synchronized (appServerLock) {
+      Enumeration nodes = nodeToAppServer.keys();
+      while (nodes.hasMoreElements()) {
+        String node = (String)nodes.nextElement();
+        AppServerDesc desc = getAppServer(node);
+        if (desc.hostName.equals(appServerDesc.hostName) &&
+            desc.port == appServerDesc.port) {
+          nodeToAppServer.remove(node);
+          appServerDeleted = true;
+        }
       }
+      appServers.remove(appServerDesc);
     }
-    appServers.remove(appServerDesc);
+    if (appServerDeleted) {
+      setChanged();
+      notifyObservers(APP_SERVER_DELETED);
+    }
   }
 
   /**
@@ -1022,7 +1048,11 @@ public class CSMARTConsoleModel extends Observable {
    * Get list of nodes to which CSMART is attached.
    */
   public ArrayList getAttachedNodes() {
-    return new ArrayList(nodeToAppServer.keySet());
+    ArrayList nodes = null;
+    synchronized (appServerLock) {
+      nodes = new ArrayList(nodeToAppServer.keySet());
+    }
+    return nodes;
   }
 
   /**
