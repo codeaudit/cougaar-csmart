@@ -49,7 +49,7 @@ public class CommunityTable extends JTable {
   }
   
   public void setAssemblyId(String id) {
-    ((DatabaseTableModel)getModel()).setAssemblyId(id);
+    ((DatabaseTableModel)((TableSorter)getModel()).getModel()).setAssemblyId(id);
   }
 
   public boolean isCellEditable(int row, int column) {
