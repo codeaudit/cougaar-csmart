@@ -244,8 +244,13 @@ public class CommunityPanel extends JPanel {
     removeAllChildren(hostTree);
     removeAllChildren(nodeTree);
     removeAllChildren(agentTree);
+    // Necessary? Must remove listener first?
+    communityTree.getModel().removeTreeModelListener(treeModelListener);
+    removeAllChildren(communityTree);
+    communityTree.getModel().addTreeModelListener(treeModelListener);
     // get hosts, agents and nodes from experiment
     addHostsFromExperiment();
+    putAllCommunitiesInTree();
     // add unassigned nodes to nodes tree
     addUnassignedNodesFromExperiment();
     // add unassigned agents to agents tree
@@ -537,7 +542,10 @@ public class CommunityPanel extends JPanel {
   }
 
   private String selectCommunityToDisplay() {
-    ArrayList communityNames = CommunityDBUtils.getCommunities();
+    // This version shows all communities anywhere
+    //    ArrayList communityNames = CommunityDBUtils.getCommunities();
+    // But I think I only want those in this experiment
+    ArrayList communityNames = CommunityDBUtils.getCommunitiesForExperiment(experiment.getCommAsbID());
     if (communityNames == null || communityNames.size() == 0)
       return null;
     JComboBox cb = 
@@ -562,8 +570,10 @@ public class CommunityPanel extends JPanel {
   // method invoked from view-community menu item
   // put the community in the tree and display info about it
   // disable tree model listener so it doesn't try to update the database
-
   private void displayCommunityInformation() {
+    if (log.isDebugEnabled()) {
+      log.debug("displayCommunityInformation called");
+    }
     String communityName = selectCommunityToDisplay();
     if (communityName == null)
       return;
@@ -572,6 +582,25 @@ public class CommunityPanel extends JPanel {
     communityTree.getModel().removeTreeModelListener(treeModelListener);
     addToTree(communityTree.addNode(null, communityName, "Community", null),
               communityName);
+    communityTree.getModel().addTreeModelListener(treeModelListener);
+  }
+
+  private void putAllCommunitiesInTree() {
+    ArrayList communityNames = CommunityDBUtils.getCommunitiesForExperiment(experiment.getCommAsbID());
+    if (communityNames == null || communityNames.size() == 0)
+      return;
+    communityTree.getModel().removeTreeModelListener(treeModelListener);
+    for (Iterator iter = communityNames.iterator(); iter.hasNext(); ) {
+      String communityName = (String)iter.next();
+      communityName = communityName.trim();
+      if (communityName.length() > 0) {
+	if (log.isDebugEnabled()) {
+	  log.debug("putAllComms adding " + communityName);
+	}
+	addToTree(communityTree.addNode(null, communityName, "Community", null),
+		  communityName);
+      }
+    }
     communityTree.getModel().addTreeModelListener(treeModelListener);
   }
 
