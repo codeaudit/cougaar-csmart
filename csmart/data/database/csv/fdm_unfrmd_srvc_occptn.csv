@@ -1,0 +1,1769 @@
+UNFRMD_SRVC_OCCPTN_CD,SVC_CD,RANK_SUBCATEGORY_CODE,UNFRMD_SRVC_OCCPTN_TX
+1,A,O,Duties Unassigned,
+2,A,O,General Officer,
+3,A,O,"Relieved From Duty,  Sick in Hospital or Quarters",JDL
+5,A,O,ROTC Officer Awaiting Entry On Active Duty,
+6,A,O,Student Officer,
+9,A,O,Special Assignment,
+30,A,O,Postal Officer,
+110,A,O,***** Dummy Officer Entry For DMDC Matching *****,
+120,A,O,***** Dummy Officer Entry For DMDC Matching *****,
+131,A,Left Blank,Unknown,
+150,A,O,***** Dummy Officer Entry For DMDC Matching *****,
+151,A,Left Blank,Unknown,
+152,A,Left Blank,Unknown,
+153,A,Left Blank,Unknown,
+154,A,Left Blank,Unknown,
+155,A,Left Blank,Unknown
+205,A,O,Communications & Electronics Staff Officer
+213,A,O,Post Communication Electronics Officer
+215,A,Left Blank,Unknown
+220,A,O,Area Signal Center Officer
+220,A,O,********DUMMY OFFICER ENTRY********
+221,A,O,Communications Center Officer
+250,A,O,***** Dummy Officer Entry For DMDC Matching *****
+251,A,Left Blank,Unknown
+260,A,O,***** Dummy Officer Entry For DMDC Matching *****
+270,A,O,***** Dummy Officer Entry For DMDC Matching *****
+300,A,O,Fixed Plant Signal Unit Commander
+300,A,O,********DUMMY OFFICER ENTRY********
+310,A,O,***** Dummy Officer Entry For DMDC Matching *****
+350,A,O,***** Dummy Officer Entry For DMDC Matching *****
+351,A,Left Blank,Unknown
+352,A,Left Blank,Unknown
+353,A,Left Blank,Unknown
+370,A,O,***** Dummy Officer Entry For DMDC Matching *****
+400,A,O,*******Dummy Officer Entry*****************
+405,A,O,Telephone-Digital Communications Officer
+410,A,O,***** Dummy Officer Entry For DMDC Matching *****
+425,A,O,Cable Communications Officer
+440,A,O,***** Dummy Officer Entry For DMDC Matching *****
+460,A,O,***** Dummy Officer Entry For DMDC Matching *****
+490,A,O,***** Dummy Officer Entry For DMDC Matching *****
+505,A,O,Radio Systems Officer
+520,A,O,***** Dummy Officer Entry For DMDC Matching *****
+530,A,O,***** Dummy Officer Entry For DMDC Matching *****
+540,A,O,***** Dummy Officer Entry For DMDC Matching *****
+590,A,O,Radio Controlled Target Airplane Officer
+600,A,O,Motor Officer
+609,A,O,Highway Transport Planning Officer
+612,A,O,Field Transportation Officer
+615,A,O,Highway Traffic Engineer
+640,A,Left Blank,Unknown
+660,A,O,Highway Transport Officer
+663,A,O,Engineer Equipment Officer
+668,A,O,Amphibious Craft Officer
+670,A,Left Blank,Unknown
+692,A,O,Transportation Officer
+693,A,O,Transportation Traffic Management Officer
+694,A,O,Transportation Movements Officer
+700,A,O,***** Dummy Officer Entry For DMDC Matching *****
+706,A,O,Trainmaster
+710,A,O,***** Dummy Officer Entry For DMDC Matching *****
+715,A,O,Railway Maintenance-Of-Way Superintendent
+716,A,O,Railway Bridge & Building Supervisor
+717,A,O,Railway Track Supervisor,
+718,A,O,Railway Signal Maintenance Supervisor,
+720,A,O,***** Dummy Officer Entry For DMDC Matching *****,
+720,A,O,"Road Foreman,  Railroad Locomotives",JDL
+730,A,O,Yardmaster,
+730,A,O,***** Dummy Officer Entry For DMDC Matching *****,
+735,A,O,Railway Master Mechanic,
+736,A,O,Railway Car Foreman,
+737,A,O,Enginehouse Foreman,
+740,A,O,Railway Dispatcher,
+740,A,O,***** Dummy Officer Entry For DMDC Matching *****,
+750,A,O,Railway Operations Superintendent,
+750,A,O,***** Dummy Officer Entry For DMDC Matching *****,
+753,A,O,Railway Car Service Superintendent,
+754,A,O,Railway Equipment Superintendent,
+760,A,O,***** Dummy Officer Entry For DMDC Matching *****,
+801,A,O,Harbor Master
+804,A,O,Cargo Officer
+810,A,O,***** Dummy Officer Entry For DMDC Matching *****
+815,A,O,Port Operations Officer
+820,A,O,Dredge Master
+823,A,O,Dredge Engineering Officer
+825,A,O,Harbor Craft Unit Commander
+830,A,O,***** Dummy Officer Entry For DMDC Matching *****
+860,A,O,***** Dummy Officer Entry For DMDC Matching *****
+880,A,Left Blank,Unknown
+881,A,Left Blank,Unknown
+910,A,O,***** Dummy Officer Entry For DMDC Matching *****
+912,A,Left Blank,Unknown
+913,A,Left Blank,Unknown
+914,A,Left Blank,Unknown
+915,A,Left Blank,Unknown
+916,A,Left Blank,Unknown,
+917,A,Left Blank,Unknown,
+918,A,Left Blank,Unknown,
+919,A,Left Blank,Unknown,
+920,A,Left Blank,Unknown,
+921,A,Left Blank,Unknown,
+922,A,Left Blank,Unknown,
+950,A,O,***** Dummy Officer Entry For DMDC Matching *****,
+970,A,O,***** Dummy Officer Entry For DMDC Matching *****,
+1010,A,O,Combat Signal Unit Commander,
+1111,A,O,Safeguard Unit Commander,
+1115,A,O,Safeguard Staff Officer,
+1154,A,O,Field Artillery Target Acquisition Officer,
+1174,A,O,Light Air Defense Artillery Unit Commander,
+1176,A,O,Composite Aaa Unit Commander,
+1177,A,O,"Air Defense Missile Staff Officer,  Nike Hercules",JDL
+1178,A,O,"Air Defense Missile Staff Officer,  Hawk",JDL
+1180,A,O,Air Defense Missile Unit Commander,
+1181,A,O,Guided Missile Systems Officer,
+1183,A,O,Reconnaissance & Survey Officer,
+1190,A,O,Ballistic Missile Unit Commander,
+1193,A,O,Field Artillery Unit Commander,
+1198,A,O,Field Illumination Unit Commander,
+1203,A,O,Tank Unit Commander,
+1204,A,O,Armored Reconnaissance Unit Commander,
+1210,A,O,Armored Combat Command Commander,
+1328,A,O,Engineer Construction Unit Commander,
+1330,A,O,Armored Engineer Unit Commander,
+1331,A,O,Combat Engineer Unit Commander,
+1342,A,O,Portable Bridge Unit Commander,
+1367,A,O,Amphibious Engineer Unit Commander,
+1415,A,O,Chemical Combat Support Unit Commander,
+1542,A,O,Infantry Unit Commander
+1543,A,O,Infantry Heavy Mortar Unit Commander
+1560,A,O,Infantry Unit Commander (Mechanized)
+1690,A,O,Military Intelligence Unit Commander
+1691,A,O,Army Cryptologic & Electronic Warfare Unit Commander
+1980,A,O,Fixed Wing Aviation Unit Commander
+1981,A,O,Rotary Wing Aviation Unit Commander
+1982,A,O,Airfield Commander
+1987,A,O,Composite Aviation Unit Commander
+2010,A,O,Chief of Staff
+2011,A,O,Secretary of The General Staff
+2015,A,O,Congressional Liaison Officer
+2019,A,O,Post Commander
+2025,A,O,Major Departmental Unit Chief or Director
+2030,A,O,Aide-De-Camp
+2040,A,O,Test & Evaluation Officer
+2110,A,O,Adjutant or Adjutant General,
+2120,A,O,Administrative Officer,
+2136,A,O,Nontactical Unit Officer,
+2145,A,O,WAC Staff Adviser,
+2162,A,O,"Operations & Training Staff Officer (G3, S3)",JDL
+2163,A,O,"Air Operations Officer (G3, S3)",JDL
+2167,A,O,Research & Development Coordinator,
+2170,A,O,Technical Operations Officer,
+2180,A,O,"Civil-Military Operations Staff Officer (G5, S5)",JDL
+2200,A,O,Personnel Officer,
+2210,A,O,Personnel Management Officer,
+2239,A,O,Psychological Assistant,
+2260,A,O,"Personnel Staff Officer (G1,  S1)",JDL
+2265,A,O,Manpower Control Officer,
+2310,A,O,Recruiting & Induction Officer,
+2330,A,O,Labor Relations Officer,
+2334,A,O,Selective Service Officer,
+2350,A,O,Race Relations/Equal Opportunity Officer,
+2401,A,O,"ADP Officer,  PCM",JDL
+2402,A,O,ADP Officer,
+2420,A,O,Archivist,
+2421,A,O,Military Historian,
+2430,A,O,Memorial Activities Officer,
+2500,A,O,School Commandant,
+2510,A,O,Adviser Group Commander/Senior Adviser (Reserve Component),
+2517,A,O,Professor of Military Science,
+2518,A,O,Aviation Staff Officer,
+2520,A,O,Training Officer,
+2548,A,O,Training Aids Officer,
+2610,A,O,Management Analyst,
+2615,A,O,Organization & Equipment Planning Officer,
+2622,A,O,Training Center Unit Officer,
+2624,A,O,Logistical Commander,
+2625,A,O,Logistics Officer,
+2640,A,O,Troop Movements Officer,
+2701,A,O,Nonmilitary Subjects Instruction Officer (Designated Subject),
+2715,A,O,Military Leadership Instructor,
+2720,A,O,Civil Defense Officer,
+2728,A,O,Military College Faculty Member,
+2800,A,O,Comptroller,
+2801,A,O,"Comptroller Staff Officer,  Army General Staff",JDL
+2900,A,O,Headquarters Unit Commander,
+2910,A,O,Service Company Commander,
+3000,A,O,Executive Medicine Officer,
+3004,A,O,Nuclear Medical Officer,
+3005,A,O,Preventive Medicine Officer,
+3006,A,O,Occupational Medicine Officer,
+3012,A,O,Health Care Administrator,
+3100,A,O,General Medical Officer
+3101,A,O,Pulmonary Disease Officer
+3105,A,O,Gastroenterologist
+3107,A,O,Cardiologist
+3108,A,O,Obstetrician & Gynecologist
+3111,A,O,Urologist
+3112,A,O,Dermatologist
+3113,A,O,Allergist/Clinical Immunologist
+3115,A,O,Anesthesiologist
+3116,A,O,Pediatrician
+3117,A,O,Pediatric Cardiologist
+3118,A,O,Child Neurologist
+3125,A,O,Ophthalmologist
+3126,A,O,Otorhinolaryngologist
+3127,A,O,Child Psychiatrist
+3128,A,O,Neurologist
+3129,A,O,Psychiatrist
+3130,A,O,Adolescent Psychiatrist
+3131,A,O,Neurosurgeon
+3132,A,O,Hematologist
+3134,A,O,Nephrologist
+3135,A,O,Medical Oncologist
+3136,A,O,Endocrinologist
+3137,A,O,Rheumatologist
+3138,A,O,Clinical Pharmacologist
+3139,A,O,Internist
+3140,A,O,Infectious Disease Officer
+3141,A,O,Family Physician
+3150,A,O,General Surgeon
+3151,A,O,Thoracic Surgeon
+3152,A,O,Plastic Surgeon
+3153,A,O,Orthopedic Surgeon
+3154,A,O,Peripheral Vascular Surgeon,
+3160,A,O,Aviation Medical Officer,
+3167,A,O,Preventive Dentistry Officer,
+3168,A,O,Endodontist,
+3170,A,O,General Dentistry Officer,
+3171,A,O,Oral Surgeon,
+3172,A,O,Pedodontist,
+3173,A,O,Orthodontist,
+3174,A,O,Periodontist,
+3175,A,O,"Prosthodontist, Removable",JDL
+3176,A,O,"Prosthodontist,  Fixed",JDL
+3177,A,O,Oral Pathologist,
+3178,A,O,Dental Staff Officer,
+3179,A,O,Oral Medicine Officer,
+3180,A,O,Physiatrist,
+3200,A,O,General Veterinary Officer,
+3201,A,O,Veterinary Public Health Officer
+3202,A,O,Small Animal Veterinary Officer
+3203,A,O,Veterinary Staff Officer
+3204,A,O,Veterinary Food Hygienist
+3205,A,O,Veterinary Laboratory Animal Officer
+3206,A,O,Veterinary Pathologist
+3207,A,O,Veterinary Microbiologist/Parasitologist
+3208,A,O,Veterinary Radiobiologist/Radiologist
+3209,A,O,Veterinary Comparative Medicine Officer
+3210,A,O,Veterinary Laboratory Officer
+3304,A,O,Therapeutic Radiologist (Radiation Oncologist)
+3305,A,O,Diagnostic Radiologist
+3306,A,O,Radiologist
+3307,A,O,Microbiologist
+3308,A,O,Nuclear Medical Science Officer
+3309,A,O,Biochemist
+3310,A,O,Parasitologist
+3311,A,O,Immunologist
+3314,A,O,Clinical Laboratory Officer
+3315,A,O,Entomologist
+3316,A,O,Nutrition Officer
+3318,A,O,Pharmacy Officer
+3324,A,O,Anatomical Pathologist
+3325,A,O,Pathologist
+3326,A,O,Clinical Pathologist
+3327,A,O,Physiologist
+3328,A,O,Forensic Pathologist
+3329,A,O,Neuropathologist
+3340,A,O,Optometry Officer
+3350,A,O,Podiatrist
+3360,A,O,Audiologist
+3370,A,O,Environmental Science Officer
+3371,A,O,Sanitary Engineer
+3380,A,O,Military Community Oral Health Manager
+3416,A,O,Occupational Therapist
+3418,A,O,Physical Therapist
+3420,A,O,Hospital Dietitian
+3430,A,O,Nurse Administrator
+3431,A,O,Community Health Nurse
+3437,A,O,Psychiatric/Mental Health Nurse
+3442,A,O,Pediatric Nurse
+3443,A,O,Operating Room Nurse
+3445,A,O,Nurse Anesthetist
+3446,A,O,Obstetric & Gynecologic Nurse
+3448,A,O,Medical-Surgical Nurse
+3449,A,O,Clinical Nurse
+3506,A,O,Field Medical Assistant
+3510,A,O,Health Services Comptroller
+3520,A,O,Biomedical Information Systems Officer,
+3530,A,O,Patient Administration Officer,
+3560,A,O,Health Services Personnel Manager,
+3565,A,O,Health Services Manpower Control Officer,
+3570,A,O,Health Services Plans & Operations Officer,
+3581,A,O,Aeromedical Evacuation Officer,
+3590,A,O,Health Services Materiel Officer,
+3593,A,O,Health Services Intelligence Officer,
+3595,A,O,Health Facilities Planning Officer,
+3606,A,O,Social Work Officer,
+3620,A,O,Psychologist,
+3621,A,O,Health Services Research Psychologist,
+3639,A,O,Behavioral Science Associate,
+3900,A,O,Medical Unit Commander,
+4010,A,O,"Supply Staff Officer (G4,  S4)",JDL
+4011,A,O,Maintenance Staff Officer,
+4112,A,O,Club Manager
+4114,A,O,Food Adviser
+4130,A,O,Subsistence Officer
+4200,A,O,Supply & Service Officer
+4201,A,O,Supply Management Officer
+4210,A,O,Army Exchange Officer
+4223,A,O,Commissary Officer
+4300,A,O,Materiel Project/Product Manager
+4312,A,O,Real Estate Officer
+4319,A,O,Procurement Control & Production Officer
+4320,A,O,Procurement Officer
+4360,A,O,Printing Officer
+4371,A,O,Dog Handling Officer
+4403,A,O,Foreign Aid Supply Officer
+4420,A,O,Aircraft Supply Officer
+4445,A,O,Storage Officer
+4475,A,O,Railway Supply Officer
+4510,A,O,Unit Ammunition Officer
+4514,A,O,Conventional Ammunition Officer
+4515,A,O,Missile & Munitions Officer
+4516,A,O,Missile Maintenance Officer
+4517,A,O,Special Ammunition Officer
+4600,A,O,Property Disposal Officer
+4601,A,O,Salvage Collecting Officer
+4803,A,O,Maintenance Officer
+4804,A,O,Marine Maintenance Officer
+4808,A,O,Armament Maintenance & Repair Officer
+4815,A,O,Mechanical Maintenance Officer
+4818,A,O,Tire Maintenance & Repair Officer
+4820,A,O,Parachute Maintenance & Aerial Supply Officer
+4823,A,O,Aircraft Maintenance Officer
+4825,A,O,Electronics Maintenance Officer
+4830,A,O,Laundry & Fumigation Officer
+4850,A,O,Railway Shop Superintendent
+4851,A,O,Car Repair Shop Superintendent
+4857,A,O,Railway Machine Shop Superintendent
+4862,A,O,Diesel Locomotive Shop Superintendent
+4940,A,O,Water Supply Unit Commander
+4942,A,O,Forestry Officer
+4944,A,O,Gas Generating Unit Commander
+4960,A,O,Petroleum Products Supply Officer
+5000,A,O,Recreation Services Officer
+5241,A,O,Army Band Officer
+5310,A,O,Chaplain
+5400,A,O,Publications Officer
+5503,A,O,Public Education Officer
+5505,A,O,Information Officer
+5522,A,O,Broadcast Officer
+5525,A,O,Physical Reconditioning Officer
+5900,A,O,Public Welfare Officer
+6010,A,O,Public Finance Officer
+6100,A,O,Finance & Accounting Officer
+6101,A,O,Accounting Officer
+6200,A,O,Finance Staff Officer
+6201,A,O,Finance Disbursing Officer
+6302,A,O,Program/Budget Officer
+6400,A,O,Statistician
+6410,A,O,Economist
+7004,A,O,Division Engineer
+7010,A,O,Engineer Staff Officer
+7020,A,O,Public Works & Utilities Officer
+7110,A,O,Construction Engineer
+7130,A,O,Facilities Engineer
+7140,A,O,Highway Engineer
+7211,A,O,Marine Hull Maintenence Officer
+7221,A,O,Marine Engine Maintenance Officer
+7240,A,O,Port & Dock Construction Engineer
+7242,A,O,Marine Diver
+7300,A,O,Chemical Engineer
+7312,A,O,Physicist
+7314,A,O,Chemical Staff Officer
+7315,A,O,Chemical Combat Service Support Officer
+7317,A,O,Metallurgist
+7318,A,O,Organic Chemist
+7319,A,O,Chemist
+7320,A,O,Munitions Production Officer
+7330,A,O,Nuclear Weapons Effects Officer
+7360,A,O,Chemical Munitions Development Officer
+7421,A,O,Production Engineer
+7422,A,O,Safety Engineer
+7423,A,O,Aviation Safety Officer
+7424,A,O,Experimental Test Pilot
+7500,A,O,Mechanical Engineer
+7501,A,O,Aeronautical Engineer
+7502,A,O,Air Conditioning & Refrigeration Engineer
+7601,A,O,Electronics Engineer
+7611,A,O,Electrical Engineer
+7750,A,O,Communications Electronics Systems Engineer
+7860,A,O,Radio Engineer
+7881,A,O,Radio Frequency Engineering Officer
+7899,A,O,Public Communications Officer
+7900,A,O,Civil Engineer
+7902,A,O,Soils Engineer
+7915,A,O,Topographic Engineer
+7922,A,O,Railway Construction Engineer
+7930,A,O,Petroleum Engineer
+7932,A,O,Pipeline Engineer,
+7940,A,O,Geologist,
+7960,A,O,Sanitary Engineer,
+8000,A,O,Civil Affairs Agricultural Officer,
+8101,A,O,Legal Officer,
+8102,A,O,"Military Judge,  Trial & Appellate Level",JDL
+8103,A,O,Judge Advocate or Judge Advocate General,
+8104,A,O,Civil Government Officer,
+8105,A,O,"Civil Affairs Officer (G5, S5)",JDL
+8130,A,O,Patent Lawyer,
+8204,A,O,Meteorologist,
+8311,A,O,Geographer,
+8400,A,O,Physical Anthropologist,
+8430,A,O,Research Psychologist,
+8500,A,O,Pictorial Unit Commander,
+8510,A,O,Pictorial Officer,
+8511,A,O,Motion Picture & TV Director,
+8521,A,O,Motion Picture or TV Writer,
+8530,A,O,Audio-Visual Instructional Technology Officer,
+8605,A,O,Arts-Monuments Officer,
+8700,A,O,Operations Research/Systems Analysis (OR/SA) Officer,
+9000,A,O,Public Safety Officer,
+9100,A,O,Provost Marshal,
+9110,A,O,Military Police Officer,
+9121,A,O,Correctional Officer,
+9150,A,O,Criminal Investigation Officer,
+9224,A,O,Explosive Ordnance Disposal Officer,
+9300,A,O,"Strategic Intelligence Staff Officer (G2,  J2)",JDL
+9301,A,O,"Tactical Intelligence Staff Officer (G2, S2)",JDL
+9303,A,O,Army Attache,
+9305,A,O,Psychological Operations Officer,
+9307,A,O,Installation Intelligence Officer,
+9309,A,O,Aerial Surveillance Officer
+9310,A,O,Inspector General
+9330,A,O,Translation Officer (Designated Language)
+9332,A,O,Interpreter
+9335,A,O,Censorship Officer
+9414,A,O,Fire Protection Officer
+9511,A,O,Camouflage Officer
+9600,A,O,General Electronics Warfare Cryptologic Officer
+9601,A,O,Cryptanalytic Officer
+9604,A,O,Language Officer
+9610,A,O,Electronic Warfare Officer
+9620,A,O,Signal Intelligence Officer
+9630,A,O,Signal Security Officer
+9640,A,O,Electronic Warfare Cryptologic Staff Officer
+9666,A,O,Counterintelligence Officer
+9668,A,O,Area Intelligence Officer
+001A,A,W,Unqualified in Authorized Warrant Officer MOS,
+002A,A,W,Patient,
+003A,A,W,Student,
+004A,A,W,Duties Unassigned or in Transit,
+005A,A,W,P.O.W.,
+006A,A,W,Missing,
+007A,A,W,Arrest or Confinement,
+008A,A,W,A.W.O.L.,
+00A,A,O,Duties Unassigned,
+00B,A,E,Diver,
+00B,A,O,General Officer,
+00C,A,E,Dog Trainer,
+00C,A,O,"Relieved From Duty,  Sick in Hospital or Quarters",JDL
+00D,A,E,Special Duty Assignment,
+00D,A,O,ROTC Officer Awaiting Entry On Active Duty/ACDUTRA,
+00E,A,E,Recruiter,
+00E,A,O,Student Officer
+00F,A,O,Permanent Professor or Permanent Associate Professor
+00H,A,E,Enlisted Aide
+00J,A,E,Club/Community Activities Manager
+00R,A,E,Recruiter/Retention NCO
+00U,A,E,Equal Opportunity Specialist
+00Z,A,E,Command Sergeant Major
+011A,A,W,Branch/MOS Immaterial
+01A,A,O,Branch Immaterial
+01B,A,E,Electrical-Electronic Engineering Assistant
+01C,A,E,Mechanical Engineering Assistant
+01D,A,E,Civil Engineering Assistant
+01E,A,E,Mathematics-Statistics Assistant
+01F,A,E,Physical Sciences Assistant
+01G,A,E,Chemical Engineering Assistant
+01H,A,E,Biological Sciences Assistant
+01K,A,E,Personnel Psychology Specialist
+021A,A,W,Club Manager
+02A,A,O,Combat Arms Immaterial
+02B,A,E,Cornet or Trumpet Player
+02C,A,E,Euphonium Player
+02D,A,E,French Horn Player
+02E,A,E,Trombone Player
+02F,A,E,Tuba Player
+02G,A,E,Flute or Piccolo Player
+02H,A,E,Oboe Player
+02J,A,E,Clarinet Player
+02K,A,E,Bassoon Player
+02L,A,E,Saxophone Player
+02M,A,E,Percussion Player
+02N,A,E,Keyboard Player
+02P,A,E,Brass Group Leader
+02Q,A,E,Woodwind Group Leader
+02R,A,E,Percussion Group Leader
+02S,A,E,Special Bands Member
+02T,A,E,Guitar Player
+02U,A,E,Electric Bass Player
+02Z,A,E,Bands Senior Sergeant
+031A,A,W,Bandmaster
+03A,A,O,Logistics Immaterial
+03B,A,E,Performing Arts Specialist
+03C,A,E,Physical Activities Specialist
+03D,A,E,Arts & Crafts Specialist
+03Z,A,E,Special Services Senior Sergeant
+041A,A,W,Food Service Technician
+04A,A,O,Personnel Immaterial
+04B,A,E,Translator-Interpreter
+04C,A,E,Expert Linguist
+051A,A,W,Veterinary Services Technician
+052A,A,W,Non-Morse Intercept Technician
+053A,A,W,Special Identification Technician
+05A,A,O,AMEDD Immaterial
+05B,A,E,Radio Operator
+05C,A,E,Radio Teletype Operator
+05D,A,E,EW/SIGINT Emitter Identifier/Locator
+05E,A,E,Voice-Radio Operator
+05F,A,E,Radio Teletypewriter Operator (Non-Morse)
+05G,A,E,Signal Security Specialist
+05H,A,E,EW/SIGINT Morse Interceptor
+05K,A,E,EW/SIGINT Non-Morse Interceptor
+09B,A,E,Trainee
+09C,A,E,Split Unit Trainee
+09D,A,E,College Trainee
+09E,A,E,WAC Trainee
+09R,A,E,Simultaneous Membership Program Participant (Reserve Forces),
+09S,A,E,Commissioned Officer Candidate,
+09T,A,E,College Student ARNG Officer Program (Reserve Forces),
+09W,A,E,Warrant Officer Candidate,
+100A,A,W,Multiengine Utility Helicopter Pilot,
+100B,A,W,Utility/Observation Helicopter Pilot,
+100C,A,W,Cargo Helicopter Pilot,
+100D,A,W,Heavy Lift Helicopter Pilot,
+100E,A,W,Attack Helicopter Pilot,
+100F,A,W,"Pilot,  OH-6",JDL
+100G,A,W,"Pilot,  OH-58",JDL
+100K,A,W,Multiengine Attack Helicopter Pilot,
+100P,A,W,"Pilot, U-8",JDL
+100Q,A,W,Combat Service/Support Fixed Wing Pilot,
+100R,A,W,Combat Surveillance Fixed Wing Pilot,
+100Z,A,W,"Pilot,  Nonstandard Aircraft",JDL
+103A,A,W,Aviation Technician
+11A,A,O,Infantry
+11B,A,E,Infantryman
+11B,A,O,Light Infantry
+11BXH,A,E,Light Weapon Infantryman
+11C,A,E,Indirect Fire Infantryman
+11C,A,O,Mechanized Infantry
+11CXH,A,E,Infantry Indirect Fire Crewman
+11D,A,E,Armor Reconnaissance Specialist
+11E,A,E,Armor Crewman
+11H,A,E,Heavy Antiarmor Weapons Infantryman
+11L,A,E,Infantry Senior Sergeant
+11M,A,E,Fighting Vehicle Infantryman
+11X,A,E,Infantry (Reporting Code)
+11X,A,O,*
+11Z,A,E,Infantry Senior Sergeant
+12A,A,E,Pioneer,
+12A,A,O,"Armor, General",JDL
+12B,A,E,Combat Engineer,
+12B,A,O,Armor,
+12C,A,E,Bridge Crewmember,
+12C,A,O,Cavalry,
+12D,A,E,Powered Bridge Specialist,
+12E,A,E,Atomic Demolition Munitions Specialist,
+12F,A,E,Engineer Tracked Vehicle Crewman,
+12X,A,O,*,
+12Z,A,E,Combat Engineering Senior Sergeant,
+130A,A,W,"Missile System Technician,  Pershing",JDL
+130B,A,W,LANCE Missile System Technician,
+131A,A,W,Field Artillery Targeting Technician,
+131B,A,W,Remote Piloted Vehicle Technician,
+132A,A,W,Meteorology Technician,
+13A,A,O,"Field Artillery, General",JDL
+13A,A,E,Field Artillery Basic,
+13B,A,E,Cannon Crewmember,
+13B,A,O,Light Missile Field Artillery,
+13C,A,E,Automated Fire Support Systems Specialist,
+13C,A,O,Heavy Missile Field Artillery,
+13D,A,E,Field Artillery Tactical Data System Specialist,
+13D,A,O,Field Artillery Target Acquisition,
+13E,A,E,Cannon Fire Direction Specialist,
+13E,A,O,Cannon Field Artillery,
+13F,A,E,Fire Support Specialist,
+13M,A,E,Multiple Launch Rocket System (MLRS) Crewmember,
+13N,A,E,LANCE Crewmember,
+13P,A,E,Multiple Launch Rocket System/Fire Dircection Specialist,
+13R,A,E,FA Firefinder Radar Operator,
+13T,A,E,Remotely Piloted Vehicle Crewmember,
+13W,A,E,Field Artillery Target Acquisition Senior Sergeant,
+13X,A,O,*,
+13Y,A,E,Cannon/Missile Senior Sergeant,
+13Z,A,E,Field Artillery Senior Sergeant,
+140A,A,W,Command and Control Systems Integrator,
+140B,A,W,FAAD Systems Technician,
+140C,A,W,Custodial System Technician,
+140D,A,W,HAWK System Technician,
+140E,A,W,PATRIOT System Technician,
+14A,A,O,"Air Defense Artillery, General",JDL
+14B,A,O,SHORAD,
+14C,A,O,Nike Hercules Missile Air Defense Artillery,
+14D,A,E,Hawk Missile System Crewmember,
+14D,A,O,Hawk Missile Air Defense Artillery,
+14E,A,E,PATRIOT Fire Control Enhanced Operator/Maintainer,
+14E,A,O,Patriot Missile ADA,
+14F,A,O,Guided Missile Systems Officer
+14G,A,O,Air Defense Artillery Command & Control Officer
+14J,A,E,Air Defense C4I Tactical Operations Center Enhanced Operator/Maintainer
+14L,A,E,AN/TSQ-73 Air Defense Artillery Command and Control System Operator/Maintainer
+14M,A,E,Man Portable Air Defense System Crewmember
+14R,A,E,BRADLEY Linebacker Crewmember
+14S,A,E,Avenger Crewmember
+14T,A,E,PATRIOT Launching Station Enhanced Operator/Maintainer
+14Z,A,E,Air Defense Artillery Senior Sergeant
+150A,A,W,Air Traffic Control Technician
+151A,A,W,Aviation Maintenance Technician
+152B,A,W,OH-58A/C Scout Pilot
+152C,A,W,OH-6 Scout Pilot
+152D,A,W,OH-58D Scout Pilot
+152F,A,W,AH-64 Pilot
+152G,A,W,AH-1 Pilot
+152H,A,W,AH-64D Attack Pilot,
+153A,A,W,Rotary Wing Aviator,
+153B,A,W,UH-1 Pilot,
+153C,A,W,OH-58A/C Pilot (Observation),
+153D,A,W,UH-60 Pilot,
+154A,A,W,CH-54 Pilot,
+154B,A,W,CH-47A/B/C Pilot,
+154C,A,W,CH-47D Pilot,
+155A,A,W,Fixed Wing Aviator,
+155D,A,W,U-21 Pilot,
+155E,A,W,C-12 Pilot,
+155F,A,W,Jet Aircraft Pilot,
+155G,A,W,0-5A/EO-5B/RC-7 Pilot,
+156A,A,W,OB-1/RV-1 Pilot,
+15A,A,O,Aviation General,
+15B,A,O,"Aviation,  Combined Arms Operations",JDL
+15B,A,E,Sergeant Missile Crewman,
+15C,A,O,Aviation All-Source Intelligence,
+15D,A,O,"Aviation, Logistics",JDL
+15D,A,E,LANCE Crewmember/MLRS Sergeant,
+15E,A,O,"Aviation,  Tactical Communications",JDL
+15E,A,E,Pershing Missile Crewmember,
+15F,A,E,Honest John Rocket Crew Member,
+15J,A,E,MLRS/LANCE Operational/Fire Direction Specialist,
+15M,A,O,"Aviation,  Combat Intelligence",JDL
+15S,A,O,"Aviation,  Air Traffic Control",JDL
+15T,A,O,Aviation Logistics,
+15Z,A,E,Field Artillery Missle-Rocket Senior Sergeant,
+160A,A,W,Aviation Maintenance Technician,
+16B,A,E,Hercules Missile Crew Member,
+16C,A,E,Hercules Fire Control Crewman,
+16D,A,E,Hawk Missile Crewmember,
+16E,A,E,Hawk Fire Control Crewmember
+16F,A,E,Light Air Defense Artillery Crewmember (Reserve Forces)
+16G,A,E,ROLAND Systems Crewmember (Reserve Forces)
+16H,A,E,Air Defense Artillery Operations & Intelligence Assistant
+16J,A,E,Defense Acquisition Radar Operator
+16L,A,E,SGT YORK Air Defense Gun Crewmember
+16P,A,E,CHAPARRAL Crewmember
+16R,A,E,VULCAN Crewmember
+16S,A,E,Man Portable Air Defense Systems (MANPADS) Crewmember
+16T,A,E,Patriot Missile Crewmember
+16X,A,E,Air Defense (Reporting Code)
+16Z,A,E,Air Defense Artillery Senior Sergeant
+17A,A,E,Combat Surveillance & Target Acquisition Crewman
+17B,A,E,Field Artillery Radar Crewmember
+17C,A,E,Field Artillery Target Acquisition Specialist
+17D,A,E,Flash Ranging Crewman
+17E,A,E,Field Illumination Crewman
+17K,A,E,Ground Surveillance Radar Crewman
+17L,A,E,Aerial Sensor Specialist (Reserve Forces)
+17M,A,E,Remote Sensor Specialist
+17Z,A,E,Combat Surveillance & Target Acquisition NCO
+180A,A,W,Special Forces Warrant Officer
+18A,A,O,Special Forces
+18B,A,E,Special Forces Weapons Sergeant
+18B,A,O,Psychological Operations
+18C,A,E,Special Forces Engineer Sergeant
+18C,A,O,Civil Affairs Operations (AC)
+18D,A,E,Special Forces Medical Sergeant
+18E,A,E,Special Forces Communications Sergeant
+18F,A,E,Special Forces Assistant Operations and Intelligence Sergeant
+18X,A,E,Special Forces Candidate (Reporting Code)
+18Z,A,E,Special Forces Senior Sergeant
+19A,A,E,Armor Recruit
+19D,A,E,Cavalry Scout
+19E,A,E,M48-M60 Armor Crewman
+19F,A,E,M48/M60 Tank Driver
+19G,A,E,Armor Reconnaissance Vehicle Crewman
+19H,A,E,Armor Reconnaissance Vehicle Driver
+19J,A,E,M60A2 Armor Crewman
+19K,A,E,M1 Armor Crewman
+19L,A,E,XM1 Tank Driver
+19Z,A,E,Armor Senior Sergeant
+201A,A,W,Meteorology Technician
+202A,A,W,Biomedical Equipment Repair Technician
+210A,A,W,Utilities Operation & Maintenance Technician
+211A,A,W,Target Acquisition Radar Technician
+212A,A,W,Remote Piloted Vehicle Technician
+213A,A,W,Engineer Equipment Repair Technician
+214E,A,W,"Missile System Technician,  Pershing",JDL
+214F,A,W,Field Artillery Missile System Technician (Sergeant),
+214G,A,W,"Missile System Technician, Lance",JDL
+215A,A,W,Photomapping Technician,
+215B,A,W,Survey Technician,
+215C,A,W,Reproduction Technician,
+215D,A,W,Terrain Analysis Technician,
+21A,A,O,"Engineer, General",JDL
+21B,A,O,Combat Engineer,
+21C,A,O,Topographic Engineer,
+21D,A,O,Facilities/Contract Construction Management Engineer (FCCME),
+21E,A,O,Battlefield Support Engineering,
+21F,A,O,Garrison Support Engineering,
+21G,A,E,Pershing Electronics Materiel Specialist,
+21G,A,O,General Army Support Engineering,
+21H,A,O,Specialized Support Engineering,
+21J,A,O,Combat Engineer,
+21K,A,O,"Engineer Officer, General",JDL
+21L,A,E,Pershing Electronics Repairer,
+21R,A,E,Sergeant Firing Set Repairman,
+21S,A,E,Sergeant Missile Guidance Repairman,
+21T,A,E,Sergeant Test Equipment Repairman,
+21U,A,E,Sergeant Maintenance Chief,
+221B,A,W,"Missile Assembly Technician,  Nike",JDL
+221C,A,W,"Missile Maintenance Technician,  Safeguard",JDL
+222B,A,W,"Missile Fire Control Technician,  Nike",JDL
+222C,A,W,"Missile System Technician, Patriot",JDL
+223B,A,W,"Missile System Technician, Hawk",JDL
+223C,A,W,Air Defense Missile System Technician (Hawk),
+223D,A,W,"Air Defense Missile System Technician,  Improved Hawk",JDL
+224B,A,W,Chaparral-Vulcan Systems Technician,
+224D,A,W,SGT YORK Air Defense Systems Technician,
+225B,A,W,ADA Command and Control Maintenance Technician,
+22A,A,O,Topographic Engineering,
+22K,A,E,Hawk Missile-Launcher Repairer,
+22L,A,E,Nike Test Equipment Repairer,
+22N,A,E,Nike-Hercules Missile-Launcher Repairer,
+23A,A,O,Facilities Management Engineer,
+23B,A,O,Contract Construction Management Engineer,
+23N,A,E,Nike Track Radar Repairer,
+23Q,A,E,Hawk Fire Control Repairer,
+23R,A,E,Hawk Missile System Mechanic,
+23S,A,E,Hawk Pulse Radar Repairer,
+23T,A,E,Hawk Continuous Wave Radar Repairman,
+23U,A,E,Nike High Power Radar-Simulator Repairer,
+23V,A,E,Hawk Maintenance Chief,
+23W,A,E,Nike Maintenance Chief,
+241E,A,W,"Field Artillery Missile Systems Repair Technician, Sergeant",JDL
+241F,A,W,"Field Artillery Missile Systems Repair Technician,  Pershing",JDL
+24A,A,O,Telecommunications Systems Engineer,
+24B,A,E,Hawk Continuous Wave Radar Mechanic,
+24B,A,O,Data Systems Engineer,
+24C,A,E,Hawk Firing Section Mechanic,
+24D,A,E,Hawk Missile Launcher Mechanic,
+24E,A,E,Hawk Fire Control Mechanic (Reserve Forces),
+24F,A,E,Hawk Fire Control Mechanic,
+24G,A,E,HAWK Information Coordination Central Mechanic,
+24H,A,E,Hawk Fire Control Repairer,
+24J,A,E,Hawk Pulse Radar Repairer,
+24K,A,E,Hawk Continuous Wave Radar Repairer,
+24L,A,E,Hawk Launcher/Mechanical Systems Repairer,
+24M,A,E,VULCAN System Mechanic,
+24N,A,E,CHAPARRAL System Mechanic,
+24P,A,E,Defense Acquisition Radar Mechanic,
+24Q,A,E,Nike-Hercules Fire Control Mechanic,
+24R,A,E,Hawk Master Mechanic,
+24S,A,E,ROLAND System Mechanic,
+24T,A,E,PATRIOT Operator System Mechanic,
+24U,A,E,Nike-Hercules Custodial Mechanic,
+24V,A,E,Hawk Maintenance Chief,
+24W,A,E,SGT YORK Air Defense Gun Systems Mechanic,
+24Z,A,O,Information Systems Engineer,
+250A,A,W,Telecommunications Technician,
+250B,A,W,Tactical Automated Network Technician,
+250N,A,W,Network Management Technician,
+251A,A,W,Information Systems Technician,
+251B,A,W,"Air Defense Missile System Repair Technician,  Nike",JDL
+251C,A,W,"Air Defense Missile System Repair Technician, Hawk",JDL
+251D,A,W,"Air Defense Missile System Repair Technician,  Improved Hawk",JDL
+252A,A,W,Test Measuring and Diagnostic Equipment Support Technician,
+256A,A,W,Communications-Electronics Equipment Repair Technician,
+257A,A,W,Data Processing Systems Repair Technician,
+25A,A,O,"Signal, General",JDL
+25B,A,O,Communications-Electronics Automation,
+25C,A,O,Communications-Electronics Operations,
+25D,A,E,Birdie Repairman,
+25D,A,O,Communications-Electronics Engineering,
+25E,A,O,Communications-Electronics Networking,
+25F,A,O,Communications-Electronics Materiel Integration,
+25G,A,E,Mobile Air Defense Command Post Monitor Repairman,
+25H,A,E,Radar Data Processing Equipment Repairman,
+25J,A,E,Operations Central Repairer,
+25K,A,E,AN/TSQ-51 System Repairer/Maintenance Chief,
+25L,A,E,AN/TSQ-73 ADA Command & Control System Operator/Maintainer,
+25M,A,E,Multimedia Illustrator,
+25P,A,E,Visual Information/Audio Documentation Systems Specialist,
+25Q,A,E,Graphics Documentation Specialist
+25R,A,E,Visual Information Equipment Operator-Maintainer
+25S,A,E,Still Documentation Specialist
+25V,A,E,Combat Documentation/Production Specialist
+25Z,A,E,Visual Information Operations Chief
+260A,A,W,Nuclear Weapons Technician
+261A,A,W,Special Ammunition Maintenance Technician
+262A,A,W,Nuclear Weapons Electronic Technician
+26A,A,O,Fixed Telecommunications Systems Officer
+26B,A,E,Weapons Support Radar Repairer
+26B,A,O,Telecommunications Center Officer
+26C,A,E,Combat Area Surveillance Radar Repairer
+26C,A,O,Telephone-Digital Communications Officer
+26D,A,E,Ground Control Approach Radar Repairer
+26D,A,O,Fixed Radio Systems Officer
+26E,A,E,Aerial Radar Sensor Repairer
+26F,A,E,Aerial Photo Sensor Repairer
+26H,A,E,Air Defense Radar Repairer (Reserve Forces)
+26K,A,E,Aerial Electronic Warning Defense Equipment Repairer
+26L,A,E,Tactical Microwave Systems Repairer
+26M,A,E,Aerial Surveillance Radar Repairer (Reserve Forces)
+26N,A,E,Aerial Surveillance Infrared Repairer (Reserve Forces)
+26P,A,E,Radio Propagation Specialist
+26Q,A,E,Tactical Satellite/Microwave Systems Operator
+26R,A,E,Strategic Microwave Systems Operator
+26T,A,E,Radio/Television Systems Specialist
+26U,A,E,Unattended Ground Sensor Systems Repairman
+26V,A,E,Strategic Microwave Systems Repairer
+26W,A,E,Radar Maintenance Supervisor-Inspector
+26Y,A,E,SATCOM Equipment Repairer
+271A,A,W,Land Combat Missile Systems Repair Technician
+27A,A,O,Communications-Electronics Engineer
+27B,A,E,Land Combat Support System Test Specialist
+27B,A,O,Communications-Electronics Systems Engineer
+27C,A,E,ROLAND Repairer (Reserve Forces)
+27C,A,O,Radio Frequency Engineering Officer
+27D,A,E,ROLAND FMTS Repairer (Reserve Forces)
+27E,A,E,Land Combat Electronic Missle System Repairer
+27F,A,E,VULCAN Repairer
+27G,A,E,CHAPARRAL/REDEYE Repairer
+27H,A,E,HAWK Field Maintenance/Firing Section Repairer
+27J,A,E,HAWK Field Maintenance Equipment/Pulse Acquisition Radar Repairer
+27K,A,E,HAWK Fire Control/Continuous Wave Radar Repairer
+27L,A,E,LANCE System Repairer
+27M,A,E,Multiple Launch Rocket System (MLRS) Repairer
+27N,A,E,Forward Area Alerting Radar (FAAR) Repairer
+27P,A,E,SGT YORK Air Defense Gun Radar/Electrical Repairer
+27Q,A,E,SGT YORK Air Defense Gun System Test Specialist
+27T,A,E,Avenger System Repairer
+27V,A,E,Hawk Maintenance Chief
+27X,A,E,Patriot System Repairer
+27Z,A,E,Missle Systems Maintenance Chief
+281A,A,W,Radio Repair Technician
+282A,A,W,Radar Repair Technician
+285A,A,W,Electronic Warfare/Intercept Equipment Repair Technician
+286A,A,W,Communications-Electronics Equipment Repair Technician
+287A,A,W,Data Processing Systems Repair Technician
+28A,A,O,Training Development Officer
+28B,A,O,Media Production Officer
+28C,A,O,Instructional Technologist
+28M,A,E,Anti-Ballistic Missile Maintenance Specialist
+290A,A,W,Telecommunications Technician
+29E,A,E,Radio Repairer
+29F,A,E,Fixed COMSEC Equipment Repairer
+29G,A,E,Digital Communications Equipment Repairer
+29H,A,E,ADMSE Repairer
+29J,A,E,Teletypewriter Equipment Repairer
+29M,A,E,Tactical Satellite/Microwave Repairer
+29N,A,E,Switching Central Repairer
+29P,A,E,COMSEC Maintenance Chief
+29S,A,E,Communications Security Equipment Repairer
+29T,A,E,Satellite/Microwave Communications Chief
+29U,A,E,Digital Equipment Maintenance Chief
+29V,A,E,Microwave Systems Operator/Repairer
+29W,A,E,Electronics Maintenance Supervisor
+29X,A,E,Communications Equipment Maintenance Chief
+29Y,A,E,SATCOM Systems Repairer
+29Z,A,E,Electronics Maintenance Chief
+301A,A,W,Data Processing Equipment Repair Technician
+30A,A,O,Information Operations Officer
+310A,A,W,Utilities Operation & Maintenance Technician
+311A,A,W,Criminal Investigator
+31A,A,O,Military Police
+31B,A,E,Field Communications-Electronics Equipment Mechanic
+31B,A,O,Physical Security
+31C,A,E,Radio Operator-Maintainer
+31C,A,O,Correctional
+31D,A,E,MSE Transmission System Operator
+31D,A,O,Criminal Investigation
+31E,A,E,Field Radio Repairer
+31F,A,E,Network Switching Systems Operator-Maintainer
+31G,A,E,Tactical Communications Chief
+31J,A,E,Teletypewriter
+31K,A,E,Combat Signaler
+31L,A,E,Cable Systems Installer-Maintainer
+31M,A,E,Multichannel Transmission Systems Operator
+31N,A,E,Communications Systems/Circuit Controller
+31P,A,E,Microwave Systems Operator-Maintainer
+31Q,A,E,Tactical Satellite Microwave Systems Operator
+31R,A,E,Multichannel Transmission Systems Operator-Maintainer
+31S,A,E,Satellite Communications Systems Operator-Maintainer
+31T,A,E,Satellite/Microwave Systems Chief
+31U,A,E,Signal Support Systems Specialist
+31V,A,E,UL Communications Maintainer
+31W,A,E,Telecommunications Operations Chief
+31X,A,E,Communications Systems Circuit Control Supervisor
+31Y,A,E,Telecommunications Systems Supervisor
+31Z,A,E,Senior Signal Sergeant
+32D,A,E,Communications Systems Circuit Controller
+32E,A,E,Fixed Plant Carrier Repairman
+32F,A,E,Fixed Ciphony Repairer
+32G,A,E,Fixed Cryptographic Equipment Repairer
+32H,A,E,Fixed Station Radio Repairer
+32Z,A,E,Communications-Electronics Maintenance Chief
+33C,A,E,Terminal Intercept Equipment Repairman
+33D,A,E,Intercept Recording Systems Repairman
+33F,A,E,Intercept Demultiplex Systems Repairman
+33G,A,E,ECM/DF Systems Repairman
+33M,A,E,EW/Intercept Strategic Sys Analyst & Cmd & Cont Subsystem Repairer
+33P,A,E,EW/Intercept Strategic Receiving Subsystems/Repairer
+33Q,A,E,EW/Intercept Strategic Processing & Storage Subsystems Repairer
+33R,A,E,Electronic Warfare/Intercept Aviation Systems Repairer
+33S,A,E,EW/Intercept Tactical System Repairer
+33T,A,E,Electronic Warfare/Intercept Tactical Systems Repairer
+33V,A,E,EW/Intercept Aerial Sensor Repairer
+33W,A,E,Electronic Warfare/Intercept Systems Repairer
+33Y,A,E,Strategic Systems Repairer
+33Z,A,E,EW/Intercept Systems Maintenance Supervisor
+341A,A,W,Cryptographic Equipment Repair Technician
+34A,A,O,Strategic Intelligence Officer
+34B,A,E,Card Punch Machine Repairer
+34C,A,E,Decentralized Auto Support Systems (DAS3) Computer Repairer
+34D,A,E,ADPS Repairman
+34E,A,E,NCR 500 Computer Repairer
+34F,A,E,DSTE Repairer
+34G,A,E,Fire Control Computer Repairer
+34H,A,E,ADMSE Repairer
+34J,A,E,Univac 1004/1005 DCT 9000 System Repairer
+34K,A,E,IBM 360 Repairer
+34L,A,E,Field Artillery Digital Systems Repairer
+34M,A,E,SDS 920 Equipment Repairman
+34T,A,E,Tactical Computer Systems Repairer
+34Y,A,E,FA Computer Repairer
+34Z,A,E,ADP Maintenance Supervisor
+350B,A,W,All Source Intelligence Technician,
+350D,A,W,Imagery Intelligence Technician,
+350L,A,W,Attache Technician,
+351A,A,W,Power Station Technician,
+351B,A,W,Counterintelligence Technician,
+351C,A,W,Area Intelligence Technician,
+351E,A,W,Human Intelligence Collection Technician,
+352C,A,W,Traffic Analysis Technician,
+352D,A,W,Emitter Location/Identification Technician,
+352G,A,W,Voice Intercept Technician,
+352H,A,W,Morse Intercept Technician,
+352J,A,W,Emanations Analysis Technician,
+352K,A,W,Non-Morse Intercept Technician,
+353A,A,W,Intelligence Electronic Warfare Equipment Technician,
+35A,A,O,"Military Intelligence, General",JDL
+35B,A,E,Land Combat Support System (LCSS) Test Specialist,
+35B,A,O,Strategic Intelligence,
+35C,A,E,Surveillance Radar Repairer,
+35C,A,O,Imagery Intelligence,
+35D,A,E,Air Traffic Control Equipment Repairer,
+35D,A,O,All Source Intelligence,
+35E,A,E,Radio/COMSEC Rerpairer,
+35E,A,O,Counterintelligence,
+35F,A,E,Special Electronics Device Repairer,
+35F,A,O,Human Intelligence,
+35G,A,E,"Medical Equipment Repairer, Unit Level",JDL
+35G,A,O,Signal Intelligence-Electronic Warfare,
+35H,A,E,TMDE Maintenance Support Specialist,
+35J,A,E,Computer/Automation Systems Repairer,
+35K,A,E,Avionic Mechanic,
+35L,A,E,Avionic Communications Equipment Repairer,
+35M,A,E,Radar Repairer,
+35N,A,E,Wire Systems Equipment Repairer,
+35P,A,E,Avionic Equipment Maintenance Supervisor,
+35Q,A,E,Avionic Flight Systems Repairer,
+35R,A,E,Avionic System Repairer,
+35S,A,E,Electronic Biomedical Equipment Repairer,
+35T,A,E,X-Ray Biomedical Equipment Repairer,
+35U,A,E,"Medical Equipment Repairer,  Advanced",JDL
+35W,A,E,Electronic Maintenance Chief,
+35Y,A,E,Integrated Family of Test Equipment Operator/Maintainer,
+35Z,A,E,Senior Electronics Maintenance Chief,
+361A,A,W,Fire Distribution Systems Repair Technician,
+36A,A,O,Counterintelligence,
+36B,A,O,Human Intelligence,
+36C,A,E,Wire Systems Installer,
+36D,A,E,Antenna Installer Specialist,
+36E,A,E,Cable Splicer,
+36G,A,E,Manual Central Office Repairman,
+36H,A,E,Dial/Manual Central Office Repairer,
+36K,A,E,Tactical Wire Operations Specialist,
+36L,A,E,Transportable Automatic Switching Systems Operator/Maintainer,
+36M,A,E,Switching Systems Operator,
+37A,A,O,Tactical Signal Intelligence-Electronic Warfare,
+37B,A,O,Strategic Signal Intelligence,
+37C,A,O,Signal Security Officer,
+37D,A,O,Electronic Warfare Cryptologic Officer,
+37E,A,O,Electronic Warfare-Cryptologic Officer,
+37F,A,E,Psychological Operations Specialist,
+38A,A,O,"Civil Affairs, General (RC Comp)",JDL
+38A,A,E,Civil Affairs Specialist,
+39A,A,O,"Psychological Operations or civil affairs,  general",JDL
+39B,A,E,Automatic Test Equipment Operator/Maintainer,
+39B,A,O,Psychological Operations,
+39C,A,E,Target Acquisition Surveillance Radar Repairer,,
+39C,A,O,Civil Affairs,,
+39D,A,E,DAS3 Computer Systems Repairer,,
+39E,A,E,Special Electronics Devices Repairer,,
+39G,A,E,Automated Communications Computer Systems Repairer,,
+39K,A,E,IBM ADPS Repairer,,
+39L,A,E,Field Artillery Digital Systems Repairer,,
+39T,A,E,Tactical Computer System Repairer,,
+39V,A,E,Computerized System Maintenance Chief,,
+39W,A,E,Radar Special Electronic Devices Maintenance Chief,,
+39X,A,E,Electronic Equipment Maintenance Chief,,
+39X,A,O,"Psychological Operations,  and Civil Affairs, Designated",1/12/2000 0:00,JDL
+39Y,A,E,Field Artillery Tactical Fire Direction Systems Repairer,,
+401A,A,W,Airdrop Equipment Technician,,
+40A,A,O,Space Operations,,
+411A,A,W,Ammunition Technician,,
+41A,A,O,Personnel Programs Management Staff
+41B,A,E,Topographic Instrument Repair Specialist
+41B,A,O,Community/Family Support
+41C,A,E,FC Instrument Repairer
+41C,A,O,Equal Opportunity Staff Officer
+41E,A,E,Audio-Visual Equipment Repairer
+41F,A,E,Projector Repairman
+41G,A,E,Aerial Surveillance Photo Equipment Repairer (Reserve Forces)
+41H,A,E,Photographic Equipment Repair Chief
+41J,A,E,Office Machine Repairer
+41K,A,E,Reproduction Equipment Repair Specialist
+41X,A,O,WAC Staff Adviser
+420A,A,W,Military Personnel Technician
+420C,A,W,Bandmaster
+420D,A,W,Club Manager
+421A,A,W,Armament Repair Technician
+42A,A,O,"Adjutant General, General",JDL
+42B,A,O,Personnel Systems Management,
+42C,A,E,Orthotic Specialist,
+42C,A,O,Army Band,
+42D,A,E,Dental Laboratory Specialist,
+42D,A,O,Community Activities Management,
+42E,A,E,Optical Laboratory Specialist,
+42E,A,O,Administrative Systems Management,
+42F,A,E,Dental Fixed Prosthetic Specialist,
+43A,A,O,Human Resources Management Officer,
+43B,A,O,Community Services Management,
+43C,A,O,Morale Support,
+43D,A,O,Army Band,
+43E,A,E,Parachute Rigger,
+43J,A,E,Textile Repairman,
+43K,A,E,Canvas Repairman,
+43M,A,E,Fabric Repair Specialist
+441A,A,W,Repair Shop Technician
+44A,A,E,Metalworking Apprentice
+44A,A,O,Finance General
+44B,A,E,Metal Worker
+44B,A,O,Accounting Officer
+44C,A,E,Welder
+44C,A,O,Disbursing Officer
+44E,A,E,Machinist
+45A,A,E,Armament Maintenance Apprentice
+45A,A,O,Comptroller
+45B,A,E,Small Arms Artillery Repairer
+45B,A,O,Program/Budget
+45C,A,O,Management Officer
+45D,A,E,Self-Propelled Field Artillery Turret Mechanic
+45E,A,E,M1 ABRAMS Tank Turret Mechanic
+45G,A,E,Fire Control Repairer
+45J,A,E,Aircraft Armament Repairman
+45K,A,E,Armament Repairer
+45L,A,E,Artillery Repairer
+45M,A,E,Aircraft Armament Subsystem Mechanic
+45N,A,E,M60A1/A3 Tank Turret Mechanic
+45P,A,E,Sheridan Turret Mechanic
+45R,A,E,M60A2 Tank Turret Mechanic
+45T,A,E,Bradley Fighting Vehicle System Turret Mechanic
+45Z,A,E,Armament/Fire Control Maintenance Supervisor
+461A,A,W,Airdrop Equipment Repair Technician
+46A,A,O,Public Affairs General
+46B,A,O,Broadcast
+46D,A,E,Improved Hawk Mechanical Systems Repairman
+46L,A,E,Sergeant Electrical-Mechanical Repairman
+46N,A,E,PERSHING Electrical-Mechanical Repairer
+46Q,A,E,Journalist,
+46R,A,E,Broadcast Journalist,
+46Z,A,E,Public Affairs Chief,
+47A,A,O," USMA, Professor",JDL
+47B,A,O," USMA, Academy Professor",JDL
+47C,A,O," USMA, Professor of English",JDL
+47D,A,O," USMA, Professor of Electrical Engineering and Computer Science",JDL
+47F,A,O," USMA, Professor Systems Engineering",JDL
+47G,A,O," USMA, Professor of Foreign Languages",JDL
+47H,A,O," USMA, Professor of Physics",JDL
+47J,A,O," USMA, Professor of Social Sciences",JDL
+47K,A,O," USMA, Professor of History",JDL
+47L,A,O," USMA, Professor of Behavioral Sciences and Leadership",JDL
+47M,A,O," USMA, Professor of Chemistry",JDL
+47N,A,O," USMA, Professor of Mathematical Sciences",JDL
+47P,A,O," USMA, Professor of Geography and Environmental Engineering",JDL
+47Q,A,O," USMA, Professor and Associate Dean",JDL
+47R,A,O," USMA, Professor of Civil and Mechanical Engineering",JDL
+47S,A,O," USMA, Professor of Physical Education",JDL
+48A,A,O,"Foreign Area,  General",JDL
+48B,A,O,Latin America,
+48C,A,O,West Europe,
+48D,A,O,South Asia,
+48E,A,O,Russia/East Europe,
+48F,A,O,China,
+48G,A,O,Middle East/North Africa,
+48H,A,O,Northeast Asia,
+48I,A,O,South East Asia,
+48J,A,O,"Africa, South of Sahara",JDL
+49A,A,O,"Operations Research,  General",JDL
+49B,A,O," Operations Research, Personnel",JDL
+49C,A,O," Operations Research, Combat Operations/Weapon Systems",JDL
+49D,A,O," Operations Research, Planning,  Programming and Resource Management",1/12/2000 0:00,JDL
+49E,A,O," Operations Research, Test and Evaluation",JDL,
+49W,A,O," Trained, Operations Research/System Analysis",JDL,
+49X,A,O," Untrained, Operations Research/System Analysis",JDL,
+500A,A,W,Marine Deck Officer,,
+50A,A,O,Force Development,,
+510A,A,W,Marine Engineering Officer,,
+51A,A,E,Construction & Utilities Worker,,
+51A,A,O,Systems Development,,
+51B,A,E,Carpentry & Masonry Specialist,,
+51B,A,O,Test & Evaluation,,
+51C,A,E,Structures Specialist,,
+51C,A,O,Contracting and Industrial Management,,
+51D,A,E,Mason,,
+51D,A,O,Acquisition,,
+51E,A,E,Camouflage Specialist,,
+51F,A,E,Pipeline Specialist
+51G,A,E,Materials Quality Specialist
+51H,A,E,Construction Engineering Supervisor
+51J,A,E,Heating & Ventilating Specialist
+51K,A,E,Plumber
+51L,A,E,Heating & Cooling Specialist
+51M,A,E,Fire Fighter
+51N,A,E,Water Treatment & Plumbing Systems Specialist
+51P,A,E,Utilities Engineering Supervisor
+51R,A,E,Interior Electrician
+51R,A,O,Systems Automation Acquisition and Engineering
+51S,A,O,Research and Engineering
+51T,A,E,Technical Engineering Specialist
+51Z,A,E,General Engineering Supervisor
+51Z,A,O,Acquisition
+521A,A,W,Utilities Maintenance Technician
+52A,A,O,"Nuclear Weapons,  General",JDL
+52B,A,E,Power Generation Equipment Operator/Mechanic,
+52B,A,O,Nuclear Research and Operations,
+52C,A,E,Utilities Equipment Repairer,
+52D,A,E,Power Generation Equipment Repairer,
+52E,A,E,Prime Power Production Specialist,
+52F,A,E,Turbine Engine Driven Generator Repairer,
+52G,A,E,Transmission & Distribution Specialist,
+52H,A,E,Nuclear Power Plant Mechanic/Operator,
+52J,A,E,Nuclear Power Plant Electrician/Operator,
+52K,A,E,Nuclear Power Plant Instrumentman/Operator,
+52L,A,E,Nuclear Power Plant Process Control Specialist/Operator,
+52M,A,E,Nuclear Power Plant Chief,
+52X,A,E,Special Purpose Equipment Repairer,
+53A,A,O,Systems Automation Management,
+53B,A,E,Industrial Gas Production Specialist (Reserve Forces),
+53B,A,O,Systems Automation Engineering,
+53C,A,E,Carbon Dioxide-Hydrogen Production Specialist,
+53C,A,O,Systems Automation Acquisition,
+53X,A,O,Designated Systems Automation,
+54A,A,O,"Operations, Plans & Training",JDL
+54A,A,E,Chemical Operations Assistant,
+54B,A,E,Chemical Operations Specialist,
+54B,A,O,Combat Development Officer,
+54C,A,E,Smoke Operations Specialist,
+54C,A,O,Force Development,
+54D,A,E,Chemical Equipment Repairer,
+54E,A,E,NBC Specialist,
+54Z,A,E,Chemical Senior Sergeant,
+550A,A,W,Legal Administrator,
+55A,A,O,"Judge Advocate,  General",JDL
+55A,A,E,Ammunition Helper,
+55B,A,E,Ammunition Specialist,,
+55B,A,O,Military Judge,,
+55C,A,E,Ammunition Specialist,,
+55C,A,O,Patent Lawyer,,
+55D,A,E,Explosive Ordnance Disposal Specialist,,
+55G,A,E,Nuclear Weapons Specialist,,
+55R,A,E,Ammunition Stock Control & Accounting Specialist,,
+55X,A,E,Ammunition Inspector,,
+55Z,A,E,Ammunition Supervisor,,
+561B,A,W,Harbormaster/Pilot,,
+561C,A,W,"Vessel Master, Unlimited",JDL,
+561D,A,W,"Vessel Master, Coastal; Mate, Unlimited",1/12/2000 0:00,JDL
+561E,A,W,Mate,,
+562B,A,W,Marine Engineering Technician/Marine Inspector,,
+562C,A,W,"Chief Engineer, Unlimited",JDL,
+562D,A,W,"Chief Engineer,  Coastal; Assistant Engineer, Unlimited",1/12/2000 0:00,JDL
+562E,A,W,Assistant Engineer
+56A,A,O,Command & Unit Chaplain
+56B,A,O,Family Life Chaplain
+56C,A,O,Hospital Chaplain
+56D,A,O,Clinical Pastoral Educator
+57A,A,E,Duty Soldier
+57A,A,O,Simulations Operations Officer
+57D,A,E,Sawyer
+57E,A,E,Laundry & Bath Specialist
+57F,A,E,Mortuary Affairs Specialist
+57G,A,E,Duty Foreman
+57H,A,E,Cargo Specialist
+59A,A,O,Strategic Plans and Policy
+600A,A,W,Physician's Assistant
+60A,A,O,Operational Medicine Officer
+60B,A,O,Nuclear Medical Officer
+60C,A,O,Preventive Medicine Officer
+60D,A,O,Occupational Medicine Officer
+60E,A,O,General Medical Officer
+60F,A,O,Pulmonary Disease Officer
+60G,A,O,Gastroenterologist
+60H,A,O,Cardiologist
+60J,A,O,Obstetrician & Gynecologist
+60K,A,O,Urologist
+60L,A,O,Dermatologist
+60M,A,O,Allergist/Clinical Immunologist
+60N,A,O,Anesthesiologist
+60P,A,O,Pediatrician
+60Q,A,O,Pediatric Cardiologist
+60R,A,O,Child Neurologist
+60S,A,O,Ophthalmologist
+60T,A,O,Otolaryngologist
+60U,A,O,Child Psychiatrist
+60V,A,O,Neurologist
+60W,A,O,Psychiatrist
+60Z,A,O,Hematologist
+61A,A,E,Seaman
+61A,A,O,Nephrologist
+61B,A,E,Watercraft Operator
+61B,A,O,Medical Oncologist/Hematologist
+61C,A,E,Watercraft Engineer
+61C,A,O,Endocrinologist
+61D,A,E,Amphibian Operator
+61D,A,O,Rheumatologist
+61E,A,E,Amphibian Engineer
+61E,A,O,Clinical Pharmacologist
+61F,A,E,Marine Hull Repairer
+61F,A,O,Internist
+61G,A,O,Infectious Disease Officer
+61H,A,O,Family Physician
+61J,A,O,General Surgeon
+61K,A,O,Thoracic Surgeon
+61L,A,O,Plastic Surgeon
+61M,A,O,Orthopedic Surgeon
+61N,A,O,Flight Surgeon
+61P,A,O,Physiatrist
+61Q,A,O,Therapeutic Radiologist
+61R,A,O,Diagnostic Radiogist
+61S,A,O,Radiologist
+61T,A,O,Anatomical Pathologist
+61U,A,O,Pathologist
+61V,A,O,Clinical Pathologist
+61W,A,O,Peripheral Vascular Surgeon
+61Z,A,E,Marine Senior Sergeant
+61Z,A,O,Neurosurgeon
+621A,A,W,Engineer Equipment Repair Technician
+62A,A,O,Emergency Physician
+62B,A,E,Construction Equipment Repairer
+62B,A,O,Field Surgeon
+62C,A,E,Engineer Missile Equipment Specialist
+62D,A,E,Asphalt Equipment Operator
+62E,A,E,Heavy Construction Equipment Operator
+62F,A,E,Crane Operator
+62G,A,E,Quarrying Specialist
+62H,A,E,Concrete & Asphalt Equipment Operator
+62J,A,E,General Construction Equipment Operator
+62K,A,E,Grader Operator
+62L,A,E,Wheeled Tractor Operator
+62M,A,E,Rough Terrain Forklift & Loader Operator
+62N,A,E,Construction Equipment Supervisor
+630A,A,W,Wheel Vehicle Maintenance Technician
+630B,A,W,Light Systems Maintenance Technician
+630C,A,W,Field Artillery Maintenance Technician
+630D,A,W,Maintenance Technician Wheeled Vehicle
+630E,A,W,Support/Staff Maintenance Technician
+631A,A,W,Automotive Maintenance Technician
+632A,A,W,Automotive Repair Technician
+63A,A,E,Mechanical Maintenance Helper
+63A,A,O,General Dentist
+63B,A,E,Light Wheel Vehicle Mechanic
+63B,A,O,Comprehensive Dentist
+63C,A,E,Track Vehicle Mechanic
+63C,A,O,Oral Medicine Officer
+63D,A,E,Self-Propelled Field Artillery System Mechanic
+63D,A,O,Periodontist
+63E,A,E,M1 ABRAMS Tank System Mechanic
+63E,A,O,Endodontist,
+63F,A,E,Recovery Specialist,
+63F,A,O,Prosthodontist,
+63G,A,O,"Prosthodontist, Removable",JDL
+63G,A,E,Fuel & Electrical System Repairer,
+63H,A,E,Track Vehicle Repairer,
+63H,A,O,Public Health Dentist,
+63J,A,E,Quartermaster & Chemical Equipment Repairer,
+63K,A,E,QM Heavy Equipment Repairman,
+63K,A,O,Pediatric Dentist,
+63M,A,O,Orthodonist,
+63N,A,E,M60A1/A3 Tank System Mechanic,
+63N,A,O,Oral and Maxillofacial Surgeon,
+63P,A,O,Oral Pathologist,
+63R,A,E,M60A2 Tank System Mechanic,
+63R,A,O,Executive Dentist,
+63S,A,E,Heavy Wheel Vehicle Mechanic
+63T,A,E,BFV System Mechanic
+63W,A,E,Wheel Vehicle Repairer
+63Y,A,E,Track Vehicle Mechanic
+63Z,A,E,Mechanical Maintenance Supervisor
+640A,A,W,Veterinary Services Technician
+64A,A,O,Senior Veterinarian
+64B,A,O,Veterinary Staff Officer
+64C,A,E,Motor Transport Operator
+64C,A,O,Veterinary Laboratory Animal Medicine Officer
+64D,A,O,Veterinary Pathologist
+64E,A,O,Veterinary Microbiologist
+64F,A,O,Veterinary Comparative Medicine Officer
+64Z,A,E,Transportation Senior Sergeant
+65A,A,O,Occupational Therapy
+65B,A,E,Locomotive Repairer (Reserve Forces)
+65B,A,O,Physical Therapy
+65C,A,E,Diesel-Electric Locomotive Repairman
+65C,A,O,Dietitian
+65D,A,E,Railway Car Repairer (Reserve Forces)
+65D,A,O,Physician's Assistant
+65E,A,E,Airbrake Repairer (Reserve Forces)
+65F,A,E,Locomotive Electrician (Reserve Forces)
+65G,A,E,Railway Section Repairer (Reserve Forces)
+65H,A,E,Locomotive Operator (Reserve Forces)
+65J,A,E,Train Crewmember (Reserve Forces)
+65K,A,E,Railway Movement Coordinator (Reserve Forces)
+65Z,A,E,Railway Senior Sergeant (Reserve Forces)
+66A,A,O,Nurse Administrator
+66B,A,O,Community Health Nurse
+66C,A,O,Psychiatric/Mental Health Nurse
+66D,A,O,Pediatric Nurse
+66D-8E,A,O,Pediatric Nurse Practitioner
+66E,A,O,Operating Room Nurse
+66F,A,O,Nurse Anesthetist
+66G,A,E,Utility Airplane Technical Inspector
+66G,A,O,Obstetric & Gynecologic Nurse
+66G-8D,A,O,Nurse Midwife
+66G-8E,A,O,Obstetric & Gynecologic Nurse Practitioner
+66H,A,E,Observation Airplane Technical Inspector
+66H,A,O,Medical Surgical Nurse
+66J,A,E,Aircraft Armament Technical Inspector
+66J,A,O,Clinical Nurse
+66N,A,E,Utility Helicopter Technical Inspector
+66N,A,O,Generalist Nurse
+66R,A,E,Attack Helicopter (AH-64) Technical Inspector
+66S,A,E,Scout Helicopter Technical Inspector (NISH)
+66T,A,E,Tactical Transport Helicopter Technical Inspector
+66U,A,E,Medium Helicopter Technical Inspector,
+66V,A,E,Observation/Scout Helicopter Technical Inspector,
+66X,A,E,Heavylift Helicopter Technical Inspector,
+66Y,A,E,Attack Helicopter (AH-1) Technical Inspector,
+670A,A,W,Health Services Maintenance Technician,
+671C,A,W,"Aircraft Repair Technician, Rotary Wing Rated",JDL
+671E,A,W,"Aircraft Repair Technician, Rotary & Fixed Wing Rated",JDL
+67A,A,O,Health Services,
+67B,A,E,O-1/U-6 Airplane Repairman,
+67B,A,O,Laboratory Sciences,
+67C,A,E,U-1A Airplane Repairman,
+67C,A,O,Preventive Medicine Sciences,
+67D,A,O,Behavioral Sciences,
+67E,A,O,Pharmacy,
+67F,A,E,Airplane Technical Inspector,
+67F,A,O,Optometry,
+67G,A,E,Utility Airplane Repairer,,
+67G,A,O,Podiatry,,
+67H,A,O,"Health Services Plans, Operations, Intelligence & Trng. Officer",1/12/2000 0:00,JDL
+67H,A,E,Observation Airplane Repairer,,
+67J,A,O,Aeromedical Evacuation,,
+67K,A,O,Health Services Materiel Officer,,
+67L,A,O,Health Facilities Planning Officer,,
+67M,A,E,OH-13/OH-23 Helicopter Repairman,,
+67N,A,E,UH-1 Helicopter Repairer,,
+67R,A,E,Attack Helicopter Repairer (AH-64),,
+67S,A,E,Scout Helicopter Repairer (NISH),,
+67T,A,E,UH-60 Helicopter Repairer,,
+67U,A,E,CH-47 Helicopter Repairer,,
+67V,A,E,Observation/Scout Helicopter Repairer,,
+67W,A,E,Aircraft Quality Control Supervisor,,
+67X,A,E,Heavy Lift Helicopter Repairer,,
+67Y,A,E,AH-1 Attack Helicopter Repairer
+67Z,A,E,Aircraft Maintenance Senior Sergeant
+68A,A,O,Microbiologist
+68B,A,E,Aircraft Powerplant Repairer
+68B,A,O,Nuclear Medical Science Officer
+68C,A,O,Biochemist
+68D,A,E,Aircraft Powertrain Repairer
+68D,A,O,Parasitologist
+68E,A,E,Aircraft Rotor & Propeller Repairman
+68E,A,O,Immunologist
+68F,A,E,Aircraft Electrician
+68F,A,O,Clinical Laboratory Officer/Laboratory Manager
+68G,A,E,Aircraft Structural Repairer
+68G,A,O,Entomologist
+68H,A,E,Aircraft Pneudraulics Repairer
+68H,A,O,Pharmacy Officer
+68J,A,E,Aircraft Armament/Missile Systems Repairer
+68J,A,O,Physiologist
+68K,A,E,Aircraft Components Repair Supervisor
+68K,A,O,Optometry Officer
+68L,A,E,Avionic Communications Equipment Repairer
+68L,A,O,Podiatrist
+68M,A,E,Aircraft Weapons Systems Repairer
+68M,A,O,Audiologist
+68N,A,E,Avionic Mechanic
+68N,A,O,Environmental Science Officer
+68P,A,E,Avionics Maintenance Supervisor
+68P,A,O,Sanitary Engineer
+68Q,A,E,Avionic Flight Systems Repairer
+68Q,A,O,Military Community Oral Health Manager
+68R,A,E,Avionic Radar Repairer
+68R,A,O,Social Work Officer
+68S,A,O,Clinical Psychologist,
+68T,A,O,Research Psychologist,
+68U,A,O,Psychology Associate,
+68X,A,E,AH-64 Armament/Electrical Systems,
+68Y,A,E,AH-64D Armament/Electrical/Avionics Systems Repairer,
+70A,A,O,Health Care Administration,
+70B,A,O,Health Services Administration,
+70C,A,O,Health Services Comptroller,
+70D,A,O,Health Services Systems Management,
+70E,A,O,Patient Administration,
+70F,A,O,Health Services Human Resources,
+70H,A,O,"Health Services Plans Operation Intelligence,  Security & Training",JDL
+70K,A,O,Health Services Materiel,
+711A,A,W,Personnel/Administrative Technician,
+712A,A,W,General Staff Administrative Technician,
+713A,A,W,Legal Administrator,
+71A,A,O,Microbiology
+71B,A,E,Clerk-Typist
+71B,A,O,Biochemistry
+71C,A,E,Executive Administrative Assistant
+71C,A,O,Parasitology
+71D,A,E,Legal Specialist
+71D,A,O,Immunology
+71E,A,E,Court Reporter
+71E,A,O,Clinical Laboratory
+71F,A,E,Postal Clerk
+71F,A,O,Research Psychology
+71G,A,E,Patient Administration Specialist
+71L,A,E,Administrative Specialist
+71M,A,E,Chaplain Assistant
+71N,A,E,Traffic Management Coordinator
+71P,A,E,Flight Operations Coordinator
+71Q,A,E,Journalist
+71R,A,E,Broadcast Journalist
+71S,A,E,Attache Specialist
+71T,A,E,Equipment Maintenance Clerk
+71U,A,E,Card & Tape Writer
+721A,A,W,Cryptographic Technician
+72A,A,O,Nuclear Medical Science
+72B,A,E,Communications Center Specialist
+72B,A,O,Entomology
+72C,A,E,Central Office Switchboard Operator
+72C,A,O,Audiology
+72D,A,E,Cryptographic Center Specialist
+72D,A,O,Environmental Science
+72E,A,E,Tactical Telecommunications Center Operator
+72E,A,O,Sanitary Engineer
+72F,A,E,Data Communications Center Specialist
+72G,A,E,Automatic Data Telecommunications Operator,
+72H,A,E,Central Office Operations Operator,
+73A,A,O,Social Work,
+73B,A,O,Clinical Psychology,
+73C,A,E,Finance Specialist,
+73D,A,E,Accounting Specialist,
+73Z,A,E,Finance Senior Sergeant,
+741A,A,W,Data Processing Technician,
+741B,A,W,"Data Processing Technician,  PCM",JDL
+741C,A,W,"Data Processing Technician,  ADPS",JDL
+741D,A,W,"Data Processing Technician,  Programmer",JDL
+741E,A,W,Telecommunications Automation Software Technician,
+74A,A,O,"Chemical,  General",JDL
+74B,A,E,Information Systems Operator-Analyst,
+74B,A,O,Chemical Operations and Training,
+74C,A,E,Telecommunications Operator-Maintainer,
+74C,A,O,Chemical Munitions and Materiel Management
+74D,A,E,Information System Operator
+74E,A,E,Computer Systems Operator
+74F,A,E,Software Analyst
+74G,A,E,Telecommunications Computer Operator-Maintainer
+74Z,A,E,Information Systems Chief
+75A,A,O,Field Veterinary Service
+75B,A,E,Personnel Administration Specialist
+75B,A,O,Veterinary Preventive Medicine
+75C,A,E,Personnel Management Specialist
+75C,A,O,Veterinary Laboratory Animal Medicine
+75D,A,E,Personnel Records Specialist
+75D,A,O,Veterinary Pathology
+75E,A,E,Personnel Actions Specialist
+75E,A,O,Veterinary Microbiology
+75F,A,E,Personnel Information Systems Management Specialist
+75F,A,O,Veterinary Comparative Medicine
+75H,A,E,Personnel Services Specialist
+75Z,A,E,Personnel Sergeant
+761A,A,W,General Supply Technician
+762A,A,W,Support Supply Technician
+76A,A,E,Supplyman
+76A,A,O,Armament Materiel Management Officer
+76C,A,E,Equipment Records & Parts Specialist
+76D,A,E,Materiel Supply Specialist
+76J,A,E,Medical Supply Specialist
+76N,A,E,Procurement Sergeant
+76P,A,E,Materiel Control & Accounting Specialist
+76Q,A,E,Special Purpose Materiel Supply Specialist
+76R,A,E,Weapons Material Supply Specialist
+76S,A,E,Vehicle Materiel Supply Specialist
+76T,A,E,Aircraft Materiel Supply Specialist
+76U,A,E,Communications Electronics (COMMEL) Materiel Supply Specialist
+76V,A,E,Materiel Storage & Handling Specialist
+76W,A,E,Petroleum Supply Specialist
+76X,A,E,Subsistence Supply Specialist
+76Y,A,E,Unit Supply Specialist
+76Z,A,E,Senior Supply/Service Sergeant
+77A,A,O,Tank/Ground Mobility Materiel Management Officer
+77B,A,O,Tank-Automotive Materiel Management Officer
+77C,A,O,Ground Support Materiel Management Officer
+77D,A,O,Motor Officer
+77F,A,E,Petroleum Supply Specialist
+77L,A,E,Petroleum Laboratory Specialist
+77W,A,E,Water Treatment Specialist
+79D,A,E,Reenlistment NCO
+79R,A,E,Recruiter
+79S,A,E,Career Counselor
+79T,A,E,Recruiting and Retention NCO (Army National Guard of the United States)
+811A,A,W,Photomapping Technician
+81A,A,E,General Draftsman
+81A,A,O,Petroleum Management Officer
+81B,A,E,Technical Drafting Specialist
+81C,A,E,Cartographer
+81E,A,E,Illustrator
+81L,A,E,Lithographer
+81Q,A,E,Terrain Analyst
+81T,A,E,Topographic Analyst
+81Z,A,E,Topographic Engineering Supervisor
+821A,A,W,Survey Technician
+82A,A,E,Rodman & Tapeman
+82A,A,O,Subsistence Supply Officer
+82B,A,E,Construction Surveyor
+82B,A,O,Subsistence Officer
+82C,A,E,Field Artillery Surveyor,
+82C,A,O,Food Service Officer,
+82D,A,E,Topographic Surveyor,
+82D,A,O,Commissary Management Officer,
+82E,A,E,Topographic Computer,
+833A,A,W,Reproduction Technician,
+83A,A,O,"General Troop Support Materiel Management Officer,  General",JDL
+83B,A,O,General Troop Support Materiel Management Officer,
+83C,A,O,Parachute Maintenance & Aerial Supply Officer,
+83D,A,E,Process Photographer,
+83E,A,E,Photo & Layout Specialist,
+83F,A,E,Printing and Bindery Specialist,
+83Z,A,E,Photolithography Chief,
+841A,A,W,Terrain Analysis Technician,
+84B,A,E,Still Photographic Specialist,
+84C,A,E,Motion Picture Specialist,
+84D,A,E,Audio Specialist,
+84E,A,E,Television Cameraman,
+84F,A,E,Audio/Television Specialist,
+84G,A,E,Photographic Laboratory Specialist,
+84T,A,E,TV/Radio Broadcast Operations Chief,
+84Z,A,E,Public Affairs Chief,
+85A,A,O,"Transportation,  General",JDL
+86A,A,O,Traffic Management Officer,
+87A,A,O,Marine & Terminal Operations Officer,
+87B,A,O,Cargo Officer,
+87C,A,O,Dredge Officer,
+87D,A,O,Dredge Engineering Officer,
+87E,A,O,Marine Materiel Management Officer,
+880A,A,W,Marine Deck Officer,
+881A,A,W,Marine Engineering Officer,
+88A,A,O,"Transportation,  General",JDL
+88B,A,O,Traffic Management
+88C,A,O,Marine and Terminal Operations
+88D,A,O,Motor/Rail Transportation
+88E,A,O,Transportation Management
+88F,A,O,Railway Supply Management Officer
+88H,A,E,Cargo Specialist
+88K,A,E,Watercraft Operator
+88L,A,E,Watercraft Engineer
+88M,A,E,Motor Transport Operator
+88N,A,E,Traffic Management Coordinatior
+88P,A,E,Railway Equipment Repairer (Reserve Forces)
+88Q,A,E,Railway Car Repairer (Reserve Forces)
+88R,A,E,Airbrake Repairer (Reserve Forces)
+88S,A,E,Locomotive Electrician (Reserve Forces)
+88T,A,E,Railway Section Repairer (Reserve Forces)
+88U,A,E,Railway Operations Crewmember (Reserve Forces)
+88V,A,E,Train Crewmember (Reserve Forces)
+88W,A,E,Railway Movement Coordinator (Reserve Forces)
+88X,A,E,Railway Senior Sergeant (Reserve Forces)
+88Y,A,E,Marine Senior Sergeant
+88Z,A,E,Transportation Senior Sergeant
+90A,A,O,Logistics
+910A,A,W,Ammunition Warrant Officer
+911A,A,W,Nuclear Weapons Technician
+912A,A,W,Land Combat Missile Systems Repair Technician
+913A,A,W,Armament Repair Technician
+914A,A,W,Allied Trades Technician
+915A,A,W,Unit Maintenance Officer
+915B,A,W,Light Systems Maintenance Technician
+915C,A,W,Field Artillery Maintenance Technician
+915D,A,W,Unit Maintenance Technician (Heavy)
+915E,A,W,Support Maintenance Officer
+916A,A,W,High-to-Medium Altitude Air Defense (HIMAD) DS/GS Maintenance Tech,
+917A,A,W,Maneuver Forces Air Defense Systems (MFADS) Technician,
+918A,A,W,TMDE Maintenance Support,
+918B,A,W,Electronic Systems Maintenance Warrant Officer,
+919A,A,W,Engineer Equipment Repair,
+91A,A,O,"Ordnance,  General",JDL
+91A,A,E,Medical Equipment Repairer,
+91B,A,E,Medical Specialist,
+91B,A,O,Maintenance Management,
+91B  N3,A,E,Occupational Therapy Specialist,
+91B  N9,A,E,Physical Therapy Specialist,
+91B  P1,A,E,Orthopedic Specialist,
+91B  P2,A,E,"Ear, Nose and Throat Specialist",JDL
+91B  P3,A,E,Eye Specialist,
+91B  Y6,A,E,Cariovascular Specialist,
+91C,A,E,Practical Nurse,
+91C,A,O,Missile/Electronics Materiel Management
+91D,A,E,Operating Room Specialist
+91D,A,O,Munitions Materiel Management
+91E,A,E,Dental Specialist
+91E,A,O,Explosive Ordnance Disposal
+91E  N5,A,E,Dental Laboratory Specialist
+91F,A,E,Psychiatric Specialist
+91G,A,E,Behavioral Science Specialist
+91H,A,E,Orthopedic Specialist
+91J,A,E,Physical Therapy Specialist
+91K,A,E,Medical Laboratory Specialist
+91K  M2,A,E,Cytology Specialist
+91K  M4,A,E,Blood Donor Center Operations
+91K  P9,A,E,Biological Sciences Assistant
+91L,A,E,Occupational Therapy Specialist
+91M,A,E,Hospital Food Service Specialist
+91N,A,E,Cardiac Specialist,,
+91P,A,E,Radiology Specialist,,
+91P  M5,A,E,Nuclear Medicine Specialist,,
+91Q,A,E,Pharmacy Specialist,,
+91Q  Y7,A,E,Sterile Pharmacy Specialist,,
+91R,A,E,Veterinary Food Inspection Specialist,,
+91S,A,E,Preventive Medicine Specialist,,
+91S  N4,A,E,Health Physics Specialist,,
+91T,A,E,Animal Care Specialist,,
+91U,A,E,"Ear, Nose,  & Throat (ENT) Specialist",1/12/2000 0:00,JDL
+91V,A,E,Respiratory Specialist,,
+91W,A,E,Nuclear Medicine Specialist,,
+91X,A,E,Mental Health Specialist,,
+91Y,A,E,Eye Specialist,,
+91Z,A,E,Medical Senior Sergeant,,
+920A,A,W,Property Accounting Technician,,
+920B,A,W,Supply Systems Technician,
+921A,A,W,Airdrop Systems Technician,
+922A,A,W,Food Service Technician,
+92A,A,O,"Quartermaster,  General",JDL
+92A,A,E,Automated Logistical Specialist,
+92B,A,E,Medical Laboratory Specialist,
+92B,A,O,Supply and Materiel Management,
+92C,A,E,Petroleum Laboratory Specialist,
+92C,A,O,Laundry & Bath Officer,
+92D,A,E,Chemical Laboratory Specialist,
+92D,A,O,Aerial Delivery & Materiel,
+92E,A,E,Cytology Specialist,
+92E,A,O,Memorial Activities Officer,
+92F,A,O,Petroleum and Water,
+92G,A,E,Food Service Specialist,
+92G,A,O,Subsistence,
+92M,A,E,Mortuary Affairs Specialist,
+92R,A,E,Parachute Rigger,
+92Y,A,E,Unit Supply Specialit,
+92Z,A,E,Senior Non-Commissioned Logitician,
+93A,A,O,"Adjutant General,  General",JDL
+93B,A,E,Aeroscout Observer,
+93B,A,O,Property Disposal Officer,
+93C,A,E,Air Traffic Control Operator,
+93C,A,O,Laundry & Bath Officer,
+93D,A,E,Air Traffic Controller (ATC) Equipment Repairer,
+93D,A,O,Memorial Activities Officer,
+93E,A,E,Meteorological Observer,
+93E,A,O,Army Exchange Officer,
+93F,A,E,Field Artillery Meteorological Crewmember,
+93H,A,E,Air Traffic Control Tower Operator,
+93J,A,E,Air Traffic Control Radar Controller,
+93K,A,E,ATC Approach Control/Enroute Specialist,
+93L,A,E,ATC Chief,
+93P,A,E,Aviation Operations Specialist,
+941A,A,W,Food Service Technician,
+94A,A,E,Food Service Helper,
+94B,A,E,Food Service Specialist,
+94D,A,E,Baker,
+94F,A,E,Hospital Food Service Specialist,
+94Z,A,E,Food Service Supervisor,
+951A,A,W,Criminal Investigator,
+951C,A,W,Questioned Document Examiner,
+951D,A,W,Firearms & Toolmark Examiner,
+951E,A,W,Latent Fingerprint Examiner,
+951F,A,W,Forensic Photographer,
+951G,A,W,Forensic Chemist,
+95A,A,O,"Transportation, General",JDL
+95B,A,E,Military Police
+95B,A,O,Traffic Management
+95C,A,E,Internment/Resettlement Specialist
+95C,A,O,Marine & Terminal Operations Officer
+95D,A,E,CID Special Agent
+95D,A,O,Motor/Rail Transportation Officer
+95E,A,O,Transportation Manager
+961A,A,W,Attache Technician
+962A,A,W,Image Interpretation Technician
+963A,A,W,Interrogation Technician
+964A,A,W,Order of Battle Technician
+96B,A,E,Intelligence Analyst
+96C,A,E,Interrogator
+96D,A,E,Imagery Analyst
+96F,A,E,Psychological Operations Specialist
+96H,A,E,Imagery Ground Station Operator
+96R,A,E,Ground Surveillance Systems Operator,
+96U,A,E,Unmanned Aerial Vehicle Operator,
+96Z,A,E,Intelligence Senior Sergeant,
+971A,A,W,Counterintelligence Technician,
+972A,A,W,Area Intelligence Technician,
+973A,A,W,Interrogation Technician,
+97A,A,O,Contracting and Industrial Management Officer,
+97B,A,E,Counterintelligence Agent,
+97B,A,O,Contracting Management Officer,
+97C,A,E,Area Intelligence Specialist,
+97C,A,O,Industrial Management Officer,
+97D,A,E,Military Intelligence Coordinator,
+97E,A,E,Interrogator,
+97G,A,E,Multi-Discipline Counter-Intelligence Operator/Analyst,
+97L,A,E,Translator/Interpreter,
+97Z,A,E,"Counterintelligence/Human Intelligence,  Senior Sergeant",JDL
+982A,A,W,Traffic Analysis Technician
+983A,A,W,Emanations Analysis Technician
+984A,A,W,Morse Intercept Technician
+985A,A,W,Non-Morse Intercept Technician
+986A,A,W,Emitter Location/Identification Technician
+988A,A,W,Voice Intercept Technician
+98B,A,E,EW/Cryptanalytic Cryptanalyst
+98C,A,E,Signals Intelligence Analyst
+98D,A,E,Emitter Locator/Identifier
+98G,A,E,Voice Interceptor
+98H,A,E,Communications Locator/Interceptor
+98J,A,E,Electronic Intelligence Interceptor/Analyst
+98K,A,E,Signals Collection/Identification Analyst
+98X,A,E,EW/SIGINT Specialty (Linguist) (Reporting Code)
+98Z,A,E,Signals Intelligence/Electronic Warfare
+99A,A,O,Combat Developments
+MOS,A,O,Unknown
+OOX,A,O,Reporting Classification
+XXX,A,O,Any MOS Held by Officer of General Rank
+XXX0X,A,E,Undergoing Training or MOS Reclassification
+XXXDX,A,E,Undergoing Training or MOS Reclassification
+XXXX,A,O,Any MOS Held by Officer of General Rank
+XXXXH,A,E,Instructor-Any MOS With Suffix -H-
+XXXXM,A,E,First Sergeant-Any MOS With Suffix -M-
+XXXXS,A,E,Special Forces-Any MOS With Suffix -S-
