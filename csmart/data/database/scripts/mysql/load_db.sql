@@ -26,7 +26,7 @@ CREATE TABLE v4_alib_component (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/alib_component.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/alib_component.csv.tmp'
     INTO TABLE v4_alib_component
     FIELDS
         TERMINATED BY ','
@@ -53,7 +53,7 @@ CREATE TABLE v4_asb_agent (
   KEY COMPONENT_NAME (COMPONENT_NAME)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_agent.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_agent.csv.tmp'
     INTO TABLE v4_asb_agent
     FIELDS
         TERMINATED BY ','
@@ -83,7 +83,7 @@ CREATE TABLE v4_asb_agent_pg_attr (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_agent_pg_attr.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_agent_pg_attr.csv.tmp'
     INTO TABLE v4_asb_agent_pg_attr
     FIELDS
         TERMINATED BY ','
@@ -112,7 +112,7 @@ CREATE TABLE v4_asb_agent_relation (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_agent_relation.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_agent_relation.csv.tmp'
     INTO TABLE v4_asb_agent_relation
     FIELDS
         TERMINATED BY ','
@@ -138,7 +138,7 @@ CREATE TABLE v4_asb_alploc (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_alploc.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_alploc.csv.tmp'
     INTO TABLE v4_asb_alploc
     FIELDS
         TERMINATED BY ','
@@ -160,7 +160,7 @@ CREATE TABLE v4_asb_assembly (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_assembly.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_assembly.csv.tmp'
     INTO TABLE v4_asb_assembly
     FIELDS
         TERMINATED BY ','
@@ -186,7 +186,7 @@ CREATE TABLE v4_asb_component_arg (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_component_arg.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_component_arg.csv.tmp'
     INTO TABLE v4_asb_component_arg
     FIELDS
         TERMINATED BY ','
@@ -214,7 +214,7 @@ CREATE TABLE v4_asb_component_hierarchy (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_component_hierarchy.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_component_hierarchy.csv.tmp'
     INTO TABLE v4_asb_component_hierarchy
     FIELDS
         TERMINATED BY ','
@@ -239,7 +239,7 @@ CREATE TABLE v4_asb_oplan (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_oplan.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_oplan.csv.tmp'
     INTO TABLE v4_asb_oplan
     FIELDS
         TERMINATED BY ','
@@ -270,7 +270,7 @@ CREATE TABLE v4_asb_oplan_agent_attr (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_oplan_agent_attr.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_oplan_agent_attr.csv.tmp'
     INTO TABLE v4_asb_oplan_agent_attr
     FIELDS
         TERMINATED BY ','
@@ -293,7 +293,7 @@ CREATE TABLE v4_expt_experiment (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_experiment.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_experiment.csv.tmp'
     INTO TABLE v4_expt_experiment
     FIELDS
         TERMINATED BY ','
@@ -317,7 +317,7 @@ CREATE TABLE v4_expt_trial (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial.csv.tmp'
     INTO TABLE v4_expt_trial
     FIELDS
         TERMINATED BY ','
@@ -343,7 +343,7 @@ CREATE TABLE v4_expt_trial_assembly (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_assembly.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_assembly.csv.tmp'
     INTO TABLE v4_expt_trial_assembly
     FIELDS
         TERMINATED BY ','
@@ -369,7 +369,7 @@ CREATE TABLE v4_expt_trial_config_assembly (
   KEY TRIAL_ID (TRIAL_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_config_assembly.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_config_assembly.csv.tmp'
     INTO TABLE v4_expt_trial_config_assembly
     FIELDS
         TERMINATED BY ','
@@ -396,7 +396,7 @@ CREATE TABLE v4_expt_trial_mod_recipe (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_mod_recipe.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_mod_recipe.csv.tmp'
     INTO TABLE v4_expt_trial_mod_recipe
     FIELDS
         TERMINATED BY ','
@@ -423,7 +423,7 @@ CREATE TABLE v4_expt_trial_org_mult (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_org_mult.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_org_mult.csv.tmp'
     INTO TABLE v4_expt_trial_org_mult
     FIELDS
         TERMINATED BY ','
@@ -447,7 +447,7 @@ CREATE TABLE v4_expt_trial_thread (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_thread.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/expt_trial_thread.csv.tmp'
     INTO TABLE v4_expt_trial_thread
     FIELDS
         TERMINATED BY ','
@@ -468,7 +468,7 @@ CREATE TABLE v4_lib_activity_type_ref (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_activity_type_ref.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_activity_type_ref.csv.tmp'
     INTO TABLE v4_lib_activity_type_ref
     FIELDS
         TERMINATED BY ','
@@ -491,7 +491,7 @@ CREATE TABLE v4_lib_agent_org (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_agent_org.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_agent_org.csv.tmp'
     INTO TABLE v4_lib_agent_org
     FIELDS
         TERMINATED BY ','
@@ -511,7 +511,7 @@ CREATE TABLE v4_lib_clone_set (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_clone_set.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_clone_set.csv.tmp'
     INTO TABLE v4_lib_clone_set
     FIELDS
         TERMINATED BY ','
@@ -535,7 +535,7 @@ CREATE TABLE v4_lib_component (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_component.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_component.csv.tmp'
     INTO TABLE v4_lib_component
     FIELDS
         TERMINATED BY ','
@@ -557,7 +557,7 @@ CREATE TABLE v4_lib_component_arg (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_component_arg.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_component_arg.csv.tmp'
     INTO TABLE v4_lib_component_arg
     FIELDS
         TERMINATED BY ','
@@ -581,7 +581,7 @@ CREATE TABLE v4_lib_mod_recipe (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_mod_recipe.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_mod_recipe.csv.tmp'
     INTO TABLE v4_lib_mod_recipe
     FIELDS
         TERMINATED BY ','
@@ -605,7 +605,7 @@ CREATE TABLE v4_lib_mod_recipe_arg (
 ) TYPE=MyISAM;
 
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_mod_recipe_arg.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_mod_recipe_arg.csv.tmp'
     INTO TABLE v4_lib_mod_recipe_arg
     FIELDS
         TERMINATED BY ','
@@ -630,7 +630,7 @@ CREATE TABLE v4_lib_pg_attribute (
   KEY PG_NAME (PG_NAME)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_pg_attribute.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_pg_attribute.csv.tmp'
     INTO TABLE v4_lib_pg_attribute
     FIELDS
         TERMINATED BY ','
@@ -658,7 +658,7 @@ CREATE TABLE v6_cfw_alploc (
   KEY CFW_ID (CFW_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_alploc.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_alploc.csv.tmp'
     INTO TABLE v6_cfw_alploc
     FIELDS
         TERMINATED BY ','
@@ -682,7 +682,7 @@ CREATE TABLE v6_cfw_context_plugin_arg (
   KEY ORG_CONTEXT (ORG_CONTEXT)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_context_plugin_arg.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_context_plugin_arg.csv.tmp'
     INTO TABLE v6_cfw_context_plugin_arg
     FIELDS
         TERMINATED BY ','
@@ -702,7 +702,7 @@ CREATE TABLE v6_cfw_group (
   UNIQUE KEY PK_V6_CFW_GROUP (CFW_GROUP_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_group.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_group.csv.tmp'
     INTO TABLE v6_cfw_group
     FIELDS
         TERMINATED BY ','
@@ -725,7 +725,7 @@ CREATE TABLE v6_cfw_group_member (
   KEY CFW_ID (CFW_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_group_member.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_group_member.csv.tmp'
     INTO TABLE v6_cfw_group_member
     FIELDS
         TERMINATED BY ','
@@ -747,7 +747,7 @@ CREATE TABLE v6_cfw_group_org (
   KEY ORG_ID (ORG_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_group_org.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_group_org.csv.tmp'
     INTO TABLE v6_cfw_group_org
     FIELDS
         TERMINATED BY ','
@@ -767,7 +767,7 @@ CREATE TABLE v6_cfw_instance (
   UNIQUE KEY PK_V6_CFW_INSTANCE (CFW_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_instance.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_instance.csv.tmp'
     INTO TABLE v6_cfw_instance
     FIELDS
         TERMINATED BY ','
@@ -791,7 +791,7 @@ CREATE TABLE v6_cfw_oplan (
   KEY CFW_ID (CFW_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan.csv.tmp'
     INTO TABLE v6_cfw_oplan
     FIELDS
         TERMINATED BY ','
@@ -818,7 +818,7 @@ CREATE TABLE v6_cfw_oplan_activity (
   KEY ORG_GROUP_ID (ORG_GROUP_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan_activity.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan_activity.csv.tmp'
     INTO TABLE v6_cfw_oplan_activity
     FIELDS
         TERMINATED BY ','
@@ -844,7 +844,7 @@ CREATE TABLE v6_cfw_oplan_loc (
   KEY CFW_AND_OPLAN_ID (CFW_ID,OPLAN_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan_loc.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan_loc.csv.tmp'
     INTO TABLE v6_cfw_oplan_loc
     FIELDS
         TERMINATED BY ','
@@ -871,7 +871,7 @@ CREATE TABLE v6_cfw_oplan_og_attr (
   KEY CFW_AND_OPLAN_ID (CFW_ID,OPLAN_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan_og_attr.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_oplan_og_attr.csv.tmp'
     INTO TABLE v6_cfw_oplan_og_attr
     FIELDS
         TERMINATED BY ','
@@ -895,7 +895,7 @@ CREATE TABLE v6_cfw_org_group_org_member (
   KEY ORG_ID (ORG_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_group_org_member.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_group_org_member.csv.tmp'
     INTO TABLE v6_cfw_org_group_org_member
     FIELDS
         TERMINATED BY ','
@@ -919,7 +919,7 @@ CREATE TABLE v6_cfw_org_hierarchy (
   KEY SUPERIOR_ORG_ID (SUPERIOR_ORG_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_hierarchy.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_hierarchy.csv.tmp'
     INTO TABLE v6_cfw_org_hierarchy
     FIELDS
         TERMINATED BY ','
@@ -941,7 +941,7 @@ CREATE TABLE v6_cfw_org_list (
   KEY CFW_ID (CFW_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_list.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_list.csv.tmp'
     INTO TABLE v6_cfw_org_list
     FIELDS
         TERMINATED BY ','
@@ -970,7 +970,7 @@ CREATE TABLE v6_cfw_org_og_relation (
   KEY CFW_ID (CFW_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_og_relation.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_og_relation.csv.tmp'
     INTO TABLE v6_cfw_org_og_relation
     FIELDS
         TERMINATED BY ','
@@ -995,7 +995,7 @@ CREATE TABLE v6_cfw_org_orgtype (
   KEY ORGTYPE_ID (ORGTYPE_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_orgtype.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_orgtype.csv.tmp'
     INTO TABLE v6_cfw_org_orgtype
     FIELDS
         TERMINATED BY ','
@@ -1021,7 +1021,7 @@ CREATE TABLE v6_cfw_org_pg_attr (
   KEY CFW_AND_ORG_ID (CFW_ID,ORG_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_pg_attr.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_org_pg_attr.csv.tmp'
     INTO TABLE v6_cfw_org_pg_attr
     FIELDS
         TERMINATED BY ','
@@ -1045,7 +1045,7 @@ CREATE TABLE v6_cfw_orgtype_plugin_grp (
   KEY PLUGIN_GROUP_ID (PLUGIN_GROUP_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_orgtype_plugin_grp.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_orgtype_plugin_grp.csv.tmp'
     INTO TABLE v6_cfw_orgtype_plugin_grp
     FIELDS
         TERMINATED BY ','
@@ -1070,7 +1070,7 @@ CREATE TABLE v6_cfw_plugin_group_member (
   KEY CFW_ID (CFW_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_plugin_group_member.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_plugin_group_member.csv.tmp'
     INTO TABLE v6_cfw_plugin_group_member
     FIELDS
         TERMINATED BY ','
@@ -1090,7 +1090,7 @@ CREATE TABLE v6_lib_org_group (
   UNIQUE KEY PK_V6_CFW_ORG_GROUP (ORG_GROUP_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_org_group.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_org_group.csv.tmp'
     INTO TABLE v6_lib_org_group
     FIELDS
         TERMINATED BY ','
@@ -1111,7 +1111,7 @@ CREATE TABLE v6_lib_organization (
   UNIQUE KEY PK_V6_LIB_ORGANIZATION (ORG_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_organization.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_organization.csv.tmp'
     INTO TABLE v6_lib_organization
     FIELDS
         TERMINATED BY ','
@@ -1131,7 +1131,7 @@ CREATE TABLE v6_lib_orgtype_ref (
   UNIQUE KEY PK_V6_LIB_ORGTYPE_REF (ORGTYPE_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_orgtype_ref.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_orgtype_ref.csv.tmp'
     INTO TABLE v6_lib_orgtype_ref
     FIELDS
         TERMINATED BY ','
@@ -1154,7 +1154,7 @@ CREATE TABLE v6_lib_plugin_arg (
   UNIQUE KEY PK_V6_LIB_PLUGIN_ARG (PLUGIN_ARG_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_arg.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_arg.csv.tmp'
     INTO TABLE v6_lib_plugin_arg
     FIELDS
         TERMINATED BY ','
@@ -1176,7 +1176,7 @@ CREATE TABLE v6_lib_plugin_arg_thread (
   KEY PLUGIN_ARG_ID (PLUGIN_ARG_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_arg_thread.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_arg_thread.csv.tmp'
     INTO TABLE v6_lib_plugin_arg_thread
     FIELDS
         TERMINATED BY ','
@@ -1197,7 +1197,7 @@ CREATE TABLE v6_lib_plugin_group (
   UNIQUE KEY PK_V6_LIB_PLUGIN_GROUP (PLUGIN_GROUP_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_group.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_group.csv.tmp'
     INTO TABLE v6_lib_plugin_group
     FIELDS
         TERMINATED BY ','
@@ -1217,7 +1217,7 @@ CREATE TABLE v6_lib_plugin_ref (
   UNIQUE KEY PK_V6_LIB_PLUGIN_REF (PLUGIN_CLASS)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_ref.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_ref.csv.tmp'
     INTO TABLE v6_lib_plugin_ref
     FIELDS
         TERMINATED BY ','
@@ -1240,7 +1240,7 @@ CREATE TABLE v6_lib_plugin_thread (
   KEY THREAD_ID (THREAD_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_thread.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_thread.csv.tmp'
     INTO TABLE v6_lib_plugin_thread
     FIELDS
         TERMINATED BY ','
@@ -1260,7 +1260,7 @@ CREATE TABLE v6_lib_role_ref (
   UNIQUE KEY PK_V6_LIB_ROLE_REF (ROLE)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_role_ref.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_role_ref.csv.tmp'
     INTO TABLE v6_lib_role_ref
     FIELDS
         TERMINATED BY ','
@@ -1283,7 +1283,7 @@ CREATE TABLE v6_lib_role_thread (
   KEY THREAD_ID (THREAD_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_role_thread.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_role_thread.csv.tmp'
     INTO TABLE v6_lib_role_thread
     FIELDS
         TERMINATED BY ','
@@ -1303,7 +1303,7 @@ CREATE TABLE v6_lib_thread (
   UNIQUE KEY PK_V6_LIB_THREAD (THREAD_ID)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_thread.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_thread.csv.tmp'
     INTO TABLE v6_lib_thread
     FIELDS
         TERMINATED BY ','
@@ -1325,7 +1325,7 @@ CREATE TABLE v6_oplan_activity (
   END_CDAY decimal(68,30) default NULL
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_activity.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_activity.csv.tmp'
     INTO TABLE v6_oplan_activity
     FIELDS
         TERMINATED BY ','
@@ -1346,7 +1346,7 @@ CREATE TABLE v6_oplan_loc (
   END_CDAY decimal(68,30) default NULL
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_loc.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_loc.csv.tmp'
     INTO TABLE v6_oplan_loc
     FIELDS
         TERMINATED BY ','
@@ -1384,7 +1384,7 @@ CREATE TABLE v6_tpfdd (
   RDD_DEST decimal(68,30) default NULL
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/tpfdd.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/tpfdd.csv.tmp'
     INTO TABLE v6_tpfdd
     FIELDS
         TERMINATED BY ','
@@ -1410,7 +1410,7 @@ CREATE TABLE community_entity_attribute (
   KEY ATTRIBUTE_VALUE (ATTRIBUTE_VALUE)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/community_entity_attribute.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/community_entity_attribute.csv.tmp'
     INTO TABLE community_entity_attribute
     FIELDS
         TERMINATED BY ','
@@ -1434,7 +1434,7 @@ CREATE TABLE community_attribute (
   KEY ATTRIBUTE_VALUE (ATTRIBUTE_VALUE)
 ) TYPE=MyISAM;
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/community_attribute.csv'
+LOAD DATA INFILE ':cip/csmart/data/database/csv/community_attribute.csv.tmp'
     INTO TABLE community_attribute
     FIELDS TERMINATED BY ','
     OPTIONALLY ENCLOSED BY '"'

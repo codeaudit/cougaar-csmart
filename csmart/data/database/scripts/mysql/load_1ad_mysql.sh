@@ -46,9 +46,13 @@ echo $COUGAAR_INSTALL_PATH | tr '\\' '/' > newcip.txt
 sed s/:cip/$(cat newcip.txt | sed 's/\//\\\//g')/ $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/load_db.sql > load_mysql_db_new.sql
 rm newcip.txt
 
+#Replace potential '\r\n' combo in all .csv files with only '\n' to match load script
+sedscr.sh $COUGAAR_INSTALL_PATH/csmart/data/database/csv/*.csv
+
 echo "Loading '.csv' files to database."
 mysql -u$1 -p$2 $3 < load_mysql_db_new.sql
 
 rm load_mysql_db_new.sql
+rm $COUGAAR_INSTALL_PATH/csmart/data/database/csv/*.tmp
 
 echo "Done."
