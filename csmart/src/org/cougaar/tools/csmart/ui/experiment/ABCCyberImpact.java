@@ -28,7 +28,9 @@ public class ABCCyberImpact
   extends ModifiableConfigurableComponent
   implements PropertiesListener, Serializable {
 
-  
+  private static final String DESCRIPTION_RESOURCE_NAME = "cyber-impact-description.html";
+  private static final String BACKUP_DESCRIPTION =  "Defines a Cyber Attack";
+
   public static final String PROP_TARGET = "Target";
   public static final String PROP_TARGET_DFLT = new String();
   public static final String PROP_TARGET_DESC = "Target agent for Cyber Attack";

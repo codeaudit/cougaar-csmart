@@ -28,6 +28,9 @@ public class ABCKineticImpact
   extends ModifiableConfigurableComponent
   implements PropertiesListener, Serializable {
 
+
+  private static final String DESCRIPTION_RESOURCE_NAME = "kinetic-impact-description.html";
+  private static final String BACKUP_DESCRIPTION =  "Defines a Kinetic Impact";
   
   public static final String PROP_LATITUDE = "Latitude";
   public static final Double PROP_LATITUDE_DFLT = new Double(0.0);

@@ -67,9 +67,9 @@ public class ABCImpact
   private String rweFile;
   private String societyFile;
 
-  private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
+  private static final String DESCRIPTION_RESOURCE_NAME = "abc-impact-description.html";
   private static final String BACKUP_DESCRIPTION = 
-    "Impact description not available";
+    "ABCImpact generates an Impact";
 
   /** Property Definitions for Real World Events **/
   public static final String  PROP_CYBERCOUNT      = "Cyber Events";
