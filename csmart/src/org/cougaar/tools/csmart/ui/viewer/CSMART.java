@@ -693,6 +693,8 @@ public class CSMART extends JFrame {
   private void addTool(String toolName, String docName, JFrame tool) {
     NamedFrame.getNamedFrame().addFrame(toolName + ": " + docName, tool);
     final JFrame frameArg = tool;
+    tool.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+
     tool.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
         if(!frameArg.getGlassPane().isVisible()) {
