@@ -24,6 +24,7 @@ package org.cougaar.tools.csmart.ui.analyzer;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
+import org.cougaar.util.Parameters;
 
 import java.awt.GridLayout;
 import java.awt.event.*;
@@ -140,12 +141,8 @@ public class Analyzer extends JFrame implements ActionListener {
     if (fileChooser.getSelectedFile().isDirectory())
       return; // user specified a directory, not a file
     String filePathName = fileChooser.getSelectedFile().getPath();
-    String excel = "C:/Program Files/Microsoft Office/Office/EXCEL.EXE";
-    try {
-      excel = System.getProperty(EXCEL);
-    } catch (RuntimeException e) {
-      // just use default
-    }
+    String excel = 
+      Parameters.findParameter("org.cougaar.tools.csmart.excelpath");
     String[] cmds = { excel, "" };
     System.out.println("Launching excel from: " + cmds[0]);
     cmds[1] = filePathName;
