@@ -20,7 +20,6 @@
  */
 package org.cougaar.tools.csmart.experiment;
 
-import org.cougaar.core.node.Node;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.db.DBConflictHandler;
@@ -59,7 +58,7 @@ public interface Experiment extends ModifiableComponent {
   /** When true, if CSMART dies, the society does not die **/
   String AS_SWALLOW_ERRORS = "org.cougaar.tools.server.swallowOutputConnectionException";
   /** Which initialization method should we use. DB means the CSMART DB **/
-  String INITIALIZER_PROP = Node.INITIALIZER_PROP;
+  String INITIALIZER_PROP = "org.cougaar.core.node.InitializationComponent";
 
   // Default values:
   String PERSISTENCE_DFLT = "false";
