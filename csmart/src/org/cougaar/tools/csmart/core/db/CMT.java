@@ -63,33 +63,14 @@ public class CMT {
   public CMT() {
   }
   
-  //NEW CODE
-  static void clearAllCMTAssemblies(){
-    DBUtils.deleteItems(asbPrefix+"asb_component_hierarchy","assembly_id","assembly_id", QUERY_FILE);
-    DBUtils.deleteItems(asbPrefix+"asb_agent", "assembly_id", "assembly_id", QUERY_FILE);
-    DBUtils.deleteItems(asbPrefix+"asb_agent_pg_attr","assembly_id","assembly_id", QUERY_FILE);
-    DBUtils.deleteItems(asbPrefix+"asb_agent_relation","assembly_id","assembly_id", QUERY_FILE);
-    DBUtils.deleteItems(asbPrefix+"asb_component_arg","assembly_id","assembly_id", QUERY_FILE);
-    DBUtils.deleteItems(asbPrefix+"asb_oplan_agent_attr", "assembly_id", "assembly_id", QUERY_FILE);
-    DBUtils.deleteItems(asbPrefix+"asb_oplan", "assembly_id", "assembly_id", QUERY_FILE);
-    
-    //DBUtils.deleteItems(asbPrefix+"alib_component","assembly_id","assembly_id", QUERY_FILE);
-    DBUtils.deleteItems(asbPrefix+"asb_assembly","assembly_id","assembly_id", QUERY_FILE);
-  }
-  
   static void clearUnusedCMTassemblies(){
     // FIXME!! This query may have problems in MySQL!!!
     Set unusedAssemblies=DBUtils.querySet("unusedAssemblies",new HashMap(), QUERY_FILE);
     Iterator i = unusedAssemblies.iterator();
     while (i.hasNext()) {
-      clearCMTasb((String)i.next());
+      reallyClearCMTasb((String)i.next());
     }
   }  
-  
-  static void clearCMTAssembly(String cfw_g_id, String[] threads){
-    String assembly_id = getAssemblyID(cfw_g_id,threads,new HashMap());
-    clearCMTasb(assembly_id);
-  }
   
   static String tabbrev(String thread){
     if(thread.equals("STRATEGIC-TRANS")) return "S";
@@ -151,15 +132,54 @@ public class CMT {
     return result;
   }
 
-  static void clearCMTasb(String assembly_id){
-    // FIXME! This query may have problems in MySQL!!
-    Set unusedAssemblies=DBUtils.querySet("unusedAssemblies",new HashMap(), QUERY_FILE);
-    if(unusedAssemblies.contains(assembly_id)){
-      reallyClearCMTasb(assembly_id);
-    }
-  }
-  
+  /**
+   * Despite the name, this method
+   * deletes the contents of any assembly type.
+   **/
   public static void reallyClearCMTasb(String assembly_id){
+    if (assembly_id == null || assembly_id.equals(""))
+      return;
+
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.CMT");
+
+    // Avoid base assemblies here
+    if (assembly_id.startsWith("CMT") && assembly_id.indexOf("134589") != -1) {
+      if (log.isInfoEnabled()) {
+	log.info("Asked to delete base assembly " + assembly_id, new Throwable());
+      }
+      // base assembly I think.
+      int response = 
+	JOptionPane.showConfirmDialog(null,
+				      "You seem to be trying to delete a base society (id " + assembly_id + ") -- do you REALLY want to do this?",
+				      "Confirm Delete",
+				      JOptionPane.YES_NO_OPTION);
+      
+      if (response != JOptionPane.YES_OPTION) {
+	return;
+      }
+    }
+
+    // Add in base community assembly avoidance here too?
+    if (assembly_id.equals("COMM-DEFAULT_CONFIG")) {
+      if (log.isInfoEnabled()) {
+	log.info("Asked to delete base comm assembly " + assembly_id, new Throwable());
+      }
+      // base assembly I think.
+      int response = 
+	JOptionPane.showConfirmDialog(null,
+				      "You seem to be trying to delete the base community definition (id " + assembly_id + ") -- do you REALLY want to do this?",
+				      "Confirm Delete",
+				      JOptionPane.YES_NO_OPTION);
+      
+      if (response != JOptionPane.YES_OPTION) {
+	return;
+      }
+    }
+
+    if (log.isDebugEnabled()) {
+      log.debug("Deleting assembly " + assembly_id);
+    }
+
     DBUtils.deleteItems(asbPrefix+"asb_component_hierarchy", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_agent", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_agent_pg_attr", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
