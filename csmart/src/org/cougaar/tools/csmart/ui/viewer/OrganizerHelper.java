@@ -107,6 +107,18 @@ public class OrganizerHelper {
         }
       }
       
+      if (id == null || (! id.startsWith(CMT_START_STRING) && ! id.startsWith(CSA_START_STRING))) {
+	// PROBLEM! Not a society assembly!
+	if (log.isErrorEnabled()) {
+	  log.error("createExpt found no society Assembly for experiment " + experimentId);
+	  if (id == null)
+	    log.error("Found no assembly at all!");
+	  else
+	    log.error("Found only assembly " + id);
+	}
+	return null;
+      }
+      
       if(id != null) {
         String societyName = DBUtils.getSocietyName(id);
         SocietyComponent sc = organizer.getSociety(societyName);
