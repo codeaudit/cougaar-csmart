@@ -23,10 +23,6 @@ package org.cougaar.tools.csmart.ui.experiment;
 
 import org.cougaar.tools.csmart.ui.component.*;
 import java.util.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -24,8 +24,6 @@ import java.io.FileFilter;
 import java.io.Serializable;
 import java.net.URL;
 
-import org.cougaar.tools.server.ConfigurationWriter;
-
 import org.cougaar.tools.csmart.scalability.ScalabilityMetricsFileFilter;
 import org.cougaar.tools.csmart.ui.component.AgentComponent;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponentPropertyAdapter;

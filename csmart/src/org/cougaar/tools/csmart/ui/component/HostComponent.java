@@ -27,28 +27,24 @@ import java.io.IOException;
 /**
  * The interface for adding and removing hosts from a society.
  */
-
 public interface HostComponent extends ComponentProperties {
 
   /**
    * Add a node to the host.
    * @param node the node to add
    */
-
   void addNode(NodeComponent node);
 
   /**
    * Remove the specified node from the host.
    * @param node the node to remove
    */
-
   void removeNode(NodeComponent node);
 
   /**
    * Get the nodes in this host.
    * @return array of node components
    */
-
   NodeComponent[] getNodes();
 
   /**

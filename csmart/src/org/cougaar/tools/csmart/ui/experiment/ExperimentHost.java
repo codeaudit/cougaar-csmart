@@ -21,13 +21,8 @@
 
 package org.cougaar.tools.csmart.ui.experiment;
 
-import org.cougaar.tools.server.ConfigurationWriter;
 import org.cougaar.tools.csmart.ui.component.*;
 import java.util.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -102,7 +97,6 @@ public class ExperimentHost
    * Get the port on which to contact the server on this host.
    * @return the server port
    */
-
   public int getServerPort() {
     return serverPort;
   }
@@ -111,7 +105,6 @@ public class ExperimentHost
    * Set the port on which to contact the server on this host.
    * @param the server port
    */
-
   public void setServerPort(int serverPort) {
     this.serverPort = serverPort;
   }
@@ -120,7 +113,6 @@ public class ExperimentHost
    * Get the port on which to monitor nodes running on this host.
    * @return the monitoring port
    */
-
   public int getMonitoringPort() {
     return monitoringPort;
   }
@@ -129,7 +121,6 @@ public class ExperimentHost
    * Set the port on which to monitor nodes running on this host.
    * @param the monitoring port
    */
-
   public void setMonitoringPort(int monitoringPort) {
     this.monitoringPort = monitoringPort;
   }

@@ -20,30 +20,14 @@
  */
 package org.cougaar.tools.csmart.ui.experiment;
 
-import java.awt.Component;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.JFileChooser;
 import java.util.Collection;
 
-import org.cougaar.tools.server.ConfigurationWriter;
-import org.cougaar.util.EmptyIterator;
-
 import org.cougaar.tools.csmart.ui.component.*;
-import org.cougaar.tools.csmart.ui.viewer.Organizer;
-import org.cougaar.tools.csmart.configgen.abcsociety.ABCAgent;
 
 /**
  * Impact for ABC XML specified RealWorldEvents. 
@@ -250,31 +234,6 @@ public class ABCImpact
     }
   }
     
-//    /**
-//     * This is the opportunity for an impact to specify additional
-//     * components to load into non-Impact Agents
-//     *
-//     * @return a <code>String</code> Node file addition, possibly null
-//     */
-//    public String getNodeFileAddition() {
-//      StringBuffer buf = new StringBuffer();
-//      ComponentData data = createBinderComponentData();
-
-//      buf.append(data.getName());
-//      buf.append(" = ");
-//      buf.append(data.getClassName());
-//      buf.append("(");
-//      Object[] params = data.getParameters();
-//      for(int i=0; i < params.length; i++) {
-//        if((i+1) == params.length) {
-//  	buf.append(params[i] + ")\n");
-//        } else {
-//  	buf.append(params[i] + ", ");
-//        }
-//      }
-//      return buf.toString();
-//    }
-
   private ComponentData createBinderComponentData() {
     ComponentData data = new GenericComponentData();
 

@@ -25,9 +25,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.net.URL;
 
-import org.cougaar.tools.csmart.ui.viewer.Organizer;
-import org.cougaar.tools.server.ConfigurationWriter;
-
 /**
  * The interface for adding and removing nodes from a society.
  */

@@ -560,13 +560,6 @@ public class ABCSociety
     return false;
   }
 
-//   /**
-//    * Get a configuration writer for this society.
-//    */
-//   public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes, String nodeFileAddition) {
-//     return new ABCConfigurationWriter(this, nodes, nodeFileAddition);
-//   }
-
   public ComponentProperties copy(ComponentProperties result) {
     result = super.copy(result);
     // Try to get the PROP_SUPPLIES and PROP_INITIALIZER properties

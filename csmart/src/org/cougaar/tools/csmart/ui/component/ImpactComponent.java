@@ -24,7 +24,6 @@ package org.cougaar.tools.csmart.ui.component;
 import java.net.URL;
 
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
-import org.cougaar.tools.server.ConfigurationWriter;
 
 /**
  * Parent interface for all Impacts to a CSMART system.
