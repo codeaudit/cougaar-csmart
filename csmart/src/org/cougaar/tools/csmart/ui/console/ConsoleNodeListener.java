@@ -71,8 +71,7 @@ public class ConsoleNodeListener implements NodeEventListener {
                              ConsoleStyledDocument doc) throws IOException {
 
 
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
-
+    createLogger();
     this.console = console;
     this.nodeComponent = nodeComponent;
     nodeName = nodeComponent.toString();
@@ -101,6 +100,10 @@ public class ConsoleNodeListener implements NodeEventListener {
     StyleConstants.setForeground(atts[2], new Color(205, 205, 205));
     atts[3] = new SimpleAttributeSet();
     StyleConstants.setForeground(atts[3], new Color(64, 64, 192));
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
   }
 
   public void setIdleChart(JCChart chart, ChartDataModel dataModel) {
@@ -458,6 +461,14 @@ public class ConsoleNodeListener implements NodeEventListener {
   public ConsoleStyledDocument getDocument() {
     return doc;
   }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }
 
 

@@ -50,6 +50,10 @@ public abstract class PropertyBase implements Property {
    */
   protected PropertyBase(ConfigurableComponent c) {
     component = c;
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.core.property");
   }
 
@@ -155,6 +159,7 @@ public abstract class PropertyBase implements Property {
   {
     stream.defaultReadObject();
     listeners = (List) stream.readObject();
+    createLogger();
   }
 
   public void printProperty(PrintStream out) {
@@ -170,4 +175,5 @@ public abstract class PropertyBase implements Property {
     out.println(indent + "Allowed Values: " + getAllowedValues());
     out.println(indent + "Experiment Values: " + getExperimentValues());
   }
+
 }

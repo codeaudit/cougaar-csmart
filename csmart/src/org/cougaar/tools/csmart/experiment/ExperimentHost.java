@@ -52,7 +52,11 @@ public class ExperimentHost
 
   public ExperimentHost(String hostName) {
       super(hostName);
-      log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
+      createLogger();
+  }
+
+  private void createLogger() {
+      log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");    
   }
 
   public void initProperties() {
@@ -139,4 +143,5 @@ public class ExperimentHost
   public void setMonitoringPort(int monitoringPort) {
     this.monitoringPort = monitoringPort;
   }
+
 }

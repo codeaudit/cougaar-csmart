@@ -72,7 +72,7 @@ public class CMTDialog extends JDialog {
                    String experimentName,
                    String experimentId) {
     super(parent, "Threads and Groups", true); // modal dialog
-    log = CSMART.createLogger(getClass().getPackage().toString());
+    createLogger();
     this.organizer = organizer; // to get unique names
     this.experimentName = experimentName;
     this.experimentId = experimentId;
@@ -225,6 +225,9 @@ public class CMTDialog extends JDialog {
     show();
   }
 
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+  }
 
   private void ok_actionPerformed() {
     cancelled = false;

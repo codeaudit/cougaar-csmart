@@ -30,6 +30,8 @@ import java.io.Serializable;
 import java.util.*;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * Maintains information about a node and generates the
@@ -53,6 +55,10 @@ public class ExperimentNode
     this.experiment = experiment;
     addProperty("Experiment", experiment);
     addDefaultArgumentsToNode(nodeName);
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
   }
 
@@ -152,4 +158,12 @@ public class ExperimentNode
     newProps.putAll(getArguments());
     return nodeCopy;
   }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }

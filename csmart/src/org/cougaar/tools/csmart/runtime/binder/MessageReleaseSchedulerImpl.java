@@ -68,6 +68,10 @@ public class MessageReleaseSchedulerImpl
     this.sleepMS = t;
     this.inQ = new ObjectReleaseQueue(inMessagesPerSecond);
     this.outQ = new ObjectReleaseQueue(outMessagesPerSecond);
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
   }
 
@@ -198,5 +202,6 @@ public class MessageReleaseSchedulerImpl
       }
     }
   }
+
 
 }

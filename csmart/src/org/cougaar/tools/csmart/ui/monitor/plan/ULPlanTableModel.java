@@ -47,7 +47,7 @@ public class ULPlanTableModel extends AbstractTableModel {
 
   public ULPlanTableModel(Node node) {
     this.node = node;
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.plan");
+    createLogger();
     names = new Vector();
     values = new Vector();
     Enumeration keys = node.getLocalAttributeKeys();
@@ -113,6 +113,10 @@ public class ULPlanTableModel extends AbstractTableModel {
     addAttribute(PropertyNames.OBSERVED_ALLOCATION_RESULT_END_TIME);
     addAttribute(PropertyNames.OBSERVED_ALLOCATION_RESULT_FAILURE_REASON);
     makePrettyNames();
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.plan");
   }
 
   public int getColumnCount() { 
@@ -208,4 +212,5 @@ public class ULPlanTableModel extends AbstractTableModel {
     names.addElement(name);
     values.addElement(node.getLocalAttribute(name).getValue());
   }
+
 }

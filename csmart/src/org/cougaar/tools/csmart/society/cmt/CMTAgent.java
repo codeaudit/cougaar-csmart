@@ -90,13 +90,17 @@ public class CMTAgent
     super(name);
     this.name = name;
     this.assemblyID = null;
-    log = CSMART.createLogger("org.cougaar.tools.csmart.society.cmt");
+    createLogger();
   }
 
   public CMTAgent(String name, List assemblyID) {
     super(name);
     this.name = name;
     this.assemblyID = assemblyID;
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.society.cmt");
   }
 
@@ -301,6 +305,7 @@ public class CMTAgent
   {
     ois.defaultReadObject();
     initDBProperties();
+    createLogger();
   }
 
   
@@ -319,4 +324,5 @@ public class CMTAgent
     }
     return false;
   }
+
 } // end of CMTAgent.java

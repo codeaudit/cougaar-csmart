@@ -44,6 +44,10 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
   public ConsoleStyledDocument() {
     bufferSize = DefaultStyledDocument.BUFFER_SIZE_DEFAULT * 4;
     minRemoveSize = (int)(bufferSize * .2);
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
   }
 
@@ -254,4 +258,5 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       }
     }
   }
+
 }

@@ -62,8 +62,7 @@ public class ConsoleTextPane extends JTextPane {
   public ConsoleTextPane(ConsoleStyledDocument doc, 
                          NodeStatusButton statusButton) {
     super(doc);
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
-
+    createLogger();
     this.doc = doc;
     this.statusButton = statusButton;
     highlighter = getHighlighter();
@@ -71,6 +70,10 @@ public class ConsoleTextPane extends JTextPane {
       new DefaultHighlighter.DefaultHighlightPainter(Color.yellow);
     notifyHighlight =
       new DefaultHighlighter.DefaultHighlightPainter(Color.magenta);
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
   }
 
   private void highlightSearchString(int startOffset, int endOffset) {
@@ -354,4 +357,5 @@ public class ConsoleTextPane extends JTextPane {
     }
 
   }
+
 }

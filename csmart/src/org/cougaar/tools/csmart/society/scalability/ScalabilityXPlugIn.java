@@ -30,6 +30,8 @@ import org.cougaar.tools.csmart.core.property.PropertyAlias;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 public class ScalabilityXPlugIn
   extends ConfigurableComponent
@@ -46,6 +48,10 @@ public class ScalabilityXPlugIn
   public ScalabilityXPlugIn(String name, String pluginClass) {
     super(name);
     this.pluginClass = pluginClass;
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.society.scalability");
   }
 
@@ -112,5 +118,11 @@ public class ScalabilityXPlugIn
     return data;    
   }
 
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
 
 }

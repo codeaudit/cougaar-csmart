@@ -25,6 +25,8 @@ import java.util.*;
 import javax.swing.JFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * Ensure that window names are unique within the CSMARTUL application.
@@ -78,6 +80,10 @@ public class NamedFrame extends Observable {
    * Disallow new. Must use singleton instance via getNamedFrame
    **/
   private NamedFrame() {
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.util");
   }
 
@@ -183,5 +189,13 @@ public class NamedFrame extends Observable {
       this.prevTitle = prevTitle;
     }
   }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }
 

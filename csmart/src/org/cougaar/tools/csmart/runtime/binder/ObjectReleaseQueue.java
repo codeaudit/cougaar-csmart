@@ -52,6 +52,9 @@ public class ObjectReleaseQueue {
     nDueObjects = 0.0;
     // really want a circular queue, but a List is okay:
     objQ = new TrimmableArrayList();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
   }
 
@@ -142,5 +145,6 @@ public class ObjectReleaseQueue {
       super.removeRange(fromIdx, toIdx);
     }
   }
+
 }
 

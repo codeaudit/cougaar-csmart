@@ -27,6 +27,8 @@ import java.awt.event.*;
 import java.util.Vector;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * Adds functionality to GrappaAdapter which is the class that handles
@@ -56,6 +58,10 @@ public class CSMARTGrappaAdapter extends GrappaAdapter {
     super();
     this.birdFrame = birdFrame;
     this.frame = frame;
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
   }
 
@@ -160,6 +166,14 @@ public class CSMARTGrappaAdapter extends GrappaAdapter {
     else
       frame.enableSelectedMenus(false);
   }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }
 
 

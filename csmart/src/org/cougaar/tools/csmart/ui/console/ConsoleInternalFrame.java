@@ -58,6 +58,8 @@ import org.cougaar.tools.server.NodeServesClient;
 import org.cougaar.tools.server.system.ProcessStatus;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 public class ConsoleInternalFrame extends JInternalFrame {
   private static final String NODE_MENU = "Node";
@@ -131,7 +133,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     this.nodeServer = nodeServer;
     this.console = console;
 
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
+    createLogger();
 
     consoleTextPane = (ConsoleTextPane)pane.getViewport().getView();
     // get host component by getting the experiment and 
@@ -327,6 +329,10 @@ public class ConsoleInternalFrame extends JInternalFrame {
     initKeyMap(consoleTextPane);
     getContentPane().add(pane);
     setSize(300,300);
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
   }
 
   /**
@@ -920,6 +926,14 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                   JOptionPane.PLAIN_MESSAGE);
 
   }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }
 
 

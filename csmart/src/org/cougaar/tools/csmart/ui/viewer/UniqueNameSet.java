@@ -33,6 +33,10 @@ public class UniqueNameSet extends HashSet {
 
   public UniqueNameSet(String prefix) {
     this.prefix = prefix;
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
   }
 
@@ -64,4 +68,6 @@ public class UniqueNameSet extends HashSet {
     }
     return name;
   }
+
+
 }

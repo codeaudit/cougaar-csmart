@@ -40,8 +40,8 @@ public class CommunityTimePhasedData extends TimePhasedData {
   /** Default Constructor **/
   public CommunityTimePhasedData() {
     super();
+    createLogger();
     communities = new ArrayList();
-    CSMART.createLogger("org.cougaar.tools.csmart.core.cdata");
     try {
       setStartTime("");
     } catch (ParseException pe) {
@@ -56,6 +56,10 @@ public class CommunityTimePhasedData extends TimePhasedData {
         log.error("Caught an exception setting stopTime");
       }
     }
+  }
+  
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.core.cdata");
   }
 
   /**

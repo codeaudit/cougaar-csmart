@@ -53,7 +53,7 @@ public class BirdFrame extends JFrame implements ChangeListener {
 
   public BirdFrame(String title, Graph graph, CSMARTFrame frame) {
     super(title);
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+    createLogger();
     // if user closes window, this hides the window, so we can re-use it
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
@@ -72,6 +72,11 @@ public class BirdFrame extends JFrame implements ChangeListener {
     getContentPane().add("Center", gp);
     setVisible(true);
   }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+  }
+
 
   /**
    * ChangeListener interface.

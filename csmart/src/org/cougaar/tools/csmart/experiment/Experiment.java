@@ -59,6 +59,8 @@ import org.cougaar.core.agent.ClusterImpl;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
@@ -113,21 +115,22 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 		    RecipeComponent[] recipes)
   {
     this(name);
-    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
+    createLogger();
     setSocietyComponents(societyComponents);
     setRecipes(recipes);
     setDefaultNodeArguments();
   }
 
+
   public Experiment(String name) {
     super(name);
-    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
+    createLogger();
     setDefaultNodeArguments();
   }
 
   public Experiment(String name, String expID, String trialID) {
     super(name);
-    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
+    createLogger();
     this.expID = expID;
     this.trialID = trialID;
     inDatabase = true;
@@ -135,6 +138,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if(log.isDebugEnabled()) {
       log.debug("Experiment: " + expID + " Trial: " + trialID);
     }
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
   }
 
   private void setDefaultNodeArguments() {
@@ -1406,6 +1413,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       ac.setParent(nc);
       nc.addChild((ComponentData)ac);
     }
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
 } // end of Experiment.java

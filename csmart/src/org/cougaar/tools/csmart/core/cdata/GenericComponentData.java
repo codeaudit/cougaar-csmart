@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * Generic Component Data.
@@ -52,10 +54,14 @@ public class GenericComponentData implements ComponentData, Serializable {
 
 
   public GenericComponentData() {
+    createLogger();
     children = new ArrayList();
     parameters = new ArrayList();
     leafComponents = new ArrayList();
     timePhasedData = new ArrayList();
+  }
+  
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.core.cdata");
   }
 
@@ -344,6 +350,13 @@ public class GenericComponentData implements ComponentData, Serializable {
 
   public String getAlibID() {
     return aLibID;
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
   public boolean equals(Object o) {

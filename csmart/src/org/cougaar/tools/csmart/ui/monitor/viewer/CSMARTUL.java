@@ -66,6 +66,8 @@ import java.net.URL;
 import java.util.*;
 import javax.swing.*;
 import org.cougaar.util.log.Logger;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * The user interface for the CSMART Society.
@@ -174,7 +176,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   
   public CSMARTUL(CSMART csmart) {
     this.csmart = csmart;
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+    createLogger();
 
     refreshAgents();
     // create one version of properties for all objects
@@ -266,6 +268,10 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
     pack();
     setVisible(true);
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
   }
 
   /**
@@ -1105,6 +1111,13 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       NamedFrame.getNamedFrame().removeFrame(monitor);
       monitor.dispose();
     }
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
 }

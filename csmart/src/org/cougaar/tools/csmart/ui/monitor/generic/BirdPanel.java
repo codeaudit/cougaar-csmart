@@ -41,8 +41,13 @@ public class BirdPanel extends GrappaPanel {
 
   public BirdPanel(Graph graph) {
     super(graph);
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
   }
+
 
 //   public void setVisibleOutline(GrappaBox r) {
 //     outline = r;

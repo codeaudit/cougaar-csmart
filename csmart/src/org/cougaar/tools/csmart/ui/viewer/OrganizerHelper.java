@@ -45,6 +45,8 @@ import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.cmt.CMTSociety;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 public class OrganizerHelper {
   private static final String EXPT_DESC_QUERY = "queryExptDescriptions";
@@ -70,7 +72,7 @@ public class OrganizerHelper {
                                      String experimentId,
                                      String trialId) {
 
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+    createLogger();
 
     // get assembly ids for trial
     ArrayList assemblyIds = getTrialAssemblyIds(experimentId, trialId);
@@ -147,6 +149,10 @@ public class OrganizerHelper {
       }
     }
     return experiment;
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
   }
 
   /**
@@ -678,5 +684,13 @@ public class OrganizerHelper {
       super(name, cls);
     }
   }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }
 

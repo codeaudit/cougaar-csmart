@@ -22,6 +22,8 @@ package org.cougaar.tools.csmart.runtime.binder;
 
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 
 /**
@@ -69,7 +71,7 @@ public class CapacityChartImpl implements CapacityChart {
    * @see #create(double,long,long)
    */
   protected CapacityChartImpl() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
+    createLogger();
   }
 
   /**
@@ -82,7 +84,7 @@ public class CapacityChartImpl implements CapacityChart {
       long end, 
       CapacityChart post) {
 
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
+    createLogger();
 
     if (DEBUG) {
       ASSERT(f >= 0.0);
@@ -96,6 +98,10 @@ public class CapacityChartImpl implements CapacityChart {
     this.begin = begin;
     this.end = end;
     this.post = post;
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
   }
 
   public long getTime() {
@@ -305,4 +311,12 @@ public class CapacityChartImpl implements CapacityChart {
         }
       }
     }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }

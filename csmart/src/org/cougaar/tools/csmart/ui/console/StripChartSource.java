@@ -63,9 +63,12 @@ public class StripChartSource extends JCDefaultDataSource implements Runnable {
     super(null, null, null, null, "Strip Chart");
     chart = c;
     init();
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
+    createLogger();
   }
 
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console");
+  }
 
   /**
    * Init the data source.  Create the x and y value arrays,

@@ -308,8 +308,6 @@ public class CMT {
       DBUtils.addSubs(subs,":oplan_ids","('093FF')");
       DBUtils.addSubs(subs,":cfw_instances",sqlListFromQuery("getCFWInstancesFromGroup",subs));
       
-      //  	    System.out.println("subs = "+subs);
-      
       if(!hasRows(asbPrefix+"asb_assembly","assembly_id",DBUtils.sqlQuote(assembly_id))){
 	// this query is legal in both Oracle and mySQL
 	DBUtils.dbUpdate("insertASBAssembly",

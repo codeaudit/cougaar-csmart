@@ -56,7 +56,7 @@ public class SlowMessageTransportServiceProxy
       MessageTransportService mt,
       Object requestor,
       MessageReleaseScheduler mrs) {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
+    createLogger();
     this.mt = mt;
     this.mtc = 
       ((requestor instanceof MessageTransportClient) ? 
@@ -69,6 +69,10 @@ public class SlowMessageTransportServiceProxy
     Thread rt = new Thread(rr);
     rt.start();
 
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.binder");
   }
 
   public void degradeReleaseRate(
@@ -158,4 +162,6 @@ public class SlowMessageTransportServiceProxy
       }
     }
   }
+
+
 }

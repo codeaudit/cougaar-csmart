@@ -40,6 +40,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.StringTokenizer;
 import java.util.Date;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Static methods for accessing the CSMART configuration database
@@ -186,6 +188,7 @@ public class DBUtils {
     String username;
     String password;
     Connection conn = null;
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
 
     if(isValidRCFile()) {
       try {	
@@ -193,8 +196,10 @@ public class DBUtils {
 	database = dbProps.getProperty("database");
 	username = dbProps.getProperty("username");
 	password = dbProps.getProperty("password");
-//  	System.out.println("getConnection: DATABASE="+DATABASE+", QUERY_FILE="+ QUERY_FILE);
-//  	System.out.println("getConnection: database="+database+", username="+ username);
+        if(log.isDebugEnabled()) {
+          log.debug("getConnection: DATABASE="+DATABASE+", QUERY_FILE="+ QUERY_FILE);
+          log.debug("getConnection: database="+database+", username="+ username);
+        }
 	String dbtype = dbProps.getDBType();
 	String driverParam = "driver." + dbtype;
 	String driverClass = Parameters.findParameter(driverParam);
@@ -384,23 +389,31 @@ public class DBUtils {
     if (!execute)
       return;
     String dbQuery = "";
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+    Logger qLog = CSMART.createLogger("queries");
+
     try {
       Connection conn = DBUtils.getConnection(qFile);
       try {
 	Statement stmt = conn.createStatement();	
 	for (int i = 0; i < queries.size(); i++) {
 	  dbQuery = (String)queries.get(i);
-	  //          System.out.println("Query: " + dbQuery);
+          if(qLog.isDebugEnabled()) {
+            qLog.debug("Query: " + dbQuery);
+          }
 	  int count = stmt.executeUpdate(dbQuery);
-	  //          System.out.println("Deleted "+count+" items from the database");
+          if(log.isDebugEnabled()) {
+            log.debug("Deleted "+count+" items from the database");
+          }
 	}
 	stmt.close();
       } finally {
 	conn.close();
       }
     } catch (Exception e) {
-      System.out.println("dbDelete: "+dbQuery);
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("dbDelete: "+dbQuery, e);
+      }
       throw new RuntimeException("Error" + e);
     }
   } 
@@ -416,15 +429,22 @@ public class DBUtils {
    */
   static int deleteItems(String table, String column, String val, String qFile){
     String dbQuery = "delete from "+ table.toUpperCase() +" where "+column+"="+val;
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+    Logger qLog = CSMART.createLogger("queries");
+
     int count=0;
     try {
       Connection conn = DBUtils.getConnection(qFile);
       if(execute){
 	try {
 	  Statement stmt = conn.createStatement();	
-	  //System.out.println("Query: " + dbQuery);
+          if(qLog.isDebugEnabled()) {
+            qLog.debug("Query: " + dbQuery);
+          }
 	  count = stmt.executeUpdate(dbQuery);
-	  //  		    System.out.println("Deleted "+count+" items from the database");
+          if(log.isDebugEnabled()) {
+            log.info("Deleted "+count+" items from the database");
+          }
 	  stmt.close();
 	  
 	} finally {
@@ -432,8 +452,9 @@ public class DBUtils {
 	}
       }
     } catch (Exception e) {
-      System.out.println("dbDelete: "+dbQuery);
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("dbDelete: "+dbQuery, e);
+      }
       throw new RuntimeException("Error" + e);
     }
     return count;
@@ -449,6 +470,7 @@ public class DBUtils {
    */
   static Set querySet(String query, Map substitutions, String qFile){
     String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
     Set s = new HashSet();
     try {
       Connection conn = DBUtils.getConnection(qFile);
@@ -463,8 +485,9 @@ public class DBUtils {
       }
       
     } catch (Exception e) {
-      System.out.println("querySet: "+dbQuery);
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("querySet: "+dbQuery, e);
+      }
       throw new RuntimeException("Error" + e);
     }
     return s;
@@ -482,12 +505,15 @@ public class DBUtils {
    */
   static SortedMap queryHT(String query, Map substitutions, String qFile){
     String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
     Connection conn = null;
     Map ht = new TreeMap();
     try {
       conn = DBUtils.getConnection(qFile);
       if (conn == null) {
-	System.out.println("DBUtils:queryHT: Got no connection");
+        if(log.isDebugEnabled()) {
+          log.info("DBUtils:queryHT: Got no connection");
+        }
 	return (SortedMap)ht;
       }
       try {
@@ -506,8 +532,9 @@ public class DBUtils {
       }
       
     } catch (Exception e) {
-      System.out.println("queryHT: "+dbQuery);
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("queryHT: "+dbQuery, e);
+      }
       throw new RuntimeException("Error" + e);
     }
     return (SortedMap)ht;
@@ -523,7 +550,8 @@ public class DBUtils {
    */
   static String query1String(String query, Map substitutions, String qFile){
     String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
-    
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+
     String res = null;
     try {
       Connection conn = DBUtils.getConnection(qFile);
@@ -541,8 +569,9 @@ public class DBUtils {
       }
       
     } catch (Exception e) {
-      System.out.println("query1String: "+dbQuery);
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("query1String: "+dbQuery, e);
+      }
       throw new RuntimeException("Error" + e);
     }
     return res;

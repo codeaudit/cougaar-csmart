@@ -167,6 +167,10 @@ public class CSMARTConsole extends JFrame {
     societyComponent = experiment.getSocietyComponent(0);
     desktop = new ConsoleDesktop();
     setSocietyComponent(societyComponent);
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
   }
 
@@ -1256,11 +1260,12 @@ public class CSMARTConsole extends JFrame {
                                  nci.args,
                                  nci.listener, 
                                  nci.filter, 
-                                 nci.configWriter);
+                                  nci.configWriter);
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        e.printStackTrace();
+        if(log.isErrorEnabled()) {
         log.error("CSMARTConsole: cannot create node: " + 
-                           nci.nodeName);
+                           nci.nodeName, e);
         }
         JOptionPane.showMessageDialog(this,
                                       "Cannot create node on: " + 
@@ -1965,4 +1970,13 @@ public class CSMARTConsole extends JFrame {
       this.logFileName = logFileName;
     }
   }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }
+

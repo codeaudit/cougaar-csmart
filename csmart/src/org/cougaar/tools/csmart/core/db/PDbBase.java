@@ -53,6 +53,7 @@ import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
 /**
  * This class takes a structure of ComponentData objects and populates
  * the configuration database with some or all of the components
@@ -96,8 +97,7 @@ public class PDbBase {
         throws SQLException, IOException
     {
 
-      log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
-
+      createLogger();
         if (logQueries)
             pwlog = new PrintWriter(new FileWriter(getLogName()));
         dbp = DBProperties.readQueryFile(QUERY_FILE);
@@ -429,6 +429,10 @@ public class PDbBase {
         }
     }
 
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+  }
+
     protected void finalize() {
         try {
             if (dbConnection != null) close();
@@ -450,4 +454,12 @@ public class PDbBase {
         }
         return "'" + s + "'";
     }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }

@@ -102,8 +102,13 @@ public class OrganizerTree extends DNDTree {
         super(model);
         this.model = model;
         setExpandsSelectedPaths(true);
-        log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+        createLogger();
     }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+  }
+
 
     public void setSelection(TreeNode treeNode) {
         TreeNode[] nodes = model.getPathToRoot(treeNode);

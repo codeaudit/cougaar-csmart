@@ -41,6 +41,8 @@ import org.cougaar.tools.csmart.ui.Browser;
 import java.net.URL;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * Frame for displaying graphs.
@@ -149,7 +151,8 @@ public class CSMARTFrame extends JFrame implements ActionListener
   public CSMARTFrame(String title, CSMARTGraph graph) {
     super(title);
 
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+    createLogger();
+
     //    this.title = Util.getNamedFrame().addFrame(title, this);
     // guarantee unique name, this may change title
     NamedFrame.getNamedFrame().addFrame(title, this);
@@ -170,6 +173,10 @@ public class CSMARTFrame extends JFrame implements ActionListener
         log.debug("CSMARTFrame: Displaying graph at: " +
                   System.currentTimeMillis()/1000);
       }
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
   }
 
   /**
@@ -917,6 +924,13 @@ public class CSMARTFrame extends JFrame implements ActionListener
 	return;
       }
     }
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
 }

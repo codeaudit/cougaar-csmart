@@ -71,7 +71,7 @@ public class UIProperties {
    */
 
   public UIProperties() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
+    createLogger();
     // define default properties
     Properties defaults = new Properties();
     setDefaults(defaults);
@@ -92,6 +92,10 @@ public class UIProperties {
     int maxColor =
       Integer.parseInt(properties.getProperty("color.cluster.max"));
     //    printColors(); // for debugging
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
   }
 
   private void printColors() {
@@ -306,6 +310,13 @@ public class UIProperties {
    */
   public int getMetricLegendSize() {
     return Integer.parseInt(properties.getProperty("metric.legend.size"));
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
   /**

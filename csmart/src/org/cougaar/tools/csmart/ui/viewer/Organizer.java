@@ -125,7 +125,7 @@ public class Organizer extends JScrollPane {
   }
   
   public Organizer(CSMART csmart, String workspaceFileName) {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+    createLogger();
 
     setPreferredSize(new Dimension(400, 100));
     JPanel panel = new JPanel(new BorderLayout());
@@ -172,6 +172,10 @@ public class Organizer extends JScrollPane {
     panel.add(workspace);
     setViewportView(panel);
     updater.start();
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
   }
 
   ///////////////////////////////////////  
@@ -1501,4 +1505,12 @@ public class Organizer extends JScrollPane {
       return name;
     }
   }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }

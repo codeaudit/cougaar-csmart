@@ -31,6 +31,8 @@ import javax.swing.JColorChooser;
 import org.cougaar.tools.server.NodeEvent;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 public class ConsoleFontChooser extends JDialog {
   private JComboBox msgTypesCB;
@@ -61,8 +63,7 @@ public class ConsoleFontChooser extends JDialog {
     // create a modal dialog
     super((java.awt.Frame)null, "Select Font", true); 
 
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
-
+    createLogger();
     JPanel panel = new JPanel(new BorderLayout());
     // define the gui here
 
@@ -191,6 +192,10 @@ public class ConsoleFontChooser extends JDialog {
     pack();
   }
 
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
+  }
+
   // implement these methods to return the values the user selects
   // message type will be one of the types defined in NodeEvent
   // plus define two new types in this file (SEARCH and NOTIFY)
@@ -224,4 +229,12 @@ public class ConsoleFontChooser extends JDialog {
     ConsoleFontChooser fontChooser = new ConsoleFontChooser();
     fontChooser.setVisible(true);
   }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }

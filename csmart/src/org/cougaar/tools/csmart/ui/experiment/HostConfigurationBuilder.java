@@ -93,12 +93,16 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   public HostConfigurationBuilder(Experiment experiment, 
                                   ExperimentBuilder experimentBuilder) {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
+    createLogger();
     this.experiment = experiment;
     this.experimentBuilder = experimentBuilder;
     hostConfigurationBuilder = this; // for inner class dialogs
     isEditable = experiment.isEditable();
     initDisplay();
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
   }
 
   private void initDisplay() {

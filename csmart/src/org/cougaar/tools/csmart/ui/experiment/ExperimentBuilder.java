@@ -41,6 +41,8 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.util.log.Logger;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 public class ExperimentBuilder extends JFrame implements ModificationListener {
   private static final String FILE_MENU = "File";
@@ -147,7 +149,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
 
   public ExperimentBuilder(CSMART csmart, Experiment experiment) {
     this.csmart = csmart;
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
+    createLogger();
     setExperiment(experiment);
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
@@ -294,6 +296,10 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
       }
     });
     show();
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
   }
 
   private void setExperiment(Experiment newExperiment) {
@@ -496,5 +502,12 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
                                       nodesInNodeTree != null);
       }
     };
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
 
 }

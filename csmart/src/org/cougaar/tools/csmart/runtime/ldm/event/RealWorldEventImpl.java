@@ -71,10 +71,14 @@ public abstract class RealWorldEventImpl extends DirectiveImpl
    * @param uid an <code>UID</code> for the Event
    */
   public RealWorldEventImpl (UID uid) {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.event");
+    createLogger();
     setUID(uid);
   }
-  
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.event");
+  }
+
   /**
    * Set the type of adverse event, using a String value
    * from <code>org.cougaar.tools.csmart.Constants</code>

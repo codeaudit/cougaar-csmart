@@ -34,6 +34,8 @@ import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTFrame;
 import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * Find plan object from a dialog in which the user can specify:
@@ -150,7 +152,7 @@ public class ULPlanFinder extends JDialog {
 
     super(frame, "Finder");
 
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.plan");
+    createLogger();
     this.communityToAgents = communityToAgents;
     this.graph = graph;
     this.frame = frame;
@@ -292,6 +294,11 @@ public class ULPlanFinder extends JDialog {
     communityCB.addActionListener(disableFindNext);
     agentCB.addActionListener(disableFindNext);
     planObjectTypeCB.addActionListener(disableFindNext);
+  }
+
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.plan");
   }
 
   /**
@@ -1869,6 +1876,13 @@ public class ULPlanFinder extends JDialog {
       return this.equals(o);
     }
 
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
 }

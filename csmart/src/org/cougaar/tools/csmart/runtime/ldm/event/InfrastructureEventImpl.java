@@ -68,8 +68,7 @@ public class InfrastructureEventImpl
   
   public InfrastructureEventImpl(UID uid) {
     setUID(uid);
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.event");
-
+    createLogger();
   }
 
   public InfrastructureEventImpl(
@@ -78,13 +77,17 @@ public class InfrastructureEventImpl
       String type,
       long duration,
       double intensity) {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.event");
 
+    createLogger();
     setUID(uid);
     setDestination(destination);
     setDuration(duration);
     setIntensity(intensity);
     setType(type);
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.event");
   }
 
   // setters and getters

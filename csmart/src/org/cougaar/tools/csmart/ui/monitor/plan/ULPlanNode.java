@@ -29,6 +29,8 @@ import org.cougaar.tools.csmart.ui.monitor.generic.NodeObject;
 import org.cougaar.util.PropertyTree;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 public class ULPlanNode implements NodeObject {
   PropertyTree properties;
@@ -62,7 +64,7 @@ public class ULPlanNode implements NodeObject {
    */
 
   public ULPlanNode(PropertyTree p, String communityName) {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.plan");
+    createLogger();
 
     this.properties = p;
     UID = (String)properties.get(PropertyNames.UID_ATTR);
@@ -199,6 +201,10 @@ public class ULPlanNode implements NodeObject {
       outgoingLinks = new Vector(1);
       outgoingLinks.addElement((String)properties.get(PropertyNames.EVENT_REGARDING));
     }
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.plan");
   }
 
   /**
@@ -446,6 +452,13 @@ public class ULPlanNode implements NodeObject {
       String s = (String)j.next();
       System.out.println(s + "," + properties.get(s));
     }
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
 }

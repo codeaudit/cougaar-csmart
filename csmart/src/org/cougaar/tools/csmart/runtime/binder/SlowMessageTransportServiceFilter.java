@@ -57,10 +57,14 @@ public class SlowMessageTransportServiceFilter
   private transient Logger log;
 
   public SlowMessageTransportServiceFilter() {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.log.binder");
+    createLogger();
     if(log.isDebugEnabled()) {
       log.info("\n\n SlowMT created\n\n");
     }
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.log.binder");
   }
 
   protected Class getBinderClass(Object child) {
@@ -181,6 +185,7 @@ public class SlowMessageTransportServiceFilter
           log.debug("created smtfsb with "+sb);
         }
       }
+
       public Object getService(
           Object requestor, 
           Class serviceClass,
@@ -226,4 +231,5 @@ public class SlowMessageTransportServiceFilter
       }
     }
   }
+
 }

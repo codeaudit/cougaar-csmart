@@ -90,4 +90,5 @@ public class AgentQueryProperty extends ConfigurableComponentProperty {
     }   
     return availableQueries;
   }
+
 }

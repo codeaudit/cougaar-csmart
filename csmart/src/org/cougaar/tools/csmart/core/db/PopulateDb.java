@@ -193,8 +193,7 @@ public class PopulateDb extends PDbBase {
         throws SQLException, IOException
     {
         super();
-        log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
-
+        createLogger();
         if (cmtType == null) throw new IllegalArgumentException("null cmtType");
         if (hnaType == null) throw new IllegalArgumentException("null hnaType");
         if (csmiType == null) throw new IllegalArgumentException("null csmiType");
@@ -219,6 +218,10 @@ public class PopulateDb extends PDbBase {
         }
         setNewAssemblyIds();
     }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.core.db");
+  }
 
     private String getOldExperimentName() throws SQLException {
         ResultSet rs = executeQuery(stmt, dbp.getQuery("queryExptName", substitutions));
@@ -1064,6 +1067,7 @@ public class PopulateDb extends PDbBase {
             return "[" + order + "]=" + argument;
         }
     }
+
 
 //      public interface ConflictHandler {
 //          Object KEEP_CHOICE = "Keep Existing Definition";

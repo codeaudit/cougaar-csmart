@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.ArrayList;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * SocietyBase.java
@@ -62,9 +64,12 @@ public abstract class SocietyBase
 
   public SocietyBase(String name){
     super(name);
-    log = CSMART.createLogger("org.cougaar.tools.csmart.society");
+    createLogger();
   }
 
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.society");
+  }
   /**
    * Returns the name of this Society
    *
@@ -196,5 +201,12 @@ public abstract class SocietyBase
    * Called when a property has been removed from the society
    */
   public void propertyRemoved(PropertyEvent e) {}
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
 
 }// SocietyBase

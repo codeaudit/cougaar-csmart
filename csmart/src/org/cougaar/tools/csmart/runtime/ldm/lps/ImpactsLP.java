@@ -54,6 +54,10 @@ public class ImpactsLP extends LogPlanLogicProvider implements MessageLogicProvi
 
   public ImpactsLP(LogPlanServesLogicProvider logplan, ClusterServesLogicProvider cluster) {
     super(logplan, cluster);
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.ldm.lps");
   }
 

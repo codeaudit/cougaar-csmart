@@ -58,7 +58,7 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
   private transient Logger log;
 
   public LeafOnlyConfigWriter(List components, NodeComponent[] nodesToWrite, Experiment exp) {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
+    createLogger();
     this.nodesToWrite = nodesToWrite;
     this.components = components;
     theSoc = new GenericComponentData();
@@ -86,6 +86,10 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
     }    
   }
   
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
+  }
+
   public void writeConfigFiles(File configDir) throws IOException {
     // Call writeNodeFile for each of the nodes in theSoc.
     ComponentData[] nodes = theSoc.getChildren();
@@ -183,5 +187,6 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
       }
     } // end of loop over leaves
   } // end of writeLeafData  
+
   
 }

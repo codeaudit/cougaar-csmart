@@ -74,7 +74,7 @@ public class Analyzer extends JFrame implements ActionListener {
    */
 
   public Analyzer(CSMART csmart, Experiment experiment) {
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
+    createLogger();
     this.csmart = csmart;
     this.experiment = experiment;
     myFrame = this;
@@ -119,6 +119,10 @@ public class Analyzer extends JFrame implements ActionListener {
     pack();
     setSize(400, 120);
     setVisible(true);
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
   }
 
   public void reinit(Experiment experiment) {
@@ -246,6 +250,13 @@ public class Analyzer extends JFrame implements ActionListener {
     public String getDescription() {
       return description;
     }
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
 }

@@ -91,6 +91,7 @@ public class CSMARTGraph extends Graph
     customizeGraph();
     setColors();
     setupDotPath();
+    createLogger();
   }
 
   /**
@@ -123,6 +124,7 @@ public class CSMARTGraph extends Graph
    */
   public CSMARTGraph(Collection objectsToGraph, String graphType) {
     super("CSMART", true, true);
+    createLogger();
     initGraph();
     markedElements = new Vector();
     setColors();
@@ -143,6 +145,10 @@ public class CSMARTGraph extends Graph
     customizeGraph();
     setupDotPath();
     doLayout();
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
   }
 
 
@@ -2240,5 +2246,12 @@ public class CSMARTGraph extends Graph
       log.debug("Finished building grappa nodes at: " + System.currentTimeMillis()/1000);
     }
   } // end of layoutDotFile
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
 
 } // end of CSMARTGraph.java

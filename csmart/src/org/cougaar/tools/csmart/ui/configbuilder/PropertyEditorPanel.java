@@ -54,6 +54,7 @@ import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
 
 /**
  * Panel that holds the PropertyEditor for editing the properties of a <code>ModifiableConfigurableComponent</code><br>
@@ -89,6 +90,10 @@ public class PropertyEditorPanel extends JPanel
     compsToConfig = new ModifiableConfigurableComponent[1];
     compsToConfig[0] = configComp;
     setModifiableConfigurableComponent();
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
   }
 
@@ -450,5 +455,12 @@ public class PropertyEditorPanel extends JPanel
   /**
    * End TreeSelectionListener interface.
    */
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
 
 }

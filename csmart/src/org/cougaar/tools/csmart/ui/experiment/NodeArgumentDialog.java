@@ -43,7 +43,7 @@ public class NodeArgumentDialog extends JDialog {
 
   public NodeArgumentDialog(String title, Properties props, boolean isLocal) {
     super((Frame)null, title, true); // display modal dialog
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
+    createLogger();
     Box nodeArgPanel = Box.createVerticalBox();
     JPanel argumentPanel = new JPanel();
     // ok and cancel buttons panel
@@ -143,6 +143,10 @@ public class NodeArgumentDialog extends JDialog {
     pack();
   }
 
+  public void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
+  }
+
   /**
    * Return a value indicating how the dialog was dismissed: one of
    * JOptionPane.OK_OPTION, JOptionPane.CANCEL_OPTION, 
@@ -232,6 +236,7 @@ public class NodeArgumentDialog extends JDialog {
     nad.updateProperties();
     props.list(System.out);
   }
+
 
 }
 

@@ -82,6 +82,7 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
 
 import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
+import java.io.ObjectInputStream;
 
 /**
  * Top level CSMART user interface.
@@ -198,7 +199,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   public CSMART() {
     setTitle("CSMART");
 
-    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+    createLog();
 
     // Write initial CSMART info to the log file
     if (log.isInfoEnabled()) {
@@ -1013,10 +1014,13 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       props.load(new FileInputStream(cf.locateFile("debug.properties")));
     } catch(Exception e) {
       System.err.println("Could not read debug properties file, using defaults");
-      //e.printStackTrace();
       props = null;
     }
 
+    // configure take a Map.  The implementation of
+    // Properties does not store the defaults, as in
+    // Properties(defaults) in the Map thus the two
+    // two seperate Properties objects.
     lf.configure((props == null) ? defaults : props);
   }
 
@@ -1028,6 +1032,17 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    */
   public static Logger createLogger(String name) {
     return lf.createLogger(name);
+  }
+
+  private void createLog() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLog();
   }
 
 }

@@ -28,6 +28,8 @@ import att.grappa.*;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * Provide the values for the attribute table for the specified node
@@ -53,6 +55,10 @@ public class ULCommunityTableModel extends AbstractTableModel {
     values = new Vector();
     addAttribute(PropertyNames.COMMUNITY_MEMBERS);
     makePrettyNames();
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.community");
   }
 
@@ -103,6 +109,13 @@ public class ULCommunityTableModel extends AbstractTableModel {
     }
     names.addElement(name);
     values.addElement(a.getValue());
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
     
 }

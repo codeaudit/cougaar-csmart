@@ -23,6 +23,8 @@ package org.cougaar.tools.csmart.core.property.range;
 
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 
 /**
@@ -34,10 +36,22 @@ public class RangeBase {
   private transient Logger log;
 
   public RangeBase() {
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.core.property.range");
   }
 
-    public int compareTo(Object o) {
-        return toString().compareTo(o.toString());
-    }
+  public int compareTo(Object o) {
+    return toString().compareTo(o.toString());
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }

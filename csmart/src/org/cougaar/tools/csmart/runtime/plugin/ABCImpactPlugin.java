@@ -65,12 +65,16 @@ public class ABCImpactPlugin extends SimplePlugIn {
       };
   }
 
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+  }
+
   /**
    * Find the MessageTransport controller, subscribe to InfrastructureEvents.
    */
   public void setupSubscriptions() {
 
-    log = CSMART.createLogger("org.cougaar.tools.csmart.runtime.plugin");
+    createLogger();
 
     if(log.isDebugEnabled()) {
       log.debug(" setting up subscriptions");

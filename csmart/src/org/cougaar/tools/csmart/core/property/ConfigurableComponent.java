@@ -176,7 +176,10 @@ public abstract class ConfigurableComponent
       name += "-" + ++nameCount;
     }
     myName = new ComponentName(null, name);
+    createLogger();
+  }
 
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.core.property");
   }
 
@@ -864,6 +867,7 @@ public abstract class ConfigurableComponent
     }
     myProperties = null;
     setSerializableListeners((List) stream.readObject());
+    createLogger();
   }
 
   public ComponentData addComponentData(ComponentData data) {

@@ -34,6 +34,8 @@ import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.ui.tree.*;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 /**
  * Provides method definitions for abstract methods in DNDTree.
@@ -75,6 +77,10 @@ public class ConsoleDNDTree extends DNDTree {
 
   public ConsoleDNDTree(DefaultTreeModel model) {
     super(model);
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.tree");
   }
 
@@ -199,6 +205,13 @@ public class ConsoleDNDTree extends DNDTree {
       model.insertNodeInto(children[i], newNode, i);
     }
     scrollPathToVisible(new TreePath(newNode.getPath()));
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
 }

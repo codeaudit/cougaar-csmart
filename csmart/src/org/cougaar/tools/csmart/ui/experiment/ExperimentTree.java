@@ -37,6 +37,8 @@ import org.cougaar.tools.csmart.ui.tree.DNDTree;
 import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 public class ExperimentTree extends DNDTree {
   private transient Logger log;
@@ -92,8 +94,12 @@ public class ExperimentTree extends DNDTree {
         super(model);
         this.model = model;
         setExpandsSelectedPaths(true);
-        log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
+        createLogger();
     }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.experiment");
+  }
 
     public void setSelection(TreeNode treeNode) {
         TreeNode[] nodes = model.getPathToRoot(treeNode);
@@ -218,4 +224,12 @@ public class ExperimentTree extends DNDTree {
         }
         return DnDConstants.ACTION_NONE;
     }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+  }
+
 }

@@ -38,6 +38,8 @@ import java.util.HashSet;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
+import java.io.IOException;
 
 
 /**
@@ -58,6 +60,10 @@ public abstract class RecipeBase
 
   public RecipeBase (String name){
     super(name);
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.recipe");
   }
 
@@ -137,6 +143,13 @@ public abstract class RecipeBase
    */
   public ComponentData addComponentData(ComponentData data) {
     return data;
+  }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
   }
 
 }// RecipeBase

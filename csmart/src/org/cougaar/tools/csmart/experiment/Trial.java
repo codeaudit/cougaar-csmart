@@ -52,6 +52,10 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
     trialParameters = new ArrayList();
     trialValues = new ArrayList();
     trialResults = new ArrayList();
+    createLogger();
+  }
+
+  private void createLogger() {
     log = CSMART.createLogger("org.cougaar.tools.csmart.experiment");
   }
 
@@ -184,4 +188,5 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
       log.info(sb.substring(0, sb.length()-1));
     }
   }
+
 }

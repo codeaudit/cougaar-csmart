@@ -134,8 +134,12 @@ public class ScalabilityXLevel
         super("lvl" + level);
         this.level = level;
         this.superior = superior;
-        log = CSMART.createLogger("org.cougaar.tools.csmart.society.scalability");
+        createLogger();
     }
+
+  private void createLogger() {
+    log = CSMART.createLogger("org.cougaar.tools.csmart.society.scalability");
+  }
 
     public void setCustomers(List customers) {
         for (int i = 0, n = getChildCount(); i < n; i++) {
@@ -195,4 +199,5 @@ public class ScalabilityXLevel
             c.initProperties();
         }
     }
+
 }
