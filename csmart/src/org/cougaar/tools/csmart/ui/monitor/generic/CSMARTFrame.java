@@ -77,7 +77,7 @@ public class CSMARTFrame extends JFrame implements ActionListener
   protected static final String HELP_MENU = "Help";
   protected static final String HELP_DOC = "help.html";
   protected static final String ABOUT_CSMART_ITEM = "About CSMART";
-  protected static final String ABOUT_DOC = "../../help/about-csmart.html";
+  protected static final String ABOUT_DOC = "/org/cougaar/tools/csmart/ui/help/about-csmart.html";
   protected static final String HELP_MENU_ITEM = "Help";
 
   protected static final String SEPARATOR = "Separator";
@@ -435,6 +435,8 @@ public class CSMARTFrame extends JFrame implements ActionListener
 
     if (command.equals(SAVE_AS_MENU_ITEM)) {
       graph.saveAsGraph();
+      // enable save menu item if possible
+      saveMenuItem.setEnabled(graph.hasOutputFile());
       return;
     }
 
