@@ -28,13 +28,13 @@
 # Cougaar Install Path must be set
 
 if [ "x$3" = "x" ]; then
-  echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] "
+  echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] [local]"
   exit
 fi
 
 if [ "x$COUGAAR_INSTALL_PATH" = "x" ] ; then
   echo "You must set COUGAAR_INSTALL_PATH to the root of your Cougaar install."
-  echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] "
+  echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] [local]"
   exit
 fi
 
@@ -59,12 +59,24 @@ else
     $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sedscr.sh $COUGAAR_INSTALL_PATH/csmart/data/database/csv/*.csv
 fi
 
+if [ "$4" = "local" ]; then
+    echo "Adding LOCAL to all lines"
+    mv load_mysql_db_new.sql load_mysql_db_new_orig.sql
+    sed "s/DATA INFILE/DATA LOCAL INFILE/g" load_mysql_db_new_orig.sql > load_mysql_db_new.sql
+fi
+
 echo "Loading '.csv' files to database."
-mysql -u$1 -p$2 $3 < load_mysql_db_new.sql
+if [ "$4" = "local" ]; then
+    mysql --local-infile=1 -u$1 -p$2 $3 < load_mysql_db_new.sql
+else
+    mysql -u$1 -p$2 $3 < load_mysql_db_new.sql
+fi
+
 echo "Creating indexes in database tables."
 mysql -u$1 -p$2 $3 < $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sql/csmart-db.create-mysql-indexes.sql
 
 rm load_mysql_db_new.sql
+rm -f load_mysql_db_new_orig.sql
 rm $COUGAAR_INSTALL_PATH/csmart/data/database/csv/*.tmp
 
 echo "Done."
