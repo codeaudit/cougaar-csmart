@@ -1812,8 +1812,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       generateAgentComponent(agentsToWrite[i], completeSociety, this);
       savedAgents.add(agentsToWrite[i]);
     }
-    if (log.isDebugEnabled()) 
-      checkHNA(completeSociety, getAgents());
+    
+    // Uncomment for very verbose output setting up HNA mapping
+//     if (log.isDebugEnabled()) 
+//       checkHNA(completeSociety, getAgents());
   }
 
   private void checkHNA(ComponentData data, AgentComponent[] agents) {
