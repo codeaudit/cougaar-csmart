@@ -75,7 +75,7 @@ defined and saved experiment):</b>
 <ol>
 <li>
 Click the right mouse button on the "Default Workspace" to display a
-pop-up menu, or use the File menu.  Select "New Experiment -&gt; From
+pop-up menu, or use the Edit menu.  Select "New Experiment -&gt; From
 Database" to display a list of experiments defined in the database.
 Select the desired experiment from the database.</li>
 <li>If prompted, select the threads and groups for the experiment from the dialog
@@ -92,7 +92,7 @@ to hosts.  Also use this tool to specify node arguments.  When you exit this too
 <p><b>To create an experiment from (INI) files:</b>
 <ol>
 <li>Click the right mouse button on the "Default Workspace" to display a
-pop-up menu, or use the File menu.  Select "New Experiment -&gt; From
+pop-up menu, or use the Edit menu.  Select "New Experiment -&gt; From
 File" to display a File Chooser. Select a directory containing many
 Agent INI files (ie CIP/configs/minitestconfig), or a single Node INI
 file listing the Agents you want to run. <b>Note: Only Agents and
@@ -113,7 +113,7 @@ Builder, you may load it from the database as per above.</li>
 <p><b>To create an experiment from the UI:</b>
 <ol>
 <li>Click the right mouse button on the "Default Workspace" to display a
-pop-up menu, or use the File menu.  Select "New Experiment -&gt; From
+pop-up menu, or use the Edit menu.  Select "New Experiment -&gt; From
 User". You will be prompted for a unique name for your
 experiment. CSMART will automatically create a new, empty society for
 that experiment.</li>
@@ -164,7 +164,7 @@ or recipe),</li>
 <li>
 Select the desired tool on the pop-up menu on the selected experiment, society or recipe
 in the Workspace, or</li>
-<li> Select the desired tool from the File menu, or </li>
+<li> Select the desired tool from the Edit menu, or </li>
 <li>
 Select the appropriate tool from the toolbar button.</li>
 </ul>
@@ -230,7 +230,7 @@ experiment's society and recipes cannot be modified.
 <li>
 <b>Configure, build, rename, copy, or delete: </b>Point to the item and click the
 right mouse button; select the appropriate action from the pop-up menu
-displayed. You may access the same functions from the File menu in the Launcher window.</li>
+displayed. You may access the same functions from the Edit menu in the Launcher window.</li>
 
 <li>
 <b>Arrange items in workspace: </b>Point to the item, hold the left mouse
@@ -268,15 +268,15 @@ these and saving them, users can then retrieve recipes from the
 database for later reuse. For example, one recipe might add a certain
 plugin to every agent in the society. This recipe could then be used
 for any society.
-<br><br>To create a recipe, select "New Recipe" from the File menu or "Default
+<br><br>To create a recipe, select "New Recipe" from the Edit menu or "Default
 Workspace" pop-up menu. Then select "From Template" or "From Database". You
 will get a list of the available recipes of each type. Once you have
 loaded the recipe, you may configure it by selecting "Configure" from
-the pop-up menu on the recipe or from the File menu, or by selecting the
+the pop-up menu on the recipe or from the Edit menu, or by selecting the
 Configuration Builder from the toolbar.
 <br><br>To add a recipe to an Experiment, drag it onto the "Recipes"
 folder in the Experiment Builder. Recipes can also be duplicated,
-deleted, or renamed by using the pop-up menu or File menu options.
+deleted, or renamed by using the pop-up menu or Edit menu options.
 <h4>Metrics</h4>
 A metric is a kind of recipe, a set of run-time statistics about the running society, which
 you wish to collect. CSMART allows you to add one or more metrics to your experiment.
@@ -291,9 +291,7 @@ might be real (really loading up the network), or simulated (via a Binder
 on the MessageTransport or some other mechanism).
 <h3>Menus</h3>
 <h4>File Menu</h4>
-The File menu provides quick access to functions also available on the
-pop-up menus on items in the workspace, plus other items.<br>
-The items available only on the File menu are:<br>
+The File menu provides basic CSMART Workspace functionality:<br>
 <ul><li>Open Workspacee...: Open the named workspace file (for use
 when you previously renamed your workspace).</li>
 <li>Save New Results In..: Set the directory where node log files and
@@ -301,11 +299,18 @@ results files will be stored. Defaults to CIP/results</li>
 <li>Exit: Quit CSMART</li>
 </ul>
 
+<h4>Edit Menu</h4>
+The Edit menu provides quick access to functions also available on the
+pop-up menus on items in the workspace.<br>
 Items that are available on pop-up menus in the workspace:
 <ul><li>New Experiment with a sub-menu for defining the experiment from the database, a file, or the user interface</li>
 <li>New Recipe - with sub-items for From Database (pre-configured) or
 From Template (configurable in the Configuration Builder)</li>
-<li>New Folder</li>
+<li>Delete Experiment From Database (to delete experiments not also in
+your workspace)</li>
+<li>Delete Recipe From Database (to delete recipes not also in your
+workspace)</li>
+<li>New Folder - for organizing your workspace</li>
 <li>Configure (When a society or recipe is selected, opens the
 Configuration Builder on that component. See the above note on editing
 the local copy vs the global copy. When an experiment is selected, a
@@ -314,13 +319,9 @@ that experiment, and starts the Configuration Builder on that new society.)</li>
 <li>Build (enabled for experiments)</li>
 <li>Run (an experiment)</li>
 <li>Duplicate (ie. copy)</li>
-<li>Delete (you will be prompted whether to also delete from the database)</li>
-<li>Delete Experiment From Database (to delete experiments not also in
-your workspace)</li>
-<li>Delete Recipe From Database (to delete recipes not also in your
-workspace)</li>
 <li>Rename (to rename an Experiment, society, or recipe)</li>
 <li>Save To Database (to force a save now)</li>
+<li>Delete (you will be prompted whether to also delete from the database)</li>
 </ul>
 <br>
 

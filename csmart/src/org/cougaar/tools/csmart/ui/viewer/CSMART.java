@@ -102,6 +102,7 @@ public class CSMART extends JFrame {
   private static CSMARTConsole console;
   private static File resultDir;
   private static JMenu fileMenu;
+  private static JMenu editMenu;
   private static JButton configureButton;
   private static JButton buildButton;
   private static JButton runButton;
@@ -112,9 +113,12 @@ public class CSMART extends JFrame {
   private static final String NEW_MENU_ITEM = "Open Workspace...";
   private static final String NEW_RESULTS_MENU_ITEM = "Save New Results In...";
   private static final String EXIT_MENU_ITEM = "Exit";
-  private static final String WINDOW_MENU = "Window";
-  private static final String HELP_MENU = "Help";
 
+  private static final String EDIT_MENU = "Edit";
+
+  private static final String WINDOW_MENU = "Window";
+
+  private static final String HELP_MENU = "Help";
   protected static final String HELP_DOC = "help.html";
   protected static final String ABOUT_DOC = "/org/cougaar/tools/csmart/ui/help/about-csmart.html";
   private static final String VERSION_ACTION = "Show CSMART Version";
@@ -243,28 +247,6 @@ public class CSMART extends JFrame {
     newResultsMenuItem.setToolTipText("Select a directory for saving results");
     fileMenu.add(newResultsMenuItem);
 
-    JMenu newExperimentMenu = new JMenu(ActionUtil.NEW_EXPERIMENT_ACTION);
-    for (int i = 0; i < organizer.newExperimentActions.length; i++)
-      newExperimentMenu.add(organizer.newExperimentActions[i]);
-    fileMenu.add(newExperimentMenu);
-
-    JMenu newRecipeMenu = new JMenu(ActionUtil.NEW_RECIPE_ACTION);
-    for (int i = 0; i < organizer.newRecipeActions.length; i++)
-      newRecipeMenu.add(organizer.newRecipeActions[i]);
-    fileMenu.add(newRecipeMenu);
-
-    fileMenu.add(new JMenuItem(organizer.newFolderAction));
-    fileMenu.addSeparator();
-    fileMenu.add(new JMenuItem(organizer.configureAction));
-    fileMenu.add(new JMenuItem(organizer.buildExperimentAction));
-    fileMenu.add(new JMenuItem(organizer.runExperimentAction));
-    fileMenu.add(new JMenuItem(organizer.duplicateAction));
-    fileMenu.add(new JMenuItem(organizer.deleteAction));
-    fileMenu.add(new JMenuItem(organizer.deleteExperimentFromDatabaseAction));
-    fileMenu.add(new JMenuItem(organizer.deleteRecipeFromDatabaseAction));
-    fileMenu.add(new JMenuItem(organizer.renameAction));
-    fileMenu.add(new JMenuItem(organizer.saveAction));
-    fileMenu.addSeparator();
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -274,6 +256,68 @@ public class CSMART extends JFrame {
     exitMenuItem.setToolTipText("Exit");
     fileMenu.add(exitMenuItem);
 
+    // End of file menu
+    editMenu = new JMenu(EDIT_MENU);
+    editMenu.setToolTipText("Load, edit, run, or delete experiments");
+    editMenu.addMenuListener(myMenuListener);
+
+    JMenu newExperimentMenu = new JMenu(ActionUtil.NEW_EXPERIMENT_ACTION);
+    for (int i = 0; i < organizer.newExperimentActions.length; i++)
+      newExperimentMenu.add(organizer.newExperimentActions[i]);
+    editMenu.add(newExperimentMenu);
+    newExperimentMenu.setToolTipText("Load or Create an Experiment");
+
+    JMenu newRecipeMenu = new JMenu(ActionUtil.NEW_RECIPE_ACTION);
+    for (int i = 0; i < organizer.newRecipeActions.length; i++)
+      newRecipeMenu.add(organizer.newRecipeActions[i]);
+    editMenu.add(newRecipeMenu);
+    newRecipeMenu.setToolTipText("Load or Create a Recipe");
+
+    JMenuItem newMenu = null;
+    newMenu = new JMenuItem(organizer.deleteExperimentFromDatabaseAction);
+    newMenu.setToolTipText("Delete an Experiment from the Database");
+    editMenu.add(newMenu);
+
+    newMenu = new JMenuItem(organizer.deleteRecipeFromDatabaseAction);
+    newMenu.setToolTipText("Delete a recipe from the Database");
+    editMenu.add(newMenu);
+
+    newMenu = new JMenuItem(organizer.newFolderAction);
+    newMenu.setToolTipText("Create new folder in Organizer");
+    editMenu.add(newMenu);
+
+    editMenu.addSeparator();
+
+    newMenu = new JMenuItem(organizer.configureAction);
+    newMenu.setToolTipText("Edit a Society or Recipe");
+    editMenu.add(newMenu);
+
+    newMenu = new JMenuItem(organizer.buildExperimentAction);
+    newMenu.setToolTipText("Set up Experiment Configuration");
+    editMenu.add(newMenu);
+
+    newMenu = new JMenuItem(organizer.runExperimentAction);
+    newMenu.setToolTipText("Run a configured Experiment, or attach to a running Experiment");
+    editMenu.add(newMenu);
+
+    newMenu = new JMenuItem(organizer.duplicateAction);
+    newMenu.setToolTipText("Copy this item");
+    editMenu.add(newMenu);
+
+    newMenu = new JMenuItem(organizer.renameAction);
+    newMenu.setToolTipText("Rename this item (possibly workspace)");
+    editMenu.add(newMenu);
+
+    newMenu = new JMenuItem(organizer.saveAction);
+    newMenu.setToolTipText("Save a modified item");
+    editMenu.add(newMenu);
+
+    newMenu = new JMenuItem(organizer.deleteAction);
+    newMenu.setToolTipText("Delete this item");
+    editMenu.add(newMenu);
+
+    // Done with Edit menu
+
     windowMenu = new JMenu(WINDOW_MENU);
     windowMenu.setToolTipText("Display selected window.");
 
@@ -282,6 +326,7 @@ public class CSMART extends JFrame {
       helpMenu.add(new JMenuItem(helpActions[i]));
 
     menuBar.add(fileMenu);
+    menuBar.add(editMenu);
     menuBar.add(windowMenu);
     menuBar.add(helpMenu);
     
