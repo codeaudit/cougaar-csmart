@@ -32,7 +32,6 @@ InstallAndTest.html)
   csmart/data/database/scripts/mysql/dump_1ad_mysql.sh  See bug # 1231 (and 1229)
 
 
-
 Release 9.0:
 - The CSMART required Cougaar 3rd party jar file: grappa1_2_bbn.jar has been changed 
   to grappa1_2.jar. The BBN modifications in the prior jar are now included in the 
