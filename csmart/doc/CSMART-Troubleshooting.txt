@@ -72,7 +72,7 @@ This means that the JSSE jar files could not be found. Make sure that
 they are installed in your JRE installation if you have one in
 addition to any JDK install.
 
-Running a database society
+Running any other society
 - If on startup you get a JDBC error like:
 java.sql.SQLException: Unknown driver driver.mysql//localhost
 then make sure your JDBC connection string is correctly formatted.
@@ -135,7 +135,7 @@ You have an error in your SQL syntax near ') AND C.INSERTION_POINT LIKE
 Running CSMART
 - Ensure that bootstrap.jar is on your CLASSPATH
 - Ensure that all jar files are from the same build
-- When you get a message at startup on STDOUT that says SHOUT [CSMART] - CSMART 9.0.0 built on.....
+- When you get a message at startup on STDOUT that says SHOUT [CSMART] - CSMART 9.2.0 built on.....
 This is not an error, but normal operation.
 
 Starting a Society from the Experiment Controller
@@ -166,7 +166,7 @@ scalability society to take some intermediate samples
 specifying the location of Excel
 
 Linux Specific Issues
-- Various display issues have been noticed on Linux Systems with JDK1_3.
+- Various display issues have been noticed on Linux Systems.
 Some of these include:
   * Windows opening very small
   * Menus displaying incorrectly
