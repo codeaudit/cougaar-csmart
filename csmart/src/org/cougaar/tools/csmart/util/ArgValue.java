@@ -52,7 +52,7 @@ public class ArgValue implements Serializable {
    * @param sep a <code>String</code> that separates Arg and Value
    * @param len an <code>int</code> of arbitrary value
    */
-  public ArgValue(String pair, String sep, int len) {
+  public ArgValue(String pair, String sep) {
     // the pair must be split on sep to produce arg and value
     if (pair == null || sep == null) {
       // error!
@@ -84,7 +84,7 @@ public class ArgValue implements Serializable {
    * @param pair a <code>String</code> with arg and value
    */
   public ArgValue(String pair) {
-    this(pair, " = ", 0);
+    this(pair, " = ");
   }
   
   /**
