@@ -20,21 +20,18 @@
  */
 package org.cougaar.tools.csmart.core.cdata;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
 import org.cougaar.planning.plugin.asset.AssetDataCallback;
-import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
-import org.cougaar.tools.csmart.core.cdata.PGPropMultiVal;
-import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.TimeSpan;
 import org.cougaar.util.log.Logger;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
 
 
 /**

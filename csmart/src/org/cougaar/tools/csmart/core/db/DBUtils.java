@@ -21,27 +21,18 @@
 
 package org.cougaar.tools.csmart.core.db;
 
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.DBConnectionPool;
+import org.cougaar.util.DBProperties;
+import org.cougaar.util.Parameters;
+import org.cougaar.util.log.Logger;
+
 import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.StringTokenizer;
-import java.util.Date;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.Connection;
-import org.cougaar.util.Parameters;
-import org.cougaar.util.DBProperties;
-import org.cougaar.util.DBConnectionPool;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.util.*;
 
 /**
  * Static methods for accessing the CSMART configuration database

@@ -21,7 +21,7 @@
 
 package org.cougaar.tools.csmart.core.property.name;
 
-import java.util.Vector;
+
 
 /**
  * The name in the namespace of a configurable component.

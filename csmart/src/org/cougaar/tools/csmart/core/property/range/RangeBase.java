@@ -23,8 +23,9 @@ package org.cougaar.tools.csmart.core.property.range;
 
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
-import java.io.ObjectInputStream;
+
 import java.io.IOException;
+import java.io.ObjectInputStream;
 
 
 /**

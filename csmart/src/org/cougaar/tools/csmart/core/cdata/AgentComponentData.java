@@ -20,7 +20,6 @@
  */
 package org.cougaar.tools.csmart.core.cdata;
 
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import java.util.ArrayList;
 
 /**

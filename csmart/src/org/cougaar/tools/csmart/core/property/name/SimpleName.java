@@ -21,14 +21,10 @@
 
 package org.cougaar.tools.csmart.core.property.name;
 
-import java.io.Serializable;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.ObjectStreamException;
-
-import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**

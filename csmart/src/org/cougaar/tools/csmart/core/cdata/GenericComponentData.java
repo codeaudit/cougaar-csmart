@@ -21,15 +21,15 @@
 
 package org.cougaar.tools.csmart.core.cdata;
 
+import org.cougaar.core.component.ComponentDescription;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.core.component.ComponentDescription;
-import java.io.ObjectInputStream;
-import java.io.IOException;
 
 /**
  * Generic Component Data.

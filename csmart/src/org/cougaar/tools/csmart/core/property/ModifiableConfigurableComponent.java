@@ -21,13 +21,11 @@
 
 package org.cougaar.tools.csmart.core.property;
 
+import javax.swing.event.EventListenerList;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Constructor;
 import java.util.EventListener;
-import javax.swing.event.EventListenerList;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Base class for ConfigurableComponents implementing the

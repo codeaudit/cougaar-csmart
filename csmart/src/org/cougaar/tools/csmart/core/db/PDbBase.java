@@ -20,44 +20,35 @@
  */
 package org.cougaar.tools.csmart.core.db;
 
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Connection;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Date;
-import java.util.List;
-import java.util.Iterator;
-import java.util.StringTokenizer;
-import java.io.IOException;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.FileWriter;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
-
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.recipe.ComplexRecipeComponent;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.DBConnectionPool;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.log.Logger;
 
-import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
-import org.cougaar.tools.csmart.recipe.RecipeComponent;
-import org.cougaar.tools.csmart.recipe.ComplexRecipeComponent;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This class takes a structure of ComponentData objects and populates

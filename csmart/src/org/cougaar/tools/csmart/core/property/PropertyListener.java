@@ -20,8 +20,8 @@
  */
 package org.cougaar.tools.csmart.core.property;
 
-import java.util.EventListener;
 import java.io.Serializable;
+import java.util.EventListener;
 
 /**
  * Defines a listener for a Property

@@ -22,31 +22,26 @@
 package org.cougaar.tools.csmart.core.db;
 
 
-import java.io.IOException;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.DBConnectionPool;
+import org.cougaar.util.DBProperties;
+import org.cougaar.util.Parameters;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.*;
-import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.util.DBConnectionPool;
-import org.cougaar.util.DBProperties;
-import org.cougaar.util.Parameters;
-import org.cougaar.util.log.Logger;
 
 /**
  * Methods for constructing a society in the configuration database' assembly

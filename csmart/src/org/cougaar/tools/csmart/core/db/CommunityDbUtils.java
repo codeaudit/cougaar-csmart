@@ -20,21 +20,31 @@
  */
 package org.cougaar.tools.csmart.core.db;
 
-import java.util.*;
-import java.sql.*;
-import java.io.*;
-
-import org.cougaar.util.Parameters;
-import org.cougaar.util.DBProperties;
-import org.cougaar.util.DBConnectionPool;
-import org.cougaar.util.log.Logger;
-import org.cougaar.util.ConfigFinder;
-
-import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.tools.csmart.util.XMLUtils;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.util.XMLUtils;
+import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.DBConnectionPool;
+import org.cougaar.util.DBProperties;
+import org.cougaar.util.Parameters;
+import org.cougaar.util.log.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import org.w3c.dom.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Utility methods for importing/exporting community definitions in

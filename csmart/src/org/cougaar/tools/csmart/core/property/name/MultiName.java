@@ -21,9 +21,7 @@
 
 package org.cougaar.tools.csmart.core.property.name;
 
-import java.util.Vector;
-import java.util.Iterator;
-import java.util.ArrayList;
+
 
 /**
  * A CompositeName composed from a parent name and a SimpleName. This

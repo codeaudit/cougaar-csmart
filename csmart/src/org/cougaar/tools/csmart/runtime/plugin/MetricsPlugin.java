@@ -20,33 +20,30 @@
  */
 package org.cougaar.tools.csmart.runtime.plugin;
 
-import org.cougaar.core.service.BlackboardMetricsService;
-import org.cougaar.core.blackboard.IncrementalSubscription;
-import org.cougaar.core.mts.MessageAddress;
+import org.cougaar.core.blackboard.Directive;
 import org.cougaar.core.blackboard.DirectiveMessage;
-import org.cougaar.core.component.ServiceRevokedListener;
+import org.cougaar.core.blackboard.IncrementalSubscription;
 import org.cougaar.core.component.ServiceRevokedEvent;
+import org.cougaar.core.component.ServiceRevokedListener;
+import org.cougaar.core.mts.Message;
+import org.cougaar.core.mts.MessageAddress;
+import org.cougaar.core.mts.MessageTransportWatcher;
+import org.cougaar.core.service.BlackboardMetricsService;
 import org.cougaar.core.service.MessageStatisticsService;
 import org.cougaar.core.service.MessageWatcherService;
-import org.cougaar.core.mts.MessageTransportWatcher;
 import org.cougaar.core.service.NodeMetricsService;
-import org.cougaar.core.mts.MessageAddress;
-import org.cougaar.core.mts.Message;
-
-import org.cougaar.planning.service.PrototypeRegistryService;
-
-import org.cougaar.planning.ldm.asset.Asset;
 import org.cougaar.planning.ldm.asset.AbstractAsset;
+import org.cougaar.planning.ldm.asset.Asset;
+import org.cougaar.planning.ldm.plan.Allocation;
 import org.cougaar.planning.ldm.plan.AllocationResult;
 import org.cougaar.planning.ldm.plan.AspectType;
-import org.cougaar.planning.ldm.plan.Allocation;
-import org.cougaar.core.blackboard.Directive;
 import org.cougaar.planning.ldm.plan.Notification;
 import org.cougaar.planning.ldm.plan.PlanElement;
 import org.cougaar.planning.ldm.plan.Role;
 import org.cougaar.planning.ldm.plan.Task;
 import org.cougaar.planning.ldm.plan.Verb;
-
+import org.cougaar.planning.service.PrototypeRegistryService;
+import org.cougaar.tools.scalability.performance.jni.CpuClock;
 import org.cougaar.util.UnaryPredicate;
 
 import java.io.File;
@@ -55,9 +52,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.*;
-
-import org.cougaar.tools.scalability.performance.jni.CpuClock;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
 /**
  * Collect statistics on Agent operation. <br>

@@ -21,14 +21,8 @@
 
 package org.cougaar.tools.csmart.core.db;
 
-import java.io.File;
-import java.io.FileReader;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.Set;
-import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.util.DBProperties;
 
 /**
  * Utility methods used by <code>CMT</code> and calling into it.

@@ -21,7 +21,7 @@
 
 package org.cougaar.tools.csmart.core.property;
 
-import java.net.URL;
+
 
 /**
  * The interface for ConfigurableComponents that can be modified from

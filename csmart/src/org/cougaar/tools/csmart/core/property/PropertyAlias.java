@@ -21,13 +21,11 @@
 
 package org.cougaar.tools.csmart.core.property;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.net.URL;
-
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
+import java.net.URL;
+import java.util.Set;
 
 /**
  * Defines a property in terms of another. Only the name is changed.

@@ -21,14 +21,13 @@
 
 package org.cougaar.tools.csmart.core.property;
 
-import java.util.Set;
-import java.util.Iterator;
-import java.util.List;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.net.URL;
-
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Every property has these attributes:

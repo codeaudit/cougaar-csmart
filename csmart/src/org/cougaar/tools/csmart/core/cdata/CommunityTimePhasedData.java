@@ -21,11 +21,12 @@
 
 package org.cougaar.tools.csmart.core.cdata;
 
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.text.ParseException;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Data structure used to store Community Time Phased data.

@@ -20,8 +20,8 @@
  */
 package org.cougaar.tools.csmart.runtime.plugin;
 
-import org.cougaar.planning.ldm.plan.Verb;
 import org.cougaar.planning.ldm.plan.Role;
+import org.cougaar.planning.ldm.plan.Verb;
 /**
  * Constants used by Metrics base.
  **/

@@ -21,38 +21,33 @@
 
 package org.cougaar.tools.csmart.core.property;
 
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.property.name.ComponentName;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.core.property.name.SimpleName;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.FilteredIterator;
+import org.cougaar.util.UnaryPredicate;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.event.EventListenerList;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Set;
-import javax.swing.event.EventListenerList;
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-
-import org.cougaar.util.FilteredIterator;
-import org.cougaar.util.UnaryPredicate;
-import org.cougaar.util.log.Logger;
-
-import org.cougaar.tools.csmart.core.property.name.ComponentName;
-import org.cougaar.tools.csmart.core.property.name.SimpleName;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.db.PopulateDb;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * This is the default configurable component implementation.

@@ -20,28 +20,21 @@
  */
 package org.cougaar.tools.csmart.core.property;
 
-import javax.swing.*;
-import javax.swing.table.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
-import java.util.List;
-import java.util.Collection;
-import java.util.Set;
-import java.util.Comparator;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Enumeration;
-import java.awt.BorderLayout;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.lang.reflect.Array;
-
-import org.cougaar.tools.csmart.core.property.range.Range;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.core.property.range.Range;
+
+import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+import java.awt.*;
+import java.lang.reflect.Array;
+import java.util.*;
+import java.util.List;
 
 public class TestGUI
     extends JPanel

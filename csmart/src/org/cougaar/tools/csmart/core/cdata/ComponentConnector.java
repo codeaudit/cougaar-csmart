@@ -22,12 +22,6 @@ package org.cougaar.tools.csmart.core.cdata;
 
 
 
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 import org.cougaar.core.agent.AgentManager;
 import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.core.node.INIParser;
@@ -36,6 +30,11 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.log.Logger;
+
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * ComponentConnector.java

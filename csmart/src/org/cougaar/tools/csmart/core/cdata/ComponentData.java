@@ -21,9 +21,10 @@
 
 package org.cougaar.tools.csmart.core.cdata;
 
-import java.io.Serializable;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.core.domain.DomainManager;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+
+import java.io.Serializable;
 
 /** 
  * Interface that contains all data

@@ -20,17 +20,18 @@
  */
 package org.cougaar.tools.csmart.core.property;
 
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.PrintStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Iterator;
-import java.util.Collections;
-import java.net.URL;
-import java.io.*;
-
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.util.log.Logger;
 
 /**
  * Base implementation of the <code>Property</code> Interface

@@ -21,17 +21,12 @@
 
 package org.cougaar.tools.csmart.core.property;
 
-import java.util.List;
-import java.util.Set;
-
-import java.io.Serializable;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectStreamException;
-
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Set;
 
 /**
  * A ConfigurableComponentProperty is a property within a ConfigurableComponent.

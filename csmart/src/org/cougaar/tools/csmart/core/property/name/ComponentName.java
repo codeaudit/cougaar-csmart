@@ -21,7 +21,6 @@
 
 package org.cougaar.tools.csmart.core.property.name;
 
-import java.util.Vector;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 
 /**

@@ -21,22 +21,18 @@
 
 package org.cougaar.tools.csmart.runtime.plugin;
 
-import org.cougaar.core.service.DomainService;
-import org.cougaar.core.service.UIDService;
-import org.cougaar.planning.ldm.PlanningFactory;
-
-import org.cougaar.core.service.BlackboardService;
-import org.cougaar.core.component.ServiceRevokedListener;
-import org.cougaar.core.component.ServiceRevokedEvent;
 import org.cougaar.core.blackboard.Subscription;
+import org.cougaar.core.component.ServiceRevokedEvent;
+import org.cougaar.core.component.ServiceRevokedListener;
 import org.cougaar.core.plugin.ComponentPlugin;
+import org.cougaar.core.service.BlackboardService;
+import org.cougaar.core.service.DomainService;
+import org.cougaar.core.service.LoggingService;
+import org.cougaar.core.service.UIDService;
 import org.cougaar.core.util.UID;
-
-import org.cougaar.tools.csmart.util.*;
-
+import org.cougaar.planning.ldm.PlanningFactory;
 import org.cougaar.util.StateModelException;
 import org.cougaar.util.UnaryPredicate;
-import org.cougaar.core.service.LoggingService;
 
 /**
  * CSMART Base Plugin. Provide convenience methods.<br>

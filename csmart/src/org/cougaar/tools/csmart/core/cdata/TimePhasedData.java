@@ -22,8 +22,8 @@
 package org.cougaar.tools.csmart.core.cdata;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * Data Structure for Time Phased Data.
