@@ -578,7 +578,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	}
 	ihost = ihost.trim();
 	// Do other checking for reasonable host names here...
-	if (! ihost.equals("") && ihost != null)
+	// Maybe skip "localhost" here?
+	if (ihost != null && ! ihost.equals("") && ! hosts.contains(ihost))
 	  hosts.add(ihost);
       }
       hostFile.close();
@@ -847,6 +848,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     String hostName = null;
     while (true) {
       hostName = JOptionPane.showInputDialog("New host name: ");
+      // FIXME: Forbid localhost here?
       if (hostName == null || hostName.length() == 0)
         return;
       HostComponent[] hc = experiment.getHostComponents();
@@ -964,7 +966,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     TreePath path = tree.getSelectionPath();
     if (path == null) {
       if(log.isWarnEnabled()) {
-      log.warn("HostConfigurationBuilder newNodeInTree called with null path; ignoring");
+	log.warn("HostConfigurationBuilder newNodeInTree called with null path; ignoring");
       }
       return;
     }
