@@ -29,3 +29,8 @@ PlanServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools.cs
 
 # New Topology servlet for Topology SocMon UI, available at /topology
 TopologyServlet,org.cougaar.core.topology.TopologyReaderServlet
+
+# New servlet for Agent Mobility. This only loads in Agents,
+# and you may want it in NodeAgents as well. Will be available at /move
+MobilityServlet,org.cougaar.core.mobility.servlet.MoveAgentServlet
+
