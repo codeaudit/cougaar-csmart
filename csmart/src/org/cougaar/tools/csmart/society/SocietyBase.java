@@ -56,9 +56,9 @@ public abstract class SocietyBase
   extends ModifiableConfigurableComponent
   implements SocietyComponent, PropertiesListener {
 
-  protected static final String DESCRIPTION_RESOURCE_NAME = "description.html";
+  protected static final String DESCRIPTION_RESOURCE_NAME = "/org/cougaar/tools/csmart/society/society-base-description.html";
   protected static final String BACKUP_DESCRIPTION =
-    "Description not available";
+    "A Society: Agents, Binders, Plugins, etc.";
 
   protected boolean isRunning = false;
   protected boolean isSelfTerminating = false;
@@ -367,6 +367,9 @@ public abstract class SocietyBase
     cdata.setName(name);
     SocietyComponent component = new SocietyCDataComponent(cdata);
     component.initProperties();
+
+    // Let the new society be marked as saved? That would force
+    // a save on exit though...
     ((SocietyBase)component).modified = this.modified;
 
     // copy the assembly ID - the one under which this societies'
