@@ -25,6 +25,7 @@ public class PopulateDb {
     public static final String QUERY_FILE = "PopulateDb.q";
     public static final String INSERT_ALIB_COMPONENT = "insertAlibComponent";
     public static final String INSERT_COMPONENT_HIERARCHY = "insertComponentHierarchy";
+    public static final String CHECK_COMPONENT_HIERARCHY = "checkComponentHierarchy";
     public static final String INSERT_COMPONENT_ARG = "insertComponentArg";
     public static final String INSERT_AGENT_ORG = "insertAgentOrg";
     public static final String INSERT_ATTRIBUTE = "insertAttribute";
@@ -165,6 +166,7 @@ public class PopulateDb {
      * the database.
      **/
     public PopulateDb(String cmtType, String hnaType, String csmType,
+                      String experimentName,
                       String exptId, String trialId, boolean createNew)
         throws SQLException, IOException
     {
@@ -194,7 +196,7 @@ public class PopulateDb {
         this.trialId = trialId;
         substitutions.put(":cmt_type", cmtType);
         if (createNew) {
-            cloneTrial(hnaType, trialId);
+            cloneTrial(hnaType, trialId, experimentName);
             writeEverything = true;
         } else {
             cleanTrial(csmType, trialId);
@@ -216,11 +218,11 @@ public class PopulateDb {
         return csmAssemblyId;
     }
 
-    private void cloneTrial(String idType, String oldTrialId)
+    private void cloneTrial(String idType, String oldTrialId, String experimentName)
         throws SQLException
     {
-        newExperiment(idType);
-        newTrial(idType);
+        newExperiment(idType, experimentName);
+        newTrial(idType, experimentName); // Trial and experiment have same name
         copyCMTAssemblies(oldTrialId, trialId);
     }
 
@@ -236,10 +238,11 @@ public class PopulateDb {
         executeUpdate(stmt, dbp.getQuery(CLEAN_TRIAL_ASSEMBLY, substitutions));
     }
 
-    private void newExperiment(String idType) throws SQLException {
+    private void newExperiment(String idType, String experimentName) throws SQLException {
         String exptIdPrefix = idType + "-";
         substitutions.put(":expt_id_pattern:", exptIdPrefix + "____");
         substitutions.put(":expt_type:", idType);
+        substitutions.put(":expt_name:", experimentName);
         DecimalFormat exptIdFormat =
             new DecimalFormat(exptIdPrefix + "0000");
         ResultSet rs =
@@ -269,11 +272,11 @@ public class PopulateDb {
         return trialId;
     }
 
-    private void newTrial(String idType)
+    private void newTrial(String idType, String trialName)
         throws SQLException
     {
         String trialIdPrefix = idType + "-";
-        substitutions.put(":trial_id_pattern", trialIdPrefix + "____:");
+        substitutions.put(":trial_id_pattern:", trialIdPrefix + "____");
         substitutions.put(":trial_type:", idType);
         DecimalFormat trialIdFormat =
             new DecimalFormat(trialIdPrefix + "0000");
@@ -297,7 +300,7 @@ public class PopulateDb {
         substitutions.put(":trial_id:", trialId);
         substitutions.put(":expt_id:", exptId);
         substitutions.put(":description:", "Modified Trial");
-        substitutions.put(":name:", "Modified Trial");
+        substitutions.put(":trial_name:", trialName);
         executeUpdate(stmt, dbp.getQuery(INSERT_TRIAL_ID, substitutions));
     }
 
@@ -444,9 +447,9 @@ public class PopulateDb {
     {
         boolean result = writeEverything;
         boolean isAgent = data.getType().equals(ComponentData.AGENT);
-        boolean isNode = data.getType().equals(ComponentData.NODE);
+        boolean isSociety = data.getType().equals(ComponentData.SOCIETY);
         boolean isAdded = isAdded(data);
-        if (force || isAdded) {
+        if (!isSociety) {
             substitutions.put(":component_name:", sqlQuote(data.getName()));
             substitutions.put(":component_lib_id:", getComponentLibId(data));
             substitutions.put(":component_alib_id:", getComponentAlibId(data));
@@ -466,22 +469,28 @@ public class PopulateDb {
                 result = true;
             }
             rs.close();
-            if (isAgent) {
-                // Must be a metric or impact agent because that's all that gets added
-                populateAgent(data);
-                result = true;
-                force = true;   // Force writing of all plugins, too
-            }
+        }
+        if (isAgent) {
+            // Must be a metric or impact agent because that's all that gets added
+            populateAgent(data);
+            result = true;
+            force = true;   // Force writing of all plugins, too
         }
 
         ComponentData parent = data.getParent();
         if (parent != null) {
-            if (force || isAgent || isNode || isAdded) {
+            String parentType = parent.getType();
+            if (!parentType.equals(ComponentData.SOCIETY)) {
                 substitutions.put(":parent_component_alib_id:", getComponentAlibId(parent));
+                substitutions.put(":component_alib_id:", getComponentAlibId(data));
                 substitutions.put(":insertion_order:", String.valueOf(insertionOrder));
                 substitutions.put(":assembly_id:", sqlQuote(isAdded ? csmAssemblyId : hnaAssemblyId));
-                executeUpdate(stmt, dbp.getQuery(INSERT_COMPONENT_HIERARCHY, substitutions));
-                result = true;
+                ResultSet rs =
+                    executeQuery(stmt, dbp.getQuery(CHECK_COMPONENT_HIERARCHY, substitutions));
+                if (!rs.next()) {
+                    executeUpdate(stmt, dbp.getQuery(INSERT_COMPONENT_HIERARCHY, substitutions));
+                    result = true;
+                }
             }
         }
 

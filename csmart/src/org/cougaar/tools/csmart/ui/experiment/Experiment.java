@@ -651,6 +651,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   public void saveToDb() {
+    System.out.println("saveToDb");
     try {
       List components = getComponents();
       NodeComponent[] nodesToWrite = getNodes();
@@ -661,7 +662,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       theSoc.setOwner(this); // the experiment
       theSoc.setParent(null);
       PopulateDb pdb =
-        new PopulateDb("CMT", "CSMART", "CSM",
+        new PopulateDb("CMT", "CSMART", "CSM", getExperimentName(),
                        getExperimentID(), trialID, !isCloned());
       setExperimentID(pdb.getExperimentId());
       trialID = pdb.getTrialId();
@@ -677,7 +678,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         nc.setParent(theSoc);
         ComponentName name = 
 	  new ComponentName((ConfigurableComponent) nodesToWrite[i], "ConfigurationFileName");
-        nc.addParameter(((ComponentProperties)nodesToWrite[i]).getProperty(name).getValue().toString());
+        nc.addParameter(node.getShortName());
         theSoc.addChild(nc);
         pdb.addWritableComponent(nc); // Write all node components
         AgentComponent[] agents = node.getAgents();
