@@ -263,9 +263,13 @@ public class ExperimentINIWriter implements ConfigurationWriter {
           }
 	} else {
 	  // What is the prefix line I write here?
-	  // FIXME!!!!!!
-	  // This assumes the name is always the prefix.
-	  writer.print(children[i].getName() + " = ");
+	  if (children[i].getType().equals(ComponentData.NODEBINDER)) {
+	    writer.print("Node.AgentManager.Binder = ");
+	  } else {
+	    // FIXME!!!!!!
+	    // This assumes the name is always the prefix.
+	    writer.print(children[i].getName() + " = ");
+	  }
 	  writeChildLine(writer, children[i]);
 	  // Could one of these guys have children?
 	  writeChildrenOfComp(writer, configDir, children[i]);
