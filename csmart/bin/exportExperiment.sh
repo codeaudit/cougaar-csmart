@@ -42,9 +42,9 @@ fi
 # Check that named experiment exists
 # if this fails, something went wrong in copy
 if [ "x$5" = "x" ]; then
-  EID=`mysql -s -e "select distinct name from v4_expt_experiment where name = '$1-exprt'" -u $2 -p$3 tempcopy`
+  EID=`mysql -s -e "select distinct name from expt_experiment where name = '$1-exprt'" -u $2 -p$3 tempcopy`
 else
-  EID=`mysql -s -e "select distinct name from v4_expt_experiment where name = '$1-exprt'" -u $2 -p$3 -h $5 tempcopy`
+  EID=`mysql -s -e "select distinct name from expt_experiment where name = '$1-exprt'" -u $2 -p$3 -h $5 tempcopy`
 fi
 
 if [ -z $EID ]; then
@@ -81,8 +81,8 @@ else
 fi
 
 # Munge the dump file to replace INSERT with REPLACE for the tables
-# v4_lib_component and v4_alib_component
-sed s/'INSERT INTO v4_lib_component'/'REPLACE INTO v4_lib_component'/ "$1-export.sql" | sed s/'INSERT INTO v4_alib_component'/'REPLACE INTO v4_alib_component'/ > exp-export.sql
+# lib_component and alib_component
+sed s/'INSERT INTO lib_component'/'REPLACE INTO lib_component'/ "$1-export.sql" | sed s/'INSERT INTO alib_component'/'REPLACE INTO alib_component'/ > exp-export.sql
 mv exp-export.sql "$1-export.sql"
 
 # tell the user the name of the export file
@@ -93,9 +93,9 @@ echo "Note the use of the -f option, to ignore errors about duplicate rows"
 # get names of recipes to copy, tell user
 echo "You must be sure to separately copy the following queries as well:"
 if [ "x$5" = "x" ]; then
-  echo "select distinct arg_value from tempcopy.v4_lib_mod_recipe_arg where arg_value like 'recipeQuery%'" | mysql -s -u $2 -p$3 $4
+  echo "select distinct arg_value from tempcopy.lib_mod_recipe_arg where arg_value like 'recipeQuery%'" | mysql -s -u $2 -p$3 $4
 else
-  echo "select distinct arg_value from tempcopy.v4_lib_mod_recipe_arg where arg_value like 'recipeQuery%'" | mysql -s -u $2 -p$3 -h $5 $4
+  echo "select distinct arg_value from tempcopy.lib_mod_recipe_arg where arg_value like 'recipeQuery%'" | mysql -s -u $2 -p$3 -h $5 $4
 fi
 
 # delete the temp db

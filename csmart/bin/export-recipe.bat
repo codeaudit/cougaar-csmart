@@ -62,7 +62,7 @@ if [%5] == [] (
 
 REM munge export script - replace INSERT with REPLACE
 REM Do I need to do more than these tables?
-call %COUGAAR_INSTALL_PATH%\\csmart\\data\\database\\scripts\\sed.exe s/'INSERT INTO v4_lib_mod_recipe'/'REPLACE INTO v4_lib_mod_recipe'/ rt-exprt.sql > r-export.sql
+call %COUGAAR_INSTALL_PATH%\\csmart\\data\\database\\scripts\\sed.exe s/'INSERT INTO lib_mod_recipe'/'REPLACE INTO lib_mod_recipe'/ rt-exprt.sql > r-export.sql
 if exist rt-exprt.sql del rt-exprt.sql
 if exist ".\%1-export.sql" del ".\%1-export.sql"
 if exist r-export.sql move r-export.sql ".\%1-export.sql"
@@ -76,9 +76,9 @@ REM get the names of the queries to copy
 echo You must be sure to separately copy the following queries as well:
 
 if [%5] == [] (
-   mysql -s -e "select distinct arg_value from tempcopy.v4_lib_mod_recipe_arg where arg_value like 'recipeQuery%%';" -u %2 -p%3 %4
+   mysql -s -e "select distinct arg_value from tempcopy.lib_mod_recipe_arg where arg_value like 'recipeQuery%%';" -u %2 -p%3 %4
 ) else (
-   mysql -s -e "select distinct arg_value from tempcopy.v4_lib_mod_recipe_arg where arg_value like 'recipeQuery%%';" -u %2 -p%3 -h %5 %4
+   mysql -s -e "select distinct arg_value from tempcopy.lib_mod_recipe_arg where arg_value like 'recipeQuery%%';" -u %2 -p%3 -h %5 %4
 )
 
 echo

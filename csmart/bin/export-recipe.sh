@@ -55,7 +55,7 @@ fi
 
 # munge export script - replace INSERT with REPLACE
 # Do I need to do more than these tables?
-sed s/'INSERT INTO v4_lib_mod_recipe'/'REPLACE INTO v4_lib_mod_recipe'/ "$1-export.sql" > r-export.sql
+sed s/'INSERT INTO lib_mod_recipe'/'REPLACE INTO lib_mod_recipe'/ "$1-export.sql" > r-export.sql
 mv r-export.sql "$1-export.sql"
 
 # tell user name of export file, to load with -f option
@@ -65,9 +65,9 @@ echo "Note the use of the -f option, to ignore errors about duplicate rows"
 # get the names of the queries to copy
 echo "You must be sure to separately copy the following queries as well:"
 if [ "x$5" = "x" ]; then
-  echo "select distinct arg_value from tempcopy.v4_lib_mod_recipe_arg where arg_value like 'recipeQuery%';" | mysql -s -u $2 -p$3 $4
+  echo "select distinct arg_value from tempcopy.lib_mod_recipe_arg where arg_value like 'recipeQuery%';" | mysql -s -u $2 -p$3 $4
 else
-  echo "select distinct arg_value from tempcopy.v4_lib_mod_recipe_arg where arg_value like 'recipeQuery%';" | mysql -s -u $2 -p$3 -h $5 $4
+  echo "select distinct arg_value from tempcopy.lib_mod_recipe_arg where arg_value like 'recipeQuery%';" | mysql -s -u $2 -p$3 -h $5 $4
 fi
 
 # delete the temp db

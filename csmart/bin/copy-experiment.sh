@@ -33,9 +33,9 @@ fi
 # Check that the Experiment Exists First
 # if it doesn't, list all experiments.
 if [ "x$7" = "x" ]; then
-  EID=`mysql -s -e "select distinct name from v4_expt_experiment where name = '$1'" -u $3 -p$4 $5`
+  EID=`mysql -s -e "select distinct name from expt_experiment where name = '$1'" -u $3 -p$4 $5`
 else
-  EID=`mysql -s -e "select distinct name from v4_expt_experiment where name = '$1'" -u $3 -p$4 -h $7 $5`
+  EID=`mysql -s -e "select distinct name from expt_experiment where name = '$1'" -u $3 -p$4 -h $7 $5`
 fi
 
 if [ -z "${EID}" ]; then
@@ -43,9 +43,9 @@ if [ -z "${EID}" ]; then
  echo "The experiment, $1 is not a known experiment."
  echo "All known experiment names:"
  if [ "x$7" = "x" ]; then
-     echo "select NAME from v4_expt_experiment" | mysql -s -u $3 -p$4 $5
+     echo "select NAME from expt_experiment" | mysql -s -u $3 -p$4 $5
  else
-     echo "select NAME from v4_expt_experiment" | mysql -s -u $3 -p$4 -h $7 $5
+     echo "select NAME from expt_experiment" | mysql -s -u $3 -p$4 -h $7 $5
  fi
  echo ""
  exit
@@ -63,9 +63,9 @@ fi
 # which breaks the later sed
 # Need to warn if the number of items is other than 1
 if [ "x$7" = "x" ]; then
-  OEID=`mysql -s -e "select expt_id from v4_expt_experiment where name = '$1'" -u $3 -p$4 $5`
+  OEID=`mysql -s -e "select expt_id from expt_experiment where name = '$1'" -u $3 -p$4 $5`
 else
-  OEID=`mysql -s -e "select expt_id from v4_expt_experiment where name = '$1'" -u $3 -p$4 -h $7 $5`
+  OEID=`mysql -s -e "select expt_id from expt_experiment where name = '$1'" -u $3 -p$4 -h $7 $5`
 fi
 
 sed s/:oldeid/${OEID}/ fixed-copy.sql > fixed-copy-2.sql

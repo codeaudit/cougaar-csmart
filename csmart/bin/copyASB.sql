@@ -522,7 +522,7 @@ CREATE TABLE tempcopy.expt_trial_org_mult AS
    MULTIPLIER AS  MULTIPLIER, 
    VETOM.DESCRIPTION AS DESCRIPTION 
   FROM 
-   expt_trial_org_mult VETOM, v4_expt_trial VT, v4_expt_experiment VE 
+   expt_trial_org_mult VETOM, expt_trial VT, expt_experiment VE 
   WHERE 
    VETOM.TRIAL_ID = VT.TRIAL_ID AND VT.EXPT_ID = VE.EXPT_ID AND VE.NAME = ':oldExpt';
 
@@ -540,7 +540,7 @@ CREATE TABLE tempcopy.expt_trial_assembly AS
    CONCAT(VE.EXPT_ID,'-:suffix') AS EXPT_ID,
    CONCAT(TA.DESCRIPTION, ' copy') AS DESCRIPTION
  FROM 
-   expt_trial_assembly TA, v4_expt_trial VT, v4_expt_experiment VE 
+   expt_trial_assembly TA, expt_trial VT, expt_experiment VE 
  WHERE 
     TA.TRIAL_ID= VT.TRIAL_ID AND VT.EXPT_ID = VE.EXPT_ID AND VE.NAME = ':oldExpt' ;
 
@@ -558,7 +558,7 @@ CREATE TABLE tempcopy.expt_trial_config_assembly AS
    CONCAT(VE.EXPT_ID,'-:suffix') AS EXPT_ID,
    CONCAT(TA.DESCRIPTION, ' copy') AS DESCRIPTION
  FROM 
-   expt_trial_config_assembly TA, v4_expt_trial VT, v4_expt_experiment VE 
+   expt_trial_config_assembly TA, expt_trial VT, expt_experiment VE 
  WHERE 
     TA.TRIAL_ID= VT.TRIAL_ID AND VT.EXPT_ID = VE.EXPT_ID AND VE.NAME = ':oldExpt' ;
 
