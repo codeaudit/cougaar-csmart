@@ -108,6 +108,11 @@ public abstract class CSMARTPlugin
     log = (LoggingService)
       getServiceBroker().getService(this, LoggingService.class, null);
 
+    if (log == null) {
+      // Print to STDERR?
+      log = LoggingService.NULL;    
+    }
+
     // get the CSMART factory
     this.theCSMARTF = 
       ((domainService != null) ?
