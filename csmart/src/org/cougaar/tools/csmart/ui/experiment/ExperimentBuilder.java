@@ -41,6 +41,7 @@ public class ExperimentBuilder extends JFrame {
   private Experiment experiment;
   private boolean isEditable;
   private boolean isRunnable;
+  private JTabbedPane tabbedPane;
   private UnboundPropertyBuilder propertyBuilder;
   private HostConfigurationBuilder hostConfigurationBuilder;
   private TrialBuilder trialBuilder;
@@ -97,13 +98,16 @@ public class ExperimentBuilder extends JFrame {
     menuBar.add(helpMenu);
     setJMenuBar(menuBar);
 
-    JTabbedPane tabbedPane = new JTabbedPane();
+    tabbedPane = new JTabbedPane();
     propertyBuilder = new UnboundPropertyBuilder(experiment);
     tabbedPane.add("Properties", propertyBuilder);
     hostConfigurationBuilder = new HostConfigurationBuilder(experiment);
     tabbedPane.add("Configurations", hostConfigurationBuilder);
-    trialBuilder = new TrialBuilder(experiment);
-    tabbedPane.add("Trials", trialBuilder);
+    // only display trial builder for non-database experiments
+    if (!experiment.isInDatabase()) {
+      trialBuilder = new TrialBuilder(experiment);
+      tabbedPane.add("Trials", trialBuilder);
+    }
     // after starting all the editors, set experiment editability to false
     experiment.setEditable(false);
     experiment.setRunnable(false); // not runnable when editing it
@@ -148,7 +152,19 @@ public class ExperimentBuilder extends JFrame {
     isRunnable = newExperiment.isRunnable();
     propertyBuilder.reinit(experiment);
     hostConfigurationBuilder.reinit(experiment);
-    trialBuilder.reinit(experiment);
+    // only display trial builder for non-database experiments
+    if (experiment.isInDatabase()) {
+      if (trialBuilder != null) {
+        tabbedPane.remove(trialBuilder);
+        trialBuilder = null;
+      } else {
+        if (trialBuilder == null) {
+          trialBuilder = new TrialBuilder(experiment);
+          tabbedPane.add("Trials", trialBuilder);
+        } else
+          trialBuilder.reinit(experiment);
+      }
+    }
     experiment.setEditable(false);
     experiment.setRunnable(false);
   }

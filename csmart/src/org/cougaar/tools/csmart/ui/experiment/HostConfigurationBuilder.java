@@ -64,8 +64,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   DNDTree agentTree;
   String nameServerHostName = "";
   private boolean modified = false; // set true if any mapping changes
-  //  private Hashtable hostToNodes = new Hashtable();
-  //  private Hashtable nodeToAgents = new Hashtable();
   // menu items for popup menu in hostTree
   private static final String NEW_HOST_MENU_ITEM = "New Host";
   private static final String NEW_NODE_MENU_ITEM = "New Node";
@@ -380,7 +378,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
     hostTree.getModel().addTreeModelListener(this);
     nodeTree.getModel().addTreeModelListener(this);
-    //    setHostNodeAgentMapping(hostToNodes, nodeToAgents);
   }
 
   /**
@@ -1154,81 +1151,43 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
   }
 
-  /**
-   * Fill in a hashtable that matches host name (String) to
-   * node names (ArrayList of String),
-   * and a hashtable that maps node name (String) to
-   * agent names (ArrayList of String).
-   */
-
-//    public void setHostNodeAgentMapping(Hashtable hostToNodes,
-//                                        Hashtable nodeToAgents) {
-//      HostComponent[] hosts = experiment.getHosts();
-//      for (int i = 0; i < hosts.length; i++) {
-//        String hostName = hosts[i].getShortName();
-//        NodeComponent[] nodeComponents = hosts[i].getNodes();
-//        ArrayList nodes = new ArrayList();
-//        for (int j = 0; j < nodeComponents.length; j++) {
-//          nodes.add(nodeComponents[j].getShortName());
-//        }
-//        hostToNodes.put(hostName, nodes);
-//      }
-//      NodeComponent[] nodes = experiment.getNodes();
-//      for (int i = 0; i < nodes.length; i++) {
-//        String nodeName = nodes[i].getShortName();
-//        AgentComponent[] agentComponents = nodes[i].getAgents();
-//        ArrayList agents = new ArrayList();
-//        for (int j = 0; j < agentComponents.length; j++) {
-//          agents.add(agentComponents[j].getShortName());
-//        }
-//        nodeToAgents.put(nodeName, agents);
-//      }
-//      String assemblyName = 
-//        (String)JOptionPane.showInputDialog(this, "Name", "Name",
-//                                        JOptionPane.QUESTION_MESSAGE,
-//                                        null, null, "");
-//      if (assemblyName == null)
-//        return;
-//      String newAssemblyName =
-//        ExperimentDB.addMachineAssignments(hostToNodes, assemblyName);
-//      ExperimentDB.addNodeAssignments(nodeToAgents, assemblyName);
-//      // need to define a new trial in order to define a new configuration
-//      ExperimentDB.addAssembly(experiment.getExperimentID(),
-//                               experiment.getTrialID(),
-//                               newAssemblyName);
-//    }
-
   public void save() {
     if (!modified) {
       JOptionPane.showMessageDialog(this, "No modifications were made.");
       return;
     }
     modified = false;
-    String name = "";
-    Hashtable experimentNamesHT = ExperimentDB.getExperimentNames();
-    Set experimentNameSet = experimentNamesHT.keySet();
-    String[] experimentNames = null;
-    if (experimentNameSet != null)
-      experimentNames = 
-        (String[])experimentNameSet.toArray(new String[experimentNameSet.size()]);
-    while (true) {
-      name = (String) JOptionPane.showInputDialog(this, 
+    if (experiment.isCloned()) {
+      experiment.saveToDb();
+      return;
+    }
+    // if experiment name is already unique, then don't ask user for new one
+    // TODO: make sure that name is unique in Organizer
+    // TODO: rename experiment in Organizer
+    if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
+      String name = "";
+      while (true) {
+        name = (String) JOptionPane.showInputDialog(this, 
                                                   "Enter Experiment Name",
                                                   "Experiment Name",
                                                   JOptionPane.QUESTION_MESSAGE,
                                                   null, null, name);
-      if (name == null) return;
-      if (experimentNameSet != null && !experimentNameSet.contains(name)) 
-        break;
-      int answer = JOptionPane.showConfirmDialog(this,
-                                                 "Use an unique name",
-                                                 "Experiment Name Not Unique",
-                                                 JOptionPane.OK_CANCEL_OPTION,
-                                                 JOptionPane.ERROR_MESSAGE);
-      if (answer != JOptionPane.OK_OPTION) return;
+        if (name == null) return;
+        if (!ExperimentDB.isExperimentNameInDatabase(name)) {
+          // TODO: update name
+          System.out.println("WARNING: Need to save experiment under new name");
+          break;
+        }
+        int answer = JOptionPane.showConfirmDialog(this,
+                                               "Use an unique name",
+                                               "Experiment Name Not Unique",
+                                               JOptionPane.OK_CANCEL_OPTION,
+                                               JOptionPane.ERROR_MESSAGE);
+        if (answer != JOptionPane.OK_OPTION) return;
+      }
     }
-    //    experiment.saveToDatabase(name);
-    // experiment.setCloned(true);
+    experiment.saveToDb();
+    experiment.setCloned(true);
   }
 
   private DefaultTreeModel createModel(final Experiment experiment, DefaultMutableTreeNode node, boolean askKids) {

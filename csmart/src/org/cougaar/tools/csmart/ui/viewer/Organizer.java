@@ -38,7 +38,6 @@ import javax.swing.tree.*;
 import javax.swing.event.*;
 
 import org.cougaar.tools.csmart.ui.component.*;
-import org.cougaar.tools.csmart.ui.console.ConsoleTrialDialog;
 import org.cougaar.tools.csmart.ui.console.ExperimentDB;
 import org.cougaar.tools.csmart.ui.experiment.*;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
@@ -1346,10 +1345,16 @@ public class Organizer extends JScrollPane {
   private void selectExperimentFromDatabase(DefaultMutableTreeNode node) {
     // select experiment from database
     Hashtable experimentNamesHT = ExperimentDB.getExperimentNames();
-    Set experimentNames = experimentNamesHT.keySet();
-    if (experimentNames == null)
+    Set dbExperimentNames = experimentNamesHT.keySet();
+    if (dbExperimentNames == null)
       return;
-    JComboBox cb = new JComboBox(experimentNames.toArray());
+    // for debugging, print experiment names and ids
+    Object[] tmp = dbExperimentNames.toArray();
+    for (int i = 0; i < tmp.length; i++) 
+      System.out.println("Experiment name: " + tmp[i] +
+                         " Experiment id: " + experimentNamesHT.get(tmp[i]));
+    // end for debugging
+    JComboBox cb = new JComboBox(dbExperimentNames.toArray());
     cb.setEditable(false);
     JPanel panel = new JPanel();
     panel.add(new JLabel("Select Experiment:"));
@@ -1362,6 +1367,23 @@ public class Organizer extends JScrollPane {
       return;
     String experimentName = (String)cb.getSelectedItem();
     String experimentId = (String)experimentNamesHT.get(experimentName);
+    // produce an unique name for CSMART if necessary
+    if (experimentNames.contains(experimentName)) {
+      experimentName = 
+        getUniqueExperimentName(experimentNames.generateName(experimentName));
+      if (experimentName == null)
+        return;
+      // make sure that user didn't use another experiment name in the database
+      //      if (ExperimentDB.isExperimentNameInDatabase(experimentName)) {
+      //        int answer = JOptionPane.showConfirmDialog(this,
+      //						 "Use an unique name",
+      //						 "Experiment Name Not Unique",
+      //						 JOptionPane.OK_CANCEL_OPTION,
+      //						 JOptionPane.ERROR_MESSAGE);
+      //        return; // user just starts over from here
+      //      }
+    }
+
     // if defining new experiment, select society template next
 //      if (!((ArrayList)experimentNames).contains(experimentName)) {
 //        societyTemplates = ExperimentDB.getSocietyTemplates();
@@ -1381,16 +1403,16 @@ public class Organizer extends JScrollPane {
 //      }
 
     // get threads and groups information
-    ConsoleTrialDialog dialog = 
-      new ConsoleTrialDialog(csmart, experimentName, experimentId);
-    dialog.setVisible(true);
+    CMTDialog dialog = 
+      new CMTDialog(csmart, this, experimentName, experimentId);
     String trialId = dialog.getTrialId();
     if (trialId == null)
       return;
     createCMTExperiment(node, 
                         dialog.getExperimentName(),
                         dialog.getExperimentId(),
-                        trialId);
+                        trialId,
+                        dialog.isCloned());
 //      try {
 //        new Thread("") {
 //          public void run() {
@@ -1415,7 +1437,7 @@ public class Organizer extends JScrollPane {
       substitutions.put(":trial_id", trialId);
       Statement stmt = conn.createStatement();
       String query = DBUtils.getQuery(EXPT_ASSEM_QUERY, substitutions);
-      System.out.println("getTrialAssemblyIds: " + query);
+      System.out.println("Organizer: getTrialAssemblyIds: " + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         String asmid = rs.getString(1);
@@ -1464,7 +1486,7 @@ public class Organizer extends JScrollPane {
       substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
       String query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
-      System.out.println("Nodes query: " + query);
+      System.out.println("Organizer: Nodes query: " + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         nodes.add(rs.getString(1));
@@ -1490,6 +1512,7 @@ public class Organizer extends JScrollPane {
       substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
       String query = DBUtils.getQuery(EXPT_HOST_QUERY, substitutions);
+      System.out.println("Organizer: Get hosts query: " + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         hosts.add(rs.getString(1));
@@ -1524,6 +1547,7 @@ public class Organizer extends JScrollPane {
         // Loop Query for every node.
         substitutions.put(":parent_name", nodeName);
         String query = DBUtils.getQuery("queryComponents", substitutions);
+        System.out.println("Organizer: Get agents: " + query);
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
           // Find AgentComponent.
@@ -1556,7 +1580,8 @@ public class Organizer extends JScrollPane {
   private void createCMTExperiment(DefaultMutableTreeNode node,
                                    String experimentName,
                                    String experimentId,
-                                   String trialId) {
+                                   String trialId,
+                                   boolean isCloned) {
     System.out.println("Creating society");
     // get assembly ids for trial
     ArrayList assemblyIds = getTrialAssemblyIds(experimentId, trialId);
@@ -1576,6 +1601,7 @@ public class Organizer extends JScrollPane {
     }
     Experiment experiment = new Experiment((String)experimentName, 
                                            experimentId, trialId);
+    experiment.setCloned(isCloned);
     DefaultMutableTreeNode newNode =
       addExperimentToWorkspace(experiment, node);
     experiment.addSocietyComponent((SocietyComponent)soc);
@@ -1590,6 +1616,41 @@ public class Organizer extends JScrollPane {
     workspace.setSelection(newNode);
   }
 
+  /**
+   * Ensure that experiment name is unique in both CSMART and the database.
+   */
+
+  public String getUniqueExperimentName(String name) {
+    while (true) {
+      name = (String) JOptionPane.showInputDialog(this, "Enter Experiment Name",
+                                                  "Experiment Name",
+                                                  JOptionPane.QUESTION_MESSAGE,
+                                                  null, null,
+                                                  name);
+      if (name == null) return null;
+      // if name is unique in CSMART
+      if (!experimentNames.contains(name)) {
+        // ensure that name is not in the database
+        if (ExperimentDB.isExperimentNameInDatabase(name)) {
+          int answer = JOptionPane.showConfirmDialog(this,
+                     "This name is in the database; use an unique name",
+                                                 "Experiment Name Not Unique",
+						 JOptionPane.OK_CANCEL_OPTION,
+						 JOptionPane.ERROR_MESSAGE);
+          if (answer != JOptionPane.OK_OPTION) return null;
+        } else
+          break; // have unique name
+      } else {
+        int answer = JOptionPane.showConfirmDialog(this,
+						 "Use an unique name",
+						 "Experiment Name Not Unique",
+						 JOptionPane.OK_CANCEL_OPTION,
+						 JOptionPane.ERROR_MESSAGE);
+        if (answer != JOptionPane.OK_OPTION) return null;
+      }
+    }
+    return name;
+  }
 
   private DefaultMutableTreeNode newExperiment(DefaultMutableTreeNode node) {
 //      String[] options = { "From Database", "Built In" };
@@ -1602,22 +1663,25 @@ public class Organizer extends JScrollPane {
 //        return null;
 //      if (result.equals("From Database"))
 //        return newExperimentFromDatabase(node);
-    String name = experimentNames.generateName();
-    while (true) {
-      name = (String) JOptionPane.showInputDialog(this, "Enter Experiment Name",
-						  "Experiment Name",
-						  JOptionPane.QUESTION_MESSAGE,
-						  null, null,
-						  name);
-      if (name == null) return null;
-      if (!experimentNames.contains(name)) break;
-      int answer = JOptionPane.showConfirmDialog(this,
-						 "Use an unique name",
-						 "Experiment Name Not Unique",
-						 JOptionPane.OK_CANCEL_OPTION,
-						 JOptionPane.ERROR_MESSAGE);
-      if (answer != JOptionPane.OK_OPTION) return null;
-    }
+//      String name = experimentNames.generateName();
+//      while (true) {
+//        name = (String) JOptionPane.showInputDialog(this, "Enter Experiment Name",
+//  						  "Experiment Name",
+//  						  JOptionPane.QUESTION_MESSAGE,
+//  						  null, null,
+//  						  name);
+//        if (name == null) return null;
+//        if (!experimentNames.contains(name)) break;
+//        int answer = JOptionPane.showConfirmDialog(this,
+//  						 "Use an unique name",
+//  						 "Experiment Name Not Unique",
+//  						 JOptionPane.OK_CANCEL_OPTION,
+//  						 JOptionPane.ERROR_MESSAGE);
+//        if (answer != JOptionPane.OK_OPTION) return null;
+//      }
+    String name = getUniqueExperimentName(experimentNames.generateName());
+    if (name == null) return null;
+
     try {
       Experiment experiment = new Experiment(name);
       DefaultMutableTreeNode newNode =

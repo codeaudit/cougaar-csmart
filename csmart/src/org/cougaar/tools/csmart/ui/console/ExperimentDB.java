@@ -65,6 +65,21 @@ public class ExperimentDB {
 	return (Hashtable)call("getExperimentNames");
     }
 
+  /**
+   * Returns true if experiment name is in database and false otherwise.
+   * Used to guarantee that experiment names in database are unique.
+   * @param experimentName human readable experiment name
+   * @return true if name is unique and false otherwise
+   */
+
+  public static boolean isExperimentNameInDatabase(String experimentName) {
+    Hashtable experimentNamesHT = getExperimentNames();
+    Set namesInDB = experimentNamesHT.keySet();
+    if (namesInDB != null && namesInDB.contains(experimentName))
+      return true;
+    return false;
+  }
+
     /*
      * Returns hashtable where the keys are human readable names (Strings) and
      * the values are trial ids (Strings).
