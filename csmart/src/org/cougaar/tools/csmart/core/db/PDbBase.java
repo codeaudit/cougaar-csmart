@@ -139,63 +139,90 @@ public class PDbBase {
      * value<br> RECIPE_STATUS_DIFFERS -- Recipe already in database
      * with different value
      **/
-    public int recipeExists(RecipeComponent rc) {
-        try {
-            if (checkRecipeExistence(rc) == null)
-                return RECIPE_STATUS_ABSENT;
-            else
-                return RECIPE_STATUS_EXISTS;
-        } catch (SQLException sqle) {
-            return RECIPE_STATUS_DIFFERS;
-        }
+
+  public int recipeExists(RecipeComponent rc) {
+    String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
+    if (recipeIdAndClass == null)
+      return RECIPE_STATUS_ABSENT;
+    else {
+      if (isRecipeEqual(recipeIdAndClass, rc))
+        return RECIPE_STATUS_EXISTS;
+      else
+        return RECIPE_STATUS_DIFFERS;
+    }
+  }
+
+  /**
+   * Checks if the given recipe matches the recipe in the database
+   * specified by the id and class.
+   * @param String[] id and class from recipe in database
+   * @param rc the recipe component to compare against
+   * @return true if recipe class, properties, and values are the same
+   **/
+
+  private boolean isRecipeEqual(String[] recipeIdAndClass, 
+                                RecipeComponent rc) {
+    if (!recipeIdAndClass[1].equals(rc.getClass().getName()))
+      return false; // different class
+
+    Map newProps = new HashMap();
+    for (Iterator j = rc.getPropertyNames(); j.hasNext(); ) {
+      CompositeName pname = (CompositeName) j.next();
+      Property prop = rc.getProperty(pname);
+      Object val = prop.getValue();
+      if (val == null) continue; // Don't write null values
+      String sval = val.toString();
+      if (sval.equals("")) continue; // Don't write empty values
+      String name = pname.last().toString();
+      newProps.put(name, sval);
     }
 
-    /**
-     * Check the existence of a recipe.
-     * @return The recipeId if the recipe is already present and matches, null if the recipe is absent
-     * @exception if the recipe is present and differs.
-     **/
-    private String checkRecipeExistence(RecipeComponent rc) throws SQLException {
-        Map newProps = new HashMap();
-        for (Iterator j = rc.getPropertyNames(); j.hasNext(); ) {
-            CompositeName pname = (CompositeName) j.next();
-            Property prop = rc.getProperty(pname);
-            Object val = prop.getValue();
-            if (val == null) continue; // Don't write null values
-            String sval = val.toString();
-            if (sval.equals("")) continue; // Don't write empty values
-            String name = pname.last().toString();
-            newProps.put(name, sval);
+    Map oldProps = new HashMap();
+    substitutions.put(":recipe_id:", recipeIdAndClass[0]);
+    ResultSet rs = null;
+    try {
+      rs = executeQuery(stmt, 
+                        dbp.getQuery("queryLibRecipeProps", substitutions));
+      while (rs.next()) {
+        oldProps.put(rs.getString(1), rs.getString(2));
+      }
+    } catch (SQLException sqle) {
+      if(log.isErrorEnabled()) {
+        log.error("SQL Exception: ", sqle);
+      }
+      return false;
+    } finally {
+      try {
+        if (rs != null)
+          rs.close();
+      } catch (SQLException sqle2) {
+        if(log.isErrorEnabled()) {
+          log.error("SQL Exception: ", sqle2);
         }
-        String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
-        if (recipeIdAndClass == null) return null; // Does not exists
-        // Already exists, check equality
-        if (!recipeIdAndClass[1].equals(rc.getClass().getName()))
-            throw new SQLException("Attempt to overwrite recipe "
-                                   + rc.getRecipeName());
-        Map oldProps = new HashMap();
-        substitutions.put(":recipe_id:", recipeIdAndClass[0]);
-        ResultSet rs =
-            executeQuery(stmt, dbp.getQuery("queryLibRecipeProps", substitutions));
-        while (rs.next()) {
-            oldProps.put(rs.getString(1), rs.getString(2));
-        }
-        rs.close();
-        if (!oldProps.equals(newProps))
-            throw new SQLException("Attempt to overwrite recipe "
-                                   + rc.getRecipeName());
-        return recipeIdAndClass[0]; // Exists and matches
+        return false;
+      }
     }
+    return oldProps.equals(newProps);
+  }
+
+  /**
+   * Insures that the given recipe is in the database.
+   * If the recipe is not in the database, it writes it to the database
+   * with a new id.  If the recipe is in the database, it updates
+   * the database entries if necessary.
+   * @param rc the recipe to save in the database
+   * @return the id of the recipe in the database
+   */
 
     public String insureLibRecipe(RecipeComponent rc) throws SQLException {
-        String recipeId = checkRecipeExistence(rc);
-        if (recipeId != null) return recipeId;
-        return insertLibRecipe(rc);
-    }
-
-    public String replaceLibRecipe(RecipeComponent rc) throws SQLException {
-        removeLibRecipe(rc);
-        return insertLibRecipe(rc);
+      String[] recipeIdAndClass = getRecipeIdAndClass(rc.getRecipeName());
+      if (recipeIdAndClass != null) {
+        if (isRecipeEqual(recipeIdAndClass, rc))
+          return recipeIdAndClass[0];
+        else
+          return insertLibRecipe(rc, recipeIdAndClass[0]);
+      } else
+        return insertLibRecipe(rc, null);
     }
 
     public void removeLibRecipe(RecipeComponent rc) throws SQLException {
@@ -216,10 +243,19 @@ public class PDbBase {
         }
     }
 
-    public String insertLibRecipe(RecipeComponent rc) throws SQLException {
-        String recipeId = checkRecipeExistence(rc);
-        if (recipeId != null) return recipeId;
-        recipeId = getNextId("queryMaxRecipeId", "RECIPE-");
+  /**
+   * Inserts the specified recipe into the database.
+   * If the given recipe id already exists in the database,
+   * then just update the database recipe (by removing it
+   * and inserting the new recipe using the same id).
+   **/
+    private String insertLibRecipe(RecipeComponent rc,
+                                   String recipeId) throws SQLException {
+      try {
+        if (recipeId != null)
+          removeLibRecipeNamed(rc.getRecipeName());
+        else
+          recipeId = getNextId("queryMaxRecipeId", "RECIPE-");
         substitutions.put(":recipe_id:", recipeId);
         substitutions.put(":java_class:", rc.getClass().getName());
         substitutions.put(":description:", "No description available");
@@ -239,21 +275,40 @@ public class PDbBase {
             executeUpdate(dbp.getQuery("insertLibRecipeProp", substitutions));
         }
         return recipeId;
+      } catch (SQLException sqle) {
+        System.out.println("Exception in insertLibRecipe: " + sqle);
+        Thread.dumpStack();
+        return null;
+      }
     }
 
-    private String[] getRecipeIdAndClass(String recipeName) throws SQLException {
-        substitutions.put(":recipe_name:", recipeName);
-        ResultSet rs =
-            executeQuery(stmt, dbp.getQuery("queryLibRecipeByName", substitutions));
-        try {
-            if (rs.next()) {
-                return new String[] {rs.getString(1), rs.getString(2)};
-            } else {
-                return null;
-            }
-        } finally {
-            rs.close();
+    private String[] getRecipeIdAndClass(String recipeName) {
+      substitutions.put(":recipe_name:", recipeName);
+      ResultSet rs = null;
+      try {
+        rs = executeQuery(stmt, 
+                          dbp.getQuery("queryLibRecipeByName", substitutions));
+        if (rs.next()) {
+          return new String[] {rs.getString(1), rs.getString(2)};
+        } else {
+          return null;
         }
+      } catch (SQLException sqle) {
+        if(log.isErrorEnabled()) {
+          log.error("SQL Exception: ", sqle);
+        }
+        return null;
+      } finally {
+        try {
+          if (rs != null)
+            rs.close();
+        } catch (SQLException sqle2) {
+          if (log.isErrorEnabled()) {
+            log.error("SQL Exception: ", sqle2);
+          }
+          return null;
+        }
+      }
     }
 
     protected String getNextId(String queryName, String prefix) {
