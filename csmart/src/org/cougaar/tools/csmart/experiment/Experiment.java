@@ -1097,6 +1097,10 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     if (modified)
       saveToDb(); // if modified, update component data and save to database
     
+    // If the exp/trialID is null and we have recipes, we must do a save
+    // Otherwise recipes wont correctly add their data
+    // do this within generateCompleteSociety
+
     if (completeSociety == null)
       generateCompleteSociety();
     
@@ -1899,11 +1903,18 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @return a <code>boolean</code>, true if any component was removed
    */
   public boolean generateCompleteSociety() {
+    // If the exp/trialID is null and we have recipes, we must do a save
+    // Otherwise the pdb recipes get when doing modifyComponentData
+    // wont let them do the DB queries they want to do
+    if ((getTrialID() == null || getExperimentID() == null) && getRecipeComponentCount() > 0)
+      saveToDb();
+
     if (! modified && completeSociety != null)
       return false;
     generateHNACDATA();
 
     boolean mods = askComponentsToAddCDATA();
+
     return mods |= allowModifyCData();
   }
 
