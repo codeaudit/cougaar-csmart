@@ -99,69 +99,77 @@ public class ThreadBuilder extends JPanel {
                                  new Insets(0, leftIndent, 5, 0),
                                  0, 0));
     }
-    leftIndent = leftIndent - 5;
-    add(new JLabel("Organization Groups:"),
-        new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
-                               GridBagConstraints.WEST,
-                               GridBagConstraints.NONE,
-                               new Insets(0, leftIndent, 0, 0),
-                               0, 0));
-    leftIndent = leftIndent + 5;
+
+    ////////////////////////////
+    // Now the OrgGroups
+
     Map groupNameToId = ExperimentDB.getOrganizationGroups(experimentId);
     Set groups = groupNameToId.keySet();
     groupNames = (String[])groups.toArray(new String[groups.size()]);
     int nGroupNames = groupNames.length;
-    for (int i = 0; i < nGroupNames; i++) {
-      String groupName = (String)groupNames[i];
-      JCheckBox groupCB = new JCheckBox(groupName);
-      boolean sel = ExperimentDB.isGroupSelected(trialId, groupName);
-      groupCheckBoxes.add(groupCB);
-      originalGroupSelected.add(new Boolean(sel));
-      groupCB.setSelected(sel);
-      groupCB.setEnabled(false);
-      add(groupCB,
-          new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+
+    // Show the groups stuff only if we have some
+    if (nGroupNames > 0) {
+      leftIndent = leftIndent - 5;
+      add(new JLabel("Organization Groups:"),
+	  new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+                               GridBagConstraints.WEST,
+                               GridBagConstraints.NONE,
+                               new Insets(0, leftIndent, 0, 0),
+                               0, 0));
+      leftIndent = leftIndent + 5;
+      for (int i = 0; i < nGroupNames; i++) {
+	String groupName = (String)groupNames[i];
+	JCheckBox groupCB = new JCheckBox(groupName);
+	boolean sel = ExperimentDB.isGroupSelected(trialId, groupName);
+	groupCheckBoxes.add(groupCB);
+	originalGroupSelected.add(new Boolean(sel));
+	groupCB.setSelected(sel);
+	groupCB.setEnabled(false);
+	add(groupCB,
+	    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                  GridBagConstraints.WEST,
                                  GridBagConstraints.NONE,
                                  new Insets(0, leftIndent, 5, 0),
                                  0, 0));
-      add(new JLabel("Number of Copies:"),
-          new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+	add(new JLabel("Number of Copies:"),
+	    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                  GridBagConstraints.WEST,
                                  GridBagConstraints.NONE,
                                  new Insets(0, 0, 5, 5),
                                  0, 0));
-      JTextField multiplierField = new JTextField(4);
-      multiplierFields.add(multiplierField);
-      int multiplier = ExperimentDB.getMultiplier(trialId, groupName);
-      multiplierField.setText(String.valueOf(multiplier));
-      multiplierField.setEnabled(false);
-      originalGroupMultiplier.add(new Integer(multiplier));
-      add(multiplierField,
-          new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+	JTextField multiplierField = new JTextField(4);
+	multiplierFields.add(multiplierField);
+	int multiplier = ExperimentDB.getMultiplier(trialId, groupName);
+	multiplierField.setText(String.valueOf(multiplier));
+	multiplierField.setEnabled(false);
+	originalGroupMultiplier.add(new Integer(multiplier));
+	add(multiplierField,
+	    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                  GridBagConstraints.WEST,
                                  GridBagConstraints.NONE,
                                  new Insets(0, 0, 5, 5),
                                  0, 0));
-      add(new JLabel("Members:"),
-          new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+	add(new JLabel("Members:"),
+	    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                  GridBagConstraints.WEST,
                                  GridBagConstraints.NONE,
                                  new Insets(0, 0, 5, 5),
                                  0, 0));
-      Set members = 
-        ExperimentDB.getOrganizationsInGroup(experimentId, 
+	Set members = 
+	  ExperimentDB.getOrganizationsInGroup(experimentId, 
                                          (String)groupNameToId.get(groupName));
-      JList membersList = new JList(members.toArray());
-      membersList.setVisibleRowCount(4);
-      membersList.setEnabled(false);
-      add(new JScrollPane(membersList),
-          new GridBagConstraints(x++, y++, 1, 1, 0.0, 0.0,
+	JList membersList = new JList(members.toArray());
+	membersList.setVisibleRowCount(4);
+	membersList.setEnabled(false);
+	add(new JScrollPane(membersList),
+	    new GridBagConstraints(x++, y++, 1, 1, 0.0, 0.0,
                                  GridBagConstraints.WEST,
                                  GridBagConstraints.NONE,
                                  new Insets(0, 0, 5, 5),
                                  0, 0));
-    }
+      } // loop over group names
+    } // end of block to show groups if have some
   }
 
   /**
