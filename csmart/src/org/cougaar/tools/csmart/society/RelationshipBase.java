@@ -50,9 +50,13 @@ public class RelationshipBase
   public static final String PROP_ITEM = "Item";
   public static final String PROP_ITEM_DESC = "Item";
 
+  public static final String PROP_SUPPORTED = "Supported Agent";
+  public static final String PROP_SUPPORTED_DESC = "Agent Supported by this relationship";
+
   private Property propType;
   private Property propRole;
   private Property propItem;
+  private Property propSupported;
   private RelationshipData relationship;
 
   public RelationshipBase (RelationshipData relationship, int index){
@@ -72,6 +76,8 @@ public class RelationshipBase
     propRole.setToolTip(PROP_ROLE_DESC);
     propItem = addProperty(PROP_ITEM, relationship.getItem());
     propItem.setToolTip(PROP_ITEM_DESC);
+    propSupported = addProperty(PROP_SUPPORTED, relationship.getSupported());
+    propSupported.setToolTip(PROP_SUPPORTED_DESC);
   }
 
 }// RelationshipBase
