@@ -1,6 +1,0 @@
-2001-11-06  Ray Tomlinson  <RTomlinson@bbn.com>
-
-	* DBUtils.java (Repository):
-	Don't play dumb when exceptions occur while trying to connect to
-	the database. Print the exception.
-
