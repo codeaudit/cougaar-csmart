@@ -74,6 +74,7 @@ public class PDbBase {
             throw new SQLException("Driver class not found: " + driverClass);
         }
         dbConnection = DBConnectionPool.getConnection(database, username, password);
+        dbConnection.setAutoCommit(false);
         stmt = dbConnection.createStatement();
         updateStmt = dbConnection.createStatement();
     }
@@ -293,7 +294,7 @@ public class PDbBase {
      **/
     public synchronized void close() throws SQLException {
         if (dbConnection != null) {
-            dbConnection.commit();
+            if (!dbConnection.getAutoCommit()) dbConnection.commit();
             dbConnection.close();
             dbConnection = null;
         }
