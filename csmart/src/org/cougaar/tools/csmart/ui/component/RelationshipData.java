@@ -20,6 +20,7 @@
  */
 package org.cougaar.tools.csmart.ui.component;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.io.Serializable;
 

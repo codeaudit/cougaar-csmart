@@ -21,12 +21,14 @@
 
 package org.cougaar.tools.csmart.ui.component;
 
+import java.io.Serializable;
+
 /**
  * Generic Leaf Component Implementation.
  *
  * @see LeafComponentData
  */
-public class GenericLeafComponentData implements LeafComponentData {
+public class GenericLeafComponentData implements LeafComponentData, Serializable {
 
   private String type = null;
   private String name = null;

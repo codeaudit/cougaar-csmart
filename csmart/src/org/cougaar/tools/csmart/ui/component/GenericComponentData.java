@@ -21,6 +21,7 @@
 
 package org.cougaar.tools.csmart.ui.component;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -30,7 +31,7 @@ import java.util.ArrayList;
  *
  * @see ComponentData for docs.
  */
-public class GenericComponentData implements ComponentData {
+public class GenericComponentData implements ComponentData, Serializable {
   protected String type = null;
   private String name = null;
   protected String className = null;
