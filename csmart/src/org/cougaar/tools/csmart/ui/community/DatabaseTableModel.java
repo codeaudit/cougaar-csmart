@@ -61,8 +61,14 @@ public class DatabaseTableModel extends AbstractTableModel {
 
   public void setAssemblyId(String assemblyId) {
     this.assemblyId = assemblyId;
-    // FIXME must this be sqlquoted.
-    subs.put(":assembly_id:", assemblyId);
+    subs.put(":assembly_id:", "'" + assemblyId + "'");
+
+    // FIXME: This says if assembly_id is null, use none at all
+    // Maybe instead use all?
+    if (assemblyId != null)
+      subs.put(":assembly_match:", "IN ('" + assemblyId + "')");
+    else 
+      subs.put(":assembly_match:", "IS NULL");
   }
 
   /**
