@@ -611,6 +611,9 @@ public class PDbBase {
       long startTime = 0;
       if (pwlog != null)
 	startTime = System.currentTimeMillis();
+      if(log.isDebugEnabled()) {
+        log.debug("executeUpdate: " + query);
+      }
       int result = updateStmt.executeUpdate(query);
       if (pwlog != null) {
 	long endTime = System.currentTimeMillis();
@@ -774,6 +777,10 @@ public class PDbBase {
     if (quoteIndex == 0 && s.lastIndexOf('\'') == s.length() - 1)
       return s;
     ret = new String(s);
+    // Check to see if the String is a path and ends with a '\'.  If so, escape it.
+    if( ret.endsWith("\\")) {
+      ret += "\\";
+    }
     while (quoteIndex >= 0) {
       ret = ret.substring(0, quoteIndex) + "''" + ret.substring(quoteIndex + 1);
       quoteIndex = ret.indexOf('\'', quoteIndex + 2);
