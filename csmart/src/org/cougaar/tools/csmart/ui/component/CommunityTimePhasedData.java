@@ -66,7 +66,7 @@ public class CommunityTimePhasedData extends TimePhasedData {
    * @return array all communities
    */
   public String[] getCommunities() {
-    return (String[])communities.toArray(new String[0]);
+    return (String[])communities.toArray(new String[communities.size()]);
   }
 
   /**
@@ -79,14 +79,14 @@ public class CommunityTimePhasedData extends TimePhasedData {
   }
 
   /**
-   * Adds a single community at a specific index.
+   * Sets a single community at a specific index.
    * 
-   * @param int index to add community at.
+   * @param int index to replace community at.
    * @param String community name.
    */ 
-  public void addCommunity(int index, String community) 
+  public void setCommunity(int index, String community) 
     throws IndexOutOfBoundsException {
-    communities.add(index, community);
+    communities.set(index, community);
   }
 
   /**
