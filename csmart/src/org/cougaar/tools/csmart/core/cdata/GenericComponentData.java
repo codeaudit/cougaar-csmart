@@ -417,4 +417,54 @@ public class GenericComponentData implements ComponentData, Serializable {
     return false;
   }
 
+  /**
+   * Generate the standard unique name for a sub-component (Binder, Plugin). 
+   * The rule is that the name should be parent|<classname>. 
+   * However, if the ComponentData has a non-null name when passed in,
+   * then use that as the base.
+   * But if that is taken within this parent, and you have a first parameter, add |<param 0>. 
+   * Otherwise, or if that too is taken, add a number: The index at which
+   * this component will be added to the parent. 
+   * Note that the self component should <i>not</i> be currently a child of the parent - at least,
+   * not to the best of the caller's knowledge. 
+   * Also note that this method does not <i>set</i> the name, just calculate it.
+   *
+   * @param parent a <code>ComponentData</code> to which this Component has <i>not yet</i> been added
+   * @param self a <code>ComponentData</code> which will be added to the parent and whose name should be calculated
+   * @return a <code>String</code> name for the self ComponentData, null if the self ComponentData was null
+   */
+  public static String getSubComponentUniqueName(ComponentData parent, ComponentData self) {
+    if (self == null)
+      return null;
+
+    String cname = self.getName();
+    if (parent == null) 
+      if (cname != null)
+	return cname;
+      else 
+	return self.getClassName();
+      
+    if (cname == null)
+      cname = parent.getName() + "|" + self.getClassName();
+
+    ComponentData[] children = parent.getChildren();
+    if (children == null)
+      return cname;
+    boolean addedparam = false;
+    for (int i = 0; i < children.length; i++) {
+      ComponentData kid = children[i];
+      if (kid != null && kid.getName().equals(cname)) {
+	// OK, must at least add a paramter if it has one
+	if (self.parameterCount() > 0 && ! addedparam) {
+	    cname = cname + "|" + self.getParameter(0);
+	    addedparam = true;
+	} else {
+	  // OK, no params. Add a number? Maybe the others do have a param?
+	  cname = cname + children.length;
+	}
+      }
+    }
+    return cname;
+  }
+
 }
