@@ -52,7 +52,7 @@ public class AgentComponentDataTest extends TestCase {
     assertEquals("Test addRole()", "NewRole", r2[data.getRoleCount()-1]);
 
     try {
-      data.addRole(10, "Should Fail");
+      data.setRole(10, "Should Fail");
       fail("IndexOutOfBoundsException Expected");
     } catch(IndexOutOfBoundsException e) {}
   }
@@ -81,7 +81,7 @@ public class AgentComponentDataTest extends TestCase {
     assertEquals("Test getCommunityIterator()", c1, cc);
 
     try {
-      data.addCommunity(10, c4);
+      data.setCommunity(10, c4);
       fail("IndexOutOfBoundsException Expected");
     } catch(IndexOutOfBoundsException e) {}
 
@@ -116,7 +116,7 @@ public class AgentComponentDataTest extends TestCase {
     assertEquals("Test getRelationshipIterator()", r1, rr);
 
     try {
-      data.addRelationship(10, r4);
+      data.setRelationship(10, r4);
       fail("IndexOutOfBoundsException Expected");
     } catch(IndexOutOfBoundsException e) {}
 

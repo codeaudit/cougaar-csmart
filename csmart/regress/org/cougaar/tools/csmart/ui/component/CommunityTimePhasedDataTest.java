@@ -51,7 +51,7 @@ public class CommunityTimePhasedDataTest extends TestCase {
     ctpd = new CommunityTimePhasedData();
     ctpd.addCommunity("Test1");
     assertEquals("Test Add Community", "Test1", ctpd.getCommunity(0));
-    ctpd.addCommunity(0, "NewTest");
+    ctpd.setCommunity(0, "NewTest");
     assertEquals("Test addCommunity(int, String)", "NewTest", ctpd.getCommunity(0));
   }
 
