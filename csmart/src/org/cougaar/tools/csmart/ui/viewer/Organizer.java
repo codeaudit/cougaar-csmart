@@ -1003,6 +1003,18 @@ public class Organizer extends JScrollPane {
     }
   }
   
+  private SocietyComponent createSoc(String name, List assemblyIDs, Class cls) {
+    try {
+      Constructor constructor = cls.getConstructor(new Class[] {String.class, List.class});
+      SocietyComponent sc = (SocietyComponent) constructor.newInstance(new Object[] {name, assemblyIDs});
+      sc.initProperties();
+      return sc;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
   private DefaultMutableTreeNode addSocietyToWorkspace(SocietyComponent sc,
 						       DefaultMutableTreeNode node) {
     DefaultMutableTreeNode newNode = 
@@ -1637,7 +1649,7 @@ public class Organizer extends JScrollPane {
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         String propname = rs.getString(1);
-        System.out.println("Have Property: " + propname);
+        //        System.out.println("Have Property: " + propname);
         Property prop = mc.getProperty(propname);
         Class propClass = prop.getPropertyClass();
         Constructor constructor = propClass.getConstructor(new Class[] {String.class});
@@ -2109,6 +2121,7 @@ public class Organizer extends JScrollPane {
   private DefaultMutableTreeNode findNode(Object userObject) {
     Enumeration nodes = root.depthFirstEnumeration();
     while (nodes.hasMoreElements()) {
+      //      System.out.println("Have Element");
       DefaultMutableTreeNode node = 
 	(DefaultMutableTreeNode)nodes.nextElement();
       if (node.isLeaf() &&
@@ -2178,8 +2191,14 @@ public class Organizer extends JScrollPane {
 				      Object context) {
     //    SocietyComponent societyCopy = society.copy(this, context);
     // Create a new society whose name is based on the old one
-    SocietyComponent societyCopy = createSoc(generateSocietyName(society.getSocietyName()), society.getClass());
-    
+    SocietyComponent societyCopy = null;
+
+    if(society instanceof CMTSociety) {
+      societyCopy = createSoc(generateSocietyName(society.getSocietyName()), 
+                              ((CMTSociety)society).getAssemblyID(), society.getClass());
+    } else {
+      societyCopy = createSoc(generateSocietyName(society.getSocietyName()), society.getClass());
+    }
     // use the base copy method in ComponentProperties
     society.copy(societyCopy);
     boolean builtIn = false;

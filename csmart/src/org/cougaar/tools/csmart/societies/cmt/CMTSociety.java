@@ -64,14 +64,14 @@ public class CMTSociety
   private Map substitutions = new HashMap();
 
   // FIXME - are these right constructors?
-  public CMTSociety() {
-    this("CMT");
-  }
+//   public CMTSociety() {
+//     this("CMT");
+//   }
 
-  public CMTSociety(String name) {
+  public CMTSociety(String name, List assemblyID) {
     super(name);
-    assemblyID = new ArrayList();
-    assemblyID.add(name);
+    this.assemblyID = assemblyID;
+    //    assemblyID.add(name);
   }
 
   public CMTSociety(List ids) {
@@ -299,4 +299,9 @@ public class CMTSociety
   
   public void propertyAdded(PropertyEvent e) {
   }
+
+  public List getAssemblyID() {
+    return this.assemblyID;
+  }
+
 } // end of CMTSociety.java
