@@ -628,11 +628,9 @@ public class PopulateDb extends PDbBase {
         if (data == null) return sqlQuote(null);
         String componentType = data.getType();
         if (componentType.equals(ComponentData.PLUGIN)) {
-            String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
             return sqlQuote(data.getType() + "|" + data.getClassName());
         }
         if (componentType.equals(ComponentData.BINDER)) {
-            String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
             return sqlQuote(data.getType() + "|" + data.getClassName());
         }
         if (componentType.equals(ComponentData.AGENT)) {
