@@ -113,10 +113,6 @@ public class INIAgent extends ConfigurableComponent
     return data;
   }
 
-  public boolean equals(Object o) {
-    return false;
-  }
-
   private void createLogger() {
     log = CSMART.createLogger(this.getClass().getName());
   }
