@@ -142,22 +142,41 @@ public class AgentInfoServlet
 			  HttpServletResponse response) throws IOException, ServletException 
     {  
       
-      //this.out = response.getWriter();
-      this.out = response.getOutputStream();
+      //this.out = response.getOutputStream();
 
       // create a URL parameter visitor
-      ServletUtil.ParamVisitor vis = 
+      /*ServletUtil.ParamVisitor vis = 
         new ServletUtil.ParamVisitor() {
 	    public void setParam(String name, String value) {
-	      /* There is no mode, as it only returns the list of agent
-	       * names, so do nothing but set up for parameter parsing.   
-	       */	  
+	       There is no mode, as it only returns the list of agent
+	        names, so do nothing but set up for parameter parsing.   
+	       	  
 	    }
 	  };
-      
+
       // visit the URL parameters
       ServletUtil.parseParams(vis, request);
+      */
+    
+      if( request.getQueryString() == null) {
+	response.setStatus(
+			   HttpServletResponse.SC_OK);
+      }
       
+      // check for illegal arguments
+      if( request.getQueryString() != null) {
+	response.sendError(
+			   HttpServletResponse.SC_BAD_REQUEST,
+			   "<html><body><br><font size=4>" + 
+			   "<font size = 5><B>" + 
+			   request.getQueryString() + 
+			   "</B></font>" +
+			   " Is Not A Legal Parameter List<br>" + 
+			   "This servlet expects no parameters" +
+			   "</font></body></html>");
+      }
+      
+      this.out = response.getOutputStream();
       try {
 	Vector collection = getSelfInformation();
 	if (collection!=null)
