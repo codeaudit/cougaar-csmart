@@ -32,6 +32,9 @@ import javax.swing.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
@@ -39,6 +42,7 @@ import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class CommunityPanel extends JPanel {
   private static final String VIEW_COMMUNITY_ACTION = "Display Community...";
@@ -61,6 +65,8 @@ public class CommunityPanel extends JPanel {
   private JPopupMenu communityMenu;
   private JPopupMenu parentEntityMenu;
   private JPopupMenu entityMenu;
+
+  private transient Logger log;
 
   // actions on menus and pop-up menus
   public Action viewCommunityAction = new AbstractAction(VIEW_COMMUNITY_ACTION) {
@@ -94,6 +100,7 @@ public class CommunityPanel extends JPanel {
     };
 
   public CommunityPanel(Experiment experiment) {
+    log = CSMART.createLogger(this.getClass().getName());
     this.experiment = experiment;
     communityTable = createTable();
     splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
@@ -112,6 +119,10 @@ public class CommunityPanel extends JPanel {
   public void reinit(Experiment experiment) {
     this.experiment = experiment;
     splitPane.remove(treePane);
+    if (log.isDebugEnabled()) {
+      if (experiment != null) 
+	log.debug("reinit using Comm ASB " + experiment.getCommAsbID());
+    }
     if (experiment != null)
       ((CommunityTable)communityTable).setAssemblyId(experiment.getCommAsbID());
     else
@@ -122,6 +133,10 @@ public class CommunityPanel extends JPanel {
 
   private JTable createTable() {
     CommunityTable communityTable =  new CommunityTable();
+    if (log.isDebugEnabled()) {
+      if (experiment != null) 
+	log.debug("createTable using Comm ASB " + experiment.getCommAsbID());
+    }
     if (experiment != null)
       communityTable.setAssemblyId(experiment.getCommAsbID());
     communityTableUtils = (CommunityTableUtils)communityTable.getModel();
@@ -143,7 +158,7 @@ public class CommunityPanel extends JPanel {
       }
     };
     communityTree = new CommunityDNDTree(treeModel);
-    treeModelListener = new CommunityTreeModelListener(communityTableUtils);
+    treeModelListener = new CommunityTreeModelListener(communityTableUtils, experiment.getCommAsbID());
     treeModel.addTreeModelListener(treeModelListener);
     communityTree.setExpandsSelectedPaths(true);
     communityTree.setCellEditor(treeCellEditor);
@@ -350,7 +365,7 @@ public class CommunityPanel extends JPanel {
     }
     communityTree.scrollPathToVisible(new TreePath(node.getPath()));
     // add community info to database
-    CommunityDBUtils.insertCommunityInfo(communityName, communityType);
+    CommunityDBUtils.insertCommunityInfo(communityName, communityType, experiment.getCommAsbID());
     // populate table by retrieving new info from database
     communityTableUtils.getCommunityInfo(communityName);
   }
@@ -398,7 +413,7 @@ public class CommunityPanel extends JPanel {
       (CommunityTreeObject)selectedNode.getUserObject();
     if (cto.isCommunity()) {
       String communityName = cto.toString();
-      CommunityDBUtils.insertCommunityAttribute(communityName);
+      CommunityDBUtils.insertCommunityAttribute(communityName, experiment.getCommAsbID());
       // populate table by retrieving new info from database
       communityTableUtils.getCommunityInfo(communityName);
     } else {
@@ -406,7 +421,7 @@ public class CommunityPanel extends JPanel {
       String entityName = cto.toString();
       if (communityName == null)
         return;
-      CommunityDBUtils.insertEntityAttribute(communityName, entityName);
+      CommunityDBUtils.insertEntityAttribute(communityName, entityName, experiment.getCommAsbID());
       // populate table by retrieving new info from database
       communityTableUtils.getEntityInfo(communityName, entityName);
     }
@@ -561,12 +576,12 @@ public class CommunityPanel extends JPanel {
   }
 
   private void addToTree(DefaultMutableTreeNode node, String communityName) {
-    ArrayList entityNames = CommunityDBUtils.getEntities(communityName);
+    ArrayList entityNames = CommunityDBUtils.getEntities(communityName, experiment.getCommAsbID());
     if (entityNames == null || entityNames.size() == 0)
       return;
     for (int i = 0; i < entityNames.size(); i++) {
       String entityName = (String)entityNames.get(i);
-      String entityType = CommunityDBUtils.getMemberType(entityName);
+      String entityType = CommunityDBUtils.getEntityType(entityName, experiment.getCommAsbID());
       DefaultMutableTreeNode newNode = 
         communityTree.addNode(node, entityName, entityType, communityName);
       if (entityType.equals("Community"))

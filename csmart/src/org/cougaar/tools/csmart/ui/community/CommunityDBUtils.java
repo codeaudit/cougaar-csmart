@@ -35,7 +35,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 public class CommunityDBUtils {
   private static final String GET_COMMUNITIES_QUERY = "queryCommunities";
   private static final String GET_ENTITIES_QUERY = "queryEntities";
-  private static final String GET_MEMBER_TYPE_QUERY = "queryMemberType";
+  private static final String GET_ENTITY_TYPE_QUERY = "queryEntityType";
   private static final String INSERT_COMMUNITY_INFO_QUERY = 
     "queryInsertCommunityInfo";
   private static final String INSERT_COMMUNITY_ATTRIBUTE_QUERY = 
@@ -90,31 +90,53 @@ public class CommunityDBUtils {
     return results;
   }
 
+  /**
+   * Get all known community IDs
+   **/
   public static ArrayList getCommunities() {
     ArrayList communityIds = doQuery(GET_COMMUNITIES_QUERY, new HashMap());
     Collections.sort(communityIds);
     return communityIds;
   }
 
-  public static ArrayList getEntities(String communityId) {
-    Map substitutions = new HashMap();
+  /**
+   * Get all Entity IDs in the given community
+   *
+   * @param communityId a <code>String</code> value
+   * @param assemblyId a <code>String</code> Assembly to limit ourselves to
+   * @return an <code>ArrayList</code> value
+   */
+  public static ArrayList getEntities(String communityId, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     ArrayList entityIds = doQuery(GET_ENTITIES_QUERY, substitutions);
     Collections.sort(entityIds);
     return entityIds;
   }
 
-  public static String getMemberType(String entityId) {
-    Map substitutions = new HashMap();
+  /**
+   *
+   * @param entityId a <code>String</code> value
+   * @param assemblyId a <code>String</code> Assembly to limit ourselves to
+   * @return a <code>String</code> value
+   */
+  public static String getEntityType(String entityId, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":entity_id", entityId);
-    ArrayList results = doQuery(GET_MEMBER_TYPE_QUERY, substitutions);
+    ArrayList results = doQuery(GET_ENTITY_TYPE_QUERY, substitutions);
     if (results.size() != 0)
       return (String)results.get(0);
     return "Entity"; // default
   }
 
-  public static boolean isCommunityInUse(String communityId) {
-    Map substitutions = new HashMap();
+  /**
+   *
+   * @param communityId a <code>String</code> value
+   * @param assemblyId a <code>String</code> Assembly to limit ourselves to
+   * @return a <code>boolean</code> value
+   */
+  public static boolean isCommunityInUse(String communityId, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     ArrayList results = doQuery(IS_COMMUNITY_IN_USE_QUERY, substitutions);
     return (results.size() != 0);
@@ -124,9 +146,10 @@ public class CommunityDBUtils {
    * Insert the community into the database.
    * @param communityId the community
    * @param communityType the community type
+   * @param assemblyId a <code>String</code> Assembly to limit ourselves to
    */
-  public static void insertCommunityInfo(String communityId, String communityType) {
-    Map substitutions = new HashMap();
+  public static void insertCommunityInfo(String communityId, String communityType, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     substitutions.put(":community_type", communityType);
     doQuery(INSERT_COMMUNITY_INFO_QUERY, substitutions);
@@ -135,9 +158,10 @@ public class CommunityDBUtils {
   /**
    * Insert a new parameter for the community into the database.
    * @param communityId the community
+   * @param assemblyId a <code>String</code> Assembly to limit ourselves to
    */
-  public static void insertCommunityAttribute(String communityId) {
-    Map substitutions = new HashMap();
+  public static void insertCommunityAttribute(String communityId, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     doQuery(INSERT_COMMUNITY_ATTRIBUTE_QUERY, substitutions);
   }
@@ -146,10 +170,11 @@ public class CommunityDBUtils {
    * Insert the entity into the database.
    * @param communityId the community
    * @param communityType the community type
+   * @param assemblyId a <code>String</code> Assembly to limit ourselves to
    */
   public static void insertEntityInfo(String communityId, String entityId,
-                                      String attributeName, String attributeValue) {
-    Map substitutions = new HashMap();
+                                      String attributeName, String attributeValue, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     substitutions.put(":entity_id", entityId);
     substitutions.put(":attribute_id", attributeName);
@@ -161,9 +186,10 @@ public class CommunityDBUtils {
    * Insert a new parameter for the entity into the database.
    * @param communityId the community
    * @param entityId the entity
+   * @param assemblyId a <code>String</code> Assembly to limit ourselves to
    */
-  public static void insertEntityAttribute(String communityId, String entityId) {
-    Map substitutions = new HashMap();
+  public static void insertEntityAttribute(String communityId, String entityId, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     substitutions.put(":entity_id", entityId);
     doQuery(INSERT_ENTITY_ATTRIBUTE_QUERY, substitutions);
@@ -172,8 +198,8 @@ public class CommunityDBUtils {
   public static void setCommunityAttributeId(String communityId,
                                              String attributeId,
                                              String prevAttributeId,
-                                             String attributeValue) {
-    Map substitutions = new HashMap();
+                                             String attributeValue, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     substitutions.put(":attribute_id", attributeId);
     substitutions.put(":prev_attribute_id", prevAttributeId);
@@ -184,8 +210,8 @@ public class CommunityDBUtils {
   public static void setCommunityAttributeValue(String communityId,
                                                 String attributeValue,
                                                 String attributeId,
-                                                String prevAttributeValue) {
-    Map substitutions = new HashMap();
+                                                String prevAttributeValue, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     substitutions.put(":attribute_value", attributeValue);
     substitutions.put(":attribute_id", attributeId);
@@ -197,8 +223,8 @@ public class CommunityDBUtils {
                                           String entityId,
                                           String attributeId,
                                           String prevAttributeId,
-                                          String attributeValue) {
-    Map substitutions = new HashMap();
+                                          String attributeValue, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     substitutions.put(":entity_id", entityId);
     substitutions.put(":attribute_id", attributeId);
@@ -211,8 +237,8 @@ public class CommunityDBUtils {
                                              String entityId,
                                              String attributeValue,
                                              String attributeId,
-                                             String prevAttributeValue) {
-    Map substitutions = new HashMap();
+                                             String prevAttributeValue, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     substitutions.put(":entity_id", entityId);
     substitutions.put(":attribute_value", attributeValue);
@@ -221,14 +247,14 @@ public class CommunityDBUtils {
     doQuery(UPDATE_ENTITY_ATTRIBUTE_VALUE_QUERY, substitutions);
   }
 
-  public static void deleteCommunityInfo(String communityId) {
-    Map substitutions = new HashMap();
+  public static void deleteCommunityInfo(String communityId, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     doQuery(DELETE_COMMUNITY_INFO_QUERY, substitutions);
   }
 
-  public static void deleteEntityInfo(String communityId, String entityId) {
-    Map substitutions = new HashMap();
+  public static void deleteEntityInfo(String communityId, String entityId, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     substitutions.put(":entity_id", entityId);
     doQuery(DELETE_ENTITY_INFO_QUERY, substitutions);
@@ -236,8 +262,8 @@ public class CommunityDBUtils {
 
   public static void deleteCommunityAttribute(String communityId,
                                               String attributeId,
-                                              String attributeValue) {
-    Map substitutions = new HashMap();
+                                              String attributeValue, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     substitutions.put(":attribute_id", attributeId);
     substitutions.put(":attribute_value", attributeValue);
@@ -247,8 +273,8 @@ public class CommunityDBUtils {
   public static void deleteEntityAttribute(String communityId,
                                            String entityId,
                                            String attributeId,
-                                           String attributeValue) {
-    Map substitutions = new HashMap();
+                                           String attributeValue, String assemblyId) {
+    Map substitutions = DatabaseTableModel.getSubstitutions(assemblyId);
     substitutions.put(":community_id", communityId);
     substitutions.put(":entity_id", entityId);
     substitutions.put(":attribute_id", attributeId);

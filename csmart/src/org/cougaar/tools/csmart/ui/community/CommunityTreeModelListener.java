@@ -39,11 +39,13 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class CommunityTreeModelListener implements TreeModelListener {
   private CommunityTableUtils communityTableUtils;
+  private String assemblyId; // The Experiments Community Assembly
   private transient Logger log;
 
-  public CommunityTreeModelListener(CommunityTableUtils communityTableUtils) {
+  public CommunityTreeModelListener(CommunityTableUtils communityTableUtils, String assemblyId) {
     this.communityTableUtils = communityTableUtils;
     log = CSMART.createLogger(this.getClass().getName());
+    this.assemblyId = assemblyId;
   }
 
   public void treeNodesChanged(TreeModelEvent e) {
@@ -100,9 +102,9 @@ public class CommunityTreeModelListener implements TreeModelListener {
       if (!addedObject.isHost()) { // don't add info about hosts to database
         String entityName = addedObject.toString();
         CommunityDBUtils.insertEntityInfo(communityName, entityName, 
-                                          "MemberType", addedObject.getType());
+                                          "EntityType", addedObject.getType(), assemblyId);
         CommunityDBUtils.insertEntityInfo(communityName, entityName,
-                                          "Role", "Member");
+                                          "Role", "Member", assemblyId);
       }
     }
   }
@@ -128,7 +130,7 @@ public class CommunityTreeModelListener implements TreeModelListener {
     if (communityName == null)
       return;
     if (!deletedObject.isHost()) 
-      CommunityDBUtils.deleteEntityInfo(communityName, entityName);
+      CommunityDBUtils.deleteEntityInfo(communityName, entityName, assemblyId);
   }
 
   /**
@@ -162,8 +164,8 @@ public class CommunityTreeModelListener implements TreeModelListener {
    * Remove this community if it's not in any other community.
    */
   private void removeCommunity(String communityName) {
-    if (!CommunityDBUtils.isCommunityInUse(communityName))
-      CommunityDBUtils.deleteCommunityInfo(communityName);
+    if (!CommunityDBUtils.isCommunityInUse(communityName, assemblyId))
+      CommunityDBUtils.deleteCommunityInfo(communityName, assemblyId);
   }
 
   public void treeStructureChanged(TreeModelEvent e) {

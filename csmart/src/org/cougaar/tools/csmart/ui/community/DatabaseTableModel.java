@@ -48,7 +48,7 @@ public class DatabaseTableModel extends AbstractTableModel {
 
   private transient Logger log;
 
-  private HashMap subs = new HashMap();
+  private HashMap substitutions = new HashMap();
 
   public DatabaseTableModel() {
     log = CSMART.createLogger(this.getClass().getName());
@@ -61,7 +61,12 @@ public class DatabaseTableModel extends AbstractTableModel {
 
   public void setAssemblyId(String assemblyId) {
     this.assemblyId = assemblyId;
-    subs.put(":assembly_id:", "'" + assemblyId + "'");
+    substitutions = getSubstitutions(assemblyId);
+  }
+
+  public static HashMap getSubstitutions(String assemblyId) {
+    HashMap subs = new HashMap();
+    subs.put(":assembly_id:", assemblyId);
 
     // FIXME: This says if assembly_id is null, use none at all
     // Maybe instead use all?
@@ -69,13 +74,14 @@ public class DatabaseTableModel extends AbstractTableModel {
       subs.put(":assembly_match:", "IN ('" + assemblyId + "')");
     else 
       subs.put(":assembly_match:", "IS NULL");
+
+    return subs;
   }
 
   /**
    * Methods for getting information from the database and updating the table model.
    */
   public void getAllCommunityInfo(String communityId) {
-    Map substitutions = new HashMap();
     substitutions.put(":community_id", communityId);
     String query =
       DBUtils.getQuery(GET_ALL_COMMUNITY_INFO_QUERY, substitutions);
@@ -83,7 +89,6 @@ public class DatabaseTableModel extends AbstractTableModel {
   }
 
   public void getCommunityInfo(String communityId) {
-    Map substitutions = new HashMap();
     substitutions.put(":community_id", communityId);
     String query =
       DBUtils.getQuery(GET_COMMUNITY_INFO_QUERY, substitutions);
@@ -91,7 +96,6 @@ public class DatabaseTableModel extends AbstractTableModel {
   }
 
   public void getEntityInfo(String communityId, String entityId) {
-    Map substitutions = new HashMap();
     substitutions.put(":community_id", communityId);
     substitutions.put(":entity_id", entityId);
     String query =
@@ -101,7 +105,6 @@ public class DatabaseTableModel extends AbstractTableModel {
   }
 
   public void getChildrenEntityInfo(String communityId, String childrenEntityIds) {
-    Map substitutions = new HashMap();
     substitutions.put(":community_id", communityId);
     substitutions.put(":children_entity_ids", childrenEntityIds);
     String query =
@@ -191,16 +194,18 @@ public class DatabaseTableModel extends AbstractTableModel {
       }
       return;
     }
-    if (tableName.equals("community_attribute"))
+    if (tableName.equalsIgnoreCase("community_attribute"))
       CommunityDBUtils.deleteCommunityAttribute( 
                                dbRepresentation(0, getValueAt(row, 0)),
                                dbRepresentation(1, getValueAt(row, 1)),
-                               dbRepresentation(2, getValueAt(row, 2)));
-    else if (tableName.equals("community_entity_attribute"))
+                               dbRepresentation(2, getValueAt(row, 2)),
+			       assemblyId);
+    else if (tableName.equalsIgnoreCase("community_entity_attribute"))
       CommunityDBUtils.deleteEntityAttribute(communityName,
                                dbRepresentation(0, getValueAt(row, 0)),
                                dbRepresentation(1, getValueAt(row, 1)),
-                               dbRepresentation(2, getValueAt(row, 2)));
+                               dbRepresentation(2, getValueAt(row, 2)),
+					     assemblyId);
     else {
       if(log.isErrorEnabled()) {
         log.error("Attempting to delete from unknown table: " + tableName);
@@ -349,9 +354,9 @@ public class DatabaseTableModel extends AbstractTableModel {
       }
       return;
     }
-    if (tableName.equals("community_attribute"))
+    if (tableName.equalsIgnoreCase("community_attribute"))
       updateCommunityAttributeTable(value, row, column);
-    else if (tableName.equals("community_entity_attribute"))
+    else if (tableName.equalsIgnoreCase("community_entity_attribute"))
       updateCommunityEntityAttributeTable(value, row, column);
     else 
       if(log.isErrorEnabled()) {
@@ -363,14 +368,16 @@ public class DatabaseTableModel extends AbstractTableModel {
     String columnName = getColumnName(column);
     String communityId = (String)getValueAt(row, 0);
     String dbValue = dbRepresentation(column, value);
-    if (columnName.equals("ATTRIBUTE_ID")) {
+    if (columnName.equalsIgnoreCase("ATTRIBUTE_ID")) {
       CommunityDBUtils.setCommunityAttributeId(communityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
-                               dbRepresentation(2, getValueAt(row, 2)));
-    } else if (columnName.equals("ATTRIBUTE_VALUE")) {
+                               dbRepresentation(2, getValueAt(row, 2)),
+					       assemblyId);
+    } else if (columnName.equalsIgnoreCase("ATTRIBUTE_VALUE")) {
       CommunityDBUtils.setCommunityAttributeValue(communityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
-                               dbRepresentation(2, getValueAt(row, 2)));
+                               dbRepresentation(2, getValueAt(row, 2)),
+						  assemblyId);
     } else {
       if (log.isErrorEnabled()) {
         log.error("Attempting to set value for unknown column name: " + 
@@ -386,14 +393,16 @@ public class DatabaseTableModel extends AbstractTableModel {
     String columnName = getColumnName(column);
     String entityId = (String)getValueAt(row, 0);
     String dbValue = dbRepresentation(column, value);
-    if (columnName.equals("ATTRIBUTE_ID")) {
+    if (columnName.equalsIgnoreCase("ATTRIBUTE_ID")) {
       CommunityDBUtils.setEntityAttributeId(communityName, entityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
-                               dbRepresentation(2, getValueAt(row, 2)));
-    } else if (columnName.equals("ATTRIBUTE_VALUE")) {
+                               dbRepresentation(2, getValueAt(row, 2)),
+					    assemblyId);
+    } else if (columnName.equalsIgnoreCase("ATTRIBUTE_VALUE")) {
       CommunityDBUtils.setEntityAttributeValue(communityName, entityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
-                               dbRepresentation(2, getValueAt(row, 2)));
+                               dbRepresentation(2, getValueAt(row, 2)),
+					       assemblyId);
     } else {
       if (log.isErrorEnabled()) {
         log.error("Attempting to set value for unknown column name: " + 
