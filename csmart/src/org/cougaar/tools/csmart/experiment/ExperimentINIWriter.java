@@ -265,10 +265,10 @@ public class ExperimentINIWriter implements ConfigurationWriter {
   } // end of writeLeafData  
   
   private void writeNodeFile(File configDir, ComponentData nc) throws IOException {
-    if (nc.childCount() == 0) {
-      // node has no agents or binders. skip it
-      return;
-    }
+//     if (nc.childCount() == 0) {
+//       // node has no agents or binders. skip it
+//       return;
+//     }
     Object[] parameters = nc.getParameters();
     String configFileName = nc.getName() + ".ini";
     if (parameters.length > 0)
@@ -298,16 +298,21 @@ public class ExperimentINIWriter implements ConfigurationWriter {
           }
           // What is the prefix line I write here?
           if (children[i].getType().equals(ComponentData.NODEBINDER)) {
-            writer.print("Node.AgentManager.Binder = ");
+            writer.print("Node.AgentManager.Binder");
 	  } else if (children[i].getType().equals(ComponentData.AGENTBINDER)) {
-	    writer.print("Node.AgentManager.Agent.PluginManager.Binder = ");
+	    writer.print("Node.AgentManager.Agent.PluginManager.Binder");
 	  } else {
 	    if (log.isDebugEnabled()) {
 	      log.debug("writeNodeFile writing component of type: " + children[i].getType() + ", and name " + children[i].getName());
 	    }
-	    writer.print(children[i].getType() + " = ");
+	    writer.print(children[i].getType());
             // This assumes the type is always the prefix.
           }
+	  if(ComponentDescription.parsePriority(children[i].getPriority()) != 
+	     ComponentDescription.PRIORITY_COMPONENT) {
+	    writer.print("(" + children[i].getPriority() + ")");
+	  }
+	  writer.print(" = ");
           writeChildLine(writer, children[i]);
           // Could one of these guys have children?
           writeChildrenOfComp(writer, configDir, children[i]);
