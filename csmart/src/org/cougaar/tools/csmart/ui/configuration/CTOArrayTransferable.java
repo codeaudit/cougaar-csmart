@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.cougaar.tools.csmart.ui.component.ComponentProperties;
 import org.cougaar.tools.csmart.ui.tree.*;
 
 public class CTOArrayTransferable implements Transferable {

@@ -32,7 +32,10 @@ import java.util.Set;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.EtchedBorder;
-import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.ui.component.InvalidPropertyValueException;
+import org.cougaar.tools.csmart.ui.component.Property;
+import org.cougaar.tools.csmart.ui.component.PropertyHelper;
+import org.cougaar.tools.csmart.ui.component.Range;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 

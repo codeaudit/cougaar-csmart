@@ -41,7 +41,14 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.cougaar.tools.csmart.ui.Browser;
-import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.ui.component.CompositeName;
+import org.cougaar.tools.csmart.ui.component.InvalidPropertyValueException;
+import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.ui.component.PropertiesListener;
+import org.cougaar.tools.csmart.ui.component.Property;
+import org.cougaar.tools.csmart.ui.component.PropertyEvent;
+import org.cougaar.tools.csmart.ui.component.PropertyHelper;
+import org.cougaar.tools.csmart.ui.component.PropertyListener;
 import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 

@@ -28,7 +28,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.ui.component.AgentComponent;
+import org.cougaar.tools.csmart.ui.component.HostComponent;
+import org.cougaar.tools.csmart.ui.component.NodeComponent;
 import org.cougaar.tools.csmart.ui.tree.*;
 
 /**
@@ -172,6 +174,8 @@ public class ConsoleDNDTree extends DNDTree {
     if (before != null) {       // If before specified, put it there.
       ix = model.getIndexOfChild(target, before);
     }
+    System.out.println("Add element:" + cto.getName() + " to: " +
+                       target.toString());
     model.insertNodeInto(newNode, target, ix);
     int n = source.getChildCount();
     DefaultMutableTreeNode[] children = new DefaultMutableTreeNode[n];

@@ -24,7 +24,11 @@ package org.cougaar.tools.csmart.ui.configuration;
 import java.io.Serializable;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
-import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.ui.component.AgentComponent;
+import org.cougaar.tools.csmart.ui.component.HostComponent;
+import org.cougaar.tools.csmart.ui.component.NodeComponent;
+import org.cougaar.tools.csmart.ui.component.ComponentProperties;
+import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
 import java.awt.datatransfer.DataFlavor;
 
