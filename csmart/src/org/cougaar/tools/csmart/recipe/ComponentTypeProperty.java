@@ -44,8 +44,10 @@ public class ComponentTypeProperty extends ConfigurableComponentProperty {
   private static Set allComponents = null;
 
   public ComponentTypeProperty (ConfigurableComponent c, String name, Object value){
+    
+//     super(c, name, new StringRange((String)value));
     super(c, name, value);
-
+    
     // Build up the set from the known values in ComponentData
     allComponents = new HashSet();
     allComponents.add(new StringRange(ComponentData.SOCIETY));
@@ -57,7 +59,7 @@ public class ComponentTypeProperty extends ConfigurableComponentProperty {
     allComponents.add(new StringRange(ComponentData.AGENTBINDER));
     allComponents.add(new StringRange(ComponentData.SERVICE));
     setAllowedValues(allComponents);
-    setPropertyClass(StringRange.class);
+    setPropertyClass(String.class);
   }
 
 }// ComponentTypeProperty
