@@ -49,7 +49,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpUtils;
 import org.cougaar.core.agent.ClusterIdentifier;
 import org.cougaar.core.logging.NullLoggingServiceImpl;
 import org.cougaar.core.servlet.ServletUtil;
@@ -190,38 +189,34 @@ public class SearchServlet
 			    HttpServletRequest req) throws IOException, ClassNotFoundException
     {  
       // always read "format=..", "limit=..", etc
-      String reqQueryString = req.getQueryString();      
-      if (reqQueryString != null) {
-	Map m = HttpUtils.parseQueryString(reqQueryString);
-	ServletUtil.ParamVisitor vis = new ServletUtil.ParamVisitor() {
-	    public void setParam(String name, String value) {
-	      if ("find".equalsIgnoreCase(name)) {
-		if ("down".equalsIgnoreCase(value)) {
-		  isDown = true;
-		} else if ("up".equalsIgnoreCase(value)) {
-		  isDown = false;
-		}
-	      } else if ("format".equalsIgnoreCase(name)) {
-		if ("data".equalsIgnoreCase(value)) {
-		  returnAsData = true;
-		} else if ("html".equalsIgnoreCase(value)) {
-		  returnAsData = false;
-		}
-	      } else if ("limit".equalsIgnoreCase(name)) {
-		try {
-		  limit = Integer.parseInt(value);
-		  if (limit < 0) {
-		    limit = Integer.MAX_VALUE;
-		  }
-		} catch (NumberFormatException nfe) {
-		}
-	      } else if ("uid".equalsIgnoreCase(name)) {
-		uid = value;
-	      }
-	    }
-	  };
-	ServletUtil.parseParams(vis, m);
-      }
+      ServletUtil.ParamVisitor vis = new ServletUtil.ParamVisitor() {
+        public void setParam(String name, String value) {
+          if ("find".equalsIgnoreCase(name)) {
+            if ("down".equalsIgnoreCase(value)) {
+              isDown = true;
+            } else if ("up".equalsIgnoreCase(value)) {
+              isDown = false;
+            }
+          } else if ("format".equalsIgnoreCase(name)) {
+            if ("data".equalsIgnoreCase(value)) {
+              returnAsData = true;
+            } else if ("html".equalsIgnoreCase(value)) {
+              returnAsData = false;
+            }
+          } else if ("limit".equalsIgnoreCase(name)) {
+            try {
+              limit = Integer.parseInt(value);
+              if (limit < 0) {
+                limit = Integer.MAX_VALUE;
+              }
+            } catch (NumberFormatException nfe) {
+            }
+          } else if ("uid".equalsIgnoreCase(name)) {
+            uid = value;
+          }
+        }
+      };
+      ServletUtil.parseParams(vis, req);
 
       // read attached data if there  (e.g. from PUT)
       int len = req.getContentLength();
