@@ -43,26 +43,26 @@ public class Regress extends TestSuite {
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.util.parser.ParserTest.class));
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.util.parser.SimpleParserTest.class));
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.util.ArgValueTest.class));    
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.ComponentNameTest.class));
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.ConcatenatedNameTest.class));
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.DoubleRangeTest.class));
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.FloatRangeTest.class));
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.IntegerRangeTest.class));
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.LongRangeTest.class));
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.StringRangeTest.class));
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.MultiNameTest.class));
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.SimpleNameTest.class));
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.PropertyAliasTest.class));    
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.ConfigurableComponentPropertyTest.class));
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.ConfigurableComponentTest.class));    
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.GenericLeafComponentDataTest.class));    
-    //csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.AgentComponentDataTest.class));    
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.CommunityTimePhasedDataTest.class));    
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.name.ComponentNameTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.name.ConcatenatedNameTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.range.DoubleRangeTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.range.FloatRangeTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.range.IntegerRangeTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.range.LongRangeTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.range.StringRangeTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.name.MultiNameTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.name.SimpleNameTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.PropertyAliasTest.class));    
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.property.ConfigurableComponentTest.class));    
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.cdata.GenericLeafComponentDataTest.class));    
+    //csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.cdata.AgentComponentDataTest.class));    
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.cdata.CommunityTimePhasedDataTest.class));    
 
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.TimePhasedDataTest.class));    
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.cdata.TimePhasedDataTest.class));    
     // This is broken currently, cause of missing .q files and such
-    //    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.TestPopulateDb.class));    
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.societies.abcsociety.ABCAgentTest.class));
+    //    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.core.db.TestPopulateDb.class));    
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.society.abc.ABCAgentTest.class));
     // Leave this commented out for now - needs a UI, so nightly build
     // may have trouble....
     //    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.console.ConsoleTextPaneTest.class));    
