@@ -62,10 +62,18 @@ public class AgentDBComponent
   implements AgentComponent, Serializable 
 {
 
+  /** Agent Property Name **/
   public static final String PROP_AGENT_NAME = "Agent Name";
+
+  /** Assembly ID Property Name **/
   public static final String PROP_ASSEMBLY_ID = "Assembly ID";
+
+  /** Component ID Property Name **/
   public static final String PROP_COMPONENT_ID = "Component ID";
+  
+  /** Component Category Property Name **/
   public static final String PROP_COMPONENT_CATEGORY = "Component Category";
+
   private static final String QUERY_AGENT_DATA = "queryAgentData";
   private static final String QUERY_PLUGIN_NAME = "queryPluginNames";
   private static final String QUERY_PLUGIN_ARGS = "queryComponentArgs";
@@ -85,10 +93,19 @@ public class AgentDBComponent
   private transient DBProperties dbp;
   private Map substitutions = new HashMap();
 
+  /**
+   * Creates a new <code>AgentDBComponent</code> instance.
+   *
+   */
   public AgentDBComponent() {
     this("Name", new ArrayList());
   }
 
+  /**
+   * Creates a new <code>AgentDBComponent</code> instance.
+   *
+   * @param name Name of the new Component
+   */
   public AgentDBComponent(String name) {
     super(name);
     this.name = name;
@@ -96,6 +113,14 @@ public class AgentDBComponent
     createLogger();
   }
 
+  /**
+   * Creates a new <code>AgentDBComponent</code> instance.
+   * This component is created from the database assemblies
+   * that are passed in as a parameter.
+   *
+   * @param name Name of the new component
+   * @param assemblyID List of Assembly ID's for the component
+   */
   public AgentDBComponent(String name, List assemblyID) {
     super(name);
     this.name = name;
@@ -107,6 +132,10 @@ public class AgentDBComponent
     log = CSMART.createLogger(this.getClass().getName());
   }
 
+  /**
+   * Initialize all local properties.
+   *
+   */
   public void initProperties() {
     String componentID = name;
     String componentCategory = "agent";
@@ -229,10 +258,15 @@ public class AgentDBComponent
 //      return data;
 //    }
 
+  /**
+   * Adds all relevent <code>ComponentData</code> for this agent.
+   * This method will not perform any modifications, only additions.
+   *
+   * @see ComponentData
+   * @param data Pointer to the global <code>ComponentData</code> object.
+   * @return a <code>ComponentData</code> value
+   */
   public ComponentData addComponentData(ComponentData data) {
-//     if(log.isDebugEnabled()) {
-//       log.debug("In CMTAgent addComponentData");
-//     }
     // The incoming data is an agent
     String name = data.getName();
     int dotPos = name.lastIndexOf('.');
@@ -392,9 +426,9 @@ public class AgentDBComponent
   /**
    * Tests equality for agents.
    * Agents are equal if they have the same short name.
+   * @param o Object to test for equality.
    * @return returns true if the object is an AgentComponent with same name
    */
-
   public boolean equals(Object o) {
     if (o instanceof AgentComponent) {
       AgentComponent that = (AgentComponent)o;
