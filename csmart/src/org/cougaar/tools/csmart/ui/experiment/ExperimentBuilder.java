@@ -49,7 +49,7 @@ public class ExperimentBuilder extends JFrame {
   private static final String SAVE_MENU_ITEM = "Save";
   private static final String SAVE_AS_MENU_ITEM = "Save As...";
   private static final String DUMP_INI_ITEM = "Debug: Dump .ini files";
-  private static final String DUMP_HNA_ITEM = "Dump HNA Mapping";
+  private static final String EXPORT_HNA_ITEM = "Export HNA Mapping";
   private static final String IMPORT_HNA_ITEM = "Import HNA Mapping";
   private static final String EXIT_MENU_ITEM = "Close";
   private static final String FIND_MENU = "Find";
@@ -119,7 +119,7 @@ public class ExperimentBuilder extends JFrame {
       },
   };
   private Action[] hnaActions = {
-    new AbstractAction(DUMP_HNA_ITEM) {
+    new AbstractAction(EXPORT_HNA_ITEM) {
 	public void actionPerformed(ActionEvent e) {
 	  dumpHNA();
 	}
