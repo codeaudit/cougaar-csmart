@@ -478,6 +478,8 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
   public ComponentData addComponentData(ComponentData data) {
     ComponentData[] children = data.getChildren();
 
+    finishConfiguration();
+
     // This seams like it can be more efficient.
     for(int i=0; i < children.length; i++) {
       ComponentData child = children[i];
