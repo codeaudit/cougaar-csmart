@@ -720,6 +720,8 @@ public class CSMART extends JFrame {
       public void windowClosing(WindowEvent e) {
         if(!frameArg.getGlassPane().isVisible()) {
           NamedFrame.getNamedFrame().removeFrame(frameArg);
+	  // Next line can cause NPE in Container.removeNotify(line 1878)
+	  // Is there some test we can/should do on the JFrame before calling?
           frameArg.dispose();
         }
       }
