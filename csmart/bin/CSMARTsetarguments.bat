@@ -35,7 +35,12 @@ REM Domains are now usually defined by the config file LDMDomains.ini
 REM But you may still use properties if you wish.
 REM SET MYDOMAINS=-Dorg.cougaar.domain.alp=org.cougaar.glm.GLMDomain
 SET MYDOMAINS=
-SET MYCLASSES=org.cougaar.core.node.Node
+SET MYCLASSES=org.cougaar.bootstrap.Bootstrapper org.cougaar.core.node.Node
+
+REM You may use the optional environment variable COUGAAR_DEV_PATH
+REM to point to custom developed code that is not in COUGAR_INSTALL_PATH/lib
+REM or CIP/sys. This can be one or many semicolon separated 
+REM directories/jars/zips, or left undefined
 
 REM To point to configs at a web server, include the following:
 REM -Dorg.cougaar.config.path="http://<full URL>/\;"
@@ -47,12 +52,12 @@ REM configuration is coming is listed _first_, and certainly before any
 REM common directories.
 SET MYCONFIG="%COUGAAR_INSTALL_PATH%/csmart/data/common/\;"
 
-SET MYPROPERTIES=%MYDOMAINS% -Dorg.cougaar.system.path=%COUGAAR3RDPARTY% -Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH% -Duser.timezone=GMT -Dorg.cougaar.planning.ldm.lps.ComplainingLP.level=0
+set MYPROPERTIES=-Xbootclasspath/p:%COUGAAR_INSTALL_PATH%\lib\javaiopatch.jar -Dorg.cougaar.system.path=%COUGAAR3RDPARTY% -Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH% -Duser.timezone=GMT -Dorg.cougaar.core.agent.startTime=08/10/2005 -Dorg.cougaar.class.path=%COUGAAR_DEV_PATH% -Dorg.cougaar.workspace=%COUGAAR_WORKSPACE%
 
-SET MYPROPERTIES=%MYPROPERTIES% -Dorg.cougaar.config.path=%MYCONFIG% -Dorg.cougaar.class.path=%LIBPATHS%
+SET MYPROPERTIES=%MYPROPERTIES% -Dorg.cougaar.config.path=%MYCONFIG% %MYDOMAINS% -Dorg.cougaar.planning.ldm.lps.ComplainingLP.level=0
 
 REM To collect statistics on Message Transport, the following is required
 REM This may only work with RMI Transport
-SET MYPROPERTIES=-Xbootclasspath/p:%COUGAAR_INSTALL_PATH%\lib\javaiopatch.jar %MYPROPERTIES% -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
+SET MYPROPERTIES=%MYPROPERTIES% -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
 
 SET MYMEMORY=-Xms100m -Xmx300m
