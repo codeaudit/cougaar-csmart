@@ -47,7 +47,7 @@ dot.exe:
     or http://ABCTestbed.bbn.com.
     Also available in the csmart-3rdparty.zip and cougaar.zip files
 
-Optional: JUnit, Jikes and Ant(1.3 or better)
+Optional: JUnit (Cougaar uses 3.7), Jikes and Ant(1.3 or better)
 
 Some notes:
 -- CSMART adds some required run-time properties - so has a separate
