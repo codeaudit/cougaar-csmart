@@ -506,6 +506,7 @@ public class CMT {
 	deleteItems(asbPrefix+"expt_trial_org_mult", "expt_id", expt_id);
 	deleteItems(asbPrefix+"expt_trial_metric_prop", "trial_id", sqlQuote(experiment_id+".TRIAL"));
 	deleteItems(asbPrefix+"expt_trial_metric", "trial_id", sqlQuote(experiment_id+".TRIAL"));
+	deleteItems(asbPrefix+"expt_trial_mod_recipe", "trial_id", sqlQuote(experiment_id+".TRIAL"));
 	deleteItems(asbPrefix+"expt_trial", "expt_id", expt_id);
 	deleteItems(asbPrefix+"expt_experiment", "expt_id", expt_id);
 	clearUnusedCMTassemblies();

@@ -43,17 +43,12 @@ public class OrganizerTree extends DNDTree {
                              null,
                              OrganizerTree.class,
                              "Society");
-    public static final CSMARTDataFlavor impactFlavor =
-        new CSMARTDataFlavor(ImpactComponent.class,
+    public static final CSMARTDataFlavor recipeFlavor =
+      new CSMARTDataFlavor(RecipeComponent.class,
+			   //   new CSMARTDataFlavor(Recipe.class,
                              null,
                              OrganizerTree.class,
-                             "Impact");
-    public static final CSMARTDataFlavor metricFlavor =
-      new CSMARTDataFlavor(MetricComponent.class,
-			   //   new CSMARTDataFlavor(Metric.class,
-                             null,
-                             OrganizerTree.class,
-                             "Metric");
+                             "Recipe");
     public static final CSMARTDataFlavor experimentFlavor =
         new CSMARTDataFlavor(Experiment.class,
                              null,
@@ -76,11 +71,9 @@ public class OrganizerTree extends DNDTree {
                 flavors = new DataFlavor[] {folderFlavor};
             else if (theData instanceof SocietyComponent)
                 flavors = new DataFlavor[] {societyFlavor};
-            else if (theData instanceof ImpactComponent)
-                flavors = new DataFlavor[] {impactFlavor};
-	    else if (theData instanceof MetricComponent)
-	      //else if (theData instanceof Metric)
-                flavors = new DataFlavor[] {metricFlavor};
+	    else if (theData instanceof RecipeComponent)
+	      //else if (theData instanceof Recipe)
+                flavors = new DataFlavor[] {recipeFlavor};
             else if (theData instanceof Experiment)
                 flavors = new DataFlavor[] {experimentFlavor};
             else if (theData instanceof ModifiableConfigurableComponent)
@@ -134,8 +127,7 @@ public class OrganizerTree extends DNDTree {
                     CSMARTDataFlavor cflavor = (CSMARTDataFlavor) flavor;
                     if (getClass().getName().equals(cflavor.getSourceClassName())) {
                         if (cflavor.equals(societyFlavor)
-                            || cflavor.equals(impactFlavor)
-                            || cflavor.equals(metricFlavor)
+                            || cflavor.equals(recipeFlavor)
                             || cflavor.equals(experimentFlavor)
 			    || cflavor.equals(componentFlavor))
                             return DnDConstants.ACTION_MOVE;

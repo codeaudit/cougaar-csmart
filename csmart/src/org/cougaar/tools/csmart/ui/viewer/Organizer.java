@@ -44,6 +44,7 @@ import org.cougaar.tools.csmart.ui.experiment.*;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.societies.abcsociety.ABCSociety;
 import org.cougaar.tools.csmart.societies.abcsociety.BasicMetric;
+import org.cougaar.tools.csmart.societies.abcsociety.BinderTest;
 import org.cougaar.tools.csmart.societies.cmt.CMTSociety;
 import org.cougaar.tools.csmart.societies.database.DBUtils;
 
@@ -83,30 +84,25 @@ public class Organizer extends JScrollPane {
     new ComboItem("ABC", ABCSociety.class),
   };
 
-  // The impacts which can be created in CSMART
-  private Object[] impComboItems = {
-    new ComboItem("ABCImpact", ABCImpact.class)
-  };
-
-  // The stand-alone metrics that can be created in CSMART
+  // The stand-alone recipes that can be created in CSMART
   private Object[] metComboItems = {
     new ComboItem("Basic Metric", BasicMetric.class),
-    new ComboItem("Empty Metric", EmptyMetric.class)
+    new ComboItem("Empty Metric", EmptyMetric.class),
+    new ComboItem("ABCImpact", ABCImpact.class),
+    new ComboItem("Binder Test", BinderTest.class)
   };
 
   // Define Unique Name sets
   private UniqueNameSet societyNames = new UniqueNameSet("Society");
   private UniqueNameSet experimentNames = new UniqueNameSet("Experiment");
-  private UniqueNameSet impactNames = new UniqueNameSet("Impact");
-  private UniqueNameSet metricNames = new UniqueNameSet("Metric");
+  private UniqueNameSet recipeNames = new UniqueNameSet("Recipe");
   private UniqueNameSet componentNames = new UniqueNameSet("Component");
   
   // Define menus
   private DefaultMutableTreeNode popupNode;
   private JPopupMenu societyMenu = new JPopupMenu();
   private JPopupMenu componentMenu = new JPopupMenu();
-  private JPopupMenu impactMenu = new JPopupMenu();
-  private JPopupMenu metricMenu = new JPopupMenu();
+  private JPopupMenu recipeMenu = new JPopupMenu();
   private JPopupMenu experimentMenu = new JPopupMenu();
   private JPopupMenu treeMenu = new JPopupMenu();
   private JPopupMenu rootMenu = new JPopupMenu();
@@ -120,14 +116,9 @@ public class Organizer extends JScrollPane {
 	  newSociety(popupNode);
 	}
       },
-    new AbstractAction("New Impact") {
+    new AbstractAction("New Recipe") {
 	public void actionPerformed(ActionEvent e) {
-	  newImpact(popupNode);
-	}
-      },
-    new AbstractAction("New Metric") {
-	public void actionPerformed(ActionEvent e) {
-	  newMetric(popupNode);
+	  newRecipe(popupNode);
 	}
       },
     new AbstractAction("New Folder") {
@@ -226,39 +217,6 @@ public class Organizer extends JScrollPane {
 	}
       }
   };
-  private Action[] impactAction = {
-    new AbstractAction("Configure", new ImageIcon(getClass().getResource("SB16.gif"))) {
-      public void actionPerformed(ActionEvent e) {
-	startBuilder(popupNode, e.getActionCommand().equals("Configure"));
-      }
-    },
-    //          new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
-    //              public void actionPerformed(ActionEvent e) {
-    //                  startConsole(popupNode);
-    //              }
-    //          },
-    new AbstractAction("Build Experiment",
-		       new ImageIcon(getClass().getResource("EB16.gif"))) {
-	public void actionPerformed(ActionEvent e) {
-	  startExperimentBuilder(popupNode, true);
-	}
-      },
-    new AbstractAction("Duplicate") {
-	public void actionPerformed(ActionEvent e) {
-	  copyImpactInNode(popupNode);
-	}
-      },
-    new AbstractAction("Delete") {
-	public void actionPerformed(ActionEvent e) {
-	  deleteImpact(popupNode);
-	}
-      },
-    new AbstractAction("Rename") {
-	public void actionPerformed(ActionEvent e) {
-	  renameImpact(popupNode);
-	}
-      }
-  };
   private Action[] componentAction = {
     //          new AbstractAction("Edit", new ImageIcon(getClass().getResource("SB16.gif"))) {
     //              public void actionPerformed(ActionEvent e) {
@@ -292,7 +250,7 @@ public class Organizer extends JScrollPane {
 	}
       }
   };
-  private Action[] metricAction = {
+  private Action[] recipeAction = {
     new AbstractAction("Configure", new ImageIcon(getClass().getResource("SB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  startBuilder(popupNode, e.getActionCommand().equals("Configure"));
@@ -311,17 +269,17 @@ public class Organizer extends JScrollPane {
       },
     new AbstractAction("Duplicate") {
 	public void actionPerformed(ActionEvent e) {
-	  copyMetricInNode(popupNode);
+	  copyRecipeInNode(popupNode);
 	}
       },
     new AbstractAction("Delete") {
 	public void actionPerformed(ActionEvent e) {
-	  deleteMetric(popupNode);
+	  deleteRecipe(popupNode);
 	}
       },
     new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
-	  renameMetric(popupNode);
+	  renameRecipe(popupNode);
 	}
       }
   };
@@ -333,18 +291,11 @@ public class Organizer extends JScrollPane {
 	  newSociety(popupNode);
 	}
       },
-    new AbstractAction("New Impact") {
+    new AbstractAction("New Recipe") {
 	public void actionPerformed(ActionEvent e) {
 	  while (! popupNode.getAllowsChildren())
 	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
-	  newImpact(popupNode);
-	}
-      },
-    new AbstractAction("New Metric") {
-	public void actionPerformed(ActionEvent e) {
-	  while (! popupNode.getAllowsChildren())
-	    popupNode = (DefaultMutableTreeNode)popupNode.getParent();
-	  newMetric(popupNode);
+	  newRecipe(popupNode);
 	}
       },
 //      new AbstractAction("New Experiment") {
@@ -460,11 +411,8 @@ public class Organizer extends JScrollPane {
     for (int i = 0; i < componentAction.length; i++) {
       componentMenu.add(componentAction[i]);
     }
-    for (int i = 0; i < impactAction.length; i++) {
-      impactMenu.add(impactAction[i]);
-    }
-    for (int i = 0; i < metricAction.length; i++) {
-      metricMenu.add(metricAction[i]);
+    for (int i = 0; i < recipeAction.length; i++) {
+      recipeMenu.add(recipeAction[i]);
     }
     for (int i = 0; i < experimentAction.length; i++) {
       experimentMenu.add(experimentAction[i]);
@@ -503,16 +451,8 @@ public class Organizer extends JScrollPane {
     return (ModifiableConfigurableComponent[]) getSelectedLeaves(ModifiableConfigurableComponent.class);
   }
   
-  public ImpactComponent[] getSelectedImpacts() {
-    return (ImpactComponent[]) getSelectedLeaves(ImpactComponent.class);
-  }
-    
-  //public Metric[] getSelectedMetrics() {
-  //  return (Metric[]) getSelectedLeaves(Metric.class);
-  //}
-  
-  public MetricComponent[] getSelectedMetrics() {
-    return (MetricComponent[]) getSelectedLeaves(MetricComponent.class);
+  public RecipeComponent[] getSelectedRecipes() {
+    return (RecipeComponent[]) getSelectedLeaves(RecipeComponent.class);
   }
  
   public Experiment[] getSelectedExperiments() {
@@ -545,16 +485,8 @@ public class Organizer extends JScrollPane {
     return (SocietyComponent[]) getLeaves(SocietyComponent.class, node);
   }
   
-  private ImpactComponent[] getImpacts(TreeNode node) {
-    return (ImpactComponent[]) getLeaves(ImpactComponent.class, node);
-  }
-  
-  //private Metric[] getMetrics(TreeNode node) {
-  //  return (Metric[]) getLeaves(Metric.class, node);
-  // }
-  
-  private MetricComponent[] getMetrics(TreeNode node) {
-    return (MetricComponent[]) getLeaves(MetricComponent.class, node);
+  private RecipeComponent[] getRecipes(TreeNode node) {
+    return (RecipeComponent[]) getLeaves(RecipeComponent.class, node);
   }
  
   private Experiment[] getExperiment(TreeNode node) {
@@ -607,14 +539,9 @@ public class Organizer extends JScrollPane {
     } else if (o instanceof SocietyComponent) {
       configureSocietyMenu(((SocietyComponent)o).isEditable());
       societyMenu.show(workspace, e.getX(), e.getY());
-    } else if (o instanceof ImpactComponent) {
-      configureImpactMenu(((ImpactComponent)o).isEditable());
-      impactMenu.show(workspace, e.getX(), e.getY());
-      //} else if (o instanceof Metric) {
-      //metricMenu.show(workspace, e.getX(), e.getY());
-    } else if (o instanceof MetricComponent) {
-      configureMetricMenu(((MetricComponent)o).isEditable());
-      metricMenu.show(workspace, e.getX(), e.getY());
+    } else if (o instanceof RecipeComponent) {
+      configureRecipeMenu(((RecipeComponent)o).isEditable());
+      recipeMenu.show(workspace, e.getX(), e.getY());
     } else if (o instanceof Experiment) {
       configureExperimentMenu(((Experiment)o));
       experimentMenu.show(workspace, e.getX(), e.getY());
@@ -697,42 +624,22 @@ public class Organizer extends JScrollPane {
     }
   }
   
-  private void configureImpactMenu(boolean isEditable) {
+  private void configureRecipeMenu(boolean isEditable) {
     if (isEditable) {
-      for (int i = 0; i < impactAction.length; i++) {
-	String s = (String)impactAction[i].getValue(Action.NAME);
+      for (int i = 0; i < recipeAction.length; i++) {
+	String s = (String)recipeAction[i].getValue(Action.NAME);
 	if (s.equals("View"))
-	  impactAction[i].putValue(Action.NAME, "Configure");
-	impactAction[i].setEnabled(true);
+	  recipeAction[i].putValue(Action.NAME, "Configure");
+	recipeAction[i].setEnabled(true);
       } 
     } else {
-      for (int i = 0; i < impactAction.length; i++) {
-	String s = (String)impactAction[i].getValue(Action.NAME);
+      for (int i = 0; i < recipeAction.length; i++) {
+	String s = (String)recipeAction[i].getValue(Action.NAME);
 	if (s.equals("New Experiment") ||
 	    s.equals("Rename"))
-	  impactAction[i].setEnabled(false);
+	  recipeAction[i].setEnabled(false);
 	else if (s.equals("Configure"))
-	  impactAction[i].putValue(Action.NAME, "View");
-      }
-    }
-  }
-  
-  private void configureMetricMenu(boolean isEditable) {
-    if (isEditable) {
-      for (int i = 0; i < metricAction.length; i++) {
-	String s = (String)metricAction[i].getValue(Action.NAME);
-	if (s.equals("View"))
-	  metricAction[i].putValue(Action.NAME, "Configure");
-	metricAction[i].setEnabled(true);
-      } 
-    } else {
-      for (int i = 0; i < metricAction.length; i++) {
-	String s = (String)metricAction[i].getValue(Action.NAME);
-	if (s.equals("New Experiment") ||
-	    s.equals("Rename"))
-	  metricAction[i].setEnabled(false);
-	else if (s.equals("Configure"))
-	  metricAction[i].putValue(Action.NAME, "View");
+	  recipeAction[i].putValue(Action.NAME, "View");
       }
     }
   }
@@ -752,34 +659,21 @@ public class Organizer extends JScrollPane {
       String name = "Experiment for " + sc.getSocietyName();
       experiment = new Experiment(experimentNames.generateName(name),
 				  new SocietyComponent[] {sc},
-				  new ImpactComponent[0],
-				  //				  new Metric[0]);
-      				  new MetricComponent[0]);
-    } else if (o instanceof ImpactComponent) {
-      ImpactComponent impact = (ImpactComponent) o;
-      String name = "Experiment for " + impact.getImpactName();
+      				  new RecipeComponent[0]);
+    } else if (o instanceof RecipeComponent) {
+      RecipeComponent recipe = (RecipeComponent) o;
+      //} else if (o instanceof Recipe) {
+      //Recipe recipe = (Recipe) o;
+      String name = "Experiment for " + recipe.getRecipeName();
       experiment = new Experiment(experimentNames.generateName(name),
 				  new SocietyComponent[0],
-				  new ImpactComponent[] {impact},
-				  //			  new Metric[0]);
-      				  new MetricComponent[0]);
-    } else if (o instanceof MetricComponent) {
-      MetricComponent metric = (MetricComponent) o;
-      //} else if (o instanceof Metric) {
-      //Metric metric = (Metric) o;
-      String name = "Experiment for " + metric.getMetricName();
-      experiment = new Experiment(experimentNames.generateName(name),
-				  new SocietyComponent[0],
-				  new ImpactComponent[0],
-				  //				  new Metric[] {metric});
-      				  new MetricComponent[] {metric});
+      				  new RecipeComponent[] {recipe});
     } else if (o instanceof Experiment) {
       experiment = (Experiment) o;
     } else if (o instanceof String) {
       experiment = new Experiment(experimentNames.generateName(),
 				  getSocietyComponents(node),
-				  getImpacts(node),
-				  getMetrics(node));
+				  getRecipes(node));
     } else {
       return;
     }
@@ -818,9 +712,7 @@ public class Organizer extends JScrollPane {
       name = experimentNames.generateName(name);
       experiment = new Experiment(name,
 				  new SocietyComponent[] {sc},
-				  new ImpactComponent[0],
-				  //				  new Metric[0]);
-				  new MetricComponent[0]);
+				  new RecipeComponent[0]);
       DefaultMutableTreeNode parent = 
 	(DefaultMutableTreeNode) node.getParent();
       DefaultMutableTreeNode newNode =
@@ -1076,12 +968,10 @@ public class Organizer extends JScrollPane {
       (ModifiableConfigurableComponent) node.getUserObject();
     if (societyComponent instanceof SocietyComponent) {
       renameSociety(node);
-    } else if (societyComponent instanceof ImpactComponent) {
-      renameImpact(node);
     } else if (societyComponent instanceof Experiment) {
       renameExperiment(node);
-    } else if (societyComponent instanceof MetricComponent) {
-      renameMetric(node);
+    } else if (societyComponent instanceof RecipeComponent) {
+      renameRecipe(node);
     }
     String name = JOptionPane.showInputDialog("New component name");
     renameComponent(node, name);
@@ -1158,12 +1048,10 @@ public class Organizer extends JScrollPane {
     ModifiableConfigurableComponent component = (ModifiableConfigurableComponent)node.getUserObject();
     if (component instanceof SocietyComponent)
       deleteSociety(node);
-    else if (component instanceof ImpactComponent)
-      deleteImpact(node);
     else if (component instanceof Experiment)
       deleteExperiment(node);
-    else if (component instanceof MetricComponent)
-      deleteMetric(node);
+    else if (component instanceof RecipeComponent)
+      deleteRecipe(node);
     else {
       if (!component.isEditable()) {
 	int result = JOptionPane.showConfirmDialog(this,
@@ -1179,206 +1067,109 @@ public class Organizer extends JScrollPane {
     }
   }
   
-  private void newImpact(DefaultMutableTreeNode node) {
-    Object[] values = impComboItems;
-    Object answer =
-      JOptionPane.showInputDialog(this, "Select Impact Type",
-				  "Select Impact",
-				  JOptionPane.QUESTION_MESSAGE,
-				  null,
-				  values,
-				  "ABCImpact");
-    if (answer instanceof ComboItem) {
-      ComboItem item = (ComboItem) answer;
-      String name = impactNames.generateName(item.name);
-      
-      // Special case code for ABC Impacts:
-      File xmlfile = null; // to read in
-      while (true) {
-	name = (String) JOptionPane.showInputDialog(this, "Enter Impact Name",
-						    "Name Impact",
-						    JOptionPane.QUESTION_MESSAGE,
-						    null, null,
-						    name);
-	if (name == null) return;
-	if (!impactNames.contains(name)) break;
-	int ok = JOptionPane.showConfirmDialog(this,
-					       "Use an unique name",
-					       "Impact Name Not Unique",
-					       JOptionPane.OK_CANCEL_OPTION,
-					       JOptionPane.ERROR_MESSAGE);
-	if (ok != JOptionPane.OK_OPTION) return;
-      }
-      ImpactComponent impact = createImp(name, item.cls);
-      if (impact == null)
-	return;
-      DefaultMutableTreeNode newNode =
-	addImpactToWorkspace(impact, node);
-      workspace.setSelection(newNode);
-    }
-  }
-
-  private ImpactComponent createImp(String name, Class cls) {
-      try {
-	Constructor constructor = cls.getConstructor(constructorArgTypes);
-	ImpactComponent impact =
-	  (ImpactComponent) constructor.newInstance(new String[] {name});
-	impact.initProperties();
-	return impact;
-      } catch (Exception e) {
-	e.printStackTrace();
-	return null;
-      }
-  }
-  
-  private DefaultMutableTreeNode addImpactToWorkspace(ImpactComponent impact,
-						      DefaultMutableTreeNode node) {
-    if (impact == null)
-      return null;
-    DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(impact, false);
-    addNode(node, newNode);
-    impactNames.add(impact.getImpactName());
-    //   installListeners(sc);
-    return newNode;
-  }
-  
-  private void renameImpact(DefaultMutableTreeNode node) {
-    String name = JOptionPane.showInputDialog("New impact name");
-    renameImpact(node, name);
-  }
-  
-  private void renameImpact(DefaultMutableTreeNode node, String name) {
-    ImpactComponent impact =
-      (ImpactComponent) node.getUserObject();
-    if (name == null || name.equals(impact.getImpactName()) || name.equals("")) return;
-    while (true) {
-      if (!impactNames.contains(name)) break;
-      int ok = JOptionPane.showConfirmDialog(this,
-					     "Use an unique name",
-					     "Impact Name Not Unique",
-					     JOptionPane.OK_CANCEL_OPTION,
-					     JOptionPane.ERROR_MESSAGE);
-      if (ok != JOptionPane.OK_OPTION) return;
-      name = JOptionPane.showInputDialog("New impact name");
-      if (name == null || name.equals("")) return;
-    }
-    if (name != null) {
-      impactNames.remove(impact.getImpactName());
-      impact.setName(name);
-      impactNames.add(impact.getImpactName());
-      model.nodeChanged(node);
-    }
-  }
-  
-  private void deleteImpact(DefaultMutableTreeNode node) {
-    if (node == null) return;
-    model.removeNodeFromParent(node);
-    impactNames.remove(((ImpactComponent) node.getUserObject()).getImpactName());
-  }
-  
-  private void newMetric(DefaultMutableTreeNode node) {
+  private void newRecipe(DefaultMutableTreeNode node) {
     Object[] values = metComboItems;
     Object answer =
-      JOptionPane.showInputDialog(this, "Select Metric Type",
-				  "Select Metric",
+      JOptionPane.showInputDialog(this, "Select Recipe Type",
+				  "Select Recipe",
 				  JOptionPane.QUESTION_MESSAGE,
 				  null,
 				  values,
-				  "Empty Metric");
-				  //"Mo Metric");
+				  "Empty Recipe");
+				  //"Mo Recipe");
     if (answer instanceof ComboItem) {
       ComboItem item = (ComboItem) answer;
-      String name = metricNames.generateName(item.name);
+      String name = recipeNames.generateName(item.name);
       while (true) {
-	name = (String) JOptionPane.showInputDialog(this, "Enter Metric Name",
-						    "Name Metric",
+	name = (String) JOptionPane.showInputDialog(this, "Enter Recipe Name",
+						    "Name Recipe",
 						    JOptionPane.QUESTION_MESSAGE,
 						    null, null,
 						    name);
 	if (name == null) return;
-	if (!metricNames.contains(name)) break;
+	if (!recipeNames.contains(name)) break;
 	int ok = JOptionPane.showConfirmDialog(this,
 					       "Use an unique name",
-					       "Metric Name Not Unique",
+					       "Recipe Name Not Unique",
 					       JOptionPane.OK_CANCEL_OPTION,
 					       JOptionPane.ERROR_MESSAGE);
 	if (ok != JOptionPane.OK_OPTION) return;
       }
       try {
 	Constructor constructor = item.cls.getConstructor(constructorArgTypes);
-	MetricComponent metric =
-		  (MetricComponent) constructor.newInstance(new String[] {name});
-	metric.initProperties();
+	RecipeComponent recipe =
+		  (RecipeComponent) constructor.newInstance(new String[] {name});
+	recipe.initProperties();
 	DefaultMutableTreeNode newNode =
-	  addMetricToWorkspace(metric, node);
+	  addRecipeToWorkspace(recipe, node);
 	workspace.setSelection(newNode);
       } catch (Exception e) {
 	e.printStackTrace();
       }
     }
-  } // end of newMetric
+  } // end of newRecipe
 
-  private MetricComponent createMet(String name, Class cls) {
+  private RecipeComponent createMet(String name, Class cls) {
     try {
       Constructor constructor = cls.getConstructor(constructorArgTypes);
-      //  	Metric metric =
-      //  	  (Metric) constructor.newInstance(new String[] {name});
-      MetricComponent metric =
-	(MetricComponent) constructor.newInstance(new String[] {name});
-      metric.initProperties();
-      return metric;
+      //  	Recipe recipe =
+      //  	  (Recipe) constructor.newInstance(new String[] {name});
+      RecipeComponent recipe =
+	(RecipeComponent) constructor.newInstance(new String[] {name});
+      recipe.initProperties();
+      return recipe;
     } catch (Exception e) {
       e.printStackTrace();
       return null;
     }
   }
   
-  private DefaultMutableTreeNode addMetricToWorkspace(MetricComponent metric,
- //private DefaultMutableTreeNode addMetricToWorkspace(Metric metric,
+  private DefaultMutableTreeNode addRecipeToWorkspace(RecipeComponent recipe,
+ //private DefaultMutableTreeNode addRecipeToWorkspace(Recipe recipe,
 						      DefaultMutableTreeNode node) {
     DefaultMutableTreeNode newNode = 
-      new DefaultMutableTreeNode(metric, false);
+      new DefaultMutableTreeNode(recipe, false);
     addNode(node, newNode);
-    metricNames.add(metric.getMetricName());
-    //installListeners(metric);
+    recipeNames.add(recipe.getRecipeName());
+    //installListeners(recipe);
     return newNode;
   }
   
-  private void renameMetric(DefaultMutableTreeNode node) {
-    String name = JOptionPane.showInputDialog("New metric name");
-    renameMetric(node, name);
+  private void renameRecipe(DefaultMutableTreeNode node) {
+    String name = JOptionPane.showInputDialog("New recipe name");
+    renameRecipe(node, name);
   }
   
   // Separate method for use from model...
-  private void renameMetric(DefaultMutableTreeNode node, String name) {
-      MetricComponent metric =
-        (MetricComponent) node.getUserObject();
-      //    Metric metric =
-      //(Metric) node.getUserObject();
-    if (name == null || name.equals(metric.getMetricName()) || name.equals("")) return;
+  private void renameRecipe(DefaultMutableTreeNode node, String name) {
+      RecipeComponent recipe =
+        (RecipeComponent) node.getUserObject();
+      //    Recipe recipe =
+      //(Recipe) node.getUserObject();
+    if (name == null || name.equals(recipe.getRecipeName()) || name.equals("")) return;
     while (true) {
-      if (!metricNames.contains(name)) break;
+      if (!recipeNames.contains(name)) break;
       int ok = JOptionPane.showConfirmDialog(this,
 					     "Use an unique name",
-					     "Metric Name Not Unique",
+					     "Recipe Name Not Unique",
 					     JOptionPane.OK_CANCEL_OPTION,
 					     JOptionPane.ERROR_MESSAGE);
       if (ok != JOptionPane.OK_OPTION) return;
-      name = JOptionPane.showInputDialog("New metric name");
+      name = JOptionPane.showInputDialog("New recipe name");
       if (name == null || name.equals("")) return;
     }
     if (name != null) {
-      metricNames.remove(metric.getMetricName());
-      metric.setName(name);
-      metricNames.add(metric.getMetricName());
+      recipeNames.remove(recipe.getRecipeName());
+      recipe.setName(name);
+      recipeNames.add(recipe.getRecipeName());
       model.nodeChanged(node); // update the model...
     }
   }
   
-  private void deleteMetric(DefaultMutableTreeNode node) {
+  private void deleteRecipe(DefaultMutableTreeNode node) {
     if (node == null) return;
     model.removeNodeFromParent(node);
-    metricNames.remove(((MetricComponent) node.getUserObject()).getMetricName());
+    recipeNames.remove(((RecipeComponent) node.getUserObject()).getRecipeName());
   }
 
   // CAUTION: this runs in a non-swing thread
@@ -1609,8 +1400,8 @@ public class Organizer extends JScrollPane {
   }
 
 
-  private List checkForMetrics(String trialId, String exptId) {
-    ArrayList metricList = new ArrayList();
+  private List checkForRecipes(String trialId, String exptId) {
+    ArrayList recipeList = new ArrayList();
 
     try {
       Connection conn = DBUtils.getConnection();
@@ -1618,11 +1409,11 @@ public class Organizer extends JScrollPane {
       substitutions.put(":trial_id", trialId);
       substitutions.put(":expt_id", exptId);
       Statement stmt = conn.createStatement();
-      String query = DBUtils.getQuery("queryMetrics", substitutions);
+      String query = DBUtils.getQuery("queryRecipes", substitutions);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
-        String metric = rs.getString(1);
-        metricList.add(metric);
+        String recipe = rs.getString(1);
+        recipeList.add(recipe);
       }
       rs.close();
       stmt.close();
@@ -1632,19 +1423,19 @@ public class Organizer extends JScrollPane {
       se.printStackTrace();
     }    
     
-    return metricList;
+    return recipeList;
   }
 
-  private void setMetricComponentProperties(String trialId, String metricId, MetricComponent mc) {
+  private void setRecipeComponentProperties(String trialId, String recipeId, RecipeComponent mc) {
     Map substitutions = new HashMap();
 
     substitutions.put(":trial_id", trialId);
-    substitutions.put(":metric_id", metricId);
+    substitutions.put(":recipe_id", recipeId);
 
     try {
       Connection conn = DBUtils.getConnection();
       Statement stmt = conn.createStatement();
-      String query = DBUtils.getQuery("queryMetricProperties", substitutions);
+      String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
 
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
@@ -1663,7 +1454,7 @@ public class Organizer extends JScrollPane {
       System.err.println("Caught SQL exception: " + se);
       se.printStackTrace();
     } catch (Exception e ) {
-      System.err.println("[setMetricComponentProperties] Caught exception: " + e);
+      System.err.println("[setRecipeComponentProperties] Caught exception: " + e);
     }
   }
 
@@ -1698,18 +1489,18 @@ public class Organizer extends JScrollPane {
     Experiment experiment = new Experiment((String)experimentName, 
                                            experimentId, trialId);
     experiment.setCloned(isCloned);
-    List metrics = checkForMetrics(trialId, experimentId);
-    if( metrics.size() != 0 ) {
-      Iterator metIter = metrics.iterator();
+    List recipes = checkForRecipes(trialId, experimentId);
+    if( recipes.size() != 0 ) {
+      Iterator metIter = recipes.iterator();
       while( metIter.hasNext() ) {
         String dbMet = (String)metIter.next();
         for(int i=0; i < metComboItems.length; i++) {
           ComboItem item = (ComboItem)metComboItems[i];
           if(dbMet.equals(item.name)) {
-            MetricComponent mc = createMet(dbMet, item.cls);
-            setMetricComponentProperties(trialId, dbMet, mc);
-            experiment.addMetric(mc);
-            addMetricToWorkspace(mc, node);
+            RecipeComponent mc = createMet(dbMet, item.cls);
+            setRecipeComponentProperties(trialId, dbMet, mc);
+            experiment.addRecipe(mc);
+            addRecipeToWorkspace(mc, node);
             break;
           }
         }
@@ -1948,10 +1739,8 @@ public class Organizer extends JScrollPane {
 			  SocietyComponent.class.getMethod("getSocietyName", noTypes));
 	experimentNames.init(getLeaves(Experiment.class, root),
 			     Experiment.class.getMethod("getExperimentName", noTypes));
-	impactNames.init(getLeaves(ImpactComponent.class, root),
-			 ImpactComponent.class.getMethod("getImpactName", noTypes));
-	metricNames.init(getLeaves(MetricComponent.class, root),
-			 MetricComponent.class.getMethod("getMetricName", noTypes));
+	recipeNames.init(getLeaves(RecipeComponent.class, root),
+			 RecipeComponent.class.getMethod("getRecipeName", noTypes));
 	componentNames.init(getLeaves(ModifiableConfigurableComponent.class, root),
 			    ModifiableConfigurableComponent.class.getMethod("getShortName", noTypes));
 	return;
@@ -2229,12 +2018,10 @@ public class Organizer extends JScrollPane {
 						       Object context) {
     if (comp instanceof SocietyComponent)
       return (ModifiableConfigurableComponent)copySociety((SocietyComponent)comp, context);
-    else if (comp instanceof ImpactComponent)
-      return (ModifiableConfigurableComponent)copyImpact((ImpactComponent)comp, context);
     else if (comp instanceof Experiment)
       return (ModifiableConfigurableComponent)copyExperiment((Experiment)comp, context);
-    else if (comp instanceof MetricComponent)
-      return (ModifiableConfigurableComponent)copyMetric((MetricComponent)comp, context);
+    else if (comp instanceof RecipeComponent)
+      return (ModifiableConfigurableComponent)copyRecipe((RecipeComponent)comp, context);
     //ModifiableConfigurableComponent compCopy = comp.copy(this, context);
     // FIXME!!!
     ModifiableConfigurableComponent compCopy = comp;
@@ -2247,45 +2034,23 @@ public class Organizer extends JScrollPane {
     return compCopy;
   }
   
-  private void copyImpactInNode(DefaultMutableTreeNode node) {
-    copyImpact((ImpactComponent)node.getUserObject(), node.getParent());
+  private void copyRecipeInNode(DefaultMutableTreeNode node) {
+    copyRecipe((RecipeComponent)node.getUserObject(), node.getParent());
   }
   
-  private void copyMetricInNode(DefaultMutableTreeNode node) {
-    copyMetric((MetricComponent)node.getUserObject(), node.getParent());
-  }
-  
-  public ImpactComponent copyImpact(ImpactComponent impact, Object context) {
-    ImpactComponent impactCopy = null;
-    // FIXME!! Once ABCImpact has been made a component,
-    // get rid of this special case
-    if (impact instanceof ABCImpact) {
-      //impactCopy = ((ABCImpact)impact).copy(this, context);
-    } else {
-      impactCopy = createImp(generateImpactName(impact.getImpactName()), impact.getClass());
-      impact.copy(impactCopy);
-    }
-    if (impactCopy == null)
-      return null;
-    if (context == null)
-      workspace.setSelection(addImpactToWorkspace(impactCopy, (DefaultMutableTreeNode)findNode(impact).getParent()));
-    workspace.setSelection(addImpactToWorkspace(impactCopy, (DefaultMutableTreeNode)context));
-    return impactCopy;
-  }
-  
-  public MetricComponent copyMetric(MetricComponent metric, Object context) {
+  public RecipeComponent copyRecipe(RecipeComponent recipe, Object context) {
     // FIXME!!!!
-    MetricComponent metricCopy = createMet(generateMetricName(metric.getMetricName()), metric.getClass());
-    metric.copy(metricCopy);
-    //public Metric copyMetric(Metric metric, Object context) {
-    // Fixme: once only metrics are components,
+    RecipeComponent recipeCopy = createMet(generateRecipeName(recipe.getRecipeName()), recipe.getClass());
+    recipe.copy(recipeCopy);
+    //public Recipe copyRecipe(Recipe recipe, Object context) {
+    // Fixme: once only recipes are components,
     // get rid of this & do real component copy
-    //Metric metricCopy = metric.copy(this, context);
+    //Recipe recipeCopy = recipe.copy(this, context);
     if (context == null)
-      workspace.setSelection(addMetricToWorkspace(metricCopy, (DefaultMutableTreeNode)findNode(metric).getParent()));
+      workspace.setSelection(addRecipeToWorkspace(recipeCopy, (DefaultMutableTreeNode)findNode(recipe).getParent()));
     else 
-      workspace.setSelection(addMetricToWorkspace(metricCopy, (DefaultMutableTreeNode)context));
-    return metricCopy;
+      workspace.setSelection(addRecipeToWorkspace(recipeCopy, (DefaultMutableTreeNode)context));
+    return recipeCopy;
   }
   
   public String generateExperimentName(String name) {
@@ -2300,12 +2065,8 @@ public class Organizer extends JScrollPane {
     return componentNames.generateName(name);
   }
 
-  public String generateImpactName(String name) {
-    return impactNames.generateName(name);
-  }
-
-  public String generateMetricName(String name) {
-    return metricNames.generateName(name);
+  public String generateRecipeName(String name) {
+    return recipeNames.generateName(name);
   }
 
   // Override the default tree model
@@ -2328,11 +2089,8 @@ public class Organizer extends JScrollPane {
 	    //	    System.err.println("Resetting node type to SocietyComponent");
 	    myorg.renameSociety(aNode, newValue.toString());
 	    
-	  } else if (aNode.getUserObject() instanceof ImpactComponent) {
-	    myorg.renameImpact(aNode, newValue.toString());
-	    //} else if (aNode.getUserObject() instanceof Metric) {
-	  } else if (aNode.getUserObject() instanceof MetricComponent) {
-	    myorg.renameMetric(aNode, newValue.toString());
+	  } else if (aNode.getUserObject() instanceof RecipeComponent) {
+	    myorg.renameRecipe(aNode, newValue.toString());
 	  } else if (aNode.getUserObject() instanceof Experiment) {
 	    myorg.renameExperiment(aNode, newValue.toString());
 	  } else if (aNode == myorg.root) {

@@ -22,6 +22,7 @@
 package org.cougaar.tools.csmart.ui.analyzer;
 
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
+import org.cougaar.tools.csmart.ui.component.RecipeComponent;
 import org.cougaar.tools.csmart.ui.component.MetricComponent;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
@@ -217,14 +218,17 @@ public class Analyzer extends JFrame implements ActionListener {
 	if (fileFilter.accept(f))
 	  return true;
       }
-      int m = experiment.getMetricCount();
+      int m = experiment.getRecipeCount();
       for (int i = 0; i < m; i++) {
-	MetricComponent metricComponent = experiment.getMetric(i);
-	java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
-	if (fileFilter == null)
-	  continue;
-	if (fileFilter.accept(f))
-	  return true;
+	RecipeComponent recipeComponent = experiment.getRecipe(i);
+        if (recipeComponent instanceof MetricComponent) {
+          MetricComponent metricComponent = (MetricComponent) recipeComponent;
+          java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
+          if (fileFilter == null)
+            continue;
+          if (fileFilter.accept(f))
+            return true;
+        }
       }
       return false;
     }

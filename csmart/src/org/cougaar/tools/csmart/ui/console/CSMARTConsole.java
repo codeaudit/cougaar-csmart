@@ -1150,14 +1150,15 @@ public class CSMARTConsole extends JFrame {
       if(fileFilter.accept(thisFile))
 	return true;
     }
-    int nmetrics = experiment.getMetricCount();
-    for (int i = 0; i < nmetrics; i++) {
-      MetricComponent metricComponent = experiment.getMetric(i);
-      java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
-      if (fileFilter == null)
-	continue;
-      if(fileFilter.accept(thisFile))
-	return true;
+    int nrecipes = experiment.getRecipeCount();
+    for (int i = 0; i < nrecipes; i++) {
+      RecipeComponent recipeComponent = experiment.getRecipe(i);
+      if (recipeComponent instanceof MetricComponent) {
+        MetricComponent metricComponent = (MetricComponent) recipeComponent;
+        java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
+        if (fileFilter != null && fileFilter.accept(thisFile))
+          return true;
+      }
     }
     return false;
   }

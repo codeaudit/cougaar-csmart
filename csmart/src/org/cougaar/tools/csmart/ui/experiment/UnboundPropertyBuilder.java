@@ -32,9 +32,8 @@ import org.cougaar.tools.csmart.ui.component.CompositeName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
-import org.cougaar.tools.csmart.ui.component.ImpactComponent;
 import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.ui.component.MetricComponent;
+import org.cougaar.tools.csmart.ui.component.RecipeComponent;
 
 public class UnboundPropertyBuilder extends JPanel {
   private static final String REMOVE_MENU_ITEM = "Remove";
@@ -46,8 +45,7 @@ public class UnboundPropertyBuilder extends JPanel {
   private boolean isRunnable;
   private DefaultMutableTreeNode root;
   private DefaultMutableTreeNode societies;
-  private DefaultMutableTreeNode impacts;
-  private DefaultMutableTreeNode metrics;
+  private DefaultMutableTreeNode recipes;
   private PropTableModel propModel = new PropTableModel();
   private JTable propTable = new JTable(propModel);
   private JScrollPane propScrollPane = new JScrollPane(propTable);
@@ -55,12 +53,11 @@ public class UnboundPropertyBuilder extends JPanel {
   private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
   private JPopupMenu popupMenu = new JPopupMenu();
   private JPopupMenu societiesMenu = new JPopupMenu();
-  private JPopupMenu impactsMenu = new JPopupMenu();
-  private JPopupMenu metricsMenu = new JPopupMenu();
+  private JPopupMenu recipesMenu = new JPopupMenu();
   private JTextField trialCountField;
 
   /**
-   * Define actions for pop-up menus on societies, impacts, and metrics.
+   * Define actions for pop-up menus on societies and recipes.
    */
   private Action removeAction = new AbstractAction(REMOVE_MENU_ITEM) {
     public void actionPerformed(ActionEvent e) {
@@ -80,18 +77,10 @@ public class UnboundPropertyBuilder extends JPanel {
     }
   };
   
-  private Action[] impactsActions = {
-    new AbstractAction(REMOVE_MENU_ITEM + " All Impacts") {
+  private Action[] recipesActions = {
+    new AbstractAction(REMOVE_MENU_ITEM + " All Recipes") {
       public void actionPerformed(ActionEvent e) {
-        removeAllChildren(impacts);
-      }
-    }
-  };
-  
-  private Action[] metricsActions = {
-    new AbstractAction(REMOVE_MENU_ITEM + " All Metrics") {
-      public void actionPerformed(ActionEvent e) {
-        removeAllChildren(metrics);
+        removeAllChildren(recipes);
       }
     }
   };
@@ -140,7 +129,7 @@ public class UnboundPropertyBuilder extends JPanel {
   };
 
   /**
-   * Define tree model listener to update the societies, metrics, and impacts
+   * Define tree model listener to update the societies and recipes
    * in the experiment when the user modifies the tree.
    */
 
@@ -171,14 +160,11 @@ public class UnboundPropertyBuilder extends JPanel {
     root = new DefaultMutableTreeNode();
     model = new DefaultTreeModel(root);
     societies = new DefaultMutableTreeNode(ExperimentTree.SOCIETIES);
-    impacts = new DefaultMutableTreeNode(ExperimentTree.IMPACTS);
-    metrics = new DefaultMutableTreeNode(ExperimentTree.METRICS);
+    recipes = new DefaultMutableTreeNode(ExperimentTree.RECIPES);
     societies.setAllowsChildren(true);
-    impacts.setAllowsChildren(true);
-    metrics.setAllowsChildren(true);
+    recipes.setAllowsChildren(true);
     model.insertNodeInto(societies, root, 0);
-    model.insertNodeInto(impacts, root, 1);
-    model.insertNodeInto(metrics, root, 2);
+    model.insertNodeInto(recipes, root, 1);
     model.setAsksAllowsChildren(true);
     tree = new ExperimentTree(model);
     // cell editor always returns false so that user can't edit cell names
@@ -193,8 +179,7 @@ public class UnboundPropertyBuilder extends JPanel {
     tree.setExpandsSelectedPaths(true);
     tree.setRootVisible(false);
     tree.expandNode(societies);
-    tree.expandNode(impacts);
-    tree.expandNode(metrics);
+    tree.expandNode(recipes);
     tree.addMouseListener(mouseListener);
     tree.setPreferredSize(new Dimension(250, 200));
     model.addTreeModelListener(myTreeModelListener);
@@ -237,11 +222,8 @@ public class UnboundPropertyBuilder extends JPanel {
     for (int i = 0; i < societiesActions.length; i++) {
       societiesMenu.add(societiesActions[i]);
     }
-    for (int i = 0; i < impactsActions.length; i++) {
-      impactsMenu.add(impactsActions[i]);
-    }
-    for (int i = 0; i < metricsActions.length; i++) {
-      metricsMenu.add(metricsActions[i]);
+    for (int i = 0; i < recipesActions.length; i++) {
+      recipesMenu.add(recipesActions[i]);
     }
     initDisplay();
   }
@@ -266,8 +248,7 @@ public class UnboundPropertyBuilder extends JPanel {
   private void initDisplay() {
     model.removeTreeModelListener(myTreeModelListener);
     societies.removeAllChildren();
-    impacts.removeAllChildren();
-    metrics.removeAllChildren();
+    recipes.removeAllChildren();
     model.nodeStructureChanged(root);
     DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
     if (!isEditable) {
@@ -279,15 +260,11 @@ public class UnboundPropertyBuilder extends JPanel {
     for (int i = 0, n = experiment.getSocietyComponentCount(); i < n; i++) {
       addSocietyComponent(experiment.getSocietyComponent(i));
     }
-    for (int i = 0, n = experiment.getImpactCount(); i < n; i++) {
-      addImpact(experiment.getImpact(i));
-    }
-    for (int i = 0, n = experiment.getMetricCount(); i < n; i++) {
-      addMetric(experiment.getMetric(i));
+    for (int i = 0, n = experiment.getRecipeCount(); i < n; i++) {
+      addRecipe(experiment.getRecipe(i));
     }
     tree.expandNode(societies);
-    tree.expandNode(impacts);
-    tree.expandNode(metrics);
+    tree.expandNode(recipes);
     model.addTreeModelListener(myTreeModelListener);
     updateTrialCount();
   }
@@ -306,7 +283,7 @@ public class UnboundPropertyBuilder extends JPanel {
   }
 
   /**
-   * Update societies, impacts and metrics in the experiment when the user
+   * Update societies and recipes in the experiment when the user
    * modifies the tree.
    */
   private void reconcileExperimentNodes() {
@@ -318,24 +295,15 @@ public class UnboundPropertyBuilder extends JPanel {
       society.setEditable(false); // so society editability tracks experiment editability
     }
     experiment.setSocietyComponents(societyComponentsAry);
-    int nImpacts = impacts.getChildCount();
-    ImpactComponent[] impactAry = new ImpactComponent[nImpacts];
-    for (int i = 0; i < nImpacts; i++) {
-      impactAry[i] =
-        (ImpactComponent) ((DefaultMutableTreeNode) impacts.getChildAt(i)).getUserObject();
-      impactAry[i].setEditable(false);
+    int nRecipes = recipes.getChildCount();
+    RecipeComponent[] recipeAry = new RecipeComponent[nRecipes];
+    for (int i = 0; i < nRecipes; i++) {
+      recipeAry[i] =
+	//  (Recipe) ((DefaultMutableTreeNode) recipes.getChildAt(i)).getUserObject();
+              (RecipeComponent) ((DefaultMutableTreeNode) recipes.getChildAt(i)).getUserObject();
+      recipeAry[i].setEditable(false);
     }
-    experiment.setImpacts(impactAry);
-    int nMetrics = metrics.getChildCount();
-        MetricComponent[] metricAry = new MetricComponent[nMetrics];
-	//Metric[] metricAry = new Metric[nMetrics];
-    for (int i = 0; i < nMetrics; i++) {
-      metricAry[i] =
-	//  (Metric) ((DefaultMutableTreeNode) metrics.getChildAt(i)).getUserObject();
-              (MetricComponent) ((DefaultMutableTreeNode) metrics.getChildAt(i)).getUserObject();
-      metricAry[i].setEditable(false);
-    }
-    experiment.setMetrics(metricAry);
+    experiment.setRecipes(recipeAry);
     experiment.invalidateTrials(); // and force experiment to recreate trials
   }
 
@@ -352,19 +320,15 @@ public class UnboundPropertyBuilder extends JPanel {
     Object o = popupNode.getUserObject();
     if (o instanceof SocietyComponent) {
       popupMenu.show(tree, e.getX(), e.getY());
-    } else if (o instanceof ImpactComponent) {
-      popupMenu.show(tree, e.getX(), e.getY());
-    } else if (o instanceof MetricComponent) {
-      //} else if (o instanceof Metric) {
+    } else if (o instanceof RecipeComponent) {
+      //} else if (o instanceof Recipe) {
       popupMenu.show(tree, e.getX(), e.getY());
     } else if (o instanceof Experiment) {
       popupMenu.show(tree, e.getX(), e.getY());
     } else if (popupNode == societies) {
       societiesMenu.show(tree, e.getX(), e.getY());
-    } else if (popupNode == impacts) {
-      impactsMenu.show(tree, e.getX(), e.getY());
-    } else if (popupNode == metrics) {
-      metricsMenu.show(tree, e.getX(), e.getY());
+    } else if (popupNode == recipes) {
+      recipesMenu.show(tree, e.getX(), e.getY());
     }
   }
 
@@ -419,20 +383,11 @@ public class UnboundPropertyBuilder extends JPanel {
   }
 
   /**
-   * Add impact component to tree.
+   * Add recipe component to tree.
    */
-
-  private void addImpact(ImpactComponent impact) {
-    DefaultMutableTreeNode node = new DefaultMutableTreeNode(impact, false);
-    model.insertNodeInto(node, impacts, impacts.getChildCount());
-  }
-
-  /**
-   * Add metric component to tree.
-   */
-  private void addMetric(MetricComponent metric) {
-    DefaultMutableTreeNode node = new DefaultMutableTreeNode(metric, false);
-    model.insertNodeInto(node, metrics, metrics.getChildCount());
+  private void addRecipe(RecipeComponent recipe) {
+    DefaultMutableTreeNode node = new DefaultMutableTreeNode(recipe, false);
+    model.insertNodeInto(node, recipes, recipes.getChildCount());
   }
 
   /**

@@ -36,12 +36,10 @@ import org.cougaar.tools.csmart.ui.viewer.OrganizerTree;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 
 public class ExperimentTree extends DNDTree {
-    public static final String IMPACTS = "Impacts";
-    public static final String METRICS = "Metrics";
+    public static final String RECIPES = "Recipes";
     public static final String SOCIETIES = "Societies";
     public static final String COMPONENTS = "Components";
-    public static final CSMARTDataFlavor impactFlavor = OrganizerTree.impactFlavor;
-    public static final CSMARTDataFlavor metricFlavor = OrganizerTree.metricFlavor;
+    public static final CSMARTDataFlavor recipeFlavor = OrganizerTree.recipeFlavor;
     public static final CSMARTDataFlavor societyFlavor = OrganizerTree.societyFlavor;
     public static final CSMARTDataFlavor componentFlavor = OrganizerTree.componentFlavor;
 
@@ -52,11 +50,9 @@ public class ExperimentTree extends DNDTree {
         DataFlavor[] flavors;
         public MyTransferable(DefaultMutableTreeNode aNode) {
             theData = aNode.getUserObject();
-            if (theData instanceof ImpactComponent)
-                flavors = new DataFlavor[] {impactFlavor};
-	    else if (theData instanceof MetricComponent)
-	      //else if (theData instanceof Metric)
-                flavors = new DataFlavor[] {metricFlavor};
+            if (theData instanceof RecipeComponent)
+	      //else if (theData instanceof Recipe)
+                flavors = new DataFlavor[] {recipeFlavor};
             else if (theData instanceof ModifiableConfigurableComponent)
                 flavors = new DataFlavor[] {componentFlavor};
             else
@@ -129,17 +125,13 @@ public class ExperimentTree extends DNDTree {
 		    return DnDConstants.ACTION_NONE;
                 return testFlavors(possibleFlavors, societyFlavor);
             }
-            if (userObject.equals(IMPACTS)) {
-                return testFlavors(possibleFlavors, impactFlavor);
-            }
-            if (userObject.equals(METRICS)) {
-                return testFlavors(possibleFlavors, metricFlavor);
+            if (userObject.equals(RECIPES)) {
+                return testFlavors(possibleFlavors, recipeFlavor);
             }
         } else if (target == model.getRoot()) {
             return DnDConstants.ACTION_COPY
                 & (testFlavors(possibleFlavors, societyFlavor)
-                   | testFlavors(possibleFlavors, impactFlavor)
-                   | testFlavors(possibleFlavors, metricFlavor));
+                   | testFlavors(possibleFlavors, recipeFlavor));
         }
         return DnDConstants.ACTION_NONE;
     }
@@ -164,8 +156,7 @@ public class ExperimentTree extends DNDTree {
                             (DefaultMutableTreeNode) root.getChildAt(i);
                         Object o = node.getUserObject();
                         if (SOCIETIES.equals(o) && flavor == societyFlavor
-                            || IMPACTS.equals(o) && flavor == impactFlavor
-                            || METRICS.equals(o) && flavor == metricFlavor) {
+                            || RECIPES.equals(o) && flavor == recipeFlavor) {
                             target = node;
                         } else {
                             return DnDConstants.ACTION_NONE;

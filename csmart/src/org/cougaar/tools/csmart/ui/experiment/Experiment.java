@@ -43,8 +43,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private List societies = new ArrayList();
   private List hosts = new ArrayList();
   private List nodes = new ArrayList();
-  private List impacts = new ArrayList();
-  private List metrics = new ArrayList();
+  private List recipes = new ArrayList();
   private transient List listeners = null;
   private File resultDirectory; // where to store results
   private int numberOfTrials = 1;
@@ -73,12 +72,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private boolean inDatabase = false;
 
   public Experiment(String name, SocietyComponent[] societyComponents,
-		    ImpactComponent[] impacts, MetricComponent[] metrics)
+		    RecipeComponent[] recipes)
   {
     this(name);
     setSocietyComponents(societyComponents);
-    setImpacts(impacts);
-    setMetrics(metrics);
+    setRecipes(recipes);
   }
 
   public Experiment(String name) {
@@ -122,83 +120,59 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     societies.clear();
     societies.addAll(Arrays.asList(ary));
   }
-  public void setImpacts(ImpactComponent[] ary) {
-    impacts.clear();
-    impacts.addAll(Arrays.asList(ary));
-  }
-  public void setMetrics(MetricComponent[] ary) {
-    metrics.clear();
-    metrics.addAll(Arrays.asList(ary));
+  public void setRecipes(RecipeComponent[] ary) {
+    recipes.clear();
+    recipes.addAll(Arrays.asList(ary));
   }
   public void addSocietyComponent(SocietyComponent sc) {
     if (!societies.contains(sc)) societies.add(sc);
   }
-  public void addImpact(ImpactComponent impact) {
-    if (!impacts.contains(impact)) impacts.add(impact);
-  }
-  public void addMetric(MetricComponent metric) {
-    if (!metrics.contains(metric)) metrics.add(metric);
+  public void addRecipe(RecipeComponent recipe) {
+    if (!recipes.contains(recipe)) recipes.add(recipe);
   }
   
   public void addComponent(ModifiableConfigurableComponent comp) {
     if (comp instanceof SocietyComponent)
       addSocietyComponent((SocietyComponent)comp);
-    else if (comp instanceof ImpactComponent)
-      addImpact((ImpactComponent)comp);
-    else if (comp instanceof MetricComponent)
-      addMetric((MetricComponent)comp);
+    else if (comp instanceof RecipeComponent)
+      addRecipe((RecipeComponent)comp);
     // handle others!!!
   }
   public void removeSociety(SocietyComponent sc) {
     societies.remove(sc);
   }
-  public void removeImpact(ImpactComponent impact) {
-    impacts.remove(impact);
-  }
-  public void removeMetric(MetricComponent metric) {
-    metrics.remove(metric);
+  public void removeRecipe(RecipeComponent recipe) {
+    recipes.remove(recipe);
   }
   public void removeComponent(ModifiableConfigurableComponent comp) {
     if (comp instanceof SocietyComponent)
       removeSociety((SocietyComponent)comp);
-    if (comp instanceof ImpactComponent)
-      removeImpact((ImpactComponent)comp);
-    if (comp instanceof MetricComponent)
-      removeMetric((MetricComponent)comp);
+    if (comp instanceof RecipeComponent)
+      removeRecipe((RecipeComponent)comp);
     // Must handle random components!!!
   }
   public int getSocietyComponentCount() {
     return societies.size();
   }
   public int getComponentCount() {
-    return societies.size() + impacts.size() + metrics.size();
-	//return societies.size() + impacts.size();
-    // this is a kludge
+    return societies.size() + recipes.size();
   }
-  public int getImpactCount() {
-    return impacts.size();
-  }
-  public int getMetricCount() {
-    return metrics.size();
+  public int getRecipeCount() {
+    return recipes.size();
   }
   public SocietyComponent getSocietyComponent(int i) {
     return (SocietyComponent) societies.get(i);
   }
-  public ImpactComponent getImpact(int i) {
-    return (ImpactComponent) impacts.get(i);
-  }
-  public MetricComponent getMetric(int i) {
-    return (MetricComponent) metrics.get(i);
+  public RecipeComponent getRecipe(int i) {
+    return (RecipeComponent) recipes.get(i);
   }
   
   public ModifiableConfigurableComponent getComponent(int i) {
     // What a hack!!!
     if (i < getSocietyComponentCount())
       return (ModifiableConfigurableComponent)getSocietyComponent(i);
-    else if (i < getImpactCount() + getSocietyComponentCount())
-      return (ModifiableConfigurableComponent)getImpact(i - getSocietyComponentCount());
     else if (i < getComponentCount()) 
-      return (ModifiableConfigurableComponent)(getMetric(i - (getSocietyComponentCount() + getImpactCount())));
+      return (ModifiableConfigurableComponent)(getRecipe(i - (getSocietyComponentCount())));
     else
       return null;
   }
@@ -337,11 +311,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       experimentCopy.addComponent(copiedSC);
     }
     
-//      // Remove this once Metric stuff is fixed!!!!
-//      for (int i = 0; i < metrics.size(); i++) {
-//        Metric metric = (Metric)metrics.get(i);
-//        Metric copiedMetric = organizer.copyMetric(metric, context);
-//        experimentCopy.addMetric(copiedMetric);
+//      // Remove this once Recipe stuff is fixed!!!!
+//      for (int i = 0; i < recipes.size(); i++) {
+//        Recipe recipe = (Recipe)recipes.get(i);
+//        Recipe copiedRecipe = organizer.copyRecipe(recipe, context);
+//        experimentCopy.addRecipe(copiedRecipe);
 //      }
 
     // What about copying Hosts & Nodes????
@@ -490,7 +464,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     fireModification();
   }
 
-  // get all the Societies, Metrics, & impacts
+  // get all the Societies, Recipes
   private List getComponents() {
     List comps = new ArrayList();
     for (int i = 0; i < getComponentCount(); i++) {
@@ -527,31 +501,17 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     List nags = getAgentsInSocieties();
     if (nags != null && (! nags.isEmpty()))
       agents.addAll(nags);
-    nags = getAgentsInImpacts();
-    if (nags != null && (! nags.isEmpty()))
-      agents.addAll(nags);
-    nags = getAgentsInMetrics();
+    nags = getAgentsInRecipes();
     if (nags != null && (! nags.isEmpty()))
       agents.addAll(nags);
     return agents;
   }
 
-  private List getAgentsInImpacts() {
+  private List getAgentsInRecipes() {
     List agents = new ArrayList();
-    for (int i = 0; i < impacts.size(); i++) {
-      ImpactComponent impact = (ImpactComponent)impacts.get(i);
-      AgentComponent[] impagents = impact.getAgents();
-      if (impagents != null && impagents.length > 0)
-	agents.addAll(Arrays.asList(impagents));
-    }
-    return agents;
-  }
-
-  private List getAgentsInMetrics() {
-    List agents = new ArrayList();
-    for (int i = 0; i < metrics.size(); i++) {
-      MetricComponent metric = (MetricComponent)metrics.get(i);
-      AgentComponent[] impagents = metric.getAgents();
+    for (int i = 0; i < recipes.size(); i++) {
+      RecipeComponent recipe = (RecipeComponent)recipes.get(i);
+      AgentComponent[] impagents = recipe.getAgents();
       if (impagents != null && impagents.length > 0)
 	agents.addAll(Arrays.asList(impagents));
     }
@@ -562,10 +522,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     List agents = getAgentsInSocieties();
     if (agents == null)
       agents = new ArrayList();
-    List other = getAgentsInImpacts();
-    if (other != null && (! other.isEmpty()))
-      agents.addAll(other);
-    other = getAgentsInMetrics();
+    List other = getAgentsInRecipes();
     if (other != null && (! other.isEmpty()))
       agents.addAll(other);
     return agents;
@@ -705,7 +662,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         soc.addComponentData(theSoc);
       }
       pdb.setPreexistingItems(theSoc); // Record these items so additions can be detected
-//        pdb.setImpacts(impacts);
 
       // then give everyone a chance to modify what they've collectively produced
       for (int i = components.size() - 1; i >= 0; i--) {
@@ -715,7 +671,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       if (pdb.populate(theSoc, 1)) {
         setCloned(true);        // If not cloned before, we certainly are now
       }
-      pdb.setModRecipes(metrics);
+      pdb.setModRecipes(recipes);
       pdb.close();
     } catch (Exception sqle) {
       sqle.printStackTrace();
