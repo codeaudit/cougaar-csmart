@@ -8,7 +8,7 @@
 
 (set! cfw-prefix "V5_")
 (set! asb-prefix "V4_")
-
+(set! refDBConnection #null)
 
 
 
@@ -26,8 +26,9 @@
   ;;(DriverManager.registerDriver (OracleDriver.))
   (Class.forName refDBDriver)
   ;; Open a connection to the reference database
-  (set! refDBConnection (DriverManager.getConnection refDBConnURL refDBUser refDBPasswd))
-  #t)
+  (if (eq? refDBConnection #null)
+      (set! refDBConnection (DriverManager.getConnection refDBConnURL refDBUser refDBPasswd))
+  #t))
 
 (define (createStatement conn)
   (tryCatch
@@ -48,7 +49,6 @@
 (define (getrefDBConnection)
   refDBConnection)
 
-
 (define (result-set-jdbc query)
   (let* ((stmt (createStatement (getrefDBConnection)))
 	 (rs (.executeQuery stmt query)))
@@ -59,19 +59,25 @@
       (.close stmt)
       #null))))
 
+(define (println msg)
+  (.println System.out$ msg)
+  #t)
+
 (define (with-query-jdbc query ex)
-  (let* ((stmt (createStatement (getrefDBConnection)))
-	 (rs (.executeQuery stmt query))
-	 (answer (ex rs)))
-    (cond
-     ((not (eq? rs #null))
-      (.close stmt)
-      (.close rs))
-     (else
-      (.close stmt)
-      ;;(println "Closing JDBC result")
-      ))
-    answer))
+  (let((q query))
+    (println (string-append "(with-query-jdbc " query " " ex))
+    (let* ((stmt (createStatement (getrefDBConnection)))
+	   (rs (.executeQuery stmt query))
+	   (answer (ex rs)))
+      (cond
+       ((not (eq? rs #null))
+	(.close stmt)
+	(.close rs))
+       (else
+	(.close stmt)
+	;;(println "Closing JDBC result")
+	))
+      answer)))
 
 ;;;
 ;;; view query
