@@ -103,7 +103,7 @@ public class CMTDialog extends JDialog {
                                      new Insets(0, leftIndent, 0, 0),
                                      0, 0));
     leftIndent = leftIndent + 5;
-    Hashtable groupNameToId = ExperimentDB.getOrganizationGroups(experimentId);
+    Map groupNameToId = ExperimentDB.getOrganizationGroups(experimentId);
     Set groups = groupNameToId.keySet();
     groupNames = (String[])groups.toArray(new String[groups.size()]);
     int nGroupNames = groupNames.length;
@@ -143,7 +143,7 @@ public class CMTDialog extends JDialog {
                                        GridBagConstraints.NONE,
                                        new Insets(0, 0, 5, 5),
                                        0, 0));
-      HashSet members = 
+      Set members = 
         ExperimentDB.getOrganizationsInGroup(experimentId, 
                                          (String)groupNameToId.get(groupName));
       JList membersList = new JList(members.toArray());
