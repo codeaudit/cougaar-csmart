@@ -212,6 +212,12 @@ very similar for WinNT.
       You could instead create this user such that any machine in your domain can access it (with the security risks that entails), by doing: <pre>myname@"%.foo.com"</pre> instead.
       </li><p>
 
+  <li>You must now create a special table which CSMART requires when
+  using MySQL. To create this table, do:
+  <pre>
+     mysql -u myname -p mycoug &lt; create-dummy-dual.sql
+     [supply password 'mypass]
+  </pre>       
   <li>Once you have imported the CMT MySQL datafile, be sure to follow
   the same steps to import the Cougaar domain plugin MySQL database on
   the same machine.<li><p>
