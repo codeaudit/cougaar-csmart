@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2002-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -31,7 +31,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Vector;
 
 
 /**
@@ -77,7 +76,7 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
   public String getType(String type) {
     return type;
 //     int i;
-//     if ((i = type.indexOf("<")) > -1) { // deal with collections 
+//     if ((i = type.indexOf("<")) > -1) { // deal with collections
 //       int j = type.lastIndexOf(">");
 //       return getType(type.substring(0, i).trim()); // deal with measures
 //     } else if ((i = type.indexOf("/")) > -1) {
@@ -171,17 +170,19 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
         throw new RuntimeException("Unparsable collection type: "+type);
       }
 
-      Vector l = org.cougaar.util.StringUtility.parseCSV(arg);
-      for (Iterator it = l.iterator(); it.hasNext();) {
-        c.add((String)parseE(etype, (String)it.next()));
+      Collection coll = org.cougaar.util.CSVUtility.parseToCollection(arg);
+      for (Iterator iterator = coll.iterator(); iterator.hasNext();) {
+        String str = (String) iterator.next();
+        c.add(parseE(etype, str));
       }
+
       return c;
     } else if ((i = type.indexOf("/")) >= 0) {
       // Handle Measure Object Here.
       return arg;
     } else {
       return arg;
-    }    
+    }
   }
 
   private Object parseE(String type, String arg) {
@@ -201,9 +202,10 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
         throw new RuntimeException("Unparsable collection type: "+type);
       }
 
-      Vector l = org.cougaar.util.StringUtility.parseCSV(arg);
-      for (Iterator it = l.iterator(); it.hasNext();) {
-        c.add((String)parseE(etype, (String)it.next()));
+      Collection coll = org.cougaar.util.CSVUtility.parseToCollection(arg);
+      for (Iterator iterator = coll.iterator(); iterator.hasNext();) {
+        String o = (String) iterator.next();
+        c.add(parseE(etype, o));
       }
       return c;
     } else if ((i = type.indexOf("/")) >= 0) {
@@ -211,13 +213,13 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
       return arg;
     } else {
       return arg;
-    }    
+    }
   }
 
   /**
    * Parses a Date
    *
-   * @param dateString Date string to parse 
+   * @param dateString Date string to parse
    * @return a <code>long</code> value
    * @exception ParseException if an error occurs
    */
@@ -269,10 +271,10 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     if(data.getName().equals("HomeLocation")) {
       data.setValue(parseHomeLocation((String)arguments[0]));
     // This is a serious hack!  For now, can not see any way around it.
-    // The bug this is trying to fix is that in the INI files, 
+    // The bug this is trying to fix is that in the INI files,
     // the ItemIdentification is not always the Agent name.
     // We need to correct this or there will be runtime issues.
-    } else if (name.equals("ItemIdentification") && 
+    } else if (name.equals("ItemIdentification") &&
                !arguments[0].equals(clusterName)) {
       data.setValue(clusterName);
     } else {
@@ -297,8 +299,8 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
   /**
    * Not implemented
    *
-   * @param latStr 
-   * @param lonStr 
+   * @param latStr
+   * @param lonStr
    */
   public void setLocationSchedule(String latStr, String lonStr) {
     // Not really sure what to do here.
@@ -357,5 +359,5 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     rd.setSupported(supportedCluster);
     assetData.addRelationship(rd);
   }
-  
+
 }// AssetDataCallbackImpl
