@@ -83,12 +83,6 @@ public class ScalabilityXLevel
             case PropertyEvent.EXPERIMENTVALUES_CHANGED:
                 childProperty.setExperimentValues(myProp.getExperimentValues());
                 break;
-//              case PropertyEvent.TOOLTIP_CHANGED:
-//                  childProperty.setToolTip(myProp.getToolTip());
-//                  break;
-//              case PropertyEvent.HELP_CHANGED:
-//                  childProperty.setHelp(myProp.getHelp());
-//                  break;
             default:
                 break;
             }

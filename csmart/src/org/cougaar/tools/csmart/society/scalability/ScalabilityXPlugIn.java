@@ -76,21 +76,21 @@ public class ScalabilityXPlugIn
     return addInvisibleProperty(new PropertyAlias(this, PROP_PARAM + nParameters++, prop));
   }
 
-  public String getConfigLine() {
-    StringBuffer buf = new StringBuffer();
-    buf.append("plugin = ");
-    buf.append(getPlugInClassName());
-    buf.append("(");
-    for (int i = 0; i < nParameters; i++) {
-      Object param = getProperty(PROP_PARAM + i).getValue();
-      if (i > 0) {
-        buf.append(",");
-      }
-      buf.append(param);
-    }
-    buf.append(")");
-    return buf.substring(0);
-  }
+//   public String getConfigLine() {
+//     StringBuffer buf = new StringBuffer();
+//     buf.append("plugin = ");
+//     buf.append(getPlugInClassName());
+//     buf.append("(");
+//     for (int i = 0; i < nParameters; i++) {
+//       Object param = getProperty(PROP_PARAM + i).getValue();
+//       if (i > 0) {
+//         buf.append(",");
+//       }
+//       buf.append(param);
+//     }
+//     buf.append(")");
+//     return buf.substring(0);
+//   }
 
   public ComponentData addComponentData(ComponentData data) {
     data.setName(getPlugInClassName());

@@ -34,7 +34,7 @@ import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.society.SocietyBase;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.InvalidPropertyValueException;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
@@ -82,13 +82,11 @@ import org.cougaar.tools.csmart.util.ResultsFileFilter;
  * the numLevels.
  **/
 public class ScalabilityXSociety
-extends ModifiableConfigurableComponent
-implements PropertiesListener, Serializable, SocietyComponent, ModificationListener
+extends SocietyBase
+implements Serializable, ModificationListener
 {
   private static final long serialVersionUID = 4800304251932120182L;
 
-  private boolean isRunning = false;
-  private boolean editable = true;
   private static FileFilter metricsFileFilter = new ResultsFileFilter();
 
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
@@ -196,6 +194,8 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
 
   public ScalabilityXSociety(String name) {
     super(name);
+    setEditable(true);
+    setSelfTerminating(true);
   }
 
   public void modified(ModificationEvent e) {
@@ -205,10 +205,6 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
   public void setName(String newName) {
     super.setName(newName);
     fireModification();
-  }
-
-  public String getSocietyName() {
-    return getShortName();
   }
 
   public void initProperties() {
@@ -399,51 +395,6 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
     return (AgentComponent[]) agents.toArray(new AgentComponent[agents.size()]);
   }
 
-  public URL getDescription() {
-    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
-  }
-
-  /**
-   * Returns whether or not the society can be edited.
-   * @return true if society can be edited and false otherwise
-   */
-  public boolean isEditable() {
-    //    return !isRunning;
-    return editable;
-  }
-
-  /**
-   * Set whether or not the society can be edited.
-   * @param editable true if society is editable and false otherwise
-   */
-  public void setEditable(boolean editable) {
-    this.editable = editable;
-  }
-
-  /**
-   * Set by the experiment controller to indicate that the
-   * society is running.
-   * The society is running from the moment that any node
-   * is successfully created 
-   * until all nodes are terminated (aborted, self terminated, or
-   * manually terminated).
-   * @param flag indicating whether or not the society is running
-   */
-  public void setRunning(boolean isRunning) {
-    this.isRunning = isRunning;
-  }
-
-  /**
-   * Returns whether or not the society is running, 
-   * i.e. can be dynamically monitored.
-   * Running societies are not editable, but they can be copied,
-   * and the copy can be edited.
-   * @return true if society is running and false otherwise
-   */
-  public boolean isRunning() {
-    return isRunning;
-  }
-
   /**
    * Return a file filter which can be used to fetch
    * the metrics files for this experiment.
@@ -461,18 +412,6 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
   public FileFilter getCleanupFileFilter() {
     // TODO: return cleanup file filter
     return null;
-  }
-
-  /**
-   * Returns whether the society is self terminating or must
-   * be manually terminated.
-   * Self terminating nodes cause a NODE_DESTROYED event
-   * to be generated (see org.cougaar.tools.server.NodeEvent).
-   * @return true if society is self terminating
-   * @see org.cougaar.tools.server.NodeEvent
-   */
-  public boolean isSelfTerminating() {
-    return true;
   }
 
   public ComponentData addComponentData(ComponentData data) {

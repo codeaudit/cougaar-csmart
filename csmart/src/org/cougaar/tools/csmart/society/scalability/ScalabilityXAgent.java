@@ -138,11 +138,6 @@ public class ScalabilityXAgent
     "org.cougaar.tools.scalability.scalability.ConsumerPlugin";
   private static final String PlanServerPlugIn_name =
     "org.cougaar.lib.planserver.PlanServerPlugIn";
-  // Hack: This PlugIn is required if using ABCImpacts
-  // But there's no way to tell the society
-  // to add this PlugIn to every Agent
-  private static final String ABCImpactPlugIn_name =
-    "org.cougaar.tools.csmart.runtime.plugin.ABCImpactPlugin";
 
   private static HashMap subscriptionCounts = new HashMap(13);
 
@@ -159,9 +154,6 @@ public class ScalabilityXAgent
     subscriptionCounts.put(ScalabilityConsumerPlugIn_name,    new Integer(2));
     subscriptionCounts.put(PlanServerPlugIn_name,             new Integer(0));
   }
-  // FIXME!!! add: subscriptionCounts.pug(ABCImpactPlugIn_name, new Integer(1)); or whatever the right number is
-  // Todd says it has 0 subscriptions if running without ABCImpacts,
-  // and 1 if we are.
   
   private Property propIndex;   // The property specifying our index at this level
   private Property propCPUPerTask;
@@ -308,11 +300,6 @@ public class ScalabilityXAgent
     plugin = new ScalabilityXPlugIn("PlanServer", PlanServerPlugIn_name);
     addChild(plugin);
     plugin.initProperties();
-    // Hack: ABCImpactPlugin only used if have an ABCImpact in the experiment,
-    // but no way to do this cleanly, so always add it for now
-    //    plugin = new ScalabilityXPlugIn("ABCImpact", ABCImpactPlugIn_name);
-    //    addChild(plugin);
-    //    plugin.initProperties();
   }
 
   private void addExpanderPlugIn() {
@@ -441,72 +428,71 @@ public class ScalabilityXAgent
     }
     return sum;
   }
-  public String getConfigLine() {
-    return "cluster = " + getFullName();
-  }
-  public void writeIniFile(File configDir) throws IOException {
-    File iniFile = new File(configDir, getFullName() + ".ini");
-    PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
-    adjustAllocators();
-    try {
-      writer.println("[ Cluster ]");
-      writer.println("class = " + agentClassName);
-      writer.println("uic = \"" + getFullName() + "\"");
-      writer.println("cloned = false");
-      writer.println();
-      writer.println("[ PlugIns ]");
-      for (int i = 0, n = getChildCount(); i < n; i++) {
-        ScalabilityXPlugIn plugin = (ScalabilityXPlugIn) getChild(i);
-        writer.println(plugin.getConfigLine());
-      }
-//        writer.println("plugin = org.cougaar.lib.planserver.PlanServerPlugIn");
-      writer.println();
-      writer.println("[ Policies ]");
-      writer.println();
-      writer.println("[ Permission ]");
-      writer.println();
-      writer.println("[ AuthorizedOperation ]");
-    }
-    finally {
-      writer.close();
-    }
-  }
-//   public void writePrototypeIniFile(File configDir) throws IOException {
-//     File iniFile = new File(configDir, getFullName() + "-prototype-ini.dat");
-//     PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
 
-  public void writePrototypeIniFile(PrintWriter writer) {
-    try {
-      writer.println("[Prototype] CombatOrganization");
-      writer.println();
-      writer.println("[UniqueId] \"UTC/CombatOrg\"");
-      writer.println();
-      writer.println("[UIC] \"UIC/" + getFullName() + "\"");
-      writer.println();
-      writer.println("[Relationship]");
-      for (Iterator iter = supporting.iterator(); iter.hasNext(); ) {
-        writer.println("Supporting \"" + ((ScalabilityXAgent) iter.next()).getFullName() + "\" \"ScalabilityProvider\"");
-      }
-      if (superior != null) {
-        writer.println("Supporting \"" + superior.getFullName() + "\" \"ScalabilityControlProvider\"");
-        writer.println("Supporting \"" + superior.getFullName() + "\" \"ScalabilityStatisticsProvider\"");
-        writer.println("Superior  \"" + superior.getFullName() + "\" \"\"");
-      }
-      writer.println();
-      writer.println("[TypeIdentificationPG]");
-      writer.println("TypeIdentification String \"UTC/RTOrg\"");
-      writer.println("Nomenclature String \"" + getFullName() + "\"");
-      writer.println();
-      writer.println("[ClusterPG]");
-      writer.println("ClusterIdentifier ClusterIdentifier \"" + getFullName() + "\"");
-      writer.println();
-      writer.println("[OrganizationPG]");
-      writer.println("Roles Collection<Role> \"ScalabilityProvider, ScalabilityControlProvider, ScalabilityStatisticsProvider\"");
-    }
-    finally {
-      writer.close();
-    }
-  }
+//   public String getConfigLine() {
+//     return "cluster = " + getFullName();
+//   }
+
+//   public void writeIniFile(File configDir) throws IOException {
+//     File iniFile = new File(configDir, getFullName() + ".ini");
+//     PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
+//     adjustAllocators();
+//     try {
+//       writer.println("[ Cluster ]");
+//       writer.println("class = " + agentClassName);
+//       writer.println("uic = \"" + getFullName() + "\"");
+//       writer.println("cloned = false");
+//       writer.println();
+//       writer.println("[ PlugIns ]");
+//       for (int i = 0, n = getChildCount(); i < n; i++) {
+//         ScalabilityXPlugIn plugin = (ScalabilityXPlugIn) getChild(i);
+//         writer.println(plugin.getConfigLine());
+//       }
+// //        writer.println("plugin = org.cougaar.lib.planserver.PlanServerPlugIn");
+//       writer.println();
+//       writer.println("[ Policies ]");
+//       writer.println();
+//       writer.println("[ Permission ]");
+//       writer.println();
+//       writer.println("[ AuthorizedOperation ]");
+//     }
+//     finally {
+//       writer.close();
+//     }
+//   }
+
+//   public void writePrototypeIniFile(PrintWriter writer) {
+//     try {
+//       writer.println("[Prototype] CombatOrganization");
+//       writer.println();
+//       writer.println("[UniqueId] \"UTC/CombatOrg\"");
+//       writer.println();
+//       writer.println("[UIC] \"UIC/" + getFullName() + "\"");
+//       writer.println();
+//       writer.println("[Relationship]");
+//       for (Iterator iter = supporting.iterator(); iter.hasNext(); ) {
+//         writer.println("Supporting \"" + ((ScalabilityXAgent) iter.next()).getFullName() + "\" \"ScalabilityProvider\"");
+//       }
+//       if (superior != null) {
+//         writer.println("Supporting \"" + superior.getFullName() + "\" \"ScalabilityControlProvider\"");
+//         writer.println("Supporting \"" + superior.getFullName() + "\" \"ScalabilityStatisticsProvider\"");
+//         writer.println("Superior  \"" + superior.getFullName() + "\" \"\"");
+//       }
+//       writer.println();
+//       writer.println("[TypeIdentificationPG]");
+//       writer.println("TypeIdentification String \"UTC/RTOrg\"");
+//       writer.println("Nomenclature String \"" + getFullName() + "\"");
+//       writer.println();
+//       writer.println("[ClusterPG]");
+//       writer.println("ClusterIdentifier ClusterIdentifier \"" + getFullName() + "\"");
+//       writer.println();
+//       writer.println("[OrganizationPG]");
+//       writer.println("Roles Collection<Role> \"ScalabilityProvider, ScalabilityControlProvider, ScalabilityStatisticsProvider\"");
+//     }
+//     finally {
+//       writer.close();
+//     }
+//   }
 
 
   private PropGroupData getTypeIdentificationPG() {
