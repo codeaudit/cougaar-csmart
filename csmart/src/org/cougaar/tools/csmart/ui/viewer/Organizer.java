@@ -849,15 +849,16 @@ public class Organizer extends JScrollPane {
   }
 
   /**
-   * Return names of society from database.
+   * Return names of experiment from database.
    */
 
-  private Collection getSocietyNamesFromDB() {
+  private Collection getExperimentNamesFromDB() {
     ArrayList tmpNames = new ArrayList(10);
     Map substitutions = new HashMap();
 
     if(csmart.inDBMode()) {
       try {
+        // TODO EXPERIMENT DATABASE: get experiment names from db
 	substitutions.put(":assembly_type", "CMT");
 	Connection conn = DBUtils.getConnection();
 	Statement stmt = conn.createStatement();
@@ -879,30 +880,19 @@ public class Organizer extends JScrollPane {
   }
 
   /**
-   * Create a new society from either a ComboItem (for Scalability and
-   * ABC societies) or from a string (society name) obtained from a database.
+   * Create a new society.
    */
 
   private DefaultMutableTreeNode newSociety(DefaultMutableTreeNode node) {
-    ArrayList values = new ArrayList(10);
-    // add in ComboItems for societies such as scalability and abc
-    for (int i = 0; i < socComboItems.length; i++)
-      values.add(socComboItems[i]);
-    if (csmart.inDBMode()) {
-      // add in society names from database
-      try {
-	values.addAll(getSocietyNamesFromDB());
-      } catch (IndexOutOfBoundsException e) {
-	System.out.println("Organizer: Exception: " + e);
-      }
-    }
     Object answer =
       JOptionPane.showInputDialog(this, "Select Society Type",
 				  "Select Society",
 				  JOptionPane.QUESTION_MESSAGE,
 				  null,
-				  values.toArray(),
+				  socComboItems,
 				  "ScalabilityX");
+    if (answer == null)
+      return null;
     SocietyComponent sc = null;
     if (answer instanceof ComboItem) {
       // create a scalability or abc society
@@ -924,11 +914,6 @@ public class Organizer extends JScrollPane {
 	if (ok != JOptionPane.OK_OPTION) return null;
       }
       sc = createSoc(name, item.cls);
-    } else if (csmart.inDBMode()) {
-      // create a society from a database
-      // answer is the society name obtained from the database
-      sc = CMTSociety.loadCMTSociety((String)answer);    
-      sc.initProperties();
     }
     if (sc == null)
       return null;
@@ -1314,8 +1299,36 @@ public class Organizer extends JScrollPane {
     model.removeNodeFromParent(node);
     metricNames.remove(((MetricComponent) node.getUserObject()).getMetricName());
   }
-  
+
+  private DefaultMutableTreeNode newExperimentFromDatabase(DefaultMutableTreeNode node) {
+    Collection experimentNames = null;
+    experimentNames = getExperimentNamesFromDB();
+    if (experimentNames == null)
+      return null;
+    Object answer = JOptionPane.showInputDialog(this, "Select Experiment",
+                                                "Select Experiment",
+                                                JOptionPane.QUESTION_MESSAGE,
+                                                null,
+                                                experimentNames.toArray(),
+                                                null);
+    if (answer == null)
+      return null;
+    try {
+      // TODO EXPERIMENT DATABASE: create experiment from database, given experiment name
+      Experiment experiment = new Experiment((String)answer);
+      DefaultMutableTreeNode newNode =
+	addExperimentToWorkspace(experiment, node);
+      workspace.setSelection(newNode);
+      return newNode;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
   private DefaultMutableTreeNode newExperiment(DefaultMutableTreeNode node) {
+    if (CSMART.inDBMode()) 
+      return newExperimentFromDatabase(node);
     String name = experimentNames.generateName();
     while (true) {
       name = (String) JOptionPane.showInputDialog(this, "Enter Experiment Name",
@@ -1350,7 +1363,7 @@ public class Organizer extends JScrollPane {
       return null;
     }
   }
-  
+
   private DefaultMutableTreeNode addExperimentToWorkspace(Experiment experiment, 
 							  DefaultMutableTreeNode node) {
     DefaultMutableTreeNode newNode = 
