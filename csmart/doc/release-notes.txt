@@ -4,13 +4,20 @@ Release 9.4.1:
 This release includes bug fixes and feature enhancements to support UL
 fall integration not available in time for the 9.4 release.
 
-- Renamed mysqldump.9.2.txt to mysqldump.txt (the content has not changed).
-- All Nodes, by default, include the persistence argument (in the
-  Experiment Builder's Global Command Line Arguments dialog) that clears
-  all persistence information on startup. This is not a functionality
-  change, but makes clear the previous behavior. In order to restart
-  Nodes using previous persistence information, change the value of
-  this Argument from "true" to "false". (bug 1504)
+- Renamed mysqldump.9.2.txt to mysqldump.txt (the content has not
+  changed).
+- If CSMART crashes, and you were using the workspace file, bring
+  components back as fully editable and usable as possible.
+- When renaming a Recipe, change only the name in the database rather
+  than save an entirely new recipe under the new name.
+- Forbid adding a recipe to an Experiment twice.
+- Forbid adding two Agents with the same name to an Experiment via
+  recipes. Note that no Node in your society may have the same name as
+  an Agent in your society, as Nodes have a Node Agent whose name is
+  that of the Node.
+- When configuring a Society from scratch in the Configuration
+  Builder, give the user an editable drop-down of all known Plugins or
+  Binders in the database, not just those in the Society so far (bug 1443).
 
 Release 9.4:
 This release constitues the last major Cougaar release for this
@@ -61,6 +68,15 @@ mysql -f -u [user] -p[pw] [db] < mysqldump.txt
 - CSMART code was modified to correctly handle various database IDs. (bug
   1465). This solves the "duplicate plugin" problem for the UL
   Adaptive Logistics team.
+- Bug 1504: Made persistence.clear=true a default Node argument. Users
+  may now modify this if they _want_ to use old persistence
+  information. Otherwise, behavior is as before: CSMART clears old
+  persistence information before starting a new run. Note however that
+  the Node->Restart functionality from the CSMART Console will use saved
+  persistence information to start up the Node from where it left off.
+- Bug 1524: Default results directory if not set so HNA exports in
+  same place.
+- Bug 1494: Display correct Agent's contents in Console Node info screen.
 - Bug 533: Improved javadoc to include @property tags.
 - Bug 789: Added the Cougaar javadoc Parameters.html to the Experiment
   Builder Help menu for ideas on some Node Properties to set.
