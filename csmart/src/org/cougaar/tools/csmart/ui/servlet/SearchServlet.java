@@ -86,6 +86,15 @@ import org.cougaar.tools.csmart.ui.servlet.TranslateUtils;
  * <ul>
  * The result is a List of <code>PropertyTree</code>s for all the
  * related UniqueObjects.
+ * 
+ * <p>
+ * Can be loaded manually by including this line in an agent's .ini configuration file: <ul>
+ *   plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.SearchServlet, 
+ *   /CSMART_SearchServlet)
+ *
+ * <p>
+ * Is loaded from a URL on a CSMART machine, on agent 'Agent': <ul>
+ *   http://localhost:port/$Agent/CSMART_SearchServlet
  *
  * @see TranslateUtils
  */
@@ -326,7 +335,7 @@ public class SearchServlet
 	  // serialize back to the user
 	  ObjectOutputStream p = new ObjectOutputStream(out);
 	  p.writeObject(retL);
-	  System.out.println("SearchServlet: Sent Objects");  
+	  //System.out.println("SearchServlet: Sent Objects");  
 	}
       } catch (Exception e) {
 	System.out.println("SearchServlet Exception: " + e);

@@ -53,6 +53,16 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  *    % and number of tasks that are not yet allocated
  *    % and number of tasks that are low confidence < 0.50
  * </pre>
+ *
+ * <p>
+ * Can be loaded manually by including this line in an agent's .ini configuration file: <ul>
+ *   plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.MetricsServlet, 
+ *   /CSMART_MetricsServlet)
+ *
+ * <p>
+ * Is loaded from a URL on a CSMART machine, on agent 'Agent': <ul>
+ *   http://localhost:port/$Agent/CSMART_MetricsServlet
+ *
  */
 public class MetricsServlet 
   extends HttpServlet
@@ -166,7 +176,7 @@ public class MetricsServlet
 	  this.out = response.getOutputStream();
 	  ObjectOutputStream p = new ObjectOutputStream(out);
 	  p.writeObject(list);
-	  System.out.println("Sent Objects");  
+	  //System.out.println("Sent Objects");  
 	}
       } catch (Exception e) {
         if(log.isDebugEnabled()) {
