@@ -1,5 +1,51 @@
 CSMART Release Notes
 
+Release 9.4.1.2:
+This patch release includes additional fixes to support the Fall 2002
+Ultra*Log integration. These include performance improvements, and
+some fixes to the Component Collection Recipes. It also includes a
+change to the 1AD defined societies, that require reloading part of
+the CSMART database. Note in particular the change to the Experiment
+save behavior (bug 2002).
+
+- Bug 2002: Saving experiments is incredibly slow. This is a partial
+  fix, which changes some existing functionality. Recipe target
+  queries (in recipeQueries.q) look in the database to decide where to
+  apply a recipe. They usually just look for Agents or NodeAgents by
+  name. Sometimes they look at community information. Theoretically,
+  they could also look at Plugins in the Agents, Plugin parameters, or
+  Agent relationships, or other such Agent-internal details. However,
+  this is not normally done. The change included with this fix changes
+  this behavior. It is no longer possible, by default, to have a
+  recipeTargetQuery that looks at PropertyGroups, Relationships,
+  Plugins, Binders, etc. If you require this ability, un-comment the
+  line in the CSMART startup scripts that set the new property
+  org.cougaar.tools.csmart.allowComplexRecipeQueries to true. This
+  change should dramatically reduce Experiment save times,
+  particularly for experiments with many recipes.
+
+- Bug 2015: Log out the start and finish times when saving an
+  experiment, to aid in debugging the above bug.
+- Bug 1988: This is a change to the CSMART included 1AD society
+  definitions. You must re-run csmart/data/database/script/mysq/load_1ad_mysql.[sh/bat]
+- Bug 2000: If a recipe fails to load, avoid later NPEs.
+- Bug 2000: When using ConfigFinder to find a file, if you cannot
+  locate it, be careful to look for the null return -- particularly in
+  the ServletGroupInsertionRecipe.
+- Bug 2012: The HomeLocation slot of MilitaryOrgPG was incorrectly
+  parsed in some cases. This has now been fixed.
+- Bug 2022: The "csmart/bin/CSMART" script erroneously ran CSMART
+  within jdb.
+- Bug 2008: If an AppServer dies unexpectedly, it is possible to get a
+  NullPointerException in a couple places. Avoid that.
+- Bug 1958: Fix small typo in comment in dumped INI files
+- Bug 2009: Adding parameters to components when editing a Society,
+  Complete Agent recipe or Component Collection recipe would start
+  over-riding the last parameter starting with the 12th parameter
+  (named param-10). You may now add as many parameters as you wish.
+- Bug 2021: Forbid adding an Agent with the same name as the recipe
+  from which you are adding it.
+
 Release 9.4.1.1:
 This release includes bug fixes to support the Fall 2002 Ultra*Log
 integration, not found in time for the 9.4.1 release.
