@@ -83,6 +83,17 @@ public class SlowMessageTransportServiceProxy
     mt.registerClient(wrappedClient);
   }
 
+  public void unregisterClient(MessageTransportClient client) {
+    // FIXME!!!!
+    if (client == this.mtc)
+      mt.unregisterClient(wrappedClient);
+  }
+  
+  public ArrayList flushMessages() {
+    // FIXME!!!!
+    return mt.flushMessages();
+  }
+  
   public String getIdentifier() {
     return mt.getIdentifier();
   }
