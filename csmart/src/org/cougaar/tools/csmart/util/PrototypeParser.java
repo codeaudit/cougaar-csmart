@@ -24,6 +24,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.StreamTokenizer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -118,8 +120,13 @@ public class PrototypeParser {
     aad.setIniFormat(AgentAssetData.OLD_FORMAT);
 
     try {
-      fileStream = 
-        new InputStreamReader(ConfigFinder.getInstance().open(filename));
+      File tryfile = new File(filename);
+      if (! tryfile.exists()) {
+	fileStream = 
+	  new InputStreamReader(ConfigFinder.getInstance().open(filename));
+      } else {
+	fileStream = new FileReader(tryfile);
+      }
       input = new BufferedReader(fileStream);
       StreamTokenizer tokens = new StreamTokenizer(input);
       tokens.commentChar('#');
