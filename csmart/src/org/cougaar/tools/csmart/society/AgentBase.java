@@ -140,45 +140,20 @@ public abstract class AgentBase
       asset.addComponentData(data);
     }
 
-    // Process Binders
+    // Process all other components.
     iter = 
       ((Collection)getDescendentsOfClass(ContainerBase.class)).iterator();
     while(iter.hasNext()) {
       ContainerBase container = (ContainerBase)iter.next();
-      if(container.getShortName().equals("Binders")) {
+      if(container.getShortName().equals("Binders") ||
+         container.getShortName().equals("Plugins") ||
+         container.getShortName().equals("Other Components")) {
         for(int i=0; i < container.getChildCount(); i++) {
-          BinderBase binder = (BinderBase) container.getChild(i);
-	  binder.addComponentData(data);
+          BaseComponent base = (BaseComponent) container.getChild(i);
+	  base.addComponentData(data);
         }
       }
     }
-   
-    // Process Plugins
-    iter = 
-      ((Collection)getDescendentsOfClass(ContainerBase.class)).iterator();
-    while(iter.hasNext()) {
-      ContainerBase container = (ContainerBase)iter.next();
-      if(container.getShortName().equals("Plugins")) {
-        for(int i=0; i < container.getChildCount(); i++) {
-	  PluginBase plugin = (PluginBase) container.getChild(i);
-	  plugin.addComponentData(data);
-        }
-      }
-    }
-   
-    // FIXME: Process misc components
-    iter = 
-      ((Collection)getDescendentsOfClass(ContainerBase.class)).iterator();
-    while(iter.hasNext()) {
-      ContainerBase container = (ContainerBase)iter.next();
-      if(container.getShortName().equals("Other Components")) {
-        for(int i=0; i < container.getChildCount(); i++) {
-	  ComponentBase plugin = (ComponentBase) container.getChild(i);
-	  plugin.addComponentData(data);
-        }
-      }
-    }
-   
    
     return data;
   }
