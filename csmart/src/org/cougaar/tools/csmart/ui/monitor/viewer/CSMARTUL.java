@@ -25,8 +25,6 @@ package org.cougaar.tools.csmart.ui.monitor.viewer;
 
 import org.cougaar.tools.csmart.ui.Browser;
 
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 
