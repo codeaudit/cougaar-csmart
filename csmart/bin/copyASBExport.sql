@@ -320,7 +320,7 @@ CREATE TABLE tempcopy.v4_asb_oplan_agent_attr AS
   ATTRIBUTE_NAME,
   END_CDAY, 
   ATTRIBUTE_VALUE 
-FROM tempcopy.v4_asb_oplan_agent_attr2; 
+ FROM tempcopy.v4_asb_oplan_agent_attr2; 
 
 DROP TABLE IF EXISTS tempcopy.v4_asb_oplan_agent_attr2;
 
@@ -329,17 +329,17 @@ DROP TABLE IF EXISTS tempcopy.v4_asb_oplan;
 DROP TABLE IF EXISTS tempcopy.v4_asb_oplan2;
 
 CREATE TABLE tempcopy.v4_asb_oplan2 AS
-SELECT DISTINCT 
- CONCAT(AA.ASSEMBLY_ID, '-:suffix') AS ASSEMBLY_ID, 
- AA.OPLAN_ID AS OPLAN_ID, 
- AA.OPERATION_NAME AS OPERATION_NAME,
- AA.PRIORITY AS PRIORITY, 
- AA.C0_DATE AS C0_DATE 
-FROM v4_asb_oplan AA, 
+  SELECT DISTINCT 
+   CONCAT(AA.ASSEMBLY_ID, '-:suffix') AS ASSEMBLY_ID, 
+   AA.OPLAN_ID AS OPLAN_ID, 
+   AA.OPERATION_NAME AS OPERATION_NAME,
+   AA.PRIORITY AS PRIORITY, 
+   AA.C0_DATE AS C0_DATE 
+  FROM v4_asb_oplan AA, 
      v4_expt_experiment E,
      v4_expt_trial ET,
      v4_expt_trial_assembly EA
- WHERE 
+  WHERE 
       E.EXPT_ID = ET.EXPT_ID
       AND ET.TRIAL_ID = EA.TRIAL_ID
       AND EA.ASSEMBLY_ID = AA.ASSEMBLY_ID
@@ -347,30 +347,30 @@ FROM v4_asb_oplan AA,
 
 REPLACE INTO tempcopy.v4_asb_oplan2
  (ASSEMBLY_ID, OPLAN_ID, OPERATION_NAME, PRIORITY, C0_DATE)
-SELECT DISTINCT 
- CONCAT(AA.ASSEMBLY_ID, '-:suffix') AS ASSEMBLY_ID, 
- AA.OPLAN_ID AS OPLAN_ID, 
- AA.OPERATION_NAME AS OPERATION_NAME,
- AA.PRIORITY AS PRIORITY, 
- AA.C0_DATE AS C0_DATE 
-FROM v4_asb_oplan AA, 
+  SELECT DISTINCT 
+   CONCAT(AA.ASSEMBLY_ID, '-:suffix') AS ASSEMBLY_ID, 
+   AA.OPLAN_ID AS OPLAN_ID, 
+   AA.OPERATION_NAME AS OPERATION_NAME,
+   AA.PRIORITY AS PRIORITY, 
+   AA.C0_DATE AS C0_DATE 
+  FROM v4_asb_oplan AA, 
      v4_expt_experiment E,
      v4_expt_trial ET,
      v4_expt_trial_config_assembly EA
- WHERE 
+  WHERE 
       E.EXPT_ID = ET.EXPT_ID
       AND ET.TRIAL_ID = EA.TRIAL_ID
       AND EA.ASSEMBLY_ID = AA.ASSEMBLY_ID
       AND E.NAME = ':oldExpt';
 
 CREATE TABLE tempcopy.v4_asb_oplan AS
-SELECT DISTINCT 
- ASSEMBLY_ID, 
- OPLAN_ID, 
- OPERATION_NAME,
- PRIORITY, 
- C0_DATE 
-FROM tempcopy.v4_asb_oplan2;
+  SELECT DISTINCT 
+   ASSEMBLY_ID, 
+   OPLAN_ID, 
+   OPERATION_NAME,
+   PRIORITY, 
+   C0_DATE 
+  FROM tempcopy.v4_asb_oplan2;
 
 DROP TABLE IF EXISTS tempcopy.v4_asb_oplan2;
 
@@ -379,15 +379,15 @@ DROP TABLE IF EXISTS tempcopy.v4_asb_assembly;
 DROP TABLE IF EXISTS tempcopy.v4_asb_assembly2;
 
 CREATE TABLE tempcopy.v4_asb_assembly2 AS
-SELECT DISTINCT 
- CONCAT(AA.ASSEMBLY_ID, '-:suffix') AS ASSEMBLY_ID, 
- AA.ASSEMBLY_TYPE AS ASSEMBLY_TYPE, 
- concat(AA.DESCRIPTION,' Modified for :suffix') AS DESCRIPTION 
-FROM v4_asb_assembly AA, 
+  SELECT DISTINCT 
+   CONCAT(AA.ASSEMBLY_ID, '-:suffix') AS ASSEMBLY_ID, 
+   AA.ASSEMBLY_TYPE AS ASSEMBLY_TYPE, 
+   CONCAT(AA.DESCRIPTION,' Modified for :suffix') AS DESCRIPTION 
+  FROM v4_asb_assembly AA, 
      v4_expt_experiment E,
      v4_expt_trial ET,
      v4_expt_trial_assembly EA
- WHERE 
+  WHERE 
       E.EXPT_ID = ET.EXPT_ID
       AND ET.TRIAL_ID = EA.TRIAL_ID
       AND EA.ASSEMBLY_ID = AA.ASSEMBLY_ID
@@ -395,26 +395,26 @@ FROM v4_asb_assembly AA,
 
 REPLACE INTO tempcopy.v4_asb_assembly2
  (ASSEMBLY_ID, ASSEMBLY_TYPE, DESCRIPTION)
-SELECT DISTINCT 
- CONCAT(AA.ASSEMBLY_ID, '-:suffix') AS ASSEMBLY_ID, 
- AA.ASSEMBLY_TYPE AS ASSEMBLY_TYPE, 
- concat(AA.DESCRIPTION,' Modified for :suffix') AS DESCRIPTION 
-FROM v4_asb_assembly AA, 
+  SELECT DISTINCT 
+   CONCAT(AA.ASSEMBLY_ID, '-:suffix') AS ASSEMBLY_ID, 
+   AA.ASSEMBLY_TYPE AS ASSEMBLY_TYPE, 
+   CONCAT(AA.DESCRIPTION,' Modified for :suffix') AS DESCRIPTION 
+  FROM v4_asb_assembly AA, 
      v4_expt_experiment E,
      v4_expt_trial ET,
      v4_expt_trial_config_assembly EA
- WHERE 
+  WHERE 
       E.EXPT_ID = ET.EXPT_ID
       AND ET.TRIAL_ID = EA.TRIAL_ID
       AND EA.ASSEMBLY_ID = AA.ASSEMBLY_ID
       AND E.NAME = ':oldExpt';
 
 CREATE TABLE tempcopy.v4_asb_assembly AS
-SELECT DISTINCT 
- ASSEMBLY_ID, 
- ASSEMBLY_TYPE, 
- DESCRIPTION 
-FROM tempcopy.v4_asb_assembly2; 
+  SELECT DISTINCT 
+   ASSEMBLY_ID, 
+   ASSEMBLY_TYPE, 
+   DESCRIPTION 
+  FROM tempcopy.v4_asb_assembly2; 
 
 DROP TABLE IF EXISTS tempcopy.v4_asb_assembly2;
 
@@ -423,12 +423,12 @@ DROP TABLE IF EXISTS tempcopy.v4_expt_trial_mod_recipe;
 
 CREATE TABLE tempcopy.v4_expt_trial_mod_recipe AS
   SELECT DISTINCT
-   CONCAT(CONCAT(E.EXPT_ID,'-:suffix'),'.TRIAL') AS TRIAL_ID, 
+    CONCAT(CONCAT(E.EXPT_ID,'-:suffix'),'.TRIAL') AS TRIAL_ID, 
     CONCAT(AA.MOD_RECIPE_LIB_ID,'-cpy') AS MOD_RECIPE_LIB_ID,
     AA.RECIPE_ORDER,
     CONCAT(E.EXPT_ID,'-:suffix') AS EXPT_ID
   FROM
-    v4_expt_trial_mod_recipe AA,
+     v4_expt_trial_mod_recipe AA,
      v4_expt_experiment E,
      v4_expt_trial ET
   WHERE
@@ -448,7 +448,7 @@ CREATE TABLE tempcopy.v4_expt_experiment AS
   FROM 
    v4_expt_experiment VEE 
   WHERE 
-  VEE.NAME =':oldExpt';
+   VEE.NAME =':oldExpt';
 
 -- v4_expt_trial_thread
 DROP TABLE IF EXISTS tempcopy.v4_expt_trial_thread;
@@ -468,7 +468,7 @@ CREATE TABLE tempcopy.v4_expt_trial_thread AS
 DROP TABLE IF EXISTS tempcopy.v4_expt_trial_org_mult;
 
 CREATE TABLE tempcopy.v4_expt_trial_org_mult AS
-SELECT DISTINCT
+ SELECT DISTINCT
    CONCAT(VE.EXPT_ID,'-:suffix') AS EXPT_ID, 
    CONCAT(CONCAT(VE.EXPT_ID,'-:suffix'),'.TRIAL') AS  TRIAL_ID, 
    CFW_ID AS CFW_ID, 
@@ -492,7 +492,7 @@ CREATE TABLE tempcopy.v4_expt_trial_assembly AS
  FROM 
    v4_expt_trial_assembly TA, v4_expt_trial VT, v4_expt_experiment VE 
  WHERE 
-    TA.TRIAL_ID= VT.TRIAL_ID AND VT.EXPT_ID = VE.EXPT_ID AND VE.NAME = ':oldExpt' ;
+   TA.TRIAL_ID= VT.TRIAL_ID AND VT.EXPT_ID = VE.EXPT_ID AND VE.NAME = ':oldExpt' ;
 
 -- v4_expt_trial_config_assembly
 DROP TABLE IF EXISTS tempcopy.v4_expt_trial_config_assembly;
@@ -517,8 +517,8 @@ SELECT DISTINCT
   CONCAT(VE.EXPT_ID, '-:suffix') AS EXPT_ID,
   CONCAT(VE.DESCRIPTION, '-:suffix a copy') AS DESCRIPTION,
   CONCAT(VE.DESCRIPTION, '-:suffix a copy') AS NAME
-FROM v4_expt_experiment VE
-WHERE VE.NAME = ':oldExpt';
+ FROM v4_expt_experiment VE
+ WHERE VE.NAME = ':oldExpt';
 
 -- Add new entry in v4_alib_component for the society
 DROP TABLE IF EXISTS tempcopy.v4_alib_component;

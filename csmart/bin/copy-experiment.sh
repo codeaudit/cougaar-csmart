@@ -38,7 +38,7 @@ else
   EID=`mysql -s -e "select distinct name from v4_expt_experiment where name = '$1'" -u $3 -p$4 -h $7 $5`
 fi
 
-if [ -z $EID ]; then
+if [ -z "${EID}" ]; then
  echo ""
  echo "The experiment, $1 is not a known experiment."
  echo "All known experiment names:"
@@ -57,8 +57,6 @@ if [ "$6" = "export" ]; then
 else
     sed s/:suffix/"$2"/ ${COUGAAR_INSTALL_PATH}/csmart/bin/copyASB.sql | sed s/:oldExpt/"$1"/ > fixed-copy.sql
 fi
-
-
 
 # Still need to do a replace on the orig expt ID
 # FIXME: If the db is screwy this might give more than one ID
@@ -91,7 +89,5 @@ if [ "$6" != "export" ]; then
     # Drop the temporary database
     ${COUGAAR_INSTALL_PATH}/csmart/bin/delete-temp-db.sh $3 $4 $5 $7
 fi
-
-
 
 echo "Copy Done."
