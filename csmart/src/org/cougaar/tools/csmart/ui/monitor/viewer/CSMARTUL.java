@@ -997,10 +997,12 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
             if (relationship.endsWith("Customer") || 
                 relationship.endsWith("Superior"))
               node.addIncomingLink(relatedToUID);
-            else if (relationship.endsWith("Provider") ||
-                     relationship.endsWith("Subordinate"))
-              node.addOutgoingLink(relatedToUID);
-            else
+            else if (!relationship.endsWith("Provider") &&
+                     !relationship.endsWith("Subordinate"))
+              // do nothing, assume that all relationships are dual
+              // so that graphing "one side" of the relationship is ok
+              //              node.addOutgoingLink(relatedToUID);
+              //            else
               System.out.println("Unknown relationship: " + relatedToName);
           }
         }
