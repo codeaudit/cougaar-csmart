@@ -131,6 +131,7 @@ public class Analyzer extends JFrame implements ActionListener {
   				    JOptionPane.WARNING_MESSAGE);
         return;
     }
+    resultsDir = new File(resultsDir, experiment.getExperimentName());
     JFileChooser fileChooser = new JFileChooser(resultsDir);
     fileChooser.setFileFilter(new MyFileFilter(experiment));
     int result = fileChooser.showOpenDialog(this);
