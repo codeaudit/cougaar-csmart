@@ -219,11 +219,13 @@ public class PropertyBuilder extends JFrame implements ActionListener {
       GUIUtils.createSaveToDbConflictHandler(this);
     final PropertyBuilder propertyBuilder = this;
     GUIUtils.timeConsumingTaskStart(this);
+    GUIUtils.timeConsumingTaskStart(csmart);
     try {
       new Thread("SaveExperiment") {
           public void run() {
             experiment.saveToDb(saveToDbConflictHandler);
             GUIUtils.timeConsumingTaskEnd(propertyBuilder);
+            GUIUtils.timeConsumingTaskEnd(csmart);
           }
         }.start();
     } catch (RuntimeException re) {
@@ -231,6 +233,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
         log.error("Runtime exception saving experiment", re);
       }
       GUIUtils.timeConsumingTaskEnd(propertyBuilder);
+      GUIUtils.timeConsumingTaskEnd(csmart);
     }
   }
 

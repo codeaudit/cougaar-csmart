@@ -412,6 +412,7 @@ public class ExperimentBuilder extends JFrame {
 	  log.error("Error saving experiment: ", re);
 	}
 	GUIUtils.timeConsumingTaskEnd(c);
+        GUIUtils.timeConsumingTaskEnd(csmart);
       }
     }
   }

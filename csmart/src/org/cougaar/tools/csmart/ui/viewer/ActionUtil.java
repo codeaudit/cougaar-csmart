@@ -92,6 +92,9 @@ public class ActionUtil {
       }
     }
 
+    if (organizer.isNodeBeingEdited(organizer.getSelectedNode()))
+      return false; // can't do anything with nodes in an exp. being edited
+
     if (organizer.getSelectedNode().isRoot()) {
       if (action.equals(NEW_EXPERIMENT_ACTION) ||
           //          action.equals(NEW_SOCIETY_ACTION) ||

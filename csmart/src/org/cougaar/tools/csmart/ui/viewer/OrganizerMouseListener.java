@@ -323,6 +323,8 @@ public class OrganizerMouseListener extends MouseAdapter {
     DefaultMutableTreeNode selectedNode =
       (DefaultMutableTreeNode) selPath.getLastPathComponent();
     Object o = selectedNode.getUserObject();
+    if (organizer.isNodeBeingEdited(selectedNode))
+      return; // can't do anything with these
     if (selectedNode.isRoot()) {
       configureMenu(rootMenu);
       rootMenu.show(workspace, e.getX(), e.getY());

@@ -94,7 +94,7 @@ public class Organizer extends JScrollPane {
   private OrganizerTree workspace;
   private Organizer organizer;
   private CMTDialog cmtDialog;
-
+  private ArrayList editingNodes = new ArrayList();
   private transient Logger log;
 
   private DBConflictHandler saveToDbConflictHandler =
@@ -175,6 +175,9 @@ public class Organizer extends JScrollPane {
     // if a node represents an experiment
     // and that experiment needs to be saved to the database, 
     // then draw the experiment in red
+    // if a node represents a component in an experiment,
+    // and that experiment is being edited,
+    // then draw the node in gray
     DefaultTreeCellRenderer myRenderer = new DefaultTreeCellRenderer() {
         public Component getTreeCellRendererComponent(JTree tree,
                                                       Object value,
@@ -193,7 +196,8 @@ public class Organizer extends JScrollPane {
             if (((Experiment)o).isModified()) {
               c.setForeground(Color.red);
             }
-          }
+          } else if (editingNodes.contains(node))
+            c.setForeground(Color.gray);
           return c;
         }
       };
@@ -1492,11 +1496,19 @@ public class Organizer extends JScrollPane {
 
   /**
    * Add tree nodes for the children (societies and recipes)
-   * of an experiment.
+   * of an experiment.  First removes any current children nodes.
    * @param experiment the experiment for which to add children
    */
   public void addChildren(Experiment experiment) {
     DefaultMutableTreeNode expNode = findNode(experiment);
+    // first remove old nodes
+    int n = expNode.getChildCount();
+    for (int i = 0; i < n; i++) {
+      DefaultMutableTreeNode node = 
+        (DefaultMutableTreeNode)expNode.getChildAt(0);
+      model.removeNodeFromParent(node);
+      editingNodes.remove(node);
+    }
     SocietyComponent society = experiment.getSocietyComponent();
     if (society != null)
       addSocietyToWorkspace(society, expNode);
@@ -1507,15 +1519,25 @@ public class Organizer extends JScrollPane {
   }
 
   /**
-   * Remove tree nodes for the children (societies and recipes)
-   * of an experiment.
-   * @param experiment the experiment for which to remove children
+   * Display tree nodes for the children (societies and recipes)
+   * of an experiment in gray and don't let them be edited.
+   * Used when editing the experiment.
+   * @param experiment the experiment
    */
   protected void removeChildren(Experiment experiment) {
-    DefaultMutableTreeNode node = findNode(experiment);
-    int n = node.getChildCount();
-    for (int i = 0; i < n; i++)
-      model.removeNodeFromParent((DefaultMutableTreeNode)node.getChildAt(0));
+    DefaultMutableTreeNode expNode = findNode(experiment);
+    int n = expNode.getChildCount();
+    // display these nodes in gray and don't let them be edited
+    for (int i = 0; i < n; i++) {
+      DefaultMutableTreeNode node = 
+        (DefaultMutableTreeNode)expNode.getChildAt(i);
+      editingNodes.add(node);
+      model.nodeChanged(node);
+    }
+  }
+
+  protected boolean isNodeBeingEdited(DefaultMutableTreeNode node) {
+    return editingNodes.contains(node);
   }
 
   ////////////////////////////////
