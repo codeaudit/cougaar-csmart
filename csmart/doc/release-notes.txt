@@ -65,6 +65,8 @@ mysql -f -u [user] -p[pw] [db] < mysqldump.txt
 - If a drop-down list is open (ie in the Configuration
   Builder) and you kill that window, you get an NPE. This appears to be
   a JDK bug, and will be logged as a warning. (bug 1439)
+- Changed the default Console Node view size to 300,000 characters
+  (from 50,000). Bug 1309.
 - CSMART code was modified to correctly handle various database IDs. (bug
   1465). This solves the "duplicate plugin" problem for the UL
   Adaptive Logistics team.
