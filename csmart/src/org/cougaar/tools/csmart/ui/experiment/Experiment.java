@@ -30,10 +30,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private List trials = new ArrayList();
   private boolean hasValidTrials = false;
   // schemes for varying experimental data
-  private static final String VARY_ONE_DIMENSION = "Univariate";
-  private static final String VARY_TWO_DIMENSION = "Bivariate";
-  private static final String VARY_SEQUENTIAL = "Multivariate";
-  private static final String VARY_RANDOM = "Random";
+  public static final String VARY_ONE_DIMENSION = "Univariate";
+  public static final String VARY_TWO_DIMENSION = "Bivariate";
+  public static final String VARY_SEQUENTIAL = "Multivariate";
+  public static final String VARY_RANDOM = "Random";
   private static final String[] variationSchemes = {
     VARY_ONE_DIMENSION, VARY_TWO_DIMENSION, VARY_SEQUENTIAL, VARY_RANDOM };
   private String variationScheme = null;
@@ -448,7 +448,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (hasValidTrials)
       return (Trial[])trials.toArray(new Trial[trials.size()]);
 
-    // create trials
+    getTrialCount(); // update trial count
+
     // get lists of unbound properties and their experimental values
     List properties = new ArrayList();
     List experimentValues = new ArrayList();
@@ -466,6 +467,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       }
     }
 
+    // handle simple case of no properties to vary
     int nProperties = properties.size();
     if (nProperties == 0) {
       hasValidTrials = true;
@@ -476,35 +478,53 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       return (Trial[])trials.toArray(new Trial[trials.size()]);
     }
 
-    if (variationScheme.equals(VARY_ONE_DIMENSION)) {
-      getTrialCount(); // update trial count if necessary
-      trials = new ArrayList(numberOfTrials);
-      int propToVaryIndex = 0; // index of property being varied
-      int k = 0; // index into values of property being varied
-      for (int i = 0; i < numberOfTrials; i++) {
-	Trial trial = new Trial("Trial " + (i+1));
-	trial.initProperties();
-	for (int j = 0; j < nProperties; j++) {
-	  List parameterValues = (List)experimentValues.get(j);
-	  Object value;
-	  if (j == propToVaryIndex)
-	    value = parameterValues.get(k++);
-	  else
-	    value = parameterValues.get(0);
-	  trial.addTrialParameter((Property)properties.get(j), value);
-	}
-	// if we've stepped through all the values of the property being varied
-	// then vary the next property
-	if (((List)experimentValues.get(propToVaryIndex)).size() == k) {
-	  k = 1; // after first pass, skip nominal values
-	  propToVaryIndex++;
-	}
-	trials.add(trial);
+    // create trials according to variation scheme
+    if (variationScheme.equals(VARY_ONE_DIMENSION)) 
+      return getUnivariateTrials(properties, experimentValues);
+    else if (variationScheme.equals(VARY_TWO_DIMENSION)) 
+      return getBivariateTrials(properties, experimentValues);
+    else if (variationScheme.equals(VARY_SEQUENTIAL) ||
+	     variationScheme.equals(VARY_RANDOM))
+      return getMultivariateTrials(properties, experimentValues);
+    else {
+      System.out.println("Variation scheme not implemented: " + 
+			 variationScheme);
+      return null;
+    }
+  }
+
+  private Trial[] getUnivariateTrials(List properties, List experimentValues) {
+    trials = new ArrayList(numberOfTrials);
+    int propToVaryIndex = 0; // index of property being varied
+    int k = 0; // index into values of property being varied
+    int nProperties = properties.size();
+    for (int i = 0; i < numberOfTrials; i++) {
+      Trial trial = new Trial("Trial " + (i+1));
+      trial.initProperties();
+      for (int j = 0; j < nProperties; j++) {
+	List parameterValues = (List)experimentValues.get(j);
+	Object value;
+	if (j == propToVaryIndex)
+	  value = parameterValues.get(k++);
+	else
+	  value = parameterValues.get(0);
+	trial.addTrialParameter((Property)properties.get(j), value);
       }
-    } else
-      System.out.println("Variation scheme not implemented yet.");
+      // if we've stepped through all the values of the property being varied
+      // then vary the next property
+      if (((List)experimentValues.get(propToVaryIndex)).size() == k) {
+	k = 1; // after first pass, skip nominal values
+	propToVaryIndex++;
+      }
+      trials.add(trial);
+    }
     hasValidTrials = true;
     return (Trial[])trials.toArray(new Trial[trials.size()]);
+  }
+
+  private Trial[] getBivariateTrials(List properties, List experimentValues) {
+    hasValidTrials = true;
+    return null;
   }
 
   public void addTrial(Trial trial) {
@@ -525,7 +545,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    */
 
   public int getTrialCount() {
-    if (hasValidTrials)
+    if (hasValidTrials) 
       return numberOfTrials;
     ArrayList experimentValueCounts = new ArrayList(100);
     int n = getSocietyComponentCount();
@@ -562,6 +582,49 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return numberOfTrials;
   }
 
+  private void addParameterValues(List trials,
+				  Property property, 
+				  List values, int nCopies) {
+    int x = 0;
+    int j = 0;
+    int nValues = values.size();
+    for (int i = 0; i < numberOfTrials; i++) {
+      ((Trial)trials.get(i)).addTrialParameter(property, values.get(j));
+      x++;
+      if (x >= nCopies) {
+	x = 0;
+	j++;
+	if (j >= nValues)
+	  j = 0;
+      }
+    }
+  }
+
+  private Trial[] getMultivariateTrials(List properties, 
+					List experimentValues) {
+    trials = new ArrayList(numberOfTrials);
+    for (int i = 0; i < numberOfTrials; i++) {
+      Trial trial = new Trial("Trial " + (i+1));
+      trial.initProperties();
+      trials.add(trial);
+    }
+    int nProperties = properties.size();
+    // how many times to copy each value in the experiment values
+    // to the trials
+    int nCopies = 1;
+    for (int i = 0; i < nProperties; i++) {
+      addParameterValues(trials,
+			 (Property)properties.get(i),
+			 (List)experimentValues.get(i),
+			 nCopies);
+      nCopies = nCopies * ((List)(experimentValues.get(i))).size();
+    }
+    hasValidTrials = true;
+    return (Trial[])trials.toArray(new Trial[trials.size()]);
+  }
+
+  
+			     
 }
 
 

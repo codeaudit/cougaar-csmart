@@ -27,7 +27,7 @@ public class ExperimentBuilder extends JFrame {
   protected static final String ABOUT_DOC = "../help/about-csmart.html";
   protected static final String HELP_MENU_ITEM = "Help";
   private Experiment experiment;
-  private PropertyBuilder propertyBuilder;
+  private UnboundPropertyBuilder propertyBuilder;
   private HostConfigurationBuilder hostConfigurationBuilder;
   private TrialBuilder trialBuilder;
 
@@ -75,7 +75,7 @@ public class ExperimentBuilder extends JFrame {
     setJMenuBar(menuBar);
 
     JTabbedPane tabbedPane = new JTabbedPane();
-    propertyBuilder = new PropertyBuilder(experiment);
+    propertyBuilder = new UnboundPropertyBuilder(experiment);
     tabbedPane.add("Properties", propertyBuilder);
     hostConfigurationBuilder = new HostConfigurationBuilder(experiment);
     tabbedPane.add("Configurations", hostConfigurationBuilder);

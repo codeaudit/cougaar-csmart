@@ -60,7 +60,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     }
     menuBar.add(helpMenu);
 
-    propertyEditor = new PropertyEditorPanel(society, true);
+    propertyEditor = new PropertyEditorPanel(society, society.isEditable());
     getContentPane().setLayout(new BorderLayout());
     getContentPane().add(propertyEditor, BorderLayout.CENTER);
 

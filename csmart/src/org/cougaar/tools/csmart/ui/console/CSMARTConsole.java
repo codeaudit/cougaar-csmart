@@ -514,14 +514,27 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     }
   }
 
+  /**
+   * Create nodes; if no nodes can be run, reset the run button,
+   * unset the trial values, decrement the trial counter, and return.
+   */
+
   private void createNodes() {
     ConfigurationWriter configWriter = 
       experiment.getConfigurationWriter(nodesToRun);
+    boolean haveRunningNode = false;
     for (int i = 0; i < nodesToRun.length; i++) {
       NodeComponent nodeComponent = nodesToRun[i];
-      createNode(nodeComponent, nodeComponent.toString(), 
-		 hostsToRunOn[i],
-		 configWriter);
+      if (createNode(nodeComponent, nodeComponent.toString(), 
+		     hostsToRunOn[i],
+		     configWriter))
+	haveRunningNode = true;
+    }
+    if (!haveRunningNode) {
+      runButton.setSelected(false);
+      runButton.setEnabled(true);
+      unsetTrialValues();
+      currentTrial--;
     }
   }
 
@@ -942,11 +955,12 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * Create a node and add a tab and status button for it.
    * Create a node event listener and pass it the status button
    * so that it can update it.
+   * Returns true if successful and false otherwise.
    */
 
-  private void createNode(NodeComponent nodeComponent,
-			  String nodeName, String hostName,
-			  ConfigurationWriter configWriter) {
+  private boolean createNode(NodeComponent nodeComponent,
+			     String nodeName, String hostName,
+			     ConfigurationWriter configWriter) {
     DefaultStyledDocument doc = new DefaultStyledDocument();
     JTextPane pane = new JTextPane(doc);
     JScrollPane stdoutPane = new JScrollPane(pane);
@@ -965,7 +979,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     } catch (Exception e) {
       System.err.println("Unable to create output for: " + nodeName);
       e.printStackTrace();
-      return;
+      return false;
     }
 
     // set up idle chart
@@ -1016,7 +1030,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 				    hostName +
 				    "; check that server is running");
       e.printStackTrace();
-      return;
+      return false;
     }
 
     // create the node
@@ -1038,7 +1052,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 				     "Cannot create node on: " + hostName +
 				     "; check that server is running");
        e.printStackTrace();
-       return;
+       return false;
     }
     
     // only add gui controls if successfully created node
@@ -1046,6 +1060,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     addStatusButton(statusButton);
     updateExperimentControls(experiment, true);
     startTimers();
+    return true;
   }
 
   private void startTimers() {
@@ -1161,6 +1176,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     if (currentTrial < 0)
       return; // nothing to save
     File metricsDir = getMetricsDir();
+    if (metricsDir == null)
+      return; // can't save, user didn't specify metrics directory
     Trial trial = experiment.getTrials()[currentTrial];
     String dirname = metricsDir.getAbsolutePath() + File.separatorChar + 
       experiment.getExperimentName() + File.separatorChar +

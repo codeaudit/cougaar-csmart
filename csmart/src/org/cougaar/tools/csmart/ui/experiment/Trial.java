@@ -144,9 +144,17 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
   }
 
   public void printParametersAndValues() {
-    for (int i = 0; i < trialParameters.size(); i++) 
-      System.out.println(((Property)trialParameters.get(i)).getName());
-    for (int i = 0; i < trialValues.size(); i++)
-      System.out.println(trialValues.get(i).toString());
+    StringBuffer sb = new StringBuffer(200);
+    for (int i = 0; i < trialParameters.size(); i++) {
+      sb.append(((Property)trialParameters.get(i)).getName());
+      sb.append(",");
+    }
+    System.out.println(sb.substring(0, sb.length()-1));
+    sb.setLength(0);
+    for (int i = 0; i < trialValues.size(); i++) {
+      sb.append(trialValues.get(i).toString());
+      sb.append(",");
+    }
+    System.out.println(sb.substring(0, sb.length()-1));
   }
 }
