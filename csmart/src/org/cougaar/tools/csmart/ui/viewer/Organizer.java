@@ -248,6 +248,30 @@ public class Organizer extends JScrollPane {
 	}
       }
   };
+  private Action[] newRecipeActions = {
+    new AbstractAction("From Database") {
+	public void actionPerformed(ActionEvent e) {
+          GUIUtils.timeConsumingTaskStart(organizer);
+          try {
+            new Thread("SelectRecipe") {
+              public void run() {
+                selectRecipeFromDatabase(popupNode);
+                GUIUtils.timeConsumingTaskEnd(organizer);
+              }
+            }.start();
+          } catch (RuntimeException re) {
+            System.out.println("Runtime exception creating recipe: " + re);
+            re.printStackTrace();
+            GUIUtils.timeConsumingTaskEnd(organizer);
+          }
+  	}
+    },
+    new AbstractAction("Built In") {
+	public void actionPerformed(ActionEvent e) {
+	  newRecipe(popupNode);
+	}
+    }
+  };
   private Action[] recipeAction = {
     new AbstractAction("Configure", new ImageIcon(getClass().getResource("SB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
@@ -400,6 +424,11 @@ public class Organizer extends JScrollPane {
       newExperimentMenu.add(newExperimentActions[i]);
     }
     rootMenu.add(newExperimentMenu);
+    JMenu newRecipeMenu = new JMenu("New Recipe");
+    for (int i = 0; i < newRecipeActions.length; i++) {
+      newRecipeMenu.add(newRecipeActions[i]);
+    }
+    rootMenu.add(newRecipeMenu);
     for (int i = 0; i < rootAction.length; i++) {
       rootMenu.add(rootAction[i]);
     }
@@ -420,6 +449,11 @@ public class Organizer extends JScrollPane {
       newExperimentInTreeMenu.add(newExperimentActions[i]);
     }
     treeMenu.add(newExperimentInTreeMenu);
+    JMenu newRecipeInTreeMenu = new JMenu("New Recipe");
+    for (int i = 0; i < newRecipeActions.length; i++) {
+      newRecipeInTreeMenu.add(newRecipeActions[i]);
+    }
+    treeMenu.add(newRecipeInTreeMenu);
     for (int i = 0; i < treeAction.length; i++) {
       treeMenu.add(treeAction[i]);
     }
@@ -1171,6 +1205,42 @@ public class Organizer extends JScrollPane {
   }
 
   // CAUTION: this runs in a non-swing thread
+  private void selectRecipeFromDatabase(DefaultMutableTreeNode node) {
+    Map recipeNamesHT = getRecipeNamesFromDatabase();
+    if (recipeNamesHT == null) {
+      return;
+    }
+    Set dbRecipeNames = recipeNamesHT.keySet();
+    if (dbRecipeNames.isEmpty()) return;
+    JComboBox cb = new JComboBox(dbRecipeNames.toArray());
+    cb.setEditable(false);
+    JPanel panel = new JPanel();
+    panel.add(new JLabel("Select Recipe:"));
+    panel.add(cb);
+    int result = 
+      JOptionPane.showConfirmDialog(null, panel, "Recipe",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.PLAIN_MESSAGE);
+    if (result != JOptionPane.OK_OPTION)
+      return;
+    String recipeName = (String)cb.getSelectedItem();
+    String recipeId = (String) recipeNamesHT.get(recipeName);
+    // produce an unique name for CSMART if necessary
+//      if (recipeNames.contains(recipeName)) {
+//        recipeNames.addAll(dbRecipeNames); // Also avoid other database names
+//        recipeName = getUniqueRecipeName(recipeName);
+//        if (recipeName == null)
+//          return;
+//      }
+    DbRecipe dbRecipe = getDatabaseRecipe(recipeId);
+    if (dbRecipe == null) return;
+    dbRecipe.name = recipeName;
+    RecipeComponent mc = createMet(dbRecipe.name, dbRecipe.cls);
+    setRecipeComponentProperties(dbRecipe, mc);
+    addRecipeToWorkspace(mc, node);
+  }
+
+  // CAUTION: this runs in a non-swing thread
   private void selectExperimentFromDatabase(DefaultMutableTreeNode node) {
     experimentNamesHT = ExperimentDB.getExperimentNames();
     if (experimentNamesHT == null) {
@@ -1397,7 +1467,6 @@ public class Organizer extends JScrollPane {
     }
   }
 
-
   private List checkForRecipes(String trialId, String exptId) {
     List recipeList = new ArrayList();
 
@@ -1407,7 +1476,6 @@ public class Organizer extends JScrollPane {
       substitutions.put(":trial_id", trialId);
       substitutions.put(":expt_id", exptId);
       Statement stmt = conn.createStatement();
-      Statement stmt2 = conn.createStatement();
       String query = DBUtils.getQuery("queryRecipes", substitutions);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
@@ -1415,19 +1483,13 @@ public class Organizer extends JScrollPane {
           DbRecipe dbRecipe = new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
           String recipeId = rs.getString(1);
           substitutions.put(":recipe_id", recipeId);
-          String query2 = DBUtils.getQuery("queryRecipeProperties", substitutions);
-          ResultSet rs2 = stmt2.executeQuery(query2);
-          while(rs2.next()) {
-            dbRecipe.props.put(rs2.getString(1), rs2.getString(2));
-          }
-          rs2.close();
+          getRecipeProperties(dbRecipe, conn, substitutions);
           recipeList.add(dbRecipe);
         } catch (ClassNotFoundException cnfe) {
           System.err.println(cnfe + ": for recipe");
         }
       }
       rs.close();
-      stmt2.close();
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
@@ -1436,6 +1498,72 @@ public class Organizer extends JScrollPane {
     }    
     
     return recipeList;
+  }
+
+  private Map getRecipeNamesFromDatabase() {
+    Map recipes = new TreeMap();
+
+    try {
+      Connection conn = DBUtils.getConnection();
+      Statement stmt = conn.createStatement();
+      Map substitutions = new HashMap();
+      String query = DBUtils.getQuery("queryLibRecipes", substitutions);
+      ResultSet rs = stmt.executeQuery(query);
+      while(rs.next()) {
+        recipes.put(rs.getString(2), rs.getString(1));
+      }
+      rs.close();
+      stmt.close();
+      conn.close();   
+    } catch (SQLException se) {
+      System.err.println("Caught SQL exception: " + se);
+      se.printStackTrace();
+    }    
+    
+    return recipes;
+  }
+
+  private void getRecipeProperties(DbRecipe dbRecipe, Connection conn, Map substitutions)
+    throws SQLException
+  {
+    Statement stmt = conn.createStatement();
+    String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
+    ResultSet rs = stmt.executeQuery(query);
+    while(rs.next()) {
+      dbRecipe.props.put(rs.getString(1), rs.getString(2));
+    }
+    rs.close();
+  }
+
+  private DbRecipe getDatabaseRecipe(String recipeId) {
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+        Map substitutions = new HashMap();
+        substitutions.put(":recipe_id", recipeId);
+        Statement stmt = conn.createStatement();
+        String query = DBUtils.getQuery("queryRecipe", substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        if (rs.next()) {
+          try {
+            DbRecipe dbRecipe = new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
+            getRecipeProperties(dbRecipe, conn, substitutions);
+            return dbRecipe;
+          } catch (ClassNotFoundException cnfe) {
+            System.err.println(cnfe + ": for recipe");
+          }
+        }
+        System.err.println("Recipe not found: " + recipeId);
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
+      }
+    } catch (SQLException se) {
+      System.err.println("Caught SQL exception: " + se);
+      se.printStackTrace();
+    }    
+    return null;
   }
 
   private void setRecipeComponentProperties(DbRecipe dbRecipe, RecipeComponent mc) {
