@@ -24,6 +24,8 @@ package org.cougaar.tools.csmart.core.property;
 import java.util.*;
 import java.lang.reflect.*;
 import org.cougaar.tools.csmart.core.property.range.Range;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 public class PropertyHelper {
   private static final Class[] stringArgType = {String.class};
@@ -122,16 +124,27 @@ public class PropertyHelper {
   public static Object validateValue(Class cls, Set validValues, Object newValue)
     throws InvalidPropertyValueException
   {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.property.PropertyHelper");
+
+    if(log.isDebugEnabled()) {
+      log.debug("validateValue(Class, Set, Object) \n" +
+                cls + "\n"  +
+                "Set: " + validValues + "\n"+
+                "Object: " + newValue + "\n" +
+                "Object Class: " + newValue.getClass());
+    }
     if (cls == null) return newValue;
     if (cls.isArray()) {
       if (!newValue.getClass().isArray()) {
         newValue = convertStringToArray(newValue.toString());
       }
       Class cclass = cls.getComponentType();
-      if (cclass == Integer.TYPE)
+      if (cclass == Integer.TYPE) {
         return validateIntArrayValue(validValues, newValue);
-      if (cclass == String.class)
+      }
+      if (cclass == String.class) {
         return validateStringArrayValue(validValues, newValue);
+      }
       return newValue;
     } else if (cls.equals(ArrayList.class)) {
       if (!(newValue.getClass().getComponentType() == ArrayList.class)) {
@@ -143,6 +156,7 @@ public class PropertyHelper {
       return newValue;
     } else {
       if (!cls.isInstance(newValue)) {
+        
         newValue = valueFromString(cls, newValue.toString());
       }
       return validateValidValue(validValues, newValue);
