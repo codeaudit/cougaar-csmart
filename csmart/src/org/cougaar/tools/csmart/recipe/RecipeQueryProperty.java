@@ -21,11 +21,13 @@
 package org.cougaar.tools.csmart.recipe;
 
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Set;
+import org.cougaar.tools.csmart.ui.component.RecipeComponent;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponentProperty;
 import org.cougaar.tools.csmart.ui.component.PDbBase;
@@ -59,12 +61,25 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
         if (availableQueries == null) {
             try {
                 availableQueries = new HashSet();
+		// Get the base queries
                 for (Iterator i = DBProperties.readQueryFile(PDbBase.QUERY_FILE).keySet().iterator();
                      i.hasNext(); ) {
                     String s = i.next().toString();
                     if (s.startsWith("recipeQuery"))
                         availableQueries.add(new StringRange(s));
                 }
+
+		// Get the user defined queries from recipeQueries.q
+		try {
+		  for (Iterator i = DBProperties.readQueryFile(RecipeComponent.RECIPE_QUERY_FILE).keySet().iterator();
+		       i.hasNext(); ) {
+                    String s = i.next().toString();
+                    if (s.startsWith("recipeQuery"))
+		      availableQueries.add(new StringRange(s));
+		  }
+		} catch (FileNotFoundException e) {
+		  // this is normal if a user has no separate recipe query file.
+		}
                 
             } catch (IOException ioe) {
                 ioe.printStackTrace();
