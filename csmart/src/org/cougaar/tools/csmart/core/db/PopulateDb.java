@@ -892,6 +892,28 @@ public class PopulateDb extends PDbBase {
     return assemblyId;
   }
 
+  /**
+   * Change the description of an Assembly (name of a society)
+   *
+   * @param assemblyID a <code>String</code> society to change
+   * @param newName a <code>String</code> new name, not empty
+   * @exception SQLException if an error occurs
+   * @exception IOException if an error occurs
+   */
+  public static void changeSocietyName(String assemblyID, String newName) throws SQLException, IOException {
+    if (assemblyID == null || assemblyID.equals("") || newName == null || newName.equals(""))
+      return;
+    PopulateDb pdb = new PopulateDb(null, null);
+    pdb.reallyChangeSocietyName(assemblyID, newName);
+    pdb.close();
+  }
+
+  private void reallyChangeSocietyName(String assemblyID, String newName) throws SQLException, IOException {
+    substitutions.put(":assembly_id:", assemblyID);
+    substitutions.put(":soc_desc:", newName);
+    executeUpdate(dbp.getQuery("updateAssemblyDesc", substitutions));
+  }
+
   // Add a new assembly of the given type to the current trial's
   // RUNTIME assemblies, returning the new ID
   private String addAssembly(String idType)
