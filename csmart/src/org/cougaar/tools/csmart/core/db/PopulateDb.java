@@ -2607,6 +2607,7 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":insertion_point:", getComponentInsertionPoint(data));
     substitutions.put(":clone_set_id:", getComponentCloneSetId(data));
     substitutions.put(":description:", sqlQuote("Added " + data.getType()));
+    substitutions.put(":priority:", getComponentPriority(data));
     ComponentData parent = data.getParent();
     if (parent != null) {
       substitutions.put(":parent_component_alib_id:",
@@ -2636,6 +2637,12 @@ public class PopulateDb extends PDbBase {
       return sqlQuote(componentType + "|" + data.getClassName());
     }
   }
+  
+  private String getComponentPriority(ComponentData data) {
+    if (data == null) return sqlQuote(null);
+    return sqlQuote(data.getPriority());
+  }
+
 
   /**
    * Get the component insertion point for the component described

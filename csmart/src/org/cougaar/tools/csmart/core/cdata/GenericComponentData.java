@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.core.component.ComponentDescription;
 import java.io.ObjectInputStream;
 import java.io.IOException;
 
@@ -41,6 +42,8 @@ public class GenericComponentData implements ComponentData, Serializable {
   protected String type = null;
   private String name = null;
   protected String className = null;
+  private String priority = 
+    ComponentDescription.priorityToString(ComponentDescription.PRIORITY_COMPONENT);
   private ArrayList children = null;
   private ArrayList parameters = null;
   private ComponentData parent = null;
@@ -89,6 +92,31 @@ public class GenericComponentData implements ComponentData, Serializable {
     this.className = className;
   }
 
+  public String getPriority() {
+    return this.priority;
+  }
+
+  public void setPriority(String priority) {
+    try {
+      ComponentDescription.parsePriority(priority);
+      this.priority = priority;
+    } catch(IllegalArgumentException e) {
+      if(log.isErrorEnabled()) {
+        log.error("IllegalArgumentException setting component priority", e);
+      }
+    }
+  }
+
+  public void setPriority(int priority) {
+    try {
+      this.priority = ComponentDescription.priorityToString(priority);
+    } catch(IllegalArgumentException e) {
+      if(log.isErrorEnabled()) {
+        log.error("IllegalArgumentException setting component priority", e);
+      }
+    }
+  }
+  
   public ComponentData[] getChildren() {
     return (ComponentData[])children.toArray(new ComponentData[children.size()]);
   }
@@ -353,6 +381,7 @@ public class GenericComponentData implements ComponentData, Serializable {
     buf.append("Name: " + getName());
     buf.append(", Type: " + getType());
     buf.append(", Class: " + getClassName());
+    buf.append(", PRiority: " + getPriority());
     if (owner != null) {
       buf.append(", Owner: " + getOwner());
     }
@@ -411,7 +440,7 @@ public class GenericComponentData implements ComponentData, Serializable {
 //  	return (this.getAlibID().equals(that.getAlibID()));
 //        } else
       if (this.getName() == null) {
-	if (this.getClassName() != null && this.getClassName().equals(that.getClassName()) && this.getType() != null && this.getType().equals(that.getType()) && this.parameterCount() == that.parameterCount()) {
+	if (this.getClassName() != null && this.getClassName().equals(that.getClassName()) && this.getType() != null && this.getType().equals(that.getType()) && this.parameterCount() == that.parameterCount() && this.getPriority() != null && this.getPriority().equals(that.getPriority())) {
 	  for (int j = 0; j < that.parameterCount(); j++) {
 	    if (! that.getParameter(j).equals(this.getParameter(j))) {
 	      return false;
@@ -478,15 +507,20 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   /**
-   * Look for the given ComponentData in the given parent, using its class, type, and parameters.
-   * Do not consider the name of the child, or any AssetData or children it might have.
-   * That is, if any existing child of the given parent has the same type, class, and parameter list
-   * of the given candidate child, return true. Also return true if the parent or child is null. Return
-   * false if the parent has no children.
+   * Look for the given ComponentData in the given parent, 
+   * using its class, type, and parameters.
+   * Do not consider the name of the child, or any 
+   * AssetData or children it might have.
+   * That is, if any existing child of the given parent has the same type, 
+   * class, and parameter list
+   * of the given candidate child, return true. Also return true 
+   * if the parent or child is null.
+   * Return false if the parent has no children.
    *
-   * @param parent a <code>ComponentData</code> that may already contain the component
+   * @param parent <code>ComponentData</code> that may already contain the component
    * @param self a <code>ComponentData</code> a component to look for
-   * @return a <code>boolean</code>, true if a component with the same type, class, and parameters is already present
+   * @return a <code>boolean</code>, true if a component with the same type, 
+   *         class, and parameters is already present
    */
   public static boolean alreadyAdded(final ComponentData parent, final ComponentData self) {
     Logger log = CSMART.createLogger(GenericComponentData.class.getName());
