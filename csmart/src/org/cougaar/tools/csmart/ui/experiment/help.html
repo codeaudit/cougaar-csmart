@@ -15,7 +15,7 @@ consists of one or more trials over that Society. By placing a Society
 in the Society folder, and selecting it, you should see all of the unbound
 properties in the properties panel on the right. You will then be able
 to specify a set of experimental trials varying the values of those properties.
-(Functionality coming.) You may also add External Impacts to subject the
+You may also add External Impacts to subject the
 running society to, or Experimental Metrics to collect. To add an external
 impact or metric to your experiment, create one in your workspace organizer,
 and drag it into the appropriate folder here. Note however that currently
@@ -101,5 +101,65 @@ for a given experiment. Currently, all societies record the same metrics.
 The details of when the societies record those numbers are controlled from
 the Configuration Builder tool.
 <br>&nbsp;
+<h3>Using the Experiment Builder</h3>
+The following explains usage of each of the tabbed panes:
+<h4>Properties</h4>
+To edit the tree on the left, create a Society, Impact or Metric in your 
+workspace organizer and drag it into the appropriate folder in the tree.
+To delete an item in the tree, position the mouse over the item and click the
+right mouse button; a pop-up window will be displayed allowing you to delete
+the item, or, for a folder, to delete all the items in the folder.
+<br>
+To edit Unbound Properties in the table, select a Society, Impact or Metric in the tree on the left.  The Unbound Properties (properties for which no value 
+was set in the Configuration Builder) are displayed on the right.  Enter a
+set of comma separated values to be used in trials.
+<br>
+Select the Variation Scheme used to generate trials in the experiment.
+In the Univariate scheme, the Unbound Properties are varied one at a time;
+the default value (assumed to be the first value entered for an Unbound
+Property) is used for the non-varied Unbound Properties.  In the Multivariate
+scheme, the values of all Unbound Properties are varied at once; this
+produces trials for all possible combinations of values of the Unbound Properties.  The "Minimum number of Trials" display indicates how many trials will be automatically produced.
+<h4>Configurations</h4>
+<ol>
+<li>
+In the Hosts tree, create an entry for each host to be used in the experiment.
+An entry for a host can be created:</li>
+
+<ul>
+<li>
+By adding the host name to the hosts.txt file in the directory from which
+CSMART is launched, or</li>
+
+<li>
+By clicking the right mouse button over the "Hosts" folder.
+A pop-up menu is displayed; select "New Host" from this menu.
+A pop-up dialog is displayed in which to enter the name of the host.</li>
+
+<li>
+Note that hosts named "localhost", or host names that do not include the
+full domain name (ie cougaar.org), sometimes fail (due to an RMI bug).
+If you see:</li>
+
+<pre>!Waiting for //127.0.0.1:8888/NameService!.!.!.</pre>
+this usually indicates a problem. Try using an IP address or fully qualified
+host name.</ul>
+
+<li>
+Create a node or nodes for each host to be used in the experiment. Click
+the right mouse button over the host folder in the "Hosts" tree, and select
+"New Node" from the menu. A pop-up dialog is displayed in which to enter
+the name of the node.</li>
+
+<li>
+Assign agents to nodes. Drag and drop agents from the "Unassigned Agents"
+tree to the nodes created in the previous step. To select a group of agents,
+left click on the first agent to select, and shift left click on the last
+agent.</li>
+</ol>
+<h4>Trials</h4>
+This table displays the values that will be used for each of the Unbound 
+Properties for each trial.  To delete a Trial, right click on the Trial row;
+a pop-up menu will be displayed allowing you to delete the Trial.
 </body>
 </html>
