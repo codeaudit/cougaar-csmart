@@ -71,7 +71,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 
 
   private Property[] propServlets;
-  private ServletListRecord[] servletList = null;
+  private Vector servletList = null;
   private Property propTargetAgentQuery;
   private Property propNewServletCount;
   private Property[] propNewServlets = null;
@@ -87,18 +87,17 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   }
 
   public void initProperties() {
+
     servletList = getServletList();
-    
-    int count = servletList.length;
-    propServlets = new Property[count];
+    propServlets = new Property[servletList.size()];
 
     if (servletList != null) {
-      for (int i=0; i < count; i++) {
-        propServlets[i] = addBooleanProperty(((ServletListRecord)servletList[i]).getName(),PROP_SERVLETS_DFLT);
+      for (int i=0; i < servletList.size(); i++) {
+        propServlets[i] = addBooleanProperty(((ServletListRecord)servletList.elementAt(i)).getName(),PROP_SERVLETS_DFLT);
         ((Property)propServlets[i]).setToolTip(PROP_SERVLETS_DESC);
       }
     }
-
+   
     propTargetAgentQuery =
       addRecipeQueryProperty(PROP_TARGET_AGENT_QUERY,
                              PROP_TARGET_AGENT_QUERY_DFLT);
@@ -156,12 +155,9 @@ public class ServletGroupInsertionRecipe extends RecipeBase
     return getShortName();
   }
 
-  private ServletListRecord[] getServletList() {
+  private Vector getServletList() {
     Vector vec = null;
-    ServletListRecord[] servList = null;
 
-
-    // Get the debug file.
     ConfigFinder cf = ConfigFinder.getInstance();
     File inputFile = null;
     try {
@@ -170,12 +166,6 @@ public class ServletGroupInsertionRecipe extends RecipeBase
       System.err.println("Could not read servlets file.");
       e.printStackTrace();
     } 
-
-
-//String pathName = Util.getPath("servlets.txt");
-//    if (pathName == null)
-//      return servList;
-
     if (vec == null) {
       try { 
         vec = new Vector();
@@ -199,11 +189,7 @@ public class ServletGroupInsertionRecipe extends RecipeBase
                            " " + e.toString()); 
       }
     }
-    servList = new ServletListRecord [vec.size()];
-    for (int j=0; j < vec.size(); j++) {
-      servList[j]=(ServletListRecord)vec.elementAt(j);
-    }
-    return servList;    
+    return vec;    
   }
 
 
@@ -247,8 +233,8 @@ public class ServletGroupInsertionRecipe extends RecipeBase
             plugin.setParent(data);
             plugin.setOwner(this);
  
-            plugin.addParameter(servletList[i].getClassname());
-            plugin.addParameter(servletList[i].getArgument());
+            plugin.addParameter(((ServletListRecord)servletList.elementAt(i)).getClassname());
+            plugin.addParameter(((ServletListRecord)servletList.elementAt(i)).getArgument());
             data.addChildDefaultLoc(plugin);
           }
         }
