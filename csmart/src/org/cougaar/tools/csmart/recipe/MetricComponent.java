@@ -7,7 +7,7 @@
  *       © Copyright 2001 by BBNT Solutions LLC.
  * </copyright>
  */
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.recipe;
 
 import java.io.File;
 import java.io.FileFilter;

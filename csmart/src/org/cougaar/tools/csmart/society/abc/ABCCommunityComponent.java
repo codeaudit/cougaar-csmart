@@ -27,20 +27,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.core.property.range.IntegerRange;
-import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 
 /**
- * <PRE>
+ * <PRE/>
  * Define a community with the following properties:
  * TaskType: type (verb) of task that this community processes
  * NumberOfAgents: number of agents in this community
  * </PRE>
  */
-
 public class ABCCommunityComponent extends ConfigurableComponent {
   static final long serialVersionUID = 3635872801642632859L;
 

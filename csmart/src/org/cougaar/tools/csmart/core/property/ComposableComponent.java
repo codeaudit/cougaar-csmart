@@ -29,7 +29,6 @@ import org.cougaar.tools.csmart.core.property.name.CompositeName;
 /**
  * Interface that defines all component, parent and child operations. 
  */
-
 public interface ComposableComponent extends Serializable {
 
   /** Component Operations **/

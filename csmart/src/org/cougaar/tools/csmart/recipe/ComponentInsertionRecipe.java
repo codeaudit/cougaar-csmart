@@ -27,8 +27,17 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Set;
 import java.util.ArrayList;
-import org.cougaar.tools.csmart.ui.component.*;
+
 import org.cougaar.util.DBProperties;
+
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+
+import org.cougaar.tools.csmart.society.AgentComponent;
 
 /**
  * This recipe performs component insertion into an experiment based

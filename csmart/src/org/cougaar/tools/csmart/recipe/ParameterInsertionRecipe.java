@@ -20,11 +20,19 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import org.cougaar.tools.csmart.ui.component.*;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.net.URL;
 import java.util.Set;
+
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+
+import org.cougaar.tools.csmart.society.AgentComponent;
 
 public class ParameterInsertionRecipe extends ModifiableConfigurableComponent
   implements RecipeComponent, PropertiesListener, Serializable

@@ -24,7 +24,11 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.util.*;
 import java.lang.reflect.Array;
-import org.cougaar.tools.csmart.ui.component.*;
+
+import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.InvalidPropertyValueException;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 
 public class PropTableModel extends PropTableModelBase {
     private Map bindings = new HashMap();

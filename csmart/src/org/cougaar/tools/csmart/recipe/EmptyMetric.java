@@ -18,21 +18,21 @@
  * PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.recipe;
 
 import java.io.FileFilter;
 import java.io.Serializable;
 import java.net.URL;
 
-import org.cougaar.tools.csmart.society.scalability.ScalabilityMetricsFileFilter;
-import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
-import org.cougaar.tools.csmart.recipe.MetricComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.recipe.MetricComponent;
+import org.cougaar.tools.csmart.society.scalability.ScalabilityMetricsFileFilter;
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 
 /**

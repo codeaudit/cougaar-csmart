@@ -20,7 +20,6 @@
  */
 package org.cougaar.tools.csmart.society.scalability;
 
-import org.cougaar.tools.csmart.ui.component.*;
 import java.util.*;
 import java.io.File;
 import java.io.FileWriter;

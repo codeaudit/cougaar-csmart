@@ -36,7 +36,6 @@ import org.cougaar.tools.csmart.core.property.name.CompositeName;
  * and experimentValues.
  * These values should be get/set through the ComponentProperties interface.
  */
-
 public interface Property extends Serializable {
     CompositeName getName();
 //      void setName(CompositeName name);

@@ -20,18 +20,19 @@
  */
 package org.cougaar.tools.csmart.society.abc;
 
+import java.io.*;
+import java.lang.StringBuffer;
+import java.util.Collections;
+
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.range.FloatRange;
 import org.cougaar.tools.csmart.core.property.range.LongRange;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
+
 import org.cougaar.tools.csmart.core.cdata.GenericLeafComponentData;
 import org.cougaar.tools.csmart.core.cdata.LeafComponentData;
-
-import java.io.*;
-import java.lang.StringBuffer;
-import java.util.Collections;
 
 /**
  * Defines an Allocation File.  An allocation file contains
@@ -54,7 +55,6 @@ import java.util.Collections;
  *
  * @see ConfigurableComponent
  */
-
 public class ABCAllocation
   extends ConfigurableComponent
   implements Serializable 

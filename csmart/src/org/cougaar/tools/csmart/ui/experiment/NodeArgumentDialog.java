@@ -29,6 +29,8 @@ import javax.swing.border.*;
 import javax.swing.table.DefaultTableModel;
 import java.util.*;
 
+import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
+
 public class NodeArgumentDialog extends JDialog {
   Properties props;
   JTable argTable;

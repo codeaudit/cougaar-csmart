@@ -24,7 +24,7 @@ package org.cougaar.tools.csmart.society.scalability;
 import java.io.*;
 
 import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.ui.component.ComponentName;
+import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.ComponentProperties;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;

@@ -20,6 +20,8 @@
  */
 package org.cougaar.tools.csmart.core.cdata;
 
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+
 /**
  * AgentComponentData extends ComponentData and fills in the
  * Agent values of some fields.

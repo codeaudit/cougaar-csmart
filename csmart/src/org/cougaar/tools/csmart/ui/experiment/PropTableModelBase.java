@@ -25,7 +25,8 @@ import javax.swing.table.*;
 import java.awt.Component;
 import java.util.*;
 import java.lang.reflect.Array;
-import org.cougaar.tools.csmart.ui.component.*;
+
+import org.cougaar.tools.csmart.core.property.Property;
 
 public abstract class PropTableModelBase extends AbstractTableModel {
     public static final int LABEL_COL = 0;

@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.plugin;
+package org.cougaar.tools.csmart.runtime.plugin;
 
 import org.cougaar.core.service.DomainService;
 import org.cougaar.core.domain.RootFactory;

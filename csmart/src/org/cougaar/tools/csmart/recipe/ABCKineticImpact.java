@@ -20,9 +20,13 @@
  */
 package org.cougaar.tools.csmart.ui.experiment;
 
-import org.cougaar.tools.csmart.ui.component.*;
-
 import java.io.Serializable;
+
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
 
 public class ABCKineticImpact
   extends ModifiableConfigurableComponent

@@ -43,6 +43,7 @@ import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
@@ -58,12 +59,16 @@ import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.recipe.BasicMetric;
 import org.cougaar.tools.csmart.recipe.EmptyMetric;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.recipe.ComponentInsertionRecipe;
+import org.cougaar.tools.csmart.recipe.SpecificInsertionRecipe;
+import org.cougaar.tools.csmart.recipe.AgentInsertionRecipe;
+import org.cougaar.tools.csmart.recipe.ParameterInsertionRecipe;
+import org.cougaar.tools.csmart.recipe.ABCImpact;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.abc.ABCSociety;
 import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.society.cmt.CMTSociety;
-import org.cougaar.tools.csmart.ui.experiment.*;
 
 
 /**
@@ -96,7 +101,7 @@ public class Organizer extends JScrollPane {
   private Map dbExptMap = new HashMap();
   private Map dbTrialMap = new HashMap();
   private CMTDialog cmtDialog;
-  private PopulateDb.ConflictHandler saveToDbConflictHandler =
+  private DBConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(this);
   
   // The societies which can be created in CSMART

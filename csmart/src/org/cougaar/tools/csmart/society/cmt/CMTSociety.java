@@ -31,6 +31,7 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 
 import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
@@ -38,11 +39,10 @@ import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
-import org.cougaar.tools.csmart.society.SocietyComponent;
-
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 import org.cougaar.tools.csmart.core.db.DBUtils;
+
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class CMTSociety 
   extends ModifiableConfigurableComponent 

@@ -20,7 +20,6 @@
  */ 
 package org.cougaar.tools.csmart.recipe;
 
-import org.cougaar.tools.csmart.ui.component.*;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.net.URL;
@@ -29,6 +28,20 @@ import java.util.Iterator;
 import java.util.Collection;
 import java.util.StringTokenizer;
 import java.util.HashSet;
+
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
+import org.cougaar.tools.csmart.core.cdata.RelationshipData;
+import org.cougaar.tools.csmart.core.cdata.PropGroupData;
+import org.cougaar.tools.csmart.core.cdata.PGPropData;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+
+import org.cougaar.tools.csmart.society.AgentComponent;
 
 public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   implements RecipeComponent, PropertiesListener, Serializable

@@ -24,7 +24,7 @@ package org.cougaar.tools.csmart.ui.configbuilder;
 import java.util.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.cougaar.tools.csmart.ui.component.CompositeName;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 
 public class PropertyTreeNode extends DefaultMutableTreeNode {
   SortedSet myPropertyNames = new TreeSet();

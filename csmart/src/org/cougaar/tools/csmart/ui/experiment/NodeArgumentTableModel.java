@@ -18,7 +18,7 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.ui.console;
+package org.cougaar.tools.csmart.ui.experiment;
 
 import javax.swing.*;
 import javax.swing.table.*;

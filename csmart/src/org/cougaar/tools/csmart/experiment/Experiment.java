@@ -46,6 +46,7 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 
 import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
@@ -763,7 +764,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
   }
 
-  public void saveToDb(PopulateDb.ConflictHandler ch) {
+  public void saveToDb(DBConflictHandler ch) {
     try {
       updateNameServerHostName(); // Be sure this is up-to-date
       Set writtenNodes = new HashSet();

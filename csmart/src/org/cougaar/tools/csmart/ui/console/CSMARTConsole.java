@@ -42,7 +42,7 @@ import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
-import org.cougaar.tools.csmart.experiment.SocietyComponent;
+import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.experiment.Trial;
 import org.cougaar.tools.csmart.experiment.TrialResult;
 import org.cougaar.tools.csmart.recipe.MetricComponent;

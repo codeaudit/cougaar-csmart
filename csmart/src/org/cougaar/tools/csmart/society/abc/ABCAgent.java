@@ -26,29 +26,32 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.planning.ldm.plan.Role;
+
 import org.cougaar.tools.csmart.society.AgentComponent;
+
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.PropertyEvent;
-import org.cougaar.tools.csmart.core.property.PropertyAdapter;
 import org.cougaar.tools.csmart.core.property.PropertyAlias;
+import org.cougaar.tools.csmart.core.property.PropertyAdapter;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
-import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
+
+import org.cougaar.tools.csmart.core.property.range.IntegerRange;
+
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
-import org.cougaar.tools.csmart.core.cdata.PropGroupData;
-import org.cougaar.tools.csmart.core.cdata.LeafComponentData;
-import org.cougaar.tools.csmart.core.cdata.PGPropData;
-import org.cougaar.tools.csmart.core.cdata.PGPropMultiVal;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
-import org.cougaar.tools.csmart.core.property.range.IntegerRange;
-import org.cougaar.planning.ldm.plan.Role;
+import org.cougaar.tools.csmart.core.cdata.PropGroupData;
+import org.cougaar.tools.csmart.core.cdata.PGPropData;
+import org.cougaar.tools.csmart.core.cdata.PGPropMultiVal;
+import org.cougaar.tools.csmart.core.cdata.LeafComponentData;
 
 /**
  * Defines an Agent within an ABC Society.
  */
-
 public class ABCAgent
    extends ConfigurableComponent
   implements Serializable, AgentComponent
@@ -96,15 +99,15 @@ public class ABCAgent
 
   /** Full names of all plugins **/
   private static final String CustomerPlugIn_name =
-    "org.cougaar.tools.csmart.plugin.CustomerPlugIn";
+    "org.cougaar.tools.csmart.runtime.plugin.CustomerPlugIn";
   private static final String AllocatorPlugIn_name =
-    "org.cougaar.tools.csmart.plugin.AllocatorPlugIn";
+    "org.cougaar.tools.csmart.runtime.plugin.AllocatorPlugIn";
   private static final String ExecutorPlugIn_name =
-    "org.cougaar.tools.csmart.plugin.ExecutorPlugIn";
+    "org.cougaar.tools.csmart.runtime.plugin.ExecutorPlugIn";
   private static final String PlanServerPlugIn_name =
     "org.cougaar.lib.planserver.PlanServerPlugIn";
   private static final String AssetBuilderPlugIn_name =
-    "org.cougaar.tools.csmart.plugin.LocalAssetBuilder";
+    "org.cougaar.tools.csmart.runtime.plugin.LocalAssetBuilder";
   private static final String AssetDataPlugIn_name =
     "org.cougaar.planning.plugin.AssetDataPlugIn";
   private static final String AssetReportPlugIn_name =

@@ -27,15 +27,19 @@ import java.net.URL;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
-import org.cougaar.tools.csmart.ui.Browser;
+
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.db.DBConflictHandler;
+import org.cougaar.tools.csmart.core.property.ModificationListener;
+import org.cougaar.tools.csmart.core.property.ModificationEvent;
+
+import org.cougaar.tools.csmart.experiment.Experiment;
+
+import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
-import org.cougaar.tools.csmart.core.property.ModificationListener;
-import org.cougaar.tools.csmart.core.property.ModificationEvent;
-import org.cougaar.tools.csmart.core.db.PopulateDb;
-import org.cougaar.tools.csmart.experiment.Experiment;
 
 public class ExperimentBuilder extends JFrame implements ModificationListener {
   private static final String FILE_MENU = "File";
@@ -61,7 +65,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   private ThreadBuilder threadBuilder;
   private boolean modified = false;
   private JMenu findMenu;
-  private PopulateDb.ConflictHandler saveToDbConflictHandler =
+  private DBConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(this);
   // items in file menu specific to selected node in HostConfigurationBuilder
   private JMenuItem globalCommandLineMenuItem;

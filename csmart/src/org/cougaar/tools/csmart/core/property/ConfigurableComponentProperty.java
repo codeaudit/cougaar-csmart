@@ -21,19 +21,17 @@
 
 package org.cougaar.tools.csmart.core.property;
 
-import org.cougaar.tools.csmart.core.property.name.ComponentName;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
-
 import java.util.List;
 import java.util.Set;
 
+import org.cougaar.tools.csmart.core.property.name.ComponentName;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 /**
  * Every property has these attributes:
  * name, propertyClass, label, defaultValue, value, allowedValues, 
  * and experimentValues.
  * These values should be get/set through the ComponentProperties interface.
  */
-
 public class ConfigurableComponentProperty extends PropertyBase implements Property {
   static final long serialVersionUID = -1591739578094464420L;
 

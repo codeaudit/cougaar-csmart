@@ -18,7 +18,6 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-
 package org.cougaar.tools.csmart.society;
 
 import java.io.File;

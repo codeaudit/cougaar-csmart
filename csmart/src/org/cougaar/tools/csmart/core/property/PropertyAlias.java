@@ -34,7 +34,6 @@ import org.cougaar.tools.csmart.core.property.name.ComponentName;
  * Additionally, other properties can be added and their values will
  * track the aliased property.
  **/
-
 public class PropertyAlias extends PropertyBase implements Property, PropertyListener {
   static final long serialVersionUID = -3114178146196112865L;
 
