@@ -19,9 +19,10 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.core.property.name;
 
 import java.util.Vector;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 
 /**
  * The name in the namespace of a configurable component.

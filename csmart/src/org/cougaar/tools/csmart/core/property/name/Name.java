@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.core.property.name;
 
 import java.io.Serializable;
 
