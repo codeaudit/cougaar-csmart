@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.core.property.range;
 
 /**
  * An implementation of the Range interface for doubles.
