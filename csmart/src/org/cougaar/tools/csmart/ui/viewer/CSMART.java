@@ -35,6 +35,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
@@ -1070,6 +1071,9 @@ public class CSMART extends JFrame {
     lf.configure(props);
   }
 
+  /** Keep loggers as flyweights **/
+  private static final HashMap _loggers = new HashMap(97);
+
   /**
    * Used to grab an instance of the Logger
    *
@@ -1077,7 +1081,14 @@ public class CSMART extends JFrame {
    * @return a <code>Logger</code> value
    */
   public static Logger createLogger(String name) {
-    return lf.createLogger(name);
+    synchronized (_loggers) {
+      Logger l = (Logger)_loggers.get(name);
+      if (l == null) {
+        l = lf.createLogger(name);
+        _loggers.put(name, l);
+      }
+      return l;
+    }
   }
 
   private void createLog() {
