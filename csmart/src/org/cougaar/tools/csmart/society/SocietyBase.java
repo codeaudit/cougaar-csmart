@@ -25,6 +25,13 @@ import java.net.URL;
 
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.experiment.NodeComponent;
+import org.cougaar.tools.csmart.experiment.HostComponent;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.Property;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * SocietyBase.java
@@ -44,6 +51,8 @@ public abstract class SocietyBase
     "Description not available";
 
   protected boolean isRunning = false;
+  protected List nodes = new ArrayList();
+  protected List hosts = new ArrayList();
 
   public SocietyBase(String name){
     super(name);
