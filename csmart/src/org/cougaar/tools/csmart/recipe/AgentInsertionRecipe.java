@@ -90,11 +90,6 @@ public class AgentInsertionRecipe extends RecipeBase
   private static final String PROP_ALTTYPEID_DFLT = "";
   private static final String PROP_ALTTYPEID_DESC = "Alternate Type Identification";
 
-  private static final String PROP_PSPPARAM = "PlanServer Parameter";
-  private static final String PROP_PSPPARAM_DFLT = "";
-  private static final String PROP_PSPPARAM_DESC = 
-    "Additional Value passed to PlanServer, can be blank";
-
   private static final String PROP_ORGASSET = "Include Org Asset";
   private static final String PROP_ORGASSET_DFLT = TRUE;
   private static final String PROP_ORGASSET_DESC = 
@@ -118,7 +113,6 @@ public class AgentInsertionRecipe extends RecipeBase
   private Property propNomenclature;
   private Property propAltTypeId;
   private Property propAssetClass;
-  private Property propPSPParameter;
   private Property propOrgAsset;
   private Property propItemPG;
 
@@ -148,9 +142,6 @@ public class AgentInsertionRecipe extends RecipeBase
 
     propAssetClass = addProperty(PROP_ASSETCLASS, PROP_ASSETCLASS_DFLT);
     propAssetClass.setToolTip(PROP_ASSETCLASS_DESC);
-
-    propPSPParameter = addProperty(PROP_PSPPARAM, PROP_PSPPARAM_DFLT);
-    propPSPParameter.setToolTip(PROP_PSPPARAM_DESC);
 
     propOrgAsset = addBooleanProperty(PROP_ORGASSET, PROP_ORGASSET_DFLT);
     propOrgAsset.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
