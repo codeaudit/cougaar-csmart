@@ -184,11 +184,10 @@ public class PopulateDb extends PDbBase {
      * @param experimentName the name of the experiment being written
      * @param exptId the experiment id of the source experiment
      * @param trialId the trial id
-     * @param createNew clone the experiment first
      **/
     public PopulateDb(String cmtType, String hnaType, String csmiType,
                       String experimentName,
-                      String exptId, String trialId, boolean createNew,
+                      String exptId, String trialId,
                       DBConflictHandler ch)
         throws SQLException, IOException
     {
@@ -218,6 +217,57 @@ public class PopulateDb extends PDbBase {
         }
         setNewAssemblyIds();
     }
+
+
+
+
+
+
+
+  /**
+   * Constructor
+   * @param hnaType the hna assembly type
+   * @param csmiType the csmi assembly type
+   * @param experimentName the name of the experiment being written
+   * @param exptId ExperimentId, if one exists, else null
+   * @param trialId the trial id
+   * @param ch 
+   * @exception SQLException if an error occurs
+   * @exception IOException if an error occurs
+   */
+  public PopulateDb(String hnaType, String csmiType, String experimentName,
+                      String exptId, String trialId, DBConflictHandler ch)
+        throws SQLException, IOException
+    {
+        super();
+        createLogger();
+        if (hnaType == null) throw new IllegalArgumentException("null hnaType");
+        if (csmiType == null) throw new IllegalArgumentException("null csmiType");
+        if (ch == null) throw new IllegalArgumentException("null conflict handler");
+        this.cmtType = cmtType;
+        this.hnaType = hnaType;
+        this.csmiType = csmiType;
+        if(exptId == null) {
+          // Create a new exptId here.
+          exptId = newExperiment("EXPT", experimentName, "NON-CFW EXPERIMENT");
+          // Trial and experiment have same name
+          trialId = newTrial(exptId + ".TRIAL", experimentName, "NON-CFW TRIAL");
+        }
+        this.trialId = trialId;
+        this.exptId = exptId;
+        this.conflictHandler = ch;
+        substitutions.put(":expt_id:", exptId);
+        String oldExperimentName = getOldExperimentName();
+        if (!experimentName.equals(oldExperimentName)) {
+            cloneTrial(hnaType, trialId, experimentName, "Modified " + oldExperimentName);
+            writeEverything = true;
+        } else {
+          //            cleanTrial(cmtType, hnaType, csmiType, trialId);
+            writeEverything = false;
+        }
+        setNewAssemblyIds();
+    }
+
 
   private void createLogger() {
     log = CSMART.createLogger(this.getClass().getName());
@@ -324,7 +374,7 @@ public class PopulateDb extends PDbBase {
         executeUpdate(dbp.getQuery("cleanTrialRecipe", substitutions));
     }
 
-    private void newExperiment(String idType, String experimentName, String description)
+    private String newExperiment(String idType, String experimentName, String description)
         throws SQLException
     {
         String exptIdPrefix = idType + "-";
@@ -338,24 +388,35 @@ public class PopulateDb extends PDbBase {
         substitutions.put(":expt_name:", experimentName);
         substitutions.put(":description:", description);
         exptId = getNextId("queryMaxExptId", exptIdPrefix);
+        if(log.isDebugEnabled()) {
+          log.debug("Created New exptId: " + exptId);
+        }
         substitutions.put(":expt_id:", exptId);
         executeUpdate(dbp.getQuery("insertExptId", substitutions));
+        return exptId;
     }
 
     public String getTrialId() {
-        return trialId;
+      if(log.isDebugEnabled()) {
+        log.debug("trialId: " + trialId);
+      }
+      return trialId;
     }
 
-    private void newTrial(String idType, String trialName, String description)
+    private String newTrial(String idType, String trialName, String description)
         throws SQLException
     {
         String trialIdPrefix = idType + "-";
         substitutions.put(":trial_type:", idType);
         trialId = getNextId("queryMaxTrialId", trialIdPrefix);
+        if(log.isDebugEnabled()) {
+          log.debug("TrialId: " + trialId);
+        }
         substitutions.put(":trial_id:", trialId);
         substitutions.put(":description:", description);
         substitutions.put(":trial_name:", trialName);
         executeUpdate(dbp.getQuery("insertTrialId", substitutions));
+        return trialId;
     }
 
     private String addAssembly(String idType)
@@ -486,10 +547,16 @@ public class PopulateDb extends PDbBase {
             rs = executeQuery(stmt, dbp.getQuery("queryComponentArgs", substitutions));
             oldArgs = new TreeSet();
             while (rs.next()) {
+              if(log.isDebugEnabled()) {
+                log.debug("Adding Old Arg: " + rs.getString(1));
+              }
                 oldArgs.add(new Argument(rs.getString(1), rs.getFloat(2)));
             }
             rs.close();
             if (parent != null) {
+              if(log.isDebugEnabled()) {
+                log.debug("PopulateDb:populate, Parent is not null");
+              }
                 rs = executeQuery(stmt, dbp.getQuery("checkComponentHierarchy",
                                                      substitutions));
                 if (!rs.next()) {
@@ -506,6 +573,9 @@ public class PopulateDb extends PDbBase {
         SortedSet newArgs = new TreeSet();
         Object[] params = data.getParameters();
         for (int i = 0; i < params.length; i++) {
+          if(log.isDebugEnabled()) {
+            log.debug("PopulateDb:populate; Param: " + params[i]);
+          }
             newArgs.add(new Argument(params[i].toString(), i));
         }
         // The new args must only contain additions. There must be no
@@ -514,6 +584,9 @@ public class PopulateDb extends PDbBase {
         // there are fewer newArgs than oldArgs, there is clearly a
         // violation of this premise.
         int excess = newArgs.size() - oldArgs.size();
+        if(log.isDebugEnabled()) {
+          log.debug("excess: " + excess);
+        }
         if (excess < 0) {
             throw new IllegalArgumentException("Attempt to remove "
                                                + (-excess)
@@ -539,6 +612,9 @@ public class PopulateDb extends PDbBase {
             Argument newArg = (Argument) newIter.next();
             Argument oldArg = (Argument) oldIter.next();
             while (!newArg.argument.equals(oldArg.argument)) {
+              if(log.isWarnEnabled()) {
+                log.warn("newArg != oldArg, new: " +newArg.toString() + " old: " + oldArg.toString());
+              }
                 // Assume arguments were inserted
                 excess--;
                 if (excess < 0) {
@@ -564,6 +640,9 @@ public class PopulateDb extends PDbBase {
             substitutions.put(":argument_value:", sqlQuote(arg.argument));
             substitutions.put(":argument_order:", sqlQuote(String.valueOf(arg.order)));
             executeUpdate(dbp.getQuery("insertComponentArg", substitutions));
+            if(log.isDebugEnabled()) {
+              log.debug("Adding oldArg: " + arg);
+            }
             oldArgs.add(arg);
             result = true;
         }
@@ -730,12 +809,18 @@ public class PopulateDb extends PDbBase {
      **/
     private void populateAgent(ComponentData data, boolean isAdded) throws SQLException {
       
+      if(log.isDebugEnabled()) {
+        log.debug("populateAgent: " + data.getName());
+      }
         AgentAssetData assetData = data.getAgentAssetData();
         if (assetData == null) return;
         substitutions.put(":agent_org_class:", sqlQuote(assetData.getAssetClass()));
         substitutions.put(":agent_lib_name:", sqlQuote(data.getName()));
         substitutions.put(":component_name:", sqlQuote(data.getName()));
         if (isAdded) {
+          if(log.isDebugEnabled()) {
+            log.debug("isAdded is true!");
+          }
             // finish populating a new agent
             ResultSet rs = executeQuery(stmt, dbp.getQuery("checkAgentOrg", substitutions));
             if (!rs.next()) {
@@ -765,7 +850,13 @@ public class PopulateDb extends PDbBase {
                             throw new RuntimeException("Property is not a collection: "
                                                        + propInfo.toString());
                         String[] values = ((PGPropMultiVal) prop.getValue()).getValuesStringArray();
+                        if(log.isDebugEnabled()) {
+                          log.debug("Prop: " + prop.getName() + "::"+prop.toString());
+                        }
                         for (int k = 0; k < values.length; k++) {
+                          if(log.isDebugEnabled()) {
+                            log.debug("Adding value: " + values[k]);
+                          }
                             substitutions.put(":attribute_value:", sqlQuote(values[k]));
                             substitutions.put(":attribute_order:", String.valueOf(k + 1));
                             executeUpdate(dbp.getQuery("insertAttribute", substitutions));
@@ -857,15 +948,23 @@ public class PopulateDb extends PDbBase {
      * database.
      **/
     private PropertyInfo getPropertyInfo(String pgName, String propName) throws SQLException {
+      if(log.isDebugEnabled()) {
+        log.debug("getPropertyInfo("+pgName+", "+propName+")");
+      }
         PropertyKey key = new PropertyKey(pgName, propName);
         PropertyInfo result = (PropertyInfo) propertyInfos.get(key);
         if (result == null) {
+          if(log.isDebugEnabled()) {
+            log.debug("getPropertyInfo, result is null");
+          }
             Statement stmt = dbConnection.createStatement();
             substitutions.put(":pg_name:", pgName);
             substitutions.put(":attribute_name:", propName);
             ResultSet rs = executeQuery(stmt, dbp.getQuery("queryLibPGAttribute", substitutions));
             while (rs.next()) {
-                PropertyKey key1 = new PropertyKey(rs.getString(1), rs.getString(2));
+              String s1 = rs.getString(1);
+              String s2 = rs.getString(2);
+                PropertyKey key1 = new PropertyKey(s1, s2);
                 PropertyInfo info = new PropertyInfo(key1,
                                                      rs.getString(3),
                                                      rs.getString(4),
@@ -873,6 +972,9 @@ public class PopulateDb extends PDbBase {
                 
                 propertyInfos.put(key1, info);
                 if (key1.equals(key)) {
+                  if(log.isDebugEnabled()) {
+                    log.debug("getPropertyInfo, found a result");
+                  }
                   result = info;
                 }
 
