@@ -1,0 +1,68 @@
+#!/bin/csh -f
+
+# <copyright>
+#  Copyright 2001-2003 BBNT Solutions, LLC
+#  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
+# 
+#  This program is free software; you can redistribute it and/or modify
+#  it under the terms of the Cougaar Open Source License as published by
+#  DARPA on the Cougaar Open Source Website (www.cougaar.org).
+# 
+#  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
+#  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
+#  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, AND WITHOUT
+#  ANY WARRANTIES AS TO NON-INFRINGEMENT.  IN NO EVENT SHALL COPYRIGHT
+#  HOLDER BE LIABLE FOR ANY DIRECT, SPECIAL, INDIRECT OR CONSEQUENTIAL
+#  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE OF DATA OR PROFITS,
+#  TORTIOUS CONDUCT, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+#  PERFORMANCE OF THE COUGAAR SOFTWARE.
+# </copyright>
+
+
+# Main script to run CONSOLE on Unix
+# Note that CONSOLE writes some files to its working directory.
+       
+if (! $?COUGAAR_INSTALL_PATH) then
+    echo "COUGAAR_INSTALL_PATH not set!"
+    exit
+endif
+
+if (! $?COUGAAR3RDPARTY) then
+    setenv COUGAAR3RDPARTY /opt/cougaar-jars
+endif
+
+if (! $?COUGAAR_WORKSPACE) then
+    echo "Defaulting COUGAAR_WORKSPACE to CIP/workspace"
+    setenv COUGAAR_WORKSPACE ${COUGAAR_INSTALL_PATH}/workspace
+endif
+
+# Optional environment variable COUGAAR_DEV_PATH can be
+# used to point to custom developer code: one or more colon separated
+# directories/jars/zips. It may also be left unset.
+
+set devp=""
+if ($?COUGAAR_DEV_PATH) then
+    set devp="-Dorg.cougaar.class.path=${COUGAAR_DEV_PATH}"
+endif
+
+set MYMEMORY="-Xms100m -Xmx300m"
+set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Dorg.cougaar.workspace=$COUGAAR_WORKSPACE $devp -Dorg.cougaar.core.util.ConfigFinder.verbose=true"
+
+# Set the config path to include the basic CSMART config files first
+set MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;$COUGAAR_INSTALL_PATH/configs/\;"
+
+#set DEBUG = "-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
+
+set MYCLASSPATH = "${COUGAAR_INSTALL_PATH}/lib/bootstrap.jar"
+
+set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -cp $MYCLASSPATH -Dorg.cougaar.tools.server.verbose=true"
+
+if ($?COUGAAR_DEV_PATH) then
+  echo java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.console.CSMARTConsoleView
+endif
+
+exec java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.console.CSMARTConsoleView
+
+
+
