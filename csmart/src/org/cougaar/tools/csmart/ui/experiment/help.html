@@ -140,7 +140,16 @@ The global command line and command line values both
  affect running the nodes of the society. Each node receives a
  combination of the global command line values and its own command
  line values. The node command line values override the global
- ones. Command line arguments set here will over-ride or augment any
+ ones. Note that you cannot delete a global argument for only a single
+ Node. To remove a global argument from a single Node, specify an
+ empty value, or delete it from the Global arguments, and then add it
+ to the nodes where you do want that value.<br>
+You may also load a file of command line arguments, using the "Read
+ from File" button in the "Command Line Arguments" dialog box. This
+ file should be in standard Java Properties file format, and the
+ values loaded here will over-ride any previous values specified in
+ this window. <br>
+Command line arguments set here will over-ride or augment any
  values specified in the AppServer properties files (server.props).
  A few -D arguments are not editable. 
 To set an environment variable, make the name "env.&lt;name&gt;".
@@ -164,6 +173,8 @@ As of 9.2.1, you may include the
  string $HOST in a command line argument, and CSMART will substitute
  at runtime the name of the Host on which that Node is running (using
  the form of the name you specified within CSMART).<br>
+When specifying program Arguments in the free text box at the bottom
+ of the dialog, be sure to include each argument on a separate line.<br>
 </p>
 There are a number of other File menu options for further configuring
 your Experiment. In particular, note the "Save" and "Save As" options
