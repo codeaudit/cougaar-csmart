@@ -257,42 +257,119 @@
 (define (org_components assembly_id cfw_group_id)
   
   (string-append 
-   "select " (sq assembly_id) ","
-   (sq assembly_id)
+   "select " (sqlQuote  assembly_id) ","
+   (sqlQuote  assembly_id)
    "|| org_name ,null,org_name, org.org_id,'AGENT',0 from v1_cfw_group_org go, v1_lib_organization org  where cfw_group_id=" 
-   (sq cfw_group_id)
+   (sqlQuote  cfw_group_id)
    "               and org.org_id=go.org_id"
    )
   )
 
+
+  
+
 (define (view_org_components assembly_id cfw_group_id)
   (view-query  
    (getrefDBConnection)
+   (get-asb-org-data-sql assembly_id cfw_group_id)
+   ))
+
+
+;; ASSEMBLY_ID				  VARCHAR2(50)
+;; COMPONENT_ID			 NOT NULL VARCHAR2(150)
+;; COMPONENT_NAME 			  VARCHAR2(100)
+;; PARENT_COMPONENT_ID			  VARCHAR2(100)
+;; COMPONENT_LIB_ID			  VARCHAR2(100)
+;; COMPONENT_CATEGORY			  VARCHAR2(50)
+;; INSERTION_ORDER			  VARCHAR2(50)
+
+
+
+
+(define (get-asb-org-data-sql assembly_id cfw_group_id)
    (string-append 
-    "select " (sq assembly_id) ","
-    (sq assembly_id)
-    "|| org_name ,null,org_name, org.org_id,'AGENT',0 from v1_cfw_group_org go, v1_lib_organization org  where cfw_group_id=" 
-    (sq cfw_group_id)
+    "select " (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
+    (sqlQuote  assembly_id)
+    "|| '|' ||  org.org_id AS COMPONENT_ID,"
+    "org.org_id as COMPONENT_NAME,"
+    "null as PARENT_COMPONENT_ID,"
+    "org.org_id as COMPONENT_LIB_ID,"
+    "'agent' as COMONENT_CATEGOR,"
+    "1 as INSERTION_ORDER "
+    " from v1_cfw_group_org go, v1_lib_organization org  where cfw_group_id=" 
+    (sqlQuote  cfw_group_id)
     "               and org.org_id=go.org_id"
+    " order by org.org_id"
     )
+)
+
+(define (view_plugin_components assembly_id cfw_group_id)
+  (view-query  
+   (getrefDBConnection)
+   (get-asb-plugin-data-sql assembly_id cfw_group_id)
+   ))
+
+
+;;select '3ID-135-CMT'as ASSEMBLY_ID,'3ID-135-CMT'|| '|' ||  pl.plugin_class AS COMPONENT_ID,
+;;pl.plugin_class as COMPONENT_NAME,
+;;null as PARENT_COMPONENT_ID,
+;;org.org_id as COMPONENT_LIB_ID,
+;;'plugin' as COMONENT_CATEGOR,
+;;1 as INSERTION_ORDER  from v1_cfw_group_org go,
+;; v1_lib_organization org,
+;; v1_cfw_org_orgtype ot,
+;; v1_cfw_orgtype_plugin_grp pg,
+;; v1_cfw_plugin_group_member pl
+;;   where cfw_group_id='3ID-CFW-GRP-A'
+;;   and org.org_id=go.org_id
+;;    and org.org_id=ot.org_id
+;;    and ot.orgtype_id=pg.orgtype_id
+;;    and pg.plugin_group_id = pl.plugin_group_id order by org.org_id;
+;;
+;;
+(define (get-asb-plugin-data-sql assembly_id cfw_group_id)
+  (string-append 
+   "select " (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
+   (sqlQuote  assembly_id)
+   "|| '|' ||  pl.plugin_class AS COMPONENT_ID,"
+   "pl.plugin_class as COMPONENT_NAME,"
+   "null as PARENT_COMPONENT_ID,"
+   "org.org_id as COMPONENT_LIB_ID,"
+   "'plugin' as COMONENT_CATEGOR,"
+   "1 as INSERTION_ORDER "
+   " from v1_cfw_group_org go, v1_lib_organization org, v1_cfw_org_orgtype ot, v1_cfw_orgtype_plugin_grp pg, v1_cfw_plugin_group_member pl"
+   "   where cfw_group_id=" 
+   (sqlQuote  cfw_group_id)
+   "    and org.org_id=go.org_id"
+   "    and org.org_id=ot.org_id"
+   "    and ot.orgtype_id=pg.orgtype_id" 
+   "    and pg.plugin_group_id = pl.plugin_group_id"
+   " order by org.org_id"
    )
-  )
+)
+
+
+
+(define (voc)
+  (let
+      ((assembly_id "3ID-135-CMT")
+       (cfw_group_id "3ID-CFW-GRP-A"))
+    (view_org_components assembly_id cfw_group_id)))
+
+(define (vpc)
+  (let
+      ((assembly_id "3ID-135-CMT")
+       (cfw_group_id "3ID-CFW-GRP-A"))
+    (view_plugin_components assembly_id cfw_group_id)))
+    
 
 (define (insert_org_components assembly_id cfw_group_id)
   (string-append 
    "insert into v3_asb_component"
-   "(select " (sq assembly_id) ","
-   (sq assembly_id) "|| org_name ,"
-   "null,"
-   "org_name,"
-   "org.org_id,"
-   "'AGENT',"
-   "0"
-   " from v1_cfw_group_org go, v1_lib_organization org  where cfw_group_id=" 
-   (sq cfw_group_id)
-   "               and org.org_id=go.org_id)"
-   )
-  )
+   "("
+   (get-asbcomponent-data-sql assembly_id cfw_group_id)
+   ")"
+))
 
 (define (vq query)
   (view-query    
@@ -303,3 +380,4 @@
   (collect-query    
    (getrefDBConnection)
    query))
+
