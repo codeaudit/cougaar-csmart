@@ -124,17 +124,17 @@ public class CMTAgent
 			     }
 			   });
 
-    propComponentID = addProperty(PROP_COMPONENT_ID, componentID,
-			   new ConfigurableComponentPropertyAdapter() {
-			     public void PropertyValueChanged(PropertyEvent e) {
-			     }
-			   });
+//     propComponentID = addProperty(PROP_COMPONENT_ID, componentID,
+// 			   new ConfigurableComponentPropertyAdapter() {
+// 			     public void PropertyValueChanged(PropertyEvent e) {
+// 			     }
+// 			   });
 
-    propCategory = addProperty(PROP_COMPONENT_CATEGORY, componentCategory,
-			   new ConfigurableComponentPropertyAdapter() {
-			     public void PropertyValueChanged(PropertyEvent e) {
-			     }
-			   });
+//     propCategory = addProperty(PROP_COMPONENT_CATEGORY, componentCategory,
+// 			   new ConfigurableComponentPropertyAdapter() {
+// 			     public void PropertyValueChanged(PropertyEvent e) {
+// 			     }
+// 			   });
 
   }
 
@@ -154,7 +154,7 @@ public class CMTAgent
 
   public ComponentData addComponentData(ComponentData data) {
 
-    System.out.println("Agent: " + data.getName());
+    //    System.out.println("Agent: " + data.getName());
     StringBuffer assemblyMatch = null;
 
     String name = data.getName();
@@ -171,6 +171,7 @@ public class CMTAgent
 	Statement stmt = conn.createStatement();	
         dbp.setDebug(true);
 	String query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
+	
 	ResultSet rs = stmt.executeQuery(query);
 	while(rs.next()) {
 	  GenericComponentData plugin = new GenericComponentData();
@@ -179,7 +180,8 @@ public class CMTAgent
           plugin.setClassName(pluginClassName);
 	  plugin.setParent(data);
 	  plugin.setOwner(this);
-	  plugin.setName(pluginClassName);
+	  plugin.setName(pluginClassName);	  
+	  plugin.setAlibID(rs.getString(2));
 	  data.addChild(plugin);
 	}
 
@@ -190,8 +192,6 @@ public class CMTAgent
       e.printStackTrace();
       throw new RuntimeException("Error" + e);
     }
-
-    System.out.println("Done");
     return data;
   }
 
