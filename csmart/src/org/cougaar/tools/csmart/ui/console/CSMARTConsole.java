@@ -37,6 +37,7 @@ import javax.swing.tree.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
+import org.cougaar.mlm.ui.glsinit.GLSClient;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.experiment.Experiment;
@@ -730,10 +731,20 @@ public class CSMARTConsole extends JFrame {
               }
             });
         } else
+          // create and display iconified GLSClient
           SwingUtilities.invokeLater(new Runnable() {
               public void run() {
-                String s = getOPlanAgentURL();
-                desktop.add(new GLSClient(s));
+                JInternalFrame jif = 
+                  new JInternalFrame("GLS", true, false, true, true);
+                jif.getContentPane().add(new GLSClient(getOPlanAgentURL()));
+                jif.setSize(350, 350);
+                jif.setLocation(0, 0);
+                jif.setVisible(true);
+                desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
+                try {
+                  jif.setIcon(true);
+                } catch (PropertyVetoException e) {
+                }
               }
             });
       }
