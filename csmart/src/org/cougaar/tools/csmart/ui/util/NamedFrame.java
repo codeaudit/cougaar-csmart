@@ -100,9 +100,6 @@ public class NamedFrame extends Observable {
    * @param frame the frame
    */
   public String addFrame(String title, JFrame frame) {
-    if (titleToFrame == null)
-      titleToFrame = new Hashtable();
-
     // number commonly used titles
     for (int i = 0; i < titles.length; i++) {
       if (title.equals(titles[i])) {
@@ -123,14 +120,10 @@ public class NamedFrame extends Observable {
   }
 
   public JFrame getFrame(String title) {
-    if (titleToFrame == null)
-      titleToFrame = new Hashtable();
     return (JFrame) titleToFrame.get(title);
   }
 
   public JFrame getToolFrame(String toolTitle) {
-    if (titleToFrame == null)
-      titleToFrame = new Hashtable();
     Enumeration titles = titleToFrame.keys();
     while (titles.hasMoreElements()) {
       String title = (String)titles.nextElement();
@@ -141,8 +134,6 @@ public class NamedFrame extends Observable {
   }
 
   public JFrame getToolFrame(String toolTitle, String societyName) {
-    if (titleToFrame == null)
-      titleToFrame = new Hashtable();
     String newTitle = toolTitle + ": " + societyName;
     Enumeration titles = titleToFrame.keys();
     while (titles.hasMoreElements()) {
@@ -170,8 +161,6 @@ public class NamedFrame extends Observable {
    * @param frame the frame to remove
    */
   public void removeFrame(JFrame frame) {
-    if (titleToFrame == null)
-      titleToFrame = new Hashtable();
     //    String s = removeTitleColon(frame.getTitle());
     String s = frame.getTitle();
     titleToFrame.remove(s);
@@ -208,7 +197,7 @@ public class NamedFrame extends Observable {
   {
     ois.defaultReadObject();
     createLogger();
+    titleToFrame = new Hashtable();
   }
 
 }
-
