@@ -277,10 +277,6 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   }
   
   public ComponentData modifyComponentData(ComponentData data, PopulateDb pdb) {
-    if (log.isDebugEnabled()) {
-      log.debug("modCData handed data " + data.getName() + ". Will do query " + propTargetAgentQuery.getValue().toString());
-    }
-
     try {
       Set targets = pdb.executeQuery(propTargetAgentQuery.getValue().toString());
       modifyComponentData(data, pdb, targets);
@@ -295,10 +291,6 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   private void modifyComponentData(ComponentData data, PopulateDb pdb, Set targets)
     throws SQLException
   {
-    if (log.isDebugEnabled()) {
-      log.debug(this + " doing mod with targets list size " + targets.size());
-      log.debug("Where data (" + data.getName() + ") itself says AlibID is " + data.getAlibID());
-    }
     if (targets.contains(pdb.getComponentAlibId(data))) { 
       if (log.isDebugEnabled()) {
 	log.debug("Adding servlets to " + pdb.getComponentAlibId(data));
@@ -356,10 +348,10 @@ public class ServletGroupInsertionRecipe extends RecipeBase
             data.addChildDefaultLoc(comp);
         }
       }
-    } else {
-      if (log.isDebugEnabled()) {
-	log.debug("No match for " + pdb.getComponentAlibId(data));
-      }
+//     } else {
+//       if (log.isDebugEnabled()) {
+// 	log.debug("No match for " + pdb.getComponentAlibId(data));
+//       }
     }
 
     if (data.childCount() > 0) {
