@@ -110,9 +110,15 @@ public class OrganizerHelper {
       if(id != null) {
         String societyName = DBUtils.getSocietyName(id);
         SocietyComponent sc = organizer.getSociety(societyName);
-        if (sc != null && (sc instanceof SocietyDBComponent))
+        if (sc != null && (sc instanceof SocietyDBComponent)) {
+	  if (log.isDebugEnabled()) {
+	    log.debug("Found already loaded society " + societyName);
+	  }
           soc = (SocietyDBComponent)sc;
-        else {
+        } else {
+	  if (log.isDebugEnabled()) {
+	    log.debug("Loading society " + societyName + " from id " + id);
+	  }
           soc = new SocietyDBComponent(societyName, id);
           soc.initProperties();
         } 
@@ -125,10 +131,11 @@ public class OrganizerHelper {
       }
       return null; // creating an experiment from scratch not implemented yet
     }
+
     Experiment experiment = new Experiment((String)experimentName, 
                                            experimentId, trialId);
-    // The following is ugly
-    
+
+    // The following is ugly  
     setDefaultNodeArguments(experiment, assemblyMatch,
                             ComponentData.SOCIETY
                             + "|"
@@ -142,14 +149,51 @@ public class OrganizerHelper {
     String origExperimentId = (String)experimentNamesMap.get(originalExperimentName);
     String origTrialId = ExperimentDB.getTrialId(origExperimentId);
     
+    // This gets all the recipes for the experiment from which this was created
     List defaultRecipes = checkForRecipes(origTrialId, origExperimentId);
   
+//     if (log.isDebugEnabled()) {
+//       log.debug("default recipes list from OLD exptID has " + defaultRecipes.size() + " items");
+//       Iterator rI = defaultRecipes.iterator();
+//       while (rI.hasNext()) {
+// 	DbRecipe rn = (DbRecipe) rI.next();
+// 	log.debug("default recipes list: " + rn.name);
+//       }
+//     }
+
     List recipes = checkForRecipes(trialId, experimentId);
+
+//     if (log.isDebugEnabled()) {
+//       log.debug("recipes list from this exptID has " + recipes.size() + " items");
+//       Iterator rI = recipes.iterator();
+//       while (rI.hasNext()) {
+// 	DbRecipe rn = (DbRecipe) rI.next();
+// 	log.debug("recipes list: " + rn.name);
+//       }
+//     }
+
+    // FIXME: Maybe deal with CMT societies & DEFAULT comms
+    // here??
+    // And in general, must grab comm stuff from orig ID and resave it
+    // under a new ID and attach it to the new Expt.
+    // FIXME: Do something with community stuff here?
+    // That is, find any comm info, stash it away in new ASB
+    // ref'ed in Expt, so that saveToDb can then save it
+    // in the correct assembly in the Expt.
+
+
+    // maybe change this if to be:
+    //    if (! recipes.contains(defaultRecipes)
+    // except of course, looping over the items....
 
     // When creating an experiment from one of the base experiments
     // copy over the recipes that came with the base
-    if (! origExperimentId.startsWith("EXPT-"))
+    if (origExperimentId != null && ! origExperimentId.equals(experimentId)) {
+      if (log.isDebugEnabled()) {
+	log.debug("Combining old expts recipes with those from this");
+      }
       recipes.addAll(defaultRecipes);
+    }
 
     if (recipes.size() != 0) {
       Iterator metIter = recipes.iterator();
@@ -164,10 +208,14 @@ public class OrganizerHelper {
         AgentComponent[] recagents = mc.getAgents(); 
         if (recagents != null && recagents.length > 0) {
           agents.addAll(Arrays.asList(recagents));
-        }      
+        }
+	if (log.isDebugEnabled()) {
+	  log.debug("Adding recipe to experiment " + experiment.getExperimentName() + ": " + mc.getRecipeName());
+	}
         experiment.addRecipeComponent(mc);
       }
     }
+
     AgentComponent[] socagents = soc.getAgents();
     if (socagents!= null && socagents.length > 0) {
       for (int i = 0; i < socagents.length; i++) {
@@ -180,10 +228,14 @@ public class OrganizerHelper {
 
     experiment.addSocietyComponent((SocietyComponent)soc);
 
+    if (log.isDebugEnabled()) {
+      log.debug("createExperiment about to do Agent/Node mapping");
+    }
     // Retrieve the Agent/Node mapping. Add the Nodes to the Experiment
     // And set the properties for the Nodes.
     // Add all Nodes.
     addAgents(experiment, nodes, allagents, trialId, assemblyMatch);
+
     // Add all Hosts.
     Iterator hostIter = hosts.iterator();
     while (hostIter.hasNext()) {
@@ -192,18 +244,28 @@ public class OrganizerHelper {
       setComponentProperties(hc, hostName, assemblyMatch);
     }
     mapNodesToHosts(experiment, assemblyMatch);
-    try {
-      if (!ExperimentDB.isExperimentNameInDatabase(experimentName))
+
+    try {    
+      if (!ExperimentDB.isExperimentNameInDatabase(experimentName)) {
+	if (log.isDebugEnabled()) {
+	  log.debug("Saving expt " + experimentName + " not in DB to DB");
+	}
 	experiment.saveToDb(saveToDbConflictHandler);
+      }
       else {
 	// Add the recipes to the expt_trial_mod_recipe table
+	List rcs = new ArrayList();
+	for (int i = 0; i < experiment.getRecipeComponentCount(); i++) {
+	  rcs.add(experiment.getRecipeComponent(i));
+	}
+
+	if (log.isDebugEnabled()) {
+	  log.debug("Setting recipes on experiment " + experiment.getExperimentID() + " in DB");
+	}
+
 	PopulateDb pdb = null;
 	try {
 	  pdb = new PopulateDb(experiment.getExperimentID(), experiment.getTrialID());
-	  List rcs = new ArrayList();
-	  for (int i = 0; i < experiment.getRecipeComponentCount(); i++) {
-	    rcs.add(experiment.getRecipeComponent(i));
-	  }
 	  pdb.setAndCleanModRecipes(rcs);
 	} catch (Exception e) {
 	  if (log.isErrorEnabled()) {
@@ -819,6 +881,29 @@ public class OrganizerHelper {
     }
     public String toString() {
       return name;
+    }
+
+    // 2 NameClassItems are equals if they have the same name & class
+    public boolean equals (Object o) {
+      if (o instanceof NameClassItem) {
+	NameClassItem nci = (NameClassItem)o;
+	if (name != null && name.equals(nci.name)) {
+	  if (cls != null && cls.equals(nci.cls))
+	    return true;
+	  else if (cls == null && nci.cls == null)
+	    return true;
+	  else
+	    return false;
+	} else if (name == null && nci.name == null) {
+	  if (cls != null && cls.equals(nci.cls))
+	    return true;
+	  else if (cls == null && nci.cls == null)
+	    return true;
+	  else
+	    return false;
+	}
+      }
+      return false;
     }
   }
 
