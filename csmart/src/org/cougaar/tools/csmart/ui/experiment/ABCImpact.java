@@ -241,7 +241,7 @@ public class ABCImpact
   private ComponentData createBinderComponentData() {
     ComponentData data = new GenericComponentData();
 
-    data.setType(ComponentData.BINDER);
+    data.setType(ComponentData.NODEBINDER);
     data.setName("Node.Agent.Binder");
     data.setClassName(BinderClass_name);
     data.addParameter(propSamplesPerSecond.getValue());
@@ -407,13 +407,15 @@ public class ABCImpact
     return data;
   }
 
-  private ComponentData getImpactPlugIn() {
-    ComponentData data = new GenericComponentData();
+  private ComponentData getImpactPlugIn(ComponentData data) {
+    ComponentData gcdata = new GenericComponentData();
     
-    data.setType(ComponentData.PLUGIN);
-    data.setName(ImpactPlugin_name);
+    gcdata.setType(ComponentData.PLUGIN);
+    gcdata.setName(ImpactPlugin_name);
+    gcdata.setParent(data);
+    gcdata.setOwner(this);
 
-    return data;
+    return gcdata;
   }
 
   private ComponentData addBinder(ComponentData data) {
@@ -441,7 +443,7 @@ public class ABCImpact
 	   !child.getName().equals(transducerAgent.getFullName().toString())) {
 
 	  // Add ImpactPlugin to the Agent.
-	  child.addChild(getImpactPlugIn());
+	  child.addChild(getImpactPlugIn(child));
 	}
       } else {
 	// Process it's children.
