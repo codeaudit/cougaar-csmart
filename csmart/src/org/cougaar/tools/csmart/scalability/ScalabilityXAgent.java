@@ -496,9 +496,109 @@ public class ScalabilityXAgent
     }
   }
 
+
+  private PropGroupData getTypeIdentificationPG() {
+
+    PropGroupData pgData = new PropGroupData(PropGroupData.TYPE_IDENTIFICATION);
+    PGPropData propData = new PGPropData();
+    propData.setName("TypeIdentification");
+    propData.setType("String");
+    propData.setValue("UTC/RTOrg");
+    pgData.addProperty(propData);
+
+    propData = new PGPropData();
+    propData.setName("Nomenclature");
+    propData.setType("String");
+    propData.setValue(getFullName().toString());
+    pgData.addProperty(propData);
+
+    return pgData;
+  }
+
+
+  private PropGroupData getClusterPG() {
+
+    PropGroupData pgData = new PropGroupData(PropGroupData.CLUSTER);
+    PGPropData propData = new PGPropData();
+    propData.setName("ClusterIdentifier");
+    propData.setType("ClusterIdentifier");
+    propData.setValue(getFullName().toString());
+    pgData.addProperty(propData);
+
+    return pgData;
+  }
+
+  private PropGroupData getOrgPG() {
+
+    PropGroupData pgData = new PropGroupData(PropGroupData.ORGANIZATION);
+    PGPropData propData = new PGPropData();
+    propData.setName("Roles");
+    propData.setType("Collection");
+    propData.setSubType("Role");
+    PGPropMultiVal values = new PGPropMultiVal();
+    values.addValue("ScalabilityProvider");
+    values.addValue("ScalabilityControlProvider");
+    values.addValue("ScalabilityStatisticsProvider");
+    propData.setValue(values);
+    pgData.addProperty(propData);
+
+    return pgData;
+  }
+
+  private ComponentData addAssetData(ComponentData data) {
+    AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
+
+    assetData.setType(AgentAssetData.ORG);
+    assetData.setAssetClass(AgentAssetData.COMBAT_ASSETCLASS);
+
+    assetData.setUniqueID("UTC/CombatOrg");
+    assetData.setUIC("UIC/" + getFullName());
+
+    // Add all Relationship data
+    for (Iterator iter = supporting.iterator(); iter.hasNext(); ) {
+      RelationshipData relData = new RelationshipData();
+      relData.setType(RelationshipData.SUPERIOR);
+      relData.setCluster(((ScalabilityXAgent) iter.next()).getFullName().toString());
+      relData.setRole("ScalabilityProvider");
+      assetData.addRelationship(relData);
+    }
+    if (superior != null) {
+      RelationshipData relData = new RelationshipData();
+      
+      relData.setType(RelationshipData.SUPPORTING);
+      relData.setCluster(superior.getFullName().toString());
+      relData.setRole("ScalabilityControlProvider");
+      assetData.addRelationship(relData);
+
+      relData = new RelationshipData();
+      relData.setType(RelationshipData.SUPPORTING);
+      relData.setCluster(superior.getFullName().toString());
+      relData.setRole("ScalabilityStatisticsProvider");
+      assetData.addRelationship(relData);
+
+      relData = new RelationshipData();
+      relData.setType(RelationshipData.SUPERIOR);
+      relData.setCluster(superior.getFullName().toString());
+      relData.setRole("");
+      assetData.addRelationship(relData);
+
+    }
+    
+    // Add all the PG's
+    assetData.addPropertyGroup(getTypeIdentificationPG());
+    assetData.addPropertyGroup(getClusterPG());
+    assetData.addPropertyGroup(getOrgPG());
+
+    data.addAgentAssetData(assetData);
+
+    return data;
+  }
+
+
   public ComponentData addComponentData(ComponentData data) {
     GenericComponentData plugin;
 
+    // Add all plugins
     for (int i = 0, n = getChildCount(); i < n; i++) {
       ScalabilityXPlugIn sxp = (ScalabilityXPlugIn) getChild(i);
       plugin = new GenericComponentData();
@@ -507,7 +607,9 @@ public class ScalabilityXAgent
       plugin.setType(ComponentData.PLUGIN);
       data.addChild(sxp.addComponentData(plugin));      
     }
-   
+
+    data = addAssetData(data);
+
     return data;
   }
 
