@@ -25,8 +25,6 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
 
-import org.cougaar.tools.server.ConfigurationWriter;
-
 import org.cougaar.tools.csmart.scalability.ScalabilityMetricsFileFilter;
 
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
@@ -66,6 +64,49 @@ public class BasicMetric extends ModifiableConfigurableComponent
   private Property propSampleInterval;
   private Property propStartDelay;
   private Property propMaxSamples;
+
+  // Properties to define parameters to MetricsPlugin
+  // Directory to saveresults files in - default "."
+  public static final String PROP_RESULTSDIR = "Metrics results directory";
+  public static final String PROP_RESULTSDIR_DFLT = ".";
+  public static final String PROP_RESULTSDIR_DESC = "Relative path in which to save results files";
+  private Property propResultsDir;
+  
+  // Verb to search for - default null
+  public static final String PROP_TVERB = "Task Verb";
+  public static final String PROP_TVERB_DFLT = "";
+  public static final String PROP_TVERB_DESC = "Task Verb to search for and count";
+  private Property propTVerb;
+  
+  // 1/0 for Blackboard Service, default 0
+  public static final String PROP_BBSERV = "Blackboard Statistics Service On/Off";
+  public static final Integer PROP_BBSERV_DFLT = new Integer(0);
+  public static final String PROP_BBSERV_DESC = "Turn Blackboard metrics collection on or off";
+  private Property propBBServ;
+  
+  // 1/0 for PrototypeRegistryService, default 0
+  public static final String PROP_PRSERV = "Prototype Registry Service On/Off";
+  public static final Integer PROP_PRSERV_DFLT = new Integer(0);
+  public static final String PROP_PRSERV_DESC = "Turn Prototype Registry metrics on or off";
+  private Property propPRServ;
+  
+  // 1/0 for NodeMetricsService, default 0
+  public static final String PROP_NODESERV = "Node Metrics Service On/Off";
+  public static final Integer PROP_NODESERV_DFLT = new Integer(0);
+  public static final String PROP_NODESERV_DESC = "Turn Node metrics on or off";
+  private Property propNodeServ;  
+  
+  // 1/0 for MessageStatsService, default 1
+  public static final String PROP_MSTATSSERV = "Message Stats Service On/Off";
+  public static final Integer PROP_MSTATSSERV_DFLT = new Integer(1);
+  public static final String PROP_MSTATSSERV_DESC = "Turn Message Transport metrics on or off";
+  private Property propMStatsServ;  
+  
+  // 1/0 for MessageWatcherService, default 0
+  public static final String PROP_MWATCHSERV = "Message Watcher Service On/Off";
+  public static final Integer PROP_MWATCHSERV_DFLT = new Integer(0);
+  public static final String PROP_MWATCHSERV_DESC = "Turn Message Watcher on or off";
+  private Property propMWatchServ;
   
   private static final String MetricsPlugIn_name =
     "org.cougaar.tools.csmart.plugin.MetricsPlugin";
@@ -109,6 +150,61 @@ public class BasicMetric extends ModifiableConfigurableComponent
     });
     propStartDelay.setToolTip(PROP_STARTDELAY_DESC);
 
+    propResultsDir = addProperty(PROP_RESULTSDIR, PROP_RESULTSDIR_DFLT,
+                                new ConfigurableComponentPropertyAdapter() {
+	public void propertyValueChanged(PropertyEvent e) {
+	}
+    });
+    propResultsDir.setToolTip(PROP_RESULTSDIR_DESC);
+
+    // For now, don't show this property - we need the results filter to change
+    // appropriately before we can let the user change this
+    // FIXME!
+    setPropertyVisible(propResultsDir, false);
+
+    // Task Verb to search for
+    propTVerb = addProperty(PROP_TVERB, PROP_TVERB_DFLT,
+                                new ConfigurableComponentPropertyAdapter() {
+	public void propertyValueChanged(PropertyEvent e) {
+	}
+    });
+    propTVerb.setToolTip(PROP_TVERB_DESC);
+
+    propBBServ = addProperty(PROP_BBSERV, PROP_BBSERV_DFLT,
+                                new ConfigurableComponentPropertyAdapter() {
+	public void propertyValueChanged(PropertyEvent e) {
+	}
+    });
+    propBBServ.setToolTip(PROP_BBSERV_DESC);
+
+    propPRServ = addProperty(PROP_PRSERV, PROP_PRSERV_DFLT,
+                                new ConfigurableComponentPropertyAdapter() {
+	public void propertyValueChanged(PropertyEvent e) {
+	}
+    });
+    propPRServ.setToolTip(PROP_PRSERV_DESC);
+
+    propNodeServ = addProperty(PROP_NODESERV, PROP_NODESERV_DFLT,
+                                new ConfigurableComponentPropertyAdapter() {
+	public void propertyValueChanged(PropertyEvent e) {
+	}
+    });
+    propNodeServ.setToolTip(PROP_NODESERV_DESC);
+
+    propMStatsServ = addProperty(PROP_MSTATSSERV, PROP_MSTATSSERV_DFLT,
+                                new ConfigurableComponentPropertyAdapter() {
+	public void propertyValueChanged(PropertyEvent e) {
+	}
+    });
+    propMStatsServ.setToolTip(PROP_MSTATSSERV_DESC);
+
+    propMWatchServ = addProperty(PROP_MWATCHSERV, PROP_MWATCHSERV_DFLT,
+                                new ConfigurableComponentPropertyAdapter() {
+	public void propertyValueChanged(PropertyEvent e) {
+	}
+    });
+    propMWatchServ.setToolTip(PROP_MWATCHSERV_DESC);
+
   }
   
   public String getMetricName() {
@@ -149,22 +245,12 @@ public class BasicMetric extends ModifiableConfigurableComponent
     return metricsFileFilter;
   }
 
-  /**
-   * Get a configuration writer for this metric.
-   * @param nodes the <code>NodeComponent[]</code> of the full experiment
-   * @param nodeFileAddition a <code>String</code> to add Services to every Node file
-   * @return a <code>ConfigurationWriter</code> to write out all config data for this metric
-   */
-  public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes, String nodeFileAddition) {
-    // FIXME -- I don't want to need this method at all!
-    return null;
-  }
-
   private transient int numAgents = 0; // numAgents collecting stats
   private transient RelationshipData metricRelate = null; // name of agent doing controling
   private transient int numAgs2 = 0;
   
   public ComponentData addComponentData(ComponentData data) {
+    //    System.out.println("BasicMetric in addCD on data: " + data);
     // The Basic Metric needs to add its plugin to each Agent in the society.
     // Plus, it should pick one agent in the society, and add the initializer to that agent
     // plus, it needs one of the args to the initializer to be the total number of agents in the society
@@ -202,7 +288,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
       // for each child, call this same method.
       ComponentData[] children = data.getChildren();
       for (int i = 0; i < children.length; i++) {
-	data = this.addComponentData(children[i]);
+	addComponentData(children[i]);
       }
     }
     return data;
@@ -233,9 +319,18 @@ public class BasicMetric extends ModifiableConfigurableComponent
     plugin.setType(ComponentData.PLUGIN);
     //plugin.setName("MetricPlugin");
     plugin.setName(MetricsPlugIn_name);
-    // Could add the directory to save results in as a parameter
     plugin.setParent(data);
     plugin.setOwner(this);
+
+    // Add parameters here:
+    // Why can't I find it by name? Cause it's hidden?
+    plugin.addParameter(propResultsDir.getValue()); // dir for Results files
+    plugin.addParameter(getProperty(PROP_TVERB).getValue()); // Task Verb to search for
+    plugin.addParameter(getProperty(PROP_BBSERV).getValue()); // Turn on/off BBoard Serv
+    plugin.addParameter(getProperty(PROP_PRSERV).getValue()); // Turn on/off Proto Reg. Serv
+    plugin.addParameter(getProperty(PROP_NODESERV).getValue()); // Turn on/off Node Metrics Serv
+    plugin.addParameter(getProperty(PROP_MSTATSSERV).getValue()); // Turn on/off Msg Stats Serv, def. on
+    plugin.addParameter(getProperty(PROP_MWATCHSERV).getValue()); // Turn on/off MsgWatcher Serv
     data.addChild(plugin);
   }
 
