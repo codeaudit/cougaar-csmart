@@ -375,7 +375,7 @@ public class DBUtils {
     return DBUtils.getListMatch(listItems, null);
   }
   
-  public static String getAssemblyMatch(ArrayList assemblyIDs) {
+  public static String getAssemblyMatch(List assemblyIDs) {
     return DBUtils.getListMatch(assemblyIDs);
   }
 
