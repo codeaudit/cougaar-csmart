@@ -515,11 +515,6 @@ public class Organizer extends JScrollPane {
         return;
       addExperimentAndComponentsToWorkspace(experiment, 
                         (DefaultMutableTreeNode) node.getParent());
-      // can't run if experiment has unbound properties
-      if (experiment.hasUnboundProperties()) {
-        csmart.runExperimentBuilder(experiment, false);
-        return;
-      }
       if (!experiment.hasConfiguration())
         experiment.createDefaultConfiguration();
       // TODO: this generates an error -- null trial id in PdbBase.put

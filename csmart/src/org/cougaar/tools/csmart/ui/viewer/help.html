@@ -37,7 +37,7 @@ allows defining communities of agents. </li>
 
 <li>
 <b>Experiment Controller: </b>
-Run, stop or abort the experiment, and display output from the
+Run or stop the experiment, and display output from the
 experiment. Output from the nodes can be filtered or searched, and
 CSMART can notify you of certain Strings in the output. This is often
 referred to as the "CSMART Console", for it is the interface for
@@ -257,13 +257,6 @@ values of node command line arguments.
 Experiments define for a society how you will
 use available compute resources to run the society. Therefore, an
 Experiment adds Hosts, Nodes, etc. 
-(An Experiment is, in general, 
-made up of one or more trials. Trials are constructed by varying some parameter
-- a Plugin parameter, which Agents are run, what Recipes are included,
-the distribution of Agents to Nodes or Nodes to Hosts, etc. For each trial,
-there may be some results - statistics about the run that are collected
-by one of the specified metrics (see below).  Experiments created from
-a database cannot vary any parameter, and thus have only one trial.)
 
 <h3>Recipes</h3>
 A recipe is a set of rules for modifying a society, by adding one or

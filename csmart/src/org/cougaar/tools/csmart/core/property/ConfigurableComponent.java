@@ -1219,23 +1219,9 @@ public abstract class ConfigurableComponent
         }
       } else {
 	try {
-	  // if have experimental values, then copy those
-	  // else copy the property value
-	  if (myProp.getExperimentValues() != null) {
-	    List experimentValues = myProp.getExperimentValues();
-	    Object newValue = Array.newInstance(myProp.getPropertyClass(),
-						experimentValues.size());
-	    for (int j = 0; j < experimentValues.size(); j++)
-	      Array.set(newValue, j,
-			PropertyHelper.validateValue(myProp, 
-						     experimentValues.get(j)));
-	    hisProp.setExperimentValues(Arrays.asList((Object[])newValue));
-	    hisProp.setValue(null); // no specific value
-	  } else {
-	    Object o = PropertyHelper.validateValue(myProp, myProp.getValue());
-	    if (o != null) {
-	      hisProp.setValue(o);
-	    }
+	  Object o = PropertyHelper.validateValue(myProp, myProp.getValue());
+	  if (o != null) {
+	    hisProp.setValue(o);
 	  }
 	} catch (InvalidPropertyValueException e) {
 	  if(log.isErrorEnabled()) {

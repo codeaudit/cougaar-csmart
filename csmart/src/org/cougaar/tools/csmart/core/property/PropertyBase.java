@@ -64,8 +64,6 @@ public abstract class PropertyBase implements Property {
   public abstract void setDefaultValue(Object defaultValue);
   public abstract Object getValue();
   public abstract void setValue(Object value);
-  public abstract List getExperimentValues();
-  public abstract void setExperimentValues(List experimentValues);
   public abstract Set getAllowedValues();
   public abstract void setAllowedValues(Set allowedValues);
   public abstract boolean isValueSet();
@@ -179,7 +177,6 @@ public abstract class PropertyBase implements Property {
     out.println(indent + "Value: " + getValue());
     out.println(indent + "Default: " + getDefaultValue());
     out.println(indent + "Allowed Values: " + getAllowedValues());
-    out.println(indent + "Experiment Values: " + getExperimentValues());
   }
 
 }

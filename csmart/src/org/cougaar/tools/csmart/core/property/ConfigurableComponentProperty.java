@@ -39,7 +39,6 @@ import org.cougaar.tools.csmart.core.property.name.CompositeName;
  * have to be displayed.
  * Every property has these attributes:
  * name, propertyClass, label, defaultValue, value, allowedValues, 
- * and experimentValues.
  * These values should be get/set through the ComponentProperties interface.
  */
 public class ConfigurableComponentProperty extends PropertyBase implements Property {
@@ -51,7 +50,6 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
   private Object defaultValue;
   private Object value;
   private Set allowedValues;
-  private List experimentValues;
 
   /**
    * Construct a Property with default values based on the name and value
@@ -75,7 +73,6 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
     setPropertyClass(prop.getPropertyClass());
     setLabel(prop.getLabel());
     setDefaultValue(prop.getDefaultValue());
-    setExperimentValues(prop.getExperimentValues());
     setAllowedValues(prop.getAllowedValues());
   }
 
@@ -206,37 +203,6 @@ public class ConfigurableComponentProperty extends PropertyBase implements Prope
 	this.value = old;
 	throw re;
       }
-    }
-  }
-
-  /**
-   * Gets a <code>List</code> of Experiment Values.
-   * All properties can contain a list of values to
-   * be used in a experiment.  This values indicate
-   * a range that should be used for a specific property.
-   * 
-   * @return a <code>List</code> value
-   */
-  public List getExperimentValues() {
-    return experimentValues;
-  }
-
-  /**
-   * Defines a <code>List</code> of Experiment Values.
-   * All properties can contain a list of values to
-   * be used in a experiment.  This values indicate
-   * a range that should be used for a specific property.
-   *
-   * @param experimentValues 
-   */
-  public void setExperimentValues(List experimentValues) {
-    List old = this.experimentValues;
-    this.experimentValues = experimentValues;
-    try {
-      fireOtherChanged(old, PropertyEvent.EXPERIMENTVALUES_CHANGED);
-    } catch (RuntimeException re) {
-      this.experimentValues = old;
-      throw re;
     }
   }
 

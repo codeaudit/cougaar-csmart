@@ -11,6 +11,7 @@ reloaded, in particular to reflect the obsolesence of ClusterIdentifier.
   developers should reset COUGAAR_DEV_PATH from csmart/tmpdir to
   csmart/tmp/classes. Additionally, any setting in ~/.ant.properties
   should probably instead be in csmart/module.properties.
+- Removed CSMART Domain. Edit your configs/common/LDMDomains.ini as necessary.
 - Use SimpleAgent instead of ClusterImpl as default Agent class. The
   provided database csv files have been updated, but ClusterImpl will
   still work just fine.
@@ -22,7 +23,15 @@ reloaded, in particular to reflect the obsolesence of ClusterIdentifier.
   csmart/data/database/scripts/mysql/sql/cluster-id-removal.sql. In
   addition, at CSMART experiment load time, any instance of
   ClusterIdentifier will be replaced by MessageAddress. 
+- Updated AdaptivitySupport recipe to reflect core/planning split, and
+  new fact that AEViewerServlet does not use
+  BlackboardServletComponent.
 - Code cleanup .... FIXME!!
+- Remove misleading "idleness" graphs in Console.
+- Remove unused multi-trial and property experimental-values code.
+- Performance improvement on experiment save: New modified flag on
+  components used to limit which components are compared with
+  database, reducing DB interactions.
 - Bugs 2071 and 2072: Avoid runtime exceptions in the Console if the
   current trial counter somehow gets out of line. This does not
   avoid the counter from getting off, but should avoid runtime errors

@@ -33,7 +33,6 @@ import org.cougaar.tools.csmart.core.property.name.CompositeName;
 /**
  * Every property has these attributes:
  * name, propertyClass, label, defaultValue, value, allowedValues, 
- * and experimentValues.
  * These values should be get/set through the ComponentProperties interface.
  */
 public interface Property extends Serializable {
@@ -106,20 +105,6 @@ public interface Property extends Serializable {
    * @param value 
    */
   void setValue(Object value);
-
-  /**
-   * Get a <code>List</code> of all the Experiment Values for this property.
-   *
-   * @return a <code>List</code> value
-   */
-  List getExperimentValues();
-
-  /**
-   * Sets a <code>List</code> of all Experiment Values for this property.
-   *
-   * @param experimentValues 
-   */
-  void setExperimentValues(List experimentValues);
 
   /**
    * Gets all Allowed Values for this property. 

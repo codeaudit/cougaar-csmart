@@ -41,8 +41,6 @@ import javax.swing.event.UndoableEditListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DefaultEditorKit;
 
-import com.klg.jclass.chart.JCChart;
-
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 import org.cougaar.util.log.Logger;
@@ -62,7 +60,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String CPU_USAGE_ACTION = "Machine CPU Usage";
   private static final String NODE_CPU_USAGE_ACTION = "Node CPU Usage";
   private static final String MEMORY_USAGE_ACTION = "Memory Usage";
-  private static final String HISTORY_ACTION = "Utilization History";
 
   private static final String EDIT_MENU = "Edit";
   private static final String CUT_ACTION = "Cut";
@@ -184,13 +181,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
     };
     memoryUsageAction.setEnabled(false);
     nodeMenu.add(memoryUsageAction);
-    Action historyAction = new AbstractAction(HISTORY_ACTION) {
-      public void actionPerformed(ActionEvent e) {
-	history_actionPerformed();
-      }
-    };
-    nodeMenu.add(historyAction);
-
     // Edit menu
     JMenu editMenu = new JMenu(EDIT_MENU);
     Action cutAction = new AbstractAction(CUT_ACTION) {
@@ -696,20 +686,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
     table.setPreferredScrollableViewportSize(new Dimension(400, 100));
     JOptionPane.showConfirmDialog(this, jsp, "Process Status", 
                                   JOptionPane.PLAIN_MESSAGE);
-  }
-
-  /**
-   * Display strip chart for node.
-   */
-
-  private void history_actionPerformed() {
-    JCChart chart = new StripChart();
-    StripChartSource chartDataModel = new StripChartSource(chart);
-    ((StripChart)chart).init(chartDataModel);
-    listener.setIdleChart(chart, chartDataModel);
-    JInternalFrame chartFrame = new StripChartFrame(chart, title);
-    ConsoleDesktop desktop = (ConsoleDesktop)getDesktopPane();
-    desktop.addFrame(chartFrame, false);
   }
 
   /**

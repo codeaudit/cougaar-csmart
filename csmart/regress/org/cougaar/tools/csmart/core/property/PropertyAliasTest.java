@@ -74,13 +74,6 @@ public class PropertyAliasTest extends TestCase {
     assertEquals("Test value()", expected, tst.getValue());
   }
 
-  public void testExperimentValues() {
-    ArrayList al = new ArrayList();
-    al.add(new Integer(1));
-    tst.setExperimentValues(al);
-    assertEquals("Test getExperimentValues()", al, tst.getExperimentValues());
-  }
-
   public void testAllowedValues() {
     HashSet hs = new HashSet();
     hs.add(new Integer(1));

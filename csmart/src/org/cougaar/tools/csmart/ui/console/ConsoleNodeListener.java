@@ -35,8 +35,6 @@ import org.cougaar.tools.server.NodeEvent;
 import org.cougaar.tools.server.OutputBundle;
 import org.cougaar.tools.server.OutputListener;
 
-import com.klg.jclass.chart.JCChart;
-import com.klg.jclass.chart.ChartDataModel;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
@@ -51,8 +49,6 @@ public class ConsoleNodeListener implements OutputListener {
   private String logFileName;
   private Writer logFile;
   private SimpleAttributeSet[] atts;
-  private JCChart chart;
-  private StripChartSource idleTimeDataModel;
   public NodeStatusButton statusButton;
   private long firsttime = 0l;
   private boolean haveError = false;
@@ -113,11 +109,6 @@ public class ConsoleNodeListener implements OutputListener {
 
   private void createLogger() {
     log = CSMART.createLogger(this.getClass().getName());
-  }
-
-  public void setIdleChart(JCChart chart, ChartDataModel dataModel) {
-    this.chart = chart;
-    idleTimeDataModel = (StripChartSource)dataModel;
   }
 
   /**
@@ -348,8 +339,6 @@ public class ConsoleNodeListener implements OutputListener {
       timestamp = 0l;
     }
     
-    if (idleTimeDataModel != null) 
-      idleTimeDataModel.addValue(result, timestamp);
   }
 
   private void updateStatus(NodeEvent nodeEvent) {
@@ -454,9 +443,7 @@ public class ConsoleNodeListener implements OutputListener {
       logFile = null;
     }
     console = null;
-    chart = null;
     statusButton = null;
-    idleTimeDataModel = null;
   }
 
   private void readObject(ObjectInputStream ois)

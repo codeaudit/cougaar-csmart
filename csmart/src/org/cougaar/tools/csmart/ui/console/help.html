@@ -20,13 +20,6 @@ The console keeps a list of active Application Servers (usually
 defined by the hosts in the selected experiment), which you can add or
 remove from. These servers are regularly polled for new Nodes to which
 you can "attach".<br>
-The Experiment Controller also allows the user to run through all Trials
-automatically, to stop after a Trial completes, or to abort a Trial.
-Trials are defined in the Experiment Builder.
-A Trial is one "run" of a Society with all Unbound Properties bound
-to one set of values as specified in the Experiment Builder.<br>  
-<i>Note: Currently, Experiments do not use Societies with Unbound Properties; these experiments 
-have one trial, and the user interface is simplified accordingly.</i>
 <p>Note that you must separately launch the AppServer on each host used in
 the experiment. See the installation instructions for running the Server.
 <br>
@@ -51,10 +44,8 @@ If the Society in the experiment is configured to stop automatically,
 then this merely stops the experiment when the society stops (no societies
 currently stop automatically).
 If the society is not configured to stop automatically, 
-then this stops the experiment immediately (i.e. it acts the same as "Abort").
+then this stops the experiment immediately.
 </li>
-<li>
-Select the "Abort" button to abort the experiment, ending it immediately.</li>
 </ul>
 <li>If CSMART was killed unexpectedly, or another CSMART user started
 the experiment, you may instead select "Attach" to attach to nodes
@@ -139,7 +130,7 @@ Windows menu.</li> The types of messages that can be displayed are:
 </li>
 <li>Node Destroyed: The node process was killed.
 </li>
-<li>Idle: Controls the color of the node status button and provides data for the Utilization History graph (which can be displayed from the Node Window Menu).
+<li>Idle: Controls the color of the node status button.
 </li>
 </ul>
 </ul>
@@ -234,7 +225,6 @@ name, you can see the components configured to run in that Agent (only
 available for Nodes started from this CSMART).</li>
 <li>Machine CPU Usage: Displays CPU usage for all processes on the machine on which the node is running.  (This information is not supported for Windows machines.)</li>
 <li>Node CPU Usage: Displays CPU usage for the Node's processes and child processes.  (This information is not displayed for Windows machines.)</li>
-<li>Utilization History: Displays a graph of the relative load at the node, over time.</li>
 </ul>
 <li>Edit: Edit the text in the node window.</li>
 <ul>

@@ -74,13 +74,6 @@ public class ConfigurableComponentPropertyTest extends TestCase {
     assertEquals("Test value()", expected, ccp.getValue());
   }
 
-  public void testExperimentValues() {
-    ArrayList al = new ArrayList();
-    al.add(new Integer(1));
-    ccp.setExperimentValues(al);
-    assertEquals("Test getExperimentValues()", al, ccp.getExperimentValues());
-  }
-
   public void testAllowedValues() {
     HashSet hs = new HashSet();
     hs.add(new Integer(1));

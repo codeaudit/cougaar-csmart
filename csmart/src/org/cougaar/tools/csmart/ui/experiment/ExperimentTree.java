@@ -277,8 +277,6 @@ public class ExperimentTree extends DNDTree {
     }
     if (userData instanceof ModifiableComponent) {
       ModifiableComponent mcc = (ModifiableComponent) userData;
-      if (!mcc.isEditable() && mcc.hasUnboundProperties())
-        return;
       // check for duplicates, if not dragging from same tree
       String thisClassName = getClass().getName();
       if (flavor instanceof CSMARTDataFlavor &&

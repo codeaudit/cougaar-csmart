@@ -93,7 +93,6 @@ public class CSMARTConsole extends JFrame {
   // Need window titles to find the windows later
   private static final String configWindowTitle = "Configuration";
   private static final String glsWindowTitle = "GLS";
-  private static final String tValsWindowTitle = "Trial Values";
 
   // number of characters displayed in the node output window
   private static final int DEFAULT_VIEW_SIZE = 300000; // 60 pages of text or 300K
@@ -107,13 +106,9 @@ public class CSMARTConsole extends JFrame {
   private HostConfigurationBuilder hostConfiguration = null;
   private SocietyComponent societyComponent;
   private Experiment experiment;
-  private int currentTrial; // index of currently running trial in experiment
-  private long startTrialTime; // in msecs
   private long startExperimentTime;
   private DecimalFormat myNumberFormat;
-  private javax.swing.Timer trialTimer;
   private javax.swing.Timer experimentTimer;
-  private boolean userStoppedTrials = false;
   private boolean stopping = false; // user is stopping the experiment
   private Hashtable runningNodes; // maps node names to RemoteProcesses
   private Object runningNodesLock = new Object();
@@ -146,9 +141,6 @@ public class CSMARTConsole extends JFrame {
   JMenuItem addGLSMenuItem; // call addGLSWindow
   JToggleButton runButton;
   JToggleButton stopButton;
-  JToggleButton abortButton;
-  JLabel trialNameLabel;
-  JProgressBar trialProgressBar; // indicates how many trials have been run
   JPanel buttonPanel; // contains status buttons
   JPopupMenu nodeMenu; // pop-up menu on node status button
 
@@ -233,7 +225,6 @@ public class CSMARTConsole extends JFrame {
     this.experiment = experiment;
     createLogger();
     console = this;
-    currentTrial = -1;
     runningNodes = new Hashtable();
     oldNodes = new ArrayList();
     nodeListeners = new Hashtable();
@@ -685,8 +676,8 @@ public class CSMARTConsole extends JFrame {
 	    log.debug("Killing all Nodes!");
 
 	  // First, kill anything this console knows about
-	  if (abortButton != null && abortButton.isEnabled())
-	    abortButton_actionPerformed();
+	  if (stopButton != null && stopButton.isEnabled())
+	    doStop();
 	  // Then kill anything remaining
           appServerSupport.killAllProcesses();
         }
@@ -775,17 +766,12 @@ public class CSMARTConsole extends JFrame {
     // description panel, status button panel, and tabbed panes
     JPanel panel = new JPanel(new GridBagLayout());
 
-    // descriptionPanel contains society name, trial name, control buttons
+    // descriptionPanel contains society name, control buttons
     JPanel descriptionPanel = createHorizontalPanel(true);
     descriptionPanel.add(Box.createRigidArea(VGAP30));
     descriptionPanel.add(Box.createRigidArea(HGAP10));
     descriptionPanel.add(new JLabel(description));
     descriptionPanel.add(Box.createRigidArea(HGAP5));
-    trialNameLabel = new JLabel("");
-    //    descriptionPanel.add(new JLabel("Trial: "));
-    //    descriptionPanel.add(Box.createRigidArea(HGAP5));
-    //    descriptionPanel.add(trialNameLabel);
-    //    descriptionPanel.add(Box.createRigidArea(HGAP10));
 
     attachButton = new JToggleButton("Attach");
     attachButton.setToolTipText("Attach to running nodes");
@@ -820,41 +806,15 @@ public class CSMARTConsole extends JFrame {
     descriptionPanel.add(stopButton);
     descriptionPanel.add(Box.createRigidArea(HGAP5));
 
-    abortButton = new JToggleButton("Abort");
-    abortButton.setToolTipText("Interrupt experiment");
-    abortButton.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-	abortButton_actionPerformed();
-      }
-    });
-    abortButton.setFocusPainted(false);
-    descriptionPanel.add(abortButton);
 
-    // create trial progress panel for time labels
+    // create progress panel for time labels
     // these are referenced elsewhere, so are created even if not displayed
-    JPanel trialProgressPanel = createHorizontalPanel(false);
+    JPanel runProgressPanel = createHorizontalPanel(false);
     final JLabel experimentTimeLabel = new JLabel("Experiment: 00:00:00");
-    final JLabel trialTimeLabel = new JLabel("Trial: 00:00:00");
     myNumberFormat = new DecimalFormat("00");
-    int n = 1;
-    if (experiment != null)
-      n = experiment.getTrialCount()+1;
-    trialProgressBar = new JProgressBar(0, n);
-
-    // only when not in database
-    // create progress panel for progress bar and trial and experiment times
-    //    trialProgressBar.setValue(0);
-    //    trialProgressBar.setStringPainted(true);
-    //    trialProgressPanel.add(trialTimeLabel);
-    //    trialProgressPanel.add(Box.createRigidArea(HGAP10));
-    //    progressPanel.add(trialProgressBar,
-    //        new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
-    //  			     GridBagConstraints.WEST,
-    //  			     GridBagConstraints.HORIZONTAL,
-    //                               new Insets(5, 0, 0, 0), 0, 0));
     JPanel progressPanel = new JPanel(new GridBagLayout());
-    trialProgressPanel.add(experimentTimeLabel);
-    progressPanel.add(trialProgressPanel,
+    runProgressPanel.add(experimentTimeLabel);
+    progressPanel.add(runProgressPanel,
 		      new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
 					     GridBagConstraints.WEST,
 					     GridBagConstraints.HORIZONTAL,
@@ -872,14 +832,6 @@ public class CSMARTConsole extends JFrame {
                                      new Insets(0, 10, 2, 10),
 				     0, 0));
 
-    // set up trial and experiment timers
-    trialTimer = 
-      new javax.swing.Timer(1000, new ActionListener() {
-	public void actionPerformed(ActionEvent e) {
-	  trialTimeLabel.setText(getElapsedTimeLabel("Trial: ",
-						     startTrialTime));
-	}
-      });
     experimentTimer = 
       new javax.swing.Timer(1000, new ActionListener() {
 	public void actionPerformed(ActionEvent e) {
@@ -929,7 +881,7 @@ public class CSMARTConsole extends JFrame {
     // create tabbed panes for configuration information (not editable)
     if (experiment != null) {
       hostConfiguration = new HostConfigurationBuilder(experiment, null);
-      hostConfiguration.update(); // display first trial
+      hostConfiguration.update(); // display configuration
       hostConfiguration.addHostTreeSelectionListener(myTreeListener);
       JInternalFrame jif = new JInternalFrame(configWindowTitle,
                                               true, false, true, true);
@@ -939,15 +891,6 @@ public class CSMARTConsole extends JFrame {
       jif.setVisible(true);
       desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
     }
-    // only when not in database
-//        PropertyEditorPanel trialViewer = 
-//          new PropertyEditorPanel(experiment.getComponentsAsArray(), false);
-//        jif = new JInternalFrame(tValsWindowTitle, true, false, true, true);
-//        jif.getContentPane().add(trialViewer);
-//        jif.setSize(300, 300);
-//        jif.setLocation(310, 0);
-//        jif.setVisible(true);
-//        desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
     panel.add(desktop,
 	      new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
 				     GridBagConstraints.WEST,
@@ -961,7 +904,6 @@ public class CSMARTConsole extends JFrame {
     // and agent
     initRunButton();
     stopButton.setEnabled(false);
-    abortButton.setEnabled(false);
 
 
     updateASControls();
@@ -1129,18 +1071,15 @@ public class CSMARTConsole extends JFrame {
 
   /**
    * User selected "Run" button.
-   * Set the next trial values.
    * Start each node
    * and create a status button and
    * tabbed pane for it.
    */
-
   private void runButton_actionPerformed() {
     if (log.isDebugEnabled()) {
       log.debug("Hit run button");
     }
     destroyOldNodes(); // Get rid of any old stuff before creating the new
-    userStoppedTrials = false;
     if (experiment != null) {
       usingExperiment = true;
       initNodesFromExperiment();
@@ -1239,12 +1178,7 @@ public class CSMARTConsole extends JFrame {
    * restarting nodes that were attached to.
    */
   private void runTrial() {
-    if (log.isDebugEnabled()) {
-      log.debug("runTrial about to setTrialValues");
-    }
     runStart = new Date(); // set now, cause it's used in logfilename
-    if (experiment != null && usingExperiment)
-      setTrialValues();
     nodeCreationInfoList = new ArrayList();
     Collection values = nodeToNodeInfo.values();
     for (Iterator i = values.iterator(); i.hasNext(); ) {
@@ -1281,8 +1215,6 @@ public class CSMARTConsole extends JFrame {
               public void run() {
                 runButton.setSelected(false);
                 runButton.setEnabled(true);
-                unsetTrialValues();
-                currentTrial--;
               }
             });
         } else {
@@ -1453,102 +1385,23 @@ public class CSMARTConsole extends JFrame {
   // End of GLS Related methods
   /////////////////////////////////////////
 
-  /////////////////////////////
-  // Some trial related methods, not currently particularly relevant
-
-  private boolean haveMoreTrials() {
-    if (experiment == null || !usingExperiment)
-      return false;
-    else
-      return currentTrial < (experiment.getTrialCount()-1);
-  }
-
-  /**
-   * Set the trial values in the corresponding properties,
-   * and update the trial guis.
-   */
-  private void setTrialValues() {
-    if (currentTrial >= 0)
-      unsetTrialValues(); // unset previous trial values
-    currentTrial++;  // starts with 0
-    Trial[] trials = experiment.getTrials();
-    Trial trial = null;
-    if (currentTrial < trials.length) {
-      trial = trials[currentTrial];
-    } else {
-      if (log.isWarnEnabled())
-	log.warn("Bug 2071 in setTrialValues. currTrial = " + currentTrial + ", trials.length=" + trials.length);
-      trial = trials[0];
-      currentTrial--;
-    }
-    trialNameLabel.setText(trial.getShortName());
-    trialProgressBar.setValue(currentTrial+1);
-    Property[] properties = trial.getParameters();
-    Object[] values = trial.getValues();
-    if (log.isDebugEnabled()) {
-      log.debug("setTrialValues about to loop through trial properties to set");
-    }
-    for (int i = 0; i < properties.length; i++) {
-      if (properties[i].getValue() == null || ! properties[i].getValue().equals(values[i]))
-	properties[i].setValue(values[i]);
-    }
-  }
-
-  /**
-   * Called when trial is finished; unset the property values
-   * that were used in the trial by setting their value to null.
-   */
-  private void unsetTrialValues() {
-    if (experiment == null || !usingExperiment)
-      return;
-    if (currentTrial < 0)
-      return;
-    Trial[] trials = experiment.getTrials();
-    Trial trial = null;
-    if (currentTrial < trials.length) {
-      trial = trials[currentTrial];
-    } else {
-      if (log.isWarnEnabled())
-	log.warn("unsetTrialValues, bug 2071/2. currentTrial=" + currentTrial + ", trials.length= " + trials.length);
-      trial = trials[0];
-      currentTrial--;
-    }
-    Property[] properties = trial.getParameters();
-    for (int i = 0; i < properties.length; i++) 
-      properties[i].setValue(null);
-  }
-
-  //
-  //////////////////////////////////
-
   /**
    * Stop all nodes.
    * If the society in the experiment is self terminating, 
    * just stop after the current trial (don't start next trial),
-   * otherwise stop immediately (same as abort).
-   * Because no society is self terminating, 
-   * the stop and abort buttons currently do the same thing.
+   * otherwise stop immediately.
    */
   private void stopButton_actionPerformed(ActionEvent e) {
-    stopButton.setSelected(true); // indicate stopping
-    stopButton.setEnabled(false); // disable until experiment stops
-    userStoppedTrials = true; // if self terminating, don't start next trial
-    stopAllNodes(); // all nodes must be stopped manually for now
-//      SocietyComponent society = experiment.getSocietyComponent();
-//      if (society != null && !society.isSelfTerminating())
-//        stopAllNodes(); // manually stop society immediately
-  }
-  
-  /**
-   * Abort all nodes.
-   */
-  private void abortButton_actionPerformed() {
-    userStoppedTrials = true;
-    stopAllNodes();
+    doStop();
   }
 
+  private void doStop() {
+    stopButton.setSelected(true); // indicate stopping
+    stopButton.setEnabled(false); // disable until experiment stops
+    stopAllNodes(); // all nodes must be stopped manually for now
+  }
   /**
-   * Stop the nodes; called by both stop and abort.
+   * Stop the nodes; called by stop.
    */
   private void stopAllNodes() {
     // if there's a thread still creating nodes, stop it
@@ -1574,7 +1427,7 @@ public class CSMARTConsole extends JFrame {
     // so we can no longer assume that a gui (node frame, status button)
     // exists for every node
 
-    // set a flag indicating that we're stopping the trial
+    // set a flag indicating that we're stopping the run
     stopping = true;
     Enumeration nodeNames;
     synchronized (runningNodesLock) {
@@ -1682,7 +1535,7 @@ public class CSMARTConsole extends JFrame {
     // the threads in the first place?
     // What happens in the UI if it looks like you can keep going, 
     // but the Nodes have not been killed yet?
-    // To put it another way: the point of joining is so that when the abort or stop
+    // To put it another way: the point of joining is so that when the stop
     // button action method completes, the Nodes are all really stopped.
     // Then the UI reflects this and the user can keep going
     // If you don't do this, I suppose the user might hit run again and be surprised
@@ -1717,7 +1570,7 @@ public class CSMARTConsole extends JFrame {
 //       });
   } // end of stopAllNodes
 
-  // Kill any existing output frames or history charts
+  // Kill any existing output frames
   private void destroyOldNodes() {
     Iterator nodeNames = oldNodes.iterator();
     while (nodeNames.hasNext()) {
@@ -1729,7 +1582,7 @@ public class CSMARTConsole extends JFrame {
     JInternalFrame[] frames = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
       String s = frames[i].getTitle();
-      if (!s.equals(configWindowTitle) && !s.equals(tValsWindowTitle)) {
+      if (!s.equals(configWindowTitle)) {
 	if (log.isDebugEnabled())
 	  log.debug("destroyOldNodes killing frame " + s);
 	// FIXME: Is the title what it's under in the hash?
@@ -1762,15 +1615,13 @@ public class CSMARTConsole extends JFrame {
     // FIXME: This means the run button will be disabled
     // if I attach to some nodes but have not started my experiment?
     // see end of the attach method
-    runButton.setEnabled(!isRunning && haveMoreTrials());
+    runButton.setEnabled(!isRunning);
     runButton.setSelected(isRunning);
 
     // if running, enable the stop button and don't select it
     // if not running, disable the stop button and don't select it
     stopButton.setEnabled(isRunning);
     stopButton.setSelected(false);
-    abortButton.setEnabled(isRunning);
-    abortButton.setSelected(false);
 
     // if not running, don't allow the user to restart individual nodes
     JInternalFrame[] frames = desktop.getAllFrames();
@@ -1779,7 +1630,7 @@ public class CSMARTConsole extends JFrame {
 //       if (log.isDebugEnabled()) {
 // 	log.debug("Considering toggling restart for frame " + s + ". Will tell it: " + !isRunning);
 //       }
-      if (!s.equals(configWindowTitle) && !s.equals(tValsWindowTitle) &&
+      if (!s.equals(configWindowTitle) &&
           !s.equals(glsWindowTitle)) {
 // 	if (log.isDebugEnabled())
 // 	  log.debug("updateControls setting enableRestart to " + !isRunning + " for node " + s);
@@ -1791,10 +1642,7 @@ public class CSMARTConsole extends JFrame {
   /**
    * Called by ConsoleNodeListener when node has stopped;
    * called within the Swing thread.
-   * If all nodes are stopped, then trial is stopped.
-   * Wait for this method to be called on each node before 
-   * starting the next trial
-   * Run the next trial.
+   * If all nodes are stopped, then run is stopped.
    * Update the gui controls.
    */
   public void nodeStopped(String nodeName) {
@@ -1865,53 +1713,21 @@ public class CSMARTConsole extends JFrame {
       return;
 
     // when all nodes have stopped, save results
-    // run the next trial and update the gui controls
-    boolean finishedTrial = false;
+    // and update the gui controls
+    boolean finishedRun = false;
     synchronized (runningNodesLock) {
       if (runningNodes == null || runningNodes.isEmpty())
-        finishedTrial = true;
+        finishedRun = true;
 //       else if (log.isDebugEnabled())
 // 	log.debug("nodeStopped for node " + nodeName + " still have " + runningNodes.size() + " running nodes.");
     } // end synchronized
 
-    if (finishedTrial) {
+    if (finishedRun) {
       if (log.isDebugEnabled())
-	log.debug("nodeStopped: finished trial after killing node " + nodeName);
+	log.debug("nodeStopped: finished run after killing node " + nodeName);
       stopping = false;
-      trialFinished();
-      if (haveMoreTrials()) {
-	if (!userStoppedTrials) {
-          // if the trial stopped by itself, then start the next trial
-	  destroyOldNodes(); // destroy old guis before starting new ones
-	  runTrial(); // run next trial
-	} else { // user stopped trials, allow them to run the next one
-	  if (runButton != null)
-	    runButton.setSelected(false);
-	}
-      } else { // no more trials, experiment is done
-	experimentFinished();
-      }
-//     } else if (log.isDebugEnabled()) {
-//       log.debug("nodeStopped says not finished with trial");
+      experimentFinished();
     }
-  }
-
-  /**
-   * The trial is finished; stop the timer, save the results,
-   * unset the property values used, and update the gui.
-   */
-  private void trialFinished() {
-    trialTimer.stop();
-    saveResults();
-    // This should not be necessary - done by nodeStopped
-//     Collection c = nodeListeners.values();
-//     for (Iterator i = c.iterator(); i.hasNext(); )
-//       ((ConsoleNodeListener)i.next()).closeLogFile();
-    // Warning - above sets log to null
-
-//     if (userStoppedTrials)
-//       cleanListeners();
-    updateControls(false);
   }
 
   // Flush and dispose of old node listeners
@@ -1944,12 +1760,11 @@ public class CSMARTConsole extends JFrame {
    * unset the property values used in the experiment.
    */
   private void experimentFinished() {
-    if (experiment != null && usingExperiment)
-      trialProgressBar.setValue(experiment.getTrialCount() + 1);
+    saveResults();
+    updateControls(false);
     updateControls(false);
     runButton.setSelected(false);
     runButton.setEnabled(true);
-    currentTrial = -1;
     experimentTimer.stop();
     // AMH - FIXME
     //    usingExperiment = false;
@@ -2181,7 +1996,7 @@ public class CSMARTConsole extends JFrame {
    * Called from ConsoleInternalFrame (i.e. from menu on the node's output
    * window) to stop a node. 
    * If this is the only node, then it is handled the same
-   * as selecting the Abort button on the console.
+   * as selecting the stop button on the console.
    */
   public void stopNode(String nodeName) {
     boolean doAbort = false;
@@ -2191,7 +2006,7 @@ public class CSMARTConsole extends JFrame {
     } // end synchronized
 
     if (doAbort) {
-      abortButton_actionPerformed();
+      doStop();
       return;
     }
 
@@ -2528,12 +2343,8 @@ public class CSMARTConsole extends JFrame {
   }
 
   private void startTimers() {
-    startTrialTime = new Date().getTime();
-    trialTimer.start();
-    if (currentTrial == 0) {
-      startExperimentTime = new Date().getTime();
-      experimentTimer.start();
-    }
+    startExperimentTime = new Date().getTime();
+    experimentTimer.start();
   }
   
   /**
@@ -2605,31 +2416,21 @@ public class CSMARTConsole extends JFrame {
   }
   
   /**
-   * Create a file for the results of this trial.
+   * Create a file for the results of this run.
    * Results file structure is:
    * <ExperimentName>
    *    <TrialName>
    *       Results-<Timestamp>.results
    */
   private void saveResults() {
-    if (currentTrial < 0)
-      return; // nothing to save
     String dirname = makeResultDirectory();
     if (experiment != null && usingExperiment) {
       try {
         String myHostName = InetAddress.getLocalHost().getHostName();
         URL url = new URL("file", myHostName, dirname);
-	Trial[] trials = experiment.getTrials();
-	Trial trial = null;
-	if (currentTrial < trials.length) {
-	  trial = trials[currentTrial];
-	} else {
-	  trial = trials[0];
-	  if (log.isWarnEnabled())
-	    log.warn("saveResults: Bug 2071/2. currentTrial=" + currentTrial + ", trials.length=" + trials.length);
-	  currentTrial--;
-	}
-        trial.addTrialResult(new TrialResult(runStart, url));
+	Trial trial = experiment.getTrial();
+	if (trial != null)
+	  trial.addTrialResult(new TrialResult(runStart, url));
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
           log.error("Exception creating trial results URL: ", e);
@@ -2683,7 +2484,7 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * Create a directory for the results of this trial.
+   * Create a directory for the results of this run.
    * Results file structure is:
    * <ExperimentName>
    *    <TrialName>
@@ -2694,16 +2495,15 @@ public class CSMARTConsole extends JFrame {
     File resultDir = csmart.getResultDir();
     String experimentName = "Experiment";
     String trialName = "Trial 1";
-    if (experiment != null && usingExperiment && currentTrial >= 0) {
+    if (experiment != null && usingExperiment) {
       resultDir = experiment.getResultDirectory();
       experimentName = experiment.getExperimentName();
-      Trial[] trials = experiment.getTrials();
-      if (currentTrial < trials.length) {
-	trialName = trials[currentTrial].getShortName();
+      Trial trial = experiment.getTrial();
+      if (trial != null) {
+	trialName = trial.getShortName();
       } else {
 	if (log.isWarnEnabled())
-	  log.warn("Bug 2072 in makeResultDirectory: currentTrial >= # trials? currentTrial=" + currentTrial + ", trials.length=" + trials.length);
-	currentTrial--;
+	  log.warn("Null trial in experiment " + experimentName);
       }
     }
     // if user didn't specify results directory, save in local directory
@@ -2797,7 +2597,7 @@ public class CSMARTConsole extends JFrame {
 	// on the network. But if I don't block, this method
 	// will later destroy some state that the nodeStopped method
 	// probably wants, and this may cause errors
-	abortButton_actionPerformed();
+	doStop();
 	// don't stop experiments when exiting the console
 	//    stopExperiments();
       } else {
@@ -2838,9 +2638,6 @@ public class CSMARTConsole extends JFrame {
 	// This will contact all the AppServers again
 	saveResults();
 
-	// stop the trial timer?
-	if (trialTimer != null)
-	  trialTimer.stop();
 	if (experimentTimer != null)
 	  experimentTimer.stop();
 
@@ -2891,7 +2688,6 @@ public class CSMARTConsole extends JFrame {
     attachButton = null;
     runButton = null;
     stopButton = null;
-    abortButton = null;
     buttonPanel = null;
     nodeCreator = null;
     myMouseListener = null;
@@ -2904,7 +2700,6 @@ public class CSMARTConsole extends JFrame {
     displayFilter = null;
     nodeCreationInfoList = null;
     appServerSupport = null;
-    trialTimer = null;
     experimentTimer = null;
     glsClient = null;
     experiment = null;

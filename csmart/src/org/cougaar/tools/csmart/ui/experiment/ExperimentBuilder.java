@@ -84,7 +84,6 @@ public class ExperimentBuilder extends JFrame {
   private JTabbedPane tabbedPane;
   private UnboundPropertyBuilder propertyBuilder;
   private HostConfigurationBuilder hcb;
-  //  private TrialBuilder trialBuilder;
   private ThreadBuilder threadBuilder;
   private CommunityPanel communityPanel;
   private JMenu findMenu;
@@ -421,9 +420,6 @@ public class ExperimentBuilder extends JFrame {
     }
     tabbedPane.add("Threads", threadBuilder);
 
-    // only display trial builder for non-database experiments
-    //    trialBuilder = new TrialBuilder(experiment);
-    //    tabbedPane.add("Trials", trialBuilder);
     // after starting all the editors, set experiment editability to false
     experiment.setEditInProgress(true);
     getContentPane().add(tabbedPane);

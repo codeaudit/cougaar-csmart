@@ -33,7 +33,6 @@ import javax.swing.event.*;
 
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
-import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
@@ -50,7 +49,6 @@ import org.cougaar.util.log.Logger;
 public class UnboundPropertyBuilder extends JPanel {
   private static final String REMOVE_MENU_ITEM = "Remove";
   private ExperimentBuilder experimentBuilder;
-  private String variationScheme;
   private DefaultTreeModel model;
   private ExperimentTree tree;
   private Experiment experiment;
@@ -58,15 +56,15 @@ public class UnboundPropertyBuilder extends JPanel {
   private DefaultMutableTreeNode root;
   private DefaultMutableTreeNode societies;
   private DefaultMutableTreeNode recipes;
-  private PropTableModel propModel = new PropTableModel();
-  private JTable propTable = new JTable(propModel);
-  private JScrollPane propScrollPane = new JScrollPane(propTable);
+
+  // FIXME: right panel is empty. Get rid of it?
+  // Do something to make this panel useful?
+  // Drop it altogether?
   private JPanel rightPanel = new JPanel(new BorderLayout());
   private JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
   private JPopupMenu popupMenu = new JPopupMenu();
   private JPopupMenu societiesMenu = new JPopupMenu();
   private JPopupMenu recipesMenu = new JPopupMenu();
-  private JTextField trialCountField;
 
   private transient Logger log;
 
@@ -114,34 +112,6 @@ public class UnboundPropertyBuilder extends JPanel {
     public void mouseReleased(MouseEvent e) {
       if (!isEditable) return;
       if (e.isPopupTrigger()) doPopup(e);
-    }
-  };
-
-  /**
-   * Define tree selection listener to display unbound properties
-   * for selected component in tree.
-   */
-  private TreeSelectionListener myTreeSelectionListener = new TreeSelectionListener() {
-    public void valueChanged(TreeSelectionEvent e) {
-      TreePath path = tree.getSelectionPath();
-      if (path != null) {
-        DefaultMutableTreeNode node =
-        (DefaultMutableTreeNode) path.getLastPathComponent();
-        displayEditorForNode(node);
-      }
-    }
-  };
-
-  /**
-   * Define table model listener to update minimum trial count
-   * whenever values in table are changed.
-   */
-
-  private TableModelListener myTableModelListener = new TableModelListener() {
-    public void tableChanged(TableModelEvent e) {
-      // experimental property values changed; need to update trials
-      experiment.invalidateTrials();
-      updateTrialCount();
     }
   };
 
@@ -203,38 +173,10 @@ public class UnboundPropertyBuilder extends JPanel {
     tree.addMouseListener(mouseListener);
     //    tree.setPreferredSize(new Dimension(250, 200));
     model.addTreeModelListener(myTreeModelListener);
-    tree.addTreeSelectionListener(myTreeSelectionListener);
 
-    // don't allow user to reorder columns
-    propTable.getTableHeader().setReorderingAllowed(false);
-    propTable.setCellSelectionEnabled(true);
-    propTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    propModel.addTableModelListener(myTableModelListener);
-    rightPanel.add(propScrollPane, BorderLayout.CENTER);
-    rightPanel.add(new JLabel("Unbound Properties", SwingConstants.CENTER), 
-		   BorderLayout.NORTH);
     splitPane.setRightComponent(rightPanel);
     splitPane.setLeftComponent(new JScrollPane(tree));
     setLayout(new BorderLayout());
-    JPanel trialPanel = new JPanel();
-    JLabel variationLabel = new JLabel("Variation Scheme:");
-    String[] variationSchemes = Experiment.getVariationSchemes();
-    JComboBox cb = new JComboBox(variationSchemes);
-    variationScheme = variationSchemes[0];
-    cb.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-	variationSchemeCB_actionPerformed(e);
-      }
-    });
-    trialPanel.add(variationLabel);
-    trialPanel.add(cb);
-    JLabel trialLabel = new JLabel("Minimum number of Trials:");
-    trialCountField = new JTextField("1", 4);
-    trialCountField.setEditable(false);
-    trialPanel.add(trialLabel);
-    trialPanel.add(trialCountField);
-    // don't add trial panel cause there are no trials
-    //    add(trialPanel, BorderLayout.NORTH);
     add(splitPane, BorderLayout.CENTER);
     splitPane.setDividerLocation(100);
     for (int i = 0; i < popupActions.length; i++) {
@@ -286,27 +228,12 @@ public class UnboundPropertyBuilder extends JPanel {
     tree.expandNode(societies);
     tree.expandNode(recipes);
     model.addTreeModelListener(myTreeModelListener);
-    updateTrialCount();
-  }
-
-  /**
-   * Clear out old property name/value pairs in table and display new ones.
-   */
-  private void displayEditorForNode(DefaultMutableTreeNode node) {
-    if (node == null) return;
-    Object o = (node.getUserObject());
-    if (o instanceof BaseComponent) {
-      propModel.clear(); // clear out any previous table entries
-      propModel.setComponentProperties((BaseComponent) o);
-      rightPanel.add(propScrollPane, BorderLayout.CENTER);
-    }
   }
 
   /**
    * Update society and recipes in the experiment when the user
    * modifies the tree.
    */
-
   private void reconcileExperimentNodes() {
     int nSocieties = societies.getChildCount();
     if (nSocieties > 1) {
@@ -331,7 +258,6 @@ public class UnboundPropertyBuilder extends JPanel {
         (RecipeComponent) ((DefaultMutableTreeNode) recipes.getChildAt(i)).getUserObject();
     }
     experiment.setRecipeComponents(recipeAry);
-    experiment.invalidateTrials(); // and force experiment to recreate trials
   }
 
   /**
@@ -408,7 +334,6 @@ public class UnboundPropertyBuilder extends JPanel {
 //  	  userObject instanceof ModifiableComponent)
 //  	((ModifiableComponent)userObject).setEditable(true);
     }
-    propModel.clear(); // selected items were removed, so clear prop table
   }
 
   /**
@@ -430,27 +355,6 @@ public class UnboundPropertyBuilder extends JPanel {
   private void addRecipe(RecipeComponent recipe) {
     DefaultMutableTreeNode node = new DefaultMutableTreeNode(recipe, false);
     model.insertNodeInto(node, recipes, recipes.getChildCount());
-  }
-
-  /**
-   * User modified variation scheme; update minimum number of trials.
-   * @param e the event describing the change
-   */
-  public void variationSchemeCB_actionPerformed(ActionEvent e) {
-    variationScheme = (String)((JComboBox)e.getSource()).getSelectedItem();
-    if (variationScheme.equals(Experiment.VARY_TWO_DIMENSION)) {
-      JOptionPane.showMessageDialog(this,
-				    "Variation scheme not implemented",
-				    "Variation Scheme",
-				    JOptionPane.WARNING_MESSAGE);
-      return;
-    }
-    updateTrialCount();
-  }
-
-  private void updateTrialCount() {
-    experiment.setVariationScheme(variationScheme);
-    trialCountField.setText(Integer.toString(experiment.getTrialCount()));
   }
 
   private void readObject(ObjectInputStream ois)

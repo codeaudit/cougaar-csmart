@@ -73,7 +73,6 @@ import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 
 /**
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
- * Computes the trials, and the configuration data for running a trial.
  * @property org.cougaar.tools.csmart.allowComplexRecipeQueries 
  *    (default false): If true, save changes after every recipe 
  *    application, to permit recipe target queries to see the effect 
@@ -126,19 +125,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   private List recipes = new ArrayList();
   private ReadOnlyProperties defaultNodeArguments;
   private File resultDirectory; // where to store results
-  private int numberOfTrials = 1;
-  private List trials = new ArrayList();
-  private boolean hasValidTrials = false;
-  // schemes for varying experimental data
-  public static final String VARY_ONE_DIMENSION = "Univariate";
-  public static final String VARY_TWO_DIMENSION = "Bivariate";
-  public static final String VARY_SEQUENTIAL = "Multivariate";
-  public static final String VARY_RANDOM = "Random";
-  private static final String[] variationSchemes = {
-    VARY_ONE_DIMENSION, VARY_TWO_DIMENSION, VARY_SEQUENTIAL, VARY_RANDOM };
-  private String variationScheme = variationSchemes[0];
-  //  private boolean overrideEditable = false;
-  //  private boolean cloned = false;
+  private Trial theTrial; // Experiments currently have a single trial
   private transient boolean editInProgress = false;
   private transient boolean runInProgress = false;
 
@@ -147,7 +134,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
   private String expID = null; // An Experiment has a single ExpID
   private String trialID = null;
-  // Soon Experiment's Trials will have TrialIDs
 
   private ComponentData completeSociety = null;
 
@@ -214,6 +200,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   private void init() {
     createLogger();
     setDefaultNodeArguments();
+    if (trialID != null)
+      theTrial = new Trial(trialID);
+    else
+      theTrial = new Trial("Trial 1");
+    theTrial.initProperties();
   }
 
   private void createLogger() {
@@ -278,21 +269,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
         log.error("UnknownHost Exception", uhe);
       }
     }
-  }
-
-  /**
-   * Determines if any results exist for this Experiment/Trial
-   *
-   * @return a <code>boolean</code> value
-   */
-  private boolean hasResults() {
-    Trial[] trials = getTrials();
-    for (int i = 0; i < trials.length; i++) {
-      TrialResult[] results = trials[i].getTrialResults();
-      if (results.length != 0) 
-        return true;
-    }
-    return false;
   }
 
 
@@ -562,7 +538,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @return whether or not an experiment is runnable
    */
   public boolean isRunnable() {
-    if (!hasConfiguration() || hasUnboundProperties() || modified)
+    if (!hasConfiguration() || modified)
       return false;
     return !runInProgress; // allow user to run experiment they're editing
   }
@@ -593,32 +569,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     return editInProgress;
   }
 
-  /**
-   * Returns true if experiment is editable: 
-   * it has no trial results, and
-   * it's not being edited or run
-   * The first condition can be overridden using the setEditable method.
-   * @return true if experiment is editable, false otherwise
-   */
-//    public boolean isEditable() {
-//      if (editInProgress)
-//        return false;
-//      if (overrideEditable)
-//        return true;
-//      else
-//        return !hasResults();
-//    }
-
-  /**
-   * Make an experiment editable even if
-   * it has experiment results.
-   */
-//    public void setEditable(boolean editable) {
-//      if (editable == overrideEditable) return; // no change
-//      overrideEditable = editable;
-//      fireModification();
-//    }
-
 
   ////////////////////////////////////////////
   //  Trial Operations.
@@ -646,223 +596,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
   /**
-   * Return whether or not the experiment has a valid set of trials.
-   * The trials may be invalid because something about the experiment
-   * has changed (i.e. the set of configurable components, the
-   * unbound variables of a component, the variation scheme)
-   * and the trials have not been recomputed.  This supports recomputing
-   * trials only as needed.
-   * @return boolean indicating whether or not the trials are valid
+   * Return the trial defined for this experiment.  
    */
-  public boolean hasValidTrials() {
-    return hasValidTrials;
+  public Trial getTrial() {
+    return theTrial;
   }
-
-  /**
-   * Indicate that the experiment does not have valid trials; should
-   * be called when some aspect of the experiment or its components
-   * changes so as to invalidate trials.
-   */
-  public void invalidateTrials() {
-    hasValidTrials = false;
-  }
-
-  /**
-   * Return the trials defined for this experiment.  Computes trials
-   * if necessary.
-   * @return array of Trials
-   */
-  public Trial[] getTrials() {
-    if (hasValidTrials)
-      return (Trial[])trials.toArray(new Trial[trials.size()]);
-
-    getTrialCount(); // update trial count
-
-    // get lists of unbound properties and their experimental values
-    List properties = new ArrayList();
-    List experimentValues = new ArrayList();
-    // Get Society Components.
-    ModifiableComponent comp = getSocietyComponent();
-    if (comp != null) {
-       for (Iterator j = comp.getProperties(); j.hasNext(); ) {
-        Property property = (Property)j.next();
-        List values = property.getExperimentValues();
-        if (values != null && values.size() != 0) {
-          properties.add(property);
-          experimentValues.add(values);
-        }
-      }
-    }
-
-    // Get Recipe Components.
-    int n = getRecipeComponentCount();
-    for (int i = 0; i < n; i++) {
-      comp = getRecipeComponent(i);
-       for (Iterator j = comp.getProperties(); j.hasNext(); ) {
-	Property property = (Property)j.next();
-	List values = property.getExperimentValues();
-	if (values != null && values.size() != 0) {
-	  properties.add(property);
-	  experimentValues.add(values);
-	}
-      }
-    }
-
-    // handle simple case of no properties to vary
-    int nProperties = properties.size();
-    if (nProperties == 0) {
-      hasValidTrials = true;
-      numberOfTrials = 1;
-      Trial trial = new Trial("Trial 1");
-      trial.initProperties();
-      trials = new ArrayList(1);
-      trials.add(trial);
-      variationScheme = VARY_ONE_DIMENSION;
-      return (Trial[])trials.toArray(new Trial[trials.size()]);
-    }
-
-    // create trials according to variation scheme
-    if (variationScheme.equals(VARY_ONE_DIMENSION)) 
-      return getUnivariateTrials(properties, experimentValues);
-    else if (variationScheme.equals(VARY_TWO_DIMENSION)) 
-      return getBivariateTrials(properties, experimentValues);
-    else if (variationScheme.equals(VARY_SEQUENTIAL) ||
-	     variationScheme.equals(VARY_RANDOM))
-      return getMultivariateTrials(properties, experimentValues);
-    else {
-      System.out.println("Variation scheme not implemented: " + 
-			 variationScheme);
-      return null;
-    }
-  }
-
-  public void addTrial(Trial trial) {
-    trials.add(trial);
-    numberOfTrials++;
-  }
-
-  public void removeTrial(int trialIndex) {
-    trials.remove(trialIndex);
-    numberOfTrials--;
-    if (numberOfTrials == 0)
-      numberOfTrials = 1;
-  }
-
-  /**
-   * Get the number of trials. Recomputes the number of trials if necessary.
-   * @return number of trials
-   */
-  public int getTrialCount() {
-    if (hasValidTrials) 
-      return numberOfTrials;
-    ArrayList experimentValueCounts = new ArrayList(100);
-
-    // Get Society Components
-    ModifiableComponent comp = getSocietyComponent();
-    if (comp == null)
-      return 1; // always assume one trial
-    Iterator props = comp.getProperties();
-    while (props.hasNext()) {
-      Property property = (Property)props.next();
-      List values = property.getExperimentValues();
-      if (values != null)
-        experimentValueCounts.add(new Integer(values.size()));
-    }
-
-    // Get Recipe Components
-    int n = getRecipeComponentCount();
-    for (int i = 0; i < n; i++) {
-      comp = getRecipeComponent(i);
-      props = comp.getProperties();
-      while (props.hasNext()) {
-        Property property = (Property)props.next();
-	List values = property.getExperimentValues();
-	if (values != null)
-	  experimentValueCounts.add(new Integer(values.size()));
-      }
-    }
-    // one dimension: sum the counts of experiment values
-    // but only count nominal value the first time
-    if (variationScheme.equals(VARY_ONE_DIMENSION)) {
-      numberOfTrials = 0;
-      for (int i = 0; i < experimentValueCounts.size(); i++)
-	numberOfTrials = numberOfTrials + 
-	  ((Integer)experimentValueCounts.get(i)).intValue() - 1;
-      numberOfTrials++; // add one to use nominal value for first time
-    }
-    // sequential or random: (all combinations): multiply counts
-    else if (variationScheme.equals(VARY_RANDOM) ||
-	     variationScheme.equals(VARY_SEQUENTIAL)) {
-      numberOfTrials = 1;
-      for (int i = 0; i < experimentValueCounts.size(); i++)
-	numberOfTrials = numberOfTrials *
-	  ((Integer)experimentValueCounts.get(i)).intValue();
-    }
-    // two dimension: ???
-    if (numberOfTrials == 0)
-      numberOfTrials = 1;  // always assume at least one trial
-    return numberOfTrials;
-  }
-
-  // Private Methods
-
-  private Trial[] getMultivariateTrials(List properties, 
-					List experimentValues) {
-    trials = new ArrayList(numberOfTrials);
-    for (int i = 0; i < numberOfTrials; i++) {
-      Trial trial = new Trial("Trial " + (i+1));
-      trial.initProperties();
-      trials.add(trial);
-    }
-    int nProperties = properties.size();
-    // how many times to copy each value in the experiment values
-    // to the trials
-    int nCopies = 1;
-    for (int i = 0; i < nProperties; i++) {
-      addParameterValues(trials,
-			 (Property)properties.get(i),
-			 (List)experimentValues.get(i),
-			 nCopies);
-      nCopies = nCopies * ((List)(experimentValues.get(i))).size();
-    }
-    hasValidTrials = true;
-    return (Trial[])trials.toArray(new Trial[trials.size()]);
-  }
-
-  private Trial[] getUnivariateTrials(List properties, List experimentValues) {
-    trials = new ArrayList(numberOfTrials);
-    int propToVaryIndex = 0; // index of property being varied
-    int k = 0; // index into values of property being varied
-    int nProperties = properties.size();
-    for (int i = 0; i < numberOfTrials; i++) {
-      Trial trial = new Trial("Trial " + (i+1));
-      trial.initProperties();
-      for (int j = 0; j < nProperties; j++) {
-	List parameterValues = (List)experimentValues.get(j);
-	Object value;
-	if (j == propToVaryIndex)
-	  value = parameterValues.get(k++);
-	else
-	  value = parameterValues.get(0);
-	trial.addTrialParameter((Property)properties.get(j), value);
-      }
-      // if we've stepped through all the values of the property being varied
-      // then vary the next property
-      if (((List)experimentValues.get(propToVaryIndex)).size() == k) {
-	k = 1; // after first pass, skip nominal values
-	propToVaryIndex++;
-      }
-      trials.add(trial);
-    }
-    hasValidTrials = true;
-    return (Trial[])trials.toArray(new Trial[trials.size()]);
-  }
-
-  private Trial[] getBivariateTrials(List properties, List experimentValues) {
-    hasValidTrials = true;
-    return null;
-  }
-
 
   ////////////////////////////////////////////
   // Basic Operations.
@@ -1219,7 +957,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     // put all the properties in here
     // the list of components are children
     // the editability & runability are properties
-    // the hosts, trials, etc should all be properties
+    // the hosts, trial, etc should all be properties
     // then we wouldn't need the special copy mechanism
     // (if all the sub-pieces were also components)
   }
@@ -1253,14 +991,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * Checks for modification event being EXPERIMENT_SAVED
    * in which case, it does not mark the experiment modified.
    */
-//    ModificationListener myModificationListener = 
-//      new ModificationListener() {
-//          public void modified(ModificationEvent e) {
-//            // tell listeners on experiment that experiment was modified
-//            notifyExperimentListeners(e);
-//          }
-//        };
-
   ModificationListener myModificationListener = new MyModificationListener();
 
   /**
@@ -1306,19 +1036,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     boolean temp = modified;
     createLogger();
     createObserver();
-    // these are reinstalled in ConfigurableComponent
-    // reinstall listeners
-//      if (societyComponent != null)
-//        installListeners((ModifiableConfigurableComponent)societyComponent);
-//      RecipeComponent[] recipes = getRecipeComponents();
-//      for (int i = 0; i < recipes.length; i++)
-//        installListeners((ModifiableConfigurableComponent)recipes[i]);
-//      HostComponent[] hostComponents = getHostComponents();
-//      for (int i = 0; i < hostComponents.length; i++)
-//        installListeners((ModifiableConfigurableComponent)hostComponents[i]);
-//      NodeComponent[] nodeComponents = getNodeComponents();
-//      for (int i = 0; i < nodeComponents.length; i++)
-//        installListeners((ModifiableConfigurableComponent)nodeComponents[i]);
     modified = temp;
     editInProgress = false;
     runInProgress = false;
@@ -1339,24 +1056,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	  // it impossible for these to be much use?
 	  // FIXME??
           cd.addParameter(PROP_PREFIX + prop.getName().last() + "=" + pvalue);
-      }
-    }
-  }
-
-  private void addParameterValues(List trials,
-				  Property property, 
-				  List values, int nCopies) {
-    int x = 0;
-    int j = 0;
-    int nValues = values.size();
-    for (int i = 0; i < numberOfTrials; i++) {
-      ((Trial)trials.get(i)).addTrialParameter(property, values.get(j));
-      x++;
-      if (x >= nCopies) {
-	x = 0;
-	j++;
-	if (j >= nValues)
-	  j = 0;
       }
     }
   }
@@ -2387,7 +2086,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     if (resultDir == null) {
       resultDir = new File(".");
     }
-    Trial trial = getTrials()[0];
+    Trial trial = getTrial();
     String dirname = resultDir.getAbsolutePath() + File.separatorChar + 
       getExperimentName() + File.separatorChar +
       trial.getShortName() + File.separatorChar +
@@ -2484,7 +2183,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       resultDir = new File(resultDirName + File.separatorChar + "results");
     }
 
-    Trial trial = getTrials()[0];
+    Trial trial = getTrial();
     String dirname = resultDir.getAbsolutePath() + File.separatorChar + 
       getExperimentName() + File.separatorChar +
       trial.getShortName() + File.separatorChar +
@@ -2779,40 +2478,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     }
   }
 
-  ////////////////////////////////////////////
-  // Variation Specific Operations
-  ////////////////////////////////////////////
-
-  /**
-   * Get possible experiment variation schemes, i.e. 
-   * univariate, bivariate, multivariate, random.
-   * @return the variation schemes which can being used in this experiment
-   */
-  public static String[] getVariationSchemes() {
-    return variationSchemes;
-  }
-
-  /**
-   * Return variation scheme being used in this experiment:
-   * univariate, bivariate, multivariate, or random.
-   * @return the variation scheme being used in this experiment
-   */
-  public String getVariationScheme() {
-    return variationScheme;
-  }
-
-  /**
-   * Set variation scheme to use in this experiment:
-   * univariate, bivariate, multivariate, or random.
-   * @param the variation scheme to use in this experiment
-   */
-  public void setVariationScheme(String variationScheme) {
-    if (this.variationScheme != null &&
-	!(this.variationScheme.equals(variationScheme)))
-      hasValidTrials = false; // new variation scheme, invalidates trials
-    this.variationScheme = variationScheme;
-  }
-
   /**
    * If the experiment has still unbound properties,
    * then we can't run it yet. <br>
@@ -2822,34 +2487,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @return a <code>boolean</code> value
    */
   public boolean hasUnboundProperties() {
-    // First handle Societies
-    ModifiableComponent comp = getSocietyComponent();
-    if (comp != null) {
-       for (Iterator j = comp.getProperties(); j.hasNext(); ) {
-        Property property = (Property)j.next();
-        if (! property.isValueSet()) {
-          List values = property.getExperimentValues();
-          if (values == null || values.size() == 0) {
-            return true;
-          }
-        }
-      }
-    }
-
-    // Now handle Recipes
-    int n = getRecipeComponentCount();
-    for (int i = 0; i < n; i++) {
-      comp = getRecipeComponent(i);
-      for (Iterator j = comp.getProperties(); j.hasNext(); ) {
-	Property property = (Property)j.next();
-	if (! property.isValueSet()) {
-	  List values = property.getExperimentValues();
-	  if (values == null || values.size() == 0) {
-	    return true;
-	  }
-	}
-      } // end of loop over this components properties
-    } // end of loop over all components in experiment
+    // Dont use this!!!!
     return false;
   }
 
