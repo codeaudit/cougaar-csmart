@@ -102,6 +102,7 @@ public class CSMARTGraph extends Graph
    */
   public CSMARTGraph(Collection objectsToGraph, String graphType) {
     super("CSMART", true, true);
+    log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic");
     markedElements = new Vector();
     setColors();
     if (objectsToGraph == null)
