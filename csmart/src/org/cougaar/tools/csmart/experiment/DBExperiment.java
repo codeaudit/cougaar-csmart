@@ -217,9 +217,8 @@ public final class DBExperiment extends ExperimentBase {
         if (log.isErrorEnabled()) {
           log.error("setName: error setting name in DB", e);
         }
-      } finally {
-        return;
       }
+      return;
     }
 
     fireModification();
