@@ -5,7 +5,8 @@ This release includes a major reworking of the Console, new
 option to run the console stand-alone from XML files, and a
 new XML society viewing tool. Additionally,
 UltraLog specific configuration information has been removed. CSMART
-no longer comes with the so-called 1AD societies by default.
+no longer comes with the so-called 1AD societies by default. Also,
+refconfigdb.zip has been replaced by CSV files and a load script (load_ref_data.sh).
 
 The console rework included:
 - Broke up the Console into Model and View.
