@@ -18,17 +18,15 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-
 package org.cougaar.tools.csmart.runtime.ldm;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 import org.cougaar.core.agent.ClusterServesLogicProvider;
 
 import org.cougaar.core.blackboard.LogPlan;
 import org.cougaar.core.blackboard.XPlanServesBlackboard;
-
-import org.cougaar.core.component.BindingSite;
 
 import org.cougaar.core.domain.DomainAdapter;
 import org.cougaar.core.domain.DomainBindingSite;
@@ -43,7 +41,6 @@ import org.cougaar.tools.csmart.runtime.ldm.lps.*;
  *         -Dorg.cougaar.domain.csmart=org.cougaar.tools.csmart.runtime.ldm.CSMARTDomain
  * </pre>
  **/
-
 public class CSMARTDomain extends DomainAdapter {
   private static final String CSMART_NAME = "csmart".intern();
 
@@ -66,8 +63,8 @@ public class CSMARTDomain extends DomainAdapter {
     DomainBindingSite bindingSite = (DomainBindingSite) getBindingSite();
 
     if (bindingSite == null) {
-      throw new RuntimeException("Binding site for the domain has not be set.\n" +
-                             "Unable to initialize domain Factory without a binding site.");
+      throw new RuntimeException("Binding site for the CSMART domain has not be set.\n" +
+                             "Unable to initialize CSMART domain Factory without a binding site.");
     } 
 
     setFactory(new CSMARTFactory(bindingSite.getClusterServesLogicProvider().getLDM()));
@@ -77,19 +74,19 @@ public class CSMARTDomain extends DomainAdapter {
     DomainBindingSite bindingSite = (DomainBindingSite) getBindingSite();
 
     if (bindingSite == null) {
-      throw new RuntimeException("Binding site for the domain has not be set.\n" +
-                             "Unable to initialize domain XPlan without a binding site.");
+      throw new RuntimeException("Binding site for the CSMART domain has not be set.\n" +
+                             "Unable to initialize CSMART domain XPlan without a binding site.");
     } 
 
     Collection xPlans = bindingSite.getXPlans();
-    LogPlan logPlan = null;
+    XPlanServesBlackboard logPlan = null;
     
     for (Iterator iterator = xPlans.iterator(); iterator.hasNext();) {
       XPlanServesBlackboard  xPlan = (XPlanServesBlackboard) iterator.next();
       if (xPlan instanceof LogPlan) {
         // Note that this means there are 2 paths to the plan.
         // Is this okay?
-        logPlan = (LogPlan) logPlan;
+        logPlan = xPlan;
         break;
       }
     }
@@ -105,12 +102,15 @@ public class CSMARTDomain extends DomainAdapter {
     DomainBindingSite bindingSite = (DomainBindingSite) getBindingSite();
 
     if (bindingSite == null) {
-      throw new RuntimeException("Binding site for the domain has not be set.\n" +
-                             "Unable to initialize domain LPs without a binding site.");
+      throw new RuntimeException("Binding site for the CSMART domain has not be set.\n" +
+                             "Unable to initialize CSMART domain LPs without a binding site.");
     } 
 
     ClusterServesLogicProvider cluster =
       bindingSite.getClusterServesLogicProvider();
+
+    // Most LPs actually need a LogPlanServesLogicProvider. The only XPlan that implements
+    // that (actually, the only one anywhere), is the LogPlan. So cast it.
     LogPlan logPlan = (LogPlan) getXPlan();
 
     addLogicProvider(new ImpactsLP(logPlan, cluster));;
