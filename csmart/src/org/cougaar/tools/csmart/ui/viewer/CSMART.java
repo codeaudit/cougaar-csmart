@@ -1074,7 +1074,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     lf = LoggerFactory.getInstance();
 
     Properties defaults = new Properties();
-    defaults.setProperty("log4j.rootCategory", "DEBUG, A1");
+    defaults.setProperty("log4j.rootCategory", "WARN, A1");
     defaults.setProperty("log4j.appender.A1",
                          "org.apache.log4j.ConsoleAppender");
     defaults.setProperty("log4j.appender.A1.Target", "System.out");
