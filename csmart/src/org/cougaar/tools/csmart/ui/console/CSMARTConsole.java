@@ -1930,9 +1930,13 @@ public class CSMARTConsole extends JFrame {
     // things to attach to is up-to-date
     appServerSupport.haveNewNodes();
     ArrayList nodesToAttach = appServerSupport.getNodesToAttach();
-    if (nodesToAttach == null || nodesToAttach.isEmpty()) {
+    if (nodesToAttach == null) {
+      // There were no Nodes to attach to
       JOptionPane.showMessageDialog(this, "No New Nodes to Attach To.", 
 				    "Attach", JOptionPane.PLAIN_MESSAGE);
+      return;
+    } else if  (nodesToAttach.isEmpty()) {
+      // User just selected none to attach to
       return;
     }
 
