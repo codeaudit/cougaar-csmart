@@ -162,25 +162,6 @@ public abstract class AgentBase
   }
 
   /**
-   * Add the AssetComponent to hold any Agent asset.
-   */
-  protected abstract void addAssetData();
-
-  /**
-   * Add the Plugins Container that contains things that extend or are
-   * PluginBase
-   */
-  protected abstract void addPlugins();
-
-  /**
-   * Add the Binders Container that contains things that extend or are
-   * BinderBase
-   */
-  protected abstract void addBinders();
-
-  protected abstract void addComponents();
-  
-  /**
    * Gets the classname for this binder
    *
    * @return a <code>String</code> value
