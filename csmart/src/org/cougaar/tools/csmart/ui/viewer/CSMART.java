@@ -1033,30 +1033,25 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     lf = LoggerFactory.getInstance();
 
     Properties defaults = new Properties();
-    defaults.setProperty("org.cougaar.core.logging.rootCategory", "WARN, A1");
-    defaults.setProperty("org.cougaar.core.logging.appender.A1",
+    defaults.setProperty("log4j.rootCategory", "WARN, A1");
+    defaults.setProperty("log4j.appender.A1",
                          "org.apache.log4j.ConsoleAppender");
-    defaults.setProperty("org.cougaar.core.logging.appender.A1.Target", "System.out");
-    defaults.setProperty("org.cougaar.core.logging.appender.A1.layout", 
+    defaults.setProperty("log4j.appender.A1.Target", "System.out");
+    defaults.setProperty("log4j.appender.A1.layout", 
                          "org.apache.log4j.PatternLayout");
-    defaults.setProperty("org.cougaar.core.logging.appender.A1.layout.ConversionPattern", 
+    defaults.setProperty("log4j.appender.A1.layout.ConversionPattern", 
                          "%d{ABSOLUTE} %-5p [ %t] - %m%n");
 
-    Properties props = new Properties();
+    Properties props = new Properties(defaults);
     // Get the debug file.
     ConfigFinder cf = ConfigFinder.getInstance();
     try {
       props.load(new FileInputStream(cf.locateFile("debug.properties")));
     } catch(Exception e) {
       System.err.println("Could not read debug properties file, using defaults");
-      props = null;
     }
 
-    // configure take a Map.  The implementation of
-    // Properties does not store the defaults, as in
-    // Properties(defaults) in the Map thus the two
-    // two seperate Properties objects.
-    lf.configure((props == null) ? defaults : props);
+    lf.configure(props);
   }
 
   /**
