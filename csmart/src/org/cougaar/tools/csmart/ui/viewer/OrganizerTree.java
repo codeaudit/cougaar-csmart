@@ -154,11 +154,9 @@ public class OrganizerTree extends DNDTree {
 	    Object userObject = node.getUserObject();
 	    // FIXME!!! Should this be instanceof ModifiableConfigurableComponent?????
 	    if (userObject != null &&
-		(userObject instanceof SocietyComponent) &&
-		!((SocietyComponent)userObject).isEditable())
-//  		(userObject instanceof ModifiableConfigurableComponent) &&
-//  		!((ModifiableConfigurableComponent)userObject).isEditable())
-	      return false; // not draggable if it's a non-editable society
+  		(userObject instanceof ModifiableConfigurableComponent) &&
+  		!((ModifiableConfigurableComponent)userObject).isEditable())
+	      return false; // not draggable if it's a non-editable component
 	    return true;
 	    //            return node != getModel().getRoot();
         }
