@@ -64,3 +64,18 @@ TRANSCOM-PlanePacker,TRANSCOM: PlanePacker, ,1
 TRANSCOM-ShipPacker,TRANSCOM: ShipPacker, ,1
 TRANSCOM-TheaterGround,TRANSCOM: TheaterGround, ,1
 TSC,Theater Support Command, ,1
+1-AD-DIV-OGT,1-AD-DIV Org Group Type, ,
+1-BDE-1-AD-OGT,1-BDE-1-AD Org Group Type, ,
+2-BDE-1-AD-OGT,2-BDE-1AD Org Group Type, ,
+3-BDE-1-AD-OGT,3-BDE-1AD Org Group Type, ,
+DIVARTY-1-AD-OGT,DIVARTY-1AD Org Group Type, ,
+DISCOM-1-AD-OGT,DISCOM-1AD Org Group Type, ,
+AVNBDE-1-AD-OGT,AVNBDE-1-AD Org Group Type, ,
+3-SUPCOM-OGT,3-SUPCOM Org Group Type, ,
+16-CSG-OGT,16-CSG Org Group Type, ,
+7-CSG-OGT,7-CSG Org Group Type, ,
+5-CORPS-REAR-OGT,5-CORPS-REAR Org Group Type, ,
+5-CORPS-ARTY-OGT,5-CORPS-ARTY Org Group Type, ,
+21-TSC-OGT,21-TSC Org Group Type, ,
+29-SPTGP-OGT,29-SPTGP Org Group Type, ,
+37-TRANSGP-OGT,37-TRANSGP Org Group Type, 
