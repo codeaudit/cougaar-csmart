@@ -2,7 +2,7 @@ csmart/doc/CSMART-Troubleshooting.txt
 
 Here are some tips for solving some common problems. In general, you
 should make sure that you can run minitestconfig, and view the data
-from a PSP, before worrying about CSMART specific items. If your
+from a servlet, before worrying about CSMART specific items. If your
 problem is not addressed here, send a query to
 cougaar-developers@cougaar.org.
 
@@ -29,17 +29,10 @@ Society Monitor section.
 
 
 Running the Society Monitor Standalone
-- Ensure that the grappa, JCChart, planserver, and csmart jars are all
+- Ensure that the grappa, JCChart, servlet, and csmart jars are all
 in the classpath for the Society Monitor
-- Ensure that you have included all of the CSMART PSPs from
-csmart/data/common/default.psps.xml in whichever set of PSPs you are
-loading
-- If you are trying to use the standard CSMART default.psps.xml, be
-sure that you have set org.cougaar.config.path to include
-COUGAAR_INSTALL_PATH/csmart/data/common/, and have included this
-_before_ any other directory that contains a default.psps.xml. Be sure
-you include "\;" between additions to the config path, and at the end
-of your command-line additions.
+- Ensure that you have included all of the CSMART servlets from
+csmart/data/common/servlets.txt in your agent configurations
 
 Running one of the supplied pre-configured Societies or using the
 include Metrics
@@ -76,8 +69,6 @@ they are installed in your JRE installation if you have one in
 addition to any JDK install.
 
 Running a database society
-- Windows don't pop up to publish Oplan, etc: Are you running an X
-server? Did you do: "xhost +" or equivalent?
 - If on startup you get a JDBC error like:
 java.sql.SQLException: Unknown driver driver.mysql//localhost
 then make sure your JDBC connection string is correctly formatted.
@@ -146,7 +137,7 @@ You have an error in your SQL syntax near ') AND C.INSERTION_POINT LIKE
 
   
 Running CSMART
-- Ensure that csmart, planserver, server, grappa, jcchart, xerces,
+- Ensure that csmart, servlet, server, grappa, jcchart, xerces,
 glm, and core jar files are all included
 - Ensure that all jar files are from the same build
 
