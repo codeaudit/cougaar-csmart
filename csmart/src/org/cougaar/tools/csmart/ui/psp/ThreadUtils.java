@@ -14,6 +14,7 @@ import java.util.*;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 
 import org.cougaar.util.PropertyTree;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
@@ -289,7 +290,8 @@ public final class ThreadUtils {
       // create URL
       String surl = 
         "http://"+host+":"+port+
-        "/$"+agentName+
+        "/$"+
+        URLEncoder.encode(agentName)+
         SEARCH_PSP_NAME+
         "?format=data"+
         "?find="+

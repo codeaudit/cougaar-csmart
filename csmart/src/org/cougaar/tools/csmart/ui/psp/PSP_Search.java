@@ -11,6 +11,7 @@
 package org.cougaar.tools.csmart.ui.psp;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.util.*;
 
 import org.cougaar.core.cluster.*;
@@ -19,7 +20,6 @@ import org.cougaar.core.society.UniqueObject;
 import org.cougaar.core.util.*;
 import org.cougaar.domain.planning.ldm.asset.Asset;
 import org.cougaar.domain.planning.ldm.asset.AssetGroup;
-import org.cougaar.domain.glm.ldm.asset.Organization;
 import org.cougaar.domain.planning.ldm.plan.*;
 import org.cougaar.lib.planserver.*;
 import org.cougaar.util.*;
@@ -194,7 +194,9 @@ implements PlanServiceProvider, UISubscriber, UseDirectSocketOutputStream
     String hrefBase =
       "<a"+
       " target=\"itemFrame\""+
-      " href=\"/$"+cid+"/alpine/demo/TASKS.PSP?uid=";
+      " href=\"/$"+
+      URLEncoder.encode(cid.toString())+
+      "/alpine/demo/TASKS.PSP?uid=";
     // print objs
     for (int i = 0; i < n; i++) {
       UniqueObject ui = (UniqueObject)l.get(i);
