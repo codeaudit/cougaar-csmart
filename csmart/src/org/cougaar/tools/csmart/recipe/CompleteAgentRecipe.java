@@ -49,14 +49,13 @@ import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.range.IntegerRange;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.recipe.ui.ComplexRecipeUIComponent;
 import org.cougaar.util.log.Logger;
 
 /**
  * Recipe to add a complete Agent to the society.  This agent
  * consists of all required plugins relationships and asset data.
  */
-public class CompleteAgentRecipe extends ComplexRecipeUIComponent
+public class CompleteAgentRecipe extends ComplexRecipeBase
   implements Serializable
 {
   private static final String DESCRIPTION_RESOURCE_NAME = 
@@ -77,6 +76,10 @@ public class CompleteAgentRecipe extends ComplexRecipeUIComponent
    */
   public CompleteAgentRecipe(String name) {
     super(name);
+  }
+
+  public CompleteAgentRecipe(String name, String assemblyId) {
+    super(name, assemblyId);
   }
 
   /**
