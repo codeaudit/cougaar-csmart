@@ -108,7 +108,7 @@ public class AssetFileComponent
     propUnitName = addProperty(PROP_UNITNAME, unitname);
     propUnitName.setToolTip(PROP_UNITNAME_DESC);
     
-    propUIC = addProperty(PROP_UIC, (aad.getUIC() != null) ? aad.getUIC() : "");
+    propUIC = addProperty(PROP_UIC, (aad.getUIC() != null) ? aad.getUIC() : "UIC/" + aad.getClusterID());
     propUIC.setToolTip(PROP_UIC_DESC);
 
     addPropGroups(aad);
