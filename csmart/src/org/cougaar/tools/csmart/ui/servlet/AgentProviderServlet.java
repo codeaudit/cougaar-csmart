@@ -65,6 +65,11 @@ public class AgentProviderServlet
 {
   private SimpleServletSupport support;
   
+  /**
+   * Creates a new <code>AgentProviderServlet</code> instance.
+   *
+   * @param support Support Servlet
+   */
   public AgentProviderServlet(SimpleServletSupport support) {
     super();
     this.support = support;

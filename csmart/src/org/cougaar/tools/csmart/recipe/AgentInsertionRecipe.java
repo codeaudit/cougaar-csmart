@@ -117,14 +117,27 @@ public class AgentInsertionRecipe extends RecipeBase
   private Property propOrgAsset;
   private Property propItemPG;
 
+  /**
+   * Creates a new <code>AgentInsertionRecipe</code> instance.
+   *
+   */
   public AgentInsertionRecipe() {
     this("Agent Component Recipe");
   }
 
+  /**
+   * Creates a new <code>AgentInsertionRecipe</code> instance.
+   *
+   * @param name Name of the Component
+   */
   public AgentInsertionRecipe(String name) {
     super(name);
   }
 
+  /**
+   * Initialize any local Properties
+   *
+   */
   public void initProperties() {
     propName = addProperty(PROP_NAME, PROP_NAME_DFLT);
     propName.setToolTip(PROP_NAME_DESC);
@@ -183,6 +196,10 @@ public class AgentInsertionRecipe extends RecipeBase
   private void updateOrgParameters(Boolean val) {
     boolean show = val.booleanValue();
 
+    if(log.isDebugEnabled()) {
+      log.debug("updateOrgParameters("+show+")");
+    }
+
     if(!show && propRelations != null && propRelations.length > 0) {
       for(int i=0; i < propRelations.length; i++) {
         removeProperty(propRelations[i]);
@@ -224,6 +241,11 @@ public class AgentInsertionRecipe extends RecipeBase
     }      
   }
 
+  /**
+   * Get the name of this Recipe.
+   *
+   * @return a Recipe Name as a <code>String</code> value
+   */
   public String getRecipeName() {
     return getShortName();
   }
@@ -266,12 +288,25 @@ public class AgentInsertionRecipe extends RecipeBase
     }
   }
 
+  /**
+   * Gets an array of all agents created by this recipe.
+   *
+   * @see AgentComponent
+   * @return an <code>AgentComponent[]</code> array of all agents
+   */
   public AgentComponent[] getAgents() {
     initAgents();
     Collection agents = getDescendentsOfClass(AgentComponent.class);    
     return (AgentComponent[]) agents.toArray(new AgentComponent[agents.size()]);
   }
 
+  /**
+   * Adds any new data to the global <code>ComponentData</code> tree.
+   * No existing data is modified in this method.
+   *
+   * @param data Pointer to the Global <code>ComponentData</code> tree
+   * @return an updated <code>ComponentData</code> value
+   */
   public ComponentData addComponentData(ComponentData data) {
     ComponentData[] children = data.getChildren();
 
@@ -311,6 +346,17 @@ public class AgentInsertionRecipe extends RecipeBase
     return data;
   }
 
+  /**
+   * Modifies the global <code>ComponentData</code> tree.
+   * This method is free to make any modifications it needs
+   * to the global tree, not just to it's own Component.
+   * <br>
+   * Currently, this component makes no modifications.
+   *
+   * @param data Pointer to the global <code>ComponentData</code>
+   * @param pdb Access to the database via <code>PopulateDb</code> object
+   * @return a modified <code>ComponentData</code> value
+   */
   public ComponentData modifyComponentData(ComponentData data, PopulateDb pdb) {
     return data;
   }

@@ -35,6 +35,9 @@ public interface AgentMapping {
    * Servlet queries are more efficient if the host for this specific agent 
    * is known, but the URLConnection redirect mechanism should allow the user to
    * specify one Servlet host for all agents.
+   *
+   * @param agentName Agent to get Host For
+   * @return a Host Name as a <code>String</code> value
    */
   String getHost(String agentName);
 
@@ -44,6 +47,8 @@ public interface AgentMapping {
    * Typically this is "8800", but the user might configure this 
    * port to a different address.
    *
+   * @param agentName Agent to get port for
+   * @return an port as an <code>int</code> value
    * @see #getHost(String)
    */
   int getPort(String agentName);
