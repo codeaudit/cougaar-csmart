@@ -1,7 +1,7 @@
 @ECHO OFF
 
 REM "<copyright>"
-REM " Copyright 2001 BBNT Solutions, LLC"
+REM " Copyright 2001,2002 BBNT Solutions, LLC"
 REM " under sponsorship of the Defense Advanced Research Projects Agency (DARPA)."
 REM ""
 REM " This program is free software; you can redistribute it and/or modify"
@@ -46,25 +46,8 @@ REM start the classpath with the optional COUGAAR_DEV_PATH
 SET DEVPATH=
 IF NOT "%COUGAAR_DEV_PATH%" == "" SET DEVPATH=%COUGAAR_DEV_PATH%
 
-REM Add CSMART jar explicitly to get started
-SET LIBPATHS=%DEVPATH%;%COUGAAR_INSTALL_PATH%\lib\csmart.jar
-
-REM The AppServer jar must also be specified
-SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\server.jar
-
-REM For now CSMART needs "core.jar" for the Bootstrapper and some
-REM  utility classes.  This dependency should be removed in a future
-REM  release of CSMART!
-SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\core.jar
-
-REM Plus these third party jar files, which are in COUGAAR3RDPARTY
-REM You must add the MySQL jar file here if you want it
-SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\xerces.jar
-SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\jcchart451K.jar
-SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\grappa1_2.jar
-SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\mm-mysql-2.jar
-SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\log4j.jar
-SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\oracle12.zip
+REM Start CSMART using Bootstrapper
+SET MYCLASSPATH=%DEVPATH%;%COUGAAR_INSTALL_PATH%\lib\core.jar
 
 SET MYMEMORY=-Xms100m -Xmx300m
 SET MYPROPERTIES=-Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH%
@@ -78,6 +61,6 @@ SET MYDELAY=-Dorg.cougaar.tools.csmart.startdelay=0
 
 @ECHO ON
 
-java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %MYEXCEL% %MYDELAY% -Dorg.cougaar.class.path=%LIBPATHS% -classpath %LIBPATHS% org.cougaar.tools.csmart.ui.viewer.CSMART
+java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %MYEXCEL% %MYDELAY% -classpath %MYCLASSPATH% org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
 
 :L_END
