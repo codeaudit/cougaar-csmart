@@ -47,6 +47,8 @@ public class ABCAgentTest extends TestCase {
     assertEquals("Test Name", agent.getFullName().toString(), data.getName());
     assertEquals("Test Class", "org.cougaar.core.cluster.ClusterImpl", data.getClassName());
     assertEquals("Test Number of PlugIns", 6, data.childCount());
+    assertEquals("Test Owner", agent, data.getOwner());
+    assertEquals("Test Parent", gc, data.getParent());
 
     Object[] children = data.getChildren();
 
