@@ -1,0 +1,94 @@
+Last updated: 04/29/02
+
+The document outlines the current CSMART package structure:
+
+-- org.cougaar.tools.csmart
+ -- runtime
+    This is where plugins, Assets, and other society runtime pieces go.
+   
+  -- binder
+      CSMART binder related code (Binder is used by Impacts)
+
+  -- ldm
+    -- asset
+	All CSMART/ABC Assets
+    -- event
+        All CSMART/ABC Events
+    -- lps
+        All CSMART/ABC LP's
+    -- plugin
+      -- customer
+          Customer Plugin specific classes
+      -- transducer
+          Transducer Plugin specific classes
+
+  -- plugin
+      All CSMART Plugins.
+
+  -- society
+	This is where the classes for creating societies live. This directory has base classes
+	and interfaces for Societies, Agents, Plugins, and other Components.
+    -- abc
+        All classes for the ABC Configurable Components 
+    -- db
+        All classes for the societies created from the database
+    -- scalability
+      All classes for the Scalability Configurable Components
+
+  -- recipe
+     All classes about recipes (including metrics and impacts)
+     
+  -- experiment
+     All classes about Experiments and Trials
+     
+  -- core
+     -- property
+	Properties and objects that hold them and edit them.
+	-- name
+	   Names of properties
+	-- range
+	   Utilities to mark a property as existing in a range of
+	   values
+  
+     -- cdata
+        The ComponentData tree for translating CSMART configuration
+	data representation into the form used to run.
+  
+     -- db
+	Database access mechanisms
+  -- ui
+    -- analyzer
+	Performance Analyzer
+    -- configbuilder
+	Property Table builder classes
+    -- console
+	All classes relating to the console, including charting classes
+    -- experiment
+	All classes relating to the experiment builder
+    -- help
+	About CSMART help 
+    -- monitor
+      -- community
+	  Community View classes
+      -- generic
+	  Various monitor related classes
+      -- metrics
+	  Metrics graphs
+      -- plan
+          Plan view classes
+      -- society 
+          Society View classes
+      -- viewer
+          Gif files and the CSMART UI
+    -- servlet
+       Servlets to replace the above PSPs
+    -- tree
+	UI Drag and Drop tree classes
+    -- util
+	Various UI utility classes
+    -- viewer
+	All classes related to the Organizer + Gifs
+  -- util
+      Various utility classes
+    -- parser
+      Various parsers required by CSMART/ABC
