@@ -200,13 +200,34 @@ Of particular note: the -D argument <code>java.class.name</code> indicates the
  the first argument to the running process must be the name of the
  class to run - <code>org.cougaar.core.node.Node</code> for standard
  Cougaar societies. This argument is specified in the first line of
- the non -D argument text box.<br><br>
+ the non -D argument text box.<br>
+The argument <code>org.cougaar.name.server</code> indicates where the
+Cougaar Name Server will run. This defaults to the host on which the
+first listed Node is running. It will be reset to this default if you
+try to set it to a Host not in your experiment or which has no Node
+running on it. You should only edit this argument from the Global
+Command Line Arguments dialog.<br>
+The arguments that begin <code>org.cougaar.configuration.</code> point
+to the CSMART configuration database, so that the running society can
+be initialized. These should be using the values as retrieved from
+your cougaar.rc file and should not normally be modified.<br>
+The argument <code>org.cougaar.experiment.id</code> is the key for
+your society to use to initialize itself from the database, and cannot
+be edited.<br>
+The argument <code>org.cougaar.control.port</code> tells the Node what
+port to listen on for control messages from the AppServer.<br><br>
 As of 9.2.1, you may include the
  string $HOST in a command line argument, and CSMART will substitute
  at runtime the name of the Host on which that Node is running (using
  the form of the name you specified within CSMART).<br><br>
 When specifying program Arguments in the free text box at the bottom
- of the dialog, be sure to include each argument on a separate line.<br>
+ of the dialog, be sure to include each argument on a separate
+ line.<br>
+<b>Warning</b>: You <i>must</i> hit "Enter" after editing the name or
+value of an Argument in order for your change to take effect,
+<i>before</i> hitting the "OK" button to dismiss the dialog. After
+making an edit the Experiment should be red in the Organizer, and
+bringing up the same dialog again should show your changed value.<br>
 </p>
 Some File menu options support adding information to Hosts and Nodes,
 purely for the user's benefit; these do not affect running the nodes.  These
