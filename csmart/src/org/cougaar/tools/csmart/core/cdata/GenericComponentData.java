@@ -485,6 +485,7 @@ public class GenericComponentData implements ComponentData, Serializable {
    * @return a <code>String</code> name for the self ComponentData, null if the self ComponentData was null
    */
   public static String getSubComponentUniqueName(ComponentData parent, ComponentData self) {
+    // FIXME: This needs to match up with PopulateDb's ideas of Alib IDs and stuff
     if (self == null)
       return null;
 
