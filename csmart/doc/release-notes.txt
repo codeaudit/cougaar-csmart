@@ -111,6 +111,8 @@ save behavior (bug 2002).
   society, agents could be duplicated. In addition, various agent
   comparisons were slow.
 - Avoid complaints if a community entity type has trailing whitespace.
+- Bug 2107: Fix CSMART.q query for Agent names so that agents in a
+  society, with no sub-components can be loaded.
 
 Release 9.4.1.1:
 This release includes bug fixes to support the Fall 2002 Ultra*Log
