@@ -991,6 +991,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   public void createUnassignedNode() {
+    // FIXME: If nothing in nodeTree selected, select the root
+    // That way can create an unassigned Node without 
+    // selecting anything
     newNodeInTree(nodeTree);
   }
 

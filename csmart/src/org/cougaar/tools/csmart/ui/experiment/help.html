@@ -82,9 +82,9 @@ recipes within the Recipes folder. Drop a recipe on
 the folder and it is added last. Drop a recipe on another recipe and it is inserted before that other recipe.
 <h4>Configurations</h4>
 The configuration of Hosts, Unassigned Nodes, and Unassigned Agents
-can be modified using File menu items, pop-up menus or by drag-and-drop. Agents can be dropped
+can be modified using Configure (and Find) menu items, pop-up menus or by drag-and-drop. Agents can be dropped
 on nodes; nodes can be dropped on hosts. Create, delete, and rename hosts
-and nodes by using the appropriate File menu option, or right clicking on a host or node to display a pop-up menu
+and nodes by using the appropriate Configure menu option, or right clicking on a host or node to display a pop-up menu
 with these options. Agents are created by societies or recipes and cannot be created,
 deleted or renamed in the Experiment Builder. Unassigned Agents are
 agents not yet assigned to a node.
@@ -102,7 +102,7 @@ CSMART is launched, or</li>
 <li>
 By clicking the right mouse button over the "Hosts" folder.
 A pop-up menu is displayed; select "New Host" from this menu.
-A pop-up dialog is displayed in which to enter the name of the host. The same command is available from a File menu item.</li>
+A pop-up dialog is displayed in which to enter the name of the host. The same command is available from a Configure menu item.</li>
 
 <li>
 Note that hosts named "localhost", or host names that do not include the
@@ -114,7 +114,7 @@ usually indicates a problem in specifying the host name. Try using an IP address
 host name.</li></ul></li>
 
 <li>
-Create a node or nodes for each host to be used in the experiment. The full set of node names defined in the Experiment is displayed in the unassigned window by default.  You may use one of these, or create a new one.  For a new node name, use the File menu item, or click
+Create a node or nodes for each host to be used in the experiment. The full set of node names defined in the Experiment is displayed in the unassigned window by default.  You may use one of these, or create a new one.  For a new node name, use the Configure menu item, or click
 the right mouse button over the host folder in the "Hosts" tree, and select
 "New Node" from the menu. A pop-up dialog is displayed in which to enter
 the name of the node.</li>
@@ -127,7 +127,7 @@ agent. New in 9.2.1, it is possible to run a Node without any Agent
 assigned to it. This is useful for, among other things, Agent Mobiility.</li>
 </ol>
 <p>
- Using the pop-up or File menus, additional information can be added to the
+ Using the pop-up or Configure menus, additional information can be added to the
  host and node. This information includes: Host Description, Host
  Type, Host Location, Node Description, Global Command Line Arguments,
  and Command Line Arguments. This information can be displayed using
@@ -145,12 +145,12 @@ experiments.  The XML file can also be edited by hand, before re-importing it.
 <p>
 To use this feature, create an experiment, as explained in this help file.
 After the desired mappings are configured, with all hosts, nodes and agents
-assigned, select "Export HNA" on the "File" menu.  This saves the HNA mapping
+assigned, select "Export HNA" on the "Configure" menu.  This saves the HNA mapping
 to a file located beneath the results directory, or in a directory starting with
 the current experiment name, in "csmart/bin/".</p>
 <p>To use a previously exported mapping, load the desired experiment from the
 database.  Once loaded, open the experiment builder and select "Import HNA" 
-from the "File" menu.  This will re-create all the mappings stored in the
+from the "Configure" menu.  This will re-create all the mappings stored in the
 file.  If the stored file contains agents that are not part of the new 
 experiment, the agent in the file is ignored.  
 </p>
@@ -232,8 +232,8 @@ bringing up the same dialog again should show your changed value.<br>
 Some File menu options support adding information to Hosts and Nodes,
 purely for the user's benefit; these do not affect running the nodes.  These
 options are: Describe Host, Describe Node, Type and Location.<br><br>
-There are a number of other File menu options for further configuring
-your Experiment. In particular, note the "Save" and "Save As" options
+There are a number of other Configure menu options for further configuring
+your Experiment. Note the File menu "Save" and "Save As" options
 for ensuring your experiment changes are saved to the database. For
 debugging the configuration of your experiment, you may use the
 debugging File menu option to generate "ini" style configuration
@@ -251,13 +251,13 @@ agents to communities.  The Communities display always shows the most
 recent HNA mappings in the bottom right portion of the display.
 HNA mappings cannot be modified in the Communities display.<br><br>
 <b>Displaying a Community</b>
-Use the Display Community command on the File menu to display a previously
+Use the Display Community command on the Community menu to display a previously
 defined community.<br><br>
 <b>Creating a Community</b>
 To create a community, 
 right click on the root of the community tree or on a community within
 the tree and select New Community from the pop-up menu, or
-use the New Community command on the File menu.
+use the New Community command on the Community menu.
 Assign agents to the community by dragging hosts, nodes or agents from
 the Host-Node-Agent portion of the display on to the new communities.
 When a host is dragged on to a community, all its nodes and agents are

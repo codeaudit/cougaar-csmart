@@ -49,6 +49,8 @@ import org.cougaar.util.log.Logger;
 
 public class ExperimentBuilder extends JFrame {
   private static final String FILE_MENU = "File";
+  private static final String COMMUNITY_MENU = "Community";
+  private static final String CONFIGURE_MENU = "Configure";
   private static final String SAVE_MENU_ITEM = "Save";
   private static final String SAVE_AS_MENU_ITEM = "Save As...";
   private static final String DUMP_INI_ITEM = "Debug: Dump .ini files";
@@ -82,6 +84,8 @@ public class ExperimentBuilder extends JFrame {
   private ThreadBuilder threadBuilder;
   private CommunityPanel communityPanel;
   private JMenu findMenu;
+  private JMenu communityMenu;
+  private JMenu configureMenu;
   private DBConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(this);
   private JMenuItem newCommunityMenuItem;
@@ -151,6 +155,13 @@ public class ExperimentBuilder extends JFrame {
 	  dumpINIs();
 	}
       },
+    new AbstractAction(EXIT_MENU_ITEM) {
+      public void actionPerformed(ActionEvent e) {
+	exit();
+        NamedFrame.getNamedFrame().removeFrame(ExperimentBuilder.this);
+	dispose();
+      }
+    }
   };
   private Action[] hnaActions = {
     new AbstractAction(EXPORT_HNA_ITEM) {
@@ -162,14 +173,7 @@ public class ExperimentBuilder extends JFrame {
 	public void actionPerformed(ActionEvent e) {
 	  importHNAMap();
 	}
-      },
-    new AbstractAction(EXIT_MENU_ITEM) {
-      public void actionPerformed(ActionEvent e) {
-	exit();
-        NamedFrame.getNamedFrame().removeFrame(ExperimentBuilder.this);
-	dispose();
       }
-    }
   };
 
   private Action[] findActions = {
@@ -210,21 +214,16 @@ public class ExperimentBuilder extends JFrame {
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
     JMenu fileMenu = new JMenu(FILE_MENU);
-    fileMenu.setToolTipText("Configure communities, hosts and nodes, save, or quit");
-
+    fileMenu.setToolTipText("Save, export configuration, or quit");
+    communityMenu = new JMenu(COMMUNITY_MENU);
+    communityMenu.setToolTipText("Configure communities");
+    configureMenu = new JMenu(CONFIGURE_MENU);
+    configureMenu.setToolTipText("Configure hosts and nodes");
     communityPanel = new CommunityPanel(experiment);
     newCommunityMenuItem = new JMenuItem(communityPanel.newCommunityAction);
-    fileMenu.add(newCommunityMenuItem);
+    communityMenu.add(newCommunityMenuItem);
     viewCommunityMenuItem = new JMenuItem(communityPanel.viewCommunityAction);
-    fileMenu.add(viewCommunityMenuItem);
-    globalCommandLineMenuItem = 
-      new JMenuItem(HostConfigurationBuilder.GLOBAL_COMMAND_LINE_MENU_ITEM);
-    globalCommandLineMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          hcb.setGlobalCommandLine();
-        }
-      });
-    fileMenu.add(globalCommandLineMenuItem);
+    communityMenu.add(viewCommunityMenuItem);
     newHostMenuItem = 
       new JMenuItem(HostConfigurationBuilder.NEW_HOST_MENU_ITEM);
     newHostMenuItem.addActionListener(new ActionListener() {
@@ -232,7 +231,61 @@ public class ExperimentBuilder extends JFrame {
           hcb.createHost();
         }
       });
-    fileMenu.add(newHostMenuItem);
+    configureMenu.add(newHostMenuItem);
+    describeHostMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.DESCRIBE_HOST_MENU_ITEM);
+    describeHostMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.setHostDescription();
+        }
+      });
+    configureMenu.add(describeHostMenuItem);
+    hostTypeMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.HOST_TYPE_MENU_ITEM);
+    hostTypeMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.setHostType();
+        }
+      });
+    configureMenu.add(hostTypeMenuItem);
+    hostLocationMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.HOST_LOCATION_MENU_ITEM);
+    hostLocationMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.setHostLocation();
+        }
+      });
+    configureMenu.add(hostLocationMenuItem);
+    deleteHostMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.DELETE_HOST_MENU_ITEM);
+    deleteHostMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.deleteHost();
+        }
+      });
+    configureMenu.add(deleteHostMenuItem);
+
+    configureMenu.addSeparator();
+
+    globalCommandLineMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.GLOBAL_COMMAND_LINE_MENU_ITEM);
+    globalCommandLineMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.setGlobalCommandLine();
+        }
+      });
+    configureMenu.add(globalCommandLineMenuItem);
+    commandLineMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.NODE_COMMAND_LINE_MENU_ITEM);
+    commandLineMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.setNodeCommandLine();
+        }
+      });
+    configureMenu.add(commandLineMenuItem);
+
+    configureMenu.addSeparator();
+
     newNodeMenu = new JMenu(HostConfigurationBuilder.NEW_NODE_MENU_ITEM);
     newUnassignedNodeMenuItem = new JMenuItem("Unassigned");
     newUnassignedNodeMenuItem.addActionListener(new ActionListener() {
@@ -248,23 +301,7 @@ public class ExperimentBuilder extends JFrame {
         }
       });
     newNodeMenu.add(newAssignedNodeMenuItem);
-    fileMenu.add(newNodeMenu);
-    commandLineMenuItem = 
-      new JMenuItem(HostConfigurationBuilder.NODE_COMMAND_LINE_MENU_ITEM);
-    commandLineMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          hcb.setNodeCommandLine();
-        }
-      });
-    fileMenu.add(commandLineMenuItem);
-    describeHostMenuItem = 
-      new JMenuItem(HostConfigurationBuilder.DESCRIBE_HOST_MENU_ITEM);
-    describeHostMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          hcb.setHostDescription();
-        }
-      });
-    fileMenu.add(describeHostMenuItem);
+    configureMenu.add(newNodeMenu);
     describeNodeMenuItem = 
       new JMenuItem(HostConfigurationBuilder.DESCRIBE_NODE_MENU_ITEM);
     describeNodeMenuItem.addActionListener(new ActionListener() {
@@ -272,31 +309,7 @@ public class ExperimentBuilder extends JFrame {
           hcb.setNodeDescription();
         }
       });
-    fileMenu.add(describeNodeMenuItem);
-    hostTypeMenuItem = 
-      new JMenuItem(HostConfigurationBuilder.HOST_TYPE_MENU_ITEM);
-    hostTypeMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          hcb.setHostType();
-        }
-      });
-    fileMenu.add(hostTypeMenuItem);
-    hostLocationMenuItem = 
-      new JMenuItem(HostConfigurationBuilder.HOST_LOCATION_MENU_ITEM);
-    hostLocationMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          hcb.setHostLocation();
-        }
-      });
-    fileMenu.add(hostLocationMenuItem);
-    deleteHostMenuItem = 
-      new JMenuItem(HostConfigurationBuilder.DELETE_HOST_MENU_ITEM);
-    deleteHostMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          hcb.deleteHost();
-        }
-      });
-    fileMenu.add(deleteHostMenuItem);
+    configureMenu.add(describeNodeMenuItem);
     deleteNodeMenuItem = 
       new JMenuItem(HostConfigurationBuilder.DELETE_NODE_MENU_ITEM);
     deleteNodeMenuItem.addActionListener(new ActionListener() {
@@ -304,17 +317,18 @@ public class ExperimentBuilder extends JFrame {
           hcb.deleteNode();
         }
       });
-    fileMenu.add(deleteNodeMenuItem);
-    fileMenu.addSeparator();
+    configureMenu.add(deleteNodeMenuItem);
     for (int i = 0; i < fileActions.length; i++) {
       fileMenu.add(fileActions[i]);
     }
-    fileMenu.addSeparator();
+    configureMenu.addSeparator();
     for (int i = 0; i < hnaActions.length; i++) {
-      fileMenu.add(hnaActions[i]);
+      configureMenu.add(hnaActions[i]);
     }
     
     fileMenu.addMenuListener(myMenuListener);
+    configureMenu.addMenuListener(myMenuListener);
+    communityMenu.addMenuListener(myMenuListener);
     findMenu = new JMenu(FIND_MENU);
     findMenu.setToolTipText("Find a host, node, or agent.");
     for (int i = 0; i < findActions.length; i++) {
@@ -327,17 +341,26 @@ public class ExperimentBuilder extends JFrame {
       helpMenu.add(helpActions[i]);
     }
     menuBar.add(fileMenu);
+    menuBar.add(configureMenu);
     menuBar.add(findMenu);
+    menuBar.add(communityMenu);
     menuBar.add(helpMenu);
     setJMenuBar(menuBar);
 
     tabbedPane = new JTabbedPane();
     tabbedPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
-        if (tabbedPane.getSelectedComponent().equals(hcb))
+        if (tabbedPane.getSelectedComponent().equals(hcb)) {
           findMenu.setEnabled(true);
-        else
+          configureMenu.setEnabled(true);
+	} else {
           findMenu.setEnabled(false);
+          configureMenu.setEnabled(false);
+	}
+        if (tabbedPane.getSelectedComponent().equals(communityPanel))
+          communityMenu.setEnabled(true);
+        else
+          communityMenu.setEnabled(false);
       }
     });
     propertyBuilder = new UnboundPropertyBuilder(experiment, this);
@@ -530,16 +553,7 @@ public class ExperimentBuilder extends JFrame {
           hcb.getSelectedNodesInHostTree();
         DefaultMutableTreeNode[] nodesInNodeTree = 
           hcb.getSelectedNodesInNodeTree();
-        boolean isHostRootSelected = hcb.isHostTreeRootSelected();
         boolean isNodeRootSelected = hcb.isNodeTreeRootSelected();
-        newHostMenuItem.setEnabled(isHostRootSelected);
-        if (isHostRootSelected || isNodeRootSelected ||
-            (hostsInHostTree != null) ||
-            (nodesInHostTree != null) ||
-            (nodesInNodeTree != null))
-          globalCommandLineMenuItem.setEnabled(true);
-        else
-          globalCommandLineMenuItem.setEnabled(false);
         // enable "new node" command if unassigned nodes root is selected
         // or one host is selected in the host tree
         newUnassignedNodeMenuItem.setEnabled(isNodeRootSelected);
@@ -551,8 +565,6 @@ public class ExperimentBuilder extends JFrame {
           newAssignedNodeMenuItem.setEnabled(false);
         newNodeMenu.setEnabled(newAssignedNodeMenuItem.isEnabled() ||
                                newUnassignedNodeMenuItem.isEnabled());
-        // enable "new host" command if host tree root is selected
-        newHostMenuItem.setEnabled(isHostRootSelected);
         // if a single node is selected
         // enable "command line arguments"
         int nodeCount = 0;
