@@ -65,12 +65,6 @@ public interface SocietyComponent extends ModifiableComponent, ComponentProperti
   public boolean isRunning();
 
   /**
-   * Return a deep copy of the society.
-   * @return society component created
-   */
-  public SocietyComponent copy(Organizer organizer, Object context);
-
-  /**
    * Return a file filter which can be used to fetch
    * the metrics files for this experiment.
    * @return file filter to get metrics files for this experiment
