@@ -37,7 +37,6 @@ import javax.swing.tree.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
-import org.cougaar.mlm.ui.glsinit.GLSClient;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.experiment.Experiment;
@@ -54,9 +53,10 @@ import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.configbuilder.PropertyEditorPanel;
 import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
 import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
-import org.cougaar.tools.csmart.ui.util.NamedFrame;
+import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
+import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.server.*;
 import org.cougaar.tools.server.rmi.ClientCommunityController;
 import org.cougaar.util.Parameters;
@@ -732,7 +732,8 @@ public class CSMARTConsole extends JFrame {
         } else
           SwingUtilities.invokeLater(new Runnable() {
               public void run() {
-                (new GLSClient()).createGUI();
+                String s = getOPlanAgentURL();
+                desktop.add(new GLSClient(s));
               }
             });
       }
@@ -743,6 +744,40 @@ public class CSMARTConsole extends JFrame {
     } catch (RuntimeException re) {
       re.printStackTrace();
     }
+  }
+
+  /**
+   * Get the agent URL (http://host:port/$agentname)
+   * for the agent named "NCA" in the experiment.
+   */
+
+  private String getOPlanAgentURL() {
+    HostComponent[] hosts = experiment.getHosts();
+    for (int i = 0; i < hosts.length; i++) {
+      NodeComponent[] nodes = hosts[i].getNodes();
+      for (int j = 0; j < nodes.length; j++) {
+        AgentComponent[] agents = nodes[j].getAgents();
+        for (int k = 0; k < agents.length; k++) {
+          if (agents[k].getShortName().equals("NCA")) {
+            int port = CSMARTUL.agentPort;
+            Properties arguments = nodes[j].getArguments();
+            if (arguments != null) {
+              String s = arguments.getProperty(CSMARTUL.AGENT_PORT);
+              if (s != null) {
+                try {
+                  port = Integer.parseInt(s);
+                } catch (Exception e) {
+                  if (log.isDebugEnabled())
+                    log.error("Exception parsing " + CSMARTUL.AGENT_PORT + " : " + e);
+                }
+              }
+            }
+            return "http://" + hosts[i].getShortName() + ":" + port + "/$NCA";
+          }
+        }
+      }
+    }
+    return null;
   }
 
   private boolean haveMoreTrials() {
@@ -977,7 +1012,8 @@ public class CSMARTConsole extends JFrame {
     JInternalFrame[] frames = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
       String s = frames[i].getTitle();
-      if (!s.equals("Configuration") && !s.equals("Trial Values")) 
+      if (!s.equals("Configuration") && !s.equals("Trial Values") &&
+          !s.equals("GLS"))
         ((ConsoleInternalFrame)frames[i]).enableRestart(false);
     }
   }
