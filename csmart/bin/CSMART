@@ -52,7 +52,7 @@ endif
 set MYEXCEL=""
 
 set MYMEMORY="-Xms100m -Xmx300m"
-set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL -Dorg.cougaar.workspace=$COUGAAR_WORKSPACE $devp"
+set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL -Dorg.cougaar.workspace=$COUGAAR_WORKSPACE -Dorg.cougaar.system.path=$COUGAAR3RDPARTY $devp"
 
 # It is possible to disable use of the workspace file: Your work
 # will only be saved to the database when you explicitly save,

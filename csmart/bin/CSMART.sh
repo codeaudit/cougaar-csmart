@@ -65,7 +65,7 @@ MYEXCEL=-Dorg.cougaar.tools.csmart.excelpath=""
 
 MYMEMORY="-Xms100m -Xmx300m"
 
-MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY $DEVPATH"
+MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY -Dorg.cougaar.system.path=$COUGAAR3RDPARTY $DEVPATH"
 
 # It is possible to disable use of the workspace file: Your work
 # will only be saved to the database when you explicitly save,

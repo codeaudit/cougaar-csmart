@@ -57,7 +57,7 @@ fi
     
 MYMEMORY="-Xms100m -Xmx300m"
 
-MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $DEVPATH"
+MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Dorg.cougaar.system.path=$COUGAAR3RDPARTY $DEVPATH"
 
 # Set the config path to include the basic CSMART config files first
 MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"

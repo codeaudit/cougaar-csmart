@@ -51,7 +51,7 @@ IF NOT "%COUGAAR_DEV_PATH%" == "" SET DEVPATH=-Dorg.cougaar.class.path=%COUGAAR_
 REM Use the Bootstrapper to find Jar files.
 
 SET MYMEMORY=-Xms100m -Xmx300m
-SET MYPROPERTIES=-Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH%
+SET MYPROPERTIES=-Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH% -Dorg.cougaar.system.path=%COUGAAR3RDPARTY%
 SET MYCONFIGPATH=-Dorg.cougaar.config.path="%COUGAAR_INSTALL_PATH%/csmart/data/common/\;"
 
 @ECHO ON

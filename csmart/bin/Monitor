@@ -52,7 +52,7 @@ if ($?COUGAAR_DEV_PATH) then
 endif
     
 set MYMEMORY="-Xms100m -Xmx300m"
-set MYPROPERTIES="-Dorg.cougaar.install.path=${COUGAAR_INSTALL_PATH} ${DEVPATH}"
+set MYPROPERTIES="-Dorg.cougaar.install.path=${COUGAAR_INSTALL_PATH} -Dorg.cougaar.system.path=${COUGAAR3RDPARTY} ${DEVPATH}"
 set MYCONFIGPATH="-Dorg.cougaar.config.path=${COUGAAR_INSTALL_PATH}/csmart/data/common/\;"
 
 set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -classpath $LIBPATHS"

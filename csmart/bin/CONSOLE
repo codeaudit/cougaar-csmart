@@ -47,7 +47,7 @@ if ($?COUGAAR_DEV_PATH) then
 endif
 
 set MYMEMORY="-Xms100m -Xmx300m"
-set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Dorg.cougaar.workspace=$COUGAAR_WORKSPACE $devp -Dorg.cougaar.core.util.ConfigFinder.verbose=true"
+set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Dorg.cougaar.system.path=$COUGAAR3RDPARTY -Dorg.cougaar.workspace=$COUGAAR_WORKSPACE $devp -Dorg.cougaar.core.util.ConfigFinder.verbose=true"
 
 # Set the config path to include the basic CSMART config files first
 set MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;$COUGAAR_INSTALL_PATH/configs/\;"

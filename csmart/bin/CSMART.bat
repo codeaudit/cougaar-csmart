@@ -53,7 +53,7 @@ REM Start CSMART using Bootstrapper
 SET MYCLASSPATH=%COUGAAR_INSTALL_PATH%\lib\bootstrap.jar
 
 SET MYMEMORY=-Xms100m -Xmx300m
-SET MYPROPERTIES=-Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH%
+SET MYPROPERTIES=-Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH% -Dorg.cougaar.system.path=%COUGAAR3RDPARTY%
 SET MYCONFIGPATH=-Dorg.cougaar.config.path="%COUGAAR_INSTALL_PATH%/csmart/data/common/\;%COUGAAR_INSTALL_PATH%/configs/minitestconfig/\;"
 
 REM Edit the following line to reflect your local installation
