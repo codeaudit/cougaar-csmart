@@ -105,6 +105,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   public static int agentPort = 8800;
   // node component argument that specifies alternate port
   public static String AGENT_PORT = "org.cougaar.lib.web.http.port";
+  // FIXME: Need also the https version!!!
+
   // maps host to port
   private static CSMARTAgentMap agentMap;
   // these mappings are determined once per experiment
@@ -540,6 +542,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private static void setURLToMonitor() {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL");
     // FIXME: Use secure mode if necessary here!
+    // How do I decide?
+    // Must I use a different port as well?
     JTextField tf = 
       new JTextField(ClientServletUtil.makeURL("localhost", agentPort));
     JPanel panel = new JPanel();
@@ -555,14 +559,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     agentURL = tf.getText();
     int startIndex;
     int endIndex;
-    // FIXME This stuff could use the same secure flag I use above in making the URL
-    if (agentURL.startsWith("http://")) {
-      startIndex = 7;
-      endIndex = agentURL.indexOf(":", startIndex);
-      if (endIndex != -1)
-	agentHost = agentURL.substring(startIndex, endIndex);
-    } else if (agentURL.startsWith("https://")) {
-      startIndex = 8;
+
+    if (agentURL.indexOf("://") != -1) {
+      startIndex = agentURL.indexOf("://") + 3;
       endIndex = agentURL.indexOf(":", startIndex);
       if (endIndex != -1)
 	agentHost = agentURL.substring(startIndex, endIndex);
