@@ -48,7 +48,7 @@ public class CSMARTMetricsFrame extends JFrame implements ActionListener
   protected static final String HELP_DOC = "help.html";
   protected static final String HELP_MENU_ITEM = "Help";
   protected static final String ABOUT_MENU_ITEM = "About CSMART";
-  protected static final String ABOUT_DOC = "../../help/about-csmart.html";
+  protected static final String ABOUT_DOC = "/org/cougaar/tools/csmart/ui/help/about-csmart.html";
 
   static final String SEPARATOR = "Separator";
 

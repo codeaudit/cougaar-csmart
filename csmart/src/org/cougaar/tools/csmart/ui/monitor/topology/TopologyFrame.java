@@ -64,7 +64,7 @@ public class TopologyFrame extends JFrame {
   private static final String HELP_DOC = "help.html";
   private static final String HELP_ACTION = "Help";
   private static final String ABOUT_ACTION = "About CSMART";
-  private static final String ABOUT_DOC = "../../help/about-csmart.html";
+  private static final String ABOUT_DOC = "/org/cougaar/tools/csmart/ui/help/about-csmart.html";
 
   private final JFrame myFrame;
   private String title;
