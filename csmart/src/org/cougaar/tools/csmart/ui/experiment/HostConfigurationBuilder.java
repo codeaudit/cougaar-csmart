@@ -608,7 +608,11 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Add unassigned nodes from experiment to unassigned nodes tree.
    */
   private void addUnassignedNodesFromExperiment() {
-    Set unassignedNodes = new TreeSet(baseComponentComparator);
+    Set unassignedNodes;
+    if (experiment.isInDatabase())
+      unassignedNodes = new TreeSet(dbBaseComponentComparator);
+    else
+      unassignedNodes = new TreeSet(builtInBaseComponentComparator);
     HostComponent[] hosts = experiment.getHosts();
     NodeComponent[] nodes = experiment.getNodes();
     unassignedNodes.addAll(Arrays.asList(nodes));
@@ -637,24 +641,32 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
   }
 
-  private static Comparator baseComponentComparator = new Comparator() {
+  // In general, agent names from built in societies are complex
+  // and those from the db are short
+  // The complex ones should be compared in full,
+  // while the DB ones should only be compared in short versions
+  // And Nodes are also short only
+  // Failing to compare only the short names when using DB societies
+  // results in agents erroneously appearing 2x, once unassigned
+
+  private static Comparator dbBaseComponentComparator = new Comparator() {
     public int compare(Object o1, Object o2) {
       BaseComponent c1 = (BaseComponent) o1;
       BaseComponent c2 = (BaseComponent) o2;
 
-      // In general, agent names from built in societies are complex
-      // and those from the db are short - they just start with "Combo"
-      // as components, but in runtime that is dropped
-      // The complex ones should be compared in full,
-      // while the DB ones should only be compared in short versions
-      // And Nodes are also short only
-      // Failing to compare only the short names when using DB societies
-      // results in agents erroneously appearing 2x, once unassigned
-      if (c1 instanceof NodeComponent || c2 instanceof NodeComponent || c1.getFullName().startsWith(new SimpleName("Combo")) || c2.getFullName().startsWith(new SimpleName("Combo")))
+      return c1.getShortName().compareTo(c2.getShortName());
+    }
+  };
+      
+  private static Comparator builtInBaseComponentComparator = new Comparator() {
+    public int compare(Object o1, Object o2) {
+      BaseComponent c1 = (BaseComponent) o1;
+      BaseComponent c2 = (BaseComponent) o2;
+
+      if (c1 instanceof NodeComponent || c2 instanceof NodeComponent)
 	return c1.getShortName().compareTo(c2.getShortName());
-      else
+      else // agent name comparison
 	return c1.getFullName().compareTo(c2.getFullName());
-	
     }
   };
 
@@ -662,7 +674,11 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    * Add unassigned agents to unassigned agents tree.
    */
   private void addUnassignedAgentsFromExperiment() {
-    Set unassignedAgents = new TreeSet(baseComponentComparator);
+    Set unassignedAgents;
+    if (experiment.isInDatabase())
+      unassignedAgents = new TreeSet(dbBaseComponentComparator);
+    else
+      unassignedAgents = new TreeSet(builtInBaseComponentComparator);
     AgentComponent[] agents = experiment.getAgents();
     NodeComponent[] nodes = experiment.getNodes();
     unassignedAgents.addAll(Arrays.asList(agents));
