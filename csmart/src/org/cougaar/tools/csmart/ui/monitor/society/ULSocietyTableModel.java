@@ -122,10 +122,11 @@ public class ULSocietyTableModel extends AbstractTableModel {
   private void addAttribute(String name) {
     Attribute a = node.getLocalAttribute(name);
     if (a == null) {
-      if(log.isDebugEnabled()) {
-        log.debug("ULSocietyTableModel: attribute not found: " +
-                  name);
-      }
+      // Bug 1921: Just too verbose
+//       if(log.isDebugEnabled()) {
+//         log.debug("ULSocietyTableModel: attribute not found: " +
+//                   name);
+//       }
       return;
     }
     names.addElement(name);
