@@ -645,6 +645,7 @@ public class CMT {
 	  rs.close();
 	}
       } finally {
+        dbConnection.close();
 	stmt.close();
       }
     } catch (Exception e) {
