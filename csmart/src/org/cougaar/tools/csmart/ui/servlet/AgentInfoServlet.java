@@ -57,7 +57,7 @@ import java.io.ObjectOutputStream;
 
 /**
  * This Servlet gathers information about agents and their relationships.
- * The information is encoded in name/value pairs stored in PropertyTree
+ * The information is encoded in name/value pairs stored in <code>PropertyTree</code>
  * objects which are serialized to the client. <br>
  *
  * <p>
@@ -72,18 +72,33 @@ import java.io.ObjectOutputStream;
 public class AgentInfoServlet 
   extends HttpServlet 
 {
+  /** Role for Self **/
   public static final Role SELF_ROLE = Role.getRole("Self");
   
   private SimpleServletSupport support;
   
+  /**
+   * Creates a new <code>AgentInfoServlet</code> instance.
+   *
+   * @param support <code>SimpleServletSupport</code> object
+   */
   public AgentInfoServlet(SimpleServletSupport support) {
     super();
     this.support = support;
      if ( !  ( "/CSMART_AgentInfoServlet".equals(support.getPath()) ) ) {
-      System.out.println("Error in servlet path: " + support.getPath());
+      System.err.println("Error in servlet path: " + support.getPath());
     }
   }
   
+  /**
+   * Processes an HTTP get command.
+   * 
+   *
+   * @param request Request Object
+   * @param response Response Object
+   * @exception IOException if an error occurs
+   * @exception ServletException if an error occurs
+   */
   public void doGet(
 		    HttpServletRequest request,
 		    HttpServletResponse response) throws IOException, ServletException
@@ -93,6 +108,14 @@ public class AgentInfoServlet
     ai.execute(request, response);  
   }
   
+  /**
+   * Processes an HTTP put command.
+   *
+   * @param request Request Object
+   * @param response Response Object
+   * @exception IOException if an error occurs
+   * @exception ServletException if an error occurs
+   */
   public void doPut(
 		     HttpServletRequest request,
 		     HttpServletResponse response) throws IOException, ServletException
