@@ -52,10 +52,6 @@ public class CSMARTConsoleModel extends Observable implements Observer {
   public static final String STOP_EXPERIMENT_TIMER = "Stop Timer";
   public static final String START_EXPERIMENT_TIMER = "Start Timer";
 
-  public static final int APP_SERVER_DEFAULT_PORT = 8484;
-
-  private static final String DEFAULT_BOOTSTRAP_CLASS = "org.cougaar.bootstrap.BootStrapper";
-  private static final String DEFAULT_NODE_CLASS = "org.cougaar.core.node.Node";
   public static final String COMMAND_ARGUMENTS = "Command$Arguments";
 
   public static final int DEFAULT_VIEW_SIZE = 300000; // 60 pages of text or 300K
@@ -118,7 +114,7 @@ public class CSMARTConsoleModel extends Observable implements Observer {
       for (int j = 0; j < nodes.length; j++) {
         NodeComponent nodeComponent = nodes[j];
         Properties properties = getNodeMinusD(nodeComponent, hostName);
-        int port = APP_SERVER_DEFAULT_PORT;
+        int port = Experiment.APP_SERVER_DEFAULT_PORT;
         if (properties != null) {
           try {
             String tmp = properties.getProperty(Experiment.CONTROL_PORT);
@@ -128,7 +124,7 @@ public class CSMARTConsoleModel extends Observable implements Observer {
             // use default port
           }
           if (port < 1)
-            port = APP_SERVER_DEFAULT_PORT;
+            port = Experiment.APP_SERVER_DEFAULT_PORT;
         }
         appServerSupport.add(hostName, port);
       }
@@ -460,7 +456,7 @@ public class CSMARTConsoleModel extends Observable implements Observer {
     if (foundclass == false)
       result.put(
           Experiment.BOOTSTRAP_CLASS,
-          DEFAULT_BOOTSTRAP_CLASS);
+          Experiment.DEFAULT_BOOTSTRAP_CLASS);
     return result;
   }
 
@@ -473,8 +469,8 @@ public class CSMARTConsoleModel extends Observable implements Observer {
       // nothing here, nothing will run!
       //  So if were using the default bootstrapper and have no arguments
       // Give it an argument with the default node class
-      if (props.getProperty(Experiment.BOOTSTRAP_CLASS) == null || props.getProperty(Experiment.BOOTSTRAP_CLASS).equals(DEFAULT_BOOTSTRAP_CLASS))
-        return Collections.singletonList(DEFAULT_NODE_CLASS);
+      if (props.getProperty(Experiment.BOOTSTRAP_CLASS) == null || props.getProperty(Experiment.BOOTSTRAP_CLASS).equals(Experiment.DEFAULT_BOOTSTRAP_CLASS))
+        return Collections.singletonList(Experiment.DEFAULT_NODE_CLASS);
       return Collections.EMPTY_LIST;
     }
     StringTokenizer tokens =

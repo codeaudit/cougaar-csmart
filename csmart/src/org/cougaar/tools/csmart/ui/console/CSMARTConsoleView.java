@@ -1115,7 +1115,7 @@ public class CSMARTConsoleView extends JFrame implements Observer {
    * Message the model to try to add this app server.
    */
   private void addAppServer() {
-    int port = CSMARTConsoleModel.APP_SERVER_DEFAULT_PORT;
+    int port = Experiment.APP_SERVER_DEFAULT_PORT;
     JTextField tf = new JTextField("localhost:" + port, 20);
     JPanel panel = new JPanel();
     panel.add(new JLabel("Enter HostName:Port:"));
