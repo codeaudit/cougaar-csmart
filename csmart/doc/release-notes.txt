@@ -6,14 +6,23 @@ Release 9.2.2:
   is no re-enabled. As before, the startup scripts indicate how to
   disable this.
 - Added support for specifying component load priority (bug 1310).
-- Added new Topology view in Society Monitor for viewing mobile Agents.
-- Fixed bug 1323 (no prompt to name recipes)
+- Added new Topology view in Society Monitor for viewing mobile
+  Agents.
+- Added new built-in recipe for adding the Adaptivity Engine and
+  related components to a set of Agents. For details on the Adaptivity
+  Engine, see the Cougaar Developers Guide. For details on using this
+  recipe, see the online help.
+- Upgrade MySQL JDBC driver (bug 1347)
+- Mostly fixed errors with database load scripts. Windows users who
+  retrieve CSMART via CVS or who want to edit the database files should
+  use Cygwin and the sh load scripts. (bug 1321)
 - Add icons for recipes, societies, and experiments in Organizer!
 - Unique names are now created with a number in square-brackets, not
   just by appending a number.
+- Mostly fixed export scripts (bug 1231)
+- Fixed bug 1323 (no prompt to name recipes)
 - Fix some bugs with Property iterators, etc.
 - Fix bugs allowing user to make edits during a save (bugs 1339,1078)
-- Mostly fixed export scripts (bug 1231)
 - Better error messages on failure to reach servlets (bug 1302)
 - Fix bug in modification recognition (bug 1335)
 
