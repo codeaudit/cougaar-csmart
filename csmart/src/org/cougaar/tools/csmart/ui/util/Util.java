@@ -47,11 +47,17 @@ public class Util {
     ConfigFinder configFinder = ConfigFinder.getInstance();
     File file = configFinder.locateFile(filename);
     String path = null;
-    try {
-      path = file.getCanonicalPath();
-    } catch (Exception e) {
+    if (file != null) {
+      try {
+	path = file.getCanonicalPath();
+      } catch (Exception e) {
+	if(log.isWarnEnabled()) {
+	  log.warn("Could not find: " + filename);
+	}
+      }
+    } else {
       if(log.isWarnEnabled()) {
-        log.warn("Could not find: " + filename);
+	log.warn("Could not find: " + filename);
       }
     }
     return path;
