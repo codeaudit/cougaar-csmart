@@ -2424,9 +2424,22 @@ public class CSMARTConsole extends JFrame {
    */
   private void saveResults() {
     String dirname = makeResultDirectory();
+    // Must check for null return here!?
+    if (dirname == null) {
+      // User didn't specify a directory or couldn't create one or something?
+      if (log.isInfoEnabled())
+	log.info("saveResults got no good result directory from makeResult: Using pwd.");
+      // Is . really the right choice here?
+      dirname = ".";
+    }
     if (experiment != null && usingExperiment) {
       try {
         String myHostName = InetAddress.getLocalHost().getHostName();
+	if (myHostName == null) {
+	  if (log.isWarnEnabled())
+	    log.warn("saveResults Got null host name from InetAddress? Using localhost.");
+	  myHostName = "localhost";
+	}
         URL url = new URL("file", myHostName, dirname);
 	Trial trial = experiment.getTrial();
 	// FIXME: No one uses these Trial results anywhere!
@@ -2509,8 +2522,11 @@ public class CSMARTConsole extends JFrame {
       }
     }
     // if user didn't specify results directory, save in local directory
-    if (resultDir == null)
+    if (resultDir == null) {
+      if (log.isInfoEnabled())
+	log.info("No result directory specified. Should use a local dir. Returning null (in makeResultDirectory).");
       return null;
+    }
     String dirname = resultDir.getAbsolutePath() + File.separatorChar + 
       experimentName + File.separatorChar +
       trialName + File.separatorChar +
@@ -2518,8 +2534,11 @@ public class CSMARTConsole extends JFrame {
     try {
       File f = new File(dirname);
       // guarantee that directories exist
-      if (!f.exists() && !f.mkdirs() && !f.exists()) 
+      if (!f.exists() && !f.mkdirs() && !f.exists()) {
+	if (log.isWarnEnabled())
+	  log.warn("Unabled to create directory " + dirname + ". Should default to local directory - returning null (in makeResultDirectory)");
         return null;
+      }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
         log.error("Couldn't create results directory " + dirname + ": ", e);
