@@ -644,6 +644,8 @@ public class Organizer extends JScrollPane {
       if (log.isInfoEnabled()) {
  	log.info("crtExpFromFile got no Community XML data out of " + xmlFile.getAbsolutePath());
       }
+    } else if (log.isDebugEnabled()) {
+      log.debug("crtExpFromFile had xmlFile: " + xmlFile + " and or return from CommDbUtils not false");
     }
     
     DefaultMutableTreeNode experimentNode =

@@ -91,6 +91,9 @@ public class CommunityDbUtils {
    * @return           True if operation was successful
    **/
   public static boolean importCommunityXML(File xmlFile, String assemblyID) {
+    if (log.isDebugEnabled()) {
+      log.debug("importcommXML with file " + xmlFile + " and ASB " + assemblyID);
+    }
     XMLUtils xml = new XMLUtils();
     Document doc;
     try {
@@ -148,6 +151,10 @@ public class CommunityDbUtils {
       if(entities.size() > 0) celist.put(communityName, entities);
     }
 
+    if (log.isDebugEnabled()) {
+      log.debug("About to importCommAtt");
+    }
+
     boolean flag1 = importCommunityAttribute(calist, assemblyID);
     boolean flag2 = importCommunityEntity(celist, assemblyID);
     return flag1&&flag2;
@@ -163,6 +170,10 @@ public class CommunityDbUtils {
    **/
   public static boolean dumpCommunityXML(String xmlFileFullName, String assemblyID)
   {
+    if (log.isDebugEnabled()) {
+      log.debug("dumpCommXML with filename: " + xmlFileFullName + " and ASB " + assemblyID);
+    }
+
     File file = new File(xmlFileFullName);
     try {
       if(file.exists())
@@ -171,7 +182,7 @@ public class CommunityDbUtils {
         file.createNewFile();
       }
     } catch (IOException e) {
-      log.error("dumpCommXML: try to overwrite the file " + xmlFileFullName);
+      log.error("dumpCommXML: try to overwrite the file " + xmlFileFullName, e);
       return false;
     }
 
@@ -179,7 +190,7 @@ public class CommunityDbUtils {
     try{
       rfile = new RandomAccessFile(file, "rw");
     } catch(IOException e) {
-      log.error("Invalid file " + xmlFileFullName);
+      log.error("Invalid file " + xmlFileFullName, e);
       return false;
     }
 
