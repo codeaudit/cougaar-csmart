@@ -58,6 +58,7 @@ public class ConsoleNodeListener implements NodeEventListener {
   private ConsoleStyledDocument doc;
   private ConsoleNodeOutputFilter filter = null;
   private Object logFileLock = new Object();
+  private int nLogEvents = 0;
 
   public ConsoleNodeListener(CSMARTConsole console,
 			     NodeComponent nodeComponent,
@@ -168,6 +169,11 @@ public class ConsoleNodeListener implements NodeEventListener {
       // write stdout/stderr/etc to log file
       try {
         logFile.write(nodeEventDescription);
+        nLogEvents++;
+        if (nLogEvents > 100) {
+          logFile.flush();
+          nLogEvents = 0;
+        }
       } catch (Exception e) {
         System.out.println("Exception writing to log file: " + e);
       }
@@ -226,6 +232,11 @@ public class ConsoleNodeListener implements NodeEventListener {
         do {
           NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
           logFile.write(getNodeEventDescription(nodeEvent));
+          nLogEvents++;
+          if (nLogEvents > 100) {
+            logFile.flush();
+            nLogEvents = 0;
+          }
         } while (++i < n);
       } catch (Exception e) {
         System.out.println("Exception writing to log file: " + e);
