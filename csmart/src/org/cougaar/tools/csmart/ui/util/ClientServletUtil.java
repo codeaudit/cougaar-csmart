@@ -53,6 +53,8 @@ public class ClientServletUtil {
   public static final String PLAN_SERVLET = "CSMART_PlanServlet";
   public static final String SEARCH_SERVLET = "CSMART_SearchServlet";
   public static final String METRICS_SERVLET = "CSMART_MetricsServlet";
+  private static final String HTTP_PROTOCOL = "http";
+  private static final String HTTPS_PROTOCOL = "https";
 
   /**
    * Get data which is a list of text strings from the specified url.
@@ -85,10 +87,12 @@ public class ClientServletUtil {
    * @param URL the URL of the agent to contact
    * @return vector of String; URLs of agents in society
    */
-
   public static Vector getAgentURLs(String URLString) throws Exception {
     String urlSpec = URLString + "/" + ClientServletUtil.AGENT_PROVIDER_SERVLET;
     URL url = new URL(urlSpec);
+
+    // FIXME!! This must do the HTTPS version as necessary, possibly getting user
+    // credentials
     URLConnection connection = url.openConnection();
     connection.setDoInput(true);
     connection.setDoOutput(true);
@@ -175,6 +179,8 @@ public class ClientServletUtil {
     String urlSpec = URLSpec.getResult();
     String errorMessage = null;
     Collection results = null;
+
+    // FIXME! This must do the https thing as necessary, possibly getting user credentials!
     HttpURLConnection connection = null;
     try {
       URL url = new URL(urlSpec);
@@ -258,6 +264,7 @@ public class ClientServletUtil {
     return new ServletResponse(urlSpec, results, errorMessage);
   }
 
+  // This is used in CSMARTUL:304,542 and ThreadUtils:317
   /**
    * Return a URL string of the form:
    * http://host:port/
@@ -266,9 +273,15 @@ public class ClientServletUtil {
    * @return the URL string
    */
   public static String makeURL(String host, int port) {
-    return "http://" + host + ":" + String.valueOf(port);
+    return HTTP_PROTOCOL + "://" + host + ":" + String.valueOf(port);
   }
 
+  /**
+   * Make a URL that uses HTTPS
+   **/
+  public static String makeSecureURL(String host, int port) {
+    return HTTPS_PROTOCOL + "://" + host + ":" + String.valueOf(port);
+  }
 
   /**
    * This class handles building a URL.
