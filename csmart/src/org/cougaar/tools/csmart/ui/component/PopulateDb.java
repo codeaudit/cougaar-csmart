@@ -562,7 +562,7 @@ public class PopulateDb {
             substitutions.put(":supporting:", getComponentAlibId(data));
             substitutions.put(":supported:", getAgentAlibId(r.getCluster()));
             substitutions.put(":start_date:", sqlQuote(r.getStartTime()));
-            substitutions.put(":stop_date:", sqlQuote(r.getStopTime()));
+            substitutions.put(":end_date:", sqlQuote(r.getStopTime()));
             ResultSet rs = executeQuery(stmt, dbp.getQuery(CHECK_RELATIONSHIP, substitutions));
             if (!rs.next())
                 executeUpdate(stmt, dbp.getQuery(INSERT_RELATIONSHIP, substitutions));
