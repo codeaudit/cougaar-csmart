@@ -2155,8 +2155,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     // tables, then must save out what the assembly ID is such 
     // that on load of the INI files we can preserve the OPLAN INFO
 
-    // FIXME: Also, write out the community XML file
-
     // Generate the complete Society
     generateCompleteSociety();
 
@@ -2187,6 +2185,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       try {
 	JOptionPane.showMessageDialog(null, "Writing ini file to " + f.getAbsolutePath() + "...");
 	cw.writeConfigFiles(f);
+	// FIXME: Also, write out the community XML file
+	// if (! CommWriter.dumpCommunityXML(f.getFullPath() + "communities.xml", getCommAsbID())) 
+	// log.error("Couldn't write communities.xml file");
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
           log.error("Couldn't write ini files: ", e);
