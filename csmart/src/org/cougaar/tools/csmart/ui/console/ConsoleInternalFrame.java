@@ -32,11 +32,15 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.DefaultEditorKit;
 
 import com.klg.jclass.chart.JCChart;
 
+import org.cougaar.tools.csmart.ui.component.AgentComponentData;
+import org.cougaar.tools.csmart.ui.component.ComponentData;
 import org.cougaar.tools.csmart.ui.component.ComponentName;
 import org.cougaar.tools.csmart.ui.component.CompositeName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
@@ -102,6 +106,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private ConsoleNodeOutputFilter filter;
   private NodeServesClient nodeServer;
   private CSMARTConsole console;
+  private Experiment experiment;
 
   public ConsoleInternalFrame(NodeComponent node, 
                               ConsoleNodeListener listener,
@@ -124,7 +129,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     consoleTextPane = (ConsoleTextPane)pane.getViewport().getView();
     // get host component by getting the experiment and 
     // searching its hosts for one with this node.
-    Experiment experiment = 
+    experiment = 
       (Experiment)getPropertyValue((ConfigurableComponent)node, "Experiment");
     HostComponent[] hosts = experiment.getHosts();
     for (int i = 0; i < hosts.length; i++) {
@@ -348,7 +353,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
    */
 
   public void displayAbout() {
-    ArrayList agentNames = 
+    final ArrayList agentNames = 
       (ArrayList)getPropertyValue((ConfigurableComponent)node, "AgentNames");
     JPanel aboutPanel = new JPanel();
     aboutPanel.setLayout(new GridBagLayout());
@@ -539,6 +544,12 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           0, 0));
     x = 0;
     aboutPanel.add(new JLabel("Agents:"),
+                   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 5, 5),
+                                          0, 0));
+    aboutPanel.add(new JLabel("(select for more information)"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.NONE,
@@ -546,6 +557,15 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           0, 0));
     JList agentsList = new JList(agentNames.toArray());
     agentsList.setBackground(aboutPanel.getBackground());
+    agentsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    agentsList.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        if (e.getValueIsAdjusting())
+          return;
+        String agentName = (String)agentNames.get(e.getLastIndex());
+        displayPlugIns(agentName);
+      }
+    });
     JScrollPane jspAgents = new JScrollPane(agentsList);
     jspAgents.setMinimumSize(new Dimension(50, 50));
     aboutPanel.add(jspAgents,
@@ -816,6 +836,82 @@ public class ConsoleInternalFrame extends JInternalFrame {
     ((NodeStatusButton)statusButton).clearError();
   }
 
+  private void displayPlugIns(String agentName) {
+    ComponentData societyComponentData = experiment.getSocietyComponentData();
+    if (societyComponentData == null) {
+      System.out.println("ConsoleInternalFrame: Need to save experiment");
+      return;
+    }
+    ComponentData[] children = societyComponentData.getChildren();
+    ComponentData nodeComponentData = null;
+    for (int i = 0; i < children.length; i++) {
+      if (children[i].getType().equals(ComponentData.HOST)) {
+        ComponentData[] nodes = children[i].getChildren();
+        for (int j = 0; j < nodes.length; j++) {
+          if (nodes[j].getName().equals(node.getShortName())) {
+            nodeComponentData = nodes[j];
+            break;
+          }
+        }
+      }
+    }
+    if (nodeComponentData == null)
+      return;
+    ComponentData[] agents = nodeComponentData.getChildren();
+    ComponentData agentComponentData = null;
+    for (int i = 0; i < agents.length; i++) {
+      if (agents[i] instanceof AgentComponentData &&
+          agents[i].getName().equals(agentName)) {
+        agentComponentData = agents[i];
+        break;
+      }
+    }
+    if (agentComponentData == null)
+      return;
+    ComponentData[] agentChildren = agentComponentData.getChildren();
+    ArrayList entries = new ArrayList(agentChildren.length);
+    for (int i = 0; i < agentChildren.length; i++) {
+      if (!agentChildren[i].getType().equals(ComponentData.PLUGIN))
+        continue;
+      StringBuffer sb = new StringBuffer();
+      sb.append(agentChildren[i].getClass().getName());
+      if (agentChildren[i].parameterCount() != 0) {
+        sb.append("(");
+        Object[] params = agentChildren[i].getParameters();
+        sb.append(params[0].toString());
+        for (int j = 1; j < agentChildren[i].parameterCount(); j++) {
+          sb.append(",");
+          sb.append(params[j].toString());
+        }
+        sb.append(")");
+      }
+      entries.add(sb.toString());
+    }
+    JList plugInsList = new JList(entries.toArray());
+    JScrollPane jsp = new JScrollPane(plugInsList);
+    jsp.setMinimumSize(new Dimension(50, 50));
+    JPanel agentInfoPanel = new JPanel();
+    agentInfoPanel.setLayout(new GridBagLayout());
+    plugInsList.setBackground(agentInfoPanel.getBackground());
+    int x = 0;
+    int y = 0;
+    agentInfoPanel.add(new JLabel("PlugIns:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(10, 0, 5, 5),
+                                          0, 0));
+    agentInfoPanel.add(jsp,
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(0, 0, 5, 0),
+                                          0, 0));
+    JOptionPane.showMessageDialog(this, agentInfoPanel, 
+                                  "Information: " + agentName,
+                                  JOptionPane.PLAIN_MESSAGE);
+
+  }
 }
 
 

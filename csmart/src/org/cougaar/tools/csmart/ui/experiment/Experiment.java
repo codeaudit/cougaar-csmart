@@ -1279,6 +1279,79 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return inDatabase;
   }
 
+
+  /**
+   * Get component data for the society in the experiment.
+   * If the experiment is not in the database, then it
+   * constructs the society component data here.
+   * @return ComponentData the component data for the society
+   */
+
+  public ComponentData getSocietyComponentData() {
+    if (inDatabase)
+      return theWholeSoc;
+    theWholeSoc = new GenericComponentData();
+    theWholeSoc.setType(ComponentData.SOCIETY);
+    theWholeSoc.setName(getExperimentName()); // this should be experiment: trial FIXME
+    theWholeSoc.setClassName("java.lang.Object"); // leave this out? FIXME
+    theWholeSoc.setOwner(this); // the experiment
+    theWholeSoc.setParent(null);
+    // For each node, create a GenericComponentData, and add it to the society
+    addNodes();
+
+    // Some components will want access to the complete set of Nodes in the society, etc.
+    // To get that, they must get back to the root soc object,
+    // and do a getOwner and go from there. Ugly.
+    
+    // Now ask each component in turn to add its stuff
+    List components = getComponents();
+    for (int i = 0; i < components.size(); i++) {
+      ComponentProperties soc = (ComponentProperties) components.get(i);
+      soc.addComponentData(theWholeSoc);
+    }
+    // Then give everyone a chance to modify what they've collectively produced
+    for (int i = 0; i < components.size(); i++) {
+      ComponentProperties soc = (ComponentProperties) components.get(i);
+      soc.modifyComponentData(theWholeSoc);
+    }    
+    return theWholeSoc;
+  }
+  
+  private void addNodes() {
+    NodeComponent[] nodesToWrite = getNodes();
+    for (int i = 0; i < nodesToWrite.length; i++) {
+      ComponentData nc = new GenericComponentData();
+      nc.setType(ComponentData.NODE);
+      nc.setName(nodesToWrite[i].getShortName());
+      nc.setClassName(""); // leave this out?? FIXME
+      nc.setOwner(this);
+      nc.setParent(theWholeSoc);
+      ComponentName name = 
+	  new ComponentName((ConfigurableComponent)nodesToWrite[i], "ConfigurationFileName");
+      try {
+	nc.addParameter(((ComponentProperties)nodesToWrite[i]).getProperty(name).getValue().toString());
+      } catch (NullPointerException e) {
+	nc.addParameter(nc.getName() + ".ini");
+      }
+      theWholeSoc.addChild(nc);
+      addAgents(nodesToWrite[i], nc);
+    }
+  }
+
+  private void addAgents(NodeComponent node, ComponentData nc) {
+    AgentComponent[] agents = node.getAgents();
+    if (agents == null || agents.length == 0)
+      return;
+    for (int i = 0; i < agents.length; i++) {
+      AgentComponentData ac = new AgentComponentData();
+      ac.setName(agents[i].getFullName().toString());
+      // FIXME!!
+      ac.setOwner(null); // the society that contains this agent FIXME!!!
+      ac.setParent(nc);
+      nc.addChild((ComponentData)ac);
+    }
+  }
+
 } // end of Experiment.java
 
 
