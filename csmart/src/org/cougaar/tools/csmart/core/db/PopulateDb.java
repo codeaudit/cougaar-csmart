@@ -64,14 +64,15 @@ public class PopulateDb extends PDbBase {
   private String exptId;
   private String trialId;
 
-  private String cmtType;
-  private String hnaType;
-  private String csmiType;
-  private static String csaType = "CSA";
-  private static String realcmtType = "CMT";
-  private static String realcsmiType = "CSMI";
-  private static String realcshnaType = "CSHNA";
+  private static final String CSATYPE = "CSA";
+  private static final String REAL_CMT_TYPE = "CMT";
+  private static final String REAL_CSMI_TYPE = "CSMI";
+  private static final String REAL_CSHNA_TYPE = "CSHNA";
   public static final String COMM_ASB_TYPE = "COMM";
+
+  private String cmtType = REAL_CMT_TYPE;
+  private String hnaType = REAL_CSHNA_TYPE;
+  private String csmiType = REAL_CSMI_TYPE;
 
   // The cmtAssemblyId defines the baseline society - 
   // the one in the Config assemblies table. Note however
@@ -122,9 +123,7 @@ public class PopulateDb extends PDbBase {
     createLogger();
     if (ch == null) throw new IllegalArgumentException("null conflict handler");
     this.conflictHandler = ch;
-    this.cmtType = csaType;
-    this.hnaType = realcshnaType;
-    this.csmiType = realcsmiType;
+    this.cmtType = CSATYPE;
     this.exptId = null;
     this.trialId = null;
     substitutions.put(":cmt_type:", cmtType);
@@ -193,8 +192,6 @@ public class PopulateDb extends PDbBase {
     // FIXME: I'm not using these types, why require them?
     if (ch == null) throw new IllegalArgumentException("null conflict handler");
     this.cmtType = cmtType;
-    this.hnaType = realcshnaType;
-    this.csmiType = realcsmiType;
     if(exptId == null) {
       // Create a new exptId here.
       exptId = newExperiment("EXPT", experimentName, "NON-CFW EXPERIMENT");
@@ -206,7 +203,7 @@ public class PopulateDb extends PDbBase {
     this.conflictHandler = ch;
     this.cmtAssemblyId = societyId;
     substitutions.put(":cmt_type:", cmtType);
-    substitutions.put(":csa_type:", csaType);
+    substitutions.put(":csa_type:", CSATYPE);
     substitutions.put(":expt_id:", exptId);
     substitutions.put(":trial_id:", trialId); 
 
@@ -278,9 +275,6 @@ public class PopulateDb extends PDbBase {
     throws SQLException, IOException {
     super();
     createLogger();
-    this.cmtType = cmtType;
-    this.hnaType = realcshnaType;
-    this.csmiType = realcsmiType;
 
     if (exptId != null) {
       this.exptId = exptId;
@@ -314,10 +308,10 @@ public class PopulateDb extends PDbBase {
       return "null";
     } else if (assemblyId.equals("")) {
       return "empty";
-    } else if (assemblyId.startsWith(realcmtType)) {
-      return realcmtType;
-    } else if (assemblyId.startsWith(csaType)) {
-      return csaType;
+    } else if (assemblyId.startsWith(REAL_CMT_TYPE)) {
+      return REAL_CMT_TYPE;
+    } else if (assemblyId.startsWith(CSATYPE)) {
+      return CSATYPE;
     } else if (assemblyId.startsWith(hnaType)) {
       return hnaType;
     } else if (assemblyId.startsWith(csmiType)) {
@@ -521,7 +515,7 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":cmt_type:", cmtType);
     substitutions.put(":hna_type:", hnaType);
     substitutions.put(":csmi_type:", csmiType);
-    substitutions.put(":csa_type:", csaType);
+    substitutions.put(":csa_type:", CSATYPE);
 
     // check that each Assembly it finds is not
     // referenced by another experiment. If it is, then we only delete from 
@@ -782,8 +776,8 @@ public class PopulateDb extends PDbBase {
   public void removeOrphanNonSocietyAssemblies() throws SQLException {
     // Do a query for assemblyIDs in asb_assembly, where it is not
     // of type cmtType or csaType
-    substitutions.put(":cmt_type:", realcmtType);
-    substitutions.put(":csa_type:", csaType);
+    substitutions.put(":cmt_type:", REAL_CMT_TYPE);
+    substitutions.put(":csa_type:", CSATYPE);
     substitutions.put(":trial_id:", "");
     Statement stmt = getStatement();
     ResultSet rs = executeQuery(stmt, dbp.getQuery("queryNonSocietyAssemblies", substitutions));
@@ -975,9 +969,9 @@ public class PopulateDb extends PDbBase {
     if (log.isDebugEnabled()) {
       log.debug("Creating new CSA " + (cmtAsbID != null ? "based on soc: " + cmtAsbID : "from scratch") + " named " + societyName);
     }
-    String assemblyIdPrefix = csaType + "-";
+    String assemblyIdPrefix = CSATYPE + "-";
     substitutions.put(":assembly_id_pattern:", assemblyIdPrefix + "____");
-    substitutions.put(":assembly_type:", csaType);
+    substitutions.put(":assembly_type:", CSATYPE);
     String assemblyId = getNextId("queryMaxAssemblyId", assemblyIdPrefix);
     csaAssemblyId = assemblyId;
     substitutions.put(":assembly_id:", sqlQuote(assemblyId));
@@ -1409,7 +1403,7 @@ public class PopulateDb extends PDbBase {
 	  }
 	  configHasNewHNA = true;
 	}
-      } else if (assid.startsWith(realcmtType)) {
+      } else if (assid.startsWith(REAL_CMT_TYPE)) {
 	// This should be the real society definition
 	if (cmtAssemblyId != null && ! assid.equals(cmtAssemblyId)) {
 	  // an old CMT assembly still listed somehow. Delete it!
@@ -1462,7 +1456,7 @@ public class PopulateDb extends PDbBase {
 	    log.warn("fixAsb: Trial " + trialId + " has null cmtAssemblyId while examining cmt asb " + assid);
 	  }
 	}
-      } else if (assid.startsWith(csaType)) {
+      } else if (assid.startsWith(CSATYPE)) {
 	// This could be the cmtAssemblyId 
 	// and if so, fine.
 	if (cmtAssemblyId != null && ! assid.equals(cmtAssemblyId)) {
@@ -1566,7 +1560,7 @@ public class PopulateDb extends PDbBase {
     
     // 3: Ensure config-time has a CMT _or_ CSA
     // use queryConfigTrialAssemblies -- see above
-    // and cmtType and csaType
+    // and cmtType and CSATYPE
     // if has both => error
     //--- do what? Delete the CSA, assuming it was erroneously written
     // there when should have only been in runtime?
@@ -1583,7 +1577,7 @@ public class PopulateDb extends PDbBase {
 
     // 4: Ensure run-time has a CMT _or_ CSA (only CSA if CSA in config_time)
     // use queryTrialAssemblies
-    // and cmtType and csaType
+    // and cmtType and CSATYPE
     rs = executeQuery(stmt, dbp.getQuery("queryTrialAssemblies", substitutions));
     assid = null;
 
@@ -1617,7 +1611,7 @@ public class PopulateDb extends PDbBase {
 	    log.debug("fixAsb: Found current hna (" + assid + ") in run for trial " + trialId);
 	  }
 	}
-      } else if (assid.startsWith(realcmtType)) {
+      } else if (assid.startsWith(REAL_CMT_TYPE)) {
 	if (! assid.equals(cmtAssemblyId)) {
 	  // an old CMT assembly still listed somehow. Delete it!
 	  
@@ -1692,7 +1686,7 @@ public class PopulateDb extends PDbBase {
 	  
 	  // FIXME!!
 	} // end of block dealing with finding the CMT cmtAssemblyId in runtime
-      } else if (assid.startsWith(csaType)) {
+      } else if (assid.startsWith(CSATYPE)) {
 	if (assid.equals(cmtAssemblyId)) {
 	  // Found the CSA society def in runtime
 	  // It better also be in config time
@@ -1778,7 +1772,7 @@ public class PopulateDb extends PDbBase {
 	  } // end of block dealing with bogus CSMI
 	} // end of block handling finding non-orig soc CSA in runtime
 	// Should be done with finding a CSA type assembly altogether
-      } else if (assid.startsWith(realcsmiType)) {
+      } else if (assid.startsWith(REAL_CSMI_TYPE)) {
 	if (! assid.equals(csmiAssemblyId)) {
 	  if (log.isWarnEnabled()) {
 	    log.warn("fixAsb: Got unknown csmi (" + assid + ") in runtime for trial " + trialId + " while examining csmi " + assid);
@@ -2124,7 +2118,7 @@ public class PopulateDb extends PDbBase {
       // remove the CSHNA assembly as well?
       
       // Add this new assembly to the runtime assemblies for this experiment
-      substitutions.put(":assembly_type:", csaType);
+      substitutions.put(":assembly_type:", CSATYPE);
       addAssemblyToRuntime(csaAssemblyId);
 
       // For purposes of populate, this is the society definition
