@@ -546,8 +546,18 @@ public class CommunityPanel extends JPanel {
     //    ArrayList communityNames = CommunityDBUtils.getCommunities();
     // But I think I only want those in this experiment
     ArrayList communityNames = CommunityDBUtils.getCommunitiesForExperiment(experiment.getCommAsbID());
-    if (communityNames == null || communityNames.size() == 0)
+    if (communityNames == null || communityNames.size() == 0) {
+      if (log.isDebugEnabled()) {
+	log.debug("selectComms got none");
+      }
+      // Show a message to that effect
+      JOptionPane.showMessageDialog(null, "No Communities defined for this Experiment.");
       return null;
+    }
+
+    // Add special community name meaning show all communities...
+    communityNames.add(0, "All");
+
     JComboBox cb = 
       new JComboBox(communityNames.toArray(new String[communityNames.size()]));
     cb.setEditable(false);
@@ -577,9 +587,17 @@ public class CommunityPanel extends JPanel {
     String communityName = selectCommunityToDisplay();
     if (communityName == null)
       return;
+
+    if (communityName.equals("All")) {
+      putAllCommunitiesInTree();
+      return;
+    }
+
     // display community information in table
     communityTableUtils.getAllCommunityInfo(communityName);
     communityTree.getModel().removeTreeModelListener(treeModelListener);
+
+    // Note that this clears out any communities currently being displayed!
     addToTree(communityTree.addNode(null, communityName, "Community", null),
               communityName);
     communityTree.getModel().addTreeModelListener(treeModelListener);
@@ -597,7 +615,8 @@ public class CommunityPanel extends JPanel {
 	if (log.isDebugEnabled()) {
 	  log.debug("putAllComms adding " + communityName);
 	}
-	addToTree(communityTree.addNode(null, communityName, "Community", null),
+	// This first argument must point to the tree root
+	addToTree(communityTree.addNode((DefaultMutableTreeNode)communityTree.getModel().getRoot(), communityName, "Community", null),
 		  communityName);
       }
     }
