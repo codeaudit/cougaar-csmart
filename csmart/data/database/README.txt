@@ -7,8 +7,7 @@ See csmart/doc/InstallandTest.html or the User's Guide for more information.
 Summary:
 After creating a database per the instructions referenced above, you load
 it with data from files contained here.
-First, load the data in the Domain-MySQL.ZIP file. (It was
-changed with release 9.4.1.)
+First, load the data in the Domain-MySQL.ZIP file.
 Then, to load the configuration information (necessary to "clean" your
 installation, and when upgrading to the most recent Cougaar version),
 use ./scripts/mysql/load_1ad_mysql.sh[bat] 
@@ -34,7 +33,8 @@ Sub-directories:
         Contains a '.csv' file for each table to be created in the 
         configuration database.  These files can be loaded into a
         MySQL database 'as is' or may be modified (eg, in excel) as necessary
-        before loading.
+        before loading. (Note the trailing comma on every row which
+        helps avoid load errors.)
 
    db_src/:
         Contains the database schema source files that are produced from ERStudio.
