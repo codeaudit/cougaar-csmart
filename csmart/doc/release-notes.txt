@@ -22,6 +22,8 @@ fall integration not available in time for the 9.4 release.
   To add additional servlets, use the Specific Insertion Recipe. (Bug
   1521)
 - Experiment export scripts now export communities correctly (bug 1563).
+- Added a new recipe "Complete Agent" that allows the creation of a Agent(s)
+  including all plugins, relationships and asset data in one GUI configurable recipe.
 
 Release 9.4:
 This release constitues the last major Cougaar release for this
