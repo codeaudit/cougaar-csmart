@@ -1,15 +1,19 @@
 Last updated: 04/30/02
 
-The document outlines the current CSMART package structure:
+The document outlines the current CSMART package structure,
+highlighting key classes and interfaces.
 
 -- org.cougaar.tools.csmart
+   All CSMART classes fall under this root package.
  -- runtime
-    This is where plugins, Assets, and other society runtime pieces go.
+    This is where plugins, Assets, and other society runtime pieces
+   go. In particular, the built-in ABC society's runtime components
+   are defined here, as are pieces for the Basic Metric.
    
-  -- binder
+   -- binder
       CSMART binder related code (Binder is used by Impacts)
 
-  -- ldm
+   -- ldm
     -- asset
 	All CSMART/ABC Assets
     -- event
@@ -22,82 +26,138 @@ The document outlines the current CSMART package structure:
       -- transducer
           Transducer Plugin specific classes
 
-  -- plugin
-      All CSMART Plugins.
+   -- plugin
+      All CSMART Plugins, including those supporting the Basic Metric.
 
-  -- society
+ -- society
 	All classes for Creating a complete Society. All base classes and interfaces
-        reside in this package.
+        reside in this package. The basic interface for a society is
+	SocietyComponent, where the base class is SocietyBase. There
+	are also interface/classes for Agents
+	(AgentComponent/AgentBase), Plugins
+	(PluginComponent/PluginBase), etc.)
     -- abc
-        This package contains all classes to represent an ABC Society 
+        This package contains all classes to represent an ABC
+	Society. (currently disabled)
     -- cdata
         This package contains classes to generate a Society from a 
-        complete ComponentData structure. 
+        complete ComponentData structure (ie when you hit Configure on
+	an Experiment.)
     -- db
-        This package contains all classes to represent a Database Society.
+        This package contains all classes to represent a Database
+	Society (any society loaded from the database, however it was
+	originally created).
     -- file
         This package contains all classes to represent a Society created from INI Files.
     -- scalability
-        This package contains all classes to represent a Scalability society.
+        This package contains all classes to represent a Scalability
+	society (currently disabled).
     -- ui
-        This package contains all classes to represnt a UI based Society.
+        This package contains all classes to represent a society
+	completely created from the UI.
 
-  -- recipe
-     All classes about recipes (including metrics and impacts)
+ -- recipe
+     All classes about recipes (including metrics and impacts). This
+     includes the root interface by which the UI refers to recipes
+     (RecipeComponent) and the base class that all recipes use
+     (RecipeBase). In addition, RecipeList is used to list recipes
+     that should be options for users in the Organizer.
      
-  -- experiment
+ -- experiment
      All classes representing Experiments and Trials.  This includes 
-     ConfigurationWriters for Experiments that write complete Exeriments to ini files.
+     ConfigurationWriters for Experiments that write complete
+     Exeriments to ini files. The primary class of interest is Experiment.
      
-  -- core
+ -- core
+     Core data structures and database access classes.
      -- property
-	Component Properties and objects that hold them and edit them.
+	When building and configuring things in CSMART, the underlying
+     datastructures are collections of properties (Property
+     objects). These collections are ConfigurableComponents - this is
+     the base class therefore for Experiments, Recipes, Societies,
+     Agents, Plugins, etc.
+
 	-- name
-	   Names of properties.
+	   Names of Property's. See in particular CompositeName and
+	   MultiName. The name of a Plugin in a society, for example,
+	   includes that of the Society and Agent.
+
 	-- range
-	   Utilities to mark a property as existing in a range of values
+	   Utilities to mark a Property as existing in a range of
+	   values. See the interface Range or base class RangeBase.
   
      -- cdata
         The ComponentData tree for translating the CSMART configuration
-	data representation into a runable form.  All classes within this
+	data representation (ConfigurableComponents) into a runnable form.  All classes within this
 	package represent components and sub-components of the complete 
-	ComponentData structure.
+	ComponentData structure. See in particular the interface
+        ComponentData, and the base implementation
+        GenericComponentData. These trees are created in
+        Experiment.java and in SocietyComponentCreator.java, and
+        filled in in the addComponentData and modifyComponentData
+        methods of ConfigurableComponents.
   
      -- db
-	All Database access mechanisms used by the ComponentData structure.
-  -- ui
+	All Database access mechanisms used in CSMART. Basic utitilies
+	are in DBUtils. Methods for manipulating db-defined societies
+	are in CMT.java and ExperimentDB.java. The real work for
+	saving recipes, societies, and experiments to the database
+	happens in PDbBase and its extension, PopulateDb
+
+ -- ui
     -- analyzer
-	Performance Analyzer
+	The Performance Analyzer
     -- configbuilder
-	Property Table builder classes
+	Property Table builder classes for configuring societies and
+  recipes (any ConfigurableComponent really). The root Frame is in PropertyBuilder, and the workhorse
+  panel is in PropertyEditorPanel.
+
     -- console
-	All classes relating to the console, including charting classes
+	All classes relating to the console (Experiment Controller), including charting
+	classes. See in particular CSMARTConsole
+
     -- experiment
-	All classes relating to the experiment builder
+	All classes relating to the ExperimentBuilder (main UI),
+	including the HostConfigurationBuilder for assigning Agents to
+	Nodes to Hosts, and the NodeArgumentDialog for specifying Node
+	-D arguments.
     -- help
 	About CSMART help 
+
     -- monitor
+       These packages define the CSMART Society Monitor. PropertyNames
+       defines some constants used to communicate between CSMART
+       servlets and the client.
+
       -- community
-	  Community View classes
+	  The Community View classes
       -- generic
-	  Various monitor related classes
+	  Various monitor related classes, including the basic Frame,
+	  Grappa extensions and support classes, and classes to manage the
+	  legend and coloring of objects in Grappa graphs.
+
       -- metrics
-	  Metrics graphs
+	  Metrics graphs Sociey monitor view.
       -- plan
-          Plan view classes
+          Plan view classes, including the Filter and Finder. Start
+	  with ULPlanFrame.
       -- society 
-          Society View classes
+          Society (or Agent) View classes, starting with the ULSocietyFrame.
       -- viewer
-          Gif files and the CSMART UI
+          Gif files and the Society Monitor UI (CSMARTUL).
+
     -- servlet
-       Servlets to replace the above PSPs
+       Servlets used in the Society Monitor
     -- tree
 	UI Drag and Drop tree classes
     -- util
-	Various UI utility classes
+	Various UI utility classes for finding files, servlets,
+	frames, etc.
     -- viewer
-	All classes related to the Organizer + Gifs
-  -- util
+       CSMART.java is located here. Also located here is the Organizer
+	(or Workspace), and helper files and images.
+
+ -- util
       Various utility classes
     -- parser
       Various parsers required by CSMART/ABC
