@@ -452,7 +452,76 @@ public class DBUtils {
       throw new RuntimeException("Error" + e);
     }
   } 
+
+  public static boolean isSocietyNameInDatabase(String societyName) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
+    Logger qLog = CSMART.createLogger("queries");
+    Map substitutions = new HashMap();
+    String result = null;
+    String query = "";
+
+    substitutions.put(":society_name:", societyName);
+
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+	Statement stmt = conn.createStatement();	
+        query = getQuery("querySocietyByName", substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          result = rs.getString(1);
+          if(result != null) { break; }
+        }
+        rs.close();
+	stmt.close();
+      } finally {
+	conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("isSocietyNameInDatabase: "+query, e);
+      }
+      throw new RuntimeException("Error" + e);
+    }
+
+    return (result != null) ? true : false;
+  }
+
+  public static boolean isRecipeNameInDatabase(String recipeName) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
+    Logger qLog = CSMART.createLogger("queries");
+    Map substitutions = new HashMap();
+    String result = null;
+    String query = "";
+    substitutions.put(":recipe_name:", recipeName);
+
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+	Statement stmt = conn.createStatement();	
+        query = getQuery("queryRecipeByName", substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          result = rs.getString(1);
+          if(result != null) { break; }
+        }
+        rs.close();
+	stmt.close();
+      } finally {
+	conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("isRecipeNameInDatabase: "+query, e);
+      }
+      throw new RuntimeException("Error" + e);
+    }
+
+    return (result != null) ? true : false;
+  }
   
+
+
   /**
    * Delete rows from the given table where the given column has the given value
    *
