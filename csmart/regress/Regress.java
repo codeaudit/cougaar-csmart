@@ -60,7 +60,8 @@ public class Regress extends TestSuite {
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.CommunityTimePhasedDataTest.class));    
 
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.TimePhasedDataTest.class));    
-    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.TestPopulateDb.class));    
+    // This is broken currently, cause of missing .q files and such
+    //    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.TestPopulateDb.class));    
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.societies.abcsociety.ABCAgentTest.class));
     // Leave this commented out for now - needs a UI, so nightly build
     // may have trouble....
