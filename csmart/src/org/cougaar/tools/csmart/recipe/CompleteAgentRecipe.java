@@ -20,6 +20,8 @@
  */ 
 package org.cougaar.tools.csmart.recipe;
 
+
+
 import java.io.Serializable;
 import java.net.URL;
 import java.sql.SQLException;
@@ -29,7 +31,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
-
+import org.cougaar.core.agent.ClusterImpl;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -39,6 +41,7 @@ import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
@@ -47,7 +50,6 @@ import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.range.IntegerRange;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.society.AgentComponent;
-
 import org.cougaar.util.log.Logger;
 
 /**
@@ -169,6 +171,40 @@ public class CompleteAgentRecipe extends ComplexRecipeBase
    */
   public ComponentData modifyComponentData(ComponentData data, PopulateDb pdb) {
     return data;
+  }
+
+  protected ComponentData getComponentData() {
+    ComponentData cd = new GenericComponentData();
+    cd.setType(ComponentData.RECIPE);
+    cd.setClassName(RECIPE_CLASS);
+    cd.setName(getRecipeName());
+    cd.setOwner(null);
+    cd.setParent(null);
+
+    AgentComponent[] agents = getAgents();
+    for (int i = 0; i < agents.length; i++) {
+      generateAgentComponentData(agents[i], cd, null);
+    }
+
+    // Now let all components add their data.
+    addComponentData(cd);
+
+    modifyComponentData(cd);
+
+    return addComponentData(cd);
+  }
+
+  private static final void generateAgentComponentData(AgentComponent agent, 
+                             ComponentData parent, 
+                             ConfigurableComponent owner) {
+
+    AgentComponentData ac = new AgentComponentData();
+    ac.setName(agent.getShortName());
+    ac.setClassName(ClusterImpl.class.getName());
+    ac.addParameter(agent.getShortName()); // Agents have one parameter, the agent name
+    ac.setOwner(owner);
+    ac.setParent(parent);
+    parent.addChild((ComponentData)ac);
   }
 
 }
