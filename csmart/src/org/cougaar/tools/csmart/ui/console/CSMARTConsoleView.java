@@ -824,7 +824,10 @@ public class CSMARTConsoleView extends JFrame implements Observer {
 
     if (arg instanceof NodeView) {
       // TODO: second argument should be node name
-      desktop.addNodeFrame((NodeView)arg, "");
+      desktop.addNodeFrame((NodeView)arg, ((NodeView) arg).getNodeName());
+      NodeModel nm = model.getNodeModel(((NodeView)arg).getNodeName());
+      statusButtons.add(nm.getStatusButton());
+      buttonPanel.add(nm.getStatusButton());
       return;
     }
   }
