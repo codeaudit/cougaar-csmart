@@ -2,7 +2,7 @@ CSMART contains a few known issues:
 
 * Society Monitor will warn about an inability to contact Agents in
   which no CSMART Servlets are running. This will usually include all
-  Node Agents. While not a bug, it is annoyin. See bug # 1241
+  Node Agents. While not a bug, it is annoying. See bug # 1241
 
 * Experiment and recipe export scripts may no longer work. 
   As a workaround, try using the complete DB export scripts in
@@ -12,7 +12,17 @@ CSMART contains a few known issues:
   CSMART workspace.
 
 * Running a node on a multiprocessor machines may result in the CSMART
-  console freezing up
+  console freezing up.
+
+* There are a couple NPEs that can occur but we have not been able to
+  reproduce. If you see an error message mentioning a bug #, please
+  report on Bugzilla what you saw.
+
+* Some Windows 2000 users corrupted data loading the CSMART
+  database. This has not been reproduced.
+
+* MySQL cannot load data across network drives, causing errors
+  creating the database in some circumstances. See bug# 1257.
 
 For up to date information on these and other CSMART issues see:
 http://www.cougaar.org/bugs
