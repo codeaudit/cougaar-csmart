@@ -1,5 +1,38 @@
 CSMART Release Notes
 
+Release 9.2.1:
+- Multiple bug fixes
+- Note that changes to the default AppServer properties file to use
+the Java "server" VM may require Path changes on some systems, when
+you upgrade your AppServer properties file. See the Install
+instructions (./InstallAndTest.html) for details.
+- Add Community tables to CSMART DB to begin support for Community configuration
+- Performance improvements (bug 1226)
+- Allow running Nodes without any Agents (bug 1265)
+- Address errors using Agent Insertion Recipes (bugs 1240, 1245)
+- Add Dos DB dump scripts (bug 1229)
+- Address servlet errors with GLS Init window (bug 1215) and Society
+Monitor (bug 1241)
+- New option to not read or write a Workspace file: Add the CSMART -D
+argument org.cougaar.tools.csmart.doWorkspace=false to use this. Note
+that this means you will have to re-load your Experiments and recipes
+from the database every time you restart CSMART.
+- Allow specifying $HOST in Node command line arguments to indicate
+the name of the machine on which the Node will be running (bug 861)
+- Address errors in enabling tools (bug 1268)
+- Address errors auto-running societies (bug 1269)
+- Address errors with non-unique folder names (bug 1267)
+- Remove obsolete Heartbeat in console (bug 1247)
+- Avoid double-counted warnings on recipe change (bug 1107)
+- Disconnect GLS UI when society stops to avoid warning (bug 1055)
+- Ensure possible to use Analyzer to view old Experiment results
+- Use lower-case database table names throughout
+- Known issues: There are some very rare NPEs (bugs 1304, 1279). If
+you create a Society from an Experiment that includes recipes, the
+recipe effects are not included correctly (bug 1283). Finally,
+command-line scripts to export/copy experiments & recipes do not work
+(bugs 1231, 950).
+
 Release 9.2:
 - New ability to load societies from INI files
 - New UIs to edit societies within CSMART
@@ -30,7 +63,6 @@ InstallAndTest.html)
 - Known issue: Experiment and recipe export scripts may no longer work. 
   As a workaround, try using the complete DB export scripts in
   csmart/data/database/scripts/mysql/dump_1ad_mysql.sh  See bug # 1231 (and 1229)
-
 
 Release 9.0:
 - The CSMART required Cougaar 3rd party jar file: grappa1_2_bbn.jar has been changed 
