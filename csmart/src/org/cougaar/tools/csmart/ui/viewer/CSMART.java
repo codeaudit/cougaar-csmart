@@ -658,8 +658,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
             SocietyComponent societyCopy = (SocietyComponent)society.copy(newName);
             originalComponent = cc;
             cc = societyCopy;
-            if (societyCopy.isModified())
-              System.out.println("CSMART: society is modified");
+//             if (societyCopy.isModified())
+//               System.out.println("CSMART: society is modified");
           } else if (cc instanceof RecipeComponent) {
             RecipeComponent recipe = (RecipeComponent)cc;
             String newName =
