@@ -118,7 +118,7 @@ public abstract class ConfigurableComponent
   }
 
   private void firePropertyRemoved(Property p) {
-    firePropertyRemoved(new PropertyEvent(p, PropertyEvent.PROPERTY_ADDED));
+    firePropertyRemoved(new PropertyEvent(p, PropertyEvent.PROPERTY_REMOVED));
   }
 
   private void firePropertyRemoved(PropertyEvent ev) {
@@ -449,6 +449,14 @@ public abstract class ConfigurableComponent
     Property p = addProperty(name, value, value.getClass(), false);
     p.addPropertyListener(l);
     return p;
+  }
+
+
+  public void removeProperty(Property prop) {
+    System.out.println("Removing Property: " + prop.getName());
+    setPropertyVisible(prop, false);
+    //    getMyProperties().put(p.getName(), p);
+    firePropertyRemoved(prop);
   }
 
   public Iterator getLocalPropertyNames() {

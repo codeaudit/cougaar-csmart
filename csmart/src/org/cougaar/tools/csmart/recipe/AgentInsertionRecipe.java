@@ -130,6 +130,23 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
 
   private void updateRelationCount(Integer newCount) {
     int count = newCount.intValue();
+
+    // For now delete all variable props and start fresh.
+    // Annoying for the user, but it works.
+    if( propRelations != null && count != propRelations.length ) {
+      for(int i=0; i < propRelations.length; i++) {
+        removeProperty(propRelations[i]);
+      }
+    }
+
+    // These two arrays should never get out of sink add
+    // could probably be deleted in one loop.
+    if( propRoles != null && count != propRoles.length ) {
+      for(int i=0; i < propRoles.length; i++) {
+        removeProperty(propRoles[i]);
+      }
+    }
+
     propRelations = new Property[count];
     propRoles = new Property[count];
 
@@ -148,8 +165,8 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
     return getShortName();
   }
 
-  private void adjustParameterCount() {
-  }
+//   private void adjustParameterCount() {
+//   }
 
   private void initAgents() {
     boolean childrenOK = true;

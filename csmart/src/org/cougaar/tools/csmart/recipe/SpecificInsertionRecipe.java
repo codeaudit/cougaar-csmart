@@ -111,6 +111,15 @@ public class SpecificInsertionRecipe extends ModifiableConfigurableComponent
 
   private void updatePropCount(Integer newCount) {
     int count = newCount.intValue();
+
+    // For now delete all props and start fresh.
+    // Annoying for the user, but it works.
+    if( variableProps != null && count != variableProps.length ) {
+      for(int i=0; i < variableProps.length; i++) {
+        removeProperty(variableProps[i]);
+      }
+    }
+
     variableProps = new Property[count];
 
     // Note: If you feel you want to change the name of these
