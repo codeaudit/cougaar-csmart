@@ -604,7 +604,7 @@ public class Organizer extends JScrollPane {
     if (society == null)
       return;
     Experiment experiment = createExperiment(society);
-
+    
     // Add in community info for this society
     JFileChooser chooser = 
       new JFileChooser(SocietyFinder.getInstance().getPath());
@@ -612,20 +612,20 @@ public class Organizer extends JScrollPane {
     chooser.setDialogTitle("Select the communities.xml file for this Society, if any");
     // Allow selection of XML files and directories
     chooser.addChoosableFileFilter(new FileFilter() {
-      public boolean accept(File f) {
-	if (f == null)
-	  return false;
-	if (f.isDirectory())
-	  return true;
-	return f.getName().endsWith(".xml");
-      }
-
-      public String getDescription() {
-	return "XML Files";
-      }
-
+	public boolean accept(File f) {
+	  if (f == null)
+	    return false;
+	  if (f.isDirectory())
+	    return true;
+	  return f.getName().endsWith(".xml");
+	}
+	
+	public String getDescription() {
+	  return "XML Files";
+	}
+	
       });
-
+    
     File xmlFile = null;
     while (xmlFile == null) {
       int result = chooser.showDialog(organizer, "OK");
@@ -645,12 +645,11 @@ public class Organizer extends JScrollPane {
       addExperimentToWorkspace(experiment, getSelectedNode());
     addSocietyToWorkspace(society, experimentNode);
   }
-
+  
   /**
    * Create an experiment and a society that will be specified
    * from the user interface.
    */
-
   protected void createExperimentFromUI() {
     String name = getUniqueExperimentName("", false);
     if (name == null)

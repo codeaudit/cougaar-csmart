@@ -781,7 +781,6 @@ public class OrganizerHelper {
     return recipes;
   }
 
-
   private void getRecipeProperties(DbRecipe dbRecipe, 
                                    Connection conn, 
                                    Map substitutions) throws SQLException
@@ -791,12 +790,12 @@ public class OrganizerHelper {
     ResultSet rs = stmt.executeQuery(query);
 
     while(rs.next()) {
-    if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
-      // Query the Assembly Table for the correct data.
-      break;
-    } else {
-      dbRecipe.props.put(rs.getString(1), rs.getString(2));
-    }
+      if(rs.getString(1).equalsIgnoreCase(ComplexRecipeBase.ASSEMBLY_PROP)) {
+	// Query the Assembly Table for the correct data.
+	break;
+      } else {
+	dbRecipe.props.put(rs.getString(1), rs.getString(2));
+      }
     }
     rs.close();
   }

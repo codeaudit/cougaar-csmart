@@ -443,20 +443,20 @@ public class CommunityPanel extends JPanel {
     chooser.setDialogTitle("Select the communities.xml file to import");
     // Allow selection of XML files and directories
     chooser.addChoosableFileFilter(new FileFilter() {
-      public boolean accept(File f) {
-	if (f == null)
-	  return false;
-	if (f.isDirectory())
-	  return true;
-	return f.getName().endsWith(".xml");
-      }
-
-      public String getDescription() {
-	return "XML Files";
-      }
-
+	public boolean accept(File f) {
+	  if (f == null)
+	    return false;
+	  if (f.isDirectory())
+	    return true;
+	  return f.getName().endsWith(".xml");
+	}
+	
+	public String getDescription() {
+	  return "XML Files";
+	}
+	
       });
-
+    
     File xmlFile = null;
     while (xmlFile == null) {
       int result = chooser.showDialog(this, "OK");
