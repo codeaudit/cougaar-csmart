@@ -73,6 +73,8 @@ public class AppServerSupport {
    * @return the app server or null
    */
   public RemoteHost getAppServer(String hostName, int port) {
+    if (port < 1 || hostName == null || hostName.equals(""))
+      return null;
     RemoteHost remoteAppServer = null;
     try {
       remoteAppServer = 
@@ -107,6 +109,8 @@ public class AppServerSupport {
     } catch (NumberFormatException nfe) {
       // use default port
     }
+    if (port < 1)
+      port = Experiment.APP_SERVER_DEFAULT_PORT;
     return port;
   }
 
@@ -120,6 +124,8 @@ public class AppServerSupport {
    */
   public synchronized RemoteHost addAppServerForExperiment(String hostName,
                                                            Properties properties) {
+    if (hostName == null || hostName.equals(""))
+      return null;
     int remotePort = getAppServerPort(properties);
     RemoteHost appServer = getAppServer(hostName, remotePort);
     if (appServer != null) {
@@ -258,7 +264,7 @@ public class AppServerSupport {
 				   null, null, null);
     if (result != JOptionPane.OK_OPTION)
       return;
-    String s = tf.getText();
+    String s = tf.getText().trim();
     int index = s.indexOf(':');
     if (index == -1)
       return;
@@ -276,6 +282,8 @@ public class AppServerSupport {
     } catch (Exception e) {
       return;
     }
+    if (remotePort < 1)
+      return;
 
     RemoteHost appServer = getAppServer(hostName, remotePort);
     if (appServer != null)
