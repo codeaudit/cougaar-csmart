@@ -1,11 +1,25 @@
-PlanViewServlet,org.cougaar.planning.servlet.PlanViewServlet,/tasks
-CompletionServlet,org.cougaar.mlm.ui.psp.transit.CompletionServlet,/completion
-AgentProviderServlet,org.cougaar.tools.csmart.ui.servlet.AgentProviderServlet,/CSMART_AgentProviderServlet
-AgentInfoServlet,org.cougaar.tools.csmart.ui.servlet.AgentInfoServlet,/CSMART_AgentInfoServlet
-CommunityProviderServlet,org.cougaar.tools.csmart.ui.servlet.CommunityProviderServlet,/CSMART_CommunityProviderServlet
-MetricsServlet,org.cougaar.tools.csmart.ui.servlet.MetricsServlet,/CSMART_MetricsServlet
-SearchServlet,org.cougaar.tools.csmart.ui.servlet.SearchServlet,/CSMART_SearchServlet
-PlanServlet,org.cougaar.tools.csmart.ui.servlet.PlanServlet,/CSMART_PlanServlet
-HierarchyServlet,org.cougaar.mlm.ui.psp.transit.HierarchyServlet,/hierarchy
-DataGathererServlet,org.cougaar.mlm.ui.psp.transit.DataGathererServlet,/datagatherer
-LoaderServletComponent,plugin = org.cougaar.planning.servlet.LoaderServletComponent,/load
+# Name of servlet, class of servlet loader, arguments [usu class of servlet, then URI to access servlet]
+# One line per servlet which ServletGroupInsertionRecipe can turn
+# on/off
+
+# Old TASKS.PSP:
+PlanViewServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.planning.servlet.PlanViewServlet,/tasks
+
+# Datagrabber Completion PSP
+CompletionServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.planning.servlet.CompletionServlet,/completion
+
+# For the data grabber
+HierarchyServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.mlm.ui.psp.transit.HierarchyServlet,/hierarchy
+DataGathererServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.mlm.ui.psp.transit.DataGathererServlet,/datagatherer
+
+# Allows loading arbitrary components
+LoaderServletComponent,org.cougaar.planning.servlet.LoaderServletComponent,/load
+
+# CSMART Servlets follow
+# This nolonger used
+#AgentProviderServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools.csmart.ui.servlet.AgentProviderServlet,/CSMART_AgentProviderServlet
+AgentInfoServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools.csmart.ui.servlet.AgentInfoServlet,/CSMART_AgentInfoServlet
+CommunityProviderServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools.csmart.ui.servlet.CommunityProviderServlet,/CSMART_CommunityProviderServlet
+MetricsServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools.csmart.ui.servlet.MetricsServlet,/CSMART_MetricsServlet
+SearchServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools.csmart.ui.servlet.SearchServlet,/CSMART_SearchServlet
+PlanServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.tools.csmart.ui.servlet.PlanServlet,/CSMART_PlanServlet
