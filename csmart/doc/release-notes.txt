@@ -7,6 +7,8 @@ This release includes a major reworking on the Console.
   also Model and View.
 - Fixed buttons to prevent unknown button states.
 - The complete refactoring fixed bugs: 1946, 2640, 1626, 1639, 2321, 1637.
+- Added new tools (under ui/organization) for viewing and validating
+  XML based societies.
 
 Release 10.3:
 This patch release includes updates to various 1AD configurations, and
