@@ -11,4 +11,6 @@ from
 where
     org.uic like 'W%'
 and org.uic = funit.unit_identifier(+)
+order by
+    org.org_id
 ;

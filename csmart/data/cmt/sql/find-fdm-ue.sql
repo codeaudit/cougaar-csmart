@@ -23,7 +23,7 @@ where
 and org.uic = fue.unit_identifier
 and fue.ti_id = fte.ti_id
 and fue.ti_id = fted.ti_id
-and org.org_id = '3-133-FABN-155'
+-- and org.org_id like '%FABN%'
 -- and org.org_id like '%FABN'
 -- and fue.ti_id = 'T13168'
 -- and fue.ti_id = 'H57642'
