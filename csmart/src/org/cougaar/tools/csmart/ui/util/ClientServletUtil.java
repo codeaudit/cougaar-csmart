@@ -21,18 +21,19 @@
 
 package org.cougaar.tools.csmart.ui.util;
 
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.*;
-
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 
@@ -231,10 +232,17 @@ public class ClientServletUtil {
     }
 
     public static void addArg(String argName, Object argValue) {
+      Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
       buf.append(parameterPrefix);
       buf.append(argName);
       buf.append('=');
-      buf.append(URLEncoder.encode(argValue.toString()));
+      try {
+        buf.append(URLEncoder.encode(argValue.toString(), "UTF-8"));
+      } catch(UnsupportedEncodingException e) {
+      if (log.isErrorEnabled())
+        log.error("Exception Encoding ", e);
+      }
+
       parameterPrefix = '&';
     }
 

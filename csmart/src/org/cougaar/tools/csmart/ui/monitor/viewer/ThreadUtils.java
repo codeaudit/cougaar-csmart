@@ -21,18 +21,19 @@
 
 package org.cougaar.tools.csmart.ui.monitor.viewer;
 
-import java.util.*;
+
 import java.io.*;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-
-import org.cougaar.util.PropertyTree;
+import java.util.*;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
 import org.cougaar.tools.csmart.ui.util.ServletResult;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.PropertyTree;
+import org.cougaar.util.log.Logger;
 
 /**
  * Utility <tt>getFullThread(..)<tt> methods for multi-agent interaction
@@ -313,7 +314,15 @@ public final class ThreadUtils {
       int limit) {
     String agentURL = ClientServletUtil.makeURL(am.getHost(agentName),
                                                 am.getPort(agentName));
-    agentURL = agentURL + "/$" + URLEncoder.encode(agentName) + "/";
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
+
+    try {
+      agentURL = agentURL + "/$" + URLEncoder.encode(agentName, "UTF-8") + "/";
+    } catch(UnsupportedEncodingException e) {
+      if (log.isErrorEnabled())
+        log.error("Exception Encoding ", e);
+    }
+
     ArrayList parameterNames = new ArrayList(2);
     ArrayList parameterValues = new ArrayList(2);
     parameterNames.add("format");

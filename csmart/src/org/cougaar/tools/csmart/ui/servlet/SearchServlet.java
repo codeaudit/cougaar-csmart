@@ -21,15 +21,22 @@
  
 package org.cougaar.tools.csmart.ui.servlet;
 
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
+
+
+
+
+
+
+
+
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -39,18 +46,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpUtils;
-
+import org.cougaar.core.agent.ClusterIdentifier;
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
+import org.cougaar.core.util.UniqueObject;
 import org.cougaar.planning.ldm.asset.Asset;
 import org.cougaar.planning.ldm.asset.AssetGroup;
-
 import org.cougaar.planning.ldm.plan.Aggregation;
 import org.cougaar.planning.ldm.plan.Allocation;
 import org.cougaar.planning.ldm.plan.AssetTransfer;
@@ -61,13 +67,10 @@ import org.cougaar.planning.ldm.plan.MPTask;
 import org.cougaar.planning.ldm.plan.PlanElement;
 import org.cougaar.planning.ldm.plan.Task;
 import org.cougaar.planning.ldm.plan.Workflow;
-
-import org.cougaar.core.agent.ClusterIdentifier;
-import org.cougaar.core.util.UniqueObject;
-
-import org.cougaar.util.UnaryPredicate;
-
 import org.cougaar.tools.csmart.ui.servlet.TranslateUtils;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.UnaryPredicate;
+import org.cougaar.util.log.Logger;
 
 /**
  * Servlet that searches the Blackboard for all <code>UniqueObjects</code> that
@@ -361,6 +364,7 @@ public class SearchServlet
 				      Set startUIDs,
 				      boolean isDown,
 				      List l) {
+      Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui");
       int nStartUIDs = ((startUIDs != null) ? startUIDs.size() : 0);
       out.print(
 		"<html><head><title>Search results</title></head><body>\n"+
@@ -383,12 +387,19 @@ public class SearchServlet
       out.print("\n<h3>Found UniqueObjects["+n+"]:</h3><p>"+
 		"<i>Note: links will appear in the task servlet's lower-left frame</i>"+
 		"<p><ol>\n");
-      String hrefBase =
-	"<a"+
-	" target=\"itemFrame\""+
-	" href=\"/$"+
-	URLEncoder.encode(cid.toString())+
-	"/tasks?uid=";
+      String hrefBase  = null;
+      try {
+        hrefBase =
+          "<a"+
+          " target=\"itemFrame\""+
+          " href=\"/$"+
+          URLEncoder.encode(cid.toString(), "UTF-8")+
+          "/tasks?uid=";
+        } catch(UnsupportedEncodingException e) {
+          if (log.isErrorEnabled())
+            log.error("Exception Encoding ", e);
+        }
+
       // print objs
       for (int i = 0; i < n; i++) {
 	UniqueObject ui = (UniqueObject)l.get(i);
