@@ -1753,6 +1753,9 @@ public class Organizer extends JScrollPane {
     }
     mapNodesToHosts(experiment, assemblyMatch);
     workspace.setSelection(addExperimentToWorkspace(experiment, node));
+    // if the experiment hasn't been cloned, then save it so it's runnable
+    if (!isCloned)
+      experiment.saveToDb();
   }
 
   private void setComponentProperties(ConfigurableComponent cc,
@@ -1902,7 +1905,7 @@ public class Organizer extends JScrollPane {
   
   // Separate method that takes a new name, for use by model.valueChanged...
   private void renameExperiment(DefaultMutableTreeNode node, String name) {
-    Experiment experiment =
+    final Experiment experiment =
       (Experiment) node.getUserObject();
     if (name == null || name.equals(experiment.getExperimentName()) || name.equals("")) return;
     while (true) {
@@ -1919,6 +1922,20 @@ public class Organizer extends JScrollPane {
     if (name != null) {
       experimentNames.remove(experiment.getExperimentName());
       experiment.setName(name);
+      experiment.setCloned(false);
+      GUIUtils.timeConsumingTaskStart(organizer);
+      try {
+        new Thread("SaveExperiment") {
+          public void run() {
+            experiment.saveToDb(); // save under new name
+            GUIUtils.timeConsumingTaskEnd(organizer);
+          }
+        }.start();
+      } catch (RuntimeException re) {
+        System.out.println("Runtime exception saving experiment: " + re);
+        re.printStackTrace();
+        GUIUtils.timeConsumingTaskEnd(organizer);
+      }
       experimentNames.add(name);
       // This next line is the key line, that updates things
       model.nodeChanged(node);
