@@ -34,6 +34,7 @@ import javax.swing.event.*;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
@@ -185,7 +186,7 @@ public class UnboundPropertyBuilder extends JPanel {
     model.insertNodeInto(societies, root, 0);
     model.insertNodeInto(recipes, root, 1);
     model.setAsksAllowsChildren(true);
-    tree = new ExperimentTree(model);
+    tree = new ExperimentTree(model, experiment);
     // cell editor always returns false so that user can't edit cell names
     // using tree.setCellEditor(null) doesn't work
     DefaultCellEditor myEditor = new DefaultCellEditor(new JTextField()) {
@@ -305,6 +306,7 @@ public class UnboundPropertyBuilder extends JPanel {
    * Update society and recipes in the experiment when the user
    * modifies the tree.
    */
+
   private void reconcileExperimentNodes() {
     int nSocieties = societies.getChildCount();
     if (nSocieties > 1) {
@@ -327,12 +329,10 @@ public class UnboundPropertyBuilder extends JPanel {
     for (int i = 0; i < nRecipes; i++) {
       recipeAry[i] =
         (RecipeComponent) ((DefaultMutableTreeNode) recipes.getChildAt(i)).getUserObject();
-      //      recipeAry[i].setEditable(false);
     }
     experiment.setRecipeComponents(recipeAry);
     experiment.invalidateTrials(); // and force experiment to recreate trials
   }
-
   /**
    * Display the correct popup menu.
    * Don't display popup for Societies folder or for the individual
