@@ -511,8 +511,12 @@ public abstract class ConfigurableComponent
   }
 
 
-  public ConfigurableComponent copy(ConfigurableComponent result) {
-
+  public ComponentProperties copy(ComponentProperties result) {
+    // Make sure we're copying apples into apples
+    // The result can be a sub-class, but we want it
+    // to at least have the same set of properties
+    if (! (this.getClass().isAssignableFrom(result.getClass())))
+      return null;
     Iterator iter = getLocalPropertyNames();
     while(iter.hasNext()) {
       CompositeName name = (CompositeName)iter.next();
@@ -520,7 +524,7 @@ public abstract class ConfigurableComponent
       // compose the correct name for the property
       // name must be prepended by new society name
       String s = name.last().toString();
-      ComponentName hisPropName = new ComponentName(result, s);
+      ComponentName hisPropName = new ComponentName((ConfigurableComponent)result, s);
       Property hisProp = result.getProperty(hisPropName);
       try {
 	// if have experimental values, then copy those
@@ -548,7 +552,7 @@ public abstract class ConfigurableComponent
     // Now, clone my children
     for(int i=0; i < getChildCount(); i++) {
       ConfigurableComponent cc = getChild(i);
-      ConfigurableComponent co = result.getChild(cc.getFullName().last());
+      ConfigurableComponent co = ((ConfigurableComponent)result).getChild(cc.getFullName().last());
       if(co != null) {
 	cc.copy(co);
       }
