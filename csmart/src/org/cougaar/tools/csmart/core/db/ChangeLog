@@ -1,3 +1,154 @@
+2002-03-21  Brian Krisler  <bkrisler@bbn.com>
+
+	* PopulateDb.java:
+	Added setPropertyInfo method to add new PG info to the database
+	when it does not exist.
+
+	Note: This compiles but has not been tested yet.  Test case in
+	progress.
+
+2002-03-21  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* PopulateDb.java:
+	PopulateDB: if populating an HNA assembly, don't check for new agents.
+	Experiment: Better error message when saving experiment to database.
+	PropGroupBase: Property attribute name is the last part of a dot-separated name.
+	PropGroupComponent interface: added getPropGroupData.
+	AssetDBComponent: added code to create property groups as configurable components, when a society is read from the database.
+	AssetFileComponent: cast ot PropGroupComponent interface, not PropGroupBase class.
+	ExperimentBuilder: Removed listening for modifications to the experiment;
+	instead tell the experiment it's modified when the user makes modifications,
+	so that the experiment saveToDb method actually saves to the database.
+
+2002-03-20  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* PopulateDb.java: Add comments
+	Fix indentation
+	remove unused method, and unused argument to another method
+	remove some commented out code
+
+2002-03-20  Brian Krisler  <bkrisler@bbn.com>
+
+	* PopulateDb.java: Removed alot of unneeded debug output.
+
+2002-03-15  Brian Krisler  <bkrisler@bbn.com>
+
+	* PopulateDb.java:
+	Modifications to handle Save for both INI and DB societies.
+
+	***
+	Note.  This compiles, but does not work correctly yet for
+	INI Files.
+	***
+
+2002-02-27  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CMT.java: javadoc cleanup
+
+2002-02-13  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* ExperimentDB.java: Removed System.out call.
+
+2002-02-12  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* DBUtils.java:
+	New method to get experiments that use specified recipe.
+
+2002-02-12  Brian Krisler  <bkrisler@bbn.com>
+
+	* PopulateDb.java: Fix Bug # 1082.
+	When assemblies were cleaned, they were not being cleaned
+	from the ASB_ASSEMBLY, ASB_COMPONENT_HIERARCHY and ASB_COMPONENT_ARG
+	tables.
+
+2002-02-07  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* PDbBase.java: Fixed bug #1031, error saving recipes in experiment.
+	If a recipe is modified, then it is removed, and reinserted with
+	the same recipe id.
+
+2002-02-01  Brian Krisler  <bkrisler@bbn.com>
+
+	* CMT.java, DBUtils.java, PDbBase.java, PopulateDb.java:
+	Fixed Logging Statments
+	 - ensured that the right check was being done for the log level
+	 - removed printStackTraces, they are now part of the log message.
+	Corrected Copyright year
+
+2002-01-31  Brian Krisler  <bkrisler@bbn.com>
+
+	* CMT.java, DBUtils.java, PDbBase.java, PopulateDb.java:
+	Changed logging category to just use getClass().getName().
+	* This will prevent any future issues when repackaging.
+	* Makes logging more fine grained
+
+2002-01-29  Brian Krisler  <bkrisler@bbn.com>
+
+	* CMT.java, DBUtils.java, PDbBase.java, PopulateDb.java:
+	Fixed Bug 1023.
+
+	Added a readObject method to each class that calls the createLogger()
+
+2002-01-25  Brian Krisler  <bkrisler@bbn.com>
+
+	* CMT.java, DBConflictHandler.java, DBUtils.java, ExperimentDB.java, PDbBase.java, PopulateDb.java:
+	Updated copyright
+
+	* CMT.java: Removed all System outs. Use new logger.
+
+	This file attempts to create a new category for queries, this
+	is still be tested.
+
+2002-01-24  Brian Krisler  <bkrisler@bbn.com>
+
+	* PDbBase.java, PopulateDb.java: Added Logging code.
+
+	Removed all system.out and system.err calls
+
+2002-01-24  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CMT.java, DBUtils.java: DB access cleanup:
+	1) remove unused stuff
+	2) fix indents
+	3) move generic DB access stuff into DBUtils
+	4) add comments
+
+2002-01-23  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* ExperimentDB.java: Add javadoc
+	Fix spacing
+	remove unused methods
+
+	* DBUtils.java: Add javadoc
+	generalize getAssemblyMatch to getListMatch which can take a prefix of
+	items in the list to avoid
+	Add in generic method used elsewhere - getNonNullString to throw
+	exception if the given item in the resultset is null
+
+	* DBUtils.java: Add global dbMode flag set at CSMART launch
+
+2002-01-14  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* ExperimentDB.java: Removed unneeded import.
+
+2002-01-09  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CMT.java, PopulateDb.java: fix packages, imports after repackage
+
+2002-01-09  Ginny Travers  <travers@clarinet.sl.bbn.com>
+
+	* DBConflictHandler.java:
+	Make this a separate interface so the gui utilities aren't creating
+	objects that implement inner interfaces.
+
+	* PDbBase.java, PopulateDb.java, DBUtils.java, ExperimentDB.java:
+	Fixed package names; moved ConflictHandler to separate class.
+
+2002-01-09  Brian Krisler  <bkrisler@bbn.com>
+
+	* CMT.java, ChangeLog, DBUtils.java, ExperimentDB.java, PDbBase.java, PopulateDb.java:
+	New Package for all database access
+
 2001-11-06  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* DBUtils.java (Repository):
