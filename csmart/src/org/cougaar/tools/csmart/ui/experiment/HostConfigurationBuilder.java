@@ -371,6 +371,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     experiment = newExperiment;
     isEditable = newExperiment.isEditable();
     isRunnable = newExperiment.isRunnable();
+    // if this pane is being displayed, then bring it up-to-date
+    if (isShowing())
+      update(); 
   }
 
   /**
