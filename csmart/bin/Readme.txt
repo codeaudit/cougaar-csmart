@@ -46,13 +46,19 @@ Monitor.bat - Scripts for running the CSMART Society Monitor tool
         blackboard. Again, these rely upon having "$COUGAAR_INSTALL_PATH"
         set.
 
+CONSOLE
+CONSOLE.sh
+CONSOLE.bat - This script runs the CSMART Experiment Controller (aka Console)
+        standalone. This is particularly useful for running an experiment
+        defined in an XML file.
+
 dot.exe
 dot-l386
         For the AT&T GraphViz package, for doing graph layout.  "dot.exe" 
         is for DOS/WIN machines, "dot-l386" is for Linux (also works on 
         Solaris).  Used by the CSMART "Society Monitor" UIs. These come 
-        with a standard Cougaar install (from the "cougaar.zip"), but are 
-        also available from the "csmart-3rdparty.zip" file. The
+        with a standard Cougaar install (from the "cougaar.zip")
+        The
 	usual location is $COUGAAR_INSTALL_PATH/csmart/bin, but alternatives 
         such as $COUGAAR_INSTALL_PATY/sys and $COUGAAR_INSTALL_PATH/bin 
         also work. You can also get these files from the  GraphViz site.
