@@ -99,7 +99,7 @@ public class TopologyTableModel extends AbstractTableModel {
     else if (index == 6)
       return "Move Id";
     else if (index == 7)
-      return "Is Node";
+      return "Type";
     else if (index == 8)
       return "Status";
     else
