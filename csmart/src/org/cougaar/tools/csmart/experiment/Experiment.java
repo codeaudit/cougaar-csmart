@@ -320,7 +320,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @return true if experiment is editable, false otherwise
    */
   public boolean isEditable() {
-    if (editInProgress || runInProgress)
+    //    if (editInProgress || runInProgress)
+    //      return false;
+    // allow user to edit a running experiment
+    if (editInProgress)
       return false;
     if (overrideEditable)
       return true;
@@ -363,7 +366,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public boolean isRunnable() {
     if (!hasConfiguration() || hasUnboundProperties())
       return false;
-    return !editInProgress && !runInProgress;
+    //    return !editInProgress && !runInProgress;
+    return !runInProgress; // allow user to run experiment they're editing
   }
 
   /**

@@ -78,12 +78,11 @@ public class ExperimentHost
     ArrayList names = (ArrayList)prop.getValue();
     names.add(node.getShortName());
     ExperimentNode sa = (ExperimentNode) node;
-    if(log.isDebugEnabled()) {
-      log.debug("ExperimentHost: " + getShortName() +
-                " added node: " + node.getShortName());
-    }
-
-     nodes.add(sa);
+//      if(log.isDebugEnabled()) {
+//        log.debug("ExperimentHost: " + getShortName() +
+//                  " added node: " + node.getShortName());
+//      }
+    nodes.add(sa);
     fireModification();
   }
 
@@ -99,10 +98,10 @@ public class ExperimentHost
       if (index != -1)
         names.remove(node.getShortName());
     }
-    if(log.isDebugEnabled()) {
-      log.debug("ExperimentHost: " + getShortName() +
-                 " removed node: " + node.getShortName());
-    }
+    //    if(log.isDebugEnabled()) {
+    //      log.debug("ExperimentHost: " + getShortName() +
+    //                 " removed node: " + node.getShortName());
+    //    }
     nodes.remove(node);
     fireModification();
   }
