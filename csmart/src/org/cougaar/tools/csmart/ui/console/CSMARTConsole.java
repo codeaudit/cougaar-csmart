@@ -80,6 +80,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   Hashtable chartFrames; // maps node name to chart frame
   NodeComponent[] nodesToRun; // node components that contain agents to run
   String[] hostsToRunOn;      // hosts that are assigned nodes to run
+  ArrayList hostsToUse; // Hosts that are actually having stuff run on them
 
   // gui controls
   JTabbedPane tabbedPane;
@@ -137,7 +138,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * Create and show console GUI.
    */
-
   public CSMARTConsole(CSMART csmart) {
     this.csmart = csmart;
     experiment = csmart.getExperiment();
@@ -152,7 +152,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * Set the society component for which to display information and run.
    */
-
   private void setSocietyComponent(SocietyComponent cc) {
     communitySupport = new ClientCommunityController();
     runningNodes = new Hashtable();
@@ -404,7 +403,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * If experiment has trial results it's no longer editable.
    */
-
   private void updateExperimentEditability() {
     if (isEditable) { // only need to update if was editable
       Trial[] trials = experiment.getTrials();
@@ -422,7 +420,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * Create a panel whose components are layed out vertically.
    */
-
   private JPanel createVerticalPanel(boolean threeD) {
     JPanel p = new JPanel();
     p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
@@ -437,7 +434,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * Create a panel whose components are layed out horizontally.
    */
-
   private JPanel createHorizontalPanel(boolean makeBorder) {
     JPanel p = new JPanel();
     p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
@@ -452,7 +448,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * Create a button representing a node.
    */
-
   private JRadioButton createStatusButton(String nodeName) {
     // use unknown color
     JRadioButton button = 
@@ -475,7 +470,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * Add status button to status button display.
    */
-
   private void addStatusButton(JRadioButton button) {
     statusButtons.add(button);
     buttonPanel.add(button);
@@ -483,16 +477,20 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
   /**
    * Enable run button if experiment has at least one host that has at least
-   * one node to run.
+   * one node to run which has at least one agent to run.
    */
-
   private void initRunButton() {
     HostComponent[] hosts = experiment.getHosts();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
       if (nodes != null && nodes.length > 0) {
-	runButton.setEnabled(true);
-	return;
+	for (int j = 0; j < nodes.length; j++) {
+	  AgentComponent[] agents = nodes[j].getAgents();
+	  if (agents != null && agents.length > 0) {
+	    runButton.setEnabled(true);
+	    return;
+	  }
+	}
       }
     }
     runButton.setEnabled(false);
@@ -507,12 +505,11 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * and create a status button and
    * tabbed pane for it.
    */
-
   public void runButton_actionPerformed(ActionEvent e) {
     destroyOldNodes(); // Get rid of any old stuff before creating the new
     userStoppedTrials = false;
     ArrayList nodesToUse = new ArrayList();
-    ArrayList hostsToUse = new ArrayList(); // hosts that nodes are on
+    hostsToUse = new ArrayList(); // hosts that nodes are on
     nameServerHostName = null;
     HostComponent[] hosts = experiment.getHosts();
     for (int i = 0; i < hosts.length; i++) {
@@ -660,7 +657,10 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       stopAllNodes();
     // Tell the societies that they are no longer running
     // Tell the experiment it is no longer running
-    saveResults();
+    
+    // Dont save the results here - they already get saved when you call
+    // stopAllNodes() when it calls trialFinished()
+    //saveResults();
   }
 
   /**
@@ -676,7 +676,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * Stop all experiments.  Called before exiting CSMART.
    */
-
   public void stopExperiments() {
     stopAllNodes(); // stop the nodes
     destroyOldNodes(); // kill all their outputs
@@ -688,7 +687,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * Used to stop trials in societies that aren't self terminating
    * and used to abort trials.
    */
-
   private void stopAllNodes() {
     Enumeration nodeComponents = runningNodes.keys();
     while (nodeComponents.hasMoreElements()) {
@@ -1179,6 +1177,10 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     if (resultDir != null)
       return resultDir;
 
+    // FIXME: 
+    // Don't make the user pick one if this gets called
+    // when the console is not visible & the analyzer is not visible
+    
     String resultDirName = ".";
     try {
       resultDirName = System.getProperty("org.cougaar.install.path");
@@ -1243,6 +1245,11 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     HostComponent[] hosts = experiment.getHosts();
     for (int i = 0; i < hosts.length; i++) {
       String hostName = hosts[i].getShortName();
+
+      // Skip hosts that have no node
+      if (! hostsToUse.contains(hostName))
+	continue;
+      
       HostServesClient hostInfo = null;
       try {
 	hostInfo = communitySupport.getHost(hostName, DEFAULT_PORT);
@@ -1278,9 +1285,10 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * Action listeners for top level menus.
    */
   public void exitMenuItem_actionPerformed(AWTEvent e) {
-    updateExperimentEditability();
     stopExperiments();
     updateExperimentControls(experiment, false);
+    updateExperimentEditability();
+
     // If this was this frame's exit menu item, we have to remove
     // the window from the list
     // if it was a WindowClose, the parent notices this as well
