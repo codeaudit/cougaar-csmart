@@ -166,14 +166,28 @@ public class SpecificInsertionRecipe extends RecipeBase
     return data;
   }
 
-  private void modifyComponentData(ComponentData data, PopulateDb pdb, Set targets)
+  private void modifyComponentData(ComponentData data, final PopulateDb pdb, final Set targets)
     throws SQLException
   {
     if (targets.contains(pdb.getComponentAlibId(data))) {
       // do insertion
       GenericComponentData comp = new GenericComponentData();
       comp.setName(propName.getValue().toString());
-      comp.setType(propType.getValue().toString());
+      // FIXME: Do an equals with the ComponentData constants here?
+      String type = propType.getValue().toString();
+      if (type == null) {
+	if (log.isWarnEnabled()) {
+	  log.warn("Null type for component " + comp);
+	}
+	comp.setType(null); // FIXME!
+      } else if (type.equals(ComponentData.PLUGIN))
+	comp.setType(ComponentData.PLUGIN);
+      else if (type.equals(ComponentData.AGENTBINDER))
+	comp.setType(ComponentData.AGENTBINDER);
+      else if (type.equals(ComponentData.NODEBINDER))
+	comp.setType(ComponentData.NODEBINDER);
+      else
+	comp.setType(type);
       comp.setClassName(propClass.getValue().toString());
       
       // Add args.
@@ -184,6 +198,11 @@ public class SpecificInsertionRecipe extends RecipeBase
       }
       comp.setParent(data);
       comp.setOwner(this);
+
+      // Reset the name to ensure uniqueness. This will use the user-specified name if possible,
+      // but tack on the first parameter and/or a number if necessary to ensure a unique name
+      comp.setName(GenericComponentData.getSubComponentUniqueName(data, comp));
+
       data.addChildDefaultLoc(comp);
       if(log.isInfoEnabled()) {
         log.info("Inserted " + comp + " into " + data.getName());
