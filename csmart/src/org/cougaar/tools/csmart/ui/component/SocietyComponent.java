@@ -51,20 +51,6 @@ public interface SocietyComponent extends ModifiableComponent, ComponentProperti
   URL getDescription();
 
   /**
-   * Returns whether or not the society can be edited.
-   * @return true if society can be edited and false otherwise
-   */
-
-  public boolean isEditable();
-
-  /**
-   * Set whether or not the society can be edited.
-   * @param editable true if society is editable and false otherwise
-   */
-
-  public void setEditable(boolean editable);
-
-  /**
    * Set by the experiment controller to indicate that the
    * society is running.
    * The society is running from the moment that any node
