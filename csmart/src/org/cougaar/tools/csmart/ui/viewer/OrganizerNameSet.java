@@ -117,6 +117,10 @@ public class OrganizerNameSet extends UniqueNameSet {
                                              JOptionPane.QUESTION_MESSAGE,
                                              null, null, originalName);
       if (name == null) return null;
+
+      name = name.trim();
+      if (name.equals("")) return null;
+
       if (name.equals(originalName) && allowExistingName)
         return name;
 
