@@ -518,7 +518,7 @@ public class CSMART extends JFrame {
     if (cc instanceof Experiment) {
       experiment = (Experiment)cc;
       // copy the original experiment and put the copy in the workspace
-      Experiment experimentCopy = organizer.copyExperiment(experiment);
+      Experiment experimentCopy = organizer.copyExperiment(experiment, false);
       if (experimentCopy == null)
         return;
       // remove all the components from the copy
@@ -635,7 +635,7 @@ public class CSMART extends JFrame {
       experiment.setEditable(true);
     else if (options[result].equals("Copy"))
       // copy it
-      experiment = organizer.copyExperiment(experiment);
+      experiment = organizer.copyExperiment(experiment, true);
     else if (options[result].equals("Cancel"))
       // user cancelled
       return null;

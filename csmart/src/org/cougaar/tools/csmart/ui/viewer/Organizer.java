@@ -1031,33 +1031,36 @@ public class Organizer extends JScrollPane {
     if (o == null)
       return;
     if (o instanceof Experiment)
-      copyExperiment((Experiment)o);
+      copyExperiment((Experiment)o, true);
     else if (o instanceof SocietyComponent)
       copySociety((SocietyComponent)o);
     else if (o instanceof RecipeComponent)
       copyRecipe((RecipeComponent)o);
   }
 
-  protected Experiment copyExperiment(Experiment experiment) {
+  protected Experiment copyExperiment(Experiment experiment,
+                                      boolean save) {
     String newName = 
       generateExperimentName(experiment.getExperimentName(), false);
     if (newName == null)
       return null;
     final Experiment experimentCopy = (Experiment)experiment.copy(newName);
-    // save copy in database
-    GUIUtils.timeConsumingTaskStart(organizer);
-    try {
-      new Thread("DuplicateExperiment") {
-          public void run() {
-            experimentCopy.saveToDb(saveToDbConflictHandler);
-            GUIUtils.timeConsumingTaskEnd(organizer);
-          }
-        }.start();
-    } catch (RuntimeException re) {
-      if(log.isErrorEnabled()) {
-        log.error("Runtime exception duplicating experiment", re);
+    if (save) {
+      // save copy in database
+      GUIUtils.timeConsumingTaskStart(organizer);
+      try {
+        new Thread("DuplicateExperiment") {
+            public void run() {
+              experimentCopy.saveToDb(saveToDbConflictHandler);
+              GUIUtils.timeConsumingTaskEnd(organizer);
+            }
+          }.start();
+      } catch (RuntimeException re) {
+        if(log.isErrorEnabled()) {
+          log.error("Runtime exception duplicating experiment", re);
+        }
+        GUIUtils.timeConsumingTaskEnd(organizer);
       }
-      GUIUtils.timeConsumingTaskEnd(organizer);
     }
     DefaultMutableTreeNode node = 
       (DefaultMutableTreeNode)findNode(experiment).getParent();
@@ -1071,7 +1074,7 @@ public class Organizer extends JScrollPane {
     addExperimentAndComponentsToWorkspace(experimentCopy, node);
     return experimentCopy;
   }
-  
+
   /**
    * Copy society; save the society to the database;
    * put the society in the workspace.
