@@ -77,17 +77,17 @@ public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
 
   /** Target Component Property Definitions **/
   public static final String PROP_TARGET_COMPONENT_QUERY = "Target Component Selection Query";
-  public static final String PROP_TARGET_COMPONENT_QUERY_DFLT = "querySelectNothing";
+  public static final String PROP_TARGET_COMPONENT_QUERY_DFLT = "recipeQuerySelectNothing";
   public static final String PROP_TARGET_COMPONENT_QUERY_DESC = "The query name for selecting components to modify";
 
   /** Insertion Component Property Definitions **/
   public static final String PROP_INSERTION_COMPONENT_QUERY = "Insertion Component Specification Query";
-  public static final String PROP_INSERTION_COMPONENT_QUERY_DFLT = "querySelectNothing";
+  public static final String PROP_INSERTION_COMPONENT_QUERY_DFLT = "recipeQuerySelectNothing";
   public static final String PROP_INSERTION_COMPONENT_QUERY_DESC = "The query name for specifying components to insert";
 
   /** Insertion Component Property Arg Definitions **/
   public static final String PROP_INSERTION_COMPONENT_ARG_QUERY = "Insertion Component Arg Specification Query";
-  public static final String PROP_INSERTION_COMPONENT_ARG_QUERY_DFLT = "querySelectNothing";
+  public static final String PROP_INSERTION_COMPONENT_ARG_QUERY_DFLT = "recipeQuerySelectNothing";
   public static final String PROP_INSERTION_COMPONENT_ARG_QUERY_DESC = "The query name for specifying args of components to insert";
 
   // Props for metrics

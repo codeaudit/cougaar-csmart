@@ -58,7 +58,7 @@ public class SpecificInsertionRecipe extends ModifiableConfigurableComponent
   private static final String PROP_ARGS_DESC = "The number of arguments for this insertion.";
 
   private static final String PROP_TARGET_COMPONENT_QUERY = "Target Component Selection Query";
-  private static final String PROP_TARGET_COMPONENT_QUERY_DFLT = "selectNothing";
+  private static final String PROP_TARGET_COMPONENT_QUERY_DFLT = "recipeQuerySelectNothing";
   private static final String PROP_TARGET_COMPONENT_QUERY_DESC = "The query name for selecting components to modify";
 
   private Property propName;
