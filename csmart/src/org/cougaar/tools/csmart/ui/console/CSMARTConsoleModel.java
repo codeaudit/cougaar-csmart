@@ -99,6 +99,7 @@ public class CSMARTConsoleModel extends Observable {
     this.appServerSupport = new AppServerSupport(this);
     this.runningNodes = new Hashtable(5);
     this.nodeModels = new Hashtable(5);
+    this.nodeViews = new Hashtable(5);
     this.nodeToAppServer = new Hashtable(5);
     this.appServers = new AppServerList();
     //this.resultDirectory = makeResultDirectory();
@@ -198,11 +199,16 @@ public class CSMARTConsoleModel extends Observable {
    * @param running -- The new running state.
    */
   public void setRunning(boolean running) {
-    // FIXME:  This should get moved out of run.  Nodes should be created long before run is ever pushed.
-    createAllNodes();
-    createAllNodeViews();
-    startNodes();
-    isRunning = running;
+    try {
+      createAllNodes();
+      createAllNodeViews();
+      startNodes();
+      isRunning = running;
+    } catch(IllegalStateException ise) {
+      JOptionPane.showMessageDialog(null, ("Cannot start run,  " + ise.getMessage()),
+                                    "Cannot start run",JOptionPane.ERROR_MESSAGE);
+
+    }
     setChanged();
     notifyObservers(TOGGLE_RUNNING_STATE);
   }
@@ -226,44 +232,46 @@ public class CSMARTConsoleModel extends Observable {
     }
   }
 
-  private void createAllNodes() {
+  private void createAllNodes() throws IllegalStateException {
     // Create all Node Models, either from the Experiment or from the XML file?
 
-    if (experiment != null) {
-      usingExperiment = true;
+    if (experiment == null) {
+      throw new IllegalStateException("No experiment to initialize Node from.");
+    }
 
-      HostComponent[] hostsToRunOn = experiment.getHostComponents();
-      for (int i = 0; i < hostsToRunOn.length; i++) {
-        String hostName = hostsToRunOn[i].getShortName();
-        NodeComponent[] nodesToRun = hostsToRunOn[i].getNodes();
-        for (int j = 0; j < nodesToRun.length; j++) {
-          NodeComponent nodeComponent = nodesToRun[j];
-          String nodeName = nodeComponent.getShortName();
+    usingExperiment = true;
 
-          // get arguments from NodeComponent and pass them to ApplicationServer
-          // note that these properties augment any properties that
-          // are passed to the server in a properties file on startup
-          Properties properties = getNodeMinusD(nodeComponent, hostName);
-          List args = getNodeArguments(nodeComponent);
+    HostComponent[] hostsToRunOn = experiment.getHostComponents();
+    for (int i = 0; i < hostsToRunOn.length; i++) {
+      String hostName = hostsToRunOn[i].getShortName();
+      NodeComponent[] nodesToRun = hostsToRunOn[i].getNodes();
+      for (int j = 0; j < nodesToRun.length; j++) {
+        NodeComponent nodeComponent = nodesToRun[j];
+        String nodeName = nodeComponent.getShortName();
 
-          if (experiment.getTrialID() != null) {
-            properties.setProperty(Experiment.EXPERIMENT_ID,
-                                   experiment.getTrialID());
-          } else {
-            log.error("Null trial ID for experiment!");
-          }
-          // get the app server to use
-          int port = getAppServerPort(properties);
-          requestAppServerAdd(hostName, port);
-          AppServerDesc appServerDesc = getAppServer(hostName, port);
-          if (appServerDesc == null) {
-            continue;
-          }
-          NodeInfo info = new NodeInfo(appServerDesc.appServer, 
-                                       nodeName, hostName, 
-                                       properties, args);
-          this.nodeModels.put(nodeName, new NodeModel(info, this));
+        // get arguments from NodeComponent and pass them to ApplicationServer
+        // note that these properties augment any properties that
+        // are passed to the server in a properties file on startup
+        Properties properties = getNodeMinusD(nodeComponent, hostName);
+        List args = getNodeArguments(nodeComponent);
+
+        if (experiment.getTrialID() != null) {
+          properties.setProperty(Experiment.EXPERIMENT_ID,
+                                 experiment.getTrialID());
+        } else {
+          log.error("Null trial ID for experiment!");
         }
+        // get the app server to use
+        int port = getAppServerPort(properties);
+        requestAppServerAdd(hostName, port);
+        AppServerDesc appServerDesc = getAppServer(hostName, port);
+        if (appServerDesc == null) {
+          continue;
+        }
+        NodeInfo info = new NodeInfo(appServerDesc.appServer,
+                                     nodeName, hostName,
+                                     properties, args);
+        this.nodeModels.put(nodeName, new NodeModel(info, this));
       }
     }
   }
@@ -908,7 +916,7 @@ public class CSMARTConsoleModel extends Observable {
    */
   public void requestAppServerAdd(String hostName, int port) {
     setChanged();
-    notifyObservers(new AppServerRequest(hostName, port, 
+    notifyObservers(new AppServerRequest(hostName, port,
                                          AppServerRequest.ADD));
   }
 
@@ -929,7 +937,7 @@ public class CSMARTConsoleModel extends Observable {
     boolean nodeAdded = false;
     boolean serverAdded = false;
     synchronized (appServerLock) {
-      if (nodeToAppServer.get(name) == null) 
+      if (nodeToAppServer.get(name) == null)
         nodeAdded = true;
       Collection servers = nodeToAppServer.values();
       for (Iterator i = servers.iterator(); i.hasNext();) {
@@ -1076,4 +1084,7 @@ public class CSMARTConsoleModel extends Observable {
     }
   }
 
+  public Experiment getExperiment() {
+    return experiment;
+  }
 }
