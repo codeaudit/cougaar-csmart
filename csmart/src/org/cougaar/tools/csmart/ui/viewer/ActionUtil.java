@@ -155,12 +155,14 @@ public class ActionUtil {
     if (action.equals(DUPLICATE_ACTION))
       return true;
     SocietyComponent society = experiment.getSocietyComponent();
-    if (society != null && CSMART.isSocietyInEditor(society))
+    if (society != null && !society.isEditable()) {
       return false;
+    }
     RecipeComponent[] recipes = experiment.getRecipeComponents();
     for (int i = 0; i < recipes.length; i++) {
-      if (CSMART.isRecipeInEditor(recipes[i]))
+      if (!recipes[i].isEditable()) {
         return false;
+      }
     }
     if (society == null) {
       if (action.equals(RUN_ACTION) ||
@@ -189,10 +191,13 @@ public class ActionUtil {
   private static boolean isActionAllowedOnSociety(String action,
                                                   Organizer organizer,
                                                   SocietyComponent society) {
+    if (!society.isEditable())
+      return false;
     if (isNodeInExperiment(organizer)) {
       if (action.equals(DUPLICATE_ACTION) ||
           action.equals(BUILD_ACTION) ||
-          action.equals(DELETE_ACTION))
+          action.equals(DELETE_ACTION) ||
+          action.equals(RUN_ACTION))
         return false;
     }
     if (action.equals(DUPLICATE_ACTION))
@@ -219,6 +224,8 @@ public class ActionUtil {
   private static boolean isActionAllowedOnRecipe(String action,
                                                  Organizer organizer,
                                                  RecipeComponent recipe) {
+    if (!recipe.isEditable())
+      return false;
     if (isNodeInExperiment(organizer)) {
       if (action.equals(DUPLICATE_ACTION) ||
           action.equals(DELETE_ACTION))

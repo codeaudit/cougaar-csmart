@@ -233,14 +233,13 @@ public class Organizer extends JScrollPane {
     new AbstractAction(ActionUtil.CONFIGURE_ACTION, 
                        new ImageIcon(getClass().getResource("SB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
-          // if this was invoked from a popup menu
-          // then take down the menu as this could be a long operation
-//            Component c = ((Component)e.getSource()).getParent();
-//            if (c instanceof JPopupMenu) {
-//              System.out.println("Taking down popup menu");
-//              c.setVisible(false);
-//            }
-	  organizer.startBuilder();
+          // use invokeLater so if this was invoked from a popup menu
+          // the menu is taken down first
+	  SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                organizer.startBuilder();
+              }
+            });
 	}
       };
 
@@ -1260,15 +1259,6 @@ public class Organizer extends JScrollPane {
 
   protected void deleteSocietyInNode(DefaultMutableTreeNode societyNode) {
     SocietyComponent society = (SocietyComponent)societyNode.getUserObject();
-    if (!society.isEditable()) {
-      int result = JOptionPane.showConfirmDialog(this,
-						 "Society has been or is being used; delete anyway?",
-						 "Society Not Editable",
-						 JOptionPane.YES_NO_OPTION,
-						 JOptionPane.WARNING_MESSAGE);
-      if (result != JOptionPane.YES_OPTION)
-	return;
-    }
     model.removeNodeFromParent(societyNode);
     // if deleted last reference to society in the workspace
     // ask if society should be deleted from database and delete it

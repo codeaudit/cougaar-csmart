@@ -531,38 +531,38 @@ public class CSMART extends JFrame {
 
     ModifiableComponent originalComponent = null;
     Experiment experiment = null;
-    // if configuring a component in an experiment, get the experiment
     DefaultMutableTreeNode selectedNode = organizer.getSelectedNode();
-    if (selectedNode.getUserObject() != null &&
-        selectedNode.getUserObject().equals(cc)) {
-      DefaultMutableTreeNode parentNode = 
-        (DefaultMutableTreeNode)selectedNode.getParent();
-      if (parentNode.getUserObject() != null &&
-          parentNode.getUserObject() instanceof Experiment) {
-        experiment = (Experiment)parentNode.getUserObject();
-        // copy the component, so it's modified only in the experiment
-        if (cc instanceof SocietyComponent) {
-          SocietyComponent society = (SocietyComponent)cc;
-          String newName =
-            organizer.generateSocietyName(society.getSocietyName(), false);
-          if (newName == null)
-            return;
-          SocietyComponent societyCopy = 
-            (SocietyComponent)society.copy(newName);
-          originalComponent = cc;
-          cc = societyCopy;
-        } else if (cc instanceof RecipeComponent) {
-          RecipeComponent recipe = (RecipeComponent)cc;
-          String newName =
-            organizer.generateRecipeName(recipe.getRecipeName(), false);
-          if (newName == null)
-            return;
-          RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
-          originalComponent = cc;
-          cc = recipeCopy;
-        }
-      }
+    DefaultMutableTreeNode parentNode = 
+      (DefaultMutableTreeNode)selectedNode.getParent();
+    if (parentNode.getUserObject() != null &&
+        parentNode.getUserObject() instanceof Experiment) {
+      experiment = (Experiment)parentNode.getUserObject();
+      // if configuring a component in an experiment, 
+      // copy the component, so it's modified only in the experiment
+      if (cc instanceof SocietyComponent) {
+        SocietyComponent society = (SocietyComponent)cc;
+        String newName =
+          organizer.generateSocietyName(society.getSocietyName(), false);
+        if (newName == null)
+          return;
+        SocietyComponent societyCopy = (SocietyComponent)society.copy(newName);
+        originalComponent = cc;
+        cc = societyCopy;
+      } else if (cc instanceof RecipeComponent) {
+        RecipeComponent recipe = (RecipeComponent)cc;
+        String newName =
+          organizer.generateRecipeName(recipe.getRecipeName(), false);
+        if (newName == null)
+          return;
+        RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
+        originalComponent = cc;
+        cc = recipeCopy;
+      } else
+        return; // unknown component in experiment
     }
+    cc.setEditable(false);
+    if (originalComponent != null)
+      originalComponent.setEditable(false);
     JFrame tool = 
       (JFrame)new PropertyBuilder(this, cc, originalComponent, experiment);
     addTool(CONFIGURATION_BUILDER, cc.getShortName(), tool);
@@ -604,6 +604,8 @@ public class CSMART extends JFrame {
       }
       SocietyComponent societyCopy = 
         (SocietyComponent)originalSociety.copy(copyName);
+      societyCopy.setEditable(false);
+      originalSociety.setEditable(false);
       JFrame tool = 
         (JFrame)new PropertyBuilder(csmart, societyCopy, originalSociety,
                                     experimentToEdit);
