@@ -3,6 +3,8 @@ Last updated: 10/19/01
 The document outlines the current CSMART package structure:
 
 -- org.cougaar.tools.csmart
+ -- runtime
+    This is where plugins, Assets, and other society runtime pieces go.
    
   -- binder
       CSMART binder related code (Binder is used by Impacts)
@@ -21,32 +23,46 @@ The document outlines the current CSMART package structure:
           Transducer Plugin specific classes
 
   -- plugin
-      All CSMART/ABC Plugins.
+      All CSMART Plugins.
 
-  -- scalability
-      All classes for the Scalability Configurable Components
-
-  -- societies
-    -- abcsociety
-        All classes for the ABC Configurable Components Plus Basic Metrics Components
+  -- society
+    -- abc
+        All classes for the ABC Configurable Components 
     -- cmt
         All classes for the CMT Configurable Component
-    -- database
-        Contains database utility classes.
+    -- scalability
+      All classes for the Scalability Configurable Components
+
+  -- recipe
+     All classes about recipes (including metrics and impacts)
+     
+  -- experiment
+     All classes about Experiments and Trials
+     
+  -- core
+     -- property
+	Properties and objects that hold them and edit them.
+	-- name
+	   Names of properties
+	-- range
+	   Utilities to mark a property as existing in a range of
+	   values
+  
+     -- cdata
+        The ComponentData tree for translating CSMART configuration
+	data representation into the form used to run.
+  
+     -- db
+	Database access mechanisms
   -- ui
     -- analyzer
 	Performance Analyzer
-    -- builder
+    -- configbuilder
 	Property Table builder classes
-    -- component
-	All code relating to ConfigurableComponents, ComponentData, Data Ranges
-        and some db classes.
-    -- configuration
-	Console Drag and Drop Tree classes
     -- console
 	All classes relating to the console, including charting classes
     -- experiment
-	All classes relating to experiments, trials, Impact Component and various html files
+	All classes relating to the experiment builder
     -- help
 	About CSMART help 
     -- monitor
@@ -64,6 +80,8 @@ The document outlines the current CSMART package structure:
           Gif files and the CSMART UI
     -- psp
 	All PSP's used by CSMART
+    -- servlet
+       Servlets to replace the above PSPs
     -- tree
 	UI Drag and Drop tree classes
     -- util
