@@ -586,6 +586,9 @@ public class OrganizerHelper {
           }
         } else {
           Class propClass = prop.getPropertyClass();
+	  if (log.isDebugEnabled() && propClass == null) {
+	    log.debug("null prop class for Prop name: " + propName + ", value " + propValue + " property: " + prop.toString());
+	  }
           Constructor constructor = 
             propClass.getConstructor(new Class[] {String.class});
           Object value = constructor.newInstance(new Object[] {propValue});
