@@ -20,16 +20,19 @@
  */
 package org.cougaar.tools.csmart.core.cdata;
 
-import org.cougaar.core.component.ComponentDescription;
+import java.io.InputStream;
 import java.util.Hashtable;
 import java.util.List;
-import java.io.InputStream;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.util.log.Logger;
 import java.util.Iterator;
 import java.util.Vector;
+
+import org.cougaar.util.log.Logger;
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.core.node.INIParser;
+import org.cougaar.core.component.ComponentDescription;
+
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
 
 /**
  * ComponentConnector.java
@@ -93,7 +96,8 @@ public class ComponentConnector {
     }
 
     try {
-      InputStream in = ConfigFinder.getInstance().open(filename);
+      InputStream in = SocietyFinder.getInstance().open(filename);
+      //InputStream in = ConfigFinder.getInstance().open(filename);
       try { 
         desc = INIParser.parse(in, containerInsertionPoint);
       } finally {
