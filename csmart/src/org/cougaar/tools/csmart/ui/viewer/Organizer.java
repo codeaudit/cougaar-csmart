@@ -206,7 +206,7 @@ public class Organizer extends JScrollPane {
             c.setForeground(Color.gray);
 	  }
 	  // mark a society or recipe modified
-	  // by turning it read...
+	  // by turning it red...
 	  else if (o instanceof SocietyComponent) {
 	    if (((SocietyComponent)o).isModified()) {
 	      c.setForeground(Color.red);
