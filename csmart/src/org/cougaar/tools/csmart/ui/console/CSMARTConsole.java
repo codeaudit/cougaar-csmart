@@ -38,6 +38,10 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 
 import org.cougaar.mlm.ui.glsinit.GLSClient;
+import org.cougaar.tools.server.*;
+import org.cougaar.util.Parameters;
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
@@ -60,17 +64,20 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
-import org.cougaar.tools.server.*;
-import org.cougaar.util.Parameters;
-import org.cougaar.util.log.Logger;
 
+
+/**
+ * The Console or Experiment Controller is the tool for starting, stoping, and watching
+ * a running Cougaar society.
+ **/
 public class CSMARTConsole extends JFrame {
   private static final String DEFAULT_BOOTSTRAP_CLASS = "org.cougaar.bootstrap.BootStrapper";
   private static final String DEFAULT_NODE_CLASS = "org.cougaar.core.node.Node";
   public static final String COMMAND_ARGUMENTS = "Command$Arguments";
   private static final String[] emptyStringArray = {};
+
   // number of characters displayed in the node output window
-  private static final int DEFAULT_VIEW_SIZE = 50000;
+  private static final int DEFAULT_VIEW_SIZE = 300000; // 60 pages of text or 300K
 
   // CSMART only knows how to talk http for now
   private String GLS_PROTOCOL = "http";
