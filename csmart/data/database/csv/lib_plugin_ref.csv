@@ -1,4 +1,4 @@
-PLUGIN_CLASS,DESCRIPTION,BLANK
+PLUGIN_ID,DESCRIPTION,BLANK
 "mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugin","Inventory Management Plugin"
 "mil.darpa.log.alpine.blackjack.plugins.AntsMEILDMPlugin","Provides MEI asset prototypes & PGs from database"
 "mil.darpa.log.alpine.blackjack.plugins.AntsPartsLDMPlugin","Provides Part asset prototypes & PGs from database"

@@ -1,4 +1,4 @@
-PLUGIN_ARG_ID,ARGUMENT_ORDER,PLUGIN_CLASS,ARGUMENT,ARGUMENT_TYPE,BLANK
+PLUGIN_ARG_ID,ARGUMENT_ORDER,PLUGIN_ID,ARGUMENT,ARGUMENT_TYPE,BLANK
 "mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugin|BulkPOL_inv=FSB_bulkpol.inv|0",0.000000000000000000000000000000,"mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugin","BulkPOL_inv=FSB_bulkpol.inv","INVENTORY_MANAGEMENT_ARGS"
 "mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugin|BulkPOL_inv=POLSPLY_bulkpol.inv|0",0.000000000000000000000000000000,"mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugin","BulkPOL_inv=POLSPLY_bulkpol.inv","INVENTORY_MANAGEMENT_ARGS"
 "mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugin|BulkPOL_inv=TCBN-HHC_bulkpol.inv|0",0.000000000000000000000000000000,"mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugin","BulkPOL_inv=TCBN-HHC_bulkpol.inv","INVENTORY_MANAGEMENT_ARGS"

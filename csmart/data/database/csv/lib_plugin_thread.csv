@@ -1,4 +1,4 @@
-PLUGIN_CLASS,THREAD_ID,DESCRIPTION,BLANK
+PLUGIN_ID,THREAD_ID,DESCRIPTION,BLANK
 "mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugin","CLASS-1","InventoryManagementPlugin"
 "mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugin","CLASS-3","InventoryManagementPlugin"
 "mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugin","CLASS-4","InventoryManagementPlugin"
