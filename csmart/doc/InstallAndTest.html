@@ -128,7 +128,7 @@ very similar for WinNT) and a MYSQL database.
     <pre>security.provider.3=com.sun.net.ssl.internal.ssl.Provider</pre><br><br></li>
 
   <li>If you require a local database (Oracle or MySQL) then you must
-    install this database.  Currently CSMART has been fully tested on a MySQL database.
+    install this database.  Currently CSMART has been fully tested on a MySQL database. See <a href="#dbInst">below</a> for instructions.
     <br><br></li>
 
   <li>If you are creating a distributed society (more than one machine), or you
@@ -157,7 +157,7 @@ very similar for WinNT) and a MYSQL database.
    A database is required to run the larger
    <a href="http://www.cougaar.org">Cougaar</a>
    societies and to run CSMART.  Typically a MySQL, Oracle, or 
-   PostGreSQL database is used. Only Oracle and MySQL are supported for CSMART.
+   PostGreSQL database is used. Only MySQL is currently supported for CSMART.
    A single database can be shared with other CSMART users, but you
    must first arrange access to the database --
    these notes detail how to create your own database and <a href="../../doc/details/DataAccess.html">cougaar.rc</a>
@@ -247,8 +247,8 @@ very similar for WinNT) and a MYSQL database.
   Note that importing this database requires loading 2 files at least,
   with separate files for the "class 9" data. A recommended minimum is
   to also load:
-  <pre><a href="#cougaarEnv">$CIP</a>/dbms/data/mysql/army_spares.zip</pre>
-   Then you <em>must</em> also create indexes for that data, by loading:
+  <pre><a href="#cougaarEnv">$CIP</a>/dbms/data/mysql/army.txt</pre>created by unzipping <pre><a href="#cougaarEnv">$CIP</a>/dbms/data/mysql/army_spares.zip</pre>
+   Then you <em>must</em> also create indexes for that data, by loading (from the same directory):
   <pre>spares_index.txt</pre>
   Load all such files following the same instructions as above.<br><br></li><p>
       
@@ -478,17 +478,16 @@ installation using
 
 <a name="httpVisuals"/>
 <li><font size=+1><b>To use an HTTP browser to view the society:</b></font>
-  <p>
+  <p>Cougaar includes the <a href="http://jakarta.apache.org/tomcat/">Apache Tomcat</a> servlet server by default. It usually runs on port 8800. For details, see the <a href="../../doc/details/Servlet.html">core documentation</a>. There are a number of servlets loaded by default, and others included in most societies (including the above <a href="#minitest">minitestconfig</a>). To use these:<br><br>
   <ol>
   <li>Open any HTTP browser, such as 
     <a href="http://www.netscape.com">Netscape</a>.</li><p>
-
   <a name="tasksSVLT"/>
   <li>Choose the hostname of any host (e.g. "localhost") in your society 
     that's running a Node, and in your browser open this URL:
       <a href="http://localhost:8800/tasks">http://localhost:8800/tasks</a>
     This should create an HTML page that can be used to view the contents
-    of an Agent's Blackboard.  Other pages (or servlets) are available -- see the
+    of an Agent's Blackboard.  Other pages (or servlets) are available. Go to <a href="http://localhost:8800">http://localhost:8800</a> for some basic help, and links to show you the available running servlets. You may also look at the related core <a href="../../doc/details/Servlet.html">servlet documentation</a>, or see the
     <a href="http://www.cougaar.org/documents/pdg.html">Cougaar Developers Guide</a> 
     for further details.</li><p>
 
@@ -566,7 +565,7 @@ installation using
     <a href="http://www.cougaar.org">Cougaar</a>
     environment variables.  Its
     configuration is fully specified in a <i>.props</i> file, which is detailed
-    below and in <tt>server/doc/README</tt>.</li><p>
+    below and in <tt><a href="../../server/doc/README">server/doc/README</a></tt>.</li><p>
 
   <li>Copy the template <tt>server/data/unix-server-sample.props</tt> file (or <tt>win-server-sample.props</tt> as appropriate) to
     <tt>server/bin/server.props</tt>.  To copy:
@@ -577,8 +576,7 @@ installation using
     <a href="http://www.cougaar.org">Cougaar</a>
     installation 
     properties -- if you used directory names other than <tt>/opt/cougaar</tt>,
-    or you plan to run a society other than SMALL-135 or SMALL-135-TRANS, 
-    then you must modify this file.  For
+    then you must modify this file.  You may also set various properties by default.  For
     example, one can alter the logging level by changing a property in the
     "server.props".  See the "server.props" for details. (Note that you may use a name other than "server.props", in which case you must provide the server startup script with the relative path to your server properties file when you invoke the script.)</li><p>
 
@@ -616,7 +614,7 @@ installation using
 
   <li>After fully <a href="#cougaarInst">installing</a> Cougaar and
   testing your <a href="#minitest">installation</a> with minitestconfig (and installing a
-  database if necessary), you are ready for CSMART.</li><p>
+  <a href="#dbInst">database</a> if necessary), you are ready for CSMART.</li><p>
   
   <a name="excelPath"/>
   <li>You may need to modify the supplied "CSMART" or "CSMART.bat" startup script in csmart/bin.  For example, a Java System
@@ -625,9 +623,11 @@ installation using
     Excel that is later used to 
     <a href="#analyzeResults">analyze performance metrics</a>.</li><p>
 
-  <li>For all the machines that you will use as AppServers, and plugins that
-    contain Swing GUI's, you must explicitly allow UI popups to appear 
-    on your CSMART machine.  No core plugins require this step.  This can wait until 
+  <li>Some third party plugins may use Swing GUIs. No core plugins do
+  this, for the preferred mechanism is to use servlets.  But if you
+  expect to use such plugins, then for all the machines that you will
+  use as AppServers, you must explicitly allow UI popups to appear on
+  your CSMART machine.  This can wait until
     just before you start a run.  Here we will use "localhost" to run our society 
     and we'll allow localhost popups in advance:
        <pre>
@@ -659,10 +659,8 @@ installation using
 <li><font size=+1><b>Example run of CSMART:</b></font>
   <p>
   These notes detail how to configure and run the standard two-Node 
-  "SMALL-135 + TRANSPORTATION" society on a single machine.  It is assumed in
-  these notes that only one society will be run on the machines at a time,
-  otherwise one must select an alternate port address for the society, which is
-  not currently supported within CSMART.
+  "TINY-1AD + TRANSPORTATION" society on a single machine.  It is assumed in
+  these notes that only one society will be run on the machines at a time.
   <p>
   <ol>
   <p>
