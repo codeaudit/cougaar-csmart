@@ -328,7 +328,7 @@ public class CMTSociety
 
 	while(iter.hasNext()) {
 	  CMTAgent agent = (CMTAgent)iter.next();
-	  if(child.getName().equals(agent.getFullName().toString())) {
+	  if(child.getName().equals(agent.getShortName().toString())) {
 	    child.setOwner(this);
 	    System.out.println("Match: " + child.getName());
 	    agent.addComponentData(child);
