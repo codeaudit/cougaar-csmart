@@ -15,3 +15,10 @@ user.timezone=GMT
 csmart.log.severity=PROBLEM
 org.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0
 org.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
+
+# support localhost popups
+#
+# instead of "env.XAUTHORITY=.." one use 
+#   "xhost +localhost" OUTSIDE this file (i.e. in your xterm!)
+env.DISPLAY=localhost:0.0
+env.XAUTHORITY=/home/ahelsing/.Xauthority
