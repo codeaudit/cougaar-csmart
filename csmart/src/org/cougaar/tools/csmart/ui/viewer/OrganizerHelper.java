@@ -194,11 +194,15 @@ public class OrganizerHelper {
       }
       recipes.addAll(defaultRecipes);
 
+
+      // Now community stuff
       PopulateDb pdbc = null;
       String commAsb = null;
       try {
 	pdbc = new PopulateDb(experimentId, trialId);
 	commAsb = pdbc.getNewCommAsbFromExpt(origExperimentId, origTrialId);
+	if (commAsb != null)
+	  pdbc.setCommAssemblyId(commAsb);
       } catch (SQLException sqle) {
 	log.error("createExperiment couldnt get new commAsb based on orig expt " + origExperimentId + " for new experiment " + experimentId, sqle);
       } catch (IOException ioe) {
@@ -251,6 +255,8 @@ public class OrganizerHelper {
       try {
 	pdbc = new PopulateDb(experimentId, trialId);
 	commAsb = pdbc.getNewCommAssembly();
+	if (commAsb != null)
+	  pdbc.setCommAssemblyId(commAsb);
       } catch (SQLException sqle) {
 	log.error("createExperiment couldnt get new commAsb for expt " + experimentId, sqle);
       } catch (IOException ioe) {
