@@ -112,7 +112,7 @@ public class SpecificInsertionRecipe extends RecipeBase
       });
     propArgs.setToolTip(PROP_ARGS_DESC);
 
-    propPriority = addPriorityProperty(PROP_PRIORITY, PROP_PRIORITY_DESC);
+    propPriority = addPriorityProperty(PROP_PRIORITY, PROP_PRIORITY_DFLT);
     propPriority.setToolTip(PROP_PRIORITY_DESC);
 
     propTargetComponentQuery =
