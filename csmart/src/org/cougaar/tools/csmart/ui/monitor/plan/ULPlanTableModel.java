@@ -66,6 +66,7 @@ public class ULPlanTableModel extends AbstractTableModel {
     }
     addAttribute(PropertyNames.UID_ATTR);
     addAttribute(PropertyNames.AGENT_ATTR);
+    addAttribute(PropertyNames.PLAN_OBJECT_COMMUNITY_NAME);
     addAttribute(PropertyNames.TASK_DIRECT_OBJECT_UID);
     addAttribute(PropertyNames.TASK_PLAN_ELEMENT_UID);
     addAttribute(PropertyNames.TASK_VERB);

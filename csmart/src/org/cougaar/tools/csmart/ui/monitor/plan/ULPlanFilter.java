@@ -559,7 +559,7 @@ public class ULPlanFilter {
     new ULPlanFrame(NamedFrame.PLAN, newGraph, 
 		    new ULPlanFilter(communityToAgents, 
 				     showObjectTypes, hideObjectTypes,
-				     ignoreObjectTypes), null);
+				     ignoreObjectTypes));
 
   }
 

@@ -57,7 +57,7 @@ public class ULPlanNode implements NodeObject {
    * workflow->tasks
    */
 
-  public ULPlanNode(PropertyTree p) {
+  public ULPlanNode(PropertyTree p, String communityName) {
     this.properties = p;
     UID = (String)properties.get(PropertyNames.UID_ATTR);
     tooltip = UID; // default tooltip if none other is set
@@ -71,6 +71,9 @@ public class ULPlanNode implements NodeObject {
       if (s != null)
 	color = s;
     }
+
+    // add community name to properties
+    properties.put(PropertyNames.PLAN_OBJECT_COMMUNITY_NAME, communityName);
 
     // set Attribute Table Title from properties
     // set task type for single or multi-parent

@@ -51,7 +51,7 @@ public class ULPlanFrame extends CSMARTFrame {
   private static final String COLOR_CHILDREN = "colorChildren";
   // MEK
   private static final String FIND_PLAN_OBJECTS_MENU_ITEM = "Find Plan Objects";
-  private Hashtable communityToAgents;
+  private Hashtable communityToAgents = null;
   private ULPlanFinder finder;
   // MEK
   private JDialog legendDialog;
@@ -60,11 +60,10 @@ public class ULPlanFrame extends CSMARTFrame {
   private JMenuItem threadUpMenuItem;
   private JMenuItem threadDownMenuItem;
 
-  public ULPlanFrame(String title, CSMARTGraph graph, ULPlanFilter filter, Hashtable communityToAgents) {
+  public ULPlanFrame(String title, CSMARTGraph graph, ULPlanFilter filter) {
     super(title, graph);
     setProperties();
     this.filter = filter;
-    this.communityToAgents = communityToAgents;
     this.graph = graph;
 
   }
@@ -155,7 +154,7 @@ public class ULPlanFrame extends CSMARTFrame {
       // values for the NEXT graph to be created, not with
       // the values used to create the current graph, which is what you need
       //
-      new ULPlanFrame(NamedFrame.PLAN, newGraph, filter.copy(), communityToAgents);
+      new ULPlanFrame(NamedFrame.PLAN, newGraph, filter.copy());
       return;
     }
 
@@ -214,7 +213,29 @@ public class ULPlanFrame extends CSMARTFrame {
       }
       return;
     }
+
     if (command.equals(FIND_PLAN_OBJECTS_MENU_ITEM)) {
+      // create hashtable mapping community to agents for the finder
+      if (communityToAgents == null) {
+	communityToAgents = new Hashtable();
+	Vector nodes = graph.vectorOfElements(GrappaConstants.NODE);
+	for (int i = 0; i < nodes.size(); i++) {
+	  Node node = (Node)nodes.get(i);
+	  String agent = 
+	    (String)node.getAttributeValue(PropertyNames.AGENT_ATTR);
+	  String community =
+	    (String)node.getAttributeValue(PropertyNames.PLAN_OBJECT_COMMUNITY_NAME);
+	  if (agent != null && community != null) {
+	    Vector agents = (Vector)communityToAgents.get(community);
+	    if (agents == null) {
+	      agents = new Vector();
+	      agents.addElement(agent);
+	      communityToAgents.put(community, agents);
+	    } else if (!agents.contains(agent))
+	      agents.addElement(agent);
+	  }
+	}
+      }
       finder = new ULPlanFinder(this, graph, communityToAgents);
       finder.displayFinder();
       return;
