@@ -1,4 +1,4 @@
-@ECHO OFF
+s@ECHO OFF
 
 REM "<copyright>"
 REM " Copyright 2003 BBNT Solutions, LLC"
@@ -30,7 +30,7 @@ COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_component_arg_he
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_component_hierarchy_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\asb_component_hierarchy_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\asb_component_hierarchy.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_oplan_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\asb_oplan_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\asb_oplan.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\asb_oplan_agent_attr_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\asb_oplan_agent_attr_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\asb_oplan_agent_attr.csv
-COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\lib_oplan_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\lib_oplan_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_oplan.csv
+COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\oplan_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\oplan_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\oplan.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\oplan_agent_attr_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\oplan_agent_attr_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\oplan_agent_attr.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\expt_experiment_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\expt_experiment_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\expt_experiment.csv
 COPY /b %COUGAAR_INSTALL_PATH%\csmart\data\database\headers\expt_trial_header.csv+%COUGAAR_INSTALL_PATH%\csmart\data\database\raw_data\expt_trial_data.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\expt_trial.csv

@@ -70,14 +70,14 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_component_hierarchy.csv.tmp'
     IGNORE 1 LINES
     (ASSEMBLY_ID,COMPONENT_ALIB_ID,PARENT_COMPONENT_ALIB_ID,PRIORITY,INSERTION_ORDER);
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_oplan.csv.tmp'
-    INTO TABLE lib_oplan
+LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan.csv.tmp'
+    INTO TABLE oplan
     FIELDS
         TERMINATED BY ','
         OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
-    (OPLAN_ID,OPERATION_NAME,PRIORITY,C0_DATE);
+    (OPLAN_ID,OPERATION_NAME,PRIORITY,MIN_PLANNING_OFFSET,START_OFFSET,END_OFFSET);
 
 LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_agent_attr.csv.tmp'
     INTO TABLE oplan_agent_attr

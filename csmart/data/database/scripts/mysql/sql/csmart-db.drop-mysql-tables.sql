@@ -54,6 +54,7 @@ DROP TABLE IF EXISTS lib_role_ref;
 DROP TABLE IF EXISTS lib_role_thread;
 DROP TABLE IF EXISTS lib_thread;
 DROP TABLE IF EXISTS lib_oplan;
+DROP TABLE IF EXISTS oplan;
 DROP TABLE IF EXISTS oplan_agent_attr;
 DROP TABLE IF EXISTS dual;
 DROP TABLE IF EXISTS fdm_unit;

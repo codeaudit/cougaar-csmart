@@ -116,15 +116,17 @@ CREATE TABLE asb_component_hierarchy(
 
 
 ## 
-## TABLE: lib_oplan 
+## TABLE: oplan 
 ##
 
-CREATE TABLE lib_oplan(
+CREATE TABLE oplan(
     OPLAN_ID          VARCHAR(50)    BINARY NOT NULL DEFAULT '',
     OPERATION_NAME    VARCHAR(50)    BINARY DEFAULT NULL,
     PRIORITY          VARCHAR(50)    BINARY DEFAULT NULL,
-    C0_DATE           DATETIME             DEFAULT NULL,
-    UNIQUE KEY pk_lib_oplan (OPLAN_ID)
+    MIN_PLANNING_OFFSET    DECIMAL(68,30)       DEFAULT NULL,
+    START_OFFSET    DECIMAL(68,30)         DEFAULT NULL,
+    END_OFFSET    DECIMAL(68,30)           DEFAULT NULL,
+    UNIQUE KEY pk_oplan (OPLAN_ID)
 ) TYPE=MyISAM 
 ;
 

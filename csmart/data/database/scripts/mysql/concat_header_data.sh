@@ -33,7 +33,7 @@ cat $HEADER_PATH/asb_component_arg_header.csv $DATA_PATH/asb_component_arg_data.
 cat $HEADER_PATH/asb_component_hierarchy_header.csv $DATA_PATH/asb_component_hierarchy_data.csv > $CSV_PATH/asb_component_hierarchy.csv
 cat $HEADER_PATH/asb_oplan_header.csv $DATA_PATH/asb_oplan_data.csv > $CSV_PATH/asb_oplan.csv
 cat $HEADER_PATH/asb_oplan_agent_attr_header.csv $DATA_PATH/asb_oplan_agent_attr_data.csv > $CSV_PATH/asb_oplan_agent_attr.csv
-cat $HEADER_PATH/lib_oplan_header.csv $DATA_PATH/lib_oplan_data.csv > $CSV_PATH/lib_oplan.csv
+cat $HEADER_PATH/oplan_header.csv $DATA_PATH/oplan_data.csv > $CSV_PATH/oplan.csv
 cat $HEADER_PATH/oplan_agent_attr_header.csv $DATA_PATH/oplan_agent_attr_data.csv > $CSV_PATH/oplan_agent_attr.csv
 cat $HEADER_PATH/expt_experiment_header.csv $DATA_PATH/expt_experiment_data.csv > $CSV_PATH/expt_experiment.csv
 cat $HEADER_PATH/expt_trial_header.csv $DATA_PATH/expt_trial_data.csv > $CSV_PATH/expt_trial.csv
