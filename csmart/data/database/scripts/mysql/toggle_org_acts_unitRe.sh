@@ -21,7 +21,7 @@
 # </copyright>
 
 if [ "x$1" = "x" ]; then
-    echo "Usage: toggle_org_acts_unitRe.sh [1AD] or [UA]"
+    echo "Usage: toggle_org_acts_unitRe.sh [1AD_Test] or [UA]"
     echo "   "
     echo "     Specify whether you want the oplan_agent_attr.csv file"
     echo "            to be the 'test' version (all 1AD) or 'final' version (UA). "
@@ -29,24 +29,24 @@ if [ "x$1" = "x" ]; then
 fi
 
 
-if [ "$1" = "UA" ]; then
-    echo "Copying oplan_agent_attr.csv to final UA version."
+if [ "$1" = "1AD_Test" ]; then
+    echo "Copying oplan_agent_attr.csv to 1AD only test version."
 
-    if [ ! -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_unitRe.csv" ]; then
-        echo "Cannot find $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_unitRe.csv"
+    if [ ! -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_1ADTest.csv" ]; then
+        echo "Cannot find $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_1ADTest.csv"
         exit
     fi
-    cp $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_test.csv
-    cp $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_unitRe.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv
+    cp $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_orig.csv
+    cp $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_1ADTest.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv
     
-    echo "oplan_agent_attr.csv is now in its final Unit Re-Affiliation use case format."
+    echo "oplan_agent_attr.csv is now in its 1AD test Unit Re-Affiliation use case format."
 else
-    echo "Copying oplan_agent_attr.csv to the 1AD only test version."
-    if [ ! -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_test.csv" ]; then
-        echo "Cannot find $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_test.csv"
+    echo "Copying oplan_agent_attr.csv to the final UA use case version."
+    if [ ! -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_orig.csv" ]; then
+        echo "Cannot find $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_orig.csv"
         exit
     fi 
-    cp $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_test.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv
+    cp $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr_orig.csv $COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv
     
-    echo "oplan_agent_attr.csv is now in test Unit Re-Affiliation use case format."
+    echo "oplan_agent_attr.csv is now in final UA, Unit Re-Affiliation use case format."
 fi
