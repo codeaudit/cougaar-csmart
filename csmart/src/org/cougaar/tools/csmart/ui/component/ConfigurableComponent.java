@@ -37,7 +37,7 @@ import org.cougaar.util.UnaryPredicate;
  */
 
 public abstract class ConfigurableComponent
-  implements ComponentProperties, ConfigurableComponentListener
+  implements ComposableComponent, ComponentProperties, ConfigurableComponentListener
 {
   private static final long serialVersionUID = -7727291298618568087L;
 
@@ -205,6 +205,12 @@ public abstract class ConfigurableComponent
     c.setParent(null);
   }
 
+  public void removeAllChildren() {
+    for (int i = 0; i < getChildCount(); i++) {
+      removeChild(getChild(i));
+    }
+  }
+
   public int getChildCount() {
     if (children == null) return 0;
     return children.size();
@@ -212,6 +218,19 @@ public abstract class ConfigurableComponent
 
   public ConfigurableComponent getChild(int n) {
     return (ConfigurableComponent) children.get(n);
+  }
+
+  public ConfigurableComponent getChild(CompositeName childName) {
+    ConfigurableComponent cc = null;
+
+    for(int i=0; i < getChildCount(); i++) {
+      cc = getChild(i);
+      if(cc.getName().equals(childName)){
+	break;
+      }
+    }
+
+    return cc;
   }
 
   /**
