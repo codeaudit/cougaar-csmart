@@ -227,14 +227,16 @@ public class CSMARTGraph extends Graph
   public static CSMARTGraph createGraphFromDotFile(File f) {
     InputStream input = null;
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph");
+
     try {
       input = new FileInputStream(f);
     } catch(FileNotFoundException fnf) {
       if(log.isErrorEnabled()) {
-        log.error("Exception", fnf);
+        log.error("createGraphFromDotFile couldnt find file " + f.getAbsolutePath() + ". Error: " + fnf);
       }
       return null;
     }
+
     CSMARTGraph graph = new CSMARTGraph();
     graph.file = f;
     Parser program = new Parser(input, System.err, graph);
@@ -1895,7 +1897,6 @@ public class CSMARTGraph extends Graph
    * Thus, the color scheme used in the graph is saved with the file.
    * @param outputFile the file in which to save the graph
    */
-
   private void saveGraph(File outputFile) {
     if (outputFile == null)
       return;
@@ -1913,6 +1914,7 @@ public class CSMARTGraph extends Graph
         if(log.isErrorEnabled()) {
           log.error("CSMARTGraph: Can't get local host: ", e);
         }
+	return;
       }
       graphUID = localHost.toString() + "/" + (new UID()).toString();
     }
@@ -1976,8 +1978,11 @@ public class CSMARTGraph extends Graph
       if(log.isErrorEnabled()) {
         log.error("CSMARTGraph: Could not write to file:", e);
       }
+      return;
     }
     Grappa.usePrintList = true;
+
+    file = outputFile;
   }
 
   /**
@@ -1987,7 +1992,6 @@ public class CSMARTGraph extends Graph
    * if this is true, a limited set of attributes is written 
    * (appropriate for doing layout only).
    */
-
   public void printGraph(PrintWriter pw) {
     GraphEnumeration ge = elements();
     while (ge.hasMoreElements()) {
@@ -2033,7 +2037,6 @@ public class CSMARTGraph extends Graph
    * Save in dot file from which graph was read
    * or query user for file to save in.
    */
-
   public void saveGraph() {
     if (file != null)
       saveGraph(file);
@@ -2046,7 +2049,6 @@ public class CSMARTGraph extends Graph
    * Can be used to enable/disable "Save As" menus.
    * @return       returns true if graph has an output file associated with it
    */
-
   public boolean hasOutputFile() {
     return file != null;
   }
@@ -2054,21 +2056,27 @@ public class CSMARTGraph extends Graph
   /**
    * Query user for file in which to save graph and save it.
    */
-
   public void saveAsGraph() {
     JFileChooser jfc = new JFileChooser(System.getProperty("org.cougaar.install.path"));
+    jfc.setDialogTitle("Save graph data in file...");
+
+    if (file != null && file.exists())
+      jfc.setSelectedFile(file);
+
     ExtensionFileFilter filter;
     String[] filters = { "dot" };
     filter = new ExtensionFileFilter(filters, "dot files");
     jfc.addChoosableFileFilter(filter);
     if (jfc.showSaveDialog(null) == JFileChooser.CANCEL_OPTION)
       return;
-    File file = jfc.getSelectedFile();
-    if (file == null)
+    File nfile = jfc.getSelectedFile();
+    if (nfile == null) {
       if(log.isWarnEnabled()) {
         log.warn("CSMARTGraph: file is null");
       }
-    saveGraph(file);
+    } else {
+      saveGraph(nfile);
+    }
   }
 
   /**
