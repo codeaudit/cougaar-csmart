@@ -42,18 +42,19 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 
 public class CommunityFrame extends JFrame {
   // database queries
-  private static final String GET_COMMUNITIES_QUERY = "Select community_id from community_entity_attribute";
-  private static final String GET_ENTITIES_QUERY = "Select entity_id from community_entity_attribute where community_entity_attribute.community_id ='";
-  private static final String GET_MEMBER_TYPE_QUERY = "Select attribute_value from community_entity_attribute where community_entity_attribute.entity_id = '";
-  private static final String GET_ALL_COMMUNITY_INFO_QUERY = "Select community_entity_attribute.community_id, community_entity_attribute.entity_id, community_entity_attribute.attribute_id, community_entity_attribute.attribute_value, community_attribute.attribute_id, community_attribute.attribute_value from community_entity_attribute, community_attribute where community_attribute.community_id=community_entity_attribute.community_id and community_attribute.community_id='";
-  public static final String GET_COMMUNITY_INFO_QUERY = "Select * from community_attribute where community_attribute.community_id='";
-  public static final String GET_ENTITY_INFO_QUERY = "Select entity_id, attribute_id, attribute_value from community_entity_attribute where community_entity_attribute.community_id = '";
-  public static final String INSERT_COMMUNITY_INFO_QUERY = "Insert into community_attribute values ('";
-  public static final String INSERT_ENTITY_INFO_QUERY = "Insert into community_entity_attribute values ('";
-  public static final String DELETE_COMMUNITY_INFO_QUERY = "Delete from community_attribute where community_id = '";
-  public static final String DELETE_ENTITY_INFO_QUERY = "Delete from community_entity_attribute where community_id = '";
-  public static final String IS_COMMUNITY_IN_USE_QUERY = "Select entity_id from community_entity_attribute where community_id = '";
-  public static final String IS_IN_COMMUNITY_QUERY =  "Select entity_id from community_entity_attribute where community_id = '";
+//    private static final String GET_COMMUNITIES_QUERY = "Select community_id from community_entity_attribute";
+//    private static final String GET_ENTITIES_QUERY = "Select entity_id from community_entity_attribute where community_entity_attribute.community_id ='";
+//    private static final String GET_MEMBER_TYPE_QUERY = "Select attribute_value from community_entity_attribute where community_entity_attribute.entity_id = '";
+//    private static final String GET_ALL_COMMUNITY_INFO_QUERY = "Select community_entity_attribute.community_id, community_entity_attribute.entity_id, community_entity_attribute.attribute_id, community_entity_attribute.attribute_value, community_attribute.attribute_id, community_attribute.attribute_value from community_entity_attribute, community_attribute where community_attribute.community_id=community_entity_attribute.community_id and community_attribute.community_id='";
+//    public static final String GET_COMMUNITY_INFO_QUERY = "Select * from community_attribute where community_attribute.community_id='";
+//    public static final String GET_ENTITY_INFO_QUERY = "Select entity_id, attribute_id, attribute_value from community_entity_attribute where community_entity_attribute.community_id = '";
+//    public static final String INSERT_COMMUNITY_INFO_QUERY = "Insert into community_attribute values ('";
+//    public static final String INSERT_ENTITY_INFO_QUERY = "Insert into community_entity_attribute values ('";
+//    public static final String DELETE_COMMUNITY_INFO_QUERY = "Delete from community_attribute where community_id = '";
+//    public static final String DELETE_ENTITY_INFO_QUERY = "Delete from community_entity_attribute where community_id = '";
+//    public static final String IS_COMMUNITY_IN_USE_QUERY = "Select entity_id from community_entity_attribute where community_id = '";
+//    public static final String IS_IN_COMMUNITY_QUERY =  "Select entity_id from community_entity_attribute where community_id = '";
+
   private static final String FILE_MENU = "File";
   private static final String CLOSE_ACTION = "Close";
   private static final String VIEW_MENU = "View";
@@ -352,14 +353,9 @@ public class CommunityFrame extends JFrame {
     }
     communityTree.scrollPathToVisible(new TreePath(node.getPath()));
     // add community info to database
-    String query = INSERT_COMMUNITY_INFO_QUERY + 
-                   communityName + "'," +
-                   " 'CommunityType', " +
-                   " '" +  communityType + "')";
-    communityTableUtils.executeQuery(query);
-    query = CommunityFrame.GET_COMMUNITY_INFO_QUERY + communityName + "'";
+    CommunityDBUtils.insertCommunityInfo(communityName, communityType);
     // populate table by retrieving new info from database
-    communityTableUtils.executeQuery(query);
+    communityTableUtils.getCommunityInfo(communityName);
   }
 
   /**
@@ -374,8 +370,7 @@ public class CommunityFrame extends JFrame {
     CommunityTreeObject userObject =
       (CommunityTreeObject)selectedNode.getUserObject();
     String communityName = userObject.toString();
-    String query = GET_ALL_COMMUNITY_INFO_QUERY + communityName + "'";
-    communityTableUtils.executeQuery(query);
+    communityTableUtils.getAllCommunityInfo(communityName);
   }
 
   /**
@@ -406,12 +401,9 @@ public class CommunityFrame extends JFrame {
       (CommunityTreeObject)selectedNode.getUserObject();
     if (cto.isCommunity()) {
       String communityName = cto.toString();
-      String query = 
-        INSERT_COMMUNITY_INFO_QUERY + communityName + "', '', '')";
-      communityTableUtils.executeQuery(query);
+      CommunityDBUtils.insertCommunityAttribute(communityName);
       // populate table by retrieving new info from database
-      query = CommunityFrame.GET_COMMUNITY_INFO_QUERY + communityName + "'";
-      communityTableUtils.executeQuery(query);
+      communityTableUtils.getCommunityInfo(communityName);
     } else {
       String communityName = null;
       String entityName = cto.toString();
@@ -427,14 +419,9 @@ public class CommunityFrame extends JFrame {
       }
       if (communityName == null)
         return;
-      String query =
-        INSERT_ENTITY_INFO_QUERY + communityName + "', '" +
-        entityName + "', '', '')";
-      communityTableUtils.executeQuery(query);
+      CommunityDBUtils.insertEntityAttribute(communityName, entityName);
       // populate table by retrieving new info from database
-      query = CommunityFrame.GET_ENTITY_INFO_QUERY + communityName +
-        "' and community_entity_attribute.entity_id = '" + entityName + "'";
-      communityTableUtils.executeQuery(query);
+      communityTableUtils.getEntityInfo(communityName, entityName);
     }
   }
 
@@ -550,12 +537,11 @@ public class CommunityFrame extends JFrame {
   }
 
   private String selectCommunityToDisplay() {
-    ArrayList communityNames = 
-      CommunityDBUtils.getQueryResults(GET_COMMUNITIES_QUERY);
+    ArrayList communityNames = CommunityDBUtils.getCommunities();
     if (communityNames == null || communityNames.size() == 0)
       return null;
-    Collections.sort(communityNames);
-    JComboBox cb = new JComboBox(communityNames.toArray(new String[communityNames.size()]));
+    JComboBox cb = 
+      new JComboBox(communityNames.toArray(new String[communityNames.size()]));
     cb.setEditable(false);
     JPanel panel = new JPanel();
     panel.add(new JLabel("Select Community:"));
@@ -582,8 +568,7 @@ public class CommunityFrame extends JFrame {
     if (communityName == null)
       return;
     // display community information in table
-    String query = GET_ALL_COMMUNITY_INFO_QUERY + communityName + "'";
-    communityTableUtils.executeQuery(query);
+    communityTableUtils.getAllCommunityInfo(communityName);
     communityTree.getModel().removeTreeModelListener(treeModelListener);
     addToTree(communityTree.addNode(null, communityName, "Community"),
               communityName);
@@ -591,19 +576,12 @@ public class CommunityFrame extends JFrame {
   }
 
   private void addToTree(DefaultMutableTreeNode node, String communityName) {
-    ArrayList entityNames =
-      CommunityDBUtils.getQueryResults(GET_ENTITIES_QUERY + 
-                                       communityName + "'");
+    ArrayList entityNames = CommunityDBUtils.getEntities(communityName);
     if (entityNames == null || entityNames.size() == 0)
       return;
     for (int i = 0; i < entityNames.size(); i++) {
       String entityName = (String)entityNames.get(i);
-      ArrayList results =
-        CommunityDBUtils.getQueryResults(GET_MEMBER_TYPE_QUERY + entityName +
-           "' and community_entity_attribute.attribute_id = 'MemberType'");
-      String entityType = "Entity";
-      if (results.size() != 0)
-        entityType = (String)results.get(0);
+      String entityType = CommunityDBUtils.getMemberType(entityName);
       DefaultMutableTreeNode newNode = 
         communityTree.addNode(node, entityName, entityType);
       // tell our tree model listener to simply add the node to its hashtable
@@ -626,7 +604,7 @@ public class CommunityFrame extends JFrame {
     JButton fetchButton = new JButton("Fetch");
     fetchButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
-          communityTableUtils.executeQuery(queryTextArea.getText());
+          //communityTableUtils.executeQuery(queryTextArea.getText());
         }
       });
     queryPanel.add("South", fetchButton);

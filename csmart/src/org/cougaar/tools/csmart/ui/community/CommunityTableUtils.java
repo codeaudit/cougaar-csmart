@@ -32,22 +32,11 @@ import javax.swing.JTable;
 public interface CommunityTableUtils {
 
   /**
-   * Execute query and use results to fill table.
-   * @param query SQL query
-   */
-  void executeQuery(String query);
-
-  /**
    * Return all values in the specified column; removes duplicates.
    * @param column index of column
    * @return unique values in that column
    */
   ArrayList getKnownValues(int column);
-
-  /**
-   * Add a row to the table.  Adds with empty strings.
-   */
-  void addRow();
 
   /**
    * Delete the specified row.
@@ -59,4 +48,31 @@ public interface CommunityTableUtils {
    * Make the table empty.
    */
   void clear();
+
+  /**
+   * Display all information for the community in the table.
+   * @param communityId the community
+   */
+  void getAllCommunityInfo(String communityId);
+
+  /**
+   * Display attributes for the community in the table.
+   * @param communityId the community
+   */
+  void getCommunityInfo(String communityId);
+
+  /**
+   * Display attributes for the entity in the community in the table.
+   * @param communityId the community
+   * @param entityId the entity
+   */
+  void getEntityInfo(String communityId, String entityId);
+
+  /**
+   * Display attributes for the child entities of the selected tree node
+   * in the table.
+   * @param communityId the community
+   * @param entityId the entity
+   */
+  void getChildrenEntityInfo(String communityId, String entityId);
 }

@@ -23,29 +23,78 @@
 
 package org.cougaar.tools.csmart.ui.community;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.sql.*;
+import java.util.*;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.event.TableModelEvent;
 import org.cougaar.tools.csmart.core.db.DBUtils;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class DatabaseTableModel extends AbstractTableModel {
-  String[]            columnNames = {};
-  ArrayList rows = new ArrayList();
-  ResultSetMetaData   metaData;
+  private static final String GET_ALL_COMMUNITY_INFO_QUERY = "queryAllCommunityInfo";
+  private static final String GET_COMMUNITY_INFO_QUERY = "queryCommunityInfo";
+  private static final String GET_ENTITY_INFO_QUERY = "queryEntityInfo";
+  private static final String GET_CHILDREN_ENTITY_INFO_QUERY = 
+    "queryChildrenEntityInfo";
+
+  private String[] columnNames = {};
+  private ArrayList rows = new ArrayList();
+  private ResultSetMetaData metaData;
+  private String communityName;
+  private transient Logger log;
+
+  public DatabaseTableModel() {
+    log = CSMART.createLogger(this.getClass().getName());
+  }
 
   /**
-   * Execute query and use results to fill table.
-   * @param query SQL query
+   * Methods for getting information from the database and updating the table model.
    */
-  public void executeQuery(String query) {
+  public void getAllCommunityInfo(String communityId) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    String query =
+      DBUtils.getQuery(GET_ALL_COMMUNITY_INFO_QUERY, substitutions);
+    executeQuery(query);
+  }
+
+  public void getCommunityInfo(String communityId) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    String query =
+      DBUtils.getQuery(GET_COMMUNITY_INFO_QUERY, substitutions);
+    executeQuery(query);
+  }
+
+  public void getEntityInfo(String communityId, String entityId) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    substitutions.put(":entity_id", entityId);
+    String query =
+      DBUtils.getQuery(GET_ENTITY_INFO_QUERY, substitutions);
+    executeQuery(query);
+    communityName = communityId; // used if user adds parameters to this entity
+  }
+
+  public void getChildrenEntityInfo(String communityId, String childrenEntityIds) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    substitutions.put(":children_entity_ids", childrenEntityIds);
+    String query =
+      DBUtils.getQuery(GET_CHILDREN_ENTITY_INFO_QUERY, substitutions);
+    executeQuery(query);
+  }
+
+  private void executeQuery(String query) {
     Connection conn = null;
     try {
       conn = DBUtils.getConnection();
       if (conn == null) {
-        System.err.println("Could not get connection to database");
+        if(log.isErrorEnabled()) {
+          log.error("Could not get connection to database");
+        }
         return;
       }
       Statement statement = conn.createStatement();
@@ -76,7 +125,9 @@ public class DatabaseTableModel extends AbstractTableModel {
       statement.close();
     }
     catch (SQLException ex) {
-      System.err.println(ex + " in query: " + query);
+      if(log.isErrorEnabled()) {
+        log.error("Exception in query: " + query, ex);
+      }
     } finally {
       try {
         if (conn != null)
@@ -103,48 +154,38 @@ public class DatabaseTableModel extends AbstractTableModel {
   }
 
   /**
-   * Add a row to the table.  Adds with empty strings.
-   */
-  public void addRow() {
-    int n = getColumnCount();
-    if (n == 0)
-      return; // can't do anything if we don't have a table defined
-    int newRowIndex = rows.size();
-    ArrayList newRow = new ArrayList(1);
-    for (int i = 0; i < n; i++) {
-      newRow.add("");
-    }
-    rows.add(newRow);
-    fireTableRowsInserted(newRowIndex, newRowIndex);
-  }
-
-  /**
    * Delete the specified row and update the database.
    * @param rowIndex the index of the row to delete
    */
-  public void deleteRow(int rowIndex) {
-    if (rowIndex >= rows.size()) 
+  public void deleteRow(int row) {
+    if (row >= rows.size()) 
       return;
-    String query = "";
+    String tableName = "";
     try {
-      String tableName = metaData.getTableName(1);
-      query = "delete from "+ tableName + " where ";
-      int n = getColumnCount();
-      for (int col = 0; col < n; col++) {
-        String colName = getColumnName(col);
-        if (colName.equals(""))
-          continue;
-        if (col != 0)
-          query = query + " and ";
-        query = query + colName +" = "+
-          dbRepresentation(col, getValueAt(rowIndex, col));
-      }
-      executeQuery(query);
+      tableName = metaData.getTableName(1);
     } catch (SQLException e) {
-      System.err.println("Update failed: " + query);
+      if(log.isErrorEnabled()) {
+        log.error("Exception getting table name: ", e);
+      }
+      return;
     }
-    rows.remove(rowIndex);
-    fireTableRowsDeleted(rowIndex, rowIndex);
+    if (tableName.equals("community_attribute"))
+      CommunityDBUtils.deleteCommunityAttribute( 
+                               dbRepresentation(0, getValueAt(row, 0)),
+                               dbRepresentation(1, getValueAt(row, 1)),
+                               dbRepresentation(2, getValueAt(row, 2)));
+    else if (tableName.equals("community_entity_attribute"))
+      CommunityDBUtils.deleteEntityAttribute(communityName,
+                               dbRepresentation(0, getValueAt(row, 0)),
+                               dbRepresentation(1, getValueAt(row, 1)),
+                               dbRepresentation(2, getValueAt(row, 2)));
+    else {
+      if(log.isErrorEnabled()) {
+        log.error("Attempting to delete from unknown table: " + tableName);
+      }
+    }
+    rows.remove(row);
+    fireTableRowsDeleted(row, row);
   }
 
   /**
@@ -218,8 +259,10 @@ public class DatabaseTableModel extends AbstractTableModel {
       return metaData.isWritable(column+1);
     }
     catch (SQLException e) {
-      System.out.println("Exception on is cell editable: " +
-                         row + "," + column);
+      if(log.isErrorEnabled()) {
+        log.error("Exception on is cell editable: " +
+                  row + "," + column, e);
+      }
       return false;
     }
   }
@@ -275,35 +318,68 @@ public class DatabaseTableModel extends AbstractTableModel {
    * @param column index of column in which to set value
    */
   public void setValueAt(Object value, int row, int column) {
-    String query = "";
+    String tableName = "";
     try {
-      String tableName = metaData.getTableName(column+1);
-      String columnName = getColumnName(column);
-      query =
-        "update " + tableName +
-        " set " + columnName + " = '" + dbRepresentation(column, value) + 
-        "' where ";
-      // We don't have a model of the schema so we don't know the
-      // primary keys or which columns to lock on. To demonstrate
-      // that editing is possible, we'll just lock on everything.
-      for(int col = 0; col<getColumnCount(); col++) {
-        String colName = getColumnName(col);
-        if (colName.equals("")) {
-          continue;
-        }
-        if (col != 0) {
-          query = query + " and ";
-        }
-        query = query + colName + " = '" +
-          dbRepresentation(col, getValueAt(row, col)) + "'";
+      tableName = metaData.getTableName(column+1);
+    } catch (SQLException e) {
+      if(log.isErrorEnabled()) {
+        log.error("Exception getting column name: ", e);
       }
-      executeQuery(query);
+      return;
     }
-    catch (SQLException e) {
-      System.err.println("Update failed: " + query);
+    if (tableName.equals("community_attribute"))
+      updateCommunityAttributeTable(value, row, column);
+    else if (tableName.equals("community_entity_attribute"))
+      updateCommunityEntityAttributeTable(value, row, column);
+    else 
+      if(log.isErrorEnabled()) {
+        log.error("Attempting to set value for unknown table: " + tableName);
+      }
+  }
+
+  private void updateCommunityAttributeTable(Object value, int row, int column) {
+    String columnName = getColumnName(column);
+    String communityId = (String)getValueAt(row, 0);
+    String dbValue = dbRepresentation(column, value);
+    if (columnName.equals("ATTRIBUTE_ID")) {
+      CommunityDBUtils.setCommunityAttributeId(communityId, dbValue,
+                               dbRepresentation(1, getValueAt(row, 1)),
+                               dbRepresentation(2, getValueAt(row, 2)));
+    } else if (columnName.equals("ATTRIBUTE_VALUE")) {
+      CommunityDBUtils.setCommunityAttributeValue(communityId, dbValue,
+                               dbRepresentation(1, getValueAt(row, 1)),
+                               dbRepresentation(2, getValueAt(row, 2)));
+    } else {
+      if (log.isErrorEnabled()) {
+        log.error("Attempting to set value for unknown column name: " + 
+                  columnName);
+      }
+      return;
     }
     ArrayList dataRow = (ArrayList)rows.get(row);
     dataRow.set(column, value);
   }
 
+  private void updateCommunityEntityAttributeTable(Object value, int row, int column) {
+    String columnName = getColumnName(column);
+    String entityId = (String)getValueAt(row, 0);
+    String dbValue = dbRepresentation(column, value);
+    if (columnName.equals("ATTRIBUTE_ID")) {
+      CommunityDBUtils.setEntityAttributeId(communityName, entityId, dbValue,
+                               dbRepresentation(1, getValueAt(row, 1)),
+                               dbRepresentation(2, getValueAt(row, 2)));
+    } else if (columnName.equals("ATTRIBUTE_VALUE")) {
+      CommunityDBUtils.setEntityAttributeValue(communityName, entityId, dbValue,
+                               dbRepresentation(1, getValueAt(row, 1)),
+                               dbRepresentation(2, getValueAt(row, 2)));
+    } else {
+      if (log.isErrorEnabled()) {
+        log.error("Attempting to set value for unknown column name: " + 
+                  columnName);
+      }
+      return;
+    }
+    ArrayList dataRow = (ArrayList)rows.get(row);
+    dataRow.set(column, value);
+  }
 }

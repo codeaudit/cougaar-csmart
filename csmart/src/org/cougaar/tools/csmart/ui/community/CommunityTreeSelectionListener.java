@@ -56,8 +56,7 @@ public class CommunityTreeSelectionListener implements TreeSelectionListener {
       return; // ignore selecting root
     // node is a community; display information for a community 
     if (cto.isCommunity()) {
-      query = CommunityFrame.GET_COMMUNITY_INFO_QUERY + name + "'";
-      communityTableUtils.executeQuery(query);
+      communityTableUtils.getCommunityInfo(name);
       return;
     } 
     // get community that node is in
@@ -74,33 +73,25 @@ public class CommunityTreeSelectionListener implements TreeSelectionListener {
   }
 
   private void displayEntityInfo(String communityName,
-                                DefaultMutableTreeNode node) {
+                                 DefaultMutableTreeNode node) {
     int nChildren = node.getChildCount();
     if (nChildren == 0) {
       String entityName =
         ((CommunityTreeObject)node.getUserObject()).toString();
-      String query = CommunityFrame.GET_ENTITY_INFO_QUERY + communityName + 
-        "' and community_entity_attribute.entity_id = '" + entityName + "'";
-      communityTableUtils.executeQuery(query);
+      communityTableUtils.getEntityInfo(communityName, entityName);
     } else {
       StringBuffer sbuf = new StringBuffer(500);
-      sbuf.append(CommunityFrame.GET_ENTITY_INFO_QUERY);
-      sbuf.append(communityName);
-      sbuf.append("' and (");
       for (int i = 0; i < nChildren; i++) {
         DefaultMutableTreeNode childNode =
           (DefaultMutableTreeNode)node.getChildAt(i);
         String entityName = 
           ((CommunityTreeObject)childNode.getUserObject()).toString();
-        sbuf.append("community_entity_attribute.entity_id = '");
         sbuf.append(entityName);
         if (i < (nChildren-1))
-          sbuf.append("' or ");
-        else
-          sbuf.append("')");
+          sbuf.append("', '");
       }
-      communityTableUtils.executeQuery(sbuf.toString());
+      communityTableUtils.getChildrenEntityInfo(communityName, sbuf.toString());
     }
   }
-                                
+
 }

@@ -19,47 +19,240 @@
  * </copyright>
  */
 
-// methods for interfacing to database and supporting community displays
-
 package org.cougaar.tools.csmart.ui.community;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import org.cougaar.tools.csmart.core.db.DBUtils;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+
+/**
+ * Methods for interfacing to database and supporting community displays.
+ * These methods do not modify the community table display.
+ */
 
 public class CommunityDBUtils {
+  private static final String GET_COMMUNITIES_QUERY = "queryCommunities";
+  private static final String GET_ENTITIES_QUERY = "queryEntities";
+  private static final String GET_MEMBER_TYPE_QUERY = "queryMemberType";
+  private static final String INSERT_COMMUNITY_INFO_QUERY = 
+    "queryInsertCommunityInfo";
+  private static final String INSERT_COMMUNITY_ATTRIBUTE_QUERY = 
+    "queryInsertCommunityAttribute";
+  private static final String INSERT_ENTITY_INFO_QUERY = 
+    "queryInsertEntityInfo";
+  private static final String INSERT_ENTITY_ATTRIBUTE_QUERY = 
+    "queryInsertEntityAttribute";
+  private static final String IS_COMMUNITY_IN_USE_QUERY = 
+    "queryIsCommunityInUse";
+  private static final String UPDATE_COMMUNITY_ATTRIBUTE_ID_QUERY =
+    "queryUpdateCommunityAttributeId";
+  private static final String UPDATE_COMMUNITY_ATTRIBUTE_VALUE_QUERY =
+    "queryUpdateCommunityAttributeValue";
+  private static final String UPDATE_ENTITY_ATTRIBUTE_ID_QUERY =
+    "queryUpdateEntityAttributeId";
+  private static final String UPDATE_ENTITY_ATTRIBUTE_VALUE_QUERY =
+    "queryUpdateEntityAttributeValue";
+  private static final String DELETE_COMMUNITY_INFO_QUERY = 
+    "queryDeleteCommunityInfo";
+  private static final String DELETE_ENTITY_INFO_QUERY = 
+    "queryDeleteEntityInfo";
+  private static final String DELETE_COMMUNITY_ATTRIBUTE_QUERY =
+    "queryDeleteCommunityAttribute";
+  private static final String DELETE_ENTITY_ATTRIBUTE_QUERY =
+    "queryDeleteEntityAttribute";
 
-  // execute a query and return the results
-  protected static ArrayList getQueryResults(String query) {
-    ArrayList values = new ArrayList();
-    Connection conn = null;
+  private static ArrayList doQuery(String query, Map substitutions) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.community.CommunityDBUtils");
+    ArrayList results = new ArrayList();
     try {
-      conn = DBUtils.getConnection();
-      if (conn == null) {
-        System.err.println("Could not get connection to database");
-        return null;
-      }
-      Statement statement = conn.createStatement();
-      ResultSet resultSet = statement.executeQuery(query);
-      while (resultSet.next()) {
-        String s = resultSet.getString(1);
-        if (!values.contains(s))
-          values.add(s);
-      }
-      resultSet.close();
-      statement.close();
-    }
-    catch (SQLException ex) {
-      System.err.println(ex);
-    } finally {
+      Connection conn = DBUtils.getConnection();
       try {
-        if (conn != null)
-          conn.close();
-      } catch (SQLException e) {
+        Statement stmt = conn.createStatement();
+        query = DBUtils.getQuery(query, substitutions);
+        // execute query that may or may not return results
+        if (stmt.execute(query)) {
+          ResultSet rs = stmt.getResultSet();
+          while(rs.next()) 
+            results.add(rs.getString(1));
+          rs.close();
+        }
+        stmt.close();
+      } finally {
+        conn.close();
       }
-    }
-    Collections.sort(values);
-    return values;
+    } catch (SQLException se) {
+      if(log.isErrorEnabled()) {
+        log.error("Caught SQL exception executing query: " + query, se);
+      }
+    } 
+    return results;
+  }
+
+  public static ArrayList getCommunities() {
+    ArrayList communityIds = doQuery(GET_COMMUNITIES_QUERY, new HashMap());
+    Collections.sort(communityIds);
+    return communityIds;
+  }
+
+  public static ArrayList getEntities(String communityId) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    ArrayList entityIds = doQuery(GET_ENTITIES_QUERY, substitutions);
+    Collections.sort(entityIds);
+    return entityIds;
+  }
+
+  public static String getMemberType(String entityId) {
+    Map substitutions = new HashMap();
+    substitutions.put(":entity_id", entityId);
+    ArrayList results = doQuery(GET_MEMBER_TYPE_QUERY, substitutions);
+    if (results.size() != 0)
+      return (String)results.get(0);
+    return "Entity"; // default
+  }
+
+  public static boolean isCommunityInUse(String communityId) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    ArrayList results = doQuery(IS_COMMUNITY_IN_USE_QUERY, substitutions);
+    return (results.size() != 0);
+  }
+
+  /**
+   * Insert the community into the database.
+   * @param communityId the community
+   * @param communityType the community type
+   */
+  public static void insertCommunityInfo(String communityId, String communityType) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    substitutions.put(":community_type", communityType);
+    doQuery(INSERT_COMMUNITY_INFO_QUERY, substitutions);
+  }
+
+  /**
+   * Insert a new parameter for the community into the database.
+   * @param communityId the community
+   */
+  public static void insertCommunityAttribute(String communityId) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    doQuery(INSERT_COMMUNITY_ATTRIBUTE_QUERY, substitutions);
+  }
+
+  /**
+   * Insert the entity into the database.
+   * @param communityId the community
+   * @param communityType the community type
+   */
+  public static void insertEntityInfo(String communityId, String entityId,
+                                      String attributeName, String attributeValue) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    substitutions.put(":entity_id", entityId);
+    substitutions.put(":attribute_id", attributeName);
+    substitutions.put(":attribute_value", attributeValue);
+    doQuery(INSERT_ENTITY_INFO_QUERY, substitutions);
+  }
+
+  /**
+   * Insert a new parameter for the entity into the database.
+   * @param communityId the community
+   * @param entityId the entity
+   */
+  public static void insertEntityAttribute(String communityId, String entityId) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    substitutions.put(":entity_id", entityId);
+    doQuery(INSERT_ENTITY_ATTRIBUTE_QUERY, substitutions);
+  }
+
+  public static void setCommunityAttributeId(String communityId,
+                                             String attributeId,
+                                             String prevAttributeId,
+                                             String attributeValue) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    substitutions.put(":attribute_id", attributeId);
+    substitutions.put(":prev_attribute_id", prevAttributeId);
+    substitutions.put(":attribute_value", attributeValue);
+    doQuery(UPDATE_COMMUNITY_ATTRIBUTE_ID_QUERY, substitutions);
+  }
+
+  public static void setCommunityAttributeValue(String communityId,
+                                                String attributeValue,
+                                                String attributeId,
+                                                String prevAttributeValue) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    substitutions.put(":attribute_value", attributeValue);
+    substitutions.put(":attribute_id", attributeId);
+    substitutions.put(":prev_attribute_value", prevAttributeValue);
+    doQuery(UPDATE_COMMUNITY_ATTRIBUTE_VALUE_QUERY, substitutions);
+  }
+
+  public static void setEntityAttributeId(String communityId,
+                                          String entityId,
+                                          String attributeId,
+                                          String prevAttributeId,
+                                          String attributeValue) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    substitutions.put(":entity_id", entityId);
+    substitutions.put(":attribute_id", attributeId);
+    substitutions.put(":prev_attribute_id", prevAttributeId);
+    substitutions.put(":attribute_value", attributeValue);
+    doQuery(UPDATE_ENTITY_ATTRIBUTE_ID_QUERY, substitutions);
+  }
+
+  public static void setEntityAttributeValue(String communityId,
+                                             String entityId,
+                                             String attributeValue,
+                                             String attributeId,
+                                             String prevAttributeValue) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    substitutions.put(":entity_id", entityId);
+    substitutions.put(":attribute_value", attributeValue);
+    substitutions.put(":attribute_id", attributeId);
+    substitutions.put(":prev_attribute_value", prevAttributeValue);
+    doQuery(UPDATE_ENTITY_ATTRIBUTE_VALUE_QUERY, substitutions);
+  }
+
+  public static void deleteCommunityInfo(String communityId) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    doQuery(DELETE_COMMUNITY_INFO_QUERY, substitutions);
+  }
+
+  public static void deleteEntityInfo(String communityId, String entityId) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    substitutions.put(":entity_id", entityId);
+    doQuery(DELETE_ENTITY_INFO_QUERY, substitutions);
+  }
+
+  public static void deleteCommunityAttribute(String communityId,
+                                              String attributeId,
+                                              String attributeValue) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    substitutions.put(":attribute_id", attributeId);
+    substitutions.put(":attribute_value", attributeValue);
+    doQuery(DELETE_COMMUNITY_ATTRIBUTE_QUERY, substitutions);
+  }
+
+  public static void deleteEntityAttribute(String communityId,
+                                           String entityId,
+                                           String attributeId,
+                                           String attributeValue) {
+    Map substitutions = new HashMap();
+    substitutions.put(":community_id", communityId);
+    substitutions.put(":entity_id", entityId);
+    substitutions.put(":attribute_id", attributeId);
+    substitutions.put(":attribute_value", attributeValue);
+    doQuery(DELETE_ENTITY_ATTRIBUTE_QUERY, substitutions);
   }
 }

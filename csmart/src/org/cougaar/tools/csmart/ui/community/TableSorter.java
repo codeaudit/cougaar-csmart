@@ -39,6 +39,8 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.*; 
 import javax.swing.event.TableModelListener; 
 import javax.swing.event.TableModelEvent; 
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class TableSorter extends AbstractTableModel implements TableModelListener, CommunityTableUtils {
   private TableModel model; 
@@ -47,12 +49,14 @@ public class TableSorter extends AbstractTableModel implements TableModelListene
   private boolean ascending = true;
   private int compares;
   private int nColumns;
+  private transient Logger log;
 
   public TableSorter(TableModel model) {
     this.model = model;
     nColumns = model.getColumnCount();
     reallocateIndexes();
     model.addTableModelListener(this);
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   private int compareRowsByColumn(int row1, int row2, int column) {
@@ -185,7 +189,9 @@ public class TableSorter extends AbstractTableModel implements TableModelListene
 
   private void checkModel() {
     if (indexes.length != model.getRowCount()) {
-      System.err.println("Sorter not informed of a change in model.");
+      if(log.isErrorEnabled()) {
+        log.error("Sorter not informed of a change in model.");
+      }
     }
   }
 
@@ -337,10 +343,10 @@ public class TableSorter extends AbstractTableModel implements TableModelListene
    * Execute query and use results to fill table.
    * @param query SQL query
    */
-  public void executeQuery(String query) {
-    checkModel();
-    ((DatabaseTableModel)model).executeQuery(query);
-  }
+//    public void executeQuery(String query) {
+//      checkModel();
+//      ((DatabaseTableModel)model).executeQuery(query);
+//    }
 
   /**
    * Return all values in the specified column; removes duplicates.
@@ -350,14 +356,6 @@ public class TableSorter extends AbstractTableModel implements TableModelListene
   public ArrayList getKnownValues(int column) {
     checkModel();
     return ((DatabaseTableModel)model).getKnownValues(column);
-  }
-
-  /**
-   * Add a row to the table.  Adds with empty strings.
-   */
-  public void addRow() {
-    checkModel();
-    ((DatabaseTableModel)model).addRow();
   }
 
   /**
@@ -377,4 +375,42 @@ public class TableSorter extends AbstractTableModel implements TableModelListene
     ((DatabaseTableModel)model).clear();
   }
 
+  /**
+   * Display all information for the community in the table.
+   * @param communityId the community
+   */
+  public void getAllCommunityInfo(String communityId) {
+    checkModel();
+    ((DatabaseTableModel)model).getAllCommunityInfo(communityId);
+  }
+
+  /**
+   * Display attributes for the community in the table.
+   * @param communityId the community
+   */
+  public void getCommunityInfo(String communityId) {
+    checkModel();
+    ((DatabaseTableModel)model).getCommunityInfo(communityId);
+  }
+
+  /**
+   * Display attributes for the entity in the community in the table.
+   * @param communityId the community
+   * @param entityId the entity
+   */
+  public void getEntityInfo(String communityId, String entityId) {
+    checkModel();
+    ((DatabaseTableModel)model).getEntityInfo(communityId, entityId);
+  }
+
+  /**
+   * Display attributes for the child entities of the selected tree node
+   * in the table.
+   * @param communityId the community
+   * @param entityId the entity
+   */
+  public void getChildrenEntityInfo(String communityId, String entityId) {
+    checkModel();
+    ((DatabaseTableModel)model).getChildrenEntityInfo(communityId, entityId);
+  }
 }

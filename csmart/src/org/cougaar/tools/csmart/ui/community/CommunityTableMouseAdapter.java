@@ -65,10 +65,21 @@ public class CommunityTableMouseAdapter extends MouseAdapter {
     if (e.isPopupTrigger()) doPopup(e);
   }
 
+  /**
+   * The menu only contains the "Delete" action.
+   * Deletions can only be done from tables that
+   * display the attribute ids and values for 
+   * a community or entity, in other words, not for tables
+   * that are a join of information; hence if the table
+   * doesn't have exactly 3 columns, don't display a popup menu.
+   * TODO: should be a better way to detect the join?
+   */
+
   private void doPopup(MouseEvent e) {
     row = table.rowAtPoint(e.getPoint());
     if (row == -1) return;
-    menu.show(table, e.getX(), e.getY());
+    if (table.getModel().getColumnCount() == 3)
+      menu.show(table, e.getX(), e.getY());
   }
 
   private void delete() {

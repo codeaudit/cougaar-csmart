@@ -346,15 +346,8 @@ public class CommunityDNDTree extends DNDTree {
     String nodeName = ((CommunityTreeObject)node.getUserObject()).toString();
     // get the descendants of the community
     // and make sure they don't include this node
+    // TODO: you can't move a node within a community; is this a problem?
     return isNodeNameInCommunity(communityNode, nodeName);
-    // TODO: either way you check, you can't move a node within a community
-//      String communityName = 
-//        ((CommunityTreeObject)communityNode.getUserObject()).toString();
-//      String query = CommunityFrame.IS_IN_COMMUNITY_QUERY +
-//        communityName + "' and entity_id = '" + nodeName + "'";
-//      System.out.println(query);
-//      ArrayList results = CommunityDBUtils.getQueryResults(query);
-//      return results.size() != 0;
   }
 
   /**

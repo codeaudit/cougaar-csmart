@@ -63,6 +63,7 @@ public class CommunityTreeObject {
 
   public CommunityTreeObject(BaseComponent component,
                              String label, String type) {
+    createLogger();
     if (component != null) {
       if (component instanceof HostComponent)
         isHost = true;
@@ -83,12 +84,13 @@ public class CommunityTreeObject {
         isAgent = true;
         allowsChildren = false;
       } else
-        System.out.println("CommunityTreeObject created with unknown type: " +
-                           type);
+        if(log.isErrorEnabled()) {
+          log.error("CommunityTreeObject created with unknown type: " +
+                    type);
+        }
     }
     this.label = label;
     this.toolTip = toolTip;
-    createLogger();
   }
 
   protected void setLabel(String label) {
