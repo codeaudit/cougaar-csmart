@@ -134,7 +134,7 @@ public class AssetDBComponent
           RelationshipData rData = new RelationshipData();
           rData.setType((String)rel.getProperty(RelationshipBase.PROP_TYPE).getValue());
           rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
-          rData.setItem((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
+          rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
           rData.setSupported((String)rel.getProperty(RelationshipBase.PROP_SUPPORTED).getValue());
           assetData.addRelationship(rData);
         }
@@ -185,7 +185,7 @@ public class AssetDBComponent
           String role = rs.getString(2);
           Timestamp startDate = rs.getTimestamp(3);
           Timestamp endDate = rs.getTimestamp(4);
-          rd.setItem(supported);
+          rd.setItemId(supported);
           rd.setSupported(supported);
           if (role.equals("Subordinate")) {
             rd.setRole("");

@@ -95,7 +95,7 @@ public class RelationshipBase
 //     propType.setAllowedValues(allowedTypes);
     propRole = addProperty(PROP_ROLE, relationship.getRole());
     propRole.setToolTip(PROP_ROLE_DESC);
-    propItem = addProperty(PROP_ITEM, relationship.getItem());
+    propItem = addProperty(PROP_ITEM, relationship.getItemId());
     propItem.setToolTip(PROP_ITEM_DESC);
     propTypeId = addProperty(PROP_TYPEID, relationship.getTypeId());
     propTypeId.setToolTip(PROP_TYPEID_DESC);

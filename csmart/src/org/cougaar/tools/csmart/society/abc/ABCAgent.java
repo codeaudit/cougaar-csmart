@@ -526,7 +526,7 @@ public class ABCAgent
       for(int i=0; i < supplies.length; i++) {
 	RelationshipData relData = new RelationshipData();
 	relData.setRole(role);
-	relData.setItem(supplies[i].trim());
+	relData.setItemId(supplies[i].trim());
 	relData.setType(supplies[i].substring(supplies[i].lastIndexOf(".")+1));
 	relData.setSupported(supplies[i].trim());
 	assetData.addRelationship(relData);
