@@ -28,7 +28,9 @@ import org.cougaar.core.society.UID;
 
 import org.cougaar.tools.csmart.ui.component.CompositeName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
+import org.cougaar.tools.csmart.ui.component.AgentComponent;
 import org.cougaar.tools.csmart.ui.component.HostComponent;
+import org.cougaar.tools.csmart.ui.component.NodeComponent;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.experiment.ExperimentListener;
@@ -273,13 +275,27 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   }
 
   /**
-   * Sets monitor host to first host in running experiment.
-   * TODO: Host may not actually be in use in the experiment;
-   * this should be the first host in use.
+   * Sets monitor host to first host that has a node and agent
+   * in the running experiment; defaults to localhost.
    */
+
   private void setHostToMonitor(Experiment experiment) {
     HostComponent[] hosts = experiment.getHosts();
-    agentHost = hosts[0].getShortName();
+    for (int i = 0; i < hosts.length; i++) {
+      NodeComponent[] nodes = hosts[i].getNodes();
+      if (nodes == null || nodes.length == 0)
+        continue;
+      for (int j = 0; j < nodes.length; j++) {
+	AgentComponent[] agents = nodes[j].getAgents();
+	// skip nodes that have no agents
+	if (agents == null || agents.length == 0)
+	  continue;
+        // found a host to use
+        agentHost = hosts[i].getShortName();
+        break;
+      }
+    }
+    //    agentHost = hosts[0].getShortName();
     agentPort = 5555; // default
     agentURL = "http://" + agentHost + ":5555/"; 
     agentMap = new CSMARTAgentMap(agentHost, agentPort);
