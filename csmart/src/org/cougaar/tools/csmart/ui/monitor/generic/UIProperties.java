@@ -35,24 +35,19 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  */
 
 public class UIProperties {
-  private static final String DEFAULT_COLOR_GVT = "255,255,255"; // white
   private static final String DEFAULT_COLOR_SELECT = "238,44,44"; // firebrick2
   private static final String DEFAULT_COLOR_CAUSES = "0,0,205"; // blue3
   private static final String DEFAULT_COLOR_EFFECTS = "238,238,0"; // yellow2
   private static final String DEFAULT_COLOR_BEFORE = "137,104,205"; // mediumpurple3
   private static final String DEFAULT_COLOR_AFTER = "118,238,0"; // chartreuse2
-  private static final String DEFAULT_COLOR_CLUSTER1 = "155,205,155"; // darkseagreen3
-  private static final String DEFAULT_COLOR_CLUSTER2 = "238,180,34"; // goldenrod2
-  private static final String DEFAULT_COLOR_CLUSTER3 = "238,121,66"; // sienna2
-  private static final String DEFAULT_COLOR_CLUSTER4 = "216,191,216"; // thistle
-  private static final String DEFAULT_COLOR_CLUSTER5 = "224,238,238"; // azure2
-  private static final String DEFAULT_COLOR_CLUSTER6 = "30,144,25"; // dodgerblue
-  // must match highest DEFAULT_COLOR_CLUSTER 
-  private static final int DEFAULT_MAX_COLOR = 6; // number of cluster colors
-
-  private static final String DEFAULT_COLOR_CLUSTER_ATTACKER = "155,205,155"; // darkseagreen3
-  private static final String DEFAULT_COLOR_CLUSTER_FIREWALL = "238,180,34"; // goldenrod2
-  private static final String DEFAULT_COLOR_CLUSTER_VICTIM = "238,121,66"; // sienna2
+  private static final String DEFAULT_COLOR_AGENT1 = "155,205,155"; // darkseagreen3
+  private static final String DEFAULT_COLOR_AGENT2 = "238,180,34"; // goldenrod2
+  private static final String DEFAULT_COLOR_AGENT3 = "238,121,66"; // sienna2
+  private static final String DEFAULT_COLOR_AGENT4 = "216,191,216"; // thistle
+  private static final String DEFAULT_COLOR_AGENT5 = "224,238,238"; // azure2
+  private static final String DEFAULT_COLOR_AGENT6 = "30,144,25"; // dodgerblue
+  // must match highest DEFAULT_COLOR_AGENT 
+  private static final int DEFAULT_MAX_COLOR = 6; // number of agent colors
 
   // Default line sizes for the metrics.
   private static final String DEFAULT_GRAPH_LINE_SIZE = "2";
@@ -60,16 +55,14 @@ public class UIProperties {
 
   private transient Logger log;
 
-  //  private String[] clusterNames = { "Attacker", "Firewall", "Victim" };
   private int nextColor = 1;
   private Properties properties;
   private int maxColor = DEFAULT_MAX_COLOR; // read from ui.properties file
 
   /**
-   * Set default colors for known cluster names, and define a set
-   * of colors that are used for other clusters.
+   * Set default colors for known agent names, and define a set
+   * of colors that are used for other agents.
    */
-
   public UIProperties() {
     createLogger();
     // define default properties
@@ -90,7 +83,7 @@ public class UIProperties {
       }
     }
     maxColor =
-      Integer.parseInt(properties.getProperty("color.cluster.max"));
+      Integer.parseInt(properties.getProperty("color.agent.max"));
     //    printColors(); // for debugging
   }
 
@@ -103,7 +96,7 @@ public class UIProperties {
         log.debug("Maximum colors: " + maxColor);
       }
     for (int i = 1; i <= maxColor; i++) {
-      String s = "color.cluster." + i; // color.cluster.i
+      String s = "color.agent." + i; // color.agent.i
       if(log.isDebugEnabled()) {
         log.debug(s + " is: " + properties.getProperty(s));
       }
@@ -147,22 +140,18 @@ public class UIProperties {
    */
 
   private void setDefaults(Properties defaults) {
-    defaults.setProperty("color.gvt", DEFAULT_COLOR_GVT);
     defaults.setProperty("color.select", DEFAULT_COLOR_SELECT);
     defaults.setProperty("color.causes", DEFAULT_COLOR_CAUSES);
     defaults.setProperty("color.effects", DEFAULT_COLOR_EFFECTS);
     defaults.setProperty("color.before", DEFAULT_COLOR_BEFORE);
     defaults.setProperty("color.after", DEFAULT_COLOR_AFTER);
-    defaults.setProperty("color.cluster.Attacker", DEFAULT_COLOR_CLUSTER_ATTACKER);
-    defaults.setProperty("color.cluster.Firewall", DEFAULT_COLOR_CLUSTER_FIREWALL);
-    defaults.setProperty("color.cluster.Victim", DEFAULT_COLOR_CLUSTER_VICTIM);
-    defaults.setProperty("color.cluster.1", DEFAULT_COLOR_CLUSTER1);
-    defaults.setProperty("color.cluster.2", DEFAULT_COLOR_CLUSTER2);
-    defaults.setProperty("color.cluster.3", DEFAULT_COLOR_CLUSTER3);
-    defaults.setProperty("color.cluster.4", DEFAULT_COLOR_CLUSTER4);
-    defaults.setProperty("color.cluster.5", DEFAULT_COLOR_CLUSTER5);
-    defaults.setProperty("color.cluster.6", DEFAULT_COLOR_CLUSTER6);
-    defaults.setProperty("color.cluster.max", String.valueOf(DEFAULT_MAX_COLOR));
+    defaults.setProperty("color.agent.1", DEFAULT_COLOR_AGENT1);
+    defaults.setProperty("color.agent.2", DEFAULT_COLOR_AGENT2);
+    defaults.setProperty("color.agent.3", DEFAULT_COLOR_AGENT3);
+    defaults.setProperty("color.agent.4", DEFAULT_COLOR_AGENT4);
+    defaults.setProperty("color.agent.5", DEFAULT_COLOR_AGENT5);
+    defaults.setProperty("color.agent.6", DEFAULT_COLOR_AGENT6);
+    defaults.setProperty("color.agent.max", String.valueOf(DEFAULT_MAX_COLOR));
     
     // Metric Defaults.
     defaults.setProperty("metric.line.size", DEFAULT_GRAPH_LINE_SIZE);
@@ -242,56 +231,47 @@ public class UIProperties {
   }
 
   /**
-   * Return color defined to show gvt.
-   * @return color
-   */
-
-  public Color getColorGVT() {
-    return stringToColor(properties.getProperty("color.gvt"));
-  }
-
-  /**
-   * Return a color for the specified cluster.
-   * Does case-insensitive matches on cluster name.
+   * Return a color for the specified agent.
+   * Does case-insensitive matches on agent name.
    * The color is either:
    * a color explicitly defined in this file as the default color for
-   * the cluster; or
-   * a color assigned from a group of cluster colors defined in this file;
-   * or a color specifically set for this cluster.
-   * @param  clusterName  the name of the cluster for which to get a color
-   * @return              color to use for nodes associated with the cluster
+   * the agent; or
+   * a color assigned from a group of agent colors defined in this file;
+   * or a color specifically set for this agent.
+   * @param  agentName  the name of the agent for which to get a color
+   * @return              color to use for nodes associated with the agent
    */
 
-  public Color getClusterColor(String clusterName) {
-    String propertyName = "color.cluster." + clusterName.toLowerCase();
+  public Color getAgentColor(String agentName) {
+    String propertyName = "color.agent." + agentName.toLowerCase();
     String colorString = properties.getProperty(propertyName);
     if (colorString != null) 
       return stringToColor(colorString);
       
-    String s = "color.cluster." + nextColor; // color.cluster.n
+    String s = "color.agent." + nextColor; // color.agent.n
     colorString = properties.getProperty(s);
     if (colorString == null)
       return Color.green; // shouldn't get here
 
-    // save color.cluster.clustername, color
+    // save color.agent.agentname, color
     properties.setProperty(propertyName, colorString);
     nextColor++;
     if (nextColor > maxColor)
       nextColor = 1;
     if(log.isDebugEnabled()) {
-      log.debug("Assigned: " + colorString + " to: " + clusterName);
+      log.debug("Assigned: " + colorString + " to: " + agentName);
     }
     return stringToColor(colorString);
   }
 
   /**
-   * Set the color to use for a cluster.
-   * @param clusterName  the cluster for which to set a color
-   * @param return       the color to use for nodes associated with the cluster
+   * Set the color to use for a agent.
+   * @param agentName  the agent for which to set a color
+   * @param return       the color to use for nodes associated with the agent
    */
 
-  public void setClusterColor(String clusterName, Color color) {
-    String propertyName = "color.cluster." + clusterName;
+  public void setAgentColor(String agentName, Color color) {
+    String propertyName = "color.agent." + agentName;
     String colorString = color.getRed() + "," + color.getGreen() + "," +
       color.getBlue();
     properties.setProperty(propertyName, colorString);

@@ -120,15 +120,15 @@ public class ULCommunityFrame extends CSMARTFrame {
     }
     legendDialog = new JDialog(this, "Legend", false);
 
-    JPanel clusterPanel = new JPanel();
-    clusterPanel.setBorder(new TitledBorder("Communities"));
-    clusterPanel.setLayout(new BoxLayout(clusterPanel, BoxLayout.Y_AXIS));
+    JPanel agentPanel = new JPanel();
+    agentPanel.setBorder(new TitledBorder("Communities"));
+    agentPanel.setLayout(new BoxLayout(agentPanel, BoxLayout.Y_AXIS));
 
     JComboBox cb = 
       new JComboBox(new LegendComboBoxModel(graph.getNodeColors()));
     cb.setRenderer(new LegendRenderer());
     cb.setSelectedIndex(0);
-    clusterPanel.add(cb);
+    agentPanel.add(cb);
 
     JPanel buttonPanel = new JPanel();
     JButton OKButton = new JButton("OK");
@@ -140,7 +140,7 @@ public class ULCommunityFrame extends CSMARTFrame {
     });
     buttonPanel.add(OKButton);
     legendDialog.getContentPane().setLayout(new BorderLayout());
-    legendDialog.getContentPane().add(clusterPanel, BorderLayout.CENTER);
+    legendDialog.getContentPane().add(agentPanel, BorderLayout.CENTER);
     legendDialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
     legendDialog.pack();
     legendDialog.setSize(legendDialog.getWidth(),legendDialog.getHeight()+100);

@@ -84,7 +84,7 @@ public class ULPlanFinder extends JDialog {
   private double taskEnd;
   // ASSET Panel 
   private JPanel assetPanel;
-  private JComboBox assetClusterCB;
+  private JComboBox assetAgentCB;
   private JComboBox assetGroupNameCB;
   private JComboBox assetNameCB;
   // asset transfer panel
@@ -129,10 +129,10 @@ public class ULPlanFinder extends JDialog {
   private JTextField timeComplEndField;
   // allocation panel
   private JPanel allocationPanel;
-  private JComboBox allocToClusterCB;
+  private JComboBox allocToAgentCB;
   private JComboBox allocTaskUIDCB;
   private JComboBox allocAssetUIDCB;
-  private JComboBox allocRemoteClusterUIDCB;
+  private JComboBox allocRemoteAgentUIDCB;
   private JComboBox allocLocalOrgUIDCB;
   private ActionListener disableFindNext;
   private JPanel successPanel;
@@ -523,13 +523,13 @@ public class ULPlanFinder extends JDialog {
       assetPanel.setLayout(new GridBagLayout());
       TitledBorder assetTitledBorder = new TitledBorder("Asset");
       assetPanel.setBorder(assetTitledBorder);
-      JLabel assetClusterLabel = new JLabel("Asset Agent :");
-      assetClusterCB = new JComboBox();
-      assetClusterCB.addItem(ALL);
-      Vector assetClusters = graph.getValuesOfAttribute(PropertyNames.ASSET_CLUSTER);
-      for (int i=0; i<assetClusters.size(); i++) 
-        assetClusterCB.addItem(assetClusters.elementAt(i));
-      assetClusterCB.addActionListener(disableFindNext);
+      JLabel assetAgentLabel = new JLabel("Asset Agent :");
+      assetAgentCB = new JComboBox();
+      assetAgentCB.addItem(ALL);
+      Vector assetAgents = graph.getValuesOfAttribute(PropertyNames.ASSET_AGENT);
+      for (int i=0; i<assetAgents.size(); i++) 
+        assetAgentCB.addItem(assetAgents.elementAt(i));
+      assetAgentCB.addActionListener(disableFindNext);
 
       JLabel assetGroupNameLabel = new JLabel("Asset Group Name :");
       assetGroupNameCB = new JComboBox();
@@ -549,12 +549,12 @@ public class ULPlanFinder extends JDialog {
 
       int x = 0;
       int y = 0;
-      assetPanel.add(assetClusterLabel,
+      assetPanel.add(assetAgentLabel,
                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
                                             GridBagConstraints.WEST,
                                             GridBagConstraints.HORIZONTAL,
                                             new Insets(0, 0, 0, 0), 0, 0));
-      assetPanel.add(assetClusterCB,
+      assetPanel.add(assetAgentCB,
                      new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
                                             GridBagConstraints.WEST,
                                             GridBagConstraints.HORIZONTAL,
@@ -1132,14 +1132,14 @@ public class ULPlanFinder extends JDialog {
         allocationPanel.setLayout(new GridBagLayout());
         TitledBorder allocTitledBorder = new TitledBorder("Allocation");
         allocationPanel.setBorder(allocTitledBorder);
-        JLabel allocToClusterLabel = new JLabel("To Agent :");
+        JLabel allocToAgentLabel = new JLabel("To Agent :");
 
-        allocToClusterCB = new JComboBox();
-        allocToClusterCB.addItem(ALL);
-        Vector allocToClusters = graph.getValuesOfAttribute(PropertyNames.ALLOCATION_TO_CLUSTER);
-        for (int i=0; i<allocToClusters.size(); i++) 
-          allocToClusterCB.addItem(allocToClusters.elementAt(i));
-        allocToClusterCB.addActionListener(disableFindNext);
+        allocToAgentCB = new JComboBox();
+        allocToAgentCB.addItem(ALL);
+        Vector allocToAgents = graph.getValuesOfAttribute(PropertyNames.ALLOCATION_TO_AGENT);
+        for (int i=0; i<allocToAgents.size(); i++) 
+          allocToAgentCB.addItem(allocToAgents.elementAt(i));
+        allocToAgentCB.addActionListener(disableFindNext);
 
         JLabel allocTaskUIDLabel = new JLabel("Task UID :");
         allocTaskUIDCB = new JComboBox();
@@ -1157,13 +1157,13 @@ public class ULPlanFinder extends JDialog {
           allocAssetUIDCB.addItem(allocAssetUIDs.elementAt(i));
         allocAssetUIDCB.addActionListener(disableFindNext);
 
-        JLabel allocRemoteClusterUIDLabel = new JLabel("Remote Agent UID :");
-        allocRemoteClusterUIDCB = new JComboBox();
-        allocRemoteClusterUIDCB.addItem(ALL);
-        Vector allocRemoteClusterUIDs = graph.getValuesOfAttribute(PropertyNames.ALLOCATION_REMOTE_CLUSTER_UID);
-        for (int i=0; i<allocRemoteClusterUIDs.size(); i++) 
-          allocRemoteClusterUIDCB.addItem(allocRemoteClusterUIDs.elementAt(i));
-        allocRemoteClusterUIDCB.addActionListener(disableFindNext);
+        JLabel allocRemoteAgentUIDLabel = new JLabel("Remote Agent UID :");
+        allocRemoteAgentUIDCB = new JComboBox();
+        allocRemoteAgentUIDCB.addItem(ALL);
+        Vector allocRemoteAgentUIDs = graph.getValuesOfAttribute(PropertyNames.ALLOCATION_REMOTE_AGENT_UID);
+        for (int i=0; i<allocRemoteAgentUIDs.size(); i++) 
+          allocRemoteAgentUIDCB.addItem(allocRemoteAgentUIDs.elementAt(i));
+        allocRemoteAgentUIDCB.addActionListener(disableFindNext);
 
         JLabel allocLocalOrgUIDLabel = new JLabel("Local Org UID :");
         allocLocalOrgUIDCB = new JComboBox();
@@ -1174,12 +1174,12 @@ public class ULPlanFinder extends JDialog {
         allocLocalOrgUIDCB.addActionListener(disableFindNext);
         x = 0;
         y = 0;
-        allocationPanel.add(allocToClusterLabel,
+        allocationPanel.add(allocToAgentLabel,
                       new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
                                              GridBagConstraints.WEST,
                                              GridBagConstraints.HORIZONTAL,
                                              new Insets(0, 0, 0, 0), 0, 0));
-        allocationPanel.add(allocToClusterCB,
+        allocationPanel.add(allocToAgentCB,
                       new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
                                              GridBagConstraints.WEST,
                                              GridBagConstraints.HORIZONTAL,
@@ -1210,12 +1210,12 @@ public class ULPlanFinder extends JDialog {
                                              new Insets(0, 0, 0, 0), 0, 0));
         y++;
         x = 0;
-        allocationPanel.add(allocRemoteClusterUIDLabel,
+        allocationPanel.add(allocRemoteAgentUIDLabel,
                       new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
                                              GridBagConstraints.WEST,
                                              GridBagConstraints.HORIZONTAL,
                                              new Insets(0, 0, 0, 0), 0, 0));
-        allocationPanel.add(allocRemoteClusterUIDCB,
+        allocationPanel.add(allocRemoteAgentUIDCB,
                       new GridBagConstraints(x++, y, 1, 1, 1.0, 0.0,
                                              GridBagConstraints.WEST,
                                              GridBagConstraints.HORIZONTAL,
@@ -1495,11 +1495,11 @@ public class ULPlanFinder extends JDialog {
         
       } else if (planObjectTypeSelected.equals(PropertyNames.ASSET_OBJECT)) {
         // ASSET
-        String assetClusterSelected = (String)assetClusterCB.getSelectedItem();
-        if (!assetClusterSelected.equals(ALL))
+        String assetAgentSelected = (String)assetAgentCB.getSelectedItem();
+        if (!assetAgentSelected.equals(ALL))
           selectedNodes = getNodesWithStringAttribute(selectedNodes,
-                                                      PropertyNames.ASSET_CLUSTER,
-                                                      assetClusterSelected);
+                                                      PropertyNames.ASSET_AGENT,
+                                                      assetAgentSelected);
 
         String groupSelected = (String)assetGroupNameCB.getSelectedItem();
         if (!groupSelected.equals(ALL))
@@ -1562,11 +1562,11 @@ public class ULPlanFinder extends JDialog {
                                                                 PropertyNames.ASSET_TRANSFER_ASSIGNOR,
                                                                 assignorSelected);
         } else if (planObjectTypeSelected.equals(PropertyNames.PLAN_ELEMENT_ALLOCATION)) {
-                  String allocClusterSelected = (String)allocToClusterCB.getSelectedItem();
-                  if (!allocClusterSelected.equals(ALL))
+                  String allocAgentSelected = (String)allocToAgentCB.getSelectedItem();
+                  if (!allocAgentSelected.equals(ALL))
                     selectedNodes = getNodesWithStringAttribute(selectedNodes,
-                                                                PropertyNames.ALLOCATION_TO_CLUSTER,
-                                                                allocClusterSelected);
+                                                                PropertyNames.ALLOCATION_TO_AGENT,
+                                                                allocAgentSelected);
                   String allocTaskUIDSelected = (String)allocTaskUIDCB.getSelectedItem();
                   if (!allocTaskUIDSelected.equals(ALL))
                     selectedNodes = getNodesWithStringAttribute(selectedNodes,
@@ -1578,11 +1578,11 @@ public class ULPlanFinder extends JDialog {
                     selectedNodes = getNodesWithStringAttribute(selectedNodes,
                                                                 PropertyNames.ALLOCATION_ASSET_UID,
                                                                 allocAssetUIDSelected);
-                  String allocRemoteClusterUIDSelected = (String)allocRemoteClusterUIDCB.getSelectedItem();
-                  if (!allocRemoteClusterUIDSelected.equals(ALL))
+                  String allocRemoteAgentUIDSelected = (String)allocRemoteAgentUIDCB.getSelectedItem();
+                  if (!allocRemoteAgentUIDSelected.equals(ALL))
                     selectedNodes = getNodesWithStringAttribute(selectedNodes,
-                                                                PropertyNames.ALLOCATION_REMOTE_CLUSTER_UID,
-                                                                allocRemoteClusterUIDSelected);
+                                                                PropertyNames.ALLOCATION_REMOTE_AGENT_UID,
+                                                                allocRemoteAgentUIDSelected);
 
                   String allocLocalOrgUIDSelected = (String)allocLocalOrgUIDCB.getSelectedItem();
                   if (!allocLocalOrgUIDSelected.equals(ALL)) 

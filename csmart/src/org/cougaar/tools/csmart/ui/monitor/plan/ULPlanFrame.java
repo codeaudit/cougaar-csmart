@@ -292,20 +292,20 @@ public class ULPlanFrame extends CSMARTFrame {
       return;
     }
     JPanel legendPanel = new JPanel(new BorderLayout());
-    JPanel clusterPanel = new JPanel();
-    clusterPanel.setBorder(new TitledBorder("Agents"));
-    clusterPanel.setLayout(new BoxLayout(clusterPanel, BoxLayout.Y_AXIS));
+    JPanel agentPanel = new JPanel();
+    agentPanel.setBorder(new TitledBorder("Agents"));
+    agentPanel.setLayout(new BoxLayout(agentPanel, BoxLayout.Y_AXIS));
 
     JComboBox cb = 
       new JComboBox(new LegendComboBoxModel(graph.getNodeColors()));
     cb.setRenderer(new LegendRenderer());
     cb.setSelectedIndex(0);
-    clusterPanel.add(cb);
+    agentPanel.add(cb);
 
     JPanel planPanel = new JPanel(new BorderLayout());
     planPanel.setBorder(new TitledBorder("Plan Objects"));
     planPanel.add(getNodeShapeLegend(), BorderLayout.CENTER);
-    legendPanel.add(clusterPanel, BorderLayout.NORTH);
+    legendPanel.add(agentPanel, BorderLayout.NORTH);
     legendPanel.add(planPanel, BorderLayout.CENTER);
     legendDialog = new JDialog(this, "Legend", false);
     legendDialog.getContentPane().setLayout(new BorderLayout());

@@ -249,7 +249,7 @@ public final class ThreadUtils {
         // switch on "isDown" -- let HotSpot optimize the loop
         if (isDown) {
           // "down" boundary is an allocation to an agent
-          Object o = pti.get(PropertyNames.ALLOCATION_TO_CLUSTER);
+          Object o = pti.get(PropertyNames.ALLOCATION_TO_AGENT);
           if (o != null) {
             String allocAgent = (String)o;
             String allocTask = 

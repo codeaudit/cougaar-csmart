@@ -135,9 +135,9 @@ public class PropertyNames {
   // names for Allocation properties
   public static final String ALLOCATION_ASSET_UID = "Asset_UID";
   public static final String ALLOCATION_LOCAL_ORG_UID = "Allocated_to_Local_Organization";
-  public static final String ALLOCATION_TO_CLUSTER = "Allocated_to_Agent";
+  public static final String ALLOCATION_TO_AGENT = "Allocated_to_Agent";
   public static final String ALLOCATION_TASK_UID = "Allocation_Task_UID";
-  public static final String ALLOCATION_REMOTE_CLUSTER_UID = "Remote_Agent_UID";
+  public static final String ALLOCATION_REMOTE_AGENT_UID = "Remote_Agent_UID";
   // names for AssetTransfer properties
   public static final String ASSET_TRANSFER_ASSET_UID = "Asset_Transfer_Asset_UID";
   public static final String ASSET_TRANSFER_ASSIGNEE_UID = "Assignee_UID";
@@ -156,7 +156,7 @@ public class PropertyNames {
   public static final String ASSET_GROUP_NAME = "Asset_Group_Name";
   public static final String ASSET_NAME = "Asset_Name";
   public static final String ASSET_PROPERTY = "Asset_Property";
-  public static final String ASSET_CLUSTER = "Asset_Agent";
+  public static final String ASSET_AGENT = "Asset_Agent";
   // names for Task properties
   public static final String TASK_DIRECT_OBJECT_UID = "Direct_Object_UID";
   public static final String TASK_END_TIME = "Task_End_Time";

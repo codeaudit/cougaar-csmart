@@ -75,7 +75,7 @@ public class ULPlanNode implements NodeObject {
     // set color, special case assets
     color = (String)properties.get(PropertyNames.AGENT_ATTR);
     if (objectType.equals(PropertyNames.ASSET_OBJECT)) {
-      String s = (String)properties.get(PropertyNames.ASSET_CLUSTER);
+      String s = (String)properties.get(PropertyNames.ASSET_AGENT);
       if (s != null)
 	color = s;
     }
@@ -260,7 +260,6 @@ public class ULPlanNode implements NodeObject {
    * The string that will be used to determine the color of the 
    * node; the agent, or for an asset with a clusterPG, the clusterPG agent.
    */
-
   public String getColor() {
     return color;
   }

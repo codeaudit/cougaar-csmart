@@ -265,7 +265,7 @@ public class CSMARTGraph extends Graph
 	if (a == null)
 	  continue;
 	String colorName = a.getStringValue();
-	Color color = properties.getClusterColor(colorName);
+	Color color = properties.getAgentColor(colorName);
 	GrappaColor.addColor(colorName, color);
 	node.setAttribute(COLOR_ATTR, colorName);
 	node.setAttribute(GrappaConstants.STYLE_ATTR,
@@ -282,7 +282,7 @@ public class CSMARTGraph extends Graph
       while (keys.hasMoreElements()) {
 	String colorName = (String)keys.nextElement();
 	Color color = (Color)colors.get(colorName);
-	properties.setClusterColor(colorName, color);
+	properties.setAgentColor(colorName, color);
 	GrappaColor.addColor(colorName, color);
       }
       // define COLOR_ATTR and STYLE_ATTR to use COLOR_DETERMINER value
@@ -617,7 +617,7 @@ public class CSMARTGraph extends Graph
     // get a string that determines the color
     String colorName = obj.getColor();
     // add mapping from this string to a real Color in grappa
-    GrappaColor.addColor(colorName, properties.getClusterColor(colorName));
+    GrappaColor.addColor(colorName, properties.getAgentColor(colorName));
     node.setAttribute(GrappaConstants.COLOR_ATTR, colorName);
     GrappaStyle gs = new GrappaStyle(GrappaConstants.NODE, 
 	   "filled(true), line_color(" + colorName + ")");
@@ -1618,18 +1618,18 @@ public class CSMARTGraph extends Graph
 
   /**
    * Create a label for a node from a UID string.
-   * Creates a label of the form: <clustername><newline><UID-tail>
-   * where clustername is the UIDString before the first backslash
+   * Creates a label of the form: <agentname><newline><UID-tail>
+   * where agentname is the UIDString before the first backslash
    * and UID-tail is the last 5 characters of the UIDString
    * @param UIDString UID
    * @return          label
    */
 
   private String UIDToLabel(String UIDString) {
-    String clusterId = UIDString.substring(0, UIDString.indexOf('/'));
+    String agentId = UIDString.substring(0, UIDString.indexOf('/'));
     String tail = UIDString.substring(UIDString.length()-5,
 				      UIDString.length());
-    return clusterId + "\\n" + tail;
+    return agentId + "\\n" + tail;
   }
 
   /**
@@ -1951,7 +1951,7 @@ public class CSMARTGraph extends Graph
       if (a == null)
 	continue;
       String colorName = a.getStringValue();
-      Color c = properties.getClusterColor(colorName);
+      Color c = properties.getAgentColor(colorName);
       if(log.isDebugEnabled()) {
         log.debug("CSMARTGraph: color for: " + colorName + " is: " + c);
       }

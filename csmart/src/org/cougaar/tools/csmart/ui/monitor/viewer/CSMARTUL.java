@@ -1070,9 +1070,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 	assets.put(assetKeyName, pt);
       } else {
 	// if this info is from the asset's agent, then save it instead
-	String assetClusterName = (String)pt.get(PropertyNames.ASSET_CLUSTER);
-	String assetAgentName = (String)pt.get(PropertyNames.AGENT_ATTR);
-	if (assetAgentName.equals(assetClusterName)) {
+	String assetAgentName = (String)pt.get(PropertyNames.ASSET_AGENT);
+	String assetAgentAttrName = (String)pt.get(PropertyNames.AGENT_ATTR);
+	if (assetAgentAttrName.equals(assetAgentName)) {
 	  assets.put(assetKeyName, pt);
 	}
       }
