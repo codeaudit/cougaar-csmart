@@ -23,15 +23,15 @@ package org.cougaar.tools.csmart.runtime.ldm;
 
 import java.util.*;
 
-import org.cougaar.core.domain.Domain;
-import org.cougaar.core.domain.Factory;
-import org.cougaar.core.domain.LDMServesPlugin;
-import org.cougaar.core.blackboard.LogPlan;
-import org.cougaar.core.blackboard.BlackboardServesLogicProvider;
-import org.cougaar.core.blackboard.LogPlanServesLogicProvider;
 import org.cougaar.core.agent.ClusterServesLogicProvider;
+
+import org.cougaar.core.blackboard.LogPlan;
 import org.cougaar.core.blackboard.XPlanServesBlackboard;
-import org.cougaar.core.agent.LogicProvider;
+
+import org.cougaar.core.component.BindingSite;
+
+import org.cougaar.core.domain.DomainAdapter;
+import org.cougaar.core.domain.DomainBindingSite;
 
 import org.cougaar.tools.csmart.Constants;
 import org.cougaar.tools.csmart.runtime.ldm.lps.*;
@@ -44,52 +44,76 @@ import org.cougaar.tools.csmart.runtime.ldm.lps.*;
  * </pre>
  **/
 
-public class CSMARTDomain implements Domain {
-  public CSMARTDomain() { }
+public class CSMARTDomain extends DomainAdapter {
+  private static final String CSMART_NAME = "csmart".intern();
 
-  /**
-   * Create the CSMARTFactory for creating Events and things
-   * @return the CSMARTFactory instance
-   **/
-  public Factory getFactory(LDMServesPlugin ldm) {
-    return new CSMARTFactory(ldm);
+  public String getDomainName() {
+    return CSMART_NAME;
+  }
+
+  public CSMARTDomain() {
   }
 
   /**
    * CSMART has almost no Domain initialization to do - just initialize our Constants
    **/
   public void initialize() {
+    super.initialize();
     Constants.Role.init();
   }
 
-  /**
-   * Create a simple dummy CSMARTPlan
-   * This Plan is just a placeholder for now, with no subscriptions
-   * @return the <code>CSMARTPlan</code>
-   **/
-  public XPlanServesBlackboard createXPlan(Collection existingXPlans) {
+  protected void loadFactory() {
+    DomainBindingSite bindingSite = (DomainBindingSite) getBindingSite();
 
-    for (Iterator plans = existingXPlans.iterator(); plans.hasNext(); ) {
-      XPlanServesBlackboard xPlan = (XPlanServesBlackboard) plans.next();
-      if (xPlan != null) return xPlan;
+    if (bindingSite == null) {
+      throw new RuntimeException("Binding site for the domain has not be set.\n" +
+                             "Unable to initialize domain Factory without a binding site.");
+    } 
+
+    setFactory(new CSMARTFactory(bindingSite.getClusterServesLogicProvider().getLDM()));
+  }
+
+  protected void loadXPlan() {
+    DomainBindingSite bindingSite = (DomainBindingSite) getBindingSite();
+
+    if (bindingSite == null) {
+      throw new RuntimeException("Binding site for the domain has not be set.\n" +
+                             "Unable to initialize domain XPlan without a binding site.");
+    } 
+
+    Collection xPlans = bindingSite.getXPlans();
+    LogPlan logPlan = null;
+    
+    for (Iterator iterator = xPlans.iterator(); iterator.hasNext();) {
+      XPlanServesBlackboard  xPlan = (XPlanServesBlackboard) iterator.next();
+      if (xPlan instanceof LogPlan) {
+        // Note that this means there are 2 paths to the plan.
+        // Is this okay?
+        logPlan = (LogPlan) logPlan;
+        break;
+      }
     }
     
-    return new LogPlan();
-  }  
+    if (logPlan == null) {
+      logPlan = new LogPlan();
+    }
+    
+    setXPlan(logPlan);
+  }
 
-  /**
-   * CSMART does have its own LogicProviders
-   * For now, exactly one -- the <code>ImpactsLP</code>
-   * @return a Collection of the CSMART LogicProviders or null
-   * @see ImpactsLP
-   **/
-  public Collection createLogicProviders(BlackboardServesLogicProvider logplan,
-					 ClusterServesLogicProvider cluster) {
+  protected void loadLPs() {
+    DomainBindingSite bindingSite = (DomainBindingSite) getBindingSite();
 
-      ArrayList l = new ArrayList(1);
+    if (bindingSite == null) {
+      throw new RuntimeException("Binding site for the domain has not be set.\n" +
+                             "Unable to initialize domain LPs without a binding site.");
+    } 
 
-      l.add(new ImpactsLP((LogPlanServesLogicProvider)logplan, cluster));
-      return l;
+    ClusterServesLogicProvider cluster =
+      bindingSite.getClusterServesLogicProvider();
+    LogPlan logPlan = (LogPlan) getXPlan();
+
+    addLogicProvider(new ImpactsLP(logPlan, cluster));;
   }
 
 } // end of CSMARTDomain.java
