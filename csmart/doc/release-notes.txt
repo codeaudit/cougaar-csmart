@@ -8,6 +8,9 @@ change to the 1AD defined societies, that require reloading part of
 the CSMART database. Note in particular the change to the Experiment
 save behavior (bug 2002).
 
+- Bug 1988: This is a change to the CSMART included 1AD society
+  definitions. You must re-run csmart/data/database/scripts/mysql/load_1ad_mysql.[sh/bat]
+
 - Bug 2002: Saving experiments is incredibly slow. This is a partial
   fix, which changes some existing functionality. Recipe target
   queries (in recipeQueries.q) look in the database to decide where to
@@ -24,14 +27,61 @@ save behavior (bug 2002).
   change should dramatically reduce Experiment save times,
   particularly for experiments with many recipes.
 
+- Bug 2002: Multiple additional optimizations to the manipulation and
+  traversing of internal data structures, giving overall speedup
+  throughout CSMART operations. Users should see no difference, except
+  in faster operations. These changes include: 
+  - Multiple optimizations to getProperty and getProperties
+  (ConfigurableComponent). Rely on the fact that Component names
+  reflect their position in the hierarchy and that Property names
+  similarly reflect which Component they hang off of.
+  - Intern short (< 16 chars) String Property values
+  (ConfigurableComponentProperty)
+  - Intern SimpleNames (as these often get repeated).
+  - Avoid changing Property value if the new one is .equals to the old
+  (not just checking ==) (ConfigurableComponentProperty)
+  - Cache Name hashCodes, toStrings, and sizes (MultiName, etc)
+  - Optimize some name traversals (MultiName, etc)
+  - When changing Component name, don't recurse up
+  (ConfigurableComponent)
+  - Add error check to look for adding Properties to illogical spots. (ConfigurableComponent)
+  - Cache loggers to re-use instances as much as possible (CSMART.java)
+  - Remove an un-used logger (PropertyBase)
+  - Buffer workspace file input/output (Organizer)
+  - Small bug fix to unused getInvisibleProperty(String)
+  (ConfigurableComponent)
+  - Simplify serialization to workspace file, for quicker
+  serialization and a smaller file (ConfigurableComponent)
+  - Multiple additional error checks in ConfigurableComponent
+  - Further optimizations to getPropertyNames to avoid extra tree
+  traversals
+  - Optimize getInvisibleProperty to do same as getProperty
+  - Clean up old InvisibleProperty implementation
+
+- Bug 1810, 1977: If re-calculating an ALIB_ID because only the name
+  changed, look to see if the new ALIB_ID is also already there - use
+  it if the entry is identical, otherwise loop with yet another ALIB
+  ID. This fixes problems in changing the name of an agent in a
+  Complete Agent recipe, and in using a Component Collection recipe.
+
+- Bug 2025, 2032: Deleting a recipe from the DB after deleting it from the
+  workspace failed to completely delete Complete Agent and Component
+  Collection recipes, resulting in errors on import.
+
+- Bug 2039: Copied Component Collection recipes lost some
+  parameters. Completed missing field copying (in BaseCDATAComponent),
+  simplified CDATA generation and copying logic.
+
+- Bug 2040: Renaming a Component Collection recipe caused you to lose
+  some components. Fixed name changing of components
 - Bug 2015: Log out the start and finish times when saving an
   experiment, to aid in debugging the above bug.
-- Bug 1988: This is a change to the CSMART included 1AD society
-  definitions. You must re-run csmart/data/database/script/mysq/load_1ad_mysql.[sh/bat]
 - Bug 2000: If a recipe fails to load, avoid later NPEs.
 - Bug 2000: When using ConfigFinder to find a file, if you cannot
   locate it, be careful to look for the null return -- particularly in
   the ServletGroupInsertionRecipe.
+- Bug 2000: Extra error checks to look for case of failing to find
+  servlets.txt file.
 - Bug 2012: The HomeLocation slot of MilitaryOrgPG was incorrectly
   parsed in some cases. This has now been fixed.
 - Bug 2022: The "csmart/bin/CSMART" script erroneously ran CSMART
@@ -45,6 +95,9 @@ save behavior (bug 2002).
   (named param-10). You may now add as many parameters as you wish.
 - Bug 2021: Forbid adding an Agent with the same name as the recipe
   from which you are adding it.
+- Bug 2021: When editing the Agent name parameter in a Complete Agent
+  or Component Collection recipe, reject names the same as the recipe
+  name.
 
 Release 9.4.1.1:
 This release includes bug fixes to support the Fall 2002 Ultra*Log
