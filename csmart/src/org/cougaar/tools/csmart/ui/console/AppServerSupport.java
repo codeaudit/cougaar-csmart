@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2000-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -52,7 +52,7 @@ public class AppServerSupport {
   // this maps the "experiment name-node name" to an AppServerDesc
   // and provides the app server on which the node is running
   // note that the same name must be used for the ProcessDescription
-  private Hashtable nodeToAppServer; 
+  private Hashtable nodeToAppServer;
   private transient Logger log;
 
   public AppServerSupport() {
@@ -81,11 +81,10 @@ public class AppServerSupport {
     try {
       // Third argument is whether AppServer should be verbose
       // -- it will print to STDOUT in the CSMART window
-      remoteAppServer = 
-        remoteHostRegistry.lookupRemoteHost(hostName, port, false);
+      remoteAppServer = remoteHostRegistry.lookupRemoteHost(hostName, port, false);
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Unable to contact app-server on " + 
+        log.error("Unable to contact app-server on " +
                   hostName + ":" + port, e);
       }
 
@@ -154,10 +153,10 @@ public class AppServerSupport {
     int remotePort = getAppServerPort(properties);
     RemoteHost appServer = getAppServer(hostName, remotePort);
     if (appServer != null) {
-      AppServerDesc desc = 
+      AppServerDesc desc =
         new AppServerDesc(appServer, hostName, remotePort);
       appServers.add(desc);
-      if (log.isDebugEnabled()) 
+      if (log.isDebugEnabled())
 	log.debug("Adding app server for: " + hostName + " " + remotePort);
     }
     return appServer;
@@ -179,7 +178,7 @@ public class AppServerSupport {
    * Called from menu to display known app servers.
    */
   public synchronized void displayAppServers() {
-    Util.showObjectsInList(null, appServers, "Application Servers", 
+    Util.showObjectsInList(null, appServers, "Application Servers",
                            "Application Servers");
   }
 
@@ -191,7 +190,7 @@ public class AppServerSupport {
     refreshAppServers();
     killAllProcessesWorker();
   }
-  
+
   /**
    * Synchronized worker for above
    */
@@ -258,7 +257,7 @@ public class AppServerSupport {
 		log.debug("Killing node listener: " + s +
 			  " for node: " + name);
 	      }
-	      
+
 	      try {
 		rl.flushOutput();
 	      } catch (Exception e) {
@@ -266,7 +265,7 @@ public class AppServerSupport {
 		  log.error("killListener: Exception flushing output for " + name + ": ", e);
 		}
 	      }
-	      
+
 	      try {
 		rl.removeListener(s);
 	      } catch (Exception e) {
@@ -300,9 +299,9 @@ public class AppServerSupport {
     for (int i = 0; i < appServers.size(); i++) {
       AppServerDesc desc = (AppServerDesc)appServers.get(i);
       RemoteHost rh = getAppServer(desc.hostName, desc.remotePort);
-      if (rh == null) 
+      if (rh == null)
         appServersToDelete.add(desc);
-      else 
+      else
         desc.appServer = rh;
     }
     removeAppServers(appServersToDelete);
@@ -316,7 +315,7 @@ public class AppServerSupport {
    */
   private void removeAppServers(ArrayList appServersToDelete) {
     for (int i = 0; i < appServersToDelete.size(); i++) {
-      AppServerDesc appServerToDelete = 
+      AppServerDesc appServerToDelete =
         (AppServerDesc)appServersToDelete.get(i);
       appServers.remove(appServerToDelete);
     }
@@ -348,7 +347,7 @@ public class AppServerSupport {
     JPanel panel = new JPanel();
     panel.add(new JLabel("Enter HostName:Port:"));
     panel.add(tf);
-    int result = 
+    int result =
       JOptionPane.showOptionDialog(null, panel, "Add Application Server",
 				   JOptionPane.OK_CANCEL_OPTION,
 				   JOptionPane.PLAIN_MESSAGE,
@@ -445,7 +444,7 @@ public class AppServerSupport {
               desc.remotePort == appServerDesc.remotePort)
             continue;
           else if (!findListener(appServer, name))
-            haveNewNodes = true; 
+            haveNewNodes = true;
         }
       }
     }
@@ -457,7 +456,7 @@ public class AppServerSupport {
    * Returns true if it finds a listener on the node
    * that this instance of CSMART created.
    * @param appServer the application server to contact
-   * @param the process name
+   * @param name the process name
    */
   private boolean findListener(RemoteHost appServer, String name) {
     try {
@@ -467,7 +466,7 @@ public class AppServerSupport {
 	List listenerNames = rl.list();
 	for (int j = 0; j < listenerNames.size(); j++) {
 	  String s = (String)listenerNames.get(j);
-	  if (s.equals(CSMART.getNodeListenerId())) 
+	  if (s.equals(CSMART.getNodeListenerId()))
 	    return true;
 	}
       } else {
@@ -486,7 +485,7 @@ public class AppServerSupport {
   /**
    * Returns true if new nodes were discovered since this method
    * was last called, and these new nodes don't have listeners from
-   * this instance of CSMART.  
+   * this instance of CSMART.
    * Note that this method is called periodically from a timer thread
    * so methods in this class are synchronized.
    * @return true if there are new nodes with no listeners from this CSMART
@@ -504,8 +503,8 @@ public class AppServerSupport {
   private String[] getNodesToAttach(ArrayList nodes) {
     if (nodes == null || nodes.size() == 0)
       return null;
-    Object[] selected = 
-      Util.getObjectsFromList(null, nodes, 
+    Object[] selected =
+      Util.getObjectsFromList(null, nodes,
                               "Attach to Nodes", "Select Nodes:");
     if (selected != null) {
       ArrayList sel = new ArrayList(selected.length);
@@ -597,7 +596,7 @@ public class AppServerSupport {
   public boolean isProcessNameUsed(String pName) {
     if (pName == null || pName.equals(""))
       return true;
-    
+
     refreshAppServers();
     return isProcUsedWorker(pName);
   }
@@ -721,5 +720,5 @@ public class AppServerSupport {
       super.add(descToAdd);
     }
   }
-  
+
 }
