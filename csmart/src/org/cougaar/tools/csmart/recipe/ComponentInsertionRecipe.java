@@ -43,7 +43,7 @@ import org.cougaar.tools.csmart.society.AgentComponent;
  *
  * This recipe performs three queries: The first query lists the
  * target components and should return COMPONENT_ALIB_ID values such
- * as appear in the V4_ALIB_COMPONENT.COMPONENT_ALIB_ID column. It is
+ * as appear in the ALIB_COMPONENT.COMPONENT_ALIB_ID column. It is
  * not necessary for the ids to be distinct. The substitutions that
  * are available during this first query are: :assembly_match: has
  * something like "in ('assembly', 'assembly', ...)" and should be
