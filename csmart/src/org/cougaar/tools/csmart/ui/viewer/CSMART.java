@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -24,10 +24,31 @@ package org.cougaar.tools.csmart.ui.viewer;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.util.*;
-import javax.swing.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Properties;
+
+import javax.swing.Action;
+import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JFileChooser;
+import javax.swing.JToolBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JMenuBar;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -36,6 +57,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.cougaar.core.node.Bootstrapper;
+import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.log.Logger;
 import org.cougaar.util.log.LoggerFactory;
 
@@ -60,12 +82,6 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
 
 import org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.io.FileInputStream;
-import org.cougaar.util.ConfigFinder;
-import java.io.IOException;
 
 /**
  * Top level CSMART user interface.
@@ -183,6 +199,11 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     setTitle("CSMART");
 
     log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer");
+
+    // Write initial CSMART info to the log file
+    if (log.isInfoEnabled()) {
+      log.info(writeDebug());
+    }
 
     resultDir = initResultDir();
 
@@ -952,6 +973,23 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     new CSMART();
   }
 
+  /**
+   * Write out basic info about this run of CSMART
+   * to help with debugging.
+   *
+   * @return a <code>String</code> debug string for logging
+   */
+  public String writeDebug() {
+    // Cougaar version, build info
+    return "This is CSMART";
+    // Some properties valus: OS, install.path, config.path,
+    // dbMode, isMySQL
+    // What tools are open
+    // whats loaded in the workspace
+    // results directory setting
+    // but probably not the cougaar.rc contents
+  }
+  
   // Logging Methods
 
   private static LoggerFactory lf;
