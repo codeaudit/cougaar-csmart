@@ -222,6 +222,10 @@ public abstract class DNDTree
    */
 
   public void dragGestureRecognized(DragGestureEvent event) {
+    InputEvent ie = event.getTriggerEvent();
+    // ignore right mouse events
+    if ((ie.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+      return;
     if (!isEditable()) return; // if tree isn't editable, return
     DefaultMutableTreeNode target = getDropTarget(event.getDragOrigin());
     if (target == null) return; // Nothing to drag.
