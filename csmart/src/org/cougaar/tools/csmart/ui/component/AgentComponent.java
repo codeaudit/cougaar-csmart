@@ -43,5 +43,5 @@ public interface AgentComponent extends ComponentProperties {
    * @param configDir a <code>File</code> path to write the file into
    * @exception IOException if an error occurs
    */
-  void writeIniFile(File configDir) throws IOException;
+  //  void writeIniFile(File configDir) throws IOException;
 }

@@ -69,30 +69,30 @@ public class ScalabilityConfigurationWriter implements ConfigurationWriter {
   private void writeConfigFilesForAgents(PrintWriter writer,
 					 File configDir,
 					 AgentComponent[] agents) {
-    try {
-      writer.println("[ Clusters ]");
-      for (int i = 0; i < agents.length; i++) {
-	agents[i].writeIniFile(configDir);
-        writer.println(agents[i].getConfigLine());
-	if (agents[i] instanceof ScalabilityXAgent) {
-	  ScalabilityXAgent agent = (ScalabilityXAgent)agents[i];
-	  //agent.writePrototypeIniFile(configDir);
-	}
-      }
-      writer.println();
-      writer.println("[ AlpProcess ]");
-      writer.println();
-      writer.println("[ Policies ]");
-      writer.println();
-      writer.println("[ Permission ]");
-      writer.println();
-      writer.println("[ AuthorizedOperation ]");
-    } catch (Exception e) {
-      System.out.println("Error writing config file: " + e);
-    }
-    finally {
-      writer.close();
-    }
+//     try {
+//       writer.println("[ Clusters ]");
+//       for (int i = 0; i < agents.length; i++) {
+// 	agents[i].writeIniFile(configDir);
+//         writer.println(agents[i].getConfigLine());
+// 	if (agents[i] instanceof ScalabilityXAgent) {
+// 	  ScalabilityXAgent agent = (ScalabilityXAgent)agents[i];
+// 	  //agent.writePrototypeIniFile(configDir);
+// 	}
+//       }
+//       writer.println();
+//       writer.println("[ AlpProcess ]");
+//       writer.println();
+//       writer.println("[ Policies ]");
+//       writer.println();
+//       writer.println("[ Permission ]");
+//       writer.println();
+//       writer.println("[ AuthorizedOperation ]");
+//     } catch (Exception e) {
+//       System.out.println("Error writing config file: " + e);
+//     }
+//     finally {
+//       writer.close();
+//     }
   }
 
 }
