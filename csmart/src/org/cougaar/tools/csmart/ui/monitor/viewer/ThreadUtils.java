@@ -28,8 +28,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.*;
+import javax.swing.JOptionPane;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
+import org.cougaar.tools.csmart.ui.util.ServletResponse;
 import org.cougaar.tools.csmart.ui.util.ServletResult;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.PropertyTree;
@@ -332,11 +334,14 @@ public final class ThreadUtils {
       parameterValues.add("down");
     else
       parameterValues.add("up");
-    Collection c = 
+    ServletResponse response =
       ClientServletUtil.getCollectionFromAgent(agentURL,
                      ClientServletUtil.SEARCH_SERVLET,
                      parameterNames, parameterValues, uids, limit);
-    return (List)c;
+    String s = response.getErrorMessage();
+    if (s != null)
+      JOptionPane.showMessageDialog(null, s);
+    return (List)response.getCollection();
   }
 
 //      try {

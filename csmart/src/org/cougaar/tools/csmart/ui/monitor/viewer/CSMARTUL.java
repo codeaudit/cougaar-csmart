@@ -44,9 +44,11 @@ import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.monitor.generic.UIProperties;
 import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetrics;
 import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetricsFrame;
+import org.cougaar.tools.csmart.ui.monitor.topology.TopologyFrame;
 
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
+import org.cougaar.tools.csmart.ui.util.ServletResponse;
 import org.cougaar.tools.csmart.ui.util.ServletResult;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -123,6 +125,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
      NamedFrame.PLAN,
      NamedFrame.THREAD,
      NamedFrame.METRICS,
+     NamedFrame.TOPOLOGY,
   };
 
   private static final String[] tooltips = {
@@ -131,14 +134,17 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     "Display plan objects.",
     "Display plan objects related to a specified plan object.",
     "Display metrics.",
+    "Display topology."
   };
 
+  // TODO: need new gif for topology
   private static final String[] iconFilenames = {
     "community.gif",
     "society.gif",
     "event.gif",
     "thread.gif",
-    "metric.gif"
+    "metric.gif",
+    "community.gif"
   };
 
   /**
@@ -366,6 +372,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       makeThreadGraph();
     } else if (s.equals(NamedFrame.METRICS)) {
       makeMetricsGraph();
+    } else if (s.equals(NamedFrame.TOPOLOGY)) {
+      makeTopologyGraph();
     } else if (s.equals(OPEN_GRAPH_MENU_ITEM)) {
       openGraph();
     } else if (s.equals(OPEN_METRIC_MENU_ITEM)) {
@@ -590,7 +598,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    * Query user for agent URL and get names of agents from that URL.
    * The user is only queried once, unless we fail to contact the agent.
    */
-  private static Vector getAgentURLs() {
+  public static Vector getAgentURLs() {
     if (agentURL == null)
       getAgentURL();
     if (agentURL == null)
@@ -665,51 +673,43 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       ClientServletUtil.getCollectionFromAgents(agentURLs, servletName,
                                                 parameterNames, 
                                                 parameterValues, limit);
-    ArrayList collections = servletResult.getCollections();
-    int nAgents = 0;
+    int n = servletResult.getNumberOfResponses();
     StringBuffer buf = new StringBuffer(100);
     Collection objectsFromServlet = null;
-    // there is a collection for each agent contacted
-    // if there was an error contacting the agent, then the collection is null
-    // if the limit was exceeded, the number of collections is less
-    // than the number of agents
-    for (int i = 0; i < collections.size(); i++) {
-      Collection col = (Collection)collections.get(i);
-      if (col != null) {
-        nAgents++;
-        if (objectsFromServlet == null)
-          objectsFromServlet = col;
-        else {
-          try {
-            objectsFromServlet.addAll(col);
-          } catch (Exception e) {
-            if(log.isErrorEnabled()) {
-              log.error("CSMARTUL can't add results to collection: ", e);
+    int nAgents = 0;
+    for (int i = 0; i < n; i++) {
+      ServletResponse response = servletResult.getServletResponse(i);
+      String s = response.getErrorMessage();
+      if (s != null) {
+        buf.append("Contacting: ");
+        buf.append(response.getURL());
+        buf.append(" ");
+        buf.append(response.getErrorMessage());
+        buf.append("\n");
+      } else {
+        Collection c = response.getCollection();
+        if (c != null) {
+          nAgents++;
+          if (objectsFromServlet == null)
+            objectsFromServlet = c;
+          else {
+            try {
+              objectsFromServlet.addAll(c);
+            } catch (Exception e) {
+              if(log.isErrorEnabled()) {
+                log.error("CSMARTUL can't add results to collection: ", e);
+              }
             }
           }
         }
-      } else { // these are the agents we couldn't contact
-	// FIXME:
-	// This is where we could see that the Agent in question is not in
-	// any experiment we have access to, or the servlet is not in the Agent,
-	// or the Agent is a node Agent, etc
-	// CSMARTUL.experiment should be accessible
-	// Of course, we'd have to re-parse out the Agent name
-	// And to look for the Servlet, you'd have to look at the parameters
-	// of all the plugins of the Agent.
-        buf.append("\n");
-        buf.append(agentURLs.get(i));
       }
     }
     if (servletResult.isLimitExceeded())
       JOptionPane.showMessageDialog(null,
-             "Exceeded limit, producing a trimmed graph from " + nAgents +
-                                    " agents.");
+           "Exceeded limit, producing a trimmed graph from " + nAgents +
+                                      " agents.");
     else if (buf.length() != 0) 
-      JOptionPane.showMessageDialog(null,
-                                    "Failed to contact servlet: " +
-                                    servletName + " at agents:" +
-                                    buf.toString());
+      JOptionPane.showMessageDialog(null, buf.toString());
     return objectsFromServlet;
   }
 
@@ -1133,6 +1133,12 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       Window w = 
 	(Window)new CSMARTMetricsFrame(NamedFrame.METRICS, names, data);
       myWindows.add(w);
+  }
+
+  private void makeTopologyGraph() {
+    Window w =
+      new TopologyFrame("Topology", "victoria.bbn.com", 8800, "3ID");
+    myWindows.add(w);
   }
 
   /**
