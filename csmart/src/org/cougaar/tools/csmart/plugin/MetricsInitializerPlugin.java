@@ -201,7 +201,7 @@ public class MetricsInitializerPlugin
         }
         if (checkProviders()) {
           sendControl(Verb_Ready);
-          setState(WAITING);
+          setCurrentState(WAITING);
         }
       }
       break;
@@ -209,7 +209,7 @@ public class MetricsInitializerPlugin
     case WAITING:
       if (checkControlTasks(readyAllocations)) {
         sendControl(Verb_Start);
-        setState(STARTING);
+        setCurrentState(STARTING);
       }
       break;
 
@@ -221,7 +221,7 @@ public class MetricsInitializerPlugin
 
 	startRunning();
 	
-        setState(RUNNING);
+        setCurrentState(RUNNING);
 
         startSampleTimer();
       }
@@ -232,7 +232,7 @@ public class MetricsInitializerPlugin
       //checkRootTasks();         // Keep this up to date
       if (checkControlTasks(sampleAllocations)) {
 	// OK, done with sampling. Go back to running
-        setState(RUNNING);
+        setCurrentState(RUNNING);
 	// Keep the system going
         //fillTaskQueue();
       }
@@ -249,7 +249,7 @@ public class MetricsInitializerPlugin
 
       // If it's time again, do another sample
       if (sampleTimer != null && sampleTimer.hasExpired()) {
-        setState(SAMPLING);
+        setCurrentState(SAMPLING);
         sendControl(Verb_Sample);
         startSampleTimer();     // Restart
         break;
@@ -287,13 +287,13 @@ public class MetricsInitializerPlugin
     }
   }
 
-  private void setState(int newState) {
+  private void setCurrentState(int newState) {
     state = newState;
   }
 
   private void finish() {
     sendControl(Verb_Finish);
-    setState(FINISHING);
+    setCurrentState(FINISHING);
   }
   
   private boolean checkProviders() {
