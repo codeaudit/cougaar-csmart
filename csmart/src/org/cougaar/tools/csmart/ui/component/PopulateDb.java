@@ -33,6 +33,7 @@ public class PopulateDb {
     public static final String QUERY_MAX_ASSEMBLY_ID = "queryMaxAssemblyId";
     public static final String INSERT_ASSEMBLY_ID = "insertAssemblyId";
     public static final String INSERT_TRIAL_ASSEMBLY = "insertTrialAssembly";
+    public static final String CLEAN_TRIAL_ASSEMBLY = "cleanTrialAssembly";
     public static final String CHECK_ALIB_COMPONENT = "checkAlibComponent";
     public static final String CLONE_SET_ID = "1";
     private Map substitutions = new HashMap();
@@ -202,6 +203,7 @@ public class PopulateDb {
         substitutions.put(":expt_id", exptId);
         substitutions.put(":trial_id", trialId);
         executeUpdate(stmt, dbp.getQuery(INSERT_ASSEMBLY_ID, substitutions));
+        executeUpdate(stmt, dbp.getQuery(CLEAN_TRIAL_ASSEMBLY, substitutions));
         executeUpdate(stmt, dbp.getQuery(INSERT_TRIAL_ASSEMBLY, substitutions));
     }
 
@@ -448,6 +450,8 @@ public class PopulateDb {
      **/
     private String getComponentAlibId(ComponentData data) {
         if (data == null) return sqlQuote(null);
+        String result = data.getAlibID();
+        if (result != null) return sqlQuote(result);
         String componentType = data.getType();
         if (componentType.equals(ComponentData.PLUGIN)) {
             String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
