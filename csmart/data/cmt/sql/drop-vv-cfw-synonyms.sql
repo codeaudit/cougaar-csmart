@@ -5,6 +5,8 @@ drop synonym VV_CFW_GROUP_MEMBER;
 drop synonym VV_CFW_GROUP_ORG;
 drop synonym VV_CFW_INSTANCE;
 drop synonym VV_CFW_OPLAN;
+drop synonym VV_CFW_OPLAN_ACTIVITY;
+drop synonym VV_CFW_OPLAN_LOC;
 drop synonym VV_CFW_OPLAN_OG_ATTR;
 drop synonym VV_CFW_ORGTYPE_PLUGIN_GRP;
 drop synonym VV_CFW_ORG_GROUP_OG_MEMBER;
