@@ -183,10 +183,9 @@ public class AdaptivitySupportRecipe extends RecipeBase implements Serializable 
       if(((Boolean)(propViewerServlet.getValue())).booleanValue()) {
         plugin = new GenericComponentData();
         plugin.setType(ComponentData.PLUGIN);
-        plugin.setClassName("org.cougaar.planning.servlet.BlackboardServletComponent");
+        plugin.setClassName("org.cougaar.core.adaptivity.AEViewerServlet");
         plugin.setOwner(this);
         plugin.setParent(data);
-        plugin.addParameter("org.cougaar.core.adaptivity.AEViewerServlet");
         plugin.addParameter("/aeviewer");
         if( GenericComponentData.alreadyAdded(data, plugin)) {
           if(log.isDebugEnabled()) {
