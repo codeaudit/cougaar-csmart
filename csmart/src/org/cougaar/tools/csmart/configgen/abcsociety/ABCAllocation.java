@@ -146,7 +146,6 @@ public class ABCAllocation
       for(int i=0; i < newRules; i++) {
 	ABCAllocationRule rule = new ABCAllocationRule("NewRule" + i);
 	rule.initProperties();
-	rule.getProperty(ABCAllocationRule.PROP_TASKVERB).setValue(new String[0]);
 	addChild(rule);
       }
     } else if( count < getChildCount() ) {
