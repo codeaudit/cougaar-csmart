@@ -88,6 +88,16 @@ public class Organizer extends JScrollPane {
   private boolean updateNeeded = false;
   
   private long nextUpdate = 0L;
+
+  // If you set this give property to false, then no Workspace file is
+  // read or written
+  private static boolean doWorkspace = true;
+  static {
+    String s = System.getProperty("org.cougaar.tools.csmart.doWorkspace");
+    if ("false".equalsIgnoreCase(s)) {
+      doWorkspace = false;
+    }
+  }
   
   private String workspaceFileName;
   private CSMART csmart;
@@ -152,13 +162,25 @@ public class Organizer extends JScrollPane {
     } else {
       this.workspaceFileName = workspaceFileName;
     }
+
     restore(this.workspaceFileName);
+
+    if (! doWorkspace) {
+      if (log.isInfoEnabled()) {
+	log.info("Not using workspace file");
+      }
+    }
+
     if (root == null) {
       root = new DefaultMutableTreeNode(null, true);
       model = new DefaultTreeModel(root);
     }
     model.setAsksAllowsChildren(true);
-    model.addTreeModelListener(myModelListener);
+
+    // This listener is only used to call update
+    if (doWorkspace)
+      model.addTreeModelListener(myModelListener);
+
     workspace = new OrganizerTree(model);
     DefaultCellEditor myEditor = new DefaultCellEditor(new JTextField()) {
       public boolean isCellEditable(EventObject e) {
@@ -233,7 +255,8 @@ public class Organizer extends JScrollPane {
     expandTree(); // fully expand workspace tree
     panel.add(workspace);
     setViewportView(panel);
-    updater.start();
+    if (doWorkspace)
+      updater.start();
   }
 
   private void createLogger() {
@@ -406,6 +429,10 @@ public class Organizer extends JScrollPane {
     Experiment experiment;
     if (o instanceof SocietyComponent) {
       SocietyComponent sc = (SocietyComponent) o;
+
+      // FIXME What is the society is marked as modified? Then I need to save it
+      // But can this ever get called if the society is modified?
+
       String name = "Temp Experiment for " + sc.getSocietyName();
       name = experimentNames.generateName(name);
       experiment = new Experiment(name,
@@ -421,6 +448,24 @@ public class Organizer extends JScrollPane {
       }
       if (!experiment.hasConfiguration())
         experiment.createDefaultConfiguration();
+      if (experiment.isModified()) {
+	// save it
+	final Experiment expt = experiment;
+	GUIUtils.timeConsumingTaskStart(organizer);
+	try {
+	  new Thread("SaveExperiment") {
+	    public void run() {
+	      expt.saveToDb(saveToDbConflictHandler); // save with new config
+	      GUIUtils.timeConsumingTaskEnd(organizer);
+	    }
+	  }.start();
+	} catch (RuntimeException re) {
+	  if(log.isErrorEnabled()) {
+	    log.error("Runtime exception saving experiment", re);
+	  }
+	  GUIUtils.timeConsumingTaskEnd(organizer);
+	}
+      } // end of block to see if experiment was modified
     } else if (o instanceof Experiment) {
       experiment = (Experiment) o;
     } else {
@@ -662,7 +707,9 @@ public class Organizer extends JScrollPane {
     }
     root.setUserObject(rootName);
     model.nodeChanged(root);
-    update();
+
+    if (doWorkspace)
+      update();
   }
 
   /**
@@ -1776,11 +1823,13 @@ public class Organizer extends JScrollPane {
   }
 
   private void installListeners(ModifiableComponent component) {
-    component.addPropertiesListener(myPropertiesListener);
-    for (Iterator i = component.getProperties(); i.hasNext(); ) {
-      Property p = (Property) i.next();
-      PropertyEvent event = new PropertyEvent(p, PropertyEvent.PROPERTY_ADDED);
-      myPropertiesListener.propertyAdded(event);
+    if (doWorkspace) {
+      component.addPropertiesListener(myPropertiesListener);
+      for (Iterator i = component.getProperties(); i.hasNext(); ) {
+	Property p = (Property) i.next();
+	PropertyEvent event = new PropertyEvent(p, PropertyEvent.PROPERTY_ADDED);
+	myPropertiesListener.propertyAdded(event);
+      }
     }
     component.addModificationListener(myModificationListener);
   }
@@ -2056,16 +2105,20 @@ public class Organizer extends JScrollPane {
 
   private TreeModelListener myModelListener = new TreeModelListener() {
       public void treeNodesChanged(TreeModelEvent e) {
-	update();
+	if (doWorkspace)
+	  update();
       }
       public void treeNodesInserted(TreeModelEvent e) {
-	update();
+	if (doWorkspace)
+	  update();
       }
       public void treeNodesRemoved(TreeModelEvent e) {
-	update();
+	if (doWorkspace)
+	  update();
       }
       public void treeStructureChanged(TreeModelEvent e) {
-	update();
+	if (doWorkspace)
+	  update();
       }
     };
   
@@ -2103,7 +2156,10 @@ public class Organizer extends JScrollPane {
     try {
       File f = new File(fileName);
       this.workspaceFileName = f.getPath();
-      if (f.canRead()) {
+      if (doWorkspace && f.canRead()) {
+	if (log.isInfoEnabled()) {
+	  log.info("Reading from workspace file " + fileName);
+	}
 	ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
 	try {
 	  root = (DefaultMutableTreeNode) ois.readObject();
@@ -2134,7 +2190,12 @@ public class Organizer extends JScrollPane {
 	} finally {
 	  ois.close();
 	} 	  
+      } else {
+	if (log.isInfoEnabled()) {
+	  log.info("Not reading workspace file " + fileName);
+	}
       }
+
       if (root == null)
 	root = new DefaultMutableTreeNode();
       String rootName = f.getName();
@@ -2176,23 +2237,27 @@ public class Organizer extends JScrollPane {
   
   PropertyListener myPropertyListener = new PropertyListener() {
       public void propertyValueChanged(PropertyEvent e) {
-	update();
+	if (doWorkspace)
+	  update();
       }
       
       public void propertyOtherChanged(PropertyEvent e) {
-	update();
+	if (doWorkspace)
+	  update();
       }
     };
   
   PropertiesListener myPropertiesListener = new PropertiesListener() {
       public void propertyAdded(PropertyEvent e) {
 	e.getProperty().addPropertyListener(myPropertyListener);
-	update();
+	if (doWorkspace)
+	  update();
       }
       
       public void propertyRemoved(PropertyEvent e) {
 	e.getProperty().removePropertyListener(myPropertyListener);
-	update();
+	if (doWorkspace)
+	  update();
       }
     };
 
@@ -2226,19 +2291,22 @@ public class Organizer extends JScrollPane {
 	    }
           }
         }
-	update();
+	if (doWorkspace)
+	  update();
       }
     };
   
   protected boolean exitAllowed() {
-    synchronized(lockObject) {
-      if (updateNeeded) {
-	nextUpdate = System.currentTimeMillis();
-        lockObject.notify();
-	while (updateNeeded) {
-	  try {
-            lockObject.wait();
-	  } catch (InterruptedException ie) {
+    if (doWorkspace) {    
+      synchronized(lockObject) {
+	if (updateNeeded) {
+	  nextUpdate = System.currentTimeMillis();
+	  lockObject.notify();
+	  while (updateNeeded) {
+	    try {
+	      lockObject.wait();
+	    } catch (InterruptedException ie) {
+	    }
 	  }
 	}
       }
@@ -2250,10 +2318,14 @@ public class Organizer extends JScrollPane {
    * Force an update, which saves the current workspace.
    */
   protected void save() {
-    update();
+    if (doWorkspace)
+      update();
   }
   
   private void save(String fileName) {
+    if (! doWorkspace)
+      return;
+
     if(log.isDebugEnabled()) {
       log.debug("Saving to: " + fileName);
     }
@@ -2277,9 +2349,12 @@ public class Organizer extends JScrollPane {
   private Thread updater = new Thread() {
       public void start() {
 	updateNeeded = false;
-	super.start();
+	if (doWorkspace)
+	  super.start();
       }
       public void run() {
+	if (! doWorkspace)
+	  return;
 	synchronized (lockObject) {
 	  while (true) {
 	    try {
@@ -2304,6 +2379,8 @@ public class Organizer extends JScrollPane {
     };
   
   private void update() {
+    if (! doWorkspace)
+      return;
     synchronized (lockObject) {
       nextUpdate = System.currentTimeMillis() + UPDATE_DELAY;
       updateNeeded = true;
