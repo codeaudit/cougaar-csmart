@@ -16,7 +16,7 @@ Release 9.2.2:
 - Mostly fixed errors with database load scripts. Windows users who
   retrieve CSMART via CVS or who want to edit the database files should
   use Cygwin and the sh load scripts. (bug 1321)
-- Add icons for recipes, societies, and experiments in Organizer!
+- Add icons for recipes, societies, and experiments in Organizer
 - Unique names are now created with a number in square-brackets, not
   just by appending a number.
 - Mostly fixed export scripts (bug 1231)
@@ -25,6 +25,8 @@ Release 9.2.2:
 - Fix bugs allowing user to make edits during a save (bugs 1339,1078)
 - Better error messages on failure to reach servlets (bug 1302)
 - Fix bug in modification recognition (bug 1335)
+- Fixed some bugs on when things are editable, runnable (bug 1326, others)
+- Add file-menu option to save un-saved items
 
 Release 9.2.1:
 - Multiple bug fixes
