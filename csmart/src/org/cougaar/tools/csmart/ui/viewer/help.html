@@ -207,7 +207,9 @@ See the User's Guide for details.</li>
 CSMART automatically saves your workspace as modifications are made, in the current working
 directory. To retrieve previously saved work, Select File-> Open Workspace
 from the main CSMART window. Look for the file named according to your
-workspace name.<b></b>
+workspace name. Note that CSMART will reload all experiments from the
+database as listed in your saved workspace when you restart,
+<i>not</i> restoring experiment details from this file, as in past versions.<b></b>
 <p><b>Workspace</b>
 <p>The large lower panel displays the Workspace (aka Organizer). The Workspace is used
 to create, edit, rename or delete folders, experiments, societies, and recipes. This is how you organize your work. Note that your work is
@@ -216,7 +218,10 @@ give your workspace. To open a previously saved workspace, use the File
 menu option. You may organize items in the workspace however your
 prefer.
 <p>As of 9.2.1, it is possible to disable automatic save & restore of
-the workspace to a file. See the CSMART startup scripts for details.
+the workspace to a file. See the CSMART startup scripts for
+details. Note also that as of 10.0, the workspace contains only the
+listing of which Experiments and Recipes are loaded, and CSMART relies
+on the database for details on the specifications of these components.
 <p>
 Note that society, recipes, and experiments are each displayed with a
 different icon for easy identification.  Entries in the workspace that are displayed in red have been modified
@@ -289,10 +294,11 @@ of sampling is controlled by configuring the recipe using the Configuration Buil
 <h3>Menus</h3>
 <h4>File Menu</h4>
 The File menu provides basic CSMART Workspace functionality:<br>
-<ul><li>Open Workspacee...: Open the named workspace file (for use
-when you previously renamed your workspace).</li>
+<ul><li>Open Workspace...: Open the named workspace file (for use
+when you previously renamed your workspace). This loads the
+Experiments and Recipes listed in this XML document from the database.</li>
 <li>Save New Results In..: Set the directory where node log files and
-results files will be stored. Defaults to CIP/results</li>
+results files will be stored. Defaults to CIP/results.</li>
 <li>Exit: Quit CSMART</li>
 </ul>
 
@@ -336,7 +342,8 @@ when reporting bugs.
 <li>If an appropriate item (experiment or recipe) is not selected in the Workspace,
 then the toolbar button will not be activated.</li>
 
-<li>Changes to your workspace are saved automatically.</li>
+<li>Changes to which items are loaded in your workspace are saved
+automatically to an XML file, unless explicitly disabled.</li>
 </ul>
 
 <br><br>
