@@ -23,34 +23,53 @@ abcnew. =       org.cougaar.tools.csmart.society.abc.
 scalold.   =       org.cougaar.tools.csmart.scalability.
 scalnew.   =       org.cougaar.tools.society.scalability.
 
+# TODO: Figure out why help files are not being copied correctly!
+
+# -- Handle all moves into recipe package
 
 # Move
 abcold.BasicMetric                      occ.recipe.BasicMetric
-abcold.basic-metric-description.html    occ.recipe.basic-metric-description.html
-abcold.basic-metric-help.html           occ.recipe.basic-metric-help.html
-
-# Move to new Package name from abcsociety to abc
-abcold.ABCAgent				abcnew.ABCAgent
-abcold.ABCAllocation			abcnew.ABCAllocation
-abcold.ABCAllocationRule		abcnew.ABCAllocationRule
-abcold.ABCCommunity			abcnew.ABCCommunity
-abcold.abchelp.html			abcnew.abchelp.html
-abcold.ABCLocalAsset			abcnew.ABCLocalAsset
-abcold.ABCPlugIn			abcnew.ABCPlugIn
-abcold.ABCSociety			abcnew.ABCSociety
-abcold.ABCTask				abcnew.ABCTask
-abcold.ABCTaskFile			abcnew.ABCTaskFile
-abcold.ChangeLog			abcnew.ChangeLog
-abcold.Test				abcnew.Test.java
-abcold.TestInGUI			abcnew.TestInGUI.java
-abcold.description.html                 abcnew.description.html
+#abcold.basic-metric-description.html    occ.recipe.basic-metric-description.html
+#abcold.basic-metric-help.html           occ.recipe.basic-metric-help.html
 
 # Move all recipe related components from component to recipe
 uic.ImpactComponent     occ.recipe.ImpactComponent
 uic.MetricComponent     occ.recipe.MetricComponent
 uic.RecipeComponent     occ.recipe.RecipeComponent
 uic.EmptyMetric         occ.recipe.EmptyMetric
-uic.empty-metric-description.html	occ.recipe.empty-metric-description.html
+#uic.empty-metric-description.html	occ.recipe.empty-metric-description.html
+
+# Files moved into csmart.recipe
+ui.experiment.ABCCyberImpact		occ.recipe.ABCCyberImpact
+ui.experiment.ABCImpact			occ.recipe.ABCImpact
+ui.experiment.ABCKineticImpact		occ.recipe.ABCKineticImpact
+# Missing help files?
+#ui.experiment.abc-impact-description.html	occ.recipe.abc-impact-description.html
+#ui.experiment.abc-impact-help.html	occ.recipe.abc-impact-help.html
+#ui.experiment.cyber-impact-description.html	occ.recipe.cyber-impact-description.html
+#ui.experiment.cyber-impact-help.html	occ.recipe.cyber-impact-help.html
+#ui.experiment.kinetic-impact-description.html	occ.recipe.kinetic-impact-help.html
+
+
+# Move to new Package name from abcsociety to abc
+abcold.ABCAgent				abcnew.ABCAgent
+abcold.ABCAllocation			abcnew.ABCAllocation
+abcold.ABCAllocationRule		abcnew.ABCAllocationRule
+abcold.ABCCommunity			abcnew.ABCCommunity
+#abcold.abchelp.html			abcnew.abchelp.html
+abcold.ABCLocalAsset			abcnew.ABCLocalAsset
+abcold.ABCPlugIn			abcnew.ABCPlugIn
+abcold.ABCSociety			abcnew.ABCSociety
+abcold.ABCTask				abcnew.ABCTask
+abcold.ABCTaskFile			abcnew.ABCTaskFile
+abcold.ChangeLog			abcnew.ChangeLog
+abcold.Test				abcnew.Test
+abcold.TestInGUI			abcnew.TestInGUI
+#abcold.description.html                 abcnew.description.html
+
+# Move to csmart.society.abc
+uic.ABCCommunityComponent               abcnew.ABCCommunityComponent
+uic.ABCSocietyComponent	                abcnew.ABCSocietyComponent
 
 
 # Move all society related components from component to society
@@ -93,17 +112,23 @@ uic.Range				prop.range.Range
 uic.RangeBase				prop.range.RangeBase
 uic.StringRange				prop.range.StringRange
 
-# Move to csmart.society.abc
-uic.ABCCommunityComponent               abcnew.ABCCommunityComponent
-uic.ABCSocietyComponent	                abcnew.ABCSocietyComponent
 
 # Move to core.db
 uic.PDbBase                             occ.core.db.PDbBase
 uic.PopulateDb                          occ.core.db.PopulateDb
 
+# Files moved into csmart.core.db
+ui.console.CMT				occ.core.db.CMT
+ui.console.ExperimentDB			occ.core.db.ExperimentDB
+
+# Move societies.database to core.db
+occ.societies.database.DBUtils                  occ.core.db.DBUtils
+occ.societies.database.TestConnection           occ.core.db.TestConnection
+occ.societies.database.ChangeLog                occ.core.db.ChangeLog
+
 # Move to core.cdata
 uic.AgentAssetData			occ.core.cdata.AgentAssetData
-uic.AgentComponentData			occ.core.cdata.AgentComponentData
+#uic.AgentComponentData			occ.core.cdata.AgentComponentData
 uic.CommunityTimePhasedData		occ.core.cdata.CommunityTimePhasedData
 uic.ComponentData			occ.core.cdata.ComponentData
 uic.GenericComponentData		occ.core.cdata.GenericComponentData
@@ -115,9 +140,6 @@ uic.PropGroupData			occ.core.cdata.PropGroupData
 uic.RelationshipData			occ.core.cdata.RelationshipData
 uic.TimePhasedData			occ.core.cdata.TimePhasedData
 
-# Files moved into csmart.core.db
-ui.console.CMT				occ.core.db.CMT
-ui.console.ExperimentDB			occ.core.db.ExperimentDB
 
 # Files moved into csmart.experiment
 ui.experiment.ExpConfigWriterNew        occ.experiment.ExpConfigWriterNew
@@ -129,134 +151,27 @@ ui.experiment.LeafOnlyConfigWriter	occ.experiment.LeafOnlyConfigWriter
 ui.experiment.Trial			occ.experiment.Trial
 ui.experiment.TrialResult		occ.experiment.TrialResult
 
-# Files moved into csmart.recipe
-ui.experiment.ABCCyberImpact		occ.recipe.ABCCyberImpact
-ui.experiment.ABCImpact			occ.recipe.ABCImpact
-ui.experiment.ABCKineticImpact		occ.recipe.ABCKineticImpact
-# Missing help files?
-ui.experiment.abc-impact-description.html	occ.recipe.abc-impact-description.html
-ui.experiment.abc-impact-help.html	occ.recipe.abc-impact-help.html
-ui.experiment.cyber-impact-description.html	occ.recipe.cyber-impact-description.html
-ui.experiment.cyber-impact-help.html	occ.recipe.cyber-impact-help.html
-ui.experiment.kinetic-impact-description.html	occ.recipe.kinetic-impact-help.html
 
 # Move files from console to experiment
 ui.console.NodeArgumentDialog           ui.experiment.NodeArgumentDialog
 ui.console.NodeArgumentTableModel       ui.experiment.NodeArgumentTableModel
 
 # Move ui.configuration to ui.tree
-ui.configuration.CTOArrayTransferable             ui.tree.CTOArrayTransferable
-ui.configuration.ConsoleDNDTree                   ui.tree.ConsoleDNDTree
-ui.configuration.ConsoleTreeObject                ui.tree.ConsoleTreeObject
-ui.configuration.ConsoleTreeObjectTransferable    ui.tree.ConsoleTreeObjectTransferable
+ui.configuration ui.tree;
 
 #Move ui.builder to ui.configbuilder
-ui.builder.PropertyBuilder                        ui.configbuilder.PropertyBuilder
-ui.builder.PropertyEditorPanel                    ui.configbuilder.PropertyEditorPanel
-ui.builder.PropertyTable                          ui.configbuilder.PropertyTable
-ui.builder.PropertyTreeNode                       ui.configbuilder.PropertyTreeNode
-ui.builder.ChangeLog                              ui.configbuilder.ChangeLog
-ui.builder.help.html				  ui.configbuilder.help.html
+ui.builder ui.configbuilder;
 
 # Move scalability into society
-scalold.ScalabilityConfigurationWriter		scalnew.ScalabilityConfigurationWriter
-scalold.ScalabilityHelp				scalnew.ScalabilityHelp
-scalold.ScalabilityMetricsFileFilter		scalnew.ScalabilityMetricsFileFilter
-scalold.ScalabilityXAgent			scalnew.ScalabilityXAgent
-scalold.ScalabilityXLevel			scalnew.ScalabilityXLevel
-scalold.ScalabilityXPlugIn			scalnew.ScalabilityXPlugIn
-scalold.ScalabilityXSociety			scalnew.ScalabilityXSociety
-scalold.Test					scalnew.Test
-scalold.Test2GUI				scalnew.Test2GUI
-scalold.TestInGUI				scalnew.TestInGUI
-scalold.ChangeLog                               scalnew.ChangeLog
-scalold.description.html                        scalnew.description.html
-scalold.help.html                               scalnew.help.html
-
-# Move societies.database to core.db
-occ.societies.database.DBUtils                  occ.core.db.DBUtils
-occ.societies.database.TestConnection           occ.core.db.TestConnection
+org.cougaar.tools.csmart.scalability org.cougaar.tools.csmart.society.scalability;
 
 # Move societies.cmt to society.cmt
-occ.societies.cmt.ChangeLog		occ.society.cmt.ChangeLog
-occ.societies.cmt.CMTAgent		occ.society.cmt.CMTAgent
-occ.societies.cmt.CMTSociety		occ.society.cmt.CMTSociety
+occ.societies.cmt occ.society.cmt;
 
 # Move Binder into runtime
-occ.binder.CapacityChart                               occ.runtime.binder.CapacityChart
-occ.binder.CapacityChartImpl                           occ.runtime.binder.CapacityChartImpl
-occ.binder.MessageReleaseScheduler		       occ.runtime.binder.MessageReleaseScheduler
-occ.binder.MessageReleaseSchedulerImpl		       occ.runtime.binder.MessageReleaseSchedulerImpl
-occ.binder.ObjectReleaseQueue			       occ.runtime.binder.ObjectReleaseQueue
-occ.binder.SlowMessageTransportServiceFilter	       occ.runtime.binder.SlowMessageTransportServiceFilter
-occ.binder.SlowMessageTransportServiceProxy	       occ.runtime.binder.SlowMessageTransportServiceProxy
-occ.binder.SlowMessageTransportServiceProxyController  occ.runtime.binder.SlowMessageTransportServiceProxyController
+occ.binder occ.runtime.binder;
 
 # Move LDM to runtime
-occ.ldm.CSMARTDomain               occ.runtime.ldm.CSMARTDomain
-occ.ldm.CSMARTFactory              occ.runtime.ldm.CSMARTFactory
+occ.ldm occ.runtime.ldm;
 
-occ.ldm.asset.AssetFactory		occ.runtime.ldm.asset.AssetFactory
-occ.ldm.asset.AssetSkeleton		occ.runtime.ldm.asset.AssetSkeleton
-occ.ldm.asset.CSMARTAsset		occ.runtime.ldm.asset.CSMARTAsset
-occ.ldm.asset.DoubleTimeline		occ.runtime.ldm.asset.DoubleTimeline
-occ.ldm.asset.HappinessAsset		occ.runtime.ldm.asset.HappinessAsset
-occ.ldm.asset.HappinessBG		occ.runtime.ldm.asset.HappinessBG
-occ.ldm.asset.HappinessPG		occ.runtime.ldm.asset.HappinessPG
-occ.ldm.asset.HappinessPGImpl		occ.runtime.ldm.asset.HappinessPGImpl
-occ.ldm.asset.LocalAsset		occ.runtime.ldm.asset.LocalAsset
-occ.ldm.asset.NewHappinessPG		occ.runtime.ldm.asset.NewHappinessPG
-occ.ldm.asset.NewRolesPG		occ.runtime.ldm.asset.NewRolesPG
-occ.ldm.asset.NewSimpleInventoryPG	occ.runtime.ldm.asset.NewSimpleInventoryPG
-occ.ldm.asset.PropertyGroupFactory	occ.runtime.ldm.asset.PropertyGroupFactory
-occ.ldm.asset.RolesPG			occ.runtime.ldm.asset.RolesPG
-occ.ldm.asset.RolesPGImpl		occ.runtime.ldm.asset.RolesPGImpl
-occ.ldm.asset.SimpleInventoryBG		occ.runtime.ldm.asset.SimpleInventoryBG
-occ.ldm.asset.SimpleInventoryPG		occ.runtime.ldm.asset.SimpleInventoryPG
-occ.ldm.asset.SimpleInventoryPGImpl	occ.runtime.ldm.asset.SimpleInventoryPGImpl
-occ.ldm.asset.ThermalResourceModelBG	occ.runtime.ldm.asset.ThermalResourceModelBG
-occ.ldm.asset.csmartAssets.def		occ.runtime.ldm.asset.csmartAssets.def
-occ.ldm.asset.csmartProps.def		occ.runtime.ldm.asset.csmartProps.def
-
-occ.ldm.event.CyberAttackEvent			occ.runtime.ldm.event.CyberAttackEvent
-occ.ldm.event.CyberAttackEventImpl		occ.runtime.ldm.event.CyberAttackEventImpl
-occ.ldm.event.DeadlineTimerEvent		occ.runtime.ldm.event.DeadlineTimerEvent
-occ.ldm.event.DeadlineTimerEventImpl		occ.runtime.ldm.event.DeadlineTimerEventImpl
-occ.ldm.event.HappinessChangeEvent		occ.runtime.ldm.event.HappinessChangeEvent
-occ.ldm.event.HappinessChangeEventImpl		occ.runtime.ldm.event.HappinessChangeEventImpl
-occ.ldm.event.IEFactory				occ.runtime.ldm.event.IEFactory
-occ.ldm.event.ImpactModel			occ.runtime.ldm.event.ImpactModel
-occ.ldm.event.InfrastructureEvent		occ.runtime.ldm.event.InfrastructureEvent
-occ.ldm.event.IntrastructureEventImpl		occ.runtime.ldm.event.IntrastructureEventImpl
-occ.ldm.event.KineticEvent			occ.runtime.ldm.event.KineticEvent
-occ.ldm.event.KineticEventImpl			occ.runtime.ldm.event.KineticEventImpl
-occ.ldm.event.NewCyberAttackEvent		occ.runtime.ldm.event.NewCyberAttackEvent
-occ.ldm.event.NewDeadlineTimerEvent		occ.runtime.ldm.event.NewDeadlineTimerEvent
-occ.ldm.event.NewHappinessChangeEvent		occ.runtime.ldm.event.NewHappinessChangeEvent
-occ.ldm.event.NewInfrastructureEvent		occ.runtime.ldm.event.NewInfrastructureEvent
-occ.ldm.event.NewKineticEvent			occ.runtime.ldm.event.NewKineticEvent
-occ.ldm.event.NewRealWorldEvent			occ.runtime.ldm.event.NewRealWorldEvent
-occ.ldm.event.NewSimpleKEvent			occ.runtime.ldm.event.NewSimpleKEvent
-occ.ldm.event.RealWorldEvent			occ.runtime.ldm.event.RealWorldEvent
-occ.ldm.event.RealWorldEventImpl		occ.runtime.ldm.event.RealWorldEventImpl
-occ.ldm.event.SimpleKEvent			occ.runtime.ldm.event.SimpleKEvent
-occ.ldm.event.SimpleKEventImpl			occ.runtime.ldm.event.SimpleKEventImpl
-
-occ.ldm.lps.ImpactsLP                           occ.runtime.ldm.lps.ImpactsLP
-occ.ldm.plugin.customer.SingleCustomerTask      occ.runtime.ldm.plugin.customer.SingleCustomerTask
-
-occ.ldm.plugin.transducer.Agent			occ.runtime.ldm.plugin.transducer.Agent
-occ.ldm.plugin.transducer.Society		occ.runtime.ldm.plugin.transducer.Society
-
-occ.plugin.ABCImpactPlugin			occ.runtime.plugin.ABCImpactPlugin
-occ.plugin.AllocatorPlugIn			occ.runtime.plugin.AllocatorPlugIn
-occ.plugin.CSMARTPlugIn				occ.runtime.plugin.CSMARTPlugIn
-occ.plugin.CustomerPlugIn			occ.runtime.plugin.CustomerPlugIn
-occ.plugin.ExecutorPlugIn			occ.runtime.plugin.ExecutorPlugIn
-occ.plugin.LocalAssetBuilder			occ.runtime.plugin.LocalAssetBuilder
-occ.plugin.MetricsConstants			occ.runtime.plugin.MetricsConstants
-occ.plugin.MetricsInitializerPlugin		occ.runtime.plugin.MetricsInitializerPlugin
-occ.plugin.MetricsPlugin			occ.runtime.plugin.MetricsPlugin
-occ.plugin.ScriptedEventPlugIn			occ.runtime.plugin.ScriptedEventPlugIn
-occ.plugin.TransducerPlugIn			occ.runtime.plugin.TransducerPlugIn
 
