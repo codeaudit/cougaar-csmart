@@ -36,7 +36,7 @@ IF NOT "%COUGAAR3RDPARTY%" == "" GOTO L_3
 REM Unable to find "sys" path for 3rd-party jars
 REM This is usually COUGAAR_INSTALL_PATH/sys
 ECHO COUGAAR3RDPARTY not set! Defaulting to CIP\sys
-SET COUGAAR3RDPARTY = %COUGAAR_INSTALL_PATH%\sys
+SET COUGAAR3RDPARTY=%COUGAAR_INSTALL_PATH%\sys
 :L_3
 
 REM The following line is optional. Some output files are written to the working directory.
@@ -47,7 +47,7 @@ SET LIBPATHS=
 IF NOT "%COUGAAR_DEV_PATH%" == "" SET LIBPATHS=%COUGAAR_DEV_PATH%;
 
 REM Add CSMART jar explicitly to get started
-SET LIBPATHS=%LIBPATHS%%COUGAAR_INSTALL_PATH%\lib\csmart.jar
+SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\csmart.jar
 
 REM The AppServer jar must also be specified
 SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\server.jar
