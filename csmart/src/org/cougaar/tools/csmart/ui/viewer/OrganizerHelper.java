@@ -73,7 +73,7 @@ public class OrganizerHelper {
     ArrayList hosts = getHosts(trialId, assemblyMatch);
     CMTSociety soc = null;
     if (assemblyIds.size() != 0) {
-      soc = new CMTSociety(assemblyIds);      
+      soc = new CMTSociety(experimentName, assemblyIds);      
       soc.initProperties();
     } else { // We need to create a new trial.
       // Need to have the experiment id, trial id, and multiplicity
