@@ -60,6 +60,7 @@ public class DBUtils {
   public static final String ASSEMBLYID_QUERY = "queryAssemblyID";
   private static final String EXPERIMENT_QUERY = "queryExptsWithRecipe";
   private static final String EXPERIMENT_SOCIETY_QUERY = "queryExptsWithSociety";
+  private static final String AGENT_QUERY = "queryGetAgentNames";
   private static final String PLUGIN_QUERY = "queryGetPluginClasses";
   private static final String BINDER_QUERY = "queryGetBinderClasses";
 
@@ -1106,6 +1107,11 @@ public class DBUtils {
     return result;
   }
 
+  public static Set dbGetAgentNames() {
+    String dbQuery = DBUtils.getQuery(AGENT_QUERY, new HashMap());
+    return dbGetAgentNames(dbQuery);
+  }
+
   /**
    * Get a set of plugin class names.
    *
@@ -1124,6 +1130,29 @@ public class DBUtils {
   public static Set dbGetBinderClasses() {
     String dbQuery = DBUtils.getQuery(BINDER_QUERY, new HashMap());
     return dbGetPluginOrBinderClasses(dbQuery);
+  }
+
+  private static Set dbGetAgentNames(String dbQuery) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
+    Set s = new HashSet();
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+        Statement stmt = conn.createStatement();	
+        ResultSet rs = stmt.executeQuery(dbQuery);
+        while (rs.next()) {s.add(rs.getString(1));}
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("dbGetAgentNames error using query: " + dbQuery, e);
+      }
+      throw new RuntimeException("Error getting Agent Names" + e);
+    }
+    return s;
   }
 
   private static Set dbGetPluginOrBinderClasses(String dbQuery) {
