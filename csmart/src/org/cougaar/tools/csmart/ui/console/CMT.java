@@ -138,7 +138,7 @@ public class CMT {
     }
 
     public static boolean hasRows(String table, String column, String val){
-	String dbQuery = "select * from "+table+ " where "+column+"="+val;
+	String dbQuery = "select * from "+table.toUpperCase()+ " where "+column+"="+val;
 	return hasRows(dbQuery);
     }
 
