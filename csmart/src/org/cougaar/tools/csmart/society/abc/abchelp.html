@@ -1,0 +1,566 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>ABC Society Help</title>
+</head>
+<body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+<h1>ABC Society Configuration Help</h1>
+
+<p>The ABC Society uses abstract domain plugins to generate an
+arbitrarily large and complex society, which behaves like a logistics
+supply chain.
+<br><br>
+The Society is organized by Communities, which pass Tasks between
+them. Each community consists of four Agents: Customer1, Customer2, Provider1 and Provider2.
+<br><br>
+Customer 1 and Customer 2 Agents periodically inject new demand Tasks into the system. 
+Provider 1 and Provider 2 Agents supplies local assets for these tasks.  When tasks
+are submitted, Provider1 attempts to satisify them with some local asset capacity. If that Agent
+cannot fulfill the requests, they are then allocated to the Provider2 Agent within that community.
+<br><br>
+If the Provider2 cannot fulfill the task locally, it allocates the task to the
+Provider2 Agent in another Community, depending on how the supply relationships have been established.
+<br><br>
+This society works in a purely execution mode: all tasks are matched against assets, and 
+responses are always given with high confidence eventually. In particular, Tasks include 
+deadlines for completion, and often requests will fail due to an exceeded deadline.
+<br><br>
+To build an ABC Society, you can specify parameters at several
+different levels. <br>
+<i>Note: that all parameters have defaults, so that modifications at all levels are not required.</i>
+<br>
+<h2>Parameters</h2>
+You may edit parameters at the following levels:<ul>
+<li><a href="#soclevel">Society Level</a><br>
+Overall control parameters.</li>
+<li><a href="#commlevel">Community Level</a><br>
+Overall community control parameters.</li>
+<li><a href="#agentlevel">Agent Level</a><br>
+Overall Agent control parameters.</li>
+<li><a href="#alloclevel">Allocation Level</a><br>
+Overall allocation control parameters.</li>
+<li><a href="#rulelevel">Rule Level</a><br>
+Overall Allocation Rule control parameters.</li>
+<li><a href="#tasklevel">Tasks Level</a><br>
+Overall control of root tasks (per agent).</li>
+<li><a href="#locassetlevel">Local Asset Level</a><br>
+Overall control of local assets (per agent).</li>
+</ul>
+
+<a NAME="soclevel"><h2>Society Level</h2></a>
+The Society level allows control over various aspects of the entire society.
+
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#COMMUNITY_COUNT">Community Count</a></td>
+	  <td>Integer</td>
+	  <td><a href="#LEVEL_COUNT">Level Count</a> - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#LEVEL_COUNT">Level Count</a></td>
+	  <td>Integer</td>
+	  <td>1 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#START_TIME">Start Time (relative)</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#STOP_TIME">Stop Time (relative)</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#TASK_VERB">Task Verb</a></td>
+	  <td>String Array</td>
+	  <td>{<i>Verb [, verb...]</i>}</td>
+	</tr>
+    </table>  
+    <br><br>
+
+An ABC Society consists of one or more communities which in turn contain 4 agents 
+(2 Customer and 2 Provider Agents).  
+A society attempts to maintain a basic hourglass topology of communities by dividing 
+the communities among levels.  
+By default, there are 5 communities and three levels.<br>
+This results in the following topology:
+<br><br>
+<div align="center">
+<table>
+<tr><td>Community 1</td> <td></td> <td>Community 2</td> </tr>
+<tr><td></td> <td>Community 3</td> <td></td> </tr>
+<tr><td>Community 4</td> <td></td> <td>Community 5</td></tr>
+</table>
+</div>
+<br>
+Changing the <a href="#COMMUNITY_COUNT">Community Count</a> or changing the <a href="#LEVEL_COUNT">Level Count</a>
+will regenerate a new community with an attempt to preserve the hourglass topology.
+<br><br>
+<i>Note: There must always be at least as many communities as levels.</i>
+<br><br>
+There are two types of agents within a society.  Customer agents and Provider 
+agents.  Customer agents produce tasks and provider agents contain the assets 
+to satisfy the task request.  Tasks are submitted between <a href="#START_TIME">Start Time</a> and 
+<a href="#STOP_TIME">Stop Time</a>.  Tasks start getting generated at Start Time + current time 
+and continue until Stop Time + current time.  
+<br>
+
+<a NAME="COMMUNITY_COUNT"><h3>Community Count</h3></a>
+Community Count specifies the total number of communities within the society.
+
+<a NAME="LEVEL_COUNT"><h3>Level Count</h3></a>
+Level Count Specifies the total number of levels within the society.  The ABC
+Society attempts to maintain an hour glass topology where there are fewer communities
+at the inner levels than there are at the ends.
+
+<a NAME="START_TIME"><h3>Start Time</h3></a>
+Start Time specifies the relative starting time in milliseconds.  When
+the current time equals the start time, Customer Agents start to submit
+tasks for completion.
+
+<a NAME="STOP_TIME"><h3>Stop Time</h3></a>
+Stop Time specifies the relative stop time in milliseconds.  When
+the current time equals the stop time, Customer Agents stop submitting
+tasks.<br>
+<i>Note: Stop time does not indicate that all agent communications stop,
+Provider Agents will continue to satisify all outstanding tasks beyond
+stop time.</i>
+
+<a NAME="TASK_VERB"><h3>Task Verb</h3></a>
+Task Verb indicates the Known tasks within the society.  Since
+the society can contain multiple task verbs, they must be specified
+as an array of strings.
+<i>Note: See Known issues for more information about Task Verb</i>
+
+<a NAME="commlevel"><h2>Community Level</h2></a>
+
+The community level specifies all parameters that are specific to
+communities.  
+
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#DEMAND">Demand</a></td>
+	  <td>Integer</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#LATITUDE">Latitude</a></td>
+	  <td>Float</td>
+	  <td>-90 - 90</td>
+	</tr>
+	<tr>
+	  <td><a href="#LONGITUDE">Longitude</a></td>
+	  <td>Float</td>
+	  <td>-180 - 180</td>
+	</tr>
+	<tr>
+	  <td><a href="#PRODUCTION">Production</a></td>
+	  <td>Integer</td>
+	  <td>0 - MAX</td>
+	</tr>
+    </table>  
+    <br><br>
+
+Each community has a specific amount of production and demand associated with it.  
+The <a href="#DEMAND">demand</a> is proportional to the number of tasks produced by the Customer agents
+within the community.  The higher the demand, the more tasks produced.  <a href="#PRODUCTION">Production</a> is 
+proportional to the amount of inventory on hand in the community.  Producer agents that contain a local 
+inventory satisfy all Tasks until their inventory is depleted.  Once the inventory is delpeted, 
+the Task must be satisified elsewhere, until the local inventory has been re-supplied.  
+Increasing the amount of Production in a community increases the local inventory levels, which 
+will eliminate the need for tasks to be satisfied by other communities.
+<br>
+Each community also has a location associated with it.  This location 
+specified with <a href="#LATITUDE">Latitude</a> and <a href="#LONGITUDE">Longitude</a> is the 
+center of the community.  All agent locations are based on the center of the community.
+<br>
+
+<a NAME="DEMAND"><h3>Demand</h3></a>
+Demand is used to generate the number of tasks produced by the Customer agents.  The
+higher the demand, the more tasks that are produced.<br>
+<i>Note: Demand is part of a formula, not an exact task count -- A Demand of 5 does not equal 5 tasks.</i>
+
+<a NAME="LATITUDE"><h3>Latitude</h3></a>
+Latitude specifies the Latitude coordinate of the center of the community.
+
+<a NAME="LONGITUDE"><h3>Longitude</h3></a>
+Longitude specifies the Longitude coordinate of the center of the community.
+
+<a NAME="PRODUCTION"><h3>Production</h3></a>
+Production is used to generate the amount of inventory on hand within the community. The higher
+the production value, the more local assets within the community.<br>
+<i>Note: Production is part of a formula, not an exact inventory level count</i>
+
+<a NAME="agentlevel"><h2>Agent Level</h2></a>
+
+The Agent level specifies all parameters that are specific to an agent.
+
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#DIRECTION">Direction</a></td>
+	  <td>Float</td>
+	  <td>0 - 360</td>
+	</tr>
+	<tr>
+	  <td><a href="#DISTANCE">Distance</a></td>
+	  <td>Integer</td>
+	  <td>0 - Max</td>
+	</tr>
+	<tr>
+	  <td><a href="#SUPPLIES">Supplies</a></td>
+	  <td>String Array</td>
+	  <td>{<i>Supply [,Supply..]</i>}</td>
+	</tr>
+    </table>  
+    <br><br>
+
+All agents are located relative to the center of the community.  This location
+is specified with the <a href="#DIRECTION">direction</a> and 
+<a href="#DISTANCE">distance</a> parameters.
+All agents that contain local assets (Provider Agents) must also specify a
+list of the agents that this agents <a href="#SUPPLIES">supplies</a> assets.
+<br>
+<a NAME="DIRECTION"><h3>Direction</h3></a>
+Direction specifies the direction, in degrees from North, of the agent
+from the center of the community.
+
+<a NAME="DISTANCE"><h3>Distance</h3></a>
+Distance specifies the distance, in meters of the agent from the center
+of the community.
+
+<a NAME="SUPPLIES"><h3>Supplies</h3></a>
+Supplies specifies a list of all agents, fully qualified names, that this agent
+serves as a provider. <br>
+<i>Note: This parameter is left empty for Customer agents since they do not contain local assets.</i>
+
+<a NAME="alloclevel"><h2>The Allocation Level</h2></a>
+
+The allocation level specifies all parameters that are specific to an allocation.
+
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#EXEC_TIME">Execute Time</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#ALLOC_RULES">Number of Allocation Rules</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#PUB_TIME">Publish Time</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#RES_TIME">Response Time</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#ALLOC_CONFIDENCE">Successful Allocation</a></td>
+	  <td>Float</td>
+	  <td>0 - 1</td>
+	</tr>
+	<tr>
+	  <td><a href="#EST_TRANS_TIME">Transport Time</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+    </table>  
+    <br><br>
+
+All agents have an allocation table.  This table is used to allocate all the 
+known tasks for this agent.   The Allocator can trys to calculate reduced Task 
+deadlines, based on estimated times. By asking downstream components to complete 
+a Task within reduced times, the Allocator hopes to have sufficient time to send 
+a response the original customer, or perhaps attempt another Allocation if this one fails. 
+<br>
+
+<a NAME="EXEC_TIME"><h3>Execute Time</h3></a>
+Estimated Execute Time specifies the estimated time, in milliseconds, that it will take to 
+satisify the task once it is allocated to an actual asset.
+
+<a NAME="ALLOC_RULES"><h3>Number of Allocation Rules</h3></a>
+Number of Allocation Rules specifies the amount of allocation rules within an allocation table.
+When a new rule is added to the allocation table (by incrementing the number) they are added as
+empty rules.  The CSMART user is required to fill in the <a href="#TASK_ROLE">Roles</a> and 
+<a href="#R_TASK_VERB">Task Verb</a> for each new rule.
+
+<a NAME="PUB_TIME"><h3>Publish Time</h3></a>
+Allocation Publish Time specifies the time, in milliseconds, that it takes the allocator to publish 
+an allocation.
+
+<a NAME="RES_TIME"><h3>Response Time</h3></a>
+Response Publish Time specifies the time, in milliseconds, that it takes the allocator to publish
+a simple response.
+
+<a NAME="ALLOC_CONFIDENCE"><h3>Successful Allocation</h3></a>
+Allocation Confidence Required specifies the condidence level of received allocation results. <br>
+0 - Indicates that all allocatoin results will be considered confident.<br>
+1 - Indicates that only allocations that specify complete confidence will be accepted.
+
+<a NAME="EST_TRANS_TIME"><h3>Transport Time</h3></a>
+Estimated Transport time specifies the time, in milliseconds, that it takes for the allocator to
+transport the allocation to the remote agent.
+
+
+<a NAME="rulelevel"><h2>The Rule Level</h2></a>
+
+The Rule Level specifies all parameters that are specific to an allocation rule.
+
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#TASK_ROLE">Roles</a></td>
+	  <td>String Array</td>
+	  <td>{<i>Role [,Role..]</i>}</td>
+	</tr>
+	<tr>
+	  <td><a href="#R_TASK_VERB">Task Verb</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+    </table>  
+    <br><br>
+
+All agents can have multiple allocation rules.<br>
+Each rule consists of a <a href="#R_TASK_VERB">Task Verb</a> to allocate and a list 
+of the <a href="#TASK_ROLE">Roles</a> required of an Asset to be
+able to allocate this Task verb to it (all listed rules must be present). 
+Multiple rules for the same task verb are permissible. Later
+rules will usually be for less dependable, or increasingly remote
+Assets or Organizations.
+<br>
+
+<a NAME="TASK_ROLE"><h3>Roles</h3></a>
+Roles specifies a list of Roles associated with this allocations <a href="#R_TASK_VERB">Task verb</a>.
+ 
+<a NAME="R_TASK_VERB"><h3>Task Verb</h3></a>
+Task Verb specifies a specific Task within the allocation table.  This task must be know
+throughout the society.
+<i>Note: See Known Issues for more information about the Task Verb</i>
+
+<a NAME="tasklevel"><h2>The Tasks Level</h2></a>
+
+The Tasks level specifies all parameters that are specific to the task level:
+
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#NUMB_TASKS">Number of Tasks</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+    </table>  
+    <br><br>
+
+The <a href="#NUMB_TASKS">Number of Tasks</a> specifies the number of tasks known to this agent.  
+Changing this number increments the number of tasks within the task file.  When new 
+<a href="#taskchild">tasks</a> are added, it is the responsiblity of the CSMART user to 
+add a <a href="#TC_VERB">Task Verb</a> to the newly created task.  By default, the 
+<b>Task Verb</b> is empty. 
+<br>
+
+<a NAME="NUMB_TASKS"><h3>Number of Tasks</h3></a>
+Number of Tasks specifies the number of tasks known to a specific agent.
+
+<a name="taskchild"><h2>Task Children</h2></a>
+
+The Task level contains 1 or more children.
+Each child represents a specific task verb that agent should generate.<br>
+<i>Note: Only Customer agents generate Tasks.</i>  
+<br><br>
+
+Each task consists of the following properties:
+
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#CHAOS_FACTOR">Chaos Factor</a></td>
+	  <td>Integer</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#DEADLINE">Deadline</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#INTERVAL">Interval between Tasks</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#TC_VERB">Task Verb</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#VITALNESS">Vitalness Factor</a></td>
+	  <td>Float</td>
+	  <td>0 - 1</td>
+	</tr>
+    </table>  
+    <br><br>
+
+When the customer agent is started, it starts to submit a <a href="#TC_VERB">task verb</a> to 
+be satisfied.  Tasks are repeatedly submitted at a specified <a href="#INTERVAL">Interval</a> 
+from the start time until the stop time of the society.  Some amount of 
+variability can be applied to the Interval by increasing the <a href="#CHAOS_FACTOR">Chaos Factor</a>
+for the task.  Each task must be completed by a specific time.  This time is 
+specified with <a href="#DEADLINE">Deadline</a>.  If the task is not completed 
+by the deadline, the customer's overall happiness will decrease.  The amount 
+this value decreases for each unsuccessful task is controlled by the <a href="#VITALNESS">Vitalness 
+Factor</a>.
+<br>
+
+<a NAME="CHAOS_FACTOR"><h3>Chaos Factor</h3></a>
+Chaos Factor is the amount of variablilty in the task interval.  The larger the Chaos Factor,
+the more variablilty in the interval.
+
+<a NAME="DEADLINE"><h3>Deadline</h3></a>
+Deadline is the amount of time, in milliseconds, after the task has be submitted by which it must be completed.
+
+<a NAME="INTERVAL"><h3>Interval</h3></a>
+The Interval is the amount of time, in milliseconds,  between tasks.
+
+<a NAME="TC_VERB"><h3>Task Verb</h3></a>
+The Task Verb is the task to be satisified.
+
+<a NAME="VITALNESS"><h3>Vitalness</h3></a>
+The Vitalness indicates how vital completion of a task is to overall agent happiness.
+The higher the vitalness, the unhappier the agent becomes if the task fails.
+
+
+<a NAME="locassetlevel"><h2>The Local Asset Level</h2></a>
+
+The local asset level has the following properties:
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#ASSET_NAME">Asset Name</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#AVG_EXEC_TIME">Average Execute Time</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#INV_DEC_PCT">Inventory Decrement Percent</a></td>
+	  <td>Long</td>
+	  <td>0 - 100</td>
+	</tr>
+	<tr>
+	  <td><a href="#INV_DEC_DEV">Inventory Decrement Deviation</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#LA_ROLES">Roles</a></td>
+	  <td>String Array</td>
+	  <td>{<i>Role [,Role..]</i>}</td>
+	</tr>
+	<tr>
+	  <td><a href="#TIME_DEV">Time Deviation</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+    </table>  
+    <br><br>
+
+
+Every provider agent contains a local asset.  This asset is used to satisfy 
+task requests.  Every asset contains an inventory level. When the asset is used to satisfy a task 
+request, the inventory level decreases.  The decrement amount for each Task 
+completion depends on the <a href="#INV_DEC_PCT">Decrement Amount</a> parameter.
+The inventory level can also have a certain amount of chaos applied to it by 
+changing the <a href="#INV_DEC_DEV">Inventory Deviation</a> parameter (for 
+example, stock loss due to fire or theft).  This chaotic inventory perturbation is 
+applied before every inventory request.  Each local asset can satisfy specific 
+<a href="#LA_ROLES">roles</a>.<br>
+<i>Note: An asset must list all of the roles required of it by the Allocation Rules above for it to be used for a given task verb.</i>
+
+<br><br>
+When an asset is used to satisfy a task, it takes a specific amount of <a href="#AVG_EXEC_TIME">time</a> to complete the task request.  By adjusting the <a href="#TIME_DEV">Time Deviation</a> value, 
+the time taken to satisfy a Task will vary randomly.
+<br>
+
+<a NAME="ASSET_NAME"><h3>Asset Name</h3></a>
+Asset Name is the name of the Local Asset.  Asset Name is just an
+identifier and is not used within the system.
+
+<a NAME="AVG_EXEC_TIME"><h3>Average Execute Time</h3></a>
+Average Execute Time is the average amount of time it takes to perform a specific task.
+Average Execute Time also controls how rapibly the local stock is refilled after a request.
+
+<a NAME="INV_DEC_PCT"><h3>Inventory Decrement Percent</h3></a>
+Inventory Decrement Percent defines the decrement amount for each task completion.
+The larger the decrement amount, the quicker the inventory can be depleted.
+
+<a NAME="INV_DEC_DEV"><h3>Inventory Decrement Deviation</h3></a>
+Inventory Decrement Deviation causes the inventory decrement rate to vary randomly.  The
+larger the value, the more variable the decrement rate.  With an 'Inventory Deviation' of 0, 
+the reported inventory level is the exactly calculable from the previous requests of that asset.
+
+<a NAME="LA_ROLES"><h3>Roles</h3></a>
+Roles is a list of roles that this asset can satisfy.
+
+<a NAME="TIME_DEV"><h3>Time Deviation</h3></a>
+Time Deviation causes the time taken to satisfy a task to vary randomly (Gaussian).  The
+larger the value, the more variable the time.
+
+</body>
+</html>
+
+<!-- Last Modified: $Date: 2002-01-09 17:12:47 $ -->
+<!-- By $Author: bkrisler $ -->
+
