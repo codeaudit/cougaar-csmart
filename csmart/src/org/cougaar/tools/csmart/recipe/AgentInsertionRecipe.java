@@ -45,7 +45,7 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   private static final String PROP_NAME_DESC = "Names for each Agent, seperated by a ','";
 
   private static final String PROP_CLASSNAME = "Class Name";
-  private static final String PROP_CLASSNAME_DFLT = "org.cougaar.core.agent.ClusterImpl";
+  private static final String PROP_CLASSNAME_DFLT = "org.cougaar.core.cluster.ClusterImpl";
   private static final String PROP_CLASSNAME_DESC = "Class of the Agent";
 
   private static final String PROP_RELATIONCOUNT = "Number of Relationships";
@@ -367,13 +367,13 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
     PGPropData pgData = new PGPropData();
     pgData.setName("ItemIdentification");
     pgData.setType("String");
-    pgData.setValue(this.getShortName());
+    pgData.setValue(propName.getValue().toString());
     pgd.addProperty(pgData);
 
     pgData = new PGPropData();
     pgData.setName("Nomenclature");
     pgData.setType("String");
-    pgData.setValue(this.getShortName());
+    pgData.setValue(propName.getValue().toString());
     pgd.addProperty(pgData);
 
     return pgd;
@@ -478,18 +478,18 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
           // Add the OrgRTData plugin.
           plugin = new GenericComponentData();
           plugin.setType(ComponentData.PLUGIN);
-          plugin.setName("org.cougaar.mlm.plugin.organization.OrgDataPlugIn");
+          plugin.setName("org.cougaar.domain.mlm.plugin.organization.OrgDataPlugIn");
           plugin.setParent(data);
-          plugin.setClassName("org.cougaar.mlm.plugin.organization.OrgDataPlugIn");
+          plugin.setClassName("org.cougaar.domain.mlm.plugin.organization.OrgDataPlugIn");
           plugin.setOwner(this);
           data.addChild(plugin);
 
           // Add the OrgReport plugin.
           plugin = new GenericComponentData();
           plugin.setType(ComponentData.PLUGIN);
-          plugin.setName("org.cougaar.mlm.plugin.organization.OrgReportPlugIn");
+          plugin.setName("org.cougaar.domain.mlm.plugin.organization.OrgReportPlugIn");
           plugin.setParent(data);
-          plugin.setClassName("org.cougaar.mlm.plugin.organization.OrgReportPlugIn");
+          plugin.setClassName("org.cougaar.domain.mlm.plugin.organization.OrgReportPlugIn");
           plugin.setOwner(this);
           data.addChild(plugin);
         }
