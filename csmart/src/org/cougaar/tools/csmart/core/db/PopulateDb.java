@@ -120,6 +120,7 @@ public class PopulateDb extends PDbBase {
     if (ch == null) throw new IllegalArgumentException("null conflict handler");
     this.conflictHandler = ch;
     this.cmtType = csaType;
+    this.exptId = null;
     substitutions.put(":cmt_type:", cmtType);
     if (assemblyId != null) {
       // Society already in DB.
@@ -1828,6 +1829,8 @@ public class PopulateDb extends PDbBase {
       }
       rs.close();
       stmt.close();
+
+      // Only save into the hierarchy components that have a parent
       if (parent != null) {
 
 	// Is given component in runtime hierarchy?
@@ -1839,8 +1842,18 @@ public class PopulateDb extends PDbBase {
 	rs = executeQuery(stmt, cchq);
 	// If not, add it
 	if (!rs.next()) {
-	  executeUpdate(dbp.getQuery("insertComponentHierarchy",
-				     substitutions));
+
+          // Also, if we are saving a society (exptId is null)
+          // then do not save the top-level components - those
+          // whose parent is of type society, because they
+          // then say they are always contained by something
+          // of name <society>, and the next time we save
+          // we will think they are already contained, and not
+          // save them again
+          if (exptId != null || ! parent.getType().equals(ComponentData.SOCIETY)) {
+            executeUpdate(dbp.getQuery("insertComponentHierarchy",
+                                       substitutions));
+          }
 	  // if it is an agent
 	  if (data.getType().equals(ComponentData.AGENT)) {
 	    // Added this Agent. Add it to the list
@@ -2527,34 +2540,16 @@ public class PopulateDb extends PDbBase {
   private String getComponentLibId(ComponentData data) {
     if (data == null) return sqlQuote(null);
     String componentType = data.getType();
-    if (componentType.equals(ComponentData.PLUGIN)) {
+    if (componentType.equals(ComponentData.NODE) ||
+        componentType.equals(ComponentData.HOST) ||
+        componentType.equals(ComponentData.SOCIETY) ||
+        componentType.equals(ComponentData.AGENT)) {
+      return sqlQuote(getComponentAlibId(data));
+    } else {
+      //ComponentData parent = data.getParent();
+      //    return sqlQuote(componentType + "|" + getFullName(data));
       return sqlQuote(componentType + "|" + data.getClassName());
     }
-    if (componentType.equals(ComponentData.NODEBINDER)) {
-      return sqlQuote(componentType + "|" + data.getClassName());
-    }
-    if (componentType.equals(ComponentData.AGENTBINDER)) {
-      return sqlQuote(componentType + "|" + data.getClassName());
-    }
-    if (componentType.equals(ComponentData.AGENT)) {
-      String agentName = data.getName();
-      return sqlQuote(agentName);
-    }
-    if (componentType.equals(ComponentData.NODE)) {
-      String nodeName = data.getName();
-      return sqlQuote(nodeName);
-    }
-    if (componentType.equals(ComponentData.HOST)) {
-      String hostName = data.getName();
-      return sqlQuote(hostName);
-    }
-    if (componentType.equals(ComponentData.SOCIETY)) {
-      String societyName = data.getName();
-      return sqlQuote(componentType + "|" + societyName);
-    }
-    //ComponentData parent = data.getParent();
-    //    return sqlQuote(componentType + "|" + getFullName(data));
-    return sqlQuote(componentType + "|" + data.getClassName());
   }
 
   /**
@@ -2607,6 +2602,9 @@ public class PopulateDb extends PDbBase {
 	result = ComponentData.SOCIETY + "|" + data.getName();
       } else if (componentType.equals(ComponentData.AGENT)) {
 	result = getAgentAlibId(data.getName());
+      } else if (componentType.equals(ComponentData.HOST) ||
+                 componentType.equals(ComponentData.NODE)) {
+	result = data.getName();
       } else {
 	ComponentData anc = data.getParent();
 	if (componentType.equals(ComponentData.NODEBINDER) && ! anc.getType().equals(ComponentData.NODE)) {
