@@ -1,3 +1,11 @@
+2001-11-06  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* Organizer.java:
+	Added code to save recipes from the workspace to the database.
+	Added duplicate recipe name check when reading recipes from the
+	database suggesting that the workspace recipe be deleted or
+	renamed.
+
 2001-11-05  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* Organizer.java (Repository):

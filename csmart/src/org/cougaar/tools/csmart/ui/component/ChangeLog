@@ -1,3 +1,14 @@
+2001-11-06  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java (Repository):
+	Now extends PDbBase.
+
+	* PDbBase.java (Repository):
+	Abstracted out the non-trial/experiment/assembly part of
+	PopulateDb. This part deals with the lib part of the database
+	without reference to trials, assemblies, or experiments.
+	Added code for checking the status and deleting recipes.
+
 2001-10-29  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* PopulateDb.java (Repository):

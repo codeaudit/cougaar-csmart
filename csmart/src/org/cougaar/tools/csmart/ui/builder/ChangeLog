@@ -1,0 +1,7 @@
+2001-11-06  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PropertyBuilder.java (Repository):
+	Add "Save To Database" menu item and code for saving edited
+	recipes. This code current is duplicated in Organizer. It should
+	be abstracted into a separate class.
+
