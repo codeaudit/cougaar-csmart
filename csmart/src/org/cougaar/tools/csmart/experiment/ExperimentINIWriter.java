@@ -219,21 +219,20 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.print(writeParam(params[i]));
     }
 
-    // HACK!!
+    // HACK!! Show how to make these INI files runnable
     boolean isGLS = false;
     if (me.getClassName().indexOf("GLSInitServlet") != -1) {
       isGLS = true;
       // it looks like it could get the org.cougaar.experiment.id from
       // its parameters list, so write out another parameter
       // the trialid
-      String eid = trialID;
-      if (trialID != null)
-	writer.print(",exptid=" + eid);
+//       if (trialID != null)
+// 	writer.print(",exptid=" + trialID);
     }
 
     writer.println(")");
-    if (isGLS)
-      writer.println("# Extra parameter added to GLSInitServlet to pass in experiment ID for OPLAN retrieval");
+    if (isGLS && trialID != null)
+      writer.println("# To make INI files MAYBE runnable, add the following parameter to the GLSInitServlet: exptid=," + trialID);
     return;
   }
 
