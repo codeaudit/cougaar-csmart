@@ -150,12 +150,12 @@ public class AssetCDataComponent
           RelationshipBase rel = (RelationshipBase) container.getChild(i);
           RelationshipData rData = new RelationshipData();
 	  if (rel != null) {
-	    if (rel.getProperty(PROP_TYPE) == null) {
+	    if (rel.getProperty(RelationshipBase.PROP_TYPE) == null) {
 	      if (log.isErrorEnabled()) {
 		log.error(this + " got null relationship type for " + data.getName() + " in rel #" + i);
 	      }
 	    } else {
-	      rData.setType((String)rel.getProperty(PROP_TYPE).getValue());
+	      rData.setType((String)rel.getProperty(RelationshipBase.PROP_TYPE).getValue());
 	    }
 	    rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
 	    rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
