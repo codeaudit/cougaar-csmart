@@ -32,7 +32,6 @@ import java.net.URLConnection;
 import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.*;
-import javax.swing.JOptionPane;
 
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
@@ -68,9 +67,8 @@ public class ClientServletUtil {
     Vector data = new Vector();
     String s = r.readLine();
     while (s != null) {
+      data.add(s);
       s = r.readLine();
-      if (s != null)
-        data.add(s);
     }
     return data;
   }
