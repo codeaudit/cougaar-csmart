@@ -60,6 +60,7 @@ import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.recipe.RecipeList;
 
 /**
  * The Organizer holds all the component a user creates
@@ -90,14 +91,7 @@ public class Organizer extends JScrollPane {
     GUIUtils.createSaveToDbConflictHandler(this);
   
   // The stand-alone recipes that can be created in CSMART
-  private Object[] metNameClassItems = {
-    new NameClassItem("Basic Metric", BasicMetric.class),
-    new NameClassItem("Component Insertion", ComponentInsertionRecipe.class),
-    new NameClassItem("Specific Insertion", SpecificInsertionRecipe.class),
-    new NameClassItem("Agent Insertion", AgentInsertionRecipe.class),
-    new NameClassItem("Parameter Insertion", ParameterInsertionRecipe.class),
-    new NameClassItem("Servlet Group Insertion", ServletGroupInsertionRecipe.class),
-  };
+  private Object[] metNameClassItems = null;
 
   // Define Unique Name sets
   private UniqueNameSet societyNames = new UniqueNameSet("Society");
@@ -116,6 +110,8 @@ public class Organizer extends JScrollPane {
   
   public Organizer(CSMART csmart, String workspaceFileName) {
     createLogger();
+    
+    initRecipes();
 
     setPreferredSize(new Dimension(400, 100));
     JPanel panel = new JPanel(new BorderLayout());
@@ -166,6 +162,14 @@ public class Organizer extends JScrollPane {
 
   private void createLogger() {
     log = CSMART.createLogger(this.getClass().getName());
+  }
+
+  private void initRecipes() {
+    metNameClassItems = new Object[RecipeList.getRecipeCount()];
+    for(int i=0; i < RecipeList.getRecipeCount(); i++) {
+      metNameClassItems[i] = new NameClassItem(RecipeList.getRecipeName(i), 
+                                            RecipeList.getRecipeClass(i));
+    }
   }
 
   ///////////////////////////////////////  
