@@ -32,7 +32,7 @@ public class ConcatenatedName extends MultiName implements CompositeName {
   private CompositeName parentName;
 
   public ConcatenatedName(CompositeName head, String tail) {
-    super(new SimpleName(tail));
+    super(SimpleName.getSimpleName(tail));
     parentName = head;
   }
 
