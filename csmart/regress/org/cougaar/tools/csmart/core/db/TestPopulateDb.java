@@ -483,7 +483,7 @@ public class TestPopulateDb extends TestCase {
      **/
     private void populateCMT() throws SQLException, IOException {
         pdb = new PopulateDb("", CMT_TYPE, CMT_TYPE, "REGRESSION Experiment " + exptId,
-                             exptId, trialId, GUIUtils.createSaveToDbConflictHandler(myCon));
+                             exptId, trialId, GUIUtils.createSaveToDbConflictHandler(myCon), "");
 //          pdb.setDebug(true);
         for (int i = 0; i < nodeData.length; i++) {
             ComponentData node = new GenericComponentData();
