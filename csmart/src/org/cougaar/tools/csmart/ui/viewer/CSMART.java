@@ -972,10 +972,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     // Get the debug file.
     ConfigFinder cf = ConfigFinder.getInstance();
     try {
-      props. load(new FileInputStream(cf.locateFile("debug.properties")));
+      props.load(new FileInputStream(cf.locateFile("debug.properties")));
     } catch(Exception e) {
       System.err.println("Could not read debug properties file, using defaults");
-      e.printStackTrace();
+      //e.printStackTrace();
       props = null;
     }
 
