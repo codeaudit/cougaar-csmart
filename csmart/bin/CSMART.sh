@@ -72,7 +72,7 @@ MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common
 javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -cp $MYCLASSPATH"
 
 if [ "$COUGAAR_DEV_PATH" != "" ]; then
-   echo java $javaargs org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
+   echo java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
 fi
 
 exec java $javaargs org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART

@@ -62,7 +62,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.cougaar.Version;
-import org.cougaar.core.node.Bootstrapper;
+import org.cougaar.bootstrap.Bootstrapper;
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.log.Logger;
 import org.cougaar.util.log.LoggerFactory;

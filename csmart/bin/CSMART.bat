@@ -61,6 +61,6 @@ SET MYDELAY=-Dorg.cougaar.tools.csmart.startdelay=0
 
 @ECHO ON
 
-java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %MYEXCEL% %MYDELAY% %DEVPATH% -classpath %MYCLASSPATH% org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
+java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %MYEXCEL% %MYDELAY% %DEVPATH% -classpath %MYCLASSPATH% org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
 
 :L_END

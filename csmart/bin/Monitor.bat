@@ -36,5 +36,5 @@ SET MYCONFIGPATH=-Dorg.cougaar.config.path="%COUGAAR_INSTALL_PATH%/csmart/data/c
 
 @ECHO ON
 
-java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %DEVPATH% -classpath %LIBPATHS% org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
+java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %DEVPATH% -classpath %LIBPATHS% org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
 

@@ -59,9 +59,9 @@ set MYCONFIGPATH="-Dorg.cougaar.config.path=${COUGAAR_INSTALL_PATH}/csmart/data/
 set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -classpath $LIBPATHS"
 
 if ($?COUGAAR_DEV_PATH) then
-   echo java $javaargs org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
+   echo java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
 endif
 
-exec java $javaargs org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
+exec java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
 
 

@@ -54,7 +54,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.PropertyTree;
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.core.util.UID;
-import org.cougaar.core.node.Bootstrapper;
+import org.cougaar.bootstrap.Bootstrapper;
 
 import java.awt.event.*;
 import java.awt.Frame;
