@@ -76,6 +76,14 @@ public class AgentFileComponent
     log = CSMART.createLogger(this.getClass().getName());
   }
 
+  public void initProperties() {
+    super.initProperties();
+    
+    addPlugins();
+    addBinders();
+    addComponents();
+  }
+
   protected void addAssetData() {
     String assetFile = filename.substring(0, filename.indexOf('.'));
     assetFile = assetFile + "-prototype-ini.dat";
