@@ -161,16 +161,12 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   /** 
    * Save society and recipes to database.
    * If editing a society or recipe from within an experiment,
-   * save the experiment,
+   * save the experiment also,
    * otherwise save the society or recipe and tell the user
    * what experiments will have to be updated.
    * If silently is true, display no dialog boxes (used on exit).
    */
   private void saveToDatabase(boolean silently) {
-    if (experiment != null) {
-      saveExperiment();
-      return;
-    }
     if (configComponent instanceof SocietyComponent) {
       if (((SocietyComponent)configComponent).isModified()) {
 	final PropertyBuilder propertyBuilder = this;
@@ -197,10 +193,21 @@ public class PropertyBuilder extends JFrame implements ActionListener {
 	  GUIUtils.timeConsumingTaskEnd(csmart);
 	}
 	//((SocietyComponent)configComponent).saveToDatabase();
-	CSMART.getOrganizer().displayExperiments((SocietyComponent)configComponent);
+	// Only give the user the list of experiments
+	// to save
+	if (experiment == null)
+	  CSMART.getOrganizer().displayExperiments((SocietyComponent)configComponent);
       } else {
 	// If we opened a "local" version of a society within an experiment,
 	// then we want to remove this SocietyComponent from the workspace
+	// FIXME!
+	if (experiment != null) {
+	  // Get back the old society that was in the experiment somehow
+	  // FIXME!! Maybe save the copied society anyhow?
+	  if (log.isInfoEnabled()) {
+	    log.info("Opened local society for experiment " + experiment.getExperimentName() + " but didnt modify it, so dont want to save. Need to get original back!");
+	  }
+	}
       }
     } else if (configComponent instanceof RecipeComponent) {
       try {
@@ -227,7 +234,9 @@ public class PropertyBuilder extends JFrame implements ActionListener {
                                         "Recipe written successfully.",
                                         "Recipe Written",
                                         JOptionPane.INFORMATION_MESSAGE);
-        CSMART.getOrganizer().displayExperiments(rc);
+	// Only give the user this list if not editing a local experiment
+	if (experiment == null)
+	  CSMART.getOrganizer().displayExperiments(rc);
       } catch (Exception sqle) {
         if(log.isErrorEnabled()) {
           log.error("Exception", sqle);
@@ -237,6 +246,11 @@ public class PropertyBuilder extends JFrame implements ActionListener {
                                       "Error Writing Database",
                                       JOptionPane.ERROR_MESSAGE);
       }
+    }
+    if (experiment != null && experiment.isModified()) {
+      // This gets called when editing a society within an experiment.
+      // But the society itself still must be saved!
+      saveExperiment();
     }
   }
 
