@@ -74,10 +74,11 @@ org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0
 org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Construction|0,0,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,Construction,GLS_EXPANDER_ARGS, 
 org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0,0,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,MaintainInventory,GLS_EXPANDER_ARGS, 
 org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0,0,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,PackagedPOL,GLS_EXPANDER_ARGS, 
+org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Consumable|0,0,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,Consumable,GLS_EXPANDER_ARGS, 
 org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0,0,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,StrategicTransportation,GLS_EXPANDER_ARGS, 
 org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OffsetDays=7|1,1,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,OffsetDays=7,STRAT_TRANS_ARGS, 
 org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OriginFile=GEOLOC-PLDR.xml|0,0,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,OriginFile=GEOLOC-PLDR.xml,STRAT_TRANS_ARGS, 
-org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OriginFile=None|0,0,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,OriginFile=None,STRAT_TRANS_ARGS, 
+org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OriginFile=None|0,0,org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn,OriginFile=None,STRAT_TRANS_ARGS, ,
 org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Supply|0,0,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,Supply,UNIVERSAL_ALLOCATOR_ARGS, ,
 org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn|Transport|0,0,org.cougaar.domain.mlm.plugin.sample.UniversalAllocatorPlugIn,Transport,UNIVERSAL_ALLOCATOR_ARGS, ,
 org.cougaar.lib.plugin.UTILLdmXMLPlugIn|ldmFile=GLMT.TRANSCOM.ldm.xml|0,0,org.cougaar.lib.plugin.UTILLdmXMLPlugIn,ldmFile=GLMT.TRANSCOM.ldm.xml,ENV_FILE, ,TRANSCOM

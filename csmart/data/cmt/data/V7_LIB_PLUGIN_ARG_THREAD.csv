@@ -74,6 +74,7 @@ org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0
 org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Construction|0,CLASS-4, 
 org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0,BASE, 
 org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0,CLASS-3, 
+org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Consumable|0,CLASS-9, 
 org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0,STRATEGIC-TRANS, 
 org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OffsetDays=7|1,STRATEGIC-TRANS, 
 org.cougaar.domain.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OriginFile=GEOLOC-PLDR.xml|0,STRATEGIC-TRANS, 
