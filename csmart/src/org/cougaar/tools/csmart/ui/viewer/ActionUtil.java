@@ -80,202 +80,6 @@ public class ActionUtil {
    * @param doPopup true if action will be used in popup menu
    * @return boolean true if action allowed, else false
    */
-//    public static boolean isActionAllowed(String action,
-//                                          Organizer organizer,
-//                                          boolean doPopup) {
-//      // If nothing is selected, some things are still legitimate
-//      if (organizer.getSelectedNode() == null) {
-//        if (action.equals(DELETE_EXPERIMENT_FROM_DATABASE_ACTION) ||
-//            action.equals(DELETE_RECIPE_FROM_DATABASE_ACTION)) {
-//          return true;
-//        } else {
-//  	return false;
-//        }
-//      }
-
-//      if (organizer.isNodeBeingEdited(organizer.getSelectedNode()))
-//        return false; // can't do anything with nodes in an exp. being edited
-
-//      if (organizer.getSelectedNode().isRoot()) {
-//        if (action.equals(NEW_EXPERIMENT_ACTION) ||
-//            action.equals(NEW_RECIPE_ACTION) ||
-//            action.equals(NEW_FOLDER_ACTION) ||
-//            action.equals(RENAME_ACTION) ||
-//            action.equals(DELETE_EXPERIMENT_FROM_DATABASE_ACTION) ||
-//            action.equals(DELETE_RECIPE_FROM_DATABASE_ACTION)) {
-//          return true;
-//        } else if (doPopup) {
-//          return false;
-//        } else {
-//          // TODO: Configure and Build should only be enabled
-//          // if they would be enabled for some component;
-//          // you can only edit recipes and societies
-//          // that are not being edited and are not
-//          // in an experiment that is being edited;
-//          // you can only build an experiment which is not being built
-//          // and whose society and recipes are not being edited;
-//          // unfortunately, this requires knowing the node for the component
-//          // also, when the action is invoked,
-//          // you need to apply the same logic as to which components
-//          // are configured or built
-//          if (action.equals(CONFIGURE_ACTION)) {
-//            RecipeComponent[] recipes = organizer.getSelectedRecipes();
-//            if (recipes != null) {
-//              for (int i = 0; i < recipes.length; i++) 
-//                if (!CSMART.isRecipeInEditor(recipes[i]))
-//                  return true;
-//            }
-//            return false;
-//          } else if (action.equals(BUILD_ACTION)) {
-//            Experiment[] experiments = organizer.getSelectedExperiments();
-//            if (experiments != null) {
-//              for (int i = 0; i < experiments.length; i++)
-//                if (!CSMART.isExperimentInEditor(experiments[i]))
-//                  return true;
-//            }
-//            return false;
-//          } else if (action.equals(RUN_ACTION)) {
-//            Experiment[] experiments = organizer.getSelectedExperiments();
-//            if (experiments != null) {
-//              for (int i = 0; i < experiments.length; i++)
-//                if (experiments[i].isRunnable())
-//                  return true;
-//            }
-//            return false;
-//          } else
-//            return false;
-//        }
-//      } // end if selected object is root
-
-//      Object selectedObject = organizer.getSelectedObject();
-
-//      if (selectedObject instanceof String) { // folder selected
-//        if (action.equals(DELETE_ACTION)) {
-//          RecipeComponent[] recipes = organizer.getSelectedRecipes();
-//          if (recipes != null) {
-//            for (int i = 0; i < recipes.length; i++) 
-//              if (CSMART.isRecipeInEditor(recipes[i]))
-//                return false;
-//          } 
-//          Experiment[] experiments = organizer.getSelectedExperiments();
-//          if (experiments != null) {
-//            for (int i = 0; i < experiments.length; i++)
-//              if (CSMART.isExperimentInEditor(experiments[i]) ||
-//                  experiments[i].isRunInProgress())
-//                return false;
-//          }
-//          return true;
-//        }
-//        else if (action.equals(NEW_EXPERIMENT_ACTION) ||
-//                 action.equals(NEW_RECIPE_ACTION) ||
-//                 action.equals(NEW_FOLDER_ACTION) ||
-//                 action.equals(RENAME_ACTION)) {
-//          return true;
-//        } else {
-//          if (action.equals(CONFIGURE_ACTION)) {
-//            RecipeComponent[] recipes = organizer.getSelectedRecipes();
-//            if (recipes != null) {
-//              for (int i = 0; i < recipes.length; i++) 
-//                if (!CSMART.isRecipeInEditor(recipes[i]))
-//                  return true;
-//            }
-//            return false;
-//          }
-//          else if (action.equals(BUILD_ACTION)) {
-//            Experiment[] experiments = organizer.getSelectedExperiments();
-//            if (experiments != null) {
-//              for (int i = 0; i < experiments.length; i++)
-//                if (!CSMART.isExperimentInEditor(experiments[i]))
-//                  return true;
-//            }
-//            return false;
-//          }
-//          else if (action.equals(RUN_ACTION)) {
-//            Experiment[] experiments = organizer.getSelectedExperiments();
-//            if (experiments != null) {
-//              for (int i = 0; i < experiments.length; i++)
-//                if (experiments[i].isRunnable())
-//                  return true;
-//            }
-//            return false;
-//          }
-//          else return false;
-//        }
-//      } // end if selected object is folder
-
-//      // don't allow configuring society, or building,
-//      // deleting, renaming, or running an experiment,
-//      // if you're editing one of its components (i.e. a society or recipe)
-//      // don't allow running an experiment, unless its runnable
-//      // don't allow deleting, renaming, configuring or building
-//      // if you're editing or running the experiment
-//      if (selectedObject instanceof Experiment) {
-//        Experiment experiment = (Experiment)selectedObject;
-//        if (action.equals(DUPLICATE_ACTION))
-//          return true;
-//        SocietyComponent society = experiment.getSocietyComponent();
-//        if (CSMART.isSocietyInEditor(society))
-//          return false;
-//        RecipeComponent[] recipes = experiment.getRecipeComponents();
-//        for (int i = 0; i < recipes.length; i++) {
-//          if (CSMART.isRecipeInEditor(recipes[i]))
-//            return false;
-//        }
-//        if (action.equals(RUN_ACTION))
-//          return experiment.isRunnable();
-//        if (action.equals(DELETE_ACTION) || 
-//            action.equals(RENAME_ACTION) ||
-//            action.equals(CONFIGURE_ACTION) ||
-//            action.equals(BUILD_ACTION))
-//          return (!experiment.isEditInProgress() &&
-//                  !experiment.isRunInProgress());
-//        return false;
-//      } // end if selected object is experiment
-
-//      // don't allow duplicating, building an experiment, or deleting
-//      // if the society is in an experiment
-//      // don't allow building, deleting, renaming, or configuring
-//      // if the society is being configured
-//      if (selectedObject instanceof SocietyComponent) {
-//        SocietyComponent society = (SocietyComponent)selectedObject;
-//        if (isNodeInExperiment(organizer)) {
-//          if (action.equals(DUPLICATE_ACTION) ||
-//              action.equals(BUILD_ACTION) ||
-//              action.equals(DELETE_ACTION))
-//            return false;
-//        }
-//        if (action.equals(DUPLICATE_ACTION))
-//          return true;
-//        else if (action.equals(BUILD_ACTION) ||
-//                 action.equals(DELETE_ACTION) ||
-//                 action.equals(RENAME_ACTION) ||
-//                 action.equals(CONFIGURE_ACTION)) 
-//          return (!CSMART.isSocietyInEditor(society));
-//        else
-//          return false;
-//      } // end if selected object is society
-
-//      if (selectedObject instanceof RecipeComponent) {
-//        RecipeComponent recipe = (RecipeComponent)selectedObject;
-//        if (isNodeInExperiment(organizer)) {
-//          if (action.equals(DUPLICATE_ACTION) ||
-//              action.equals(DELETE_ACTION))
-//            return false;
-//        }
-//        if (action.equals(DUPLICATE_ACTION))
-//          return true;
-//        else if (action.equals(DELETE_ACTION) ||
-//                 action.equals(RENAME_ACTION) ||
-//                 action.equals(CONFIGURE_ACTION))
-//          return (!CSMART.isRecipeInEditor(recipe));
-//        else
-//          return false;
-//      } // end if selected object is recipe
-
-//      System.out.println("Util: unhandled case: " + action);
-//      return false;
-//    }
-
   public static boolean isActionAllowed(String action,
                                         Organizer organizer,
                                         boolean doPopup) {
@@ -302,12 +106,7 @@ public class ActionUtil {
           action.equals(DELETE_EXPERIMENT_FROM_DATABASE_ACTION) ||
           action.equals(DELETE_RECIPE_FROM_DATABASE_ACTION)) 
         return true;
-      //      if (doPopup)
-      //        return false;
       return false;
-      //      DefaultMutableTreeNode rootNode = 
-      //        (DefaultMutableTreeNode)organizer.getSelectedNode();
-      //      return isActionAllowedOnFolder(action, organizer, rootNode);
     } // end handling root
 
     Object selectedObject = organizer.getSelectedObject();
@@ -348,27 +147,6 @@ public class ActionUtil {
     // can delete empty folder, but not root
     if (!nodes.hasMoreElements() && !node.isRoot()) 
       return action.equals(DELETE_ACTION);
-
-//      boolean actionAllowed = false;
-//      while (nodes.hasMoreElements()) {
-//        DefaultMutableTreeNode nextNode = 
-//          (DefaultMutableTreeNode)nodes.nextElement();
-//        Object o = nextNode.getUserObject();
-//        if (o instanceof String) 
-//          actionAllowed = 
-//            isActionAllowedOnFolder(action, organizer, nextNode);
-//        else if (o instanceof Experiment)
-//          actionAllowed =
-//            isActionAllowedOnExperiment(action, organizer, (Experiment)o);
-//        else if (o instanceof SocietyComponent)
-//          actionAllowed =
-//            isActionAllowedOnSociety(action, organizer, (SocietyComponent)o);
-//        else if (o instanceof RecipeComponent)
-//          actionAllowed =
-//            isActionAllowedOnRecipe(action, organizer, (RecipeComponent)o);
-//        if (actionAllowed)
-//          return true;
-//      }
     return false;
   }
 
@@ -406,9 +184,11 @@ public class ActionUtil {
 
   /**
    * Don't allow duplicating, building an experiment, or deleting
-   * if the society is in an experiment.
+   * if the user selected a society in an experiment.
    * Don't allow building, deleting, renaming, or configuring
    * if the society is being configured.
+   * Don't allow configuring if the society is in an experiment
+   * which is being configured or run.
    */
   private static boolean isActionAllowedOnSociety(String action,
                                                   Organizer organizer,
@@ -421,11 +201,13 @@ public class ActionUtil {
     }
     if (action.equals(DUPLICATE_ACTION))
       return true;
-    if (action.equals(BUILD_ACTION) ||
-        action.equals(DELETE_ACTION) ||
-        action.equals(RENAME_ACTION) ||
-        action.equals(CONFIGURE_ACTION)) 
+    if (action.equals(DELETE_ACTION) ||
+        action.equals(RENAME_ACTION))
       return (!CSMART.isSocietyInEditor(society));
+    if (action.equals(CONFIGURE_ACTION) ||
+        action.equals(BUILD_ACTION))
+      return !organizer.isInUse(society) &&
+        !CSMART.isSocietyInEditor(society);
     return false;
   }
 
@@ -434,6 +216,8 @@ public class ActionUtil {
    * if the recipe is in an experiment.
    * Don't allow deleting, renaming, or configuring
    * if the recipe is being configured.
+   * Don't allow configuring if the recipe is in an experiment
+   * which is being configured or run.
    */
   private static boolean isActionAllowedOnRecipe(String action,
                                                  Organizer organizer,
@@ -446,9 +230,11 @@ public class ActionUtil {
     if (action.equals(DUPLICATE_ACTION))
       return true;
     if (action.equals(DELETE_ACTION) ||
-        action.equals(RENAME_ACTION) ||
-        action.equals(CONFIGURE_ACTION))
+        action.equals(RENAME_ACTION))
       return (!CSMART.isRecipeInEditor(recipe));
+    if (action.equals(CONFIGURE_ACTION))
+      return !organizer.isInUse(recipe) &&
+        !CSMART.isRecipeInEditor(recipe);
     return false;
   }
 

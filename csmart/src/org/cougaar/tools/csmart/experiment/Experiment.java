@@ -482,10 +482,12 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     return compArray;
   }
 
-  // Private Methods
 
-  // get all the Societies, Recipes
-  private List getComponents() {
+  /**
+   * Get all the recipes and the society.
+   * @return List list of all the components in the experiment
+   */
+  public List getComponents() {
     List comps = new ArrayList();
     for (int i = 0; i < getRecipeComponentCount(); i++) {
       comps.add(getRecipeComponent(i));

@@ -725,8 +725,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * @param String the experiment name
    * @return true if experiment is in the Console
    */
-  protected static boolean isExperimentInConsole(String experimentName) {
-    String s = EXPERIMENT_CONTROLLER + ": " + experimentName;
+  protected static boolean isExperimentInConsole(Experiment experiment) {
+    String s = EXPERIMENT_CONTROLLER + ": " + experiment.getExperimentName();
     if (NamedFrame.getNamedFrame().getFrame(s) != null)
       return true;
     else

@@ -1449,23 +1449,8 @@ public class Organizer extends JScrollPane {
                                     JOptionPane.ERROR_MESSAGE);
       return;
     }
-//      if (CSMART.isExperimentInConsole(experimentName)) {
-//        JOptionPane.showMessageDialog(this,
-//                                      "You cannot delete an experiment that is in the Experiment Controller",
-//                                      "Cannot Delete Experiment",
-//                                      JOptionPane.ERROR_MESSAGE);
-//        return;
-    //    }
     String experimentId = (String)experimentNamesMap.get(experimentName);
     ExperimentDB.deleteExperiment(experimentId, experimentName);
-    // if experiment is in workspace, then mark it as needing to be resaved
-//      DefaultMutableTreeNode node = findNodeNamed(experimentName);
-//      if (node != null) {
-//        if (node.getUserObject() instanceof Experiment) {
-//          Experiment experiment = (Experiment)node.getUserObject();
-//          experiment.fireModification();
-//        }
-//      }
   }
 
   /**
@@ -2006,6 +1991,28 @@ public class Organizer extends JScrollPane {
           return name; // have unique name
       } // end if unique in CSMART
     } // end while loop
+  }
+
+  /**
+   * Returns true if the component (a society or recipe) is in an experiment
+   * that is being built or run. 
+   * Used by ActionUtil to determine allowed actions.
+   */
+  protected boolean isInUse(ModifiableComponent mc) {
+    Enumeration nodes = root.depthFirstEnumeration();
+    while (nodes.hasMoreElements()) {
+      DefaultMutableTreeNode node = 
+	(DefaultMutableTreeNode)nodes.nextElement();
+      Object o = node.getUserObject();
+      if (o instanceof Experiment) {
+        Experiment exp = (Experiment)o;
+        if (CSMART.isExperimentInConsole(exp) ||
+            CSMART.isExperimentInEditor(exp))
+          if (exp.getComponents().contains(mc))
+            return true;
+      }
+    }
+    return false;
   }
 
   ////////////////////////////////
