@@ -59,6 +59,7 @@ public class DBUtils {
   public static final String QUERY_FILE = "CSMART.q";
   public static final String ASSEMBLYID_QUERY = "queryAssemblyID";
   private static final String EXPERIMENT_QUERY = "queryExptsWithRecipe";
+  private static final String EXPERIMENT_SOCIETY_QUERY = "queryExptsWithSociety";
 
   // Flag whether to actually go to DB on queries
   public static boolean execute = true;
@@ -866,6 +867,40 @@ public class DBUtils {
     }
     return "'" + s + "'";
   }  
+
+ /**
+   * Get a set of experiment names that say they have the
+   * named society.
+   *
+   * @param societyName a <code>String</code> society name to look for
+   * @return a <code>Set</code> of experiment names that include that society
+   */
+  public static Set dbGetExperimentsWithSociety(String societyName) {
+    Map substitutions = new HashMap();
+    substitutions.put(":societyName", societyName);
+    String dbQuery = DBUtils.getQuery(EXPERIMENT_QUERY, substitutions);
+    Logger log =
+      CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
+    Set s = new HashSet();
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+        Statement stmt = conn.createStatement();
+        ResultSet rs = stmt.executeQuery(dbQuery);
+        while (rs.next()) {s.add(rs.getString(1));}
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("querySet: "+dbQuery, e);
+      }
+      throw new RuntimeException("Error" + e);
+    }
+    return s;
+  }
 
   public static Set dbGetExperimentsWithRecipe(String recipeName) {
     Map substitutions = new HashMap();

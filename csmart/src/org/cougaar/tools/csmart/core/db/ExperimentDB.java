@@ -65,7 +65,15 @@ public class ExperimentDB {
       return true;
     return false;
   }
-  
+
+  public static boolean isSocietyNameInDatabase(String societyName) {
+    return DBUtils.isSocietyNameInDatabase(societyName);
+  }
+
+  public static boolean isRecipeNameInDatabase(String recipeName) {
+    return DBUtils.isRecipeNameInDatabase(recipeName);
+  }
+
   public static String getTrialId(String experimentId) {
     return CMT.getTrialId(experimentId); 
   }
