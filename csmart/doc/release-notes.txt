@@ -52,7 +52,14 @@ Asset=true in component AGG-Agent
   Nodes by default (bug 1587).
 - The menu items in the Organizer and Experiment Builder have been
   split up, for ease of use. No functionality has changed. (Bug 1581)
-- Speed up stopping a run, by talking to each node in parallel (bug 1416).
+- Speed up stopping a run, by talking to each node in parallel (bug
+  1416).
+- Database table names have been shorted, removing extraneous v4 and
+  v6 prefixes. Recipe or experiment exports must be processed to
+  remove the "v4_" from the beginning of table names.
+- Database load scripts are now generated
+  from ER/Studio files, which themselves are available in the
+  csmart/data/database directory. This change is transparent to the user.
 
 Release 9.4:
 This release constitutes the last major Cougaar release for this
