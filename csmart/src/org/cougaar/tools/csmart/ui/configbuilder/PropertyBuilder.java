@@ -200,14 +200,14 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   private void saveToDatabase() {
     if (configComponent instanceof SocietyComponent) {
       final PropertyBuilder propertyBuilder = this;
-      GUIUtils.timeConsumingTaskStart(this);
       GUIUtils.timeConsumingTaskStart(csmart);
+      GUIUtils.timeConsumingTaskStart(this);
       try {
         new Thread("SaveSociety") {
 	    public void run() {
 	      boolean success = ((SocietyComponent)configComponent).saveToDatabase();
-	      GUIUtils.timeConsumingTaskEnd(propertyBuilder);
 	      GUIUtils.timeConsumingTaskEnd(csmart);
+	      GUIUtils.timeConsumingTaskEnd(propertyBuilder);
 	      if (!success && propertyBuilder.log.isWarnEnabled()) {
 		propertyBuilder.log.warn("Failed to save society " + configComponent.getShortName());
 	      } else if (propertyBuilder.log.isDebugEnabled()) {
@@ -219,8 +219,8 @@ public class PropertyBuilder extends JFrame implements ActionListener {
         if(log.isErrorEnabled()) {
           log.error("Runtime exception saving society", re);
         }
-        GUIUtils.timeConsumingTaskEnd(propertyBuilder);
         GUIUtils.timeConsumingTaskEnd(csmart);
+        GUIUtils.timeConsumingTaskEnd(propertyBuilder);
       }
     } else if (configComponent instanceof RecipeComponent) {
       ((RecipeComponent)configComponent).saveToDatabase();
