@@ -431,9 +431,6 @@ public class AgentInsertionRecipe extends RecipeBase
   class InsertAgentComponent extends ConfigurableComponent 
     implements AgentComponent, Serializable {
 
-    private String planServer_name = "org.cougaar.lib.planserver.PlanServerPlugIn";
-    private String pluginClass_name = planServer_name;
-
     private Property[] propRelations = null;
     private Property[] propRoles = null;
 
@@ -458,25 +455,10 @@ public class AgentInsertionRecipe extends RecipeBase
     public ComponentData addComponentData(ComponentData data) {
       if (this.getShortName().equals(data.getName())) {
 
-        // Add the planserver plugin.
-        GenericComponentData plugin = new GenericComponentData();
-        plugin.setType(ComponentData.PLUGIN);
-        plugin.setName(planServer_name);
-        plugin.setParent(data);
-        plugin.setClassName(pluginClass_name);
-        plugin.setOwner(this);
-        plugin.addParameter(propPSPParameter.getValue().toString());
-	// If this agent doesn't already have a plugin with this name, add it
-	// Otherwise, replace the existing plugin with this name, with a new one
-	if (data.getChildIndex(plugin) < 0)
-	  data.addChild(plugin);
-	else
-	  data.setChild(data.getChildIndex(plugin), plugin);
-      
         if ((propOrgAsset.getValue().toString().equals(TRUE))) {
           
           // Add the OrgRTData plugin.
-          plugin = new GenericComponentData();
+          ComponentData plugin = new GenericComponentData();
           plugin.setType(ComponentData.PLUGIN);
           plugin.setName("org.cougaar.mlm.plugin.organization.OrgDataPlugIn");
           plugin.setParent(data);
