@@ -1798,9 +1798,9 @@ public class Organizer extends JScrollPane {
     mapNodesToHosts(experiment, assemblyMatch);
     workspace.setSelection(addExperimentToWorkspace(experiment, node));
     // if the experiment hasn't been cloned, then save it so it's runnable
-    if (!isCloned) {
-      experiment.saveToDb(saveToDbConflictHandler);
-    }
+//     if (!isCloned) {
+//       experiment.saveToDb(saveToDbConflictHandler);
+//     }
   }
 
   private void setComponentProperties(ConfigurableComponent cc,
