@@ -59,9 +59,12 @@ public class XMLUtils {
    * Loads and parses an XML file into a <code>Document</code>
    *
    * @param filename Name of file to load.
-   * @return a <code>Document</code> value
+   * @return a <code>Document</code> value, null on error
    */
   public Document loadXMLFile(String filename) {
+    if (filename == null || filename.equals(""))
+      return null;
+
     try {
       DOMParser parser = new DOMParser();
       parser.parse(new InputSource(ConfigFinder.getInstance().open(filename)));
@@ -87,9 +90,12 @@ public class XMLUtils {
    * Loads and parses and XML file into a <code>Document</code>
    *
    * @param file - Handle to xml file.
-   * @return a <code>Document</code> value
+   * @return a <code>Document</code> value, null on error
    */
   public Document loadXMLFile(File file) {
+    if (file == null || ! file.canRead() || file.isDirectory())
+      return null;
+
     try {
       DOMParser parser = new DOMParser();
       parser.parse(new InputSource(new FileInputStream(file)));
