@@ -116,14 +116,32 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   private void exit() {
     propertyEditor.stopEditing(); // accept any edit in progress
     propertyEditor.exit();
+    if (experiment != null && !experiment.isModified())
+      return;
     saveToDatabase(true); // silently save
+  }
+
+  private void save() {
+    if (experiment != null && !experiment.isModified()) {
+      String[] msg = {
+        "No modifications were made.",
+        "Do you want to save this experiment anyway?"
+      };
+      int answer =
+        JOptionPane.showConfirmDialog(this, msg,
+                                      "No Modifications",
+                                      JOptionPane.YES_NO_OPTION,
+                                      JOptionPane.WARNING_MESSAGE);
+      if (answer != JOptionPane.YES_OPTION) return;
+    }
+    saveToDatabase(false);
   }
 
   public void actionPerformed(ActionEvent e) {
     Object source = e.getSource();
     String s = ((AbstractButton)source).getActionCommand();
     if (s.equals(SAVE_DB_MENU_ITEM)) {
-      saveToDatabase(false);
+      save();
     } else if (s.equals(EXIT_MENU_ITEM)) {
       exit();
       // notify top-level viewer that user quit the builder
@@ -183,7 +201,6 @@ public class PropertyBuilder extends JFrame implements ActionListener {
                                         "Recipe Written",
                                         JOptionPane.INFORMATION_MESSAGE);
         CSMART.getOrganizer().displayExperiments(rc);
-        //        updateExperiments(rc);
       } catch (Exception sqle) {
         if(log.isErrorEnabled()) {
           log.error("Exception", sqle);
