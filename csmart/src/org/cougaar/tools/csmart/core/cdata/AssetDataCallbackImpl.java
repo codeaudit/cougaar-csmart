@@ -77,15 +77,16 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
    * @return a parsed type as a <code>String</code> value
    */
   public String getType(String type) {
-    int i;
-    if ((i = type.indexOf("<")) > -1) { // deal with collections 
-      int j = type.lastIndexOf(">");
-      return getType(type.substring(0, i).trim()); // deal with measures
-    } else if ((i = type.indexOf("/")) > -1) {
-      return getType(type.substring(0, i).trim());
-    } else {
-      return type;
-    }
+    return type;
+//     int i;
+//     if ((i = type.indexOf("<")) > -1) { // deal with collections 
+//       int j = type.lastIndexOf(">");
+//       return getType(type.substring(0, i).trim()); // deal with measures
+//     } else if ((i = type.indexOf("/")) > -1) {
+//       return getType(type.substring(0, i).trim());
+//     } else {
+//       return type;
+//     }
   }
 
   /**
@@ -175,9 +176,6 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
       for (Iterator it = l.iterator(); it.hasNext();) {
         c.add((String)parseE(etype, (String)it.next()));
       }
-      if(log.isDebugEnabled()) {
-        log.debug("Collection Size: " + c.size());
-      }
       return c;
     } else if ((i = type.indexOf("/")) >= 0) {
       // Handle Measure Object Here.
@@ -250,20 +248,35 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
 
     PGPropData data = new PGPropData();
     data.setName(name);
-    if(arguments[0] instanceof Collection) {
-      if(log.isDebugEnabled()) {
-        log.debug("MultiVal for: " + name);
+    if(log.isDebugEnabled()) {
+      log.debug("setterName: " + setterName);
+      log.debug("type: " + type);
+      for(int i=0; i < arguments.length; i++) {
+        log.debug("Argument[" + i + "]: " + arguments[i]);
       }
+    }
+
+    int i;
+    if ((i = type.indexOf("<")) >= 0) {
+      int j = type.lastIndexOf(">");
+      data.setType(type.substring(0, i).trim());
+      data.setSubType(type.substring(i + 1, j).trim());
+      if(log.isInfoEnabled()) {
+        log.info("Type: " + type.substring(0, i).trim() );
+        log.info("Subtype: " + type.substring(i + 1, j).trim());
+      }
+    } else {
+      data.setType(type);
+    }
+
+    if(arguments[0] instanceof Collection) {
       Iterator iter = ((Collection)arguments[0]).iterator();
-      data.setType("Collection");
-      data.setSubType(type);
       PGPropMultiVal multi = new PGPropMultiVal();
       while(iter.hasNext()) {
         multi.addValue((String)iter.next());
       }
       data.setValue(multi);
     } else {
-      data.setType(type);
       data.setValue(arguments[0]);
     }
     propGroup.addProperty(data);
