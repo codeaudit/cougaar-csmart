@@ -394,24 +394,25 @@ public class ExperimentBuilder extends JFrame {
    * Save if the user said to do so anyhow,
    * or if it was modified.
    */
-  private void saveHelper(final boolean force) {
-    final Component c = this;
-    GUIUtils.timeConsumingTaskStart(c);
-    GUIUtils.timeConsumingTaskStart(csmart);
-    try {
-      new Thread("Save") {
-        public void run() {
-	  if (force || experiment.isModified())
+  private void saveHelper(boolean force) {
+    if (force || experiment.isModified()) {
+      final Component c = this;
+      GUIUtils.timeConsumingTaskStart(c);
+      GUIUtils.timeConsumingTaskStart(csmart);
+      try {
+	new Thread("Save") {
+	  public void run() {
 	    experiment.saveToDb(saveToDbConflictHandler);
-          GUIUtils.timeConsumingTaskEnd(c);
-          GUIUtils.timeConsumingTaskEnd(csmart);
-        }
-      }.start();
-    } catch (RuntimeException re) {
-      if(log.isErrorEnabled()) {
-        log.error("Error saving experiment: ", re);
+	    GUIUtils.timeConsumingTaskEnd(c);
+	    GUIUtils.timeConsumingTaskEnd(csmart);
+	  }
+	}.start();
+      } catch (RuntimeException re) {
+	if(log.isErrorEnabled()) {
+	  log.error("Error saving experiment: ", re);
+	}
+	GUIUtils.timeConsumingTaskEnd(c);
       }
-      GUIUtils.timeConsumingTaskEnd(c);
     }
   }
 
