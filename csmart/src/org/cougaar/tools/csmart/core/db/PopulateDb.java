@@ -2559,7 +2559,11 @@ public class PopulateDb extends PDbBase {
     String result = data.getAlibID();
     if (result == null) {
       String componentType = data.getType();
-      if (componentType.equals(ComponentData.PLUGIN) || componentType.equals(ComponentData.NODEBINDER) || componentType.equals(ComponentData.AGENTBINDER)) {
+      if (componentType.equals(ComponentData.SOCIETY)) {
+	result = ComponentData.SOCIETY + "|" + data.getName();
+      } else if (componentType.equals(ComponentData.AGENT)) {
+	result = getAgentAlibId(data.getName());
+      } else {
 	ComponentData anc = data.getParent();
 	if (componentType.equals(ComponentData.NODEBINDER) && ! anc.getType().equals(ComponentData.NODE)) {
 	  if (log.isWarnEnabled()) {
@@ -2580,28 +2584,10 @@ public class PopulateDb extends PDbBase {
 	  } else {
 	    result = agentName + "|" + data.getName();
 	  }
-	}
-      } else if (componentType.equals(ComponentData.SOCIETY)) {
-	result = ComponentData.SOCIETY + "|" + data.getName();
-      } else if (componentType.equals(ComponentData.AGENT)) {
-	result = getAgentAlibId(data.getName());
-      } else {
-	// This says that unexpected componentTypes
-	// have AlibIDs that are their name. Is this right?
-	ComponentData parent = data.getParent();
-	if (parent != null) {
-	  String pname = parent.getName();
-	  if (data.getName().startsWith(pname + "|")) {
-	    result = data.getName();
-	  } else {
-	    result = pname + "|" + data.getName();
-	  }
-	} else {
-	  result = data.getName();
-	}
-      }
+	} // got an ancestor
+      } // end of block to handle most cases for generating alib IDs
       data.setAlibID(result);
-    }
+    } // end of block to compute alib id
     return result;
   }
 
