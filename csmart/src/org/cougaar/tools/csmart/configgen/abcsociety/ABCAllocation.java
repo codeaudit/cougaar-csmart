@@ -71,12 +71,17 @@ public class ABCAllocation
   public static final String PROP_ALLOCFILENAME = "Allocation File Name";
   public static final String PROP_ALLOCFILENAME_DESC = "Name of the Allocation File";
 
+  public static final String PROP_NUMBEROFRULES = "Number of Allocation Rules";
+  public static final String PROP_NUMEROFRULES_DESC = "Total Number of allocation rules for this agent";
+  public static final Long   PROP_NUMBEROFRULES_DFLT = new Long(1);
+
   private Property propSuccess;
   private Property propResponse;
   private Property propPublish;
   private Property propTransport;
   private Property propExecute;
   private Property propFileName;
+  private Property propNumberOfRules;
 
   ABCAllocation() {
     this("Allocations");
@@ -84,6 +89,12 @@ public class ABCAllocation
 
   ABCAllocation(String name) {
     super(name);
+  }
+
+  private Property addProperty(String name, Object value, PropertyListener l) {
+    Property p = addProperty(name, value, value.getClass());
+    p.addPropertyListener(l);
+    return p;
   }
 
   /**
@@ -110,6 +121,39 @@ public class ABCAllocation
     propExecute.setToolTip(PROP_EXECUTE_DESC);
     propExecute.setAllowedValues(Collections.singleton(new LongRange(0, Long.MAX_VALUE)));
 
+    propNumberOfRules = addProperty(PROP_NUMBEROFRULES, PROP_NUMBEROFRULES_DFLT,
+				    new ConfigurableComponentPropertyAdapter() {
+				      public void propertyValueChanged(PropertyEvent e) {
+					updateAllocationRuleCount((Long)e.getProperty().getValue());
+				      }
+				    });
+    propNumberOfRules.setToolTip(PROP_NUMBEROFRULES);
+    propNumberOfRules.setAllowedValues(Collections.singleton(new LongRange(0, Long.MAX_VALUE)));
+
+  }
+
+  private void updateAllocationRuleCount(Long newCount) {
+    long count = newCount.longValue();
+
+    if(count == 0) {
+      // Remove all allocation rules.
+      while(getChildCount() != 0) {
+	removeChild(getChildCount() -1);
+      }
+    } else if( count > getChildCount() ) {
+      long newRules = count - getChildCount();
+      
+      for(int i=0; i < newRules; i++) {
+	ABCAllocationRule rule = new ABCAllocationRule("NewRule" + i);
+	rule.initProperties();
+	rule.getProperty(ABCAllocationRule.PROP_TASKVERB).setValue(new String[0]);
+	addChild(rule);
+      }
+    } else if( count < getChildCount() ) {
+      while(getChildCount() != count) {
+	removeChild(getChildCount() -1 );
+      }
+    }
   }
 
   /**
@@ -127,6 +171,7 @@ public class ABCAllocation
     sb.append((Float)propSuccess.getValue());
     sb.append(", ");
     sb.append((Long)propResponse.getValue());
+
     sb.append(", ");
     sb.append((Long)propPublish.getValue());
     sb.append(", ");

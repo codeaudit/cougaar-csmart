@@ -36,7 +36,11 @@ public class ABCAllocationRule
   private Property propRoles;
 
   ABCAllocationRule() {
-    super("rule");
+    this("Alloc");
+  }
+
+  ABCAllocationRule(String name) {
+    super("Rule" + "-" + name);
   }
 
   /**

@@ -111,6 +111,7 @@ Customer agents do not have any local Assets, and this value is empty.<br>
 
 The allocation level consists of the following properties:<ul>
 <li>Estimated execute Time             [ Long, milliseconds,  0 - MAX ]</li>
+<li>Number of Allocation Rules         [ Long, 0 - MAX ]</li>
 <li>Allocation Publish Time              [ Long, milliseconds, 0 - MAX ]</li>
 <li>Response (Estimated Allocation Result) Publish Time          [ Long, milliseconds, 0 - MAX ]</li>
 <li>Allocation Confidence Required  [ Float, 0 - 1 ]</li>
@@ -129,6 +130,8 @@ time for the Allocator to publish a simple response is controlled by 'Response T
 'Transport Time' indicates the estimated amount of time it will take for the allocator 
 to transport the allocation to the remote agent.  The confidence required of Allocation Results received by the Allocator, for them to be considered confident enough to act on, is 
 controlled by 'Successful Allocation', with 0 indicating that all allocation results will be considered confident, and 1 indicating that only those specifying complete confidence will be accepted.<br>
+Each Allocation table has a number of Allocation Rules associated with it.  The amount of rules within the allocation table are controlled by 'Number of Allocation Rules'.  When new rules are added to the allocation table, they are added as empty rules.  It is
+up to the CSMART user to fill in the Roles and Task verb for each new rule. (See The Rule Level). <br>
 
 <a NAME="rulelevel"><h2>The Rule Level</h2></a>
 

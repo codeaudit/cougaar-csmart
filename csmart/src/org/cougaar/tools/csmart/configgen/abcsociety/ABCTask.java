@@ -29,7 +29,7 @@ public class ABCTask
 
   /** Properties associated with a Task **/
   public static final String PROP_TASKVERB = "Task Verb";
-  public static final String[] PROP_TASKVERB_DFLT = {"Supply500MREs", "ObtainATruck"};
+  public static final String[] PROP_TASKVERB_DFLT = {"Supply500MREs"};
 
   public static final String PROP_TASKVERB_DESC = "Task Verb used through out the Society";
 

@@ -93,8 +93,6 @@ public class ABCCommunity
   /** Name of the Local Asset **/
   public static final String DEFAULT_ASSETNAME = "ClassOneDepot";
 
-  public static final String DEFAULT_TASKVERB = "Supply500MREs";
-
   /** Agent specific defaults **/
 
   /** Customer 1 **/
@@ -344,10 +342,9 @@ public class ABCCommunity
     ABCAllocation alloc = new ABCAllocation();
     alloc.initProperties();
     String[] tasks = (String[])getProperty(PROP_TASKVERB).getValue();
-    //String taskverb = (String)getProperty(PROP_TASKVERB).getValue();
 
     for(int i=0; i < tasks.length; i++) {
-      ABCAllocationRule rule = new ABCAllocationRule();
+      ABCAllocationRule rule = new ABCAllocationRule(tasks[i]);
       rule.initProperties();
       Property verb = rule.getProperty(PROP_TASKVERB);
       verb.setValue(tasks[i]);
@@ -421,7 +418,7 @@ public class ABCCommunity
     ABCAllocation alloc = new ABCAllocation();
     alloc.initProperties();
     for(int i=0; i < tasks.length; i++) {
-      ABCAllocationRule rule = new ABCAllocationRule();
+      ABCAllocationRule rule = new ABCAllocationRule(tasks[i]);
       rule.initProperties();
       Property type = rule.getProperty(PROP_TASKVERB);
       type.setValue(tasks[i]);
