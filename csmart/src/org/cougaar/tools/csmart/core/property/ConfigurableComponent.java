@@ -778,6 +778,10 @@ public abstract class ConfigurableComponent
     };
   }
 
+  public Iterator getLocalProperties() {
+    return getMyProperties().values().iterator();
+  }
+
   public Iterator getProperties() {
     return new Iterator() {
         Iterator currentIterator = getMyProperties().values().iterator();
