@@ -1960,12 +1960,19 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   // asking them to add their ComponentData
   // return the or'ed value of componentWasRemoved()
   private boolean askComponentsToAddCDATA() {
-    List components = getComponents();
-
     // Now ask each component in turn to add its stuff
     boolean componentWasRemoved = false;
-    for (int i = 0, n = components.size(); i < n; i++) {
-      BaseComponent soc = (BaseComponent) components.get(i);
+
+    BaseComponent theSoc = getSocietyComponent();
+    if(log.isDebugEnabled()) {
+      log.debug(theSoc.getFullName().toString() + ".addComponentData");
+    }
+    theSoc.addComponentData(completeSociety);
+    componentWasRemoved |= theSoc.componentWasRemoved();
+    
+    for (int i = 0, n = recipes.size(); i < n; i++) {
+      BaseComponent soc = (BaseComponent) recipes.get(i);
+
       if(log.isDebugEnabled()) {
         log.debug(soc.getFullName().toString() + ".addComponentData");
       }
@@ -2017,12 +2024,21 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   private boolean allowModifyCData() {
     // then give everyone a chance to modify what they've collectively produced
     boolean componentModified = false;
-    List components = getComponents();
+    BaseComponent theSoc = getSocietyComponent();
     PopulateDb pdb = null;
     try {
       pdb = new PopulateDb(getExperimentID(), trialID);
-      for (int i = 0, n = components.size(); i < n; i++) {
-	BaseComponent soc = (BaseComponent) components.get(i);
+      if (log.isDebugEnabled()) {
+	log.debug("allowModify letting comps modify. comp: " + theSoc.getShortName());
+      }
+      // Recipes typically need to do DB queries
+      // in order to do these insertions correctly,
+      // so need the version of modify that takes a pdb called.
+      theSoc.modifyComponentData(completeSociety, pdb);
+      componentModified |= theSoc.componentWasRemoved();
+      
+      for (int i = 0, n = recipes.size(); i < n; i++) {
+	BaseComponent soc = (BaseComponent) recipes.get(i);
 	if (log.isDebugEnabled()) {
 	  log.debug("allowModify letting comps modify. comp: " + soc.getShortName());
 	}
@@ -2032,7 +2048,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	soc.modifyComponentData(completeSociety, pdb);
 	componentModified |= soc.componentWasRemoved();
       }
-      
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
 	log.error("allowModifyCData error with pdb", e);
