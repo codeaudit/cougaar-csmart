@@ -38,7 +38,7 @@ SET COUGAAR3RDPARTY=%COUGAAR_INSTALL_PATH%\sys
 :L_3
 
 REM Start CSMART using Bootstrapper
-SET LIBPATHS=%COUGAAR_INSTALL_PATH%\lib\bootstrap.jar
+SET LIBPATHS="%COUGAAR_INSTALL_PATH%\lib\bootstrap.jar"
 
 REM You may use the optional environment variable COUGAAR_DEV_PATH
 REM to point to custom developed code that is not in COUGAR_INSTALL_PATH/lib
@@ -47,11 +47,11 @@ REM directories/jars/zips, or left undefined
 
 REM start the classpath with the optional COUGAAR_DEV_PATH
 SET DEVPATH=
-IF NOT "%COUGAAR_DEV_PATH%" == "" SET DEVPATH=-Dorg.cougaar.class.path=%COUGAAR_DEV_PATH%
+IF NOT "%COUGAAR_DEV_PATH%" == "" SET DEVPATH=-Dorg.cougaar.class.path="%COUGAAR_DEV_PATH%"
 REM Use the Bootstrapper to find Jar files.
 
 SET MYMEMORY=-Xms100m -Xmx300m
-SET MYPROPERTIES=-Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH% -Dorg.cougaar.system.path=%COUGAAR3RDPARTY%
+SET MYPROPERTIES=-Dorg.cougaar.install.path="%COUGAAR_INSTALL_PATH%" -Dorg.cougaar.system.path="%COUGAAR3RDPARTY%"
 SET MYCONFIGPATH=-Dorg.cougaar.config.path="%COUGAAR_INSTALL_PATH%/csmart/data/common/\;"
 
 @ECHO ON
