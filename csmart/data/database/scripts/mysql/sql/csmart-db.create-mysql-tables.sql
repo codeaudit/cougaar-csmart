@@ -72,21 +72,6 @@ CREATE TABLE asb_agent_relation(
 ;
 
 
-## 
-## TABLE: asb_alploc 
-##
-
-CREATE TABLE asb_alploc(
-    ASSEMBLY_ID               VARCHAR(50)    BINARY NOT NULL DEFAULT '',
-    ALPLOC_CODE               VARCHAR(50)    BINARY NOT NULL DEFAULT '',
-    LOCATION_NAME             VARCHAR(50)    BINARY DEFAULT NULL,
-    LATITUDE                  DECIMAL(68,30) DEFAULT NULL,
-    LONGITUDE                 DECIMAL(68,30) DEFAULT NULL,
-    INSTALLATION_TYPE_CODE    CHAR(3)       BINARY DEFAULT NULL,
-    UNIQUE KEY pk_asb_alploc (ASSEMBLY_ID, ALPLOC_CODE)
-) TYPE=MyISAM 
-;
-
 
 ## 
 ## TABLE: asb_assembly 
@@ -192,19 +177,17 @@ CREATE TABLE asb_oplan_agent_attr(
 ) TYPE=MyISAM 
 ;
 
-
 ## 
-## TABLE: cfw_alploc 
+## TABLE: alploc 
 ##
 
-CREATE TABLE cfw_alploc(
-    CFW_ID                    VARCHAR(50)    BINARY NOT NULL DEFAULT '',
+CREATE TABLE alploc(
     ALPLOC_CODE               VARCHAR(50)    BINARY NOT NULL DEFAULT '',
     LOCATION_NAME             VARCHAR(50)    BINARY DEFAULT NULL,
     LATITUDE                  DECIMAL(68,30) DEFAULT NULL,
     LONGITUDE                 DECIMAL(68,30) DEFAULT NULL,
     INSTALLATION_TYPE_CODE    CHAR(3)       BINARY DEFAULT NULL,
-    UNIQUE KEY pk_cfw_alploc (CFW_ID, ALPLOC_CODE)
+    UNIQUE KEY pk_alploc (ALPLOC_CODE)
 ) TYPE=MyISAM 
 ;
 
@@ -887,7 +870,6 @@ CREATE TABLE fdm_transportable_item_detail (
   TID_CGO_CMPT_HT_DM decimal(126,0) default NULL,
   TID_CGOCMPBD_HT_DM decimal(126,0) default NULL,
   TID_CGO_BED_HT_DM decimal(126,0) default NULL,
-  TID_VNTG_CD char(1) default NULL,
   TID_WHL_BS_DM decimal(126,0) default NULL,
   TID_EMTY_LD_CLS_ID varchar(4) default NULL,
   TID_LDED_LD_CLS_ID varchar(4) default NULL,

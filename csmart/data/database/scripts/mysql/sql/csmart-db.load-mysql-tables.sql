@@ -34,14 +34,14 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_agent_relation.csv.tmp'
     IGNORE 1 LINES
     (ASSEMBLY_ID,ROLE,SUPPORTING_COMPONENT_ALIB_ID,SUPPORTED_COMPONENT_ALIB_ID,START_DATE,END_DATE);
 
-LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_alploc.csv.tmp'
-    INTO TABLE asb_alploc
+LOAD DATA INFILE ':cip/csmart/data/database/csv/alploc.csv.tmp'
+    INTO TABLE alploc
     FIELDS
         TERMINATED BY ','
         OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
-    (ASSEMBLY_ID,ALPLOC_CODE,LOCATION_NAME,LATITUDE,LONGITUDE,INSTALLATION_TYPE_CODE);
+    (ALPLOC_CODE,LOCATION_NAME,LATITUDE,LONGITUDE,INSTALLATION_TYPE_CODE);
 
 LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_assembly.csv.tmp'
     INTO TABLE asb_assembly
@@ -105,15 +105,6 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/asb_oplan_agent_attr.csv.tmp'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
     (ASSEMBLY_ID,OPLAN_ID,COMPONENT_ALIB_ID,COMPONENT_ID,START_CDAY,ATTRIBUTE_NAME,END_CDAY,ATTRIBUTE_VALUE);
-
-LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_alploc.csv.tmp'
-    INTO TABLE cfw_alploc
-    FIELDS
-        TERMINATED BY ','
-        OPTIONALLY ENCLOSED BY '"'
-    LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
-    (CFW_ID,ALPLOC_CODE,LOCATION_NAME,LATITUDE,LONGITUDE,INSTALLATION_TYPE_CODE);
 
 LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_context_plugin_arg.csv.tmp'
     INTO TABLE cfw_context_plugin_arg

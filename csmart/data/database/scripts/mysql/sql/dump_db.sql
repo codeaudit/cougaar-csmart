@@ -24,11 +24,11 @@ FIELDS TERMINATED BY ','
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM asb_agent_relation;
 
-SELECT ASSEMBLY_ID,ALPLOC_CODE,LOCATION_NAME,LATITUDE,LONGITUDE,INSTALLATION_TYPE_CODE 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/asb_alploc_data.csv" 
+SELECT ALPLOC_CODE,LOCATION_NAME,LATITUDE,LONGITUDE,INSTALLATION_TYPE_CODE 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/alploc_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY ",\n" FROM asb_alploc;
+LINES TERMINATED BY ",\n" FROM alploc;
 
 SELECT ASSEMBLY_ID,ASSEMBLY_TYPE,DESCRIPTION 
 INTO OUTFILE ":cip/csmart/data/database/raw_data/asb_assembly_data.csv" 
@@ -153,12 +153,6 @@ LINES TERMINATED BY ",\n" FROM lib_pg_attribute;
 
 ##################################################################################
 
-
-SELECT CFW_ID,ALPLOC_CODE,LOCATION_NAME,LATITUDE,LONGITUDE,INSTALLATION_TYPE_CODE 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/cfw_alploc_data.csv" 
-FIELDS TERMINATED BY ',' 
-OPTIONALLY ENCLOSED BY '"' 
-LINES TERMINATED BY ",\n" FROM cfw_alploc;
 
 SELECT CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID 
 INTO OUTFILE ":cip/csmart/data/database/raw_data/cfw_context_plugin_arg_data.csv" 

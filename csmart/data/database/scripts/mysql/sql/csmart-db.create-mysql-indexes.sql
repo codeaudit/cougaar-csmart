@@ -64,12 +64,6 @@ CREATE INDEX refalib_component31 ON asb_agent_relation(SUPPORTING_COMPONENT_ALIB
 CREATE INDEX refalib_component32 ON asb_agent_relation(SUPPORTED_COMPONENT_ALIB_ID);
 ;
 ## 
-## INDEX: refasb_assembly18 
-##
-
-CREATE INDEX refasb_assembly18 ON asb_alploc(ASSEMBLY_ID);
-;
-## 
 ## INDEX: refalib_component11 
 ##
 
@@ -122,12 +116,6 @@ CREATE INDEX refalib_component21 ON asb_oplan_agent_attr(COMPONENT_ALIB_ID);
 ##
 
 CREATE INDEX refalib_component99 ON oplan_agent_attr(ORG_ID);
-;
-## 
-## INDEX: refcfw_instance4 
-##
-
-CREATE INDEX refcfw_instance4 ON cfw_alploc(CFW_ID);
 ;
 ## 
 ## INDEX: reflib_plugin_arg43 
