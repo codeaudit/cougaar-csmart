@@ -222,7 +222,7 @@ public class TestPopulateDb extends TestCase {
             insertTestTrial(dbConnection);
             insertTestAssembly(dbConnection);
             dbConnection.commit();
-            pdb = new PopulateDb(ASSEMBLY_PREFIX);
+            pdb = new PopulateDb(ASSEMBLY_PREFIX, exptId, trialId);
             assemblyId = pdb.getAssemblyId();
             pdb.setDebug(true);
         } finally {
