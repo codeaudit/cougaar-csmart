@@ -46,9 +46,14 @@ public class CommunityPanel extends JPanel {
   private static final String VIEW_COMMUNITY_INFO_ACTION = "Show All Parameters";
   private static final String ADD_PARAMETER_ACTION = "Add Parameter";
   private static final String DELETE_ACTION = "Delete";
+
+  private Experiment experiment;
   private JSplitPane splitPane;
   private JSplitPane treePane;
   private CommunityDNDTree communityTree;
+  private JTree hostTree;
+  private JTree nodeTree;
+  private JTree agentTree;
   private CommunityTreeModelListener treeModelListener;
   private JTable communityTable;
   private CommunityTableUtils communityTableUtils;
@@ -89,10 +94,11 @@ public class CommunityPanel extends JPanel {
     };
 
   public CommunityPanel(Experiment experiment) {
+    this.experiment = experiment;
     communityTable = createTable();
     splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     splitPane.setLeftComponent(new JScrollPane(communityTable));
-    treePane = createTreeDisplay(experiment);
+    treePane = createTreeDisplay();
     splitPane.setRightComponent(treePane);
     splitPane.setDividerLocation(400);
     splitPane.validate();
@@ -104,8 +110,9 @@ public class CommunityPanel extends JPanel {
   }
 
   public void reinit(Experiment experiment) {
+    this.experiment = experiment;
     splitPane.remove(treePane);
-    treePane = createTreeDisplay(experiment);
+    treePane = createTreeDisplay();
     splitPane.setRightComponent(treePane);
   }
 
@@ -115,7 +122,7 @@ public class CommunityPanel extends JPanel {
     return communityTable;
   }
 
-  private JSplitPane createTreeDisplay(Experiment experiment) {
+  private JSplitPane createTreeDisplay() {
     DefaultMutableTreeNode root = 
       new DefaultMutableTreeNode(new CommunityTreeObject("Community"));
     DefaultTreeModel treeModel = new DefaultTreeModel(root, true) {
@@ -164,22 +171,19 @@ public class CommunityPanel extends JPanel {
     entityMenu.add(new JMenuItem(deleteAction));
     DefaultMutableTreeNode hostRoot = 
       new DefaultMutableTreeNode(new CommunityTreeObject("Hosts"));
-    JTree hostTree = 
-      new EntityDNDTree(new DefaultTreeModel(hostRoot, true));
+    hostTree = new EntityDNDTree(new DefaultTreeModel(hostRoot, true));
     hostTree.setExpandsSelectedPaths(true);
     hostTree.setCellEditor(noEdit);
     JScrollPane hostScrollPane = new JScrollPane(hostTree);
     DefaultMutableTreeNode nodeRoot = 
       new DefaultMutableTreeNode(new CommunityTreeObject("Nodes (unassigned)"));    
-    JTree nodeTree = 
-      new EntityDNDTree(new DefaultTreeModel(nodeRoot, true));
+    nodeTree = new EntityDNDTree(new DefaultTreeModel(nodeRoot, true));
     nodeTree.setExpandsSelectedPaths(true);
     nodeTree.setCellEditor(noEdit);
     JScrollPane nodeScrollPane = new JScrollPane(nodeTree);
     DefaultMutableTreeNode agentRoot = 
       new DefaultMutableTreeNode(new CommunityTreeObject("Agents (unassigned)"));
-    JTree agentTree = 
-      new EntityDNDTree(new DefaultTreeModel(agentRoot, true));
+    agentTree = new EntityDNDTree(new DefaultTreeModel(agentRoot, true));
     agentTree.setExpandsSelectedPaths(true);
     agentTree.setCellEditor(noEdit);
     JScrollPane agentScrollPane = new JScrollPane(agentTree);
@@ -195,10 +199,47 @@ public class CommunityPanel extends JPanel {
     paneOne.setDividerLocation(100);
     paneTwo.setDividerLocation(100);
     paneThree.setDividerLocation(100);
-    addHostsFromExperiment(hostTree, experiment);
-    addUnassignedNodesFromExperiment(nodeTree, experiment);
-    addUnassignedAgentsFromExperiment(agentTree, experiment);
+    addHostsFromExperiment();
+    addUnassignedNodesFromExperiment();
+    addUnassignedAgentsFromExperiment();
     return paneOne;
+  }
+
+  /**
+   * Ensure that display is up-to-date before showing it.
+   */
+
+  public void setVisible(boolean visible) {
+    if (visible)
+      update();
+    super.setVisible(visible);
+  }
+
+  /**
+   * Bring the display up-to-date by re-reading host/node/agent information
+   * from the experiment.
+   */
+  public void update() {
+    removeAllChildren(hostTree);
+    removeAllChildren(nodeTree);
+    removeAllChildren(agentTree);
+    // get hosts, agents and nodes from experiment
+    addHostsFromExperiment();
+    // add unassigned nodes to nodes tree
+    addUnassignedNodesFromExperiment();
+    // add unassigned agents to agents tree
+    addUnassignedAgentsFromExperiment();
+  }
+
+  /**
+   * Remove all children from a tree; called in update.
+   */
+
+  private void removeAllChildren(JTree tree) {
+    DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+    DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
+    root.removeAllChildren();
+    model.nodeStructureChanged(root);
   }
 
   DefaultCellEditor noEdit = new DefaultCellEditor(new JTextField()) {
@@ -369,7 +410,7 @@ public class CommunityPanel extends JPanel {
    * Add hosts and their nodes and agents from an experiment.
    */
 
-  private void addHostsFromExperiment(JTree hostTree, Experiment experiment) {
+  private void addHostsFromExperiment() {
     DefaultMutableTreeNode root = 
       (DefaultMutableTreeNode)hostTree.getModel().getRoot();
     DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
@@ -402,8 +443,7 @@ public class CommunityPanel extends JPanel {
   /**
    * Add unassigned nodes from experiment to unassigned nodes tree.
    */
-  private void addUnassignedNodesFromExperiment(JTree nodeTree, 
-                                                Experiment experiment) {
+  private void addUnassignedNodesFromExperiment() {
     Set unassignedNodes;
     unassignedNodes = new TreeSet(dbBaseComponentComparator);
     HostComponent[] hosts = experiment.getHostComponents();
@@ -453,8 +493,7 @@ public class CommunityPanel extends JPanel {
    * Add unassigned agents to unassigned agents tree.
    */
 
-  private void addUnassignedAgentsFromExperiment(JTree agentTree,
-                                                 Experiment experiment) {
+  private void addUnassignedAgentsFromExperiment() {
     Set unassignedAgents;
     unassignedAgents = new TreeSet(dbBaseComponentComparator);
     AgentComponent[] agents = experiment.getAgents();
@@ -510,7 +549,7 @@ public class CommunityPanel extends JPanel {
     // display community information in table
     communityTableUtils.getAllCommunityInfo(communityName);
     communityTree.getModel().removeTreeModelListener(treeModelListener);
-    addToTree(communityTree.addNode(null, communityName, "Community"),
+    addToTree(communityTree.addNode(null, communityName, "Community", null),
               communityName);
     communityTree.getModel().addTreeModelListener(treeModelListener);
   }
@@ -523,40 +562,12 @@ public class CommunityPanel extends JPanel {
       String entityName = (String)entityNames.get(i);
       String entityType = CommunityDBUtils.getMemberType(entityName);
       DefaultMutableTreeNode newNode = 
-        communityTree.addNode(node, entityName, entityType);
+        communityTree.addNode(node, entityName, entityType, communityName);
       // tell our tree model listener to simply add the node to its hashtable
       treeModelListener.addNode(newNode, communityName);
       if (entityType.equals("Community"))
         addToTree(newNode, entityName);
     }
-  }
-
-  // for debugging, displays a frame in which the user can enter
-  // a sql query
-
-  private void displayQueryFrame() {
-    JPanel queryPanel = new JPanel(new BorderLayout());
-    // Create the query text area and label.
-    final JTextArea queryTextArea = 
-      new JTextArea("SELECT * FROM community_entity_attribute", 25, 25);
-    JScrollPane queryPane = new JScrollPane(queryTextArea);
-    queryPanel.add("Center", queryPane);
-    JButton fetchButton = new JButton("Fetch");
-    fetchButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          //communityTableUtils.executeQuery(queryTextArea.getText());
-        }
-      });
-    queryPanel.add("South", fetchButton);
-
-    // Create a Frame and put the panel in it.
-    JFrame frame = new JFrame("SQL Query");
-    frame.addWindowListener(new WindowAdapter() {
-        public void windowClosing(WindowEvent e) {System.exit(0);}});
-    frame.getContentPane().add("Center", queryPanel);
-    frame.pack();
-    frame.setVisible(true);
-    frame.setBounds(200, 200, 640, 480);
   }
 
 }

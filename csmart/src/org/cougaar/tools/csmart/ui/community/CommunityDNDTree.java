@@ -113,8 +113,14 @@ public class CommunityDNDTree extends DNDTree {
       return "";
   }
 
+  /**
+   * Add a new node to the tree; used to build trees when
+   * user displays a new tree.
+   */
+
   protected DefaultMutableTreeNode addNode(DefaultMutableTreeNode node,
-                                           String name, String type) {
+                                           String name, String type,
+                                           String communityName) {
     DefaultTreeModel model = (DefaultTreeModel)getModel();
     DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
     if (node == null) {
@@ -123,7 +129,7 @@ public class CommunityDNDTree extends DNDTree {
       node = root;
     }
     DefaultMutableTreeNode newNode =
-      new DefaultMutableTreeNode(new CommunityTreeObject(name, type),
+      new DefaultMutableTreeNode(new CommunityTreeObject(name, type, communityName),
                                  !type.equals("Agent"));
     model.insertNodeInto(newNode, node, node.getChildCount());
     // expand branch below new node and scroll to display new node
@@ -251,7 +257,7 @@ public class CommunityDNDTree extends DNDTree {
   }
 
   /** 
-   * Add an element by getting the user object out of the source
+   * Add an element by copying the user object in the source
    * and creating a new tree node for it.
    */
 
@@ -268,8 +274,9 @@ public class CommunityDNDTree extends DNDTree {
     if (before != null)
       ix = model.getIndexOfChild(target, before);
     CommunityTreeObject cto = (CommunityTreeObject)source.getUserObject();
+    CommunityTreeObject newCTO = cto.copy();
     DefaultMutableTreeNode newNode =
-      new DefaultMutableTreeNode(cto, cto.allowsChildren());
+      new DefaultMutableTreeNode(newCTO, newCTO.allowsChildren());
     if (isDuplicate(newNode, target) || isInCommunity(newNode, target)) {
       return false;
     }
@@ -300,8 +307,9 @@ public class CommunityDNDTree extends DNDTree {
         (DefaultMutableTreeNode)oldNode.getChildAt(i);
       CommunityTreeObject cto = 
         (CommunityTreeObject)oldChildNode.getUserObject();
+      CommunityTreeObject newCTO = cto.copy();
       DefaultMutableTreeNode newChildNode =
-        new DefaultMutableTreeNode(cto, cto.allowsChildren());
+        new DefaultMutableTreeNode(newCTO, newCTO.allowsChildren());
       if (isDuplicate(newChildNode, newNode) ||
           isInCommunity(newChildNode, newNode))
         continue;

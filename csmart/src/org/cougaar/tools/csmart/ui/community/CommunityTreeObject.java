@@ -34,7 +34,7 @@ import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import java.io.ObjectInputStream;
 
-public class CommunityTreeObject {
+public class CommunityTreeObject implements Cloneable {
   private String label;
   private String toolTip;
   private boolean isRoot = false;
@@ -42,6 +42,7 @@ public class CommunityTreeObject {
   private boolean isHost = false;
   private boolean isAgent = false;
   private boolean allowsChildren = true;
+  private String communityName = null; // community this object is in
   private transient Logger log;
 
   /**
@@ -50,20 +51,25 @@ public class CommunityTreeObject {
    * @param allowed class of the children
    */
   public CommunityTreeObject(String label) {
-    this(null, label, "Root");
+    this(null, label, "Root", null);
+  }
+
+  public CommunityTreeObject(String label, String type) {
+    this(null, label, type, null);
   }
                                           
-  public CommunityTreeObject(String label, String type) {
-    this(null, label, type);
+  public CommunityTreeObject(String label, String type, String communityName) {
+    this(null, label, type, communityName);
   }
 
   public CommunityTreeObject(BaseComponent component) {
-    this(component, component.toString(), "");
+    this(component, component.toString(), "", null);
   }
 
   public CommunityTreeObject(BaseComponent component,
-                             String label, String type) {
+                             String label, String type, String communityName) {
     createLogger();
+    this.communityName = communityName;
     if (component != null) {
       if (component instanceof HostComponent)
         isHost = true;
@@ -178,6 +184,26 @@ public class CommunityTreeObject {
         return true;
     }
     return false;
+  }
+
+  public void setCommunityName(String communityName) {
+    this.communityName = communityName;
+  }
+
+  public String getCommunityName() {
+    return communityName;
+  }
+
+  public CommunityTreeObject copy() {
+    CommunityTreeObject copiedObject = null;
+    try {
+      copiedObject = (CommunityTreeObject)clone();
+    } catch (CloneNotSupportedException e) {
+      if(log.isErrorEnabled()) {
+        log.error("Clone not supported: " + e);
+      }
+    }
+    return copiedObject;
   }
 
   private void writeObject(ObjectOutputStream os) throws IOException {

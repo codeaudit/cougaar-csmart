@@ -71,10 +71,15 @@ public class CommunityTreeModelListener implements TreeModelListener {
    * create a new entry in the community_entity_attribute table
    * 3) the user dragged an entity or community from one community to another
    * create a new entry in the community_entity_attribute table
+   * The user object contains the name of the community that the node was in;
+   * this method sets the new community name.
    */
   public void treeNodesInserted(TreeModelEvent e) {
     Object[] addedNodes = e.getChildren();
-    // first, take remove action
+    // first, take remove action, 
+    // but only if the node was dragged from a community tree
+    // TODO: determine how to remember that the node was dragged from
+    // a community tree; encode community in user object?
     for (int i = 0; i < addedNodes.length; i++)
       removeNode((DefaultMutableTreeNode)addedNodes[i]);
     // get parent of added nodes
@@ -104,6 +109,8 @@ public class CommunityTreeModelListener implements TreeModelListener {
       node = (DefaultMutableTreeNode)addedNodes[i];
       CommunityTreeObject addedObject = 
         (CommunityTreeObject)node.getUserObject();
+      // set the new community name in the user object
+      addedObject.setCommunityName(communityName);
       if (!addedObject.isHost()) { // don't add info about hosts to database
         String entityName = addedObject.toString();
         CommunityDBUtils.insertEntityInfo(communityName, entityName, 
@@ -129,9 +136,11 @@ public class CommunityTreeModelListener implements TreeModelListener {
    * been moved from some other community, or when deleting nodes.
    */
   public void removeNode(DefaultMutableTreeNode node) {
-    // remove from previous community
+    // remove from previous community, if any
     CommunityTreeObject deletedObject =
       (CommunityTreeObject)node.getUserObject();
+    if (deletedObject.getCommunityName() == null)
+      return;
     String entityName = deletedObject.toString();
     String communityName = (String)communities.remove(entityName);
     if (communityName == null)
