@@ -147,6 +147,9 @@ public class GenericComponentData implements ComponentData, Serializable {
 //              log.debug("Got a nodebinder at index: " + i);
 //            }
 	  lastbinder = i;
+	} else {
+	  // Plugins, AgentBinders, misc components
+	  // FIXME!!!
 	}
       } else if (this.getType().equals(ComponentData.AGENT)) {
 	if (kid.getType().equals(ComponentData.PLUGIN)) {
@@ -160,6 +163,9 @@ public class GenericComponentData implements ComponentData, Serializable {
 //              log.debug("Got an agentbinder at index: " + i);
 //            }
 	  lastbinder = i;
+	} else {
+	  // Misc components
+	  // FIXME!!!
 	}
       }
     } // end of loop over kids of this data item
