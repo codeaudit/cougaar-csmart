@@ -57,12 +57,22 @@ csmart_database=$COUGAAR_INSTALL_PATH/csmart/data/database
 
 # The main db (1ADDomainData)
 echo "Loading domain database: $domaindb"
-#echo "unzip -p $dbms_mysql/1ADDomainData.zip 1ADDomainData.sql | $domain_mysqlcmd"
-unzip -p $dbms_mysql/1ADDomainData.zip 1ADDomainData.sql | $domain_mysqlcmd
+domain_data_zip=$dbms_mysql/1ADDomainData.zip
+if [ ! -f $domain_data_zip ]; then
+  echo Missing file $domain_data_zip
+  exit -1
+fi
+#echo "unzip -p $domain_data_zip 1ADDomainData.sql | $domain_mysqlcmd"
+unzip -p $domain_data_zip 1ADDomainData.sql | $domain_mysqlcmd
 
 # Army_spares
-#echo "unzip -p $dbms_mysql/army_spares.zip army.txt | $domain_mysqlcmd"
-unzip -p $dbms_mysql/army_spares.zip army.txt | $domain_mysqlcmd
+army_spares_zip=$dbms_mysql/army_spares.ZIP
+if [ ! -f $army_spares_zip ]; then
+  echo Missing file $army_spares_zip
+  exit -1
+fi
+#echo "unzip -p $army_spares_zip army.txt | $domain_mysqlcmd"
+unzip -p $army_spares_zip army.txt | $domain_mysqlcmd
 
 # Spares index
 #echo "cat $dbms_mysql/spares_index.txt | $domain_mysqlcmd"
