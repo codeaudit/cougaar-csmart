@@ -36,6 +36,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 
@@ -603,6 +604,43 @@ public class Organizer extends JScrollPane {
     if (society == null)
       return;
     Experiment experiment = createExperiment(society);
+
+    // Add in community info for this society
+    JFileChooser chooser = 
+      new JFileChooser(SocietyFinder.getInstance().getPath());
+    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    chooser.setDialogTitle("Select the communities.xml file for this Society, if any");
+    // Allow selection of XML files and directories
+    chooser.addChoosableFileFilter(new FileFilter() {
+      public boolean accept(File f) {
+	if (f == null)
+	  return false;
+	if (f.isDirectory())
+	  return true;
+	return f.getName().endsWith(".xml");
+      }
+
+      public String getDescription() {
+	return "XML Files";
+      }
+
+      });
+
+    File xmlFile = null;
+    while (xmlFile == null) {
+      int result = chooser.showDialog(organizer, "OK");
+      if (result != JFileChooser.APPROVE_OPTION)
+	break;
+      xmlFile = chooser.getSelectedFile();
+    }
+
+//     if (xmlFile != null && !CommWriter.importCommunityXML(xmlFile, experiment.getCommAsbID())) {
+//       // There may have been none, so don't complain too loudly.
+//       if (log.isInfoEnabled()) {
+// 	log.info("crtExpFromFile got no Community XML data out of " + xmlFile.getFullPath());
+//       }
+//     }
+
     DefaultMutableTreeNode experimentNode =
       addExperimentToWorkspace(experiment, getSelectedNode());
     addSocietyToWorkspace(society, experimentNode);
