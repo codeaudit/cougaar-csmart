@@ -398,20 +398,18 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostTree.setEditable(isEditable);
     nodeTree.setEditable(isEditable);
     agentTree.setEditable(isEditable);
-    if (societyComponent != null) {
-      // get hosts, agents and nodes from experiment
-      addHostsFromExperiment();
-      // create new host components for hosts named in config file
-      addHostsFromFile();
-      // add unassigned nodes to nodes tree
-      addUnassignedNodesFromExperiment();
-      // add unassigned agents to agents tree
-      addUnassignedAgentsFromExperiment();
-      // fully expand trees
-      expandTree(hostTree);
-      expandTree(nodeTree);
-      expandTree(agentTree);
-    }
+    // get hosts, agents and nodes from experiment
+    addHostsFromExperiment();
+    // create new host components for hosts named in config file
+    addHostsFromFile();
+    // add unassigned nodes to nodes tree
+    addUnassignedNodesFromExperiment();
+    // add unassigned agents to agents tree
+    addUnassignedAgentsFromExperiment();
+    // fully expand trees
+    expandTree(hostTree);
+    expandTree(nodeTree);
+    expandTree(agentTree);
     hostTree.getModel().addTreeModelListener(this);
     nodeTree.getModel().addTreeModelListener(this);
     setNameServerHostName(); // set name server host name in all nodes
