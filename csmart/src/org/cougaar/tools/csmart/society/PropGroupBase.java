@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import org.cougaar.tools.csmart.core.cdata.PGPropData;
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
+import org.cougaar.tools.csmart.core.cdata.PGPropMultiVal;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
@@ -66,8 +67,11 @@ public class PropGroupBase
       } else {
         name = data.getName() + " ("+ data.getSubType() + ")";
       }
-
-      addProperty(name, data.getValue());
+      
+      if (data.isListType())
+	addProperty(name, ((PGPropMultiVal)data.getValue()).getValuesStringArray());
+      else
+	addProperty(name, data.getValue());
     }
   }
 
@@ -135,7 +139,12 @@ public class PropGroupBase
             }
           }
 
-          pg.setValue(prop.getValue());
+	  if (pg.isListType()) {
+	    pg.setValue(new PGPropMultiVal(prop.getValue()));
+	  } else {
+	    pg.setValue(prop.getValue());
+	  }	    
+
           pgData.addProperty(pg);
         }
     
