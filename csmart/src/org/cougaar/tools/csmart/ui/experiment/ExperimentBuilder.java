@@ -47,6 +47,10 @@ import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.util.log.Logger;
 
+/**
+ * The Experiment Builder is the tool for assigning society Agents to resources,
+ * configuring communities, etc.
+ **/
 public class ExperimentBuilder extends JFrame {
   private static final String FILE_MENU = "File";
   private static final String COMMUNITY_MENU = "Community";
@@ -407,6 +411,9 @@ public class ExperimentBuilder extends JFrame {
     tabbedPane.add("Communities", communityPanel);
 
     // Only need to add the ThreadBuilder if there are threads
+    // FIXME: This does not entirely cover the cases where
+    // putting this up would be useful -- a CSA assembly
+    // could also have legitimate threads
     if (DBUtils.containsCMTAssembly(experiment.getExperimentID())) {
       threadBuilder = new ThreadBuilder(experiment);
     } else {
