@@ -27,26 +27,36 @@ import javax.swing.text.DefaultStyledDocument;
 
 public class ConsoleStyledDocument extends DefaultStyledDocument {
   // DefaultStyledDocument buffer size is 4096
-  static int MAX_CHARACTERS = DefaultStyledDocument.BUFFER_SIZE_DEFAULT;
-  static int MIN_REMOVE_CHARACTERS = 800;
+  //  static int MAX_CHARACTERS = DefaultStyledDocument.BUFFER_SIZE_DEFAULT;
+  //  static int MIN_REMOVE_CHARACTERS = 800;
+  int bufferSize;
+  int minRemoveSize;
+
+  public ConsoleStyledDocument() {
+    bufferSize = DefaultStyledDocument.BUFFER_SIZE_DEFAULT;
+    minRemoveSize = (int)(bufferSize * .2);
+  }
 
   public void appendString(String s, AttributeSet a) {
     try {
+      if (bufferSize == -1) { // display everything, no limit on buffer size
+        super.insertString(getLength(), s, a);
+        return;
+      }
       int len = s.length();
       // special case, the string is larger than the document
       // just insert the end of the string
-      if (len >= MAX_CHARACTERS) {
+      if (len >= bufferSize) {
         remove(0, getLength());
-        super.insertString(0, s.substring(len - MAX_CHARACTERS), a);
+        super.insertString(0, s.substring(len - bufferSize), a);
         return;
       }
       int bufferLength = getLength();
       int neededSpace = bufferLength + len;
       // if appending string will exceed buffer length
       // then remove at least the first 20% of buffer
-      if (neededSpace > MAX_CHARACTERS) {
-        int tmp = Math.max(neededSpace - MAX_CHARACTERS,
-                           MIN_REMOVE_CHARACTERS);
+      if (neededSpace > bufferSize) {
+        int tmp = Math.max(neededSpace - bufferSize, minRemoveSize);
         // don't remove more characters than exist
         tmp = Math.min(tmp, bufferLength);
         remove(0, tmp);
@@ -59,11 +69,36 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
     }
   }
 
+  /**
+   * Set the number of characters displayed.  A value of -1 means
+   * display all characters (no limit).  Values of 0 and other negative
+   * numbers are ignored.
+   */
+
+  public void setBufferSize(int bufferSize) {
+    if (bufferSize == -1) 
+      this.bufferSize = bufferSize;
+    else if (bufferSize >= 1) {
+      this.bufferSize = bufferSize;
+      this.minRemoveSize = Math.min((int)(bufferSize * .2), 1);
+    }
+  }
+
+  /**
+   * Get the number of characters displayed.  A value of -1 means
+   * display all characters (no limit). 
+   */
+
+  public int getBufferSize() {
+    return bufferSize;
+  }
+
   public static void main(String[] args) {
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
     AttributeSet a = new javax.swing.text.SimpleAttributeSet();
     // with MAX_CHARACTER = 5 this prints:
     // abc, abcde, fghij, vwxyz
+    doc.setBufferSize(5);
     try {
       doc.appendString("abc", a);
       System.out.println(doc.getText(0, doc.getLength()));

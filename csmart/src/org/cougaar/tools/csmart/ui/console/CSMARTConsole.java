@@ -512,14 +512,13 @@ public class CSMARTConsole extends JFrame {
                                           "Notification",
                                           JOptionPane.QUESTION_MESSAGE,
                                           null, null, notifyCondition);
-    if (s == null || s.length() == 0) {
+    if (s == null || s.length() == 0)
       notifyCondition = null;
-      return;
-    }
+    else
+      notifyCondition = s;
     Collection c = nodeListeners.values();
     for (Iterator i = c.iterator(); i.hasNext(); )
-      ((ConsoleNodeListener)i.next()).setNotifyCondition(s);
-    notifyCondition = s;
+      ((ConsoleNodeListener)i.next()).setNotifyCondition(notifyCondition);
   }
 
   /**

@@ -53,11 +53,14 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String SEARCH_NEXT_ACTION = "Search Next";
   private static final String STATUS_MENU = "Status";
   private static final String HISTORY_ACTION = "Utilization History";
+  private static final String DISPLAY_MENU = "Display";
+  private static final String DISPLAY_ACTION = "Set Screen Buffer Size...";
+  private static final String DISPLAY_ALL_ACTION = "Display All";
   private static int openFrameCount = 0;
   private static final int xOffset = 30, yOffset = 30;
   private NodeComponent node;
   private ConsoleNodeListener listener;
-  private JComponent component;
+  private ConsoleTextPane consoleTextPane;
   private Action searchAction;
   private Action searchNextAction;
   private HostComponent host;
@@ -65,7 +68,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   public ConsoleInternalFrame(NodeComponent node, 
                               ConsoleNodeListener listener,
-                              JComponent component) {
+                              ConsoleTextPane consoleTextPane) {
     super("",   // title
           true, //resizable
           false, //not closable, because they can't be recreated
@@ -73,7 +76,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
           true);//iconifiable
     this.node = node;
     this.listener = listener;
-    this.component = component;
+    this.consoleTextPane = consoleTextPane;
     // get host component by getting the experiment and 
     // searching its hosts for one with this node.
     Experiment experiment = 
@@ -126,6 +129,19 @@ public class ConsoleInternalFrame extends JInternalFrame {
       }
     };
     controlMenu.add(traceAction);
+    JMenu displayMenu = new JMenu(DISPLAY_MENU);
+    Action displayAction = new AbstractAction(DISPLAY_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        display_actionPerformed();
+      }
+    };
+    displayMenu.add(displayAction);
+    Action displayAllAction = new AbstractAction(DISPLAY_ALL_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        displayAll_actionPerformed();
+      }
+    };
+    displayMenu.add(displayAllAction);
     JMenu searchMenu = new JMenu(SEARCH_MENU);
     searchAction = new AbstractAction(SEARCH_ACTION) {
       public void actionPerformed(ActionEvent e) {
@@ -148,12 +164,14 @@ public class ConsoleInternalFrame extends JInternalFrame {
     statusMenu.add(historyAction);
     menuBar.add(aboutMenu);
     menuBar.add(controlMenu);
-    menuBar.add(searchMenu);
+    menuBar.add(displayMenu);
     menuBar.add(statusMenu);
+    menuBar.add(searchMenu);
+    //    menuBar.add(notifyMenu);
     getRootPane().setJMenuBar(menuBar);
-    initKeyMap((ConsoleTextPane)component);
+    initKeyMap(consoleTextPane);
     openFrameCount++;
-    getContentPane().add(component);
+    getContentPane().add(consoleTextPane);
     setSize(300,300);
     //Set the window's location.
     setLocation(xOffset*openFrameCount, yOffset*openFrameCount);
@@ -298,16 +316,16 @@ public class ConsoleInternalFrame extends JInternalFrame {
       return;
     }
     // search and highlight
-    boolean found = ((ConsoleTextPane)component).search(s);
+    boolean found = consoleTextPane.search(s);
     searchNextAction.setEnabled(found);
   }
 
   public void searchNext_actionPerformed() {
     // search and highlight
-    boolean found = ((ConsoleTextPane)component).searchNext();
+    boolean found = consoleTextPane.searchNext();
     searchNextAction.setEnabled(found);
-    component.revalidate();
-    component.repaint();
+    consoleTextPane.revalidate();
+    consoleTextPane.repaint();
   }
 
   /**
@@ -324,6 +342,44 @@ public class ConsoleInternalFrame extends JInternalFrame {
     desktop.addFrame(chartFrame, false);
   }
 
+  /**
+   * Change number of characters displayed in the node's output pane.
+   */
+
+  public void display_actionPerformed() {
+    JTextPane textPane = (JTextPane)consoleTextPane.getViewport().getView();
+    int n =
+      ((ConsoleStyledDocument)textPane.getStyledDocument()).getBufferSize();
+    String tmp = "";
+    if (n != -1)
+      tmp = String.valueOf(n);
+    String s = 
+      (String)JOptionPane.showInputDialog(this,
+                                          "Enter Screen Buffer Size",
+                                          "Screen Buffer Size",
+                                          JOptionPane.QUESTION_MESSAGE,
+                                          null, null, tmp);
+    try {
+      n = Integer.parseInt(s);
+    } catch (NumberFormatException nfe) {
+      System.out.println("Not a valid number: " + s);
+      return;
+    }
+    setBufferSize(n);
+  }
+
+  /**
+   * Display entire log in node's output pane.
+   */
+
+  public void displayAll_actionPerformed() {
+    setBufferSize(-1);
+  }
+
+  private void setBufferSize(int n) {
+    JTextPane textPane = (JTextPane)consoleTextPane.getViewport().getView();
+    ((ConsoleStyledDocument)textPane.getStyledDocument()).setBufferSize(n);
+  }
 }
 
 

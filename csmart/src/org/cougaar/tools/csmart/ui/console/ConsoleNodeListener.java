@@ -382,7 +382,10 @@ public class ConsoleNodeListener implements NodeEventListener {
    */
 
   public void setNotifyCondition(String s) {
-    notifyCondition = s.toLowerCase();
+    if (s == null)
+      notifyCondition = s;
+    else
+      notifyCondition = s.toLowerCase();
   }
 
   /**
@@ -406,6 +409,7 @@ public class ConsoleNodeListener implements NodeEventListener {
       System.out.println("Exception closing log file: " + e);
     }
   }
+
 }
 
 
