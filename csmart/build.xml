@@ -145,7 +145,7 @@
 
     <!-- Extra jars needed at run / unit-test time. -->
     <!-- WARNING: Only relative paths work here. -->
-    <property name="run.jarlist" value="${target.lib}/core.jar,${target.lib}/server.jar,${target.lib}/glm.jar,${target.lib}/scalability.jar,${target.lib}/bootstrap.jar,${target.lib}/util.jar,${target.sys}/xerces.jar,${target.sys}/jcchart.jar,${target.sys}/grappa1_2.jar,${target.sys}/servlet.jar,${target.sys}/oracle12.zip,${target.sys}/mm-mysql-2.jar,${target.sys}/bbn-postgresql7.1.3.jar,${target.sys}/log4j.jar"/>
+    <property name="run.jarlist" value="${target.lib}/core.jar,${target.lib}/server.jar,${target.lib}/glm.jar,${target.lib}/scalability.jar,${target.lib}/bootstrap.jar,${target.lib}/util.jar,${target.sys}/xerces.jar,${target.sys}/jcchart.jar,${target.sys}/grappa1_2.jar,${target.sys}/servlet.jar,${target.sys}/oracle12.zip,${target.sys}/mm-mysql-2.jar,${target.sys}/log4j.jar"/>
     <!-- Put absolute paths on this list, in the form of a path. -->
     <property name="run.abs.jarlist" value=""/>
     
