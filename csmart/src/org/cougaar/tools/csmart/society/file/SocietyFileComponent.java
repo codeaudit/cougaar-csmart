@@ -158,13 +158,20 @@ public class SocietyFileComponent
    * @return a <code>ModifiableComponent</code> which is a copy of this object
    */
   public ModifiableComponent copy(String name) {
-    ModifiableComponent societyCopy = 
-      new SocietyFileComponent(name, filenames);
+    ModifiableComponent societyCopy; 
 
-    //societyCopy.initProperties();
-    for(int i=0; i < this.getChildCount(); i++) {
-      societyCopy.addChild(this.getChild(i));
-    }
+    if (filenames != null)
+      societyCopy = new SocietyFileComponent(name, filenames);
+    else 
+      societyCopy = new SocietyFileComponent(singleFilename, name);
+
+    societyCopy.initProperties();
+
+    // copy the assembly ID - the one under which this societies'
+    // data is currently in the DB, but must be copied
+    ((SocietyBase)societyCopy).setAssemblyId(getAssemblyId());
+
+    ((SocietyBase)societyCopy).saveToDatabase();
 
     return societyCopy;
   }
