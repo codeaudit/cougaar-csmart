@@ -332,6 +332,7 @@ public class ABCSociety
    * Redefines a society when the community or level count changes
    */
   private void changeSociety() {
+
     int newLevels = getLevelCount();
     int newCommunities = getCommunityCount();
     int crntCommunity = 0;
@@ -670,95 +671,23 @@ public class ABCSociety
    * @return society component created
    */
   public SocietyComponent copy(Organizer organizer, Object context) {
+
     String societyName = organizer.generateSocietyName(getSocietyName());
     ABCSociety result = new ABCSociety(societyName);
     result.initProperties();
 
-    // set the level & community count properties explicitly
-    Property propLevelCount = result.getProperty(PROP_LEVELCOUNT);
-    propLevelCount.setValue(getProperty(PROP_LEVELCOUNT).getValue());
-    Property propCommCount = result.getProperty(PROP_COMMUNITYCOUNT);
-    propCommCount.setValue(getProperty(PROP_COMMUNITYCOUNT).getValue());
-    result.changeSociety();
+//     // set the level & community count properties explicitly
+//     Property propLevelCount = result.getProperty(PROP_LEVELCOUNT);
+//     propLevelCount.setValue(getProperty(PROP_LEVELCOUNT).getValue());
+//     Property propCommCount = result.getProperty(PROP_COMMUNITYCOUNT);
+//     propCommCount.setValue(getProperty(PROP_COMMUNITYCOUNT).getValue());
+//     result.changeSociety();
 
-    // Handle other top-level properties.
-    Property propStartTime = result.getProperty(PROP_STARTTIME);
-    propStartTime.setValue(getProperty(PROP_STARTTIME).getValue());
-    Property propStopTime = result.getProperty(PROP_STOPTIME);
-    propStopTime.setValue(getProperty(PROP_STOPTIME).getValue());
-    //    Property propInitializer = result.getProperty(PROP_INITIALIZER);
-    //  propInitializer.setValue(getProperty(PROP_INITIALIZER).getValue());
-    Property propSampleInterval = result.getProperty(PROP_SAMPLEINTERVAL);
-    propSampleInterval.setValue(getProperty(PROP_SAMPLEINTERVAL).getValue());
-    Property propMaxSamples = result.getProperty(PROP_MAXNUMBSAMPLES);
-    propMaxSamples.setValue(getProperty(PROP_MAXNUMBSAMPLES).getValue());
-    Property propStartDelay = result.getProperty(PROP_STARTDELAY);
-    propStartDelay.setValue(getProperty(PROP_STARTDELAY).getValue());
-//      Property propNumbProviders = result.getProperty(PROP_NUMBPROVIDERS);
-//      propNumbProviders.setValue(getProperty(PROP_NUMBPROVIDERS).getValue());
-    Property propTaskVerb = result.getProperty(PROP_TASKVERB);
-    propTaskVerb.setValue(getProperty(PROP_TASKVERB).getValue());
-    
-//      // Then get all the children that are Communities
-//      Iterator iter = ((Collection)getDescendentsOfClass(ABCCommunity.class)).iterator();
-//      //	System.out.println("Community: " + child.getName().toString());
-//      while(iter.hasNext()) {
-//        ABCCommunity comm = (ABCCommunity)iter.next();
-//        ComponentName rcname = new ComponentName(result.getShortName(), comm.getFullName().toString().substring(getSocietyName().length()));
-//        ABCCommunity rcomm = (ABCCommunity)result.getChild(rcname);
-//        comm.copySelf(rcomm);
-//      }
-    
-    // For each, do their local properties
-    // Then for each agent, do its local properties
-    // then for each plugin, do its local properties.
-    
-    // then copy every other property
-    for (Iterator i = getPropertyNames(); i.hasNext(); ) {
-      CompositeName name = (CompositeName) i.next();
-      Property myProp = getProperty(name);
-      if (myProp == propLevelCount) continue;
-      if (myProp == propCommCount) continue;
-      // compose the correct name for the property
-      // name must be prepended by new society name
-      String s = name.toString();
-      ComponentName hisPropName = 
-	new ComponentName(result, s.substring(societyName.length()));
-      Property hisProp = result.getProperty(hisPropName);
-      if (hisProp == null) {
-	// This happens on just about all the properties. Note
-	// That the toString on the name _looks_ OK. So what is the problem?
-	System.err.println("ABCSociety: No prop named: " + hisPropName);
-	continue;
-      } else {
-	// This happens for the ones I already explicitly changed, so I hardly care.
-	System.err.println("ABCSociety: Got OK prop: " + hisPropName);
-      }
-      try {
-	// if have experimental values, then copy those
-	// else copy the property value
-	if (myProp.getExperimentValues() != null) {
-	  List experimentValues = myProp.getExperimentValues();
-	  Object newValue = Array.newInstance(myProp.getPropertyClass(),
-					      experimentValues.size());
-	  for (int j = 0; j < experimentValues.size(); j++)
-	    Array.set(newValue, j,
-		      PropertyHelper.validateValue(myProp, 
-						   experimentValues.get(j)));
-	  hisProp.setExperimentValues(Arrays.asList((Object[])newValue));
-	  hisProp.setValue(null); // no specific value
-	} else {
-	  Object o = PropertyHelper.validateValue(myProp, myProp.getValue());
-	  if (o != null)
-	    hisProp.setValue(o);
-	}
-      } catch (InvalidPropertyValueException e) {
-	System.out.println("ABCSociety: " + e);
-      }
-    }
+    this.copy(result);
     
     return (SocietyComponent)result;
   }
+    
 
   // Change this to get getOutputFileFilter or something like that?
   /**
