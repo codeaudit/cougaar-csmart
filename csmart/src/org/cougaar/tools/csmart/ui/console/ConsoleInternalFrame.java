@@ -674,6 +674,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   public void enableRestart() {
     startAction.setEnabled(true);
+    stopAction.setEnabled(false);
   }
 
   private void restart_actionPerformed() {

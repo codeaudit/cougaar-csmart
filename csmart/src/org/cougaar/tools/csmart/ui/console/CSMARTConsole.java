@@ -880,8 +880,9 @@ public class CSMARTConsole extends JFrame {
         nsc.flushNodeEvents();
         nsc.destroy();
       } catch (Exception ex) {
-        System.err.println("Unable to destroy node: " + ex);
-	continue;
+        System.err.println("Unable to destroy node, assuming it's dead: " + ex);
+        nodeStopped(nodeComponent);
+        getNodeStatusButton(nodeComponent.getShortName()).setStatus(NodeStatusButton.STATUS_NO_ANSWER);
       }
     }
   }
@@ -1173,7 +1174,11 @@ public class CSMARTConsole extends JFrame {
       nsc.flushNodeEvents();
       nsc.destroy();
     } catch (Exception ex) {
-      System.err.println("Unable to destroy node: " + ex);
+      System.err.println("Unable to destroy node, assuming it's dead: " + ex);
+      // call the method that would have been called when the 
+      // ConsoleNodeListener received the node destroyed confirmation
+      nodeStopped(node); 
+      getNodeStatusButton(node.getShortName()).setStatus(NodeStatusButton.STATUS_NO_ANSWER);
     }
   }
 
@@ -1415,7 +1420,7 @@ public class CSMARTConsole extends JFrame {
 	// This happens if you listed random hosts which you don't
 	// really intend to talk to
 	JOptionPane.showMessageDialog(this,
-				      "No response from host: " + hostName +
+				      "Cannot save results.  No response from: " + hostName +
 				      "; check that server is running.",
 				      "No Response From Server",
 				      JOptionPane.WARNING_MESSAGE);
