@@ -47,8 +47,8 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 public class CommunityPanel extends JPanel {
   private static final String VIEW_COMMUNITY_ACTION = "Display Community...";
   private static final String NEW_COMMUNITY_ACTION = "New Community...";
-  private static final String VIEW_COMMUNITY_INFO_ACTION = "Show All Parameters";
-  private static final String ADD_PARAMETER_ACTION = "Add Parameter";
+  private static final String VIEW_COMMUNITY_INFO_ACTION = "Show All Attributes";
+  private static final String ADD_PARAMETER_ACTION = "Add Attribute";
   private static final String DELETE_ACTION = "Delete";
 
   private Experiment experiment;
