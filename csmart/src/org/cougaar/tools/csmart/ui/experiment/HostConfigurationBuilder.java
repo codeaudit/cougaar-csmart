@@ -84,11 +84,22 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     DefaultTreeModel model = createModel(experiment, root, true);
     hostTree = new ConsoleDNDTree(model);
     hostTree.setExpandsSelectedPaths(true);
-
-    // get hosts, agents and nodes from experiment
-    //    addHostsFromExperiment();
-    // create new host components for hosts named in config file
-    //    addHostsFromFile();
+    // cell editor returns false if user tries to edit root node
+    DefaultCellEditor myEditor = new DefaultCellEditor(new JTextField()) {
+      public boolean isCellEditable(EventObject e) {
+	if (super.isCellEditable(e) && e instanceof MouseEvent) {
+	  TreePath path = hostTree.getPathForLocation(((MouseEvent)e).getX(),
+						      ((MouseEvent)e).getY());
+	  if (path == null)
+	    return false;
+	  Object o = path.getLastPathComponent();
+	  if (((DefaultMutableTreeNode)o).isRoot())
+	    return false;
+	}
+	return super.isCellEditable(e);
+      }
+    };
+    hostTree.setCellEditor(myEditor);
 
     JScrollPane hostTreeScrollPane = new JScrollPane(hostTree);
     hostTreeScrollPane.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
@@ -157,6 +168,24 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     root = new DefaultMutableTreeNode(cto, true);
     model = createModel(experiment, root, true);
     nodeTree = new ConsoleDNDTree(model);
+    // cell editor returns false if try to edit agent names or root name
+    DefaultCellEditor nodeEditor = new DefaultCellEditor(new JTextField()) {
+      public boolean isCellEditable(EventObject e) {
+	if (super.isCellEditable(e) && e instanceof MouseEvent) {
+	  TreePath path = hostTree.getPathForLocation(((MouseEvent)e).getX(),
+						      ((MouseEvent)e).getY());
+	  if (path == null)
+	    return false;
+	  Object o = path.getLastPathComponent();
+	  DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode)o;
+	  if (treeNode.isRoot() ||
+	      ((ConsoleTreeObject)treeNode.getUserObject()).isNode())
+	    return false;
+	}
+	return super.isCellEditable(e);
+      }
+    };
+    nodeTree.setCellEditor(nodeEditor);
     nodeTree.setExpandsSelectedPaths(true);
     //    addUnassignedNodesFromExperiment();
     //    nodeTree.getModel().addTreeModelListener(this);
@@ -204,6 +233,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     root = new DefaultMutableTreeNode(cto, true);
     model = createModel(experiment, root, true);
     agentTree = new ConsoleDNDTree(model);
+    // cell editor returns false; can't edit agent names or root name
+    DefaultCellEditor agentEditor = new DefaultCellEditor(new JTextField()) {
+      public boolean isCellEditable(EventObject e) {
+	return false;
+      }
+    };
+    agentTree.setCellEditor(agentEditor);
     agentTree.setExpandsSelectedPaths(true);
     //    addUnassignedAgentsFromExperiment();
     JScrollPane agentTreeScrollPane = new JScrollPane(agentTree);

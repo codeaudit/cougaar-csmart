@@ -386,6 +386,8 @@ public class Organizer extends JScrollPane {
 	if (super.isCellEditable(e) && e instanceof MouseEvent) {
 	  TreePath path = workspace.getPathForLocation(((MouseEvent)e).getX(),
 						       ((MouseEvent)e).getY());
+	  if (path == null)
+	    return false;
 	  Object o = path.getLastPathComponent();
 	  Object userObject = ((DefaultMutableTreeNode)o).getUserObject();
 	  if (userObject instanceof ModifiableConfigurableComponent)
