@@ -1416,7 +1416,16 @@ public class CSMARTConsole extends JFrame {
     if (currentTrial >= 0)
       unsetTrialValues(); // unset previous trial values
     currentTrial++;  // starts with 0
-    Trial trial = experiment.getTrials()[currentTrial];
+    Trial[] trials = experiment.getTrials();
+    Trial trial = null;
+    if (currentTrial < trials.length) {
+      trial = trials[currentTrial];
+    } else {
+      if (log.isWarnEnabled())
+	log.warn("Bug 2071 in setTrialValues. currTrial = " + currentTrial + ", trials.length=" + trials.length);
+      trial = trials[0];
+      currentTrial--;
+    }
     trialNameLabel.setText(trial.getShortName());
     trialProgressBar.setValue(currentTrial+1);
     Property[] properties = trial.getParameters();
@@ -1439,7 +1448,16 @@ public class CSMARTConsole extends JFrame {
       return;
     if (currentTrial < 0)
       return;
-    Trial trial = experiment.getTrials()[currentTrial];
+    Trial[] trials = experiment.getTrials();
+    Trial trial = null;
+    if (currentTrial < trials.length) {
+      trial = trials[currentTrial];
+    } else {
+      if (log.isWarnEnabled())
+	log.warn("unsetTrialValues, bug 2071/2. currentTrial=" + currentTrial + ", trials.length= " + trials.length);
+      trial = trials[0];
+      currentTrial--;
+    }
     Property[] properties = trial.getParameters();
     for (int i = 0; i < properties.length; i++) 
       properties[i].setValue(null);
@@ -2442,7 +2460,16 @@ public class CSMARTConsole extends JFrame {
       try {
         String myHostName = InetAddress.getLocalHost().getHostName();
         URL url = new URL("file", myHostName, dirname);
-        Trial trial = experiment.getTrials()[currentTrial];
+	Trial[] trials = experiment.getTrials();
+	Trial trial = null;
+	if (currentTrial < trials.length) {
+	  trial = trials[currentTrial];
+	} else {
+	  trial = trials[0];
+	  if (log.isWarnEnabled())
+	    log.warn("saveResults: Bug 2071/2. currentTrial=" + currentTrial + ", trials.length=" + trials.length);
+	  currentTrial--;
+	}
         trial.addTrialResult(new TrialResult(runStart, url));
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
@@ -2511,7 +2538,14 @@ public class CSMARTConsole extends JFrame {
     if (experiment != null && usingExperiment && currentTrial >= 0) {
       resultDir = experiment.getResultDirectory();
       experimentName = experiment.getExperimentName();
-      trialName = experiment.getTrials()[currentTrial].getShortName();
+      Trial[] trials = experiment.getTrials();
+      if (currentTrial < trials.length) {
+	trialName = trials[currentTrial].getShortName();
+      } else {
+	if (log.isWarnEnabled())
+	  log.warn("Bug 2072 in makeResultDirectory: currentTrial >= # trials? currentTrial=" + currentTrial + ", trials.length=" + trials.length);
+	currentTrial--;
+      }
     }
     // if user didn't specify results directory, save in local directory
     if (resultDir == null)
