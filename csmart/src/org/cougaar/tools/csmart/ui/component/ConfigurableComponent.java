@@ -603,6 +603,14 @@ public abstract class ConfigurableComponent
     setSerializableListeners((List) stream.readObject());
   }
 
+  public ComponentData addComponentData(ComponentData data) {
+    return data;
+  }
+
+  public ComponentData modifyComponentData(ComponentData data) {
+    return data;
+  }
+
   private void setSerializableListeners(List l) {
     EventListenerList ll = getEventListenerList();
     for (Iterator i = l.iterator(); i.hasNext(); ) {
