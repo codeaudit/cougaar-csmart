@@ -1,6 +1,13 @@
 2001-10-19  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* PopulateDb.java (Repository):
+	define expt_id for all queries. Minor spelling changes (e.g. csm
+	-> csmi).
+
+	* TestPopulateDb.java (Repository):
+	Several fixes to accomodate new naming conventions.
+
+	* PopulateDb.java (Repository):
 	Fix clone-cleaning code. Changed to remove all csmi and hna type
 	assemblies.
 	(Repository):
