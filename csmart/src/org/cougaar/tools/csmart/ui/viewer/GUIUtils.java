@@ -29,7 +29,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.MouseInputAdapter;
-import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 
 /**
  * Methods to put up a wait cursor and consume mouse events while
@@ -95,18 +95,8 @@ public class GUIUtils {
     }
   }
 
-  public static PopulateDb.ConflictHandler createSaveToDbConflictHandler(final Component parent) {
-    return new PopulateDb.ConflictHandler() {
-      public int handleConflict(Object msg, Object[] choices, Object defaultChoice) {
-        return JOptionPane.showOptionDialog(parent,
-                                            msg,
-                                            "Database Conflict",
-                                            JOptionPane.WARNING_MESSAGE,
-                                            JOptionPane.DEFAULT_OPTION,
-                                            null,
-                                            choices,
-                                            defaultChoice);
-      }
-    };
+  public static DBConflictHandler createSaveToDbConflictHandler(final Component parent) {
+    return new GUIDBConflictHandler(parent);
   }
+
 }
