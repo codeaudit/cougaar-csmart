@@ -115,6 +115,7 @@ public class ExperimentBuilder extends JFrame {
 
   private void exit() {
     // before exiting, restore experiment's and society's editability
+    // FIXME Restore on society!!!!
     if (isEditable) 
       experiment.setEditable(isEditable);
     if (isRunnable)
