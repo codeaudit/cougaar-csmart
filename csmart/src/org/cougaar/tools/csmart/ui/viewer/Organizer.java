@@ -44,7 +44,6 @@ import org.cougaar.tools.csmart.ui.experiment.*;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.societies.abcsociety.ABCSociety;
 import org.cougaar.tools.csmart.societies.abcsociety.BasicMetric;
-import org.cougaar.tools.csmart.societies.abcsociety.BinderTest;
 import org.cougaar.tools.csmart.societies.cmt.CMTSociety;
 import org.cougaar.tools.csmart.societies.database.DBUtils;
 
@@ -89,7 +88,6 @@ public class Organizer extends JScrollPane {
     new ComboItem("Basic Metric", BasicMetric.class),
     new ComboItem("Empty Metric", EmptyMetric.class),
     new ComboItem("ABCImpact", ABCImpact.class),
-    new ComboItem("Binder Test", BinderTest.class)
   };
 
   // Define Unique Name sets
