@@ -49,10 +49,13 @@ REM then do the real substitution
 DEL cip.txt
 DEL script.txt
 
+FOR %%y in (%COUGAAR_INSTALL_PATH%\csmart\data\database\csv\*.csv) DO COPY %%y %%y.tmp
+
 ECHO Loading '.csv' files to database %3 in user %1
 mysql -u%1 -p%2 %3 < load_mysql_db_new.sql
 
-del load_mysql_db_new.sql
+DEL load_mysql_db_new.sql
+DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\*.tmp
 
 ECHO Done.
 

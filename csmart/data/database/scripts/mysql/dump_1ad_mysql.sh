@@ -41,8 +41,6 @@ if [ ! -e "$MYFILE" ]; then
     #Replace variable in sql script with CIP
     sed s/:cip/$(cat newcip.txt | sed 's/\//\\\//g')/ dump_db.sql > dump_mysql_db_new.sql
     rm newcip.txt
-    #sed s/:cip/$(echo "$COUGAAR_INSTALL_PATH" | sed 's/\\/\\\\\\\\/g')/ dump_mysql_db.sql > dump_mysql_db_new.sql
-    #sed s/:cip/$(echo "$COUGAAR_INSTALL_PATH" | sed 's/\//\\\//g')/ dump_mysql_db.sql > dump_mysql_db_new.sql
 
     echo "Dumping database to .csv files."
     mysql -u$1 -p$2 $3 < dump_mysql_db_new.sql
