@@ -27,7 +27,9 @@ import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.net.URL;
 import java.util.*;
+import java.io.File;
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.event.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -43,6 +45,7 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
 
 public class CommunityPanel extends JPanel {
   private static final String VIEW_COMMUNITY_ACTION = "Display Community...";
@@ -50,6 +53,7 @@ public class CommunityPanel extends JPanel {
   private static final String VIEW_COMMUNITY_INFO_ACTION = "Show All Attributes";
   private static final String ADD_PARAMETER_ACTION = "Add Attribute";
   private static final String DELETE_ACTION = "Delete";
+  private static final String IMPORT_ACTION = "Import Communities";
 
   private Experiment experiment;
   private JSplitPane splitPane;
@@ -96,6 +100,12 @@ public class CommunityPanel extends JPanel {
   private AbstractAction deleteAction = new AbstractAction(DELETE_ACTION) {
       public void actionPerformed(ActionEvent e) {
         delete();
+      }
+    };
+
+  private AbstractAction importAction = new AbstractAction(IMPORT_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        importCommunities();
       }
     };
 
@@ -180,6 +190,7 @@ public class CommunityPanel extends JPanel {
     communityTree.addMouseListener(communityTreeMouseListener);
     rootMenu = new JPopupMenu();
     rootMenu.add(new JMenuItem(newCommunityAction));
+    rootMenu.add(new JMenuItem(importAction));
     communityMenu = new JPopupMenu();
     communityMenu.add(new JMenuItem(newCommunityAction));
     communityMenu.add(new JMenuItem(viewCommunityInfoAction));
@@ -421,6 +432,48 @@ public class CommunityPanel extends JPanel {
       (DefaultMutableTreeNode)selectedPath.getLastPathComponent();
     ((DefaultTreeModel)communityTree.getModel()).removeNodeFromParent(selectedNode);
     treeModelListener.removeBranch(selectedNode);
+  }
+
+  // Import community definitions from an XML File
+  private void importCommunities() {
+    // Add in community info for this society
+    JFileChooser chooser = 
+      new JFileChooser(SocietyFinder.getInstance().getPath());
+    chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+    chooser.setDialogTitle("Select the communities.xml file to import");
+    // Allow selection of XML files and directories
+    chooser.addChoosableFileFilter(new FileFilter() {
+      public boolean accept(File f) {
+	if (f == null)
+	  return false;
+	if (f.isDirectory())
+	  return true;
+	return f.getName().endsWith(".xml");
+      }
+
+      public String getDescription() {
+	return "XML Files";
+      }
+
+      });
+
+    File xmlFile = null;
+    while (xmlFile == null) {
+      int result = chooser.showDialog(this, "OK");
+      if (result != JFileChooser.APPROVE_OPTION)
+	return;
+      xmlFile = chooser.getSelectedFile();
+    }
+
+//     if (xmlFile != null && !CommWriter.importCommunityXML(xmlFile, experiment.getCommAsbID())) {
+//       // There may have been none, so don't complain too loudly.
+//       if (log.isInfoEnabled()) {
+// 	log.info("crtExpFromFile got no Community XML data out of " + xmlFile.getFullPath());
+//       }
+//     }
+
+    // re-init display if necessary
+    update();
   }
 
   /**
