@@ -29,31 +29,31 @@ import java.util.Properties;
 import java.util.Set;
 
 public class ReadOnlyProperties extends Properties implements Serializable {
-    protected Set readOnlyKeys = null;
-    private PropertiesObservable observable;
-
-    public ReadOnlyProperties() {
-      super();
-      init();
-    }
-
-    public ReadOnlyProperties(Set readOnlyKeys) {
-        super();
-        this.readOnlyKeys = readOnlyKeys;
-        init();
-    }
-
-    public ReadOnlyProperties(Set readOnlyKeys, Properties defaults) {
-        super(defaults);
-        this.readOnlyKeys = readOnlyKeys;
-        init();
-    }
-
+  protected Set readOnlyKeys = null;
+  private PropertiesObservable observable;
+  
+  public ReadOnlyProperties() {
+    super();
+    init();
+  }
+  
+  public ReadOnlyProperties(Set readOnlyKeys) {
+    super();
+    this.readOnlyKeys = readOnlyKeys;
+    init();
+  }
+  
+  public ReadOnlyProperties(Set readOnlyKeys, Properties defaults) {
+    super(defaults);
+    this.readOnlyKeys = readOnlyKeys;
+    init();
+  }
+  
   private void init() {
     if (observable == null)
       observable = new PropertiesObservable();
   }
-
+  
   public void addObserver(Observer o) {
     observable.addObserver(o);
   }
@@ -68,74 +68,78 @@ public class ReadOnlyProperties extends Properties implements Serializable {
     observable.fireChange();
   }
 
-    public void setReadOnlyProperty(String key, String newValue) {
-      Object o = get(key);
-      if (o != null && o.equals(newValue)) return; // no change
-        super.put(key, newValue);
-        //        System.out.println("Setting read only property: " + key);
-        fireChange();
+  public void setReadOnlyProperty(String key, String newValue) {
+    Object o = get(key);
+    if (o != null && o.equals(newValue)) return; // no change
+    super.put(key, newValue);
+    //        System.out.println("Setting read only property: " + key);
+    fireChange();
+  }
+  
+  public Object setProperty(String key, String newValue) {
+    //        System.out.println("Setting property: " + key);
+    //        fireChange(); // change is fired in put if necessary
+
+    // Dont call super.setProperty which is synchronized
+    // Wait to let super.put do the synchronization
+    //    return super.setProperty(key, newValue);
+    return put(key, newValue);
+  }
+  
+  public boolean isReadOnly(Object key) {
+    if (readOnlyKeys == null) return false;
+    if (readOnlyKeys.contains(key)) return true;
+    if (defaults instanceof ReadOnlyProperties) {
+      return ((ReadOnlyProperties) defaults).isReadOnly(key);
     }
-
-    public Object setProperty(String key, String newValue) {
-      //        System.out.println("Setting property: " + key);
-      //        fireChange(); // change is fired in put if necessary
-        return super.setProperty(key, newValue);
-    }
-
-    public boolean isReadOnly(Object key) {
-        if (readOnlyKeys == null) return false;
-        if (readOnlyKeys.contains(key)) return true;
-        if (defaults instanceof ReadOnlyProperties) {
-            return ((ReadOnlyProperties) defaults).isReadOnly(key);
-        }
-        return false;
-    }
-
-    // Override the Property interface implementation to enforce read-only keys
-
-    public Object put(Object key, Object val) {
-        if (isReadOnly(key)) return null;
-        Object o = get(key);
-        if (o != null && o.equals(val)) return val; // no change
-        //        System.out.println("Putting property: " + key);
-        fireChange();
-        return super.put(key, val);
-    }
-
-    public void putAll(Map map) {
-        boolean changeHappened = false;
-        for (Iterator entries = map.entrySet().iterator(); entries.hasNext(); ) {
-            Map.Entry entry = (Map.Entry) entries.next();
-            Object key = entry.getKey();
+    return false;
+  }
+  
+  // Override the Property interface implementation to enforce read-only keys
+  
+  public Object put(Object key, Object val) {
+    if (isReadOnly(key)) return null;
+    Object o = get(key);
+    if (o != null && o.equals(val)) return val; // no change
+    //        System.out.println("Putting property: " + key);
+    fireChange();
+    return super.put(key, val);
+  }
+  
+  public void putAll(Map map) {
+    boolean changeHappened = false;
+    for (Iterator entries = map.entrySet().iterator(); entries.hasNext(); ) {
+      Map.Entry entry = (Map.Entry) entries.next();
+      Object key = entry.getKey();
             if (isReadOnly(key)) continue;
             Object o = get(key);
             if (o != null && o.equals(entry.getValue())) continue;
             super.put(key, entry.getValue());
             changeHappened = true;
-        }
-        //        System.out.println("Put all");
-        if (changeHappened)
-          fireChange();
     }
-
-    public Object remove(Object key) {
-        if (isReadOnly(key)) return null;
-        if (!super.contains(key)) return null; // no change
+    //        System.out.println("Put all");
+    if (changeHappened)
+      fireChange();
+  }
+  
+  public Object remove(Object key) {
+    if (isReadOnly(key)) return null;
+    if (!super.contains(key)) return null; // no change
         //        System.out.println("Removing: " + key);
-        fireChange();
-        return super.remove(key);
+    fireChange();
+    return super.remove(key);
+  }
+  
+  public void clear() {
+    for (Iterator keys = keySet().iterator(); keys.hasNext(); ) {
+      Object key = keys.next();
+      if (isReadOnly(key)) continue;
+      keys.remove();
     }
-
-    public void clear() {
-        for (Iterator keys = keySet().iterator(); keys.hasNext(); ) {
-            Object key = keys.next();
-            if (isReadOnly(key)) continue;
-            keys.remove();
-        }
         //        System.out.println("Clearing");
-        fireChange();
-    }
-
+    fireChange();
+  }
+  
   private void readObject(ObjectInputStream ois)
     throws IOException, ClassNotFoundException
   {
