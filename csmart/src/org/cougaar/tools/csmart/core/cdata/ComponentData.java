@@ -40,7 +40,13 @@ public interface ComponentData extends Serializable {
   String PLUGIN = "plugin";
   String NODEBINDER = "node binder";
   String AGENTBINDER = "agent binder";
-  String SERVICE = "service";
+  // Shorter type? This is the insertion point
+  // It gets added to _Agents_ (and possible NodeAgents)
+  String DOMAIN = "Node.AgentManager.Agent.DomainManager.Domain";
+  // Maybe one for arbitrary agent-level component: Node.AgentManager.Agent.Component?
+  // Note must augment ComponentTypeProperty, logic in GenericComponentData
+  // Also ComponentBase & SpecificInsertionRecipe & PopulateDb
+  // And the various Agent*Components too probably
   
   /**
    * Gets the type of this component.  Component Types
