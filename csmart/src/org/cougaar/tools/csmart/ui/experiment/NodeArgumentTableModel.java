@@ -113,6 +113,12 @@ public class NodeArgumentTableModel extends AbstractTableModel {
     // trim whitespace off of the value.
     if (aValue instanceof String) {
       aValue = ((String)aValue).trim();
+      
+      // AppServer cant handle values containing whitespace
+      if (((String)aValue).indexOf(' ') != -1) {
+	// Now what? Reject edit? Tell user?
+	return;
+      }
     }
 
     // See if the value really changed. If not, return
