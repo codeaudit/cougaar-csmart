@@ -85,33 +85,28 @@ public class BasicMetric extends RecipeBase
   public static final String PROP_TVERB_DESC = "Task Verb to search for and count";
   private Property propTVerb;
   
-  // 1/0 for Blackboard Service, default 0
-  public static final String PROP_BBSERV = "Blackboard Statistics Service On/Off";
-  public static final Integer PROP_BBSERV_DFLT = new Integer(0);
+  public static final String PROP_BBSERV = "Blackboard Statistics Service On";
+  public static final String PROP_BBSERV_DFLT = FALSE;
   public static final String PROP_BBSERV_DESC = "Turn Blackboard metrics collection on or off";
   private Property propBBServ;
   
-  // 1/0 for PrototypeRegistryService, default 0
-  public static final String PROP_PRSERV = "Prototype Registry Service On/Off";
-  public static final Integer PROP_PRSERV_DFLT = new Integer(0);
+  public static final String PROP_PRSERV = "Prototype Registry Service On";
+  public static final String PROP_PRSERV_DFLT = FALSE;
   public static final String PROP_PRSERV_DESC = "Turn Prototype Registry metrics on or off";
   private Property propPRServ;
   
-  // 1/0 for NodeMetricsService, default 0
-  public static final String PROP_NODESERV = "Node Metrics Service On/Off";
-  public static final Integer PROP_NODESERV_DFLT = new Integer(0);
+  public static final String PROP_NODESERV = "Node Metrics Service On";
+  public static final String PROP_NODESERV_DFLT = FALSE;
   public static final String PROP_NODESERV_DESC = "Turn Node metrics on or off";
   private Property propNodeServ;  
   
-  // 1/0 for MessageStatsService, default 1
-  public static final String PROP_MSTATSSERV = "Message Stats Service On/Off";
-  public static final Integer PROP_MSTATSSERV_DFLT = new Integer(1);
+  public static final String PROP_MSTATSSERV = "Message Stats Service On";
+  public static final String PROP_MSTATSSERV_DFLT = FALSE;
   public static final String PROP_MSTATSSERV_DESC = "Turn Message Transport metrics on or off";
   private Property propMStatsServ;  
   
-  // 1/0 for MessageWatcherService, default 0
-  public static final String PROP_MWATCHSERV = "Message Watcher Service On/Off";
-  public static final Integer PROP_MWATCHSERV_DFLT = new Integer(0);
+  public static final String PROP_MWATCHSERV = "Message Watcher Service On";
+  public static final String PROP_MWATCHSERV_DFLT = FALSE;
   public static final String PROP_MWATCHSERV_DESC = "Turn Message Watcher on or off";
   private Property propMWatchServ;
   
@@ -136,32 +131,16 @@ public class BasicMetric extends RecipeBase
 
   public void initProperties() {
     
-    propSampleInterval = addProperty(PROP_SAMPLEINTERVAL, PROP_SAMPLEINTERVAL_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
+    propSampleInterval = addProperty(PROP_SAMPLEINTERVAL, PROP_SAMPLEINTERVAL_DFLT);
     propSampleInterval.setToolTip(PROP_SAMPLEINTERVAL_DESC);
 
-    propMaxSamples = addProperty(PROP_MAXNUMBSAMPLES, PROP_MAXNUMBSAMPLES_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
+    propMaxSamples = addProperty(PROP_MAXNUMBSAMPLES, PROP_MAXNUMBSAMPLES_DFLT);
     propMaxSamples.setToolTip(PROP_MAXNUMBSAMPLES_DESC);
 
-    propStartDelay = addProperty(PROP_STARTDELAY, PROP_STARTDELAY_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
+    propStartDelay = addProperty(PROP_STARTDELAY, PROP_STARTDELAY_DFLT);
     propStartDelay.setToolTip(PROP_STARTDELAY_DESC);
 
-    propResultsDir = addProperty(PROP_RESULTSDIR, PROP_RESULTSDIR_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
+    propResultsDir = addProperty(PROP_RESULTSDIR, PROP_RESULTSDIR_DFLT);
     propResultsDir.setToolTip(PROP_RESULTSDIR_DESC);
 
     // For now, don't show this property - we need the results filter to change
@@ -170,46 +149,22 @@ public class BasicMetric extends RecipeBase
     setPropertyVisible(propResultsDir, false);
 
     // Task Verb to search for
-    propTVerb = addProperty(PROP_TVERB, PROP_TVERB_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
+    propTVerb = addProperty(PROP_TVERB, PROP_TVERB_DFLT);
     propTVerb.setToolTip(PROP_TVERB_DESC);
 
-    propBBServ = addProperty(PROP_BBSERV, PROP_BBSERV_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
+    propBBServ = addBooleanProperty(PROP_BBSERV, PROP_BBSERV_DFLT);
     propBBServ.setToolTip(PROP_BBSERV_DESC);
 
-    propPRServ = addProperty(PROP_PRSERV, PROP_PRSERV_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
+    propPRServ = addBooleanProperty(PROP_PRSERV, PROP_PRSERV_DFLT);
     propPRServ.setToolTip(PROP_PRSERV_DESC);
 
-    propNodeServ = addProperty(PROP_NODESERV, PROP_NODESERV_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
+    propNodeServ = addBooleanProperty(PROP_NODESERV, PROP_NODESERV_DFLT);
     propNodeServ.setToolTip(PROP_NODESERV_DESC);
 
-    propMStatsServ = addProperty(PROP_MSTATSSERV, PROP_MSTATSSERV_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
+    propMStatsServ = addBooleanProperty(PROP_MSTATSSERV, PROP_MSTATSSERV_DFLT);
     propMStatsServ.setToolTip(PROP_MSTATSSERV_DESC);
 
-    propMWatchServ = addProperty(PROP_MWATCHSERV, PROP_MWATCHSERV_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
+    propMWatchServ = addBooleanProperty(PROP_MWATCHSERV, PROP_MWATCHSERV_DFLT);
     propMWatchServ.setToolTip(PROP_MWATCHSERV_DESC);
 
   }
@@ -286,11 +241,16 @@ public class BasicMetric extends RecipeBase
     // Why can't I find it by name? Cause it's hidden?
     plugin.addParameter(propResultsDir.getValue()); // dir for Results files
     plugin.addParameter(getProperty(PROP_TVERB).getValue()); // Task Verb to search for
-    plugin.addParameter(getProperty(PROP_BBSERV).getValue()); // Turn on/off BBoard Serv
-    plugin.addParameter(getProperty(PROP_PRSERV).getValue()); // Turn on/off Proto Reg. Serv
-    plugin.addParameter(getProperty(PROP_NODESERV).getValue()); // Turn on/off Node Metrics Serv
-    plugin.addParameter(getProperty(PROP_MSTATSSERV).getValue()); // Turn on/off Msg Stats Serv, def. on
-    plugin.addParameter(getProperty(PROP_MWATCHSERV).getValue()); // Turn on/off MsgWatcher Serv
+    plugin.addParameter((getProperty(PROP_BBSERV).getValue().equals(TRUE)) ? 
+                        new Integer(1) : new Integer(0));
+    plugin.addParameter((getProperty(PROP_PRSERV).getValue().equals(TRUE)) ? 
+                        new Integer(1) : new Integer(0));
+    plugin.addParameter((getProperty(PROP_NODESERV).getValue().equals(TRUE)) ? 
+                        new Integer(1) : new Integer(0));
+    plugin.addParameter((getProperty(PROP_MSTATSSERV).getValue().equals(TRUE)) ? 
+                        new Integer(1) : new Integer(0));
+    plugin.addParameter((getProperty(PROP_MWATCHSERV).getValue().equals(TRUE)) ? 
+                        new Integer(1) : new Integer(0));
 
     // Add the plugin such that it replaces any previous version
     data.addChildDefaultLoc(plugin);
