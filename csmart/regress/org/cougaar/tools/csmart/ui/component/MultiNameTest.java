@@ -35,8 +35,8 @@ public class MultiNameTest extends TestCase {
 
 
   public void testSize() {
-    assertEquals("Test size()", 2, tst.size());
-    assertEquals("Test size()", 1, noParent.size());
+    assertEquals("Test size() [2]", 2, tst.size());
+    assertEquals("Test size() [1]", 1, noParent.size());
   }
 
   public void testGet() {
@@ -89,7 +89,14 @@ public class MultiNameTest extends TestCase {
   }
 
   public void testEquals() {
-    assert("Test equals", tst.equals(tst));
+    assert("Test equals()", tst.equals(tst));
+  }
+
+  public void testCompareTo() {
+    assert("Test compareTo() [0]", (tst.compareTo(new SimpleMultiName(componentName)) == 0));
+    SimpleName sn = new SimpleName("Testing");
+    assert("Test compareTo() [>0]", (tst.compareTo(new SimpleMultiName(sn)) > 0));
+    assert("Test compareTo() [<0]", (tst.compareTo(new SimpleName("a")) < 0));
   }
 
   public static Test suite() {
@@ -101,12 +108,20 @@ public class MultiNameTest extends TestCase {
   }
 
   public class SimpleMultiName extends MultiName {    
+    private SimpleName parent = null;
+
     public SimpleMultiName(String name) {
       super(new SimpleName(name));
+      parent = new SimpleName("Parent");
     }
-    
+
+    public SimpleMultiName(SimpleName name) {
+      super(name);
+      parent = new SimpleName("Different Name");
+    }
+
     protected CompositeName getParentName() {
-      return new SimpleName("Parent");
+      return parent;
     }
   }
 
