@@ -138,10 +138,6 @@ public abstract class CSMARTPlugin
     return getBlackboardService().subscribe(pred);
   }
   
-  protected ClusterIdentifier getAgentIdentifier() {
-    return getBindingSite().getAgentIdentifier();
-  }
-  
   //
   // Timer related functions
   //
