@@ -212,7 +212,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
     } else if (data.childCount() > 0) {
       // for each child, call this same method.
       ComponentData[] children = data.getChildren();
-      for (int i = 0; i < data.childCount(); i++) {
+      for (int i = 0; i < children.length; i++) {
 	data = this.addComponentData(children[i]);
       }
     }
@@ -237,13 +237,13 @@ public class BasicMetric extends ModifiableConfigurableComponent
     //Only add this if its not there already
     ComponentData[] children = data.getChildren();
     for (int i = 0; i < data.childCount(); i++) {
-      if (children[i].getClassName().equals(MetricsPlugIn_name))
+      if (children[i].getName().equals(MetricsPlugIn_name))
 	return;
     }
     GenericComponentData plugin = new GenericComponentData();
     plugin.setType(ComponentData.PLUGIN);
-    plugin.setName("MetricPlugin");
-    plugin.setClassName(MetricsPlugIn_name);
+    //plugin.setName("MetricPlugin");
+    plugin.setName(MetricsPlugIn_name);
     // Could add the directory to save results in as a parameter
     plugin.setParent(data);
     plugin.setOwner(this);
@@ -289,7 +289,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
     // Find the plugin with the Metrics initializer plugin
     ComponentData[] children = data.getChildren();
     for (int i = 0; i < data.childCount(); i++) {
-      if (children[i].getClassName().equals(MetricsInitializerPlugIn_name))
+      if (children[i].getName().equals(MetricsInitializerPlugIn_name))
 	return children[i];
     }
     return null;
