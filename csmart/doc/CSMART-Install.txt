@@ -12,8 +12,8 @@ A standard installation will begin from the following files:
 3) cougaar-support.zip -- Third party jar files and binaries. Includes
    some CSMART specific required Jars (grappa).
 
-(An equivalent, older install would include (on top of a normal Cougaar
-install):
+(An equivalent, v0.3 install would include, on top of a normal Cougaar
+install:
 1) csmart.zip -- a Cougaar module to be installed within your Cougaar
    installation directory.
    Contains startup scripts, data files, and built CSMART code.
@@ -47,7 +47,7 @@ dot.exe:
     or http://ABCTestbed.bbn.com.
     Also available in the csmart-3rdparty.zip and cougaar.zip files
 
-Optional: JUnit, Jikes and Ant
+Optional: JUnit, Jikes and Ant(1.3 or better)
 
 Some notes:
 -- CSMART adds some required run-time properties - so has a separate
