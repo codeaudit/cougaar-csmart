@@ -5,8 +5,8 @@
 # Old TASKS.PSP:
 PlanViewServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.planning.servlet.PlanViewServlet,/tasks
 
-# Datagrabber Completion PSP
-CompletionServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.planning.servlet.CompletionServlet,/completion
+# New GLM Completion servlet
+CompletionServlet,org.cougaar.glm.servlet.GLMCompletionServlet,/completion
 
 # For the data grabber
 HierarchyServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.planning.servlet.HierarchyServlet,/hierarchy
@@ -33,4 +33,7 @@ TopologyServlet,org.cougaar.core.topology.TopologyReaderServlet
 # New servlet for Agent Mobility. This only loads in Agents,
 # and you may want it in NodeAgents as well. Will be available at /move
 MobilityServlet,org.cougaar.core.mobility.servlet.MoveAgentServlet
+
+# Old Datagrabber Completion servlet
+# CompletionServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.planning.servlet.CompletionServlet,/completion
 
