@@ -22,9 +22,12 @@
 package org.cougaar.tools.csmart.ui.util;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.*;
 import javax.swing.JOptionPane;
@@ -34,6 +37,14 @@ import javax.swing.JOptionPane;
  */
 
 public class ClientServletUtil {
+  // names of servlets used by CSMART
+  public static final String COMMUNITY_SERVLET = 
+    "CSMART_CommunityProviderServlet";
+  public static final String CLUSTER_SERVLET = 
+    "CSMART_ClusterInfoServlet";
+  public static final String PLAN_SERVLET = "CSMART_PlanServlet";
+  public static final String SEARCH_SERVLET = "CSMART_SearchServlet";
+  public static final String METRICS_SERVLET = "CSMART_MetricsServlet";
   // servlet to get the URLs of all agents in the society
   public static final String AGENT_PROVIDER_SERVLET =
     "CSMART_ClusterProviderServlet";
@@ -92,7 +103,7 @@ public class ClientServletUtil {
       String url = (String)agentURLs.elementAt(i);
       Collection col = 
         getCollectionFromAgent(url, servletId, parameterNames,
-                               parameterValues, remainingLimit);
+                               parameterValues, null, remainingLimit);
       result.addCollection(col);
       // check limit, and set flag in result if its exceeded
       if (hasLimit) {
@@ -113,15 +124,17 @@ public class ClientServletUtil {
    * Same as getCollectionFromAgents for a single agent.
    * @param agentURL  the agent to contact
    * @param servletId the servlet to contact
+   * @param data      data to be sent to the servlet if non-null
    * @param limit     max. number of objects to return, or -1 if no limit
    * @return          the collection from the servlet or null
    */
 
-  private static Collection getCollectionFromAgent(String agentURL,
-                                                   String servletId,
-                                                   ArrayList parameterNames,
-                                                   ArrayList parameterValues,
-                                                   int limit) {
+  public static Collection getCollectionFromAgent(String agentURL,
+                                                  String servletId,
+                                                  ArrayList parameterNames,
+                                                  ArrayList parameterValues,
+                                                  List data,
+                                                  int limit) {
     URLSpec.setBase(agentURL + servletId);
     if (parameterNames != null)
       URLSpec.addArgs(parameterNames, parameterValues);
@@ -130,11 +143,20 @@ public class ClientServletUtil {
     String urlSpec = URLSpec.getResult();
     Collection results = null;
     try {
-      //      System.out.println("ClientServerUtil: contacting: " + urlSpec);
+      System.out.println("ClientServerUtil: contacting: " + urlSpec);
       URL url = new URL(urlSpec);
       URLConnection connection = url.openConnection();
+      if (data != null) // force URL connection to use the PUT method for data
+        ((HttpURLConnection)connection).setRequestMethod("PUT");
       connection.setDoInput(true);
       connection.setDoOutput(true);
+      if (data != null) {
+        System.out.println("Sending list: " + data);
+        OutputStream os = connection.getOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(os);
+        oos.writeObject(data);
+        oos.close();
+      }
       InputStream is = connection.getInputStream();
       ObjectInputStream p = new ObjectInputStream(is);
       results = (Collection)p.readObject();
@@ -143,6 +165,19 @@ public class ClientServletUtil {
     }
     return results;
   }
+
+  /**
+   * Return a URL string of the form:
+   * http://host:port/
+   * @param host the host in the URL
+   * @param port the port in the URL
+   * @return the URL string
+   */
+
+  public static String makeURL(String host, int port) {
+    return "http://" + host + ":" + String.valueOf(port) + "/";
+  }
+
 
   /**
    * This class handles building a URL.

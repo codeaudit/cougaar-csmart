@@ -28,23 +28,50 @@ public class ServletResult {
   ArrayList results;
   boolean limitExceeded;
 
+  /**
+   * Results from a servlet.
+   */
+
   public ServletResult() {
     results = new ArrayList();
     limitExceeded = false;
   }
 
+  /**
+   * Set limit exceeded flag; this flag is true if the servlet had
+   * more objects to send, but the user limited the number of
+   * objects it wished to receive.  The default is false.
+   * @param limitExceeded whether or not the limit was exceeded
+   */
+
   public void setLimitExceeded(boolean limitExceeded) {
     this.limitExceeded = limitExceeded;
   }
+
+  /**
+   * Returns true if the servlet had more objects to send than the client
+   * was willing to receive.
+   * @return true if limit exceeded, else false
+   */
 
   public boolean isLimitExceeded() {
     return limitExceeded;
   }
 
+  /**
+   * Add the collection received from an agent; the collection may be null.
+   * @param c collection of objects received from an agent
+   */
   public void addCollection(Collection c) {
     results.add(c);
   }
 
+  /**
+   * Return the collections received from all agents;
+   * there is one collection for each agent contacted;
+   * the collection may be null.
+   * @return array list of Collection
+   */
   public ArrayList getCollections() {
     return results;
   }
