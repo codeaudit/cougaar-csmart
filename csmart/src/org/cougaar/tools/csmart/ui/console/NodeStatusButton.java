@@ -22,7 +22,9 @@
 package org.cougaar.tools.csmart.ui.console;
 
 import java.awt.Color;
+import java.net.URL;
 import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JRadioButton;
 
 public class NodeStatusButton extends JRadioButton {
@@ -98,11 +100,19 @@ public class NodeStatusButton extends JRadioButton {
     if (status < 0 || status > (statusColors.length-1))
       return; // invalid status
     this.status = status;
-    if (status == STATUS_NOTIFY || status == STATUS_STD_ERROR)
+    if (status == STATUS_NOTIFY || status == STATUS_STD_ERROR) {
       error = true;
-    Color statusColor = statusColors[status];
-    setIcon(new ColoredCircle(statusColor, 20));
-    setSelectedIcon(new SelectedColoredCircle(statusColor, 20));
+      URL iconURL = getClass().getResource("Bang.gif");
+      if (iconURL != null) {
+        ImageIcon icon = new ImageIcon(iconURL);
+        setIcon(icon);
+        setSelectedIcon(new SelectedErrorIcon(icon.getImage(), 20));
+      }
+    } else {
+      Color statusColor = statusColors[status];
+      setIcon(new ColoredCircle(statusColor, 20));
+      setSelectedIcon(new SelectedColoredCircle(statusColor, 20));
+    }
     String s = getToolTipText((java.awt.event.MouseEvent)null);
     if (s == null)
       return;

@@ -57,6 +57,7 @@ public class ConsoleNodeListener implements NodeEventListener {
   private boolean haveError = false;
   private ConsoleStyledDocument doc;
   private ConsoleNodeOutputFilter filter = null;
+  private Object logFileLock = new Object();
 
   public ConsoleNodeListener(CSMARTConsole console,
 			     NodeComponent nodeComponent,
@@ -161,10 +162,13 @@ public class ConsoleNodeListener implements NodeEventListener {
     final int nodeEventType = nodeEvent.getType();
     final String nodeEventDescription = getNodeEventDescription(nodeEvent);
 
-    // write stdout/stderr/etc to log file
-    try {
-      logFile.write(nodeEventDescription);
-    } catch (Exception e) {
+    synchronized (logFileLock) {
+      // write stdout/stderr/etc to log file
+      try {
+        logFile.write(nodeEventDescription);
+      } catch (Exception e) {
+        System.out.println("Exception writing to log file: " + e);
+      }
     }
 
     // ignore events user isn't interested in
@@ -211,14 +215,16 @@ public class ConsoleNodeListener implements NodeEventListener {
     }
 
     // write a description of the event to the log file
-    try {
-      int i = 0;
-      do {
-	NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
-	logFile.write(getNodeEventDescription(nodeEvent));
-      } while (++i < n);
-    } catch (Exception e) {
-      System.out.println("Exception writing to log file: " + e);
+    synchronized (logFileLock) {
+      try {
+        int i = 0;
+        do {
+          NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
+          logFile.write(getNodeEventDescription(nodeEvent));
+        } while (++i < n);
+      } catch (Exception e) {
+        System.out.println("Exception writing to log file: " + e);
+      }
     }
 
     // must use swing "invokeLater" to be thread-safe
@@ -343,6 +349,7 @@ public class ConsoleNodeListener implements NodeEventListener {
         statusButton.setStatus(NodeStatusButton.STATUS_IDLE);
       else if (nodeEventType == NodeEvent.NODE_DESTROYED) {
         statusButton.setStatus(NodeStatusButton.STATUS_ERROR);
+        console.nodeStopped(nodeComponent);
       } else if (nodeEventType == NodeEvent.STANDARD_ERR) {
         statusButton.setStatus(NodeStatusButton.STATUS_STD_ERROR);
       }
@@ -363,10 +370,12 @@ public class ConsoleNodeListener implements NodeEventListener {
    */
 
   public void closeLogFile() {
-    try {
-      logFile.close();
-    } catch (Exception e) {
-      System.out.println("Exception closing log file: " + e);
+    synchronized (logFileLock) {
+      try {
+        logFile.close();
+      } catch (Exception e) {
+        System.out.println("Exception closing log file: " + e);
+      }
     }
   }
 
@@ -376,12 +385,14 @@ public class ConsoleNodeListener implements NodeEventListener {
    */
 
   public void fillFromLogFile() {
-    try {
-      logFile.close();
-      doc.fillFromLogFile(logFileName);
-      logFile = new BufferedWriter(new FileWriter(logFileName, true));
-    } catch (Exception e) {
-      System.out.println(e);
+    synchronized (logFileLock) {
+      try {
+        logFile.close();
+        doc.fillFromLogFile(logFileName);
+        logFile = new BufferedWriter(new FileWriter(logFileName, true));
+      } catch (Exception e) {
+        System.out.println(e);
+      }
     }
   }
 

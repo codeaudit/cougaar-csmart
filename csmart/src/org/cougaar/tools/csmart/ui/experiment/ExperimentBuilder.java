@@ -101,7 +101,8 @@ public class ExperimentBuilder extends JFrame {
     tabbedPane = new JTabbedPane();
     propertyBuilder = new UnboundPropertyBuilder(experiment);
     tabbedPane.add("Properties", propertyBuilder);
-    hostConfigurationBuilder = new HostConfigurationBuilder(experiment);
+    hostConfigurationBuilder = 
+      new HostConfigurationBuilder(experiment, csmart);
     tabbedPane.add("Configurations", hostConfigurationBuilder);
     // only display trial builder for non-database experiments
     if (!experiment.isInDatabase()) {

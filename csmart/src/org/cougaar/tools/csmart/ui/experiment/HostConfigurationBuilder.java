@@ -51,6 +51,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class HostConfigurationBuilder extends JPanel implements TreeModelListener {
   Experiment experiment;
+  CSMART csmart;
   boolean isEditable;
   boolean isRunnable;
   SocietyComponent societyComponent;
@@ -73,8 +74,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private static final String HOST_TYPE_MENU_ITEM = "Type";
   private static final String HOST_LOCATION_MENU_ITEM = "Location";
 
-  public HostConfigurationBuilder(Experiment experiment) {
+  public HostConfigurationBuilder(Experiment experiment, CSMART csmart) {
     this.experiment = experiment;
+    this.csmart = csmart;
     isEditable = experiment.isEditable();
     isRunnable = experiment.isRunnable();
     initDisplay();
@@ -1161,28 +1163,12 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       experiment.saveToDb();
       return;
     }
-    // if experiment name is already unique, then don't ask user for new one
-    // TODO: make sure that name is unique in Organizer
+    // get unique name in both database and CSMART
     if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
-      String name = "";
-      while (true) {
-        name = (String) JOptionPane.showInputDialog(this, 
-                                                  "Enter Experiment Name",
-                                                  "Experiment Name",
-                                                  JOptionPane.QUESTION_MESSAGE,
-                                                  null, null, name);
-        if (name == null) return;
-        if (!ExperimentDB.isExperimentNameInDatabase(name)) {
-          experiment.setName(name);
-          break;
-        }
-        int answer = JOptionPane.showConfirmDialog(this,
-                                               "Use an unique name",
-                                               "Experiment Name Not Unique",
-                                               JOptionPane.OK_CANCEL_OPTION,
-                                               JOptionPane.ERROR_MESSAGE);
-        if (answer != JOptionPane.OK_OPTION) return;
-      }
+      String name = csmart.getUniqueExperimentName(experiment.getShortName());
+      if (name == null)
+        return;
+      experiment.setName(name);
     }
     experiment.saveToDb();
     experiment.setCloned(true);

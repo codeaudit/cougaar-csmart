@@ -69,7 +69,7 @@ public class CSMARTConsole extends JFrame {
   javax.swing.Timer experimentTimer;
   boolean userStoppedTrials = false;
   boolean stopping = false;
-  boolean aborting = false;
+  //  boolean aborting = false;
   Hashtable runningNodes; // maps NodeComponents to NodeServesClient
   Hashtable oldNodes; // store old charts till next experiment is started
   NodeComponent[] nodesToRun; // node components that contain agents to run
@@ -281,8 +281,10 @@ public class CSMARTConsole extends JFrame {
 
     // create trial progress panel for time labels
     JPanel trialProgressPanel = createHorizontalPanel(false);
-    trialProgressPanel.add(trialTimeLabel);
-    trialProgressPanel.add(Box.createRigidArea(HGAP5));
+    if (!experiment.isInDatabase()) {
+      trialProgressPanel.add(trialTimeLabel);
+      trialProgressPanel.add(Box.createRigidArea(HGAP10));
+    }
     trialProgressPanel.add(experimentTimeLabel);
     progressPanel.add(trialProgressPanel,
 		      new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
@@ -346,7 +348,7 @@ public class CSMARTConsole extends JFrame {
     nodeMenu.add(resetAction);
 
     // create tabbed panes for configuration information (not editable)
-    hostConfiguration = new HostConfigurationBuilder(experiment);
+    hostConfiguration = new HostConfigurationBuilder(experiment, csmart);
     hostConfiguration.update(); // set host configuration to display 1st trial
     hostConfiguration.addHostTreeSelectionListener(myTreeListener);
     JInternalFrame jif = new JInternalFrame("Configuration",
@@ -356,14 +358,16 @@ public class CSMARTConsole extends JFrame {
     jif.setLocation(0, 0);
     jif.setVisible(true);
     desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
-    PropertyEditorPanel trialViewer = 
-      new PropertyEditorPanel(experiment.getComponentsAsArray());
-    jif = new JInternalFrame("Trial Values", true, false, true, true);
-    jif.getContentPane().add(trialViewer);
-    jif.setSize(300, 300);
-    jif.setLocation(310, 0);
-    jif.setVisible(true);
-    desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
+    if (!experiment.isInDatabase()) {
+      PropertyEditorPanel trialViewer = 
+        new PropertyEditorPanel(experiment.getComponentsAsArray());
+      jif = new JInternalFrame("Trial Values", true, false, true, true);
+      jif.getContentPane().add(trialViewer);
+      jif.setSize(300, 300);
+      jif.setLocation(310, 0);
+      jif.setVisible(true);
+      desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
+    }
     panel.add(desktop,
 	      new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
 				     GridBagConstraints.WEST,
@@ -767,7 +771,8 @@ public class CSMARTConsole extends JFrame {
    * returned by createNode).
    */
   private void abortButton_actionPerformed(ActionEvent e) {
-    aborting = true;
+    //    aborting = true;
+    userStoppedTrials = true;
     stopAllNodes();
   }
 
@@ -839,15 +844,15 @@ public class CSMARTConsole extends JFrame {
       experiment.getSocietyComponent(i).setRunning(isRunning);
 
     // if aborting, disable and unselect all controls
-    if (aborting) {
-      runButton.setEnabled(false);
-      runButton.setSelected(false);
-      stopButton.setEnabled(false);
-      stopButton.setSelected(false);
-      abortButton.setEnabled(false);
-      abortButton.setSelected(false);
-      return;
-    }
+//      if (aborting) {
+//        runButton.setEnabled(false);
+//        runButton.setSelected(false);
+//        stopButton.setEnabled(false);
+//        stopButton.setSelected(false);
+//        abortButton.setEnabled(false);
+//        abortButton.setSelected(false);
+//        return;
+//      }
 
     // if not running, enable the run button, and don't select it
     // if running, disable the run button and select it
@@ -859,6 +864,7 @@ public class CSMARTConsole extends JFrame {
     stopButton.setEnabled(isRunning);
     stopButton.setSelected(false);
     abortButton.setEnabled(isRunning);
+    abortButton.setSelected(false);
   }
 
   /**
@@ -883,10 +889,11 @@ public class CSMARTConsole extends JFrame {
     if (runningNodes.isEmpty()) {
       stopping = false;
       trialFinished();
-      if (aborting) {
-	experimentFinished();
-	aborting = false;
-      } else if (haveMoreTrials()) {
+      //      if (aborting) {
+        //	experimentFinished();
+      //	aborting = false;
+      //      } else if (haveMoreTrials()) {
+      if (haveMoreTrials()) {
 	if (!userStoppedTrials) {
 	  destroyOldNodes(); // destroy old guis before starting new ones
 	  runTrial(); // run next trial
@@ -922,8 +929,12 @@ public class CSMARTConsole extends JFrame {
   private void experimentFinished() {
     trialProgressBar.setValue(experiment.getTrialCount() + 1);
     updateExperimentControls(experiment, false);
-    runButton.setEnabled(false);
+    //    runButton.setEnabled(false);
     runButton.setSelected(false);
+    // allow user to run experiment again
+    runButton.setEnabled(true);
+    // reset trial counter
+    currentTrial = -1;
     experimentTimer.stop();
   }
 

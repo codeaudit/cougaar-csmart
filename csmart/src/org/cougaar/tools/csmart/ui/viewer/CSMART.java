@@ -781,6 +781,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       launch(args);
     }
   }
+
+  public String getUniqueExperimentName(String name) {
+    return organizer.getUniqueExperimentName(name);
+  }
   
   public static void launch(String[] args) {
     new CSMART();
