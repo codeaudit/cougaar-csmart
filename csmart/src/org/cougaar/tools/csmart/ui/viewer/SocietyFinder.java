@@ -21,8 +21,8 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
@@ -188,6 +188,53 @@ public final class SocietyFinder {
     return (String[])agentFilenames.toArray(new String[agentFilenames.size()]);
   }
 
+
+  /**
+   * Opens an InputStream to access the named file. The file is sought
+   * in all the places specified in configPath.
+   * @throws IOException if the resource cannot be found.
+   **/
+  public InputStream open(String aURL) throws IOException {
+    // First, see if the file can be opened as is
+    try {
+      File url = new File(aURL);
+      System.out.println("Trying "+url+": ");
+      InputStream is = url.toURL().openStream();
+      System.err.println("Found it. File " + aURL + " is " + url);
+      if (is != null)
+	return is;
+    }
+//     catch (MalformedURLException mue) {
+//       System.out.println("Got exception" + mue);
+//     }
+    catch (IOException ioe) {
+      System.out.println("Got exception" + ioe);
+    }
+
+    // Then try all the things on the ConfigPath
+    for (int i = 0 ; i < configPath.size() ; i++) {
+      URL base = (URL) configPath.get(i);
+      try {
+        URL url = new URL(base, aURL);
+        System.out.println("Trying "+url+": ");
+        InputStream is = url.openStream();
+        if (is == null) continue; // Don't return null
+        System.out.println("Found it. File " + aURL + " is " + url);
+        return is;
+      }
+      catch (MalformedURLException mue) {
+        //if (verbose) { System.err.println(); }
+	System.out.println("Got exception" + mue);
+        continue;
+      }
+      catch (IOException ioe) {
+        //if (verbose) { System.err.println(); }
+	System.out.println("Got exception" + ioe);
+        continue;
+      }
+    }
+    throw new FileNotFoundException("Exhausted options for: " + aURL);
+  }
 
   public static void main(String[] args) {
     JFileChooser chooser =
