@@ -44,10 +44,10 @@ import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.range.IntegerRange;
-import org.cougaar.tools.csmart.society.scalability.ScalabilityMetricsFileFilter;
+import org.cougaar.tools.csmart.util.ResultsFileFilter;
 
 /**
- * <PRE>
+ * <PRE/>
  * Define a society with the following properties:
  * Levels: an integer, with value 1 to 3
  * Number of communities per level: an integer, with values 1 to 4
@@ -58,7 +58,6 @@ import org.cougaar.tools.csmart.society.scalability.ScalabilityMetricsFileFilter
  * The subcomponents of this component are of class ABCCommunityComponent.
  * </PRE>
  */
-
 public class ABCSocietyComponent
   extends ModifiableConfigurableComponent
   implements SocietyComponent, PropertyListener, ModificationListener
@@ -87,12 +86,11 @@ public class ABCSocietyComponent
   private boolean isRunning;
   private boolean editable = true;
 
-  private static FileFilter metricsFileFilter = new ScalabilityMetricsFileFilter();
+  private static FileFilter metricsFileFilter = new ResultsFileFilter();
 
   /**
    * Define properties and set default and allowed values.
    */
-
   public ABCSocietyComponent() {
     super("abc");
   }

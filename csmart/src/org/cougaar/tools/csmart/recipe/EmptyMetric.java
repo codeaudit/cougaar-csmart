@@ -29,8 +29,8 @@ import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
+
 import org.cougaar.tools.csmart.recipe.MetricComponent;
-import org.cougaar.tools.csmart.society.scalability.ScalabilityMetricsFileFilter;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;

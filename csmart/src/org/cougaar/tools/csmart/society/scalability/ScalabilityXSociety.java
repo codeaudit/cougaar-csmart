@@ -33,6 +33,7 @@ import java.util.Set;
 import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
+
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.InvalidPropertyValueException;
@@ -45,9 +46,11 @@ import org.cougaar.tools.csmart.core.property.PropertyHelper;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.PropertyListener;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.util.ResultsFileFilter;
 
 /**
  * Create configuration files to run an COUGAAR society with given
@@ -86,7 +89,7 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
 
   private boolean isRunning = false;
   private boolean editable = true;
-  private static FileFilter metricsFileFilter = new ScalabilityMetricsFileFilter();
+  private static FileFilter metricsFileFilter = new ResultsFileFilter();
 
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
   private static final String BACKUP_DESCRIPTION =

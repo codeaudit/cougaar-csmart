@@ -22,7 +22,6 @@ package org.cougaar.tools.csmart.society.abc;
 
 import org.cougaar.tools.csmart.Constants;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.society.scalability.ScalabilityMetricsFileFilter;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.ComponentProperties;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;

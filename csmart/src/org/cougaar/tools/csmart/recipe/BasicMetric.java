@@ -25,7 +25,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.List;
 
-import org.cougaar.tools.csmart.society.scalability.ScalabilityMetricsFileFilter;
+import org.cougaar.tools.csmart.util.ResultsFileFilter;
 
 import org.cougaar.tools.csmart.experiment.Experiment;
 
@@ -129,7 +129,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
   private transient int numAgs2 = 0;
 
   // FileFilter for metrics:
-  private static FileFilter metricsFileFilter = new ScalabilityMetricsFileFilter();
+  private static FileFilter metricsFileFilter = new ResultsFileFilter();
 
   public BasicMetric() {
     this("Basic Metric");
