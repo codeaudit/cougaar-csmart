@@ -29,6 +29,41 @@ import java.sql.SQLException;
 /**
  * This recipe performs component insertion into an experiment based
  * on queries and constants described by its parameters.
+ *
+ * This recipe performs three queries: The first query lists the
+ * target components and should return COMPONENT_ALIB_ID values such
+ * as appear in the V4_ALIB_COMPONENT.COMPONENT_ALIB_ID column. It is
+ * not necessary for the ids to be distinct. The substitutions that
+ * are available during this first query are: :assembly_match: has
+ * something like "in ('assembly', 'assembly', ...)" and should be
+ * used as "... AND R.ASSEMBLY_ID :assembly_match;" which would be
+ * true if the assembly_id is in the set of assemblies of the current
+ * experiment trial.
+ *
+ * The second query is used to obtain descriptions of the components
+ * that are to be inserted. It is executed once for each target
+ * component. A rows should be returned for each component to be
+ * inserted into the target component. Each returned row should be a
+ * triple consisting of: component name, component type, and class
+ * name. The number of components inserted equals the number of rows
+ * returned. The substitutions available consist of the following:
+ * :component_name:
+ * :component_lib_id:
+ * :component_alib_id:
+ * :component_category:
+ * :component_class:
+ * :insertion_point:
+ * :description:
+ * These are all relative to the target component. So for example, if
+ * the target is an agent the insertion point would be Node.AgentManager.Agent
+ *
+ * The third query is performed for each inserted component. Each row
+ * returned corresponds to a parameter of the component and consists
+ * of two parts: name and value. If both are non-null, the parameter
+ * is constructed by concatenating the string together with an "="
+ * between them. If either is null, the other is used (without an
+ * "="). The same substitutions are available, except they refer to
+ * the component being inserted.
  **/
 public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
     implements RecipeComponent, PropertiesListener, Serializable
@@ -135,10 +170,18 @@ public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
         comp.setName(vals[0]);
         comp.setType(vals[1]);
         comp.setClassName(vals[2]);
-        rowData = pdb.executeQueryForComponent(propInsertionComponentArgQuery.getValue().toString(), data);
+        rowData = pdb.executeQueryForComponent(propInsertionComponentArgQuery.getValue().toString(), comp);
         for (int i = 0; i < rowData.length; i++) {
           String[] row = rowData[i];
-          comp.addParameter(row[0] + "=" + row[1]);
+          String param;
+          if (row[0] == null) {
+            param = row[1];
+          } else if (row[1] == null) {
+            param = row[0];
+          } else {
+            param = row[0] + "=" + row[1];
+          }
+          comp.addParameter(param);
         }
         comp.setParent(data);
         comp.setOwner(this);
