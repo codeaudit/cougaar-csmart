@@ -386,8 +386,8 @@ public class DatabaseTableModel extends AbstractTableModel {
     if (communityId == null) {
       log.error("updateCommAtt on column " + columnName + " has null commId. CommName=" + communityName + " in row " + row);
     }
-    if (communityName == null) {
-      log.error("updateCommAtt has null commName for community " + communityId + " and column " + columnName + " in row: " + row);
+    if (columnName == null) {
+      log.error("updateCommAtt has null columnName for community " + communityId + " and column " + column + " in row: " + row);
     }
     String dbValue = dbRepresentation(column, value);
     if (dbValue == null) {
@@ -395,6 +395,15 @@ public class DatabaseTableModel extends AbstractTableModel {
     }
 
     if (columnName.equalsIgnoreCase("ATTRIBUTE_ID") || columnName.equalsIgnoreCase("COMMUNITY_ATTRIBUTE_ID")) {
+      // Bug 1905: Disallow empty values here.
+      dbValue = dbValue.trim();
+      if (dbValue.equals("") || dbValue.equals("null")) {
+	if (log.isInfoEnabled()) {
+	  log.info("updateCommAttribute: Empty value for Attribute_ID not allowed. Ignoring change.");
+	}
+	return;
+      }
+
       // This throws an exception if it looks like a duplicate
       try {
 	CommunityDBUtils.setCommunityAttributeId(communityId, dbValue,
@@ -454,6 +463,15 @@ public class DatabaseTableModel extends AbstractTableModel {
     }
 
     if (columnName.equalsIgnoreCase("ATTRIBUTE_ID") || columnName.equalsIgnoreCase("ENTITY_ATTRIBUTE_ID")) {
+      // Bug 1905: Disallow empty values here.
+      dbValue = dbValue.trim();
+      if (dbValue.equals("") || dbValue.equals("null")) {
+	if (log.isInfoEnabled()) {
+	  log.info("updateCommEntityAttribute: Empty value for Attribute_ID not allowed. Ignoring change.");
+	}
+	return;
+      }
+
       try {
       // This throws an exception if it looks like a duplicate
 	CommunityDBUtils.setEntityAttributeId(communityName, entityId, dbValue,
