@@ -42,6 +42,9 @@ public class AgentComponentData extends GenericComponentData {
     className = defClassName;
   }
 
+  // FIXME: Do we need equivalent methods for Binders
+  // and other Misc components?
+
   /**
    * Returns a list of all plugin names for this agent.
    *
