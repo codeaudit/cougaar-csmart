@@ -92,6 +92,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public static final String NODE_NAME = "org.cougaar.node.name";
   // When true, if CSMART dies, the society does not die
   public static final String AS_SWALLOW_ERRORS = "org.cougaar.tools.server.swallowOutputConnectionException";
+  // Which initialization method should we use. DB means the CSMART DB
+  public static final String INITIALIZER_PROP = Node.INITIALIZER_PROP;
 
   
   // Define some Defaults
@@ -110,6 +112,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
   public static final String PROP_PREFIX = "PROP$";
+  public static final String DBINIT_PROP = "DB"; // Use the CSMART database
 
   // Member Variables
   private SocietyComponent societyComponent = null;
@@ -251,6 +254,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 			       Parameters.findParameter(DBUtils.USER));
       defaultNodeArguments.put(CONFIG_PASSWD, 
 			       Parameters.findParameter(DBUtils.PASSWORD));
+      // Initializer components from the CSMART database
+      defaultNodeArguments.put(INITIALIZER_PROP, DBINIT_PROP);
       if (getTrialID() != null)
         defaultNodeArguments.setReadOnlyProperty(EXPERIMENT_ID, getTrialID());
     }

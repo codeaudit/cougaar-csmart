@@ -9,6 +9,9 @@ This is a minor patch release, preparing for future work.
 - Moved CSMART related .q files to csmart/data/common. The preferred
   location for recipeQueries.q is now csmart/data/common. However,
   files in the old CIP/configs/common _will_ still be found.
+- Provide new -D argument specifying to explicitly load components from the
+  CSMART database at runtime. Note that DB exports that preserve the
+  -D arguments but want to run from files should remove or change that argument.
 
 Release 10.0:
 This is a major Cougaar release, incorporating all previous fixes plus
