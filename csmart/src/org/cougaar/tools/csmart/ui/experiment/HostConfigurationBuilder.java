@@ -857,7 +857,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       HostComponent[] hc = experiment.getHostComponents();
       boolean isUnique = true;
       for (int i = 0; i < hc.length; i++) 
-        if (hostName.equals(hc[i].getShortName())) {
+        if (hostName.equalsIgnoreCase(hc[i].getShortName())) {
           isUnique = false;
           break;
         }
@@ -886,7 +886,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     HostComponent[] hc = experiment.getHostComponents();
     boolean isUnique = true;
     for (int i = 0; i < hc.length; i++) 
-      if (name.equals(hc[i].getShortName()))
+      if (name.equalsIgnoreCase(hc[i].getShortName()))
         return false;
     return true;
   }
@@ -1025,7 +1025,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         if (node.getUserObject() instanceof ConsoleTreeObject) {
           ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
           if ((cto.isNode() || cto.isAgent()) &&
-              cto.getName().equals(name)) 
+              cto.getName().equalsIgnoreCase(name)) 
             return false;
         }
     }
@@ -1481,7 +1481,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
           ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
           if (cto.getComponent() != null &&
               cto.getComponent().getClass().equals(componentClass) &&
-              cto.getName().equals(name)) {
+              cto.getName().equalsIgnoreCase(name)) {
             path = new TreePath(node.getPath());
             tree.setSelectionPath(path);
             tree.scrollPathToVisible(path);
