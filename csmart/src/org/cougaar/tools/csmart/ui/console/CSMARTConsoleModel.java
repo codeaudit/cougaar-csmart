@@ -21,14 +21,11 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import org.cougaar.tools.csmart.experiment.DBExperiment;
+import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
-import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.server.ProcessDescription;
 import org.cougaar.tools.server.RemoteHost;
 import org.cougaar.util.log.Logger;
@@ -51,6 +48,7 @@ public class CSMARTConsoleModel extends Observable implements Observer {
   public static final String NODE_REMOVED = "Node Removed";
   public static final String STOP_EXPERIMENT_TIMER = "Stop Timer";
   public static final String START_EXPERIMENT_TIMER = "Start Timer";
+  public static final String NEW_EXPERIMENT = "New Experiment";
 
   public static final String COMMAND_ARGUMENTS = "Command$Arguments";
 
@@ -317,7 +315,7 @@ public class CSMARTConsoleModel extends Observable implements Observer {
           properties.setProperty(Experiment.EXPERIMENT_ID,
                                  experiment.getTrialID());
         } else {
-          log.error("Null trial ID for experiment!");
+          log.warn("Null trial ID for experiment.  This is fine if the experiment is running from XML.");
         }
         // get the app server to use
         int port = getAppServerPort(properties);
@@ -353,6 +351,20 @@ public class CSMARTConsoleModel extends Observable implements Observer {
   }
 
   /**
+   * Sets an experiment for this model.  This is used when an experiment is
+   * loaded from the Console.
+   * @param experiment
+   */
+
+  public void setExperiment(Experiment experiment) {
+    this.experiment = experiment;
+    getAppServersFromExperiment();
+    destroyOldNodes(); // remove any GUIs from previous runs
+    setChanged();
+    notifyObservers(NEW_EXPERIMENT);
+  }
+
+  /**
    * Update the gui controls when experiments (or attached nodes)
    * are started or stopped.
    */
@@ -360,9 +372,13 @@ public class CSMARTConsoleModel extends Observable implements Observer {
     if (experiment != null && usingExperiment) {
       if (!isRunning) {
         experiment.experimentStopped();
-        csmart.removeRunningExperiment(experiment);
-      } else
-        csmart.addRunningExperiment(experiment);
+        if(csmart != null)
+          csmart.removeRunningExperiment(experiment);
+      } else {
+        if(csmart != null) {
+          csmart.addRunningExperiment(experiment);
+        }
+      }
       experiment.getSocietyComponent().setRunning(isRunning);
     }
   }
@@ -773,7 +789,7 @@ public class CSMARTConsoleModel extends Observable implements Observer {
     if (glsNode == null) {
       ArrayList models = getNodeModels();
       if (! models.isEmpty())
-	glsNode = (NodeModel) models.get(0);
+        glsNode = (NodeModel) models.get(0);
     }
     recordGLSContactInfo(glsNode);
 
@@ -893,5 +909,9 @@ public class CSMARTConsoleModel extends Observable implements Observer {
 	  glsContactInfo[2] = s;
       }
     }
+  }
+
+  public boolean isCSMARTNull() {
+    return (csmart == null) ? true : false;
   }
 }
