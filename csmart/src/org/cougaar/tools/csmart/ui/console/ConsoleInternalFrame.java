@@ -156,34 +156,66 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
     // Edit menu
     JMenu editMenu = new JMenu(EDIT_MENU);
-    Action copyAction = new AbstractAction(SELECT_ALL_ACTION) {
+    Action cutAction = new AbstractAction(CUT_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        cut_actionPerformed();
+      }
+    };
+    cutAction.setEnabled(false);
+    JMenuItem mi = editMenu.add(cutAction);
+    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X,
+                                             Event.CTRL_MASK));
+    Action copyAction = new AbstractAction(COPY_ACTION) {
       public void actionPerformed(ActionEvent e) {
         copy_actionPerformed();
       }
     };
     copyAction.setEnabled(false);
-    editMenu.add(copyAction);
+    mi = editMenu.add(copyAction);
+    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C,
+                                             Event.CTRL_MASK));
+    Action pasteAction = new AbstractAction(PASTE_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        paste_actionPerformed();
+      }
+    };
+    pasteAction.setEnabled(false);
+    mi = editMenu.add(pasteAction);
+    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V,
+                                             Event.CTRL_MASK));
+    Action clearAction = new AbstractAction(CLEAR_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        clear_actionPerformed();
+      }
+    };
+    clearAction.setEnabled(false);
+    editMenu.add(clearAction);
     editMenu.addSeparator();
     Action selectAllAction = new AbstractAction(SELECT_ALL_ACTION) {
       public void actionPerformed(ActionEvent e) {
         selectAll_actionPerformed();
       }
     };
-    editMenu.add(selectAllAction);
+    mi = editMenu.add(selectAllAction);
+    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A,
+                                             Event.CTRL_MASK));
     editMenu.addSeparator();
     findAction = new AbstractAction(FIND_ACTION) {
       public void actionPerformed(ActionEvent e) {
         find_actionPerformed();
       }
     };
-    editMenu.add(findAction);
+    mi = editMenu.add(findAction);
+    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F,
+                                             Event.CTRL_MASK));
     findNextAction = new AbstractAction(FIND_NEXT_ACTION) {
       public void actionPerformed(ActionEvent e) {
         findNext_actionPerformed();
       }
     };
-    editMenu.add(findNextAction);
-
+    mi = editMenu.add(findNextAction);
+    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G,
+                                             Event.CTRL_MASK));
     // view menu
     JMenu viewMenu = new JMenu(VIEW_MENU);
     Action displayLogAction = new AbstractAction(DISPLAY_LOG_ACTION) {
@@ -204,7 +236,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
         filter_actionPerformed();
       }
     };
-    filterAction.setEnabled(false);
     viewMenu.add(filterAction);
 
     // control menu
@@ -241,7 +272,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
 	notify_actionPerformed();
       }
     };
-    notifyMenu.add(notifyAction);
+    mi = notifyMenu.add(notifyAction);
+    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N,
+                                             Event.CTRL_MASK));
     Action removeNotifyAction = new AbstractAction(REMOVE_NOTIFY_ACTION) {
       public void actionPerformed(ActionEvent e) {
 	removeNotify_actionPerformed();
@@ -253,8 +286,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
 	notifyNext_actionPerformed();
       }
     };
-    //    notifyNextAction.setEnabled(false);
-    notifyMenu.add(notifyNextAction);
+    mi = notifyMenu.add(notifyNextAction);
+    mi.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O,
+                                             Event.CTRL_MASK));
     Action resetNotifyAction = new AbstractAction(RESET_NOTIFY_ACTION) {
       public void actionPerformed(ActionEvent e) {
 	resetNotifyAction_actionPerformed();
@@ -526,11 +560,16 @@ public class ConsoleInternalFrame extends JInternalFrame {
     consoleTextPane.repaint();
   }
 
-  /**
-   * Copy from node output pane.
-   */
+  private void cut_actionPerformed() {
+  }
 
   private void copy_actionPerformed() {
+  }
+
+  private void paste_actionPerformed() {
+  }
+
+  private void clear_actionPerformed() {
   }
 
   /**
@@ -554,9 +593,21 @@ public class ConsoleInternalFrame extends JInternalFrame {
     doc.setBufferSize(viewSize);
   }
 
+  /**
+   * Get the values from any existing filter and use those to
+   * initialize the new filter.
+   */
   private void filter_actionPerformed() {
-    ConsoleStyledDocument doc = 
-      (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
+    boolean[] filterValues = null;
+    boolean isAllSelected = true;
+    ConsoleNodeOutputFilter currentFilter = listener.getFilter();
+    if (currentFilter != null) {
+      filterValues = currentFilter.getValues();
+      isAllSelected = currentFilter.isAllSelected();
+    }
+    ConsoleNodeOutputFilter filter =
+      new ConsoleNodeOutputFilter(filterValues, isAllSelected);
+    listener.setFilter(filter);
   }
 
   /**

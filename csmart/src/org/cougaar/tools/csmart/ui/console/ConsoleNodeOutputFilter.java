@@ -188,6 +188,18 @@ public class ConsoleNodeOutputFilter extends JDialog {
   }
 
   /**
+   * Return whether or not the event type should be displayed in the
+   * console.  Event types are defined in NodeEvent.
+   */
+
+  public boolean includeEventTypeInDisplay(int eventType) {
+    if (allSelected)
+      return true;
+    else
+      return msgArray[eventType];
+  }
+
+  /**
    * Return whether or not the event should be written in the log file.
    */
 

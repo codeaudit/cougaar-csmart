@@ -173,6 +173,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         cmdLineNodeMenuItem_actionPerformed(hostTree);
       }
     });
+    cmdLineNodeInHostMenuItem.setEnabled(false);
     JMenuItem deleteNodeInHostMenuItem = new JMenuItem(DELETE_MENU_ITEM);
     deleteNodeInHostMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -262,6 +263,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	cmdLineNodeMenuItem_actionPerformed(nodeTree);
       }
     });
+    cmdLineNodeMenuItem.setEnabled(false);
     JMenuItem deleteNodeMenuItem = new JMenuItem(DELETE_MENU_ITEM);
     deleteNodeMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -1044,14 +1046,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void cmdLineNodeMenuItem_actionPerformed(JTree tree) {
-//      String cmdLineArgs = getPropertyOfNode(tree, "Command Line Arguments");
-//      String s = (String)JOptionPane.showInputDialog(this,
-//                                             "Enter Command Line Arguments",
-//                                             "Command Line Arguments",
-//                                             JOptionPane.QUESTION_MESSAGE,
-//                                             null, null, cmdLineArgs);
-//      if (s != null && s.length() != 0) 
-//        setPropertyOfNode(tree, "CmdLineArgs", s);
     ArrayList names = new ArrayList();
     ArrayList values = new ArrayList();
     NodeArgumentDialog dialog = new NodeArgumentDialog();

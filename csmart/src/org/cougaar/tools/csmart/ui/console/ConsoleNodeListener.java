@@ -172,8 +172,8 @@ public class ConsoleNodeListener implements NodeEventListener {
     }
 
     // ignore events user isn't interested in
-    if (filter != null && !filter.includeEventInDisplay(nodeEvent))
-      return;
+    //    if (filter != null && !filter.includeEventInDisplay(nodeEvent))
+    //      return;
 
     final SimpleAttributeSet style = getNodeEventStyle(nodeEventType);
     double nodeEventValue = 0;
@@ -194,6 +194,9 @@ public class ConsoleNodeListener implements NodeEventListener {
             handleIdleUpdate(idleTime, timestamp);
           else {
             updateStatus(myNodeEvent);
+            // don't append events user isn't interested in
+            if (filter != null && !filter.includeEventInDisplay(myNodeEvent))
+              return;
             doc.appendString(nodeEventDescription, style);
           }
 	}
@@ -239,14 +242,16 @@ public class ConsoleNodeListener implements NodeEventListener {
 	  // get the first description which is not an idle update
 	  for (int i = 0; i < n; i++) {
 	    NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
-            if (filter != null && !filter.includeEventInDisplay(nodeEvent))
-              continue; // skip events user isn't interested in
+            //            if (filter != null && !filter.includeEventInDisplay(nodeEvent))
+            //              continue; // skip events user isn't interested in
 	    int nodeEventType = nodeEvent.getType();
 	    if (nodeEventType == NodeEvent.IDLE_UPDATE) {
 	      String s = nodeEvent.getMessage();
 	      handleIdleUpdate(getIdleness(s), getTimestamp(s));
             } else {
 	      updateStatus(nodeEvent);
+              if (filter != null && !filter.includeEventInDisplay(nodeEvent))
+                continue; // don't append events user isn't interested in
 	      prevType = nodeEventType;
 	      prevDescription = getNodeEventDescription(nodeEvent);
 	      nextEventIndex = i+1;
@@ -258,8 +263,8 @@ public class ConsoleNodeListener implements NodeEventListener {
 	  // start batching descriptions
 	  for (int j = nextEventIndex; j < n; j++) {
 	    NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(j);
-            if (filter != null && !filter.includeEventInDisplay(nodeEvent))
-              continue; // skip events user isn't interested in
+            //            if (filter != null && !filter.includeEventInDisplay(nodeEvent))
+            //              continue; // skip events user isn't interested in
 	    int nodeEventType = nodeEvent.getType();
 	    String description = getNodeEventDescription(nodeEvent);
 	    updateStatus(nodeEvent);
@@ -269,14 +274,16 @@ public class ConsoleNodeListener implements NodeEventListener {
 	    } else if (nodeEventType == prevType) {
 	      prevDescription += description;
 	    } else {
-              doc.appendString(prevDescription, 
-                               getNodeEventStyle(prevType));
+              if (filter == null || filter.includeEventTypeInDisplay(prevType))
+                doc.appendString(prevDescription, 
+                                 getNodeEventStyle(prevType));
 	      prevDescription = description;
 	      prevType = nodeEventType;
 	    }
 	  }
-          doc.appendString(prevDescription,
-                           getNodeEventStyle(prevType));
+          if (filter == null || filter.includeEventTypeInDisplay(prevType))
+            doc.appendString(prevDescription,
+                             getNodeEventStyle(prevType));
 	}
       });
     } catch (RuntimeException e) {
@@ -403,6 +410,15 @@ public class ConsoleNodeListener implements NodeEventListener {
   public void setFilter(ConsoleNodeOutputFilter filter) {
     this.filter = filter;
   }
+
+  /**
+   * Get the console node output filter used to filter events displayed.
+   */
+
+  public ConsoleNodeOutputFilter getFilter() {
+    return filter;
+  }
+
 
 }
 
