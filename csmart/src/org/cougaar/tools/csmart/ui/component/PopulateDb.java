@@ -494,6 +494,7 @@ public class PopulateDb {
         boolean isAgent = data.getType().equals(ComponentData.AGENT);
         boolean isSociety = data.getType().equals(ComponentData.SOCIETY);
         boolean isAdded = isAdded(data);
+        substitutions.put(":assembly_id:", sqlQuote(isAdded ? csmAssemblyId : hnaAssemblyId));
         if (!isSociety) {
             substitutions.put(":component_name:", sqlQuote(data.getName()));
             substitutions.put(":component_lib_id:", getComponentLibId(data));
@@ -513,16 +514,19 @@ public class PopulateDb {
                 // Use the one that is there
             } else {
                 executeUpdate(dbp.getQuery(INSERT_ALIB_COMPONENT, substitutions));
+                result = true;
+            }
+            rs.close();
+            if (isAdded) {
                 Object[] params = data.getParameters();
                 for (int i = 0; i < params.length; i++) {
+                    System.out.println("param value = " + params[i]);
                     substitutions.put(":argument_value:", sqlQuote(params[i].toString()));
                     substitutions.put(":argument_order:", sqlQuote(String.valueOf(i + 1)));
                     executeUpdate(dbp.getQuery(INSERT_COMPONENT_ARG, substitutions));
                     result = true;
                 }
-                result = true;
             }
-            rs.close();
         }
         if (isAgent) {
             // Must be a metric or impact agent because that's all that gets added
@@ -538,7 +542,6 @@ public class PopulateDb {
                 substitutions.put(":parent_component_alib_id:", getComponentAlibId(parent));
                 substitutions.put(":component_alib_id:", getComponentAlibId(data));
                 substitutions.put(":insertion_order:", String.valueOf(insertionOrder));
-                substitutions.put(":assembly_id:", sqlQuote(isAdded ? csmAssemblyId : hnaAssemblyId));
                 ResultSet rs =
                     executeQuery(stmt, dbp.getQuery(CHECK_COMPONENT_HIERARCHY, substitutions));
                 if (!rs.next()) {
@@ -775,6 +778,11 @@ public class PopulateDb {
      **/
     private static String sqlQuote(String s) {
         if (s == null) return "null";
+        int quoteIndex = s.indexOf('\'');
+        while (quoteIndex >= 0) {
+            s = s.substring(0, quoteIndex) + "''" + s.substring(quoteIndex + 1);
+            quoteIndex = s.indexOf('\'', quoteIndex + 2);
+        }
         return "'" + s + "'";
     }
 
