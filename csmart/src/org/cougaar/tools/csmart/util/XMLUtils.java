@@ -26,16 +26,18 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.StringBuffer;
+
 import org.apache.xerces.parsers.DOMParser;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.util.ConfigFinder;
-import org.cougaar.util.log.Logger;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
+import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.log.Logger;
+
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * XMLUtils.java
@@ -47,7 +49,6 @@ import org.xml.sax.InputSource;
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  * @version 1.0
  */
-
 public class XMLUtils {
   private Logger log;
 
