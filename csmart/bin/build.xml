@@ -2,7 +2,7 @@
 
 <!-- =======================================================================-->
 <!-- CSMART Build File				                            -->
-<!--	Requires Ant1.3 or better!!					    -->
+<!--	Requires Ant1.4 or better!!					    -->
 <!-- This build file was created to simplify the build process of CSMART    -->
 <!-- However, it should work for any module if you change a few props -->
 <!-- Note that files are compiled into module/tmpdir -->
@@ -85,14 +85,6 @@
            <pathelement location="${sys}/log4j.jar" />
 	</path>
 
-	<!-- Backwards compatibility -->
-	<target name="test-csmart" depends="test-module" description="Backwards compatibility - run unit tests on csmart"> </target>
-	
-	<!-- For backwards compatibility -->
-	<target name="dist-csmart" depends="dist-module"
-	   description="Backwards compatibility - Jars the csmart module">
-	</target>
-
 	<!-- Set this to the comma separate list of class files to run rmic on -->
 	<property name="rmicfiles.list" value="none"/>
 <!--	<property name="rmicfiles.list" value="**/*Impl.class"/> -->
@@ -168,14 +160,14 @@
 	<!-- Run the code generators                            	-->
 	<!-- ============================================================= -->
 	<target name="defrunner" depends="prepare-defrunner, prepare" unless="defrunner.notRequired" if="have.buildjar">
-	   <execon executable="java"
+	   <apply executable="java"
 	           parallel="false"
 		   failonerror="false" >
 	     <arg line="-classpath ${genpath} org.cougaar.tools.build.DefRunner" />
 	     <fileset dir="${src}" >
 		<include name="**/*.def" />
 	     </fileset>
-	   </execon>
+	   </apply>
 	</target>
 	
 	<!-- ============================================================= -->
@@ -275,7 +267,7 @@
 	<target name="really-compile" depends="prepare, defrunner" if="has.src">
 		<mkdir dir="${build}" />
 		<available property="has.build" file="${build}"/>
-		<javac srcdir="${src}" destdir="${build}" 
+		<javac srcdir="${src}" destdir="${build}"
 		       includeAntRuntime="no" deprecation="${doDeprecation}">
  	             	<classpath>
         	          <path refid="${module}.classpath" />
