@@ -24,6 +24,8 @@ package org.cougaar.tools.csmart.scalability;
 import java.io.*;
 
 import org.cougaar.tools.csmart.ui.component.AgentComponent;
+import org.cougaar.tools.csmart.ui.component.ComponentName;
+import org.cougaar.tools.csmart.ui.component.ComponentProperties;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.NodeComponent;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
@@ -45,8 +47,12 @@ public class ScalabilityConfigurationWriter implements ConfigurationWriter {
     ((ScalabilityXSociety)society).finishConfiguration();
     for (int i = 0; i < nodes.length; i++) {
       NodeComponent node = nodes[i];
+      //      File nodeFile = 
+      //	new File(configDir, node.getShortName() + ".ini");
+      // temporary fix to use unique node names to circumvent server problem
       File nodeFile = 
-	new File(configDir, node.getShortName() + ".ini");
+        new File(configDir, 
+           ((ComponentProperties)node).getProperty(new ComponentName((ConfigurableComponent)node, "ConfigurationFileName")).getValue() + ".ini");
       PrintWriter writer = new PrintWriter(new FileWriter(nodeFile));
       // Ensure that this node is for my agents only? Or at least no Impact
       // agents?
