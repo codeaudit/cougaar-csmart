@@ -97,6 +97,7 @@ public class ULPlanTableModel extends AbstractTableModel {
     addAttribute(PropertyNames.EVENT_TIME_COMPLETED);
     addAttribute(PropertyNames.EVENT_CUMULATIVE);
     addAttribute(PropertyNames.EVENT_DELTA);
+    addAttribute(PropertyNames.EVENT_DESCRIPTION);
     addAttribute(PropertyNames.EVENT_REGARDING);
     addAttribute(PropertyNames.EVENT_VISIBILITY_TIME);
     addAttribute(PropertyNames.EVENT_PUBLISHER);

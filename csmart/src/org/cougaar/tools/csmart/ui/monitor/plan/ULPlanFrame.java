@@ -236,7 +236,8 @@ public class ULPlanFrame extends CSMARTFrame {
 	  }
 	}
       }
-      finder = new ULPlanFinder(this, graph, communityToAgents);
+      if (finder == null)
+        finder = new ULPlanFinder(this, graph, communityToAgents);
       finder.displayFinder();
       return;
     }
