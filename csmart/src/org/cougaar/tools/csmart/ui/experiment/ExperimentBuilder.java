@@ -312,7 +312,7 @@ public class ExperimentBuilder extends JFrame {
   }
 
   private void exit() {
-    saveHelper(); // if experiment from database was modified, save it
+    saveHelper(false); // if experiment from database was modified, save it
     experiment.setEditInProgress(false);
     // display experiment components in organizer
     Organizer organizer = CSMART.getOrganizer();
@@ -327,7 +327,7 @@ public class ExperimentBuilder extends JFrame {
    * @param newExperiment the new experiment to edit
    */
   public void reinit(Experiment newExperiment) {
-    saveHelper();
+    saveHelper(false);
     // restore editable flag on previous experiment
     experiment.setEditInProgress(false);
     experiment = newExperiment;
@@ -360,7 +360,7 @@ public class ExperimentBuilder extends JFrame {
                                       JOptionPane.WARNING_MESSAGE);
       if (answer != JOptionPane.YES_OPTION) return;
     }
-    saveHelper();
+    saveHelper(true);
   }
 
   private void saveAs() {
@@ -373,7 +373,7 @@ public class ExperimentBuilder extends JFrame {
         return;
       experiment.setName(name);
     }
-    saveHelper();
+    saveHelper(false);
   }
 
   // Dump out the ini files for the first trial to the local results directory
@@ -382,18 +382,19 @@ public class ExperimentBuilder extends JFrame {
   }
 
   /**
-   * Save the experiment.  If we get to this point, the user wants
-   * to save the experiment regardless of whether it's been modified.
+   * Save the experiment.  
+   * Save if the user said to do so anyhow,
+   * or if it was modified.
    */
-
-  private void saveHelper() {
+  private void saveHelper(final boolean force) {
     final Component c = this;
     GUIUtils.timeConsumingTaskStart(c);
     GUIUtils.timeConsumingTaskStart(csmart);
     try {
       new Thread("Save") {
         public void run() {
-          experiment.saveToDb(saveToDbConflictHandler);
+	  if (force || experiment.isModified())
+	    experiment.saveToDb(saveToDbConflictHandler);
           GUIUtils.timeConsumingTaskEnd(c);
           GUIUtils.timeConsumingTaskEnd(csmart);
         }
