@@ -33,6 +33,16 @@ public class Regress extends TestSuite {
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.util.parser.SimpleParserTest.class));
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.configgen.CustomerTaskTest.class));
     csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.configgen.XMLParserTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.ComponentNameTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.ConcatenatedNameTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.DoubleRangeTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.FloatRangeTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.IntegerRangeTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.LongRangeTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.StringRangeTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.MultiNameTest.class));
+    csmartTests.addTest(new TestSuite(org.cougaar.tools.csmart.ui.component.SimpleNameTest.class));
+
     return csmartTests;
   }
 }
