@@ -8,20 +8,37 @@
 <body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
 
 <h2>Configuration Builder</h2>
-Use this tool to configure a Recipe, which can modify the behavior of the Society in an Experiment in various ways (i.e. collect run-time statistics, add
-agents, etc.).
+Use this tool to configure a Society or Recipe.
+Societies can be modified by adding or deleting agents, binders, and other components, and by adding or deleting agent property groups and relationships.  In addition,
+parameters of agents, binders, components, property groups, and relationships can be added, deleted, and modified.
+Recipes can be modified by modifying their parameters, including the agents
+they should be applied to and their parameters.
+In general, you modify societies when you want to make a few, specific changes,
+to specific components and you modify recipes, when you want to make the same
+change to multiple components, i.e. to all agents, or all agents that match
+a specific pattern.
+Use the component specific
+help for details on configuring a particular society or recipe. 
 <p>Components of the society or recipe are organized in the tree on the left. Properties
-of that component can be edited in the table on the right. Hit escape to
-cancel edits to a particular field in progress. Hit enter when you are
-finished editing a value. Modifications are automatically saved in the
-database when you exit the tool.  If a recipe is modified, a list of experiments
-that use the recipe will be displayed.  These experiments have to be re-saved to the database in order to be updated.  Use the component specific
-help for details on configuring a particular society or recipe. <br>
+of that component can be edited in the tree on the left and in the table on the right. 
+<p>In the tree, 
+<ul>
+<li>use the left mouse button to select a component, and its properties will be
+displayed in the table.</li>
+<li>use the right mouse button to pop-up a menu with editing actions for the component (usually delete and add).
+</ul>
+In the table, 
+<ul>
+<li>hit enter when you are finished editing a value.</li>
+<li>hit escape to cancel edits to a particular field in progress.</li>
+<li>use the right mouse button to pop-up a menu allowing you to delete a property.</li>
+</ul>
+Modifications are automatically saved in the
+database when you exit the tool.  If a modified society or recipe is contained
+in experiments in the workspace, these experiments are displayed in red in order to indicate
+that they must be re-saved to the database in order to be updated.  <br>
 <br>
 <i>Note: Lists are curly-brace enclosed, and comma-separated. Changes to your component are saved automatically in your workspace.</i>
-
-<p>
-To set up multiple trials in an experiment, delete the values of the properties that you want to vary in the experiment.  The string "not set" will be displayed for those properties.  These properties are "unbound"; specify the values for these properties in an experiment using the Experiment Builder. (This capability is not supported for database experiments.)
 <br><br>
 <!-- hhmts start -->
 Last modified: Wed Feb 13 14:41:57 EST 2002
