@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -24,22 +24,11 @@ package org.cougaar.tools.csmart.ui.viewer;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 
+/**
+ * Set of utilities for determining what tools & actions
+ * should be enabled, based on what items are being currently used.
+ */
 public class ActionUtil {
-
-  /**
-   * Return whether or not an action is allowed, based
-   * on the object selected.
-   * If the object selected is either root or a folder,
-   * then if the caller is setting up a pop-up menu,
-   * then the actions are specific to the selected object;
-   * if the caller is setting up the top-level menu
-   * or the buttons, then the actions are dependent on all the
-   * experiments and recipes contained under the root or folder.
-   * @param String action, as defined in this class
-   * @param organizer used to get the selected object and children
-   * @param doPopup true if action will be used in popup menu
-   * @return boolean true if action allowed, else false
-   */
 
   public static String CONFIGURE_ACTION = "Configure";
   public static String BUILD_ACTION = "Build";
@@ -56,6 +45,20 @@ public class ActionUtil {
     "Delete Recipe From Database";
   public static String SAVE_TO_DATABASE_ACTION = "Save To Database";
   
+  /**
+   * Return whether or not an action is allowed, based
+   * on the object selected.
+   * If the object selected is either root or a folder,
+   * then if the caller is setting up a pop-up menu,
+   * then the actions are specific to the selected object;
+   * if the caller is setting up the top-level menu
+   * or the buttons, then the actions are dependent on all the
+   * experiments and recipes contained under the root or folder.
+   * @param String action, as defined in this class
+   * @param organizer used to get the selected object and children
+   * @param doPopup true if action will be used in popup menu
+   * @return boolean true if action allowed, else false
+   */
   public static boolean isActionAllowed(String action,
                                         Organizer organizer,
                                         boolean doPopup) {
