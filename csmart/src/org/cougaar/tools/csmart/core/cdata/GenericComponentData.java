@@ -234,7 +234,11 @@ public class GenericComponentData implements ComponentData, Serializable {
 	  // Misc components
 	  // FIXME!!!
 	}
+      } else if (this.getType().equals(ComponentData.RECIPE)) {
+        if (firstother < 0)
+          firstother = i;
       }
+
     } // end of loop over kids of this data item
     // Now lastbinder points to the last binder.
     // I use lastbinder+1
