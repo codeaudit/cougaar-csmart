@@ -543,6 +543,45 @@ public class DBUtils {
 
 
   /**
+   * Determines if an agent has asset data.
+   *
+   * @return a <code>boolean</code> value
+   */
+  public static boolean agentHasAssetData(String name, String assemblyId) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
+    Logger qLog = CSMART.createLogger("queries");
+    Map substitutions = new HashMap();
+    String result = null;
+    String query = "";
+    substitutions.put(":agent:", name);
+    substitutions.put(":assembly_id", assemblyId);
+
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+	Statement stmt = conn.createStatement();	
+        query = getQuery("queryAgentAssetData", substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          result = rs.getString(1);
+          if(result != null) { break; }
+        }
+        rs.close();
+	stmt.close();
+      } finally {
+	conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("agentHasAssetData: "+query, e);
+      }
+      throw new RuntimeException("Error" + e);
+    }
+
+    return (result != null) ? true : false;
+  }
+
+  /**
    * Delete rows from the given table where the given column has the given value
    *
    * @param table a <code>String</code> table name to delete from
