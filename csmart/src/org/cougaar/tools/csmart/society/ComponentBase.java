@@ -212,10 +212,20 @@ public class ComponentBase
   // with the same class, type, and parameters
   // Does not check its children or leaf data
   protected boolean alreadyAdded(ComponentData parent, ComponentData self) {
+    if (self == null)
+      return true;
     ComponentData[] children = parent.getChildren();
     for (int i = 0; i < children.length; i++) {
       boolean isdiff = false;
       ComponentData kid = children[i];
+      if (kid == null) {
+	if (log.isWarnEnabled()) {
+	  log.warn("Child " + i + " is null in " + parent.getName());
+	}
+	// FIXME: Maybe do a parent.setChildren with a new list that doesn't include
+	// the null?
+	continue;
+      }
       if (kid.getClassName().equals(self.getClassName())) {
 	if (kid.getType().equals(self.getType())) {
 	  if (kid.parameterCount() == self.parameterCount()) {
