@@ -25,15 +25,21 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 
 /**
  * The interface for adding and removing nodes from a society.
  */
 
-public interface NodeComponent extends ComponentProperties {
+public interface NodeComponent extends BaseComponent {
 
+  /**
+   * Rename the node.
+   * @param newName the new name for the node
+   */
+  void rename(String newName);
+  
   /**
    * Add an agent to the node.
    * @param agent the agent to add

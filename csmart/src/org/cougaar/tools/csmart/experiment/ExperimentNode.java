@@ -25,8 +25,6 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 import java.io.Serializable;
 import java.util.*;

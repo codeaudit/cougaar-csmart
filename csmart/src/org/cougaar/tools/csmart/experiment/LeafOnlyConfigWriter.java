@@ -33,7 +33,7 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
@@ -72,12 +72,12 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
     
     // Now ask each component in turn to add its stuff
     for (int i = 0; i < components.size(); i++) {
-      ComponentProperties soc = (ComponentProperties) components.get(i);
+      BaseComponent soc = (BaseComponent) components.get(i);
       soc.addComponentData(theSoc);
     }
     // Then give everyone a chance to modify what they've collectively produced
     for (int i = components.size() - 1; i >= 0; i--) {
-      ComponentProperties soc = (ComponentProperties) components.get(i);
+      BaseComponent soc = (BaseComponent) components.get(i);
       soc.modifyComponentData(theSoc);
     }    
   }
@@ -130,8 +130,9 @@ public class LeafOnlyConfigWriter implements ConfigurationWriter {
       nc.setOwner(exp); // the experiment? FIXME
       nc.setParent(theSoc);
       ComponentName name = 
-	  new ComponentName((ConfigurableComponent)nodesToWrite[i], "ConfigurationFileName");
-      nc.addParameter(((ComponentProperties)nodesToWrite[i]).getProperty(name).getValue().toString());
+	  new ComponentName((BaseComponent)nodesToWrite[i], 
+                            "ConfigurationFileName");
+      nc.addParameter(((BaseComponent)nodesToWrite[i]).getProperty(name).getValue().toString());
       theSoc.addChild(nc);
       addAgents(nodesToWrite[i], nc);
     }

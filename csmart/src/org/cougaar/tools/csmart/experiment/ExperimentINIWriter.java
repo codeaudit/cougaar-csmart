@@ -35,8 +35,7 @@ import org.cougaar.tools.server.ConfigurationWriter;
 import org.cougaar.tools.csmart.experiment.Experiment;
 
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.cdata.*;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.abc.ABCAgent;
@@ -75,13 +74,13 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     
     // Now ask each component in turn to add its stuff
     for (int i = 0; i < components.size(); i++) {
-      ComponentProperties soc = (ComponentProperties) components.get(i);
+      BaseComponent soc = (BaseComponent) components.get(i);
       soc.addComponentData(theSoc);
     }
     // Then give everyone a chance to modify what they've collectively produced
     //    for (int i = components.size() - 1; i >= 0; i--) {
     for (int i = 0; i < components.size(); i++) {
-      ComponentProperties soc = (ComponentProperties) components.get(i);
+      BaseComponent soc = (BaseComponent) components.get(i);
       soc.modifyComponentData(theSoc);
     }    
   }
@@ -95,9 +94,9 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       nc.setOwner(exp); // the experiment? FIXME
       nc.setParent(theSoc);
       ComponentName name = 
-	  new ComponentName((ConfigurableComponent)nodesToWrite[i], "ConfigurationFileName");
+	  new ComponentName((BaseComponent)nodesToWrite[i], "ConfigurationFileName");
       try {
-	nc.addParameter(((ComponentProperties)nodesToWrite[i]).getProperty(name).getValue().toString());
+	nc.addParameter(((BaseComponent)nodesToWrite[i]).getProperty(name).getValue().toString());
       } catch (NullPointerException e) {
 	nc.addParameter(nc.getName() + ".ini");
       }

@@ -28,18 +28,21 @@ import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.*;
 
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
+
+import org.cougaar.tools.csmart.core.db.DBUtils;
 
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
@@ -48,13 +51,11 @@ import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 
-import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
-import org.cougaar.tools.csmart.ui.viewer.Organizer;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 import org.cougaar.tools.server.ConfigurationWriter;
 import org.cougaar.core.node.Node;
 import org.cougaar.core.agent.ClusterImpl;
+import org.cougaar.util.Parameters;
 
 /**
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
@@ -63,6 +64,9 @@ import org.cougaar.core.agent.ClusterImpl;
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  */
 public class Experiment extends ModifiableConfigurableComponent implements ModificationListener, java.io.Serializable {
+  // org.cougaar.control.port; port for contacting applications server
+  public static final int APP_SERVER_DEFAULT_PORT = 8484;
+  public static final String NAME_SERVER_PORTS = "8888:5555";
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
   public static final String PROP_PREFIX = "PROP$";
   private List societies = new ArrayList();
@@ -134,16 +138,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     defaultNodeArguments.put("org.cougaar.message.transport.aspects",
                              "org.cougaar.core.mts.StatisticsAspect");
     defaultNodeArguments.put("org.cougaar.tools.server.nameserver.ports", 
-                             CSMARTConsole.NAME_SERVER_PORTS);
+                             NAME_SERVER_PORTS);
     defaultNodeArguments.put("org.cougaar.control.port", 
-                             Integer.toString(CSMARTConsole.APP_SERVER_DEFAULT_PORT));
+                             Integer.toString(APP_SERVER_DEFAULT_PORT));
     if (isInDatabase()) {
       defaultNodeArguments.put("org.cougaar.configuration.database", 
-                               CSMART.getDatabaseConfiguration());
+                               Parameters.findParameter(DBUtils.DATABASE));
       defaultNodeArguments.put("org.cougaar.configuration.user", 
-                               CSMART.getDatabaseUserName());
+                               Parameters.findParameter(DBUtils.USER));
       defaultNodeArguments.put("org.cougaar.configuration.password", 
-                               CSMART.getDatabaseUserPassword());
+                               Parameters.findParameter(DBUtils.PASSWORD));
       defaultNodeArguments.setReadOnlyProperty("org.cougaar.experiment.id", getTrialID());
     }
     try {
@@ -204,12 +208,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (!recipes.contains(recipe)) recipes.add(recipe);
   }
   
-  public void addComponent(ModifiableConfigurableComponent comp) {
+  public void addComponent(ModifiableComponent comp) {
     if (comp instanceof SocietyComponent)
       addSocietyComponent((SocietyComponent)comp);
     else if (comp instanceof RecipeComponent)
       addRecipe((RecipeComponent)comp);
-    // handle others!!!
   }
   public void removeSociety(SocietyComponent sc) {
     societies.remove(sc);
@@ -217,7 +220,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void removeRecipe(RecipeComponent recipe) {
     recipes.remove(recipe);
   }
-  public void removeComponent(ModifiableConfigurableComponent comp) {
+  public void removeComponent(ModifiableComponent comp) {
     if (comp instanceof SocietyComponent)
       removeSociety((SocietyComponent)comp);
     if (comp instanceof RecipeComponent)
@@ -239,13 +242,15 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public RecipeComponent getRecipe(int i) {
     return (RecipeComponent) recipes.get(i);
   }
-  
-  public ModifiableConfigurableComponent getComponent(int i) {
+  public RecipeComponent[] getRecipes() {
+    return (RecipeComponent[])recipes.toArray(new RecipeComponent[recipes.size()]);
+  }
+  public ModifiableComponent getComponent(int i) {
     // What a hack!!!
     if (i < getSocietyComponentCount())
-      return (ModifiableConfigurableComponent)getSocietyComponent(i);
+      return (ModifiableComponent)getSocietyComponent(i);
     else if (i < getComponentCount()) 
-      return (ModifiableConfigurableComponent)(getRecipe(i - (getSocietyComponentCount())));
+      return (ModifiableComponent)(getRecipe(i - (getSocietyComponentCount())));
     else
       return null;
   }
@@ -380,8 +385,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * Add experiments and societies to workspace.
    * @return the copy of the experiment.
    */
-  public Experiment copy(Organizer organizer, Object context) {
-    String uniqueName = organizer.generateExperimentName(getExperimentName());
+  public ModifiableComponent copy(String uniqueName) {
     Experiment experimentCopy = null;
     if (inDatabase) 
       experimentCopy = new Experiment(uniqueName, expID, trialID);
@@ -392,10 +396,15 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     newProps.putAll(getDefaultNodeArguments());
 
     // this copies the society and the agents
+    // TODO: do agents have to be copied explicitly?
     for (int i = 0; i < getComponentCount(); i++) {
-      ModifiableConfigurableComponent sc = getComponent(i);
-      ModifiableConfigurableComponent copiedSC = organizer.copyComponent(sc, context);
-      experimentCopy.addComponent(copiedSC);
+      ModifiableComponent sc = getComponent(i);
+      if (sc instanceof SocietyComponent) {
+        // this gets around asking the organizer for a new unique name
+        ModifiableComponent copiedSC = sc.copy("Society for " + uniqueName);
+        experimentCopy.addComponent(copiedSC);
+      } else
+        System.out.println("Experiment: error in copying: unexpected component of class: " + sc.getClass().getName());
     }
     // copy hosts
     HostComponent[] hosts = getHosts();
@@ -496,20 +505,19 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return result;
   }
 
-  public void removeHost(HostComponent nc) {
-    ExperimentHost sc = (ExperimentHost) nc;
-    hosts.remove(nc);
+  public void removeHost(HostComponent hostComponent) {
+    ExperimentHost sc = (ExperimentHost) hostComponent;
+    hosts.remove(hostComponent);
     sc.dispose();           // Let the host disassociate itself from nodes
     sc.removeModificationListener(this);
     fireModification();
   }
 
-  public void renameHost(HostComponent nc, String name) {
+  public void renameHost(HostComponent hostComponent, String name) {
     // FIXME! This allows 2 Hosts with the same name!
-    hosts.remove(nc);
-    ((ConfigurableComponent)nc).setName(name);
-    //fireModification();
-    hosts.add(nc);
+    hosts.remove(hostComponent);
+    hostComponent.setName(name);
+    hosts.add(hostComponent);
     fireModification();
   }
 
@@ -554,7 +562,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
           break hostLoop;       // Use existing nameserver definition
         }
         if (dfltNameServer == null) { // First host is default
-          dfltNameServer = thisHost + ":" + CSMARTConsole.NAME_SERVER_PORTS;
+          dfltNameServer = thisHost + ":" + NAME_SERVER_PORTS;
           if (oldNameServer == null) {
             break hostLoop;     // Use dfltNameServer
           }
@@ -604,7 +612,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void renameNode(NodeComponent nc, String name) {
     // FIXME! This allows 2 Hosts with the same name!
     nodes.remove(nc);
-    ((ConfigurableComponent)nc).setName(name);
+    nc.setName(name);
     //fireModification();
     nodes.add(nc);
     fireModification();
@@ -622,9 +630,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   /**
    * @return a <code>ModifiableConfigurableComponent[]</code> array of all the components in the experiment
    */
-  public ModifiableConfigurableComponent[] getComponentsAsArray() {
+  public ModifiableComponent[] getComponentsAsArray() {
     List comps = getComponents();
-    ModifiableConfigurableComponent[] compArray = (ModifiableConfigurableComponent[])comps.toArray(new ModifiableConfigurableComponent[comps.size()]);
+    ModifiableComponent[] compArray = (ModifiableComponent[])comps.toArray(new ModifiableComponent[comps.size()]);
     return compArray;
   }
   
@@ -817,7 +825,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       // Now ask each component in turn to add its stuff
       boolean componentWasRemoved = false;
       for (int i = 0, n = components.size(); i < n; i++) {
-        ComponentProperties soc = (ComponentProperties) components.get(i);
+        BaseComponent soc = (BaseComponent) components.get(i);
 //          System.out.println(soc + ".addComponentData");
         soc.addComponentData(theSoc);
         componentWasRemoved |= soc.componentWasRemoved();
@@ -828,7 +836,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
       // then give everyone a chance to modify what they've collectively produced
       for (int i = 0, n = components.size(); i < n; i++) {
-        ComponentProperties soc = (ComponentProperties) components.get(i);
+        BaseComponent soc = (BaseComponent) components.get(i);
         soc.modifyComponentData(theSoc, pdb);
         if (soc.componentWasRemoved()) {
           pdb.repopulateCMT(theSoc);
@@ -931,7 +939,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
   }
 
-  private void addPropertiesAsParameters(ComponentData cd, ComponentProperties cp)
+  private void addPropertiesAsParameters(ComponentData cd, BaseComponent cp)
   {
     for (Iterator it = cp.getPropertyNames(); it.hasNext(); ) {
       ComponentName pname = (ComponentName) it.next();
@@ -1012,7 +1020,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public boolean hasUnboundProperties() {
     int n = getComponentCount();
     for (int i = 0; i < n; i++) {
-      ModifiableConfigurableComponent comp = getComponent(i);
+      ModifiableComponent comp = getComponent(i);
       List propertyNames = comp.getPropertyNamesList();
       for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
 	Property property = comp.getProperty((CompositeName)j.next());
@@ -1110,7 +1118,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     List experimentValues = new ArrayList();
     int n = getComponentCount();
     for (int i = 0; i < n; i++) {
-      ModifiableConfigurableComponent comp = getComponent(i);
+      ModifiableComponent comp = getComponent(i);
       List propertyNames = comp.getPropertyNamesList();
       for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
 	Property property = comp.getProperty((CompositeName)j.next());
@@ -1206,7 +1214,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     ArrayList experimentValueCounts = new ArrayList(100);
     int n = getComponentCount();
     for (int i = 0; i < n; i++) {
-      ModifiableConfigurableComponent comp = getComponent(i);
+      ModifiableComponent comp = getComponent(i);
       Iterator names = comp.getPropertyNames();
       while (names.hasNext()) {
 	Property property = comp.getProperty((CompositeName)names.next());
@@ -1332,12 +1340,12 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     // Now ask each component in turn to add its stuff
     List components = getComponents();
     for (int i = 0; i < components.size(); i++) {
-      ComponentProperties soc = (ComponentProperties) components.get(i);
+      BaseComponent soc = (BaseComponent) components.get(i);
       soc.addComponentData(theWholeSoc);
     }
     // Then give everyone a chance to modify what they've collectively produced
     for (int i = 0; i < components.size(); i++) {
-      ComponentProperties soc = (ComponentProperties) components.get(i);
+      BaseComponent soc = (BaseComponent) components.get(i);
       soc.modifyComponentData(theWholeSoc);
     }    
     return theWholeSoc;
@@ -1355,7 +1363,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       ComponentName name = 
 	  new ComponentName((ConfigurableComponent)nodesToWrite[i], "ConfigurationFileName");
       try {
-	nc.addParameter(((ComponentProperties)nodesToWrite[i]).getProperty(name).getValue().toString());
+	nc.addParameter(((BaseComponent)nodesToWrite[i]).getProperty(name).getValue().toString());
       } catch (NullPointerException e) {
 	nc.addParameter(nc.getName() + ".ini");
       }
