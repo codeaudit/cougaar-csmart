@@ -21,12 +21,6 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-
-
-
-
-
-
 // tools created by this user interface
 import java.awt.*;
 import java.awt.event.*;
@@ -238,6 +232,7 @@ public class CSMART extends JFrame {
     fileMenu.add(new JMenuItem(organizer.deleteExperimentFromDatabaseAction));
     fileMenu.add(new JMenuItem(organizer.deleteRecipeFromDatabaseAction));
     fileMenu.add(new JMenuItem(organizer.renameAction));
+    fileMenu.add(new JMenuItem(organizer.saveAction));
     fileMenu.addSeparator();
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.addActionListener(new ActionListener() {
@@ -573,6 +568,7 @@ public class CSMART extends JFrame {
     experimentToEdit = null;
     configureThread = 
       new ConfigureThread("ConfigureExperiment", experiment);
+    // TODO: this isn't blocking mouse events on the toolbar; it's deferring them
     GUIUtils.timeConsumingTaskStart(csmart);
     try {
       configureThread.start();

@@ -78,7 +78,8 @@ public class OrganizerMouseListener extends MouseAdapter {
       organizer.duplicateAction,
       organizer.deleteExperimentAction,
       organizer.renameExperimentAction,
-      organizer.configureAction
+      organizer.configureAction,
+      organizer.saveAction
     };
 
     Object[] societyMenuItems = {
@@ -86,7 +87,8 @@ public class OrganizerMouseListener extends MouseAdapter {
       organizer.buildExperimentAction,
       organizer.duplicateAction,
       organizer.deleteSocietyAction,
-      organizer.renameSocietyAction
+      organizer.renameSocietyAction,
+      organizer.saveAction
     };
 
     Object[] recipeMenuItems = {
@@ -94,6 +96,7 @@ public class OrganizerMouseListener extends MouseAdapter {
       organizer.duplicateAction,
       organizer.deleteRecipeAction,
       organizer.renameRecipeAction,
+      organizer.saveAction
     };
 
     Object[] folderMenuItems = {

@@ -52,6 +52,7 @@ public class ActionUtil {
     "Delete Experiment From Database";
   public static String DELETE_RECIPE_FROM_DATABASE_ACTION = 
     "Delete Recipe From Database";
+  public static String SAVE_ACTION = "Save";
   
   /**
    * Enable/disable an action, based on the object selected.
@@ -154,6 +155,8 @@ public class ActionUtil {
                                                      Experiment experiment) {
     if (action.equals(DUPLICATE_ACTION))
       return true;
+    if (action.equals(SAVE_ACTION) && experiment.isModified())
+      return !experiment.isEditInProgress();
     SocietyComponent society = experiment.getSocietyComponent();
     if (society != null && !society.isEditable()) {
       return false;
@@ -202,6 +205,8 @@ public class ActionUtil {
     }
     if (action.equals(DUPLICATE_ACTION))
       return true;
+    if (action.equals(SAVE_ACTION) && society.isModified())
+      return (!CSMART.isSocietyInEditor(society));
     if (action.equals(DELETE_ACTION) ||
         action.equals(RENAME_ACTION))
       return (!CSMART.isSocietyInEditor(society));
@@ -231,6 +236,8 @@ public class ActionUtil {
           action.equals(DELETE_ACTION))
         return false;
     }
+    if (action.equals(SAVE_ACTION) && recipe.isModified())
+      return (!CSMART.isRecipeInEditor(recipe));
     if (action.equals(DUPLICATE_ACTION))
       return true;
     if (action.equals(DELETE_ACTION) ||

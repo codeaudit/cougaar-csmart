@@ -233,15 +233,18 @@ public class Organizer extends JScrollPane {
     new AbstractAction(ActionUtil.CONFIGURE_ACTION, 
                        new ImageIcon(getClass().getResource("SB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
+          organizer.startBuilder();
+        }
+      };
           // use invokeLater so if this was invoked from a popup menu
           // the menu is taken down first
-	  SwingUtilities.invokeLater(new Runnable() {
-              public void run() {
-                organizer.startBuilder();
-              }
-            });
-	}
-      };
+//  	  SwingUtilities.invokeLater(new Runnable() {
+//                public void run() {
+          //                organizer.startBuilder();
+          //              }
+          //            });
+          //	}
+          //      };
 
   protected AbstractAction deleteRecipeAction =
     new AbstractAction(ActionUtil.DELETE_ACTION) {
@@ -297,6 +300,13 @@ public class Organizer extends JScrollPane {
 	}
     }
   };
+
+  protected AbstractAction saveAction = 
+    new AbstractAction("Save") {
+        public void actionPerformed(ActionEvent e) {
+          organizer.saveInDatabase();
+        }
+      };
 
   /**
    * Construct a workspace, i.e. an user interface for a tree
@@ -1504,6 +1514,73 @@ public class Organizer extends JScrollPane {
     }
   }
 
+
+  ////////////////////////////////
+  // Save Experiment or Society in Database
+  ///////////////////////////////
+
+  private void saveInDatabase() {
+    DefaultMutableTreeNode node = getSelectedNode();
+    if (node == null)
+      return;
+    Object o = node.getUserObject();
+    if (o == null)
+      return;
+    if (o instanceof Experiment)
+      saveExperiment((Experiment)o);
+    else if (o instanceof SocietyComponent)
+      saveSociety((SocietyComponent)o);
+    else if (o instanceof RecipeComponent)
+      saveRecipe((RecipeComponent)o);
+  }
+
+  private void saveExperiment(Experiment experiment) {
+    final Experiment exp = experiment;
+    GUIUtils.timeConsumingTaskStart(organizer);
+    try {
+      new Thread("Save") {
+	  public void run() {
+	    exp.saveToDb(saveToDbConflictHandler);
+            GUIUtils.timeConsumingTaskEnd(organizer);
+	  }
+	}.start();
+    } catch (RuntimeException re) {
+      if(log.isErrorEnabled()) {
+        log.error("Error saving experiment: ", re);
+      }
+      GUIUtils.timeConsumingTaskEnd(organizer);
+    }
+  }
+
+  private void saveSociety(SocietyComponent society) {
+    final SocietyComponent sc = society;
+    GUIUtils.timeConsumingTaskStart(organizer);
+    try {
+      new Thread("SaveSociety") {
+          public void run() {
+            boolean success = sc.saveToDatabase();
+            GUIUtils.timeConsumingTaskEnd(organizer);
+            if (!success && organizer.log.isWarnEnabled()) {
+		organizer.log.warn("Failed to save society " + 
+                                   sc.getSocietyName());
+	      } else if (organizer.log.isDebugEnabled()) {
+		organizer.log.debug("Saved society " + 
+                                    sc.getSocietyName());
+	      }
+	    }
+	  }.start();
+    } catch (RuntimeException re) {
+      if(log.isErrorEnabled()) {
+        log.error("Runtime exception saving society", re);
+      }
+      GUIUtils.timeConsumingTaskEnd(organizer);
+    }
+    GUIUtils.timeConsumingTaskEnd(organizer);
+  }
+
+  private void saveRecipe(RecipeComponent recipe) {
+    recipe.saveToDatabase();
+  }
 
   ////////////////////////////////
   // Replace Component in Experiment
