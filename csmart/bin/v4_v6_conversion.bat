@@ -42,11 +42,16 @@ GOTO L_END
 
 MV %1 oldfile.sql
 
-%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe s/v4_//g oldfile.sql > midfile.sql
-%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe s/v6_//g midfile.sql > %1
+%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe s/v4_//g oldfile.sql > midfile1.sql
+%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe s/V4_//g midfile1.sql > midfile2.sql
+%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe s/v6_//g midfile2.sql > midfile3.sql
+%COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\sed.exe s/V6_//g midfile3.sql > %1
 
 rm oldfile.sql
-rm midfile.sql
+rm midfile1.sql
+rm midfile2.sql
+rm midfile3.sql
+
 
 ECHO Done.
 

@@ -32,10 +32,14 @@ fi
 
 mv $1 oldfile.sql
 
-sed s/v4_//g oldfile.sql > midfile.sql
-sed s/v6_//g midfile.sql > $1
+sed s/v4_//g oldfile.sql > midfile1.sql
+sed s/V4_//g midfile1.sql > midfile2.sql
+sed s/v6_//g midfile2.sql > midfile3.sql
+sed s/V6_//g midfile3.sql > $1
 
 rm oldfile.sql
-rm midfile.sql
+rm midfile1.sql
+rm midfile2.sql
+rm midfile3.sql
 
 echo "Done."
