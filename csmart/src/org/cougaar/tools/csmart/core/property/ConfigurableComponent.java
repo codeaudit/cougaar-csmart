@@ -616,18 +616,30 @@ public abstract class ConfigurableComponent
 
 
   /**
-   * Removes a Property from this component.
+   * Removes a Property from this component.  The property must be
+   * local to the component.
    *
    * @param prop Property to remove.
    */
   public void removeProperty(Property prop) {
-    setPropertyVisible(prop, false);
+    boolean wasVisible = isPropertyVisible(prop);
+    if (!wasVisible) return; // if it's not visible, then it's not my property
+    Object oldValue = getMyProperties().remove(prop.getName());
+    if (oldValue == null) { // was someone else's property, ignore
+      if (log.isErrorEnabled())
+        log.error("", new Throwable("Attempting to remove non-local property: " + prop.getName()));
+      return;
+    }
     firePropertyRemoved(prop);
   }
 
   private Property addProperty(Property p, boolean visible) {
-    if (!visible) setPropertyVisible(p, false);
+    // remove old property if it exists
+    Property oldProperty = (Property)getMyProperties().get(p.getName());
+    if (oldProperty != null)
+      removeProperty(oldProperty);
     getMyProperties().put(p.getName(), p);
+    // if the new property is visible, tell the listeners
     if (visible) firePropertyAdded(p);
     return p;
   }
@@ -749,6 +761,7 @@ public abstract class ConfigurableComponent
    * @param prop Property to check visiblity
    * @return a <code>boolean</code> value
    */
+
   public boolean isPropertyVisible(Property prop) {
     Object np = getMyProperties().get(prop.getName());
     return !nullProperty.equals(np);

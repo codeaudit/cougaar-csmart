@@ -23,13 +23,17 @@ package org.cougaar.tools.csmart.ui.configbuilder;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.lang.reflect.Array;
+import java.util.EventObject;
 import java.util.SortedSet;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.Set;
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.*;
 import javax.swing.border.EtchedBorder;
 import org.cougaar.tools.csmart.core.property.InvalidPropertyValueException;
@@ -44,6 +48,8 @@ import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
  */
 
 public class PropertyTable extends JTable {
+  private PropertyChangeListener editorRemover = null;
+
   private class Model extends PropTableModelBase {
     boolean isEditable;
 
@@ -108,7 +114,7 @@ public class PropertyTable extends JTable {
         }
       }
     }
-  }
+  } // end Model class
 
   //  Model model = new Model();
   Model model;
@@ -117,19 +123,7 @@ public class PropertyTable extends JTable {
     model = new Model(isEditable);
     setModel(model);
     setDefaultRenderer(String.class, model.getCellRenderer());
-    addMouseListener(new MouseAdapter() {
-      public void mouseClicked(MouseEvent e) {
-        int col = columnAtPoint(e.getPoint());
-        int row = rowAtPoint(e.getPoint());
-        if (col == Model.LABEL_COL) {
-          Property prop = model.getProperty(row);
-          if (prop != null) {
-            URL url = prop.getHelp();
-            if (url != null) Browser.setPage(url);
-          }
-        }
-      }
-    });
+    addMouseListener(new MyMouseAdapter(this));
   }
 
   /**
@@ -218,5 +212,142 @@ public class PropertyTable extends JTable {
   public void removeAll() {
     model.clear();
   }
+
+
+  /**
+   * Pops up a menu with Help and Delete actions
+   * for the property in the row in which the mouse is located.
+   */
+
+  public class MyMouseAdapter extends MouseAdapter {
+    JTable table;
+    JPopupMenu menu;
+    int row;
+
+    private AbstractAction helpAction =
+      new AbstractAction("Help") {
+          public void actionPerformed(ActionEvent e) {
+            Property prop = model.getProperty(row);
+            if (prop != null) {
+              URL url = prop.getHelp();
+              if (url != null) Browser.setPage(url);
+            }
+          }
+        };
+
+    private AbstractAction deleteAction =
+      new AbstractAction("Delete") {
+          public void actionPerformed(ActionEvent e) {
+            Property prop = model.getProperty(row);
+            if (prop != null) 
+              ((PropertyTable)table).removeProperty(prop);
+          }
+        };
+
+    private Action[] actions = {
+      helpAction,
+      deleteAction
+    };
+
+    public MyMouseAdapter(JTable table) {
+      super();
+      this.table = table;
+      menu = new JPopupMenu();
+      for (int i = 0; i < actions.length; i++)
+        menu.add(actions[i]);
+    }
+
+    public void mouseClicked(MouseEvent e) {
+      if (e.isPopupTrigger()) doPopup(e);
+    }
+  
+    public void mousePressed(MouseEvent e) {
+      if (e.isPopupTrigger()) doPopup(e);
+    }
+  
+    public void mouseReleased(MouseEvent e) {
+      if (e.isPopupTrigger()) doPopup(e);
+    }
+
+    private void doPopup(MouseEvent e) {
+      row = table.rowAtPoint(e.getPoint());
+      if (row == -1) return;
+      menu.show(table, e.getX(), e.getY());
+    }
+  }
+
+  /** 
+   * Override this to install our own focus manager property change listener.
+   */
+
+  public boolean editCellAt(int row, int column, EventObject e) {
+    if (editorRemover == null) { 
+      KeyboardFocusManager fm =
+        KeyboardFocusManager.getCurrentKeyboardFocusManager();
+      editorRemover = new CellEditorRemover(fm);
+      fm.addPropertyChangeListener("focusOwner", editorRemover);
+    }
+    return super.editCellAt(row, column, e);
+  }
+
+  /**
+   * Override this to deinstall our focus manager property change listener.
+   */
+
+  public void removeNotify() {
+    KeyboardFocusManager.getCurrentKeyboardFocusManager().
+      removePropertyChangeListener("focusOwner", editorRemover);
+    editorRemover = null;
+    super.removeNotify();
+  }
+
+  /**
+   * Override this to deinstall our focus manager property change listener.
+   */
+
+  public void removeEditor() {
+    KeyboardFocusManager.getCurrentKeyboardFocusManager().
+      removePropertyChangeListener("focusOwner", editorRemover);
+    editorRemover = null;
+    super.removeEditor();
+  }
+
+  /** 
+   * This class tracks changes in the keyboard focus state. It is used
+   * when the JTable is editing to determine when to stop the edit.
+   * If focus switches to a component outside of the jtable, but in the
+   * same window, this will stop editing.
+   * Adapted from JTable.
+   */
+
+  class CellEditorRemover implements PropertyChangeListener {
+    KeyboardFocusManager focusManager;
+    
+    public CellEditorRemover(KeyboardFocusManager fm) {
+      this.focusManager = fm;
+    }
+
+    public void propertyChange(PropertyChangeEvent ev) {
+      if (!isEditing()) {
+        return;
+      }
+      Component c = focusManager.getFocusOwner();
+      while (c != null) {
+        if (c == PropertyTable.this) {
+          // focus remains inside the table
+          return;
+        } else if ((c instanceof Window) ||
+                   (c instanceof java.applet.Applet && 
+                    c.getParent() == null)) {
+          // focus is inside window and outside table
+          if (c == SwingUtilities.getRoot(PropertyTable.this)) {
+            getCellEditor().stopCellEditing();
+          }
+          break;
+        }
+        c = c.getParent();
+      }
+    }
+  } // end CellEditorRemover
 
 }

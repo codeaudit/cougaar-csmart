@@ -27,6 +27,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 
 public class PropertyTreeNode extends DefaultMutableTreeNode {
+  boolean isLeaf = true;
   SortedSet myPropertyNames = new TreeSet();
   CompositeName myName;
 
@@ -62,4 +63,15 @@ public class PropertyTreeNode extends DefaultMutableTreeNode {
   public CompositeName getName() {
     return myName;
   }
+
+  public boolean isLeaf() {
+    if (getChildCount() > 0)
+      return false;
+    return isLeaf; // if no children, the flag overrides
+  }
+
+  public void setLeaf(boolean isLeaf) {
+    this.isLeaf = isLeaf;
+  }
+
 }
