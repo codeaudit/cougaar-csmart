@@ -446,6 +446,8 @@ public abstract class SocietyBase
 	    return;
 	  else
 	    fireModification();
+	} else if (e.getPreviousValue() == null) {
+	  fireModification();
 	} else if (! e.getProperty().getValue().toString().trim().equals(e.getPreviousValue().toString()))
 	  fireModification();
       }
