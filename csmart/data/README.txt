@@ -23,6 +23,10 @@ This directory contains several configuration sub-directories:
 		use with the ABC Impacts. Edit the included files to
 		specify actual Agent names to have these
 		impacts included in your CSMART experiment.
+  cmt/
+	Data files and scripts for loading them for the CMT society
+	configuration database. These are necessarily only when building
+	a _new_ database for running societies from.
 
   ?/:
     optional society configuration files 
