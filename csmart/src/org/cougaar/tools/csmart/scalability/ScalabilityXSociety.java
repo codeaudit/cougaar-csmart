@@ -430,55 +430,6 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
   }
 
   /**
-   * Return a deep copy of the society.
-   * @return society component created
-   */
-
-  public SocietyComponent copy(Organizer organizer, Object context) {
-    String societyName = organizer.generateSocietyName(getSocietyName());
-    ScalabilityXSociety result = new ScalabilityXSociety(societyName);
-    result.initProperties();
-    Property propLevelCount = result.getProperty(PROP_LEVELCOUNT);
-    propLevelCount.setValue(getProperty(PROP_LEVELCOUNT).getValue());
-    Property propAgentCount = result.getProperty(PROP_AGENTCOUNT);
-    propAgentCount.setValue(getProperty(PROP_AGENTCOUNT).getValue());
-    for (Iterator i = getPropertyNames(); i.hasNext(); ) {
-      CompositeName name = (CompositeName) i.next();
-      Property myProp = getProperty(name);
-      if (myProp == propLevelCount) continue;
-      if (myProp == propAgentCount) continue;
-      // compose the correct name for the property
-      // name must be prepended by new society name
-      String s = name.toString();
-      ComponentName hisPropName = 
-	new ComponentName(result, s.substring(societyName.length()));
-      Property hisProp = result.getProperty(hisPropName);
-      try {
-	// if have experimental values, then copy those
-	// else copy the property value
-	if (myProp.getExperimentValues() != null) {
-	  List experimentValues = myProp.getExperimentValues();
-	  Object newValue = Array.newInstance(myProp.getPropertyClass(),
-					      experimentValues.size());
-	  for (int j = 0; j < experimentValues.size(); j++)
-	    Array.set(newValue, j,
-		      PropertyHelper.validateValue(myProp, 
-						   experimentValues.get(j)));
-	  hisProp.setExperimentValues(Arrays.asList((Object[])newValue));
-	  hisProp.setValue(null); // no specific value
-	} else {
-	  Object o = PropertyHelper.validateValue(myProp, myProp.getValue());
-	  if (o != null)
-	    hisProp.setValue(o);
-	}
-      } catch (InvalidPropertyValueException e) {
-	System.out.println("ScalabilityXSociety: " + e);
-      }
-    }
-    return (SocietyComponent)result;
-  }
-
-  /**
    * Return a file filter which can be used to fetch
    * the metrics files for this experiment.
    * @return file filter to get metrics files for this experiment

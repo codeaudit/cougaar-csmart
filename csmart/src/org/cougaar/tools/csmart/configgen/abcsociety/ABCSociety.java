@@ -666,29 +666,6 @@ public class ABCSociety
     return isRunning;
   }
 
-  /**
-   * Return a deep copy of the society.
-   * @return society component created
-   */
-  public SocietyComponent copy(Organizer organizer, Object context) {
-
-    String societyName = organizer.generateSocietyName(getSocietyName());
-    ABCSociety result = new ABCSociety(societyName);
-    result.initProperties();
-
-//     // set the level & community count properties explicitly
-//     Property propLevelCount = result.getProperty(PROP_LEVELCOUNT);
-//     propLevelCount.setValue(getProperty(PROP_LEVELCOUNT).getValue());
-//     Property propCommCount = result.getProperty(PROP_COMMUNITYCOUNT);
-//     propCommCount.setValue(getProperty(PROP_COMMUNITYCOUNT).getValue());
-//     result.changeSociety();
-
-    this.copy(result);
-    
-    return (SocietyComponent)result;
-  }
-    
-
   // Change this to get getOutputFileFilter or something like that?
   /**
    * Return a file filter which can be used to fetch
