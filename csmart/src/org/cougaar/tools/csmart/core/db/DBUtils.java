@@ -334,9 +334,9 @@ public class DBUtils {
       while (iter.hasNext()) {
 	String val = (String)iter.next();
 	// Ignore entries that start with the given pattern
-	if (badStartPattern != null && val.startsWith(badStartPattern))
+	if (val == null || val.equals(""))
 	  continue;
-	if (val.equals(""))
+	if (badStartPattern != null && val.startsWith(badStartPattern))
 	  continue;
 	if (first) {
 	  first = false;
