@@ -613,10 +613,10 @@ public class MetricsPlugin
     int bbTaskCount = 0;
     int bbObjCount = 0;
     if (bbMetricsService != null) {
-      assetCount = bbMetricsService.getAssetCount();
-      planElementCount = bbMetricsService.getPlanElementCount();
-      bbTaskCount = bbMetricsService.getTaskCount();
-      bbObjCount = bbMetricsService.getBlackboardObjectCount();
+      assetCount = bbMetricsService.getBlackboardCount(Asset.class);
+      planElementCount = bbMetricsService.getBlackboardCount(PlanElement.class);
+      bbTaskCount = bbMetricsService.getBlackboardCount(Task.class);
+      bbObjCount = bbMetricsService.getBlackboardCount();
     }
 
     // Prototype Registry Statistics
