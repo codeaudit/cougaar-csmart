@@ -12,7 +12,9 @@ really want to run a PSP.
 - Use new Cougaar Logging Service
 - New Servlet based GLS / Oplan UIs
 - Disabled built-in societies, pending full database support
-- Due to above, experiments with multiple trials are temporarily disabled
+- Due to above, experiments with multiple trials are temporarily
+disabled
+- Updated build script to Ant1.4.1
 
 Release v8.8.0
 This relse represents all of the fixes made during integration on

@@ -2,7 +2,7 @@
 
 <!-- =======================================================================-->
 <!-- CSMART Build File				                            -->
-<!--	Requires Ant1.4 or better!!					    -->
+<!--	Requires Ant1.4.1 or better!!					    -->
 <!-- This build file was created to simplify the build process of CSMART    -->
 <!-- However, it should work for any module if you change a few props -->
 <!-- Note that files are compiled into module/tmpdir -->

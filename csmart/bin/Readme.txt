@@ -69,7 +69,7 @@ build-all.bat
         Simple script for compiling CSMART sources on a Windows machine.
 
 build.xml
-	ANT1.3 build script. ANT is available at http://jakarta.apache.org/ant
+	ANT1.4.1 build script. ANT is available at http://jakarta.apache.org/ant
 
 [The sample scripts for running the AppServer have been moved to the server 
  module.]
