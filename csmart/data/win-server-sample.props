@@ -1,4 +1,4 @@
-# Sample Windows[NT] configuration file for the AppServer
+# Sample Windows[NT] configuration file for the AppServer.
 #
 # Edit the claspath, install-path and config-path to reflect your 
 #   local installation.  See "java.util.Properties" for syntax details.
@@ -7,34 +7,47 @@
 #   "org.cougaar.node.name=..", but otherwise this is the *complete*
 #   list of properties.
 #
-# One can use just this ".props" file and ignore the AppServer's
-#   "Warning: couldn't load properties from: 'Common.props'."
-#   and similar "Windows[_NT].props" warnings.
-#
 # Note that some symbols, such as "\", must be encoded ("\\")
 
-# Set the cougaag install path
+# On Windows machines the Oracle driver needs the "%SYSTEMROOT%" set
+#   to the windows install directory.
+env.SYSTEMROOT=C\:\\WINNT
+
+# Set the cougaag install path.
 org.cougaar.install.path=D\:\\opt\\alp
+
+# Set the cougaar system path, which is used to find third-party jars
+#   (e.g. "log4j.jar").
+#
+# This defaults to "{org.cougaar.install.path} + \\sys", but one can
+#   use a different directory.  Here we're explicit. 
+org.cougaar.system.path=D\:\\opt\\alp\\sys
 
 # Set the classpath for starting the Node, which uses ";" separators.
 #
 # Typically only core.jar needs to be in here.
-java.class.path=D\:\\opt\\alp\\csmart\\tmpdir\;D\:\\opt\\alp\\lib\\csmart.jar\;D\:\\opt\\alp\\lib\\core.jar
+java.class.path=D\:\\opt\\alp\\lib\\csmart.jar\;D\:\\opt\\alp\\lib\\core.jar
 
-# Set the config path, which uses ";" separators
-org.cougaar.config.path=D\:\\opt\\alp\\csmart\\data\\common\;D\:\\opt\\alp\\configs\\common
+# Set the config path, which uses ";" separators.
+#
+# This path must contain your "cougaar.rc", database files ("*.q"), 
+#   "default.psps.xml", and other configuration files.
+#
+# Here we'll use the ConfigFinder's default path.
+#org.cougaar.config.path=D\:\\opt\\alp\\configs\\common
 
-# Set a couple other standard properties
-user.timezone=GMT 
-csmart.log.severity=PROBLEM 
-org.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0 
-org.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
-
-# Set some standard memory settings
+# Set some standard JVM memory settings.
+#
+# These are not usually modified.
 java.Xms100m 
 java.Xmx300m
 
-# On Windows machines the Oracle driver needs the "%SYSTEMROOT%" set
-#   to the windows install directory
-env.SYSTEMROOT=C\:\\WINNT
+# Set some standard COUGAAR properties.
+#
+# These are not usually modified.
+user.timezone=GMT 
+org.cougaar.core.cluster.startTime=08/10/2005
+csmart.log.severity=PROBLEM 
+org.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0 
+org.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
 
