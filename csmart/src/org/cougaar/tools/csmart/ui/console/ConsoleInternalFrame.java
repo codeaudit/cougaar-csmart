@@ -960,11 +960,11 @@ public class ConsoleInternalFrame extends JInternalFrame {
       entries.add(sb.toString());
     }
     JList plugInsList = new JList(entries.toArray());
-    JScrollPane jsp = new JScrollPane(plugInsList);
-    jsp.setMinimumSize(new Dimension(50, 50));
-    // FIXME: Don't force entire content to fit horizontally
-    // And add a horizontal scroll-bar if necessary
-    // Bug 1525
+    JScrollPane jsp = 
+      new JScrollPane(plugInsList, 
+                      ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                      ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+    jsp.setPreferredSize(new Dimension(400, 100));
     JPanel agentInfoPanel = new JPanel();
     agentInfoPanel.setLayout(new GridBagLayout());
     plugInsList.setBackground(agentInfoPanel.getBackground());
@@ -977,9 +977,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           new Insets(10, 0, 5, 5),
                                           0, 0));
     agentInfoPanel.add(jsp,
-                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
-                                          GridBagConstraints.HORIZONTAL,
+                                          GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     JOptionPane.showMessageDialog(this, agentInfoPanel, 
