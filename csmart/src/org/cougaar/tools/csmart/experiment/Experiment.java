@@ -1,3 +1,23 @@
+/* 
+ * <copyright>
+ * Copyright 2003 BBNT Solutions, LLC
+ * under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
+
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the Cougaar Open Source License as published by
+ * DARPA on the Cougaar Open Source Website (www.cougaar.org).
+
+ * THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
+ * PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
+ * IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, AND WITHOUT
+ * ANY WARRANTIES AS TO NON-INFRINGEMENT.  IN NO EVENT SHALL COPYRIGHT
+ * HOLDER BE LIABLE FOR ANY DIRECT, SPECIAL, INDIRECT OR CONSEQUENTIAL
+ * DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE OF DATA OR PROFITS,
+ * TORTIOUS CONDUCT, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THE COUGAAR SOFTWARE.
+ * </copyright>
+ */
 package org.cougaar.tools.csmart.experiment;
 
 import org.cougaar.core.node.Node;
@@ -23,22 +43,25 @@ import java.awt.*;
  *
  */
 public interface Experiment extends ModifiableComponent {
+  String EXPERIMENT_ID = "org.cougaar.experiment.id";
   String PERSISTENCE_ENABLE = "org.cougaar.core.persistence.enable";
   String PERSIST_CLEAR = "org.cougaar.core.persistence.clear";
   String TIMEZONE = "user.timezone";
   String AGENT_STARTTIME = "org.cougaar.core.agent.startTime";
   String COMPLAININGLP_LEVEL = "org.cougaar.planning.ldm.lps.ComplainingLP.level";
+  // Used by AppServer
   String CONTROL_PORT = "org.cougaar.control.port";
+
   String ENV_DISPLAY = "env.DISPLAY";
   String BOOTSTRAP_CLASS = "java.class.name";
   String NAME_SERVER = "org.cougaar.name.server";
   String NODE_NAME = "org.cougaar.node.name";
   /** When true, if CSMART dies, the society does not die **/
   String AS_SWALLOW_ERRORS = "org.cougaar.tools.server.swallowOutputConnectionException";
-  String AS_SWALLOW_ERRORS_DFLT = "true";
   /** Which initialization method should we use. DB means the CSMART DB **/
   String INITIALIZER_PROP = Node.INITIALIZER_PROP;
 
+  // Default values:
   String PERSISTENCE_DFLT = "false";
   String PERSIST_CLEAR_DFLT = "true";
   String TIMEZONE_DFLT = "GMT";
@@ -50,8 +73,8 @@ public interface Experiment extends ModifiableComponent {
   String NAME_SERVER_PORTS = "8888:5555";
   String DEFAULT_BOOTSTRAP_CLASS = "org.cougaar.bootstrap.Bootstrapper";
   String DEFAULT_NODE_CLASS = "org.cougaar.core.node.Node";
+  String AS_SWALLOW_ERRORS_DFLT = "true";
   String PROP_PREFIX = "PROP$";
-  String EXPERIMENT_ID = "org.cougaar.experiment.id";
 
   /**
    * Adds a society, as a <code>SocietyComponent</code> to the experiment.  A society contains
