@@ -137,7 +137,14 @@ minitestconfig split among those machines, and ensure that that works
 - If running a database society, be sure that you can connect to the
 database using the appropriate username and password from a command
 line tool.
+- If a running Node in an Experiment contains the exception:
+Xlib: connection to "servername" refused by server
+Xlib: client is not authorized to connect to server
 
+Java.lang.InternalError: can't connect to X11 window server using "xxx" as the 
+display value.
+
+You forgot to run 'xhost +' in the X Server on the machine running CSMART.
 
 Viewing Metrics Results
 - The Scalability society may not write any metrics until it has
