@@ -1152,7 +1152,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   public void save() {
-    if (!modified) {
+    if (false && !modified) {
       JOptionPane.showMessageDialog(this, "No modifications were made.");
       return;
     }
