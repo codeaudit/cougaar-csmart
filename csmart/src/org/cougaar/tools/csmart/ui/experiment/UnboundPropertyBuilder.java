@@ -204,7 +204,7 @@ public class UnboundPropertyBuilder extends JPanel {
     rightPanel.add(new JLabel("Unbound Properties", SwingConstants.CENTER), 
 		   BorderLayout.NORTH);
     splitPane.setRightComponent(rightPanel);
-    splitPane.setLeftComponent(tree);
+    splitPane.setLeftComponent(new JScrollPane(tree));
     setLayout(new BorderLayout());
     JPanel trialPanel = new JPanel();
     JLabel variationLabel = new JLabel("Variation Scheme:");
