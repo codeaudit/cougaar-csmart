@@ -646,6 +646,7 @@ public class CSMARTGraph extends Graph
         log.warn(
                  "CSMARTGraph: WARNING: Displaying property: " + name +
                  " of class: " + ((o != null) ? o.getClass().getName() : "null") +
+                 " for UID: " + UID +
                  " not supported");
       }
     }
