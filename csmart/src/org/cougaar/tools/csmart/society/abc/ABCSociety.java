@@ -89,9 +89,6 @@ public class ABCSociety
 
   private HashMap  commPerLevel = new HashMap(25);
 
-//   private List hosts = new ArrayList();
-//   private List nodes = new ArrayList();
-
   /**
    * Creates a new <code>ABCSociety</code> instance.
    *
