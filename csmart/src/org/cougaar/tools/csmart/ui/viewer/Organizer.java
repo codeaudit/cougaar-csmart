@@ -1399,7 +1399,7 @@ public class Organizer extends JScrollPane {
 
 
   private List checkForRecipes(String trialId, String exptId) {
-    ArrayList recipeList = new ArrayList();
+    List recipeList = new ArrayList();
 
     try {
       Connection conn = DBUtils.getConnection();
@@ -1407,13 +1407,27 @@ public class Organizer extends JScrollPane {
       substitutions.put(":trial_id", trialId);
       substitutions.put(":expt_id", exptId);
       Statement stmt = conn.createStatement();
+      Statement stmt2 = conn.createStatement();
       String query = DBUtils.getQuery("queryRecipes", substitutions);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
-        String recipe = rs.getString(1);
-        recipeList.add(recipe);
+        try {
+          DbRecipe dbRecipe = new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
+          String recipeId = rs.getString(1);
+          substitutions.put(":recipe_id", recipeId);
+          String query2 = DBUtils.getQuery("queryRecipeProperties", substitutions);
+          ResultSet rs2 = stmt2.executeQuery(query2);
+          while(rs2.next()) {
+            dbRecipe.props.put(rs2.getString(1), rs2.getString(2));
+          }
+          rs2.close();
+          recipeList.add(dbRecipe);
+        } catch (ClassNotFoundException cnfe) {
+          System.err.println(cnfe + ": for recipe");
+        }
       }
       rs.close();
+      stmt2.close();
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
@@ -1424,35 +1438,19 @@ public class Organizer extends JScrollPane {
     return recipeList;
   }
 
-  private void setRecipeComponentProperties(String trialId, String recipeId, RecipeComponent mc) {
-    Map substitutions = new HashMap();
-
-    substitutions.put(":trial_id", trialId);
-    substitutions.put(":recipe_id", recipeId);
-
-    try {
-      Connection conn = DBUtils.getConnection();
-      Statement stmt = conn.createStatement();
-      String query = DBUtils.getQuery("queryRecipeProperties", substitutions);
-
-      ResultSet rs = stmt.executeQuery(query);
-      while(rs.next()) {
-        String propname = rs.getString(1);
-        //        System.out.println("Have Property: " + propname);
-        Property prop = mc.getProperty(propname);
+  private void setRecipeComponentProperties(DbRecipe dbRecipe, RecipeComponent mc) {
+    for (Iterator i = dbRecipe.props.keySet().iterator(); i.hasNext(); ) {
+      try {
+        String propName = (String) i.next();
+        String propValue = (String) dbRecipe.props.get(propName);
+        Property prop = mc.getProperty(propName);
         Class propClass = prop.getPropertyClass();
         Constructor constructor = propClass.getConstructor(new Class[] {String.class});
-        Object value = constructor.newInstance(new Object[] {rs.getString(2)});
+        Object value = constructor.newInstance(new Object[] {propValue});
         prop.setValue(value);
+      } catch (Exception e) {
+        System.err.println("[setRecipeComponentProperties] Caught exception: " + e);
       }
-      rs.close();
-      stmt.close();
-      conn.close();   
-    } catch (SQLException se) {
-      System.err.println("Caught SQL exception: " + se);
-      se.printStackTrace();
-    } catch (Exception e ) {
-      System.err.println("[setRecipeComponentProperties] Caught exception: " + e);
     }
   }
 
@@ -1488,19 +1486,15 @@ public class Organizer extends JScrollPane {
                                            experimentId, trialId);
     experiment.setCloned(isCloned);
     List recipes = checkForRecipes(trialId, experimentId);
-    if( recipes.size() != 0 ) {
+    if (recipes.size() != 0) {
       Iterator metIter = recipes.iterator();
-      while( metIter.hasNext() ) {
-        String dbMet = (String)metIter.next();
-        for(int i=0; i < metComboItems.length; i++) {
-          ComboItem item = (ComboItem)metComboItems[i];
-          if(dbMet.equals(item.name)) {
-            RecipeComponent mc = createMet(dbMet, item.cls);
-            setRecipeComponentProperties(trialId, dbMet, mc);
-            experiment.addRecipe(mc);
-            addRecipeToWorkspace(mc, node);
-            break;
-          }
+      while (metIter.hasNext()) {
+        DbRecipe dbRecipe = (DbRecipe) metIter.next();
+        RecipeComponent mc = createMet(dbRecipe.name, dbRecipe.cls);
+        setRecipeComponentProperties(dbRecipe, mc);
+        experiment.addRecipe(mc);
+        if (!recipeNames.contains(mc.getRecipeName())) {
+          addRecipeToWorkspace(mc, node);
         }
       }
     }
@@ -2149,6 +2143,12 @@ public class Organizer extends JScrollPane {
     }
     public String toString() {
       return name;
+    }
+  }
+  private static class DbRecipe extends ComboItem {
+    public Map props = new TreeMap();
+    public DbRecipe(String name, Class cls) {
+      super(name, cls);
     }
   }
 }
