@@ -736,22 +736,23 @@ public class CSMARTConsole extends JFrame {
         } else
           // create and display iconified GLSClient
           // if its servlet exists
-          SwingUtilities.invokeLater(new Runnable() {
-              public void run() {
-                findServlet();
-                JInternalFrame jif = 
-                  new JInternalFrame("GLS", true, false, true, true);
-                jif.getContentPane().add(new GLSClient(getOPlanAgentURL()));
-                jif.setSize(350, 350);
-                jif.setLocation(0, 0);
-                jif.setVisible(true);
-                desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
-                try {
-                  jif.setIcon(true);
-                } catch (PropertyVetoException e) {
+          if(findServlet()) {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                  JInternalFrame jif = 
+                    new JInternalFrame("GLS", true, false, true, true);
+                  jif.getContentPane().add(new GLSClient(getOPlanAgentURL()));
+                  jif.setSize(350, 350);
+                  jif.setLocation(0, 0);
+                  jif.setVisible(true);
+                  desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
+                  try {
+                    jif.setIcon(true);
+                  } catch (PropertyVetoException e) {
+                  }
                 }
-              }
-            });
+              });
+          }
       }
     };
     starting = true;
@@ -796,9 +797,10 @@ public class CSMARTConsole extends JFrame {
 
   private boolean hasServlet(AgentComponentData cdata) {
     String[] names = cdata.getPluginNames();
-    for (int i = 0; i < names.length; i++) 
+    for (int i = 0; i < names.length; i++) {
       if (names[i].endsWith("org.cougaar.mlm.plugin.organization.GLSInitServlet"))
         return true;
+    }
     return false;
   }
 
