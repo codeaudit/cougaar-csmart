@@ -190,14 +190,6 @@ public class CSMART extends JFrame {
       log.shout(writeDebug());
     }
 
-    String hostName = "";
-    try {
-      InetAddress myAddr = InetAddress.getLocalHost();
-      hostName = myAddr.getHostName();
-    } catch (Exception e) {
-    }
-    listenerId = CSMART_LISTENER + hostName + "-" +
-      new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
     resultDir = initResultDir();
 
     organizer = new Organizer(this);
@@ -225,6 +217,18 @@ public class CSMART extends JFrame {
   }
 
   public static String getNodeListenerId() {
+    if(listenerId == null) {
+      String hostName = "";
+      try {
+        InetAddress myAddr = InetAddress.getLocalHost();
+        hostName = myAddr.getHostName();
+      } catch (Exception e) {
+        // Safe to ignore.  Will just have an empty hostname.
+      }
+
+      listenerId = CSMART_LISTENER + hostName + "-" +
+          new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+    }
     return listenerId;
   }
 
