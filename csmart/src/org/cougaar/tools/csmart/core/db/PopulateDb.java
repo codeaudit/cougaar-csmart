@@ -59,6 +59,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  * the configuration database with some or all of the components
  * described by the data. It can save just a society, or an experiment.
  **/
+
 public class PopulateDb extends PDbBase {
   private String exptId;
   private String trialId;
@@ -2933,17 +2934,21 @@ public class PopulateDb extends PDbBase {
    **/
   private String getComponentLibId(ComponentData data) {
     if (data == null) return sqlQuote(null);
-    String componentType = data.getType();
-    if (componentType.equals(ComponentData.NODE) ||
-        componentType.equals(ComponentData.HOST) ||
-        componentType.equals(ComponentData.SOCIETY) ||
-        componentType.equals(ComponentData.AGENT)) {
-      return sqlQuote(getComponentAlibId(data));
-    } else {
-      //ComponentData parent = data.getParent();
-      //    return sqlQuote(componentType + "|" + getFullName(data));
-      return sqlQuote(componentType + "|" + data.getClassName());
+    String result = data.getLibID();
+    if(result == null) {
+      String componentType = data.getType();
+      if (componentType.equals(ComponentData.NODE) ||
+          componentType.equals(ComponentData.HOST) ||
+          componentType.equals(ComponentData.SOCIETY) ||
+          componentType.equals(ComponentData.AGENT)) {
+        return sqlQuote(getComponentAlibId(data));
+      } else {
+        //ComponentData parent = data.getParent();
+        //    return sqlQuote(componentType + "|" + getFullName(data));
+        result = componentType + "|" + data.getClassName();
+      }
     }
+    return sqlQuote(result);
   }
   
   private String getComponentPriority(ComponentData data) {
