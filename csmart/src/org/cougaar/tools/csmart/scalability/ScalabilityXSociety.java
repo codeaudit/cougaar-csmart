@@ -321,14 +321,17 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
   }
 
   private void setProviderCount() {
+    //    System.err.println(this + " in setProviderCount");
     int[] agentCount = (int[]) getProperty(PROP_AGENTCOUNT).getValue();
     int nLevels = getLevelCount();
     int providerCount = 0;
     for (int i = 0; i < nLevels; i++) {
       // AMH - dont access spot in array equal to length, only to length-1
+      //providerCount += agentCount[Math.min(i, agentCount.length)];
       providerCount += agentCount[Math.min(i, agentCount.length - 1)];
     }
     if (propProviderCount != null) {
+      //System.err.println("Setting new val " + providerCount);
       propProviderCount.setValue(new Integer(providerCount));
     }
   }
