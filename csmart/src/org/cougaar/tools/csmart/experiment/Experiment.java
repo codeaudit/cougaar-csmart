@@ -1915,6 +1915,18 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	}
       }
 
+
+      // Are we allowing complex Recipe target queries that depend on the previous
+      // actions of earlier recipes on Plugins, Binders, etc?
+      boolean doComplex = (System.getProperty("org.cougaar.tools.csmart.allowComplexRecipeQueries", "false").equalsIgnoreCase("true"));
+
+      if (! doComplex) {
+	// Should this be turned down to INFO level? Or perhaps only after people have gotten used
+	// to it?
+	if (log.isWarnEnabled())
+	  log.warn("saveToDb: Not allowing complex recipe target queries. Some queries using Agent contents or relationships may not work. Queries based on Agent, Node, or Host names and assignments, and Community information will work. If your recipe fails to apply correctly, try un-commenting the appropriate line in the CSMART startup script.");
+      }
+
       // then give everyone a chance to modify what they've collectively produced
       for (int i = 0, n = components.size(); i < n; i++) {
         BaseComponent soc = (BaseComponent) components.get(i);
@@ -1931,7 +1943,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	// later recipes can look at these changes to decide what to do.
 	// If not though, and we're only looking at HNA data and perhaps
 	// CMT data, plus COMM data, then these extra saves are not necessary
-	if (System.getProperty("org.cougaar.tools.csmart.allowComplexRecipeQueries", "false").equalsIgnoreCase("true")) {  
+	if (doComplex) {
 	  try {
 	    // Incrementally save
 	    // so that later recipes have the benefit
@@ -1946,16 +1958,13 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 	    }
 	    pdb.populateCSA(completeSociety);
 	  }
-	} else {
-	  if (log.isWarnEnabled())
-	    log.warn("saveToDb not allowing complex recipe queries. Only queries based on Agent names, Node names, Host names, and community information, and non-recipe component information will work.");
 	}
       } // end of loop over components to do mod
 
       // If we did not iteratively save above, must do a save here
-      if (! System.getProperty("org.cougaar.tools.csmart.allowComplexRecipeQueries", "false").equalsIgnoreCase("true")) {
-	if (log.isWarnEnabled()) 
-	  log.warn("saveToDb now save all modifications");
+      if (! doComplex) {
+	if (log.isInfoEnabled()) 
+	  log.info("saveToDb: Now saving all modifications at once.");
 	try {
 	  // Incrementally save
 	  // so that later recipes have the benefit
