@@ -896,9 +896,29 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    */
   public void setName(String newName) {
     // If name is same, don't fire modification
-    if(getExperimentName().equals(newName))
+    if(getExperimentName().equals(newName) || newName == null || newName.equals(""))
       return;
+
+    if (log.isDebugEnabled()) {
+      log.debug("Change expt name from " + getExperimentName() + " to " + newName);
+    }
     super.setName(newName);
+
+    // If the experiment isnt otherwise modified, and we can save
+    // to the DB, then do so, and dont mark the experiment
+    // as modified.
+    if (! modified && expID != null) {
+      try {
+	PopulateDb.changeExptName(expID, newName);
+      } catch (Exception e) {
+	if (log.isErrorEnabled()) {
+	  log.error("setName: error setting name in DB", e);
+	}
+      } finally {
+	return;
+      }
+    }
+
     fireModification();
   }
 
@@ -927,6 +947,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @return the copy of the experiment.
    */
   public ModifiableComponent copy(String uniqueName) {
+    if (log.isDebugEnabled()) {
+      log.debug("Experiment copying " + getExperimentName() + " into new name " + uniqueName);
+    }
     Experiment experimentCopy = null;
     if (DBUtils.dbMode) 
       experimentCopy = new Experiment(uniqueName, expID, trialID);
@@ -942,10 +965,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       ModifiableComponent copiedSocietyComponent = null;
 
       // FIXME: USe a name based on the original society!!
-      copiedSocietyComponent = society.copy("Society for " + uniqueName);
+      //      copiedSocietyComponent = society.copy("Society for " + uniqueName);
+      copiedSocietyComponent = society.copy(society.getShortName() + " copy");
       if (copiedSocietyComponent != null) {
-        // FIXME: Must save the copied society to the DB!
-	//FIXME !!
+        // FIXME: Must save the copied society to the DB? I think the 
+	// society does it for me...
         experimentCopy.addComponent(copiedSocietyComponent);
       }
     }
@@ -955,7 +979,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       ModifiableComponent mc = getRecipeComponent(i);
       ModifiableComponent copiedComponent = null;
       // FIXME: USe a name based on the original recipe!!
-      copiedComponent = mc.copy("Recipe for " + uniqueName);
+      //      copiedComponent = mc.copy("Recipe for " + uniqueName);
+      copiedComponent = mc.copy(mc.getShortName() + " copy");
       if (copiedComponent != null) {
         experimentCopy.addComponent(copiedComponent);
       }
