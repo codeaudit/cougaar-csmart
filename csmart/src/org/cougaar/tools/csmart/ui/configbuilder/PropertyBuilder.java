@@ -28,7 +28,7 @@ import java.net.URL;
 import java.sql.SQLException;
 
 import org.cougaar.tools.csmart.ui.Browser;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
@@ -38,7 +38,7 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
  */
 public class PropertyBuilder extends JFrame implements ActionListener {
   private PropertyEditorPanel propertyEditor;
-  private ModifiableConfigurableComponent configComponent;
+  private ModifiableComponent configComponent;
   private boolean isEditable; // remember if society was editable on entering
   private static final String FILE_MENU = "File";
   private static final String EXIT_MENU_ITEM = "Exit";
@@ -57,7 +57,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
 
   private JMenuItem saveMenuItem;
 
-  public PropertyBuilder(ModifiableConfigurableComponent society) {
+  public PropertyBuilder(ModifiableComponent society) {
     // initialize menus and gui panels
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
@@ -165,14 +165,15 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     }
   }
 
-  public void reinit(ModifiableConfigurableComponent newModifiableConfigurableComponent) {
-    setConfigComponent(newModifiableConfigurableComponent);
+  public void reinit(ModifiableComponent newModifiableComponent) {
+    setConfigComponent(newModifiableComponent);
     propertyEditor.reinit(configComponent);
   }
 
-  private void setConfigComponent(ModifiableConfigurableComponent newConfigComponent) {
+  private void setConfigComponent(ModifiableComponent newConfigComponent) {
     configComponent = newConfigComponent;
     isEditable = configComponent.isEditable();
     saveMenuItem.setEnabled(configComponent instanceof RecipeComponent);
   }
+
 }

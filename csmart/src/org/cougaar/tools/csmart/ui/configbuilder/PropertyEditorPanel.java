@@ -44,6 +44,7 @@ import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.InvalidPropertyValueException;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
@@ -70,10 +71,10 @@ public class PropertyEditorPanel extends JPanel
   Hashtable propertyToComponent = new Hashtable();
   Hashtable propertyToLabel = new Hashtable();
   boolean isEditable;
-  ModifiableConfigurableComponent[] compsToConfig = null; // support an array of things to edit/view
-  ModifiableConfigurableComponent componentToConfigure = null;
+  ModifiableComponent[] compsToConfig = null; // support an array of things to edit/view
+  ModifiableComponent componentToConfigure = null;
 
-  public PropertyEditorPanel(ModifiableConfigurableComponent configComp) {
+  public PropertyEditorPanel(ModifiableComponent configComp) {
     // create the configComp panel
     configCompPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     setLayout(new BorderLayout());
@@ -90,7 +91,7 @@ public class PropertyEditorPanel extends JPanel
    *
    * @param configComps a <code>ModifiableConfigurableComponent[]</code> array of components to edit - usually really just to vie
    */
-  public PropertyEditorPanel(ModifiableConfigurableComponent[] configComps) {
+  public PropertyEditorPanel(ModifiableComponent[] configComps) {
     // create the configComp panel
     configCompPanel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
     setLayout(new BorderLayout());
@@ -113,7 +114,7 @@ public class PropertyEditorPanel extends JPanel
    * Set configComp component to edit; used to re-use a running editor
    * to edit a different configComp.
    */
-  public void reinit(ModifiableConfigurableComponent newModifiableConfigurableComponent) {
+  public void reinit(ModifiableComponent newModifiableConfigurableComponent) {
     // restore editable flag on previous configComp
     if (isEditable) {
       for (int i = 0; i < compsToConfig.length; i++) {
