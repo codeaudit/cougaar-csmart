@@ -1624,6 +1624,11 @@ public class PopulateDb extends PDbBase {
     return true;
   } // end of fixAssemblies
 
+  public void setAndCleanModRecipes(List recipes) throws SQLException, IOException {
+    executeUpdate(dbp.getQuery("cleanTrialRecipe", substitutions));
+    setModRecipes(recipes);
+  }
+
   /**
    * Add the given List of recipes to the experiment in order.
    *

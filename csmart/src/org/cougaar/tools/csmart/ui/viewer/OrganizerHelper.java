@@ -185,7 +185,7 @@ public class OrganizerHelper {
 	  for (int i = 0; i < experiment.getRecipeComponentCount(); i++) {
 	    rcs.add(experiment.getRecipeComponent(i));
 	  }
-	  pdb.setModRecipes(rcs);
+	  pdb.setAndCleanModRecipes(rcs);
 	} catch (Exception e) {
 	  if (log.isErrorEnabled()) {
 	    log.error("Problem saving recipes on experiment " + experiment.getExperimentID(), e);
