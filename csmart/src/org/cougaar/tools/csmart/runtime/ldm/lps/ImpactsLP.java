@@ -33,11 +33,10 @@ import org.cougaar.core.domain.LogPlanLogicProvider;
 import org.cougaar.core.domain.MessageLogicProvider;
 import org.cougaar.core.util.UniqueObject;
 import org.cougaar.planning.ldm.plan.Directive;
+import org.cougaar.core.service.LoggingService;
 
 import org.cougaar.tools.csmart.runtime.ldm.event.RealWorldEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.InfrastructureEvent;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.util.log.Logger;
 
 /**
  * LP to transfer <code>RealWorldEvent</code>s and <code>InfrastructureEvent</code>s
@@ -50,15 +49,11 @@ import org.cougaar.util.log.Logger;
  */
 public class ImpactsLP extends LogPlanLogicProvider implements MessageLogicProvider, EnvelopeLogicProvider {
 
-  private transient Logger log;
+  private transient LoggingService log;
 
-  public ImpactsLP(LogPlanServesLogicProvider logplan, ClusterServesLogicProvider cluster) {
+  public ImpactsLP(LogPlanServesLogicProvider logplan, ClusterServesLogicProvider cluster, LoggingService log) {
     super(logplan, cluster);
-    createLogger();
-  }
-
-  private void createLogger() {
-    log = CSMART.createLogger(this.getClass().getName());
+    this.log = log;
   }
 
   /**
