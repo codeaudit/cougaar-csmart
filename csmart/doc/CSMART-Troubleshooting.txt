@@ -131,7 +131,7 @@ on your org.cougaar.config.path as specified in your AppServer
 server.props file on each machine on which you will run part of this
 society. For example, to run small-135 through CSMART, you will still
 have to have available on your org.cougaar.config.path the various
-'.xml' files found in CIP/configs/small-135, but your society will not
+'.xml' files found in CIP/configs/examples/small-135, but your society will not
 use the '.dat' or '.ini' files. 
 
 - If while running minitestconfig you get an error
@@ -255,8 +255,7 @@ specifying the location of Excel
 - Results files are not automatically retrieved until you "stop" the society.
 
 Compiling CSMART
-- Compiling CSMART with Jikes 1.15 will result in VerifyErrors in a few classes.  To
-  avoid these errors, use Jikes 1.14.
+- Cougaar now uses asserts, so you should plan to compile with javac.
 
 MySQL Database issues
 - If you get SQL errors, claiming that a table does not exist, eg
