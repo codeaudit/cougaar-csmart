@@ -4,6 +4,13 @@ Release 10.3:
 This patch release includes updates to various 1AD configurations, and
 related changes to database table definitions.
 
+- Removed the domain data file Domain_MySQL.zip.  This file 
+  contained a sql script which loaded domain
+  data into the csmart configuration database.  This data
+  has been made into separate .csv files which are now loaded
+  simultaneously with the csmart configuration database via the
+  load script ./load_1ad_mysql.sh[bat]. 
+
 Release 10.2:
 This is a minor patch release, preparing for future work.
 
