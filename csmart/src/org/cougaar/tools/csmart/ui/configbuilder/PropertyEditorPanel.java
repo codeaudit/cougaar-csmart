@@ -96,14 +96,16 @@ public class PropertyEditorPanel extends JPanel
   PropertyTable propertyTable = null;
   JScrollPane tableScrollPane;
   // correspondence between configurable component and tree node
-  Hashtable componentToNode = new Hashtable();
-  Hashtable nodeToComponent = new Hashtable();
+  private Hashtable componentToNode = new Hashtable();
+  private Hashtable nodeToComponent = new Hashtable();
   Hashtable propertyToLabel = new Hashtable();
   boolean isEditable;
   ModifiableComponent componentToConfigure = null;
   private transient Logger log;
   // all property groups, including those created by user
   Vector propertyGroups = null;
+  // properties we're listening on, for cleanup
+  ArrayList listeningOnProperties = new ArrayList();
   // well known property groups
   Object [] wellKnownPropertyGroups = { 
     PropGroupData.ITEM_IDENTIFICATION,
@@ -374,6 +376,7 @@ public class PropertyEditorPanel extends JPanel
   private void addTableEntryForProperty(Property property) {
     propertyTable.addProperty(property);
     property.addPropertyListener(this);
+    listeningOnProperties.add(property);
   }
 
   /**
@@ -395,6 +398,12 @@ public class PropertyEditorPanel extends JPanel
       (ModifiableComponent)prop.getConfigurableComponent();
     PropertyTreeNode node = (PropertyTreeNode)componentToNode.get(cc);
     CompositeName name = prop.getName();
+    if (node == null) {
+      if (log.isErrorEnabled()) {
+        log.error("No node for component: " + cc);
+      }
+      return;
+    }
     if (node.addPropertyName(name)) {
       TreePath path = tree.getSelectionPath();
       if (path == null) return;
@@ -449,6 +458,7 @@ public class PropertyEditorPanel extends JPanel
   private void removeTableEntryForProperty(Property property) {
     propertyTable.removeProperty(property);
     property.removePropertyListener(this);
+    listeningOnProperties.remove(property);
   }
 
 
@@ -462,6 +472,7 @@ public class PropertyEditorPanel extends JPanel
   public void propertyValueChanged(PropertyEvent e) {
     Property p = e.getProperty();
     p.removePropertyListener(this);
+    listeningOnProperties.remove(p);
     int row = 
       ((PropTableModelBase)(propertyTable.getModel())).getRowForProperty(p);
     if (row != -1) {
@@ -474,6 +485,7 @@ public class PropertyEditorPanel extends JPanel
       Object valueInTable = propertyTable.getValueAt(row, 1);
       if (valueInTable.equals(value)) {
 	p.addPropertyListener(this);
+        listeningOnProperties.add(p);
 	return; // don't need to update
       }
       propertyTable.setValueAt(p.getValue(), row, 1);
@@ -481,6 +493,7 @@ public class PropertyEditorPanel extends JPanel
       propertyTable.repaint();
     }
     p.addPropertyListener(this);
+    listeningOnProperties.add(p);
   }
 
   public void propertyOtherChanged(PropertyEvent e) {
@@ -579,27 +592,27 @@ public class PropertyEditorPanel extends JPanel
     AgentComponent agentComponent = 
       (AgentComponent)new AgentUIComponent(name);
     // put the node in the tree before adding properties to it
+    society.addChild(agentComponent);
     PropertyTreeNode agentNode = createTreeNode(agentComponent, selNode);
     agentComponent.initProperties();
-    society.addChild(agentComponent);
     tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(agentNode));
-    addContainerComponent(agentComponent, "Binders");
-    addContainerComponent(agentComponent, "Plugins");
+    addContainerComponent(agentNode, agentComponent, "Binders");
+    addContainerComponent(agentNode, agentComponent, "Plugins");
     AssetComponent asset = (AssetComponent)new AssetUIComponent();
+    agentComponent.addChild(asset);
     PropertyTreeNode assetNode = createTreeNode(asset, agentNode);
     asset.initProperties();
-    agentComponent.addChild(asset);
-    addContainerComponent(asset, "Property Groups");
-    addContainerComponent(asset, "Relationships");
+    addContainerComponent(assetNode, asset, "Property Groups");
+    addContainerComponent(assetNode, asset, "Relationships");
   }
 
-  private void addContainerComponent(BaseComponent parent, String name) {
+  private void addContainerComponent(DefaultMutableTreeNode parentNode,
+                                     BaseComponent parent, String name) {
     ContainerComponent containerComponent = 
       (ContainerComponent)new ContainerBase(name);
-    createTreeNode(containerComponent, 
-       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
-    containerComponent.initProperties();
     parent.addChild(containerComponent);
+    createTreeNode(containerComponent, parentNode);
+    containerComponent.initProperties();
   }
 
   /**
@@ -701,10 +714,10 @@ public class PropertyEditorPanel extends JPanel
   private void addBaseComponent(BaseComponent bc) {
     DefaultMutableTreeNode selNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-    DefaultMutableTreeNode newNode = createTreeNode(bc, selNode);
-    bc.initProperties();
     BaseComponent parentBC = (BaseComponent)nodeToComponent.get(selNode);
     parentBC.addChild(bc);
+    DefaultMutableTreeNode newNode = createTreeNode(bc, selNode);
+    bc.initProperties();
     tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(newNode));
   }
 
@@ -882,6 +895,16 @@ public class PropertyEditorPanel extends JPanel
     int column = propertyTable.getEditingColumn();
     if (row != -1 && column != -1) 
       propertyTable.getCellEditor(row, column).stopCellEditing();
+  }
+
+  /**
+   * Remove this object as a listener on the configurable component.
+   */
+
+  public void exit() {
+    componentToConfigure.removePropertiesListener(this);
+    for (int i = 0; i < listeningOnProperties.size(); i++)
+      ((Property)listeningOnProperties.get(i)).removePropertyListener(this);
   }
 
   private void readObject(ObjectInputStream ois)
