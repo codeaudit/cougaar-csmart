@@ -32,6 +32,8 @@ package org.cougaar.tools.csmart.recipe;
  * @version 1.0
  */
 
-public interface ComplexRecipeComponent {
-  
+public interface ComplexRecipeComponent extends RecipeComponent {
+
+  public void addTargetQueryProperty();
+
 }// ComplexdRecipeComponent
