@@ -1,0 +1,84 @@
+<html>
+<head>
+<title>Basic Metric Help</title>
+</head>
+<body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+<h1>Basic Metric Configuration Help</h1>
+The Basic Metric collects rudimentary run-time performance metrics for any society to which it is added. The results can then be viewed in the Performance Analyzer.<br>
+<ul>
+<li>Max number of metric samples     [Integer, 0 - MAX]</li>
+<li>Metric sample interval           [Integer, seconds, 0 - 60]</li>
+<li>Metric start delay               [Integer, seconds, 0 -  MAX]</li>
+<li>Task Verb                        [String]</li>
+<li>Blackboard Statistics Service On/Off  [Integer, 0 or 1]</li>
+<li>Prototype Registry Service On/Off     [Integer, 0 or 1]</li>
+<li>Node Metrics Service On/Off     [Integer, 0 or 1]</li>
+<li>Message Stats Service On/Off     [Integer, 0 or 1]</li>
+<li>Message Watcher Service On/Off     [Integer, 0 or 1]</li>
+</ul>
+Throughout task production, metrics are collected for each agent.  Once the 
+agent is started, it will start producing metrics at 'Metrics: Start Delay' + 
+current time.  The agent will then continue to report its metrics at every 
+interval 'Metrics: Sample Interval' (seconds) until the requested number of metrics samples
+'Metrics: Maximum Number of Samples' are collected.<br>
+The remaining parameters allow you to customize which metrics are
+collected.<br>
+<b>FIXME!!!</b>
+Standard statistics always collected include:<br>
+Sample length in seconds<br>
+CPU seconds used by Node during sample<br>
+(NOTE: This CPU statistic required the separate CpuClock shared library,
+included with the scalability module.  See the Scalability module's install
+instructions for installing the CpuClock library. If you do not install
+this library, you will see a warning exception, which can be ignored.<br>
+<br>
+Memory used by Node in Megabytes<br>
+Total memory allocated to the Node in megabytes<br>
+<br>
+The Task Verb parameter allows you to request that the
+plugin count the tasks with the given Verb that go by.<br>
+It will also count the time since the first task with that Verb went by.<br>
+For example, use this to count the Transport tasks, or to see how long
+after a DetermineRequirements Task things get busy.<br>
+The three new statistics you get are:<br>
+Time since first Task with the Verb<br>
+Number of Tasks in this interval with the verb<br>
+Total Tasks seen with the verb<br>
+<br>
+Other statistics are gathered from the various services which provide
+measurements.<br>
+These statistics can be turned on/off via the additional optional 1/0 arguments.<br>
+By default however, only the basic set of statistics is gathered.<br>
+First, Blackboard statistics (off by default): <br>
+Count of Assets on this Agent's Blackboard<br>
+PlanElements on this Blackboard<br>
+Tasks on the Blackboard<br>
+Total Objects on this Blackboard<br>
+<br>
+Prototype Registry (off by default):<br>
+Cached Prototypes<br>
+Property Providers<br>
+Prototype Providers<br>
+<br>
+Node Metrics (off by default): <br>
+Active threads in the COUGAAR group (a per-Node stat)<br>
+Free memory (bytes) in this Node's allocation<br>
+Total memory (bytes) in this Node's allocation<br>
+<br>
+Then come some statistics recorded only if the MessageStatisticsService was requested,
+which is the default setting:<Br>
+Message Queue Length (a per-Node statistic)<br>
+MessageBytes Sent (per-Node)<br>
+Messages sent (per-Node)<br>
+<br>
+Message Watcher (off by default): <br>
+Directives received by this Agent<br>
+Directives sent<br>
+Notifications received by this Agent<br>
+Notifications sent by this Agent<br>
+<br>
+</body></html>
+
+
+
+
