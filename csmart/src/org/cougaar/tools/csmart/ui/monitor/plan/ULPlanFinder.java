@@ -370,7 +370,7 @@ public class ULPlanFinder extends JDialog {
       final JLabel fromLabel = new JLabel("From: ");
       final JLabel toLabel = new JLabel("To: ");
       allTimeButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent evt) {
           allTimeFilter = true;
           fromLabel.setEnabled(false);
           startTimeField.setEnabled(false);
@@ -381,7 +381,7 @@ public class ULPlanFinder extends JDialog {
       JRadioButton specificTimesButton = new JRadioButton();
       specificTimesButton.setFocusPainted(false);
       specificTimesButton.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent evt) {
           allTimeFilter = false;
           fromLabel.setEnabled(true);
           startTimeField.setEnabled(true);
