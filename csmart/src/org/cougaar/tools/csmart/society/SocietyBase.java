@@ -65,6 +65,8 @@ public abstract class SocietyBase
   protected transient Logger log;
 
   protected String assemblyId;
+  public String oldAssemblyId;
+  public boolean modified = true;
 
   /**
    * Constructs a <code>SocietyBase</code> object
@@ -284,8 +286,17 @@ public abstract class SocietyBase
     String currAssID = null;
     // FIXME: How do I get that old assembly ID?
     // Is it the assemblyId in the current assemblyid slot?
-    oldCMTAsbid = getAssemblyId();
-    
+    if (oldAssemblyId != null)
+      oldCMTAsbid = oldAssemblyId;
+    currAssID = getAssemblyId();
+
+    if (currAssID.startsWith("CMT")) {
+      if (log.isDebugEnabled()) {
+	log.debug("saveToDB not saving CMT society (" + getSocietyName() + ") with id " + currAssID + " and old ID " + oldCMTAsbid);
+      }
+      return false;
+    }
+
     // And what is my current assemblyID?
     // How do I know if it is different?
     // FIXME: Maybe I need a new
@@ -307,25 +318,57 @@ public abstract class SocietyBase
       }
       return false;
     }
+    modified = false;
     return true;
   }
   
   // Save the copy in the database before returning
+  /**
+   * Copy the given society, including the modified status.
+   * The copy will store the original AssemblyId in the oldAssemblyId slot.
+   *
+   * @param name a <code>String</code> new society name
+   * @return a <code>ModifiableComponent</code> society copy
+   */
   public ModifiableComponent copy(String name) {
     if (log.isDebugEnabled()) {
       log.debug("Copying society " + this.getSocietyName() + " with assembly " + getAssemblyId() + " into new name " + name);
     }
     ModifiableComponent component = super.copy(name);
+    ((SocietyBase)component).modified = this.modified;
 
     // copy the assembly ID - the one under which this societies'
     // data is currently in the DB, but must be copied
-    ((SocietyBase)component).setAssemblyId(getAssemblyId());
+    ((SocietyBase)component).oldAssemblyId = getAssemblyId();
 
-    // FIXME: If I do this here, what about sub-components that want to fix
-    // up the copy after using the base class?
-    if (component != null)
-      ((SocietyBase)component).saveToDatabase();
     return component;
   }
 
+  /**
+   * Copy this Society and save the copy to the database, under
+   * the given new name. If the save fails, the new society
+   * will be marked modified when this method returns
+   *
+   * @param name a <code>String</code> new society name
+   * @return a <code>ModifiableComponent</code> new society
+   */
+  public ModifiableComponent copyAndSave(String name) {
+    ModifiableComponent component = copy(name);
+    if (! ((SocietyBase)component).saveToDatabase()) {
+      ((SocietyBase)component).modified = true;
+      if (log.isWarnEnabled()) {
+	log.warn("Error saving copy of society " + getSocietyName());
+      }
+    }
+    return component;
+  }
+
+  /**
+   * Has this society been modified, such that a save would do something.
+   *
+   * @return a <code>boolean</code>, false if no save necessary
+   */
+  public boolean isModified() {
+    return modified;
+  }
 }// SocietyBase

@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.society.db;
 import java.io.FileFilter;
 import java.io.Serializable;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.URL;
 import java.util.*;
 import java.sql.SQLException;
@@ -30,18 +31,17 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyBase;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
-
-import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.ObjectInputStream;
 
 /**
  * A Society created from the CFW portion of the CSMART configuration
@@ -61,6 +61,11 @@ public class SocietyDBComponent
 
   private Map substitutions;
   private transient Logger log;
+
+  public SocietyDBComponent(String name) {
+    super(name);
+    createLogger();
+  }
 
   public SocietyDBComponent(String name, String assemblyID) {
     super(name);
@@ -144,13 +149,26 @@ public class SocietyDBComponent
   }
 
   public ModifiableComponent copy(String name) {
+    // FIXME: I'd like to do the normal copy,
+    // but my children only get created in initproperties
+    // if I have an assemblyId, and by reading from the DB, so I don't
+    // know if it would work
+    //ModifiableComponent component = super.copy(name);
     if (log.isDebugEnabled()) {
       log.debug("Copying society " + this.getSocietyName() + " with assembly " + getAssemblyId() + " into new name " + name);
     }
     String assemblyID = getAssemblyId();
     ModifiableComponent sc = new SocietyDBComponent(name, assemblyID);
     sc.initProperties();
-    ((SocietyDBComponent)sc).saveToDatabase();
+
+    // If I re-init from DB, it is not modified, per se.
+    // But we're putting it under a new assembly ID, and not saving it
+    // so to that extent, it is modified.
+    // Otherwise, set to the old value (= this.modified)
+    ((SocietyBase)sc).modified = true;
+    ((SocietyBase)sc).oldAssemblyId = assemblyID;
+    ((SocietyBase)sc).setAssemblyId(null); // so it will save under new ID
+
     return sc;
   }
 

@@ -43,7 +43,8 @@ public class SocietyCDataComponent extends SocietyBase {
     // create agents from cdata
     ArrayList agentData = new ArrayList();
     ArrayList alldata = new ArrayList();
-    alldata.add(cdata);
+    if (cdata != null)
+      alldata.add(cdata);
     
     // FIXME: It'd be nice to deal with binders of Agents in here!!!
 

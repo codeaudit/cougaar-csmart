@@ -105,6 +105,16 @@ public interface SocietyComponent extends ModifiableComponent {
   boolean saveToDatabase();
 
   /**
+   * Copy this Society and save the copy to the database, under
+   * the given new name. If the save fails, the new society
+   * will be marked modified when this method returns
+   *
+   * @param name a <code>String</code> new society name
+   * @return a <code>ModifiableComponent</code> new society
+   */
+  ModifiableComponent copyAndSave(String name);
+
+  /**
    * Set the assembly id for this Society.
    * @param assemblyId the assembly id for this Society
    */
@@ -115,4 +125,11 @@ public interface SocietyComponent extends ModifiableComponent {
    * @return a <code>String</code> which is the assembly id for this Society
    */
   String getAssemblyId();
+
+  /**
+   * Has this society been modified, such that a save would do something.
+   *
+   * @return a <code>boolean</code>, false if no save necessary
+   */
+  boolean isModified();
 }
