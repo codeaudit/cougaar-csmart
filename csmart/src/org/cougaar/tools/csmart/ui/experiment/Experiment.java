@@ -787,7 +787,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       ComponentName pname = (ComponentName) it.next();
       Property prop = cp.getProperty(pname);
       if (prop != null) {
-        cd.addParameter(PROP_PREFIX + pname.last() + "=" + prop.getValue());
+        Object pvalue = prop.getValue();
+        if (pvalue instanceof String)
+          cd.addParameter(PROP_PREFIX + pname.last() + "=" + pvalue);
       }
     }
   }
