@@ -18,7 +18,7 @@
  * PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.core.db;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -48,6 +48,9 @@ import org.cougaar.util.DBProperties;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.DBConnectionPool;
 
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 /**
  * This class takes a structure of ComponentData objects and populates
  * the configuration database with some or all of the components

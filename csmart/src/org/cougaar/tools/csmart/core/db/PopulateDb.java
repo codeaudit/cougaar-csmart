@@ -18,7 +18,7 @@
  * PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.core.db;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -67,7 +67,7 @@ public class PopulateDb extends PDbBase {
     private Set alibComponents = new HashSet();
     private Map componentArgs = new HashMap();
     private boolean writeEverything = false;
-    private ConflictHandler conflictHandler;
+    private DBConflictHandler conflictHandler;
     private boolean keepAll = false;
     private boolean overwriteAll = false;
 
@@ -182,7 +182,7 @@ public class PopulateDb extends PDbBase {
     public PopulateDb(String cmtType, String hnaType, String csmiType,
                       String experimentName,
                       String exptId, String trialId, boolean createNew,
-                      ConflictHandler ch)
+                      DBConflictHandler ch)
         throws SQLException, IOException
     {
         super();
@@ -569,17 +569,17 @@ public class PopulateDb extends PDbBase {
         if (keepAll) return false;
         if (conflictHandler == null) return false;
         switch (conflictHandler.handleConflict(msg,
-                                               ConflictHandler.STANDARD_CHOICES,
-                                               ConflictHandler.STANDARD_CHOICES[ConflictHandler.KEEP]))
+                                               DBConflictHandler.STANDARD_CHOICES,
+                                               DBConflictHandler.STANDARD_CHOICES[DBConflictHandler.KEEP]))
             {
-            case ConflictHandler.KEEP:
+            case DBConflictHandler.KEEP:
                 return false;
-            case ConflictHandler.OVERWRITE:
+            case DBConflictHandler.OVERWRITE:
                 return true;
-            case ConflictHandler.KEEP_ALL:
+            case DBConflictHandler.KEEP_ALL:
                 keepAll = true;
                 return false;
-            case ConflictHandler.OVERWRITE_ALL:
+            case DBConflictHandler.OVERWRITE_ALL:
                 overwriteAll = true;
                 return true;
             }
@@ -1054,21 +1054,21 @@ public class PopulateDb extends PDbBase {
         }
     }
 
-    public interface ConflictHandler {
-        Object KEEP_CHOICE = "Keep Existing Definition";
-        Object OVERWRITE_CHOICE = "Overwrite";
-        Object KEEP_ALL_CHOICE = "Keep All";
-        Object OVERWRITE_ALL_CHOICE = "Overwrite All";
-        Object[] STANDARD_CHOICES = {
-            KEEP_CHOICE,
-            OVERWRITE_CHOICE,
-            KEEP_ALL_CHOICE,
-            OVERWRITE_ALL_CHOICE
-        };
-        int KEEP = 0;
-        int OVERWRITE = 1;
-        int KEEP_ALL = 2;
-        int OVERWRITE_ALL = 3;
-        int handleConflict(Object msg, Object[] options, Object defaultOption);
-    }
+//      public interface ConflictHandler {
+//          Object KEEP_CHOICE = "Keep Existing Definition";
+//          Object OVERWRITE_CHOICE = "Overwrite";
+//          Object KEEP_ALL_CHOICE = "Keep All";
+//          Object OVERWRITE_ALL_CHOICE = "Overwrite All";
+//          Object[] STANDARD_CHOICES = {
+//              KEEP_CHOICE,
+//              OVERWRITE_CHOICE,
+//              KEEP_ALL_CHOICE,
+//              OVERWRITE_ALL_CHOICE
+//          };
+//          int KEEP = 0;
+//          int OVERWRITE = 1;
+//          int KEEP_ALL = 2;
+//          int OVERWRITE_ALL = 3;
+//          int handleConflict(Object msg, Object[] options, Object defaultOption);
+//      }
 }

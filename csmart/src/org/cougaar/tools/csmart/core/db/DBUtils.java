@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.societies.database;
+package org.cougaar.tools.csmart.core.db;
 
 import java.util.Map;
 import java.util.HashMap;
