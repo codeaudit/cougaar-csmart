@@ -16,5 +16,6 @@ PG_ATTRIBUTE_LIB_ID,PG_NAME,ATTRIBUTE_NAME,ATTRIBUTE_TYPE,AGGREGATE_TYPE,BLANK
 "MilitaryOrgPG|Hierarchy2525","MilitaryOrgPG","Hierarchy2525","String","SINGLE",
 "MilitaryOrgPG|IsReserve","MilitaryOrgPG","IsReserve","boolean","SINGLE",
 "MilitaryOrgPG|HomeLocation","MilitaryOrgPG","HomeLocation","queryGeolocLocation","SINGLE",
+"MilitaryOrgPG|RequestedEchelonOfSupport","MilitaryOrgPG","RequestedEchelonOfSupport","String","SINGLE",
 "CSSCapabilityPG|Capabilities","CSSCapabilityPG","Capabilities","CSSCapability","COLLECTION",
 "MaintenancePG|Level","MaintenancePG","Level","String","SINGLE",
