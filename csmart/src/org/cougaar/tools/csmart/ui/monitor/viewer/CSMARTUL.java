@@ -376,10 +376,10 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       else if (graphType.equals(CSMARTGraph.GRAPH_TYPE_SOCIETY))
 	new ULSocietyFrame(NamedFrame.AGENT + ": <" + fileName + ">", graph);
       else if (graphType.equals(CSMARTGraph.GRAPH_TYPE_THREAD))
-	new ULPlanFrame(NamedFrame.THREAD + ": <" + fileName + ">", graph, null);
+	new ULPlanFrame(NamedFrame.THREAD + ": <" + fileName + ">", graph, null, null);
       else if (graphType.equals(CSMARTGraph.GRAPH_TYPE_PLAN))
 	new ULPlanFrame(NamedFrame.PLAN + ": <" + fileName + ">", graph,
-			new ULPlanFilter(graph));
+			new ULPlanFilter(graph), null);
       else
 	JOptionPane.showMessageDialog(this, "Unknown graph type: " + graphType);
     }
@@ -533,6 +533,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       if (agents == null) {
 	agents = new Vector();
 	agents.addElement(agentName);
+        System.out.println("Adding agent name: " + agentName);
 	communityToAgents.put(communityName, agents);
       } else
 	agents.addElement(agentName);
@@ -649,7 +650,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 	(Window)new ULPlanFrame(NamedFrame.PLAN, 
 				new CSMARTGraph(nodeObjects, 
 						CSMARTGraph.GRAPH_TYPE_PLAN),
-				filter);
+				filter, communityToAgents);
       myWindows.add(w);
     }
   }
@@ -875,7 +876,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 	(Window)new ULPlanFrame(NamedFrame.PLAN, 
 				new CSMARTGraph(nodeObjects, 
 						CSMARTGraph.GRAPH_TYPE_PLAN),
-				new ULPlanFilter(communityToAgents));
+				new ULPlanFilter(communityToAgents), communityToAgents);
       myWindows.add(w);
     }
   }
