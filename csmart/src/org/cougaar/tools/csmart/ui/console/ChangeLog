@@ -1,0 +1,8 @@
+2001-11-07  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* CMT.java:
+	Fix deleteExperiment. Code assumed that trial ids had a particular
+	form. That form did not match trial ids assigned when clonging an
+	experiment prior to adding host-node-agent mappings and recipes.
+	Fix is to query the db for the trial id of the experiment.
+
