@@ -411,11 +411,28 @@ public class AppServerSupport {
    * @return list of NodeInfo objects for nodes to attach
    */
   public synchronized ArrayList getNodesToAttach() {
+    // Caller should ensure that it has the most up-to-date list of AppServers
+    // it wants
     if (appServers.size() == 0)
       return null;
     Set processNames = nodeToAppServer.keySet();
     if (processNames.size() == 0)
       return null;
+    // Avoid those that I'm already attached to
+    String[] pnames = (String[])processNames.toArray(new String[processNames.size()]);
+    for (int i = 0; i < pnames.length; i++) {
+      String pName = (String)pnames[i];
+      AppServerDesc desc = (AppServerDesc)nodeToAppServer.get(pName);
+      RemoteHost appServer = desc.appServer;
+      if (findListener(appServer, pName)) {
+	if (log.isDebugEnabled()) {
+	  log.debug("Skipping process we're already listening to: " + pName);
+	}
+	// We're already listening to this one
+	processNames.remove(pName);
+      }
+    }
+
     ArrayList results = new ArrayList();
     String[] attachToNodes = getNodesToAttach(new ArrayList(processNames));
     if (attachToNodes == null)
@@ -436,6 +453,13 @@ public class AppServerSupport {
       Properties properties = (Properties)pd.getJavaProperties();
       String nodeName = (String)properties.get(Experiment.NODE_NAME);
       String hostName = (String)properties.get(Experiment.NAME_SERVER);
+
+      // Must remove the port numbers...
+      int pStart = hostName.indexOf(':');
+      if (pStart != -1) {
+	hostName = hostName.substring(0, pStart).trim();
+      }
+
       java.util.List args = pd.getCommandLineArguments();
       results.add(new NodeInfo(appServer, nodeName, hostName,
                                processName,
