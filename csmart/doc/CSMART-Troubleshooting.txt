@@ -209,6 +209,16 @@ database, the table names may be uppercase in some instances. This
 will cause problems - you will need to reload your database, after
 setting the above parameter.
 
+- If on loading a society from the database into CSMART you see errors
+  like: 16:12:17,228 ERROR [DBUtils] - dbExecute: CREATE TEMPORARY TABLE
+tmp_v4_alib_component_"
+"SMALL_1AD_TRANS_STU_ST1359  AS SELECT DISTINCT GO.ORG_ID AS
+....
+
+this probably indicates a corrupted database due to
+carriage-return/newline issues on loading the CSMART configuration
+database. Try editing the file and removing excess ^Ms. See bug# 1321.
+
 Recipe Queries not available:
 - You have written your own recipe queries, but they are not available
 when building your recipe?

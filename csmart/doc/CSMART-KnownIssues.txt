@@ -25,8 +25,12 @@ CSMART contains a few known issues:
 * We have seen occasional Swing exceptions while running an Experiment
   in the console. See bug #1104.
 
-* Some Windows 2000 users corrupted data loading the CSMART
-  database. This has not been reproduced.
+* Windows users creating societies from new-style INI files must put
+  the directory containing those files on the org.cougaar.config.path
+  for CSMART.
+
+* Some Windows users corrupted data loading the CSMART
+  database. This has not been reliably reproduced. See bug #1321.
 
 * MySQL cannot load data across network drives, causing errors
   creating the database in some circumstances. See bug# 1257.
