@@ -439,6 +439,24 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     fireModification();
   }
 
+  // get all the Societies, Metrics, & impacts
+  private List getComponents() {
+    List comps = new ArrayList();
+    for (int i = 0; i < getComponentCount(); i++) {
+      comps.add(getComponent(i));
+    }
+    return comps;
+  }
+
+  /**
+   * @return a <code>ModifiableConfigurableComponent[]</code> array of all the components in the experiment
+   */
+  public ModifiableConfigurableComponent[] getComponentsAsArray() {
+    List comps = getComponents();
+    ModifiableConfigurableComponent[] compArray = (ModifiableConfigurableComponent[])comps.toArray(new ModifiableConfigurableComponent[comps.size()]);
+    return compArray;
+  }
+  
   /**
    * Get the agents from the societies in the experiment.
    */
@@ -446,16 +464,24 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     List agents = new ArrayList();
     for (int i = 0; i < societies.size(); i++) {
       SocietyComponent society = (SocietyComponent)societies.get(i);
-      agents.addAll(Arrays.asList(society.getAgents()));
+      AgentComponent[] sags = society.getAgents();
+      if (sags != null && sags.length > 0)
+	agents.addAll(Arrays.asList(sags));
     }
     return agents;
   }
 
   private List getAgentsInComponents() {
     List agents = new ArrayList();
-    agents.addAll(getAgentsInSocieties());
-    agents.addAll(getAgentsInImpacts());
-    agents.addAll(getAgentsInMetrics());
+    List nags = getAgentsInSocieties();
+    if (nags != null && (! nags.isEmpty()))
+      agents.addAll(nags);
+    nags = getAgentsInImpacts();
+    if (nags != null && (! nags.isEmpty()))
+      agents.addAll(nags);
+    nags = getAgentsInMetrics();
+    if (nags != null && (! nags.isEmpty()))
+      agents.addAll(nags);
     return agents;
   }
 
@@ -463,7 +489,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     List agents = new ArrayList();
     for (int i = 0; i < impacts.size(); i++) {
       ImpactComponent impact = (ImpactComponent)impacts.get(i);
-      agents.addAll(Arrays.asList(impact.getAgents()));
+      AgentComponent[] impagents = impact.getAgents();
+      if (impagents != null && impagents.length > 0)
+	agents.addAll(Arrays.asList(impagents));
     }
     return agents;
   }
@@ -471,16 +499,24 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private List getAgentsInMetrics() {
     List agents = new ArrayList();
     for (int i = 0; i < metrics.size(); i++) {
-      MetricComponent impact = (MetricComponent)impacts.get(i);
-      agents.addAll(Arrays.asList(impact.getAgents()));
+      MetricComponent metric = (MetricComponent)metrics.get(i);
+      AgentComponent[] impagents = metric.getAgents();
+      if (impagents != null && impagents.length > 0)
+	agents.addAll(Arrays.asList(impagents));
     }
     return agents;
   }
 
   public List getAgentsList() {
     List agents = getAgentsInSocieties();
-    agents.addAll(getAgentsInImpacts());
-    agents.addAll(getAgentsInMetrics());
+    if (agents == null)
+      agents = new ArrayList();
+    List other = getAgentsInImpacts();
+    if (other != null && (! other.isEmpty()))
+      agents.addAll(other);
+    other = getAgentsInMetrics();
+    if (other != null && (! other.isEmpty()))
+      agents.addAll(other);
     return agents;
   }
   
@@ -529,6 +565,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @return a <code>ConfigurationWriter</code> to write out the config data
    */
   public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes) {
+    // The given set of nodes is potentially fewer than the full set in the society
+    // Note the ugly this parameter...
+    //ExpConfigWriterNew test = new ExpConfigWriterNew(getComponents(), nodes, this);
+    //System.err.println(this + " created test write: " + test);
     return new ExperimentConfigWriter(societies, impacts, nodes);
   }
 
