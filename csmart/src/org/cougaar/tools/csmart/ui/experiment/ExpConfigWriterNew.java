@@ -156,7 +156,6 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
 	System.err.println("Got unknown LeafComponent type: " + leaf.getType());
 	continue;
       }
-//       System.err.println("Writing leaf data file: " + leaf.getName());
       PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, leaf.getName())));
       try {
 	writer.println(leaf.getValue().toString());
@@ -222,8 +221,8 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
 	  // Write the children of this agent if there are any
 	  // write the leaf components of this agent
 	  writeAgentFile(configDir, (AgentComponentData)children[i]);
-	} else {
-	  System.err.println("Got a child of a Node that wasnt an Agent: " + children[i]);
+	} else if (!children[i].getType().equals(ComponentData.BINDER)) {
+	  System.err.println("Got a child of a Node that wasn't an Agent: " + children[i]);
 	}
       }
       writer.println();
@@ -366,35 +365,6 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
     } finally {
       writer.close();
     }
-
-
-
-
-
-//     if(agent.getOwner() instanceof ABCSociety) {
-      
-//       ABCSociety soc = (ABCSociety)agent.getOwner();
-
-//       Iterator iter = ((Collection)soc.getDescendentsOfClass(ABCAgent.class)).iterator();
-//       while(iter.hasNext()) {
-// 	ABCAgent ag = (ABCAgent)iter.next();
-// 	String name = ag.getFullName().toString();
-// 	if(name.equals(agent.getName())) {
-// 	  ag.writePrototypeIniFile(writer, metricsInitializer);
-// 	}
-//       }
-//     } else if(agent.getOwner() instanceof ScalabilityXSociety) {
-//       ScalabilityXSociety soc = (ScalabilityXSociety)agent.getOwner();
-
-//       Iterator iter = ((Collection)soc.getDescendentsOfClass(ScalabilityXAgent.class)).iterator();
-//       while(iter.hasNext()) {
-// 	ScalabilityXAgent ag = (ScalabilityXAgent)iter.next();
-// 	String name = ag.getFullName().toString();
-// 	if(name.equals(agent.getName())) {
-// 	  ag.writePrototypeIniFile(writer);
-// 	}
-//       }
-//     }
   }
 
   public String toString() {
