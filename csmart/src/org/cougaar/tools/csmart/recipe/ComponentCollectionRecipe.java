@@ -278,16 +278,18 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
           Property p = (Property)iter.next();
           ac.addParameter(p);
         }
+        
         cd.addChild((ComponentData)ac);
 
       } else if (cc instanceof ComponentBase) {
-        GenericComponentData ac = new GenericComponentData();
-        ac.setName(cc.getShortName());
-        ac.setType(cc.getProperty(ComponentBase.PROP_TYPE).getValue().toString());
-        ac.setClassName(ClusterImpl.class.getName());
-        ac.setOwner(cc);
-        ac.setParent(cd);
-        cd.addChild((ComponentData)ac);
+//         GenericComponentData ac = new GenericComponentData();
+//         ac.setName(cc.getShortName());
+//         ac.setType(cc.getProperty(ComponentBase.PROP_TYPE).getValue().toString());
+//         ac.setClassName(((ComponentBase)cc).getComponentClassName());
+//         ac.setOwner(cc);
+//         ac.setParent(cd);
+//         cd.addChild((ComponentData)ac);
+        cd = cc.addComponentData(cd);
       } else if (cc instanceof PropGroupComponent) {
         // Need to create a dummy Agent as a container.
         AgentComponentData ac = new AgentComponentData();
@@ -305,11 +307,11 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
     }
     
     // Now let all components add their data.
-    addComponentData(cd);
+//     cd = addComponentData(cd);
 
-    modifyComponentData(cd);
+//     cd = modifyComponentData(cd);
 
-    return addComponentData(cd);
+    return cd;
   }
 
   public ModifiableComponent copy(String name) {
