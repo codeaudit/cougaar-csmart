@@ -71,7 +71,8 @@ org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_FSB_assets.q|0,BASE, ,0,org
 org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_INFBN_assets.q|0,BASE, ,0,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,eiger_INFBN_assets.q,ASSET_FILE,70
 org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|eiger_MSB_assets.q|0,BASE, ,0,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,eiger_MSB_assets.q,ASSET_FILE,71
 org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn|fdm_all_aggregate_assets.q|0,BASE, ,0,org.cougaar.domain.mlm.plugin.ldm.LDMSQLPlugIn,fdm_all_aggregate_assets.q,ASSET_FILE,72
-org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn|092MP.oplan.q|0,BASE, ,0,org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn,092MP.oplan.q,OPLAN_Q_FILE,73
+org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn|092MP.oplan.q|0,BASE,,0,org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn,092MP.oplan.q,OPLAN_Q_FILE,73
+org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn|093FF.oplan.q|0,BASE, ,0,org.cougaar.domain.mlm.plugin.ldm.SQLOplanPlugIn,093FF.oplan.q,OPLAN_Q_FILE,73
 org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|ArmyFeedingPolicy.ldm.xml|0,CLASS-1, ,0,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,ArmyFeedingPolicy.ldm.xml,DIV_POLICY_FILES,74
 org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|BasicLoadPolicy.ldm.xml|1,BASE, ,1,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,BasicLoadPolicy.ldm.xml,DIV_POLICY_FILES,75
 org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-2BDE-BN.ldm.xml|0,BASE, ,0,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,InventoryPolicy-2BDE-BN.ldm.xml,INVENTORY_MANAGEMENT_POLICY_FILE,76
