@@ -9,12 +9,15 @@
  */
 package org.cougaar.tools.csmart.util;
 
+import org.cougaar.domain.planning.ldm.plan.Location;
+
 /**
- * A location with a name and a position, as a <code>LatLonPoint</code>
+ * A <code>Location</code> with a name and a position, as a <code>LatLonPoint</code>
  *
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
+ * @see Location
  */
-public interface NamedLocation {
+public interface NamedLocation extends Location {
   /**
    * Get the name of this location
    *

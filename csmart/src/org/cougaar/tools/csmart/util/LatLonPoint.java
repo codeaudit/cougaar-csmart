@@ -9,7 +9,9 @@
  */
 package  org.cougaar.tools.csmart.util;
 
-import  java.io.*;
+import org.cougaar.domain.planning.ldm.plan.Location;
+
+import java.io.*;
 
 /**
  * Courtesy of <a href="http://openmap.bbn.com">Openmap</a><br>
@@ -22,11 +24,12 @@ import  java.io.*;
  * -90&deg; &lt;= &phi; &lt;= 90&deg;
  * <p>
  * <strong>Normalized Longitude:</strong><br>
- * -180&deg; &lt;= &lambda; &lt;= 180&deg;
+ * -180&deg; &lt;= &lambda; &lt;= 180&deg;<br>
  *
+ * @see Location
  */
 public class LatLonPoint
-        implements Cloneable, Serializable {
+        implements Location, Cloneable, Serializable {
     // SOUTH_POLE <= phi <= NORTH_POLE
     // -DATELINE <= lambda <= DATELINE
     public final static float NORTH_POLE = 90.0f;
