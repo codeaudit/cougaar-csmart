@@ -27,14 +27,23 @@
 # Note that MySQL must be installed on the local machine, and
 # Cougaar Install Path must be set
 
+# If using networked drives, be sure you have MySQL v3.23.49 or better,
+# and use the optional "local" argument.
+
 if [ "x$3" = "x" ]; then
   echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] [local]"
+  echo "         -- use the 'local' keyword if running across a networked"
+  echo "            drive. You must have MySQL v3.23.49 or better to use"
+  echo "            the local option."
   exit
 fi
 
 if [ "x$COUGAAR_INSTALL_PATH" = "x" ] ; then
   echo "You must set COUGAAR_INSTALL_PATH to the root of your Cougaar install."
   echo "Usage: load_1ad_mysql.sh [Config DB Username] [Password] [MySQL Config DB database name] [local]"
+  echo "         -- use the 'local' keyword if running across a networked"
+  echo "            drive. You must have MySQL v3.23.49 or better to use"
+  echo "            the local option."
   exit
 fi
 
@@ -80,3 +89,4 @@ rm -f load_mysql_db_new_orig.sql
 rm $COUGAAR_INSTALL_PATH/csmart/data/database/csv/*.tmp
 
 echo "Done."
+
