@@ -22,8 +22,10 @@ package org.cougaar.tools.csmart.society.file;
 
 import java.util.Collection;
 import java.util.Iterator;
+import org.cougaar.planning.plugin.AssetDataFileReader;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
+import org.cougaar.tools.csmart.core.cdata.AssetDataCallbackImpl;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
@@ -34,6 +36,7 @@ import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PropGroupBase;
 import org.cougaar.tools.csmart.society.RelationshipBase;
 import org.cougaar.tools.csmart.util.PrototypeParser;
+import org.cougaar.tools.csmart.util.FileParseUtil;
 
 public class AssetFileComponent
   extends ModifiableConfigurableComponent
@@ -72,7 +75,25 @@ public class AssetFileComponent
     int index = filename.indexOf('.');
     if (index != -1) 
       filename = filename.substring(0, index);
-    AgentAssetData aad = PrototypeParser.parse(filename);
+    // Since there are two possible types of asset files, we
+    // need to determine which parser to use.
+    // We will determine this by looking for the "UniqueId"
+    // in the <agent>-ini.dat file.
+    AgentAssetData aad = null;
+    if(FileParseUtil.isOldStyleIni(filename + "-prototype-ini.dat")) {
+      if(log.isDebugEnabled()) {
+        log.debug("Using oldStyle Parser");
+      }
+      aad = PrototypeParser.parse(filename);
+    } else {
+      if(log.isDebugEnabled()) {
+        log.debug("Using newStyle Parser");
+      }
+      AssetDataCallbackImpl callback = new AssetDataCallbackImpl();
+      AssetDataFileReader reader = new AssetDataFileReader();
+      reader.readAsset(filename, callback);
+      aad = callback.getAgentAssetData();
+    }
 
     // This will be an int, need to convert.
     propAssetType = addProperty(PROP_TYPE, new Integer(aad.getType()));
@@ -81,16 +102,20 @@ public class AssetFileComponent
     propAssetClass = addProperty(PROP_CLASS, aad.getAssetClass());
     propAssetClass.setToolTip(PROP_CLASS_DESC);
 
-    propUniqueID = addProperty(PROP_UID, aad.getUniqueID());
-    propUniqueID.setToolTip(PROP_UID_DESC);
+    if(aad.getUniqueID() != null) {
+      propUniqueID = addProperty(PROP_UID, aad.getUniqueID());
+      propUniqueID.setToolTip(PROP_UID_DESC);
+    }
     
     // Unit name is allowed to be null, if it is, give an empty string.
     String unitname = (aad.getUnitName() == null) ? "" : aad.getUnitName();
     propUnitName = addProperty(PROP_UNITNAME, unitname);
     propUnitName.setToolTip(PROP_UNITNAME_DESC);
-
-    propUIC = addProperty(PROP_UIC, aad.getUIC());
-    propUIC.setToolTip(PROP_UIC_DESC);
+    
+    if(aad.getUIC() != null) {
+      propUIC = addProperty(PROP_UIC, aad.getUIC());
+      propUIC.setToolTip(PROP_UIC_DESC);
+    }
 
     addPropGroups(aad);
     addRelationships(aad.getRelationshipData());
