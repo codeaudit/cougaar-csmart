@@ -187,14 +187,14 @@ public class ABCAgent
    */
   public void writeIniFile(File configDir) throws IOException {
 
-    File iniFile = new File(configDir, getName() + ".ini");
+    File iniFile = new File(configDir, getFullName() + ".ini");
     PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
 
     try {
       writer.println("# $id$");
       writer.println("[ Cluster ]");
       writer.println("class = " + agentClassName);
-      writer.println("uic = \"" + getName().toString() + "\"");
+      writer.println("uic = \"" + getFullName().toString() + "\"");
       writer.println("cloned = false");
       writer.println();
       writer.println("[ PlugIns ]");
@@ -202,7 +202,7 @@ public class ABCAgent
       writer.println("plugin = " + AssetReportPlugIn_name);
 
       // Add the initializer plugin if this is the Initializer Agent.
-      if(getName().toString().equals(getProperty(PROP_INITIALIZER).getValue())) {
+      if(getFullName().toString().equals(getProperty(PROP_INITIALIZER).getValue())) {
 	ABCPlugIn init = new ABCPlugIn("MetricsInitializer", MetricsInitializerPlugIn_name);
 	addChild(init);
 	init.initProperties();
@@ -247,7 +247,7 @@ public class ABCAgent
    * @return configuration line for this agent
    */
   public String getConfigLine() {
-    return "cluster = " + getName();
+    return "cluster = " + getFullName();
   }
 
   /**
@@ -275,7 +275,7 @@ public class ABCAgent
    * @throws IOException if the file cannot be created.
    */
   public void writePrototypeIniFile(File configDir) throws IOException {
-    File taskFile = new File(configDir, getName().toString() + "-prototype-ini.dat");
+    File taskFile = new File(configDir, getFullName().toString() + "-prototype-ini.dat");
     PrintWriter writer = new PrintWriter(new FileWriter(taskFile));
 
     try {
@@ -301,21 +301,21 @@ public class ABCAgent
       }
       writer.println();
       writer.println("[ItemIdentificationPG]");
-      writer.println("ItemIdentification String \"" + getName().toString() + "\"");
+      writer.println("ItemIdentification String \"" + getFullName().toString() + "\"");
       // Make these next two be Community#.Customer/Provider#
       // maybe getName().get(1).toString() or getName().get(1).toString() + "." + getName().get(2).toString()
-      writer.println("Nomenclature String \"" + getName().get(1).toString() + "." + getName().get(2).toString() + "\"");
-      writer.println("AlternateItemIdentification String \"" + getName().get(1).toString() + "." + getName().get(2).toString() + "\"");
+      writer.println("Nomenclature String \"" + getFullName().get(1).toString() + "." + getFullName().get(2).toString() + "\"");
+      writer.println("AlternateItemIdentification String \"" + getFullName().get(1).toString() + "." + getFullName().get(2).toString() + "\"");
       //      writer.println("Nomenclature String \"" + getName().get(2).toString() + "\"");
       //      writer.println("AlternateItemIdentification String \"" + getName().get(2).toString() + "\"");
       writer.println();
       writer.println("[TypeIdentificationPG]");
-      writer.println("TypeIdentification String \"" + getName().get(2).toString() + "\"");
-      writer.println("Nomenclature String \"" + getName().get(2).toString() + "\"");
-      writer.println("AlternateTypeIdentification String \"" + getName().get(2).toString() + "\"");
+      writer.println("TypeIdentification String \"" + getFullName().get(2).toString() + "\"");
+      writer.println("Nomenclature String \"" + getFullName().get(2).toString() + "\"");
+      writer.println("AlternateTypeIdentification String \"" + getFullName().get(2).toString() + "\"");
       writer.println();
       writer.println("[ClusterPG]");
-      writer.println("ClusterIdentifier ClusterIdentifier \"" + getName().toString() + "\"");
+      writer.println("ClusterIdentifier ClusterIdentifier \"" + getFullName().toString() + "\"");
       writer.println();
       writer.println("[EntityPG]");
       writer.print("Roles Collection<Role> ");
@@ -362,7 +362,7 @@ public class ABCAgent
       writer.println("[CommunityPG]");
       writer.println("TimeSpan TimeSpan \"\"");
       writer.print("Communities    Collection<String> ");
-      writer.println("\"" + getName().get(1).toString() + "\"");
+      writer.println("\"" + getFullName().get(1).toString() + "\"");
     } 
     finally {
       writer.close();
@@ -391,7 +391,7 @@ public class ABCAgent
     Iterator iter = ((Collection)getDescendentsOfClass(ABCLocalAsset.class)).iterator();
     while(iter.hasNext()) {
       ABCLocalAsset ala = (ABCLocalAsset)iter.next();
-      p = ala.addProperty(ABCLocalAsset.PROP_ASSETFILENAME, ala.getName().toString() + ".dat");
+      p = ala.addProperty(ABCLocalAsset.PROP_ASSETFILENAME, ala.getFullName().toString() + ".dat");
       setPropertyVisible(p, false);
     }
     addPropertyAlias(ABCLocalAsset.PROP_ASSETFILENAME, plugin, (String)p.getValue());
@@ -419,7 +419,7 @@ public class ABCAgent
     Iterator iter = ((Collection)getDescendentsOfClass(ABCAllocation.class)).iterator();
     while(iter.hasNext()) {
       ABCAllocation alloc = (ABCAllocation)iter.next();
-      p = alloc.addProperty(ABCAllocation.PROP_ALLOCFILENAME, alloc.getName().toString() + ".dat");
+      p = alloc.addProperty(ABCAllocation.PROP_ALLOCFILENAME, alloc.getFullName().toString() + ".dat");
       setPropertyVisible(p, false);
     }
     addPropertyAlias(ABCAllocation.PROP_ALLOCFILENAME, plugin, (String)p.getValue());    
@@ -442,7 +442,7 @@ public class ABCAgent
     Iterator iter = ((Collection)getDescendentsOfClass(ABCTaskFile.class)).iterator();
     while(iter.hasNext()) {
       ABCTaskFile t = (ABCTaskFile)iter.next();
-      p = t.addProperty(ABCTaskFile.PROP_TASKFILENAME, t.getName().toString() + ".dat");
+      p = t.addProperty(ABCTaskFile.PROP_TASKFILENAME, t.getFullName().toString() + ".dat");
       setPropertyVisible(p, false);
       break;
     }

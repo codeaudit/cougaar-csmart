@@ -101,7 +101,7 @@ public class ABCSociety
    * @return Society Name
    */
   public String getSocietyName() {
-    return getName().last().toString();
+    return getShortName();
   }
 
   /**
@@ -505,7 +505,7 @@ public class ABCSociety
     Iterator iter = ((Collection)c.getDescendentsOfClass(ABCAgent.class)).iterator();
     while(iter.hasNext()) {
       ABCAgent agent = (ABCAgent)iter.next();
-      if(agent.getName().get(2).toString().equals("Provider2")) {
+      if(agent.getFullName().get(2).toString().equals("Provider2")) {
 	String[] supplies = (String[])agent.getProperty(ABCAgent.PROP_SUPPLIES).getValue();
 	String[] newSupplies = new String[supplies.length + count];
 	for(int x=0; x < supplies.length; x++) {

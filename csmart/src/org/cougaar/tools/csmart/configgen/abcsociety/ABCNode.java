@@ -66,7 +66,7 @@ public class ABCNode
   }
 
   public void writeConfigFiles(File configDir) {
-    File nodeFile = new File(configDir, getName().last() + ".ini");
+    File nodeFile = new File(configDir, getShortName() + ".ini");
     PrintWriter writer = null;
     try {
       writer = new PrintWriter(new FileWriter(nodeFile));

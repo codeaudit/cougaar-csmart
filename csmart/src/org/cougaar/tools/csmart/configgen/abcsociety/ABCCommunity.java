@@ -290,9 +290,9 @@ public class ABCCommunity
 
     for(int i =0; i < getChildCount(); i ++) {
       ABCAgent agent = (ABCAgent)getChild(i);
-      String name = agent.getName().get(2).toString();
+      String name = agent.getFullName().get(2).toString();
       if(name.equals(DEFAULT_PROVIDER_NAME + "2")) {
-	retVal=  agent.getName().toString();
+	retVal=  agent.getFullName().toString();
 	break;
       }
     }
@@ -325,7 +325,7 @@ public class ABCCommunity
 
     Property p = null;
 
-    ABCAgent agent = new ABCAgent(getName().toString(), name, index);
+    ABCAgent agent = new ABCAgent(getFullName().toString(), name, index);
     addChild(agent);
     ABCLocalAsset la = new ABCLocalAsset("LocalAsset");
     la.initProperties();
@@ -366,7 +366,7 @@ public class ABCCommunity
       supp.setValue(supplies);
     }
 
-    return agent.getName().toString();
+    return agent.getFullName().toString();
   }
 
 
@@ -392,7 +392,7 @@ public class ABCCommunity
 
     Property p = null;
 
-    ABCAgent agent = new ABCAgent(getName().toString(), name, index);
+    ABCAgent agent = new ABCAgent(getFullName().toString(), name, index);
     addChild(agent);
 
     ABCTaskFile taskFile = new ABCTaskFile("Tasks");
@@ -441,7 +441,7 @@ public class ABCCommunity
     agent.getProperty(PROP_DISTANCE).setValue(new Integer(distance));
     agent.getProperty(PROP_DIRECTION).setValue(new Integer(direction));
 
-    return agent.getName().toString();
+    return agent.getFullName().toString();
   }
 
 
