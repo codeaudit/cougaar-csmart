@@ -47,6 +47,11 @@ import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 
 import org.cougaar.tools.csmart.society.AgentComponent;
 
+/**
+ * A single Agent in a <code>CMTSociety</code>, ie one that was created from the configuration Database.
+ * @see org.cougaar.tools.csmart.core.db.CMT
+ * @see CMTSociety
+ */
 public class CMTAgent 
   extends ConfigurableComponent 
   implements AgentComponent, Serializable 
@@ -120,15 +125,6 @@ public class CMTAgent
     //    dbp.setDebug(true);
   }
 
-  private static String getNonNullString(ResultSet rs, int ix, String query)
-    throws SQLException
-  {
-    String result = rs.getString(ix);
-    if (result == null)
-      throw new RuntimeException("Null in DB ix=" + ix + " query=" + query);
-    return result;
-  }
-
   private String queryOrgClass() {
     String orgClass = null;
     substitutions.put(":agent_name", name);
@@ -163,7 +159,9 @@ public class CMTAgent
 
     String orgClass = queryOrgClass();
     assetData.setAssetClass(orgClass);
-    String assemblyMatch = getAssemblyMatch();
+    
+    // Get list of assemblies for use in query, ignoring CMT assemblies
+    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
 
     if (assemblyMatch != null) {
       substitutions.put(":assemblyMatch", assemblyMatch);
@@ -214,33 +212,6 @@ public class CMTAgent
     return data;
   }
 
-  private String getAssemblyMatch() {
-    if (assemblyID == null) return null; // No assemblies
-    StringBuffer assemblyMatch = new StringBuffer();
-    assemblyMatch.append("in (");
-    Iterator iter = assemblyID.iterator();
-    boolean first = true;
-    while (iter.hasNext()) {
-      // If this assembly is not a CMT assembly, skip it?
-      // FIXME
-      String val = (String)iter.next();
-      if (! val.startsWith("CMT")) {
-	// not a CMT assembly. Skip it
-	continue;
-      }
-      if (first) {
-        first = false;
-      } else {
-        assemblyMatch.append(", ");
-      }
-      assemblyMatch.append("'");
-      assemblyMatch.append(val);
-      assemblyMatch.append("'");
-    }
-    assemblyMatch.append(")");
-    return first ? "is null" : assemblyMatch.toString();
-  }
-
   public ComponentData addComponentData(ComponentData data) {
     // The incoming data is an agent
     String name = data.getName();
@@ -249,7 +220,7 @@ public class CMTAgent
       name = name.substring(dotPos + 1);
     }
 
-    String assemblyMatch = getAssemblyMatch();
+    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
     if (assemblyMatch != null) {
       substitutions.put(":assemblyMatch", assemblyMatch);
 
