@@ -33,26 +33,18 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.AssetComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
+import org.cougaar.tools.csmart.society.AgentBase;
 import org.cougaar.tools.csmart.society.PluginBase;
+import org.cougaar.tools.csmart.society.BinderBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 
 public class AgentUIComponent
-  extends ModifiableConfigurableComponent
+  extends AgentBase
   implements AgentComponent {
 
   private transient Logger log;
-  private String name;
-  private static final String DEFAULT_CLASS = "org.cougaar.core.agent.ClusterImpl";
 
-  /** Agent Classname Property Definitions **/
-
-  /** Classname Property Definition **/
-  public static final String PROP_CLASSNAME = "Classname";
-
-  /** Classname Description Property Definition **/
-  public static final String PROP_CLASSNAME_DESC = "Name of the Agent Class";
-  
   /**
    * Creates a new <code>AgentUIComponent</code> instance.
    *
@@ -71,49 +63,8 @@ public class AgentUIComponent
     log = CSMART.createLogger(this.getClass().getName());
   }
 
-  /**
-   * Initializes all local Properties
-   *
-   */
-  public void initProperties() {
-    Property p = addProperty(PROP_CLASSNAME, new String(DEFAULT_CLASS));
-    p.setToolTip(PROP_CLASSNAME_DESC);
-  }
-
-  /**
-   * Adds any relevent data to the global <code>ComponentData</code> tree.
-   * No modifications are made in the method, only additions.
-   *
-   * @param data Pointer to the global tree
-   * @return an updated <code>ComponentData</code> value
-   */
-  public ComponentData addComponentData(ComponentData data) {
-    // Process AssetData
-    Iterator iter = 
-      ((Collection)getDescendentsOfClass(AssetComponent.class)).iterator();
-    while(iter.hasNext()) {
-      AssetComponent asset = (AssetComponent)iter.next();
-      asset.addComponentData(data);
-    }
-
-    // Process Plugins
-    iter = 
-      ((Collection)getDescendentsOfClass(ContainerBase.class)).iterator();
-    while(iter.hasNext()) {
-      ContainerBase container = (ContainerBase)iter.next();
-      if(container.getShortName().equals("Plugins")) {
-        for(int i=0; i < container.getChildCount(); i++) {
-          GenericComponentData plugin = null;
-          PluginBase pg = (PluginBase) container.getChild(i);
-          plugin = new GenericComponentData();
-          plugin.setType(ComponentData.PLUGIN);
-          plugin.setParent(data);
-          plugin.setOwner(this);
-          data.addChild(pg.addComponentData(plugin));
-        }
-      }
-    }
-   
-    return data;
-  }
+  // FIXME: What should these do???
+  protected void addAssetData() {}
+  protected void addPlugins() {}
+  protected void addBinders() {}
 }
