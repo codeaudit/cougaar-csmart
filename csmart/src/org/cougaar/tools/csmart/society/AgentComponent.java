@@ -25,6 +25,8 @@ import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 /**
  * A simple interface implemented by configurable components 
  * that represent agents. <br>
+ * <br>
+ * Currently this interface is just a marker, and contains no methods.
  */
 public interface AgentComponent extends ModifiableComponent {
 }

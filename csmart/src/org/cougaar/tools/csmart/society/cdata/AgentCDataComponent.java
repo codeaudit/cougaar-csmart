@@ -43,16 +43,29 @@ public class AgentCDataComponent
           implements AgentComponent {
 
   /** Agent Classname Property Definitions **/
+
+  /** Classname - Property Name **/
   public static final String PROP_CLASSNAME = "Classname";
+
+  /** Classname - Property Description **/
   public static final String PROP_CLASSNAME_DESC = "Name of the Agent Class";
   
   ComponentData cdata;
 
+  /**
+   * Creates a new <code>AgentCDataComponent</code> instance.
+   *
+   * @param cdata <code>ComponentData</code> to use as base.
+   */
   public AgentCDataComponent(ComponentData cdata) {
     super(cdata.getName());
     this.cdata = cdata;
   }
 
+  /**
+   * Initializes all <code>Property</code> values for this class.
+   *
+   */
   public void initProperties() {
     Property p = addProperty(PROP_CLASSNAME, new String(cdata.getClassName()));
     p.setToolTip(PROP_CLASSNAME_DESC);
@@ -82,6 +95,15 @@ public class AgentCDataComponent
     addChild(asset);
   }
 
+  /**
+   * Adds any <code>ComponentData</code> to the ComponentData tree.
+   * This method should not modify any existing data in the <code>ComponentData</code>
+   * object.  It should only add it's own data.
+   *
+   * @see ComponentData
+   * @param data pointer to the <code>ComponentData</code> object.
+   * @return a modified <code>ComponentData</code> object.
+   */
   public ComponentData addComponentData(ComponentData data) {
     // Process AssetData
     Iterator iter = 
@@ -111,8 +133,5 @@ public class AgentCDataComponent
    
     return data;
   }
-
-
-
 
 }
