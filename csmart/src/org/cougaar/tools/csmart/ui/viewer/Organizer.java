@@ -99,6 +99,11 @@ public class Organizer extends JScrollPane {
     new ComboItem("ABC", ABCSociety.class)
   };
 
+  // The impacts which can be created in CSMART
+  private Object[] impComboItems = {
+    new ComboItem("ABCImpact", ABCImpact.class)
+  };
+
   // Define Unique Name sets
   private UniqueNameSet societyNames = new UniqueNameSet("Society");
   private UniqueNameSet experimentNames = new UniqueNameSet("Experiment");
@@ -994,9 +999,7 @@ public class Organizer extends JScrollPane {
   }
   
   private void newImpact(DefaultMutableTreeNode node) {
-    Object[] values = {
-      new ComboItem("ABCImpact", ABCImpact.class)
-    };
+    Object[] values = impComboItems;
     Object answer =
       JOptionPane.showInputDialog(this, "Select Impact Type",
 				  "Select Impact",
@@ -1033,20 +1036,29 @@ public class Organizer extends JScrollPane {
 					       JOptionPane.ERROR_MESSAGE);
 	if (ok != JOptionPane.OK_OPTION) return;
       }
+      ImpactComponent impact = createImp(name, item.cls);
+      if (impact == null)
+	return;
+      DefaultMutableTreeNode newNode =
+	addImpactToWorkspace(impact, node);
+      workspace.setSelection(newNode);
+      // If this is an ABCImpact, set the XML File as specified above
+      if (xmlfile != null && impact instanceof ABCImpact)
+	((ABCImpact)impact).setFile(xmlfile);
+    }
+  }
+
+  private ImpactComponent createImp(String name, Class cls) {
       try {
-	Constructor constructor = item.cls.getConstructor(constructorArgTypes);
+	Constructor constructor = cls.getConstructor(constructorArgTypes);
 	ImpactComponent impact =
 	  (ImpactComponent) constructor.newInstance(new String[] {name});
-	DefaultMutableTreeNode newNode =
-	  addImpactToWorkspace(impact, node);
-	workspace.setSelection(newNode);
-	// If this is an ABCImpact, set the XML File as specified above
-	if (xmlfile != null && impact instanceof ABCImpact)
-	  ((ABCImpact)impact).setFile(xmlfile);
+	impact.initProperties();
+	return impact;
       } catch (Exception e) {
 	e.printStackTrace();
+	return null;
       }
-    }
   }
   
   private DefaultMutableTreeNode addImpactToWorkspace(ImpactComponent impact,
@@ -1689,6 +1701,7 @@ public class Organizer extends JScrollPane {
     //      else if (comp instanceof MetricComponent)
     //        return (ModifiableConfigurableComponent)copyMetric((MetricComponent)comp, context);
     //    ModifiableConfigurableComponent compCopy = comp.copy(this, context);
+    // FIXME!!!
     ModifiableConfigurableComponent compCopy = comp;
     if (context == null)
       // add copy as sibling of original
@@ -1704,7 +1717,15 @@ public class Organizer extends JScrollPane {
   }
   
   public ImpactComponent copyImpact(ImpactComponent impact, Object context) {
-    ImpactComponent impactCopy = impact.copy(this, context);
+    ImpactComponent impactCopy = null;
+    if (impact instanceof ABCImpact) {
+      impactCopy = ((ABCImpact)impact).copy(this, context);
+    } else {
+      impactCopy = createImp(generateImpactName(impact.getImpactName()), impact.getClass());
+      impact.copy(impactCopy);
+    }
+    if (impactCopy == null)
+      return null;
     if (context == null)
       workspace.setSelection(addImpactToWorkspace(impactCopy, (DefaultMutableTreeNode)findNode(impact).getParent()));
     workspace.setSelection(addImpactToWorkspace(impactCopy, (DefaultMutableTreeNode)context));
