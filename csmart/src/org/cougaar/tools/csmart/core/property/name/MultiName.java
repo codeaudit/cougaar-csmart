@@ -22,6 +22,8 @@
 package org.cougaar.tools.csmart.core.property.name;
 
 import java.util.Vector;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 /**
  * A CompositeName composed from a parent name and a SimpleName. This
@@ -29,6 +31,8 @@ import java.util.Vector;
  * open so that part of the name can be supplied from subclasses.
  **/
 public abstract class MultiName implements CompositeName {
+  static final long serialVersionUID = 2707819060093765374L;
+
   private SimpleName sname;
 
   protected MultiName(SimpleName name) {
@@ -37,18 +41,27 @@ public abstract class MultiName implements CompositeName {
 
   public void setName(SimpleName newName) {
     sname = newName;
+    decache();                  // just to be certain, decache the hashcode
   }
 
   protected abstract CompositeName getParentName();
+
+  private transient volatile int _size = 0;
 
   /**
    * Get the number of elements of the name.
    * @return the number elements of the name
    **/
   public int size() {
-    CompositeName parent = getParentName();
-    if (parent == null) return sname.size();
-    return sname.size() + parent.size();
+    if (_size==0) {
+      CompositeName parent = getPrefix();
+      if (parent == null){
+        _size = sname.size();
+      } else {
+        _size = sname.size() + parent.size();
+      }
+    }
+    return _size;
   }
 
   /**
@@ -60,14 +73,14 @@ public abstract class MultiName implements CompositeName {
     int size = size();
     if (n >= size) throw new IllegalArgumentException("Index out of range: " + n + ">=" + size);
     if (n < 0) throw new IllegalArgumentException("Negative index: " + n);
-    if (n == size - 1) return sname;
-    return getParentName().get(n);
+    CompositeName thisp = this;
+    for (int i=(size-1); i>n; i--) {
+      thisp = thisp.getPrefix();
+    }
+    return thisp.last();
   }
 
   public CompositeName getPrefix() {
-    int size = size();
-    if (size == 0 || size == 1)
-      return null;
     return getParentName();
   }
 
@@ -78,7 +91,7 @@ public abstract class MultiName implements CompositeName {
     CompositeName name = this;
     int end = (size-1)-n;
     for (int i = 0; i < end; i++)
-      name = getParentName();
+      name = name.getPrefix(); // fix typo
     return name;
   }
 
@@ -96,9 +109,17 @@ public abstract class MultiName implements CompositeName {
     int thatSize = that.size();
     int thisSize = size();
     if (thatSize > thisSize) return false; // test name has too many components
-    for (int i = 0; i < thatSize; i++) {
-      if (that.get(thatSize - 1 - i).equals(get(thisSize - 1 - i))) continue;
-      return false;
+    
+    CompositeName thisp = this;
+    CompositeName thatp = that;
+    for (int i = thatSize; i>0; i--) {
+      CompositeName thisel = thisp.last();
+      CompositeName thatel = thisp.last();
+      if (! thisel.equals(thatel)) {
+        return false;
+      }
+      thisp = thisp.getPrefix();
+      thatp = thatp.getPrefix();
     }
     return true;
   }
@@ -114,9 +135,22 @@ public abstract class MultiName implements CompositeName {
     int thatSize = that.size();
     int thisSize = size();
     if (thatSize > thisSize) return false; // test name has too many components
-    for (int i = 0; i < thatSize; i++) {
-      if (that.get(i).equals(get(i))) continue;
-      return false;
+
+    // backup thisp to the right spot.
+    CompositeName thisp = this;
+    for (int i=(thisSize-thatSize); i>0; i--) {
+      thisp = thisp.getPrefix();
+    }
+
+    CompositeName thatp = that;
+    for (int i = thatSize; i>0; i--) {
+      CompositeName thisel = thisp.last();
+      CompositeName thatel = thisp.last();
+      if (! thisel.equals(thatel)) {
+        return false;
+      }
+      thisp = thisp.getPrefix();
+      thatp = thatp.getPrefix();
     }
     return true;
   }
@@ -128,20 +162,13 @@ public abstract class MultiName implements CompositeName {
    **/
 
   public boolean equals(Object o) {
+    if (o == this) return true; // minor optimization
     if (o instanceof CompositeName) {
       int diff = compareTo(o);
       return diff == 0;
     }
     return false;
   }
-
-  public int hashCode() {
-    int result = sname.hashCode();
-    CompositeName pname = getParentName();
-    if (pname != null) result += pname.hashCode() * 7;
-    return result;
-  }
-
   /**
    * Compare two CompositeNames element by element.
    **/
@@ -166,8 +193,13 @@ public abstract class MultiName implements CompositeName {
    * For debugging, print this name as a series of dot separated strings.
    **/
   public String toString() {
-    return toStringBuffer(new StringBuffer()).toString();
+    if (_tostring == null) {
+      _tostring = toStringBuffer(new StringBuffer()).toString();
+    } 
+    return _tostring;
   }
+
+  private transient volatile String _tostring = null;
 
   protected StringBuffer toStringBuffer(StringBuffer buf) {
     CompositeName parentName = getParentName();
@@ -178,5 +210,27 @@ public abstract class MultiName implements CompositeName {
     }
     if (parentName != null) buf.append(parentName.toString()).append('.');
     return buf.append(sname);
+  }
+
+
+  /** cache the hashcode.  Decached by decache() **/
+  private transient volatile int _hc = 0;
+
+  public int hashCode() {
+    if (_hc == 0) {
+      int result = sname.hashCode();
+      CompositeName pname = getParentName();
+      if (pname != null) result += pname.hashCode() * 7;
+      if (result == 0) result = 1;
+      _hc = result;
+    }
+    return _hc;
+  }
+
+  /** wipe the hashcode cache **/
+  public void decache() {
+    _hc = 0; 
+    _tostring = null;
+    _size = 0;
   }
 } 
