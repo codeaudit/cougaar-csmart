@@ -885,9 +885,11 @@ public class ConsoleInternalFrame extends JInternalFrame {
     ComponentData[] agentChildren = agentComponentData.getChildren();
     ArrayList entries = new ArrayList(agentChildren.length);
     for (int i = 0; i < agentChildren.length; i++) {
-      if (!agentChildren[i].getType().equals(ComponentData.PLUGIN))
-        continue;
+//       if (!agentChildren[i].getType().equals(ComponentData.PLUGIN))
+//         continue;
       StringBuffer sb = new StringBuffer();
+      sb.append(agentChildren[i].getType());
+      sb.append(" = ");
       sb.append(agentChildren[i].getClassName());
       if (agentChildren[i].parameterCount() != 0) {
         sb.append("(");
@@ -909,7 +911,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     plugInsList.setBackground(agentInfoPanel.getBackground());
     int x = 0;
     int y = 0;
-    agentInfoPanel.add(new JLabel("Plugins:"),
+    agentInfoPanel.add(new JLabel("SubComponents:"),
                    new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.NONE,
