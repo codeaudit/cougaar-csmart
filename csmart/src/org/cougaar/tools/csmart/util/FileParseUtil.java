@@ -63,9 +63,9 @@ public class FileParseUtil {
   public static final boolean containsPattern(String filename, String pattern) {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.FileParseUtil");
 
-    if(log.isDebugEnabled()) {
-      log.debug("Using File: " + filename);
-    }
+//     if(log.isDebugEnabled()) {
+//       log.debug("Using File: " + filename);
+//     }
 
     // Create the CharBuffer for the file.
     FileInputStream iStream = null;
@@ -77,9 +77,9 @@ public class FileParseUtil {
 	input = ConfigFinder.getInstance().locateFile(filename);
       }
       if (input != null && input.exists()) {
-	if (log.isDebugEnabled()) {
-	  log.debug("Found file: " + input.getPath());
-	}
+// 	if (log.isDebugEnabled()) {
+// 	  log.debug("Found file: " + input.getPath());
+// 	}
 	iStream = new FileInputStream(input);
       } else {
 	// Couldn't find the file at all. Return false;
