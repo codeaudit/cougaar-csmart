@@ -30,6 +30,7 @@ import org.cougaar.core.mts.Message;
 import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.node.*;
 import org.cougaar.core.mts.*;
+import org.cougaar.core.service.MessageTransportService;
 
 /**
  * A <code>ServiceFilter</code> to wrap the <code>MessageTransportService</code> 

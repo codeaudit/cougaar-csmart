@@ -26,6 +26,7 @@ import java.util.List;
 import org.cougaar.core.mts.*;
 import org.cougaar.core.mts.Message;
 import org.cougaar.core.mts.MessageAddress;
+import org.cougaar.core.service.MessageTransportService;
 
 
 /**
