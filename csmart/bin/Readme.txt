@@ -26,8 +26,6 @@ scalability module per its installation instructions
 
 
 Some key parameters that you will want to locally edit:
-ABC PlugIns use a custom logger, whose verbosity can be edited (see
-setarguments.bat)
 Excel location is specified in CMSART / CSMART.bat / CSMART.sh
 
 
