@@ -96,11 +96,11 @@ public class Organizer extends JScrollPane {
     GUIUtils.createSaveToDbConflictHandler(this);
   
   // The societies which can be created in CSMART
-  private NameClassItem[] builtInSocieties = {
-    new NameClassItem("Scalability", ScalabilityXSociety.class),
-    new NameClassItem("ABC", ABCSociety.class),
-    new NameClassItem("INI", INISociety.class),
-  };
+//    private NameClassItem[] builtInSocieties = {
+//      new NameClassItem("Scalability", ScalabilityXSociety.class),
+//      new NameClassItem("ABC", ABCSociety.class),
+//      new NameClassItem("INI", INISociety.class),
+//    };
 
   // The stand-alone recipes that can be created in CSMART
   private Object[] metNameClassItems = {
@@ -514,16 +514,16 @@ public class Organizer extends JScrollPane {
    */
 
   public DefaultMutableTreeNode newSociety() {
-    Object answer =
-      JOptionPane.showInputDialog(this, "Select Society Type",
-				  "Select Society",
-				  JOptionPane.QUESTION_MESSAGE,
-				  null,
-                                  builtInSocieties,
-				  "ScalabilityX");
-    if (answer == null)
-      return null;
-    NameClassItem item = (NameClassItem) answer;
+//      Object answer =
+//        JOptionPane.showInputDialog(this, "Select Society Type",
+//  				  "Select Society",
+//  				  JOptionPane.QUESTION_MESSAGE,
+//  				  null,
+//                                    builtInSocieties,
+//  				  "ScalabilityX");
+//      if (answer == null)
+//        return null;
+//      NameClassItem item = (NameClassItem) answer;
     // display file chooser to allow user to select file that defines society
     JFileChooser chooser = 
       new JFileChooser(SocietyFinder.getInstance().getPath());
@@ -533,7 +533,7 @@ public class Organizer extends JScrollPane {
       return null;
     String name = chooser.getSelectedFile().getName();
     // create society using file name
-    SocietyComponent sc = helper.createSociety(name, item.cls);
+    SocietyComponent sc = helper.createSociety(name, INISociety.class);
     if (sc == null)
       return null;
     if (name.endsWith(".ini"))
@@ -1083,14 +1083,15 @@ public class Organizer extends JScrollPane {
     String newName = generateSocietyName(society.getSocietyName());
     SocietyComponent societyCopy = (SocietyComponent)society.copy(newName);
 
-    boolean builtIn = false;
-    for (int i = 0; i < builtInSocieties.length; i++) 
-      if (builtInSocieties[i].cls.isInstance(societyCopy)) {
-        builtIn = true;
-        break;
-      }
+//      boolean builtIn = false;
+//      for (int i = 0; i < builtInSocieties.length; i++) 
+//        if (builtInSocieties[i].cls.isInstance(societyCopy)) {
+//          builtIn = true;
+//          break;
+//        }
     // add society to workspace only if it's builtin
-    if (builtIn) {
+    //    if (builtIn) {
+    if (societyCopy instanceof INISociety) {
       DefaultMutableTreeNode node = 
         (DefaultMutableTreeNode)findNode(society).getParent();
       workspace.setSelection(addSocietyToWorkspace(societyCopy, node));

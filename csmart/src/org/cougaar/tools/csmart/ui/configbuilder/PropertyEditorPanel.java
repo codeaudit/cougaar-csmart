@@ -447,6 +447,11 @@ public class PropertyEditorPanel extends JPanel
     if (path == null) return;
     Object o = path.getLastPathComponent();
     if (o instanceof PropertyTreeNode) {
+      // stop any editing in progress, and accept the value
+      int row = propertyTable.getEditingRow();
+      int column = propertyTable.getEditingColumn();
+      if (row != -1 && column != -1) 
+        propertyTable.getCellEditor(row, column).stopCellEditing();
       propertyTable.removeAll(); // clear what was displayed
       PropertyTreeNode node = (PropertyTreeNode) o;
       displayComponents(node.getPropertyNames());
