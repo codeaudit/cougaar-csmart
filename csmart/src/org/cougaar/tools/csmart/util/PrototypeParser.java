@@ -305,11 +305,15 @@ public class PrototypeParser {
         }
         newVal = tokens.nextToken();
       }
+      //FIXME!!!!!  
       rd = new RelationshipData();
-      rd.setType(typeId);
-      rd.setItem(itemId);
-      rd.setRole(roleName);
-      rd.setSupported(otherClusterId);
+      rd.setType(roleName);
+      rd.setTypeId(otherClusterId);
+      rd.setRole(typeId);
+
+      //      rd.setItem(itemId);
+      //      rd.setRole(roleName);
+      //      rd.setSupported(otherClusterId);
       rd.setStartTime(start);
       rd.setEndTime(end);
       aad.addRelationship(rd);
