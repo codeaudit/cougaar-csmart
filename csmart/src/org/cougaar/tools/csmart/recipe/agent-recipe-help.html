@@ -1,0 +1,96 @@
+<html>
+<head>
+<title>Agent Insertion Recipe Help</title>
+</head>
+<body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+<h1>Agent Insertion Recipe Configuration Help</h1>
+The Agent Insertion Recipe allows users to create an arbitrary agent
+for inclusion in a society, along with a skeletal Organization
+Asset. In order to add plugins to the agent, use one of the other
+Recipes, and be sure that the other recipe is listed <em>after</em>
+this recipe in the Experiment Builder.<br>
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#AG_NAMES">Agent Names</a></td>
+	  <td>String array</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#ALT_TYPE_ID">Alternate Type Identification</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#CLASS_NAME">Class Name</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#NOMEN">Nomenclature</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#NUM_REL">Number of Relationships</a></td>
+	  <td>Integer</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#TYPE_ID">Type Identification</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#REL">Relationship</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#ROLE">Role</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+    </table>  
+    <br><br>
+<h2>Parameters</h2>
+<a name="AG_NAMES"><h3>Agent Names</h3></a>
+The list (comma separate) of the agent names (all identical) which you
+    wish to create. NOTE: Currently, only one name is permitted.
+
+<a name="ALT_TYPE_ID"><h3>Alternate Type Identification</h3></a>
+An alternate identification for the type of this Organization.
+
+<a name="NOMEN"><h3>Nomenclature</h3></a>
+A verbose nomenclature for this Organization.
+
+<a name="CLASS_NAME"><h3>Class Name</h3></a>
+The class for this Agent. The default is almost always correct.
+
+<a name="NUM_REL"><h3>Number of Relationships</h3></a>
+The number of relationships which this Organization should have with
+other organizations. If you set this number to greater than 0 (and hit
+return to set your selection), then a number of new fields appear, one
+pair, appropriately numbered, for each relationship you add:
+
+<a name="REL"><h4>Relationship</h4></a>
+The name of the agent with which to have the relationship - note that
+the available values will appear in a drop-down box, showing all the
+agents known in the database. Note that this means you may only create
+relationships with Agents already added to other Experiments.
+
+<a name="ROLE"><h4>Role</h4></a>
+The role which this agent should have, relative to the other agent specified above.
+
+<a name="TYPE_ID"><h3>Type Identification</h3></a>
+The type identification for this agent.
+
+</body></html>
+
+<!-- Last Modified: $Date: 2001-11-29 00:44:25 $ -->
+<!-- By $Author: ahelsing $ -->
