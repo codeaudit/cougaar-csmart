@@ -35,7 +35,8 @@ public interface ComponentData extends Serializable {
   String AGENT = "agent";
   String NODE = "node";
   String PLUGIN = "plugin";
-  String BINDER = "binder";
+  String NODEBINDER = "node binder";
+  String AGENTBINDER = "agent binder";
   String SERVICE = "service";
   
   /**
