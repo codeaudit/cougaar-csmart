@@ -92,6 +92,11 @@ public class CMTAgent
 // 			     }
 // 			   });
 
+    try {
+      initDBProperties();
+    } catch (IOException ioe) {
+      ioe.printStackTrace();
+    }
   }
 
   private void initDBProperties() throws IOException {
