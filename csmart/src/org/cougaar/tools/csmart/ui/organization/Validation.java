@@ -24,10 +24,19 @@ package org.cougaar.tools.csmart.ui.organization;
 import java.util.*;
 import org.w3c.dom.*;
 
+/**
+ * Validate supply chains for the selected agents,
+ * i.e. determine if all agents have all their required providers.
+ * Uses the same logic as service discovery in a running society.
+ */
 public class Validation {
   // map agent (Node) to facets (Facets)
   private static Hashtable agentsToFacets = new Hashtable(100);
 
+  /**
+   * Validate the society described in the XML document.
+   * @param doc document that describes the society
+   */
   public static void validateXML(Document doc) {
     agentsToFacets.clear();
     // extract information for each agent from xml document
@@ -39,6 +48,8 @@ public class Validation {
       if (children.item(i).getNodeName().equals("host"))
         hostNode = children.item(i);
     }
+    if (hostNode == null)
+      return;
     children = hostNode.getChildNodes();
     n = children.getLength();
     Node nodeNode = null;
@@ -46,6 +57,8 @@ public class Validation {
       if (children.item(i).getNodeName().equals("node"))
         nodeNode = children.item(i);
     }
+    if (nodeNode == null)
+      return;
     children = nodeNode.getChildNodes();
     n = children.getLength();
     ArrayList agentNodes = new ArrayList();
@@ -144,6 +157,13 @@ public class Validation {
     return null;
   }
 
+  /**
+   * Find a provider of the type and echelon specified for the specified agent.
+   * @param agentNode agent for which to find a provider
+   * @param providerNeeded type of provider needed
+   * @param echelonNeeded echelon needed
+   * @return  name of provider or null, if none found
+   */
   private static String findProviderForAgent(Node agentNode,
                                              String providerNeeded,
                                              String echelonNeeded) {
@@ -151,6 +171,7 @@ public class Validation {
     ArrayList info = new ArrayList(agentsToFacets.values());
     String agentName =
       agentNode.getAttributes().getNamedItem("name").getNodeValue();
+    // search all the information for all the agents
     for (int i = 0; i < info.size(); i++) {
       Facets facets = (Facets)info.get(i);
       int index = facets.getRoles().indexOf(providerNeeded);
@@ -159,7 +180,12 @@ public class Validation {
       index = facets.getSupportedOrgs().indexOf(agentName);
       if (index == -1)
         continue; // doesn't support this agent
-      String supportedEchelon = 
+      // found provider for the agent, check the provider's echelon
+      // TODO: check the provider's subordinates;
+      // if one of the subordinates is a provider of the proper type
+      // for this agent, and its echelon is closer to the echelon needed,
+      // then use the subordinate
+      String supportedEchelon =
         (String)facets.getSupportedEchelons().get(index);
       if (MilitaryEchelon.echelonOrder(supportedEchelon) >=
         MilitaryEchelon.echelonOrder(echelonNeeded)) {
@@ -178,8 +204,8 @@ public class Validation {
    * cause going up the chain is weighted against us so heavily.
    */
   private static String findProvider(Node agentNode,
-                                      String providerNeeded,
-                                      String echelonNeeded) {
+                                     String providerNeeded,
+                                     String echelonNeeded) {
     String provider = findProviderForAgent(agentNode, providerNeeded, echelonNeeded);
     if (provider != null)
       return provider; // exact match on agent
@@ -195,7 +221,10 @@ public class Validation {
   }
 
 
-  // from service discovery code
+/**
+ * Support for describing military echelons.
+ * Taken from cougaar service discovery code.
+ */
   public static class MilitaryEchelon {
     public static final String UNDEFINED = "UNDEFINED";
     public static final String BRIGADE = "BRIGADE";
@@ -235,7 +264,7 @@ public class Validation {
       return ECHELON_ORDER[i];
     }
 
-    public static int echelonOrder(String echelonValue) {
+    private static int echelonOrder(String echelonValue) {
       // Upcase for comparison
       String upCase = echelonValue.toUpperCase();
 

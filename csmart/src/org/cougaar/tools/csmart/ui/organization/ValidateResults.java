@@ -8,14 +8,20 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 /**
- * Created by IntelliJ IDEA.
- * User: travers
- * Date: Apr 8, 2003
- * Time: 10:22:41 PM
- * To change this template use Options | File Templates.
+ * Display results of validating supply chains in a dialog.
  */
 public class ValidateResults extends JDialog {
 
+  /**
+   * Construct dialog from information gained from validating
+   * supply chaings.
+   * @param errorAgentNames agents that need providers
+   * @param providersNeeded the providers they need
+   * @param echelonsNeeded the echelons of the providers needed
+   * @param successAgentNames the agents who have all their providers
+   * @param providerTypes the type of provider an agent has
+   * @param providers the name of the provider an agent has
+   */
   public ValidateResults(ArrayList errorAgentNames, ArrayList providersNeeded, ArrayList echelonsNeeded,
                          ArrayList successAgentNames, ArrayList providerTypes, ArrayList providers) {
     setTitle("Service Discovery Validation");
@@ -75,7 +81,7 @@ public class ValidateResults extends JDialog {
     panel.add(buttonPanel, BorderLayout.SOUTH);
     getContentPane().add(panel);
     pack();
-    if (errorTable.getModel().getRowCount() != 0)
+    if (errorTable != null && errorTable.getModel().getRowCount() != 0)
       splitPane.setDividerLocation(200);
     setSize(600, 400);
     setVisible(true);

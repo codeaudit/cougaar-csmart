@@ -30,12 +30,21 @@ import org.w3c.dom.Element;
  */
 
 public class CSVRole {
-  String baseOrgId;
-  String suffix;
-  String role;
-  String echelonOfSupport;
-  String roleMechanism;
+  private String baseOrgId;
+  private String suffix;
+  private String role;
+  private String echelonOfSupport;
+  private String roleMechanism;
 
+  /**
+   * Creates an object which records information about an organization's
+   * roles, read from a csv file.
+   * @param baseOrgId name of the organization
+   * @param suffix suffix for the organization
+   * @param role organization's role
+   * @param echelonOfSupport echelon of support for this role
+   * @param roleMechanism mechanism for this role
+   */
   public CSVRole(String baseOrgId, String suffix,
                  String role, String echelonOfSupport, String roleMechanism) {
     this.baseOrgId = baseOrgId;
@@ -45,6 +54,10 @@ public class CSVRole {
     this.roleMechanism = roleMechanism;
   }
 
+  /**
+   * Returns name of the organization, i.e. baseOrgId . suffix
+   * @return organization name
+   */
   public String getName() {
     StringBuffer sb = new StringBuffer();
     sb.append(baseOrgId);
@@ -53,7 +66,12 @@ public class CSVRole {
     return sb.toString();
   }
 
-  public String toString() {
+  /**
+   * Returns name of organization and comma separated fields
+   * describing the role
+   * @return baseOrgId.suffix, role, echelonOfSupport, roleMechanism
+   */
+    public String toString() {
     StringBuffer sb = new StringBuffer();
     sb.append(baseOrgId);
     sb.append(".");
@@ -67,6 +85,11 @@ public class CSVRole {
     return sb.toString();
   }
 
+  /**
+   * Appends an element describing the role to the XML document.
+   * @param doc XML document
+   * @param element parent element for the new role element
+   */
   public void appendXML(Document doc, Element element) {
     Element facet = doc.createElement("facet");
     facet.setAttribute("role", role);

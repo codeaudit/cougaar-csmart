@@ -35,10 +35,19 @@ import javax.swing.tree.TreePath;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeWillExpandListener;
 
-
+/**
+ * Custom JTree for information read from CSV files.
+ * Supports custom renderer to show deleted/undeleted agents.
+ * Supports custom expander to prevent expanding deleted items.
+ */
 public class CSVTree extends JTree {
-  Model model;
+  private Model model;
 
+  /**
+   * Create tree from root.
+   * @param model model that drives this application
+   * @param root root of the tree
+   */
   public CSVTree(Model model, DefaultMutableTreeNode root) {
     super(root);
     this.model = model;
@@ -54,7 +63,7 @@ public class CSVTree extends JTree {
    * Nodes which will be agents are the nodes
    * for which the CSVOrgInfo.deleted flag is false.
    */
-  class CSVTreeCellRenderer extends DefaultTreeCellRenderer {
+  private class CSVTreeCellRenderer extends DefaultTreeCellRenderer {
     public Component getTreeCellRendererComponent(JTree tree,
                                                   Object value,
                                                   boolean sel,
@@ -83,7 +92,7 @@ public class CSVTree extends JTree {
    * Tree will expand listener for tree from CSV file;
    * don't allow expanding a deleted node.
    */
-  class CSVTreeWillExpandListener implements TreeWillExpandListener {
+  private class CSVTreeWillExpandListener implements TreeWillExpandListener {
     public void treeWillCollapse(TreeExpansionEvent event) throws ExpandVetoException {
     }
 

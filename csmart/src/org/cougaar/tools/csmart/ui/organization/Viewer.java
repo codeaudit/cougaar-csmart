@@ -26,9 +26,7 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
-import org.cougaar.util.ConfigFinder;
-import org.cougaar.util.log.Logger;
+import javax.swing.filechooser.FileFilter;
 
 /**
  * Reads organization information from a database or from a CSV file.
@@ -85,14 +83,15 @@ public class Viewer extends JFrame implements Observer {
   private JMenuItem collapseTreeMenuItem;
   private JMenuItem expandTreeMenuItem;
   private Model model;
-  private transient Logger log;
 
+  /**
+   * Create the user interface.
+   */
   public Viewer() {
     super("Society Builder");
 
     model = new Model();
     model.addObserver(this);
-    log = LoggerSupport.createLogger(this.getClass().getName());
 
     // create menu bar
     JMenuBar menuBar = new JMenuBar();
@@ -101,23 +100,24 @@ public class Viewer extends JFrame implements Observer {
     fileMenu = new JMenu("File");
     fileMenu.setToolTipText("Read or write society information or quit.");
 
-    databaseMenuItem = new JMenuItem("Select Database...");
-    databaseMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          getDatabaseInfo();
-        }
-      });
-    databaseMenuItem.setToolTipText("Specify database location.");
-    fileMenu.add(databaseMenuItem);
-
-    readFromDBMenuItem = new JMenuItem("Read From Database...");
-    readFromDBMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          readFromDB();
-        }
-      });
-    readFromDBMenuItem.setToolTipText("Read society description from database.");
-    fileMenu.add(readFromDBMenuItem);
+    // database support unused for now
+//    databaseMenuItem = new JMenuItem("Select Database...");
+//    databaseMenuItem.addActionListener(new ActionListener() {
+//        public void actionPerformed(ActionEvent e) {
+//          getDatabaseInfo();
+//        }
+//      });
+//    databaseMenuItem.setToolTipText("Specify database location.");
+//    fileMenu.add(databaseMenuItem);
+//
+//    readFromDBMenuItem = new JMenuItem("Read From Database...");
+//    readFromDBMenuItem.addActionListener(new ActionListener() {
+//        public void actionPerformed(ActionEvent e) {
+//          readFromDB();
+//        }
+//      });
+//    readFromDBMenuItem.setToolTipText("Read society description from database.");
+//    fileMenu.add(readFromDBMenuItem);
 
     readFromCSVMenuItem = new JMenuItem("Read From CSV File...");
     readFromCSVMenuItem.addActionListener(new ActionListener() {
@@ -136,23 +136,24 @@ public class Viewer extends JFrame implements Observer {
     });
     fileMenu.add(readFromXMLItem);
 
-    saveMenuItem = new JMenuItem("Save In Database");
-    saveMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          saveSociety();
-        }
-      });
-    saveMenuItem.setToolTipText("Save society description in database.");
-    fileMenu.add(saveMenuItem);
-
-    saveAsMenuItem = new JMenuItem("Save In Database As...");
-    saveAsMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          saveSocietyAs();
-        }
-      });
-    saveAsMenuItem.setToolTipText("Name and save the society description in the database.");
-    fileMenu.add(saveAsMenuItem);
+    // database unused for now
+//    saveMenuItem = new JMenuItem("Save In Database");
+//    saveMenuItem.addActionListener(new ActionListener() {
+//        public void actionPerformed(ActionEvent e) {
+//          saveSociety();
+//        }
+//      });
+//    saveMenuItem.setToolTipText("Save society description in database.");
+//    fileMenu.add(saveMenuItem);
+//
+//    saveAsMenuItem = new JMenuItem("Save In Database As...");
+//    saveAsMenuItem.addActionListener(new ActionListener() {
+//        public void actionPerformed(ActionEvent e) {
+//          saveSocietyAs();
+//        }
+//      });
+//    saveAsMenuItem.setToolTipText("Name and save the society description in the database.");
+//    fileMenu.add(saveAsMenuItem);
 
     saveAsXMLMenuItem = new JMenuItem("Save As XML...");
     saveAsXMLMenuItem.addActionListener(new ActionListener() {
@@ -172,14 +173,14 @@ public class Viewer extends JFrame implements Observer {
     saveAsCSVMenuItem.setToolTipText("Name and save the society description as an CSV file.");
     fileMenu.add(saveAsCSVMenuItem);
 
-    deleteMenuItem = new JMenuItem("Delete...");
-    deleteMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          deleteSociety();
-        }
-      });
-    deleteMenuItem.setToolTipText("Delete the society description from the database.");
-    fileMenu.add(deleteMenuItem);
+//    deleteMenuItem = new JMenuItem("Delete...");
+//    deleteMenuItem.addActionListener(new ActionListener() {
+//        public void actionPerformed(ActionEvent e) {
+//          deleteSociety();
+//        }
+//      });
+//    deleteMenuItem.setToolTipText("Delete the society description from the database.");
+//    fileMenu.add(deleteMenuItem);
 
     validateMenuItem = new JMenuItem("Validate");
     validateMenuItem.addActionListener(new ActionListener() {
@@ -223,12 +224,12 @@ public class Viewer extends JFrame implements Observer {
 
     // disable unneeded menus
     viewMenu.setEnabled(false);
-    readFromDBMenuItem.setEnabled(false);
-    saveMenuItem.setEnabled(false);
-    saveAsMenuItem.setEnabled(false);
+//    readFromDBMenuItem.setEnabled(false);
+//    saveMenuItem.setEnabled(false);
+//    saveAsMenuItem.setEnabled(false);
     saveAsXMLMenuItem.setEnabled(false);
     saveAsCSVMenuItem.setEnabled(false);
-    deleteMenuItem.setEnabled(false);
+//    deleteMenuItem.setEnabled(false);
     validateMenuItem.setEnabled(false);
     // end create menu bar
 
@@ -285,8 +286,7 @@ public class Viewer extends JFrame implements Observer {
     String title = model.getFileTitle();
     JFileChooser chooser = new JFileChooser(System.getProperty("org.cougaar.install.path"));
     chooser.setDialogTitle("Select " + title + " File");
-    String[] filters = { filter };
-    ExtensionFileFilter extensionFilter = new ExtensionFileFilter(filters, title + " File");
+    ExtensionFileFilter extensionFilter = new ExtensionFileFilter(filter, title + " File");
     chooser.addChoosableFileFilter(extensionFilter);
     if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
       return;
@@ -385,6 +385,8 @@ public class Viewer extends JFrame implements Observer {
   /**
    * Called by model when something has changed
    * that potentially affects the ui.
+   * @param o the object that changed
+   * @param arg what changed, a Notification or a String (defined in Model)
    */
   public void update(Observable o, Object arg) {
     if (arg instanceof Notification) {
@@ -399,8 +401,8 @@ public class Viewer extends JFrame implements Observer {
     }
 
     if (arg == model.DB_SOCIETY_CREATED) {
-      saveMenuItem.setEnabled(true);
-      saveAsMenuItem.setEnabled(true);
+//      saveMenuItem.setEnabled(true);
+//      saveAsMenuItem.setEnabled(true);
       saveAsXMLMenuItem.setEnabled(true);
       viewMenu.setEnabled(true);
       return;
@@ -408,8 +410,8 @@ public class Viewer extends JFrame implements Observer {
       readFromCSVMenuItem.setEnabled(true);
       saveAsCSVMenuItem.setEnabled(true);
       saveAsXMLMenuItem.setEnabled(true);
-      saveMenuItem.setEnabled(false);
-      saveAsMenuItem.setEnabled(false);
+//      saveMenuItem.setEnabled(false);
+//      saveAsMenuItem.setEnabled(false);
       validateMenuItem.setEnabled(true);
       viewMenu.setEnabled(true);
     } else if (arg == model.XML_SOCIETY_CREATED) {
@@ -484,8 +486,8 @@ public class Viewer extends JFrame implements Observer {
         String password = new String(passwordField.getPassword());
         dialog.hide();
         // enable database related menu items
-        readFromDBMenuItem.setEnabled(true);
-        deleteMenuItem.setEnabled(true);
+        //readFromDBMenuItem.setEnabled(true);
+        //deleteMenuItem.setEnabled(true);
         model.setDBParameters(database, username, password);
       }
     });
@@ -625,7 +627,57 @@ public class Viewer extends JFrame implements Observer {
   }
 
   public static void main(String[] args) {
-    JFrame frame = new Viewer();
+    new Viewer();
   }
 
+  /**
+   * ExtensionFileFilter
+   * A filter on the JFileChooser to display only xml files.
+   * Code taken from csmart package so this class can be independent of csmart.
+   */
+
+  public class ExtensionFileFilter extends FileFilter {
+    String filterExtension;
+    String description;
+
+    private ExtensionFileFilter(String extension, String description) {
+      filterExtension = extension;
+      this.description = description;
+    }
+
+    /**
+     * Return true if this file should be shown in the directory pane,
+     * false if it shouldn't.
+     * Files that begin with "." are ignored.
+     */
+    public boolean accept(File f) {
+      if (f != null) {
+        if (f.isDirectory())
+          return true;
+        String extension = getExtension(f);
+        if (extension != null && filterExtension.equals(extension))
+          return true;
+      }
+      return false;
+    }
+
+    private String getExtension(File f) {
+      if (f != null) {
+        String filename = f.getName();
+        int i = filename.lastIndexOf('.');
+        if (i > 0 && i < filename.length()-1) {
+          return filename.substring(i+1).toLowerCase();
+        };
+      }
+      return null;
+    }
+
+    /**
+     * Returns the human readable description of this filter.
+     */
+    public String getDescription() {
+      return description;
+    }
+
+  }
 }

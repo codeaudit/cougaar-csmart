@@ -43,9 +43,9 @@
 package org.cougaar.tools.csmart.ui.organization;
 
 /**
- * Objects of this class are based in notifications.
+ * Objects of this class are included in notifications.
+ * Used by Model to send information to Viewer.
  */
-
 public class Notification {
   String action;
   Object info;

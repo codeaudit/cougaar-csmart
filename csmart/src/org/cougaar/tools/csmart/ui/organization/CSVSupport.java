@@ -34,6 +34,9 @@ import org.w3c.dom.Element;
 
 import org.cougaar.util.log.Logger;
 
+/**
+ * Provides support for reading organization information from csv files.
+ */
 public class CSVSupport implements SocietySupport {
   private ArrayList csvOrgs = new ArrayList();
   private ArrayList csvOrgAttributes = new ArrayList();
@@ -45,6 +48,11 @@ public class CSVSupport implements SocietySupport {
   private transient Logger log =
     LoggerSupport.createLogger("org.cougaar.tools.csmart.ui.organization.CSVSupport");
 
+  /**
+   * Provide support for reading organization information from
+   * csv files.
+   * @param model model that drives this tool
+   */
   public CSVSupport(Model model) {
     this.model = model;
   }
@@ -59,8 +67,9 @@ public class CSVSupport implements SocietySupport {
    * file is in the form:
    * society_id, orig_org_id, base_org_id, suffix
    * Only the last two fields are used.
+   * @param filename file to read
+   * @return the tree that represents this set of organizations
    */
-
   public JTree readFile(String filename) {
     // read the base CSV file that defines all agents
     File file = new File(filename);
@@ -117,18 +126,34 @@ public class CSVSupport implements SocietySupport {
     return tree;
   }
 
+  /**
+   * Return the name of the society.
+   * @return society name
+   */
   public String getSocietyName() {
     return societyName;
   }
 
+  /**
+   * Return the type of the society, i.e. how it was created.
+   * @return Model.SOCIETY_FROM_CSV
+   */
   public int getType() {
     return Model.SOCIETY_FROM_CSV;
   }
 
+  /**
+   * Return the file extension.
+   * @return csv
+   */
   public String getFileExtension() {
     return "csv";
   }
 
+  /**
+   * Return a descriptive type for this file.
+   * @return CSV
+   */
   public String getFileTitle() {
     return "CSV";
   }
@@ -151,7 +176,7 @@ public class CSVSupport implements SocietySupport {
     csvOrgs = new ArrayList();
     String s;
     try {
-      s = reader.readLine(); // skip the first line, which is a comment
+      reader.readLine(); // skip the first line, which is a comment
       while ((s = reader.readLine()) != null) {
         CSVStringTokenizer st = new CSVStringTokenizer(s, ",");
         CSVOrgInfo orgInfo = getOrganizationInfoFromCSV(st);
@@ -201,16 +226,16 @@ public class CSVSupport implements SocietySupport {
    * base_org_id, suffix, superior_base_org_id, superior_suffix, rollup_code
    */
   private CSVOrgInfo getOrganizationInfoFromCSV(CSVStringTokenizer st) {
-    String ignore = st.nextToken(); // order
-    String origOrgId = st.nextToken();        // orig_org_id
+    st.nextToken(); // order
+    String origOrgId = st.nextToken(); // orig_org_id
     String baseOrgId = st.nextToken();
     String suffix = st.nextToken();
-    ignore = st.nextToken();        // superior_org_org_id
+    st.nextToken(); // superior_org_org_id
     String superiorBaseOrgId = st.nextToken();
     String superiorSuffix = st.nextToken();
-    String rollupCode = st.nextToken();
+    st.nextToken(); // rollup code
     return new CSVOrgInfo(origOrgId, baseOrgId, suffix, superiorBaseOrgId,
-                          superiorSuffix, rollupCode);
+                          superiorSuffix);
   }
 
   /**
@@ -240,8 +265,6 @@ public class CSVSupport implements SocietySupport {
   private void readCSVAttributes() {
     // get the CSV file to read
     File file = new File(baseCSVFile.getParentFile(), "org_attribute.csv");
-    if (file == null)
-      return;
     if (!file.canRead())
       return;
 
@@ -259,7 +282,7 @@ public class CSVSupport implements SocietySupport {
     String s;
     csvOrgAttributes = new ArrayList();
     try {
-      s = reader.readLine(); // skip the first line, which is a comment
+      reader.readLine(); // skip the first line, which is a comment
       while ((s = reader.readLine()) != null) {
         CSVStringTokenizer st = new CSVStringTokenizer(s, ",");
         CSVAttributes attrs = getAttributesFromCSV(st);
@@ -314,8 +337,6 @@ public class CSVSupport implements SocietySupport {
   private void readCSVRoles() {
     // get the CSV file to read
     File file = new File(baseCSVFile.getParentFile(), "org_role.csv");
-    if (file == null)
-      return;
     if (!file.canRead())
       return;
 
@@ -333,7 +354,7 @@ public class CSVSupport implements SocietySupport {
     String s;
     csvOrgRoles = new ArrayList();
     try {
-      s = reader.readLine(); // skip the first line, which is a comment
+      reader.readLine(); // skip the first line, which is a comment
       while ((s = reader.readLine()) != null) {
         CSVStringTokenizer st = new CSVStringTokenizer(s, ",");
         CSVRole role = getRolesFromCSV(st);
@@ -369,8 +390,6 @@ public class CSVSupport implements SocietySupport {
   private void readCSVSupport() {
     // get the CSV file to read
     File file = new File(baseCSVFile.getParentFile(), "org_sca.csv");
-    if (file == null)
-      return;
     if (!file.canRead())
       return;
 
@@ -388,7 +407,7 @@ public class CSVSupport implements SocietySupport {
     String s;
     csvOrgSupports = new ArrayList();
     try {
-      s = reader.readLine(); // skip the first line, which is a comment
+      reader.readLine(); // skip the first line, which is a comment
       while ((s = reader.readLine()) != null) {
         CSVStringTokenizer st = new CSVStringTokenizer(s, ",");
         CSVSupportOrg support = getSupportFromCSV(st);
@@ -423,6 +442,7 @@ public class CSVSupport implements SocietySupport {
 
   /**
    * Create an XML document for the society.
+   * @return the XML document
    */
   public Document getDocument() {
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -457,7 +477,7 @@ public class CSVSupport implements SocietySupport {
   /**
    * Save the non-deleted tree nodes and leaves as XML agent nodes.
    */
-  public void saveXMLNodes(Document doc, Element xmlNode) {
+  private void saveXMLNodes(Document doc, Element xmlNode) {
     DefaultMutableTreeNode root = 
       (DefaultMutableTreeNode)model.getTree().getModel().getRoot();
     Enumeration treeNodes = root.depthFirstEnumeration();
@@ -538,6 +558,7 @@ public class CSVSupport implements SocietySupport {
   /**
    * Save the society to a CSV file; saves information on undeleted organizations.
    * Returns true if successful.
+   * @return true if file written successfully
    */
   public boolean saveFile(File file) {
     try {
@@ -561,6 +582,7 @@ public class CSVSupport implements SocietySupport {
 
   /**
    * Return the number of agents (undeleted organizations) in the society.
+   * @return number of agents
    */
   public int updateAgentCount() {
     int nAgents = 0;

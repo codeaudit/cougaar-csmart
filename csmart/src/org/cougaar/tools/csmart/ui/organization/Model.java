@@ -26,16 +26,17 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Attr;
 
-import org.cougaar.tools.csmart.util.XMLUtils;
-import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.util.log.Logger;
 
+/**
+ * The model that keeps track of the society information read from files
+ * and selected by the user.
+ */
 public class Model extends Observable {
   public static String TREE_CHANGED = "Tree Changed";
   public static String DB_SOCIETY_CREATED = "Database Society Created";
@@ -48,7 +49,6 @@ public class Model extends Observable {
   private boolean modified = false;
   private String societyName = null;
   private int agentCount;
-  private XMLUtils utils;
   private transient Logger log;
   private SocietySupport societySupport;
 
@@ -58,23 +58,28 @@ public class Model extends Observable {
   public static int SOCIETY_FROM_CSV = 2;
   public static int SOCIETY_FROM_XML = 3;
 
+  /**
+   * Construct model.
+   */
   public Model() {
     // create logger
     log = LoggerSupport.createLogger(this.getClass().getName());
 
-    // create XML utilities
-    utils = new XMLUtils();
-
     // load mysql driver
-    try {
-      Class.forName("org.gjt.mm.mysql.Driver");
-    } catch (Exception e) {
-      if (log.isErrorEnabled()) {
-        log.error("Error loading mysql driver", e);
-      }
-    }
+//    try {
+//      Class.forName("org.gjt.mm.mysql.Driver");
+//    } catch (Exception e) {
+//      if (log.isErrorEnabled()) {
+//        log.error("Error loading mysql driver", e);
+//      }
+//    }
   }
 
+  /**
+   * Set the type of the society, i.e. from database,
+   * or from csv or xml file.
+   * @param societyType one of SOCIETY_FROM_DB, FROM_CSV, FROM_XML
+   */
   public void setSocietyType(int societyType) {
     this.societyType = societyType;
     if (societyType == SOCIETY_FROM_CSV)
@@ -83,14 +88,27 @@ public class Model extends Observable {
       societySupport = new XMLSupport(this);
   }
 
+  /**
+   * Get the file extension appropriate for this society.
+   * @return file extension
+   */
   public String getFileExtension() {
     return societySupport.getFileExtension();
   }
 
+  /**
+   * Get a description of the file appropriate for this society,
+   * i.e. CSV or XML
+   * @return description
+   */
   public String getFileTitle() {
     return societySupport.getFileTitle();
   }
 
+  /**
+   * Set whether or not the society is modified.
+   * @param flag
+   */
   private void setModified(boolean flag) {
     modified = flag;
   }
@@ -104,6 +122,7 @@ public class Model extends Observable {
 
   /**
    * Set the name of the society.
+   * @param name society name
    */
   public void setSocietyName(String name) {
     societyName = name;
@@ -112,6 +131,7 @@ public class Model extends Observable {
 
   /**
    * Get the name of the society.
+   * @return society name
    */
   public String getSocietyName() {
     return societyName;
@@ -127,6 +147,10 @@ public class Model extends Observable {
     notifyObservers(new Notification(AGENT_COUNT_CHANGED, new Integer(agentCount)));
   }
 
+  /**
+   * Get the tree currently being used.
+   * @return the tree
+   */
   public JTree getTree() {
     return tree;
   }
@@ -159,6 +183,10 @@ public class Model extends Observable {
     }
   }
 
+  /**
+   * Read a file describing a society.
+   * @param filename
+   */
   public void readFile(String filename) {
     tree = societySupport.readFile(filename);
     if (tree == null)
@@ -173,6 +201,10 @@ public class Model extends Observable {
     setModified(false);
   }
 
+  /**
+   * Save the society in the same type of file from which it was read.
+   * @param file to save
+   */
   public void saveFile(File file) {
     if (societySupport.saveFile(file))
       setModified(false);
@@ -180,18 +212,13 @@ public class Model extends Observable {
 
   /**
    * Save the society as an XML file.
+   * @param file the XML file to save
    */
   public void saveAsXML(File file) {
     Document doc = societySupport.getDocument();
     if (doc == null)
       return;
-    try {
-      utils.writeXMLFile(new File(file.getParent()), doc, file.getName());
-    } catch (IOException ie) {
-      if (log.isErrorEnabled()) {
-        log.error("Exception writing XML File.", ie);
-      }
-    }
+    writeXMLFile(new File(file.getParent()), doc, file.getName());
     setModified(false);
   }
 
@@ -204,7 +231,6 @@ public class Model extends Observable {
       Validation.validateXML(doc);
   }
 
-
   /**
    * Overwrite notifyObservers to always mark this object as changed,
    * so that the notification is done.
@@ -212,6 +238,104 @@ public class Model extends Observable {
   public void notifyObservers(Object arg) {
     setChanged();
     super.notifyObservers(arg);
+  }
+
+ /**
+   * Writes the contents of the Node to the specified
+   * file, in XML format.
+   * Extracted from csmart.util.XMLUtils
+   *
+   * @param configDir - Directory to write new xml file.
+   * @param node - Document Node to dump to xml file.
+   * @param name - Name of the new xml file.
+   */
+  private void writeXMLFile(File configDir, Node node, String name) {
+    if(!name.endsWith(".xml")) {
+      name = name + ".xml";
+    }
+    PrintWriter writer = null;
+    try {
+      writer = new PrintWriter(new FileWriter(new File(configDir, name)));
+      writeNode(writer, node, 0);
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("Error writing XML file: " + e);
+      }
+    }
+    finally {
+      if (writer != null)
+        writer.close();
+    }
+  }
+
+  private void writeNode(PrintWriter writer, Node node, int indent) {
+    StringBuffer ibuff = new StringBuffer();
+    for(int i=0; i < indent; i++) {
+      ibuff.append(" ");
+    }
+    int type = node.getNodeType();
+    switch(type) {
+      case Node.DOCUMENT_NODE:
+        writer.println("<?xml version=\"1.0\" encoding=\""+
+          "UTF-8" + "\"?>");
+        indent = -2;
+        break;
+      case Node.ELEMENT_NODE:
+        writer.print(ibuff.substring(0) + '<' + node.getNodeName() );
+        NamedNodeMap nnm = node.getAttributes();
+        if(nnm != null )
+        {
+          int len = nnm.getLength() ;
+          Attr attr;
+          for ( int i = 0; i < len; i++ )
+          {
+            attr = (Attr)nnm.item(i);
+            writer.print(' '
+              + attr.getNodeName()
+              + "=\""
+              + attr.getNodeValue()
+              +  '"' );
+          }
+        }
+        writer.println('>');
+        break;
+
+      case Node.ENTITY_REFERENCE_NODE:
+        writer.print('&' + node.getNodeName() + ';' );
+        break;
+      case Node.CDATA_SECTION_NODE:
+        writer.print( "<![CDATA["
+          + node.getNodeValue()
+          + "]]>" );
+        break;
+      case Node.TEXT_NODE:
+        writer.print(ibuff.substring(0) + node.getNodeValue());
+        break;
+      case Node.PROCESSING_INSTRUCTION_NODE:
+        writer.print(ibuff.substring(0) + "<?"
+          + node.getNodeName() ) ;
+        String data = node.getNodeValue();
+        if ( data != null && data.length() > 0 ) {
+          writer.print(' ');
+          writer.print(data);
+        }
+        writer.println("?>");
+        break;
+
+    }//end of switch
+
+
+    //recurse
+    for(Node child = node.getFirstChild(); child != null;
+        child = child.getNextSibling()) {
+      writeNode(writer, child, indent+2);
+    }
+
+    //without this the ending tags will miss
+    if ( type == Node.ELEMENT_NODE )
+    {
+      writer.println(ibuff.substring(0) + "</" + node.getNodeName() + ">");
+    }
   }
 
   /**

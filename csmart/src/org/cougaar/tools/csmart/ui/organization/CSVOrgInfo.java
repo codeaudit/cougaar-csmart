@@ -35,20 +35,29 @@ public class CSVOrgInfo {
   public String suffix;
   public String superiorBaseOrgId;
   public String superiorSuffix;
-  public String rollupCode;
   public boolean deleted = false;
 
+  /**
+   * Construct an object that maintains information about an
+   * organization and its superior, which was read from a csv file.
+   * @param baseOrgId the organization
+   * @param suffix suffix for the organization
+   * @param superiorBaseOrgId organization's superior
+   * @param superiorSuffix suffix for the superior
+   */
   public CSVOrgInfo(String origOrgId, String baseOrgId, String suffix,
-                    String superiorBaseOrgId, String superiorSuffix,
-                    String rollupCode) {
+                    String superiorBaseOrgId, String superiorSuffix) {
     this.origOrgId = origOrgId;
     this.baseOrgId = baseOrgId;
     this.suffix = suffix;
     this.superiorBaseOrgId = superiorBaseOrgId;
     this.superiorSuffix = superiorSuffix;
-    this.rollupCode = rollupCode;
   }
 
+  /**
+   * Returns baseOrgId.suffix
+   * @return name of the organization
+   */
   public String toString() {
     StringBuffer sb = new StringBuffer();
     sb.append(baseOrgId);
@@ -57,6 +66,11 @@ public class CSVOrgInfo {
     return sb.toString();
   }
 
+  /**
+   * Creates an agent XML element for the document.
+   * @param doc XML document
+   * @return the agent element
+   */
   public Element toXML(Document doc) {
     Element element = doc.createElement("agent");
     element.setAttribute("name", toString());

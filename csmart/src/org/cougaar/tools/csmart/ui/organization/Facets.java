@@ -26,16 +26,24 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Information for an agent extracted from an XML document.
+ */
 public class Facets {
-  ArrayList providersNeeded = new ArrayList();   // the providers needed
-  ArrayList echelonsNeeded = new ArrayList();    // echelons of providers 
-  ArrayList roles = new ArrayList();             // this agent's roles
-  ArrayList providedEchelons = new ArrayList();  // role echelon_of_support
-  ArrayList mechanisms = new ArrayList();        // role mechanism
-  ArrayList supportedOrgs = new ArrayList();     // sca_supported_org
-  ArrayList supportedEchelons = new ArrayList(); // sca_echelon_of_support
-  String agentName;
+  private ArrayList providersNeeded = new ArrayList();   // the providers needed
+  private ArrayList echelonsNeeded = new ArrayList();    // echelons of providers
+  private ArrayList roles = new ArrayList();             // this agent's roles
+  private ArrayList providedEchelons = new ArrayList();  // role echelon_of_support
+  private ArrayList mechanisms = new ArrayList();        // role mechanism
+  private ArrayList supportedOrgs = new ArrayList();     // sca_supported_org
+  private ArrayList supportedEchelons = new ArrayList(); // sca_echelon_of_support
+  private String agentName;
 
+  /**
+   * Construct facets for the agent from a list of XML nodes.
+   * @param agentName the agent
+   * @param facetNodes list of XML Nodes
+   */
   public Facets(String agentName, ArrayList facetNodes) {
     this.agentName = agentName;
     int nFacets = facetNodes.size();
@@ -45,6 +53,10 @@ public class Facets {
     }
   }
 
+  /**
+   * Returns agent name.
+   * @return agent name
+   */
   public String getAgentName() {
     return agentName;
   }
@@ -137,32 +149,58 @@ public class Facets {
     supportedEchelons.add(echelonOfSupport);
   }
 
+  /**
+   * Return the providers needed by this agent.
+   * @return array of String
+   */
   public ArrayList getProvidersNeeded() {
     return providersNeeded;
   }
 
+  /**
+   * Return echelon needed for each provider needed.
+   * @return array of String
+   */
   public ArrayList getEchelonsNeeded() {
     return echelonsNeeded;
   }
 
+  /**
+   * Return roles this agent provides.
+   * @return array of String
+   */
   public ArrayList getRoles() {
     return roles;
   }
 
+  /**
+   * Return echelon provided for each role provided by this agent.
+   * @return array of String
+   */
   public ArrayList getProvidedEchelons() {
     return providedEchelons;
   }
 
+  /**
+   * Return supported organizations.
+   * @return array of String
+   */
   public ArrayList getSupportedOrgs() {
     return supportedOrgs;
   }
 
+  /**
+   * Return echelon of supported organizations.
+   * @return array of String
+   */
   public ArrayList getSupportedEchelons() {
     return supportedEchelons;
   }
 
-
-  // for debugging
+  /**
+   * For debugging, print description of this agent and its facets.
+   * @param agentNode agent for which to print information
+   */
   public void printAgentInfo(Node agentNode) {
     System.out.println("Agent: " + 
                        agentNode.getAttributes().getNamedItem("name").getNodeValue());

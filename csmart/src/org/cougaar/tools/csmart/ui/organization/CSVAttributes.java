@@ -29,18 +29,33 @@ import org.w3c.dom.Element;
  */
 
 public class CSVAttributes {
-  String baseOrgId;
-  String suffix;
-  String combatSupportEchelon;
-  String echelon;
-  String echelonGroup;
-  boolean isDeployable;
-  boolean hasPhysicalAssets;
-  boolean hasEquipmentAssets;
-  boolean hasPersonnelAssets;
-  String uic;
-  String homeLocation;
-  
+  private String baseOrgId;
+  private String suffix;
+  private String combatSupportEchelon;
+  private String echelon;
+  private String echelonGroup;
+  private boolean isDeployable;
+  private boolean hasPhysicalAssets;
+  private boolean hasEquipmentAssets;
+  private boolean hasPersonnelAssets;
+  private String uic;
+  private String homeLocation;
+
+  /**
+   * Construct an object which records information about an organization
+   * and its attributes from a csv file.
+   * @param baseOrgId
+   * @param suffix
+   * @param combatSupportEchelon
+   * @param echelon
+   * @param echelonGroup
+   * @param isDeployable
+   * @param hasPhysicalAssets
+   * @param hasEquipmentAssets
+   * @param hasPersonnelAssets
+   * @param uic
+   * @param homeLocation
+   */
   public CSVAttributes(String baseOrgId, String suffix,
                        String combatSupportEchelon, String echelon,
                        String echelonGroup,
@@ -59,7 +74,11 @@ public class CSVAttributes {
     this.uic = uic;
     this.homeLocation = homeLocation;
   }
-  
+
+  /**
+   * Get the name which is baseOrgId.suffix.
+   * @return name
+   */
   public String getName() {
     StringBuffer sb = new StringBuffer();
     sb.append(baseOrgId);
@@ -67,7 +86,11 @@ public class CSVAttributes {
     sb.append(suffix);
     return sb.toString();
   }
-  
+
+  /**
+   * Convert these attributes to a comma separated list.
+   * @return comma separated list of attributes
+   */
   public String toString() {
     StringBuffer sb = new StringBuffer();
     sb.append(baseOrgId);
@@ -108,7 +131,12 @@ public class CSVAttributes {
     else
       addFacet(doc, element, name, "F");
   }
-  
+
+  /**
+   * Add description of attributes as facets in XML document.
+   * @param doc   XML document
+   * @param element the XML element to which to append
+   */
   public void appendXML(Document doc, Element element) {
     addFacet(doc, element, "home_location", homeLocation);
     addFacet(doc, element, "uic", uic);
