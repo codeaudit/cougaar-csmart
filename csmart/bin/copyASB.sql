@@ -366,6 +366,92 @@ REPLACE INTO v4_asb_assembly
    (ASSEMBLY_ID,ASSEMBLY_TYPE,DESCRIPTION)
   SELECT DISTINCT * FROM tempcopy.v4_asb_assembly;
 
+-- community_attribute
+DROP TABLE IF EXISTS tempcopy.community_attribute;
+
+CREATE TABLE tempcopy.community_attribute AS
+  SELECT DISTINCT
+   CONCAT(CA.ASSEMBLY_ID, '-:suffix') AS ASSEMBLY_ID, 
+   CA.COMMUNITY_ID AS ATTRIBUTE_ID, 
+   CA.ATTRIBUTE_ID AS ATTRIBUTE_ID,
+   CA.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE
+  FROM
+   community_attribute CA,
+   v4_expt_experiment E,
+   v4_expt_trial ET,
+   v4_expt_trial_config_assembly EA
+  WHERE
+   E.EXPT_ID = ET.EXPT_ID
+   AND ET.TRIAL_ID = EA.TRIAL_ID
+   AND EA.ASSEMBLY_ID = CA.ASSEMBLY_ID
+   AND E.NAME = ':oldExpt';
+   
+REPLACE INTO tempcopy.community_attribute
+   (ASSEMBLY_ID, COMMUNITY_ID, ATTRIBUTE_ID, ATTRIBUTE_VALUE)
+  SELECT DISTINCT
+   CONCAT(CA.ASSEMBLY_ID, '-:suffix') AS ASSEMBLY_ID, 
+   CA.COMMUNITY_ID AS ATTRIBUTE_ID, 
+   CA.ATTRIBUTE_ID AS ATTRIBUTE_ID,
+   CA.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE
+  FROM
+   community_attribute CA,
+   v4_expt_experiment E,
+   v4_expt_trial ET,
+   v4_expt_trial_assembly EA
+  WHERE
+   E.EXPT_ID = ET.EXPT_ID
+   AND ET.TRIAL_ID = EA.TRIAL_ID
+   AND EA.ASSEMBLY_ID = CA.ASSEMBLY_ID
+   AND E.NAME = ':oldExpt';
+ 
+REPLACE INTO community_attribute
+  (ASSEMBLY_ID, COMMUNITY_ID, ATTRIBUTE_ID, ATTRIBUTE_VALUE)
+ SELECT DISTINCT * FROM tempcopy.community_attribute;
+
+-- community_entity_attribute
+DROP TABLE IF EXISTS tempcopy.community_entity_attribute;
+
+CREATE TABLE tempcopy.community_entity_attribute AS
+  SELECT DISTINCT
+   CONCAT(CA.ASSEMBLY_ID, '-:suffix') AS ASSEMBLY_ID, 
+   CA.COMMUNITY_ID AS ATTRIBUTE_ID,
+   CA.ENTITY_ID AS ENTITY_ID, 
+   CA.ATTRIBUTE_ID AS ATTRIBUTE_ID,
+   CA.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE
+  FROM
+   community_entity_attribute CA,
+   v4_expt_experiment E,
+   v4_expt_trial ET,
+   v4_expt_trial_config_assembly EA
+  WHERE
+   E.EXPT_ID = ET.EXPT_ID
+   AND ET.TRIAL_ID = EA.TRIAL_ID
+   AND EA.ASSEMBLY_ID = CA.ASSEMBLY_ID
+   AND E.NAME = ':oldExpt';
+   
+REPLACE INTO tempcopy.community_entity_attribute
+   (ASSEMBLY_ID, COMMUNITY_ID, ENTITY_ID, ATTRIBUTE_ID, ATTRIBUTE_VALUE)
+  SELECT DISTINCT
+   CONCAT(CA.ASSEMBLY_ID, '-:suffix') AS ASSEMBLY_ID, 
+   CA.COMMUNITY_ID AS ATTRIBUTE_ID, 
+   CA.ENTITY_ID AS ENTITY_ID,
+   CA.ATTRIBUTE_ID AS ATTRIBUTE_ID,
+   CA.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE
+  FROM
+   community_entity_attribute CA,
+   v4_expt_experiment E,
+   v4_expt_trial ET,
+   v4_expt_trial_assembly EA
+  WHERE
+   E.EXPT_ID = ET.EXPT_ID
+   AND ET.TRIAL_ID = EA.TRIAL_ID
+   AND EA.ASSEMBLY_ID = CA.ASSEMBLY_ID
+   AND E.NAME = ':oldExpt';
+ 
+REPLACE INTO community_entity_attribute
+  (ASSEMBLY_ID, COMMUNITY_ID, ENTITY_ID, ATTRIBUTE_ID, ATTRIBUTE_VALUE)
+ SELECT DISTINCT * FROM tempcopy.community_entity_attribute;
+
 -- v4_trial_mod_recipe
 DROP TABLE IF EXISTS tempcopy.v4_expt_trial_mod_recipe;
 
