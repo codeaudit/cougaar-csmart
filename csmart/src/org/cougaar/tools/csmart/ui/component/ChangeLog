@@ -1,3 +1,19 @@
+2001-11-14  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java:
+	Remove superfluous (and NPE producing code) when trying to find
+	the "agent" ancestor of a component. Some components don't have an
+	agent ancestor.
+
+	* RecipeComponent.java:
+	Define the name of the recipe query file to be added.
+
+	* PDbBase.java:
+	Add queries for recipes from a secondary query file named
+	recipeQueries.q found in the config path. This allows recipe
+	queries to be added without disturbing the the queries in
+	PopulateDb.q
+
 2001-11-12  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* DoubleRange.java: 

@@ -1,3 +1,11 @@
+2001-11-14  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PropertyTable.java:
+	Use combo box based cell editor whenever the value is a set of
+	single-valued ranges. For example, if the allowed values are the
+	names of recipe queries, they can be selected from the combobox
+	precluding entry of unknown queries.
+
 2001-11-12  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* PropertyTable.java:
