@@ -63,7 +63,7 @@ public class CMTSociety
   private String database;
   private String username;
   private String password;
-  private DBProperties dbp;
+  transient private DBProperties dbp;
   private Map substitutions = new HashMap();
 
   // FIXME - are these right constructors?
@@ -126,91 +126,56 @@ public class CMTSociety
     Map substitutions = new HashMap();
     StringBuffer assemblyMatch = null;
 
-    // FIXME!!
-    // assembly_ID
-    // description
-    // assembly_type
-    // child agents
-    // component data stuff
-    //
-    // Probably we can re-use Ray's queries, wherever they are. But..
-    // Get Society high-level info:
-    // select description from vs_asb_assembly where assembly_id =
-    // get the Agents
-    // select component_id, component_name, component_lib_id, component_category, insertion_order from v3_asb_component where assembly_id = and component_category = ....
-    // select component_type, component_class, insertion_point, descriptoin from vs_lib_component
-    // Get the details of the Agents:
-    // select component_id, component_name, component_lib_id, component_category, insertion_order from v3_asb_component where assembly_id = and parent_component_id =
-    // now get the plugin arguments
-    // select argument, argument_order from vs_asb_component_arg where assembly_id = and component_id =
-    // Relations
-    // select role, supported_component_id, start_date, end_date from v3_asb_agent_relation where assembly_id = and supporting_component_id =
-    // PGs
-    // select pg_attribute_lib_id, attribute_value, attribute_order, start_date, end_date from v3_asb_agent_pg_attr where assembly_id = and component_id =
-    //
-
-    // Basically, we want to create all the child Agents right here (or in the constructor?)
-    // The addComponentData method therefore just asks each of the Agents to add their data.
-    // The Agents consist of basically nothing but an AgentComponentData, with all the PGs, relationships, Plugins, etc that go with it.
-    // Plus, of course, the Agents have a name.
-    // This Society probably also wants to store the ASSEMBLY_ID it came from.
-    // And maybe it uses the description from the database as the description it displays in the ConfigBuilder somehow? Probably not, based on the data in there so far...
-
-    // This Society will be editable / runnable following all the normal CSMART rules. The only funny thing about it is that it has no properties.
-
-//     testProp = addProperty("Test Property", new Integer(1),
-// 			   new ConfigurableComponentPropertyAdapter() {
-// 			     public void PropertyValueChanged(PropertyEvent e) {
-// 			     }
-// 			   });
-    try {
-      dbp = DBProperties.readQueryFile(DBUtils.DATABASE, DBUtils.QUERY_FILE);
-      database = dbp.getProperty("database");
-      username = dbp.getProperty("username");
-      password = dbp.getProperty("password");
-      assemblyMatch = new StringBuffer();
-      assemblyMatch.append("in (");
-      Iterator iter = assemblyID.iterator();
-      boolean first = true;
-      while (iter.hasNext()) {
-	String val = (String)iter.next();
-	if (first) {
-	  first = false;
-	} else {
-	  assemblyMatch.append(", ");
-	}
-	assemblyMatch.append("'");
-	assemblyMatch.append(val);
-	assemblyMatch.append("'");
-      }
-      assemblyMatch.append(")");
-      
-      substitutions.put(":assemblyMatch", assemblyMatch.toString());
-    } catch(IOException e) {
-      throw new RuntimeException("Error: " + e);
-    }
-
-    try {
-      Connection conn = DBConnectionPool.getConnection(database, username, password);
+    if (assemblyID.size() != 0) {
       try {
-	Statement stmt = conn.createStatement();
-	String query = dbp.getQuery(QUERY_AGENT_NAMES, substitutions);
-	ResultSet rs = stmt.executeQuery(query);
-	while (rs.next()) {
-	  String agentName = getNonNullString(rs, 1, query);
-	  CMTAgent agent = new CMTAgent(agentName, assemblyID);
-	  agent.initProperties();
-	  addChild(agent);
+	dbp = DBProperties.readQueryFile(DBUtils.DATABASE, DBUtils.QUERY_FILE);
+	database = dbp.getProperty("database");
+	username = dbp.getProperty("username");
+	password = dbp.getProperty("password");
+	assemblyMatch = new StringBuffer();
+	assemblyMatch.append("in (");
+	Iterator iter = assemblyID.iterator();
+	boolean first = true;
+	while (iter.hasNext()) {
+	  String val = (String)iter.next();
+	  if (first) {
+	    first = false;
+	  } else {
+	    assemblyMatch.append(", ");
+	  }
+	  assemblyMatch.append("'");
+	  assemblyMatch.append(val);
+	  assemblyMatch.append("'");
 	}
-      } finally {
-	conn.close();
+	assemblyMatch.append(")");
+      
+	substitutions.put(":assemblyMatch", assemblyMatch.toString());
+	substitutions.put(":insertion_point", "Node.AgentManager.Agent");
+      } catch(IOException e) {
+	throw new RuntimeException("Error: " + e);
       }
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new RuntimeException("Error" + e);
-    }
 
-
+      try {
+	Connection conn = DBConnectionPool.getConnection(database, username, password);
+	try {
+	  Statement stmt = conn.createStatement();
+	  String query = dbp.getQuery(QUERY_AGENT_NAMES, substitutions);
+	  ResultSet rs = stmt.executeQuery(query);
+	  while (rs.next()) {
+	    String agentName = getNonNullString(rs, 1, query);
+	    CMTAgent agent = new CMTAgent(agentName, assemblyID);
+	    agent.initProperties();
+	    addChild(agent);
+	  }
+	} finally {
+	  conn.close();
+	}
+      } catch (Exception e) {
+	e.printStackTrace();
+	throw new RuntimeException("Error" + e);
+      }
+    
+    }    
   }
 
   private static String getNonNullString(ResultSet rs, int ix, String query)
@@ -330,7 +295,6 @@ public class CMTSociety
 	  CMTAgent agent = (CMTAgent)iter.next();
 	  if(child.getName().equals(agent.getShortName().toString())) {
 	    child.setOwner(this);
-	    System.out.println("Match: " + child.getName());
 	    agent.addComponentData(child);
 	  }
 	}		
