@@ -229,6 +229,45 @@ public interface ComponentData {
    * @return leaf count
    */
   public int leafCount();
+
+  /**
+   * Returns all TimePhasedData objects known to this
+   * component.
+   *
+   * @return array of all TimePhasedData objects.
+   */
+  public TimePhasedData[] getTimePhasedData();
+  
+  /**
+   * Sets all TimePhasedData objects for this component.
+   *
+   * @param data array of TimePhasedData objects
+   */
+  public void setTimePhasedData(TimePhasedData[] data);
+
+  /**
+   * Adds a TimePhasedData object to this component at
+   * the given index.
+   *
+   * @param index Location in array to add TimePhased object
+   * @param data TimePhased object to add to component
+   */
+  public void addTimePhasedData(int index, TimePhasedData data);
+
+  /**
+   * Adds a TimePhasedData object to this component.
+   *
+   * @param data TimePhased object to add to component
+   */
+  public void addTimePhasedData(TimePhasedData data);
+
+  /**
+   * Returns a count of all TimePhasedData objects
+   *
+   * @return TimePhased Data Count
+   */
+  public int timePhasedCount();
+
 }
 
 

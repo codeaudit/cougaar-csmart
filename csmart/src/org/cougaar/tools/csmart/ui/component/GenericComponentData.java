@@ -39,11 +39,13 @@ public class GenericComponentData implements ComponentData {
   private ConfigurableComponent parent = null;
   private ConfigurableComponent owner = null;
   private ArrayList leafComponents = null;
+  private ArrayList timePhasedData = null;
 
   public GenericComponentData() {
     children = new ArrayList();
     parameters = new ArrayList();
     leafComponents = new ArrayList();
+    timePhasedData = new ArrayList();
   }
 
   public String getType() {
@@ -151,4 +153,27 @@ public class GenericComponentData implements ComponentData {
   public int leafCount() {
     return leafComponents.size();
   }
+
+  public TimePhasedData[] getTimePhasedData() {
+    return (TimePhasedData[]) timePhasedData.toArray(new TimePhasedData[0]);
+  }
+
+  public void setTimePhasedData(TimePhasedData[] data) {
+    for(int i = 0 ; i < data.length; i++) {
+      timePhasedData.add(data[i]);
+    }
+  }
+
+  public void addTimePhasedData(int index, TimePhasedData data) {
+    timePhasedData.add(index, data);
+  }
+
+  public void addTimePhasedData(TimePhasedData data) {
+    timePhasedData.add(data);
+  }
+
+  public int timePhasedCount() {
+    return timePhasedData.size();
+  }
+
 }
