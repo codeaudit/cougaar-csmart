@@ -82,6 +82,7 @@ public class AgentFileComponent
     addPlugins();
     addBinders();
     addComponents();
+    addAssetData();
   }
 
   protected void addAssetData() {
