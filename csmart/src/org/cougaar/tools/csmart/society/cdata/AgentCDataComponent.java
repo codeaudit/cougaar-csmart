@@ -31,6 +31,8 @@ import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.AssetComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PluginBase;
+import org.cougaar.tools.csmart.society.BinderBase;
+import org.cougaar.tools.csmart.society.AgentBase;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 
 /**
@@ -39,17 +41,9 @@ import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
  */
 
 public class AgentCDataComponent 
-  extends ModifiableConfigurableComponent
+  extends AgentBase
           implements AgentComponent {
 
-  /** Agent Classname Property Definitions **/
-
-  /** Classname - Property Name **/
-  public static final String PROP_CLASSNAME = "Classname";
-
-  /** Classname - Property Description **/
-  public static final String PROP_CLASSNAME_DESC = "Name of the Agent Class";
-  
   ComponentData cdata;
 
   /**
@@ -70,6 +64,34 @@ public class AgentCDataComponent
     Property p = addProperty(PROP_CLASSNAME, new String(cdata.getClassName()));
     p.setToolTip(PROP_CLASSNAME_DESC);
 
+    addBinders();
+    addPlugins();
+    addAssetData();
+  }
+
+  protected void addBinders() {
+    // Add binders
+    // FIXME: Is this right?
+    ContainerBase container = new ContainerBase("Binders");
+    container.initProperties();
+    addChild(container);
+
+    ComponentData[] childCData = cdata.getChildren();
+    for (int i = 0; i < childCData.length; i++) {
+      if (childCData[i].getType().equals(ComponentData.AGENTBINDER)) {
+        BinderBase binder = new BinderBase(childCData[i].getName(),
+                                           childCData[i].getClassName());
+        binder.initProperties();
+	binder.setBinderType(childCData[i].getType());
+        Object[] parameters = childCData[i].getParameters();
+        for (int j = 0; j < parameters.length; j++) 
+          binder.addProperty(BinderBase.PROP_PARAM + j, (String)parameters[j]);
+        container.addChild(binder);
+      }
+    }
+  }
+
+  protected void addPlugins() {
     // add plugins
     ContainerBase container = new ContainerBase("Plugins");
     container.initProperties();
@@ -88,50 +110,16 @@ public class AgentCDataComponent
       }
     }
 
+    // FIXME: Add misc components -- how do I find the type though?
+  }
+
+  protected void addAssetData() {
+
     // add asset data components
     BaseComponent asset = 
       (BaseComponent)new AssetCDataComponent(cdata.getAgentAssetData());
     asset.initProperties();
     addChild(asset);
-  }
-
-  /**
-   * Adds any <code>ComponentData</code> to the ComponentData tree.
-   * This method should not modify any existing data in the <code>ComponentData</code>
-   * object.  It should only add it's own data.
-   *
-   * @see ComponentData
-   * @param data pointer to the <code>ComponentData</code> object.
-   * @return a modified <code>ComponentData</code> object.
-   */
-  public ComponentData addComponentData(ComponentData data) {
-    // Process AssetData
-    Iterator iter = 
-      ((Collection)getDescendentsOfClass(AssetComponent.class)).iterator();
-    while(iter.hasNext()) {
-      AssetComponent asset = (AssetComponent)iter.next();
-      asset.addComponentData(data);
-    }
-
-    // Process Plugins
-    iter = 
-      ((Collection)getDescendentsOfClass(ContainerBase.class)).iterator();
-    while(iter.hasNext()) {
-      ContainerBase container = (ContainerBase)iter.next();
-      if(container.getShortName().equals("Plugins")) {
-        for(int i=0; i < container.getChildCount(); i++) {
-          GenericComponentData plugin = null;
-          PluginBase pg = (PluginBase) container.getChild(i);
-          plugin = new GenericComponentData();
-          plugin.setType(ComponentData.PLUGIN);
-          plugin.setParent(data);
-          plugin.setOwner(this);
-          data.addChild(pg.addComponentData(plugin));
-        }
-      }
-    }
-   
-    return data;
   }
 
 }
