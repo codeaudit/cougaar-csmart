@@ -233,8 +233,9 @@ public class DBUtils {
 
     if( !substitutions.isEmpty() ) {
       String query = null;
+      Connection conn = null;
       try {
-        Connection conn = getConnection();
+	conn = getConnection();
         Statement stmt = conn.createStatement();
         query = getQuery("querySocietyName", substitutions);
         ResultSet rs = stmt.executeQuery(query);
@@ -244,11 +245,15 @@ public class DBUtils {
         
         rs.close();
         stmt.close();
-	conn.close();
       } catch (SQLException se) {
         if(log.isErrorEnabled()) {
           log.error("Caught SQL exception getting Society Name " + query, se);
         }
+      } finally {
+	try {
+	  if (conn != null)
+	    conn.close();
+	} catch (SQLException e) {}
       }
     }
 
