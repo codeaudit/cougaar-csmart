@@ -204,7 +204,7 @@ public class DBUtils {
 	username = dbProps.getProperty("username");
 	password = dbProps.getProperty("password");
         if(log.isDebugEnabled()) {
-          log.debug("getConnection(): \n DATABASE=" + DATABASE + 
+          log.debug("DBUtils.getConnection(): \n DATABASE=" + DATABASE + 
                     "\n QUERY_FILE=" + QUERY_FILE + 
                     "\n database=" + database + 
                     "\n username=" + username);
