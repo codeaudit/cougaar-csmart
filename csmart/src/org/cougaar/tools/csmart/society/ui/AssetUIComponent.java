@@ -87,6 +87,7 @@ public class AssetUIComponent
           rData.setType((String)rel.getProperty(PROP_TYPE).getValue());
           rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
           rData.setItem((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
+          rData.setTypeId((String)rel.getProperty(RelationshipBase.PROP_TYPEID).getValue());
           assetData.addRelationship(rData);
         }
       }
