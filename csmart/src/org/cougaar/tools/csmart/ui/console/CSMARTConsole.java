@@ -37,6 +37,7 @@ import javax.swing.tree.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
+import org.cougaar.mlm.ui.glsinit.GLSClient;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.experiment.Experiment;
@@ -328,11 +329,11 @@ public class CSMARTConsole extends JFrame {
     descriptionPanel.add(Box.createRigidArea(HGAP10));
     descriptionPanel.add(new JLabel(cc.getSocietyName()));
     descriptionPanel.add(Box.createRigidArea(HGAP5));
-    descriptionPanel.add(new JLabel("Trial: "));
-    descriptionPanel.add(Box.createRigidArea(HGAP5));
+    //    descriptionPanel.add(new JLabel("Trial: "));
+    //    descriptionPanel.add(Box.createRigidArea(HGAP5));
     trialNameLabel = new JLabel("");
-    descriptionPanel.add(trialNameLabel);
-    descriptionPanel.add(Box.createRigidArea(HGAP10));
+    //    descriptionPanel.add(trialNameLabel);
+    //    descriptionPanel.add(Box.createRigidArea(HGAP10));
     
     runButton = new JToggleButton("Run");
     runButton.setToolTipText("Start running experiment");
@@ -716,7 +717,7 @@ public class CSMARTConsole extends JFrame {
         // reset controls if no nodes started successfully
         boolean reset = false;
         synchronized (runningNodesLock) {
-          if (runningNodes.isEmpty())
+          if (runningNodes.isEmpty()) 
             reset = true;
         } // end synchronized
         if (reset) {
@@ -728,7 +729,12 @@ public class CSMARTConsole extends JFrame {
                 currentTrial--;
               }
             });
-        }
+        } else
+          SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                (new GLSClient()).createGUI();
+              }
+            });
       }
     };
     starting = true;
@@ -738,6 +744,7 @@ public class CSMARTConsole extends JFrame {
       re.printStackTrace();
     }
   }
+
   private boolean haveMoreTrials() {
     return currentTrial < (experiment.getTrialCount()-1);
   }
@@ -948,9 +955,9 @@ public class CSMARTConsole extends JFrame {
 					boolean isRunning) {
     if (!isRunning) {
       experiment.experimentStopped();
-      csmart.setRunningExperiment(null);
+      csmart.removeRunningExperiment(experiment);
     } else
-      csmart.setRunningExperiment(experiment);
+      csmart.addRunningExperiment(experiment);
     // update society
     experiment.getSocietyComponent().setRunning(isRunning);
 
@@ -1249,17 +1256,17 @@ public class CSMARTConsole extends JFrame {
         (NodeCreationInfo)nodeCreationInfoList.get(i);
       final NodeServesClient nsc;
       try {
-        nsc = nci.hsc.createNode(nci.uniqueNodeName, 
+        nsc = nci.hsc.createNode(experiment.getExperimentName() + "-" +
+                                 nci.uniqueNodeName, 
                                  nci.properties, 
                                  nci.args,
                                  nci.listener, 
                                  nci.filter, 
-                                  nci.configWriter);
+                                 nci.configWriter);
       } catch (Exception e) {
-        e.printStackTrace();
-        if(log.isErrorEnabled()) {
-        log.error("CSMARTConsole: cannot create node: " + 
-                           nci.nodeName, e);
+        if (log.isErrorEnabled()) {
+          log.error("CSMARTConsole: cannot create node: " + 
+                    nci.nodeName, e);
         }
         JOptionPane.showMessageDialog(this,
                                       "Cannot create node on: " + 
@@ -1397,7 +1404,9 @@ public class CSMARTConsole extends JFrame {
 
     NodeServesClient nsc = null;
     try {
-      nsc = hostServer.createNode(nodeName, properties, args,
+      nsc = hostServer.createNode(experiment.getExperimentName() + "-" + 
+                                  nodeName, 
+                                  properties, args,
                                   listener, new NodeEventFilter(10), null);
       if (nsc != null) {
         synchronized (runningNodesLock) {
@@ -1779,17 +1788,15 @@ public class CSMARTConsole extends JFrame {
 
   private void viewNotifyMenuItem_actionPerformed() {
     if (notifyCondition == null)
-      JOptionPane.showConfirmDialog(this,
+      JOptionPane.showMessageDialog(this,
                                     "No notification set.",
                                     "Notification",
-                                    JOptionPane.PLAIN_MESSAGE,
-                                    JOptionPane.OK_OPTION);
+                                    JOptionPane.PLAIN_MESSAGE);
     else 
-      JOptionPane.showConfirmDialog(this,
+      JOptionPane.showMessageDialog(this,
               "Notify if any node writes: " + notifyCondition,
                                     "Notification",
-                                    JOptionPane.PLAIN_MESSAGE,
-                                    JOptionPane.OK_OPTION);
+                                    JOptionPane.PLAIN_MESSAGE);
   }
 
   /**
