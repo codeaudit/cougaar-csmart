@@ -40,8 +40,6 @@ import org.cougaar.tools.csmart.runtime.ldm.event.ImpactModel;
 import org.cougaar.tools.csmart.runtime.ldm.event.InfrastructureEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.NewInfrastructureEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.IEFactory;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.util.log.Logger;
 
 /**
  * Translate <code>RealWorldEvent</code>s into <code>InfrastructureEvent</code>s<br>
@@ -66,8 +64,6 @@ import org.cougaar.util.log.Logger;
 public class TransducerPlugIn extends CSMARTPlugIn {
   private IncrementalSubscription rweSub;
 
-  private transient Logger log;
-
   private Society world = null;
   
   // Subscribe to all RealWorldEvents
@@ -84,8 +80,6 @@ public class TransducerPlugIn extends CSMARTPlugIn {
    * and subscribe to RealWorldEvents
    */
   public void setupSubscriptions() {
-    log = CSMART.createLogger(this.getClass().getName());
-
     world = new Society();
     theIEF = new IEFactory(theCSMARTF);
     

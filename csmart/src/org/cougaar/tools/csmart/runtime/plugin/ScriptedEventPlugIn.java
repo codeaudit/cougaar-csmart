@@ -42,8 +42,6 @@ import org.cougaar.tools.csmart.runtime.ldm.event.CyberAttackEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.NewCyberAttackEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.KineticEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.NewSimpleKEvent;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * The ScriptedEventPlugIn allows real world events to enter the society
@@ -67,16 +65,12 @@ public class ScriptedEventPlugIn
   /** ClusterID of Agent containing the Transducer PlugIn **/
   private ClusterIdentifier transducer;
 
-  private transient Logger log;
-
   /**
    * Lets face it, this plugin just blindly publishes events, it doesn't
    * even care if they succeed.  No subscriptions for now.<br>
    * It parses the given XML events file, and sends one event per entry.<br>
    */
   public void setupSubscriptions() {
-    log = CSMART.createLogger(this.getClass().getName());
-
     if (log.isDebugEnabled()) {
       log.debug("setupSubscriptions:" + this + ":Entering");
     }

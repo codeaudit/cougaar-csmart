@@ -37,8 +37,6 @@ import org.cougaar.planning.ldm.plan.AuxiliaryQueryType;
 import org.cougaar.tools.csmart.runtime.ldm.asset.LocalAsset;
 import org.cougaar.tools.csmart.runtime.ldm.asset.SimpleInventoryPG;
 import org.cougaar.tools.csmart.Constants;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**  
  * The ExecutorPlugIn intercepts allocations to local assets, and asks
@@ -70,8 +68,6 @@ public class ExecutorPlugIn
    */
   private IncrementalSubscription allocSub;
 
-  private transient Logger log;
-
   private UnaryPredicate allocP = new UnaryPredicate() {
     public boolean execute(Object o) {
       if (o instanceof Allocation) {
@@ -88,7 +84,6 @@ public class ExecutorPlugIn
   };
 
   public void setupSubscriptions() {
-    log = CSMART.createLogger(this.getClass().getName());
 
     if (log.isDebugEnabled()) {
       log.debug("setupSubscriptions: " + this + ":Entering");

@@ -38,8 +38,7 @@ import org.cougaar.tools.csmart.util.*;
 
 import org.cougaar.util.StateModelException;
 import org.cougaar.util.UnaryPredicate;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.core.service.LoggingService;
 
 /**
  * CSMART Base PlugIn. Provide support for publishing after a delay and convenience methods.<br>
@@ -56,13 +55,12 @@ public abstract class CSMARTPlugIn
    */
   protected static final long MINIMUM_DELAY_MILLIS = 100;
 
-  private transient Logger log;
-
   //
   // CSMART hooks, i.e. CSMARTFactory, etc
   //
 
   private DomainService domainService = null;
+  protected LoggingService log = null;
 
   /** CSMART factory */
   protected CSMARTFactory theCSMARTF;
@@ -72,12 +70,12 @@ public abstract class CSMARTPlugIn
 
   /** Identifier of PlugIn */
   private UID id = null;
+
   
   // 
   // constructor
   //
   public CSMARTPlugIn() {
-    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**
@@ -106,6 +104,10 @@ public abstract class CSMARTPlugIn
 					    domainService  = null;
 					}
 				      });        
+
+    log = (LoggingService)
+      getServiceBroker().getService(this, LoggingService.class, null);
+
     // get the CSMART factory
     this.theCSMARTF = 
       ((domainService != null) ?
@@ -387,7 +389,7 @@ public abstract class CSMARTPlugIn
    */
   protected class SyncAlarm implements Alarm {
 
-    Logger log = CSMART.createLogger(this.getClass().getName());
+    private LoggingService log = CSMARTPlugIn.this.log;
 
     private final long expTime;
 
@@ -468,8 +470,6 @@ public abstract class CSMARTPlugIn
    */
   protected class DelayPublishAlarm implements Alarm {
 
-    Logger log = CSMART.createLogger(this.getClass().getName());
-
     private static final byte EXPIRED        = 0;
     public  static final byte PUBLISH_ADD    = 1;
     public  static final byte PUBLISH_CHANGE = 2;
@@ -481,6 +481,8 @@ public abstract class CSMARTPlugIn
     private final long expTime;
 
     private final UnaryPredicate pred;
+
+    private LoggingService log = CSMARTPlugIn.this.log;
 
     public DelayPublishAlarm(
         byte pubStyle,
@@ -542,14 +544,11 @@ public abstract class CSMARTPlugIn
 //  	  log.debug("expire: " + this + " about to get blackboard service");
 //  	}
         BlackboardService bbs = CSMARTPlugIn.this.getBlackboardService();
-//  	if (log.isApplicable(log.VERY_VERBOSE)) {
-//  	  log.log(this, log.VERY_VERBOSE, "expire: " + this + " got blackboard service");
+//  	if (log.isDebugEnabled()) {
+//  	  log.debug("expire: " + this + " got blackboard service");
 //  	}
         try {
           bbs.openTransaction();
-//  	  if (log.isApplicable(log.VERY_VERBOSE)) {
-//  	    log.log(this, log.VERY_VERBOSE, "expire: " + this + " just got BBS transaction");
-//  	  }
           // allow the user to alter and/or rethink the publish
           // 
           // must do the "pred.execute(o)" within the transaction
@@ -573,15 +572,9 @@ public abstract class CSMARTPlugIn
           } else {
             // don't publish
           }
-//  	  if (log.isApplicable(log.VERY_VERBOSE)) {
-//  	    log.log(this, log.VERY_VERBOSE, "expire: " + this + " did publish");
-//  	  }
         } finally {
           pubStyle = EXPIRED;
           bbs.closeTransaction();
-//  	  if (log.isApplicable(log.VERY_VERBOSE)) {
-//  	    log.log(this, log.VERY_VERBOSE, "expire: " + this + " closed transaction");
-//  	  }
         }
       }
     }

@@ -60,8 +60,6 @@ import org.cougaar.tools.csmart.runtime.ldm.event.DeadlineTimerEvent;
 import org.cougaar.tools.csmart.runtime.ldm.event.NewDeadlineTimerEvent;
 import org.cougaar.tools.csmart.runtime.ldm.asset.LocalAsset;
 import org.cougaar.tools.csmart.runtime.ldm.asset.RolesPG;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 
 /**
@@ -114,7 +112,6 @@ public class AllocatorPlugIn
   private static final long DEFAULT_TRANS_DELAY = 150;
   private static final long DEFAULT_TRY_TIME = 540000;
 
-  private transient Logger log;
   /** 
    * @see #minAllocTime 
    */
@@ -362,8 +359,6 @@ public class AllocatorPlugIn
    * And finaly DeadlineTimer Events, in case an allocation took too long.
    */
   public void setupSubscriptions() {
-    log = CSMART.createLogger(this.getClass().getName());
-
     if (log.isDebugEnabled()) {
       log.debug(" entering setupSubscriptions");
     }
@@ -1765,7 +1760,6 @@ public class AllocatorPlugIn
      */
     private final String task;
 
-    private transient Logger log = CSMART.createLogger(this.getClass().getName());
     /**
      * String for the single required asset role, or a Collection of 
      *   Strings for multiple (UNION) required roles.
@@ -1830,9 +1824,6 @@ public class AllocatorPlugIn
       // If its an ABC LocalAsset, treat it separately
       if (asset instanceof LocalAsset) {
 	LocalAsset lasset = (LocalAsset)asset;
-        if(log.isDebugEnabled()) {
-          log.debug("TESTING- got a local Asset to match: " + lasset);
-        }
 	RolesPG rolesPG = 
 	  ((lasset != null) ?  lasset.getRolesPG() : null);
 	if (rolesPG == null) {

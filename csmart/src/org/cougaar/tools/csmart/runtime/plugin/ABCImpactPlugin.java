@@ -32,8 +32,7 @@ import org.cougaar.util.UnaryPredicate;
 import org.cougaar.tools.csmart.runtime.ldm.event.InfrastructureEvent;
 import org.cougaar.tools.csmart.runtime.binder.SlowMessageTransportServiceProxyController;
 import org.cougaar.tools.csmart.runtime.binder.SlowMessageTransportServiceFilter;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.core.service.LoggingService;
 
 /**
  * Plugin that looks for <code>InfrastructureEvent</code>s and 
@@ -45,13 +44,11 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  */
 public class ABCImpactPlugin extends SimplePlugIn {
 
-  private static final boolean VERBOSE = false;
+  private LoggingService log;
 
   private SlowMessageTransportServiceProxyController mtController;
 
   private IncrementalSubscription infEventSub;
-
-  private transient Logger log;
 
   private UnaryPredicate createInfEventPred() {
     final ClusterIdentifier myCID = getAgentIdentifier();
@@ -65,23 +62,15 @@ public class ABCImpactPlugin extends SimplePlugIn {
       };
   }
 
-  private void createLogger() {
-    log = CSMART.createLogger(this.getClass().getName());
-  }
-
   /**
    * Find the MessageTransport controller, subscribe to InfrastructureEvents.
    */
   public void setupSubscriptions() {
 
-    createLogger();
-
-    if(log.isDebugEnabled()) {
-      log.debug(" setting up subscriptions");
-    }
-
     // get the service broker
     ServiceBroker serviceBroker = getBindingSite().getServiceBroker();
+
+    log = (LoggingService) serviceBroker.getService(this, LoggingService.class, null);
 
     // get the MessageTransport controller 
     mtController = (SlowMessageTransportServiceProxyController)

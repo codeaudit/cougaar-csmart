@@ -41,8 +41,6 @@ import org.cougaar.tools.csmart.runtime.ldm.asset.HappinessPG;
 import org.cougaar.tools.csmart.runtime.ldm.event.NewHappinessChangeEvent;
 import org.cougaar.tools.csmart.runtime.ldm.plugin.customer.*;
 import org.cougaar.tools.csmart.util.parser.TaskFileParser;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * A simple Customer - inject new <code>Task</code>s into the sytem,
@@ -79,8 +77,6 @@ public class CustomerPlugIn extends CSMARTPlugIn {
   private java.util.Random sharedRandom = new java.util.Random();
 
   private long pubDelay = 2000L;
-
-  private transient Logger log;
 
   private PlanElementPredicate peP = new PlanElementPredicate() {
       public boolean execute(PlanElement o) {
@@ -121,8 +117,6 @@ public class CustomerPlugIn extends CSMARTPlugIn {
    *
    */
   public void setupSubscriptions() {
-    log = CSMART.createLogger(this.getClass().getName());
-
     if (log.isDebugEnabled()) {
       log.debug("setupSubscriptions:" + this + ":Entering");
     }

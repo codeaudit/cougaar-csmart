@@ -31,8 +31,6 @@ import org.cougaar.planning.ldm.plan.*;
 import org.cougaar.util.UnaryPredicate;
 
 import java.util.*;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * MetricsInitializerPlugIn : Launch a number of tasks and wait
@@ -92,7 +90,6 @@ public class MetricsInitializerPlugin
 
   private HashSet activeControlTasks = new HashSet();
   private Alarm sampleTimer = null; // Times sampling
-  private transient Logger log;
 
   HashMap metricsProviders = new HashMap();
 
@@ -147,7 +144,6 @@ public class MetricsInitializerPlugin
   
   public void setupSubscriptions() 
   {
-    log = CSMART.createLogger(this.getClass().getName());
     Vector params = getParameters() != null ? new Vector(getParameters()) : null;
 
     if ((params.size() < 2) ||

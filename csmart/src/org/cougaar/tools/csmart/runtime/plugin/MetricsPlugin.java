@@ -58,8 +58,6 @@ import java.text.NumberFormat;
 import java.util.*;
 
 import org.cougaar.tools.scalability.performance.jni.CpuClock;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Collect statistics on Agent operation.<br>
@@ -181,8 +179,6 @@ public class MetricsPlugin
   private long timeFirstMyTask = 0l;
   private String searchVerb = null;
 
-  private transient Logger log;
-
   // This plugin only wants the statistics gathering tasks.
   private IncrementalSubscription myTasks;
   public UnaryPredicate myTasksPredicate = new UnaryPredicate() {
@@ -246,7 +242,6 @@ public class MetricsPlugin
           
   public void setupSubscriptions()
   {
-    log = CSMART.createLogger(this.getClass().getName());
     // Is this necessary?
     // This asset, in this plugin, is only used to be the place
     // control tasks are allocated to

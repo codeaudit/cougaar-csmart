@@ -32,8 +32,6 @@ import org.cougaar.util.UnaryPredicate;
 
 import org.cougaar.tools.csmart.runtime.ldm.asset.*;
 import org.cougaar.tools.csmart.util.parser.SimpleParser;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * The <code>LocalAssetBuilder</code> constructs <code>LocalAsset</code>s
@@ -76,7 +74,6 @@ public class LocalAssetBuilder
    */
   private static final String PROTO_NAME = "LOCAL_ASSET";
 
-  private transient Logger log;
   //
   // Could override <tt>load(..)</tt> and get the logger, like 
   // <tt>CSMARTPlugIn.load(..)</tt>, but for now it's not required.
@@ -87,7 +84,6 @@ public class LocalAssetBuilder
    * must be listed <u>FIRST</u> in the "*.INI" file!.
    */
   public void setupSubscriptions() {
-    log = CSMART.createLogger(this.getClass().getName());
     List pv = getParameters() != null ? new ArrayList(getParameters()) : null;
     int pvSize = ((pv != null) ? pv.size() : 0);
     if (pvSize > 0) {
