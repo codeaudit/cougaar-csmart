@@ -60,6 +60,7 @@ public class DBUtils {
   public static final String ASSEMBLYID_QUERY = "queryAssemblyID";
   private static final String EXPERIMENT_QUERY = "queryExptsWithRecipe";
   private static final String EXPERIMENT_SOCIETY_QUERY = "queryExptsWithSociety";
+  private static final String PLUGIN_QUERY = "queryGetPluginClasses";
 
   // Flag whether to actually go to DB on queries
   public static boolean execute = true;
@@ -1102,6 +1103,35 @@ public class DBUtils {
       throw new RuntimeException("Error" + e);
     }
     return result;
+  }
+
+  /**
+   * Get a set of plugin class names.
+   *
+   * @return a <code>Set</code> of all plugin class names in the database
+   */
+  public static Set dbGetPluginClasses() {
+    String dbQuery = DBUtils.getQuery(PLUGIN_QUERY, new HashMap());
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
+    Set s = new HashSet();
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+        Statement stmt = conn.createStatement();	
+        ResultSet rs = stmt.executeQuery(dbQuery);
+        while (rs.next()) {s.add(rs.getString(1));}
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("query: "+dbQuery, e);
+      }
+      throw new RuntimeException("Error" + e);
+    }
+    return s;
   }
 
 } // end of DBUtils.java
