@@ -95,32 +95,24 @@ public class SocietyComponentCreator {
     ac.addParameter(agent.getShortName()); // Agents have one parameter, the agent name
     ac.setOwner(owner);
     ac.setParent(parent);
-    addBinders(ac, agent);
-    addPlugins(ac, agent);
+    addContainer(ac, agent, "Binders");
+    addContainer(ac, agent, "Plugins");
     parent.addChild((ComponentData)ac);
   }
 
-  private static final void addBinders(ComponentData cd, BaseComponent cp) {
-    Iterator iter = ((Collection)cp.getDescendentsOfClass(ContainerBase.class)).iterator();
-    while(iter.hasNext()) {
-      ContainerBase container = (ContainerBase)iter.next();
-      if(container.getShortName().equals("Binders")) {
-        for(int i=0; i < container.getChildCount(); i++) {
-          BinderBase binder = (BinderBase) container.getChild(i);
-          binder.addComponentData(cd);
-        }
-      }
-    }
-  }
+  private static final void addContainer(ComponentData cd, BaseComponent cp, String name) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.SocietyComponentCreator");
 
-  private static final void addPlugins(ComponentData cd, BaseComponent cp) {
     Iterator iter = ((Collection)cp.getDescendentsOfClass(ContainerBase.class)).iterator();
     while(iter.hasNext()) {
       ContainerBase container = (ContainerBase)iter.next();
-      if(container.getShortName().equals("Plugins")) {
+      if(log.isDebugEnabled()) {
+        log.debug("Container Name: " + container.getShortName());
+      }
+      if(container.getShortName().equals(name)) {
         for(int i=0; i < container.getChildCount(); i++) {
-          PluginBase plugin = (PluginBase) container.getChild(i);
-          plugin.addComponentData(cd);
+          BaseComponent base = (BaseComponent) container.getChild(i);
+          base.addComponentData(cd);
         }
       }
     }
