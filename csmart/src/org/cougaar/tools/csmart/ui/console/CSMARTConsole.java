@@ -915,9 +915,11 @@ public class CSMARTConsole extends JFrame {
                 public void run() {
                   JInternalFrame jif = 
                     new JInternalFrame("GLS", true, false, true, true);
-                  glsClient = new GLSClient(getOPlanAgentURL(glsAgent));
+                  glsClient = getGLSClient(glsAgent);
+                  if (glsClient == null)
+                    return;
                   jif.getContentPane().add(glsClient);
-                  jif.setSize(350, 350);
+                  jif.setSize(350, 400);
                   jif.setLocation(0, 0);
                   jif.setVisible(true);
                   desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
@@ -994,70 +996,46 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * Get the agent URL for the agent named "NCA" in the experiment.
+   * Create gls client gui.
+   * Look for a definition of the https port, and if it exists, 
+   * use https and the port number;
+   * else look for a definition of http port, and if it exists,
+   * use http and the port number;
+   * else use http and the default port number.
    */
-  private String getOPlanAgentURL(String agent) {
+  private GLSClient getGLSClient(String agent) {
+    String hostName = ""; // defaults
+    String protocol = GLS_PROTOCOL;
+    String port = String.valueOf(CSMARTUL.agentPort);
     if (agent == null || agent.equals(""))
       agent = "NCA";
+    Properties arguments = null;
     HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
       for (int j = 0; j < nodes.length; j++) {
         AgentComponent[] agents = nodes[j].getAgents();
         for (int k = 0; k < agents.length; k++) {
-          if (agents[k].getShortName().equals(agent))
-            return getURL(hosts[i].getShortName(), agent, 
-                          nodes[j].getArguments());
+          if (agents[k].getShortName().equals(agent)) {
+            hostName = hosts[i].getShortName();
+            arguments = nodes[j].getArguments();
+            break;
+          }
         }
       }
     }
-    return null;
-  }
-
-  /**
-   * Look for a definition of the https port, and if it exists, 
-   * use https and the port number;
-   * else look for a definition of http port, and if it exists,
-   * use http and the port number;
-   * else use http and the default port number. 
-   * Note that this means that the HTTP(S) ports are best specified
-   * through CSMART if it is to find the Servlet.
-   */
-  private String getURL(String hostName, String agentName,
-                        Properties arguments) {
-    String defaultURL = 
-      GLS_PROTOCOL + "://" + hostName + ":" + CSMARTUL.agentPort + "/$" + agentName;
-    if (arguments == null)
-      return defaultURL;
-    String s = arguments.getProperty(CSMARTUL.AGENT_HTTPS_PORT);
-    int port = 0;
-    if (s != null) {
-      try {
-        port = Integer.parseInt(s);
-	return GLS_SECURE_PROTOCOL + "://" + hostName + ":" + port + "/$" + agentName;
-      } catch (Exception e) {
-        if (log.isErrorEnabled()) {
-          log.error("Exception parsing " + CSMARTUL.AGENT_HTTPS_PORT 
-                    + " : ", e);
-        }
+    if (arguments != null) {
+      String s = arguments.getProperty(CSMARTUL.AGENT_HTTPS_PORT);
+      if (s != null) {
+        port = s;
+        protocol = GLS_SECURE_PROTOCOL;
+      } else {
+        s = arguments.getProperty(CSMARTUL.AGENT_HTTP_PORT);
+        if (s != null)
+          port = s;
       }
     }
-
-    // No HTTPS argument. Assume it is HTTP.
-    s = arguments.getProperty(CSMARTUL.AGENT_HTTP_PORT);
-    if (s != null) {
-      try {
-        port = Integer.parseInt(s);
-	return GLS_PROTOCOL + "://" + hostName + ":" + port + "/$" + agentName;
-      } catch (Exception e) {
-        if (log.isErrorEnabled()) {
-          log.error("Exception parsing " + CSMARTUL.AGENT_HTTP_PORT);
-        }
-      }
-    }
-
-    // No HTTP argument. Assume it is on default port
-    return defaultURL;
+    return new GLSClient(protocol, hostName, port, agent);
   }
 
   private boolean haveMoreTrials() {
