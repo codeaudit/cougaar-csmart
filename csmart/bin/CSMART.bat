@@ -23,30 +23,45 @@ REM "</copyright>"
 REM Main script to run CSMART
 REM Users may want to customize the location of MS Excel
 
+
+REM Make sure that COUGAAR_INSTALL_PATH is specified
+IF NOT "%COUGAAR_INSTALL_PATH%" == "" GOTO L_2
+REM Unable to find cougaar-install-path
+ECHO COUGAAR_INSTALL_PATH not set!
+GOTO L_END
+:L_2
+
+REM Make sure that COUGAAR3RDPARTY is specified
+IF NOT "%COUGAAR3RDPARTY%" == "" GOTO L_3
+REM Unable to find "sys" path for 3rd-party jars
+ECHO COUGAAR3RDPARTY not set!
+GOTO L_END
+:L_3
+
 REM The following line is optional. Some output files are written to the working directory.
 REM CD %TEMP%
 
-REM calls setlibpath.bat which sets the path to the required jar files.
-CALL %COUGAAR_INSTALL_PATH%\bin\setlibpath.bat
+REM start the classpath with the optional COUGAAR_DEV_PATH
+SET LIBPATHS=
+IF NOT "%COUGAAR_DEV_PATH%" == "" SET LIBPATHS=%COUGAAR_DEV_PATH%;
 
-REM Next section lists classes that must be in CLASSPATH
-REM Note however that the Cougaar Bootstrapper will usually find
-REM them. The listed Jars however are less common,
-REM and so are listed here as a convenience.
-REM Note that the CSMART Jar file must be specified (as well as core),
-REM to get started.
-REM To not use the Bootstrapper, set org.cougaar.useBootstrapper=false
+REM Add CSMART jar explicitly to get started
+SET LIBPATHS=%LIBPATHS%%COUGAAR_INSTALL_PATH%\lib\csmart.jar
 
-REM add csmart.jar, explicitly
-SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\csmart.jar
+REM The AppServer jar must also be specified
+SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\server.jar
 
-REM for CSMART environment, use the following
-rem SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\server.jar
+REM For now CSMART needs "core.jar" for the Bootstrapper and some
+REM  utility classes.  This dependency should be removed in a future
+REM  release of CSMART!
+SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\core.jar
 
-REM Plus these third party jar files, which are in CIP\sys
-rem SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\sys\xerces.jar
-rem SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\sys\jcchart451K.jar
-rem SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\sys\grappa1_2_bbn.jar
+REM Plus these third party jar files, which are in COUGAAR3RDPARTY
+SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\xerces.jar
+SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\jcchart451K.jar
+SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\grappa1_2_bbn.jar
+SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\oracle12.zip
+SET LIBPATHS=%LIBPATHS%;%COUGAAR3RDPARTY%\silk.jar
 
 SET MYMEMORY=-Xms100m -Xmx300m
 SET MYPROPERTIES=-Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH%
@@ -60,3 +75,4 @@ SET MYEXCEL=-Dexcel="C:\Program Files\Microsoft Office\Office\excel.exe"
 
 java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %MYEXCEL% -classpath %LIBPATHS% org.cougaar.tools.csmart.ui.viewer.CSMART
 
+:L_END

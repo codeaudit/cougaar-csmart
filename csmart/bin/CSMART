@@ -23,8 +23,6 @@
 # Main script to run CSMART on Unix
 # Note that CSMART writes some files to its working directory.
     
-set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
-
 # Next section lists Jar files required for CSMART. Note that by default CSMART uses the Cougaar
 # Bootstrapper, which should find the jar files automatically (searching CIP/lib, plugins, sys, etc).
 # One need only include the CSMART and core jar files
@@ -48,13 +46,20 @@ set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
 # The Jars peculiar to CSMART and their usual locations are listed here as a convenience
     
 # Add CSMART jar explicitly to get started
-set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/csmart.jar"
+set LIBPATHS = "${COUGAAR_INSTALL_PATH}/lib/csmart.jar"
+
+# The AppServer jar must also be specified
+set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/server.jar"
     
-#set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/server.jar"
+# For now CSMART needs "core.jar" for the Bootstrapper and some
+#  utility classes.  This dependency should be removed in a future
+#  release of CSMART!
+set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/core.jar"
+
+# Third party jars are in COUGAAR3RDPARTY
+set LIBPATHS = "${LIBPATHS}:${COUGAAR3RDPARTY}/xerces.jar:${COUGAAR3RDPARTY}/grappa1_2_bbn.jar:${COUGAAR3RDPARTY}/jcchart451K.jar:${COUGAAR3RDPARTY}/oracle12.zip:${COUGAAR3RDPARTY}/silk.jar"
     
-# Third party jars are in CIP/sys
-# set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/sys/xerces.jar:${COUGAAR_INSTALL_PATH}/sys/grappa1_2_bbn.jar:${COUGAAR_INSTALL_PATH}/sys/jcchart451K.jar"
-    
+# Optionally add a debug/development path
 if ($?COUGAAR_DEV_PATH) then
     set LIBPATHS = "${COUGAAR_DEV_PATH}:${LIBPATHS}"
 endif

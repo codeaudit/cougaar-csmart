@@ -27,8 +27,6 @@ os=`uname`
 SEP=";"
 if [ $os = "Linux" -o $os = "SunOS" ]; then SEP=":"; fi
 
-LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
-
 # Next section lists Jar files required for CSMART. Note that by default CSMART uses the Cougaar
 # Bootstrapper, which should find the jar files automatically (searching CIP/lib, plugins, sys, etc).
 # One need only include the CSMART and core jar files
@@ -52,13 +50,19 @@ LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
 # The Jars peculiar to CSMART and their usual locations are listed here as a convenience
     
 # Add CSMART jar explicitly to get started
-LIBPATHS="${LIBPATHS}${SEP}${COUGAAR_INSTALL_PATH}/lib/csmart.jar"
+LIBPATHS="${COUGAAR_INSTALL_PATH}/lib/csmart.jar"
 export LIBPATHS
     
-#set LIBPATHS="${LIBPATHS}${SEP}${COUGAAR_INSTALL_PATH}/lib/server.jar"
+# The AppServer jar must also be specified
+LIBPATHS="${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/server.jar"
     
-# Third party jars are in CIP/sys
-# set LIBPATHS="${LIBPATHS}${SEP}${COUGAAR_INSTALL_PATH}/sys/xerces.jar${SEP}${COUGAAR_INSTALL_PATH}/sys/grappa1_2_bbn.jar${SEP}${COUGAAR_INSTALL_PATH}/sys/jcchart451K.jar"
+# For now CSMART needs "core.jar" for the Bootstrapper and some
+#  utility classes.  This dependency should be removed in a future
+#  release of CSMART!
+LIBPATHS="${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/core.jar"
+
+# Third party jars are in COUGAAR3RDPARTY
+LIBPATHS="${LIBPATHS}${SEP}${COUGAAR3RDPARTY}/xerces.jar${SEP}${COUGAAR3RDPARTY}/grappa1_2_bbn.jar${SEP}${COUGAAR3RDPARTY}/jcchart451K.jar${SEP}${COUGAAR3RDPARTY}/oracle12.zip${SEP}${COUGAAR3RDPARTY}/silk.jar"
     
 if [ "$COUGAAR_DEV_PATH" != "" ] ; then
     LIBPATHS="${COUGAAR_DEV_PATH}${SEP}${LIBPATHS}"
