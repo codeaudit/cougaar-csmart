@@ -24,12 +24,7 @@ import java.io.FileFilter;
 import java.io.Serializable;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Vector;
+import java.util.*;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -64,7 +59,7 @@ public class CMTSociety
 
   private Property testProp;
 
-  private String assemblyID;
+  private List assemblyID;
   private String database;
   private String username;
   private String password;
@@ -78,7 +73,13 @@ public class CMTSociety
 
   public CMTSociety(String name) {
     super(name);
-    assemblyID = name;
+    assemblyID = new ArrayList();
+    assemblyID.add(name);
+  }
+
+  public CMTSociety(List ids) {
+    super("Combo");
+    assemblyID = ids;
   }
 
   public static CMTSociety loadCMTSociety(String assemblyID) {
@@ -95,35 +96,36 @@ public class CMTSociety
     // -- basically, we want the componentdata stuff, or at least the list of Agents with names
     // creating the necessary AgentComponents
 
-    if(CSMART.inDBMode()) {
-      try {
-	substitutions.put(":assembly_type", "CMT");
-	Connection conn = DBUtils.getConnection();
-	Statement stmt = conn.createStatement();
-	String query = DBUtils.getQuery(DBUtils.ASSEMBLYID_QUERY, substitutions);
-	ResultSet rs = stmt.executeQuery(query);
-	while(rs.next()) {
-	  String result = rs.getString(1);
-	  if(result != null && result.equals(assemblyID)) {	    
-	    match = true;
-	    break;
-	  }
-	}
-	rs.close();
-	stmt.close();
-	conn.close();
-	if(match) {
-	  society = new CMTSociety(assemblyID);
-	  //	  society.initProperties();
-	}
-      } catch (SQLException se) {}   
-    }
+//     if(CSMART.inDBMode()) {
+//       try {
+// 	substitutions.put(":assembly_type", "CMT");
+// 	Connection conn = DBUtils.getConnection();
+// 	Statement stmt = conn.createStatement();
+// 	String query = DBUtils.getQuery(DBUtils.ASSEMBLYID_QUERY, substitutions);
+// 	ResultSet rs = stmt.executeQuery(query);
+// 	while(rs.next()) {
+// 	  String result = rs.getString(1);
+// 	  if(result != null && result.equals(assemblyID)) {	    
+// 	    match = true;
+// 	    break;
+// 	  }
+// 	}
+// 	rs.close();
+// 	stmt.close();
+// 	conn.close();
+// 	if(match) {
+// 	  society = new CMTSociety(assemblyID);
+// 	}
+//       } catch (SQLException se) {}   
+//     }
 
     return society;
   }
 
   public void initProperties() {
     Map substitutions = new HashMap();
+    StringBuffer assemblyMatch = null;
+
     // FIXME!!
     // assembly_ID
     // description
@@ -166,7 +168,24 @@ public class CMTSociety
       database = dbp.getProperty("database");
       username = dbp.getProperty("username");
       password = dbp.getProperty("password");
-      substitutions.put(":assemblyMatch", assemblyID);
+      assemblyMatch = new StringBuffer();
+      assemblyMatch.append("in (");
+      Iterator iter = assemblyID.iterator();
+      boolean first = true;
+      while (iter.hasNext()) {
+	String val = (String)iter.next();
+	if (first) {
+	  first = false;
+	} else {
+	  assemblyMatch.append(", ");
+	}
+	assemblyMatch.append("'");
+	assemblyMatch.append(val);
+	assemblyMatch.append("'");
+      }
+      assemblyMatch.append(")");
+      
+      substitutions.put(":assemblyMatch", assemblyMatch.toString());
     } catch(IOException e) {
       throw new RuntimeException("Error: " + e);
     }
@@ -298,9 +317,29 @@ public class CMTSociety
   }
 
   public ComponentData addComponentData(ComponentData data) {
-    // FIXME
-    // This should just call addComponentData on all of the child Agents, getting them to add
-    // their data to the society-level ComponentData
+    ComponentData[] children = data.getChildren();
+
+    for(int i=0; i < children.length; i++) {
+      System.out.println("Child Name: " + children[i].getName());
+      ComponentData child = children[i];
+      if(child.getType() == ComponentData.AGENT) {
+
+	Iterator iter = ((Collection)getDescendentsOfClass(CMTAgent.class)).iterator();
+
+	while(iter.hasNext()) {
+	  CMTAgent agent = (CMTAgent)iter.next();
+	  if(child.getName().equals(agent.getFullName().toString())) {
+	    child.setOwner(this);
+	    System.out.println("Match: " + child.getName());
+	    agent.addComponentData(child);
+	  }
+	}		
+      } else {
+	// Process it's children.
+	addComponentData(child);
+      }      
+    }
+
     return data;
   }
 

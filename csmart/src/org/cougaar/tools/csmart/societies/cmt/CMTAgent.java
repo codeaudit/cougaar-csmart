@@ -22,8 +22,7 @@ package org.cougaar.tools.csmart.societies.cmt;
 
 import java.io.Serializable;
 import java.io.IOException;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Statement;
@@ -45,6 +44,7 @@ public class CMTAgent
   public static final String PROP_COMPONENT_ID = "Component ID";
   public static final String PROP_COMPONENT_CATEGORY = "Component Category";
   private static final String QUERY_AGENT_DATA = "queryAgentData";
+  private static final String QUERY_PLUGIN_NAME = "queryPluginNames";
 
   // The tree will not display in the builder
   // if there are no properties so put it's name.
@@ -54,7 +54,7 @@ public class CMTAgent
   private Property propCategory;
 
   private String name;
-  private String assemblyID;
+  private List assemblyID;
 
   private String database;
   private String username;
@@ -63,24 +63,42 @@ public class CMTAgent
   private Map substitutions = new HashMap();
 
   public CMTAgent() {
-    this("Name", "AssemblyID");
+    this("Name", new ArrayList());
   }
 
-  public CMTAgent(String name, String assemblyID) {
+  public CMTAgent(String name, List assemblyID) {
     super(name);
     this.name = name;
     this.assemblyID = assemblyID;
   }
   public void initProperties() {
-    String componentID;
-    String componentCategory;
+    String componentID = new String("");
+    String componentCategory = new String("");
+    StringBuffer assemblyMatch = null;
 
     try {
       dbp = DBProperties.readQueryFile(DBUtils.DATABASE, DBUtils.QUERY_FILE);
       database = dbp.getProperty("database");
       username = dbp.getProperty("username");
       password = dbp.getProperty("password");
-      substitutions.put(":assemblyMatch", assemblyID);
+      assemblyMatch = new StringBuffer();
+      assemblyMatch.append("in (");
+      Iterator iter = assemblyID.iterator();
+      boolean first = true;
+      while (iter.hasNext()) {
+	String val = (String)iter.next();
+	if (first) {
+	  first = false;
+	} else {
+	  assemblyMatch.append(", ");
+	}
+	assemblyMatch.append("'");
+	assemblyMatch.append(val);
+	assemblyMatch.append("'");
+      }
+      assemblyMatch.append(")");
+
+      substitutions.put(":assemblyMatch", assemblyMatch.toString());
       substitutions.put(":component_name", name);
     } catch(IOException e) {
       throw new RuntimeException("Error: " + e);
@@ -92,9 +110,11 @@ public class CMTAgent
 	Statement stmt = conn.createStatement();
 	String query = dbp.getQuery(QUERY_AGENT_DATA, substitutions);
 	ResultSet rs = stmt.executeQuery(query);
-	rs.next();
-	componentID = getNonNullString(rs, 1, query);
-	componentCategory = getNonNullString(rs, 2, query);
+	while(rs.next()) {
+	  componentID = getNonNullString(rs, 1, query);
+	  componentCategory = getNonNullString(rs, 2, query);
+	}
+
       } finally {
 	conn.close();
       }
@@ -104,12 +124,6 @@ public class CMTAgent
     }
 
     propName = addProperty(PROP_AGENT_NAME, name,
-			   new ConfigurableComponentPropertyAdapter() {
-			     public void PropertyValueChanged(PropertyEvent e) {
-			     }
-			   });
-
-    propAssemblyID = addProperty(PROP_ASSEMBLY_ID, assemblyID,
 			   new ConfigurableComponentPropertyAdapter() {
 			     public void PropertyValueChanged(PropertyEvent e) {
 			     }
@@ -139,6 +153,64 @@ public class CMTAgent
   }
 
   public ComponentData addComponentData(ComponentData data) {
+
+    System.out.println("Agent: " + data.getName());
+    StringBuffer assemblyMatch = null;
+
+    try {
+      dbp = DBProperties.readQueryFile(DBUtils.DATABASE, DBUtils.QUERY_FILE);
+      //      dbp.setDebug(true);
+      database = dbp.getProperty("database");
+      username = dbp.getProperty("username");
+      password = dbp.getProperty("password");
+      assemblyMatch = new StringBuffer();
+      assemblyMatch.append("in (");
+      Iterator iter = assemblyID.iterator();
+      boolean first = true;
+      while (iter.hasNext()) {
+	String val = (String)iter.next();
+	if (first) {
+	  first = false;
+	} else {
+	  assemblyMatch.append(", ");
+	}
+	assemblyMatch.append("'");
+	assemblyMatch.append(val);
+	assemblyMatch.append("'");
+      }
+      assemblyMatch.append(")");
+
+      substitutions.put(":assemblyMatch", assemblyMatch.toString());
+      substitutions.put(":agent_name", name);
+    } catch(IOException e) {
+      throw new RuntimeException("Error: " + e);
+    }
+
+    // Get Plugin Names
+    try {
+      Connection conn = DBConnectionPool.getConnection(database, username, password);
+      try {
+	Statement stmt = conn.createStatement();	
+	String query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
+	ResultSet rs = stmt.executeQuery(query);
+	while(rs.next()) {
+	  GenericComponentData plugin = new GenericComponentData();
+	  plugin.setType(ComponentData.PLUGIN);
+	  plugin.setParent(data);
+	  plugin.setOwner(this);
+	  plugin.setName(rs.getString(1));
+	  data.addChild(plugin);
+	}
+
+      } finally {
+	conn.close();
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException("Error" + e);
+    }
+
+    System.out.println("Done");
     return data;
   }
   
