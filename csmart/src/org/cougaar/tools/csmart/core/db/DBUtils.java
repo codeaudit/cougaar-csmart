@@ -603,21 +603,20 @@ public class DBUtils {
     int count=0;
     try {
       Connection conn = DBUtils.getConnection(qFile);
-      if(execute){
-	try {
-	  Statement stmt = conn.createStatement();	
+      try {
+        if(execute){
+          Statement stmt = conn.createStatement();	
           if(qLog.isDebugEnabled()) {
             qLog.debug("Query: " + dbQuery);
           }
-	  count = stmt.executeUpdate(dbQuery);
+          count = stmt.executeUpdate(dbQuery);
           if(log.isInfoEnabled()) {
             log.info("Deleted "+count+" items from the database");
           }
-	  stmt.close();
-	  
-	} finally {
-	  conn.close();
-	}
+          stmt.close();
+        }
+      } finally {
+        conn.close();
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
@@ -695,16 +694,15 @@ public class DBUtils {
 	rs.close();
 	stmt.close();
       } finally {
-	if (conn != null)
-	  conn.close();
+        conn.close();
       }
-      
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
         log.error("queryHT: "+dbQuery, e);
       }
       throw new RuntimeException("Error" + e);
     }
+
     return (SortedMap)ht;
   }
   
@@ -854,15 +852,15 @@ public class DBUtils {
       if (traceQueries){
 	System.out.println("\nStarting dbExecute at "+new Date()+"\n\n"+dbQuery);
       }
-      if (execute){
-	try {
-	  Statement stmt = conn.createStatement();	
-	  count = stmt.executeUpdate(dbQuery);
-	  //  		    System.out.println("db"+type+" "+type+"d "+count+" items in the database"); 
-	  stmt.close();
-	} finally {
-	  conn.close();
-	}
+      try {
+        if (execute){
+          Statement stmt = conn.createStatement();	
+          count = stmt.executeUpdate(dbQuery);
+          //  		    System.out.println("db"+type+" "+type+"d "+count+" items in the database"); 
+          stmt.close();
+        }
+      } finally {
+        conn.close();
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
@@ -870,6 +868,7 @@ public class DBUtils {
       }
       throw new RuntimeException("Error" + e);
     }
+
     if (traceQueries){
       System.out.println("\nexiting dbExecute with "+count+" at "+new Date());
     }
@@ -947,20 +946,20 @@ public class DBUtils {
     try {
       Connection conn = DBUtils.getConnection();
       try {
-	Statement stmt = conn.createStatement();	
-	ResultSet rs = stmt.executeQuery(dbQuery);
-	while (rs.next()) {s.add(rs.getString(1));}
-	rs.close();
-	stmt.close();
+        Statement stmt = conn.createStatement();	
+        ResultSet rs = stmt.executeQuery(dbQuery);
+        while (rs.next()) {s.add(rs.getString(1));}
+        rs.close();
+        stmt.close();
       } finally {
-	conn.close();
+        conn.close();
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
         log.error("querySet: "+dbQuery, e);
       }
       throw new RuntimeException("Error" + e);
-    }
+    } 
     return s;
   }
 
@@ -980,13 +979,13 @@ public class DBUtils {
     try {
       Connection conn = DBUtils.getConnection();
       try {
-	Statement stmt = conn.createStatement();	
-	ResultSet rs = stmt.executeQuery(dbQuery);
-	while (rs.next()) {s.add(rs.getString(1));}
-	rs.close();
-	stmt.close();
+        Statement stmt = conn.createStatement();	
+        ResultSet rs = stmt.executeQuery(dbQuery);
+        while (rs.next()) {s.add(rs.getString(1));}
+        rs.close();
+        stmt.close();
       } finally {
-	conn.close();
+        conn.close();
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
@@ -1008,15 +1007,15 @@ public class DBUtils {
     try {
       Connection conn = DBUtils.getConnection();
       try {
-	Statement stmt = conn.createStatement();	
+        Statement stmt = conn.createStatement();	
         query = getQuery("queryCMTAssembly", substitutions);
-	ResultSet rs = stmt.executeQuery(query);
+        ResultSet rs = stmt.executeQuery(query);
         if(rs.next())
           result = true;
-	rs.close();
-	stmt.close();
+        rs.close();
+        stmt.close();
       } finally {
-	conn.close();
+        conn.close();
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
