@@ -6,6 +6,34 @@ from a servlet, before worrying about CSMART specific items. If your
 problem is not addressed here, send a query to
 cougaar-developers@cougaar.org.
 
+Errors starting society
+- The single largest problem users run into is an error message about
+"Unable to contact appserver" or some such. You should:
+0) Make sure you started the AppServer on the machine it is trying to contact
+1) Avoid hosts named "localhost" in the Experiment Builder
+2) Try using IP address or fully qualified hostname in the Experiment
+Builder
+3) Ensure you can do an "nslookup <appserver host name as specified in
+Experiment Builder>" from the CSMART machine to the
+AppServer machine
+4) Make sure you can do a reverse nslookup from the CSMART machine of
+the IP/name returned by the above nslookup, and get your original name
+5) Do the same nslookups, but this time from the AppServer machine to
+the CSMART machine.
+
+Upgrade related issues
+- Note that the database schemas have changed, and the required
+properties in the AppServer system.props files have changed in recent
+versions. Please look carefully at the install instructions and sample
+server properties files.
+
+Running CSMART
+- Ensure that bootstrap.jar is on your CLASSPATH
+- Ensure that all jar files are from the same build
+- When you get a message at startup on STDOUT that says SHOUT [CSMART] - CSMART 9.2.1 built on.....
+This is not an error, but normal operation.
+- Messages about not finding Hosts.txt can be ignored. This is common.
+
 Running the AppServer
 - Ensure that the Classpath for the Server, and as defined in your server
 properties file, and for CSMART itself, includes the same copy of bootstrap.jar
@@ -15,6 +43,94 @@ installation specific server properties file.
 are all from the same build (this results in RMI exceptions
 occasionally).
 - On Windows, be sure to set SYSTEMROOT in your props file
+
+Linux Specific Issues
+- Various display issues have been noticed on Linux Systems.
+Some of these include:
+  * Windows opening very small
+  * Menus displaying incorrectly
+  * Drag and Drop acting funny
+Installing the Linux Blackdown JVM seems to have addressed many of the above
+issues. http://www.blackdown.org
+- See Linux Issues in Database section
+
+Other common setup problems:
+- If on startup you get an error like:
+     SQLException: Cannot connect to MySQL server on localhost:3306. Is
+     there a MySQL server running on the machine/port you are trying to
+     connect to? (java.net.SocketException)
+You should confirm that you started your MySQL database at that host/port,
+     and that your database permissions are configured to allow access
+     from "localhost" in both the "db" and "user" tables. See the
+     MySQL documentation.
+
+- If on startup you get a JDBC error like:
+java.sql.SQLException: Unknown driver driver.mysql//localhost
+then make sure your JDBC connection string is correctly formatted.
+For mysql: jdbc:mysql://localhost/configdb
+For Oracle: jdbc:oracle:thin:@myhost:1521:cougaar
+- If in configuring a host/node/agent mapping, you get an error like:
+SQLException query: DROP TABLE `TMP_CMTA_CSHNA-0001`
+java.sql.SQLException: General error: Access denied for user: 'soconfig@
+localhost' to database 'cougaar'
+
+Then the permissions for your database user must be expanded to
+include permission to drop tables. See your database administrator or
+MySQL documentation.
+
+- If once running you get the following exception in the Node output
+  stream, you are using a MySQL database without the Cougaar domain
+  database installed in database "cougaar". Check your cougaar.rc file.:
+org.cougaar.core.node.InitializerServiceException: java.sql.SQLException: General error: Table 'cougaar.geoloc' doesn't exist
+	at org.cougaar.core.node.DBInitializerServiceProvider$InitializerServiceImpl.translateAttributeValue(DBInitializerServiceProvider.java:485)
+
+Recipe Queries not available:
+- You have written your own recipe queries, but they are not available
+when building your recipe?
+  Did you name the recipe "recipeQuery<Something>"? All recipe queries
+  must start with "recipeQuery", case sensitive.
+
+  Did you put the recipe query in CIP/configs/common/PopulateDb.q? If
+  so, have you since updated you Cougaar installation (over-writing
+  any queries you included there?)
+
+  Otherwise, did you put the recipe query in a file called
+  recipeQueries.q? Is that file someplace on the ConfigPath (ie
+  CIP/configs/common or the directory from which you launched CSMART)?
+  It must be to be found.
+
+  If you put the query in any other file, it will not be found.
+
+Running a Society Created from Files
+- When running a society you created from files, you will often have
+extra files that the society will need at runtime (OPLAN related
+files, files to create NSN Assets, etc). These files must be available
+on your org.cougaar.config.path as specified in your AppServer
+server.props file on each machine on which you will run part of this
+society. For example, to run small-135 through CSMART, you will still
+have to have available on your org.cougaar.config.path the various
+'.xml' files found in CIP/configs/small-135, but your society will not
+use the '.dat' or '.ini' files. 
+
+- If while running minitestconfig you get an error
+like: 
+Error parsing file: MCCGlobalMode.ldm.xml
+java.lang.NullPointerException
+        at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:1094
+        at org.cougaar.util.ConfigFinder.parseXMLConfigFile(ConfigFinder.java:308)
+        at org.cougaar.mlm.plugin.ldm.LDMXMLComponentPlugin.parseXMLFile
+This indicates that you have old files in your configs/common. Delete
+the file configs/common/MCCGlobalMode.ldm.xml on all machines, or more
+completely, re-install cougaar into a fresh directory to ensure no
+old files remain.
+
+      
+Be sure to check the Cougaar Bug list for known issues, at http://www.cougaar.org/bugs 
+If all else fails, send a query to cougaar-developers@cougaar.org
+
+----------------------
+
+Other, less common issues:
 
 Showing a Society Monitor Graph
 -- If you get an error about inability to find dot, or to determine
@@ -63,15 +179,6 @@ This indicates that you have not loaded the csmart domain. Copy csmart/data/comm
 LDMDomains that you are using to include the csmart domain:
 csmart=org.cougaar.tools.csmart.runtime.ldm.CSMARTDomain
 
-- If you get an exception like:
- java.lang.reflect.InvocationTargetException:
- java.lang.NoClassDefFoundError: javax/net/ssl/SSLServerSocket
-         at
-org.cougaar.core.naming.RMINameServer.contactNS(RMINameServer.java:104)
-This means that the JSSE jar files could not be found. Make sure that
-they are installed in your JRE installation if you have one in
-addition to any JDK install.
-
 Running any other society
 - If on Windows you get an error at startup:
 Error: no `server' JVM at `C:\Program Files\Java\j2re1.4.0\bin\server\jvm.dll'.
@@ -80,34 +187,6 @@ You must instead run the full JDK version of Java. To do so, edit your
 machine's system PATH environment variable, and put %JAVA_HOME%/bin on
 your path before %SYSTEMROOT%/system32 (ie D:\JDK1.4\bin before
 C:\WINNT\system32).
-
-- If on startup you get an error like:
-     SQLException: Cannot connect to MySQL server on localhost:3306. Is
-     there a MySQL server running on the machine/port you are trying to
-     connect to? (java.net.SocketException)
-You should confirm that you started your MySQL database at that host/port,
-     and that your database permissions are configured to allow access
-     from "localhost" in both the "db" and "user" tables. See the
-     MySQL documentation.
-
-- If on startup you get a JDBC error like:
-java.sql.SQLException: Unknown driver driver.mysql//localhost
-then make sure your JDBC connection string is correctly formatted.
-For mysql: jdbc:mysql://localhost/configdb
-For Oracle: jdbc:oracle:thin:@myhost:1521:cougaar
-- If in configuring a host/node/agent mapping, you get an error like:
-SQLException query: DROP TABLE `TMP_CMTA_CSHNA-0001`
-java.sql.SQLException: General error: Access denied for user: 'soconfig@
-localhost' to database 'cougaar'
-
-Then the permissions for your database user must be expanded to
-include permission to drop tables. See your database administrator.
-
-- If once running you get the following exception in the Node output
-  stream, you are using a MySQL database without the Cougaar domain
-  database installed in database "cougaar":
-org.cougaar.core.node.InitializerServiceException: java.sql.SQLException: General error: Table 'cougaar.geoloc' doesn't exist
-	at org.cougaar.core.node.DBInitializerServiceProvider$InitializerServiceImpl.translateAttributeValue(DBInitializerServiceProvider.java:485)
 
 - If on start you get an error:
    Table cougaar.V4_EXPT_EXPERIMENT doesn't exist on Unix, then you
@@ -137,23 +216,6 @@ java.sql.SQLException: Syntax error or access violation:
 You have an error in your SQL syntax near ') AND C.INSERTION_POINT LIKE 
 'Node.AgentManager.%' AND INSTR(SUBSTRING(C.INSERTI' at line 1
 
-- If you get a Verify Error when running that contains the plugin:
-  mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugin
-  then your server props contains the line:
-  org.cougaar.classpath=...SRA_IMComponentModel.jar
-  comment this out if you are NOT running with SRA
-  
-  If you get a Verify Error when running that contains the plugin:
-  com.sra.ul.bpdt.exec.inventory.BPDTInventoryPlugIn
-  then your server props does not contain the line:
-  org.cougaar.classpath=...SRA_IMComponentModel.jar
-  
-
-Running CSMART
-- Ensure that bootstrap.jar is on your CLASSPATH
-- Ensure that all jar files are from the same build
-- When you get a message at startup on STDOUT that says SHOUT [CSMART] - CSMART 9.2.1 built on.....
-This is not an error, but normal operation.
 
 Starting a Society from the Experiment Controller
 - Ensure you've followed all the tips on running the Server above
@@ -180,16 +242,6 @@ completed running.
 scalability society to take some intermediate samples
 - Be sure that on Windows you edited the command-line parameter
 specifying the location of Excel
-
-Linux Specific Issues
-- Various display issues have been noticed on Linux Systems.
-Some of these include:
-  * Windows opening very small
-  * Menus displaying incorrectly
-  * Drag and Drop acting funny
-Installing the Linux Blackdown JVM seems to have addressed all of the above
-issues. http://www.blackdown.org
-- See Linux Issues above in Database section
 
 Compiling CSMART
 - Compiling CSMART with Jikes 1.15 will result in VerifyErrors in a few classes.  To
@@ -228,45 +280,3 @@ this probably indicates a corrupted database due to
 carriage-return/newline issues on loading the CSMART configuration
 database. Try editing the file and removing excess ^Ms. See bug# 1321.
 
-Recipe Queries not available:
-- You have written your own recipe queries, but they are not available
-when building your recipe?
-  Did you name the recipe "recipeQuery<Something>"? All recipe queries
-  must start with "recipeQuery", case sensitive.
-
-  Did you put the recipe query in CIP/configs/common/PopulateDb.q? If
-  so, have you since updated you Cougaar installation (over-writing
-  any queries you included there?)
-
-  Otherwise, did you put the recipe query in a file called
-  recipeQueries.q? Is that file someplace on the ConfigPath (ie
-  CIP/configs/common or the directory from which you launched CSMART)?
-  It must be to be found.
-
-  If you put the query in any other file, it will not be found.
-
-Running a Society Created from Files
-- When running a society you created from files, you will often have
-extra files that the society will need at runtime (OPLAN related
-files, files to create NSN Assets, etc). These files must be available
-on your org.cougaar.config.path as specified in your AppServer
-server.props file on each machine on which you will run part of this
-society. For example, to run small-135 through CSMART, you will still
-have to have available on your org.cougaar.config.path the various
-'.xml' files found in CIP/configs/small-135, but your society will not
-use the '.dat' or '.ini' files. 
-- If while running (particularly minitestconfig) you get an error
-like: 
-Error parsing file: MCCGlobalMode.ldm.xml
-java.lang.NullPointerException
-        at org.apache.xerces.framework.XMLParser.parse(XMLParser.java:1094
-        at org.cougaar.util.ConfigFinder.parseXMLConfigFile(ConfigFinder.java:308)
-        at org.cougaar.mlm.plugin.ldm.LDMXMLComponentPlugin.parseXMLFile
-This indicates that your org.cougaar.config.path as specified in your
-server.props file lists CIP/configs/minitestconfig after
-CIP/configs/common. To run minitestconfig, you _must_ list
-configs/minitestconfig _before_ configs/common.
-
-      
-Be sure to check the Cougaar Bug list for known issues, at http://www.cougaar.org/bugs 
-If all else fails, send a query to cougaar-developers@cougaar.org
