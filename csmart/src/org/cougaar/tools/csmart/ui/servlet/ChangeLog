@@ -1,0 +1,133 @@
+2002-03-08  Brian Krisler  <bkrisler@bbn.com>
+
+	* CommunityProviderServlet.java, MetricsServlet.java, PlanServlet.java, SearchServlet.java:
+	Replaced the CSMART logging service with
+	the NullLogging Service.  Once bug #1088
+	is fixed, we can use a non-null service
+	again.
+	Note: For now servlets will not perform
+	any logging.
+
+2002-02-27  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CommunityProviderServlet.java, MetricsServlet.java: javadoc cleanup
+
+2002-02-25  Brian Krisler  <bkrisler@bbn.com>
+
+	* SearchServlet.java: Removed 1.4 warning
+
+2002-02-13  siracuse  <siracuse@clarinet.sl.bbn.com>
+
+	* MetricsServlet.java, CommunityProviderServlet.java, AgentProviderServlet.java, AgentInfoServlet.java:
+	Handle illegal parameters with a request.sendError() response
+
+2002-02-12  James L Winston  <jwinston@clarinet.sl.bbn.com>
+
+	* CommunityProviderServlet.java:
+	Changed PlugIn to Plugin inside files and file names.
+
+2002-02-01  Brian Krisler  <bkrisler@bbn.com>
+
+	* PlanServlet.java: Fixed Logging Statments
+	 - ensured that the right check was being done for the log level
+	 - removed printStackTraces, they are now part of the log message.
+	Corrected Copyright year
+
+2002-01-31  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* CommunityProviderServlet.java, MetricsServlet.java, PlanServlet.java:
+	logging cleanup
+
+2002-01-31  Brian Krisler  <bkrisler@bbn.com>
+
+	* CommunityProviderServlet.java, MetricsServlet.java:
+	Changed logging category to just use getClass().getName().
+	* This will prevent any future issues when repackaging.
+	* Makes logging more fine grained
+
+2002-01-25  siracuse  <siracuse@clarinet.sl.bbn.com>
+
+	* AgentInfoServlet.java, AgentProviderServlet.java, CommunityProviderServlet.java, MetricsServlet.java, PlanServlet.java, SearchServlet.java:
+	Inserted path check in servlet constructor
+
+2002-01-25  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* SearchServlet.java: remove psp references
+	javadoc formatting tweaks
+	referece /tasks?.... instead of /alpine/demo/TASKS.PSP?....
+
+	* TranslateUtils.java: doc fixes - remove PSP references
+
+	* PlanServlet.java: javadoc formatting fixes
+	Use TranslateUtils in servlet area, not PSP area
+
+	* MetricsServlet.java, AgentInfoServlet.java, AgentProviderServlet.java, CommunityProviderServlet.java:
+	javadoc formatting fixes
+
+2002-01-24  siracuse  <siracuse@clarinet.sl.bbn.com>
+
+	* MetricsServlet.java, PlanServlet.java, CommunityProviderServlet.java, SearchServlet.java:
+	Cleaned and Javadoc
+
+	* AgentProviderServlet.java, AgentInfoServlet.java: Renamed and Javadoc
+
+	* ClusterInfoServlet.java, ClusterProviderServlet.java: Renamed Classes
+
+2002-01-24  Brian Krisler  <bkrisler@bbn.com>
+
+	* ClusterInfoServlet.java, ClusterProviderServlet.java, CommunityProviderServlet.java, MetricsServlet.java, PlanServlet.java:
+	Added Logging code.
+
+	Removed all system.out and system.err calls
+
+2002-01-24  Aaron Helsinger  <ahelsing@clarinet.sl.bbn.com>
+
+	* ClusterInfoServlet.java, ClusterProviderServlet.java, CommunityProviderServlet.java, MetricsServlet.java, PlanServlet.java, SearchServlet.java, TranslateUtils.java:
+	cluster -> agent
+	fix indents
+	update year in copyright
+	remove global imports
+
+2002-01-23  siracuse  <siracuse@clarinet.sl.bbn.com>
+
+	* MetricsServlet.java, SearchServlet.java:
+	cleaned up code, fixed known output stream bug
+
+	* PlanServlet.java: cleaned up code, replaced doPost with doPut
+
+	* ClusterInfoServlet.java: cleaned up code
+
+2002-01-17  siracuse  <siracuse@clarinet.sl.bbn.com>
+
+	* SearchServlet.java: Working SearchServlet
+
+	* MetricsServlet.java: Working MetricsServlet
+
+	* PlanServlet.java: Working PlanServlet
+
+	* CommunityProviderServlet.java: Working CommunityProviderServlet
+
+	* ClusterProviderServlet.java: Working ClusterProviderServlet
+
+	* ClusterInfoServlet.java: Working ClusterInfoServlet
+
+	* TranslateUtils.java:
+	Servlet Output Support Class, moved from tools/csmart/ui/psp/
+
+	* SearchServlet.java: new CSMART_SearchServlet to replace PSP_Search
+
+	* PlanServlet.java: new CSMART_PlanServlet to replace PSP_Plan
+
+	* MetricsServlet.java: new CSMART_MetricsServlet to replace PSP_Metrics
+
+2002-01-16  siracuse  <siracuse@clarinet.sl.bbn.com>
+
+	* CommunityProviderServlet.java:
+	new CSMART_CommunityProviderServlet to replace PSP_CommunityProvider
+
+	* ClusterProviderServlet.java:
+	new CSMART_ClusterProviderServlet to replace PSP_ClusterProvider
+
+	* ClusterInfoServlet.java:
+	new CSMART_ClusterInfoServlet to replace PSP_ClusterInfo
+
