@@ -611,7 +611,7 @@ public class Organizer extends JScrollPane {
 
     // Add in community info for this society
     JFileChooser chooser = 
-      new JFileChooser(SocietyFinder.getInstance().getPath());
+      new JFileChooser(System.getProperty("org.cougaar.install.path"));
     chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
     chooser.setDialogTitle("Select the communities.xml file for this Society, if any");
     // Allow selection of XML files and directories
@@ -621,6 +621,8 @@ public class Organizer extends JScrollPane {
 	  return false;
 	if (f.isDirectory())
 	  return true;
+	if (! f.canRead())
+	  return false;
 	return f.getName().endsWith(".xml");
       }
 
@@ -636,6 +638,10 @@ public class Organizer extends JScrollPane {
       if (result != JFileChooser.APPROVE_OPTION)
 	break;
       xmlFile = chooser.getSelectedFile();
+      if (xmlFile != null) {
+	if (! xmlFile.canRead())
+	  xmlFile = null;
+      }
     }
     
     if (xmlFile != null && !CommunityDbUtils.importCommunityXML(xmlFile, experiment.getCommAsbID())) {
