@@ -48,6 +48,11 @@ if [ $os = "Linux" -o $os = "SunOS" ]; then SEP=":"; fi
     
 # To run without the Bootstrapper, set org.cougaar.useBootstrapper=false
 # The Jars peculiar to CSMART and their usual locations are listed here as a convenience
+
+# Third party (mostly static) jar files are either in COUGAAR3RDPARTY or in COUGAAR_INSTLL_PATH/sys
+if [ "$COUGAAR3RDPARTY" == "" ]; then
+    COUGAAR3RDPARTY="${COUGAAR_INSTALL_PATH}/sys"
+fi
     
 # Add CSMART jar explicitly to get started
 LIBPATHS="${COUGAAR_INSTALL_PATH}/lib/csmart.jar"

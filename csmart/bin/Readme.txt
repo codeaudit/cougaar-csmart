@@ -9,6 +9,9 @@ Also, all scripts here assume that the environment variable
 COUGAAR_INSTALL_PATH has been set appropriately, as in:
      COUGAAR_INSTALL_PATH=D:\Cougaar
      (where this directory is D:\Cougaar\csmart\bin)
+In addition, COUGAAR3RDPARTY should refer to the directory where
+the Cougaar support libraries have been installed (xerces, etc). For
+example D:\Cougaar\sys
 
 A platform-specific version of "dot.exe" from AT&T is required for
 graph layout. New installations (post v0.3) come with both the Win and
@@ -49,6 +52,7 @@ CSMARTsetlibpath.bat
         really just the basic LIBPATH from core.
 	
 CSMART
+CSMART.sh
 CSMART.bat - The main script for the CSMART UI. Relies on the
         setarguments from above.
 	NOTE: CSMART.bat specifies the location of MS Excel on your
@@ -79,8 +83,4 @@ Monitor.bat - Scripts for running the CSMART Society Monitor tool
         above .bat script.
         Be sure to include the required PSPs in your default.psps.xml
 
-Server
-Server.bat - Sample scripts for running the Node server (the server
-module), including parameters required for CSMART societies.
-	You will need to edit these to point to your local host properties file.
-
+[Sample scripts for running the AppServer have been moved to the server module.]
