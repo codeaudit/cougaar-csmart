@@ -195,6 +195,8 @@ public abstract class ConfigurableComponent
    */
   public void setProperties(Map props) {
     // Set the properties in Alphabetical Order.
+    // This allows any required listeners to fire, setting up
+    // dynamic properties.
     ArrayList names = new ArrayList();
     for (Iterator i = props.keySet().iterator(); i.hasNext(); ) {
       names.add(i.next());
@@ -223,7 +225,7 @@ public abstract class ConfigurableComponent
           Object value = constructor.newInstance(new Object[] {propValue});
           prop.setValue(value);
 	  if (log.isDebugEnabled()) {
-	    log.debug("Setting value for property " + prop.getName().toString() + " with label " + prop.getLabel());
+	    log.debug("Setting value for property " + prop.getName().toString() + " with label " + prop.getLabel() + " and value: " + prop.getValue());
 	  }
         }
       } catch (Exception e) {
