@@ -81,7 +81,7 @@ MYEXCEL=-Dorg.cougaar.tools.csmart.excelpath=\"C:/Program\\ Files/Microsoft\\ Of
 MYMEMORY="-Xms100m -Xmx300m"
 
 # The delay between starting nodes, in milliseconds
-MYDELAY="-Dorg.cougaar.tools.csmart.startdelay=10000"
+MYDELAY="-Dorg.cougaar.tools.csmart.startdelay=0"
 
 MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY"
 

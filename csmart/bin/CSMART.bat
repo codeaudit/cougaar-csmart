@@ -73,7 +73,7 @@ REM Edit the following line to reflect your local installation
 REM This is used by the Performance Analyzer
 SET MYEXCEL=-Dorg.cougaar.tools.csmart.excelpath="C:\Program Files\Microsoft Office\Office\excel.exe"
 REM Number of milliseconds to wait after starting each node
-SET MYDELAY=-Dorg.cougaar.tools.csmart.startdelay=10000
+SET MYDELAY=-Dorg.cougaar.tools.csmart.startdelay=0
 
 @ECHO ON
 
