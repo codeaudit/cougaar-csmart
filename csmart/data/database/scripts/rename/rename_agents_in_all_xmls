@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [ -z $1 ]; then
+if [ -z $1 ] || [ -z $2 ]; then
 cat << EOF
  This script runs the "rename_agents_in_xml" script for all
  ".xml" files in the specified directory.
@@ -23,17 +23,17 @@ src=$1;
 # where to put the modified files
 dest=$2;
 
-if [ ! -f $table ]; then
+if [ -z $table ] || [ ! -f $table ]; then
   echo "Unable to find agent rename table: $table";
   exit -1;
 fi
 
-if [ -z $src] || [ ! -d $src ]; then
+if [ -z $src ] || [ ! -d $src ]; then
   echo "Source directory doesn't exist: $src";
   exit -1;
 fi
 
-if [ -z $dest] || [ ! -d $dest ]; then
+if [ -z $dest ] || [ ! -d $dest ]; then
   echo "Destination directory doesn't exist: $dest";
   exit -1;
 fi

@@ -27,7 +27,7 @@ my %name_headers = (
  "COMPONENT_NAME" => "1",
  "COMPONENT_LIB_ID" => "1",
  "ENTITY_ID" => "1",
- "ORG_GROUP_ID" => "1",
+# "ORG_GROUP_ID" => "1",
  "PG_ATTRIBUTE_LIB_ID" => "1",
 );
 
@@ -197,9 +197,10 @@ sub fix_csv {
           if (!$isName &&
               $#name_cols == 2 &&
               $col eq "ATTRIBUTE_VALUE" &&
-              $filename =~ /cfw_org_pg_attr.csv$/) {
+              ($filename =~ /cfw_org_pg_attr.csv$/ ||
+               $filename =~ /community_attribute.csv$/)) {
             # HACK!
-            print STDERR "  Warning: Enabling custom ClusterPG handling\n";
+            print STDERR "  Warning: Enabling custom ClusterPG/ItemId/Community handling\n";
             $enable_clusterpg_hack=1;
             $isName=1;
           }
@@ -229,7 +230,8 @@ sub fix_csv {
               } else {
                 $prev_col = $cols[$i-1];
                 if ($prev_col eq "ClusterPG|MessageAddress" ||
-                    $prev_col eq "ItemIdentificationPG|ItemIdentification") {
+                    $prev_col eq "ItemIdentificationPG|ItemIdentification" ||
+                    $prev_col eq "CommunityManager") {
                   if ($VERBOSE) {
                     print STDERR "Replace $prev_col\n";
                   }
