@@ -904,8 +904,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (society != null) {
       ModifiableComponent copiedSocietyComponent = null;
       copiedSocietyComponent = society.copy("Society for " + uniqueName);
-      if (copiedSocietyComponent != null)
+      if (copiedSocietyComponent != null) {
+        // FIXME: Must save the copied society to the DB!
         experimentCopy.addComponent(copiedSocietyComponent);
+      }
     }
     
     // Copy the recipe components
@@ -913,8 +915,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       ModifiableComponent mc = getRecipeComponent(i);
       ModifiableComponent copiedComponent = null;
       copiedComponent = mc.copy("Recipe for " + uniqueName);
-      if (copiedComponent != null)
+      if (copiedComponent != null) {
+	// FIXME: Must'nt we save the copied recipes to the DB!
         experimentCopy.addComponent(copiedComponent);
+      }
     }
     // copy hosts
     HostComponent[] hosts = getHostComponents();
@@ -1468,7 +1472,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       updateNameServerHostName(); // Be sure this is up-to-date
       List components = getComponents();
 
-      boolean componentWasRemoved = generateCompleteSociety();
+      boolean componentWasRemoved = false;
 
       PopulateDb pdb = null;
       SocietyComponent sc = getSocietyComponent();
@@ -1482,6 +1486,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 	// Created with a SocietyFileComponent
 	// Have no CMT assembly, nor previous
 	// experiment or trial ID.
+
+	// FIXME: Save it in a CSA and CSMI!
+	// new PopulateDb("CSA", "CSHNA", "CSMI"....
+
 	// So save it all in the CSMI assembly
         pdb =
           new PopulateDb("CSHNA", "CSMI", getExperimentName(),
@@ -1506,29 +1514,25 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       // in the right place if necc, and clears out the other 
       // assemblies (CSMI, CSHNA)
 
-//       // Now ask each component in turn to add its stuff
-//       boolean componentWasRemoved = false;
-//       for (int i = 0, n = components.size(); i < n; i++) {
-//         BaseComponent soc = (BaseComponent) components.get(i);
-//         if(log.isDebugEnabled()) {
-//           log.debug(soc + ".addComponentData");
-//         }
-//         soc.addComponentData(completeSociety);
-// 	// Components can notice here if they had to remove
-// 	// a component (or, I suppose, modify)
-//         componentWasRemoved |= soc.componentWasRemoved();
-// 	// Note that no current component returns true here
-//       }
+      // Gather the HostNodeAgent stuff
+      generateHNACDATA();
+      if(log.isErrorEnabled() && completeSociety == null) {
+        log.error("Society Data is null!");
+      }
+
+      // Save what we have so far in the CSHNA assembly
+      pdb.populateHNA(completeSociety);
+
+      // Now let components add in their pieces
+      componentWasRemoved = askComponentsToAddCDATA();
+
       // If any component removed something, we need
       // to recreate the CMT assembly (under the original ID)
       // So this, currently destroys the orig CMT
       // Note also it does not effect Agent asset data
       // or relationships or OPLAN stuff
       if (componentWasRemoved) pdb.repopulateCMT(completeSociety);
-      if(log.isErrorEnabled() && completeSociety == null) {
-        log.error("Society Data is null!");
-      }
-      pdb.populateHNA(completeSociety);
+      // FIXME: Replace above with populateCSA or some such
 
       // then give everyone a chance to modify what they've collectively produced
       for (int i = 0, n = components.size(); i < n; i++) {
@@ -1540,6 +1544,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         pdb.populateCSMI(completeSociety);
       }
       pdb.setModRecipes(recipes);
+
+      // Now make sure the runtime/ config time assemblies
+      // are all correct
+      if (! pdb.fixAssemblies()) {
+	// Some sort of error trying to ensure the assemblies are all correct.
+	if (log.isErrorEnabled()) {
+	  log.error("Failed to ensure correct assemblies saved.");
+	}
+      }
+
       pdb.close();
     } catch (Exception sqle) {
       if (log.isErrorEnabled())
@@ -1566,15 +1580,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       });
   }
 
-
-
-
-  public boolean generateCompleteSociety() {
+  // Generate a host-node-agent ComponentData tree in the global
+  // completeSociety variable
+  // This saves all assignments of agents to Nodes, including
+  // those nodes not assigned to Hosts.
+  // It also gathers the command-line arguments
+  private void generateHNACDATA() {
     Set savedNodes = new HashSet();
     Set savedAgents = new HashSet();
     NodeComponent[] nodesToWrite = getNodeComponents();
     AgentComponent[] agentsToWrite = getAgents();
-    List components = getComponents();
 
     completeSociety = new GenericComponentData();
 
@@ -1620,6 +1635,15 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       generateAgentComponent(agentsToWrite[i], completeSociety, this);
       savedAgents.add(agentsToWrite[i]);
     }
+  }
+
+  // Use the previously inited host-node-agent ComponentData tree
+  // in the variable 'completeSociety'
+  // And loop through all components in the Experiment,
+  // asking them to add their ComponentData
+  // return the or'ed value of componentWasRemoved()
+  private boolean askComponentsToAddCDATA() {
+    List components = getComponents();
 
     // Now ask each component in turn to add its stuff
     boolean componentWasRemoved = false;
@@ -1637,6 +1661,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return componentWasRemoved;
   }
 
+  /**
+   * Generate a complete ComponentData tree for the experiment
+   *
+   * @return a <code>boolean</code>, true if any component was removed
+   */
+  public boolean generateCompleteSociety() {
+    generateHNACDATA();
+    return askComponentsToAddCDATA();
+  }
+
   ////////////////////////////////////////////
   // Configuration Writer Specific Operations
   ////////////////////////////////////////////
@@ -1649,8 +1683,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * The caller is responsible for not unnecessarily
    * saving the experiment to the database.
    */
-
   public void dumpINIFiles() {
+    // FIXME:
+    // If this Exp's society's assembly has entries in the oplan 
+    // tables, then must save out what the assembly ID is such 
+    // that on load of the INI files we can preserve the OPLAN INFO
 
     // Generate the complete Society
     generateCompleteSociety();

@@ -59,13 +59,12 @@ public class SocietyDBComponent
   "Society description not available";
   private static final String QUERY_AGENT_NAMES = "queryAgentNames";
 
-  private List assemblyID;
   private Map substitutions;
   private transient Logger log;
 
-  public SocietyDBComponent(String name, List assemblyID) {
+  public SocietyDBComponent(String name, String assemblyID) {
     super(name);
-    this.assemblyID = assemblyID;
+    super.setAssemblyId(assemblyID);
     createLogger();
   }
 
@@ -75,8 +74,8 @@ public class SocietyDBComponent
 
   public void initProperties() {
     Map substitutions = new HashMap();
-    if (assemblyID.size() > 0) {
-      substitutions.put(":assemblyMatch", DBUtils.getListMatch(assemblyID));
+    if (assemblyId != null) {
+      substitutions.put(":assemblyMatch", DBUtils.getListMatch(assemblyId));
       substitutions.put(":insertion_point", "Node.AgentManager.Agent");
 
       try {
@@ -88,7 +87,7 @@ public class SocietyDBComponent
 	  while (rs.next()) {
 	    String agentName = DBUtils.getNonNullString(rs, 1, query);
 	    AgentDBComponent agent = 
-              new AgentDBComponent(agentName, assemblyID);
+              new AgentDBComponent(agentName, assemblyId);
 	    agent.initProperties();
 	    addChild(agent);
 	  }
@@ -140,14 +139,11 @@ public class SocietyDBComponent
     return false;
   }
 
-  public List getAssemblyID() {
-    return this.assemblyID;
-  }
-
   public ModifiableComponent copy(String name) {
-    List assemblyIDs = getAssemblyID();
-    ModifiableComponent sc = new SocietyDBComponent(name, assemblyIDs);
+    String assemblyID = getAssemblyId();
+    ModifiableComponent sc = new SocietyDBComponent(name, assemblyID);
     sc.initProperties();
+    ((SocietyDBComponent)sc).saveToDatabase();
     return sc;
   }
 

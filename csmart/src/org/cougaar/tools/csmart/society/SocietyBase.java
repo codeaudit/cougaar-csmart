@@ -38,6 +38,9 @@ import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import java.io.ObjectInputStream;
 import java.io.IOException;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 
 /**
  * SocietyBase.java
@@ -59,12 +62,9 @@ public abstract class SocietyBase
   protected boolean isRunning = false;
   protected boolean isSelfTerminating = false;
 
-  protected List nodes = new ArrayList();
-  protected List hosts = new ArrayList();
-
   protected transient Logger log;
 
-  private String assemblyId;
+  protected String assemblyId;
 
   /**
    * Constructs a <code>SocietyBase</code> object
@@ -201,24 +201,6 @@ public abstract class SocietyBase
   }
 
   /**
-   * Returns all the Nodes in this society
-   *
-   * @return a <code>NodeComponent[]</code> value
-   */
-  public NodeComponent[] getNodes() {
-    return (NodeComponent[]) nodes.toArray(new NodeComponent[nodes.size()]);
-  }
-
-  /**
-   * Returns all the Hosts in this society
-   *
-   * @return a <code>HostComponent[]</code> value
-   */
-  public HostComponent[] getHosts() {
-    return (HostComponent[]) hosts.toArray(new HostComponent[hosts.size()]);
-  }
-
-  /**
    * Called when a new property has been added to the
    * society. 
    *
@@ -273,18 +255,73 @@ public abstract class SocietyBase
     return data;
   }
 
-  /**
-   * Save this society to the database.
-   */
-  public void saveToDatabase() {
-    System.out.println("SocietyBase: WARNING: save to database not implemented");
-  }
-
   private void readObject(ObjectInputStream ois)
     throws IOException, ClassNotFoundException
   {
     ois.defaultReadObject();
     createLogger();
+  }
+
+  /**
+   * Save this society to the database. Only to be used
+   * after creating a new society. Not to be used from DB societies
+   * which are already in the database.
+   *
+   * @return a <code>boolean</code>, false on error
+   */
+  public boolean saveToDatabase() {
+    if(log.isInfoEnabled()) {
+      log.info("saveToDatabase");
+    }
+
+    // TODO:
+    // Should I notice when I need to save and only save then?
+    // Should I resist creating a new assembly ID, to avoid
+    // breaking other experiments? Or always create one?
+    
+    String oldCMTAsbid = null;
+    String currAssID = null;
+    // FIXME: How do I get that old assembly ID?
+    // Is it the assemblyId in the current assemblyid slot?
+    oldCMTAsbid = getAssemblyId();
+    
+    // And what is my current assemblyID?
+    // How do I know if it is different?
+    // FIXME: Maybe I need a new
+    
+    // But probably only want to pass it in if it was in fact a CMT assembly, no?
+    // Or does it hurt to pass it in?
+    try {
+      // FIXME: Is there a non-gui conflict handler I should use?
+      PopulateDb pdb = new PopulateDb(oldCMTAsbid, getSocietyName(), currAssID, GUIUtils.createSaveToDbConflictHandler(null));
+      pdb.populateCSA(SocietyComponentCreator.getComponentData(this));
+      // Set the new CSA assembly ID on the society - get it from the PDB
+      setAssemblyId(pdb.getCSAAssemblyId());
+      // What about fixAssemblies?
+      // is it really populateCSA?
+      pdb.close();
+    } catch (Exception sqle) {
+      if (log.isErrorEnabled()) {
+	log.error("Error saving society to database: ", sqle);
+      }
+      return false;
+    }
+    return true;
+  }
+  
+  // Save the copy in the database before returning
+  public ModifiableComponent copy(String name) {
+    ModifiableComponent component = super.copy(name);
+
+    // copy the assembly ID - the one under which this societies'
+    // data is currently in the DB, but must be copied
+    ((SocietyBase)component).setAssemblyId(getAssemblyId());
+
+    // FIXME: If I do this here, what about sub-components that want to fix
+    // up the copy after using the base class?
+    if (component != null)
+      ((SocietyBase)component).saveToDatabase();
+    return component;
   }
 
 }// SocietyBase

@@ -76,6 +76,8 @@ public class SocietyComponentCreator {
     // Now let all components add their data.
     society.addComponentData(cData);
 
+    society.modifyComponentData(cData);
+
     return cData;
   }
 

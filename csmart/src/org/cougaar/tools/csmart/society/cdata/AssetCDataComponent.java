@@ -145,11 +145,23 @@ public class AssetCDataComponent
         for(int i=0; i < container.getChildCount(); i++) {
           RelationshipBase rel = (RelationshipBase) container.getChild(i);
           RelationshipData rData = new RelationshipData();
-          rData.setType((String)rel.getProperty(PROP_TYPE).getValue());
-          rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
-          rData.setItem((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
-          rData.setSupported((String)rel.getProperty(RelationshipBase.PROP_SUPPORTED).getValue());
-          assetData.addRelationship(rData);
+	  if (rel != null) {
+	    if (rel.getProperty(PROP_TYPE) == null) {
+	      if (log.isErrorEnabled()) {
+		log.error(this + " got null relationship type in rel #" + i);
+	      }
+	    }
+	    rData.setType((String)rel.getProperty(PROP_TYPE).getValue());
+	    rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
+	    rData.setItem((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
+	    rData.setSupported((String)rel.getProperty(RelationshipBase.PROP_SUPPORTED).getValue());
+	    assetData.addRelationship(rData);
+	  } else {
+	    // null relationship?
+	    if (log.isErrorEnabled()) {
+	      log.error(this + " Got null relationship #" + i);
+	    }
+	  }
         }
       }
     }

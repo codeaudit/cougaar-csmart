@@ -96,9 +96,11 @@ public interface SocietyComponent extends ModifiableComponent {
   boolean isSelfTerminating();
 
   /**
-   * Save society to database.
+   * Save this society to the database. Only to be used
+   * after creating a new society. Not to be used from DB societies
+   * which are already in the database.
+   *
+   * @return a <code>boolean</code>, false on error
    */
-
-  void saveToDatabase();
-
+  boolean saveToDatabase();
 }

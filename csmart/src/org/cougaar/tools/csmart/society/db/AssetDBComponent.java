@@ -76,12 +76,12 @@ public class AssetDBComponent
   private Property propUnitName;
   private Property propUIC;
   private String agentName;
-  private List assemblyID;
+  private String assemblyID;
   private String assemblyMatch;
   private Hashtable pgAttributes = new Hashtable();
   private Hashtable propertyGroups = new Hashtable();
 
-  public AssetDBComponent(String agentName, List assemblyID) {
+  public AssetDBComponent(String agentName, String assemblyID) {
     super("AssetData");
     this.agentName = agentName;
     this.assemblyID = assemblyID;

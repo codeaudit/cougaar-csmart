@@ -420,6 +420,7 @@ public class ABCSociety
     // reset to have the new society name in them
     if (result instanceof ABCSociety)
       ((ABCSociety)result).changeSociety();
+    ((SocietyBase)result).saveToDatabase();
     return result;
   }
 

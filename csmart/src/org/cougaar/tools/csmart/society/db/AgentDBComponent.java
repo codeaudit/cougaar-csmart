@@ -88,7 +88,7 @@ public class AgentDBComponent
   private Property propComponentID;
 
   private String name;
-  private List assemblyID;
+  private String assemblyID;
 
   private transient DBProperties dbp;
   private Map substitutions = new HashMap();
@@ -98,7 +98,7 @@ public class AgentDBComponent
    *
    */
   public AgentDBComponent() {
-    this("Name", new ArrayList());
+    this("Name", null);
   }
 
   /**
@@ -115,13 +115,13 @@ public class AgentDBComponent
 
   /**
    * Creates a new <code>AgentDBComponent</code> instance.
-   * This component is created from the database assemblies
-   * that are passed in as a parameter.
+   * This component is created from the database assembly
+   * that is passed in as a parameter.
    *
    * @param name Name of the new component
-   * @param assemblyID List of Assembly ID's for the component
+   * @param assemblyID String Assembly ID for the component
    */
-  public AgentDBComponent(String name, List assemblyID) {
+  public AgentDBComponent(String name, String assemblyID) {
     super(name);
     this.name = name;
     this.assemblyID = assemblyID;
