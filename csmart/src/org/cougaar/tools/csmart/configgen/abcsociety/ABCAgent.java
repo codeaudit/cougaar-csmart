@@ -190,66 +190,66 @@ public class ABCAgent
     addStandardPlugIns();
   }
 
-  /**
-   * Writes the agent ini file to the sepcified directory.
-   *
-   * @param File Directory to place ini file
-   * @throws IOException if the file cannot be created
-   */
-  public void writeIniFile(File configDir) throws IOException {
+//   /**
+//    * Writes the agent ini file to the sepcified directory.
+//    *
+//    * @param File Directory to place ini file
+//    * @throws IOException if the file cannot be created
+//    */
+//   public void writeIniFile(File configDir) throws IOException {
 
-    File iniFile = new File(configDir, getFullName() + ".ini");
-    PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
+//     File iniFile = new File(configDir, getFullName() + ".ini");
+//     PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
 
-    try {
-      writer.println("# $id$");
-      writer.println("[ Cluster ]");
-      writer.println("class = " + agentClassName);
-      writer.println("uic = \"" + getFullName().toString() + "\"");
-      writer.println("cloned = false");
-      writer.println();
-      writer.println("[ PlugIns ]");
-      writer.println("plugin = " + AssetDataPlugIn_name);
-      writer.println("plugin = " + AssetReportPlugIn_name);
+//     try {
+//       writer.println("# $id$");
+//       writer.println("[ Cluster ]");
+//       writer.println("class = " + agentClassName);
+//       writer.println("uic = \"" + getFullName().toString() + "\"");
+//       writer.println("cloned = false");
+//       writer.println();
+//       writer.println("[ PlugIns ]");
+//       writer.println("plugin = " + AssetDataPlugIn_name);
+//       writer.println("plugin = " + AssetReportPlugIn_name);
 
-//       // Add the initializer plugin if this is the Initializer Agent.
-//       if(getFullName().toString().equals(getProperty(PROP_INITIALIZER).getValue())) {
-// 	ABCPlugIn init = new ABCPlugIn("MetricsInitializer", MetricsInitializerPlugIn_name);
-// 	addChild(init);
-// 	init.initProperties();
-// 	addPropertyAlias(init, getProperty(PROP_NUMBPROVIDERS));
-// 	addPropertyAlias(init, getProperty(PROP_SAMPLEINTERVAL));
-// 	addPropertyAlias(init, getProperty(PROP_STARTDELAY));
-// 	addPropertyAlias(init, getProperty(PROP_MAXNUMBSAMPLES));
-// 	writer.println(init.getConfigLine());
-//       }
+// //       // Add the initializer plugin if this is the Initializer Agent.
+// //       if(getFullName().toString().equals(getProperty(PROP_INITIALIZER).getValue())) {
+// // 	ABCPlugIn init = new ABCPlugIn("MetricsInitializer", MetricsInitializerPlugIn_name);
+// // 	addChild(init);
+// // 	init.initProperties();
+// // 	addPropertyAlias(init, getProperty(PROP_NUMBPROVIDERS));
+// // 	addPropertyAlias(init, getProperty(PROP_SAMPLEINTERVAL));
+// // 	addPropertyAlias(init, getProperty(PROP_STARTDELAY));
+// // 	addPropertyAlias(init, getProperty(PROP_MAXNUMBSAMPLES));
+// // 	writer.println(init.getConfigLine());
+// //       }
       
-      // Add all other plugins
-      for(int i=0, n = getChildCount(); i < n; i++) {
-	if(getChild(i) instanceof ABCPlugIn) {
-	  ABCPlugIn plugin = (ABCPlugIn) getChild(i);
-	  writer.println(plugin.getConfigLine());
-	}
-      }
+//       // Add all other plugins
+//       for(int i=0, n = getChildCount(); i < n; i++) {
+// 	if(getChild(i) instanceof ABCPlugIn) {
+// 	  ABCPlugIn plugin = (ABCPlugIn) getChild(i);
+// 	  writer.println(plugin.getConfigLine());
+// 	}
+//       }
 
-      writer.println("plugin = " + PlanServerPlugIn_name);
-      // HACK: Add this PlugIn always, though only used if have an ABCImpact
-      // in the society
-      //      writer.println("plugin = " + ABCImpactPlugIn_name);
-      writer.println();
-      writer.println("[ Policies ]");
-      writer.println();
-      writer.println("[ Permission ]");
-      writer.println();
-      writer.println("[ AuthorizedOperation ]");
-    }
-    finally {
-      writer.close();
-    }
+//       writer.println("plugin = " + PlanServerPlugIn_name);
+//       // HACK: Add this PlugIn always, though only used if have an ABCImpact
+//       // in the society
+//       //      writer.println("plugin = " + ABCImpactPlugIn_name);
+//       writer.println();
+//       writer.println("[ Policies ]");
+//       writer.println();
+//       writer.println("[ Permission ]");
+//       writer.println();
+//       writer.println("[ AuthorizedOperation ]");
+//     }
+//     finally {
+//       writer.close();
+//     }
     
-    // Write any other associated data files.
-    writeDataFiles(configDir);
-  }
+//     // Write any other associated data files.
+//     writeDataFiles(configDir);
+//   }
 
   /**
    * Returns the configuration line:   <br>
@@ -279,107 +279,107 @@ public class ABCAgent
   }
 
 
-  /**
-   * Writes on the Prototype-ini.dat file for this agent.
-   *
-   * @param File The directory to write the file to.
-   */
-//   public void writePrototypeIniFile(File configDir) throws IOException {
-//     File taskFile = new File(configDir, getFullName().toString() + "-prototype-ini.dat");
-//     PrintWriter writer = new PrintWriter(new FileWriter(taskFile));
+//   /**
+//    * Writes on the Prototype-ini.dat file for this agent.
+//    *
+//    * @param File The directory to write the file to.
+//    */
+// //   public void writePrototypeIniFile(File configDir) throws IOException {
+// //     File taskFile = new File(configDir, getFullName().toString() + "-prototype-ini.dat");
+// //     PrintWriter writer = new PrintWriter(new FileWriter(taskFile));
   
-  public void writePrototypeIniFile(PrintWriter writer, String initializer) {
+//   public void writePrototypeIniFile(PrintWriter writer, String initializer) {
 
-    try {
-      writer.println("[Prototype] Entity");
-      writer.println();
-      writer.println("[Relationship]");
-      writer.println("#Role     ItemIdentification      TypeIdentification     Cluster   Start    End");
-      Iterator iter = getAllRoles().iterator();
-      while(iter.hasNext()) {
-	String role = (String)iter.next();
-	String[] supplies = (String[])getProperty(PROP_SUPPLIES).getValue();
-	for(int i=0; i < supplies.length; i++) {
-	  String type = supplies[i].substring(supplies[i].lastIndexOf(".")+1);
-	  writer.println("\"" + role + "\"  \"" + supplies[i].trim() + "\"  \"" + type + "\" \"" + supplies[i].trim() 
-			 + "\" \"\" \"\"");	  
-	}
+//     try {
+//       writer.println("[Prototype] Entity");
+//       writer.println();
+//       writer.println("[Relationship]");
+//       writer.println("#Role     ItemIdentification      TypeIdentification     Cluster   Start    End");
+//       Iterator iter = getAllRoles().iterator();
+//       while(iter.hasNext()) {
+// 	String role = (String)iter.next();
+// 	String[] supplies = (String[])getProperty(PROP_SUPPLIES).getValue();
+// 	for(int i=0; i < supplies.length; i++) {
+// 	  String type = supplies[i].substring(supplies[i].lastIndexOf(".")+1);
+// 	  writer.println("\"" + role + "\"  \"" + supplies[i].trim() + "\"  \"" + type + "\" \"" + supplies[i].trim() 
+// 			 + "\" \"\" \"\"");	  
+// 	}
 
-// 	// Add MetricPlugin Role.
-// 	String initializer = (String)getProperty(PROP_INITIALIZER).getValue();
-	writer.println("\"MetricsControlProvider\"  \"" + initializer +
-		       "\"  \"" + initializer.substring(initializer.lastIndexOf(".")+1) + 
-		       "\"  \"" + initializer + "\"  \"\"  \"\"");
-      }
-      writer.println();
-      writer.println("[ItemIdentificationPG]");
-      writer.println("ItemIdentification String \"" + getFullName().toString() + "\"");
-      // Make these next two be Community#.Customer/Provider#
-      // maybe getName().get(1).toString() or getName().get(1).toString() + "." + getName().get(2).toString()
-      writer.println("Nomenclature String \"" + getFullName().get(1).toString() + "." + getFullName().get(2).toString() + "\"");
-      writer.println("AlternateItemIdentification String \"" + getFullName().get(1).toString() + "." + getFullName().get(2).toString() + "\"");
-      //      writer.println("Nomenclature String \"" + getName().get(2).toString() + "\"");
-      //      writer.println("AlternateItemIdentification String \"" + getName().get(2).toString() + "\"");
-      writer.println();
-      writer.println("[TypeIdentificationPG]");
-      writer.println("TypeIdentification String \"" + getFullName().get(2).toString() + "\"");
-      writer.println("Nomenclature String \"" + getFullName().get(2).toString() + "\"");
-      writer.println("AlternateTypeIdentification String \"" + getFullName().get(2).toString() + "\"");
-      writer.println();
-      writer.println("[ClusterPG]");
-      writer.println("ClusterIdentifier ClusterIdentifier \"" + getFullName().toString() + "\"");
-      writer.println();
-      writer.println("[EntityPG]");
-      writer.print("Roles Collection<Role> ");
-      // Only print the quoted collection of roles if there are any
-      if (! getAllRoles().isEmpty()) {
-	iter = getAllRoles().iterator();
-	String role = null;
-	// No comma before the first role
-	if (iter.hasNext()) {
-	  role = (String)iter.next();
-	  // If this agent is a customer, dont write this as having provider roles
-	  // say it has the customer equivalent
-	  if (type.equalsIgnoreCase("customer")) {
-//  	    if (role.endsWith("rovider"))
-//  	      role = Role.getRole(role).getConverse().getName();
-	    // For now, just skip writing out the role
-	    while (role.endsWith("rovider") && iter.hasNext())
-	      role = (String)iter.next();
-	    if (role.endsWith("rovider"))
-	      role = null;
-	  }
-	  if (role != null) {
-	    writer.print("\"");
-	    writer.print(role);
-	  }
-	}
-	// For all subsequent roles, do a comma, a space, then the role
-	while(iter.hasNext()) {
-	  role = (String)iter.next();
-	  // If this agent is a customer, dont write this as having provider roles
-	  // say it has the customer equivalent
-	  if (type.equalsIgnoreCase("customer"))
-	    if (role.endsWith("rovider"))
-	      //	      role = Role.getRole(role).getConverse().getName();
-	      continue;
-	  writer.print(", " + role);
-	  //	writer.print(" \"" + iter.next() + "\" ");
-	}
-	// close the list of roles with quotes
-	writer.print("\"");
-      } // end of printing Collection of Roles
-      writer.println();
-      writer.println();
-      writer.println("[CommunityPG]");
-      writer.println("TimeSpan TimeSpan \"\"");
-      writer.print("Communities    Collection<String> ");
-      writer.println("\"" + getFullName().get(1).toString() + "\"");
-    } 
-    finally {
-      writer.close();
-    }    
-  }
+// // 	// Add MetricPlugin Role.
+// // 	String initializer = (String)getProperty(PROP_INITIALIZER).getValue();
+// 	writer.println("\"MetricsControlProvider\"  \"" + initializer +
+// 		       "\"  \"" + initializer.substring(initializer.lastIndexOf(".")+1) + 
+// 		       "\"  \"" + initializer + "\"  \"\"  \"\"");
+//       }
+//       writer.println();
+//       writer.println("[ItemIdentificationPG]");
+//       writer.println("ItemIdentification String \"" + getFullName().toString() + "\"");
+//       // Make these next two be Community#.Customer/Provider#
+//       // maybe getName().get(1).toString() or getName().get(1).toString() + "." + getName().get(2).toString()
+//       writer.println("Nomenclature String \"" + getFullName().get(1).toString() + "." + getFullName().get(2).toString() + "\"");
+//       writer.println("AlternateItemIdentification String \"" + getFullName().get(1).toString() + "." + getFullName().get(2).toString() + "\"");
+//       //      writer.println("Nomenclature String \"" + getName().get(2).toString() + "\"");
+//       //      writer.println("AlternateItemIdentification String \"" + getName().get(2).toString() + "\"");
+//       writer.println();
+//       writer.println("[TypeIdentificationPG]");
+//       writer.println("TypeIdentification String \"" + getFullName().get(2).toString() + "\"");
+//       writer.println("Nomenclature String \"" + getFullName().get(2).toString() + "\"");
+//       writer.println("AlternateTypeIdentification String \"" + getFullName().get(2).toString() + "\"");
+//       writer.println();
+//       writer.println("[ClusterPG]");
+//       writer.println("ClusterIdentifier ClusterIdentifier \"" + getFullName().toString() + "\"");
+//       writer.println();
+//       writer.println("[EntityPG]");
+//       writer.print("Roles Collection<Role> ");
+//       // Only print the quoted collection of roles if there are any
+//       if (! getAllRoles().isEmpty()) {
+// 	iter = getAllRoles().iterator();
+// 	String role = null;
+// 	// No comma before the first role
+// 	if (iter.hasNext()) {
+// 	  role = (String)iter.next();
+// 	  // If this agent is a customer, dont write this as having provider roles
+// 	  // say it has the customer equivalent
+// 	  if (type.equalsIgnoreCase("customer")) {
+// //  	    if (role.endsWith("rovider"))
+// //  	      role = Role.getRole(role).getConverse().getName();
+// 	    // For now, just skip writing out the role
+// 	    while (role.endsWith("rovider") && iter.hasNext())
+// 	      role = (String)iter.next();
+// 	    if (role.endsWith("rovider"))
+// 	      role = null;
+// 	  }
+// 	  if (role != null) {
+// 	    writer.print("\"");
+// 	    writer.print(role);
+// 	  }
+// 	}
+// 	// For all subsequent roles, do a comma, a space, then the role
+// 	while(iter.hasNext()) {
+// 	  role = (String)iter.next();
+// 	  // If this agent is a customer, dont write this as having provider roles
+// 	  // say it has the customer equivalent
+// 	  if (type.equalsIgnoreCase("customer"))
+// 	    if (role.endsWith("rovider"))
+// 	      //	      role = Role.getRole(role).getConverse().getName();
+// 	      continue;
+// 	  writer.print(", " + role);
+// 	  //	writer.print(" \"" + iter.next() + "\" ");
+// 	}
+// 	// close the list of roles with quotes
+// 	writer.print("\"");
+//       } // end of printing Collection of Roles
+//       writer.println();
+//       writer.println();
+//       writer.println("[CommunityPG]");
+//       writer.println("TimeSpan TimeSpan \"\"");
+//       writer.print("Communities    Collection<String> ");
+//       writer.println("\"" + getFullName().get(1).toString() + "\"");
+//     } 
+//     finally {
+//       writer.close();
+//     }    
+//   }
 
 
 
@@ -531,38 +531,166 @@ public class ABCAgent
     return rlist;
   }
 
-  private ComponentData addTimePhasedData(ComponentData data) {
-    // Add Community
-    CommunityTimePhasedData ctpd = new CommunityTimePhasedData();
-    ctpd.addCommunity(getParent().getShortName());
-    data.addTimePhasedData(ctpd);
+  private PropGroupData getItemIdentificationPG() {
+    PropGroupData pgData = new PropGroupData(PropGroupData.ITEM_IDENTIFICATION);
+    PGPropData propData = new PGPropData();
+    propData.setName("ItemIdentification");
+    propData.setType("String");
+    propData.setValue(getFullName().toString());
+    pgData.addProperty(propData);
+
+    propData = new PGPropData();
+    propData.setName("Nomenclature");
+    propData.setType("String");
+    propData.setValue(getFullName().get(1).toString() + "." + getFullName().get(2).toString());
+    pgData.addProperty(propData);
+
+    propData = new PGPropData();
+    propData.setName("AlternateItemIdentification");
+    propData.setType("String");
+    propData.setValue(getFullName().get(1).toString() + "." + getFullName().get(2).toString());
+    pgData.addProperty(propData);
+
+    return pgData;
+  }
+
+  private PropGroupData getTypeIdentificationPG() {
+
+    PropGroupData pgData = new PropGroupData(PropGroupData.TYPE_IDENTIFICATION);
+    PGPropData propData = new PGPropData();
+    propData.setName("TypeIdentification");
+    propData.setType("String");
+    propData.setValue(getFullName().get(2).toString());
+    pgData.addProperty(propData);
+
+    propData = new PGPropData();
+    propData.setName("Nomenclature");
+    propData.setType("String");
+    propData.setValue(getFullName().get(2).toString());
+    pgData.addProperty(propData);
+
+    propData = new PGPropData();
+    propData.setName("AlternateTypeIdentification");
+    propData.setType("String");
+    propData.setValue(getFullName().get(2).toString());
+    pgData.addProperty(propData);
+
+    return pgData;
+  }
+
+
+  private PropGroupData getClusterPG() {
+
+    PropGroupData pgData = new PropGroupData(PropGroupData.CLUSTER);
+    PGPropData propData = new PGPropData();
+    propData.setName("ClusterIdentifier");
+    propData.setType("ClusterIdentifier");
+    propData.setValue(getFullName().toString());
+    pgData.addProperty(propData);
+
+    return pgData;
+  }
+
+  private PropGroupData getEntityPG() {
+
+    PGPropMultiVal values = new PGPropMultiVal();
+    PropGroupData pgData = new PropGroupData(PropGroupData.ENTITY);
+    PGPropData propData = new PGPropData();
+    propData.setName("Roles");
+    propData.setType("Collection");
+    propData.setSubType("Role");
     
-    // Add Relationships
+    // Only print the quoted collection of roles if there are any
+    if (! getAllRoles().isEmpty()) {
+      Iterator iter = getAllRoles().iterator();
+      String role = null;
+      // No comma before the first role
+      if (iter.hasNext()) {
+	role = (String)iter.next();
+	// If this agent is a customer, dont write this as having provider roles
+	// say it has the customer equivalent
+	if (type.equalsIgnoreCase("customer")) {
+	  // For now, just skip writing out the role
+	  while (role.endsWith("rovider") && iter.hasNext())
+	    role = (String)iter.next();
+	  if (role.endsWith("rovider"))
+	    role = null;
+	}
+	if (role != null) {
+	  values.addValue(role);
+	}
+      }
+    }
+    propData.setValue(values);
+
+    // If there are no values, we do not want 
+    // to write anything out.
+    if(values.getValueCount() != 0) {
+      return null;
+    }
+
+    return pgData;
+  }
+
+  private PropGroupData getCommunityPG() {
+
+    PropGroupData pgData = new PropGroupData(PropGroupData.COMMUNITY);
+    PGPropData propData = new PGPropData();
+    propData.setName("TimeSpan");
+    propData.setType("TimeSpan");
+    propData.setValue("");       // Leave empty
+    pgData.addProperty(propData);
+    
+    propData = new PGPropData();
+    propData.setName("Communities");
+    propData.setType("Collection");
+    propData.setSubType("String");
+    PGPropMultiVal values = new PGPropMultiVal();
+    values.addValue(getFullName().get(1).toString());
+    propData.setValue(values);
+    pgData.addProperty(propData);
+
+    return pgData;
+  }
+
+  public ComponentData addAssetData(ComponentData data) {
+    AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
+
+    assetData.setType(AgentAssetData.ENTITY);
+    assetData.setAssetClass("Entity");
+
+    // Add all Relationship data
     Iterator iter = getAllRoles().iterator();
     while(iter.hasNext()) {
       String role = (String)iter.next();
       String[] supplies = (String[])getProperty(PROP_SUPPLIES).getValue();
       for(int i=0; i < supplies.length; i++) {
-	RelationshipTimePhasedData rtpd = new RelationshipTimePhasedData();
-	rtpd.setRole(role);
-	rtpd.setItem(supplies[i].trim());
-	rtpd.setType(supplies[i].substring(supplies[i].lastIndexOf(".")+1));
-	rtpd.setCluster(supplies[i].trim());
-	data.addTimePhasedData(rtpd);
+	RelationshipData relData = new RelationshipData();
+	relData.setRole(role);
+	relData.setItem(supplies[i].trim());
+	relData.setType(supplies[i].substring(supplies[i].lastIndexOf(".")+1));
+	relData.setCluster(supplies[i].trim());
+	assetData.addRelationship(relData);
       }
     }
-//     RelationshipTimePhasedData rel = new RelationshipTimePhasedData();
-//     String initializer = (String)getProperty(PROP_INITIALIZER).getValue();
-//     rel.setRole("MetricsControlProvider");
-//     rel.setItem(initializer);
-//     rel.setType(initializer.substring(initializer.lastIndexOf(".")+1));
-//     rel.setCluster(initializer);
-//     data.addTimePhasedData(rel);
+    
+    // Add all the PG's
+    assetData.addPropertyGroup(getItemIdentificationPG());
+    assetData.addPropertyGroup(getTypeIdentificationPG());
+    assetData.addPropertyGroup(getClusterPG());
+
+    PropGroupData pgData = getEntityPG();
+    if(pgData != null)
+      assetData.addPropertyGroup(pgData);         
+
+    assetData.addPropertyGroup(getCommunityPG());
+
+    data.addAgentAssetData(assetData);
 
     return data;
   }
 
-public ComponentData addComponentData(ComponentData data) {
+  public ComponentData addComponentData(ComponentData data) {
 
     // Add Asset Data PlugIn
     GenericComponentData plugin = new GenericComponentData();
@@ -579,21 +707,6 @@ public ComponentData addComponentData(ComponentData data) {
     plugin.setOwner(this);
     plugin.setName(AssetReportPlugIn_name);
     data.addChild(plugin);
-
-//     if(getFullName().toString().equals(getProperty(PROP_INITIALIZER).getValue())) {
-//       ABCPlugIn init = new ABCPlugIn("MetricsInitializer", MetricsInitializerPlugIn_name);
-//       addChild(init);
-//       init.initProperties();
-//       addPropertyAlias(init, getProperty(PROP_NUMBPROVIDERS));
-//       addPropertyAlias(init, getProperty(PROP_SAMPLEINTERVAL));
-//       addPropertyAlias(init, getProperty(PROP_STARTDELAY));
-//       addPropertyAlias(init, getProperty(PROP_MAXNUMBSAMPLES));
-
-//       plugin = new GenericComponentData();
-//       plugin.setOwner(this);
-//       plugin.setParent(data);
-//       data.addChild(init.addComponentData(plugin));
-//     }
 
     for(int i = 0 ; i < getChildCount(); i++) {
       if(getChild(i) instanceof ABCPlugIn) {
@@ -616,8 +729,7 @@ public ComponentData addComponentData(ComponentData data) {
     // Add data file leaves.
     data = createLeafComponents(data);
 
-    // Add Time Phased Data.
-    data = addTimePhasedData(data);
+    data = addAssetData(data);
 
     return data;
   }
