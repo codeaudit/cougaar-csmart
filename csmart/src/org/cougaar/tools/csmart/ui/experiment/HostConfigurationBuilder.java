@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.ui.experiment;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -61,6 +62,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   JPopupMenu hostNodeMenu;
   JPopupMenu nodeRootMenu;
   JPopupMenu nodeNodeMenu;
+  JPopupMenu viewOnlyMenu;
   JMenuItem cmdLineNodeMenuItem;
   JMenuItem cmdLineNodeInHostMenuItem;
   JMenuItem newNodeInHostMenuItem;
@@ -85,6 +87,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     "Global Command Line Arguments";
   public static final String HOST_TYPE_MENU_ITEM = "Type";
   public static final String HOST_LOCATION_MENU_ITEM = "Location";
+  public static final String DISPLAY_ARGS_ACTION = "Display Command Line Arguments";
   private JPanel hostConfigurationBuilder;
   // map agent component to node component
   private Hashtable agentToNode = new Hashtable();
@@ -98,6 +101,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     this.experimentBuilder = experimentBuilder;
     hostConfigurationBuilder = this; // for inner class dialogs
     isEditable = experiment.isEditable();
+    if (experimentBuilder == null)
+      isEditable = false; // not editable if we're not in experiment builder
     initDisplay();
   }
 
@@ -185,6 +190,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostRootMenu = new JPopupMenu();
     hostHostMenu = new JPopupMenu();
     hostNodeMenu = new JPopupMenu();
+    viewOnlyMenu = new JPopupMenu();
 
     JMenuItem newHostMenuItem = new JMenuItem(NEW_HOST_MENU_ITEM);
     newHostMenuItem.addActionListener(new ActionListener() {
@@ -274,20 +280,24 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     hostNodeMenu.add(cmdLineNodeInHostMenuItem);
     hostNodeMenu.add(globalCmdLineAction);
     hostNodeMenu.add(deleteNodeInHostMenuItem);
+
+    Action viewArgumentsAction = new AbstractAction(DISPLAY_ARGS_ACTION) {
+        public void actionPerformed(ActionEvent e) {
+          displayArguments(viewOnlyMenu.getInvoker());
+        }
+      };
+    viewOnlyMenu.add(viewArgumentsAction);
     
     // attach a mouse listener to the host tree to display menu 
     MouseListener hostTreeMouseListener = new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
-	if (!hostTree.isEditable()) return;
-	if (e.isPopupTrigger()) displayHostTreeMenu(e);
+        if (e.isPopupTrigger()) displayHostTreeMenu(e);
       }
       public void mousePressed(MouseEvent e) {
-	if (!hostTree.isEditable()) return;
-	if (e.isPopupTrigger()) displayHostTreeMenu(e);
+        if (e.isPopupTrigger()) displayHostTreeMenu(e);
       }
       public void mouseReleased(MouseEvent e) {
-	if (!hostTree.isEditable()) return;
-	if (e.isPopupTrigger()) displayHostTreeMenu(e);
+        if (e.isPopupTrigger()) displayHostTreeMenu(e);
       }
     };
     hostTree.addMouseListener(hostTreeMouseListener);
@@ -386,16 +396,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     // attach a mouse listener to the node tree to display menu 
     MouseListener nodeTreeMouseListener = new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
-	if (!nodeTree.isEditable()) return;
-	if (e.isPopupTrigger()) displayNodeTreeMenu(e);
+        if (e.isPopupTrigger()) displayNodeTreeMenu(e);
       }
       public void mousePressed(MouseEvent e) {
-	if (!nodeTree.isEditable()) return;
-	if (e.isPopupTrigger()) displayNodeTreeMenu(e);
+        if (e.isPopupTrigger()) displayNodeTreeMenu(e);
       }
       public void mouseReleased(MouseEvent e) {
-	if (!nodeTree.isEditable()) return;
-	if (e.isPopupTrigger()) displayNodeTreeMenu(e);
+        if (e.isPopupTrigger()) displayNodeTreeMenu(e);
       }
     };
     nodeTree.addMouseListener(nodeTreeMouseListener);
@@ -732,11 +739,17 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
       if (haveHosts) {
         newNodeInHostMenuItem.setEnabled(false);
-        hostHostMenu.show(hostTree, e.getX(), e.getY());
+        if (hostTree.isEditable())
+          hostHostMenu.show(hostTree, e.getX(), e.getY());
+        else
+          viewOnlyMenu.show(hostTree, e.getX(), e.getY());
         return;
       } else if (haveNodes) {
         cmdLineNodeInHostMenuItem.setEnabled(false);
-        hostNodeMenu.show(hostTree, e.getX(), e.getY());
+        if (hostTree.isEditable())
+          hostNodeMenu.show(hostTree, e.getX(), e.getY());
+        else
+          viewOnlyMenu.show(hostTree, e.getX(), e.getY());
         return;
       }
     } else {
@@ -747,17 +760,52 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       ConsoleTreeObject selected =
         (ConsoleTreeObject)selNode.getUserObject();
       // display popup menu 
-      if (selected.isRoot())
-        hostRootMenu.show(hostTree, e.getX(), e.getY());
-      else if (selected.isHost()) {
+      if (selected.isRoot()) {
+        if (hostTree.isEditable())
+          hostRootMenu.show(hostTree, e.getX(), e.getY());
+        else
+          viewOnlyMenu.show(hostTree, e.getX(), e.getY());
+      } else if (selected.isHost()) {
         newNodeInHostMenuItem.setEnabled(true);
-        hostHostMenu.show(hostTree, e.getX(), e.getY());
+        if (hostTree.isEditable())
+          hostHostMenu.show(hostTree, e.getX(), e.getY());
+        else
+          viewOnlyMenu.show(hostTree, e.getX(), e.getY());
       } else if (selected.isNode()) {
         cmdLineNodeInHostMenuItem.setEnabled(true);
-        hostNodeMenu.show(hostTree, e.getX(), e.getY());
+        if (hostTree.isEditable())
+          hostNodeMenu.show(hostTree, e.getX(), e.getY());
+        else
+          viewOnlyMenu.show(hostTree, e.getX(), e.getY());
       } 
     }
   } 
+
+  /**
+   * Display global command line arguments.
+   * If a node is selected, also display command line arguments for that node.
+   */
+
+  private void displayArguments(Component c) {
+    if (!(c instanceof JTree))
+      return;
+    NodeArgumentDialog dialog;
+    DefaultMutableTreeNode[] selectedNodes = 
+      getSelectedItemsInTree((JTree)c, NodeComponent.class);
+    if (selectedNodes != null && selectedNodes.length == 1) {
+      ConsoleTreeObject cto = 
+        (ConsoleTreeObject)(selectedNodes[0]).getUserObject();
+      NodeComponent nodeComponent = (NodeComponent)cto.getComponent();
+      dialog = new NodeArgumentDialog("Node " + nodeComponent.getShortName() +
+                                      " Command Line",
+                                      nodeComponent.getArguments(),
+                                      true, false);
+    } else
+      dialog = new NodeArgumentDialog("Global Command Line",
+                                      experiment.getDefaultNodeArguments(), 
+                                      false, false);
+    dialog.setVisible(true);
+  }
 
   /**
    * Add new host to host tree.
@@ -837,7 +885,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       // disable menu command to set individual node command line arguments
       if (haveNodes) {
         cmdLineNodeMenuItem.setEnabled(false);
-        nodeNodeMenu.show(nodeTree, e.getX(), e.getY());
+        if (nodeTree.isEditable())
+          nodeNodeMenu.show(nodeTree, e.getX(), e.getY());
+        else
+          viewOnlyMenu.show(nodeTree, e.getX(), e.getY());
         return;
       }
     } else {
@@ -848,11 +899,17 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       ConsoleTreeObject selected =
         (ConsoleTreeObject)selNode.getUserObject();
       // display popup menu
-      if (selected.isRoot())
-        nodeRootMenu.show(nodeTree, e.getX(), e.getY());
-      else if (selected.isNode()) {
+      if (selected.isRoot()) {
+        if (nodeTree.isEditable())
+          nodeRootMenu.show(nodeTree, e.getX(), e.getY());
+        else
+          viewOnlyMenu.show(nodeTree, e.getX(), e.getY());
+      } else if (selected.isNode()) {
         cmdLineNodeMenuItem.setEnabled(true);
-        nodeNodeMenu.show(nodeTree, e.getX(), e.getY());
+        if (nodeTree.isEditable())
+          nodeNodeMenu.show(nodeTree, e.getX(), e.getY());
+        else
+          viewOnlyMenu.show(nodeTree, e.getX(), e.getY());
       }
     }
   }
@@ -1343,7 +1400,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     NodeArgumentDialog dialog =
       new NodeArgumentDialog("Node " + nodeComponent.getShortName()
                              + " Command Line",
-                             nodeComponent.getArguments(), true);
+                             nodeComponent.getArguments(), true, true);
     dialog.setVisible(true);
     if (dialog.getValue() != JOptionPane.OK_OPTION)
       return; // user cancelled
@@ -1358,7 +1415,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     experiment.updateNameServerHostName(); // Be sure this is up-do-date
     NodeArgumentDialog dialog = 
       new NodeArgumentDialog("Global Command Line",
-                             experiment.getDefaultNodeArguments(), false);
+                             experiment.getDefaultNodeArguments(), false, true);
     dialog.setVisible(true);
     if (dialog.getValue() != JOptionPane.OK_OPTION)
       return; // user cancelled

@@ -40,12 +40,65 @@ public class NodeArgumentDialog extends JDialog {
   JTextArea args;
   int returnValue;
   private transient Logger log;
+  
+  public NodeArgumentDialog(String title, Properties props, 
+                            boolean isLocal, boolean isEditable) {
+    super((Frame)null, title, isEditable); // display modal dialog
 
-  public NodeArgumentDialog(String title, Properties props, boolean isLocal) {
-    super((Frame)null, title, true); // display modal dialog
     createLogger();
+
     Box nodeArgPanel = Box.createVerticalBox();
+
+    // create JTable
+    if (isEditable) 
+      argTable = new JTable();
+    else
+      argTable = new JTable() {
+          public boolean isCellEditable(int row, int column) {
+            return false;
+          }
+        };
+    // don't allow user to reorder columns
+    argTable.getTableHeader().setReorderingAllowed(false);
+    argTable.setColumnSelectionAllowed(false);
+    argTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    JScrollPane scrollPane = new JScrollPane(argTable);
+    JPanel tablePanel = new JPanel(new BorderLayout());
+    tablePanel.setBorder(BorderFactory.createTitledBorder("-D Options"));
+    tablePanel.add(scrollPane);
+
+    // initialize text area and table from properties
     JPanel argumentPanel = new JPanel();
+    argumentPanel.setBorder(BorderFactory.createTitledBorder("Arguments"));
+    args = new JTextArea(10, 40);
+    args.setEditable(isEditable);
+    args.setToolTipText("Enter command line args one per line");
+    argumentPanel.add(args);
+
+    this.props = props;
+    String value = props.getProperty(CSMARTConsole.COMMAND_ARGUMENTS);
+    setArguments(value);
+    model = new NodeArgumentTableModel(props, isLocal);
+    argTable.setModel(model);
+
+    // simplified version if not editable
+    if (!isEditable) {
+      JButton okButton = new JButton("OK");
+      okButton.addActionListener(new ActionListener() {
+          public void actionPerformed(ActionEvent e) {
+            setVisible(false);
+          }
+        });
+      nodeArgPanel.add(tablePanel);
+      nodeArgPanel.add(argumentPanel);
+      JPanel panel = new JPanel();
+      panel.add(okButton);
+      nodeArgPanel.add(panel);
+      getContentPane().add(nodeArgPanel);
+      pack();
+      return;
+    }
+
     // ok and cancel buttons panel
     JPanel buttonPanel = new JPanel();
     JButton okButton = new JButton("OK");
@@ -78,17 +131,6 @@ public class NodeArgumentDialog extends JDialog {
     });
     buttonPanel.add(cancelButton);
 
-    // add JTable
-    argTable = new JTable();
-    // don't allow user to reorder columns
-    argTable.getTableHeader().setReorderingAllowed(false);
-    argTable.setColumnSelectionAllowed(false);
-    argTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    JScrollPane scrollPane = new JScrollPane(argTable);
-    JPanel tablePanel = new JPanel(new BorderLayout());
-    tablePanel.setBorder(BorderFactory.createTitledBorder("-D Options"));
-    tablePanel.add(scrollPane);
-
     // add buttons to add/delete properties
     JPanel tableButtonPanel = new JPanel();
     JButton addButton = new JButton("Add Property");
@@ -116,11 +158,6 @@ public class NodeArgumentDialog extends JDialog {
     tableButtonPanel.add(fileButton);
     tablePanel.add(tableButtonPanel, BorderLayout.SOUTH);
 
-    argumentPanel.setBorder(BorderFactory.createTitledBorder("Arguments"));
-    args = new JTextArea(10, 40);
-    args.setToolTipText("Enter command line args one per line");
-    argumentPanel.add(args);
-
     nodeArgPanel.add(tablePanel);
     nodeArgPanel.add(argumentPanel);
     nodeArgPanel.add(buttonPanel);
@@ -132,13 +169,6 @@ public class NodeArgumentDialog extends JDialog {
         NodeArgumentDialog.this.setVisible(false);
       }
     });
-
-    // initialize text area and table from properties
-    this.props = props;
-    String value = props.getProperty(CSMARTConsole.COMMAND_ARGUMENTS);
-    setArguments(value);
-    model = new NodeArgumentTableModel(props, isLocal);
-    argTable.setModel(model);
 
     pack();
   }
@@ -229,7 +259,8 @@ public class NodeArgumentDialog extends JDialog {
     props.setProperty("Color", "Red");
     props.setProperty("Number", "33");
     props.setProperty("Day", "Friday");
-    NodeArgumentDialog nad = new NodeArgumentDialog("Test", props, true);
+    NodeArgumentDialog nad = 
+      new NodeArgumentDialog("Test", props, true, false);
     nad.setVisible(true);
     if (nad.getValue() != JOptionPane.OK_OPTION)
       return;
