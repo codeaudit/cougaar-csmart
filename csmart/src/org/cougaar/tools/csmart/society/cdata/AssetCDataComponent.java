@@ -35,20 +35,43 @@ import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PropGroupBase;
 import org.cougaar.tools.csmart.society.RelationshipBase;
 
+/**
+ * ConfigurableComponent that represents an <code>AssetComponentData</code>
+ */
 public class AssetCDataComponent
   extends ModifiableConfigurableComponent
   implements AssetComponent {
 
   /** Property Definitions **/
+
+  /** Type Property Definition **/
   public static final String PROP_TYPE = "Asset Type";
+
+  /** Type Description Definition **/
   public static final String PROP_TYPE_DESC = "Type of Asset";
+
+  /** Class Definition **/
   public static final String PROP_CLASS = "Asset Class";
+
+  /** Class Description Definition **/
   public static final String PROP_CLASS_DESC = "Class of the Asset";
+
+  /** UID Definition **/
   public static final String PROP_UID = "UID";
+
+  /** UID Description Definition **/
   public static final String PROP_UID_DESC = "UID of the Asset";
+
+  /** Unit Name Definition **/
   public static final String PROP_UNITNAME = "Unit Name";
+
+  /** Unit Name Description Definition **/
   public static final String PROP_UNITNAME_DESC = "Unit Name of the Asset";
+
+  /** UIC Definition **/
   public static final String PROP_UIC = "UIC";
+
+  /** UID Description Definition **/
   public static final String PROP_UIC_DESC = "UIC of the Asset";
 
   private Property propAssetType;
@@ -58,6 +81,11 @@ public class AssetCDataComponent
   private Property propUIC;
   private AgentAssetData createdFromData;
 
+  /**
+   * Creates a new <code>AssetCDataComponent</code> instance.
+   *
+   * @param data <code>AgentAssetData</code> to create from
+   */
   public AssetCDataComponent(AgentAssetData data) {
     super("AssetData");
     createdFromData = data;
@@ -78,7 +106,8 @@ public class AssetCDataComponent
       propUniqueID.setToolTip(PROP_UID_DESC);
     }
     // Unit name is allowed to be null, if it is, give an empty string.
-    String unitname = (createdFromData.getUnitName() == null) ? "" : createdFromData.getUnitName();
+    String unitname = (createdFromData.getUnitName() == null) ? 
+      "" : createdFromData.getUnitName();
     propUnitName = addProperty(PROP_UNITNAME, unitname);
     propUnitName.setToolTip(PROP_UNITNAME_DESC);
     
@@ -93,9 +122,12 @@ public class AssetCDataComponent
 
   /**
    * Add component data for asset properties, relationships,
-   * and property groups.
+   * and property groups. Only additions are made in this method,
+   * no modifications to existing data.
+   *
+   * @param data Pointer to the global <code>ComponentData</code> tree
+   * @return an updated <code>ComponentData</code> value
    */
-
   public ComponentData addComponentData(ComponentData data) {
     AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
     assetData.setType(((Integer)propAssetType.getValue()).intValue());
