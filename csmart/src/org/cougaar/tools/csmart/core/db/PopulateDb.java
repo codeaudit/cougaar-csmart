@@ -2217,15 +2217,25 @@ public class PopulateDb extends PDbBase {
 					 + propInfo.toString());
 	    substitutions.put(":attribute_value:", sqlQuote(prop.getValue().toString()));
 	    substitutions.put(":attribute_order:", "0");
-	    // if val not already there for this runtime
+
+	    // FIXME: This will see if the entire value is already there, and if not, add it.
+	    // It must be changed to throw the exception & set the modified if the value is there
+	    // but under a different value!
+
 	    // if val not already there for this runtime
 	    stmt = getStatement();
-	    ResultSet rschck = executeQuery(stmt, dbp.getQuery("checkAttribute", substitutions));
+	    String checkQuery = dbp.getQuery("checkAttribute", substitutions);
+	    if (log.isDebugEnabled()) 
+	      log.debug("Checking for PG Attr entry query: " + checkQuery);
+	    ResultSet rschck = executeQuery(stmt, checkQuery);
 	    if (! rschck.next()) {
 	      if (log.isDebugEnabled()) {
 		log.debug("pagent " + data.getName() + " inserting pgval under pgattid " + propInfo.getAttributeLibId() + ", val " + prop.getValue().toString() + " into assembly " + substitutions.get(":assembly_id:"));
 	      }
-	      executeUpdate(dbp.getQuery("insertAttribute", substitutions));
+	      String insertQuery = dbp.getQuery("insertAttribute", substitutions);
+	      if (log.isDebugEnabled())
+		log.debug("InsertPGAttr query: " + insertQuery);
+	      executeUpdate(insertQuery);
 	    }
 	    rschck.close();
 	    stmt.close();
