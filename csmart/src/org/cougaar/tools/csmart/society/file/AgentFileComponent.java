@@ -49,9 +49,19 @@ public class AgentFileComponent
   private String filename;
 
   /** Agent Classname Property Definitions **/
+
+  /** Classname Property Definition **/
   public static final String PROP_CLASSNAME = "Classname";
+
+  /** Classname Description Property Definition **/
   public static final String PROP_CLASSNAME_DESC = "Name of the Agent Class";
   
+  /**
+   * Creates a new <code>AgentFileComponent</code> instance.
+   *
+   * @param name Name of the new Component
+   * @param classname Classname for the agent
+   */
   public AgentFileComponent(String name, String classname) {
     super(name);
     this.name = name;
@@ -67,6 +77,10 @@ public class AgentFileComponent
     log = CSMART.createLogger(this.getClass().getName());
   }
 
+  /**
+   * Initialize all local properties
+   *
+   */
   public void initProperties() {
     Property p = addProperty(PROP_CLASSNAME, new String(classname));
     p.setToolTip(PROP_CLASSNAME_DESC);
@@ -75,6 +89,14 @@ public class AgentFileComponent
     addAssetData();
   }
 
+  /**
+   * Adds any relevent <code>ComponentData</code> for this component.
+   * This method does not modify any existing <code>ComponentData</code>
+   *
+   * @see ComponentData
+   * @param data Pointer to the global <code>ComponentData</code>
+   * @return an updated <code>ComponentData</code> object
+   */
   public ComponentData addComponentData(ComponentData data) {
     // Process AssetData
     Iterator iter = 
@@ -142,9 +164,9 @@ public class AgentFileComponent
   /**
    * Tests equality for agents.
    * Agents are equal if they have the same short name.
+   * @param o Object to test for equality 
    * @return returns true if the object is an AgentComponent with same name
    */
-
   public boolean equals(Object o) {
     if (o instanceof AgentComponent) {
       AgentComponent that = (AgentComponent)o;
