@@ -97,7 +97,6 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   }
 
   private void exit() {
-    configComponent.setEditable(true);
   }
 
   public void actionPerformed(ActionEvent e) {
@@ -163,14 +162,12 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   }
 
   public void reinit(ModifiableComponent newModifiableComponent) {
-    configComponent.setEditable(true);
     setConfigComponent(newModifiableComponent);
     propertyEditor.reinit(configComponent);
   }
 
   private void setConfigComponent(ModifiableComponent newConfigComponent) {
     configComponent = newConfigComponent;
-    configComponent.setEditable(false);
     saveMenuItem.setEnabled(configComponent instanceof RecipeComponent);
   }
 
