@@ -116,6 +116,8 @@ public class BasicMetric extends ModifiableConfigurableComponent
 
   private boolean editable = true;
 
+  private transient int numAgs2 = 0;
+
   // FileFilter for metrics:
   private static FileFilter metricsFileFilter = new ScalabilityMetricsFileFilter();
 
@@ -247,9 +249,86 @@ public class BasicMetric extends ModifiableConfigurableComponent
 
   private transient int numAgents = 0; // numAgents collecting stats
   private transient RelationshipData metricRelate = null; // name of agent doing controling
-  private transient int numAgs2 = 0;
   
   public ComponentData addComponentData(ComponentData data) {
+    return data;
+  }
+
+  private ComponentData addInitPICD(ComponentData data) {
+    GenericComponentData plugin = new GenericComponentData();
+    plugin.setType(ComponentData.PLUGIN);
+    plugin.setName(MetricsInitializerPlugIn_name);
+    plugin.setClassName(MetricsInitializerPlugIn_name);
+    plugin.addParameter(new Integer(numAgents)); // numProviders
+    plugin.addParameter(getProperty(PROP_SAMPLEINTERVAL).getValue()); // sampleInterval
+    plugin.addParameter(getProperty(PROP_STARTDELAY).getValue()); // startDelay
+    plugin.addParameter(getProperty(PROP_MAXNUMBSAMPLES).getValue()); // maxSamples
+    plugin.setParent(data);
+    plugin.setOwner(this);
+    data.addChild(plugin);
+    return plugin;
+  }
+
+  private void addCollectorCD(ComponentData data) {
+    //Only add this if its not there already
+    ComponentData[] children = data.getChildren();
+    for (int i = 0; i < data.childCount(); i++) {
+      if (children[i].getName().equals(MetricsPlugIn_name))
+	return;
+    }
+    GenericComponentData plugin = new GenericComponentData();
+    plugin.setType(ComponentData.PLUGIN);
+    //plugin.setName("MetricPlugin");
+    plugin.setName(MetricsPlugIn_name);
+    plugin.setClassName(MetricsPlugIn_name);
+    plugin.setParent(data);
+    plugin.setOwner(this);
+
+    // Add parameters here:
+    // Why can't I find it by name? Cause it's hidden?
+    plugin.addParameter(propResultsDir.getValue()); // dir for Results files
+    plugin.addParameter(getProperty(PROP_TVERB).getValue()); // Task Verb to search for
+    plugin.addParameter(getProperty(PROP_BBSERV).getValue()); // Turn on/off BBoard Serv
+    plugin.addParameter(getProperty(PROP_PRSERV).getValue()); // Turn on/off Proto Reg. Serv
+    plugin.addParameter(getProperty(PROP_NODESERV).getValue()); // Turn on/off Node Metrics Serv
+    plugin.addParameter(getProperty(PROP_MSTATSSERV).getValue()); // Turn on/off Msg Stats Serv, def. on
+    plugin.addParameter(getProperty(PROP_MWATCHSERV).getValue()); // Turn on/off MsgWatcher Serv
+    data.addChild(plugin);
+  }
+
+  private void addRelationship(AgentComponentData data) {
+    if (metricRelate == null) 
+      return;
+    // Only add the relationship if its not already there
+    AgentAssetData aad = data.getAgentAssetData();
+    if (aad == null) return;    // No agent asset data available
+    RelationshipData[] relats = aad.getRelationshipData();
+    for (int i = 0; i < relats.length; i++) {
+      if (relats[i].equals(metricRelate))
+	return;
+    }
+    aad.addRelationship(metricRelate);
+  }
+  
+  public ComponentData modifyComponentData(ComponentData data) {
+    numAgs2 = 0;                // Gets counted as metrics plugins are inserted
+    ComponentData picd = addMetricsComponentData(data);
+
+    // OK, now set numAgs2 val in the numProviders slot
+    // First, find the MetricsInitializer Plugin
+    if (picd == null) {
+      // couldn't find the initializer plugin. Big problem
+      System.err.println("BasicMetric: Could not insert initializer?");
+      return data;
+    }
+    
+    // Then, reset the value of the first parameter
+    //    picd.setParameter(0, new Integer(numAgs2));
+   
+    return data;
+  }
+
+  private ComponentData addMetricsComponentData(ComponentData data) {
     //    System.out.println("BasicMetric in addCD on data: " + data);
     // The Basic Metric needs to add its plugin to each Agent in the society.
     // Plus, it should pick one agent in the society, and add the initializer to that agent
@@ -257,6 +336,8 @@ public class BasicMetric extends ModifiableConfigurableComponent
     // Finally, it needs to add a relationship to every agent in the society with
     // that initializer
     // FIXME!!!
+
+    ComponentData picd = null;
 
     // Find the Experiment.
     // From it, get a count of the Agents in the Society & set the numAgents
@@ -279,111 +360,20 @@ public class BasicMetric extends ModifiableConfigurableComponent
 	metricRelate.setType(data.getName().substring(data.getName().lastIndexOf(".") + 1));
 	metricRelate.setCluster(data.getName()); // name
 	// and to the first, add the MetricsInitializerPlugIn
-	addInitPICD(data);
+	picd = addInitPICD(data);
       }
       // for each Agent, add the MetricsPlugIn & the relationship
       addCollectorCD(data);
-      addRelationship((AgentComponentData)data);
+      addRelationship((AgentComponentData) data);
     } else if (data.childCount() > 0) {
       // for each child, call this same method.
       ComponentData[] children = data.getChildren();
       for (int i = 0; i < children.length; i++) {
-	addComponentData(children[i]);
+	ComponentData xpicd = addMetricsComponentData(children[i]);
+        if (xpicd != null) picd = xpicd;
       }
     }
-    return data;
-  }
-
-  private void addInitPICD(ComponentData data) {
-    GenericComponentData plugin = new GenericComponentData();
-    plugin.setType(ComponentData.PLUGIN);
-    plugin.setName(MetricsInitializerPlugIn_name);
-    plugin.setClassName(MetricsInitializerPlugIn_name);
-    plugin.addParameter(new Integer(numAgents)); // numProviders
-    plugin.addParameter(getProperty(PROP_SAMPLEINTERVAL).getValue()); // sampleInterval
-    plugin.addParameter(getProperty(PROP_STARTDELAY).getValue()); // startDelay
-    plugin.addParameter(getProperty(PROP_MAXNUMBSAMPLES).getValue()); // maxSamples
-    plugin.setParent(data);
-    plugin.setOwner(this);
-    data.addChild(plugin);
-  }
-
-  private void addCollectorCD(ComponentData data) {
-    //Only add this if its not there already
-    ComponentData[] children = data.getChildren();
-    for (int i = 0; i < data.childCount(); i++) {
-      if (children[i].getName().equals(MetricsPlugIn_name))
-	return;
-    }
-    GenericComponentData plugin = new GenericComponentData();
-    plugin.setType(ComponentData.PLUGIN);
-    //plugin.setName("MetricPlugin");
-    plugin.setName(MetricsPlugIn_name);
-    plugin.setParent(data);
-    plugin.setOwner(this);
-
-    // Add parameters here:
-    // Why can't I find it by name? Cause it's hidden?
-    plugin.addParameter(propResultsDir.getValue()); // dir for Results files
-    plugin.addParameter(getProperty(PROP_TVERB).getValue()); // Task Verb to search for
-    plugin.addParameter(getProperty(PROP_BBSERV).getValue()); // Turn on/off BBoard Serv
-    plugin.addParameter(getProperty(PROP_PRSERV).getValue()); // Turn on/off Proto Reg. Serv
-    plugin.addParameter(getProperty(PROP_NODESERV).getValue()); // Turn on/off Node Metrics Serv
-    plugin.addParameter(getProperty(PROP_MSTATSSERV).getValue()); // Turn on/off Msg Stats Serv, def. on
-    plugin.addParameter(getProperty(PROP_MWATCHSERV).getValue()); // Turn on/off MsgWatcher Serv
-    data.addChild(plugin);
-  }
-
-  private void addRelationship(AgentComponentData data) {
-    if (metricRelate == null) 
-      return;
-    // Only add the relationship if its not already there
-    AgentAssetData aad = data.getAgentAssetData();
-    RelationshipData[] relats = data.getAgentAssetData().getRelationshipData();
-    for (int i = 0; i < relats.length; i++) {
-      if (relats[i].equals(metricRelate))
-	return;
-    }
-    data.getAgentAssetData().addRelationship(metricRelate);
-  }
-  
-  public ComponentData modifyComponentData(ComponentData data) {
-       numAgs2 = 0;
-
-    // OK, now set numAgs2 val in the numProviders slot
-    // First, find the MetricsInitializer Plugin
-    ComponentData init = findInitializer(data);
-    if (init == null) {
-      // couldn't find the initializer plugin. Big problem
-      System.err.println("BasicMetric: Could not insert initializer?");
-      return data;
-    }
-    
-    // Then, reset the value of the first parameter
-    //    init.setParameter(0, new Integer(numAgs2));
-
-   
-    return data;
-  }
-
-  private ComponentData findInitializer(ComponentData data) {
-    // Find the plugin with the Metrics initializer plugin
-    ComponentData[] children = data.getChildren();
-
-    while(!children[0].getType().equals(ComponentData.AGENT)) {
-      children = children[0].getChildren();
-    }
-
-    for(int j=0; j < children.length; j++) {
-      ComponentData[] plugins = children[j].getChildren();
-      for (int i = 0; i < plugins.length; i++) {
-	if (plugins[i].getName().equals(MetricsInitializerPlugIn_name)) {
-	  return children[j];
-	}
-      }
-    }
-
-    return null;
+    return picd;
   }
 
   ///////////////////////////////////////////
