@@ -79,6 +79,7 @@ public class CMT {
   }
   
   static void clearUnusedCMTassemblies(){
+    // FIXME!! This query may have problems in MySQL!!!
     Set unusedAssemblies=DBUtils.querySet("unusedAssemblies",new HashMap(), QUERY_FILE);
     Iterator i = unusedAssemblies.iterator();
     while (i.hasNext()) {
@@ -152,6 +153,7 @@ public class CMT {
   }
 
   static void clearCMTasb(String assembly_id){
+    // FIXME! This query may have problems in MySQL!!
     Set unusedAssemblies=DBUtils.querySet("unusedAssemblies",new HashMap(), QUERY_FILE);
     if(unusedAssemblies.contains(assembly_id)){
       reallyClearCMTasb(assembly_id);
@@ -695,6 +697,7 @@ public class CMT {
     // this query is legal in both Oracle and mySQL
     DBUtils.dbUpdate("updateCMTAssembly",subs, QUERY_FILE);
     DBUtils.dbUpdate("updateAssemblyIDOnExpt",subs, QUERY_FILE);
+    DBUtils.dbUpdate("updateRuntimeAssemblyIDOnExpt",subs, QUERY_FILE);
     return assembly_id;
   }
   
@@ -730,6 +733,7 @@ public class CMT {
     String society_id = DBUtils.sqlQuote("society|" + experiment_name);
     ArrayList queries = new ArrayList();
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_assembly", "expt_id", expt_id));
+    queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_config_assembly", "expt_id", expt_id));
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_thread", "expt_id", expt_id));
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_org_mult", "expt_id", expt_id));
     queries.add(DBUtils.makeDeleteQuery(asbPrefix+"expt_trial_metric_prop", "trial_id", trial_id));
