@@ -135,6 +135,11 @@ public class Organizer extends JScrollPane {
       public void actionPerformed(ActionEvent e) {
         deleteExperimentFromDatabase();
       }
+    },
+    new AbstractAction("Delete Recipe From Database") {
+      public void actionPerformed(ActionEvent e) {
+        deleteRecipeFromDatabase();
+      }
     }
   };
   private Action[] newExperimentActions = {
@@ -1336,6 +1341,43 @@ public class Organizer extends JScrollPane {
     String experimentName = (String)cb.getSelectedItem();
     String experimentId = (String)experimentNamesMap.get(experimentName);
     ExperimentDB.deleteExperiment(experimentId, experimentName);
+  }
+
+  public void deleteRecipeFromDatabase() {
+    Map recipeNamesHT = getRecipeNamesFromDatabase();
+    Set dbRecipeNames = recipeNamesHT.keySet();
+    if (dbRecipeNames.isEmpty()) {
+      JOptionPane.showMessageDialog(this,
+                                    "There are no recipes in the database",
+                                    "No Database Recipes",
+                                    JOptionPane.INFORMATION_MESSAGE);
+      return;
+    }
+    JComboBox cb = new JComboBox(dbRecipeNames.toArray());
+    cb.setEditable(false);
+    JPanel panel = new JPanel();
+    panel.add(new JLabel("Delete Recipe:"));
+    panel.add(cb);
+    int result = 
+      JOptionPane.showConfirmDialog(null, panel, "Delete Recipe",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.PLAIN_MESSAGE);
+    if (result != JOptionPane.OK_OPTION)
+      return;
+    String recipeName = (String)cb.getSelectedItem();
+    try {
+      PDbBase pdb = new PDbBase();
+      try {
+        pdb.removeLibRecipeNamed(recipeName);
+      } finally {
+        pdb.close();
+      }
+    } catch (Exception e) {
+      JOptionPane.showMessageDialog(this,
+                                    "An exception occurred deleting the recipe from the database",
+                                    "Error Writing Database",
+                                    JOptionPane.ERROR_MESSAGE);
+    }
   }
 
   /**

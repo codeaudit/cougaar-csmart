@@ -92,7 +92,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   private static JMenuItem runMenuItem;
   private static JMenuItem duplicateMenuItem;
   private static JMenuItem deleteMenuItem;
-  private static JMenuItem deleteFromDatabaseMenuItem;
+  private static JMenuItem deleteExperimentFromDatabaseMenuItem;
+  private static JMenuItem deleteRecipeFromDatabaseMenuItem;
   private static JMenuItem renameMenuItem;
   private static JMenuItem saveToDatabaseMenuItem;
 
@@ -259,13 +260,20 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         }
       });
     fileMenu.add(deleteMenuItem);
-    deleteFromDatabaseMenuItem = new JMenuItem("Delete From Database");
-    deleteFromDatabaseMenuItem.addActionListener(new ActionListener() {
+    deleteExperimentFromDatabaseMenuItem = new JMenuItem("Delete Experiment From Database");
+    deleteExperimentFromDatabaseMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           organizer.deleteExperimentFromDatabase();
         }
       });
-    fileMenu.add(deleteFromDatabaseMenuItem);
+    fileMenu.add(deleteExperimentFromDatabaseMenuItem);
+    deleteRecipeFromDatabaseMenuItem = new JMenuItem("Delete Recipe From Database");
+    deleteRecipeFromDatabaseMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          organizer.deleteRecipeFromDatabase();
+        }
+      });
+    fileMenu.add(deleteRecipeFromDatabaseMenuItem);
     renameMenuItem = new JMenuItem("Rename");
     renameMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
@@ -367,6 +375,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
             if (menuItem != null)
               menuItem.setEnabled(false);
           }
+          if (organizer.getSelectedNode() == null)
+            return;
           // now enable the menu items specific to the class of object
           // selected in the Organizer
           if (organizer.getSelectedNode().isRoot()) {
@@ -375,7 +385,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
             newSocietyMenuItem.setEnabled(true);
             newFolderMenuItem.setEnabled(true);
             renameMenuItem.setEnabled(true);
-            deleteFromDatabaseMenuItem.setEnabled(true);
+            deleteExperimentFromDatabaseMenuItem.setEnabled(true);
+            deleteRecipeFromDatabaseMenuItem.setEnabled(true);
             return;
           } 
           Object selObject = organizer.getSelectedObject();
