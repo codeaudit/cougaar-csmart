@@ -1,9 +1,13 @@
 2001-10-18  Ray Tomlinson  <RTomlinson@bbn.com>
 
+	* ComponentData.java (Repository):
+	Define HOST constant for identify host ComponentData.
+
 	* PopulateDb.java (Repository):
 	Record pre-existing parameters and relationships so new ones can
 	be detected and placed in the CSMI assembly rather than the CSHNA
 	assembly.
+	Handle hosts including host-node mappings.
 
 	* GenericComponentData.java (Repository): 
 	* ComponentData.java (Repository): 
