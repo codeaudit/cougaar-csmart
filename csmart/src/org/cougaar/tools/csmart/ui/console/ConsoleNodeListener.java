@@ -185,9 +185,7 @@ public class ConsoleNodeListener implements NodeEventListener {
 	      handleIdleUpdate(idleTime, timestamp);
 	    else {
 	      updateStatus(nodeEventType);
-	      //	      userDisplay.insertString(userDisplay.getLength(), 
-	      //				       nodeEventDescription, style);
-	      userDisplay.appendString(nodeEventDescription, style);
+              userDisplay.appendString(nodeEventDescription, style);
 	    } 
 	  } catch (Exception e) {
 	  }
@@ -264,11 +262,8 @@ public class ConsoleNodeListener implements NodeEventListener {
 	      prevDescription += description;
 	    } else {
 	      try {
-//  		userDisplay.insertString(userDisplay.getLength(), 
-//  					 prevDescription,
-//  					 getNodeEventStyle(prevType));
-		userDisplay.appendString(prevDescription, 
-					 getNodeEventStyle(prevType));
+                userDisplay.appendString(prevDescription, 
+                                         getNodeEventStyle(prevType));
 	      } catch (Exception e) {
 		break;
 	      }
@@ -278,11 +273,8 @@ public class ConsoleNodeListener implements NodeEventListener {
 	  }
 	  // write the last batch of descriptions
 	  try {
-//  	    userDisplay.insertString(userDisplay.getLength(), 
-//  				     prevDescription, 
-//  				     getNodeEventStyle(prevType));
-	    userDisplay.appendString(prevDescription,
-				     getNodeEventStyle(prevType));
+            userDisplay.appendString(prevDescription,
+                                     getNodeEventStyle(prevType));
 	  } catch (Exception e) {
 	  }
 	}

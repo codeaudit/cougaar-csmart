@@ -141,6 +141,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
   private Date runStart = null;
   
+  private ConsoleDesktop desktop;
+
   /**
    * Create and show console GUI.
    */
@@ -152,7 +154,19 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     currentTrial = -1;
     // TODO: support experiments with multiple societies
     societyComponent = experiment.getSocietyComponent(0);
+    desktop = new ConsoleDesktop();
     setSocietyComponent(societyComponent);
+    //    initDesktop();
+  }
+
+  // for testing
+  private void initDesktop() {
+    JFrame frame = new JFrame();
+    desktop = new ConsoleDesktop();
+    frame.getContentPane().add(desktop);
+    frame.pack();
+    frame.setSize(200, 200);
+    frame.setVisible(true);
   }
 
   /**
@@ -374,22 +388,41 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     statusButtons = new ButtonGroup();
 
     // create tabbed panes for configuration information (not editable)
-    JTabbedPane configTabbedPane = new JTabbedPane();
+    //    JTabbedPane configTabbedPane = new JTabbedPane();
     hostConfiguration = new HostConfigurationBuilder(experiment);
-    configTabbedPane.add("Configuration", hostConfiguration);
-    configTabbedPane.add("Trial Values", 
-			 new PropertyEditorPanel(experiment.getComponentsAsArray()));
+    JInternalFrame jif = new JInternalFrame("Configuration",
+                                            true, false, true, true);
+    jif.getContentPane().add(hostConfiguration);
+    jif.setSize(300, 300);
+    jif.setLocation(0, 0);
+    jif.setVisible(true);
+    System.out.println("Added configuration");
+    desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
+    PropertyEditorPanel trialViewer = 
+      new PropertyEditorPanel(experiment.getComponentsAsArray());
+    jif = new JInternalFrame("Trial Values", true, false, true, true);
+    jif.getContentPane().add(trialViewer);
+    jif.setSize(300, 300);
+    jif.setLocation(10, 10);
+    jif.setVisible(true);
+    System.out.println("Added trial viewer");
+    desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
+
+    //    configTabbedPane.add("Configuration", hostConfiguration);
+    //    configTabbedPane.add("Trial Values", 
+    //			 new PropertyEditorPanel(experiment.getComponentsAsArray()));
 
     // create tabbed panes for running nodes, tabs are added dynamically
     tabbedPane = new JTabbedPane();
     tabbedPane.addChangeListener(this);
 
     // create split pane to hold config panes on left and output panes on right
-    JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-    splitPane.setLeftComponent(configTabbedPane);
-    splitPane.setRightComponent(tabbedPane);
+    //    JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+    //    splitPane.setLeftComponent(configTabbedPane);
+    //    splitPane.setRightComponent(tabbedPane);
 
-    panel.add(splitPane,
+    //    panel.add(splitPane,
+    panel.add(desktop,
 	      new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
 				     GridBagConstraints.WEST,
 				     GridBagConstraints.BOTH,
@@ -417,7 +450,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
     pack();
     setSize(700, 600);
-    splitPane.setDividerLocation(400);
+    //    splitPane.setDividerLocation(400);
     setVisible(true);
   }
 
@@ -1087,7 +1120,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
     // create node event filter with no buffering
     // so that idle display is "smooth"
-    NodeEventFilter filter = new NodeEventFilter();
+    NodeEventFilter filter = new NodeEventFilter(100);
     Properties properties = new Properties();
     properties.put("org.cougaar.node.name", uniqueNodeName);
     String nameServerPorts = "8888:5555";
@@ -1152,7 +1185,15 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     }
     
     // only add gui controls if successfully created node
-    tabbedPane.add(nodeName, stdoutPane);
+    //    tabbedPane.add(nodeName, stdoutPane);
+    // for debugging
+    //    ArrayList names = 
+    //      (ArrayList)nodeComponent.getProperty(new ComponentName((ConfigurableComponent)nodeComponent, "AgentNames")).getValue();
+    //    for (int i = 0; i < names.size(); i++) {
+    //      System.out.println("Node: " + nodeName + " contains agent: " + 
+    //                         names.get(i));
+    //    }
+    desktop.addNodeFrame(nodeComponent, stdoutPane);
     searchAction.setEnabled(true);
     initKeyMap(stdoutPane);
     addStatusButton(statusButton);

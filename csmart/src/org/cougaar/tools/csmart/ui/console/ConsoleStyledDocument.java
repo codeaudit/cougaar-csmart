@@ -43,7 +43,8 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
         remove(0, neededSpace - MAX_CHARACTERS);
       super.insertString(getLength(), s, a);
     } catch (BadLocationException ble) {
-      System.out.println("Bad location exception: " + ble);
+      System.out.println("Bad location exception: " + ble +
+                         " " + ble.offsetRequested());
     }
   }
 

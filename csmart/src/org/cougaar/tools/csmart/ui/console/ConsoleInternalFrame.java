@@ -1,0 +1,277 @@
+/*
+ * <copyright>
+ *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
+ * 
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the Cougaar Open Source License as published by
+ *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
+ * 
+ *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
+ *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
+ *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
+ *  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, AND WITHOUT
+ *  ANY WARRANTIES AS TO NON-INFRINGEMENT.  IN NO EVENT SHALL COPYRIGHT
+ *  HOLDER BE LIABLE FOR ANY DIRECT, SPECIAL, INDIRECT OR CONSEQUENTIAL
+ *  DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE OF DATA OR PROFITS,
+ *  TORTIOUS CONDUCT, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ *  PERFORMANCE OF THE COUGAAR SOFTWARE.
+ * </copyright>
+ */
+
+package org.cougaar.tools.csmart.ui.console;
+
+import java.awt.event.ActionEvent;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.util.ArrayList;
+import javax.swing.*;
+
+import org.cougaar.tools.csmart.ui.component.ComponentName;
+import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
+import org.cougaar.tools.csmart.ui.component.HostComponent;
+import org.cougaar.tools.csmart.ui.component.NodeComponent;
+import org.cougaar.tools.csmart.ui.component.Property;
+import org.cougaar.tools.csmart.ui.experiment.Experiment;
+
+public class ConsoleInternalFrame extends JInternalFrame {
+  private static final String ABOUT_MENU = "About";
+  private static final String ABOUT_ACTION = "About";
+  private static final String CPU_USAGE_ACTION = "CPU Usage";
+  private static final String MEMORY_USAGE_ACTION = "Memory Usage";
+  private static final String CONTROL_MENU = "Control";
+  private static final String START_ACTION = "Start";
+  private static final String STOP_ACTION = "Stop";
+  private static final String TRACE_ACTION = "Stack Trace";
+  private static final String SEARCH_MENU = "Search";
+  private static final String SEARCH_ACTION = "Search...";
+  private static final String SEARCH_NEXT_ACTION = "Search Next";
+  private static int openFrameCount = 0;
+  private static final int xOffset = 30, yOffset = 30;
+  private NodeComponent node;
+  private JComponent component;
+  private Action searchNextAction;
+
+  public ConsoleInternalFrame(NodeComponent node, JComponent component) {
+    super(node.getShortName(),
+          true, //resizable
+          true, //closable
+          true, //maximizable
+          true);//iconifiable
+    this.node = node;
+    this.component = component;
+    // init menu
+    JMenuBar menuBar = new JMenuBar();
+    JMenu aboutMenu = new JMenu(ABOUT_MENU);
+    Action aboutAction = new AbstractAction(ABOUT_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        displayAbout();
+      }
+    };
+    aboutMenu.add(aboutAction);
+    Action cpuUsageAction = new AbstractAction(CPU_USAGE_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+      }
+    };
+    aboutMenu.add(cpuUsageAction);
+    Action memoryUsageAction = new AbstractAction(MEMORY_USAGE_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+      }
+    };
+    aboutMenu.add(memoryUsageAction);
+    JMenu controlMenu = new JMenu(CONTROL_MENU);
+    Action startAction = new AbstractAction(START_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+      }
+    };
+    controlMenu.add(startAction);
+    Action stopAction = new AbstractAction(STOP_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+      }
+    };
+    controlMenu.add(stopAction);
+    Action traceAction = new AbstractAction(TRACE_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+      }
+    };
+    controlMenu.add(traceAction);
+    JMenu searchMenu = new JMenu(SEARCH_MENU);
+    Action searchAction = new AbstractAction(SEARCH_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        search_actionPerformed();
+      }
+    };
+    searchMenu.add(searchAction);
+    searchNextAction = new AbstractAction(SEARCH_NEXT_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        searchNext_actionPerformed();
+      }
+    };
+    searchMenu.add(searchNextAction);
+    menuBar.add(aboutMenu);
+    menuBar.add(controlMenu);
+    menuBar.add(searchMenu);
+    getRootPane().setJMenuBar(menuBar);
+    openFrameCount++;
+    getContentPane().add(component);
+    setSize(300,300);
+    //Set the window's location.
+    setLocation(xOffset*openFrameCount, yOffset*openFrameCount);
+  }
+
+  private void displayAbout() {
+    ArrayList agentNames = 
+      (ArrayList)getPropertyValue((ConfigurableComponent)node, "AgentNames");
+    // TODO: is there a better way to do this?
+    // do nodes have to point to hosts?
+    // get host component by getting the experiment and 
+    // searching its hosts for one with this node
+    String hostName = "";
+    Experiment experiment = 
+      (Experiment)getPropertyValue((ConfigurableComponent)node, "Experiment");
+    HostComponent[] hosts = experiment.getHosts();
+    HostComponent host = null;
+    for (int i = 0; i < hosts.length; i++) {
+      NodeComponent[] nodes = hosts[i].getNodes();
+      for (int j = 0; j < nodes.length; j++) {
+        if (nodes[j].equals(node)) {
+          host = hosts[i];
+          hostName = host.getShortName();
+          break;
+        }
+      }
+    }
+    JPanel aboutPanel = new JPanel();
+    aboutPanel.setLayout(new GridBagLayout());
+    int x = 0;
+    int y = 0;
+    aboutPanel.add(new JLabel("Host Name:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(10, 0, 5, 5),
+                                          0, 0));
+    aboutPanel.add(new JLabel(hostName),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(10, 0, 5, 0),
+                                          0, 0));
+    x = 0;
+    aboutPanel.add(new JLabel("Host Description:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 5, 5),
+                                          0, 0));
+    aboutPanel.add(new JLabel((String)getPropertyValue((ConfigurableComponent)host, "Description")),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(0, 0, 5, 0),
+                                          0, 0));
+    x = 0;
+    aboutPanel.add(new JLabel("Host Type:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 5, 5),
+                                          0, 0));
+    aboutPanel.add(new JLabel((String)getPropertyValue((ConfigurableComponent)host, "MachineType")),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(0, 0, 5, 0),
+                                          0, 0));
+    x = 0;
+    aboutPanel.add(new JLabel("Host Location:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 5, 5),
+                                          0, 0));
+    aboutPanel.add(new JLabel((String)getPropertyValue((ConfigurableComponent)host, "Location")),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(0, 0, 5, 0),
+                                          0, 0));
+    x = 0;
+    aboutPanel.add(new JLabel("Node Description: "),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 5, 5),
+                                          0, 0));
+    aboutPanel.add(new JLabel((String)getPropertyValue((ConfigurableComponent)node, "Description")),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(0, 0, 5, 0),
+                                          0, 0));
+    x = 0;
+    aboutPanel.add(new JLabel("Command Line Arguments:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 5, 5),
+                                          0, 0));
+    aboutPanel.add(new JLabel((String)getPropertyValue((ConfigurableComponent)node, "CmdLineArgs")),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(0, 0, 5, 0),
+                                          0, 0));
+    x = 0;
+    aboutPanel.add(new JLabel("Agents:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 5, 5),
+                                          0, 0));
+    JList agentsList = new JList(agentNames.toArray());
+    agentsList.setBackground(aboutPanel.getBackground());
+    aboutPanel.add(new JScrollPane(agentsList),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(0, 0, 5, 0),
+                                          0, 0));
+    JOptionPane.showMessageDialog(this, aboutPanel, 
+                                  "About " + node.getShortName(), 
+                                  JOptionPane.PLAIN_MESSAGE);
+  }
+
+  // helper method for about panel
+  private Object getPropertyValue(ConfigurableComponent component, String name) {
+    Property prop = component.getProperty(new ComponentName(component, name));
+    if (prop == null)
+      return null;
+    return prop.getValue();
+  }
+
+  public void search_actionPerformed() {
+    // get string to search for
+    String s = JOptionPane.showInputDialog("Search string:");
+    if (s == null || s.length() == 0) {
+      return;
+    }
+    // search and highlight
+    boolean found = ((ConsoleTextPane)component).search(s);
+    searchNextAction.setEnabled(found);
+  }
+
+  public void searchNext_actionPerformed() {
+    // search and highlight
+    boolean found = ((ConsoleTextPane)component).searchNext();
+    searchNextAction.setEnabled(found);
+    component.revalidate();
+    component.repaint();
+  }
+
+
+}
+
+
+
