@@ -112,9 +112,11 @@ public class CSMARTDomain extends DomainAdapter {
     // Most LPs actually need a LogPlanServesLogicProvider. The only XPlan that implements
     // that (actually, the only one anywhere), is the LogPlan. So cast it.
     LogPlan logPlan = (LogPlan) getXPlan();
+    
+    //getLoggingService() is a logger the LPs can use
 
     // Until ABC Impacts re-enabled, don't bother with this....
-    //    addLogicProvider(new ImpactsLP(logPlan, cluster));;
+    //addLogicProvider(new ImpactsLP(logPlan, cluster, getLoggingService()));;
   }
 
 } // end of CSMARTDomain.java
