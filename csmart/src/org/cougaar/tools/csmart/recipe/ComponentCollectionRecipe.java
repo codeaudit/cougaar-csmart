@@ -279,16 +279,9 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
           ac.addParameter(p);
         }
         
-        cd.addChild((ComponentData)ac);
+        cd.addChild(cc.addComponentData(ac));
 
       } else if (cc instanceof ComponentBase) {
-//         GenericComponentData ac = new GenericComponentData();
-//         ac.setName(cc.getShortName());
-//         ac.setType(cc.getProperty(ComponentBase.PROP_TYPE).getValue().toString());
-//         ac.setClassName(((ComponentBase)cc).getComponentClassName());
-//         ac.setOwner(cc);
-//         ac.setParent(cd);
-//         cd.addChild((ComponentData)ac);
         cd = cc.addComponentData(cd);
       } else if (cc instanceof PropGroupComponent) {
         // Need to create a dummy Agent as a container.
@@ -306,11 +299,6 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
 
     }
     
-    // Now let all components add their data.
-//     cd = addComponentData(cd);
-
-//     cd = modifyComponentData(cd);
-
     return cd;
   }
 
