@@ -563,7 +563,12 @@ public class ConsoleInternalFrame extends JInternalFrame {
     Vector columnNames = new Vector(2);
     columnNames.add("Name");
     columnNames.add("Value");
-    JTable argTable = new JTable(new DefaultTableModel(data, columnNames));
+    // Bug 1874: Disable editing here
+    JTable argTable = new JTable(new DefaultTableModel(data, columnNames)) {
+	public boolean isCellEditable(int row, int column) {
+	  return false;
+	}
+      };
     argTable.getTableHeader().setReorderingAllowed(false);
     argTable.setColumnSelectionAllowed(false);
     argTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -865,7 +870,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     int result = JOptionPane.showConfirmDialog(this, notifyPanel, 
                                                "Notification",
                                                JOptionPane.OK_CANCEL_OPTION);
-    if (result == JOptionPane.CANCEL_OPTION)
+    if (result != JOptionPane.OK_OPTION)
       return;
     setNotification(notifyField.getText());
     ((NodeStatusButton)statusButton).setNotifyOnStandardError(stdErrorCB.isSelected());
