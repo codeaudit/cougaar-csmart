@@ -277,6 +277,10 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   }
   
   public ComponentData modifyComponentData(ComponentData data, PopulateDb pdb) {
+    if (log.isDebugEnabled()) {
+      log.debug("modCData handed data " + data.getName() + ". Will do query " + propTargetAgentQuery.getValue().toString());
+    }
+
     try {
       Set targets = pdb.executeQuery(propTargetAgentQuery.getValue().toString());
       modifyComponentData(data, pdb, targets);
@@ -291,7 +295,15 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   private void modifyComponentData(ComponentData data, PopulateDb pdb, Set targets)
     throws SQLException
   {
-    if (targets.contains(pdb.getComponentAlibId(data))) {  //if the set of targets (agents) contains the one we're at now
+    if (log.isDebugEnabled()) {
+      log.debug(this + " doing mod with targets list size " + targets.size());
+      log.debug("Where data (" + data.getName() + ") itself says AlibID is " + data.getAlibID());
+    }
+    if (targets.contains(pdb.getComponentAlibId(data))) { 
+      if (log.isDebugEnabled()) {
+	log.debug("Adding servlets to " + pdb.getComponentAlibId(data));
+      }
+      //if the set of targets (agents) contains the one we're at now
       // do insertion of the correct set of servlets into this agent
       // need to get the set of servlets the user selected
      
@@ -344,11 +356,19 @@ public class ServletGroupInsertionRecipe extends RecipeBase
             data.addChildDefaultLoc(comp);
         }
       }
+    } else {
+      if (log.isDebugEnabled()) {
+	log.debug("No match for " + pdb.getComponentAlibId(data));
+      }
     }
+
     if (data.childCount() > 0) {
       // for each child, call this same method.
       ComponentData[] children = data.getChildren();
       for (int i = 0; i < children.length; i++) {
+	// If the child is a plugins or AgentBinder, no need to look at it
+	if (children[i].getType().equals(ComponentData.PLUGIN) || children[i].getType().equals(ComponentData.AGENTBINDER))
+	  continue;
 	modifyComponentData(children[i], pdb, targets);
       }
     }
