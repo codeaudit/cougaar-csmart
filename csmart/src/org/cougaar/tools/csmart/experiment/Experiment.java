@@ -993,6 +993,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       nhosts[i] = experimentCopy.addHost(hosts[i].getShortName().toString());
       nhosts[i].setServerPort(hosts[i].getServerPort());
       nhosts[i].setMonitoringPort(hosts[i].getMonitoringPort());
+
+      // FIXME: What about other Host fields? OS, etc?
     }
     // copy nodes
     NodeComponent[] nodes = getNodeComponents();
@@ -1000,6 +1002,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     for (int i = 0; i < nodes.length; i++) {
       nnodes[i] = ((ExperimentNode)nodes[i]).copy(experimentCopy);
       experimentCopy.addNodeComponent((ExperimentNode)nnodes[i]);
+
+      // FIXME: What about other Node fields?
     }
     // reconcile hosts-nodes-agents
     AgentComponent[] nagents = experimentCopy.getAgents();
@@ -1521,6 +1525,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
     AgentComponentData ac = new AgentComponentData();
     ac.setName(agent.getShortName());
+    // Change AgentComponent to have a getClass?
     ac.setClassName(ClusterImpl.class.getName());
     ac.addParameter(agent.getShortName()); // Agents have one parameter, the agent name
     ac.setOwner(owner);
@@ -1762,14 +1767,62 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     }
     for (int i = 0; i < agentsToWrite.length; i++) {
       if (savedAgents.contains(agentsToWrite[i])) {
+	if (log.isDebugEnabled()) {
+	  log.debug("getHNA Already wrote Agent: " + agentsToWrite[i].getShortName());
+	}
         continue;
       }
       if(log.isDebugEnabled()) {
-        log.debug("Writing Agent: " + agentsToWrite[i].getShortName());
+        log.debug("getHNA Writing Agent: " + agentsToWrite[i].getShortName());
       }
       generateAgentComponent(agentsToWrite[i], completeSociety, this);
       savedAgents.add(agentsToWrite[i]);
     }
+    if (log.isDebugEnabled()) 
+      checkHNA(completeSociety, getAgents());
+  }
+
+  private void checkHNA(ComponentData data, AgentComponent[] agents) {
+    // Look for each of the Agents in the Experiment && make
+    // sure I can find them, and print out their parent.
+    if (data == null) {
+      log.debug("checkHNA got null root");
+      return;
+    }
+    ComponentData[] kids = data.getChildren();
+    for (int i = 0; i < kids.length; i++) {
+      if(kids[i].getType().equals(ComponentData.AGENT)) {
+	boolean foundkid = false;
+	log.debug("checkHNA found Agent child " + kids[i] + " with parent " + data.getName());
+	for (int j = 0; j < agents.length; j++) {
+	  if (agents[j] == null) {
+	    log.debug("checkHNA: someone already matched the " + j + " agent");
+	    continue;
+	  }
+	  log.debug("checkHNA looking to see if we found agent " + agents[j].getShortName());
+	  if (agents[j].getShortName().equals(kids[i].getName())) {
+	    log.debug("checkHNA!!! found a match for AgentComp " + agents[j].getShortName() + " with full name " + agents[j].getFullName());
+	    agents[j] = null;
+	    foundkid = true;
+	    break;
+	  }
+	} // loop over agents
+
+	// Make sure I found a real Agent for this ComponentData
+	if (! foundkid) {
+	  log.debug("checkHNA!!!! didnt find a real AgentComp to match AgentData " + kids[i] + " in parent " + data.getName());
+	}
+      } else 
+	checkHNA(kids[i], agents);
+    }
+
+    // See if I found all of the Agents in the Experiment
+    if (data == completeSociety)
+      for (int i = 0; i < agents.length; i++) {
+	if (agents[i] != null) {
+	  log.debug("checkHNA!!!! Never found componentData for Agent: " + agents[i].getShortName() + " with full name " + agents[i].getFullName());
+	}
+      }
   }
 
   // Use the previously inited host-node-agent ComponentData tree
@@ -2014,7 +2067,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
 
   ////////////////////////////////////////////
-  // Configuratoin Specific Operations
+  // Configuration Specific Operations
   ////////////////////////////////////////////
 
   /**
