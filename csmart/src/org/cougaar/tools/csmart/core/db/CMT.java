@@ -56,7 +56,7 @@ import org.cougaar.util.log.Logger;
 public class CMT {
   
   static final String QUERY_FILE = "CMT.q";
-  static final String asbPrefix="V4_";
+  static final String asbPrefix="v4_";
   // SHOULD REVISE CODE TO USE SINGLE dbp INSTANCE FOR ALL QUERIES
   protected static DBProperties dbp = null;
   
@@ -178,7 +178,7 @@ public class CMT {
   }
   
   static boolean hasRows(String table, String column, String val){
-    String dbQuery = "select * from "+table.toUpperCase()+ " where "+column+"="+val;
+    String dbQuery = "select * from "+table+ " where "+column+"="+val;
     return hasRows(dbQuery);
   }
   
@@ -429,7 +429,7 @@ public class CMT {
   }
 
   static void addCSMARTAssembly(String assembly_id, String assembly_description) {
-    if (!hasRows("V4_ASB_ASSEMBLY", "assembly_id", assembly_id)){
+    if (!hasRows(asbPrefix+"asb_assembly", "assembly_id", assembly_id)){
       Map subs = new HashMap();
       subs.put(":assembly_id",assembly_id);
       subs.put(":assembly_description",assembly_description);

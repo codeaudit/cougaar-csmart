@@ -421,7 +421,7 @@ public class DBUtils {
    * @return a <code>String</code> value
    */
   static String makeDeleteQuery(String table, String column, String val) {
-    return "delete from "+ table.toUpperCase() +" where "+column+"="+val;
+    return "delete from "+ table +" where "+column+"="+val;
   }
   
   /**
@@ -598,7 +598,7 @@ public class DBUtils {
    * @return an <code>int</code> number of rows removed
    */
   static int deleteItems(String table, String column, String val, String qFile){
-    String dbQuery = "delete from "+ table.toUpperCase() +" where "+column+"="+val;
+    String dbQuery = "delete from "+ table +" where "+column+"="+val;
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     Logger qLog = CSMART.createLogger("queries");
 
