@@ -49,8 +49,6 @@ public abstract class RecipeBase
   extends ModifiableConfigurableComponent 
   implements RecipeComponent, PropertiesListener  {
 
-  protected boolean editable = true;
-
   protected static final String TRUE = "True";
   protected static final String FALSE = "False";
 
@@ -87,24 +85,6 @@ public abstract class RecipeBase
   public void removeModificationListener(ModificationListener l)
   {
     getEventListenerList().remove(ModificationListener.class, l);
-  }
-
-  /**
-   *
-   * @return <description>
-   */
-  public boolean isEditable()
-  {
-    return this.editable;
-  }
-
-  /**
-   * Set whether or not this recipe can be edited.
-   * @param editable true if recipe can be edited, else false
-   */
-  public void setEditable(boolean editable)
-  {
-    this.editable = editable;
   }
 
   public Property addBooleanProperty(String name, String dflt) {
