@@ -107,7 +107,7 @@ public class PDbBase {
     } catch (FileNotFoundException e) {
       // This is normal if a user has no separate recipe query file.
       if (log.isDebugEnabled()) {
-	log.debug("No " + RecipeComponent.RECIPE_QUERY_FILE + " recipeQueries.q file found.");
+	log.debug("No " + RecipeComponent.RECIPE_QUERY_FILE + " file found.");
       }
     }
     //        dbp.setDebug(true);
