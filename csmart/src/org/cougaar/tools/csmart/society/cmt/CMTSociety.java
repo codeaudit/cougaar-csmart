@@ -62,20 +62,9 @@ public class CMTSociety
   private String password;
   private Map substitutions = new HashMap();
 
-  // FIXME - are these right constructors?
-//   public CMTSociety() {
-//     this("CMT");
-//   }
-
   public CMTSociety(String name, List assemblyID) {
     super(name);
     this.assemblyID = assemblyID;
-    //    assemblyID.add(name);
-  }
-
-  public CMTSociety(List ids) {
-    super("Combo");
-    assemblyID = ids;
   }
 
   public static CMTSociety loadCMTSociety(String assemblyID) {
