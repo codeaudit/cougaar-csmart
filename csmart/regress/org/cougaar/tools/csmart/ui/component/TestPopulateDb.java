@@ -222,7 +222,8 @@ public class TestPopulateDb extends TestCase {
             insertTestTrial(dbConnection);
             insertTestAssembly(dbConnection);
             dbConnection.commit();
-            pdb = new PopulateDb(assemblyId);
+            pdb = new PopulateDb(ASSEMBLY_PREFIX);
+            assemblyId = pdb.getAssemblyId();
             pdb.setDebug(true);
         } finally {
             dbConnection.close();
@@ -249,8 +250,6 @@ public class TestPopulateDb extends TestCase {
      * Insert a regression assembly with the next higher number
      **/
     private void insertTestAssembly(Connection dbConnection) throws SQLException {
-        MessageFormat assemblyIdFormat = new MessageFormat(ASSEMBLY_PREFIX + "{0,number,0000}");
-        assemblyId = getNextId(dbConnection, QUERY_MAX_ASSEMBLY, assemblyIdFormat);
         substitutions.put(":assembly_id", assemblyId);
         substitutions.put(":description", "TestPopulateDb " + new Date().toString());
         Statement stmt = dbConnection.createStatement();
