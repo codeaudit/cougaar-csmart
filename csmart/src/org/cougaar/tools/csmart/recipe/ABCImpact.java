@@ -41,6 +41,8 @@ import org.cougaar.tools.csmart.core.cdata.GenericLeafComponentData;
 
 import org.cougaar.tools.csmart.society.AgentComponent;
 
+import org.cougaar.core.agent.AgentManager;
+
 /**
  * Impact for ABC XML specified RealWorldEvents. 
  * Includes static method for getting an XML file.<br>
@@ -253,7 +255,7 @@ public class ABCImpact
     ComponentData data = new GenericComponentData();
 
     data.setType(ComponentData.NODEBINDER);
-    data.setName("Node.AgentManager.Binder");
+    data.setName(AgentManager.INSERTION_POINT + ".Binder");
     data.setClassName(BinderClass_name);
     data.addParameter(propSamplesPerSecond.getValue());
     data.addParameter(propInMsgsPerSecond.getValue());

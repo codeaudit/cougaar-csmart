@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.core.cdata;
 
 import java.io.Serializable;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.core.domain.DomainManager;
 
 /** 
  * Interface that contains all data
@@ -43,7 +44,7 @@ public interface ComponentData extends Serializable {
   String AGENTBINDER = "agent binder";
   // Shorter type? This is the insertion point
   // It gets added to _Agents_ (and possible NodeAgents)
-  String DOMAIN = "Node.AgentManager.Agent.DomainManager.Domain";
+  String DOMAIN = DomainManager.INSERTION_POINT + ".Domain";
   // Maybe one for arbitrary agent-level component: Node.AgentManager.Agent.Component?
   // Note must augment ComponentTypeProperty, logic in GenericComponentData
   // Also ComponentBase & SpecificInsertionRecipe & PopulateDb

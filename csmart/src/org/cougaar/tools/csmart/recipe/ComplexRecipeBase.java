@@ -35,6 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.cougaar.core.agent.Agent;
 import org.cougaar.core.agent.SimpleAgent;
 import org.cougaar.util.DBProperties;
 
@@ -292,7 +293,7 @@ public class ComplexRecipeBase extends RecipeBase
     Map substitutions = new HashMap();
     if (assemblyId != null) {
       substitutions.put(":assemblyMatch", DBUtils.getListMatch(assemblyId));
-      substitutions.put(":insertion_point", "Node.AgentManager.Agent");
+      substitutions.put(":insertion_point", Agent.INSERTION_POINT);
 
       try {
 	Connection conn = DBUtils.getConnection();

@@ -28,8 +28,10 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
+import org.cougaar.core.agent.AgentManager;
 import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.core.node.INIParser;
+import org.cougaar.core.plugin.PluginManager;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
 import org.cougaar.util.ConfigFinder;
@@ -152,9 +154,9 @@ public class ComponentConnector {
       } else {
 	if (shorttype.equalsIgnoreCase("binder")) {
 	  // Node or Agent?
-	  if (type.equalsIgnoreCase("Node.AgentManager.Binder")) 
+	  if (type.equalsIgnoreCase(AgentManager.INSERTION_POINT + ".Binder")) 
 	    data.setType(ComponentData.NODEBINDER);
-	  else if (type.equalsIgnoreCase("Node.AgentManager.PluginManager.Binder")) 
+	  else if (type.equalsIgnoreCase(PluginManager.INSERTION_POINT + ".Binder")) 
 	    data.setType(ComponentData.NODEBINDER);
 	}
         if(log.isWarnEnabled()) {

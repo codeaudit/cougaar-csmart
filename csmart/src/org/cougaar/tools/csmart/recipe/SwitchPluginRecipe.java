@@ -20,13 +20,16 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-
-
 import java.io.Serializable;
 import java.net.URL;
+
+import org.cougaar.core.agent.Agent;
+import org.cougaar.core.agent.AgentManager;
+import org.cougaar.core.plugin.PluginManager;
+import org.cougaar.core.plugin.PluginBase;
+
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.property.Property;
-
 
 /**
  * SwitchPluginRecipe.java
@@ -37,7 +40,6 @@ import org.cougaar.tools.csmart.core.property.Property;
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  * @version 1.0
  */
-
 public class SwitchPluginRecipe extends RecipeBase 
   implements Serializable {
 
@@ -121,13 +123,13 @@ public class SwitchPluginRecipe extends RecipeBase
 
     // If the user typed in the full insertion point of a common one, use the shorthand
     // We really arent supporting the Agent case now...
-    if (type.equalsIgnoreCase("Node.AgentManager.Agent"))
+    if (type.equalsIgnoreCase(Agent.INSERTION_POINT))
       type = ComponentData.AGENT;
-    else if (type.equalsIgnoreCase("Node.AgentManager.Binder")) 
+    else if (type.equalsIgnoreCase(AgentManager.INSERTION_POINT + ".Binder")) 
       type = ComponentData.NODEBINDER;
-    else if (type.equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Binder"))
+    else if (type.equalsIgnoreCase(PluginManager.INSERTION_POINT + ".Binder"))
       type = ComponentData.AGENTBINDER;
-    else if (type.equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Plugin"))
+    else if (type.equalsIgnoreCase(PluginBase.INSERTION_POINT))
       type = ComponentData.PLUGIN;
 
     // Is this the type we're looking for?

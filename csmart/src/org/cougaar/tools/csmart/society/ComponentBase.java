@@ -21,6 +21,10 @@
 package org.cougaar.tools.csmart.society;
 
 import java.util.Iterator;
+import org.cougaar.core.agent.Agent;
+import org.cougaar.core.agent.AgentManager;
+import org.cougaar.core.plugin.PluginManager;
+
 import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
@@ -334,13 +338,13 @@ public class ComponentBase
       return "";
     }
 
-    if (type.equalsIgnoreCase("Node.AgentManager.Agent"))
+    if (type.equalsIgnoreCase(Agent.INSERTION_POINT))
       type = ComponentData.AGENT;
-    else if (type.equalsIgnoreCase("Node.AgentManager.Binder"))
+    else if (type.equalsIgnoreCase(AgentManager.INSERTION_POINT + ".Binder"))
       type = ComponentData.NODEBINDER;
-    else if (type.equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Binder"))
+    else if (type.equalsIgnoreCase(PluginManager.INSERTION_POINT + ".Binder"))
       type = ComponentData.AGENTBINDER;
-    else if (type.equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Plugin"))
+    else if (type.equalsIgnoreCase(org.cougaar.core.plugin.PluginBase.INSERTION_POINT))
       type = ComponentData.PLUGIN;
     else if (type.equalsIgnoreCase("binder"))
       type = ComponentData.AGENTBINDER;

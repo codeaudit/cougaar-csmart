@@ -26,7 +26,9 @@ import java.util.*;
 import javax.swing.*;
 
 import org.cougaar.util.log.Logger;
+import org.cougaar.core.agent.AgentManager;
 import org.cougaar.core.component.ComponentDescription;
+import org.cougaar.core.plugin.PluginManager;
 
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -134,9 +136,9 @@ public class AgentInfoPanel extends JPanel {
     for (int i = 0; i < agentChildren.length; i++) {
       StringBuffer sb = new StringBuffer();
       if (agentChildren[i].getType().equals(ComponentData.AGENTBINDER)) {
-	sb.append("Node.AgentManager.Agent.PluginManager.Binder");
+	sb.append(PluginManager.INSERTION_POINT + ".Binder");
       } else if (agentChildren[i].getType().equals(ComponentData.NODEBINDER)) {
-	sb.append("Node.AgentManager.Binder");
+	sb.append(AgentManager.INSERTION_POINT + ".Binder");
       } else {
 	sb.append(agentChildren[i].getType());
       }

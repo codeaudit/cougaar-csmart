@@ -30,10 +30,12 @@ import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentProperty;
 import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
-import org.cougaar.util.DBProperties;
 import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+
+import org.cougaar.core.agent.Agent;
+import org.cougaar.util.DBProperties;
+import org.cougaar.util.log.Logger;
 
 /**
  * Extends ConfigurableComponentProperty in order to override the
@@ -83,7 +85,7 @@ public class AgentQueryProperty extends ConfigurableComponentProperty {
       availableQueries = new HashSet();
       Map substitutions = new HashMap();
 
-      substitutions.put(":insertion_point", "Node.AgentManager.Agent");
+      substitutions.put(":insertion_point", Agent.INSERTION_POINT);
 
       try {
         Connection conn = DBUtils.getConnection();

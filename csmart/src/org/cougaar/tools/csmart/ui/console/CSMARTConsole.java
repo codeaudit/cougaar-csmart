@@ -37,7 +37,9 @@ import javax.swing.tree.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
+import org.cougaar.core.agent.AgentManager;
 import org.cougaar.core.component.ComponentDescription;
+import org.cougaar.core.plugin.PluginManager;
 import org.cougaar.mlm.ui.glsinit.GLSClient;
 import org.cougaar.tools.server.OutputListener;
 import org.cougaar.tools.server.OutputPolicy;
@@ -3404,9 +3406,9 @@ public class CSMARTConsole extends JFrame {
       // FIXME: This should use same code as ExperimentINIWriter if possible
       StringBuffer sb = new StringBuffer();
       if (agentChildren[i].getType().equals(ComponentData.AGENTBINDER)) {
-	sb.append("Node.AgentManager.Agent.PluginManager.Binder");
+	sb.append(PluginManager.INSERTION_POINT + ".Binder");
       } else if (agentChildren[i].getType().equals(ComponentData.NODEBINDER)) {
-	sb.append("Node.AgentManager.Binder");
+	sb.append(AgentManager.INSERTION_POINT + ".Binder");
       } else {
 	sb.append(agentChildren[i].getType());
       }

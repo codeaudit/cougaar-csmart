@@ -21,8 +21,6 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-
-
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -55,6 +53,7 @@ import org.cougaar.tools.csmart.society.db.SocietyDBComponent;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+import org.cougaar.core.agent.Agent;
 
 /**
  * Helper functions for manipulating objects in the Organizer
@@ -595,7 +594,7 @@ public class OrganizerHelper {
         Map substitutions = new HashMap();
         substitutions.put(":trial_id", trialId);
         substitutions.put(":assemblyMatch", assemblyMatch);
-        substitutions.put(":insertion_point", "Node.AgentManager.Agent");	 
+        substitutions.put(":insertion_point", Agent.INSERTION_POINT);	 
         Statement stmt = conn.createStatement();
         NodeComponent nodeComponent = null;
         while(iter.hasNext()) {
