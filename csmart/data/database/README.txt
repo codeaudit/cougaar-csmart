@@ -1,9 +1,20 @@
+csmart/data/database/README
+
 This file describes the directory structure containing scripts and data
 files necessary for creating a MySQL configuration database used by CSMART.
 See csmart/doc/InstallandTest.html or the User's Guide for more information.
 
+Summary:
+After creating a database per the instructions referenced above, you load
+it with data from files contained here.
+For new databases, load the data in the Domain-MySQL.ZIP file.
+For new databases, those upgraded from 9.0, or those that you want
+to "clean", use ./scripts/mysql/load_1ad_mysql.sh 
+(Run without arguments to see usage.)
+To edit the contents of these tables directly (not recommended), edit
+the csv files in ./csv
 
-csmart/data/database
+csmart/data/database directory description:
 
 This directory contains several subdirectories as well as a zip file.
 
@@ -11,14 +22,16 @@ Zip file:
 
 "Domain-MySQL.ZIP" contains a datafile called "1ad_domain_data_dump.sql"
 which is the sql script to be run to load all domain data tables into 
-the CSMART configuration database.
+the CSMART configuration database. If you are upgrading from version
+9.0 of Cougaar, you do not need to re-load this data (but it will
+not hurt).
 
 Sub-directories:
 
    csv/:
         Contains a '.csv' file for each table to be created in the 
         configuration database.  These files can be loaded into a
-        MySQL database 'as is' or may be modified in excel as necessary
+        MySQL database 'as is' or may be modified (eg, in excel) as necessary
         before loading.
 
    headers/:
@@ -67,7 +80,7 @@ Sub-directories:
                                   directory.  The script will drop all existing configuration
                                   database tables before loading the new ones.
 
-                                  The script calls the mysql script load_mysql_db.sql'.
+                                  The script calls the mysql script load_mysql_db.sql'. This script is an easy way to "clean out" your configuration database.
 
                 load_mysql_db.sql - SQL script that loads the configuration database
                                   from data contained in specified '.csv' files in the
@@ -80,6 +93,7 @@ Editing of configuration database:
 To edit data contained in the database, a user may directly edit any of the '.csv' files
 contained in the csmart/data/database/csv directory and then reload the database. 
 
+For developers:
 To edit the structure of any tables contained in the configuration database, a user may
 need to edit the following scripts to ensure their continued function:
 
@@ -87,7 +101,9 @@ dump_mysql_db.sql
 load_mysql_db.sql
 
 If modifying or eliminating columns for a given table,  the user should verify that the 
-respective header file contained in csmart/data/database/headers/ remains valid.
+respective header file contained in csmart/data/database/headers/ remains valid. Be sure to edit the corresponding .q files in configs/common, and possibly
+the code that uses them.
+
 
 
 
