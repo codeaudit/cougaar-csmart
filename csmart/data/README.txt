@@ -1,5 +1,14 @@
 csmart/data                           
 
+See "csmart/doc/CSMART-README.txt" for an overview of CSMART
+and instructions on how to install and configure CSMART.
+
+The most important file for CSMART users in this directory,
+is the MySQL compatible datafile "CMT-MYSQL.txt", for use in creating 
+a MySQL configuration database. See csmart/doc/InstallandTest.html or the 
+User's Guide for usage.
+
+
 This directory contains several configuration sub-directories:
 
   common/:
@@ -7,17 +16,19 @@ This directory contains several configuration sub-directories:
 	a properties file for use with the CSMART UI.  Finally,
 	copies of various config files necessary to run Cougaar nodes.
 	
-	Note that CSMART loads its own domain plus GLM.
+	Note that CSMART loads its own domain plus GLM. Most users should copy the version here into CIP/configs/common.
 	Also, default.psps.xml contains the PSPs to copy for using the
-	CSMART Society Monitor standalone
+	CSMART Society Monitor standalone. These PSPs are also included 
+	in the standard default.psps.xml included in the base module.
 
  debug.properties - contains one line per package, where "true"
     specifies that debug statements from this package will be logged.
 
- unix-server-sample.props, win-server-sample.props - sample NodeServer
-     properties files, including CSMART specific settings. Use these as
-     examples in setting up your own machine to run the server.
- 
+  packages.txt - A simple description of the different Java packages
+        which make up the CSMART code.
+
+  [Sample AppServer properties files are now located in the AppServer module.]
+
   rwe-scripts/
 		This includes several XML files specifying RealWorldEvents for
 		use with the ABC Impacts. Edit the included files to

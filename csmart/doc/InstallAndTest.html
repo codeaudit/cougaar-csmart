@@ -1,0 +1,888 @@
+<html>
+<head>
+<title>CSMART Installation and Testing HOW-TO</title>
+</head>
+<html>
+<body bgcolor="white">
+
+<p>
+<center><h1>
+CSMART Installation and Testing HOW-TO</h1></center>
+<p>
+<p>
+This document provides step-by-step instructions on how to install and run a 
+single CSMART application.  See
+  <a href="http://www.cougaar.org">http://www.cougaar.org</a>
+for an overview of 
+<a href="http://www.cougaar.org">Cougaar</a>
+and the "
+<a href="http://www.cougaar.org">Cougaar</a>
+Developers Guide".  Also see the 
+CSMART User Documentation for a full list of CSMART features.
+<p>
+If you have questions then email:
+  <a href="mail:cougaar-support@cougaar.org">cougaar-support@cougaar.org</a>.
+<p>
+These notes are focused for Unix prompts, but the instructions are
+very similar for WinNT.
+<p>
+
+<p>
+<hr>
+<p>
+
+<font size=+2><b>Contents and Overview:</b></font>
+<ol>
+  <li><a href="#machineReqs">Machine requirements</a>.<br>
+    Covers basic requirements, such as JDK 1.3.1 and JSSE.</li><p>
+
+  <li><a href="#dbInst">Database installation</a>.<br>
+    Covers installation and configuration of a 
+    <a href="http://www.cougaar.org">Cougaar</a>
+    configuration database, plus how to create a "cougaar.rc" passwords 
+    file.</li><p>
+
+  <li><a href="#cougaarInst">Cougaar installation</a>.<br>
+    Covers installation of
+    <a href="http://www.cougaar.org">Cougaar</a>
+    and 3rd-party jars, plus minor modifications that are required
+    to 
+    <a href="http://www.cougaar.org">Cougaar</a>
+    installation files.</li><p>
+
+  <li><a href="#cougaarEnv">Cougaar environment variables</a>.<br>
+    Covers the meaning and setting of the "$COUGAAR_INSTALL_PATH" 
+    environment variable.</li><p>
+
+  <li><a href="#minitest">Simple "minitestconfig" test society</a>.<br>
+    Shows how to run the small "minitestconfig" society to verify 
+    that 
+    <a href="http://www.cougaar.org">Cougaar</a>
+    was correctly installed.</li><p>
+
+  <li><a href="#httpVisuals">Browser-based views of a running society</a>.<br>
+    Shows how to run the HTTP-based visualizations (TASKS.PSP, 
+    Inventory Charts, etc).
+    </li><p>
+
+  <li><a href="#socMonitor">CSMART monitor of a running society</a>.<br>
+    Shows how to run the CSMART "Society Monitor" visualizations, which
+    create graphical views of a running society.</li><p>
+
+  <li><a href="#appServer">AppServer configuration</a>.<br>
+    Covers the installation of the AppServer, including the required
+    modifications to the "Server" script and "server.props" properties file.
+    </li><p>
+
+  <li><a href="#csmartConfig">CSMART configuration</a>.<br>
+    Covers the installation of CSMART, plus the required "xhost +.."
+    commands to grant remote UI popups.
+    </li><p>
+
+  <li><a href="#csmartRun">Example run of CSMART</a>.<br>
+    Walks through a step-by-step run of CSMART, from experiment creation,
+    running the experiment using the AppServer, to the final results
+    analysis.</li><p>
+</ol>
+
+<p>
+<hr>
+<p>
+
+<font size=+2><b>Sections:</b></font>
+
+<p>
+
+<ol>
+<a name="machineReqs"/>
+<li><font size=+1><b>To check your machine's requirements:</b></font>
+  <p>
+  Make sure you check your machine before proceeding with an
+  installation!
+  <p>
+  <ol>
+  <p>
+
+  <li>Make sure that JDK 1.3.1 is installed.  This can be done using:
+      <pre>
+       java -version
+      </pre>
+    If the JDK is not installed, or you have an older version, then
+    you must download a new release from:
+       <a href="http://java.sun.com/j2se/1.3"
+       >http://java.sun.com/j2se/1.3</a>.
+    On some Linux machines this may require an upgrade of "glibc".</li><p>
+
+  <li>Make sure you have the JSSE 1.0.2 (Java Secure Sockets Extension) jars
+    in your JDK's path:
+       <pre>
+       ls $JAVA_HOME/jre/lib/ext
+       </pre>
+    Minimally this should list:
+       <pre>
+       jcert.jar  jnet.jar  jsse.jar
+       </pre>
+    If you lack these jars then download them from:
+       <a href="http://java.sun.com/products/jsse"
+       >http://java.sun.com/products/jsse</a>.  
+    You may need to modify the default JSSE security file.</li><p>
+
+  <li>If you require a local database (Oracle or MySQL) then you must
+    install this database.</li><p>
+
+  <li>If you are creating a distributed society (more than one machine), or you
+    plan to run the CSMART UI from a remote machine, then you should first
+    make sure that the machines can communicate with one another.  Checking for
+    firewalls and private-networks in advance will save many headaches in the
+    long run.  Note that RMI and HTTP will be used between the machines, plus
+    a channel for database interactions, and a wide range of ports are used.
+    Further details can be found in the release notes.  For most users this
+    will not pose a problem.</li><p>
+
+  <li>If you plan to run CSMART from a Windows machine and to control remote 
+    machines that will create UI popups, then you will need to install an
+    "X-Server" such as
+    <a href="http://www.hummingbird.com/products/nc/exceed/">Exceed</a>.
+    </li><p>
+  </ol>
+</li><p>
+
+<p>
+
+<a name="dbInst"/>
+<li><font size=+1><b>To install a configuration database:</b></font>
+  <p>
+   A database is required to run the larger
+   <a href="http://www.cougaar.org">Cougaar</a>
+   societyes and to run CSMART.  Typically a MySQL, Oracle, or 
+   PostGreSQL database is used.
+   A single database can be shared with other CSMART users, but you
+   must first arrange access to the database --
+   these notes detail how to create your own database and "cougaar.rc"
+   password file.
+   <p>
+   See "doc/details/HeterogeneousDatabase.html" for detailed 
+   documentation on database installation.  You may want to read
+   that file before continuing with the example MySQL installation
+   below.
+   <p>
+   <a name="mysqlWarning"/>
+   These notes highlight a basic installation for MySQL.  You 
+   <b><u>MUST</u></b> refer to the MySQL documentation for proper
+   installation and security documentation!  The notes below
+   do <b><u>NOT</u></b> create a secure installation!!!
+  <ol>
+  <p>
+
+  <li>Download and install MySQL from 
+    <a href="http://www.mysql.org/">http://www.mysql.org/</a>.
+    Version "3.2.3" will work.</li><p>
+
+  <li>Load the 
+    <a href="http://www.cougaar.org">Cougaar</a>
+    MySQL database snapshot from the file 
+    "csmart/data/CMT-MYSQL.txt".  For later reference when
+    creating your "cougaar.rc", suppose the database will be on host 
+    "myhost".  Here we name the database table "mycoug":
+      <pre>
+        $ mysql
+        mysql&gt; create database mycoug
+        mysql&gt; -&gt; ;
+        mysql&gt; exit;
+        $ mysql mycoug &lt; CMT-MYSQL.txt
+      </pre></li><p>
+
+  <li>Grant database permissions.  Here we grant all machines "*.foo.com"
+    access with username "myname" and password "mypass":
+       <pre>
+       $ mysql
+       mysql&gt; grant all on mycoug.* to myname@"%.foo.com" identified by 'mypass';
+       mysql&gt; exit;
+      </pre></li><p>
+
+  <li>The database is now ready.  You must now create a "cougaar.rc"
+    for the database users (<a href="http://www.cougaar.org">Cougaar</a>
+    and CSMART), which is used to store the database location and
+    username/password information.  See 
+    "cougaar/data/example-mysql-cougaar.rc" as
+    an example "cougaar.rc" template, plus see 
+    "doc/details/HeterogeneousDatabase.html".  Also see
+    "doc/example.cougaarrc".</li><p>
+
+  <li>Copy your "cougaar.rc" to "/tmp" for later use during the installation
+    of 
+    <a href="http://www.cougaar.org">Cougaar</a>
+    .  All installations must have this "cougaar.rc" to access your
+    database.</li><p>
+
+  <li>You did read the above 
+    <a href="#mysqlWarning">security warnings</a>, right?  You've been 
+    warned...</li><p>
+  </ol>
+</li><p>
+
+<p>
+
+<a name="cougaarInst"/>
+<li><font size=+1><b>To install 
+<a href="http://www.cougaar.org">Cougaar</a>:</b></font>
+  <p>
+  These are notes for the installation
+  <a href="http://www.cougaar.org">Cougaar</a>,
+  CSMART, and the AppServer.  Also see the 
+  "doc/SocStartup-Config.html" notes for similar
+  installation notes.
+  <p>
+  <ol>
+  <p>
+
+  <li>First check your <a href="#machineReqs">machine's configuration</a>.
+  </li><p>
+
+  <li>Follow the above <a href="#dbInst">database installation</a> steps, 
+      creating a "/tmp/cougaar.rc".</li><p>
+
+  <li>Select a base directory for your install.  The typical choice is
+    "/opt", but any directory will do.  Change to that directory:
+       <pre>
+       cd /opt
+       </pre>
+    Many of the following commands reference this default "/opt".  If you've
+    selected a different directory then simply substitute the base-path 
+    with your path.</li><p>
+
+  <li>Create a directory for your "alp" installation.  One can 
+    simply create a single "alp" directory, but if you expect to
+    update versions frequently, you will want
+    to create a directory tagged with the build's date and then use a
+    symbolic link.  The convention is to use the current date (e.g. 
+    "2001 Oct 26th") in a "YYYYMMDD" format and to create a tagged 
+    directory:
+       <pre>
+       mkdir alp-20011026
+       </pre>
+    Then create a symbolic link to this directory:
+       <pre>
+       ln -s alp-20011026 alp
+       </pre>
+    This makes it easier to maintain multiple build versions and to
+    still use the simple "/opt/alp" directory name to refer to the
+    most recent installation.</li><p>
+
+  <li>Change directory into your "alp" directory.
+       <pre>
+       cd alp
+       </pre>
+    <a name="cip"/>
+    Most of the commands for the remainder of this document assume that you
+    start in the "/opt/alp" directory.  This path is later set as the
+    "$COUGAAR_INSTALL_PATH" <a href="#cougaarEnv">environment variable</a>.</li><p>
+
+  <li>Download "cougaar.zip" and "cougaar-support.zip" from 
+    <a href="http://www.cougaar.org">http://www.cougaar.org</a>.
+    Place these files in the current directory ("/opt/alp"), then
+    unpack both files by using:
+       <pre>
+       unzip cougaar-support.zip
+       unzip cougaar.zip
+       </pre></li>
+    Ignore any "overwriting file 'version.txt'" warnings.  Once
+    unpacked you can (optionally) remove both ".zip" files:
+       <pre>
+       rm cougaar-support.zip cougaar.zip
+       </pre></li><p>
+
+  <li>(Optional step) The "cougaar-support" jars can often be shared across
+    multiple 
+    <a href="http://www.cougaar.org">Cougaar</a>
+    installations, which is useful if you're a developer -- this will save
+    you the download of "cougaar-support.zip".  To share a single "sys/" across 
+    multiple "/opt/alp-*" installations you can:
+      <ol>
+        <li>Move your "/opt/alp/sys" directory to the base directory:
+           <pre>
+              mv sys ../sys
+           </pre></li>
+        <li>Create a symbolic link to the moved directory:
+           <pre>
+              ln -s ../sys sys
+           </pre>
+           <i>OR</i> you can set the "$COUGAAR3RDPARTY" environment variable
+           to "/opt/sys", as <a href="#cougaarEnv">noted below</a>.
+           </li>
+      </ol></li><p>
+
+  <li>Next you need to have your "cougaar.rc" available for your
+    <a href="http://www.cougaar.org">Cougaar</a>
+    installation.  Previously we placed this file in "/tmp",
+    and here we move it to "configs/common":
+       <pre>
+       mv /tmp/cougaar.rc configs/common
+       </pre>
+    Make sure you don't have a "cougaar.rc" in your home directory:
+       <pre>
+       ls ~/cougaar.rc ~/.cougaarrc
+       </pre>
+    Remove or rename any matches to the above files, since these would
+    override your "/opt/alp/configs/common/cougaar.rc" and could
+    contain incorrect database information.  Alternately you can keep
+    your "cougaar.rc" only in your home -- just make sure that 
+    <a href="http://www.cougaar.org">Cougaar</a>
+    finds the appropriate file.</li><p>
+
+  <li>If you plan to run CSMART with metrics and use the Inventory Manager,
+    which is typical, you must modify "configs/common/LDMDomains.ini"
+    to include the CSMART domain.  Append this line to the end
+    of the file:
+       <pre>
+      csmart=org.cougaar.tools.csmart.ldm.CSMARTDomain
+       </pre>
+    An example "LDMDomains.ini" is kept in "csmart/data/common".</li><p>
+
+  <li>(Optional) Metrics also require the installation of a JNI (native-code) 
+    libraries.  See "scalability/bin/Install.txt" for details.  If you do
+    not install these libraries then Metrics will be unable to gather some
+    machine-specific information (CPU-cycle counters, etc).</li><p>
+    
+  <li>(Note) CSMART and the 
+    <a href="http://www.cougaar.org">Cougaar</a>
+    Nodes share several Java class files in
+    common, so these must be compatible builds.  The easiest way to guarantee
+    this is to use the same installation version on all machines.</li><p>
+  </ol>
+</li><p>
+
+<p>
+
+<a name="cougaarEnv"/>
+<li><font size=+1><b>To set your 
+<a href="http://www.cougaar.org">Cougaar</a>
+environment variables:</b></font>
+    <p>
+    Set the following environment variables:
+       <pre>
+       setenv COUGAAR_INSTALL_PATH /opt/alp
+       setenv COUGAAR_DEV_PATH
+       </pre>
+    <p>
+    The COUGAAR_INSTALL_PATH variable specifies the base directory for your 
+    cougaar installation.
+    <p>
+    The second variable, COUGAAR_DEV_PATH" is set to no value to explicitly 
+    make sure it is not set.  Developers can use the COUGAAR_DEV_PATH to
+    prefix the Java Classpath with custom (debugging) Java Class files 
+    or jars.  
+    <p>
+    If you unpacked "cougaar-support" into a directory other than 
+    "$COUGAAR_INSTALL_PATH/sys", and didn't create a symbolic link to this
+    directory, then you must set the COUGAAR3RDPARTY variable to that
+    directory.  For example:
+       <pre>
+       setenv COUGAAR3RDPARTY /opt/sys
+       </pre>
+    This is typically not required.
+</li><p>
+
+<p>
+
+<a name="minitest"/>
+<li><font size=+1><b>To verify the 
+<a href="http://www.cougaar.org">Cougaar</a>
+installation using 
+"minitestconfig":</b></font>
+  <p> 
+   This is a simple verification that 
+   <a href="http://www.cougaar.org">Cougaar</a>
+   was installed.  This
+   does not test CSMART, the AppServer, or your database, and only tests a 
+   localhost four-Agent configuration.  See the "minitestconfig" 
+   documentation in "doc/MiniTestConfig.html" for additional details.
+  <p>
+  <ol> 
+  <p>
+
+  <li>Follow the above <a href="#cougaarInst"
+      >Cougaar installation steps</a>.</li><p>
+
+  <li>Follow the above <a href="#cougaarEnv"
+      >Cougaar environment variable-setting steps</a>.</li><p>
+
+  <li>Start in the "$COUGAAR_INSTALL_PATH" directory.  If you are 
+     in another directory, then do:
+       <pre>
+       cd <a href="#cip">$COUGAAR_INSTALL_PATH</a>
+       </pre></li><p>
+
+  <li>Launch the simple "MiniNode":
+       <pre>
+       cd configs/minitestconfig
+       ../../bin/Node MiniNode
+       </pre>
+    You should see some UI popups and various output messages to your
+    console.</li><p>
+
+  <li>Click on the "Publish OPlan" button, wait about 10 seconds, then click on
+    the "Send GLS Root" button.  You should see a bunch of "++--.." messages
+    sent to the console output.  In the window titled
+    "AllocationAssessorPlugIn for 3-69-ARBN" you should see "21 successful
+    allocations".  See "doc/MiniTestConfig.html" for further details.</li><p>
+
+  <li>(Optionally) test the <a href="#httpVisuals">HTTP visualizations</a> and 
+    <a href="#socMonitor">CSMART "Society Monitor" visualizations</a>.</li><p>
+
+  <li>The test is complete -- your 
+    <a href="http://www.cougaar.org">Cougaar</a>
+    installation appears to be properly
+    configured.  You can use control-C to kill the Node.</li><p>
+  </ol>
+</li><p>
+
+<p>
+
+<a name="httpVisuals"/>
+<li><font size=+1><b>To use an HTTP browser to view the society:</b></font>
+  <p>
+  <ol>
+  <li>Open any HTTP browser, such as 
+    <a href="http://www.netscape.com">Netscape</a>.</li><p>
+
+  <a name="tasksPSP"/>
+  <li>Choose the hostname of any host (e.g. "localhost") in your society 
+    that's running a Node, and in your browser open this URL:
+      <a href="http://localhost:5555/alpine/demo/TASKS.PSP">http://localhost:5555/alpine/demo/TASKS.PSP</a>
+    This should create an HTML page that can be used to view the contents
+    of an Agent's Blackboard.  Other PSPs are available -- see the
+    "
+    <a href="http://www.cougaar.org">Cougaar</a>
+    Developers Guide", available at 
+    <a href="http://www.cougaar.org">http://www.cougaar.org</a>, for 
+    further details.</li><p>
+
+  <li>(Optionally) close your browser when you are done.</li><p>
+
+  <li>Additionally there are several Java applications that use HTTP
+    to communicate with the society.  See the "
+    <a href="http://www.cougaar.org">Cougaar</a>
+    Developers Guide"
+    for notes on the "Inventory Manager" and "TPFDD" viewers.  See
+    "configs/small-135/small-135.readme.html" for details.</li><p>
+  </ol>
+</li><p>
+
+<p>
+
+<a name="socMonitor"/>
+<li><font size=+1><b>To just use the CSMART "Society Monitor" UIs:</b></font>
+  <p>
+   CSMART contains several UIs that can be used independent of the full CSMART
+   society contruction/management and AppServer.  These UIs can be used with
+   the above "minitestconfig" society as a simple example.
+  <p>
+  <ol>
+  <p>
+
+  <li>Follow the above <a href="#cougaarInst"
+      >Cougaar installation steps</a>.</li><p>
+
+  <li>Follow the above <a href="#cougaarEnv"
+      >Cougaar environment variable-setting steps</a>.</li><p>
+
+  <li>Start in the "$COUGAAR_INSTALL_PATH" directory.  If you are in
+    another directory, then do:
+       <pre>
+       cd <a href="#cip">$COUGAAR_INSTALL_PATH</a>
+       </pre></li><p>
+
+  <li>The CSMART "Society Monitor" is now ready to run by using:
+       <pre>
+       cd csmart/bin
+       ./Monitor
+       </pre></li><p>
+
+  <li><i>A society must be running at this time.</i></li><p>
+
+  <li>The Monitor will ask for the URL of the "society".  You can enter the
+    hostname of any host that is running a Node of your society, such
+    as: <a href="http://localhost:5555/">http://localhost:5555/</a></li><p>
+
+  <li>See the CSMART documentation for instructions on how to use the various
+    monitor tools.</li><p>
+
+  <li>Several of these UIs make use of the 3rd-party 
+    <a href="http://www.research.att.com/sw/tools/graphviz">"Grappa"</a> 
+    graphical layout 
+    engine, which calls the program <tt>csmart/bin/dot-l386</tt> 
+    (<tt>csmart/bin/dot.exe</tt> for WinNT).  Note that large queries 
+    (1000+ objects) can be very slow and consume lots of memory.  Often it
+    is best to start with the <a href="#tasksPSP">TASKS.PSP</a> to find
+    a single starting-point Task, then to use the CSMART Society Monitor's
+    "Thread view" to display that Task.</li><p>
+
+  <li>Close the "Society Monitor" window when you are done.</li><p>
+  </ol>
+</li><p>
+
+<p>
+
+<a name="appServer"/>
+<li><font size=+1><b>To configure the AppServer:</b></font>
+  <p>
+   The AppServer is a remote process manager that is used by the CSMART UI to
+   create and destroy 
+   <a href="http://www.cougaar.org">Cougaar</a>
+   Node processes.
+  <p>
+  <ol>
+  <p>
+
+  <li>Follow the above <a href="#cougaarInst"
+      >Cougaar installation steps</a>.</li><p>
+
+  <li>The AppServer does not use the 
+    <a href="http://www.cougaar.org">Cougaar</a>
+    environment variables.  It's
+    configuration is fully specified in a ".props" file, which is detailed
+    below and in "server/doc/README".</li><p>
+
+  <li>Copy the template "server/data/unix-server-sample.props" file to
+    "server/bin/server.props".  This file defines the 
+    <a href="http://www.cougaar.org">Cougaar</a>
+    installation 
+    properties -- if you used directory names other than "/opt/alp",
+    or you plan to run a society other than SMALL-135 or SMALL-135-TRANS, 
+    then you must modify this file.  To copy:
+        <pre>
+        cp server/data/unix-server-sample.props server/bin/server.props
+        </pre><li>
+    If you are using Windows then use "win-server-sample.props" instead of
+    "unix-server-sample.props".</li><p>
+
+  <li>You may need to alter your "server/bin/server.props".  For
+    example, one can alter the logging level by changing a property in the
+    "server.props".  See the "server.props" for details.</li><p>
+
+  <li>The server script also refers to the 
+    <a href="#cip">"$COUGAAR_INSTALL_PATH"</a> installation
+    directory.  If you used a directory other than "/opt/alp" then you
+    must modify "server/bin/Server".  Windows uses should modify
+    "server/bin/Server.bat"</li><p>
+
+  <li>(Optional) Developers may want to turn on the AppServer "verbose" 
+    debugging option, which is set in the "Server" script.  See the "Server"
+    script for details.</li><p>
+
+  <li>The server is now ready to run by using:
+      <pre>
+       cd server/bin
+       ./Server
+      </pre>
+    You do not need to do this until CSMART first attempts to launch a
+    Node.  For simplicity you can start the AppServer well in advance.
+    A host only needs one AppServer running for CSMART to launch one or more
+    Nodes on that host, for one or more experiment run.  CSMART communicates
+    with multiple host/AppServers to launch and coordinate a distributed
+    experiment.</li><p>
+  </ol>
+</li><p>
+
+<p>
+
+<a name="csmartConfig"/>
+<li><font size=+1><b>To configure CSMART:</b></font>
+  <p>
+   The CSMART UI is a tool for creating 
+   <a href="http://www.cougaar.org">Cougaar</a>
+   societies, configuring the
+   society to form an "experiment", running the experiment using the AppServer, 
+   and the monitoring and analysis of a results.
+  <p>
+  <ol>
+  <p>
+
+  <li>Follow the above <a href="#cougaarInst"
+      >Cougaar installation steps</a>.</li><p>
+
+  <li>Follow the above <a href="#cougaarEnv"
+      >Cougaar environment variable-setting steps</a>.</li><p>
+
+  <li>Start in the "$COUGAAR_INSTALL_PATH" directory.  If you are
+     in another directory, then do:
+       <pre>
+       cd <a href="#cip">$COUGAAR_INSTALL_PATH</a>
+       </pre></li><p>
+
+  <a name="excelPath"/>
+  <li>You may need to modify the "CSMART" script.  For example, a Java System
+    Property 
+    "org.cougaar.tools.csmart.excelpath=.." specifies the path to
+    Excel that is later used to 
+    <a href="#analyzeResults">analyze performance metrics</a>.</li><p>
+
+  <li>For all the machines that you will use as AppServers you must
+    explicitly allow UI popups to appear on your CSMART machine.  This
+    can wait until just before you start a run.  Here we will use
+    "localhost" to run our society and we'll allow localhost popups in
+    advance:
+       <pre>
+       xhost +localhost
+       </pre>
+    Note that this must be done even if you're only using "localhost".</li><p>
+
+  <li>CSMART is now ready to run by using:
+       <pre> 
+       cd csmart/bin
+       ./CSMART
+       </pre></li><p>
+  </ol>
+</li><p>
+
+<p>
+
+<a name="csmartRun"/>
+<li><font size=+1><b>Example run of CSMART:</b></font>
+  <p>
+  These notes detail how to configure and run the standard two-Node 
+  "SMALL-135 + TRANSPORTATION" society on a single machine.  It is assumed in
+  these notes that only one society will be run on the machines at a time,
+  otherwise one must select alternate port address for the society, which is
+  not currently supported within CSMART.
+  <p>
+  <ol>
+  <p>
+
+  <li>Follow the above 
+    <a href="http://www.cougaar.org">Cougaar</a>
+    , AppServer, and CSMART installation
+    steps.</li><p>
+
+  <li>Start CSMART as noted above.  A UI will popup.</li><p>
+
+  <li>(Optional) Many CSMART windows have "help" menus and on-line 
+    documentation.</li><p>
+
+  <li>To create a new experiment from a database:
+    <ol>
+    <li>Select "Default Workspace".</li><p>
+
+    <li>Right-click, select "New Experiment", select "From Database".</li><p>
+
+    <li>Select "EXPT_TRANS".  A UI to select "Threads &amp; Groups" will
+      popup.</li><p>
+
+    <li>Configure the "Threads &amp; Groups".  At least on Thread must be
+      selected.  For this test select "class 1".</li><p>
+
+    <li>Select "Yes" to modify the experiment.  Give the modified
+      experiment a name, such as "My Test", then click "Yes" to save
+      your modified name.  Your experiment name, "My Test", is added
+      to the list in the "Default Workspace".</li><p>
+    </ol>
+  </li><p>
+
+  <li>To (optionally) create a new metric for an experiment:
+    <ol>
+    <li>Select "Default Workspace".</li><p>
+
+    <li>Right-click, select "New Metric", select "Basic Metric", then
+      "OK".</li><p>
+
+    <li>Give the metric a name -- "My Metric" is fine for this test.</li><p>
+
+    <li>Later in the experiment configuration the metric will be
+    added.</li><p>
+    </ol>
+  </li><p>
+
+  <li>To configure an experiment:
+    <ol>
+    <li>Select an experiment from the "Default Workspace".  For this
+      test select "My Test".</li><p>
+
+    <li>Click on "Experiment Builder".  A new "Configuration" UI will
+      popup.</li><p>
+
+    <li>To (optionally) add a metric to this experiment:
+       <ol>
+       <li>Click on the "Properties" tab.  A folder for "Metrics" is
+         displayed.</li><p>
+
+       <li>Bring the original "CSMART" UI window to the front and select
+         your "My Metric" metric, as created in the "To create a new
+         metric for an Experiment" notes.</li><p>
+
+       <li>Drag the "My Metric" onto the "Metrics" folder of the
+         "Properties" panel.</li><p>
+
+       </li>The metric is now associated with the experiment.</li><p>
+       </ol>
+     </li><p>
+
+    <li>Click on the "Configurations" tab.  This will display a
+      three-panel window for "Agent-&gt;Node-&gt;Host" mapping.  Stretch the
+      window to make it larger, which will facilitate the following
+      steps.</li><p>
+
+    <li>Select "TRANSCOM_NODE" from the middle ("Nodes") panel.</li><p>
+
+    <li>Select the following seven Agents from the bottom ("Agents") panel.
+      Use the control-key to select multiple Agents:
+      <ul>
+          <li>CONUSGround</li>
+          <li>GlobalAir</li>
+          <li>GlobalSea</li>
+          <li>PlanePacker</li>
+          <li>ShipPacker</li>
+          <li>TRANSCOM</li>
+          <li>TheaterGround</li>
+      </ul></li><p>
+
+    <li>Drag these selected Agent names to the "TRANSCOM_NODE" of the
+      middle ("Nodes") panel.</li><p>
+
+    <li>Select "SMALL-135-TRANS-NODE" of the middle ("Nodes") panel.</li><p>
+
+    <li>Select the remaining 25 Agents and drag them onto
+      "SMALL-135-TRANS-NODE".  Use the shift-key to select a range of
+      names.</li><p>
+
+    <li>Select your machine's address from the top ("Hosts") panel.  If
+      your machine's name is not present then right-click in the top
+      panel to add a new entry.  Make sure that you use either the
+      full host name or the IP address -- sometimes the DNS lookup
+      causes problems.</li><p>
+
+    <li>Drag both "TRANSCOM-NODE" and "SMALL-135-NODE" onto your host
+      entry of the top ("Hosts") panel.  If you were testing a
+      multi-machine configuration then you would drag the Nodes onto
+      multiple hosts.</li><p>
+
+    <li>On the top menu, select "file", then "save".  The configuration
+      is saved to the database.</li><p>
+
+    <li>On the top menu, select "file", then" close".  The UI popup for
+      configuration is closed.</li><p>
+    </ol>
+  </li><p>
+
+  <li>To run an experiment:
+
+    <ol>
+    <li>Select an experiment from the "Default Workspace".  For this
+      test select "My Test".</li><p>
+
+    <li>Click on the "Experiment Controller" button.  A new "Experiment
+      Control" UI is created.</li><p>
+
+    <li><i>At this point an AppServer must be running on all the machines
+      that will run Nodes.  See the above installation guide for the
+      AppServer.  The AppServer starts with a "Server running" message.</i></li><p>
+
+    <li><i>Additionally X-display permissions must be granted to all remote
+      AppServer hosts that will create popups.  For this test on
+      "localhost" you must do:</i>
+      <pre>
+          xhost +localhost
+      </pre></li><p>
+
+    <li>Click on the "Run" button.  A new "Select Results" UI is
+    created.</li><p>
+
+    <li>Select a destination directory for CSMART log files.  For this
+      test you can just use "/opt/alp/csmart".</li><p>
+
+    <li>Click on the "Save Results (Metrics) Storage Directory" button.
+      The "Select Results" popup is closed.</li><p>
+
+    <li><i>At this point the AppServer will print out a "Create Node"
+      debugging message.  This output can be ignored.</i></li><p>
+
+    <li>Two minimized icons are created in the "Experiment Controller"
+      window; one for each host.  Click on both to see the Node
+      output.  These output panels can be streched to 80 columns to
+      make viewing easier.  Log files of the output are written to
+      the "Select Results" directory that you specified.</li><p>
+
+    <li>In the output panels you shoudl see a "@NODE_CREATED" message,
+      followed by the 
+      <a href="http://www.cougaar.org">Cougaar</a>
+      build identification.  Refer to the
+      SMALL-135 documentation for further details.</li><p>
+
+    <li><i>If the run immediately ended and failed, check the AppServer's output
+      for details of the command line that was attempted.  Sometimes one can
+      debug the configuration by cutting &amp; pasting the command line into a
+      console window.  Double-check your "server/bin/server.props".</i></li><p>
+
+    <li><i>Eventually UI popups from the society will popup on your
+      display.  Follow the usual SMALL-135 instructions:
+      <pre>
+        - click on "Publish OPlan"
+        - wait about 10 seconds
+        - click on "Send GLS Root"
+        - let the society run for a while until it "settles".
+      </pre></i></li><p>
+
+    <li>You use an HTTP browser to view the society.  See the above notes on
+    <a href="#httpVisuals">HTTP browser visualizations</a>.</li><p>
+
+    <li>To use the society monitors:
+      <ol>
+      <li>Minimize the "Experiment Controller" UI window, raise the original
+        "CSMART" UI window, and click on "Society Monitor".  A new
+        "Society Monitor" UI window is created.  Your society is still
+        running in the "Experiment Controller" window.</li><p>
+
+      <li>See the above <a href="#socMonitor">"Society Monitor" documentation</a> 
+        for notes on using the society monitors.</li><p>
+        
+      <li>Close the "Society Monitor" window when you are done.  Raise the 
+        "Experiment Monitor" window to the front again.</li><p>
+      </ol>
+    </li><p>
+
+    <li>Click on the "Stop" button to kill the Nodes and finish the
+      experiment run.</li><p>
+
+    <li><i>The "OplanInit" and other UI popups are closed.</i></li><p>
+
+    <li><i>The AppServer notes "Node finished &lt;name&gt;".</i></li><p>
+
+    <li><i>The AppServer can now be killed by using control-C, or you can
+      leave the AppServer running if you are planning another run.</i></li><p>
+
+    <li>The "Experiment Monitor" colors the Node activity indicators
+      red, which signals that the experiment has finished.</li><p>
+
+    <li>Close the "Experiment Monitor" window.</li><p>
+  </ol>
+  </li><p>
+
+  <a name="analyzeResults"/>
+  <li>To analyze the results of an Experiment:
+    <ol>
+    <li>This is only useful if a metrics was selected during experiment
+     configuration.</li><p>
+
+    <p>
+
+    <li>Click on the "Performance Analyzer" button.  A UI window for
+       "Excel" is created.</li><p>
+
+    <li>Click on the "Excel" button.  A file-finder window is created,
+      which you can use to find your metrics files.  The metrics are
+      then loaded into <a href="#excelPath">Excel</a>.</li><p>
+
+    <li>Close the "Performance Analyzer" window when you are done.</li><p>
+    </ol>
+  </li><p>
+
+  <li>To exit CSMART:
+    <ol>
+    <li>Close the main "CSMART" UI window.</li><p>
+    </ol>
+  </li><p>
+
+<ol>
+
+</body>
+</html>
