@@ -28,11 +28,13 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.net.SocketException;
 import java.util.*;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
@@ -135,6 +137,10 @@ public class ClientServletUtil {
       Collection col = 
         getCollectionFromAgent(url, servletId, parameterNames,
                                parameterValues, null, remainingLimit);
+
+      // if (col == null)
+      // don't add it, and maybe do some error checking?
+
       result.addCollection(col);
       // check limit, and set flag in result if its exceeded
       if (hasLimit) {
@@ -173,25 +179,89 @@ public class ClientServletUtil {
       URLSpec.addArg("limit", limit);
     String urlSpec = URLSpec.getResult();
     Collection results = null;
+    HttpURLConnection connection = null;
     try {
       URL url = new URL(urlSpec);
-      URLConnection connection = url.openConnection();
-      if (data != null) // force URL connection to use the PUT method for data
-        ((HttpURLConnection)connection).setRequestMethod("PUT");
+      connection = (HttpURLConnection)url.openConnection();
+
+      // force URL connection to use the PUT method for data
+      if (data != null) {
+        connection.setRequestMethod("PUT");
+      }
+
       connection.setDoInput(true);
       connection.setDoOutput(true);
+
+      try {
+	connection.connect();
+      } catch (IOException ioe) {
+	if (log.isErrorEnabled()) {
+	  log.error("Got IOE talking to " + urlSpec, ioe);
+	}
+	return null;
+      }
+
+      // If we have any data to send to the client, do it now.
       if (data != null) {
         OutputStream os = connection.getOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(os);
         oos.writeObject(data);
         oos.close();
       }
+
+      // Try to get the response code for this connection.
+      // If it is 404, that means that the servlet was not installed on that Agent
+      // We should, ideally, be able to do something reasonable....
+      try {
+	int resp = ((HttpURLConnection)connection).getResponseCode();
+	if (resp != HttpURLConnection.HTTP_OK) {
+	  // Huh?
+	  if (resp == 404) {
+	    // If we had an experiment we could check
+	    // and see if we thought this guy was there.
+	    // This response is when there is no such servlet. IE you forgot
+	    // to load the CSMART Servlets here, or this is a NodeAgent where you
+	    // didn't load the CSMART Servlets
+	    if (log.isWarnEnabled()) {
+	      log.warn("Got 404 - file not found - trying to reach: " + urlSpec);
+	    }
+	    // FIXME! Handle this one better somehow?
+	  } else {
+	    if (log.isErrorEnabled()) {
+	      log.error("Exception contacting: " + urlSpec + ". Got HTTP Response " + resp);
+	    }
+	  }
+	  // close the connection
+	  connection.disconnect();
+	  return null;
+	} else {
+	  if (log.isInfoEnabled()) {
+	    log.info("Got OK connection: " + resp + " talking to " + urlSpec);
+	  }
+	}
+      } catch (SocketException e) {
+	if (log.isErrorEnabled()) {
+	  log.error("Exception contacting: " + urlSpec + ". Got SocketException ", e);
+	}
+      }
+
       InputStream is = connection.getInputStream();
-      ObjectInputStream p = new ObjectInputStream(is);
-      results = (Collection)p.readObject();
+      if (is != null) {
+	ObjectInputStream p = new ObjectInputStream(is);
+	results = (Collection)p.readObject();
+	is.close();
+      } else {
+	if (log.isInfoEnabled()) {
+	  log.info("Got null input stream talking to " + urlSpec);
+	}
+      }
+
     } catch (Exception e){
       if (log.isErrorEnabled())
         log.error("Exception contacting: " + urlSpec, e);
+    } finally {
+      // close the connection
+      connection.disconnect();
     }
     return results;
   }
