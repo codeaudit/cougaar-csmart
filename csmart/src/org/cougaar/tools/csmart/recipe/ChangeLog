@@ -1,3 +1,19 @@
+2001-11-12  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* RecipeQueryProperty.java (Repository):
+	New class overrides getAllowedValues based on the available
+	querys.
+
+	* ComponentInsertionRecipe.java:
+	Use RecipeQueryProperty for properties instead of vanilla
+	ConfigurableComponentProperty to get valid value checking based on
+	available queries.
+
+2001-11-09  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ComponentInsertionRecipe.java:
+	Add comment describing how to use.
+
 2001-11-07  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* ComponentInsertionRecipe.java:

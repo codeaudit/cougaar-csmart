@@ -20,11 +20,14 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import org.cougaar.tools.csmart.ui.component.*;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
-import java.util.Set;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Set;
+import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.util.DBProperties;
 
 /**
  * This recipe performs component insertion into an experiment based
@@ -74,17 +77,17 @@ public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
 
   /** Target Component Property Definitions **/
   public static final String PROP_TARGET_COMPONENT_QUERY = "Target Component Selection Query";
-  public static final String PROP_TARGET_COMPONENT_QUERY_DFLT = "selectNothing";
+  public static final String PROP_TARGET_COMPONENT_QUERY_DFLT = "querySelectNothing";
   public static final String PROP_TARGET_COMPONENT_QUERY_DESC = "The query name for selecting components to modify";
 
   /** Insertion Component Property Definitions **/
   public static final String PROP_INSERTION_COMPONENT_QUERY = "Insertion Component Specification Query";
-  public static final String PROP_INSERTION_COMPONENT_QUERY_DFLT = "selectNothing";
+  public static final String PROP_INSERTION_COMPONENT_QUERY_DFLT = "querySelectNothing";
   public static final String PROP_INSERTION_COMPONENT_QUERY_DESC = "The query name for specifying components to insert";
 
   /** Insertion Component Property Arg Definitions **/
   public static final String PROP_INSERTION_COMPONENT_ARG_QUERY = "Insertion Component Arg Specification Query";
-  public static final String PROP_INSERTION_COMPONENT_ARG_QUERY_DFLT = "selectNothing";
+  public static final String PROP_INSERTION_COMPONENT_ARG_QUERY_DFLT = "querySelectNothing";
   public static final String PROP_INSERTION_COMPONENT_ARG_QUERY_DESC = "The query name for specifying args of components to insert";
 
   // Props for metrics
@@ -104,23 +107,29 @@ public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
 
   public void initProperties() {
     propTargetComponentQuery =
-      addProperty(PROP_TARGET_COMPONENT_QUERY,
-                  PROP_TARGET_COMPONENT_QUERY_DFLT);
+      addRecipeQueryProperty(PROP_TARGET_COMPONENT_QUERY,
+                             PROP_TARGET_COMPONENT_QUERY_DFLT);
     propTargetComponentQuery.setToolTip(PROP_TARGET_COMPONENT_QUERY_DESC);
 
     propInsertionComponentQuery =
-      addProperty(PROP_INSERTION_COMPONENT_QUERY,
-                  PROP_INSERTION_COMPONENT_QUERY_DFLT);
+      addRecipeQueryProperty(PROP_INSERTION_COMPONENT_QUERY,
+                             PROP_INSERTION_COMPONENT_QUERY_DFLT);
     propInsertionComponentQuery.setToolTip(PROP_INSERTION_COMPONENT_QUERY_DESC);
 
     propInsertionComponentArgQuery =
-      addProperty(PROP_INSERTION_COMPONENT_ARG_QUERY,
-                  PROP_INSERTION_COMPONENT_ARG_QUERY_DFLT);
+      addRecipeQueryProperty(PROP_INSERTION_COMPONENT_ARG_QUERY,
+                             PROP_INSERTION_COMPONENT_ARG_QUERY_DFLT);
     propInsertionComponentQuery.setToolTip(PROP_INSERTION_COMPONENT_ARG_QUERY_DESC);
   }
 
   public String getRecipeName() {
     return getShortName();
+  }
+
+  private Property addRecipeQueryProperty(String name, String dflt) {
+    Property prop = addProperty(new RecipeQueryProperty(this, name, dflt));
+    prop.setPropertyClass(String.class);
+    return prop;
   }
 
   private void adjustParameterCount() {
