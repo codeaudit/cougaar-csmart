@@ -79,6 +79,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private static final String FILE_MENU = "File";
   private static final String NEW_MENU_ITEM = "New";
   private static final String OPEN_MENU_ITEM = "Open";
+  private static final String MONITOR_MENU_ITEM = "Monitor...";
   private static final String EXIT_MENU_ITEM = "Exit";
   private static final String WINDOW_MENU = "Window";
   private static final String OPEN_GRAPH_MENU_ITEM = "Open Graph...";
@@ -95,14 +96,17 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     HELP_MENU_ITEM, ABOUT_CSMART_ITEM
   };
 
-  private CSMART csmart; // top level viewer, gives access to save method, etc.
+  private static CSMART csmart; // top level viewer
   private JMenu windowMenu;
   private static String agentURL = null; // agent to contact initially
   private static String agentHost = "localhost";
+  // default agent port
   private static int agentPort = 8800;
-  // maps host to port, but port used is currently hardcoded
+  // node component argument that specifies alternate port
+  private static String AGENT_PORT = "org.cougaar.lib.web.http.port";
+  // maps host to port
   private static CSMARTAgentMap agentMap;
-  // these mappings are determined once,
+  // these mappings are determined once per experiment
   private static Hashtable communityToAgents = null;
   private static Hashtable agentToCommunity = null;
   private static Hashtable agentToURL = null;
@@ -140,45 +144,23 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   };
 
   /**
-   * Create and display user interface.
-   */
+   * Start the society monitor.  If there is a single running
+   * experiment in CSMART, then monitor it; otherwise, ask the 
+   * user which host and port to contact to monitor an experiment.
+   */ 
 
-  private void refreshAgents() {
-    if (csmart != null) {
-      if (experiment == csmart.getRunningExperiment()) {
-	// have the experiment already.
-	// could things have changed though?
-	return;
-      }
-      if (listener != null && experiment != null)
-	experiment.removeExperimentListener(listener);
-      // If you dont clear these out, then monitoring
-      // two experiments from the same CSMART run
-      // means the second run cant view the society
-      if (agentURL != null) {
-	agentURL = null; // agent to contact initially
-	CSMARTAgentMap agentMap = null;
-	communityToAgents = null;
-	agentToCommunity = null;
-	agentToURL = null;
-      }
-      experiment = csmart.getRunningExperiment();
-      setHostToMonitor(experiment);
-      if (listener == null)
-	listener = new MyExperimentListener(this);
-      experiment.addExperimentListener(listener);
-      return;
-    }
-    // Otherwise, were running monitor standalone.
-    // We still need to be able to refresh things, if there is
-    // a new society running. How? FIXME!!
-  }
-  
-  public CSMARTUL(CSMART csmart) {
+  public CSMARTUL(CSMART csmart, Experiment experimentToMonitor) {
     this.csmart = csmart;
+    experiment = experimentToMonitor;
     createLogger();
 
-    refreshAgents();
+    // find host and port to contact
+    if (experiment != null) {
+      setHostToMonitor();
+      // add experiment listener to shut down monitor when experiment stops
+      listener = new MyExperimentListener(this);
+      experiment.addExperimentListener(listener);
+    }
     // create one version of properties for all objects
     // and set them in CSMARTGraph because it can't address CSMARTUL
     // TODO: better handling of properties
@@ -203,6 +185,11 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     //openMetricMenuItem.setEnabled(false);
     openMenu.add(openMetricMenuItem);
     fileMenu.add(openMenu);
+
+    JMenuItem monitorMenuItem = new JMenuItem(MONITOR_MENU_ITEM);
+    monitorMenuItem.setToolTipText("Monitor an experiment.");
+    monitorMenuItem.addActionListener(this);
+    fileMenu.add(monitorMenuItem);
 
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.setToolTipText("Exit this tool.");
@@ -275,14 +262,22 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   }
 
   /**
-   * Sets monitor host to first host that has a node and agent
-   * in the running experiment; defaults to localhost.
+   * Find a URL from the current running experiment.
+   * From the list of hosts which have nodes which have agents,
+   * finds a node on which org.cougaar.lib.web.http.port is defined
+   * and uses the corresponding host, OR
+   * finds a node which has agents, and uses the corresponding host
+   * and the default port.
    */
 
-  private void setHostToMonitor(Experiment experiment) {
+  private static void setHostToMonitor() {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
+    ArrayList potentialHosts = new ArrayList();
+    ArrayList potentialNodes = new ArrayList();
     HostComponent[] hosts = experiment.getHosts();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
+      // skip hosts that have no nodes
       if (nodes == null || nodes.length == 0)
         continue;
       for (int j = 0; j < nodes.length; j++) {
@@ -290,13 +285,25 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 	// skip nodes that have no agents
 	if (agents == null || agents.length == 0)
 	  continue;
-        // found a host to use
+        // potential hosts and nodes
         agentHost = hosts[i].getShortName();
-        break;
+        Properties arguments = nodes[j].getArguments();
+        if (arguments == null)
+          continue;
+        String port = arguments.getProperty(AGENT_PORT);
+        if (port != null) {
+          try {
+            agentPort = Integer.parseInt(port);
+            break; // have host and specific port
+          } catch (Exception e) {
+            if (log.isDebugEnabled())
+              log.error("Exception parsing " + AGENT_PORT + " : " + e);
+          }
+        }
       }
     }
     agentURL = ClientServletUtil.makeURL(agentHost, agentPort);
-    agentMap = new CSMARTAgentMap(agentHost, agentPort);
+    reset(agentHost, agentPort);
   }
 
   private JButton makeButton(String label, String iconFilename) {
@@ -370,6 +377,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       openGraph();
     } else if (s.equals(OPEN_METRIC_MENU_ITEM)) {
       openMetrics();
+    } else if (s.equals(MONITOR_MENU_ITEM)) {
+      getAgentURL();
     } else if (s.equals(EXIT_MENU_ITEM)) {
       if (csmart == null)
 	System.exit(0); // if running standalone, exit
@@ -480,19 +489,57 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
 
   /**
-   * Query user for agent URL. Only used if not running under CSMART.
-   * If running under CSMART, CSMART picks the first host that has
-   * nodes and agents and builds a URL from that and the default agentPort.
+   * Query user for agent URL if running multiple experiments
+   * or not running under CSMART.
    */
 
   private static void getAgentURL() {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
 
-    if (agentURL != null)
-      return; // only ask user for agent locations once
+    if (csmart != null) 
+      setExperimentToMonitor();
+    else
+      setURLToMonitor();
+  }
+
+  /**
+   * If running under csmart, ask user for experiment to monitor.
+   */
+
+  private static void setExperimentToMonitor() {
+    // ask user to select experiment from running experiments
+    Experiment[] exp = CSMART.getRunningExperiments();
+    if (exp.length == 0) {
+      JOptionPane.showMessageDialog(null, "No experiments to monitor.");
+      return;
+    }
+
+    Vector experimentNames = new Vector(exp.length);
+    for (int i = 0; i < exp.length; i++) 
+      experimentNames.add(exp[i].getExperimentName());
+    JComboBox cb = new JComboBox(experimentNames);
+    JPanel panel = new JPanel();
+    panel.add(new JLabel("Experiment to Monitor:"));
+    panel.add(cb);
+    int result = 
+      JOptionPane.showConfirmDialog(null, panel, "Experiment To Monitor",
+                                    JOptionPane.OK_CANCEL_OPTION,
+                                    JOptionPane.PLAIN_MESSAGE);
+    if (result != JOptionPane.OK_OPTION)
+      return;
+    experiment = exp[cb.getSelectedIndex()];
+    setHostToMonitor();
+  }
+
+  /**
+   * If not running under csmart, ask user for url (host and port)
+   * to monitor.
+   */
+
+  private static void setURLToMonitor() {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.viewer");
     JTextField tf = 
       new JTextField(ClientServletUtil.makeURL("localhost", agentPort));
-
     JPanel panel = new JPanel();
     panel.add(new JLabel("Agent URL:"));
     panel.add(tf);
@@ -514,19 +561,37 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     }
     startIndex = agentURL.lastIndexOf(':');
     if (startIndex != -1) {
-      endIndex = agentURL.lastIndexOf('/');
-      if (endIndex != -1) {
-	String s = agentURL.substring(startIndex+1, endIndex);
-	try {
-	  agentPort = Integer.parseInt(s);
-	} catch (Exception e) {
-          if(log.isDebugEnabled()) {
-            log.error("CSMARTUL: " + e);
-          }
-	}
+      String s = agentURL.substring(startIndex+1);
+      try {
+        agentPort = Integer.parseInt(s);
+      } catch (Exception e) {
+        if(log.isDebugEnabled()) {
+          log.error("CSMARTUL: " + e);
+        }
       }
     }
+
+//      if (startIndex != -1) {
+//        endIndex = agentURL.lastIndexOf('/');
+//        if (endIndex != -1) {
+//  	String s = agentURL.substring(startIndex+1, endIndex);
+//  	try {
+//  	  agentPort = Integer.parseInt(s);
+//  	} catch (Exception e) {
+//            if(log.isDebugEnabled()) {
+//              log.error("CSMARTUL: " + e);
+//            }
+//  	}
+//        }
+//      }
+    reset(agentHost, agentPort);
+  }
+
+  private static void reset(String agentHost, int agentPort) {
     agentMap = new CSMARTAgentMap(agentHost, agentPort);
+    communityToAgents = null;
+    agentToCommunity = null;
+    agentToURL = null;
   }
 
   /**
@@ -535,7 +600,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    */
 
   private static Vector getAgentURLs() {
-    getAgentURL();
+    if (agentURL == null)
+      getAgentURL();
     if (agentURL == null)
       return null;
     Vector agentURLs = null;
@@ -1085,7 +1151,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   }
 
   public static void launch(String[] args) {    
-    new CSMARTUL(null);
+    new CSMARTUL(null, null);
   }
 
   class MyExperimentListener implements ExperimentListener {

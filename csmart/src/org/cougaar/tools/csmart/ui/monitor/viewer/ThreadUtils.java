@@ -313,7 +313,7 @@ public final class ThreadUtils {
       int limit) {
     String agentURL = ClientServletUtil.makeURL(am.getHost(agentName),
                                                 am.getPort(agentName));
-    agentURL = agentURL + "$" + URLEncoder.encode(agentName) + "/";
+    agentURL = agentURL + "/$" + URLEncoder.encode(agentName) + "/";
     ArrayList parameterNames = new ArrayList(2);
     ArrayList parameterValues = new ArrayList(2);
     parameterNames.add("format");
