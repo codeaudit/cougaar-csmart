@@ -355,6 +355,12 @@ public class DatabaseTableModel extends AbstractTableModel {
    * @param column index of column in which to set value
    */
   public void setValueAt(Object value, int row, int column) {
+    if ((value != null && value.equals(getValueAt(row, column))) || value == null && getValueAt(row, column) == null) {
+      if (log.isDebugEnabled()) {
+	log.debug("setValueAt (" + row + ", " + column + ") not changing unchanged value " + value);
+      }
+      return;
+    }
     String tableName = "";
     try {
       tableName = metaData.getTableName(column+1);
@@ -387,12 +393,20 @@ public class DatabaseTableModel extends AbstractTableModel {
     if (dbValue == null) {
       log.error("updateCommAtt has null dbValue on column " + columnName + ", Comm: " + communityName + ", commId: " + communityId + " in row " + row);
     }
+
+    // FIXME: If making this change makes the whole DB row a duplicate
+    // don't make the change, else get an SQL exception
+
     if (columnName.equalsIgnoreCase("ATTRIBUTE_ID") || columnName.equalsIgnoreCase("COMMUNITY_ATTRIBUTE_ID")) {
+      // If queryCommunityInfo returns a row that has communityId, dbValue, curr att_val
+      // then log & return
       CommunityDBUtils.setCommunityAttributeId(communityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
                                dbRepresentation(2, getValueAt(row, 2)),
 					       assemblyId);
     } else if (columnName.equalsIgnoreCase("ATTRIBUTE_VALUE") || columnName.equalsIgnoreCase("COMMUNITY_ATTRIBUTE_VALUE")) {
+      // If queryCommunityInfo returns a row that has communityId, curr att_id, dbValue
+      // then log & return
       CommunityDBUtils.setCommunityAttributeValue(communityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
                                dbRepresentation(2, getValueAt(row, 2)),
@@ -427,6 +441,10 @@ public class DatabaseTableModel extends AbstractTableModel {
     if (dbValue == null) {
       log.error("updateCommEntityAtt has null dbValue on column " + columnName + ", Comm: " + communityName + ", entity: " + entityId + " in row " + row);
     }
+
+    // FIXME: If making this change makes the whole DB row a duplicate
+    // don't make the change, else get an SQL exception
+
     if (columnName.equalsIgnoreCase("ATTRIBUTE_ID") || columnName.equalsIgnoreCase("ENTITY_ATTRIBUTE_ID")) {
       CommunityDBUtils.setEntityAttributeId(communityName, entityId, dbValue,
                                dbRepresentation(1, getValueAt(row, 1)),
