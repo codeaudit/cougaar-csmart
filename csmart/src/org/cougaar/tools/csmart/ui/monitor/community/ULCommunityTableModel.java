@@ -14,6 +14,8 @@ import java.util.*;
 import javax.swing.table.AbstractTableModel;
 import att.grappa.*;
 
+import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
+
 /**
  * Provide the values for the attribute table for the specified node
  * in a community graph.
