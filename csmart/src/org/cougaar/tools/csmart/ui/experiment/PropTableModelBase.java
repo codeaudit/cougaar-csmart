@@ -65,8 +65,18 @@ public abstract class PropTableModelBase extends AbstractTableModel {
     public void addProperty(Property prop) {
         int sz = properties.size();
         properties.add(prop);
+        // ensure that properties are in alphabetical order
+        Collections.sort(properties, propertyComparator);
         fireTableRowsInserted(sz, sz);
     }
+
+    private static Comparator propertyComparator = new Comparator() {
+        public int compare(Object o1, Object o2) {
+          Property p1 = (Property) o1;
+          Property p2 = (Property) o2;
+          return p1.getName().compareTo(p2.getName());
+        }
+      };
 
     public void removeProperty(Property prop) {
         int sz = properties.indexOf(prop);
