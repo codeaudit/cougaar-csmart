@@ -353,7 +353,9 @@ public class CMT {
       String shortASBId = ((String)assembly_id.substring(assembly_id.length()/2)).replace('-','_');
       shortASBId = shortASBId.replace('{','_');
       shortASBId = shortASBId.replace('}',' ');
-      DBUtils.addSubs(subs,":short_assembly_id",shortASBId);
+      // Can shortASBId ever now start with a space or other
+      // whitespace char? That would be bad, so trim it.
+      DBUtils.addSubs(subs,":short_assembly_id",shortASBId.trim());
       DBUtils.addSubs(subs,":threads", sqlThreads);
       DBUtils.addSubs(subs,":oplan_ids","('093FF')");
       DBUtils.addSubs(subs,":cfw_instances",sqlListFromQuery("getCFWInstancesFromGroup",subs));
