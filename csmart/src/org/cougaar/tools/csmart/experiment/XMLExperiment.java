@@ -108,7 +108,6 @@ public class XMLExperiment extends ExperimentBase {
     SocietyComponent soc = new SocietyCDataComponent(experiment, null);
     soc.initProperties();
     setSocietyComponent(soc);
-    System.out.println("Here.");
   }
 
   protected void setDefaultNodeArguments() {
