@@ -20,6 +20,13 @@ REM " PERFORMANCE OF THE COUGAAR SOFTWARE."
 REM "</copyright>"
 
 
+REM Load the Configuration data contained in csmart/data/database/csv
+REM This data comes with the distribution.
+REM You may also move the original data aside, and "dump" the data from a database
+REM for sharing, or editing and reloading
+REM Note that MySQL must be installed on the local machine, and
+REM Cougaar Install Path must be set
+
 
 REM Make sure that COUGAAR_INSTALL_PATH is specified
 IF NOT "%COUGAAR_INSTALL_PATH%" == "" GOTO L_2
