@@ -66,7 +66,7 @@ public class CommunityTimePhasedData extends TimePhasedData {
   /**
    * Sets all time-phased communities
    *
-   * @param String[] array of community names.
+   * @param communities array of community names.
    */
   public void setCommunities(String[] communities) {
     for(int i=0; i < communities.length; i++) {
@@ -95,7 +95,7 @@ public class CommunityTimePhasedData extends TimePhasedData {
   /**
    * Adds a single community to the list of
    * time-phased communities.
-   * @param String community name.
+   * @param community name.
    */
   public void addCommunity(String community) {
     communities.add(community);
@@ -104,8 +104,8 @@ public class CommunityTimePhasedData extends TimePhasedData {
   /**
    * Sets a single community at a specific index.
    * 
-   * @param int index to replace community at.
-   * @param String community name.
+   * @param index to replace community at.
+   * @param community name.
    */ 
   public void setCommunity(int index, String community) 
     throws IndexOutOfBoundsException {

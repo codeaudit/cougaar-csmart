@@ -384,7 +384,7 @@ public interface Experiment extends ModifiableComponent {
    * get the local variable idea of the community assembly for this
    * experiment, possibly null
    *
-   * @return
+   * @return assembly ID for community data, possibly null
    */
   public String getCommAsbID();
 

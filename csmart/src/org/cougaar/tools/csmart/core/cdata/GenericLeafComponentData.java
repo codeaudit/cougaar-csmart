@@ -54,7 +54,7 @@ public class GenericLeafComponentData implements LeafComponentData, Serializable
   /**
    * Sets the type of the leaf component.
    *
-   * @param String component type.
+   * @param type of component 
    */
   public void setType(String type) {
     this.type = type;

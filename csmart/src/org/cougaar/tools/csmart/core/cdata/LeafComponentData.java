@@ -44,7 +44,7 @@ public interface LeafComponentData {
   /**
    * Sets the type of the leaf component.
    *
-   * @param String component type.
+   * @param type (String) of component
    */
   void setType(String type);
 
@@ -60,7 +60,7 @@ public interface LeafComponentData {
   /**
    * Sets the name of the component.
    *
-   * @param String name of the component.
+   * @param name (String) of the component.
    */
   void setName(String name);
 
@@ -75,7 +75,7 @@ public interface LeafComponentData {
   /**
    * Sets the value of the component.
    *
-   * @param Object value of the component
+   * @param value of the component
    */
   void setValue(Object val);
 }

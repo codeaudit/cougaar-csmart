@@ -333,7 +333,7 @@ public class AgentAssetData implements Serializable {
    * set takes place.
    *
    * @see PropGroupData
-   * @param PropGroupData[] array of property groups
+   * @param newPropgroups array of property groups
    */
   public void setPropGroups(PropGroupData[] newPropgroups) {
     propGroups.clear();
@@ -348,7 +348,7 @@ public class AgentAssetData implements Serializable {
    * new property group is added to the end of
    * the list.
    *
-   * @param PropGroupData property group
+   * @param propgroup property group to add
    */
   public void addPropertyGroup(PropGroupData propgroup) {
     this.propGroups.add(propgroup);
@@ -359,8 +359,8 @@ public class AgentAssetData implements Serializable {
    * Sets a property group for this Agent, 
    * replacing the previous PG at the specified index
    *
-   * @param int index for the Property Group
-   * @param PropGroupData new Property Group for the specified index
+   * @param index for the Property Group
+   * @param propgroup new Property Group for the specified index
    */
   public void setPropertyGroup(int index, PropGroupData propgroup) 
                               throws IndexOutOfBoundsException{
@@ -401,7 +401,7 @@ public class AgentAssetData implements Serializable {
   /**
    * Sets all roles for this Agent.  Any previous roles are deleted.
    *
-   * @param String[] array of roles
+   * @param newRoles array of role names
    */
   public void setRoles(String[] newRoles) {
     roles.clear();
@@ -414,7 +414,7 @@ public class AgentAssetData implements Serializable {
   /**
    * Adds a role for this Agent
    *
-   * @param String new role
+   * @param role new role to add
    */
   public void addRole(String role) {
     this.roles.add(role);
@@ -424,8 +424,8 @@ public class AgentAssetData implements Serializable {
   /**
    * Sets a role for this Agent, replacing the previous role at this index
    *
-   * @param int index for role
-   * @param String role to replace with
+   * @param index for role
+   * @param role to replace with
    */
   public void setRole(int index, String role) 
                               throws IndexOutOfBoundsException{
@@ -464,7 +464,7 @@ public class AgentAssetData implements Serializable {
    * Sets the Relationship information for this agent.
    *
    * @see RelationshipData
-   * @param RelationshipData[] array of relationship objects.
+   * @param relationships array of relationship objects.
    */
   public void setRelationshipData(RelationshipData[] relationships) {
     this.relats.clear();
@@ -478,7 +478,7 @@ public class AgentAssetData implements Serializable {
    * Adds a relationship for this Agent
    *
    * @see RelationshipData
-   * @param RelationshipData new relationship for this agent
+   * @param relationship new relationship for this agent
    */
   public void addRelationship(RelationshipData relationship) {
     this.relats.add(relationship);
@@ -490,8 +490,8 @@ public class AgentAssetData implements Serializable {
    * at this index.
    *
    * @see RelationshipData
-   * @param int index for new relationship
-   * @param RelationshipData  new relationship
+   * @param index for new relationship
+   * @param relationship new relationship
    */
   public void setRelationship(int index, RelationshipData relationship) 
                         throws IndexOutOfBoundsException {
