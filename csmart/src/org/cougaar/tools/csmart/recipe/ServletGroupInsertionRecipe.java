@@ -72,11 +72,6 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   private static final String PROP_TARGET_AGENT_QUERY_DESC = 
     "The query name for selecting agents to which to add servlets.";
 
-  private static final String PROP_NEW_SERVLETS_COUNT = "_Number of New Servlets";
-  private static final Integer PROP_NEW_SERVLETS_COUNT_DFLT = new Integer(0);
-  private static final Integer PROP_NEW_SERVLETS_ARG_COUNT_DFLT = new Integer(2);
-  private static final String PROP_NEW_SERVLETS_COUNT_DESC = "Number of servlets to be added that are not listed above.";
-
   private static final String DFLT_SERVLET_CLASS = "org.cougaar.core.servlet.SimpleServletComponent";
 
 
@@ -84,9 +79,9 @@ public class ServletGroupInsertionRecipe extends RecipeBase
   private Vector servletList = null;
   private Property propTargetAgentQuery;
   private Property propNewServletCount;
-  private Property[] propNewServlets = null; // class of servlet
-  private Property[] propNewServletNumArgs = null; // how many args it has
-  private Property[][] propNewServletArgs = null; // args for each new servlet
+//   private Property[] propNewServlets = null; // class of servlet
+//   private Property[] propNewServletNumArgs = null; // how many args it has
+//   private Property[][] propNewServletArgs = null; // args for each new servlet
 
 
   public ServletGroupInsertionRecipe() {
@@ -113,15 +108,6 @@ public class ServletGroupInsertionRecipe extends RecipeBase
       addRecipeQueryProperty(PROP_TARGET_AGENT_QUERY,
                              PROP_TARGET_AGENT_QUERY_DFLT);
     propTargetAgentQuery.setToolTip(PROP_TARGET_AGENT_QUERY_DESC);
-
-    propNewServletCount = addProperty(PROP_NEW_SERVLETS_COUNT, PROP_NEW_SERVLETS_COUNT_DFLT);
-    propNewServletCount.addPropertyListener(new ConfigurableComponentPropertyAdapter() {
-        public void propertyValueChanged(PropertyEvent e) {
-          updateNewServletCount((Integer)e.getProperty().getValue());
-        }
-      });
-    propNewServletCount.setToolTip(PROP_NEW_SERVLETS_COUNT_DESC);
-    propNewServletCount.setAllowedValues(Collections.singleton(new IntegerRange(0, Integer.MAX_VALUE)));
   }
 
   private Property addRecipeQueryProperty(String name, String dflt) {
@@ -130,81 +116,6 @@ public class ServletGroupInsertionRecipe extends RecipeBase
     return prop;
   }
 
-  private void updateNewServletCount(Integer newCount) {
-    int count = newCount.intValue();
-
-    // For now delete all variable props and start fresh.
-    // Annoying for the user, but it works.
-    if( propNewServlets != null && count != propNewServlets.length ) {
-      for(int i=0; i < propNewServlets.length; i++) {
-        removeProperty(propNewServlets[i]); // class
-	// Now the arguments
-	int numargs = 0;
-	if (propNewServletNumArgs[i] != null) {
-	  Integer na = (Integer)propNewServletNumArgs[i].getValue();
-	  numargs = na.intValue();
-	}
-	for (int j = 0; j < numargs; j++) {
-	  removeProperty(propNewServletArgs[i][j]);
-	}
-	// Now the number of arguments
-        removeProperty(propNewServletNumArgs[i]);
-      }
-    }
-
-    propNewServlets = new Property[count];
-    propNewServletNumArgs = new Property[count];
-    propNewServletArgs = new Property[count][0];
-
-    for(int i=0; i < count; i++) {
-      propNewServlets[i] = addProperty("_Classname of servlet " + (i+1), DFLT_SERVLET_CLASS);
-      ((Property) propNewServlets[i]).setToolTip("Full classname of the new servlet (loader) #" + (i+1));
-
-      propNewServletNumArgs[i] = addProperty("_Number of args for servlet " + (i+1), PROP_NEW_SERVLETS_ARG_COUNT_DFLT);
-      ((Property)propNewServletNumArgs[i]).setToolTip("Number of arguments for servlet " + (i+1));
-      ((Property)propNewServletNumArgs[i]).addPropertyListener(new ConfigurableComponentPropertyAdapter() {
-	  public void propertyValueChanged(PropertyEvent e) {
-	    String name = e.getProperty().getName().toString();
-	    String servnum = name.substring(name.indexOf("servlet") + 8);
-	    int snum = -1;
-	    try {
-	      snum = Integer.parseInt(servnum) - 1;
-	    } catch (NumberFormatException nfe) {}
-	    if (snum != -1) {
-	      updateNewServletArgCount(snum, (Integer)e.getProperty().getValue());
-	    } else {
-	      if (log.isErrorEnabled()) {
-		log.error("Couldn't figure out servlet being edited. name was " + name + ", servnum was " + servnum);
-	      }
-	    }
-	  }
-	});
-      updateNewServletArgCount(i, PROP_NEW_SERVLETS_ARG_COUNT_DFLT);
-    }
-  }
-
-  // Update the arguments for a new servlet
-  private void updateNewServletArgCount(int servnum, Integer newCount) {
-    int count = newCount.intValue();
-    // First remove the old ones
-    if (propNewServletArgs != null && propNewServletArgs[servnum] != null && propNewServletArgs[servnum].length != count) {
-      for (int i = 0; i < (propNewServletArgs[servnum]).length; i++) {
-	removeProperty(propNewServletArgs[servnum][i]);
-      }
-    }
-
-    // Now add the new set in
-    propNewServletArgs[servnum] = new Property[count];
-    // The first argument is usually the real class of the servlet
-    if (count > 0) {
-      propNewServletArgs[servnum][0] = addProperty("_New Servlet " + (servnum+1) + " arg 1", "");
-      ((Property) propNewServletArgs[servnum][0]).setToolTip("New Servlet " + (servnum+1) + " First argument, usu class");
-    }
-    for (int i = 1; i < count; i++) {
-      propNewServletArgs[servnum][i] = addProperty("_New Servlet " + (servnum+1) + " arg " + (i+1), "");
-      ((Property) propNewServletArgs[servnum][i]).setToolTip("New Servlet " + (servnum+1) + " argument " + (i+1));
-    }
-  }
   
   /**
    * Gets the name of the html help file for this component.
@@ -327,35 +238,6 @@ public class ServletGroupInsertionRecipe extends RecipeBase
           }
         }
       }
-      if (propNewServlets != null) {
-        for(int i=0; i < propNewServlets.length; i++) { 
-            GenericComponentData comp = new GenericComponentData();
-            comp.setType(ComponentData.PLUGIN);
-	    String newcls = (String)propNewServlets[i].getValue();
-	    // How many args does the servlet have
-	    int numargs = ((Integer)propNewServletNumArgs[i].getValue()).intValue();
-            comp.setClassName(newcls);
-            comp.setParent(data);
-            comp.setOwner(this);
-
-	    // For each arg it has, write it out
-	    for (int j = 0; j < numargs; j++)
-	      comp.addParameter((String)propNewServletArgs[i][j].getValue());
-
-	    if (GenericComponentData.alreadyAdded(data, comp)) {
-	      if (log.isDebugEnabled()) {
-		log.debug("Not re-adding servlet. " + data.getName() + " already contains " + comp);
-	      }
-	    } else {
-	      comp.setName(GenericComponentData.getSubComponentUniqueName(data, comp));
-	      data.addChildDefaultLoc(comp);
-	    }
-        }
-      }
-//     } else {
-//       if (log.isDebugEnabled()) {
-// 	log.debug("No match for " + pdb.getComponentAlibId(data));
-//       }
     }
 
     if (data.childCount() > 0) {

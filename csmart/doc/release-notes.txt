@@ -18,6 +18,8 @@ fall integration not available in time for the 9.4 release.
 - When configuring a Society from scratch in the Configuration
   Builder, give the user an editable drop-down of all known Plugins or
   Binders in the database, not just those in the Society so far (bug 1443).
+- Adding aditional servlet is nolonger possible via the Servlet Insertion Recipe.
+  To add aditional servlets, use the Specific Insertion Recipe. (Bug 1521)
 
 Release 9.4:
 This release constitues the last major Cougaar release for this

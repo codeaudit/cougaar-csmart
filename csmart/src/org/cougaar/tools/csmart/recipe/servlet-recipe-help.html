@@ -16,6 +16,9 @@ These servlets can be added to individual agents as appropriate or to all agents
 based on the query selected by the user. The target query comes from the  
 file <tt>PopulateDb.q</tt> or the user created file <tt>recipeQueries.q</tt>.
 <br>
+<b>Note:</b><i> Adding additional servlets is no longer possible using this
+recipe.  Please use the specific insertion recipe to add new servlets.</i>
+<br>
     <h2>Component Fields</h2>
     <table width="600">
 	<tr>
@@ -34,26 +37,10 @@ file <tt>PopulateDb.q</tt> or the user created file <tt>recipeQueries.q</tt>.
 	  <td></td>
 	</tr>
 	<tr>
-	  <td><a href="#NUM_SERV">_Number of New Servlets</a></td>
-	  <td>Integer</td>
-	  <td>0 - MAX</td>
-	</tr>
-	<tr>
 	  <td><a href="#CLASSNAME">Classname of Servlet Loader</a></td>
 	  <td>String</td>
 	  <td>(usu. org.cougaar.core.servlet.SimpleServletComponent)</td>
 	</tr>
-	<tr>
-	  <td><a href="#ARG">Number of Servlet Arguments</a></td>
-	  <td>Integer</td>
-	  <td>0 - MAX, usu 2</td>
-	</tr>
-	<tr>
-	  <td><a href="NEW_SERV_ARG">New Servlet arg [#]</a></td>
-	  <td>String</td>
-	  <td></td>
-	</tr>
-
     </table>  
     <br><br>
 <h2>Parameters</h2>
@@ -83,34 +70,11 @@ Config Path: in the directory from which you run CSMART, or in
 CIP/configs/common, for example.<br>
 <em>IMPORTANT: All recipes query names must begin with "recipeQuery"!</em><br>
 
-<a name="NUM_SERV"><h3>_Number of New Servlets</h3></a>
-The number of new servlets that you would like to add that are not included
-in the list presented.  If you set this number to greater than 0 (and hit
-return to set your selection), then a number of new fields appear, one
-pair, appropriately numbered, for each new servlet you add:
-
 <a name="CLASSNAME"><h3>Classname of Servlet Loader</h3></a>
 The full classname of the servlet loader that you wish to add.  For example
 for the PlanViewServlet and most others, the classname is as follows:<br>
 org.cougaar.core.servlet.SimpleServletComponent<br>
-
-<a name="ARG"><h3>Number of Servlet Arguments</h3></a>
-The number of arguments that this servlet has. Usually this is two: one for the class of the actual servlet (ie org.cougaar.planning.servlet.PlanViewServlet), and one for the URI at which to contact the servlet.
-For example
-for the PlanViewServlet, the path is as follows:<br>
-/tasks<br>
-If you set this number to greater than 0 (and hit
-return to set your selection), then a number of new fields appear, one
-for each servlet argument you specify:<br>
-
-<a name ="NEW_SERV_ARG"><h3>New Servlet arg [#]</h3></a>
-Here you may enter the value for each argument to your servlet. This
-may be anything you like. As indicated above, typically the first
-argument is the actual class of the servlet (for one that is loaded by
-another class), and the second is the URI at which to contact the
-servlet.<br>
-
 </body></html>
 
-<!-- Last Modified: $Date: 2002-06-14 13:29:43 $ -->
+<!-- Last Modified: $Date: 2002-06-20 17:48:21 $ -->
 <!-- By $Author: bkrisler $ -->
