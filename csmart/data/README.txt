@@ -22,8 +22,4 @@ This directory also contains several configuration directories and files:
 
         debug.properties - contains information for customizing
              the use of the Core logging service, via log4j statements
-
-  packages.txt - A simple description of the different Java packages
-        which make up the CSMART code.
-
 	
