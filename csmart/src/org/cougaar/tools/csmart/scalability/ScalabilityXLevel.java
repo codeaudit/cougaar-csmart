@@ -44,11 +44,53 @@ public class ScalabilityXLevel
     private ScalabilityXAgent superior;
     private int level;          // Pass level to initProperties
     private PropertiesListener childPropertiesListener = new MyPropertiesListener();
+    private class PropertyRepeater implements PropertyListener {
+        Property childProperty;
+        public PropertyRepeater(Property childProperty) {
+            this.childProperty= childProperty;
+        }
+        public void propertyValueChanged(PropertyEvent e) {
+            Property myProp = e.getProperty();
+            childProperty.setValue(myProp.getValue());
+        }
+        public void propertyOtherChanged(PropertyEvent e) {
+            Property myProp = e.getProperty();
+            switch (e.getWhatChanged()) {
+            case PropertyEvent.VALUE_CHANGED:
+                childProperty.setValue(myProp.getValue());
+                break;
+            case PropertyEvent.DEFAULTVALUE_CHANGED:
+                childProperty.setDefaultValue(myProp.getDefaultValue());
+                break;
+            case PropertyEvent.LABEL_CHANGED:
+                childProperty.setLabel(myProp.getLabel());
+                break;
+            case PropertyEvent.CLASS_CHANGED:
+                childProperty.setPropertyClass(myProp.getPropertyClass());
+                break;
+            case PropertyEvent.ALLOWEDVALUES_CHANGED:
+                childProperty.setAllowedValues(myProp.getAllowedValues());
+                break;
+            case PropertyEvent.EXPERIMENTVALUES_CHANGED:
+                childProperty.setExperimentValues(myProp.getExperimentValues());
+                break;
+//              case PropertyEvent.TOOLTIP_CHANGED:
+//                  childProperty.setToolTip(myProp.getToolTip());
+//                  break;
+//              case PropertyEvent.HELP_CHANGED:
+//                  childProperty.setHelp(myProp.getHelp());
+//                  break;
+            default:
+                break;
+            }
+        }
+    }
+        
     private class MyPropertiesListener
         implements PropertiesListener, ConfigurableComponentListener
     {
         public void propertyAdded(PropertyEvent e) {
-            Property p = e.getProperty();
+            final Property p = e.getProperty();
             CompositeName pName = p.getName();
             ConfigurableComponent c = p.getConfigurableComponent();
             if (pName.size() == getFullName().size() + 2) {
@@ -58,7 +100,16 @@ public class ScalabilityXLevel
                     if (myProp == null) {
                         myProp = new PropertyAlias(ScalabilityXLevel.this, name, p);
                         addProperty(myProp);
-			//                        System.out.println("Add alias for " + p.getName());
+                    } else {
+                        myProp.addPropertyListener(new PropertyRepeater(p));
+                        p.setValue(myProp.getValue());
+                        p.setDefaultValue(myProp.getDefaultValue());
+                        p.setLabel(myProp.getLabel());
+                        p.setPropertyClass(myProp.getPropertyClass());
+                        p.setAllowedValues(myProp.getAllowedValues());
+                        p.setExperimentValues(myProp.getExperimentValues());
+                        p.setToolTip(myProp.getToolTip());
+                        p.setHelp(myProp.getHelp());
                     }
                 }
 		//                System.out.println("Hide " + p.getName());
