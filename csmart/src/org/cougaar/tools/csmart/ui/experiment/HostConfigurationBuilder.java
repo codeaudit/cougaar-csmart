@@ -1150,21 +1150,29 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     dialog.setArguments(arguments);
     dialog.setVisible(true);
     Vector newData = dialog.getData();
-    String newArguments = dialog.getArguments();
-    properties.clear();
-    if (!newArguments.equals(arguments)) {
-      properties.setProperty(COMMAND_ARGUMENTS, newArguments);
+    String args = dialog.getArguments().trim();
+    if (!args.equals("")) {
+      Vector newArgv = new Vector(2);
+      newArgv.add(COMMAND_ARGUMENTS);
+      newArgv.add(args);
+      newData.add(newArgv);
     }
+    Properties newProps = new Properties(experiment.getDefaultNodeArguments());
     for (int i = 0; i < newData.size(); i++) {
       Vector row = (Vector) newData.get(i);
       String name = (String) row.get(0);
       String newValue = (String) row.get(1);
-      properties.remove(name);
       String oldValue = properties.getProperty(name);
+      String dfltValue = newProps.getProperty(name);
       if (!newValue.equals(oldValue)) {
-        properties.setProperty(name, newValue);
+        System.out.println("modified " + name + ": new=" + newValue + ", old=" + oldValue);
+        experimentBuilder.setModified(true);
+        if (!newValue.equals(dfltValue)) {
+          newProps.setProperty(name, newValue);
+        }
       }
     }
+    nodeComponent.setArguments(newProps);
   }
 
   /**
@@ -1195,13 +1203,29 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     dialog.setArguments(arguments);
     dialog.setVisible(true);
     Vector newData = dialog.getData();
-    String newArguments = dialog.getArguments();
-    if (!newArguments.equals(arguments)) {
-      properties.setProperty(COMMAND_ARGUMENTS, newArguments);
+    String newArguments = dialog.getArguments().trim();
+    if (!newArguments.equals("")) {
+      Vector newArgv = new Vector(2);
+      newArgv.add(COMMAND_ARGUMENTS);
+      newArgv.add(newArguments);
+      newData.add(newArgv);
     }
+    Set oldKeys = new HashSet(properties.keySet());
     for (int i = 0; i < newData.size(); i++) {
       Vector row = (Vector) newData.get(i);
-      properties.setProperty((String) row.get(0), (String) row.get(1));
+      String name = (String) row.get(0);
+      if (name.equals("")) continue;
+      String newValue = (String) row.get(1);
+      String oldValue = properties.getProperty(name);
+      if (!newValue.equals(oldValue)) {
+        experimentBuilder.setModified(true);
+        properties.setProperty(name, newValue);
+      }
+      oldKeys.remove(name);
+    }
+    for (Iterator i = oldKeys.iterator(); i.hasNext(); ) {
+      experimentBuilder.setModified(true);
+      properties.remove(i.next());
     }
   }
 
