@@ -1,3 +1,12 @@
+2001-11-27  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* Organizer.java:
+	Add experiment name argument to deleteExperiment.
+	Restore the properties of Host and Node components from the
+	database.
+	Change the getHosts query to only retrieve hosts that are part of
+	the experiment instead of all the hosts in the database.
+
 2001-11-19  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* Organizer.java:

@@ -1,3 +1,12 @@
+2001-11-27  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ExperimentDB.java:
+	Add experiment name argument to deleteExperiment call.
+
+	* CMT.java:
+	Add experiment name to deleteExperiment so that society components
+	created for the experiment can be deleted.
+
 2001-11-20  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* ConsoleInternalFrame.java:

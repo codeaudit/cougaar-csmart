@@ -1,3 +1,11 @@
+2001-11-27  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PDbBase.java:
+	Make query logging option controlled by
+	csmart.PopulateDb.log.enable property. If true, all queries
+	executes are logged to a file named PopulateDb<datetime>.log
+	preceded by the time to execute the query.
+
 2001-11-26  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* PDbBase.java:
