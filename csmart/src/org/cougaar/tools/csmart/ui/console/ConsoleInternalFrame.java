@@ -528,9 +528,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
     // ensure the layout leaves space for the scrollbar
     jspArgTable.setMinimumSize(new Dimension(50, 50));
     aboutPanel.add(jspArgTable,
-                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 1.0,
                                           GridBagConstraints.WEST,
-                                          GridBagConstraints.HORIZONTAL,
+                                          GridBagConstraints.BOTH,
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
@@ -550,9 +550,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
     JScrollPane jspArgs = new JScrollPane(args);
     jspArgs.setMinimumSize(new Dimension(50, 50));
     aboutPanel.add(jspArgs,
-                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 1.0,
                                           GridBagConstraints.WEST,
-                                          GridBagConstraints.HORIZONTAL,
+                                          GridBagConstraints.BOTH,
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
@@ -582,9 +582,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
     JScrollPane jspAgents = new JScrollPane(agentsList);
     jspAgents.setMinimumSize(new Dimension(50, 50));
     aboutPanel.add(jspAgents,
-                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 1.0,
                                           GridBagConstraints.WEST,
-                                          GridBagConstraints.HORIZONTAL,
+                                          GridBagConstraints.BOTH,
                                           new Insets(0, 0, 5, 0),
                                           0, 0));
     JOptionPane.showMessageDialog(this, aboutPanel, 
