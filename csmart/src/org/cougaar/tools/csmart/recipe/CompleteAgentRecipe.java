@@ -20,9 +20,6 @@
  */ 
 package org.cougaar.tools.csmart.recipe;
 
-
-
-
 import java.io.Serializable;
 import java.net.URL;
 import java.sql.SQLException;
@@ -32,6 +29,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
+
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -49,6 +47,7 @@ import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.range.IntegerRange;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.society.AgentComponent;
+
 import org.cougaar.util.log.Logger;
 
 /**
@@ -98,7 +97,6 @@ public class CompleteAgentRecipe extends ComplexRecipeBase
   public URL getDescription() {
     return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
   }
-
 
   /**
    * Get the name of this Recipe.
