@@ -61,15 +61,16 @@ public class UnboundPropertyBuilder extends JPanel {
   /**
    * Define actions for pop-up menus on societies, impacts, and metrics.
    */
-
   private Action removeAction = new AbstractAction(REMOVE_MENU_ITEM) {
     public void actionPerformed(ActionEvent e) {
       removeSelectedItems();
     }
   };
+  
   private Action[] popupActions = {
     removeAction
   };
+  
   private Action[] societiesActions = {
     new AbstractAction(REMOVE_MENU_ITEM + " All Societies") {
       public void actionPerformed(ActionEvent e) {
@@ -77,6 +78,7 @@ public class UnboundPropertyBuilder extends JPanel {
       }
     }
   };
+  
   private Action[] impactsActions = {
     new AbstractAction(REMOVE_MENU_ITEM + " All Impacts") {
       public void actionPerformed(ActionEvent e) {
@@ -84,6 +86,7 @@ public class UnboundPropertyBuilder extends JPanel {
       }
     }
   };
+  
   private Action[] metricsActions = {
     new AbstractAction(REMOVE_MENU_ITEM + " All Metrics") {
       public void actionPerformed(ActionEvent e) {
@@ -95,7 +98,6 @@ public class UnboundPropertyBuilder extends JPanel {
   /**
    * Define mouse listener to pop-up menus.
    */
-
   private MouseListener mouseListener = new MouseAdapter() {
     public void mouseClicked(MouseEvent e) {
       if (e.isPopupTrigger()) doPopup(e);
@@ -112,7 +114,6 @@ public class UnboundPropertyBuilder extends JPanel {
    * Define tree selection listener to display unbound properties
    * for selected component in tree.
    */
-
   private TreeSelectionListener myTreeSelectionListener = new TreeSelectionListener() {
     public void valueChanged(TreeSelectionEvent e) {
       TreePath path = tree.getSelectionPath();
@@ -286,9 +287,10 @@ public class UnboundPropertyBuilder extends JPanel {
     if (node == null) return;
     Object o = (node.getUserObject());
     // FIXME!!!! Must I add in the unbound properties from the Metrics & Impacts here??
-    if (o instanceof SocietyComponent) {
+    // Or is this a one-by-one kind of thing?
+    if (o instanceof ModifiableConfigurableComponent) {
       propModel.clear(); // clear out any previous table entries
-      propModel.setComponentProperties((SocietyComponent) o);
+      propModel.setComponentProperties((ModifiableConfigurableComponent) o);
       rightPanel.add(propScrollPane, BorderLayout.CENTER);
     }
   }
