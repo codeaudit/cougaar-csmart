@@ -549,6 +549,39 @@ public class AppServerSupport {
     return true;
   }
 
+  /**
+   * Used to see if we know of any AppServers out there. Return
+   * <code>true</code> if we do
+   */
+  public boolean haveValidAppServers() {
+    refreshAppServers();
+    return checkASListWorker();
+  }
+
+  /**
+   * Synchronized helper for above
+   */
+  private synchronized boolean checkASListWorker() {
+    return ! appServers.isEmpty();
+  }
+
+  /**
+   * Used to see if we know of any running processes out there,
+   * regardless of whether we might now be attached to them. Return
+   * <code>true</code> if we do.
+   */
+  public boolean thereAreRunningNodes() {
+    refreshAppServers();
+    return checkRunningNodesWorker();
+  }
+
+  /**
+   * Synchronized helper for above
+   */
+  private synchronized boolean checkRunningNodesWorker() {
+    return ! nodeToAppServer.isEmpty();
+  }
+
   // for debugging
   private void printInfoFromAppServer(ProcessDescription[] attachToNodes) {
     for (int i = 0; i < attachToNodes.length; i++) {
