@@ -35,6 +35,7 @@ import java.net.URL;
 public interface RecipeComponent extends ModifiableComponent, ComponentProperties {
 
   final String CLASS_NAME_PROP = "recipe_class_name";
+  final String RECIPE_QUERY_FILE= "recipeQueries.q";
 
   void setName(String newName);
 

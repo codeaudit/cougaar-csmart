@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.FileWriter;
 import java.io.ByteArrayOutputStream;
@@ -79,6 +80,11 @@ public class PDbBase {
     {
         log = new PrintWriter(new FileWriter("PopulateDbQuery.log"));
         dbp = DBProperties.readQueryFile(QUERY_FILE);
+        try {
+            dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
+        } catch (FileNotFoundException e) {
+            // This is normal if a user has no separate recipe query file.
+        }
         //        dbp.setDebug(true);
         String database = dbp.getProperty("database");
         String username = dbp.getProperty("username");
