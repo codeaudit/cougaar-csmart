@@ -26,7 +26,6 @@
 # Additions contained in this script:
 # 1) Search csmart/data/common for config files - to ensure csmart and glm domains are loaded,
 #    amd the CSMART PSPs are loaded. Also, some UI properties are specified there
-# 2) Set the CSMART logging level (property is csmart.log.severity)
 
 # Users may want to customize the MYLOG level set below
     
@@ -63,13 +62,6 @@ endif
 # and ends with an escaped semi-colon
 set MYCONFIGS="$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
 
-# Needed for CSMART logging:    
-# Options in increasing order of verbosity are: SEVERE, PROBLEM, DEBUG, VERBOSE, or VERY_VERBOSE
-# The log file will be COUGAAR_INSTALL_PATH/<date>.log
-# Note that the file COUGAAR_INSTALL_PATH/csmart/data/debug.properties
-# controls which modules will write to the log file
-set MYLOG="DEBUG"
-
 # domains are now usually defined by the config file LDMDomains.ini.
 # But you may still use properties if you wish.
 #set MYDOMAINS="-Dorg.cougaar.domain.alp=org.cougaar.glm.GLMDomain"
@@ -78,7 +70,7 @@ set MYDOMAINS=""
 set MYPROPERTIES="$MYDOMAINS -Dorg.cougaar.system.path=$COUGAAR3RDPARTY -Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Duser.timezone=GMT -Dorg.cougaar.core.agent.startTime=08/10/2005 -Dorg.cougaar.planning.ldm.lps.ComplainingLP.level=0 -Dorg.cougaar.core.agent.SharedPlugInManager.watching=false"
 
 # This line for CSMART specific properties
-set MYPROPERTIES="${MYPROPERTIES} -Dorg.cougaar.config.path=$MYCONFIGS -Dcsmart.log.severity=$MYLOG"
+set MYPROPERTIES="${MYPROPERTIES} -Dorg.cougaar.config.path=$MYCONFIGS"
 
 # To collect message statistics on the RMI Message transport:
 set MYPROPERTIES="${MYPROPERTIES} -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect"
