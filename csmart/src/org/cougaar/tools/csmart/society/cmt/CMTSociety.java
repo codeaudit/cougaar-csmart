@@ -43,6 +43,11 @@ import org.cougaar.tools.csmart.core.property.PropertiesListener;
 
 import org.cougaar.tools.csmart.core.db.DBUtils;
 
+/**
+ * A Society created from the CFW portion of the CSMART configuration
+ * database.
+ * @see org.cougaar.tools.csmart.core.db.CMT
+ */
 public class CMTSociety 
   extends ModifiableConfigurableComponent 
   implements PropertiesListener, Serializable, SocietyComponent, ModificationListener 
@@ -54,82 +59,18 @@ public class CMTSociety
   "CMTSociety description not available";
   private static final String QUERY_AGENT_NAMES = "queryAgentNames";
 
-  private Property testProp;
-
   private List assemblyID;
-  private String database;
-  private String username;
-  private String password;
-  private Map substitutions = new HashMap();
+  private Map substitutions;
 
   public CMTSociety(String name, List assemblyID) {
     super(name);
     this.assemblyID = assemblyID;
   }
 
-  public static CMTSociety loadCMTSociety(String assemblyID) {
-    CMTSociety society = null;
-    Map substitutions = new HashMap();
-    boolean match = false;
-
-    // load all the appropriate stuff from the db right here:
-    // 1) Get a DB Connection
-    // 2) Make sure the ASSEMBLY_ID given exists.
-    // -- if not, return null
-    // 3) Create a new CMT Society with an appropriate name - the ASSEMBLY_ID?
-    // 4) Fill in all the other necessary data - see comments in the initProperties() method
-    // -- basically, we want the componentdata stuff, or at least the list of Agents with names
-    // creating the necessary AgentComponents
-
-//     if(CSMART.inDBMode()) {
-//       try {
-// 	substitutions.put(":assembly_type", "CMT");
-// 	Connection conn = DBUtils.getConnection();
-// 	Statement stmt = conn.createStatement();
-// 	String query = DBUtils.getQuery(DBUtils.ASSEMBLYID_QUERY, substitutions);
-// 	ResultSet rs = stmt.executeQuery(query);
-// 	while(rs.next()) {
-// 	  String result = rs.getString(1);
-// 	  if(result != null && result.equals(assemblyID)) {	    
-// 	    match = true;
-// 	    break;
-// 	  }
-// 	}
-// 	rs.close();
-// 	stmt.close();
-// 	conn.close();
-// 	if(match) {
-// 	  society = new CMTSociety(assemblyID);
-// 	}
-//       } catch (SQLException se) {}   
-//     }
-
-    return society;
-  }
-
   public void initProperties() {
     Map substitutions = new HashMap();
-    StringBuffer assemblyMatch = null;
-
-    if (assemblyID.size() != 0) {
-      assemblyMatch = new StringBuffer();
-      assemblyMatch.append("in (");
-      Iterator iter = assemblyID.iterator();
-      boolean first = true;
-      while (iter.hasNext()) {
-	String val = (String)iter.next();
-	if (first) {
-	  first = false;
-	} else {
-	  assemblyMatch.append(", ");
-	}
-	assemblyMatch.append("'");
-	assemblyMatch.append(val);
-	assemblyMatch.append("'");
-      }
-      assemblyMatch.append(")");
-      
-      substitutions.put(":assemblyMatch", assemblyMatch.toString());
+    if (assemblyID.size() > 0) {
+      substitutions.put(":assemblyMatch", DBUtils.getListMatch(assemblyID));
       substitutions.put(":insertion_point", "Node.AgentManager.Agent");
 
       try {
@@ -139,7 +80,7 @@ public class CMTSociety
 	  String query = DBUtils.getQuery(QUERY_AGENT_NAMES, substitutions);
 	  ResultSet rs = stmt.executeQuery(query);
 	  while (rs.next()) {
-	    String agentName = getNonNullString(rs, 1, query);
+	    String agentName = DBUtils.getNonNullString(rs, 1, query);
 	    CMTAgent agent = new CMTAgent(agentName, assemblyID);
 	    agent.initProperties();
 	    addChild(agent);
@@ -152,15 +93,6 @@ public class CMTSociety
 	throw new RuntimeException("Error" + e);
       }
     }    
-  }
-
-  private static String getNonNullString(ResultSet rs, int ix, String query)
-    throws SQLException
-  {
-    String result = rs.getString(ix);
-    if (result == null)
-      throw new RuntimeException("Null in DB ix=" + ix + " query=" + query);
-    return result;
   }
 
   public void modified(ModificationEvent e) {
