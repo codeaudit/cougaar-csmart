@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2002-2003 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -45,7 +45,7 @@ public class ExperimentTest extends TestCase {
 
   private Experiment experiment = null;
 
-  /** 
+  /**
    * Creates a new <code>ExperimentTest</code> instance.
    *
    * @param name test name
@@ -55,7 +55,7 @@ public class ExperimentTest extends TestCase {
   }
 
   protected void setUp() {
-    experiment = new Experiment("testExperiment");
+    experiment = new DBExperiment("testExperiment");
   }
 
   public void testSocietyOperations() {
@@ -73,7 +73,7 @@ public class ExperimentTest extends TestCase {
     assertEquals("Test getSocietyComponentCount", 1, experiment.getSocietyComponentCount());
     assertEquals("Test getSocietyComponent", sc, experiment.getSocietyComponent());
     experiment.removeSocietyComponent();
-    assertEquals("Test remove success", 0, experiment.getSocietyComponentCount());    
+    assertEquals("Test remove success", 0, experiment.getSocietyComponentCount());
   }
 
 
@@ -134,7 +134,7 @@ public class ExperimentTest extends TestCase {
     assertEquals("Test getComponentCount", 2, experiment.getComponentCount());
     experiment.removeComponent(rc);
     assertEquals("Test Successful recipe add", 0, experiment.getRecipeComponentCount());
-   
+
   }
 
   public void testRunInProgress() {
@@ -151,7 +151,7 @@ public class ExperimentTest extends TestCase {
     experiment.setResultDirectory(new File("Test"));
     assertEquals("Test ResultDirectory", new File("Test"), experiment.getResultDirectory());
   }
-  
+
   public void testHostComponent() {
     HostComponent h = experiment.addHost("New Host");
 
@@ -160,7 +160,7 @@ public class ExperimentTest extends TestCase {
       experiment.addHost("New Host");
       fail("addHost: Expected IllegalArgumentException");
     } catch (IllegalArgumentException ee) {}
-    
+
     try {
       experiment.renameHost(h, "New Host");
       fail("renameHost: Expected IllegalArgumentException");
@@ -173,7 +173,7 @@ public class ExperimentTest extends TestCase {
     experiment.removeHost(h);
     hosts = experiment.getHostComponents();
     assertEquals("Test Remove Host", 0, hosts.length);
-    
+
   }
 
 
@@ -185,7 +185,7 @@ public class ExperimentTest extends TestCase {
       experiment.addNode("New Node");
       fail("addNode: Expected IllegalArgumentException");
     } catch (IllegalArgumentException ee) {}
-    
+
     try {
       experiment.renameNode(n, "New Node");
       fail("renameNode: Expected IllegalArgumentException");
@@ -205,12 +205,12 @@ public class ExperimentTest extends TestCase {
    * @return a <code>TestSuite</code>
    */
   public static TestSuite suite(){
-    return new TestSuite(ExperimentTest.class); 
+    return new TestSuite(ExperimentTest.class);
   }
 
-  /** 
-   * Entry point 
-   */ 
+  /**
+   * Entry point
+   */
   public static void main(String[] args) {
     junit.textui.TestRunner.run(suite());
   }
