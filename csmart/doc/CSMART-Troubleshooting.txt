@@ -188,7 +188,7 @@ your path before %SYSTEMROOT%/system32 (ie D:\JDK1.4\bin before
 C:\WINNT\system32).
 
 - If on start you get an error:
-   Table cougaar.V4_EXPT_EXPERIMENT doesn't exist on Unix, then you
+   Table cougaar.EXPT_EXPERIMENT doesn't exist on Unix, then you
    do not have the lower_case_table_names variable set to 1.  Check
    with
    % mysqladmin variables
@@ -204,10 +204,10 @@ An alternate cause, is that you do not have a current MySQL Server
 
 SQLException query: SELECT A.COMPONENT_NAME COMPONENT_NAME, C.COMPONENT_CLASS 
 COMPONENT_CLASS, A.COMPONENT_ALIB_ID COMPONENT_ID, C.INSERTION_POINT, 
-H.INSERTION_ORDER INSERTION_ORDER FROM V4_ALIB_COMPONENT P INNER JOIN 
-V4_ASB_COMPONENT_HIERARCHY H ON P.COMPONENT_ALIB_ID = H.PARENT_COMPONENT_ALIB_ID 
-INNER JOIN V4_ALIB_COMPONENT A ON A.COMPONENT_ALIB_ID = H.COMPONENT_ALIB_ID 
-INNER JOIN V4_LIB_COMPONENT C ON C.COMPONENT_LIB_ID = A.COMPONENT_LIB_ID WHERE 
+H.INSERTION_ORDER INSERTION_ORDER FROM ALIB_COMPONENT P INNER JOIN 
+ASB_COMPONENT_HIERARCHY H ON P.COMPONENT_ALIB_ID = H.PARENT_COMPONENT_ALIB_ID 
+INNER JOIN ALIB_COMPONENT A ON A.COMPONENT_ALIB_ID = H.COMPONENT_ALIB_ID 
+INNER JOIN LIB_COMPONENT C ON C.COMPONENT_LIB_ID = A.COMPONENT_LIB_ID WHERE 
 H.ASSEMBLY_ID in () AND C.INSERTION_POINT LIKE 'Node.AgentManager.%' AND 
 INSTR(SUBSTRING(C.INSERTION_POINT, LENGTH('Node.AgentManager.') + 
 1), '.') = 0 AND P.COMPONENT_NAME = 'SMALL_1AD' ORDER BY INSERTION_ORDER
@@ -249,7 +249,7 @@ Compiling CSMART
 
 MySQL Database issues
 - If you get SQL errors, claiming that a table does not exist, eg
-error: Table 'mycoug.V4_EXPT_EXPERIMENT' doesn't exist
+error: Table 'mycoug.EXPT_EXPERIMENT' doesn't exist
 (but which you believe does in fact exist), it may be a case issue - MySQL
 is case sensitive on table names. This solution applies to MySQL
 databases run on Unix.
@@ -272,7 +272,7 @@ setting the above parameter.
 
 - If on loading a society from the database into CSMART you see errors
   like: 16:12:17,228 ERROR [DBUtils] - dbExecute: CREATE TEMPORARY TABLE
-tmp_v4_alib_component_"
+tmp_alib_component_"
 "SMALL_1AD_TRANS_STU_ST1359  AS SELECT DISTINCT GO.ORG_ID AS
 ....
 

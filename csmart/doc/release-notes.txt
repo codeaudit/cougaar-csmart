@@ -56,10 +56,17 @@ Asset=true in component AGG-Agent
   1416).
 - Database table names have been shorted, removing extraneous v4 and
   v6 prefixes. Recipe or experiment exports must be processed to
-  remove the "v4_" from the beginning of table names.
+  remove the "v4_" from the beginning of table names. Use the script
+  provided in csmart/bin to do so.
 - Database load scripts are now generated
   from ER/Studio files, which themselves are available in the
-  csmart/data/database directory. This change is transparent to the user.
+  csmart/data/database directory. This change is transparent to the
+  user.
+- You may now import a communities.xml file into your experiment (bug
+  1454), augmenting any existing community definition for that
+  experiment. (Courtesy of Mobile Intelligence, Inc).
+- When dumping out INI files, a communities.xml file is also generated
+  (bug 1453, also courtesty of Mobile Intelligence, Inc).
 
 Release 9.4:
 This release constitutes the last major Cougaar release for this
