@@ -21,6 +21,8 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
@@ -48,7 +50,6 @@ public class ActionUtil {
     "Delete Experiment From Database";
   public static String DELETE_RECIPE_FROM_DATABASE_ACTION = 
     "Delete Recipe From Database";
-  public static String SAVE_TO_DATABASE_ACTION = "Save To Database";
   
   /**
    * Return whether or not an action is allowed, based
@@ -180,8 +181,7 @@ public class ActionUtil {
     // configure the society in it
     if (selectedObject instanceof Experiment) {
       Experiment experiment = (Experiment)selectedObject;
-      if (action.equals(DUPLICATE_ACTION) ||
-          action.equals(SAVE_TO_DATABASE_ACTION)) {
+      if (action.equals(DUPLICATE_ACTION)) {
         return true;
       } else if (action.equals(CONFIGURE_ACTION)) {
         return true;
@@ -200,27 +200,31 @@ public class ActionUtil {
 
     if (selectedObject instanceof SocietyComponent) {
       SocietyComponent society = (SocietyComponent)selectedObject;
+      if (isNodeInExperiment(organizer)) {
+        if (action.equals(DUPLICATE_ACTION) ||
+            action.equals(BUILD_ACTION) ||
+            action.equals(DELETE_ACTION))
+          return false;
+      }
       if (action.equals(DUPLICATE_ACTION))
         return true;
-      if (action.equals(SAVE_TO_DATABASE_ACTION)) {
-        return false;
-      } else if (action.equals(BUILD_ACTION)) {
-        return !CSMART.isSocietyInEditor(society);
-      } else if (action.equals(DELETE_ACTION) ||
-                 action.equals(RENAME_ACTION) ||
-                 action.equals(CONFIGURE_ACTION)) {
+      else if (action.equals(BUILD_ACTION) ||
+               action.equals(DELETE_ACTION) ||
+               action.equals(RENAME_ACTION) ||
+               action.equals(CONFIGURE_ACTION)) 
         return (!CSMART.isSocietyInEditor(society));
-      } else if (action.equals(BUILD_ACTION)) {
- // TODO: should return true only if society not in experiment????
-        return true;
-      } else
+      else
         return false;
     } // end if selected object is society
 
     if (selectedObject instanceof RecipeComponent) {
       RecipeComponent recipe = (RecipeComponent)selectedObject;
-      if (action.equals(DUPLICATE_ACTION) ||
-          action.equals(SAVE_TO_DATABASE_ACTION))
+      if (isNodeInExperiment(organizer)) {
+        if (action.equals(DUPLICATE_ACTION) ||
+            action.equals(DELETE_ACTION))
+          return false;
+      }
+      if (action.equals(DUPLICATE_ACTION))
         return true;
       else if (action.equals(DELETE_ACTION) ||
                action.equals(RENAME_ACTION) ||
@@ -232,5 +236,18 @@ public class ActionUtil {
 
     System.out.println("Util: unhandled case: " + action);
     return false;
+  }
+
+  // return true if the user selected a node within an experiment
+  private static boolean isNodeInExperiment(Organizer organizer) {
+    DefaultMutableTreeNode node = organizer.getSelectedNode();
+    if (node == null)
+      return false;
+    DefaultMutableTreeNode parentNode = 
+      (DefaultMutableTreeNode)node.getParent();
+    Object o = parentNode.getUserObject();
+    if (o == null)
+      return false;
+    return (o instanceof Experiment);
   }
 }

@@ -67,13 +67,6 @@ public class OrganizerMouseListener extends MouseAdapter {
       }
   };
 
-  private Action newSocietyAction = 
-    new AbstractAction("New Society") {
-      public void actionPerformed(ActionEvent e) {
-        organizer.newSociety();
-      }
-    };
-
   private Action newFolderAction = 
     new AbstractAction(ActionUtil.NEW_FOLDER_ACTION) {
 	public void actionPerformed(ActionEvent e) {
@@ -125,13 +118,6 @@ public class OrganizerMouseListener extends MouseAdapter {
 	}
       };
 
-  private AbstractAction saveExperimentAction =
-    new AbstractAction(ActionUtil.SAVE_TO_DATABASE_ACTION) {
-        public void actionPerformed(ActionEvent e) {
-          organizer.saveExperiment();
-        }
-      };
-
   private AbstractAction deleteExperimentAction =
     new AbstractAction(ActionUtil.DELETE_ACTION) {
 	public void actionPerformed(ActionEvent e) {
@@ -168,13 +154,6 @@ public class OrganizerMouseListener extends MouseAdapter {
 	}
       };
 
-  private AbstractAction saveRecipeAction =
-    new AbstractAction(ActionUtil.SAVE_TO_DATABASE_ACTION) {
-	public void actionPerformed(ActionEvent e) {
-	  organizer.saveRecipe();
-	}
-      };
-
   private AbstractAction deleteFolderAction =
     new AbstractAction(ActionUtil.DELETE_ACTION) {
 	public void actionPerformed(ActionEvent e) {
@@ -203,13 +182,6 @@ public class OrganizerMouseListener extends MouseAdapter {
         }
       };
 
-  private AbstractAction saveSocietyAction =
-    new AbstractAction(ActionUtil.SAVE_TO_DATABASE_ACTION) {
-        public void actionPerformed(ActionEvent e) {
-          organizer.saveSociety();
-        }
-      };
-
   private Action[] newRecipeActions = {
     new AbstractAction("From Database") {
 	public void actionPerformed(ActionEvent e) {
@@ -231,7 +203,6 @@ public class OrganizerMouseListener extends MouseAdapter {
   // define pop-up menus
   private Object[] rootMenuItems = {
     newExperimentMenu,
-    newSocietyAction,
     newRecipeMenu,
     newFolderAction,
     renameWorkspaceAction,
@@ -245,7 +216,6 @@ public class OrganizerMouseListener extends MouseAdapter {
     duplicateAction,
     deleteExperimentAction,
     renameExperimentAction,
-    saveExperimentAction
   };
 
   private Object[] societyMenuItems = {
@@ -253,8 +223,7 @@ public class OrganizerMouseListener extends MouseAdapter {
     buildExperimentAction,
     duplicateAction,
     deleteSocietyAction,
-    renameSocietyAction,
-    saveSocietyAction
+    renameSocietyAction
   };
 
   private Object[] recipeMenuItems = {
@@ -262,7 +231,6 @@ public class OrganizerMouseListener extends MouseAdapter {
     duplicateAction,
     deleteRecipeAction,
     renameRecipeAction,
-    saveRecipeAction
   };
 
   private Object[] folderMenuItems = {
@@ -277,10 +245,11 @@ public class OrganizerMouseListener extends MouseAdapter {
                                 OrganizerTree workspace) {
     this.organizer = organizer;
     this.workspace = workspace;
-    //    newSocietyAction.setEnabled(false); // disable creating builtin societies
     // set up experiment submenus
-    for (int i = 0; i < newExperimentActions.length; i++) 
+    for (int i = 0; i < newExperimentActions.length; i++) {
       newExperimentMenu.add(newExperimentActions[i]);
+      newExperimentInFolderMenu.add(newExperimentActions[i]);
+    }
     // set up recipe submenus
     for (int i = 0; i < newRecipeActions.length; i++) {
       newRecipeMenu.add(newRecipeActions[i]);

@@ -225,14 +225,14 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     for (int i = 0; i < newRecipeActions.length; i++)
       newRecipeMenu.add(newRecipeActions[i]);
     fileMenu.add(newRecipeMenu);
-    newSocietyMenuItem = new JMenuItem("New Society");
-    newSocietyMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          organizer.newSociety();
-        }
-      });
+    //    newSocietyMenuItem = new JMenuItem("New Society");
+    //    newSocietyMenuItem.addActionListener(new ActionListener() {
+    //        public void actionPerformed(ActionEvent e) {
+    //          organizer.newSociety();
+    //        }
+    //      });
     //    newSocietyMenuItem.setEnabled(true); // disable creating built-in societies
-    fileMenu.add(newSocietyMenuItem);
+    //    fileMenu.add(newSocietyMenuItem);
     if(log.isDebugEnabled()) {
       log.debug("Enable Society Menu");
     }
@@ -302,14 +302,15 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         }
       });
     fileMenu.add(renameMenuItem);
-    saveToDatabaseMenuItem = 
-      new JMenuItem(ActionUtil.SAVE_TO_DATABASE_ACTION);
-    saveToDatabaseMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          organizer.saveComponent(); // save experiment or recipe
-        }
-      });
-    fileMenu.add(saveToDatabaseMenuItem);
+    // don't need to save from top level workspace menu
+//      saveToDatabaseMenuItem = 
+//        new JMenuItem(ActionUtil.SAVE_TO_DATABASE_ACTION);
+//      saveToDatabaseMenuItem.addActionListener(new ActionListener() {
+//          public void actionPerformed(ActionEvent e) {
+//            organizer.saveComponent(); // save experiment or recipe
+//          }
+//        });
+//      fileMenu.add(saveToDatabaseMenuItem);
     fileMenu.addSeparator();
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.addActionListener(this);
@@ -367,6 +368,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     setVisible(true);
   }
 
+  public static Organizer getOrganizer() {
+    return organizer;
+  }
+
   /**
    * Enable/disable entries in the File menu dependent on what
    * is selected in the organizer.
@@ -402,9 +407,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     return (Experiment[])runningExperiments.toArray(new Experiment[runningExperiments.size()]);
   }
 
-  public Experiment[] getExperimentsInWorkspace() {
-    return organizer.getExperiments();
-  }
+  //  public Experiment[] getExperimentsInWorkspace() {
+  //    return organizer.getExperiments();
+  //  }
 
   private void enableConfigurationTool(boolean enable) {
     ((JButton)toolBar.getComponentAtIndex(0)).setEnabled(enable);
@@ -566,11 +571,13 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   public void runBuilder(ModifiableComponent cc, 
                          boolean alwaysNew) {
     // note that cc is guaranteed non-null when this is called
-    Class[] paramClasses = { CSMART.class, ModifiableComponent.class };
-    Object[] params = new Object[2];
+    Class[] paramClasses = 
+      { CSMART.class, ModifiableComponent.class, Experiment.class };
+    Object[] params = new Object[3];
     params[0] = this;
+    Experiment experiment = null;
     if (cc instanceof Experiment) {
-      Experiment experiment = (Experiment)cc;
+      experiment = (Experiment)cc;
       // copy the original experiment and put the copy in the workspace
       Experiment experimentCopy = organizer.copyExperiment(experiment);
       // remove all the components from the copy
@@ -590,8 +597,47 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       experimentCopy.addSocietyComponent((SocietyComponent)cc);
       // also put the new society in the workspace
       organizer.addSociety((SocietyComponent)cc);
+      // and add the society to the workspace as a child of the experiment
+      organizer.addChildren(experimentCopy);
+      // edit the society within the newly created experiment
+      experiment = experimentCopy;
+    } else {
+      // if configuring a component in an experiment, get the experiment
+      DefaultMutableTreeNode selectedNode = organizer.getSelectedNode();
+      if (selectedNode.getUserObject() != null &&
+          selectedNode.getUserObject().equals(cc)) {
+        DefaultMutableTreeNode parentNode = 
+          (DefaultMutableTreeNode)selectedNode.getParent();
+        if (parentNode.getUserObject() != null &&
+            parentNode.getUserObject() instanceof Experiment) {
+          experiment = (Experiment)parentNode.getUserObject();
+          // copy the component, so it's modified only in the experiment
+          if (cc instanceof SocietyComponent) {
+            SocietyComponent society = (SocietyComponent)cc;
+            String newName =
+              organizer.generateSocietyName(society.getSocietyName());
+            SocietyComponent societyCopy = (SocietyComponent)society.copy(newName);
+            experiment.removeSocietyComponent();
+            experiment.addSocietyComponent(societyCopy);
+            // remove old society from workspace and add new society
+            organizer.replaceComponent(experiment, society, societyCopy);
+            cc = societyCopy;
+          } else if (cc instanceof RecipeComponent) {
+            RecipeComponent recipe = (RecipeComponent)cc;
+            String newName =
+              organizer.generateRecipeName(recipe.getRecipeName());
+            RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
+            experiment.removeRecipeComponent(recipe);
+            experiment.addRecipeComponent(recipeCopy);
+            // remove old recipe from workspace and add new recipe
+            organizer.replaceComponent(experiment, recipe, recipeCopy);
+            cc = recipeCopy;
+          }
+        }
+      }
     }
     params[1] = cc;
+    params[2] = experiment;
     createTool(CONFIGURATION_BUILDER, PropertyBuilder.class, 
 	       alwaysNew, cc.getShortName(), (ModifiableComponent)cc,
 	       paramClasses, params);
@@ -670,6 +716,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    
   private void runExperimentBuilderWorker(Experiment experiment,
                                           boolean alwaysNew) {
+    // remove the children of the experiment in the tree
+    // to avoid confusion while editing the experiment
+    organizer.removeChildren(experiment);
     Class[] paramClasses = { CSMART.class, Experiment.class };
     Object[] params = new Object[2];
     params[0] = this;
