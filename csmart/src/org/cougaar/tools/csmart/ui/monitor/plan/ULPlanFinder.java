@@ -356,6 +356,8 @@ public class ULPlanFinder extends JDialog {
       successCBox = new JCheckBox("Success");
       successCBox.addActionListener(disableFindNext);
       estimatedButton = new JRadioButton("Estimated");
+      // default to estimated for time ranges
+      estimatedButton.setSelected(true);
       estimatedButton.addActionListener(disableFindNext);
       estimatedButton.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
