@@ -15,15 +15,16 @@ single CSMART application.  See
   <a href="http://www.cougaar.org">http://www.cougaar.org</a>
 for an overview of 
 <a href="http://www.cougaar.org">Cougaar</a>
-and the &quot;<a href="http://www.cougaar.org">Cougaar</a>
-Developers Guide&quot;.  Also see the CSMART User Documentation for a
-full descriptiong of CSMART features and how to use them.
+and the &quot;<a href="http://www.cougaar.org/documents/pdg.html">Cougaar
+Developers Guide</a>&quot;.  Also see the 
+<a href="http://www.cougaar.org/projects/csmart/csmart-users-guide.pdf">
+CSMART User Documentation</a> for a full descriptiong of CSMART features and how to use them.
 <p>
 If you have questions then email:
   <a href="mail:cougaar-support@cougaar.org">cougaar-support@cougaar.org</a>.
 <p>
-These notes are focused for Unix prompts, but the instructions are
-very similar for WinNT.
+These notes are focused for Unix prompts, (but the instructions are
+very similar for WinNT) and a MYSQL database.
 <p>
 
 <p>
@@ -32,51 +33,49 @@ very similar for WinNT.
 
 <font size=+2><b>Contents and Overview:</b></font>
 <ol>
-  <li><a href="#machineReqs">Machine requirements</a>.<br>
+  <li><a href="#machineReqs">Machine Requirements</a>.<br>
     Covers basic requirements, such as JDK 1.3.1 and JSSE.</li><p>
 
-  <li><a href="#dbInst">Database installation</a>.<br>
+  <li><a href="#dbInst">Database Installation</a>.<br>
     Covers installation and configuration of a 
     <a href="http://www.cougaar.org">Cougaar</a>
-    configuration database, plus how to create a "cougaar.rc" passwords 
-    file.</li><p>
+    configuration database</li><p>
 
-  <li><a href="#cougaarInst">Cougaar installation</a>.<br>
+  <li><a href="#cougaarInst">Cougaar Installation</a>.<br>
     Covers installation of
     <a href="http://www.cougaar.org">Cougaar</a>
     and 3rd-party jars, including minor modifications to 
     the file "LDMDomains.ini".</li><p>
 
-  <li><a href="#cougaarEnv">Cougaar environment variables</a>.<br>
+  <li><a href="#cougaarEnv">Cougaar Environment Variables</a>.<br>
     Covers the meaning and setting of the "$COUGAAR_INSTALL_PATH" 
     environment variable.</li><p>
 
-  <li><a href="#minitest">Simple "minitestconfig" test society</a>.<br>
+  <li><a href="#minitest">Simple "minitestconfig" Test Society</a>.<br>
     Shows how to run the small "minitestconfig" society to verify 
     that 
     <a href="http://www.cougaar.org">Cougaar</a>
     was correctly installed.</li><p>
 
-  <li><a href="#httpVisuals">Browser-based views of a running society</a>.<br>
+  <li><a href="#httpVisuals">Browser-based Views of a Running Society</a>.<br>
     Shows how to run the HTTP-based visualizations (Tasks servlet, 
     Inventory Charts, etc).
     </li><p>
 
-  <li><a href="#socMonitor">CSMART monitor of a running society</a>.<br>
+  <li><a href="#socMonitor">CSMART Monitor of a Running Society</a>.<br>
     Shows how to run the CSMART "Society Monitor" visualizations, which
     create graphical views of a running society.</li><p>
 
-  <li><a href="#appServer">AppServer configuration</a>.<br>
+  <li><a href="#appServer">AppServer Configuration</a>.<br>
     Covers the installation of the AppServer, including the required
     modifications to the "Server" startup script and creating a "server.props" properties file.
     </li><p>
 
-  <li><a href="#csmartConfig">CSMART configuration</a>.<br>
-    Covers the installation of CSMART, including the required "xhost +.."
-    commands to allow remote UI popups.
+  <li><a href="#csmartConfig">CSMART Configuration</a>.<br>
+    Covers the installation and setup of CSMART.
     </li><p>
 
-  <li><a href="#csmartRun">Example run of CSMART</a>.<br>
+  <li><a href="#csmartRun">Example Run of CSMART</a>.<br>
     Walks through a step-by-step run of CSMART, from experiment creation,
     running the experiment using the AppServer, to the final results
     analysis.</li><p>
@@ -108,7 +107,7 @@ very similar for WinNT.
     you must download a new release from:
        <a href="http://java.sun.com/j2se/1.3"
        >http://java.sun.com/j2se/1.3</a>.
-    On some Linux machines this may require an upgrade of "glibc".</li><p>
+    On some Linux machines this may require an upgrade of "glibc".<br><br></li>
 
   <li>Make sure you have the JSSE 1.0.2 (Java Secure Sockets Extension) jars
     in your JDK's path:
@@ -121,29 +120,29 @@ very similar for WinNT.
        </pre>
     If you lack these jars then download them from:
        <a href="http://java.sun.com/products/jsse"
-       >http://java.sun.com/products/jsse</a>. Note that Windows often
-       installs JRE in 2 places: under JDK, and also in C:\Program
-       Files\JavaSoft\JRE, and both places need JSSE installed.
+       >http://java.sun.com/products/jsse</a>. <br><br>
+       <b>Windows Note:</b> <i>Windows often installs JRE in 2 places: under JDK, and also 
+       in C:\Program Files\JavaSoft\JRE, and both places need JSSE installed.</i><br><br>
     You may also need to modify the default JSSE security file (in
-    JRE/lib/security/java.security), by
-    adding the line:
-    security.provider.3=com.sun.net.ssl.internal.ssl.Provider.</li><p>
+    JRE/lib/security/java.security), by adding the line:
+    <pre>security.provider.3=com.sun.net.ssl.internal.ssl.Provider</pre><br><br></li>
 
   <li>If you require a local database (Oracle or MySQL) then you must
-    install this database (limited CSMART functionality is available without one).</li><p>
+    install this database.  Currently CSMART has been fully tested on a MySQL database.
+    <br><br></li>
 
   <li>If you are creating a distributed society (more than one machine), or you
     plan to run the CSMART UI from a remote machine, then you should first
     make sure that the machines can communicate with one another.  Checking for
     firewalls and private-networks in advance will save many headaches in the
-    long run.  Note that RMI and HTTP will be used between the machines, plus
-    a channel for database interactions, and a wide range of ports are used.
+    long run.  Note that RMI, HTTP and database interactions will be used between 
+    the machines. Various other ports may possibly be used.
     Further details can be found in the release notes.  For most users this
-    will not pose a problem.</li><p>
+    will not pose a problem.<br><br></li><p>
 
   <li>If you plan to run CSMART from a Windows machine and to control remote 
-    machines that will create UI popups, then you will need to install an
-    "X-Server" such as
+    machines that will create UI popups (No core plugins pop-up UI windows), 
+    then you will need to install an "X-Server" such as
     <a href="http://www.hummingbird.com/products/nc/exceed/">Exceed</a>
      or <a href="xfree86.cygwin.com">XFree (install on cygwin, free)</a>.
     </li><p>
@@ -161,7 +160,7 @@ very similar for WinNT.
    PostGreSQL database is used. Only Oracle and MySQL are supported for CSMART.
    A single database can be shared with other CSMART users, but you
    must first arrange access to the database --
-   these notes detail how to create your own database and "cougaar.rc"
+   these notes detail how to create your own database and <a href="../../doc/details/DataAccess.html">cougaar.rc</a>
    password file.
    <p>
    See <a href="../../doc/details/HeterogeneousDatabase.html">the database writeup</a> for detailed 
@@ -178,13 +177,13 @@ very similar for WinNT.
 
   <li>Download and install MySQL from 
     <a href="http://www.mysql.com/">http://www.mysql.com/</a>.
-    Version "3.23" will work. But on Linux, be sure to use 3.23.45 or
-    better. (For security reasons, be sure to change the default
-    users' passwords.)</li><p>
+    Version "3.23" will work.<br><br>
+    <b>Linux Note:</b> <i>Be sure to use 3.23.45 or better.  Earlier versions contain a bug with table name cases.</i><br><br> 
+    For security reasons, be sure to change the default users' passwords.<br><br></li><p>
 
   <li>You must set a MySQL variable to force table names to be
   lowercase. On Windows, this is the default. But you must set it
-  explicitly for Unix (and it won't hurt on Windows). On Unix, create
+  explicitly for Unix based systems (and it won't hurt on Windows). On Unix, create
   a file "/etc/my.cnf" ("C:\my.cnf" on Windows). In this file, in the
   "mysqld" section, you must add a line, as follows:<pre>
   [mysqld]
@@ -194,7 +193,7 @@ very similar for WinNT.
   you load tables into MySQL, and when you access them, all uppercase
   table names are converted to lowercase. If you see errors where
   tables like GEOLOC are claimed to be missing, this is a likely
-  culprit.</li><p>
+  culprit.</li><br><br><p>
 
   <li>There are two MySQL database snapshots available. One to support
   the military logistics domain plugins, and one for the CSMART
@@ -204,67 +203,71 @@ very similar for WinNT.
     <a href="http://www.cougaar.org">Cougaar</a>
     MySQL database snapshot from the file 
     "csmart/data/CMT-MySQL.ZIP" (after unzipping it).  For later reference when
-    creating your "cougaar.rc", suppose the database will be on host 
+    creating your <a href="../../doc/details/DataAccess.html">cougaar.rc</a>, suppose the database will be on host 
     "myhost".  Be sure you have started the database, using the
     appropriate "mysqld" executable. Here we name
     the database "mycoug":
       <pre>
         $ mysql -u root -p
 	[supply root password set during installation]
-        mysql&gt; create database mycoug
-        mysql&gt; -&gt; ;
+        mysql&gt; create database mycoug;
         mysql&gt; exit;
         $ mysql -u root -p mycoug &lt; [CMT MySQL data dump, eg 1ad_dump_full.sql]
 	[supply root password set during installation]
       </pre><br>
-      Note that if
+      <b>Note</b> If
 	you have a previous database you wish to replace, the command
 	to drop the old database first is "drop database
 	mycoug;". However, most scripts will drop the old tables
 	before loading the new, so this is not strictly
-	necessary. </li><p>
+	necessary. <br><br></li><p>
 
   <li>Create a user for accessing the database. Here we create a user
-  "myname" with password "mypass" who can only access the database
+  <i>myname</i> with password <i>mypass</i> who can only access the database
   locally (and therefore not useful for running a distributed Cougaar
   society). Note that the user must have select, insert, update, create,
   delete, and drop priviledges on the configuration database.
        <pre>
        $ mysql -u root -p
 	[supply root password set during installation]
-       mysql&gt; grant all on mycoug.* to myname@"localhost" identified by 'mypass';
+       mysql&gt; grant all on mycoug.* to <i>myname</i>@"localhost" identified by '<i>mypass</i>';
        mysql&gt; exit;
       </pre>
       You could instead create this user such that any machine in your
       domain can access it (with the security risks that entails), by
-      doing: <pre>myname@"%.foo.com"</pre> instead.
-  </li><p>
+      doing: <pre><i>myname</i>@"%.foo.com"</pre>
+  <br><br></li><p>
 
   <li>Once you have imported the CMT MySQL datafile, be sure to follow
-  the same steps to import the Cougaar domain plugin MySQL database
-  (from CIP/dbms/data/mysql/mysqldump.8.6.txt). You may load this data into
+  the same steps to import the Cougaar domain plugin MySQL database:
+  <pre><a href="#cougaarEnv">$CIP</a>/dbms/data/mysql/mysqldump.8.6.txt</pre> 
+  You may load this data into
   the same database as the CSMART data, or a different one, as you
-  prefer. Just be sure to build your "cougaar.rc" file appropriately.
+  prefer. Just be sure to build your <a href="../../doc/details/DataAccess.html">cougaar.rc</a> file appropriately.
   Note that importing this database requires loading 2 files at least,
   with separate files for the "class 9" data. A recommended minimum is
-  to also load "army_spares" (after unzipping), and then you
-  <em>must</em> also create indexes for that data, by loading
-  "spares_index.txt". Load all such files following the same
-  instructions as above.</li><p>
+  to also load:
+  <pre><a href="#cougaarEnv">$CIP</a>/dbms/data/mysql/army_spares.zip</pre>
+   Then you <em>must</em> also create indexes for that data, by loading:
+  <pre>spares_index.txt</pre>
+  Load all such files following the same instructions as above.<br><br></li><p>
       
-  <li>The database is now ready.  You must now create a "cougaar.rc"
+  <li>The database is now ready.  You must now create a 
+    <a href="../../doc/details/DataAccess.html">cougaar.rc</a>
     for the database users (<a href="http://www.cougaar.org">Cougaar</a>
     and CSMART), which is used to store the database location and
-    username/password information.  See 
-    <a href="../../doc/details/DataAccess.html">the detailed instructions</a> as
-    an example "cougaar.rc" template, plus see 
-    <a href="../../doc/details/HeterogeneousDatabase.html">the database writeup</a>.</li><p>
+    username/password information.  See	
+    <a href="../../doc/details/DataAccess.html">DataAccess</a> 
+    and <a href="../../doc/details/HeterogeneousDatabase.html">the database writeup</a> 
+    for detailed information.
+    <br><br></li><p>
 
-  <li>Copy your "cougaar.rc" to "/tmp" for later use during the installation
+  <li>Copy your <a href="../../doc/details/DataAccess.html">cougaar.rc</a> to "/tmp" for later use during the installation
     of 
-    <a href="http://www.cougaar.org">Cougaar</a>
-    .  All installations must have this "cougaar.rc" to access your
-    database.</li><p>
+    <a href="http://www.cougaar.org">Cougaar</a>.  
+    All installations must have this 
+    <a href="../../doc/details/DataAccess.html">cougaar.rc</a> 
+    to access your database.<br><br></li><p>
   </ol>
 </li><p>
 
@@ -321,7 +324,7 @@ very similar for WinNT.
     start in the "/opt/cougaar" directory.  This path is later set as the
     "$COUGAAR_INSTALL_PATH" <a href="#cougaarEnv">environment variable</a>.</li><p>
 
-  <li>Download "cougaar.zip" and "cougaar-support.zip" from 
+  <li>Download <i>cougaar.zip</i> and <i>cougaar-support.zip</i> from 
     <a href="http://www.cougaar.org">http://www.cougaar.org</a>.
     Place these files in the current directory ("/opt/cougaar"), then
     unpack both files by using:
@@ -355,21 +358,21 @@ very similar for WinNT.
            </li>
       </ol></li><p>
 
-  <li>Next you need to have your "cougaar.rc" available for your
+  <li>Next you need to have your <a href="../../doc/details/DataAccess.html">cougaar.rc</a> available for your
     <a href="http://www.cougaar.org">Cougaar</a>
     installation.  Previously we placed this file in "/tmp",
     and here we move it to "configs/common":
        <pre>
        mv /tmp/cougaar.rc configs/common
        </pre>
-    Make sure you don't have a "cougaar.rc" in your home directory:
+    Make sure you don't have a <a href="../../doc/details/DataAccess.html">cougaar.rc</a> in your home directory:
        <pre>
        ls ~/cougaar.rc ~/.cougaarrc
        </pre>
     Remove or rename any matches to the above files, since these would
     override your "/opt/cougaar/configs/common/cougaar.rc" and could
     contain incorrect database information.  Alternately you can keep
-    your "cougaar.rc" only in your home directory -- just make sure that 
+    your <a href="../../doc/details/DataAccess.html">cougaar.rc</a> only in your home directory -- just make sure that 
     <a href="http://www.cougaar.org">Cougaar</a>
     finds the appropriate file.</li><p>
 
@@ -486,18 +489,14 @@ installation using
       <a href="http://localhost:8800/tasks">http://localhost:8800/tasks</a>
     This should create an HTML page that can be used to view the contents
     of an Agent's Blackboard.  Other pages (or servlets) are available -- see the
-    "
-    <a href="http://www.cougaar.org">Cougaar</a>
-    Developers Guide", available at 
-    <a href="http://www.cougaar.org">http://www.cougaar.org</a>, for 
-    further details.</li><p>
+    <a href="http://www.cougaar.org/documents/pdg.html">Cougaar Developers Guide</a> 
+    for further details.</li><p>
 
   <li>(Optionally) close your browser when you are done.</li><p>
 
   <li>Additionally there are several Java applications that use HTTP
-    to communicate with the society.  See the "
-    <a href="http://www.cougaar.org">Cougaar</a>
-    Developers Guide"
+    to communicate with the society.  See the 
+    <a href="http://www.cougaar.org/documents/pdg.html">Cougaar Developers Guide</a>
     for notes on the "Inventory Manager" and "TPFDD" viewers.  See
     "configs/small-135/small-135.readme.html" for details.</li><p>
   </ol>
@@ -528,13 +527,13 @@ installation using
 
   <li>The Monitor will ask for the URL of the "society".  You can enter the
     hostname of any host that is running a Node of your society, such
-    as: <a href="http://localhost:5555/">http://localhost:5555/</a></li><p>
+    as: <a href="http://localhost:8800/">http://localhost:8800/</a></li><p>
 
   <li>See the CSMART on-line documentation or the User's Guide, section 7 for instructions on how to use the various
     monitor tools.</li><p>
 
   <li>Several of these UIs make use of the 3rd-party 
-    <a href="http://www.research.att.com/sw/tools/graphviz">"Grappa"</a> 
+    <a href="http://www.research.att.com/sw/tools/graphviz">Grappa</a> 
     graphical layout 
     engine, which calls the program <tt>csmart/bin/dot-l386</tt> 
     (<tt>csmart/bin/dot.exe</tt> for WinNT).  Note that large queries 
@@ -566,18 +565,18 @@ installation using
   <li>The AppServer does not use the 
     <a href="http://www.cougaar.org">Cougaar</a>
     environment variables.  Its
-    configuration is fully specified in a ".props" file, which is detailed
-    below and in "server/doc/README".</li><p>
+    configuration is fully specified in a <i>.props</i> file, which is detailed
+    below and in <tt>server/doc/README</tt>.</li><p>
 
-  <li>Copy the template "server/data/unix-server-sample.props" file (or "win-server-sample.props" as appropriate) to
-    "server/bin/server.props".  To copy:
+  <li>Copy the template <tt>server/data/unix-server-sample.props</tt> file (or <tt>win-server-sample.props</tt> as appropriate) to
+    <tt>server/bin/server.props</tt>.  To copy:
         <pre>
         cp server/data/unix-server-sample.props server/bin/server.props
         </pre>
-  <li>You may need to alter your "server/bin/server.props".  This file defines the 
+  <li>You may need to alter your <tt>server/bin/server.props</tt>.  This file defines the 
     <a href="http://www.cougaar.org">Cougaar</a>
     installation 
-    properties -- if you used directory names other than "/opt/cougaar",
+    properties -- if you used directory names other than <tt>/opt/cougaar</tt>,
     or you plan to run a society other than SMALL-135 or SMALL-135-TRANS, 
     then you must modify this file.  For
     example, one can alter the logging level by changing a property in the
@@ -597,7 +596,7 @@ installation using
     A host only needs one AppServer running for CSMART to launch one or more
     Nodes on that host, for one or more experiment run.  CSMART communicates
     with multiple host/AppServers to launch and coordinate a distributed
-    experiment.<br>Note that some Cougaar applications will write text files to the directory from which you start teh AppServer.</li><p>
+    experiment.<br>Note that some Cougaar applications will write text files to the directory from which you start the AppServer.</li><p>
   </ol>
 </li><p>
 
@@ -610,7 +609,7 @@ installation using
    <a href="http://www.cougaar.org">Cougaar</a>
    societies, configuring the
    society to form an "experiment", running the experiment using the AppServer, 
-   and for monitoring the societyand analysis of results.
+   and for monitoring the society and analysis of results.
   <p>
   <ol>
   <p>
@@ -626,15 +625,15 @@ installation using
     Excel that is later used to 
     <a href="#analyzeResults">analyze performance metrics</a>.</li><p>
 
-  <li>For all the machines that you will use as AppServers you must
-    explicitly allow UI popups to appear on your CSMART machine.  This
-    can wait until just before you start a run.  Here we will use
-    "localhost" to run our society and we'll allow localhost popups in
-    advance:
+  <li>For all the machines that you will use as AppServers, and plugins that
+    contain Swing GUI's, you must explicitly allow UI popups to appear 
+    on your CSMART machine.  No core plugins require this step.  This can wait until 
+    just before you start a run.  Here we will use "localhost" to run our society 
+    and we'll allow localhost popups in advance:
        <pre>
        xhost +localhost
        </pre>
-    Note that this must be done even if you're only using
+    <b>Note</b> This must be done even if you're only using
     "localhost". On Windows machines, you may need to edit your local
     xhosts.txt file (see your server documentation).</li><p>
 
@@ -810,30 +809,18 @@ installation using
       that will run Nodes.  See the above installation guide for the
       AppServer.  The AppServer starts with a "Server running" message.</li><p>
 
-    <li><b>NOTE</b>: Additionally X-display permissions must be granted to all remote
-      AppServer hosts that will create popups.  For this test on
-      "localhost" you must do:
-      <pre>
-          xhost +localhost
-      </pre></li><p>
-
     <li>Click on the "Run" button.  A new "Select Results" UI is
     created.</li><p>
-
-    <li>Select a destination directory for CSMART log  and metric results files.  For this
-      test you can just use "/opt/cougaar/csmart".</li><p>
-
-    <li>Click on the "Save Results (Metrics) Storage Directory" button.
-      The "Select Results" popup is closed.</li><p>
 
     <li>At this point the AppServer will print out a "Create Node"
       debugging message.  This output can be ignored.</li><p>
 
-    <li>Two minimized icons are created in the "Experiment Controller"
-      window; one for each host.  Click on both to see the Node
-      output.  These output panels can be streched to 80 columns to
+    <li>Three minimized icons are created in the "Experiment Controller"
+      window; one for each host and one for the GLSInit Servlet.  Click on both 
+      Node Windows to see the Node output.  These output panels can be streched 
+      to 80 columns to
       make viewing easier.  Log files of the output are written to
-      the "Select Results" directory that you specified. You can set
+      the <tt>$CIP/results</tt> directory that you specified. You can set
       notifications to monitor the Node output, filter that output,
       and many other things. See the on-line documentation or section
       6 of the User's Guide for details.</li><p>
@@ -849,8 +836,7 @@ installation using
       debug the configuration by cutting &amp; pasting the command line into a
       console window.  Double-check your "server/bin/server.props".</li><p>
 
-    <li>Eventually UI popups from the society should appear on your
-      display.  Follow the usual SMALL-135 instructions:
+    <li>Click on the GLSInit Window in the Experiment Controller.
       <pre>
         - click on "Publish OPlan"
         - wait about 10 seconds (output in the Node windows slows)
@@ -879,7 +865,7 @@ installation using
     <li>Click on the "Stop" button to kill the Nodes and finish the
       experiment run.</li><p>
 
-    <li>The "OplanInit" and other UI popups will close. The AppServer notes "Node finished &lt;name&gt;".</li><p>
+    <li>The AppServer notes "Node finished &lt;name&gt;".</li><p>
 
     <li>The AppServer can now be killed by using control-C, or you can
       leave the AppServer running if you are planning another run.</li><p>
