@@ -2998,7 +2998,7 @@ public class PopulateDb extends PDbBase {
     if (result == null) {
       String componentType = data.getType();
       if (componentType.equals(ComponentData.SOCIETY)) {
-	result = ComponentData.SOCIETY + "|" + data.getName();
+	result = getSocietyAlibId(data.getName());
       } else if (componentType.equals(ComponentData.HOST)) {
 	result = getHostAlibId(data.getName());
       } else if (componentType.equals(ComponentData.AGENT)) {
@@ -3059,6 +3059,13 @@ public class PopulateDb extends PDbBase {
    **/
   public static String getHostAlibId(String hostName) {
     return ComponentData.HOST + "|" + hostName;
+  }
+
+  /**
+   * The convention for a Society's Alib ID is to prepend society|
+   **/
+  public static String getSocietyAlibId(String societyName) {
+    return ComponentData.SOCIETY + "|" + societyName;
   }
 
   /**
