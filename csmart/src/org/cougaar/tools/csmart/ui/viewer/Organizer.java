@@ -620,20 +620,22 @@ public class Organizer extends JScrollPane {
       return;
     experimentNames.remove(originalName);
     experiment.setName(newName);
-    GUIUtils.timeConsumingTaskStart(organizer);
-    try {
-      new Thread("SaveExperiment") {
+    if (experiment.isModified()) {
+      GUIUtils.timeConsumingTaskStart(organizer);
+      try {
+	new Thread("SaveExperiment") {
           public void run() {
             experiment.saveToDb(saveToDbConflictHandler); // save under new name
             GUIUtils.timeConsumingTaskEnd(organizer);
           }
         }.start();
-    } catch (RuntimeException re) {
-      if(log.isErrorEnabled()) {
-        log.error("Runtime exception saving experiment", re);
+      } catch (RuntimeException re) {
+	if(log.isErrorEnabled()) {
+	  log.error("Runtime exception saving experiment", re);
+	}
+	GUIUtils.timeConsumingTaskEnd(organizer);
       }
-      GUIUtils.timeConsumingTaskEnd(organizer);
-    }
+    } // end of block to see if expt was modified.
     experimentNames.add(newName);
     model.nodeChanged(node);
   }
