@@ -146,7 +146,6 @@ public class CMTAgent
     assetData.setType(AgentAssetData.ORG);
 
     String orgClass = queryOrgClass();
-    System.out.println("Org Class: " + orgClass);
     assetData.setAssetClass(orgClass);
     StringBuffer assemblyMatch = new StringBuffer();
     assemblyMatch.append("in (");
@@ -188,7 +187,6 @@ public class CMTAgent
 	  rd.setRole(role);
 	  if (startDate != null) {
             rd.setStartTime(startDate.getTime());
-            System.out.println("setting start time to " + startDate);
           }
           if (endDate != null) rd.setEndTime(endDate.getTime());
 	  assetData.addRelationship(rd);
@@ -283,7 +281,6 @@ public class CMTAgent
       throw new RuntimeException("Error" + e);
     }
 
-    System.out.println("Adding AssetData");    
     data = addAssetData(data);
 
     return data;

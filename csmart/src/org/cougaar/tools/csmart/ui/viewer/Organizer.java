@@ -1442,7 +1442,7 @@ public class Organizer extends JScrollPane {
         }
       }.start();
     } catch (RuntimeException e) {
-      System.out.println("Runtime exception creating experiment: " + e);
+      System.err.println("Runtime exception creating experiment: " + e);
       e.printStackTrace();
     }
   }
@@ -1460,17 +1460,17 @@ public class Organizer extends JScrollPane {
       substitutions.put(":trial_id", trialId);
       Statement stmt = conn.createStatement();
       String query = DBUtils.getQuery(EXPT_ASSEM_QUERY, substitutions);
-      System.out.println("Organizer: getTrialAssemblyIds: " + query);
+      //      System.out.println("Organizer: getTrialAssemblyIds: " + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         String asmid = rs.getString(1);
-        System.out.println("Assembly ID: " + asmid);	  
+	//        System.out.println("Assembly ID: " + asmid);	  
         assemblyIds.add(asmid);
       }
       rs.close();
       stmt.close();
     } catch (SQLException se) {
-      System.out.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception: " + se);
       se.printStackTrace();
     }
     return assemblyIds;
@@ -1509,7 +1509,7 @@ public class Organizer extends JScrollPane {
       substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
       String query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
-      System.out.println("Organizer: Nodes query: " + query);
+      //      System.out.println("Organizer: Nodes query: " + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         nodes.add(rs.getString(1));
@@ -1518,7 +1518,7 @@ public class Organizer extends JScrollPane {
       stmt.close();
       conn.close();
     } catch (SQLException se) {      
-      System.out.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception: " + se);
       se.printStackTrace();
     }
     return nodes;
@@ -1535,7 +1535,7 @@ public class Organizer extends JScrollPane {
       substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
       String query = DBUtils.getQuery(EXPT_HOST_QUERY, substitutions);
-      System.out.println("Organizer: Get hosts query: " + query);
+      //      System.out.println("Organizer: Get hosts query: " + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         hosts.add(rs.getString(1));
@@ -1544,7 +1544,7 @@ public class Organizer extends JScrollPane {
       stmt.close();
       conn.close();
     } catch (SQLException se) {      
-      System.out.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception: " + se);
       se.printStackTrace();
     }
     return hosts;
@@ -1562,7 +1562,7 @@ public class Organizer extends JScrollPane {
       substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
       String query = DBUtils.getQuery("queryHostNodes", substitutions);
-      System.out.println(query);
+      //      System.out.println(query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
 	String hostName = rs.getString(1);
@@ -1586,7 +1586,7 @@ public class Organizer extends JScrollPane {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      System.out.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception: " + se);
       se.printStackTrace();
     }
   }
@@ -1611,7 +1611,7 @@ public class Organizer extends JScrollPane {
         // Loop Query for every node.
         substitutions.put(":parent_name", nodeName);
         String query = DBUtils.getQuery("queryComponents", substitutions);
-        System.out.println("Organizer: Get agents: " + query);
+	//        System.out.println("Organizer: Get agents: " + query);
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
           // Find AgentComponent.
@@ -1629,7 +1629,7 @@ public class Organizer extends JScrollPane {
       stmt.close();
       conn.close();   
     } catch (SQLException se) {
-      System.out.println("Caught SQL exception: " + se);
+      System.err.println("Caught SQL exception: " + se);
       se.printStackTrace();
     }
   }
@@ -1646,7 +1646,7 @@ public class Organizer extends JScrollPane {
                                    String experimentId,
                                    String trialId,
                                    boolean isCloned) {
-    System.out.println("Creating society");
+    //    System.out.println("Creating society");
     // get assembly ids for trial
     ArrayList assemblyIds = getTrialAssemblyIds(experimentId, trialId);
     String assemblyMatch = getAssemblyMatch(assemblyIds);
@@ -1691,7 +1691,7 @@ public class Organizer extends JScrollPane {
         }
       });
     } catch (RuntimeException e) {
-      System.out.println(e);
+      System.err.println(e);
       e.printStackTrace();
     }
   }
@@ -1716,7 +1716,7 @@ public class Organizer extends JScrollPane {
         try {
           inDatabase = ExperimentDB.isExperimentNameInDatabase(name);
         } catch (RuntimeException e) {
-          System.out.println(e);
+          System.err.println(e);
         }
         if (inDatabase) {
           int answer = JOptionPane.showConfirmDialog(this,
@@ -1896,7 +1896,7 @@ public class Organizer extends JScrollPane {
 	    }
 	  } // end of for loop
 	} catch (Exception e) {
-	  System.out.println("Organizer: can't read file: " + f);
+	  System.err.println("Organizer: can't read file: " + f);
 	} finally {
 	  ois.close();
 	} 	  
@@ -2313,7 +2313,7 @@ public class Organizer extends JScrollPane {
 	  String name = (String) getNameMethod.invoke(things[i], noArgs);
 	  add(name);
 	} catch (Exception e) {
-	  System.out.println("Reading: " + things[i]);
+	  System.err.println("Reading: " + things[i]);
 	  e.printStackTrace();
 	}
       }
