@@ -34,6 +34,10 @@ import org.cougaar.tools.csmart.society.file.AgentFileComponent;
 public class SocietyFileComponent
   extends SocietyBase {
 
+  protected static final String DESCRIPTION_RESOURCE_NAME = "/org/cougaar/tools/csmart/society/society-base-description.html";
+  protected static final String BACKUP_DESCRIPTION =
+    "A Society created from files: Agents, Binders, Plugins, etc.";
+
   private String name;
   private ComponentDescription[] desc;
   private String[] filenames = null;

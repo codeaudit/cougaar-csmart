@@ -25,6 +25,10 @@ import org.cougaar.tools.csmart.society.SocietyBase;
 public class SocietyUIComponent
   extends SocietyBase {
 
+  protected static final String DESCRIPTION_RESOURCE_NAME = "/org/cougaar/tools/csmart/society/society-base-description.html";
+  protected static final String BACKUP_DESCRIPTION =
+    "A Society created from the UI: Agents, Binders, Plugins, etc.";
+
   public SocietyUIComponent(String name) {
     super(name);
   }
