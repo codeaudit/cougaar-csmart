@@ -40,7 +40,7 @@ public class SocietyCDataComponent extends SocietyBase {
   public SocietyCDataComponent(ComponentData cdata, String assemblyId) {
     super(cdata.getName());
     this.cdata = cdata;
-    this.assemblyId = assemblyId;
+    this.oldAssemblyId = assemblyId;
   }
 
   public void initProperties() {
