@@ -296,7 +296,7 @@ public abstract class SocietyBase
       PopulateDb pdb = new PopulateDb(oldCMTAsbid, getSocietyName(), currAssID, GUIUtils.createSaveToDbConflictHandler(null));
       pdb.populateCSA(SocietyComponentCreator.getComponentData(this));
       // Set the new CSA assembly ID on the society - get it from the PDB
-      setAssemblyId(pdb.getCSAAssemblyId());
+      setAssemblyId(pdb.getCMTAssemblyId());
       // What about fixAssemblies?
       // is it really populateCSA?
       pdb.close();
