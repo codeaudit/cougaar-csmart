@@ -235,6 +235,29 @@ public interface ComponentData {
    */
   int leafCount();
 
+
+  /**
+   * Returns all asset data for this agent.
+   * Asset data is used to construct the
+   * Prototype-ini files.
+   *
+   * @see org.cougaar.tools.csmart.ui.component.AgentAssetData
+   * @return Asset Data for this agent
+   */
+  AgentAssetData getAgentAssetData();
+
+  /**
+   * Adds all asset data for this agent.
+   *
+   * @see org.cougaar.tools.csmart.ui.component.AgentAssetData
+   * @param data Full AgentAssetData object.
+   */
+  void addAgentAssetData(AgentAssetData data);
+
+
+  // I think everything below this point will be removed.
+  // It is now part of the AgentAssetData object.
+
   /**
    * Returns all TimePhasedData objects known to this
    * component.

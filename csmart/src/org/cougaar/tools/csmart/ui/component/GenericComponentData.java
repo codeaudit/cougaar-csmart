@@ -40,6 +40,7 @@ public class GenericComponentData implements ComponentData {
   transient private ConfigurableComponent owner = null;
   private ArrayList leafComponents = null;
   private ArrayList timePhasedData = null;
+  private AgentAssetData assetData = null;
 
   public GenericComponentData() {
     children = new ArrayList();
@@ -158,6 +159,14 @@ public class GenericComponentData implements ComponentData {
 
   public int leafCount() {
     return leafComponents.size();
+  }
+
+  public AgentAssetData getAgentAssetData() {
+    return assetData;
+  }
+
+  public void addAgentAssetData(AgentAssetData data) {
+    this.assetData = data;
   }
 
   // For testing, dump out the tree from here down
