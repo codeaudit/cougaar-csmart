@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.ui.console;
 
 import java.awt.Color;
 import java.io.*;
+import java.util.Hashtable;
 import javax.swing.JRadioButton;
 import javax.swing.SwingUtilities;
 import javax.swing.text.SimpleAttributeSet;
@@ -55,6 +56,7 @@ public class ConsoleNodeListener implements NodeEventListener {
   private String notifyCondition = null;
   private boolean haveError = false;
   private ConsoleTextPane textPane;
+  private static Hashtable colorDescriptions;
 
   public ConsoleNodeListener(CSMARTConsole console,
 			     NodeComponent nodeComponent,
@@ -87,6 +89,22 @@ public class ConsoleNodeListener implements NodeEventListener {
     StyleConstants.setForeground(atts[2], Color.green);
     atts[3] = new SimpleAttributeSet();
     StyleConstants.setForeground(atts[3], Color.blue);
+
+    if (colorDescriptions == null) {
+      colorDescriptions = new Hashtable();
+      colorDescriptions.put(CSMARTConsole.busyStatus, "extremely busy");
+      colorDescriptions.put(CSMARTConsole.highBusyStatus, "very busy");
+      colorDescriptions.put(CSMARTConsole.mediumHighBusyStatus, "busy");
+      colorDescriptions.put(CSMARTConsole.mediumBusyStatus, "somewhat busy");
+      colorDescriptions.put(CSMARTConsole.mediumLowBusyStatus, "somewhat idle");
+      colorDescriptions.put(CSMARTConsole.lowBusyStatus, "idle");
+      colorDescriptions.put(CSMARTConsole.idleStatus, "node created");
+      colorDescriptions.put(CSMARTConsole.errorStatus, "node destroyed");
+      colorDescriptions.put(CSMARTConsole.noAnswerStatus, "no answer");
+      colorDescriptions.put(CSMARTConsole.unknownStatus, "unknown");
+      colorDescriptions.put(CSMARTConsole.stdErrStatus, "error");
+      colorDescriptions.put(CSMARTConsole.notifyStatus, "notify");
+    }
   }
 
   public void setIdleChart(JCChart chart, ChartDataModel dataModel) {
@@ -360,9 +378,12 @@ public class ConsoleNodeListener implements NodeEventListener {
     if (!haveError) {
       statusButton.setIcon(new ColoredCircle(statusColor, 20));
       statusButton.setSelectedIcon(new SelectedColoredCircle(statusColor, 20));
-      //      String s = statusButton.getToolTipText((MouseEvent)null);
-      // TODO: parse string, strip off string following last colon
-      // and add in description of this color
+      String s = statusButton.getToolTipText((java.awt.event.MouseEvent)null);
+      int index = s.lastIndexOf(':');
+      if (index != -1) {
+        s = s.substring(0, index+1) + (String)colorDescriptions.get(statusColor);
+        statusButton.setToolTipText(s);
+      }
     } 
   }
 

@@ -1046,6 +1046,41 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       setPropertyOfNode(tree, "CmdLineArgs", s);
   }
 
+  /**
+   * Select a node in the host tree.
+   */
+
+  public void selectNodeInHostTree(String nodeName) {
+    DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
+    DefaultMutableTreeNode root = 
+      (DefaultMutableTreeNode)model.getRoot();
+    TreePath path = null;
+    Enumeration nodes = root.breadthFirstEnumeration();
+    while (nodes.hasMoreElements()) {
+      DefaultMutableTreeNode node = 
+ 	(DefaultMutableTreeNode)nodes.nextElement();
+        if (node.getUserObject() instanceof ConsoleTreeObject) {
+          ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
+          if (cto.isNode()) {
+            if (cto.getName().equals(nodeName)) {
+              path = new TreePath(node.getPath());
+              break;
+            }
+          }
+        }
+    }
+    if (path != null)
+      hostTree.setSelectionPath(path);
+  }
+
+  public void addHostTreeSelectionListener(TreeSelectionListener listener) {
+    hostTree.addTreeSelectionListener(listener);
+  }
+
+  public void removeHostTreeSelectionListener(TreeSelectionListener listener) {
+    hostTree.removeTreeSelectionListener(listener);
+  }
+
   private DefaultTreeModel createModel(final Experiment experiment, DefaultMutableTreeNode node, boolean askKids) {
     return new DefaultTreeModel(node, askKids) {
 	public void valueForPathChanged(TreePath path, Object newValue) {

@@ -32,12 +32,14 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.swing.*;
+import javax.swing.tree.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.ui.builder.PropertyEditorPanel;
 import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.ui.configuration.ConsoleTreeObject;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
 import org.cougaar.tools.csmart.ui.experiment.Trial;
@@ -359,6 +361,7 @@ public class CSMARTConsole extends JFrame {
     // create tabbed panes for configuration information (not editable)
     hostConfiguration = new HostConfigurationBuilder(experiment);
     hostConfiguration.update(); // set host configuration to display 1st trial
+    hostConfiguration.addHostTreeSelectionListener(myTreeListener);
     JInternalFrame jif = new JInternalFrame("Configuration",
                                             true, false, true, true);
     jif.getContentPane().add(hostConfiguration);
@@ -524,7 +527,7 @@ public class CSMARTConsole extends JFrame {
     JRadioButton button = 
       new JRadioButton(new ColoredCircle(unknownStatus, 20));
     button.setSelectedIcon(new SelectedColoredCircle(unknownStatus, 20));
-    button.setToolTipText(nodeName + ":" + hostName);
+    button.setToolTipText(nodeName + ":" + hostName + ":unknown");
     button.setActionCommand(nodeName);
     button.setFocusPainted(false);
     button.setBorderPainted(false);
@@ -557,8 +560,7 @@ public class CSMARTConsole extends JFrame {
     desktop.getNodeFrame(selectedNodeName).displayAbout();
   }
 
-  private void displayNodeFrame(MouseEvent e) {
-    String nodeName = ((JRadioButton)e.getSource()).getActionCommand();
+  private void displayNodeFrame(String nodeName) {
     JInternalFrame frame = desktop.getNodeFrame(nodeName);
     try {
       frame.setIcon(false);
@@ -585,16 +587,19 @@ public class CSMARTConsole extends JFrame {
   /**
    * Listener on the node status buttons.
    * Right click pops-up a menu with the "About" node menu item.
-   * Left click opens the node standard out frame.
+   * Left click opens the node standard out frame,
+   * and highlights the node in the configuration tree.
    */
 
   private MouseListener myMouseListener = new MouseAdapter() {
     public void mouseClicked(MouseEvent e) {
       if (e.isPopupTrigger()) 
         doPopup(e);
-      //      else if (e.getClickCount() == 2) 
-      else
-        displayNodeFrame(e);
+      else {
+        String nodeName = ((JRadioButton)e.getSource()).getActionCommand();
+        displayNodeFrame(nodeName);
+        selectNodeInHostTree(nodeName);
+      }
     }
     public void mousePressed(MouseEvent e) {
       if (e.isPopupTrigger()) doPopup(e);
@@ -1377,59 +1382,39 @@ public class CSMARTConsole extends JFrame {
     return sb.toString();
   }
 
-// the following two methods enable selection interactions
-// with the host configuration tree; currently not used
-//  /**
-//   * TreeSelectionListener interface.
-//   * If user selects an agent in the "Hosts" tree,
-//   * then pop the tabbed pane for that node to the foreground, and
-//   * select the node status button.
-//   */
-//
-//   public void valueChanged(TreeSelectionEvent event) {
-//     TreePath path = event.getPath();
-//     if (path == null) return;
-//     DefaultMutableTreeNode treeNode =
-//       (DefaultMutableTreeNode)path.getLastPathComponent();
-//     ConsoleTreeObject cto = (ConsoleTreeObject)treeNode.getUserObject();
-//     if (!cto.isNode())
-//       return; // ignore selecting if it's not a node
-//     String nodeName = 
-//       ((ConsoleTreeObject)treeNode.getUserObject()).getName();
-//     // select tabbed pane if one exists
-//     selectTabbedPane(nodeName);
-//     selectStatusButton(nodeName);
-//   }
-//
-//  /**
-//   * Select node in host tree.
-//   */
-//
-//   private void selectNodeInHostTree(String nodeName) {
-//     DefaultTreeModel model = (DefaultTreeModel)hostTree.getModel();
-//     DefaultMutableTreeNode root = 
-//       (DefaultMutableTreeNode)model.getRoot();
-//     TreePath path = null;
-//     Enumeration nodes = root.breadthFirstEnumeration();
-//     while (nodes.hasMoreElements()) {
-//       DefaultMutableTreeNode node = 
-// 	(DefaultMutableTreeNode)nodes.nextElement();
-//       if (node.getUserObject() instanceof ConsoleTreeObject) {
-// 	ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
-// 	if (cto.isNode()) {
-// 	  if (cto.getName().equals(nodeName)) {
-// 	    path = new TreePath(node.getPath());
-// 	    break;
-// 	  }
-// 	}
-//       }
-//     }
-//     if (path != null) {
-//       hostTree.removeTreeSelectionListener(this);
-//       hostTree.setSelectionPath(path);
-//       hostTree.addTreeSelectionListener(this);
-//     }
-//   }
+  /**
+   * TreeSelectionListener interface.
+   * If user selects an agent in the "Hosts" tree,
+   * then pop the pane for that node to the foreground, and
+   * select the node status button.
+   */
+  
+  private TreeSelectionListener myTreeListener = new TreeSelectionListener() {
+    public void valueChanged(TreeSelectionEvent event) {
+      TreePath path = event.getPath();
+      if (path == null) return;
+      DefaultMutableTreeNode treeNode =
+        (DefaultMutableTreeNode)path.getLastPathComponent();
+      ConsoleTreeObject cto = (ConsoleTreeObject)treeNode.getUserObject();
+      if (!cto.isNode())
+        return; // ignore selecting if it's not a node
+      String nodeName = 
+      ((ConsoleTreeObject)treeNode.getUserObject()).getName();
+      displayNodeFrame(nodeName);
+      selectStatusButton(nodeName);
+    }
+  };
+
+  /**
+   * Select node in host tree; called when user selects corresponding
+   * pane or status button.
+   */
+
+  private void selectNodeInHostTree(String nodeName) {
+    hostConfiguration.removeHostTreeSelectionListener(myTreeListener);
+    hostConfiguration.selectNodeInHostTree(nodeName);
+    hostConfiguration.addHostTreeSelectionListener(myTreeListener);
+  }
 
   public static void main(String[] args) {
     CSMARTConsole console = new CSMARTConsole(null);
@@ -1455,10 +1440,16 @@ public class CSMARTConsole extends JFrame {
     public void internalFrameDeiconified(InternalFrameEvent e) {
       frameSelected(e);
     }
+    /**
+     * When frame is selected, s
+     * select status button and node in configuration tree.
+     */
     private void frameSelected(InternalFrameEvent e) {
       ConsoleInternalFrame frame = (ConsoleInternalFrame)e.getInternalFrame();
       NodeComponent node = frame.getNodeComponent();
-      selectStatusButton(node.getShortName());
+      String nodeName = node.getShortName();
+      selectStatusButton(nodeName);
+      selectNodeInHostTree(nodeName);
     }
   }
 
