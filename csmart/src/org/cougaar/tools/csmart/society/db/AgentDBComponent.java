@@ -140,6 +140,7 @@ public class AgentDBComponent
    *
    */
   public void initProperties() {
+    initProperties();
     String componentID = name;
     String componentCategory = "agent";
     propName = addProperty(PROP_AGENT_NAME, name,
