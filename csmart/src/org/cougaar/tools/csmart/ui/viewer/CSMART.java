@@ -268,7 +268,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       });
     fileMenu.add(deleteExperimentFromDatabaseMenuItem);
     deleteRecipeFromDatabaseMenuItem = 
-      new JMenuItem(ActionUtil.DELETE_EXPERIMENT_FROM_DATABASE_ACTION);
+      new JMenuItem(ActionUtil.DELETE_RECIPE_FROM_DATABASE_ACTION);
     deleteRecipeFromDatabaseMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
           organizer.deleteRecipeFromDatabase();
