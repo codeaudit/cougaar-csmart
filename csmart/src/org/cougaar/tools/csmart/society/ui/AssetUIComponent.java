@@ -94,38 +94,19 @@ public class AssetUIComponent
 
     // Add Property Groups.
     iter = 
-      ((Collection)getDescendentsOfClass(PropGroupBase.class)).iterator();
+      ((Collection)getDescendentsOfClass(ContainerBase.class)).iterator();
     while(iter.hasNext()) {
-      PropGroupBase pg = (PropGroupBase)iter.next();
-      assetData.addPropertyGroup(pg.getPropGroupData());
+      ContainerBase container = (ContainerBase)iter.next();
+      if(container.getShortName().equals("Property Groups")) {
+        for(int i=0; i < container.getChildCount(); i++) {
+          PropGroupBase pg = (PropGroupBase)container.getChild(i);
+          assetData.addPropertyGroup(pg.getPropGroupData());
+        }
+      }
     }
 
     data.addAgentAssetData(assetData);
     return data;
-  }
-
-  private void addRelationships(RelationshipData[] rel) {
-    ContainerBase relContainer = new ContainerBase("Relationships");
-    relContainer.initProperties();
-    addChild(relContainer);
-    for(int i=0; i < rel.length; i++) {
-      RelationshipBase newR = new RelationshipBase(rel[i], i);
-      newR.initProperties();
-      relContainer.addChild(newR);
-    }
-  }
-
-  private void addPropGroups(AgentAssetData aad) {
-    Iterator iter = aad.getPropGroupsIterator();
-    while(iter.hasNext()) {
-      PropGroupData pgd = (PropGroupData)iter.next();
-      PropGroupBase newPG = new PropGroupBase(pgd);
-      if(log.isDebugEnabled()) {
-        log.debug("Adding: " + pgd.getName());
-      }
-      newPG.initProperties();
-      addChild(newPG);
-    }
   }
 
 }

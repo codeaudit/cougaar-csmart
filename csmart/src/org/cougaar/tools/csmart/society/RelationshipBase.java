@@ -59,8 +59,7 @@ public class RelationshipBase
   private Property propSupported;
   private RelationshipData relationship;
 
-  public RelationshipBase (RelationshipData relationship, int index){
-    //    super(relationship.getItem());
+  public RelationshipBase (RelationshipData relationship) {
     super(relationship.getSupported());
     createLogger();
     this.relationship = relationship;

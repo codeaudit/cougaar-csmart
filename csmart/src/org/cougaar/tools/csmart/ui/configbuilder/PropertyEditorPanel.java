@@ -44,6 +44,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
+import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
@@ -60,10 +61,13 @@ import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.society.PluginComponent;
 import org.cougaar.tools.csmart.society.PropGroupBase;
 import org.cougaar.tools.csmart.society.PropGroupComponent;
+import org.cougaar.tools.csmart.society.RelationshipBase;
+import org.cougaar.tools.csmart.society.RelationshipComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.ui.AgentUIComponent;
 import org.cougaar.tools.csmart.society.ui.AssetUIComponent;
 import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
+import org.cougaar.tools.csmart.ui.util.ComboDialog;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -85,7 +89,8 @@ public class PropertyEditorPanel extends JPanel
   JPopupMenu pluginsMenu;
   JPopupMenu pluginMenu;
   JPopupMenu assetMenu;
-  JPopupMenu pgMenu;
+  JPopupMenu propertyGroupsMenu;
+  JPopupMenu propertyGroupMenu;
   JPopupMenu relationshipsMenu;
   JPopupMenu defaultMenu;
   DefaultMutableTreeNode root;
@@ -145,6 +150,12 @@ public class PropertyEditorPanel extends JPanel
           addPropertyGroup();
         }
       };
+  private AbstractAction addRelationshipAction =
+    new AbstractAction("Add Relationship") {
+        public void actionPerformed(ActionEvent e) {
+          addRelationship();
+        }
+      };
   private AbstractAction addParameterAction =
     new AbstractAction("Add Parameter") {
         public void actionPerformed(ActionEvent e) {
@@ -189,16 +200,20 @@ public class PropertyEditorPanel extends JPanel
   };
 
   private Object[] assetMenuItems = {
-    addPropertyGroupAction,
     addParameterAction
   };
 
-  private Object[] pgMenuItems = {
-    addParameterAction,
-    removePropertyGroupAction
+  private Object[] propertyGroupsMenuItems = {
+    addPropertyGroupAction
   };
 
   private Object[] relationshipsMenuItems = {
+    addRelationshipAction
+  };
+
+  private Object[] propertyGroupMenuItems = {
+    addParameterAction,
+    removePropertyGroupAction
   };
 
   private Object[] defaultMenuItems = {
@@ -274,9 +289,10 @@ public class PropertyEditorPanel extends JPanel
     pluginsMenu = new JPopupMenu(); // add plugin
     pluginMenu = new JPopupMenu();  // delete (plugin)
     assetMenu = new JPopupMenu();   // add property group, add parameter
-    pgMenu = new JPopupMenu();      // delete (property group)
+    propertyGroupMenu = new JPopupMenu();      // delete (property group)
     defaultMenu = new JPopupMenu(); // add parameter
     relationshipsMenu = new JPopupMenu(); // add relationship
+    propertyGroupsMenu = new JPopupMenu(); // add property group
     for (int i = 0; i < societyMenuItems.length; i++)
       societyMenu.add((Action)societyMenuItems[i]);
     for (int i = 0; i < agentMenuItems.length; i++)
@@ -287,10 +303,12 @@ public class PropertyEditorPanel extends JPanel
       pluginMenu.add((Action)pluginMenuItems[i]);
     for (int i = 0; i < assetMenuItems.length; i++)
       assetMenu.add((Action)assetMenuItems[i]);
-    for (int i = 0; i < pgMenuItems.length; i++)
-      pgMenu.add((Action)pgMenuItems[i]);
     for (int i = 0; i < relationshipsMenuItems.length; i++)
       relationshipsMenu.add((Action)relationshipsMenuItems[i]);
+    for (int i = 0; i < propertyGroupsMenuItems.length; i++)
+      propertyGroupsMenu.add((Action)propertyGroupsMenuItems[i]);
+    for (int i = 0; i < propertyGroupMenuItems.length; i++)
+      propertyGroupMenu.add((Action)propertyGroupMenuItems[i]);
     for (int i = 0; i < defaultMenuItems.length; i++)
       defaultMenu.add((Action)defaultMenuItems[i]);
     configCompPanel.setLeftComponent(new JScrollPane(tree));
@@ -545,15 +563,20 @@ public class PropertyEditorPanel extends JPanel
       societyMenu.show(tree, x, y);
     else if (o instanceof AgentComponent)
       agentMenu.show(tree, x, y);
-    else if (o instanceof ContainerComponent &&
-             ((ModifiableComponent)o).getShortName().equals("Plugins"))
-      pluginsMenu.show(tree, x, y);
-    else if (o instanceof AssetComponent)
+    else if (o instanceof ContainerComponent) {
+      String name = ((ModifiableComponent)o).getShortName();
+      if (name.equals("Plugins"))
+        pluginsMenu.show(tree, x, y);
+      else if (name.equals("Relationships"))
+        relationshipsMenu.show(tree, x, y);
+      else if (name.equals("Property Groups"))
+        propertyGroupsMenu.show(tree, x, y);
+    } else if (o instanceof AssetComponent)
       assetMenu.show(tree, x, y);
     else if (o instanceof PluginComponent)
       pluginMenu.show(tree, x, y);
     else if (o instanceof PropGroupComponent)
-      pgMenu.show(tree, x, y);
+      propertyGroupMenu.show(tree, x, y);
     else
       defaultMenu.show(tree, x, y); // add parameter
   }
@@ -595,9 +618,21 @@ public class PropertyEditorPanel extends JPanel
     agentComponent.addChild(pluginContainer);
 
     AssetComponent asset = (AssetComponent)new AssetUIComponent();
-    createTreeNode(asset, agentNode);
+    PropertyTreeNode assetNode = createTreeNode(asset, agentNode);
     asset.initProperties();
     agentComponent.addChild(asset);
+
+    ContainerComponent pgContainer =
+      (ContainerComponent)new ContainerBase("Property Groups");
+    createTreeNode(pgContainer, assetNode);
+    pgContainer.initProperties();
+    asset.addChild(pgContainer);
+
+    ContainerComponent relContainer =
+      (ContainerComponent)new ContainerBase("Relationships");
+    createTreeNode(relContainer, assetNode);
+    relContainer.initProperties();
+    asset.addChild(relContainer);
   }
 
   public void removeAgent() {
@@ -668,11 +703,13 @@ public class PropertyEditorPanel extends JPanel
       (PluginComponent)new PluginBase(name, className);
     DefaultMutableTreeNode selNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-    createTreeNode(plugin, selNode);
+    DefaultMutableTreeNode pluginNode = createTreeNode(plugin, selNode);
     plugin.initProperties();
     ModifiableComponent cc = 
       (ModifiableComponent)nodeToComponent.get(selNode);
     cc.addChild(plugin);
+    // select the new node
+    tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(pluginNode));
   }
 
   public void removePlugin() {
@@ -688,66 +725,80 @@ public class PropertyEditorPanel extends JPanel
   /**
    * Create component and tree node for new property group.
    */
-  // TODO: need to determine how to organize classes so that
-  // classes created from INI files, and 
-  // classes created from database, and
-  // classes created from user edits
-  // share a common base
   public void addPropertyGroup() {
-    JPanel panel = new JPanel(new GridBagLayout());
-    int x = 0;
-    int y = 0;
-    panel.add(new JLabel("Property Group"),
-              new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.NONE,
-                                     new Insets(0, 5, 0, 5), 0, 0));
     if (propertyGroups == null) {
       propertyGroups = new Vector(wellKnownPropertyGroups.length);
       for (int i = 0; i < wellKnownPropertyGroups.length; i++)
         propertyGroups.add(wellKnownPropertyGroups[i]);
     }
-    JComboBox cb = new JComboBox(propertyGroups);
-    cb.setEditable(true);
-    cb.setPreferredSize(new Dimension(200, 
-                                      (int)cb.getPreferredSize().getHeight()));
-    panel.add(cb,
-              new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
-                                     GridBagConstraints.WEST,
-                                     GridBagConstraints.HORIZONTAL,
-                                     new Insets(0, 0, 0, 5), 0, 0));
-    int result = JOptionPane.showConfirmDialog(this, panel, "Property Group",
-                                               JOptionPane.OK_CANCEL_OPTION,
-                                               JOptionPane.PLAIN_MESSAGE);
-    if (result != JOptionPane.OK_OPTION)
+    String pgName =
+      (String)ComboDialog.showDialog(this, "Property Group", propertyGroups);
+    if (pgName == null)
       return;
-    String pgName = (String)cb.getSelectedItem();
-    int pgIndex = cb.getSelectedIndex();
-    pgName = pgName.trim();
-    if (pgName.length() == 0)
-      return;
+    int index = propertyGroups.indexOf(pgName);
+    if (index == -1) {
+      pgName = pgName.trim();
+      if (pgName.length() == 0)
+        return;
+    }
     DefaultMutableTreeNode selNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-    AssetComponent assetComponent = 
-      (AssetComponent)nodeToComponent.get(selNode);
     PropGroupData pgData = new PropGroupData(pgName);
     PropGroupComponent pg = (PropGroupComponent)new PropGroupBase(pgData);
     DefaultMutableTreeNode pgNode = createTreeNode(pg, selNode);
     pg.initProperties();
     // for each of the well defined properties
     // add the appropriate parameters
-    if (pgIndex >= 0 && pgIndex < wellKnownPropertyGroups.length)
-      setParameters(pg, pgIndex);
+    if (index >= 0 && index < wellKnownPropertyGroups.length)
+      setParameters(pg, index);
     else
       propertyGroups.add(pgName); // user defined property group
-    assetComponent.addChild(pg);
+    ModifiableComponent cc =
+      (ModifiableComponent)nodeToComponent.get(selNode);
+    cc.addChild(pg);
     // select the new node
     tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(pgNode));
   }
 
   /**
-   * TODO: will this work, i.e. can you add properties to the property group
-   * or must this use the PropGroupData object
+   * Create component and tree node for new relationship.
+   */
+  private void addRelationship() {
+    Vector relationships = new Vector();
+    AgentComponent[] agents = 
+      ((SocietyComponent)componentToConfigure).getAgents();
+    for (int i = 0; i < agents.length; i++)
+      relationships.add(agents[i].getShortName());
+    String relName = 
+      (String)ComboDialog.showDialog(this, "Relationship With Agent", relationships);
+    if (relName == null)
+      return;
+    int index = relationships.indexOf(relName);
+    if (index == -1) {
+      relName = relName.trim();
+      if (relName.length() == 0)
+        return;
+    }
+    DefaultMutableTreeNode selNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    // relationship configurable components are created from relationship data
+    RelationshipData relData = new RelationshipData();
+    relData.setSupported(relName);
+    relData.setItem("");
+    relData.setType("");
+    relData.setRole("");
+    RelationshipComponent relationship = new RelationshipBase(relData);
+    DefaultMutableTreeNode relNode = createTreeNode(relationship, selNode);
+    relationship.initProperties();
+    ModifiableComponent cc =
+      (ModifiableComponent)nodeToComponent.get(selNode);
+    cc.addChild(relationship);
+    // select the new node
+    tree.setSelectionPath(tree.getSelectionPath().pathByAddingChild(relNode));
+  }
+
+  /**
+   * Add parameters for well know properties.
    */
 
   private void setParameters(ModifiableComponent pg, int pgIndex) {
@@ -761,15 +812,13 @@ public class PropertyEditorPanel extends JPanel
       pg.addProperty("TypeIdentification", "UTC/RTOrg");
       break;
     case CLUSTER:
-      // TODO: type should be ClusterIdentifier???
-      pg.addProperty("ClusterIdentifier", "");
+      // type is enclosed in parens and appended to name
+      pg.addProperty("ClusterIdentifier (ClusterIdentifier)", "");
       break;
     case ENTITY:
       break;
     case COMMUNITY:
-      // TODO: type should be TimeSpan
-      pg.addProperty("TimeSpan", "");
-      // how do you actually set these as properties?
+      pg.addProperty("TimeSpan (TimeSpan)", "");
       pg.addProperty("Communities", "");
       break;
     case MILITARYORG:

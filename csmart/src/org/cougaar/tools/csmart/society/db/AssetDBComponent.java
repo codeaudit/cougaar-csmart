@@ -143,10 +143,15 @@ public class AssetDBComponent
 
     // Add Property Groups.
     iter = 
-      ((Collection)getDescendentsOfClass(PropGroupBase.class)).iterator();
+      ((Collection)getDescendentsOfClass(ContainerBase.class)).iterator();
     while(iter.hasNext()) {
-      PropGroupBase pg = (PropGroupBase)iter.next();
-      assetData.addPropertyGroup(pg.getPropGroupData());
+      ContainerBase container = (ContainerBase)iter.next();
+      if(container.getShortName().equals("Property Groups")) {
+        for(int i=0; i < container.getChildCount(); i++) {
+          PropGroupBase pg = (PropGroupBase)container.getChild(i);
+          assetData.addPropertyGroup(pg.getPropGroupData());
+        }
+      }
     }
 
     data.addAgentAssetData(assetData);
@@ -214,7 +219,7 @@ public class AssetDBComponent
     relContainer.initProperties();
     addChild(relContainer);
     for(int i=0; i < rel.length; i++) {
-      RelationshipBase newR = new RelationshipBase(rel[i], i);
+      RelationshipBase newR = new RelationshipBase(rel[i]);
       newR.initProperties();
       relContainer.addChild(newR);
     }
@@ -297,12 +302,15 @@ public class AssetDBComponent
     }
     // after creating all the property group data
     // create the property groups, initialize them and add them as children
+    ContainerBase pgContainer = new ContainerBase("Property Groups");
+    pgContainer.initProperties();
+    addChild(pgContainer);
     Iterator propGroupData = propertyGroups.values().iterator();
     while (propGroupData.hasNext()) {
       PropGroupData pgd = (PropGroupData)propGroupData.next();
       PropGroupComponent newPG = new PropGroupBase(pgd);
       newPG.initProperties();
-      addChild(newPG);
+      pgContainer.addChild(newPG);
     }
   }
 
