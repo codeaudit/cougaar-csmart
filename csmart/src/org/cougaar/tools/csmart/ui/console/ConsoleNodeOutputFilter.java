@@ -52,8 +52,8 @@ public class ConsoleNodeOutputFilter extends JDialog {
   private JCheckBox clusterAddCB;
   private JCheckBox idlenessCB;
   private JCheckBox heartbeatCB;
-  String[] msgArray = {OFF,OFF,OFF,OFF,OFF,OFF,OFF};
-  //  boolean[] msgArray = { false, false, false, false, false, false, false };
+  boolean[] msgArray = { false, false, false, false, false, false, false };
+  private boolean allSelected;
 
   public ConsoleNodeOutputFilter() {
     filterPanel = new JPanel(new BorderLayout());
@@ -63,13 +63,16 @@ public class ConsoleNodeOutputFilter extends JDialog {
     JButton okButton = new JButton("OK");
     okButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        for (int i=0; i<msgArray.length; i++) {
-          System.out.println("slot number " + i + "is set to " + msgArray[i]);
-        }
+        setVisible(false);
       }
     });
     buttonPanel.add(okButton);
     JButton cancelButton = new JButton("Cancel");
+    cancelButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        setVisible(false);
+      }
+    });
     buttonPanel.add(cancelButton);
 
     // Message Types Panel
@@ -83,76 +86,76 @@ public class ConsoleNodeOutputFilter extends JDialog {
 
     allCB = new JCheckBox(ALL);
     allCB.setSelected(true);
-    allCB.addActionListener(allSelected);
+    allCB.addActionListener(allCBSelected);
 
     standardCB = new JCheckBox(STANDARDOUT);
-    standardCB.addActionListener(unselectAll);
+    standardCB.addActionListener(unselectAllCB);
     standardCB.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (standardCB.isSelected())
-          msgArray[NodeEvent.STANDARD_OUT]=ON;
+          msgArray[NodeEvent.STANDARD_OUT]=true;
         else
-          msgArray[NodeEvent.STANDARD_OUT]=OFF;
+          msgArray[NodeEvent.STANDARD_OUT]=false;
       }
     });
     errorCB = new JCheckBox(ERRORMSGS);
-    errorCB.addActionListener(unselectAll);
+    errorCB.addActionListener(unselectAllCB);
     errorCB.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (errorCB.isSelected())
-          msgArray[NodeEvent.STANDARD_ERR]=ON;
+          msgArray[NodeEvent.STANDARD_ERR]=true;
         else
-          msgArray[NodeEvent.STANDARD_ERR]=OFF;
+          msgArray[NodeEvent.STANDARD_ERR]=false;
       }
     });
     createCB = new JCheckBox(NODECREATION);
-    createCB.addActionListener(unselectAll);
+    createCB.addActionListener(unselectAllCB);
     createCB.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (createCB.isSelected())
-          msgArray[NodeEvent.NODE_CREATED]=ON;
+          msgArray[NodeEvent.NODE_CREATED]=true;
         else
-          msgArray[NodeEvent.NODE_CREATED]=OFF;
+          msgArray[NodeEvent.NODE_CREATED]=false;
       }
     });
     destroyCB = new JCheckBox(NODEDESTROYED);
-    destroyCB.addActionListener(unselectAll);
+    destroyCB.addActionListener(unselectAllCB);
     destroyCB.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (destroyCB.isSelected())
-          msgArray[NodeEvent.NODE_DESTROYED]=ON;
+          msgArray[NodeEvent.NODE_DESTROYED]=true;
         else
-          msgArray[NodeEvent.NODE_DESTROYED]=OFF;
+          msgArray[NodeEvent.NODE_DESTROYED]=false;
       }
     });
     clusterAddCB = new JCheckBox(CLUSTERADD);
-    clusterAddCB.addActionListener(unselectAll);
+    clusterAddCB.addActionListener(unselectAllCB);
     clusterAddCB.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (clusterAddCB.isSelected())
-          msgArray[NodeEvent.CLUSTER_ADDED]=ON;
+          msgArray[NodeEvent.CLUSTER_ADDED]=true;
         else
-          msgArray[NodeEvent.CLUSTER_ADDED]=OFF;
+          msgArray[NodeEvent.CLUSTER_ADDED]=false;
       }
     });
     idlenessCB = new JCheckBox(IDLENESS);
-    idlenessCB.addActionListener(unselectAll);
+    idlenessCB.addActionListener(unselectAllCB);
     idlenessCB.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (idlenessCB.isSelected())
-          msgArray[NodeEvent.IDLE_UPDATE]=ON;
+          msgArray[NodeEvent.IDLE_UPDATE]=true;
         else
-          msgArray[NodeEvent.IDLE_UPDATE]=OFF;
+          msgArray[NodeEvent.IDLE_UPDATE]=false;
       }
     });
     heartbeatCB = new JCheckBox(HEARTBEAT);
-    heartbeatCB.addActionListener(unselectAll);
+    heartbeatCB.addActionListener(unselectAllCB);
     heartbeatCB.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (heartbeatCB.isSelected())
-          msgArray[NodeEvent.HEARTBEAT]=ON;
+          msgArray[NodeEvent.HEARTBEAT]=true;
         else
-          msgArray[NodeEvent.HEARTBEAT]=OFF;
+          msgArray[NodeEvent.HEARTBEAT]=false;
       }
     });
     int x = 0;
@@ -207,7 +210,7 @@ public class ConsoleNodeOutputFilter extends JDialog {
     Font titleFont = font.deriveFont(Font.ITALIC);
     bufferEventsTitledBorder.setTitleFont(titleFont);
     bufferEventsPanel.setBorder(bufferEventsTitledBorder);
-    noneButton = new JRadioButton("None");
+    noneButton = new JRadioButton("All");
     sizeButton = new JRadioButton("Buffer Size");
     noneButton.setSelected(true);
     ButtonGroup bufferButtonGroup = new ButtonGroup();
@@ -231,14 +234,10 @@ public class ConsoleNodeOutputFilter extends JDialog {
    */
 
   public boolean includeEventInDisplay(NodeEvent event) {
-    // make a flag for when "all" is selected
-    //    if (allSelected)
-    //      return true;
-    //    return msgArray[event.getType()];
-    if (msgArray[event.getType()].equals(ON))
+    if (allSelected)
       return true;
     else
-      return false;
+      return msgArray[event.getType()];
   }
 
   /**
@@ -254,30 +253,40 @@ public class ConsoleNodeOutputFilter extends JDialog {
    */
 
   public int getBufferSize() {
-    return 0;
+    String size = sizeTF.getText();
+    System.out.println("text is " + size);
+    try {
+      int bufferSize = Integer.parseInt(size);
+      return bufferSize;
+    }catch (NumberFormatException e) { 
+      System.err.println("Couldn't parse int");
+      return 0;
+    }
   }
 
-  ActionListener allSelected = new ActionListener() {
+  ActionListener allCBSelected = new ActionListener() {
     public void actionPerformed(ActionEvent e) {
+      allSelected = true;
       standardCB.setSelected(false);
-      msgArray[NodeEvent.STANDARD_OUT]=OFF;
+      msgArray[NodeEvent.STANDARD_OUT]=true;
       errorCB.setSelected(false);
-      msgArray[NodeEvent.STANDARD_ERR]=OFF;
+      msgArray[NodeEvent.STANDARD_ERR]=true;
       createCB.setSelected(false);
-      msgArray[NodeEvent.NODE_CREATED]=OFF;
+      msgArray[NodeEvent.NODE_CREATED]=true;
       destroyCB.setSelected(false);
-      msgArray[NodeEvent.NODE_DESTROYED]=OFF;
+      msgArray[NodeEvent.NODE_DESTROYED]=true;
       clusterAddCB.setSelected(false);
-      msgArray[NodeEvent.CLUSTER_ADDED]=OFF;
+      msgArray[NodeEvent.CLUSTER_ADDED]=true;
       idlenessCB.setSelected(false);
-      msgArray[NodeEvent.IDLE_UPDATE]=OFF;
+      msgArray[NodeEvent.IDLE_UPDATE]=true;
       heartbeatCB.setSelected(false); 
-      msgArray[NodeEvent.HEARTBEAT]=OFF;
+      msgArray[NodeEvent.HEARTBEAT]=true;
     }
   };
   
-  ActionListener unselectAll = new ActionListener() {
+  ActionListener unselectAllCB = new ActionListener() {
     public void actionPerformed(ActionEvent e) {
+      allSelected = false;
       if (allCB.isSelected())
       allCB.setSelected(false);
     }
