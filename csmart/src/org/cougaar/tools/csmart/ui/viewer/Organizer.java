@@ -1119,7 +1119,7 @@ public class Organizer extends JScrollPane {
                 experimentNames.init(getLeaves(Experiment.class, root),
                                      Experiment.class.getMethod("getExperimentName", noTypes));
                 impactNames.init(getLeaves(ImpactComponent.class, root),
-                                 ImpactComponent.class.getMethod("getName", noTypes));
+                                 ImpactComponent.class.getMethod("getImpactName", noTypes));
                 metricNames.init(getLeaves(Metric.class, root),
                                  Metric.class.getMethod("getName", noTypes));
                 return;
