@@ -13,9 +13,10 @@ import java.util.List;
 
 import org.cougaar.core.component.*;
 import org.cougaar.core.society.*;
+import org.cougaar.core.mts.*;
 
 /**
- * A <code>ServiceFilter</code> to wrap the <code>MessageTransportServer</code> 
+ * A <code>ServiceFilter</code> to wrap the <code>MessageTransportService</code> 
  * and simulate a degradation in I/O capacity (via increased-latency).
  * <p>
  * Specify in the Node.ini file as:<pre>
@@ -73,12 +74,12 @@ public class SlowMessageTransportServiceFilter
   }
 
   /**
-   * Wrap a <code>MessageTransportServer</code>.
+   * Wrap a <code>MessageTransportService</code>.
    */
   public SlowMessageTransportServiceProxy createSlowMessageTransportServiceProxy(
-      MessageTransportServer origMT,
+      MessageTransportService origMT,
       Object requestor) {
-    // create a new wrapped MessageTransportServer
+    // create a new wrapped MessageTransportService
     //
     // requestor should be an Agent
     MessageReleaseScheduler mrs = 
@@ -154,15 +155,15 @@ public class SlowMessageTransportServiceFilter
         if (VERBOSE) {
           System.out.println("getServiceProxy");
         }
-        if (service instanceof MessageTransportServer) {
+        if (service instanceof MessageTransportService) {
           if (VERBOSE) {
             System.out.println("get mt service");
           }
           if (smt == null) {
-            // create a new wrapped MessageTransportServer
+            // create a new wrapped MessageTransportService
             this.smt = 
               SlowMessageTransportServiceFilter_this.createSlowMessageTransportServiceProxy(
-                  (MessageTransportServer)service,
+                  (MessageTransportService)service,
                   client);
           }
           return smt;

@@ -12,34 +12,33 @@ package org.cougaar.tools.csmart.binder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.cougaar.core.mts.*;
 import org.cougaar.core.society.Message;
 import org.cougaar.core.society.MessageAddress;
-import org.cougaar.core.society.MessageTransportClient;
-import org.cougaar.core.society.MessageTransportServer;
-import org.cougaar.core.society.MessageTransportWatcher;
+
 
 /**
- * A <code>MessageTransportServer</code> that uses a 
+ * A <code>MessageTransportService</code> that uses a 
  * <code>MessageReleaseScheduler</code> to buffer and periodically 
  * release <code>Message</code>s after a customizable delay.
  *
  * @see MessageReleaseScheduler
  */
 public class SlowMessageTransportServiceProxy 
-  implements MessageTransportServer, 
+  implements MessageTransportService, 
              SlowMessageTransportServiceProxyController {
 
   private static final boolean VERBOSE = false;
 
   private MessageTransportClient mtc;
-  private MessageTransportServer mt;
+  private MessageTransportService mt;
   
   private MessageTransportClient wrappedClient;
 
   private MessageReleaseScheduler mrs;
 
   public SlowMessageTransportServiceProxy(
-      MessageTransportServer mt,
+      MessageTransportService mt,
       Object requestor,
       MessageReleaseScheduler mrs) {
     this.mt = mt;
