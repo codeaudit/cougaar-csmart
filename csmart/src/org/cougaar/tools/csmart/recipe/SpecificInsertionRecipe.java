@@ -20,20 +20,22 @@
  */ 
 package org.cougaar.tools.csmart.recipe;
 
+
+
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.net.URL;
-import java.util.Set;
+import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Iterator;
-
+import java.util.Set;
 import org.cougaar.core.component.ComponentDescription;
-
-import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
-import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.range.IntegerRange;
 import org.cougaar.tools.csmart.society.AgentComponent;
 
 public class SpecificInsertionRecipe extends RecipeBase
@@ -111,7 +113,7 @@ public class SpecificInsertionRecipe extends RecipeBase
         }
       });
     propArgs.setToolTip(PROP_ARGS_DESC);
-
+    propArgs.setAllowedValues(Collections.singleton(new IntegerRange(0, Integer.MAX_VALUE)));
     propPriority = addPriorityProperty(PROP_PRIORITY, PROP_PRIORITY_DFLT);
     propPriority.setToolTip(PROP_PRIORITY_DESC);
 

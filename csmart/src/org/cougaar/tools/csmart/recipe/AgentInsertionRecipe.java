@@ -20,32 +20,34 @@
  */ 
 package org.cougaar.tools.csmart.recipe;
 
-import java.io.Serializable;
-import java.sql.SQLException;
-import java.net.URL;
-import java.util.Set;
-import java.util.Iterator;
-import java.util.Collection;
-import java.util.StringTokenizer;
-import java.util.HashSet;
 
-import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
-import org.cougaar.tools.csmart.core.property.PropertyEvent;
-import org.cougaar.tools.csmart.core.property.range.StringRange;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
+
+import java.io.Serializable;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.StringTokenizer;
+import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
+import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
-import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
-import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
-import org.cougaar.tools.csmart.core.cdata.RelationshipData;
-import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.PGPropData;
-
+import org.cougaar.tools.csmart.core.cdata.PropGroupData;
+import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
-
+import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.core.property.range.IntegerRange;
+import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.util.log.Logger;
 
@@ -181,7 +183,8 @@ public class AgentInsertionRecipe extends RecipeBase
         }
       });
     propRelationCount.setToolTip(PROP_RELATIONCOUNT_DESC);
-
+    propRelationCount.setAllowedValues(Collections.singleton(new IntegerRange(0, Integer.MAX_VALUE)));
+   
   }
 
   /**
