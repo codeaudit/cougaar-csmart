@@ -36,6 +36,8 @@ public class CommunityTimePhasedData extends TimePhasedData {
   public CommunityTimePhasedData() {
     super();
     communities = new ArrayList();
+    setStartTime("");
+    setStopTime("");
   }
 
   /**
