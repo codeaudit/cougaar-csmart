@@ -28,6 +28,7 @@ import com.klg.jclass.chart.JCChart;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
+import org.cougaar.tools.csmart.ui.experiment.Trial;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.server.*;
@@ -45,10 +46,14 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   String nameServerHostName;
   SocietyComponent societyComponent;
   Experiment experiment;
+  int currentTrial; // index of currently running trial in experiment
+  boolean userStoppedTrials = false;
   Hashtable runningNodes; // maps NodeComponents to NodeServesClient
   Hashtable oldNodes; // store old charts till next experiment is started
   Hashtable charts; // maps node name to idle time chart
   Hashtable chartFrames; // maps node name to chart frame
+  NodeComponent[] nodesToRun; // node components that contain agents to run
+  String[] hostsToRunOn;      // hosts that are assigned nodes to run
 
   // gui controls
   JTabbedPane tabbedPane;
@@ -100,6 +105,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   public CSMARTConsole(CSMART csmart) {
     this.csmart = csmart;
     experiment = csmart.getExperiment();
+    currentTrial = -1;
     // TODO: support experiments with multiple societies
     societyComponent = experiment.getSocietyComponent(0);
     setSocietyComponent(societyComponent);
@@ -346,17 +352,20 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
   /**
    * User selected "Run" button.
+   * Set the next trial values.
    * For each host which is assigned a node,
-   * start the node on that host, and create a status button and
+   * and each node that is assigned an agent,
+   * start the node on that host, 
+   * and create a status button and
    * tabbed pane for it.
    */
 
   public void runButton_actionPerformed(ActionEvent e) {
     destroyOldNodes(); // Get rid of any old stuff before creating the new
-    ArrayList nodesToRun = new ArrayList();
+    userStoppedTrials = false;
+    ArrayList nodesToUse = new ArrayList();
     ArrayList hostsToUse = new ArrayList(); // hosts that nodes are on
     nameServerHostName = null;
-    //    String firstNodeName = null;
     HostComponent[] hosts = experiment.getHosts();
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
@@ -365,56 +374,75 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	// skip nodes that have no agents
 	if (agents == null || agents.length == 0)
 	  continue;
-	//	if (firstNodeName == null)
-	//	  firstNodeName = nodes[j].toString();
-	nodesToRun.add(nodes[j]);
-	//	String hostName = hosts[i].toString();
-	//	if (nameServerHostName == null)
-	//	  nameServerHostName = hostName;
+	nodesToUse.add(nodes[j]);
 	// record host for each node
 	hostsToUse.add(hosts[i].getShortName());
       }
     }
-    if (hostsToUse.size() > 0) 
-      nameServerHostName = (String)hostsToUse.get(0);
-    NodeComponent[] nc =
-      (NodeComponent[])nodesToRun.toArray(new NodeComponent[nodesToRun.size()]);
-    // repeat the rest of this method for each trial
-    //    setTrialParameters(); // set the trial parameters in the experiment
-    ConfigurationWriter configWriter = experiment.getConfigurationWriter(nc);
-    for (int i = 0; i < nc.length; i++) {
-      NodeComponent nodeComponent = nc[i];
-      createNode(nodeComponent, nodeComponent.toString(), 
-		 (String)hostsToUse.get(i),
-		 configWriter);
+    nodesToRun =
+      (NodeComponent[])nodesToUse.toArray(new NodeComponent[nodesToUse.size()]);
+    hostsToRunOn = 
+      (String[])hostsToUse.toArray(new String[hostsToUse.size()]);
+    if (hostsToRunOn.length > 0) 
+      nameServerHostName = hostsToRunOn[0];
+    if (!haveMoreTrials()) {
+      runButton.setEnabled(false);
+      return; // nothing to run
     }
-    // select first node
-    if (nc.length > 0) {
-      String firstNodeName = nc[0].getShortName();
+    setTrialValues();
+    if (nodesToRun.length != 0) {
+      createNodes();
+      // select tabbed pane and status button for first node
+      String firstNodeName = nodesToRun[0].getShortName();
       selectTabbedPane(firstNodeName);
       selectStatusButton(firstNodeName);
     }
-    //    if (firstNodeName != null) {
-    //      selectTabbedPane(firstNodeName);
-    //      selectStatusButton(firstNodeName);
-    //    }
+  }
+
+  private void createNodes() {
+    ConfigurationWriter configWriter = 
+      experiment.getConfigurationWriter(nodesToRun);
+    for (int i = 0; i < nodesToRun.length; i++) {
+      NodeComponent nodeComponent = nodesToRun[i];
+      createNode(nodeComponent, nodeComponent.toString(), 
+		 hostsToRunOn[i],
+		 configWriter);
+    }
+  }
+
+  private boolean haveMoreTrials() {
+    return currentTrial < (experiment.getTrialCount()-1);
+  }
+
+  /**
+   * Set the trial values in the corresponding properties.
+   */
+
+  private void setTrialValues() {
+    currentTrial++; // starts with 1
+    Trial trial = experiment.getTrials()[currentTrial];
+    Property[] properties = trial.getParameters();
+    Object[] values = trial.getValues();
+    for (int i = 0; i < properties.length; i++) 
+      properties[i].setValue(values[i]);
   }
 
   /**
    * Stop all nodes.
    * If all societies in the experiment are self terminating, 
-   * just tell the experiment to stop after the current trial.
+   * just stop after the current trial (don't start next trial).
    * If any society is not self terminating, determine if the experiment
    * is being monitored, and if so, ask the user to confirm the stop. 
    */
 
   public void stopButton_actionPerformed(ActionEvent e) {
     // determine if societies in an experiment are self terminating
-    Experiment experiment = csmart.getExperiment();
-    if (experiment == null) {
-      System.err.println("Console lost the experiment!!!");
-      return;
-    }
+    //    Experiment experiment = csmart.getExperiment();
+    // if user selects another experiment in the organizer, ignore it!
+    //    if (experiment == null) {
+    //      System.err.println("Console lost the experiment!!!");
+    //      return;
+    //    }
     int nSocieties = experiment.getSocietyComponentCount();
     boolean isSelfTerminating = true;
     for (int i = 0; i < nSocieties; i++) {
@@ -427,7 +455,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     // just tell the experiment to stop after the current trial
     // societies in experiment will self terminate
     if (isSelfTerminating) {
-      experiment.stop();
+      //      experiment.stop();
+      userStoppedTrials = true;
       return;
     }
     // need to manually stop some societies
@@ -532,17 +561,34 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
   /**
    * Called by ConsoleNodeListener when node has stopped.
-   * If all nodes are stopped, then experiment is stopped;
-   * update the gui controls.
+   * If all nodes are stopped, then trial is stopped.
+   * Run the next trial.
+   * Update the gui controls.
    */
 
   public void nodeStopped(NodeComponent nodeComponent) {
     oldNodes.put(nodeComponent, runningNodes.get(nodeComponent));
     runningNodes.remove(nodeComponent);
-    String nodeName = nodeComponent.toString();
+    //    String nodeName = nodeComponent.toString();
     //removeTabbedPane(nodeName);
     //removeStatusButton(nodeName);
-    updateExperimentControls(experiment, false);
+
+    // when all nodes have stopped
+    // run the next trial and update the gui controls
+    if (runningNodes.isEmpty()) {
+      updateExperimentControls(experiment, false);
+      if (haveMoreTrials()) {
+	if (!userStoppedTrials) {
+	  setTrialValues();
+	  destroyOldNodes(); // destroy old guis before starting new ones
+	  createNodes();
+	  String firstNodeName = nodesToRun[0].getShortName();
+	  selectTabbedPane(firstNodeName);
+	  selectStatusButton(firstNodeName);
+	} 
+      } else
+	runButton.setEnabled(false);
+    }
   }
 
   /**
