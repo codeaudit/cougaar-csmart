@@ -40,7 +40,7 @@ import org.cougaar.tools.csmart.ui.monitor.plan.ULPlanFrame;
 import org.cougaar.tools.csmart.ui.monitor.plan.ULPlanNode;
 import org.cougaar.tools.csmart.ui.monitor.society.ULSocietyFrame;
 import org.cougaar.tools.csmart.ui.monitor.society.ULSocietyNode;
-import org.cougaar.tools.csmart.ui.monitor.topology.TopologyFrame;
+//import org.cougaar.tools.csmart.ui.monitor.topology.TopologyFrame;
 import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.ServletResponse;
@@ -123,7 +123,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
      NamedFrame.PLAN,
      NamedFrame.THREAD,
      NamedFrame.METRICS,
-     NamedFrame.TOPOLOGY,
+     //     NamedFrame.TOPOLOGY,
   };
 
   private static final String[] tooltips = {
@@ -132,7 +132,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     "Display plan objects.",
     "Display plan objects related to a specified plan object.",
     "Display metrics.",
-    "Display topology."
+    //    "Display topology."
   };
 
   // TODO: need new gif for topology
@@ -142,7 +142,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     "event.gif",
     "thread.gif",
     "metric.gif",
-    "community.gif"
+    //    "community.gif"
   };
 
   /**
@@ -367,8 +367,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       makeThreadGraph();
     } else if (s.equals(NamedFrame.METRICS)) {
       makeMetricsGraph();
-    } else if (s.equals(NamedFrame.TOPOLOGY)) {
-      makeTopologyGraph();
+//     } else if (s.equals(NamedFrame.TOPOLOGY)) {
+//       makeTopologyGraph();
     } else if (s.equals(OPEN_GRAPH_MENU_ITEM)) {
       openGraph();
     } else if (s.equals(OPEN_METRIC_MENU_ITEM)) {
@@ -1166,11 +1166,11 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       myWindows.add(w);
   }
 
-  private void makeTopologyGraph() {
-    Window w =
-      new TopologyFrame("Topology", "localhost", 8800, "NCA");
-    myWindows.add(w);
-  }
+//   private void makeTopologyGraph() {
+//     Window w =
+//       new TopologyFrame("Topology", "localhost", 8800, "NCA");
+//     myWindows.add(w);
+//   }
 
   /**
    * Start up the CSMART Society Monitor stand-alone. <br>

@@ -50,9 +50,10 @@ to a single plan object.</li>
 <b>Metrics</b>: Show one (potentially many) calculated graphs of society
 activity.</li>
 
+<!-- AMH 2/7/03: Disable the topology view since that service is dying 
 <li>
 <b>Topology</b>: Display the current (dynamically changing) assignment
-of Agents to Nodes to Hosts in the society.</li>
+of Agents to Nodes to Hosts in the society.</li> -->
 </ul>
 
 When first launching a tool, if not running from CSMART, you are prompted
@@ -71,7 +72,7 @@ or load a saved data set, using the following menu items.
 <ul>
 <li>
 New: Create a new Community, Agents, Plan or Thread graph or a new
-Metrics or Topology display. This duplicates the functionality
+Metrics <!-- or Topology -->display. This duplicates the functionality
 available on the tool bar buttons.</li>
 
 <li>Open: Read and display a previously saved graph or metric.</li>
@@ -347,7 +348,7 @@ org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.serv
 </li>
 <li>plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.SearchServlet, /CSMART_SearchServlet)
 </li>
-<li>plugin = org.cougaar.core.topology.TopologyReaderServlet</li>
+<!-- <li>plugin = org.cougaar.core.topology.TopologyReaderServlet</li> -->
 </ul>
 
 <br><br>
