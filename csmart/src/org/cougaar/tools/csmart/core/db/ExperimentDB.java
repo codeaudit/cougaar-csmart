@@ -129,7 +129,7 @@ public class ExperimentDB {
   
   public static void deleteCMTAssembly(String experimentId) {
     String cmtASB = CMT.getAssemblyId(experimentId);
-    System.out.println("Deleting CMT assembly: "+cmtASB+" for experiment: " +experimentId );
+    //    System.out.println("Deleting CMT assembly: "+cmtASB+" for experiment: " +experimentId );
     CMT.reallyClearCMTasb(cmtASB);
   }
 } // end of ExperimentDB.java
