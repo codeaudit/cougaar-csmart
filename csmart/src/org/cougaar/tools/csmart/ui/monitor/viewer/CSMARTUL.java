@@ -590,7 +590,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    * Query user for agent URL and get names of agents from that URL.
    * The user is only queried once, unless we fail to contact the agent.
    */
-
   private static Vector getAgentURLs() {
     if (agentURL == null)
       getAgentURL();
@@ -609,6 +608,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
                                       agentURL + "/" +
                                    ClientServletUtil.AGENT_PROVIDER_SERVLET +
                            " returned no agents; no information to graph.");
+
+      // FIXME: Ignore NodeAgents here?
     } catch (Exception e) {
        JOptionPane.showMessageDialog(null,
                                      "Failed to contact: " + 
@@ -688,6 +689,14 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
           }
         }
       } else { // these are the agents we couldn't contact
+	// FIXME:
+	// This is where we could see that the Agent in question is not in
+	// any experiment we have access to, or the servlet is not in the Agent,
+	// or the Agent is a node Agent, etc
+	// CSMARTUL.experiment should be accessible
+	// Of course, we'd have to re-parse out the Agent name
+	// And to look for the Servlet, you'd have to look at the parameters
+	// of all the plugins of the Agent.
         buf.append("\n");
         buf.append(agentURLs.get(i));
       }
