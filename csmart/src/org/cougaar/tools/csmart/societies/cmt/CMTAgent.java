@@ -124,11 +124,11 @@ public class CMTAgent
 			     }
 			   });
 
-//     propComponentID = addProperty(PROP_COMPONENT_ID, componentID,
-// 			   new ConfigurableComponentPropertyAdapter() {
-// 			     public void PropertyValueChanged(PropertyEvent e) {
-// 			     }
-// 			   });
+    propComponentID = addProperty(PROP_COMPONENT_ID, componentID,
+			   new ConfigurableComponentPropertyAdapter() {
+			     public void PropertyValueChanged(PropertyEvent e) {
+			     }
+			   });
 
 //     propCategory = addProperty(PROP_COMPONENT_CATEGORY, componentCategory,
 // 			   new ConfigurableComponentPropertyAdapter() {
@@ -156,13 +156,15 @@ public class CMTAgent
 
     //    System.out.println("Agent: " + data.getName());
     StringBuffer assemblyMatch = null;
-
+    
     String name = data.getName();
     int dotPos = name.lastIndexOf('.');
     if (dotPos >= 0) {
       name = name.substring(dotPos + 1);
     }
     substitutions.put(":agent_name", name);
+
+    data.setAlibID((String)propComponentID.getValue());
 
     // Get Plugin Names
     try {
