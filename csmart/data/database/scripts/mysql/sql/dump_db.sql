@@ -347,61 +347,61 @@ OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY ",\n" FROM oplan_agent_attr;
 
 SELECT DUMMY 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/dual.csv" 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/dual_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM dual;
 
 SELECT ORG_ID,UNIT_IDENTIFIER,MILITARY_ORGANIZATION_CODE,UL_CD,UN_ABBRD_NM,GELOC_CD,UNT_CD,UN_CMP_CD,UN_NM 
-INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_unit.csv" 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_unit_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM fdm_unit;
 
 SELECT ORG_ID,TI_ID,UNIT_IDENTIFIER,UNIT_EQUIPMENT_QTY
-INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_unit_equipment.csv" 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_unit_equipment_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM fdm_unit_equipment;
 
 SELECT TI_ID,SCL_CD,TI_NM,TI_CGO_CPCTY_QY,TI_BLCK_BRC_SRC_ID,FUEL_BURNER
-INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_transportable_item.csv" 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_transportable_item_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM fdm_transportable_item;
 
 SELECT TID_ID,TI_ID,SHPPNG_CNFGRTN_CD,CGO_TP_CD,CGO_XTNT_CD,CGO_CNTZN_CD,MATERIEL_ITEM_IDENTIFIER,TYPE_PACK_CODE,TID_RDBL_CD,TID_LG_DM,TID_WDTH_DM,TID_EQ_TY_CD,TID_HT_DM,TID_WT,TID_VL,TID_CGO_CPCTY_QY,TID_MAX_LDED_HT_DM,TID_HVY_LFT_CD,TID_AR_CGO_LD_CD,TID_CB_DM,TID_MN_GND_CLNC_DM,TID_FTPRNT_AR,TID_PLZTN_CD,TID_CGO_CMPT_LG_DM,TID_CGO_CMPT_WD_DM,TID_CGO_CMPT_HT_DM,TID_CGOCMPBD_HT_DM,TID_CGO_BED_HT_DM,TID_WHL_BS_DM,TID_EMTY_LD_CLS_ID,TID_LDED_LD_CLS_ID,TID_MDL_ID
-INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_transportable_item_detail.csv" 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_transportable_item_detail_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM fdm_transportable_item_detail;
 
 SELECT RANK_SUBCATEGORY_CODE,RANK_SUBCATEGORY_TEXT
-INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_unfrmd_srvc_occ_rnk_subcat.csv" 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_unfrmd_srvc_occ_rnk_subcat_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM fdm_unfrmd_srvc_occ_rnk_subcat;
 
 SELECT UNFRMD_SRVC_OCCPTN_CD,SVC_CD,RANK_SUBCATEGORY_CODE,UNFRMD_SRVC_OCCPTN_TX
-INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_unfrmd_srvc_occptn.csv" 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_unfrmd_srvc_occptn_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM fdm_unfrmd_srvc_occptn;
 
 SELECT UNFRMD_SRVC_RNK_CD,SVC_CD,PAY_GRD_CD,USR_SHRT_NM,USR_OFCR_IND_CD
-INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_unfrmd_srvc_rnk.csv" 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_unfrmd_srvc_rnk_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM fdm_unfrmd_srvc_rnk;
 
 SELECT ORG_ID,UNIT_IDENTIFIER,BILLET_ID,SVC_CD,UNFRMD_SRVC_RNK_CD,UNFRMD_SRVC_OCCPTN_CD,REQ_SEI_CD,UNT_SVRC_CMPNT_CD,TO_NUMBER,TO_SUFFIX,TO_LINE_NUMBER,TO_RANK,TO_STRENGTH
-INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_unit_billet.csv" 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/fdm_unit_billet_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM fdm_unit_billet;
 
 SELECT GEOLOC_CODE,LOCATION_NAME,INSTALLATION_TYPE_CODE,COUNTRY_STATE_CODE,COUNTRY_STATE_SHORT_NAME,COUNTRY_STATE_LONG_NAME,PROVINCE_CODE,PROVINCE_NAME,LATITUDE,LONGITUDE,LOGISTIC_PLANNING_CODE,PRIME_GEOLOC_CODE,RECORD_OWNER_UIC,CIVIL_AVIATION_CODE,GSA_STATE_CODE,GSA_CITY_CODE,GSA_COUNTY_CODE
-INTO OUTFILE ":cip/csmart/data/database/raw_data/geoloc.csv" 
+INTO OUTFILE ":cip/csmart/data/database/raw_data/geoloc_data.csv" 
 FIELDS TERMINATED BY ',' 
 OPTIONALLY ENCLOSED BY '"' 
 LINES TERMINATED BY ",\n" FROM geoloc;
