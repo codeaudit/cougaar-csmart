@@ -43,7 +43,7 @@ import org.cougaar.tools.csmart.util.*;
  * The CSMART Factory.
  * It creates Events and other CSMART specific objects.<br>
  * It also provides the common logger for CSMART components, and starts it.
- * @see LogStream
+ *
  **/
 public class CSMARTFactory
     implements Factory {
