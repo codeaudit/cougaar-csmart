@@ -50,7 +50,7 @@
 	<property name="build.javadocs" value="./doc/javadoc" />
 
 	<property name="build.compiler" value="classic"/>
-	<property name="doDeprecation" value="no"/>
+	<property name="doDeprecation" value="yes"/>
 
 	<!-- ========================================================== -->
 	<!-- ========================================================== -->
@@ -311,7 +311,7 @@
 	<!-- ====================================================================== -->
 	<!-- Compile regression test code     				          -->
 	<!-- ====================================================================== -->	
-	<target name="compile-tests" depends="prepare, junit" description="Compile unit tests" if="junit.present"> 
+	<target name="compile-tests" depends="prepare, junit, compile" description="Compile unit tests" if="junit.present"> 
 	     <mkdir dir="${testbuild}" />
 	     <javac srcdir="${testsrc}" destdir="${testbuild}" >
 	            <classpath>
