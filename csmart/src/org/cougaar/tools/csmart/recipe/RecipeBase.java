@@ -229,6 +229,21 @@ public abstract class RecipeBase
     fireModification(new ModificationEvent(this, RECIPE_SAVED));
   }
 
+  /**
+   * Recipes are keyed off of their name in the DB.
+   * So two recipes are equal iff their names are equal.
+   */
+  public boolean equals(Object o) {
+    if (o instanceof RecipeComponent) {
+      RecipeComponent that = (RecipeComponent)o;
+      if (! this.getRecipeName().equals(that.getRecipeName())) {
+	return false;
+      } 
+      return true;
+    }
+    return false;
+  }
+
   private void readObject(ObjectInputStream ois)
     throws IOException, ClassNotFoundException
   {
