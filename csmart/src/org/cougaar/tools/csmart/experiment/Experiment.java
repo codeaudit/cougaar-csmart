@@ -1591,6 +1591,13 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
         return;
       }
 
+      if (sc.getAssemblyId() == null) {
+	// This should never happen!
+	if (log.isErrorEnabled()) {
+	  log.error("Saving experiment " + getExperimentName() + " with exptID " + getExperimentID() + " containing society " + sc.getSocietyName() + " but society has now Assembly! Caller trace: ", new Throwable());
+	}
+      }
+
       pdb =
 	new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
 		       getExperimentID(), trialID, ch, sc.getAssemblyId());
