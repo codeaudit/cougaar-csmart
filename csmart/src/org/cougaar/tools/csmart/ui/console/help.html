@@ -21,6 +21,7 @@ have one trial, and the user interface is simplified accordingly.</i>
 <p>The Experiment Controller also collects and displays all output from the nodes in the experiment, and provides several facilities for automatically and manually searching this ouput, and notifying the user of error conditions.
 <p>Note that you must separately launch the AppServer on each host used in
 the experiment. See the installation instructions for running the Server.
+<p><em>Important</em>: Be sure to save your experiment to the database before running it in the console.<br>
 <br>
 A typical usage would be to <ol>
 <li>Start the AppServers.</li>
@@ -28,7 +29,7 @@ A typical usage would be to <ol>
 <a href="#Notify">notifications</a>.</li>
 <li>Start the Experiment</li>
 <li>Monitor the Node's output</li>
-<li>Publish the OPLAN and send GLS Root</li>
+<li><a href="#GLS">Publish</a> the OPLAN and send GLS Root</li>
 <li>Launch the Society Monitor</li>
 </ol>
 <p>
@@ -212,6 +213,21 @@ Builder.</li>
 <li>Reset Notification</li>
 </ul>
 </ul>
+<h3><a NAME="GLS">GLS and OPLAN UI</h3>
+In related societies, a window will pop up in the CSMART Console for
+publishing an Oplan, and sending or rescinding the GLS Root task. This
+interface uses a servlet to communicate with the command node (usually
+NCA). To use this interface:
+<ul>
+<li>Wait for the Node creation to quiesce.</li>
+<li>Hit the "Connect" button, and</li>
+<li>then immediately the "Publish OPLAN"
+button.</li>
+<li>Wait for the OPLAN publishing work to quiesce.</li>
+<li>Publish GLS Root</li>
+<li>You may then rescind that task, or publish another</li>
+</ul>
+<br>
 <h3>Notes:</h3>
 If this error message is displayed:
 <pre>Cannot create node on hostname; check that server is running</pre>
@@ -223,6 +239,17 @@ loader", usually indicate a classpath problem. Be sure that both server.jar
 and csmart.jar are on the classpath used to run the server, the classpath
 defined in the server properties file, and in the classpath for running
 CSMART.<br>
+<p>In general, most errors running societies can be traced to one of
+the following:<br>
+<ul><li>Firewall issues between CSMART machine and Node machines</li>
+<li>DNS problems on Node machines - be sure you can nslookup and
+reverse nslookup each machine name.</li>
+<li>AppServer not running, or Node machine has wrong version of
+Cougaar.</li>
+<li>Node machine has incorrect cougaar.rc or other data file</li>
+<li>Experiment changes made in CSMART were not saved to the
+database.</li>
+</ul>
 <br><br>
 <!-- hhmts start -->
 Last modified: Mon Oct 29 14:53:47 EST 2001
