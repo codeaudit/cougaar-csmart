@@ -502,6 +502,13 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	Iterator iter2 = pgData.getPropertiesIterator();	
 	while(iter2.hasNext()) {
 	  PGPropData propData = (PGPropData)iter2.next();
+          if(propData.getName().equals("HomeLocation")) {
+            writer.println("# To correctly store in the database on read");
+            writer.println("# the parser removed data from this field that");
+            writer.println("# will prevent running from this INI file.");
+            writer.println("# Refer to an older ini file for the missing info.");
+          }
+
 	  writer.print(propData.getName() + " ");
 	  writer.print(propData.getType());
 	  if(propData.isListType()) {
