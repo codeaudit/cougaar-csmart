@@ -687,8 +687,12 @@ public class PropertyEditorPanel extends JPanel
         baseRecipeComponentMenu.show(tree, x, y);
       else
         baseComponentMenu.show(tree, x, y);
-    } else if (log.isErrorEnabled())
-      log.error("No menu for component of class: " + o);
+    } else if (o == null) {
+      if (log.isInfoEnabled()) {
+	log.info("No menu item for null component (root?).");
+      }
+    } else if (log.isInfoEnabled())
+      log.info("No menu for component of class: " + o);
   }
 
   /**
