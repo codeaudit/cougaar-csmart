@@ -29,7 +29,9 @@ import java.awt.Dimension;
 import java.awt.dnd.*;
 import java.awt.datatransfer.*;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.ui.console.*;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
@@ -62,6 +64,7 @@ public class ExperimentTree extends DNDTree {
                              "Modifiable Component");
 
     private DefaultTreeModel model;
+    private Experiment experiment;
 
     private static class MyTransferable implements Transferable {
         Object theData;
@@ -89,9 +92,11 @@ public class ExperimentTree extends DNDTree {
         }
     }
 
-    public ExperimentTree(DefaultTreeModel model) {
+    public ExperimentTree(DefaultTreeModel model,
+                          Experiment experiment) {
         super(model);
         this.model = model;
+        this.experiment = experiment;
         setExpandsSelectedPaths(true);
         createLogger();
     }
@@ -173,58 +178,105 @@ public class ExperimentTree extends DNDTree {
     return false;
   }
 
-    public int addElement(Transferable t,
-                          DefaultMutableTreeNode target,
-                          DefaultMutableTreeNode before) {
-        DataFlavor[] flavors = t.getTransferDataFlavors();
-        int action = isDroppable(flavors, target);
-        if (action != DnDConstants.ACTION_NONE) {
-            DataFlavor flavor = flavors[0];
-            try {
-                DefaultMutableTreeNode root =
-                    (DefaultMutableTreeNode) model.getRoot();
-                if (target == root) {
-                    for (int i = 0, n = root.getChildCount(); i < n; i++) {
-                        DefaultMutableTreeNode node =
-                            (DefaultMutableTreeNode) root.getChildAt(i);
-                        Object o = node.getUserObject();
-                        if (SOCIETIES.equals(o) && flavor == societyFlavor
-                            || RECIPES.equals(o) && flavor == recipeFlavor) {
-                            target = node;
-                        } else {
-                            return DnDConstants.ACTION_NONE;
-                        }
-                    }
-                }
-                Object userData = t.getTransferData(flavor);
-                if (userData instanceof ModifiableComponent) {
-                    ModifiableComponent mcc =
-                        (ModifiableComponent) userData;
-                    if (!mcc.isEditable() && mcc.hasUnboundProperties())
-                        return DnDConstants.ACTION_NONE;
-                }
-                DefaultMutableTreeNode node =
-                    new DefaultMutableTreeNode(userData, false);
-                int ix = target.getChildCount();
-                if (before != null) {
-                    ix = model.getIndexOfChild(target, before);
-                }
-                if(log.isDebugEnabled()) {
-                  log.debug("Insert into " + target
-                            + " at " + ix
-                            + " before " + before);
-                }
-                model.insertNodeInto(node, target, ix);
-                selectNode(node);
-                return action;
-            } catch (Exception e) {
-              if(log.isErrorEnabled()) {
-                log.error("Exception", e);
-              }
-            }
+  /**
+   * Add a dropped element to the tree.
+   * Rejects duplicates.  An object is a duplicate
+   * if it has the same name as a child of the target, 
+   * and is not from the same tree.
+   * @param t the transferable object to drop
+   * @param target where to drop the object
+   * @param before before which node to drop it or null
+   * @return int the action as defined in DnDConstants
+   */
+  public int addElement(Transferable t,
+                        DefaultMutableTreeNode target,
+                        DefaultMutableTreeNode before) {
+    DataFlavor[] flavors = t.getTransferDataFlavors();
+    int action = isDroppable(flavors, target);
+    if (action == DnDConstants.ACTION_NONE)
+      return DnDConstants.ACTION_NONE;
+    DataFlavor flavor = flavors[0];
+    try {
+      DefaultMutableTreeNode root =
+        (DefaultMutableTreeNode) model.getRoot();
+      if (target == root) {
+        for (int i = 0, n = root.getChildCount(); i < n; i++) {
+          DefaultMutableTreeNode node =
+            (DefaultMutableTreeNode) root.getChildAt(i);
+          Object o = node.getUserObject();
+          if (SOCIETIES.equals(o) && flavor == societyFlavor
+              || RECIPES.equals(o) && flavor == recipeFlavor) {
+            target = node;
+          } else {
+            return DnDConstants.ACTION_NONE;
+          }
         }
-        return DnDConstants.ACTION_NONE;
+      }
+      // if we're adding a recipe that adds an agent that's
+      // in the experiment, then reject the recipe
+      Object userData = t.getTransferData(flavor);
+      if (userData instanceof RecipeComponent) {
+        if (!checkAdd((RecipeComponent)userData))
+          return DnDConstants.ACTION_NONE;
+      }
+      if (userData instanceof ModifiableComponent) {
+        ModifiableComponent mcc = (ModifiableComponent) userData;
+        if (!mcc.isEditable() && mcc.hasUnboundProperties())
+          return DnDConstants.ACTION_NONE;
+        // check for duplicates, if not dragging from same tree
+        String thisClassName = getClass().getName();
+        if (flavor instanceof CSMARTDataFlavor &&
+            !((CSMARTDataFlavor)flavor).getSourceClassName().equals(thisClassName)) {
+          String newName = mcc.getShortName();
+          int ix = target.getChildCount();
+          for (int i = 0; i < ix; i++) {
+            DefaultMutableTreeNode childNode = 
+              (DefaultMutableTreeNode)target.getChildAt(i);
+            Object targetChildData = childNode.getUserObject();
+            if (targetChildData instanceof ModifiableComponent &&
+                ((ModifiableComponent)targetChildData).getShortName().equals(newName)) 
+              return DnDConstants.ACTION_NONE;
+          }
+        }
+      }
+      DefaultMutableTreeNode node = 
+        new DefaultMutableTreeNode(userData, false);
+      int ix = target.getChildCount();
+      if (before != null) {
+        ix = model.getIndexOfChild(target, before);
+      }
+      if(log.isDebugEnabled()) {
+        log.debug("Insert into " + target
+                  + " at " + ix
+                  + " before " + before);
+      }
+      model.insertNodeInto(node, target, ix);
+      selectNode(node);
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("Exception", e);
+      }
+      action = DnDConstants.ACTION_NONE;
     }
+    return action;
+  }
+
+  private boolean checkAdd(RecipeComponent rc) {
+    AgentComponent[] recAgents = rc.getAgents();
+    if (recAgents != null && recAgents.length > 0) {
+      for (int j=0; j < recAgents.length; j++) {
+        if (!experiment.agentNameUnique(recAgents[j].getShortName())) {
+            // Need to remove recipe and inform user.
+            JOptionPane.showMessageDialog(null, 
+                                          "Experiment cannot contain two agents with the same name: " + recAgents[j].getShortName(),
+                                          "Recipe Add Aborted!",
+                                          JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+      }
+    }
+    return true;
+  }
 
   private void readObject(ObjectInputStream ois)
     throws IOException, ClassNotFoundException
