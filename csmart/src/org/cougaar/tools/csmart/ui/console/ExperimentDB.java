@@ -73,12 +73,9 @@ public class ExperimentDB {
       return (Hashtable)call("getTrialNames",experimentId);
   }
 
+
   public static String getTrialId(String experimentId) {
-    Hashtable dbTrialNames = getTrialNames(experimentId);
-    Set trialNamesSet = dbTrialNames.keySet();
-    Object[] trialNames = trialNamesSet.toArray();
-    String trialName = (String)trialNames[0];
-    return (String)dbTrialNames.get(trialName);
+      return (String)call("getUniqueTrialName",experimentId); 
   }
 
   /**
@@ -181,7 +178,7 @@ public class ExperimentDB {
    */
 
   public static String cloneExperiment(String experimentId, String newName) {
-    return "";
+      return (String)call("cloneExperiment",experimentId, newName);
   }
 
   /**
@@ -190,6 +187,7 @@ public class ExperimentDB {
    */
 
   public static void updateCMTAssembly(String experimentId) {
+      (String)call("updateCMTAssembly",experimentId);
   }
 
     /**Silk utility functions
