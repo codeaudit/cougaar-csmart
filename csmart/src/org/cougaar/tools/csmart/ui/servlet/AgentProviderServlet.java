@@ -66,7 +66,7 @@ public class AgentProviderServlet
   /**
    * @param support Support Servlet
    */
-  public void setSimpleServletSuppport(SimpleServletSupport support) {
+  public void setSimpleServletSupport(SimpleServletSupport support) {
     this.support = support;
     if ( !  ( "/CSMART_AgentProviderServlet".equals(support.getPath()) ) ) {
       support.getLog().error("Incorrect servlet path: " + support.getPath());

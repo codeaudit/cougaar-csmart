@@ -105,11 +105,7 @@ public class SearchServlet
   // cougaar hook
   SimpleServletSupport support;
 
-  /* Constructor 
-   * @param support Cougaar hook
-   */
-  public SearchServlet(SimpleServletSupport support) {
-    super();
+  public void setSimpleServletSupport(SimpleServletSupport support) {
     this.support = support;
   
     if ( !  ( "/CSMART_SearchServlet".equals(support.getPath()) ) ) {
