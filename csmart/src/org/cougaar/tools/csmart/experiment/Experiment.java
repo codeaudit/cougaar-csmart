@@ -813,7 +813,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
                        getExperimentID(), trialID, true, ch);
       setExperimentID(pdb.getExperimentId());
-      trialID = pdb.getTrialId();
+      //      trialID = pdb.getTrialId();
+      setTrialID(pdb.getTrialId()); // sets trial id and -D argument
 
       // For each node, create a GenericComponentData, and add it to the society
       for (Iterator i = hosts.iterator(); i.hasNext(); ) {
