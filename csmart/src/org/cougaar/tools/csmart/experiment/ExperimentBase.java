@@ -1539,6 +1539,8 @@ public abstract class ExperimentBase extends ModifiableConfigurableComponent imp
 
   public abstract void save(DBConflictHandler ch);
 
+  protected abstract void setDefaultNodeArguments();
+
   final class MyModificationListener implements ModificationListener, ConfigurableComponentListener {
     // tell listeners on experiment that experiment was modified
     public void modified(ModificationEvent e) {
