@@ -1188,6 +1188,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       properties.put("org.cougaar.configuration.password", 
                      CSMART.getDatabaseUserPassword());
       properties.put("org.cougaar.experiment.id", experiment.getTrialID());
+
+      properties.put("org.cougaar.node.name", node.getShortName());
     }
     try {
       properties.put("env.DISPLAY", InetAddress.getLocalHost().getHostName() +
