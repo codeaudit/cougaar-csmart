@@ -122,6 +122,8 @@ public class PopulateDb extends PDbBase {
     if (ch == null) throw new IllegalArgumentException("null conflict handler");
     this.conflictHandler = ch;
     this.cmtType = csaType;
+    this.hnaType = realcshnaType;
+    this.csmiType = realcsmiType;
     this.exptId = null;
     this.trialId = null;
     substitutions.put(":cmt_type:", cmtType);
@@ -275,6 +277,10 @@ public class PopulateDb extends PDbBase {
     throws SQLException, IOException {
     super();
     createLogger();
+    this.cmtType = cmtType;
+    this.hnaType = realcshnaType;
+    this.csmiType = realcsmiType;
+
     if (exptId != null) {
       this.exptId = exptId;
     } else {
