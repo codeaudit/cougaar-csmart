@@ -44,11 +44,12 @@ public class OrganizerTree extends DNDTree {
                              OrganizerTree.class,
                              "Society");
     public static final CSMARTDataFlavor impactFlavor =
-        new CSMARTDataFlavor(Impact.class,
+        new CSMARTDataFlavor(ImpactComponent.class,
                              null,
                              OrganizerTree.class,
                              "Impact");
     public static final CSMARTDataFlavor metricFlavor =
+      //        new CSMARTDataFlavor(MetricComponent.class,
         new CSMARTDataFlavor(Metric.class,
                              null,
                              OrganizerTree.class,
@@ -58,6 +59,11 @@ public class OrganizerTree extends DNDTree {
                              null,
                              OrganizerTree.class,
                              "Experiment");
+    public static final CSMARTDataFlavor componentFlavor =
+        new CSMARTDataFlavor(ModifiableConfigurableComponent.class,
+                             null,
+                             OrganizerTree.class,
+                             "Modifiable Component");
 
     private DefaultTreeModel model;
 
@@ -70,12 +76,15 @@ public class OrganizerTree extends DNDTree {
                 flavors = new DataFlavor[] {folderFlavor};
             else if (theData instanceof SocietyComponent)
                 flavors = new DataFlavor[] {societyFlavor};
-            else if (theData instanceof Impact)
+            else if (theData instanceof ImpactComponent)
                 flavors = new DataFlavor[] {impactFlavor};
+	    //            else if (theData instanceof MetricComponent)
             else if (theData instanceof Metric)
                 flavors = new DataFlavor[] {metricFlavor};
             else if (theData instanceof Experiment)
                 flavors = new DataFlavor[] {experimentFlavor};
+            else if (theData instanceof ModifiableConfigurableComponent)
+                flavors = new DataFlavor[] {componentFlavor};
             else
                 throw new IllegalArgumentException("Unknown node");
         }
@@ -127,7 +136,8 @@ public class OrganizerTree extends DNDTree {
                         if (cflavor.equals(societyFlavor)
                             || cflavor.equals(impactFlavor)
                             || cflavor.equals(metricFlavor)
-                            || cflavor.equals(experimentFlavor))
+                            || cflavor.equals(experimentFlavor)
+			    || cflavor.equals(componentFlavor))
                             return DnDConstants.ACTION_MOVE;
                     }
                 }
@@ -142,9 +152,12 @@ public class OrganizerTree extends DNDTree {
 	    if (node == getModel().getRoot()) 
 	      return false; // not draggable if it's the root node
 	    Object userObject = node.getUserObject();
+	    // FIXME!!! Should this be instanceof ModifiableConfigurableComponent?????
 	    if (userObject != null &&
 		(userObject instanceof SocietyComponent) &&
 		!((SocietyComponent)userObject).isEditable())
+//  		(userObject instanceof ModifiableConfigurableComponent) &&
+//  		!((ModifiableConfigurableComponent)userObject).isEditable())
 	      return false; // not draggable if it's a non-editable society
 	    return true;
 	    //            return node != getModel().getRoot();

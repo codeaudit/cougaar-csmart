@@ -100,8 +100,18 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void removeMetric(Metric metric) {
     metrics.remove(metric);
   }
+  public void removeComponent(ModifiableConfigurableComponent comp) {
+    if (comp instanceof SocietyComponent)
+      removeSociety((SocietyComponent)comp);
+    if (comp instanceof ImpactComponent)
+      removeImpact((ImpactComponent)comp);
+  }
   public int getSocietyComponentCount() {
     return societies.size();
+  }
+  public int getComponentCount() {
+    //    return societies.size() + impacts.size() + metrics.size();
+    return societies.size() + impacts.size();
   }
   public int getImpactCount() {
     return impacts.size();
@@ -118,6 +128,18 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public Metric getMetric(int i) {
     return (Metric) metrics.get(i);
   }
+  
+  public ModifiableConfigurableComponent getComponent(int i) {
+    if (i < getSocietyComponentCount())
+      return (ModifiableConfigurableComponent)getSocietyComponent(i);
+    else if (i < getImpactCount() + getSocietyComponentCount())
+      return (ModifiableConfigurableComponent)getImpact(i - getSocietyComponentCount());
+//      else
+//        return (ModifiableConfigurableComponent)(getMetric(i = getSocietyComponentCount() + getImpactCount()));
+    else
+      return null;
+  }
+      
   public String toString() {
     return getShortName();
   }
@@ -131,12 +153,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * and all of its societies are editable.
    * @return true if experiement is editable, false otherwise
    */
-
   public boolean isEditable() {
-    if (editable) { 
+    if (editable) {
       // make sure that societies are editable too
-      for (int i = 0; i < societies.size(); i++)
-	if (!((SocietyComponent)societies.get(i)).isEditable())
+      for (int i = 0; i < getComponentCount(); i++)
+	if (!((ModifiableConfigurableComponent)getComponent(i)).isEditable())
 	  return false;
       return true;
     }
@@ -147,11 +168,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * Set whether or not the experiment can be edited.
    * @param editable true if experiment is editable and false otherwise
    */
-
   public void setEditable(boolean editable) {
     this.editable = editable;
-    for (int i = 0; i < getSocietyComponentCount(); i++)
-      getSocietyComponent(i).setEditable(editable);
+    for (int i = 0; i < getComponentCount(); i++)
+      getComponent(i).setEditable(editable);
   }
 
   /**
@@ -159,7 +179,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * runnable whenever it's not being edited.
    * @return whether or not an experiment is runnable
    */
-
   public boolean isRunnable() {
     return runnable;
   }
@@ -169,7 +188,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * runnable whenever it's not being edited.
    * @param runnable whether or not an experiment is runnable
    */
-
   public void setRunnable(boolean runnable) {
     this.runnable = runnable;
   }
@@ -180,7 +198,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * and the copy can be edited.
    * @return true if experiment is running, false otherwise
    */
-
   public boolean isRunning() {
     for (int i = 0; i < societies.size(); i++)
       if (((SocietyComponent)societies.get(i)).isRunning())
@@ -192,7 +209,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * Returns true if this experiment is being monitored, false otherwise.
    * @return true if experiment is being monitored
    */
-
   public boolean isMonitored() {
     if (listeners == null) 
       return false;
@@ -208,7 +224,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * Stop after the current trial.
    * This invokes experimentStopped.
    */
-
   public void stop() {
     // TODO: stop the experiment after the current trial
     experimentStopped();
@@ -366,11 +381,29 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return agents;
   }
 
+  private List getAgentsInComponents() {
+    List agents = new ArrayList();
+    agents.addAll(getAgentsInSocieties());
+    agents.addAll(getAgentsInImpacts());
+    agents.addAll(getAgentsInMetrics());
+    return agents;
+  }
+
   private List getAgentsInImpacts() {
     List agents = new ArrayList();
     for (int i = 0; i < impacts.size(); i++) {
-      Impact impact = (Impact)impacts.get(i);
+      ImpactComponent impact = (ImpactComponent)impacts.get(i);
       agents.addAll(Arrays.asList(impact.getAgents()));
+    }
+    return agents;
+  }
+
+  private List getAgentsInMetrics() {
+    List agents = new ArrayList();
+    for (int i = 0; i < metrics.size(); i++) {
+      Metric impact = (Metric)impacts.get(i);
+      //      MetricComponent impact = (MetricComponent)impacts.get(i);
+      //      agents.addAll(Arrays.asList(impact.getAgents()));
     }
     return agents;
   }
@@ -378,6 +411,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public List getAgentsList() {
     List agents = getAgentsInSocieties();
     agents.addAll(getAgentsInImpacts());
+    agents.addAll(getAgentsInMetrics());
     return agents;
   }
   
@@ -502,9 +536,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     // get lists of unbound properties and their experimental values
     List properties = new ArrayList();
     List experimentValues = new ArrayList();
-    int n = getSocietyComponentCount();
+    int n = getComponentCount();
     for (int i = 0; i < n; i++) {
-      SocietyComponent society = getSocietyComponent(i);
+      ModifiableConfigurableComponent society = getComponent(i);
       List propertyNames = society.getPropertyNamesList();
       for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
 	Property property = society.getProperty((CompositeName)j.next());
@@ -592,14 +626,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * Get the number of trials. Recomputes the number of trials if necessary.
    * @return number of trials
    */
-
   public int getTrialCount() {
     if (hasValidTrials) 
       return numberOfTrials;
     ArrayList experimentValueCounts = new ArrayList(100);
-    int n = getSocietyComponentCount();
+    int n = getComponentCount();
     for (int i = 0; i < n; i++) {
-      SocietyComponent society = getSocietyComponent(i);
+      ModifiableConfigurableComponent society = getComponent(i);
       Iterator names = society.getPropertyNames();
       while (names.hasNext()) {
 	Property property = society.getProperty((CompositeName)names.next());
@@ -671,9 +704,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     hasValidTrials = true;
     return (Trial[])trials.toArray(new Trial[trials.size()]);
   }
-
-  
-			     
 }
 
 

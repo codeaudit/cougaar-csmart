@@ -33,6 +33,7 @@ import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.component.ImpactComponent;
+import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
 
 public class UnboundPropertyBuilder extends JPanel {
   private static final String REMOVE_MENU_ITEM = "Remove";
@@ -281,10 +282,10 @@ public class UnboundPropertyBuilder extends JPanel {
   /**
    * Clear out old property name/value pairs in table and display new ones.
    */
-
   private void displayEditorForNode(DefaultMutableTreeNode node) {
     if (node == null) return;
     Object o = (node.getUserObject());
+    // FIXME!!!! Must I add in the unbound properties from the Metrics & Impacts here??
     if (o instanceof SocietyComponent) {
       propModel.clear(); // clear out any previous table entries
       propModel.setComponentProperties((SocietyComponent) o);
@@ -296,7 +297,6 @@ public class UnboundPropertyBuilder extends JPanel {
    * Update societies, impacts and metrics in the experiment when the user
    * modifies the tree.
    */
-
   private void reconcileExperimentNodes() {
     int nSocieties = societies.getChildCount();
     SocietyComponent[] societyComponentsAry = new SocietyComponent[nSocieties];
@@ -311,13 +311,17 @@ public class UnboundPropertyBuilder extends JPanel {
     for (int i = 0; i < nImpacts; i++) {
       impactAry[i] =
         (ImpactComponent) ((DefaultMutableTreeNode) impacts.getChildAt(i)).getUserObject();
+      impactAry[i].setEditable(false);
     }
     experiment.setImpacts(impactAry);
     int nMetrics = metrics.getChildCount();
+    //    MetricComponent[] metricAry = new MetricComponent[nMetrics];
     Metric[] metricAry = new Metric[nMetrics];
     for (int i = 0; i < nMetrics; i++) {
       metricAry[i] =
         (Metric) ((DefaultMutableTreeNode) metrics.getChildAt(i)).getUserObject();
+      //        (MetricComponent) ((DefaultMutableTreeNode) metrics.getChildAt(i)).getUserObject();
+      //metricAry[i].setEditable(false);
     }
     experiment.setMetrics(metricAry);
     experiment.invalidateTrials(); // and force experiment to recreate trials
@@ -326,7 +330,6 @@ public class UnboundPropertyBuilder extends JPanel {
   /**
    * Display the correct popup menu.
    */
-
   private void doPopup(MouseEvent e) {
     TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
     if (selPath == null) return;
@@ -339,6 +342,7 @@ public class UnboundPropertyBuilder extends JPanel {
       popupMenu.show(tree, e.getX(), e.getY());
     } else if (o instanceof ImpactComponent) {
       popupMenu.show(tree, e.getX(), e.getY());
+      //    } else if (o instanceof MetricComponent) {
     } else if (o instanceof Metric) {
       popupMenu.show(tree, e.getX(), e.getY());
     } else if (o instanceof Experiment) {
@@ -355,7 +359,6 @@ public class UnboundPropertyBuilder extends JPanel {
   /**
    * Remove all children of the specified parent from the tree.
    */
-
   private void removeAllChildren(DefaultMutableTreeNode parent) {
     for (int i = 0; i < parent.getChildCount(); i++) {
       DefaultMutableTreeNode node = 
@@ -363,8 +366,8 @@ public class UnboundPropertyBuilder extends JPanel {
       // make removed society component editable again
       Object userObject = node.getUserObject();
       if (userObject != null &&
-	  userObject instanceof SocietyComponent)
-	((SocietyComponent)userObject).setEditable(true);
+	  userObject instanceof ModifiableConfigurableComponent)
+	((ModifiableConfigurableComponent)userObject).setEditable(true);
     }
     parent.removeAllChildren();
     model.nodeStructureChanged(parent);
@@ -373,7 +376,6 @@ public class UnboundPropertyBuilder extends JPanel {
   /**
    * Remove selected items from the tree.
    */
-
   private void removeSelectedItems() {
     TreePath[] selectionPaths = tree.getSelectionPaths();
     if (selectionPaths == null)
@@ -389,8 +391,8 @@ public class UnboundPropertyBuilder extends JPanel {
       // make removed society component editable again
       Object userObject = nodes[i].getUserObject();
       if (userObject != null &&
-	  userObject instanceof SocietyComponent)
-	((SocietyComponent)userObject).setEditable(true);
+	  userObject instanceof ModifiableConfigurableComponent)
+	((ModifiableConfigurableComponent)userObject).setEditable(true);
     }
     propModel.clear(); // selected items were removed, so clear prop table
   }
@@ -417,6 +419,7 @@ public class UnboundPropertyBuilder extends JPanel {
    * Add metric component to tree.
    */
 
+  //  private void addMetric(MetricComponent metric) {
   private void addMetric(Metric metric) {
     DefaultMutableTreeNode node = new DefaultMutableTreeNode(metric, false);
     model.insertNodeInto(node, metrics, metrics.getChildCount());

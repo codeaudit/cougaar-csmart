@@ -61,7 +61,6 @@ import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
  * build, test, control, monitor and analyze
  * a society.
  */
-
 public class CSMART extends JFrame implements ActionListener, Observer, TreeSelectionListener {
   public static String MONITOR = "Society Monitor";
 
@@ -101,7 +100,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   };
 
   private static final String[] tooltips = {
-    "Specify properties of a society.",
+    "Specify properties of a society or other configurable component.",
     "", 
     "Configure an experiment.",
     "Start, stop and abort experiments.",
@@ -200,6 +199,13 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 
   public SocietyComponent getSociety() {
     SocietyComponent[] societies = organizer.getSelectedSocieties();
+    if (societies == null || societies.length == 0)
+      return null;
+    return societies[0];
+  }
+
+  public ModifiableConfigurableComponent getComponent() {
+    ModifiableConfigurableComponent[] societies = organizer.getSelectedComponents();
     if (societies == null || societies.length == 0)
       return null;
     return societies[0];
@@ -330,25 +336,24 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   /**
    * ActionListener interface.
    */
-
-  public void runBuilder(SocietyComponent cc, boolean alwaysNew,
+  public void runBuilder(ModifiableConfigurableComponent cc, boolean alwaysNew,
 			 boolean openForEditing) {
     if (!cc.isEditable() && openForEditing) {
       int result = JOptionPane.showConfirmDialog(this,
-				    "Society is not editable; create copy?",
-				    "Society Not Editable",
+				    "Component is not editable; create copy?",
+				    "Component Not Editable",
 				    JOptionPane.YES_NO_OPTION,
 				    JOptionPane.WARNING_MESSAGE);
       if (result != JOptionPane.YES_OPTION)
 	return;
-      cc = organizer.copySociety(cc, null);
+      cc = organizer.copyComponent(cc, null);
     }
     // note that cc is guaranteed non-null when this is called
     Class[] paramClasses = { ModifiableConfigurableComponent.class };
     Object[] params = new Object[1];
     params[0] = cc;
     createTool("Configuration Builder", PropertyBuilder.class, 
-	       alwaysNew, cc.getSocietyName(), (ModifiableConfigurableComponent)cc,
+	       alwaysNew, cc.getShortName(), (ModifiableConfigurableComponent)cc,
 	       paramClasses, params);
   }
 
@@ -356,10 +361,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * If an tree builder is not editing this society,
    * then start a new tree builder to edit this society.
    */
-
-  private void runMultipleBuilders(SocietyComponent[] societies) {
+  private void runMultipleBuilders(ModifiableConfigurableComponent[] societies) {
     for (int i = 0; i < societies.length; i++) {
-      String s = "Configuration Builder: " + societies[i].getSocietyName();
+      String s = "Configuration Builder: " + societies[i].getShortName();
       if (NamedFrame.getNamedFrame().getFrame(s) == null) 
 	runBuilder(societies[i], true, true);
     }
@@ -435,6 +439,11 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
                                   "No Society Selected", JOptionPane.ERROR_MESSAGE);
   }
 
+  private void noComponentSelected() {
+    JOptionPane.showMessageDialog(this, "Select a component first",
+                                  "No Component Selected", JOptionPane.ERROR_MESSAGE);
+  }
+
   private void noExperimentSelected() {
     JOptionPane.showMessageDialog(this, "Select an experiment first",
                                   "No Experiment Selected", JOptionPane.ERROR_MESSAGE);
@@ -484,9 +493,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	societies = organizer.getSelectedSocieties();
       }
       if (societies.length == 1)
-	runBuilder(societies[0], false, true);
+	runBuilder((ModifiableConfigurableComponent)societies[0], false, true);
       else if (societies.length > 1)
-	runMultipleBuilders(societies);
+	runMultipleBuilders((ModifiableConfigurableComponent [])societies);
     } else if (s.equals(views[1])) {
     } else if (s.equals(views[2])) {
       Experiment[] experiments = organizer.getSelectedExperiments();
