@@ -374,7 +374,8 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     try {
       writer.println("[ Cluster ]");
       writer.println("class = " + ac.getClassName());
-      writer.println("uic = \"" + ac.getName() + "\"");
+      AgentAssetData aad = ac.getAgentAssetData();
+      writer.println("uic = " + aad.getUIC());
       writer.println("cloned = false");
       writer.println();
       writer.println("[ Plugins ]");
@@ -420,23 +421,27 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.println(assetData.getAssetClass());
       writer.println();
 
-      if(!assetData.isEntity()) {
-	if (assetData.getUniqueID() != null) {
+//       if(!assetData.isEntity()) {
+	if (assetData.getUniqueID() != null &&
+            !assetData.getUniqueID().equals("")) {
 	  writer.print("[UniqueId] ");
 	  writer.println(quote(assetData.getUniqueID()));
 	  writer.println();
 	}
 
-	if(assetData.getUnitName() != null) {
+	if(assetData.getUnitName() != null &&
+           !assetData.getUnitName().equals("")) {
 	  writer.print("[UnitName] ");
 	  writer.println(assetData.getUnitName());
 	  writer.println();
 	}
 	
-	writer.print("[UIC] ");
-	writer.println(quote(assetData.getUIC()));
-	writer.println();
-      }
+        if(!assetData.isNewIniFormat()) {
+          writer.print("[UIC] ");
+          writer.println(quote(assetData.getUIC()));
+          writer.println();
+        }
+//       }
       
       // Write Relationships.
       Iterator iter = assetData.getRelationshipIterator();
@@ -444,31 +449,49 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       while(iter.hasNext()) {
 	RelationshipData rel = (RelationshipData)iter.next();
 
-	if (assetData.isEntity()) {	  
-	  writer.print(rel.getRole() + "  ");
-	  writer.print(quote(rel.getItem()) + "  ");
-	  writer.print(quote(rel.getTypeId()) + "  ");
-	  writer.print(quote(rel.getSupported()) + "  ");
-          long startTime = rel.getStartTime();
-          long endTime = rel.getEndTime();
-          if (startTime == 0L || endTime == 0L) {
-            writer.print(quote("") + "  ");
+        if(assetData.isNewIniFormat()) {
+          if(log.isInfoEnabled()) {
+            log.info("Writing out new INI file format");
+          }
+          if (assetData.isEntity()) {	  
+            writer.print(rel.getType() + "  ");
+            writer.print(quote(rel.getItemId()) + "  ");
+            writer.print(quote(rel.getTypeId()) + "  ");
+            writer.print(quote(rel.getSupported()) + "  ");
+            long startTime = rel.getStartTime();
+            long endTime = rel.getEndTime();
+            if (startTime == 0L || endTime == 0L) {
+              writer.print(quote("") + "  ");
+              writer.println(quote(""));
+            } else {
+              writer.print(quote(myDateFormat.format(new Date(startTime))) + "  ");
+              writer.println(quote(myDateFormat.format(new Date(endTime))));
+            }
+          } else if(assetData.isOrg()) {
+            writer.print(rel.getType() + " ");
+            writer.print(quote(rel.getSupported()) + " ");
+            writer.println(quote(rel.getRole()));
+          } else if(assetData.isTPOrg()){
+            // To Do: Deals with Realtionship.ini file
+          } else {
+            throw new RuntimeException("Asset Data Type Must be set: Entity, Org or TPOrg");
+          }
+        } else {
+          if(log.isInfoEnabled()) {
+            log.info("Writing out old INI file format");
+          }
+          
+          if(rel.getRole().equalsIgnoreCase("Subordinate")) {
+            writer.print("Superior  ");
+            writer.print(quote(rel.getSupported()) + " ");
             writer.println(quote(""));
           } else {
-            writer.print(quote(myDateFormat.format(new Date(startTime))) + "  ");
-            writer.println(quote(myDateFormat.format(new Date(endTime))));
+            writer.print(rel.getType() + " ");
+            writer.print(quote(rel.getSupported()) + " ");
+            writer.println(quote(rel.getRole()) + " ");
           }
-	} else if(assetData.isOrg()) {
-	  writer.print(rel.getType() + " ");
-	  writer.print(quote(rel.getSupported()) + " ");
-	  writer.println(quote(rel.getRole()));
-	} else if(assetData.isTPOrg()){
-	  // To Do: Deals with Realtionship.ini file
-	} else {
-	  throw new RuntimeException("Asset Data Type Must be set: Entity, Org or TPOrg");
-	}
-      }		    
-      
+        }
+      }
       writer.println();
 
       iter = assetData.getPropGroupsIterator();
