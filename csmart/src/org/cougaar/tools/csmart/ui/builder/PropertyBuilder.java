@@ -28,16 +28,15 @@ import java.net.URL;
 
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.component.ABCSocietyComponent;
-import org.cougaar.tools.csmart.ui.component.SocietyComponent;
+import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 
 /**
  * User interface that supports building a society.
  */
-
 public class PropertyBuilder extends JFrame implements ActionListener {
   private PropertyEditorPanel propertyEditor;
-  private SocietyComponent societyComponent;
+  private ModifiableConfigurableComponent configComponent;
   private boolean isEditable; // remember if society was editable on entering
   private static final String FILE_MENU = "File";
   private static final String EXIT_MENU_ITEM = "Exit";
@@ -53,8 +52,8 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     HELP_MENU_ITEM, ABOUT_CSMART_ITEM
   };
 
-  public PropertyBuilder(SocietyComponent society) {
-    societyComponent = society;
+  public PropertyBuilder(ModifiableConfigurableComponent society) {
+    configComponent = society;
     // initialize menus and gui panels
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
@@ -80,8 +79,8 @@ public class PropertyBuilder extends JFrame implements ActionListener {
       }
     });
 
-    isEditable = societyComponent.isEditable();
-    propertyEditor = new PropertyEditorPanel(societyComponent);
+    isEditable = configComponent.isEditable();
+    propertyEditor = new PropertyEditorPanel(configComponent);
     getContentPane().setLayout(new BorderLayout());
     getContentPane().add(propertyEditor, BorderLayout.CENTER);
 
@@ -92,7 +91,7 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   private void exit() {
     // before exiting, restore society's editability
     if (isEditable)
-      societyComponent.setEditable(isEditable);
+      configComponent.setEditable(isEditable);
   }
 
   public void actionPerformed(ActionEvent e) {
@@ -114,10 +113,10 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     }	       
   }
 
-  public void reinit(SocietyComponent newSocietyComponent) {
-    societyComponent = newSocietyComponent;
-    isEditable = newSocietyComponent.isEditable();
-    propertyEditor.reinit(societyComponent);
+  public void reinit(ModifiableConfigurableComponent newModifiableConfigurableComponent) {
+    configComponent = newModifiableConfigurableComponent;
+    isEditable = newModifiableConfigurableComponent.isEditable();
+    propertyEditor.reinit(configComponent);
   }
 
   public static void main(String[] args) {

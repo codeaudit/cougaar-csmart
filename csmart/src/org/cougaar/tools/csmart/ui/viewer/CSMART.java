@@ -53,6 +53,7 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.core.society.Bootstrapper;
+import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
 
 /**
  * Top level CSMART user interface.
@@ -343,11 +344,11 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       cc = organizer.copySociety(cc, null);
     }
     // note that cc is guaranteed non-null when this is called
-    Class[] paramClasses = { SocietyComponent.class };
+    Class[] paramClasses = { ModifiableConfigurableComponent.class };
     Object[] params = new Object[1];
     params[0] = cc;
     createTool("Configuration Builder", PropertyBuilder.class, 
-	       alwaysNew, cc.getSocietyName(), cc,
+	       alwaysNew, cc.getSocietyName(), (ModifiableConfigurableComponent)cc,
 	       paramClasses, params);
   }
 
@@ -554,7 +555,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	  if (tool instanceof ExperimentBuilder)
 	    ((ExperimentBuilder)tool).reinit((Experiment)argument);
 	  else if (tool instanceof PropertyBuilder)
-	    ((PropertyBuilder)tool).reinit((SocietyComponent)argument);
+	    ((PropertyBuilder)tool).reinit((ModifiableConfigurableComponent)argument);
 	  else if (tool instanceof Analyzer)
 	    ((Analyzer)tool).reinit((Experiment)argument);
 	}

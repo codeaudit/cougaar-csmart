@@ -51,6 +51,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.server.*;
 import org.cougaar.tools.server.rmi.ClientCommunityController;
 import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
 
 public class CSMARTConsole extends JFrame implements ChangeListener {
   // must match port used in org.cougaar.tools.server package
@@ -354,7 +355,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 			 new HostConfigurationBuilder(experiment));
     // TODO: society component should be non-editable at this point
     configTabbedPane.add("Trial Values", 
-			 new PropertyEditorPanel(societyComponent));
+			 new PropertyEditorPanel((ModifiableConfigurableComponent)societyComponent));
 
     // create tabbed panes for running nodes, tabs are added dynamically
     tabbedPane = new JTabbedPane();
