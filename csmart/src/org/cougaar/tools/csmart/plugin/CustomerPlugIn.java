@@ -135,7 +135,7 @@ public class CustomerPlugIn extends CSMARTPlugIn {
     publishAdd(happiness);
 
     // Load in the config file.
-    Vector pv = getParameters();
+    Vector pv = getParameters() != null ? new Vector(getParameters()) : null;
     if (pv == null || pv.size() < 3) {
       throw new RuntimeException(
 				 "CustomerPlugIn expects parameters, SIMStartTime, SIMStopTime and TaskFileName.");
@@ -338,9 +338,9 @@ public class CustomerPlugIn extends CSMARTPlugIn {
     // Publish Tasks as read in at prescribed intervals
     // If one of my Tasks is changed, look at the AllocationResult
     // Based on it being Success or Failure, publish a HappinessChangedEvent
-    if (log.isApplicable(log.VERY_VERBOSE)) {
-      log.log(this, log.VERY_VERBOSE, "execute:" + this);
-    }
+//      if (log.isApplicable(log.VERY_VERBOSE)) {
+//        log.log(this, log.VERY_VERBOSE, "execute:" + this);
+//      }
 
     Enumeration changedPEs = peSub.getChangedList();
     while(changedPEs.hasMoreElements()) {
@@ -470,9 +470,6 @@ public class CustomerPlugIn extends CSMARTPlugIn {
 	}
       }
     } // end of while loop over added Tasks
-    if (log.isApplicable(log.VERY_VERBOSE)) {
-      log.log(this, log.VERY_VERBOSE, "execute: " + this + " done taskSub while loop, exitting execute");
-    }
   } // end of execute()
 
   /**

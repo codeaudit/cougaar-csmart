@@ -21,10 +21,16 @@
 
 package org.cougaar.tools.csmart.plugin;
 
+import org.cougaar.domain.planning.ldm.DomainService;
+import org.cougaar.domain.planning.ldm.RootFactory;
+
 import org.cougaar.core.blackboard.BlackboardService;
+import org.cougaar.core.component.ServiceRevokedListener;
+import org.cougaar.core.component.ServiceRevokedEvent;
 import org.cougaar.core.cluster.Alarm;
 import org.cougaar.core.cluster.Subscription;
-import org.cougaar.core.plugin.PlugInAdapter;
+import org.cougaar.core.cluster.ClusterIdentifier;
+import org.cougaar.core.plugin.ComponentPlugin;
 import org.cougaar.core.society.UID;
 
 import org.cougaar.tools.csmart.ldm.CSMARTFactory;
@@ -34,12 +40,11 @@ import org.cougaar.util.StateModelException;
 import org.cougaar.util.UnaryPredicate;
 
 /**
- * CSMART Base PlugIn.
- *
- * @see org.cougaar.core.plugin.PlugInAdapter
+ * CSMART Base PlugIn. Provide support for publishing after a delay and convenience methods.<br>
+ * Get a hook to the <code>RootFactory</code> and the <code>CSMARTFactory</code>
  */
 public abstract class CSMARTPlugIn
-  extends PlugInAdapter
+    extends ComponentPlugin
 {
 
   /**
@@ -53,8 +58,13 @@ public abstract class CSMARTPlugIn
   // CSMART hooks, i.e. CSMARTFactory, etc
   //
 
+  private DomainService domainService = null;
+
   /** CSMART factory */
   protected CSMARTFactory theCSMARTF;
+
+  /** Root LDM Factory */
+  protected RootFactory theLDMF;
 
   /** Identifier of PlugIn */
   private UID id = null;
@@ -65,7 +75,6 @@ public abstract class CSMARTPlugIn
   // 
   // constructor
   //
-
   public CSMARTPlugIn() {
   }
 
@@ -84,25 +93,47 @@ public abstract class CSMARTPlugIn
   //
 
   /** Watch for who we are plugging into **/
-  public void load(Object object) throws StateModelException {
-    if (getThreadingChoice() == UNSPECIFIED_THREAD) {
-      setThreadingChoice(SHARED_THREAD);  // deprecated, but okay for now
-    }
-    super.load(object);
+  public void load() throws StateModelException {
+    // FIXME!!! What about ThreadingChoice??
+    super.load();
+    domainService = (DomainService)
+      getServiceBroker().getService(this, DomainService.class, 
+				    new ServiceRevokedListener() {
+					public void serviceRevoked(ServiceRevokedEvent re) {
+					  if (DomainService.class.equals(re.getService()))
+					    domainService  = null;
+					}
+				      });        
     // get the CSMART factory
     this.theCSMARTF = 
-      ((this.theLDM != null) ? 
-       ((CSMARTFactory)(this.theLDM).getFactory("csmart")) :
+      ((domainService != null) ?
+       ((CSMARTFactory)domainService.getFactory("csmart"))  :
        null);
+    
+    // Also get the Root factory
+    this.theLDMF =
+      ((domainService != null) ?
+       ((RootFactory)domainService.getFactory()) : null);
+    
     if (this.theCSMARTF == null) {
       throw new RuntimeException(
         "Loaded plugin "+this+" without CSMART Factory? Did you include the csmart domain in configs/common/LDMDomains.ini?");
     }
+    
     // Give each PlugIn a UID to uniquely identify it
     this.id = theCSMARTF.getNextUID();
     this.log = theCSMARTF.getLogStream();
-  }
+  } // end of load()
 
+  // A couple convenience functions to provide backwards compatibility
+  protected Subscription subscribe(UnaryPredicate pred) {
+    return getBlackboardService().subscribe(pred);
+  }
+  
+  protected ClusterIdentifier getClusterIdentifier() {
+    return getBindingSite().getAgentIdentifier();
+  }
+  
   //
   // Timer related functions
   //
@@ -122,7 +153,8 @@ public abstract class CSMARTPlugIn
       SyncAlarm sa = 
         new SyncAlarm(
             (currentTimeMillis() + delayMillis));
-      getAlarmService().addAlarm(sa);
+      alarmService.addAlarm(sa);
+      //      getAlarmService().addAlarm(sa);
       synchronized (sa) {
         try {
           sa.wait();
@@ -136,6 +168,11 @@ public abstract class CSMARTPlugIn
   // LogPlan changes publishing
   //
 
+  // A convenience backwards-compatibility method
+  protected final void publishAdd(Object o) {
+    getBlackboardService().publishAdd(o);
+  }
+
   /**
    * Equivalent to
    *   <tt>publishAddAfter(o, 0, pred)</tt>.
@@ -145,7 +182,7 @@ public abstract class CSMARTPlugIn
   protected final void publishAdd(Object o, UnaryPredicate pred) {
     if ((pred == null) ||
         (pred.execute(o))) {
-      publishAdd(o);
+      getBlackboardService().publishAdd(o);
     } else {
       // pred cancelled the add
     }
@@ -211,17 +248,22 @@ public abstract class CSMARTPlugIn
             o,
             (currentTimeMillis() + delayMillis), 
             pred);
-      getAlarmService().addAlarm(dpa);
+      alarmService.addAlarm(dpa);
     }
   }
 
+  // Convenience backwards-compatibility
+  protected final void publishChange(Object o) {
+    getBlackboardService().publishChange(o);
+  }
+  
   /**
    * @see #publishAdd(Object,UnaryPredicate)
    */
   protected final void publishChange(Object o, UnaryPredicate pred) {
     if ((pred == null) ||
         (pred.execute(o))) {
-      publishChange(o);
+      getBlackboardService().publishChange(o);
     } else {
       // pred cancelled the change
     }
@@ -269,8 +311,13 @@ public abstract class CSMARTPlugIn
             o,
             (currentTimeMillis() + delayMillis),
             pred);
-      getAlarmService().addAlarm(dpa);
+      alarmService.addAlarm(dpa);
     }
+  }
+
+  // Convenience
+  protected final void publishRemove(Object o) {
+    getBlackboardService().publishRemove(o);
   }
 
   /**
@@ -279,7 +326,7 @@ public abstract class CSMARTPlugIn
   protected final void publishRemove(Object o, UnaryPredicate pred) {
     if ((pred == null) ||
         (pred.execute(o))) {
-      publishRemove(o);
+      getBlackboardService().publishRemove(o);
     } else {
       // pred cancelled the remove
     }
@@ -327,11 +374,13 @@ public abstract class CSMARTPlugIn
             o,
             (currentTimeMillis() + delayMillis),
             pred);
-      getAlarmService().addAlarm(dpa);
+      alarmService.addAlarm(dpa);
     }
   }
 
-
+  /////////////////////////////////////////
+  // More alarm methods
+  
   /**
    * <code>Alarm</code> used by <tt>waitMillis</tt>.
    */
@@ -565,16 +614,16 @@ public abstract class CSMARTPlugIn
   /** call initialize within an open transaction. **/
   protected final void prerun() {
     try {
-      super.openTransaction();
+      getBlackboardService().openTransaction();
+      //      super.openTransaction();
       setupSubscriptions();
     } catch (Exception e) {
       synchronized (System.err) {
-        System.err.println(
-            getClusterIdentifier().toString()+"/"+this+" caught "+e);
+        System.err.println(getClusterIdentifier().toString()+"/"+this+" caught "+e);
         e.printStackTrace();
       }
     } finally {
-      closeTransaction(false);
+      getBlackboardService().closeTransaction(false);
     }
   }
 
@@ -590,23 +639,24 @@ public abstract class CSMARTPlugIn
    * @See execute() documentation for details
    **/
   protected final void cycle() {
-    boolean doExecute = false; // Synonymous with resetTransaction
+    //boolean doExecute = false; // Synonymous with resetTransaction
     try {
-      super.openTransaction();
-      if (wasAwakened() || 
-          (getBlackboardService().haveCollectionsChanged())) {
-        doExecute = true;
+        getBlackboardService().openTransaction();
+//      super.openTransaction();
+	// FIXME!!! Replace this if block?
+        //      if (wasAwakened() || 
+        //getBlackboardService().haveCollectionsChanged()) {
+        //doExecute = true;
         execute();
-      }
+        //}
     } catch (Exception e) {
       synchronized (System.err) {
-        System.err.println(
-            getClusterIdentifier().toString()+"/"+this+" caught "+e);
+        System.err.println(getClusterIdentifier().toString()+"/"+this+" caught "+e);
         e.printStackTrace();
       }
-      doExecute = true;
+      //doExecute = true;
     } finally {
-      closeTransaction(doExecute);
+      getBlackboardService().closeTransaction(true);
     }
   }
 
@@ -618,4 +668,5 @@ public abstract class CSMARTPlugIn
    **/
   protected abstract void execute();
 
-}
+} // end of CSMARTPlugIn.java
+

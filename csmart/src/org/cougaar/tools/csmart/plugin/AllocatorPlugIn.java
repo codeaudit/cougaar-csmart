@@ -465,7 +465,7 @@ public class AllocatorPlugIn
    */
   protected void parseTemplateRules() throws Exception {
     // read the filename from our parameters
-    Vector params = getParameters();
+    Vector params = getParameters() != null ? new Vector(getParameters()) : null;
     int nparams = ((params != null) ? params.size() : 0);
 
 //      if(log.isApplicable(log.VERY_VERBOSE)) {
@@ -594,9 +594,9 @@ public class AllocatorPlugIn
     // get the current time
     long currTime = currentTimeMillis();
 
-    if(log.isApplicable(log.VERY_VERBOSE)) {
-      log.log(this, log.VERY_VERBOSE, "execute:" + this + ":entering");
-    }
+//      if(log.isApplicable(log.VERY_VERBOSE)) {
+//        log.log(this, log.VERY_VERBOSE, "execute:" + this + ":entering");
+//      }
 
     //
     // Watch for added Assets

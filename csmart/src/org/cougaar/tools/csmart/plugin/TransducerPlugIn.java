@@ -199,7 +199,7 @@ public class TransducerPlugIn extends CSMARTPlugIn {
    * </pre>
    */
   private void parseParameters() {
-    Vector pv = getParameters();
+    Vector pv = getParameters() != null ? new Vector(getParameters()) : null;
     if (pv == null) {
       throw new RuntimeException("TranducerPlugIn expects parameters, got none");
     }

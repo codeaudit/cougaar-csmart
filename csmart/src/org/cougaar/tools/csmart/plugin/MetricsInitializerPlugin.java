@@ -1,4 +1,3 @@
-
 /*
  * <copyright>
  *  Copyright 1997-2001 BBNT Solutions, LLC
@@ -34,7 +33,7 @@ import org.cougaar.util.UnaryPredicate;
 import java.util.*;
 
 /**
- * MetricsControlPlugIn : Launch a number of tasks and wait
+ * MetricsInitializerPlugIn : Launch a number of tasks and wait
  * for them to flow through the system, measuring the time and memory
  * expended. We can also open a back door to a controller process to
  * publish the outcome.
@@ -141,7 +140,7 @@ public class MetricsInitializerPlugin
   
   public void setupSubscriptions() 
   {
-    Vector params = getParameters();
+    Vector params = getParameters() != null ? new Vector(getParameters()) : null;
 
     if ((params.size() < 2) ||
         (params.size() > 4)) {
@@ -186,9 +185,6 @@ public class MetricsInitializerPlugin
     sampleAllocations  = (IncrementalSubscription) subscribe(new ControlPredicate(Verb_Sample));
     // Verb.getVerb("Finish");
     finishAllocations = (IncrementalSubscription) subscribe(new ControlPredicate(Verb_Finish));
-
-    // Set up GUI to watch the flow of tasks
-    //    ScalabilityUtils.createGUI(buttonLabels, "Scalability", listener);
   }
 
   /**
@@ -203,7 +199,7 @@ public class MetricsInitializerPlugin
   {
     switch (state) {
     case INITIAL:
-      // No point in looking for metrics providers if there ate no local
+      // No point in looking for metrics providers if there are no local
       // Assets
       if (localAssets.size() > 0) {
         for (Iterator iterator = localAssets.getCollection().iterator();
@@ -225,10 +221,8 @@ public class MetricsInitializerPlugin
       break;
 
     case STARTING:
-     
       if (checkControlTasks(startAllocations)) {
         startTime = System.currentTimeMillis();
-
 
 	startRunning();
 	
@@ -240,12 +234,9 @@ public class MetricsInitializerPlugin
 
     case SAMPLING:
       // Keep tabs on the society
-      //checkRootTasks();         // Keep this up to date
       if (checkControlTasks(sampleAllocations)) {
 	// OK, done with sampling. Go back to running
         setCurrentState(RUNNING);
-	// Keep the system going
-        //fillTaskQueue();
       } else {
 	// Only want to break and wait to be called again
 	// if we are still in the SAMPLING state.
@@ -258,7 +249,6 @@ public class MetricsInitializerPlugin
     case RUNNING:
       // Without this next, there's no way to stop!
       // we'll never go to the "FINISHING" state
-      
       if (doneRunning()) {
 	finish();               // All root tasks have been sent,
 	break;
@@ -271,9 +261,6 @@ public class MetricsInitializerPlugin
         startSampleTimer();     // Restart
         break;
       }
-
-      // otherwise, keep the society running
-      //fillTaskQueue();          // Keep the task queue topped off
       break;
 
     case FINISHING:
@@ -384,4 +371,53 @@ public class MetricsInitializerPlugin
     }
     //System.exit(0);
   }
+
+  //////////////////////////////////////////////
+  // Helper functions below here
+  
+  /** like super.wakeAfter() except always in real (wallclock) time.
+   **/
+  private Alarm wakeAfterRealTime(long delayTime) { 
+    if (delayTime<=0) {
+      System.err.println("\nwakeAfterRealTime("+delayTime+") is in the past!");
+      Thread.dumpStack();
+      delayTime=1000;
+    }
+
+    long absTime = System.currentTimeMillis()+delayTime;
+    PluginAlarm pa = new PluginAlarm(absTime);
+    alarmService.addRealTimeAlarm(pa);
+    return pa;
+  }
+
+  /**
+   * Helper class - a simple Alarm
+   */
+  class PluginAlarm implements Alarm {
+    private long expiresAt;
+    private boolean expired = false;
+
+    public PluginAlarm (long expirationTime) {
+      expiresAt = expirationTime;
+    }
+    public long getExpirationTime() { return expiresAt; }
+
+    public synchronized void expire() {
+      if (!expired) {
+        expired = true;
+        blackboard.signalClientActivity();
+      }
+    }
+    public boolean hasExpired() { return expired; }
+    public synchronized boolean cancel() {
+      boolean was = expired;
+      expired=true;
+      return was;
+    }
+    public String toString() {
+      return "<PluginAlarm "+expiresAt+
+        (expired?"(Expired) ":" ")+
+        "for "+this.toString()+">";
+    }
+  } // end of PluginAlarm class definition
 }

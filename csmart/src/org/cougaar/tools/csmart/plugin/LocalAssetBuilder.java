@@ -84,7 +84,7 @@ public class LocalAssetBuilder
    * must be listed <u>FIRST</u> in the "*.INI" file!.
    */
   public void setupSubscriptions() {
-    List pv = getParameters();
+    List pv = getParameters() != null ? new ArrayList(getParameters()) : null;
     int pvSize = ((pv != null) ? pv.size() : 0);
     if (pvSize > 0) {
       createLocalAssets((String)pv.get(0));
@@ -118,7 +118,7 @@ public class LocalAssetBuilder
 
     // create the local asset prototype
     Asset proto = 
-      getFactory().createPrototype(
+      theLDMF.createPrototype(
           "org.cougaar.tools.csmart.ldm.asset.LocalAsset",
           PROTO_NAME);
 
@@ -206,20 +206,20 @@ public class LocalAssetBuilder
 
     // create the instance
     LocalAsset la = (LocalAsset)
-      getFactory().createInstance(
+      theLDMF.createInstance(
           proto,
           itemId);
 
     // set the inventory model
     NewSimpleInventoryPG nsiPG = (NewSimpleInventoryPG)
-      getFactory().createPropertyGroup(
+      theLDMF.createPropertyGroup(
           SimpleInventoryPG.class);
     nsiPG.setInvBG(siBG);
     la.setSimpleInventoryPG(nsiPG);
 
     // set the roles
     NewRolesPG nrPG = (NewRolesPG)
-      getFactory().createPropertyGroup(
+      theLDMF.createPropertyGroup(
           RolesPG.class);
     nrPG.setRoles(roles);
     la.setRolesPG(nrPG);

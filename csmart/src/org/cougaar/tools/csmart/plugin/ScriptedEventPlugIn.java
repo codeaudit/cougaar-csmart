@@ -76,7 +76,7 @@ public class ScriptedEventPlugIn
     }
     
     // Load in the config file.
-    Vector pv = getParameters();
+    Vector pv = getParameters() != null ? new Vector(getParameters()) : null;
     if(pv == null ) {
       throw new RuntimeException("ScriptedEventPlugIn expects parameters, got none");
     }
