@@ -312,23 +312,50 @@ public class CSMARTConsole extends JFrame {
 	markNodeDead(nodeName, false);
 	continue;
       }
+
       RemoteProcess rp = null;
       synchronized (runningNodesLock) {
 	rp = (RemoteProcess)runningNodes.get(nodeName);
       }
+
       if (rp == null) {
-	if (log.isWarnEnabled())
-	  log.warn("Remote process suddenly null for " + nodeName + ". Assuming it is dead.");
-	markNodeDead(nodeName);
+	if (! stopping) {
+	  if (log.isWarnEnabled())
+	    log.warn("Remote process suddenly null for " + nodeName + ". Assuming it is dead.");
+	  markNodeDead(nodeName);
+	} else {
+	  if (log.isInfoEnabled())
+	    log.info("Remote process suddenly null for " + nodeName + ", but we're in process of stopping, so its OK.");
+	}
 	continue;
       }
+
       try {
 	if (!rp.isAlive()) {
-	  if (log.isWarnEnabled())
-	    log.warn("Remote Process for " + nodeName + " says it is not alive. Marking it dead.");
 	  // FIXME: see if it's now not in runningNodes?
 	  // If so, a timing issue, and someone kill it...
-	  markNodeDead(nodeName);
+ 	  RemoteProcess rp2 = null;
+ 	  synchronized (runningNodesLock) {
+ 	    rp2 = (RemoteProcess)runningNodes.get(nodeName);
+ 	  }
+ 
+ 	  // FIXME: This doesnt seem to help.
+ 	  // Need to be able to look up which Nodes
+ 	  // are in process of being stopped,
+ 	  // and skip those?
+ 
+ 	  // OK: We'll check the stopping flag: If set,
+ 	  // we're in the process of stopping the Nodes,
+ 	  // so it's OK if the Node claims to not be Alive.
+ 
+ 	  if (rp2 == null || stopping) {
+ 	    if (log.isInfoEnabled())
+ 	      log.info("Remote Process must have just been killed by someone else, so it's OK - no need to mark it dead.");
+ 	  } else {
+	    if (log.isWarnEnabled())
+	      log.warn("Remote Process for " + nodeName + " says it is not alive. Marking it dead.");
+	    markNodeDead(nodeName);
+	  }
 	  continue;
 	}
       } catch (Exception e) {
@@ -1551,23 +1578,63 @@ public class CSMARTConsole extends JFrame {
 	    markNodeDead(nodeName);
             return;
           }
-
-          try {
-            RemoteListenable rl = 
-              remoteNode.getRemoteListenable();
-	    if (rl != null) {
-	      rl.flushOutput();
-	      remoteNode.destroy();
-	    }
-          } catch (Exception ex) {
-            if(log.isWarnEnabled()) {
-              log.warn("Unable to destroy node, assuming it's dead: ", ex);
-            }
-            // call the method that would have been called
-            // had the node been stopped
-	    markNodeDead(nodeName);
-          }
-        }
+	  
+	  // Try to kill the node. Try up to 5 times for now.
+	  RemoteListenable rl = null;
+	  for (int retries = 5; retries > 0; retries--) {
+	    try {
+	      rl = 
+		remoteNode.getRemoteListenable();
+	      if (rl != null) {
+		rl.flushOutput();
+		remoteNode.destroy();
+		retries = 0; // Done, dont loop again
+	      }
+	      // Note that currently if rl == null and get
+	      // no exception (can that happen?) we will loop
+	      // up to 5 times, trying to get to that point
+	      // But if there's an exeption, and rl != null,
+	      // we stop looping early
+	    } catch (Exception ex) {
+	      
+	      // May get ConnectException or ConnectIOException
+	      //  getting the remote
+	      // listenable if the remote machines / network are busy
+	      // in which case, we really want to pause & try again,
+	      // else we can't really kill the node.
+	      // But of course we should probably limit the number of times we 
+	      // re-try.
+	      if (rl == null) {
+		// some sort of connect exception probably, getting
+		// the RemoteListenable. pause, then try again.
+		// Must I check for the particular exceptions?
+		// FIXME!!
+		
+		if (log.isWarnEnabled())
+		  log.warn("Never got RemoteListenable. Exception possibly cause of load? Will pause and retry.", ex);
+		
+		// Pause here. How long will be good?
+		try {
+		  // in milliseconds
+		  sleep(2000);
+		} catch (InterruptedException ie) {}
+		
+		continue;
+	      } else {
+		// Got the RemoteListenable, but couldn't
+		// destroy it
+		if(log.isWarnEnabled()) {
+		  log.warn("Unable to destroy node, assuming it's dead: ", ex);
+		}
+		
+		// call the method that would have been called
+		// had the node been stopped
+		markNodeDead(nodeName);
+		retries = 0; // Done with this node, dont loop again
+	      }	
+	    } // end of catch block
+	  } // loop to retry killing the Node
+        } // Thread run method
       }; // end nodeDestroyer thread
       destroyerThreads.add(nodeDestroyer);
       nodeDestroyer.start();
@@ -2071,6 +2138,16 @@ public class CSMARTConsole extends JFrame {
       if(log.isErrorEnabled()) {
         log.error("Unable to destroy node, assuming it's dead: ", ex);
       }
+      
+      // FIXME: May get ConnectException or ConnectIOException
+      //  getting the remote
+      // listenable if the remote machines / network are busy
+      // in which case, we really want to pause & try again,
+      // else we can't really kill the node.
+      // But of course we should probably limit the number of times we 
+      // re-try. 
+      // To fix this, copy code from above in stopAllNodes
+      
       // call the method that would have been called when the 
       // ConsoleNodeListener received the node destroyed confirmation
       markNodeDead(nodeName);
