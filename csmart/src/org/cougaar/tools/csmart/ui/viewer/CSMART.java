@@ -55,6 +55,7 @@ import org.cougaar.tools.csmart.ui.util.Util;
 
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 import org.cougaar.core.society.Bootstrapper;
+import org.cougaar.tools.csmart.ui.component.ComponentProperties;
 
 /**
  * Top level CSMART user interface.
@@ -362,11 +363,13 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * If an tree builder is not editing this society,
    * then start a new tree builder to edit this society.
    */
-  private void runMultipleBuilders(ModifiableConfigurableComponent[] comps) {
+  private void runMultipleBuilders(ComponentProperties[] comps) {
     for (int i = 0; i < comps.length; i++) {
+      if (! (comps[i] instanceof ModifiableConfigurableComponent))
+	continue;
       String s = "Configuration Builder: " + comps[i].getShortName();
       if (NamedFrame.getNamedFrame().getFrame(s) == null) 
-	runBuilder(comps[i], true, true);
+	runBuilder((ModifiableConfigurableComponent)comps[i], true, true);
     }
   }
 
@@ -495,8 +498,9 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       }
       if (societies.length == 1)
 	runBuilder((ModifiableConfigurableComponent)societies[0], false, true);
-      else if (societies.length > 1)
-	runMultipleBuilders((ModifiableConfigurableComponent [])societies);
+      else if (societies.length > 1) {
+	runMultipleBuilders((ComponentProperties [])societies);
+      }
     } else if (s.equals(views[1])) {
     } else if (s.equals(views[2])) {
       Experiment[] experiments = organizer.getSelectedExperiments();
