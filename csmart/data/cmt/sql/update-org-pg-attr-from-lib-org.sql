@@ -203,7 +203,8 @@ select
     org.cfw_id as cfw_id
 ,   org.org_id as org_id
 ,   'TypeIdentificationPG|TypeIdentification' as pg_attribute_lib_id
-,   'UTC/'||org.org_id as attribute_value
+--,   'UTC/'||org.org_id as attribute_value
+,   org.org_id as attribute_value
 ,   0 as attribute_order
 ,   '2000-01-01 00:00:00' as start_date
 from
