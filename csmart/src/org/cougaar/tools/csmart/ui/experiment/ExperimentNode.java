@@ -63,6 +63,12 @@ public class ExperimentNode
     arguments.put("org.cougaar.node.name", nodeName);
   }
 
+  public void rename(String newName) {
+    Properties args = getArguments();
+    args.setProperty("org.cougaar.node.name", newName);
+    setName(newName); // invokes setName in ConfigurableComponent
+  }
+
   public int getAgentCount() {
     return agents.size();
   }

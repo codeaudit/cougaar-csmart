@@ -61,6 +61,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   JPopupMenu hostNodeMenu;
   JPopupMenu nodeRootMenu;
   JPopupMenu nodeNodeMenu;
+  JMenuItem cmdLineNodeMenuItem;
+  JMenuItem cmdLineNodeInHostMenuItem;
+  JMenuItem newNodeInHostMenuItem;
   DNDTree hostTree;
   DNDTree nodeTree;
   DNDTree agentTree;
@@ -142,7 +145,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
 
-    JMenuItem newNodeInHostMenuItem = new JMenuItem(NEW_NODE_MENU_ITEM);
+    newNodeInHostMenuItem = new JMenuItem(NEW_NODE_MENU_ITEM);
     newNodeInHostMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	newNodeInHostMenuItem_actionPerformed(e);
@@ -179,7 +182,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
 
-    JMenuItem cmdLineNodeInHostMenuItem = 
+    cmdLineNodeInHostMenuItem = 
       new JMenuItem(NODE_COMMAND_LINE_MENU_ITEM);
     cmdLineNodeInHostMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -281,7 +284,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	describeNodeMenuItem_actionPerformed(nodeTree);
       }
     });
-    JMenuItem cmdLineNodeMenuItem = new JMenuItem(NODE_COMMAND_LINE_MENU_ITEM);
+    cmdLineNodeMenuItem = new JMenuItem(NODE_COMMAND_LINE_MENU_ITEM);
     cmdLineNodeMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	cmdLineNodeMenuItem_actionPerformed(nodeTree);
@@ -595,28 +598,72 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   /**
    * Display the popup menu for the host tree.
-   * If pointing to root, displays "New Host"
-   * If pointing to host, displays "New Node", "Delete Host"
-   * If pointing to node, displays "Delete Node"
+   * Displays different menus if pointing to root, host or node.
    */
 
   public void displayHostTreeMenu(MouseEvent e) {
+    // the path to the node the mouse is pointing at
     TreePath selPath = hostTree.getPathForLocation(e.getX(), e.getY());
     if (selPath == null)
       return;
-    // set the selected node to be the node the mouse is pointing at
-    hostTree.setSelectionPath(selPath);
-    DefaultMutableTreeNode selNode =
-      (DefaultMutableTreeNode)selPath.getLastPathComponent();
-    ConsoleTreeObject selected =
-      (ConsoleTreeObject)selNode.getUserObject();
-    // display popup menu 
-    if (selected.isRoot())
-      hostRootMenu.show(hostTree, e.getX(), e.getY());
-    else if (selected.isHost())
-      hostHostMenu.show(hostTree, e.getX(), e.getY());
-    else if (selected.isNode())
-      hostNodeMenu.show(hostTree, e.getX(), e.getY());
+    // if the mouse is pointing at a selected node
+    // and all selected nodes are of the same type, then act on all of them
+    TreePath[] selectedPaths = hostTree.getSelectionPaths();
+    if (hostTree.isPathSelected(selPath) && selectedPaths.length > 1) {
+      boolean haveHosts = false;
+      boolean haveNodes = false;
+      for (int i = 0; i < selectedPaths.length; i++) {
+        DefaultMutableTreeNode selNode =
+          (DefaultMutableTreeNode)selectedPaths[i].getLastPathComponent();
+        ConsoleTreeObject selected =
+          (ConsoleTreeObject)selNode.getUserObject();
+        if (selected.isHost()) {
+          if (!haveHosts && !haveNodes)
+            haveHosts = true;
+          else if (haveNodes) {
+            haveNodes = false;
+            break;
+          }
+        } else if (selected.isNode()) {
+          if (!haveHosts && !haveNodes)
+            haveNodes = true;
+          else if (haveHosts) {
+            haveHosts = false;
+            break;
+          }
+        } else {
+          haveHosts = false;
+          haveNodes = false;
+          break;
+        }
+      }
+      if (haveHosts) {
+        newNodeInHostMenuItem.setEnabled(false);
+        hostHostMenu.show(hostTree, e.getX(), e.getY());
+        return;
+      } else if (haveNodes) {
+        cmdLineNodeInHostMenuItem.setEnabled(false);
+        hostNodeMenu.show(hostTree, e.getX(), e.getY());
+        return;
+      }
+    } else {
+      // else set the selected node to be the node the mouse is pointing at
+      hostTree.setSelectionPath(selPath);
+      DefaultMutableTreeNode selNode =
+        (DefaultMutableTreeNode)selPath.getLastPathComponent();
+      ConsoleTreeObject selected =
+        (ConsoleTreeObject)selNode.getUserObject();
+      // display popup menu 
+      if (selected.isRoot())
+        hostRootMenu.show(hostTree, e.getX(), e.getY());
+      else if (selected.isHost()) {
+        newNodeInHostMenuItem.setEnabled(true);
+        hostHostMenu.show(hostTree, e.getX(), e.getY());
+      } else if (selected.isNode()) {
+        cmdLineNodeInHostMenuItem.setEnabled(true);
+        hostNodeMenu.show(hostTree, e.getX(), e.getY());
+      } 
+    }
   } 
 
   /**
@@ -658,26 +705,54 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   /**
-   * Display the popup menus for the node tree.
-   * If pointing to root, displays "New Node"
-   * If pointing to node, displays "Delete Node"
+   * Display the popup menus for the node tree, either the node menu
+   * or the root menu.
    */
 
   public void displayNodeTreeMenu(MouseEvent e) {
+    // the path to the node the mouse is pointing at
     TreePath selPath = nodeTree.getPathForLocation(e.getX(), e.getY());
     if (selPath == null)
       return;
-    // set the selected node to be the node the mouse is pointing at
-    nodeTree.setSelectionPath(selPath);
-    DefaultMutableTreeNode selNode =
-      (DefaultMutableTreeNode)selPath.getLastPathComponent();
-    ConsoleTreeObject selected =
-      (ConsoleTreeObject)selNode.getUserObject();
-    // display popup menu
-    if (selected.isRoot())
-      nodeRootMenu.show(nodeTree, e.getX(), e.getY());
-    else if (selected.isNode())
-      nodeNodeMenu.show(nodeTree, e.getX(), e.getY());
+    // if the mouse is pointing at a selected node
+    // and all selected nodes are of the same type, then act on all of them
+    TreePath[] selectedPaths = nodeTree.getSelectionPaths();
+    if (nodeTree.isPathSelected(selPath) && selectedPaths.length > 1) {
+      boolean haveNodes = false;
+      for (int i = 0; i < selectedPaths.length; i++) {
+        DefaultMutableTreeNode selNode =
+          (DefaultMutableTreeNode)selectedPaths[i].getLastPathComponent();
+        ConsoleTreeObject selected =
+          (ConsoleTreeObject)selNode.getUserObject();
+        if (selected.isNode())
+          haveNodes = true;
+        else {
+          haveNodes = false;
+          break;
+        }
+      }
+      // handle multiple selected nodes
+      // disable menu command to set individual node command line arguments
+      if (haveNodes) {
+        cmdLineNodeMenuItem.setEnabled(false);
+        nodeNodeMenu.show(nodeTree, e.getX(), e.getY());
+        return;
+      }
+    } else {
+      // set the selected node to be the node the mouse is pointing at
+      nodeTree.setSelectionPath(selPath);
+      DefaultMutableTreeNode selNode =
+        (DefaultMutableTreeNode)selPath.getLastPathComponent();
+      ConsoleTreeObject selected =
+        (ConsoleTreeObject)selNode.getUserObject();
+      // display popup menu
+      if (selected.isRoot())
+        nodeRootMenu.show(nodeTree, e.getX(), e.getY());
+      else if (selected.isNode()) {
+        cmdLineNodeMenuItem.setEnabled(true);
+        nodeNodeMenu.show(nodeTree, e.getX(), e.getY());
+      }
+    }
   }
 
   /**
@@ -716,16 +791,13 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void deleteNodeInHostMenuItem_actionPerformed(ActionEvent e) {
-    deleteNodeFromTree(hostTree);
+    TreePath[] selectedPaths = hostTree.getSelectionPaths();
+    for (int i = 0; i < selectedPaths.length; i++) 
+      deleteNodeFromTree(hostTree, selectedPaths[i]);
     //    setRunButtonEnabled();
   }
 
-  private void deleteNodeFromTree(JTree tree) {
-    TreePath path = tree.getSelectionPath();
-    if (path == null) {
-      System.out.println("HostConfigurationBuilder deleteNodeMenuItem called with null path; ignoring");
-      return;
-    }
+  private void deleteNodeFromTree(JTree tree, TreePath path) {
     DefaultMutableTreeNode selectedNode = 
       (DefaultMutableTreeNode)path.getLastPathComponent();
     ConsoleTreeObject nodeCTO = 
@@ -970,16 +1042,48 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   /**
-   * Called if user edits the name of a host.
+   * Called if user edits the name of a host or a node.
    */
 
   public void treeNodesChanged(TreeModelEvent e) {
+    Object source = e.getSource();
     //    System.out.println("Tree Node Changed: " +
     //                       ((ConsoleTreeObject)((DefaultMutableTreeNode)e.getTreePath().getLastPathComponent()).getUserObject()).getName());
-    Object source = e.getSource();
-    if (hostTree.getModel().equals(source))
-      setNameServerHostName();
-    experimentBuilder.setModified(true);
+//      if (hostTree.getModel().equals(source)) 
+//        System.out.println("Host tree changed");
+//      else if (nodeTree.getModel().equals(source))
+//        System.out.println("Node tree changed");
+//      Object[] tmp = e.getChildren();
+//      for (int i = 0; i < tmp.length; i++) {
+//        System.out.println("Child changed: " +
+//           ((ConsoleTreeObject)((DefaultMutableTreeNode)tmp[i]).getUserObject()).getName());
+//      }
+    // handle user editing the name of a host in the host tree
+    if (hostTree.getModel().equals(source)) {
+      DefaultMutableTreeNode parent = 
+        (DefaultMutableTreeNode)e.getTreePath().getLastPathComponent();
+      if (((ConsoleTreeObject)parent.getUserObject()).isRoot()) {
+        setNameServerHostName(); 
+        experimentBuilder.setModified(true);
+        return;
+      }
+    }
+    // handle user editing the name of a node in the host or node tree
+    if (hostTree.getModel().equals(source) || 
+        nodeTree.getModel().equals(source)) {
+      Object[] children = e.getChildren();
+      if (children != null && children.length > 0) {
+        DefaultMutableTreeNode firstChild = 
+          (DefaultMutableTreeNode)children[0];
+        ConsoleTreeObject changedNode =
+          (ConsoleTreeObject)firstChild.getUserObject();
+        if (changedNode.isNode()) {
+          ((ExperimentNode)changedNode.getComponent()).rename(changedNode.getName());
+          experimentBuilder.setModified(true);
+          return;
+        }
+      }
+    }
   }
 
   /**
@@ -997,34 +1101,32 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void deleteHostMenuItem_actionPerformed(ActionEvent e) {
-    TreePath path = hostTree.getSelectionPath();
-    if (path == null) {
-      System.out.println("CSMARTConsole deleteHostMenuItem called with null path; ignoring");
-      return;
-    }
-    DefaultMutableTreeNode selectedNode = 
-      (DefaultMutableTreeNode)path.getLastPathComponent();
-    ConsoleTreeObject hostCTO = 
-      (ConsoleTreeObject)selectedNode.getUserObject();
-    // get any nodes that are descendants of the host being deleted
-    // and return them to the unassigned nodes tree
-    DefaultTreeModel nodeModel = (DefaultTreeModel)nodeTree.getModel();
-    DefaultMutableTreeNode root = 
-      (DefaultMutableTreeNode)nodeModel.getRoot();
-    int n = selectedNode.getChildCount();
-    for (int i = 0; i < n; i++) {
-      DefaultMutableTreeNode node = 
-	(DefaultMutableTreeNode)selectedNode.getChildAt(0);
-      ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
-      if (cto.isNode()) {
-	nodeModel.insertNodeInto(node, root, root.getChildCount());
-	nodeTree.scrollPathToVisible(new TreePath(node.getPath()));
+    TreePath[] selectedPaths = hostTree.getSelectionPaths();
+    for (int i = 0; i < selectedPaths.length; i++) {
+      DefaultMutableTreeNode selectedNode = 
+        (DefaultMutableTreeNode)selectedPaths[i].getLastPathComponent();
+      ConsoleTreeObject hostCTO = 
+        (ConsoleTreeObject)selectedNode.getUserObject();
+      // get any nodes that are descendants of the host being deleted
+      // and return them to the unassigned nodes tree
+      DefaultTreeModel nodeModel = (DefaultTreeModel)nodeTree.getModel();
+      DefaultMutableTreeNode root = 
+        (DefaultMutableTreeNode)nodeModel.getRoot();
+      int n = selectedNode.getChildCount();
+      for (int j = 0; j < n; j++) {
+        DefaultMutableTreeNode node = 
+          (DefaultMutableTreeNode)selectedNode.getChildAt(0);
+        ConsoleTreeObject cto = (ConsoleTreeObject)node.getUserObject();
+        if (cto.isNode()) {
+          nodeModel.insertNodeInto(node, root, root.getChildCount());
+          nodeTree.scrollPathToVisible(new TreePath(node.getPath()));
+        }
       }
+      DefaultTreeModel hostModel = (DefaultTreeModel)hostTree.getModel();
+      hostModel.removeNodeFromParent(selectedNode);
+      experiment.removeHost((HostComponent)hostCTO.getComponent());
+      //    setRunButtonEnabled();
     }
-    DefaultTreeModel hostModel = (DefaultTreeModel)hostTree.getModel();
-    hostModel.removeNodeFromParent(selectedNode);
-    experiment.removeHost((HostComponent)hostCTO.getComponent());
-    //    setRunButtonEnabled();
   }
 
   /**
@@ -1035,7 +1137,9 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void deleteNodeMenuItem_actionPerformed(ActionEvent e) {
-    deleteNodeFromTree(nodeTree);
+    TreePath[] selectedPaths = nodeTree.getSelectionPaths();
+    for (int i = 0; i < selectedPaths.length; i++)
+      deleteNodeFromTree(nodeTree, selectedPaths[i]);
   }
 
   /**
@@ -1059,12 +1163,15 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   private void setPropertyOfNode(JTree tree, String name, String value) {
-    DefaultMutableTreeNode selectedNode =
-      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-    ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
-    ConfigurableComponent component = 
-      (ConfigurableComponent)cto.getComponent();
-    component.addProperty(name, value);
+    TreePath[] selectedPaths = tree.getSelectionPaths();
+    for (int i = 0; i < selectedPaths.length; i++) {
+      DefaultMutableTreeNode selectedNode =
+        (DefaultMutableTreeNode)selectedPaths[i].getLastPathComponent();
+      ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
+      ConfigurableComponent component = 
+        (ConfigurableComponent)cto.getComponent();
+      component.addProperty(name, value);
+    }
   }
 
     
@@ -1114,7 +1221,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
                                            "Node Description",
                                            JOptionPane.QUESTION_MESSAGE,
                                            null, null, description);
-    if (s != null && s.length() != 0) 
+    if (s != null && s.length() != 0)
       setPropertyOfNode(tree, "Description", s);
   }
 
@@ -1160,34 +1267,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       newArgv.add(args);
       newData.add(newArgv);
     }
-//      // this wipes out the node specific properties!!!
-//      // experiment default arguments
-//      Properties newProps = new Properties(experiment.getDefaultNodeArguments());
-//      // for each of the entries from the dialog
-//      for (int i = 0; i < newData.size(); i++) {
-//        Vector row = (Vector) newData.get(i);
-//        String name = (String) row.get(0);
-//        // get the new, old and default (experiment level) values
-//        String newValue = (String) row.get(1);
-//        String oldValue = properties.getProperty(name);
-//        String dfltValue = newProps.getProperty(name);
-//        // if the new value is not the same as the old value
-//        // then the experiment was modified and must be saved
-//        if (!newValue.equals(oldValue)) {
-//          System.out.println("modified " + name + ": new=" + newValue + ", old=" + oldValue);
-//          experimentBuilder.setModified(true);
-//          // if the new value is not equal to the default value
-//          // then add the new value to the node specific properties
-//          if (!newValue.equals(dfltValue)) {
-//            newProps.setProperty(name, newValue);
-//          }
-//        }
-//      }
-//      // sets the node component's arguments to be the experiment
-//      // default arguments plus any changed node arguments
-//      // wiping out the unchanged node arguments
-//      nodeComponent.setArguments(newProps);
-
     // the original property names
     Set oldKeys = new HashSet(properties.keySet());
     // for each of the entries from the dialog
@@ -1221,7 +1300,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   /**
    * Pop-up input dialog to get global command line arguments from user.
-   * Called with the tree from which this menu item was invoked.
    */
 
   public void globalCmdLineMenuItem_actionPerformed() {
