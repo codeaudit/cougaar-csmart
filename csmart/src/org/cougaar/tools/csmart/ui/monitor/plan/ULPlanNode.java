@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -89,7 +89,7 @@ public class ULPlanNode implements NodeObject {
     if (objectType.equals(PropertyNames.TASK_OBJECT)) {
       taskType = (String)properties.get(PropertyNames.TASK_TYPE);
       if (taskType == null)
-        if(log.isDebugEnabled()) {
+        if(log.isInfoEnabled()) {
           log.info("TASK WITH NO TASK TYPE");
         }
       if (taskType.equals(PropertyNames.MPTASK))
@@ -192,7 +192,7 @@ public class ULPlanNode implements NodeObject {
       try {
 	happiness = Double.parseDouble(s);
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("ULPlanNode: " + e);
         }
       }

@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -53,7 +53,7 @@ public class ComponentPrinter implements Printable, Pageable {
 	this.component = component;
 	job = PrinterJob.getPrinterJob();
 	if (job == null) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
 	    log.error("Couldn't find a printer!");
           }
 	} else {
@@ -98,8 +98,8 @@ public class ComponentPrinter implements Printable, Pageable {
 	try {
 	    job.print();
 	} catch (PrinterException e) {
-          if(log.isDebugEnabled()) {
-	    log.error("Print job failed: " + e);
+          if(log.isErrorEnabled()) {
+	    log.error("Print job failed: ", e);
           }
 	}
     }

@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -101,7 +101,7 @@ public class ULCommunityTableModel extends AbstractTableModel {
   private void addAttribute(String name) {
     Attribute a = node.getLocalAttribute(name);
     if (a == null) {
-      if(log.isDebugEnabled()) {
+      if(log.isWarnEnabled()) {
         log.warn("ULCommunityTableModel: attribute not found: " +
                  name);
       }

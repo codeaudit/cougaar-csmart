@@ -23,6 +23,8 @@ package org.cougaar.tools.csmart.core.property;
 
 import java.lang.reflect.Constructor;
 import javax.swing.event.EventListenerList;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
  * Base class for ConfigurableComponents implementing the
@@ -34,6 +36,7 @@ public abstract class ModifiableConfigurableComponent
 {
 
   protected boolean editable = false;
+  private transient Logger log;
 
   /**
    * Creates a new <code>ModifiableConfigurableComponent</code> instance.
@@ -42,6 +45,7 @@ public abstract class ModifiableConfigurableComponent
    */
   protected ModifiableConfigurableComponent(String name) {
     super(name);
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   /**
@@ -96,7 +100,9 @@ public abstract class ModifiableConfigurableComponent
       try {
         ls[i].modified(event);
       } catch (RuntimeException re) {
-        re.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Exception", re);
+        }
       }
     }
   }
@@ -112,7 +118,9 @@ public abstract class ModifiableConfigurableComponent
       component.initProperties();
       return component;
     } catch (Exception e) {
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception", e);
+      }
       return null;
     }
   }

@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -213,7 +213,9 @@ public class PropertyEditorPanel extends JPanel
 	  pane.setPage(url);
 	  rightPanel.add(pane, BorderLayout.NORTH);
 	} catch (IOException ioe) {
-	  ioe.printStackTrace();
+          if(log.isErrorEnabled()) {
+            log.error("Exception", ioe);
+          }
 	}
       } else {
 	JLabel pane = new JLabel("No description available");

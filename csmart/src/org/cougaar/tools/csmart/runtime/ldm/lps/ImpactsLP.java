@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -113,9 +113,8 @@ public class ImpactsLP extends LogPlanLogicProvider implements MessageLogicProvi
     try {
       logplan.add(dir);
     } catch (SubscriberException se) {
-      if(log.isDebugEnabled()) {
-        log.error("Could not add RWE or IE to logplan: " + dir);
-        se.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Could not add RWE or IE to logplan: " + dir, se);
       }
     }
   }

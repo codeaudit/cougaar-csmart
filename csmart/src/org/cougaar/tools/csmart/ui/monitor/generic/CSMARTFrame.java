@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -702,7 +702,7 @@ public class CSMARTFrame extends JFrame implements ActionListener
 
   public CSMARTGraph newGraphFromSelection() {
     if (graph == null) {
-      if(log.isDebugEnabled()) {
+      if(log.isWarnEnabled()) {
       log.warn("WARNING: graph is null");
       }
       return null;
@@ -714,7 +714,7 @@ public class CSMARTFrame extends JFrame implements ActionListener
     // get the selected nodes and edges from the original graph
     Vector elements = graph.getSelectedElements();
     if (elements == null) {
-      if(log.isDebugEnabled()) {
+      if(log.isWarnEnabled()) {
         log.warn("No elements selected");
       }
       return null;
@@ -770,7 +770,7 @@ public class CSMARTFrame extends JFrame implements ActionListener
 //   public void scrollToSelected() {
 //     Node node = getSelectedNode();
 //     if (node == null) {
-//       if(log.isDebugEnabled()) {
+//       if(log.isWarnEnabled()) {
 //         log.warn("no selected node");
 //       }
 //       return;
@@ -802,7 +802,7 @@ public class CSMARTFrame extends JFrame implements ActionListener
   public void scrollToSelected() {
     Node node = getSelectedNode();
     if (node == null) {
-      if(log.isDebugEnabled()) {
+      if(log.isWarnEnabled()) {
         log.warn("no selected node");
       }
       return;

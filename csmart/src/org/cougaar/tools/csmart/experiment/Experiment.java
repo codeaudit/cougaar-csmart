@@ -970,8 +970,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 	f = new File(".");
     } catch (Exception e) {
       JOptionPane.showMessageDialog(null, "Couldn't create results directory: " + e, "Can't create directory", JOptionPane.ERROR_MESSAGE);
-      if(log.isDebugEnabled()) {
-        log.error("Couldn't create results directory: " + e);
+      if(log.isErrorEnabled()) {
+        log.error("Couldn't create results directory: ", e);
       }
     }
     if (f != null) {
@@ -980,9 +980,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 	//	System.out.println("Writing ini files to " + f.getAbsolutePath() + "...");
 	cw.writeConfigFiles(f);
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
-          log.error("Couldn't write ini files: " + e);
-          e.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Couldn't write ini files: ", e);
         }
       }
     }

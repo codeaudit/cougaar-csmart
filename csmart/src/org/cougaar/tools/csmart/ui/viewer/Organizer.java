@@ -407,7 +407,9 @@ public class Organizer extends JScrollPane {
       workspace.setSelection(newNode);
       return newNode;
     } catch (Exception e) {
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception", e);
+      }
       return null;
     }
   }
@@ -764,7 +766,9 @@ public class Organizer extends JScrollPane {
                                     "Recipe Written",
                                     JOptionPane.INFORMATION_MESSAGE);
     } catch (Exception sqle) {
-      sqle.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception", sqle);
+      }
       JOptionPane.showMessageDialog(this,
                                     "An exception occurred writing the recipe to the database",
                                     "Error Writing Database",
@@ -1326,7 +1330,7 @@ public class Organizer extends JScrollPane {
 //          } catch (IOException ioe) {
 	} catch (Exception e) {
           if(log.isErrorEnabled()) {
-            log.error("Organizer: can't read file: " + f + " got exception: " + e);
+            log.error("Organizer: can't read file: " + f + " got exception", e);
           }
 	} finally {
 	  ois.close();

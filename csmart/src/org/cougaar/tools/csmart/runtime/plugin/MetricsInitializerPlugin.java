@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 1997-2001 BBNT Solutions, LLC
+ *  Copyright 1997-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -309,7 +309,7 @@ public class MetricsInitializerPlugin
   }
   
   private boolean checkProviders() {
-    if (log.isDebugEnabled()) {
+    if (log.isInfoEnabled()) {
       log.info("Num providers: " + numProviders + 
                        " metricsProviders.size(): " + metricsProviders.size());
     }
@@ -387,10 +387,9 @@ public class MetricsInitializerPlugin
    **/
   private Alarm wakeAfterRealTime(long delayTime) { 
     if (delayTime<=0) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("\nwakeAfterRealTime("+delayTime+") is in the past!");
       }
-      Thread.dumpStack();
       delayTime=1000;
     }
 

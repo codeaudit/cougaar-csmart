@@ -99,7 +99,9 @@ public class ParameterInsertionRecipe extends RecipeBase
       Set targets = pdb.executeQuery(propQuery.getValue().toString());
       modifyComponentData(data, pdb, targets);
     } catch (SQLException sqle) {
-      sqle.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception", sqle);
+      }
     }
     return data;
   }

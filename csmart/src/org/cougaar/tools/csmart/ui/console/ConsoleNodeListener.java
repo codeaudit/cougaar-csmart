@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -188,7 +188,7 @@ public class ConsoleNodeListener implements NodeEventListener {
         }
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error("Exception writing to log file: " + e);
+          log.error("Exception writing to log file: ", e);
         }
       }
     }
@@ -254,7 +254,7 @@ public class ConsoleNodeListener implements NodeEventListener {
         } while (++i < n);
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error("Exception writing to log file: " + e);
+          log.error("Exception writing to log file: ", e);
         }
       }
     }
@@ -411,7 +411,7 @@ public class ConsoleNodeListener implements NodeEventListener {
         logFile.close();
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error("Exception closing log file: " + e);
+          log.error("Exception closing log file: ", e);
         }
       }
     }
@@ -430,7 +430,7 @@ public class ConsoleNodeListener implements NodeEventListener {
         logFile = new BufferedWriter(new FileWriter(logFileName, true));
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error(e.toString());
+          log.error("Excetpion", e);
         }
       }
     }

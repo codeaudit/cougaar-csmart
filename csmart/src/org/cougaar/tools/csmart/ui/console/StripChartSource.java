@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -141,7 +141,7 @@ public class StripChartSource extends JCDefaultDataSource implements Runnable {
 		 System.currentTimeMillis());
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error("StripChartSource: " + e);
+          log.error("StripChartSource: ", e);
         }
       }
     }

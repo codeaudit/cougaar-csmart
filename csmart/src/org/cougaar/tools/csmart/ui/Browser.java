@@ -29,11 +29,14 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class Browser extends JFrame implements HyperlinkListener {
   private static final Dimension DEFAULT_SIZE = new Dimension(600, 800);
   private static final String BROWSER_TITLE = "CSMART Help Browser";
   private static Browser singleton;
+  private Logger log;
 
   private JTextPane text = new JTextPane() {
       protected void scrollToReference(String ref) {
@@ -45,6 +48,7 @@ public class Browser extends JFrame implements HyperlinkListener {
 
   private Browser() {
     super(BROWSER_TITLE);
+    log = CSMART.createLogger(getClass().getName());
     scroll.setViewport(new JViewport() {
 	public void scrollRectToVisible(Rectangle r) {
 	  Dimension extent = getExtentSize();
@@ -98,7 +102,9 @@ public class Browser extends JFrame implements HyperlinkListener {
       text.setPage(url);
       toFront();
     } catch (IOException ioe) {
-      ioe.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception", ioe);
+      }
     }
   }
 

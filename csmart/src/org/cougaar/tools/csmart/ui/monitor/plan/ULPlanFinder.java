@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -1042,7 +1042,7 @@ public class ULPlanFinder extends JDialog {
           toLabel.setEnabled(false);
           endTimeField.setEnabled(false);
           estimatedButton.setSelected(false);
-          if(log.isDebugEnabled()) {
+          if(log.isInfoEnabled()) {
             log.info("in all action listener");
           }
           reportedButton.setSelected(false);
@@ -1646,8 +1646,8 @@ public class ULPlanFinder extends JDialog {
       try {
 	nodeValue = Float.parseFloat(s);
       } catch (NumberFormatException e) {
-        if(log.isDebugEnabled()) {
-          log.error("ULPlanFinder: " + e);
+        if(log.isErrorEnabled()) {
+          log.error("ULPlanFinder: ", e);
         }
 	continue;
       }
@@ -1670,8 +1670,8 @@ public class ULPlanFinder extends JDialog {
       try {
 	nodeValue = Long.parseLong(s);
       } catch (NumberFormatException e) {
-        if(log.isDebugEnabled()) {
-          log.error("ULPlanFinder: " + e);
+        if(log.isErrorEnabled()) {
+          log.error("ULPlanFinder: ", e);
         }
 	continue;
       }
@@ -1694,8 +1694,8 @@ public class ULPlanFinder extends JDialog {
       try {
 	nodeValue = Double.parseDouble(s);
       } catch (NumberFormatException e) {
-        if(log.isDebugEnabled()) {
-          log.error("ULPlanFinder: " + e);
+        if(log.isErrorEnabled()) {
+          log.error("ULPlanFinder: ", e);
         }
 	continue;
       }
@@ -1718,8 +1718,8 @@ public class ULPlanFinder extends JDialog {
       try {
 	nodeValue = Float.parseFloat(s);
       } catch (NumberFormatException e) {
-        if(log.isDebugEnabled()) {
-          log.error("ULPlanFinder: " + e);
+        if(log.isErrorEnabled()) {
+          log.error("ULPlanFinder: ", e);
         }
 	continue;
       }
@@ -1742,8 +1742,8 @@ public class ULPlanFinder extends JDialog {
       try {
 	nodeValue = Long.parseLong(s);
       } catch (NumberFormatException e) {
-        if(log.isDebugEnabled()) {
-          log.error("ULPlanFinder: " + e);
+        if(log.isErrorEnabled()) {
+          log.error("ULPlanFinder: ", e);
         }
 	continue;
       }

@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -742,7 +742,9 @@ public class CSMARTConsole extends JFrame {
     try {
       nodeCreator.start();
     } catch (RuntimeException re) {
-      re.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception", re);
+      }
     }
   }
 
@@ -768,7 +770,7 @@ public class CSMARTConsole extends JFrame {
                   port = Integer.parseInt(s);
                 } catch (Exception e) {
                   if (log.isErrorEnabled())
-                    log.error("Exception parsing " + CSMARTUL.AGENT_PORT + " : " + e);
+                    log.error("Exception parsing " + CSMARTUL.AGENT_PORT + " : ", e);
                 }
               }
             }
@@ -923,7 +925,7 @@ public class CSMARTConsole extends JFrame {
         nodeCreator.join();
       } catch (InterruptedException ie) {
         if(log.isErrorEnabled()) {
-          log.error("Exception waiting for node creation thread to die: " + ie);
+          log.error("Exception waiting for node creation thread to die: ", ie);
         }
       }
       nodeCreator = null;
@@ -959,7 +961,7 @@ public class CSMARTConsole extends JFrame {
         nsc.destroy();
       } catch (Exception ex) {
         if(log.isErrorEnabled()) {
-          log.error("Unable to destroy node, assuming it's dead: " + ex);
+          log.error("Unable to destroy node, assuming it's dead: ", ex);
         }
         nodeStopped(nodeComponent);
         getNodeStatusButton(nodeComponent.getShortName()).setStatus(NodeStatusButton.STATUS_NO_ANSWER);
@@ -1225,7 +1227,7 @@ public class CSMARTConsole extends JFrame {
                                            doc);
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error("Unable to create output for: " + nodeName);
+          log.error("Unable to create output for: " + nodeName, e);
         }
         continue;
       }
@@ -1250,7 +1252,7 @@ public class CSMARTConsole extends JFrame {
         hsc = communitySupport.getHost(hostName, getAppServerPort(properties));
       } catch (Exception e) {
         if(log.isErrorEnabled()) {
-          log.error("CSMARTConsole: cannot create node: " + nodeName);
+          log.error("CSMARTConsole: cannot create node: " + nodeName, e);
         }
 
         JOptionPane.showMessageDialog(this,
@@ -1383,7 +1385,7 @@ public class CSMARTConsole extends JFrame {
       nsc.destroy();
     } catch (Exception ex) {
       if(log.isErrorEnabled()) {
-        log.error("Unable to destroy node, assuming it's dead: " + ex);
+        log.error("Unable to destroy node, assuming it's dead: ", ex);
       }
       // call the method that would have been called when the 
       // ConsoleNodeListener received the node destroyed confirmation
@@ -1431,7 +1433,7 @@ public class CSMARTConsole extends JFrame {
         communitySupport.getHost(hostName, getAppServerPort(properties));
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error(e.toString());
+        log.error("Exception getting Host Server", e);
       }
       return null;
     }
@@ -1473,7 +1475,7 @@ public class CSMARTConsole extends JFrame {
       }
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error(e.toString());
+        log.error("Exception", e);
       }
     }
     return nsc;
@@ -1648,7 +1650,7 @@ public class CSMARTConsole extends JFrame {
 	return filename;
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Couldn't create results directory: " + e);
+        log.error("Couldn't create results directory: ", e);
       }
       return filename;
     }
@@ -1716,7 +1718,7 @@ public class CSMARTConsole extends JFrame {
         newViewSize = Integer.parseInt(sizeTF.getText());
       } catch (NumberFormatException e) {
         if(log.isErrorEnabled()) {
-          log.error(e.toString());
+          log.error("Exception setting view size", e);
         }
         return currentViewSize;
       }

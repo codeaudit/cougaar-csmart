@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -160,24 +160,17 @@ public class ScriptedEventPlugIn
 	}
       }
     } catch (org.xml.sax.SAXParseException spe) {
-      if (log.isDebugEnabled()) {
-	log.error("publishEvents: Parse exception Parsing file: " + fileName);
+      if (log.isErrorEnabled()) {
+	log.error("publishEvents: Parse exception Parsing file: " + fileName, spe);
       }
-      spe.printStackTrace(System.err);
     } catch (org.xml.sax.SAXException se) {
-      if (log.isDebugEnabled()) {
-	log.error("publishEvents: SAX exception parsing file: " + fileName);
+      if (log.isErrorEnabled()) {
+	log.error("publishEvents: SAX exception parsing file: " + fileName, se);
       }
-      if (se.getException() != null)
-	se.getException().printStackTrace(System.err);
-      else
-	se.printStackTrace(System.err);
     } catch (Exception e) {
-      if (log.isDebugEnabled()) {
-	log.error("publishEvents: exception parsing Attack Tree File: " +
-                    fileName);
+      if (log.isErrorEnabled()) {
+	log.error("publishEvents: exception parsing Attack Tree File: " + fileName, e);
       }
-      e.printStackTrace(System.err);
     }
   }
   

@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 1997-2001 BBNT Solutions, LLC
+ *  Copyright 1997-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -22,16 +22,21 @@ package org.cougaar.tools.csmart.society.scalability;
 
 import java.net.URL;
 import java.net.MalformedURLException;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 public class ScalabilityHelp {
     public static URL getURL(String anchor) {
+      Logger log = CSMART.createLogger("org.cougaar.tools.csmart.society.scalability.ScalabilityHelp");
         try {
             URL url = ScalabilityHelp.class.getResource("help.html");
             if (url != null) {
                 return new URL(url.toExternalForm() + "#" + anchor);
             }
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+          if(log.isErrorEnabled()) {
+            log.error("Exception", e);
+          }
         }
         return null;
     }

@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -624,9 +624,8 @@ public abstract class CSMARTPlugIn
       setupSubscriptions();
     } catch (Exception e) {
       synchronized (System.err) {
-        if(log.isDebugEnabled()) {
-          log.error(getAgentIdentifier().toString()+"/"+this+" caught "+e);
-          e.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error(getAgentIdentifier().toString()+"/"+this+" caught ", e);
         }
       }
     } finally {
@@ -658,9 +657,8 @@ public abstract class CSMARTPlugIn
         //}
     } catch (Exception e) {
       synchronized (System.err) {
-        if(log.isDebugEnabled()) {
-          log.error(getAgentIdentifier().toString()+"/"+this+" caught "+e);
-          e.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error(getAgentIdentifier().toString()+"/"+this+" caught ", e);
         }
       }
       //doExecute = true;

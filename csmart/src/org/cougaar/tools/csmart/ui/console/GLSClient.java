@@ -34,6 +34,8 @@ import java.net.URLConnection;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 public class GLSClient extends JInternalFrame {
   String agentURL; // of the form http://host:port/$agent
@@ -231,8 +233,10 @@ public class GLSClient extends JInternalFrame {
    * Sends appropriate command to agent.
    */
 
-  private class ButtonListener implements ActionListener {
+  private class ButtonListener implements ActionListener {    
     public void actionPerformed(ActionEvent ae) {
+      Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console.GLSClient");
+
       String command = ae.getActionCommand();
       String oplanId = null;
       if (command.equals(PUBLISH_COMMAND) || command.equals(RESCIND_COMMAND))
@@ -258,14 +262,18 @@ public class GLSClient extends JInternalFrame {
                                       "Invalid Host, Port, Agent or Servlet.",
                                       "Bad URL", 
                                       JOptionPane.ERROR_MESSAGE);
-        me.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Exception", me);
+        }
         return;
       } catch (java.io.IOException ioe) {
 	JOptionPane.showMessageDialog(outerPanel, 
                                       "Could not connect to Host, Port, or Agent.\nThe Servlet may not be running there.",
                                       "No Servlet", 
                                       JOptionPane.ERROR_MESSAGE);
-	ioe.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Exception", ioe);
+        }
       }
     }
   } // end of ButtonListener class
@@ -278,6 +286,7 @@ public class GLSClient extends JInternalFrame {
 
   private class ConnectionButtonListener implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
+      Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console.GLSClient");
       String urlString = getURLString(GLS_REPLY_SERVLET, 
                                       CONNECT_COMMAND, null);
       URLConnection urlConnection = null;
@@ -289,14 +298,18 @@ public class GLSClient extends JInternalFrame {
                                       "Invalid Host, Port, Agent or Servlet.",
                                       "Bad URL", 
                                       JOptionPane.ERROR_MESSAGE);
-        me.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Exception", me);
+        }
 	return;
       } catch (java.io.IOException ioe) {
 	JOptionPane.showMessageDialog(outerPanel, 
                                       "Could not connect to Host, Port, or Agent.\nThe Servlet may not be running there.",
                                       "No Servlet", 
                                       JOptionPane.ERROR_MESSAGE);
-	ioe.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Exception", ioe);
+        }
 	return;
       }
       // read from open connection
@@ -311,6 +324,7 @@ public class GLSClient extends JInternalFrame {
 
   private class LineReader extends SwingWorker {
     private URLConnection urlConnection;
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.console.GLSClient");
     public LineReader(URLConnection urlConnection) {
       super();
       this.urlConnection = urlConnection;
@@ -340,7 +354,9 @@ public class GLSClient extends JInternalFrame {
                                       JOptionPane.ERROR_MESSAGE);
 	return null;
       } catch (Exception e) {
-	e.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Exception", e);
+        }
 	return null;
       }
 

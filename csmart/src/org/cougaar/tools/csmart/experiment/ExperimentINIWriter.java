@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- * Copyright 2001 BBNT Solutions, LLC
+ * Copyright 2001-2002 BBNT Solutions, LLC
  * under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
 
  * This program is free software; you can redistribute it and/or modify
@@ -158,7 +158,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	writeChildLine(writer, children[i]);
       }
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Error writing config file: " + e);
       }
     }
@@ -174,7 +174,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.print("society = ");
       writeChildLine(writer, hc);
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Error writing config file: " + e);
       }
     }
@@ -222,7 +222,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       if (leaf == null)
 	continue;
       if (!leaf.getType().equals(LeafComponentData.FILE)) {
-        if(log.isDebugEnabled()) {
+        if(log.isErrorEnabled()) {
           log.error("Got unknown LeafComponent type: " + leaf.getType());
         }
 	continue;
@@ -231,9 +231,8 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       try {
 	writer.println(leaf.getValue().toString());
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
-          log.error("Error writing config file: " + e);
-          e.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Error writing config file: ", e);
         }
       }
       finally {
@@ -265,7 +264,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
                    children[i].getType().equals(ComponentData.SOCIETY) || 
                    children[i].getType().equals(ComponentData.AGENT) || 
                    children[i].getType().equals(ComponentData.PLUGIN)) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("Got unexpected child of Node type: " + children[i]);
           }
 	} else {
@@ -309,7 +308,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
 	} else {
 //  	} else if (!children[i].getType().equals(ComponentData.NODEBINDER) 
 //                     || !children[i].getType().equals(ComponentData.AGENTBINDER)) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("Got a child of a Node that wasn't an Agent or Node Binder: " + children[i]);
           }
 	}
@@ -323,9 +322,8 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.println();
       writer.println("[ AuthorizedOperation ]");
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error("Error writing config file: " + e);
-        e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Error writing config file: ", e);
       }
     }
     finally {
@@ -380,9 +378,8 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.println();
       writer.println("[ AuthorizedOperation ]");
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error("Error writing config file: " + e);
-        e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Error writing config file: ", e);
       }
     }
     finally {

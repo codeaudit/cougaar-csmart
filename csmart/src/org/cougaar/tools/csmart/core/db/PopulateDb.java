@@ -800,7 +800,7 @@ public class PopulateDb extends PDbBase {
                 try {
                     executeUpdate(pstmt2, query);
                 } catch (SQLException e) {
-                  if(log.isDebugEnabled()) {
+                  if(log.isErrorEnabled()) {
                     log.error("SQLException query: " + query, e);
                   }
                     throw e;

@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ public class Util {
       path = file.getCanonicalPath();
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("Could not find: " + filename);
+        log.error("Could not find: " + filename, e);
       }
     }
     return path;

@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -613,7 +613,7 @@ public class AllocatorPlugIn
 	sortedlocalassets = sortAssets(addedC);
 	if (comboassets != null) {
 	  // UhOh! there are already some orgs in here! Error?
-	  if (log.isDebugEnabled()) {
+	  if (log.isWarnEnabled()) {
 	    log.warn("execute: " + this + " got Entitys before local assets!");
 	  }
 	  // We could:
@@ -627,11 +627,11 @@ public class AllocatorPlugIn
 	  // comboassets.addAll(sortedlocalassets);
 	} else {
 	  // These are the first assets to arrive
-	  if (log.isDebugEnabled()) {
+	  if (log.isInfoEnabled()) {
 	    log.info("execute: " + this + " got first assets, locals");
 	  }
 	  if (haveAllocatedPastLocals) {
-	    if (log.isDebugEnabled()) {
+	    if (log.isErrorEnabled()) {
 	      log.error("execute: " + this + " failed a previous allocation due to no rules at all, and now there are some. Why did they arrive late?");
 	    }
 	  }
@@ -675,7 +675,7 @@ public class AllocatorPlugIn
 	  if (log.isDebugEnabled()) {
 	    log.debug("execute: " + this + " got entities after some local assets. Tasks may have been allocated!");
 	  }
-	  if (log.isDebugEnabled()) {
+	  if (log.isErrorEnabled()) {
 	    if (haveAllocatedPastLocals) {
 	      log.error("execute: " + this + 
                         " and weve done an allocation that either ran out " + 
@@ -690,7 +690,7 @@ public class AllocatorPlugIn
 	  }
 	  // Could I have a flag to notice if any tasks have been allocated?
 	  if (haveAllocatedPastLocals) {
-	    if (log.isDebugEnabled()) {
+	    if (log.isErrorEnabled()) {
 	      log.error("execute: " + this + " previous allocation used an org or ran out of rules, and so might legitimately have used one of these new orgs. Next re-alloc might do something funny cause of rule index change.");
 	    }
 	  }
@@ -700,11 +700,11 @@ public class AllocatorPlugIn
 	} // end of checks whether there are previous comboassets	
       } else {
 	// entitys are trickling in.  Its possible we've already allocated a task!!!
-	if (log.isDebugEnabled()) {
+	if (log.isInfoEnabled()) {
 	  log.info("execute: " + this + " entitys are trickling in!");
 	}
 	if (haveAllocatedPastLocals) {
-	  if (log.isDebugEnabled()) {
+	  if (log.isErrorEnabled()) {
 	    log.error("execute: " + this + " previously allocated to a non-local, so that allocation likely screwy.");
 	  }
 	}
@@ -759,7 +759,7 @@ public class AllocatorPlugIn
         allocate(t, -1, currTime, null);
 
 	if (t.getPlanElement() == null) {
-	  if (log.isDebugEnabled()) {
+	  if (log.isErrorEnabled()) {
 	    log.error("execute: " + this + " allocated a task, but it says it has not PlanElement! Task: " + t);
 	  }
 	}
@@ -823,7 +823,7 @@ public class AllocatorPlugIn
 	if (alloc.getReportedResult() == null || alloc.getReportedResult().equals(alloc.getEstimatedResult())) {
 	  // either there is no reported result or its already the same as the estimated result
 	  // so ignore this
-	  if (log.isDebugEnabled()) {
+	  if (log.isInfoEnabled()) {
 	    log.info("execute: " + this + " allocationSub fired but this alloc did not have a ReportedResult or its same as the Estimated, skipping: " + alloc);
 	  }
 	  continue;
@@ -832,7 +832,7 @@ public class AllocatorPlugIn
 	if (estAR != null && estAR.getConfidenceRating() > successBorder) {
 	  // this Allocation already has a high confidence EstimatedResult - theres nothing
 	  // to do here
-	  if (log.isDebugEnabled()) {
+	  if (log.isInfoEnabled()) {
 	    log.info("execute: " + this + " allocationSub fired but this alloc allready has a high conf. Estimated result, skipping: " + alloc);
 	  }
 	  continue;
@@ -842,7 +842,7 @@ public class AllocatorPlugIn
 	  // Our marker that we rescinded an Allocation
 	  // or propagated its success up is already here
 	  // dont do anything more
-	  if (log.isDebugEnabled()) {
+	  if (log.isErrorEnabled()) {
 	    log.error("execute: " + this + " woke up with Allocation Id otherwise try to handle, but it has the rule index marker: " + alloc);
 	  }
 	  continue;
@@ -851,7 +851,7 @@ public class AllocatorPlugIn
 	// What about using changeReports? Only works if Executor fixed
 //  	if (! PlugInHelper.checkChangeReports(allocationSub.getChangeReports(alloc), PlanElement.ReportedResultChangeReport.class)) {
 //  	  // This Allocation did not change due to a ReportedResult change
-//  	  if (log.isDebugEnabled()) {
+//  	  if (log.isInfoEnabled()) {
 //  	    log.info("execute: " + this + " allocationSub fired but this alloc did not have the ReportedResult change according to the change reports, skipping: " + alloc);
 //  	  }
 //  	  continue;
@@ -965,7 +965,7 @@ public class AllocatorPlugIn
     
     AllocationResult responseI = allocI.getReportedResult();
     if (responseI == null) {
-      if (log.isDebugEnabled()) {
+      if (log.isErrorEnabled()) {
 	log.error("handleAllocation: " + this + " got alloc with null AR: " + allocI);
       }
       // Rescind the alloc? Wait for an AR to appear? 
@@ -977,7 +977,7 @@ public class AllocatorPlugIn
     Task task = allocI.getTask();
     if (task == null) {
       // Allocation couldn't find the Task its allocating
-      if (log.isDebugEnabled()) {
+      if (log.isErrorEnabled()) {
         log.error( 
 		"execute: " + this + 
 		" got Allocation with no Task parent: " + allocI);
@@ -988,7 +988,7 @@ public class AllocatorPlugIn
     
     // If the Allocation's Task doesnt point back to the Allocation, we have trouble
     if (task.getPlanElement() == null || ! task.getPlanElement().equals(allocI)) {
-      if (log.isDebugEnabled()) {
+      if (log.isErrorEnabled()) {
 	log.error("handleAllocation: " + this + " got alloc whose Task doesn't point back to it! Alloc: " + allocI + " with RepResult: " + responseI + " and Task: " + task);
       }
       rescindAllocation(allocI);
@@ -998,7 +998,7 @@ public class AllocatorPlugIn
     // Make sure we didnt get here by mistake
     if (getAllocRuleIndex(allocI) <= -100) {
       // Weve previously handled this Allocation. Don't do it again
-      if (log.isDebugEnabled()) {
+      if (log.isErrorEnabled()) {
 	log.error("handleAllocation: " + this + " got an Allocation and about to update the PlanElement on it, but its marked with rule index: " + getAllocRuleIndex(allocI) + " for alloc: " + allocI);
       }
       return;
@@ -1061,7 +1061,9 @@ public class AllocatorPlugIn
       reason = responseI.auxiliaryQuery(AuxiliaryQueryType.FAILURE_REASON);
       if (reason == null) 
 	reason = "(no reason given)";
-      log.info("handleAllocation: " + this + " got failed response due to " + reason + " for alloc " + allocI);
+      if(log.isInfoEnabled()) {
+        log.info("handleAllocation: " + this + " got failed response due to " + reason + " for alloc " + allocI);
+      }
     }
     // However if there are no more rules, just do a failure Disposition saving the original
     // failure reason
@@ -1081,7 +1083,7 @@ public class AllocatorPlugIn
       setAllocRuleIndex(alloc, (-1 * (getAllocRuleIndex(alloc) + 100)));
 
     // log something
-    if (log.isDebugEnabled()) {
+    if (log.isInfoEnabled()) {
       log.info("rescindAllocation: " + this + " deleting Allocation " + alloc);
     }
     // rescind the allocation
@@ -1095,7 +1097,7 @@ public class AllocatorPlugIn
    */
   private void rescindDeadlineTimerEvent(DeadlineTimerEvent deadline) {
     // log something
-    if (log.isDebugEnabled()) {
+    if (log.isInfoEnabled()) {
       log.info("rescindDeadlineTimerEvent: " + this + " deleting DeadlineTimerEvent " + deadline);
     }
     // rescind the deadline
@@ -1148,7 +1150,7 @@ public class AllocatorPlugIn
     Task task = allocI.getTask();
     if (task == null) {
       // Allocation couldn't find the Task its allocating
-      if (log.isDebugEnabled()) {
+      if (log.isWarnEnabled()) {
         log.warn(
 		"execute: " + this + 
 		" got Allocation with no Task: " + allocI);
@@ -1156,7 +1158,7 @@ public class AllocatorPlugIn
       return;
     }
     
-    if (log.isDebugEnabled()) {
+    if (log.isInfoEnabled()) {
       log.info(
 	      " exceeded deadline: "+deadlineI.getUID()+
 	       "\nfor allocating task: "+task.getUID()+
@@ -1237,7 +1239,7 @@ public class AllocatorPlugIn
     // make sure the deadline has not been exceeded
     if (taskDeadline <= currTime) {
       // Task deadline is already past the current time!
-      if (log.isDebugEnabled()) {
+      if (log.isInfoEnabled()) {
         log.info(
 		" unable to allocate task: "+task.getUID()+
 		 "\ndue to deadline ("+taskDeadline+" <= "+
@@ -1285,7 +1287,7 @@ public class AllocatorPlugIn
       if (++matchingRuleIndex >= expandedRules.length) {
 	haveAllocatedPastLocals = true;
         // no more rules apply
-        if (log.isDebugEnabled()) {
+        if (log.isInfoEnabled()) {
 	  if (expandedRules.length == 0) {
 	    log.info("allocate: " + myId + " couldn't allocate cause have no expanded rules at all!");
 	  } else if (startingRuleIndex < 0) {
@@ -1430,7 +1432,7 @@ public class AllocatorPlugIn
       //
       // Note that we used the guess-timated travel times, so this 
       //   may fail tasks that might have succeeded.
-      if (log.isDebugEnabled()) {
+      if (log.isInfoEnabled()) {
         log.info( 
 		"Unable to allocate task cause calculated "+
 		"deadline too soon");
@@ -1684,7 +1686,7 @@ public class AllocatorPlugIn
     publishAddAt(deadlineE, deadlineTime);
 
     // done handling task
-    if (log.isDebugEnabled()) {
+    if (log.isInfoEnabled()) {
       log.info(
           " allocated task: "+task.getUID()+
            "\nto asset: "+alloc.getAsset().getUID()+
@@ -1723,7 +1725,7 @@ public class AllocatorPlugIn
     Disposition disp = theLDMF.createFailedDisposition(task.getPlan(), task, estAR);
 
     publishAddAfter(disp, this.taskRespPubDelay);
-    if (log.isDebugEnabled()) {
+    if (log.isInfoEnabled()) {
       log.info("publishFailureDisposition: " + this + " publishing failure: " + disp);
     }
   }

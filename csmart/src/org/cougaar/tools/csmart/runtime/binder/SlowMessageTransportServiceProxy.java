@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -87,11 +87,8 @@ public class SlowMessageTransportServiceProxy
 
   public void registerClient(final MessageTransportClient mtc) {
     if (mtc != this.mtc) {
-      if (VERBOSE) {
-        if(log.isDebugEnabled()) {
-          log.error(
-                    "Expecting the service-requestor to be the client (OK)");
-        }
+      if(log.isErrorEnabled()) {
+        log.error("Expecting the service-requestor to be the client (OK)");
       }
     }
     this.wrappedClient = 

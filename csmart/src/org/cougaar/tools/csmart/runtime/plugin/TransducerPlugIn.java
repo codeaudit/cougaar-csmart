@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -113,7 +113,7 @@ public class TransducerPlugIn extends CSMARTPlugIn {
       RealWorldEvent rwe = (RealWorldEvent)addedRWEs.nextElement();
       if (rwe == null) {
 	// error!
-	if (log.isDebugEnabled()) {
+	if (log.isErrorEnabled()) {
 	  log.error("execute: " + this + " got null RWE on subscription");
 	}
 	continue;
@@ -122,7 +122,7 @@ public class TransducerPlugIn extends CSMARTPlugIn {
       ImpactModel model = rwe.getModel();
       if (model == null) {
 	// error!
-	if (log.isDebugEnabled()) {
+	if (log.isErrorEnabled()) {
 	  log.error("execute: " + this + " got null RWE model from event: " + rwe);
 	}
 	continue;
@@ -188,7 +188,7 @@ public class TransducerPlugIn extends CSMARTPlugIn {
 	    //	    publishAdd(ie);
 	    publishAddAt(ie, ie.getTime());
 	  } else {
-	    if (log.isDebugEnabled()) {
+	    if (log.isErrorEnabled()) {
 	      log.error("execute: " + this + " got null IE as an effect!");
 	    }
 	  }
@@ -248,7 +248,7 @@ public class TransducerPlugIn extends CSMARTPlugIn {
 	      if(line.length() == 0) {
 		// Empty line with a CR. This is fin.
 	      } else {
-                if(log.isDebugEnabled()) {
+                if(log.isErrorEnabled()) {
                   log.error("Got an expection parsing input file.", e);
                 }
 	      }
@@ -258,8 +258,8 @@ public class TransducerPlugIn extends CSMARTPlugIn {
 	in.close();
       } catch (IOException e) {
 	// error reading input data!
-	if (log.isDebugEnabled()) {
-	  log.error("parseParameters: " + this + " failed to read input data.");
+	if (log.isErrorEnabled()) {
+	  log.error("parseParameters: " + this + " failed to read input data.", e);
 	}
       }
     }
@@ -272,7 +272,7 @@ public class TransducerPlugIn extends CSMARTPlugIn {
       // error -- need at least 3 words on the line!
 
       // log something
-      if (log.isDebugEnabled()) {
+      if (log.isErrorEnabled()) {
 	log.error("processInputLine: " + this + " got Agent description missing elements: " + line);
       }
       return null;

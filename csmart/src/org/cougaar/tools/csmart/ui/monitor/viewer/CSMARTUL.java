@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -297,8 +297,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
             agentPort = Integer.parseInt(port);
             break; // have host and specific port
           } catch (Exception e) {
-            if (log.isDebugEnabled())
-              log.error("Exception parsing " + AGENT_PORT + " : " + e);
+            if (log.isErrorEnabled())
+              log.error("Exception parsing " + AGENT_PORT + " : ", e);
           }
         }
       }
@@ -337,7 +337,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       } else if (event.eventType == NamedFrame.Event.REMOVED) {
         JMenuItem menuItem = (JMenuItem) titleToMenuItem.get(event.title);
         if (menuItem == null) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("CSMARTUL: No window menu item for " + event.title);
           }
         } else {
@@ -347,7 +347,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       } else if (event.eventType == NamedFrame.Event.CHANGED) {
 	JMenuItem menuItem = (JMenuItem)titleToMenuItem.get(event.prevTitle);
         if (menuItem == null) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("CSMARTUL: No window menu item for " + event.title);
           }
         } else {
@@ -567,8 +567,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       try {
         agentPort = Integer.parseInt(s);
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
-          log.error("CSMARTUL: " + e);
+        if(log.isErrorEnabled()) {
+          log.error("CSMARTUL: ", e);
         }
       }
     }
@@ -692,8 +692,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
           try {
             objectsFromServlet.addAll(col);
           } catch (Exception e) {
-            if(log.isDebugEnabled()) {
-              log.error("CSMARTUL can't add results to collection: " + e);
+            if(log.isErrorEnabled()) {
+              log.error("CSMARTUL can't add results to collection: ", e);
             }
           }
         }
@@ -745,7 +745,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     for (Iterator i = orgAssets.iterator(); i.hasNext(); ) {
       Object o = i.next();
       if (!(o instanceof PropertyTree)) {
-        if(log.isDebugEnabled()) {
+        if(log.isWarnEnabled()) {
           log.warn("CSMARTUL: expected PropertyTree, got: " + 
                    o.getClass());
         }
@@ -945,8 +945,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     try {
       limit = Integer.parseInt(sLimit);
     } catch (NumberFormatException nfe) {
-      if(log.isDebugEnabled()) {
-        log.error("Illegal number: "+sLimit);
+      if(log.isErrorEnabled()) {
+        log.error("Illegal number: "+sLimit, nfe);
       }
       return;
     }
@@ -1058,7 +1058,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     for (Iterator i = objectsFromServlet.iterator(); i.hasNext(); ) {
       Object o = i.next();
       if (!(o instanceof PropertyTree)) {
-        if(log.isDebugEnabled()) {
+        if(log.isWarnEnabled()) {
           log.warn("CSMARTUL: expected PropertyTree, got: " + 
                              o.getClass());
         }
@@ -1095,7 +1095,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
               // so that graphing "one side" of the relationship is ok
               //              node.addOutgoingLink(relatedToUID);
               //            else
-              if(log.isDebugEnabled()) {
+              if(log.isInfoEnabled()) {
                 log.info("Unknown relationship: " + relatedToName);
               }
           }
@@ -1115,7 +1115,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       getObjectsFromServlet(ClientServletUtil.METRICS_SERVLET);
     if (objectsFromServlet == null)
       return;
-    if(log.isDebugEnabled()) {
+    if(log.isInfoEnabled()) {
       log.info("Received metrics: " + objectsFromServlet.size());
     }
 

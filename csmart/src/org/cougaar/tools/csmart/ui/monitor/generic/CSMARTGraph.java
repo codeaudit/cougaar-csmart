@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -184,7 +184,7 @@ public class CSMARTGraph extends Graph
       dotNames[0] = dotName;
     } else if (! os.startsWith("Windows")) {
       // What is this OS?
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Unknown OS, " + os + ", not recognized. If this is a Windows or Linux variant, please report it on the Cougaar bug-tracking site. \n\nCannot lay out graphs without recognizing your system as either Windows or Linux.");
       }
       System.exit(-1);
@@ -213,7 +213,7 @@ public class CSMARTGraph extends Graph
     } // end of dotNames loop	
 
     if (dotFile == null || ! dotFile.exists()) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("CSMARTGraph: Could not find dot executable: " + dotName + " (the version used for your OS, " + os + ").\n Make sure it is in CIP/csmart/bin, CIP/sys, CIP/bin, CIP/csmart/data or CIP/csmart/lib.");
       }
       System.exit(-1);
@@ -229,8 +229,8 @@ public class CSMARTGraph extends Graph
     try {
       input = new FileInputStream(f);
     } catch(FileNotFoundException fnf) {
-      if(log.isDebugEnabled()) {
-        log.error(fnf.toString());
+      if(log.isErrorEnabled()) {
+        log.error("Exception", fnf);
       }
       return null;
     }
@@ -240,8 +240,8 @@ public class CSMARTGraph extends Graph
     try {
       program.parse();
     } catch(Exception ex) {
-      if(log.isDebugEnabled()) {
-        log.error("CSMARTGraph: parser exception: " + ex);
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTGraph: parser exception: ", ex);
       }
       return null;
     }
@@ -341,7 +341,7 @@ public class CSMARTGraph extends Graph
     StringTokenizer st = new StringTokenizer(s, ",");
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph");
     if (st.countTokens() < 3) {
-      if(log.isDebugEnabled()) {
+      if(log.isWarnEnabled()) {
         log.warn("CSMARTGraph: WARNING: Can't parse color: " + s);
       }
       return Color.green; // bad color string, return default color
@@ -351,8 +351,8 @@ public class CSMARTGraph extends Graph
       for (int i = 0; i < 3; i++)
 	rgb[i] = Integer.parseInt(st.nextToken());
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error("Exception parsing color string: " + e);
+      if(log.isErrorEnabled()) {
+        log.error("Exception parsing color string: ", e);
       }
       return Color.green;
     }
@@ -396,7 +396,7 @@ public class CSMARTGraph extends Graph
       Node tailNode = (Node)newNodes.get(thisEdge.getTail().getName());
       Node headNode = (Node)newNodes.get(thisEdge.getHead().getName());
       if (tailNode == null || headNode == null) {
-        if(log.isDebugEnabled()) {
+        if(log.isWarnEnabled()) {
           log.warn("WARNING: null node");
         }
       }
@@ -471,7 +471,7 @@ public class CSMARTGraph extends Graph
       Node tailNode = (Node)newNodes.get(thisEdge.getTail().getName());
       Node headNode = (Node)newNodes.get(thisEdge.getHead().getName());
       if (tailNode == null || headNode == null) {
-        if(log.isDebugEnabled()) {
+        if(log.isWarnEnabled()) {
           log.warn("WARNING: null node");
         }
       }
@@ -634,15 +634,15 @@ public class CSMARTGraph extends Graph
           for (int i = 0; i < values.size(); i++)
             node.setAttribute(name + "_" + i, (String)values.get(i));
         } catch (ClassCastException e) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("CSMARTGraph: exception setting attribute with name: " +
-                      name + " " + e);
+                      name + " ", e);
           }
         }
       }
       // for debugging
       else
-      if(log.isDebugEnabled()) {
+      if(log.isWarnEnabled()) {
         log.warn(
                  "CSMARTGraph: WARNING: Displaying property: " + name +
                  " of class: " + ((o != null) ? o.getClass().getName() : "null") +
@@ -726,10 +726,10 @@ public class CSMARTGraph extends Graph
 	    edge = new Edge(this, node, headNode);
 	  } catch (RuntimeException e) {
 	    // we'll probably get exceptions for duplicate edges, so ignore
-            if(log.isDebugEnabled()) {
+            if(log.isErrorEnabled()) {
               log.error("Couldn't create edge from: " +
                         node.getName() + " " +
-                        headNode.getName() + " " + e);
+                        headNode.getName() + " ", e);
             }
 	    continue;
 	  }
@@ -750,10 +750,10 @@ public class CSMARTGraph extends Graph
 	  edge = new Edge(this, tailNode, node);
 	} catch (RuntimeException e) {
           // we'll probably get exceptions for duplicate edges, so ignore
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
           log.error("Couldn't create edge from: " +
                     tailNode.getName() + " " +
-                    node.getName() + " " + e);
+                    node.getName() + " ", e);
           }
 	  continue;
 	}
@@ -776,10 +776,10 @@ public class CSMARTGraph extends Graph
 	    edge.setAttribute(GrappaConstants.DIR_ATTR, "none");
 	  } catch (Exception e) {
 	    // we'll probably get exceptions for duplicate edges
-            if(log.isDebugEnabled()) {
+            if(log.isErrorEnabled()) {
               log.error("Couldn't create edge from: " +
                         node.getName() + " " +
-                        linkedToNode.getName() + " " + e);
+                        linkedToNode.getName() + " ", e);
             }
 	    continue;
 	  }
@@ -803,10 +803,10 @@ public class CSMARTGraph extends Graph
 	  Edge edge = new Edge(this, node, linkedToNode);
 	  edge.setAttribute(GrappaConstants.DIR_ATTR, "none");
 	} catch (Exception e) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("Couldn't create edge from: " +
                       node.getName() + " " +
-                      linkedToNode.getName() + " " + e);
+                      linkedToNode.getName() + " ", e);
           }
 	  continue;
 	}
@@ -1000,14 +1000,14 @@ public class CSMARTGraph extends Graph
       Node node = (Node)allNodes.elementAt(i);
       Attribute attribute = node.getAttribute(COLOR_DETERMINER);
       if (attribute == null) {
-        if(log.isDebugEnabled()) {
+        if(log.isWarnEnabled()) {
           log.warn("CSMARTGraph: No Color Determiner Attribute for: " +
                    node.getName());
         }
       } else {
 	String colorDeterminer = attribute.getStringValue();
 	if (colorDeterminer == null) {
-          if(log.isDebugEnabled()) {
+          if(log.isWarnEnabled()) {
             log.warn("CSMARTGraph: Color Determiner Attribute is null for: " +
                      node.getName());
           }
@@ -1235,10 +1235,10 @@ public class CSMARTGraph extends Graph
 	  try {
 	    edge = new Edge(this, inEdge.getTail(), outEdge.getHead());
 	  } catch (Exception e) {
-            if(log.isDebugEnabled()) {
+            if(log.isErrorEnabled()) {
               log.error("Couldn't create edge from: " +
                         inEdge.getTail() + " " +
-                        outEdge.getHead() + " " + e);
+                        outEdge.getHead() + " ", e);
             }
 	    continue;
 	  }
@@ -1316,10 +1316,10 @@ public class CSMARTGraph extends Graph
 	  try {
 	    edge = new Edge(this, inEdge.getTail(), outEdge.getHead());
 	  } catch (Exception e) {
-            if(log.isDebugEnabled()) {
+            if(log.isErrorEnabled()) {
               log.error("Couldn't create edge from: " +
                         inEdge.getTail() + " " +
-                        outEdge.getHead() + " " + e);
+                        outEdge.getHead() + " ", e);
             }
 	    continue;
 	  }
@@ -1384,8 +1384,8 @@ public class CSMARTGraph extends Graph
 	  nodes.addElement(e);
       }
     } catch (NumberFormatException e) {
-      if(log.isDebugEnabled()) {
-        log.error("CSMARTGraph: " + e);
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTGraph: ", e);
       }
     }
     return nodes;
@@ -1578,7 +1578,7 @@ public class CSMARTGraph extends Graph
 	  continue;
 	Attribute a = node.getAttribute(COLOR_ATTR);
 	if (a == null) {
-          if(log.isDebugEnabled()) {
+          if(log.isWarnEnabled()) {
             log.warn("CSMARTGraph: No default color for node");
           }
 	  continue;
@@ -1672,10 +1672,10 @@ public class CSMARTGraph extends Graph
 	try {
 	  edge = new Edge(this, lastNode, node);
 	} catch (RuntimeException e) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("Couldn't create edge from: " +
                       lastNode + " " +
-                      node + " " + e);
+                      node + " ", e);
           }
           continue;
 	}
@@ -1722,7 +1722,7 @@ public class CSMARTGraph extends Graph
    */
 
   public void doLayout() {
-    if(log.isDebugEnabled()) {
+    if(log.isInfoEnabled()) {
       log.info("CSMARTGraph: Starting layout...");
     }
 
@@ -1747,8 +1747,8 @@ public class CSMARTGraph extends Graph
     try {
       dotFile = new File(dotPathname);
     } catch (NullPointerException e) {
-      if(log.isDebugEnabled()) {
-        log.error("CSMARTGraph: Could not open file handle for " + dotPathname);
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTGraph: Could not open file handle for " + dotPathname, e);
       }
     }
     
@@ -1779,16 +1779,16 @@ public class CSMARTGraph extends Graph
 	Grappa.usePrintList = true; // reset
       pw.close(); // AMH - close it to flush the data, garbage collect
     } catch (FileNotFoundException e) {
-      if(log.isDebugEnabled()) {
-        log.error("CSMARTGraph: Could not write to file:" + dotPathname + " file not found exception: " + e);
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTGraph: Could not write to file:" + dotPathname + " file not found exception: ", e);
       }
     } catch (SecurityException se) {
-      if(log.isDebugEnabled()) {
-        log.error("CSMARTGraph: Could not write to file:" + dotPathname + " security exception: " + se);
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTGraph: Could not write to file:" + dotPathname + " security exception: ", se);
       }
     } catch (IOException ie) {
-      if(log.isDebugEnabled()) {
-        log.error("CSMARTGraph: Could not write to file:" + dotPathname + " I/O exception: " + ie);
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTGraph: Could not write to file:" + dotPathname + " I/O exception: ", ie);
       }
     }
     if(log.isDebugEnabled()) {
@@ -1910,8 +1910,8 @@ public class CSMARTGraph extends Graph
       try {
 	localHost = InetAddress.getLocalHost();
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
-          log.error("CSMARTGraph: Can't get local host: " + e);
+        if(log.isErrorEnabled()) {
+          log.error("CSMARTGraph: Can't get local host: ", e);
         }
       }
       graphUID = localHost.toString() + "/" + (new UID()).toString();
@@ -1973,8 +1973,8 @@ public class CSMARTGraph extends Graph
       fos.flush();
       fos.close();
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error("CSMARTGraph: Could not write to file:" + e);
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTGraph: Could not write to file:", e);
       }
     }
     Grappa.usePrintList = true;
@@ -2065,7 +2065,7 @@ public class CSMARTGraph extends Graph
       return;
     File file = jfc.getSelectedFile();
     if (file == null)
-      if(log.isDebugEnabled()) {
+      if(log.isWarnEnabled()) {
         log.warn("CSMARTGraph: file is null");
       }
     saveGraph(file);
@@ -2101,8 +2101,8 @@ public class CSMARTGraph extends Graph
     try {
       dotFile = new File(dotPathname);
     } catch (NullPointerException e) {
-      if(log.isDebugEnabled()) {
-        log.error("CSMARTGraph: Could not open file handle for " + dotPathname);
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTGraph: Could not open file handle for " + dotPathname, e);
       }
     }
     
@@ -2131,10 +2131,9 @@ public class CSMARTGraph extends Graph
     try {
       proc = Runtime.getRuntime().exec(command);
     } catch(Exception ex) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Exception while executing: " + 
-                  command + " " + ex.getMessage());
-      ex.printStackTrace(System.err);
+                  command + " ", ex);
       }
       proc = null;
     }
@@ -2149,8 +2148,8 @@ public class CSMARTGraph extends Graph
 	fromFilterRaw = proc.getInputStream();
       }
     } catch(Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error("CSMARTGraph: Couldn't get from filter: " + e);
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTGraph: Couldn't get from filter: ", e);
       }
     }
 
@@ -2186,9 +2185,8 @@ public class CSMARTGraph extends Graph
     try {
       program.parse();
     } catch(Exception ex) {
-      if(log.isDebugEnabled()) {
-        log.error("CSMARTGraph: parser exception: " + ex.getMessage());
-        ex.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTGraph: parser exception: " + ex.getMessage(), ex);
       }
     }
     if(log.isDebugEnabled()) {
@@ -2198,8 +2196,8 @@ public class CSMARTGraph extends Graph
     try {
       fromFilter.close();
     } catch (IOException io) {
-      if(log.isDebugEnabled()) {
-        log.error("Error closing special reader");
+      if(log.isErrorEnabled()) {
+        log.error("Error closing special reader", io);
       }
     }
     stripAttributeQuotes(this);
@@ -2214,7 +2212,7 @@ public class CSMARTGraph extends Graph
       Node newNode = (Node)newNodes.elementAt(i);
       Node node = (Node)UIDToNode.get(newNode.getName());
       if (node == null) {
-        if(log.isDebugEnabled()) {
+        if(log.isWarnEnabled()) {
           log.warn("CSMARTGraph: WARNING: node not found: " + newNode.getName());
         }
       } else {
@@ -2233,7 +2231,7 @@ public class CSMARTGraph extends Graph
       String name = newEdge.getTail().getName() + newEdge.getHead().getName();
       Edge edge = (Edge)UIDToEdge.get(name);
       if (edge == null) {
-        if(log.isDebugEnabled()) {
+        if(log.isWarnEnabled()) {
           log.warn("CSMARTGraph: WARNING: edge not found: " + name);
         }
       } else

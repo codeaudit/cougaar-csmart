@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -86,7 +86,7 @@ public class StripChart extends JCChart {
       yTitle.setRotation(ChartText.DEG_270);
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error("StripChart: " + e);
+        log.error("StripChart: ", e);
       }
     }
     yaxis.setTitle(yTitle);

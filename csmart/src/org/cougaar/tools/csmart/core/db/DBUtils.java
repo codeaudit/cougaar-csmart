@@ -442,7 +442,7 @@ public class DBUtils {
             qLog.debug("Query: " + dbQuery);
           }
 	  count = stmt.executeUpdate(dbQuery);
-          if(log.isDebugEnabled()) {
+          if(log.isInfoEnabled()) {
             log.info("Deleted "+count+" items from the database");
           }
 	  stmt.close();
@@ -511,7 +511,7 @@ public class DBUtils {
     try {
       conn = DBUtils.getConnection(qFile);
       if (conn == null) {
-        if(log.isDebugEnabled()) {
+        if(log.isInfoEnabled()) {
           log.info("DBUtils:queryHT: Got no connection");
         }
 	return (SortedMap)ht;
@@ -586,6 +586,7 @@ public class DBUtils {
    * @return an <code>Integer</code> result of the query
    */
   static Integer query1Int(String query, Map substitutions, String qFile){
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
     String dbQuery = DBUtils.getQuery(query, substitutions, qFile);
     Integer res = null;
     try {
@@ -603,8 +604,9 @@ public class DBUtils {
       }
       
     } catch (Exception e) {
-      System.out.println("query1Int: "+dbQuery);
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception", e);
+      }
       throw new RuntimeException("Error" + e);
     }
     return res;
@@ -676,6 +678,8 @@ public class DBUtils {
    * @return an <code>int</code>, the number of lines affected
    */
   public static int dbExecute(String dbQuery, String type, String qFile){
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.DBUtils");
+
     int count=0;
     try {
       Connection conn = DBUtils.getConnection(qFile);
@@ -693,8 +697,9 @@ public class DBUtils {
 	}
       }
     } catch (Exception e) {
-      System.out.println("db"+type+": "+dbQuery);
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("db"+type+": "+dbQuery, e);
+      }
       throw new RuntimeException("Error" + e);
     }
     if (traceQueries){

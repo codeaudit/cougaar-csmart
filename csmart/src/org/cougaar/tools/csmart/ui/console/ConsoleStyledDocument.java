@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -75,7 +75,7 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       reader = new BufferedReader(new FileReader(logFileName));
     } catch (FileNotFoundException fnfe) {
       if(log.isErrorEnabled()) {
-        log.error(fnfe.toString());
+        log.error("Exception, Cannot find logfile", fnfe);
       }
     }
     try {
@@ -88,11 +88,11 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       }
     } catch (IOException ioe) {
       if(log.isErrorEnabled()) {
-        log.error(ioe.toString());
+        log.error("Exception", ioe);
       }
     } catch (BadLocationException ble) {
       if(log.isErrorEnabled()) {
-        log.error(ble.toString());
+        log.error("Exception", ble);
       }
     }
     bufferSize = -1; // don't trim document any more
@@ -251,7 +251,7 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       logFile.close();
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-        log.error(e.toString());
+        log.error("Exception", e);
       }
     }
   }

@@ -88,9 +88,8 @@ public class CSMARTMetrics extends JPanel {
       chartDataTableModel = (TableModel)ois.readObject();
       namearray = (String[])ois.readObject();
     } catch( Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error("Object read exception: " + e);
-        log.error("CSMARTMetrics: Could not read the file.");
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTMetrics: Could not read the file.", e);
       }
     }
 
@@ -201,8 +200,8 @@ public class CSMARTMetrics extends JPanel {
     oos.flush();
     oos.close();
     } catch(Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error("Exception: " + e);
+      if(log.isErrorEnabled()) {
+        log.error("Exception: ", e);
       }
     }
 
@@ -237,7 +236,7 @@ public class CSMARTMetrics extends JPanel {
     Collection objectsFromServlet = CSMARTUL.getObjectsFromServlet(ClientServletUtil.METRICS_SERVLET);
     if (objectsFromServlet == null)
       return;
-      if(log.isDebugEnabled()) {
+      if(log.isInfoEnabled()) {
         log.info("Received metrics: " + objectsFromServlet.size());
       }
 

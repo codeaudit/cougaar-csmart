@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -30,14 +30,19 @@ import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.ui.tree.CSMARTDataFlavor;
 import java.awt.datatransfer.DataFlavor;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.ObjectInputStream;
 
 public class ConsoleTreeObject implements Serializable {
   String name;
   private boolean root = false;
   private Class allowedClass = null;
   BaseComponent component = null;
+  private transient Logger log;
 
   public ConsoleTreeObject(BaseComponent component) {
+    createLogger();
     name = component.toString();
     this.component = component;
   }
@@ -49,13 +54,20 @@ public class ConsoleTreeObject implements Serializable {
    */
 
   public ConsoleTreeObject(String name, String allowedClassName) {
+    createLogger();
     this.name = name;
     try {
       allowedClass = Class.forName(allowedClassName);
     } catch (Exception e) {
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception", e);
+      }
     }
     root = true;
+  }
+
+  private void createLogger() {
+    log = CSMART.createLogger(this.getClass().getName());
   }
 
   public String getName() {
@@ -142,6 +154,10 @@ public class ConsoleTreeObject implements Serializable {
 
   private void writeObject(ObjectOutputStream os) throws IOException {
     throw new IOException("Attempt to serialize ConsoleTreeObject, check DataFlavor");
+  }
+
+  private void readObject(ObjectInputStream is) throws IOException, ClassNotFoundException {
+    createLogger();
   }
 }
 

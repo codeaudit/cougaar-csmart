@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -83,7 +83,7 @@ public class UIProperties {
       try {
 	properties.load(new FileInputStream(file));
       } catch (Exception e) {
-        if(log.isDebugEnabled()) {
+        if(log.isWarnEnabled()) {
           log.warn("Could not read properties file: " + 
                              file.getPath() + " " + e);
         }
@@ -119,9 +119,9 @@ public class UIProperties {
     try {
       properties.store(new FileOutputStream(file), "CSMART UI Properties");
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
+      if(log.isErrorEnabled()) {
         log.error("Could not save CSMART UI Properties in: " +
-                  file.getPath() + " " + e);
+                  file.getPath() + " ", e);
       }
     }
   }
@@ -184,8 +184,8 @@ public class UIProperties {
       for (int i = 0; i < 3; i++)
 	rgb[i] = Integer.parseInt(st.nextToken());
     } catch (Exception e) {
-      if(log.isDebugEnabled()) {
-        log.error("Exception parsing color string: " + e);
+      if(log.isErrorEnabled()) {
+        log.error("Exception parsing color string: ", e);
       }
       return Color.green;
     }

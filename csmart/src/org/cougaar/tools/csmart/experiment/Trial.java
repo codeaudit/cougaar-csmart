@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -176,7 +176,7 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
       sb.append(((Property)trialParameters.get(i)).getName());
       sb.append(",");
     }
-    if(log.isDebugEnabled()) {
+    if(log.isInfoEnabled()) {
       log.info(sb.substring(0, sb.length()-1));
     }
     sb.setLength(0);
@@ -184,7 +184,7 @@ public class Trial extends ModifiableConfigurableComponent implements Serializab
       sb.append(trialValues.get(i).toString());
       sb.append(",");
     }
-    if(log.isDebugEnabled()) {
+    if(log.isInfoEnabled()) {
       log.info(sb.substring(0, sb.length()-1));
     }
   }

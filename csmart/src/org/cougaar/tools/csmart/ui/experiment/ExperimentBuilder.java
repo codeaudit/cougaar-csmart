@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -420,7 +420,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
       }.start();
     } catch (RuntimeException re) {
       if(log.isErrorEnabled()) {
-        log.error("Error saving experiment: " + re);
+        log.error("Error saving experiment: ", re);
       }
       GUIUtils.timeConsumingTaskEnd(c);
     }

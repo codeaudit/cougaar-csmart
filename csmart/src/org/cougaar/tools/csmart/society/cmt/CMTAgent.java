@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- * Copyright 2001 BBNT Solutions, LLC
+ * Copyright 2001-2002 BBNT Solutions, LLC
  * under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
 
  * This program is free software; you can redistribute it and/or modify
@@ -128,7 +128,9 @@ public class CMTAgent
     try {
       initDBProperties();
     } catch (IOException ioe) {
-      ioe.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception", ioe);
+      }
     }
   }
 
@@ -156,7 +158,9 @@ public class CMTAgent
 	conn.close();
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception", e);
+      }
       throw new RuntimeException("Error" + e);
     }
     return orgClass;
@@ -210,7 +214,9 @@ public class CMTAgent
           conn.close();
         }
       } catch (Exception e) {
-        e.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Exception", e);
+        }
         throw new RuntimeException("Error" + e);
       }
     }
@@ -297,7 +303,9 @@ public class CMTAgent
           conn.close();
         }
       } catch (Exception e) {
-        e.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Exception", e);
+        }
         throw new RuntimeException("Error" + e);
       }
     }

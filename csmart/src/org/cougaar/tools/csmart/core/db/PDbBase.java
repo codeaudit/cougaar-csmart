@@ -281,7 +281,9 @@ public class PDbBase {
                 stmt.close();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+          if(log.isErrorEnabled()) {
+            log.error("Exception: ", e);
+          }
             // Ignore exceptions and use default
         }
         return id;
@@ -305,7 +307,7 @@ public class PDbBase {
             }
             return result;
         } catch (SQLException sqle) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("SQLException query: " + query);
           }
           if (pwlog != null) {
@@ -334,7 +336,7 @@ public class PDbBase {
             }
             return result;
         } catch (SQLException sqle) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("SQLException query: " + query);
           }
             if (pwlog != null) {
@@ -363,7 +365,7 @@ public class PDbBase {
             }
             return result;
         } catch (SQLException sqle) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("SQLException query: " + query, sqle);
           }
             if (pwlog != null) {
@@ -392,7 +394,7 @@ public class PDbBase {
             }
             return rs;
         } catch (SQLException sqle) {
-          if(log.isDebugEnabled()) {
+          if(log.isErrorEnabled()) {
             log.error("SQLException query: " + query, sqle);
           }
             if (pwlog != null) {
@@ -437,7 +439,9 @@ public class PDbBase {
         try {
             if (dbConnection != null) close();
         } catch (SQLException sqle) {
-            sqle.printStackTrace();
+          if(log.isErrorEnabled()) {
+            log.error("Exception", sqle);
+          }
         }
     }
 

@@ -162,8 +162,7 @@ public class CMT {
       } 
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
-         log.error("hasRows"+dbQuery);
-         e.printStackTrace();
+         log.error("hasRows"+dbQuery, e);
       }
       throw new RuntimeException("Error" + e);
     }
@@ -213,8 +212,7 @@ public class CMT {
     }
     catch (Exception e) {
       if(log.isErrorEnabled()) {
-         log.error("sqlListFromQuery: "+dbQuery);
-         e.printStackTrace();
+         log.error("sqlListFromQuery: "+dbQuery, e);
       }
       throw new RuntimeException("Error" + e);
     }
@@ -564,6 +562,7 @@ public class CMT {
   }
   
   static String getNextId(String queryName, String prefix) {
+    Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.db.CMT");
     DecimalFormat format = new DecimalFormat(prefix + "0000");
     Map substitutions = new HashMap();
     substitutions.put(":max_id_pattern", prefix + "____");
@@ -601,7 +600,9 @@ public class CMT {
 	stmt.close();
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      if(log.isErrorEnabled()) {
+        log.error("Exception: ", e);
+      }
       // Ignore exceptions and use default
     }
     return id;

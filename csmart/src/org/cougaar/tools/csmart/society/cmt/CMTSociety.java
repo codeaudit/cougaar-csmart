@@ -105,7 +105,9 @@ public class CMTSociety
 	  conn.close();
 	}
       } catch (Exception e) {
-	e.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Exception", e);
+        }
 	throw new RuntimeException("Error" + e);
       }
     }    

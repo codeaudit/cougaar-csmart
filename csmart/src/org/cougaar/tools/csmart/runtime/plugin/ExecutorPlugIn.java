@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -98,16 +98,12 @@ public class ExecutorPlugIn
   }
 
   public void execute() {
-//      if (log.isDebugEnabled()) {
-//        log.info("execute:" + this);
-//      }
-
     long currentTime = currentTimeMillis();
 
     for (Enumeration en = allocSub.getAddedList(); 
         en.hasMoreElements();
         ) {
-      if (log.isDebugEnabled()) {
+      if (log.isInfoEnabled()) {
 	log.info("execute:" + this + 
           ": got something from Alloc Subscription");
       }
@@ -146,7 +142,7 @@ public class ExecutorPlugIn
       double []results = {(double)assetTime}; // matching values for those Aspects
       
       if(assetTime > 0) {
-	if (log.isDebugEnabled()) {
+	if (log.isInfoEnabled()) {
 	  log.info("execute:" + this + ": Alloc request met at time: " + assetTime);
 	}
 	nar = theLDMF.newAllocationResult(1.0, // confidence rating
@@ -168,7 +164,7 @@ public class ExecutorPlugIn
 	// send them.
 
       } else {
-	if (log.isDebugEnabled()) {
+	if (log.isInfoEnabled()) {
 	  log.info("execute:" + this + ": Alloc request failed!");
 	}
 

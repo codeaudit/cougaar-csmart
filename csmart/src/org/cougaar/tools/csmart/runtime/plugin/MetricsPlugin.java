@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 1997-2001 BBNT Solutions, LLC
+ *  Copyright 1997-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -349,7 +349,7 @@ public class MetricsPlugin
       } // end of if have more than 2 params
       
       if (params.size() > 7) {
-	if (log.isDebugEnabled()) {
+	if (log.isErrorEnabled()) {
 	  // Explain the parameters correctly...
 	  // wantBBStats
 	  // wantProtoRegStats
@@ -584,7 +584,7 @@ public class MetricsPlugin
   private void finishStatistics() {
     writer.close();
     if (writer.checkError()) {
-      if (log.isDebugEnabled()) {
+      if (log.isErrorEnabled()) {
 	log.error("Error writing statistics file");
       }
     }

@@ -1,6 +1,6 @@
 /*
  * <copyright>
- *  Copyright 2000-2001 BBNT Solutions, LLC
+ *  Copyright 2000-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -32,6 +32,8 @@ import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
 
 /**
  * User interface that supports building a configurable component.
@@ -55,8 +57,10 @@ public class PropertyBuilder extends JFrame implements ActionListener {
   };
 
   private JMenuItem saveMenuItem;
+  private transient Logger log;
 
   public PropertyBuilder(ModifiableComponent mc) {
+    log = CSMART.createLogger(this.getClass().getName());
     // initialize menus and gui panels
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
@@ -152,7 +156,9 @@ public class PropertyBuilder extends JFrame implements ActionListener {
                                       "Recipe Written",
                                       JOptionPane.INFORMATION_MESSAGE);
       } catch (Exception sqle) {
-        sqle.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Exception", sqle);
+        }
         JOptionPane.showMessageDialog(this,
                                       "An exception occurred writing the recipe to the database",
                                       "Error Writing Database",

@@ -1,6 +1,6 @@
 /* 
  * <copyright>
- *  Copyright 2001 BBNT Solutions, LLC
+ *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
  * 
  *  This program is free software; you can redistribute it and/or modify
@@ -30,9 +30,17 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyHelper;
 import org.cougaar.tools.csmart.core.property.InvalidPropertyValueException;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 public class PropTableModel extends PropTableModelBase {
     private Map bindings = new HashMap();
+  private transient Logger log;
+
+  public PropTableModel() {
+    super();
+    log = CSMART.createLogger(this.getClass().getName());
+  }
 
     public void setComponentProperties(BaseComponent cp) {
         for (Iterator i = cp.getPropertyNames(); i.hasNext(); ) {
@@ -118,7 +126,9 @@ public class PropTableModel extends PropTableModelBase {
           Array.set(newValue, i,
                     PropertyHelper.validateValue(prop, values[i]));
         } catch (InvalidPropertyValueException e) {
-          e.printStackTrace();
+          if(log.isErrorEnabled()) {
+            log.error("Exception", e);
+          }
         }
       }
     } else {
@@ -131,7 +141,9 @@ public class PropTableModel extends PropTableModelBase {
         try {
           tmpValue[i] = PropertyHelper.validateValue(prop, expValues);
         } catch (InvalidPropertyValueException e) {
-          e.printStackTrace();
+          if(log.isErrorEnabled()) {
+            log.error("Exception", e);
+          }
         }
       }
       newValue = tmpValue;

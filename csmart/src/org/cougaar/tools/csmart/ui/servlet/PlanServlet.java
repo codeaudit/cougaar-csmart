@@ -367,7 +367,7 @@ public class PlanServlet
           }
         } catch (Exception e) {
           if(log.isErrorEnabled()) {
-            log.error("Illegal parameter: "+name+"="+value);
+            log.error("Illegal parameter: "+name+"="+value, e);
           }
         }
       } else if (name.equals("limit")) {
@@ -378,7 +378,7 @@ public class PlanServlet
           }
         } catch (Exception e) {
           if(log.isErrorEnabled()) {
-            log.error("Illegal parameter: "+name+"="+value);
+            log.error("Illegal parameter: "+name+"="+value, e);
           }
         }
       }

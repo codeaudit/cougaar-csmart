@@ -941,9 +941,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       tool = (JFrame) constructor.newInstance(params);
     } catch (Exception exc) {
       if(log.isErrorEnabled()) {
-        log.error("CSMART: " + exc);
+        log.error("CSMART: " + exc, exc);
       }
-      exc.printStackTrace();
       return null;
     }
     if (docName != null)
