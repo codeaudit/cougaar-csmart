@@ -58,7 +58,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  * This is the default configurable component implementation.
  * It implements all methods that define, name, label, etc. Properties.
  *
- * This method can be overridden by specific components.
+ * This class should be overridden by specific components.
  */
 public abstract class ConfigurableComponent
   implements BaseComponent, ConfigurableComponentListener
@@ -66,7 +66,7 @@ public abstract class ConfigurableComponent
   private static final long serialVersionUID = -1294225527645517794L;
 
   private transient Map myProperties = new HashMap();
-  private transient Collection myPropertyEntries = null;
+  private transient boolean myPropertiesInvalid = false; // flag to invalidate the local cache
   private transient ComposableComponent parent; // Our parent, if any
   private transient List children = null; // Our children, if any
   private static int nameCount = 0;
@@ -84,13 +84,17 @@ public abstract class ConfigurableComponent
     implements PropertiesListener, ConfigurableComponentListener
   {
     public void propertyAdded(PropertyEvent e) {
+      // Note the assumption that getProperty returns both Visible and inVisible properties
       if(e.getProperty().isVisible()) {
         firePropertyAdded(e);
       }
     }
 
     public void propertyRemoved(PropertyEvent e) {
-      if (e.getProperty().isVisible()) {
+      // Note the assumption that getProperty returns both Visible and inVisible properties
+      // Bug 1743: Is the following version better?
+      //      if (e.getProperty().isVisible()) {
+      if (isPropertyVisible(e.getProperty())) {
         firePropertyRemoved(e);
       }
     }
@@ -207,6 +211,7 @@ public abstract class ConfigurableComponent
 
     Iterator i = names.iterator();
     
+    // For each property to add
     while(i.hasNext()) {
       try {
         String propName = (String) i.next();
@@ -237,7 +242,7 @@ public abstract class ConfigurableComponent
 	}
       }
     }
-  }
+  } // end of setProperties
 
   /**
    * Get a <code>URL</code> for a description of the component. May return <code>null</code>.
@@ -301,7 +306,7 @@ public abstract class ConfigurableComponent
    **/
   public void setName(String newName) {
     startNameChange();
-    myName.setName(new SimpleName(newName));
+    myName.setName(SimpleName.getSimpleName(newName));
     finishNameChange();
   }
 
@@ -329,7 +334,6 @@ public abstract class ConfigurableComponent
   public CompositeName getFullName() {
     return myName;
   }
-
 
   /**
    * Add a child to this component. Childs are always of type
@@ -430,7 +434,7 @@ public abstract class ConfigurableComponent
 
   /**
    * Changing our parent changes all our property names so we have to
-   * rehash them
+   * rehash them and flush their caches.
    *
    * @param newParent New Parent Component
    */
@@ -438,7 +442,7 @@ public abstract class ConfigurableComponent
     ComposableComponent oldParent = parent;
     startNameChange();
     parent = newParent;
-    myName.setComponent((BaseComponent)parent);
+    myName.setComponent((BaseComponent)parent); // flushes myName's cache as a side-effect
     finishNameChange();
     if (oldParent != null) 
       ((ConfigurableComponent)oldParent).fireChildConfigurationChanged();
@@ -489,18 +493,30 @@ public abstract class ConfigurableComponent
     for (int i = 0, n = getChildCount(); i < n; i++) {
       ((ConfigurableComponent)getChild(i)).startNameChange();
     }
+
+    // MIK: WTF why are we trashing the entire CC hierarchy's maps?!?
+    /*
     if (parent != null) 
       ((ConfigurableComponent)parent).startNameChange();
+    */
+
     nameChangeMark = false;
+
+    getFullName().decache();    // decache this component name.
+
     if (myProperties != null) {
-      // Must make a copy because the entrySet is backed by the Map
-      // and the Map is about to become invalid. (The actual
-      // implementation of HashMap does not require this copying, but
-      // there are no guarantees.)
-      myPropertyEntries = new ArrayList(myProperties.entrySet());
-      myProperties = null;
+      // invalidate the property hashmap
+      myPropertiesInvalid = true;
+      
+      // while we're here, we'll decache the property names
+      // MIK: we could probably wait till we do getMyProperties
+      for (Iterator it = myProperties.entrySet().iterator(); it.hasNext(); ) {
+        Map.Entry entry = (Map.Entry) it.next();
+        CompositeName n = (CompositeName) entry.getKey();
+        n.decache();
+      }
     }
-  }
+  } // end of startNameChange
 
   /**
    * Called after a change in our name is completed. We do nothing
@@ -529,22 +545,22 @@ public abstract class ConfigurableComponent
    * this procedure recreates the Map the first time it is needed.
    * @return the Map of this component's properties.
    **/
-
   protected Map getMyProperties() {
-    if (myProperties == null) {
-      if (myPropertyEntries == null) {
-        myProperties = new HashMap();
-      } else {
-        int sz = myPropertyEntries.size();
-        sz += sz / 3;
-        myProperties = new HashMap(sz + sz / 4 + 1);
-        for (Iterator i = myPropertyEntries.iterator(); i.hasNext(); ) {
-          Map.Entry entry = (Map.Entry) i.next();
-          myProperties.put(entry.getKey(), entry.getValue());
+    if (myProperties != null) {
+      if (myPropertiesInvalid) {
+        // copy the contents because we're going to trash the original
+        ArrayList tmp = new ArrayList(myProperties.values());
+        // clear the original
+        myProperties.clear();
+        for (int i = 0, l = tmp.size(); i<l; i++) {
+          Property p = (Property) tmp.get(i);
+          myProperties.put(p.getName(), p);
         }
-        myPropertyEntries = null;
-      }
+        myPropertiesInvalid = false;
+      } 
     }
+    // Note assumption that myProperties is never null. Otherwise, getMyProperties could
+    // now return null, which is an API change!
     return myProperties;
   }
 
@@ -559,64 +575,190 @@ public abstract class ConfigurableComponent
   }
 
   /**
-   * Get an invisible property which is not returned by <code>getProperty</code>.
+   * Get an invisible property which is not returned by <code>getVisibleProperty</code>. 
    * Use this method only when absolutely necessary.
    * Returns null if no invisible property exists with the specified name. 
    *
-   * @param name 
-   * @return a <code>Property</code> value
+   * @param name full name of property to look for
+   * @return a <code>Property</code> value, null if the named property is Visible
    */
   public Property getInvisibleProperty(CompositeName name) {
-    Property prop = (Property) getMyProperties().get(name);
-    if (prop != null) {
-      if(prop.isVisible()) return null;
-      return prop;
-    }
-
-    for (int i = 0, n = getChildCount(); i < n; i++) {
-      Property result = 
-        ((ConfigurableComponent)getChild(i)).getInvisibleProperty(name);
-      if (result != null) {
-        return result;
-      }
-    }
-    return null;
+    return getPropertyWorker(name, false, false);
   }
 
   /**
-   * Get an invisible property which is not returned by <code>getProperty</code>.
+   * Get an invisible property which is not returned by <code>getVisibleProperty</code>. 
    * Use this method only when absolutely necessary.
    * Returns null if no invisible property exists with the specified name. 
    *
-   * @param localName 
+   * @param localName short name of property to look for
    * @return a <code>Property</code> value
    */
   public Property getInvisibleProperty(String localName){
-    return getProperty(new ComponentName(this, localName));
+    return getInvisibleProperty(new ComponentName(this, localName));
+  }
+  
+  /**
+   * Get a visible property which is not returned by <code>getInvisibleProperty</code>. 
+   * Use this method only when absolutely necessary.
+   * Returns null if no visible property exists with the specified name. 
+   *
+   * @param name full Name of property to look for
+   * @return a <code>Property</code> value, null if the named property is Invisible
+   */
+  public Property getVisibleProperty(CompositeName name) {
+    return getPropertyWorker(name, false, true);
   }
 
   /**
-   * Get a property by name.
+   * Get a visible property which is not returned by <code>getVisibleProperty</code>. 
+   * Use this method only when absolutely necessary.
+   * Returns null if no visible property exists with the specified name. 
+   *
+   * @param localName short name of Property to find
+   * @return a <code>Property</code> value
+   */
+  public Property getVisibleProperty(String localName){
+    return getVisibleProperty(new ComponentName(this, localName));
+  }
+  
+  /**
+   * Get a property by name. Current functionality returns it regardless
+   * of whether it is in fact invisible.
    *
    * @param name the name of the property.
    * @return the property or null if there is no property with the
    * specified name
    **/
   public Property getProperty(CompositeName name) {
-    Object o = getMyProperties().get(name);
-    if (o != null) {
-      if (o instanceof Property) return (Property) o;
-      return null;              // Fetching an invisible property
-    }
-    for (int i = 0, n = getChildCount(); i < n; i++) {
-      Property result = 
-        ((ConfigurableComponent)getChild(i)).getProperty(name);
-      if (result != null) {
-        return result;
-      }
-    }
-    return null;
+    return getPropertyWorker(name, true, true);
   }
+
+  // Only print the stacktrace once for this error
+  private transient boolean hadNullChildNameError = false;
+
+  // Worker method that gets properties from a component or its children.
+  // If you ask for all, it gets the property whether visible or not.
+  // Otherwise, it looks at the third argument, and only returns the property
+  // if its visibility matches your request
+  // Note that this method is called recursively
+  protected Property getPropertyWorker(CompositeName name, boolean all, boolean visible) {
+    // Note: This now assumes it is _always_ true that a Property is located off a Component
+    // based on its name: <full name of component>.foo, for example
+
+    // walk from root to see if we're at a reasonable spot
+    if (name.startsWith(myName)) { // is this component a prefix?
+      // Invisible Properties are still properties -- they just
+      // say they are not visible. So we must test them
+      // and return null if they say they are not visible
+      Property p = (Property)getMyProperties().get(name);
+      if (p != null) {
+	// Are we getting all properties
+	if (all) {
+	  // If so, just return it
+	  return p;
+	  // Otherwise, we only want to return the actual property
+	  // if its visibility matches that requested
+	} else if (p.isVisible() == visible) {
+	  return p;
+	} else {
+	  // User did not want all properties, and this property's visibility
+	  // is not the variant the user wanted
+	  // Don't return it.
+	  // Note however that on recursion into children, this null return
+	  // is indistinguishable from not finding the property
+	  return null;
+	}
+      } // end of block on found the property locally
+
+      // Didn't find the property locally. Check the children.
+      // check the children
+      int myl = myName.size();
+      int nl = name.size();
+      if (nl>myl) {             // any chance a child has it?
+        CompositeName nn = name.get(myl); // get the next name
+	if (nn == null) {
+	  if (log.isErrorEnabled())
+	    log.error("getProperty: null CompositeName. myName: " + myName + ", name: " + name + " myName.size(): " + myl + " name.size() " + nl, new Throwable());
+	  return null;
+	}
+
+	// Now loop over the children
+        for (int i = 0, n = getChildCount(); i < n; i++) {
+          ConfigurableComponent child = (ConfigurableComponent) getChild(i);
+
+	  // First, some error checks
+	  if (child == null) {
+	    if (log.isErrorEnabled())
+	      log.error("getProperty[" + getFullName() + "]: null child at index " + i + " when getChildCount reported " + n, new Throwable());
+	    continue;
+	  }
+	  if (child.getFullName() == null) {
+	    // This seems common at de-serialization, and apparently harmless. Is it somehow expected?
+	    if (hadNullChildNameError) {
+	      // Warning: Can't do stacktrace here cause it happens so often
+	      if (log.isInfoEnabled())
+		log.info("getProperty[" + getFullName() + "]: null child name for child at index " + i);
+	    } else {
+	      hadNullChildNameError = true;
+	      if (log.isInfoEnabled())
+		log.info("getProperty[" + getFullName() + "]: null child name for child at index " + i, new Throwable());
+	    }
+	    continue;
+	  }
+
+	  // Now see if the childs name would allow it to have the property
+          if (nn.equals(child.getFullName().get(myl))) {
+            Property result = child.getPropertyWorker(name, all, visible);
+            if (result != null) {
+	      // Found it!
+              if (nl == myl+1) {
+		if (log.isErrorEnabled())
+		  log.error("getProperty: Bogon alert: n+l child match!\n"+
+                                   getFullName()+"\n"+
+                                   name, new Throwable());
+              }                
+              return result;
+            }
+	    // We fall in here also when the matching child had the property
+	    // but it was invisible and we wanted visible or vice versa
+	    if (log.isErrorEnabled())
+	      log.error("getProperty Error: matching child didn't have " + (all==true ? "" : (visible==true ? "visible " : "invisible ")) + "property\n"+
+                               getFullName()+"\n"+
+                               name, new Throwable());
+            return null;
+          }
+        } // end of loop over children
+
+        // no child has it
+        if (nl != myl+1) {
+          // only warn if the prop is not 1 name longer than component.
+	  if (log.isErrorEnabled())
+	    log.error("getProperty Error: didn't have a child who could have match\n"+
+                             getFullName()+"\n"+
+                             name, new Throwable());
+        }
+        return null;
+      } else {
+        // no child could have it (even if we have children)
+        // We'll see this whenever someone asks component "foo.bar" for "foo.bar.baz" property
+        // which doesn't exist.
+	//if (log.isErrorEnabled())
+        //log.error("getProperty Error: No child could have match ("+nl+"<="+myl+")\n"+
+        //                   getFullName()+"\n"+
+        //                   name, new Throwable());
+        return null;
+      }
+    } else {
+      // inappropriate prefix - bail
+      if (log.isErrorEnabled())
+	log.error("getProperty Error: Inappropriate prefix\n"+
+                         getFullName()+"\n"+
+                         name, new Throwable());
+      //Thread.dumpStack();
+      return null;
+    }
+  } // end of getPropertyWorker
 
   /**
    * Gets a local property based on a <code>String</code> name.
@@ -723,7 +865,9 @@ public abstract class ConfigurableComponent
    */
   public void removeProperty(Property prop) {
     boolean wasVisible = isPropertyVisible(prop);
-    if (!wasVisible) return; // if it's not visible, then it's not my property 
+    // FIXME!!
+    // Huh? So how do you remove an invisible property? Or is that not possible?
+    if (!wasVisible) return; // if it's not visible, then it's not my property
     Object oldValue = getMyProperties().remove(prop.getName());
     if (oldValue == null) { // was someone else's property, ignore
       if (log.isErrorEnabled())
@@ -734,6 +878,17 @@ public abstract class ConfigurableComponent
   }
 
   private Property addProperty(Property p, boolean visible) {
+    if (p == null || p.getName() == null)
+      return p;
+
+    // Put in some debug stuff to see if this is ever called with a Property whose
+    // name does not make sense in this component
+    CompositeName name = p.getName();
+    if (! name.startsWith(myName)) {
+      if (log.isWarnEnabled())
+	log.warn("Adding property whose name makes no sense locally: " + getFullName() + ".addProperty(" + name + ", visible=" + visible, new Throwable());
+    }
+    
     // remove old property if it exists
     Property oldProperty = (Property)getMyProperties().get(p.getName());
     if (oldProperty != null)
@@ -752,7 +907,7 @@ public abstract class ConfigurableComponent
 
 
   /**
-   * Gets an <code/>Iterator</code> of all properties Local to this component.
+   * Gets an <code/>Iterator</code> of all visible properties Local to this component.
    *
    * @return an <code/>Iterator</code> of all local properties
    */
@@ -761,8 +916,7 @@ public abstract class ConfigurableComponent
   }
 
   /**
-   * Gets an <code/>Iterator</code> of all properties Local to this component, sorted.
-   * 
+   * Gets an <code/>Iterator</code> of all visible properties Local to this component, sorted.
    *
    * @return an <code/>Iterator</code> of all sorted local properties
    */
@@ -793,50 +947,102 @@ public abstract class ConfigurableComponent
     }
   };
     
+  // FIXME: Maybe add a version that does all properties, not just visible?
+  // Follow the getPropertyWorker model above...
   /**
-   * Gets an <code/>Iterator</code> of all Property Names in this component.
+   * Gets an <code>Iterator</code> of all visible Property Names in (or under) this component.
    *
-   * @return an <code/>Iterator</code> value
+   * @return an <code>Iterator</code> value
    */
   public Iterator getPropertyNames() {
     return new Iterator() {
-      Iterator currentIterator = getMyProperties().keySet().iterator();
-      int nextChildIndex = 0;
-      CompositeName pendingName = null;
-      public boolean hasNext() {
-        while (pendingName == null) {
-          while (!currentIterator.hasNext()) {
-            if (nextChildIndex >= getChildCount()) {
-              return false;
-            }
-            currentIterator = 
-              ((ConfigurableComponent)getChild(nextChildIndex++)).getPropertyNames();
-          }
-          pendingName = (CompositeName) currentIterator.next();
-          if (pendingName != null && !((Property)getProperty(pendingName)).isVisible()) {
-            pendingName = null;
-          }
-        }
-        return true;
-      }
+	// Note: getMyProperties _will_ return invisible properties
+	Iterator currentIterator = getMyProperties().keySet().iterator();
+	int nextChildIndex = 0;
+	CompositeName pendingName = null;
 
-      public Object next() {
-        if (pendingName == null && !hasNext())
-          throw new NoSuchElementException();
-        Object result = pendingName;
-        pendingName = null;
-        return result;
-      }
-      public void remove() {
-        throw new UnsupportedOperationException();
-      }
-    };
+	// Track which component's properties we are looking at. Always starts with this
+	ConfigurableComponent child = ConfigurableComponent.this;
+
+	public boolean hasNext() {
+	  while (pendingName == null) {
+	    // If done searching a given component
+	    while (!currentIterator.hasNext()) {
+	      // If don't have any more children to search
+	      if (nextChildIndex >= getChildCount()) {
+		currentIterator = null; // drop ref to keyset, even if client keeps iterator around.
+		return false;
+	      }
+	      // Get next child
+	      child = (ConfigurableComponent)getChild(nextChildIndex++);
+	      currentIterator = child.getPropertyNames();
+	    }
+
+	    // Try next property name in list
+	    pendingName = (CompositeName) currentIterator.next();
+	    try {
+	      if (child != null) {
+		if (pendingName != null) {
+		  // Find the property in the child, regardless of its visibility
+		  if (child.getProperty(pendingName) == null) {
+		    // Since we're looking at the child from which we just got the name,
+		    // this is bad. Particulary since getProperty returns all properties,
+		    // not just visible ones
+		    if (log.isErrorEnabled())
+		      log.error(getFullName() + ".getPropertyNames: got null property for name " + pendingName + " off of child " + child.getFullName(), new Throwable());
+
+		    // Don't treat this as a valid property name to return
+		    pendingName = null;
+		  } else if (!((Property)child.getProperty(pendingName)).isVisible()) {
+		    // getProperty now returns all properties, so this is legitimate
+
+// 		    if (log.isInfoEnabled())
+// 		      log.info(getFullName() + ".getPropertyNames got invisible but not null property " + pendingName + " off of child " + child.getFullName());
+
+		    // Right here we decide: Does this method return both visible and 
+		    // invisible property names?
+		    // To ignore invisible properties, we set pendingName to null
+		    // so the hasNext will return false if only invisible properties left
+		    // and next will never give it to you
+		    pendingName = null;
+		  }
+		}
+	      } else {
+		if (log.isErrorEnabled())
+		  log.error(getFullName() + ".getPropertyNames got null child at nextChildIndex " + nextChildIndex + " while looking for prop=" + pendingName);
+	      } // end of block to ensure non-null child
+	    } catch (Exception e) {
+	      if (log.isErrorEnabled())
+		log.error("getPropertyNames: Exception while getting "+ getFullName()+" prop="+pendingName+" and nextChildIndex: " + nextChildIndex, e);
+	    }
+	  } // end of while loop getting a non-null pendingName
+	  return true;
+	}
+	
+	public Object next() {
+	  if (pendingName == null && !hasNext())
+	    throw new NoSuchElementException();
+	  Object result = pendingName;
+	  pendingName = null;
+	  return result;
+	}
+	public void remove() {
+	  throw new UnsupportedOperationException();
+	}
+      };
   }
-
+  
+  /**
+   * Get iterator of all local properties (regardless of visibility)
+   **/
   public Iterator getLocalProperties() {
     return getMyProperties().values().iterator();
   }
 
+  // FIXME: Need a version for all properties? For invisible properties?
+  /**
+   * Return the properties in this component tree. Ignore invisible properties
+   **/
   public Iterator getProperties() {
     return new Iterator() {
         Iterator currentIterator = getMyProperties().values().iterator();
@@ -853,6 +1059,8 @@ public abstract class ConfigurableComponent
             }
 	    
 	    Property nprop = (Property)currentIterator.next();
+	    // Right here is where we decide whether this iterator covers just visible
+	    // -- as in this case -- all, or just invisible properties
             if (!nprop.isVisible()) {
               pendingProp = null;
             } else {
@@ -875,6 +1083,9 @@ public abstract class ConfigurableComponent
       };
   }
 
+  /**
+   * Return all properties in this tree, regardless of visibility
+   **/
   public Iterator getAllProperties() {
     return new Iterator() {
         Iterator currentIterator = getMyProperties().values().iterator();
@@ -935,13 +1146,12 @@ public abstract class ConfigurableComponent
   }
 
   /**
-   * Determines if the specificed property is visible.
+   * Determines if the specified property is visible as a local property.
    * If a property is not visible, it cannot be seen in the GUI.
    *
    * @param prop Property to check visiblity
-   * @return a <code/>boolean</code> value
+   * @return a <code>boolean</code> value
    */
-
   public boolean isPropertyVisible(Property prop) {
     Property p = (Property)getMyProperties().get(prop.getName());
     // If the society is fresh from the db, props don't exist in map yet.
@@ -950,7 +1160,7 @@ public abstract class ConfigurableComponent
   }
 
   /**
-   * Gets a <code/>List</code> of all Properties in this component.
+   * Gets a <code/>List</code> of all visible Properties in this component.
    *
    * @return a <code/>List</code> value
    */
@@ -984,7 +1194,9 @@ public abstract class ConfigurableComponent
       CompositeName name = (CompositeName)iter.next();
       Property myProp = getProperty(name);
       if (myProp == null) {
-        // Try to get invisible Property.
+        // Try to get invisible Property. -- but note that
+	// invisible properties are also returned by getProperty
+	// so we should never get in here
         myProp = getInvisibleProperty(name);
         if (myProp == null) {
           if (log.isErrorEnabled()) {
@@ -998,6 +1210,9 @@ public abstract class ConfigurableComponent
       String s = name.last().toString();
       ComponentName hisPropName = new ComponentName(result, s);
       Property hisProp = result.getProperty(hisPropName);
+
+      // Note that this InvisibleProperty call should not help, since getProperty should
+      // return both visible and invisible properties
       if (hisProp == null && ((hisProp = result.getInvisibleProperty(hisPropName)) == null )) {
         if (log.isErrorEnabled()) {
           log.error("Report bug 1377: Using " + CSMART.writeDebug() + " couldn't find " + hisPropName.toString() + " in " + result.getFullName().toString() + " copying from " + name.toString() + " in " + this.getFullName().toString(), new Throwable());
@@ -1050,11 +1265,25 @@ public abstract class ConfigurableComponent
     stream.writeObject(parent);
     stream.writeObject(children);
     Map properties = getMyProperties();
+    
+    // write in new format - old format is below in comment
+    {
+      int n = (-1)-properties.size(); // signal new format
+      stream.writeInt(n);
+      for (Iterator i = properties.values().iterator(); i.hasNext(); ) {
+        stream.writeObject(i.next());
+      }
+    }
+
+    /*
+    // old format
     stream.writeInt(properties.size());
     for (Iterator i = properties.entrySet().iterator(); i.hasNext(); ) {
       PropertyEntry entry = new PropertyEntry((Map.Entry)i.next());
       stream.writeObject(entry);
     }
+    */
+
     stream.writeObject(getSerializableListeners());
   }
 
@@ -1075,17 +1304,28 @@ public abstract class ConfigurableComponent
   private void readObject(ObjectInputStream stream)
     throws IOException, ClassNotFoundException
   {
+    myProperties = new HashMap(1);
     stream.defaultReadObject();
     parent = (ComposableComponent) stream.readObject();
     children = (List) stream.readObject();
-    Map properties = getMyProperties();
     int n = stream.readInt();
-    myPropertyEntries = new ArrayList(n);
-    for (int i = 0; i < n; i++) {
-      PropertyEntry entry = (PropertyEntry)stream.readObject();
-      myPropertyEntries.add(entry);
+    if (n >= 0) {
+      // old, big format - this should be dumped.
+      myProperties = new HashMap(1+n*4);
+      for (int i = 0; i < n; i++) {
+        PropertyEntry entry = (PropertyEntry)stream.readObject();
+        Property p = (Property) entry.getValue();
+        myProperties.put(p.getName(), p);
+      }
+    } else {
+      // new format - we should cut over and simplify
+      n = (-1)-n;           
+      myProperties = new HashMap(1+n*4);
+      for (int i = 0; i < n; i++) {
+        Property p = (Property) stream.readObject();
+        myProperties.put(p.getName(), p);
+      }
     }
-    myProperties = null;
     setSerializableListeners((List) stream.readObject());
     createLogger();
   }
@@ -1110,6 +1350,7 @@ public abstract class ConfigurableComponent
     return false;
   }
 
+  // Note this only checks visible properties
   public boolean hasUnboundProperties() {
     for (Iterator i = getPropertyNames(); i.hasNext(); ) {
       Property prop = (Property) getProperty((CompositeName) i.next());
@@ -1152,7 +1393,7 @@ public abstract class ConfigurableComponent
   }
 
   /**
-   * Prints all Properties for this component.
+   * Prints all visible Properties for this component.
    *
    * @param out Stream to print to.
    */
@@ -1161,7 +1402,7 @@ public abstract class ConfigurableComponent
   }
 
   /**
-   * Prints all Properties for this component.
+   * Prints all visible Properties for this component.
    *
    * @param out Stream to print to.
    * @param indent Indentation amount before each output line.
@@ -1187,18 +1428,6 @@ public abstract class ConfigurableComponent
       getProperty(name).printProperty(out, indent);
       out.println(indent + "=======================================");
     }
-  }
-
-  static class NullProperty implements Serializable {
-
-    public int hashCode() {
-      return 0;
-    }
-
-    public boolean equals(Object o) {
-      return o instanceof NullProperty;
-    }
-
   }
 
   static class PropertyEntry implements Map.Entry, Serializable {
@@ -1228,4 +1457,4 @@ public abstract class ConfigurableComponent
   public String toString() {
     return getShortName();
   }
-}
+} // end of ConfigurableComponent
