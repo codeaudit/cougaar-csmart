@@ -378,7 +378,8 @@ public class ExperimentINIWriter implements ConfigurationWriter {
       writer.println("[ Cluster ]");
       writer.println("class = " + ac.getClassName());
       AgentAssetData aad = ac.getAgentAssetData();
-      writer.println("uic = " + aad.getUIC());
+      writer.println("uic = " + ((aad == null) ? 
+                     "UIC/" + ac.getName() : aad.getUIC()));
       writer.println("cloned = false");
       writer.println();
       writer.println("[ Plugins ]");
