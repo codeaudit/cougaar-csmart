@@ -19,6 +19,12 @@ REM " TORTIOUS CONDUCT, ARISING OUT OF OR IN CONNECTION WITH THE USE OR"
 REM " PERFORMANCE OF THE COUGAAR SOFTWARE."
 REM "</copyright>"
 
+
+REM Script to scrub pre-9.4.1 database exports. Table names
+REM have changed. Run this on any recipe exports before trying
+REM to import them into a 9.4.1+ database.
+
+
 REM Make sure that COUGAAR_INSTALL_PATH is specified
 IF NOT "%COUGAAR_INSTALL_PATH%" == "" GOTO L_2
 REM Unable to find cougaar-install-path

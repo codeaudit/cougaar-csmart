@@ -20,6 +20,11 @@
 # PERFORMANCE OF THE COUGAAR SOFTWARE.
 # </copyright>
 
+# Script to scrub pre-9.4.1 database exports. Table names
+# have changed. Run this on any recipe exports before trying
+# to import them into a 9.4.1+ database.
+
+
 if [ "x$1" = "x" ]; then
   echo "Usage: v4_v6_conversion.sh [FilenameToConvert.sql] "
   exit
