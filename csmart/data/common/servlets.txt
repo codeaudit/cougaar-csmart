@@ -12,8 +12,8 @@ CompletionServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.pl
 HierarchyServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.planning.servlet.HierarchyServlet,/hierarchy
 DataGathererServlet,org.cougaar.core.servlet.SimpleServletComponent,org.cougaar.mlm.ui.servlet.DataGathererServlet,/datagatherer
 
-# For the inventory Servlet
-InventoryServlet,org.cougaar.mlm.servlet.InventoryServletComponent,org.cougaar.mlm.servlet.InventoryServlet,/inventory
+# For the logistics inventory Servlet
+LogisticsInventoryServlet,org.cougaar.logistics.servlet.LogisticsInventoryServletComponent,org.cougaar.logistics.servlet.LogisticsInventoryServlet,/log_inventory
 
 # Allows loading arbitrary components
 LoaderServletComponent,org.cougaar.planning.servlet.LoaderServletComponent,/load
