@@ -86,7 +86,8 @@ public class OrganizerHelper {
     SocietyDBComponent soc = null;
     if (assemblyIds.size() != 0) {
       //      soc = new CMTSociety(experimentName, assemblyIds);      
-      soc = new SocietyDBComponent(experimentName, assemblyIds);
+      String societyName = DBUtils.getSocietyName(assemblyIds);
+      soc = new SocietyDBComponent(societyName, assemblyIds);
       soc.initProperties();
     } else { // We need to create a new trial.
       // Need to have the experiment id, trial id, and multiplicity
