@@ -116,7 +116,7 @@ public class CMTAgent
   }
 
   private String queryOrgClass() {
-    String orgClass;
+    String orgClass = null;
     substitutions.put(":agent_name", name);
     try {
       Connection conn = DBUtils.getConnection();
@@ -124,8 +124,9 @@ public class CMTAgent
 	Statement stmt = conn.createStatement();	
 	String query = DBUtils.getQuery(QUERY_AGENT_ASSET_CLASS, substitutions);
 	ResultSet rs = stmt.executeQuery(query);
-	rs.next();
-	orgClass = rs.getString(1);	  
+	while (rs.next()) {
+	  orgClass = rs.getString(1);	  
+	}
 	rs.close();
 	stmt.close();
 
