@@ -142,7 +142,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   private transient Logger log;
   // Mark whether the experiment has been modified
   // and should be saved
-  private transient boolean modified = true;
+  private boolean modified = true;
 
   ////////////////////////////////////////////
   // Constructors
@@ -1142,6 +1142,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     throws IOException, ClassNotFoundException
   {
     ois.defaultReadObject();
+    boolean temp = modified;
     createLogger();
     createObserver();
     // reinstall listeners
@@ -1156,7 +1157,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     NodeComponent[] nodeComponents = getNodeComponents();
     for (int i = 0; i < nodeComponents.length; i++)
       installListeners((ModifiableConfigurableComponent)nodeComponents[i]);
-    modified = false;
+    modified = temp;
   }
 
   // Put a bunch of Prop$ as parameters to the given component.
