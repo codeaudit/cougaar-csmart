@@ -254,7 +254,9 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
         mysql&gt; create database mycoug;
         mysql&gt; exit;
       </pre>        
-        <b>Note</b> If
+        <b>Note 1</b> Although it is not required, if a separate database is desired for the
+        domain data, follow the same steps to create a domain database.<br><p>
+        <b>Note 2</b> If
 	you have a previous database you wish to replace, the command
 	to drop the old database first is "drop database
 	mycoug;". However, most scripts will drop the old tables
@@ -279,7 +281,23 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
       doing: <pre><i>myname</i>@"%.foo.com"</pre>
   <br></li><p>
 
-</li>
+  </li>
+
+  <li>The CSMART configuration database and the domain database can 
+  be loaded in either a single step or in two separate steps.  To load both databases in a single 
+  step, run the script "$CIP/csmart/data/database/scripts/mysql/load_1ad_all.sh[bat]" as follows: 
+      <pre>
+        $./load_1ad_all.sh [db username] [db password] [domain database name] [config database name]       
+      </pre>
+    The tables may be loaded into the same database but you must give both parameters.  This script 
+    performs a load of the configuration database files from "$CIP/csmart/data/database/csv" directory
+    as well as all domain files as referred to in Step 4 below.  If you choose to load everything with
+    one script, you may proceed directly to Step 5 below.
+    <br><br>
+    <b>Note: </b>For instructions on separately loading the CSMART configuration database and the 
+    domain database, continue on with the remainder of this step (Step 3) and Step 4.
+
+</li><br><p>
 
     <li>The CSMART configuration database tables are loaded from '.csv' 
     files provided in "$CIP/csmart/data/database/csv" directory.
