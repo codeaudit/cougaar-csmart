@@ -258,7 +258,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (editable == this.editable) return;
     this.editable = editable;
     System.err.println("new editable " + editable);
-    Thread.dumpStack();
     for (int i = 0; i < getComponentCount(); i++)
       getComponent(i).setEditable(editable);
     fireModification();
@@ -452,7 +451,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   protected void fireModification() {
-    Thread.dumpStack();
     super.fireModification();
   }
 
