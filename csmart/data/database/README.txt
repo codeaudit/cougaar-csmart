@@ -7,8 +7,7 @@ See csmart/doc/InstallandTest.html or the User's Guide for more information.
 Summary:
 After creating a database per the instructions referenced above, you load
 it with data from files contained here.
-First, load the data in the Domain-MySQL.ZIP file.
-Then, to load the configuration information (necessary to "clean" your
+First, load the configuration information (necessary to "clean" your
 installation, and when upgrading to the most recent Cougaar version),
 use ./scripts/mysql/load_1ad_mysql.sh[bat] 
 (Run without arguments to see usage.)
@@ -20,12 +19,6 @@ csmart/data/database directory description:
 This directory contains several subdirectories as well as a zip file.
 
 Zip files:
-
-"Domain-MySQL.ZIP" contains a datafile called "1ad_domain_data_dump.sql"
-which is the sql script to be run to load all domain data tables into 
-the CSMART configuration database. If you are upgrading from version
-9.4 or below of Cougaar, you should re-load this data as an additional
-table and new domain data have been added.
 
 refconfigdb.zip:
    This is a dump that includes all of the data in the above data dump,
