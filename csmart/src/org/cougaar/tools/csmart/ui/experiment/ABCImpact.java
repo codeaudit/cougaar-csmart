@@ -498,21 +498,21 @@ public class ABCImpact
     }
 
     public void writeIniFile(File configDir) throws IOException {
-      File iniFile = new File(configDir, getFullName() + ".ini");
+      File iniFile = new File(configDir, this.getFullName() + ".ini");
       PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
 
       try {
 	writer.println("# $id$");
 	writer.println("[ Cluster ]");
 	writer.println("class = " + agentClass_name);
-	writer.println("uic = \"" + getFullName().toString() + "\"");
+	writer.println("uic = \"" + this.getFullName().toString() + "\"");
 	writer.println("cloned = false");
 	writer.println();
 	writer.println("[ PlugIns ]");
 	if(generator) {
 	  writer.print("plugin = " + scriptedEvent_name);
 	  writer.print("(" + rweFile + ", ");
-	  writer.println(getFullName() + ")");
+	  writer.println(this.getFullName() + ")");
 	} else {
 	  writer.print("plugin = " + transducer_name);
 	  writer.println("(" + societyFile + ")");
@@ -532,7 +532,7 @@ public class ABCImpact
 
     public ComponentData getComponentData(ComponentData child) {
       StringBuffer sb = new StringBuffer();
-      ABCImpact parent = (ABCImpact)getParent();
+      ABCImpact parent = (ABCImpact)this.getParent();
 
       // Remove this hack when we switch to ComponentData
       rweFile = (String) parent.getProperty(PROP_RWEFILE).getValue();
@@ -543,7 +543,7 @@ public class ABCImpact
       if(generator) {
 	plugin.setName(scriptedEvent_name);
 	plugin.addParameter(parent.getProperty(PROP_RWEFILE).getValue());
-	plugin.addParameter(getFullName().toString());
+	plugin.addParameter(this.getFullName().toString());
       } else {
 	plugin.setName(transducer_name);
 	plugin.addParameter(parent.getProperty(PROP_SOCIETYFILE).getValue());
