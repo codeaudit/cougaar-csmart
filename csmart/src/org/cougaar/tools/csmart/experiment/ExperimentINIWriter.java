@@ -37,6 +37,7 @@ import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.cdata.*;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.util.log.Logger;
 
 // Create a society ComponentData
@@ -355,12 +356,17 @@ public class ExperimentINIWriter implements ConfigurationWriter {
     for (int i = 0; i < children.length; i++) {
       if (writer != null) {
 	if (children[i].getType().equals(ComponentData.AGENTBINDER)) {
-	  writer.print("Node.AgentManager.Agent.PluginManager.Binder = ");
+	  writer.print("Node.AgentManager.Agent.PluginManager.Binder");
 	} else if (children[i].getType().equals(ComponentData.NODEBINDER)) {
-	  writer.print("Node.AgentManager.Binder = ");
+	  writer.print("Node.AgentManager.Binder");
 	} else {
-	  writer.print(children[i].getType() + " = ");
+	  writer.print(children[i].getType());
 	}
+        if(ComponentDescription.parsePriority(children[i].getPriority()) != 
+           ComponentDescription.PRIORITY_COMPONENT) {
+          writer.print("(" + children[i].getPriority() + ")");
+        }
+        writer.print(" = ");
 	writeChildLine(writer, children[i]);
       }
       // Could one of these guys have children?
