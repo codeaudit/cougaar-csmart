@@ -194,7 +194,7 @@ very similar for WinNT.
   you load tables into MySQL, and when you access them, all uppercase
   table names are converted to lowercase. If you see errors where
   tables like GEOLOC are claimed to be missing, this is a likely
-  culprit.<li><p>
+  culprit.</li><p>
 
   <li>There are two MySQL database snapshots available. One to support
   the military logistics domain plugins, and one for the CSMART
@@ -217,7 +217,7 @@ very similar for WinNT.
         $ mysql -u root -p mycoug &lt; [CMT MySQL data dump, eg 1ad_dump.sql]
 	[supply root password set during installation]
       </pre><br>
-      Note that if you have a previous database you wish to replace, the command to drop the old database first is "drop database mycoug;"</li><p>
+      Note that if you have a previous database you wish to replace, the command to drop the old database first is "drop database mycoug;". However, most scripts will drop the old tables before loading the new, so this is not strictly necessary.</li><p>
 
   <li>Create a user for accessing the database. Here we create a user
   "myname" with password "mypass" who can only access the database
@@ -234,8 +234,10 @@ very similar for WinNT.
       doing: <pre>myname@"%.foo.com"</pre> instead.
   </li><p>
 
-  <li>You must now create a special table which CSMART requires when
-  using MySQL. To create this table, do:
+  <li>Optional: Current CSMART database import files do not require
+  this step.  If you have an old dump, or see errors related to a
+  table named "dual", then you must now create a special table which
+  CSMART requires when using MySQL. To create this table, do:
   <pre>
      mysql -u myname -p mycoug &lt; create-dummy-dual.sql
      [supply password 'mypass]
@@ -243,9 +245,15 @@ very similar for WinNT.
 
   <li>Once you have imported the CMT MySQL datafile, be sure to follow
   the same steps to import the Cougaar domain plugin MySQL database
-  (from CIP/dbms/mysql/mysqldump.8.6.txt). Note that importing this
-  database requires loading 2 files at least, with separate files for
-  the "class 9" data.</li><p>
+  (from CIP/dbms/mysql/mysqldump.8.6.txt). You may load this data into
+  the same database as the CSMART data, or a different one, as you
+  prefer. Just be sure to build your "cougaar.rc" file appropriately.
+  Note that importing this database requires loading 2 files at least,
+  with separate files for the "class 9" data. A recommended minimum is
+  to also load "army_spares" (after unzipping), and then you
+  <em>must</em> also create indexes for that data, by loading
+  "spares_index.txt". Load all such files following the same
+  instructions as above.</li><p>
       
   <li>The database is now ready.  You must now create a "cougaar.rc"
     for the database users (<a href="http://www.cougaar.org">Cougaar</a>
