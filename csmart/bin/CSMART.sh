@@ -29,7 +29,7 @@ if [ $os = "Linux" -o $os = "SunOS" ]; then SEP=":"; fi
 
 # Next section lists Jar files required for CSMART. Note that by default CSMART uses the Cougaar
 # Bootstrapper, which should find the jar files automatically (searching CIP/lib, plugins, sys, etc).
-# One need only include the CSMART and core jar files
+# One need only include the core jar file
 
 # COUGAAR bootstrapping classpath will be:
 #  $COUGAAR_INSTALL_PATH/lib/core.jar
@@ -46,32 +46,11 @@ if [ $os = "Linux" -o $os = "SunOS" ]; then SEP=":"; fi
 #
     
 # To run without the Bootstrapper, set org.cougaar.useBootstrapper=false
-# The Jars peculiar to CSMART and their usual locations are listed here as a convenience
 
-# Third party (mostly static) jar files are either in COUGAAR3RDPARTY or in COUGAAR_INSTLL_PATH/sys
-if [ "$COUGAAR3RDPARTY" == "" ]; then
-    COUGAAR3RDPARTY="${COUGAAR_INSTALL_PATH}/sys"
-fi
-    
-# Add CSMART jar explicitly to get started
-LIBPATHS="${COUGAAR_INSTALL_PATH}/lib/csmart.jar"
-export LIBPATHS
-    
-# The AppServer jar must also be specified
-LIBPATHS="${LIBPATHS}${SEP}${COUGAAR_INSTALL_PATH}/lib/server.jar"
-    
-# For now CSMART needs "core.jar" for the Bootstrapper and some
-#  utility classes.  This dependency should be removed in a future
-#  release of CSMART!
-LIBPATHS="${LIBPATHS}${SEP}${COUGAAR_INSTALL_PATH}/lib/core.jar"
-
-# Third party jars are in COUGAAR3RDPARTY
-# Which is usually COUGAAR_INSTALL_PATH/sys
-# you must add the MySQL jar file here if you want to use it
-LIBPATHS="${LIBPATHS}${SEP}${COUGAAR3RDPARTY}/xerces.jar${SEP}${COUGAAR3RDPARTY}/grappa1_2.jar${SEP}${COUGAAR3RDPARTY}/jcchart451K.jar${SEP}${COUGAAR3RDPARTY}/log4j.jar${SEP}${COUGAAR3RDPARTY}/oracle12.zip"
+MYCLASSPATH="${COUGAAR_INSTALL_PATH}/lib/core.jar"
     
 if [ "$COUGAAR_DEV_PATH" != "" ] ; then
-    LIBPATHS="${COUGAAR_DEV_PATH}${SEP}${LIBPATHS}"
+    MYCLASSPATH="${COUGAAR_DEV_PATH}${SEP}${MYCLASSPATH}"
 fi
     
 # The performance analyzer uses Excel. To use it or an equivalent,
@@ -88,13 +67,10 @@ MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY
 # Set the config path to include the basic CSMART config files first
 MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
 
-# Set the CLASSPATH ENV Variable
-CLASSPATH="${LIBPATHS}:${CLASSPATH}"
-
-javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -Dorg.cougaar.class.path=$LIBPATHS"
+javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -cp $MYCLASSPATH"
 
 if [ "$COUGAAR_DEV_PATH" != "" ]; then
-   echo java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART
+   echo java $javaargs org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
 fi
 
-exec java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART
+exec java $javaargs org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART

@@ -25,13 +25,11 @@
     
 # Next section lists Jar files required for CSMART. Note that by default CSMART uses the Cougaar
 # Bootstrapper, which should find the jar files automatically (searching CIP/lib, plugins, sys, etc).
-# One need only include the CSMART and core jar files
+# One need only include the core jar file
 
 # COUGAAR bootstrapping classpath will be:
 #  $COUGAAR_INSTALL_PATH/lib/core.jar
 #
-# Plus any explicitly added entries on the system classpath - for us, the CSMART Jar file
-    
 # once running, jar files will be searched for in (in order):
 #  -Dorg.cougaar.class.path 	like classpath
 #  $COUGAAR_INSTALL_PATH/lib/*
@@ -41,35 +39,6 @@
 #  $CLASSPATH		(Cougaar bootstrapping path from above)
 #
     
-# To run without the Bootstrapper, set org.cougaar.useBootstrapper=false
-# The Jars peculiar to CSMART and their usual locations are listed here as a convenience
-# Third party (mostly static) jar files are either in COUGAAAR3RDPARTY or in COUGAAR_INSTALL_PATH/sys
-if (! $?COUGAAR3RDPARTY) then
-    set COUGAAR3RDPARTY = "${COUGAAR_INSTALL_PATH}/sys"
-endif
-    
-# Add CSMART jar explicitly to get started
-set LIBPATHS = "${COUGAAR_INSTALL_PATH}/lib/csmart.jar"
-
-# The AppServer jar must also be specified
-set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/server.jar"
-    
-# For now CSMART needs "core.jar" for the Bootstrapper and some
-#  utility classes.  This dependency should be removed in a future
-#  release of CSMART!
-set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/core.jar"
-
-# Third party jars are in COUGAAR3RDPARTY
-# This is usually COUGAAR_INSTALL_PATH/sys
-# You must add the MySQL jar file if you want to use it.
-
-set LIBPATHS = "${LIBPATHS}:${COUGAAR3RDPARTY}/xerces.jar:${COUGAAR3RDPARTY}/grappa1_2.jar:${COUGAAR3RDPARTY}/jcchart451K.jar:${COUGAAR3RDPARTY}/log4j.jar:${COUGAAR3RDPARTY}/oracle12.zip"
-    
-# Optionally add a debug/development path
-if ($?COUGAAR_DEV_PATH) then
-    set LIBPATHS = "${COUGAAR_DEV_PATH}:${LIBPATHS}"
-endif
-
 # The performance analyzer uses Excel. To use it or an equivalent,
 # edit the following property:
 #set MYEXCEL="-Dorg.cougaar.tools.csmart.excelpath=C:/Program Files/Microsoft Office/Office/excel.exe"
@@ -83,17 +52,21 @@ set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYD
 # Set the config path to include the basic CSMART config files first
 set MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
 
-# Set the CLASSPATH ENV Variable to prevent "Word too Long" error.
-setenv CLASSPATH="${LIBPATHS}"
+set MYCLASSPATH = "${COUGAAR_INSTALL_PATH}/lib/core.jar"
 
-set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -Dorg.cougaar.class.path=$LIBPATHS"
+if ($?COUGAAR_DEV_PATH) then
+    set MYCLASSPATH = "${COUGAAR_DEV_PATH}:${MYCLASSPATH}"
+endif
+
+set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -cp $MYCLASSPATH -Dorg.cougaar.tools.server.verbose=true"
 
 if ($?COUGAAR_DEV_PATH) then
    echo java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART
 endif
 
 echo "Cmd"
-echo java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART
-exec java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART
+#exec java -version
+echo java $javaargs org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
+exec java $javaargs org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
 
 
