@@ -196,11 +196,11 @@ very similar for WinNT) and a MYSQL database.
   the military logistics domain plugins, and one for the CSMART
   configuration database. These instructions will help with both, but
   for further details on the plugin database, see the release <a
-  href="../../doc/index.html">documentation</a> for details.  Load the
-    <a href="http://www.cougaar.org">Cougaar</a>
-    MySQL database snapshot from the file 
-    "csmart/data/CMT-MySQL.ZIP" (after unzipping it).  For later reference when
-    creating your <a href="../../doc/details/DataAccess.html">cougaar.rc</a>, suppose the database will be on host 
+  href="../../doc/index.html">documentation</a> for details.  For the 
+  CSMART configuration database, first create the database (if necessary).  
+  For later reference when
+    creating your <a href="../../doc/details/DataAccess.html">cougaar.rc</a>, 
+    suppose the database will be on host 
     "myhost".  Be sure you have started the database, using the
     appropriate "mysqld" executable. Here we name
     the database "mycoug":
@@ -209,15 +209,50 @@ very similar for WinNT) and a MYSQL database.
 	[supply root password set during installation]
         mysql&gt; create database mycoug;
         mysql&gt; exit;
-        $ mysql -u root -p mycoug &lt; [CMT MySQL data dump, eg 1ad_dump_full.sql]
+      </pre>
+
+    Then load the  <a href="http://www.cougaar.org">Cougaar</a>
+    MySQL domain database tables from the file 
+    "$CIP/csmart/data/database/Domain-MySQL.ZIP" (after unzipping it).  
+
+      <pre>
+        $ mysql -u root -p mycoug &lt; [CMT MySQL domain data dump, eg 1ad_domain_data_dump.sql]
 	[supply root password set during installation]
       </pre>
+
       <b>Note</b> If
 	you have a previous database you wish to replace, the command
 	to drop the old database first is "drop database
 	mycoug;". However, most scripts will drop the old tables
 	before loading the new, so this is not strictly
-	necessary. <br><br></li><p>
+	necessary. 
+
+    <br><br>The CSMART configuration database tables are loaded from '.csv' 
+    files provided in "$CIP/csmart/data/database/csv" directory.
+    To load the database from these files, run the script 
+    "$CIP/csmart/data/database/scripts/mysql/load_1ad_mysql.sh".This will drop 
+    the old tables in the database first and load 
+    the new tables from the .csv files.
+
+      <pre>
+        $./load_1ad_mysql.sh [db username] [db password] [database name]       
+      </pre>
+
+    To dump a snapshot of the CSMART configuration database (excludes domain data tables), 
+    run the script "$CIP/csmart/data/database/scripts/mysql/dump_1ad_mysql.sh".
+
+      <pre>
+        $./dump_1ad_mysql.sh [db username] [db password] [database name]
+      </pre>
+
+    This will generate a set of '.csv' files for all configuration tables and place 
+    them in the directory "$CIP/csmart/data/database/csv".  The database tables can 
+    then be modified via the '.csv' files and reloaded as desired using the 
+    load_1ad_mysql.sh script.
+
+    <br><br><b>Note</b> Before dumping a current snapshot of the database, you must ensure that
+     this directory is empty.  If you wish to preserve various versions of the database 
+     tables, you must either rename or move the files currently in this directory.<br><br></li><p>
 
   <li>Create a user for accessing the database. Here we create a user
   <i>myname</i> with password <i>mypass</i> who can only access the database
