@@ -1,3 +1,12 @@
+2001-11-12  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PropertyTable.java:
+	When property value validation fails (throws an exception) present
+	the user with an error dialog instead of a stack trace on the
+	stdout. The error dialog shows the allowed ranges and allows the
+	selection of an single-valued range as a replacement. Ideally, the
+	GUI would have presented the values this way in the first place.
+
 2001-11-06  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* PropertyBuilder.java (Repository):
