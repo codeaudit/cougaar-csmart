@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.cougaar.core.agent.ClusterImpl;
+import org.cougaar.core.agent.SimpleAgent;
 import org.cougaar.util.DBProperties;
 
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
@@ -602,7 +602,7 @@ public class ComplexRecipeBase extends RecipeBase
 
     AgentComponentData ac = new AgentComponentData();
     ac.setName(agent.getShortName());
-    ac.setClassName(ClusterImpl.class.getName());
+    ac.setClassName(SimpleAgent.class.getName());
     ac.addParameter(agent.getShortName().toString()); // Agents have one parameter, the agent name
     ac.setOwner(owner);
     ac.setParent(parent);

@@ -184,7 +184,7 @@ public class AgentDBComponent
     dbp = DBProperties.readQueryFile(DBUtils.QUERY_FILE);
   }
 
-  // Get the class (ie, ClusterImpl) for the Agent from the DB
+  // Get the class (ie, SimpleAgent) for the Agent from the DB
   private void initAgentClass() {
     String aClass = null;
     // queryAgentClass - takes :assembly_id: and :agent_name, gives just class

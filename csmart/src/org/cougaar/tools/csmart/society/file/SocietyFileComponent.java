@@ -150,7 +150,7 @@ public class SocietyFileComponent
       AgentComponent agent = 
         (AgentComponent)new AgentFileComponent(agentName,
                                                filenames[i],
-                                               "org.cougaar.core.agent.ClusterImpl");
+                                               "org.cougaar.core.agent.SimpleAgent");
       agent.initProperties();
       addChild(agent);
     }

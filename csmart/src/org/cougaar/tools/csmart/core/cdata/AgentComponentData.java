@@ -26,7 +26,7 @@ import java.util.ArrayList;
 /**
  * <code>AgentComponentData</code> extends <code>GenericComponentData</code>
  * and sets the Component Type to {@link ComponentData#AGENT} and the
- * class name to <code>org.cougaar.core.agent.ClusterImpl</code>.
+ * class name to <code>org.cougaar.core.agent.SimpleAgent</code>.
  * <br><br>
  * This class also provides access to the agents plugins and their arguments.
  *
@@ -34,7 +34,7 @@ import java.util.ArrayList;
  */
 public class AgentComponentData extends GenericComponentData {
 
-  private static final String defClassName = "org.cougaar.core.agent.ClusterImpl";
+  private static final String defClassName = "org.cougaar.core.agent.SimpleAgent";
 
   /** Default Constructor **/
   public AgentComponentData() {

@@ -66,7 +66,7 @@ public class AgentInsertionRecipe extends RecipeBase
   private static final String PROP_NAME_DESC = "Name for the Agent";
 
   private static final String PROP_CLASSNAME = "Class Name";
-  private static final String PROP_CLASSNAME_DFLT = "org.cougaar.core.agent.ClusterImpl";
+  private static final String PROP_CLASSNAME_DFLT = "org.cougaar.core.agent.SimpleAgent";
   private static final String PROP_CLASSNAME_DESC = "Class of the Agent";
 
   private static final String PROP_RELATIONCOUNT = "Number of Relationships";

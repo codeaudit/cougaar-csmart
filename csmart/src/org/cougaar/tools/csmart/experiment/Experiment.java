@@ -33,7 +33,7 @@ import java.util.*;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import org.cougaar.core.agent.ClusterImpl;
+import org.cougaar.core.agent.SimpleAgent;
 import org.cougaar.core.node.Node;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.log.Logger;
@@ -1802,7 +1802,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     if (agent instanceof AgentBase)
       ac.setClassName(((AgentBase)agent).getAgentClassName());
     else
-      ac.setClassName(ClusterImpl.class.getName());
+      ac.setClassName(SimpleAgent.class.getName());
 
     ac.addParameter(agent.getShortName()); // Agents have one parameter, the agent name
     ac.setOwner(owner);

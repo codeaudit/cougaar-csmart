@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.cougaar.core.agent.ClusterImpl;
+import org.cougaar.core.agent.SimpleAgent;
 import org.cougaar.util.log.Logger;
 
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
@@ -280,7 +280,7 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
       if(cc instanceof AgentComponent) {
         AgentComponentData ac = new AgentComponentData();
         ac.setName(cc.getShortName());
-        ac.setClassName(ClusterImpl.class.getName());
+        ac.setClassName(SimpleAgent.class.getName());
         ac.addParameter(cc.getShortName().toString()); // Agents have one parameter, the agent name
         ac.setOwner(cc);
         ac.setParent(cd);

@@ -82,7 +82,7 @@ public interface ComponentData extends Serializable {
   
   /** 
    * Gets the class for this component
-   * (ClusterImpl for Agent components)
+   * (SimpleAgent for Agent components)
    *
    * @return Class name, including package
    */

@@ -62,7 +62,7 @@ public abstract class AgentBase
   protected boolean modified = true;
 
   /** Agent Classname Property Definitions **/
-  private static final String DEFAULT_CLASS = "org.cougaar.core.agent.ClusterImpl";
+  private static final String DEFAULT_CLASS = "org.cougaar.core.agent.SimpleAgent";
 
   /** Classname Property Definition **/
   public static final String PROP_CLASSNAME = "Classname";
