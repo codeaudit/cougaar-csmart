@@ -34,24 +34,24 @@ A Component Insertion Recipe contains the following parameters:
     </table>  
 <p>
   Components can be added to a society, such as a plugin in an agent,
-  or a new binder. Component insertion recipes compute the components
-  to be inserted and where by executing queries in the configuration
+  or a new binder. Component insertion recipes compute which component
+  to insert, and it's insertion location by executing queries in the configuration
   database. There are three queries, described below, specifying the
   components to be modified, the components to be inserted and the
   arguments of the inserted components. All such queries come from
-  CIP/configs/common/PopulateDb.q (for basic or example queries), or a
-  file called "recipeQueries.q" for user defined queries (often built
+  <tt>CIP/configs/common/PopulateDb.q</tt> (for basic or example queries), or a
+  file called <tt>recipeQueries.q</tt> for user defined queries (often built
   by copying queries from the other file, renaming them, and editing
   one or two values). This other file should be someplace on the
   Cougaar Config Path - for example, the directory from which CSMART
-  is run, or CIP/configs/common.
+  is run, or <tt>CIP/configs/common</tt>.<br>
 <em>IMPORTANT: All recipes query names must begin with "recipeQuery"!</em><br>
 </p>
 <p>
   <a name="TARGET_QUERY"><h3>Target Component Selection Query</h3></a>
   This query lists the target components and should return
-  COMPONENT_ALIB_ID values such as appear in the
-  V4_ALIB_COMPONENT.COMPONENT_ALIB_ID column. It is not necessary for
+  <tt>COMPONENT_ALIB_ID</tt> values such as appear in the
+  <tt>V4_ALIB_COMPONENT.COMPONENT_ALIB_ID</tt> column. It is not necessary for
   the ids to be distinct. The substitutions that are available during
   this first query are: :assembly_match: which has something like
   &quot;in ('assembly', 'assembly', ...)&quot; and should be used as
@@ -65,8 +65,8 @@ A Component Insertion Recipe contains the following parameters:
   that are to be inserted. It is executed once for each target
   component. A row should be returned for each component to be
   inserted into the target component. Each returned row should be a
-  triple consisting of: component name, component type, and class
-  name. The number of components inserted equals the number of rows
+  triple consisting of: <tt>component name</tt>, <tt>component type</tt>, and <tt>class
+  name</tt>. The number of components inserted equals the number of rows
   returned. The substitutions available consist of the following:
 </p>
 <blockquote>
@@ -81,7 +81,7 @@ A Component Insertion Recipe contains the following parameters:
 <p>
   These are all relative to the target component. So for example, if
   the target is an agent the insertion point would be
-  Node.AgentManager.Agent
+  <tt>Node.AgentManager.Agent</tt>
 </p>
 <p>
 <a name="INSERTION_ARGS_QUERY"><h3>Inserted Component Arguments</h3></a>
