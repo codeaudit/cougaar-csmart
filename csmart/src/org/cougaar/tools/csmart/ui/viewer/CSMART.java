@@ -642,7 +642,6 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	Browser.setPage(help);
     } else if (s.equals(ABOUT_CSMART_ITEM)) {
       URL about = (URL)getClass().getResource(ABOUT_DOC);
-      System.out.println("URL is: " + about);
       if (about != null)
 	Browser.setPage(about);
     } else if (s.equals(views[0])) {

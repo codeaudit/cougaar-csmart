@@ -22,6 +22,7 @@
 package org.cougaar.tools.csmart.ui.analyzer;
 
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
+import org.cougaar.tools.csmart.ui.component.MetricComponent;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.util.Parameters;
@@ -143,6 +144,12 @@ public class Analyzer extends JFrame implements ActionListener {
     String filePathName = fileChooser.getSelectedFile().getPath();
     String excel = 
       Parameters.findParameter("org.cougaar.tools.csmart.excelpath");
+    
+    if (excel == null || excel.equals("")) {
+      System.out.println("Excel location not specified");
+      return;
+    }
+    
     String[] cmds = { excel, "" };
     System.out.println("Launching excel from: " + cmds[0]);
     cmds[1] = filePathName;
@@ -210,15 +217,15 @@ public class Analyzer extends JFrame implements ActionListener {
 	if (fileFilter.accept(f))
 	  return true;
       }
-//        int n = experiment.getMetricCount();
-//        for (int i = 0; i < n; i++) {
-//  	MetricComponent metricComponent = experiment.getMetric(i);
-//  	java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
-//  	if (fileFilter == null)
-//  	  continue;
-//  	if (fileFilter.accept(f))
-//  	  return true;
-//        }
+      int m = experiment.getMetricCount();
+      for (int i = 0; i < m; i++) {
+	MetricComponent metricComponent = experiment.getMetric(i);
+	java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
+	if (fileFilter == null)
+	  continue;
+	if (fileFilter.accept(f))
+	  return true;
+      }
       return false;
     }
 

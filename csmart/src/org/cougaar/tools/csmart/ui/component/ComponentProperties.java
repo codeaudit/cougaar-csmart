@@ -49,6 +49,8 @@ public interface ComponentProperties extends Serializable {
   URL getDescription();
   
   Property getProperty(CompositeName name);
+  /** Get a property using its local name **/
+  Property getProperty(String localName);
   Iterator getPropertyNames();
   List getPropertyNamesList();
   void addPropertiesListener(PropertiesListener l);

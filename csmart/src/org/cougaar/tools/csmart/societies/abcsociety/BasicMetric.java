@@ -74,7 +74,7 @@ public class BasicMetric extends ModifiableConfigurableComponent
   
   // Verb to search for - default null
   public static final String PROP_TVERB = "Task Verb";
-  public static final String PROP_TVERB_DFLT = "";
+  public static final String PROP_TVERB_DFLT = org.cougaar.domain.glm.ldm.Constants.Verb.GETLOGSUPPORT;
   public static final String PROP_TVERB_DESC = "Task Verb to search for and count";
   private Property propTVerb;
   

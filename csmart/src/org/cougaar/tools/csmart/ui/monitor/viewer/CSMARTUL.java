@@ -593,7 +593,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       if (agents == null) {
 	agents = new Vector();
 	agents.addElement(agentName);
-        System.out.println("Adding agent name: " + agentName);
+        //        System.out.println("Adding agent name: " + agentName);
 	communityToAgents.put(communityName, agents);
       } else
 	agents.addElement(agentName);

@@ -1,3 +1,59 @@
+2001-10-29  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java (Repository):
+	If a property of a MetricComponent has a null or empty valid, skip
+	writing it to the database. Such properties are _not_ reflected as
+	plugin parameters. This means that if the verb is not set, there
+	is no "verb=xyz" parameter. This also means that all the other
+	unset parameters will be absent as well.
+
+2001-10-26  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java (Repository):
+	MySQL Conversion.
+	Convert insert into table from same table query into a multi-part
+	query as described by the query file. Requires corresponding
+	change to PopulateDb.q file.
+	Also remove unused (and non-existant) query definitions.
+
+2001-10-25  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ComponentProperties.java (Repository):
+	Add getProperty(String localName) to get a property using its
+	local name (rather than a composite name).
+
+2001-10-24  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java (Repository):
+	Fix bug 641.
+	Store the (last) names and values of the properties of the metrics
+	saved with an experiment.
+
+2001-10-23  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java (Repository):
+	Fix bug 629 "Queries to clean trials are incorrect"
+	TRIAL_ID was used instead of ASSEMBLY_ID to identify what to
+	delete. Also revised the query into two parts: one to identify
+	what to delete and another to do the delete. Mysql precludes doing
+	this in one operation (oh so lame).
+	Fix bug 630 "component_alib_id for hosts should not include the society"
+	Make the default alib id be just the name of the component and
+	special case for plugin which includes the agent name.	
+	Fix bug 630 "Metrics added to an experiment are not written to the db"
+	Add code to write the list of metrics of the experiment to the
+	database.
+
+2001-10-22  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java (Repository):
+	Fix bug 620.
+	Set description of new experiment to be the same as its name (no
+	better description is available) instead of experimentId which is
+	not user friendly. Also, the description is currently being used
+	to populate the experiment selection menu making that unfriendly
+	as well.
+
 2001-10-19  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* PopulateDb.java (Repository):
@@ -6,6 +62,8 @@
 
 	* TestPopulateDb.java (Repository):
 	Several fixes to accomodate new naming conventions.
+
+2001-10-19  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* PopulateDb.java (Repository):
 	Fix clone-cleaning code. Changed to remove all csmi and hna type

@@ -319,7 +319,7 @@ public final class ThreadUtils {
         (isDown ? "down" : "up") +
         ((limit >= 0) ? ("?limit="+limit) : "");
       // connect, upload List of Strings
-      System.out.println("ThreadUtils: connecting to: " + surl);
+      //      System.out.println("ThreadUtils: connecting to: " + surl);
       URL url = new URL(surl);
       URLConnection conn = url.openConnection();
       conn.setDoOutput(true);
@@ -336,7 +336,8 @@ public final class ThreadUtils {
       return (List)inObj;
     } catch (Exception e) {
       System.err.println("Query agent "+agentName+" failed:");
-      e.printStackTrace();
+      System.err.println(e);
+      //      e.printStackTrace();
       return null;
     }
   }

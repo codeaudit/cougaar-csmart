@@ -45,7 +45,7 @@ Tasks, Allocations, Dispositions, Asset Transfers, Aggregations, and Expansions.
 to a single plan object.</li>
 
 <li>
-<b>Metrics</b>: Show one (potentially many) calculated graph of society
+<b>Metrics</b>: Show one (potentially many) calculated graphs of society
 activity.</li>
 
 <br>&nbsp;</ul>
@@ -64,18 +64,15 @@ File: Create new graphs, save graphs, and exit.</li>
 
 <ul>
 <li>
-New: Create a new Agents, Plan or Thread graph. This duplicates the functionality
+New: Create a new Community, Agents, Plan or Thread graph or a new Metrics display. This duplicates the functionality
 available on the tool bar buttons.</li>
 
 <li>
-Open: Read and display a previously saved graph.</li>
+Open: Read and display a previously saved graph or metric.</li>
 
 <li>
 Exit: Exit the Society Monitor.</li>
 </ul>
-
-<li>
-Window: Bring a window that displays a graph to the foreground.</li>
 
 <li>
 Help: Display help information in a browser.</li>
@@ -127,7 +124,7 @@ Save: Any graph or metric may be saved for future analysis.</li>
 </ul>
 
 <p><br><b>Graph Menus</b>
-<br>These are menus common to all the graph displays:
+<br>These are menus common to all the graph displays, unless otherwise indicated:
 <ul>
 <li>
 File:</li>
@@ -157,8 +154,11 @@ Select:</li>
 <ul>
 <li>
 Find...: Select a node by its UID from a list in a pop-up dialog. Highlight
-the node and scroll the graph so that the node is displayed. In future
-this search capability will be expanded.</li>
+the node and scroll the graph so that the node is displayed.</li>
+
+<li>
+Find Plan Objects: Select a plan object by criteria such as agent name and
+object type; available only in Plan and Thread graphs.
 
 <li>
 Filter...: Filter plan objects by community and type. Implemented only
@@ -196,6 +196,14 @@ new window.</li>
 <li>
 Legend: Display a legend which describes the colors and shapes used in
 the graph.</li>
+
+<li>
+Ancestor Thread: Display a thread graph starting with the selected object and
+tracing its parents; available only in Plan and Thread graphs.</li>
+
+<li>
+Descendant Thread: Display a thread graph starting with the selected object and
+tracing its children; available only in Plan and Thread graphs.</li>
 
 <li>
 Zoom In: Zoom in to show more detail.</li>
@@ -239,6 +247,59 @@ Find Node: The Find button in the Attributes table window scrolls the graph
 so that the node whose attributes are displayed, is visible.</li>
 </ul>
 
+
+
+<b>Agents</b>
+<p>The Society Monitor's Agents View displays the agents in a running Cougaar society. Each agent is labeled with its nomenclature. It is linked to every other agent with which it has a relationship. Agents are laid out top-to-bottom. You may produce new graphs showing only selected relationships, from the File menu. Alternatively, given a selected agent, you can highlight those agents with which that agent has a given relationship.
+
+As with all graph views, a Legend indicates the color scheme. Additionally, each node has a set of attributes of the organization available (displayed by double-clicking or from the View menu when an agent is selected).
+ 
+This view has a menu with the following commands:
+<ul>
+<li>File: Relationships...: Display relationships for the selected nodes in a new window. Select the relationship, such as Superior/Subordinate or Customer/Provider from a pull-right menu. To see all the relationships for the society, first select all the nodes (using the Select->Select All menu item).</li>
+<li>Show: Show a specific relationship (selected from the Show menu) for the selected nodes. This is most useful for displaying relationships for a single selected node. The related nodes are highlighted in yellow (for Subordinates and Customers) or blue (for Superiors and Providers).</li>
+<li>Show: Clear: Clear the blue and/or yellow highlighting used to display relationships.</li>
+</ul>
+
+<b>Community</b>
+<p>This shows the communities in a running society, with their relationships (the sum of the relationships of their agents).</p>
+
+<b>Plan</b>
+<p>
+The Plan View is the most detailed monitoring tool available. It can potentially return every object in the distributed Cougaar blackboard, and show the relationships among these objects. For developers, and for truly understanding a particular interaction or result, this is the most powerful view. 
+</p>
+
+<b>Plan Filtering</b>
+<br>
+The Plan view often returns too much information (both to be useful, and to be handled comfortably by the client machine). Therefore, users typically filter their query by object type.  In addition, users can limit the number of objects returned (recommended). Currently, users may choose to hide or ignore certain plan object types. Note that by "Hide"-ing an object type, it is still retrieved and processed, merely not drawn. The transitive closure of the links between nodes is drawn, with the edge shown thicker and darker as a reminder of the missing nodes. When ignoring objects, they are not retrieved from the agent at all. Therefore, for efficiency purposes, ignoring some object types is usually more useful. 
+<br>
+<br>
+<b>Plan Legend</b>
+<br>
+Nodes in the plan view are color coded, according to the agent from which they were retrieved. Although this means that colors may be re-used, it does allow the user to quickly identify when processing moves from one agent to another. For details on which color indicates which agent, view the legend (from the "View" menu).
+Nodes are also different shapes, to indicate different object types. Again, look at the legend for details.
+Note that the plan view is laid out left to right, following the arrows from Tasks to Plan Elements and on down. These links are solely causal, and are drawn to minimize link length and crossing, and do not take into account time or any other factor.
+
+<br>
+<br>
+<b>Thread</b>
+<p>
+The Thread View is a filtered version of the Plan View. By selecting a particular node (from a Plan View or other Thread View), you may query up ("Ancestor") or down ("Descendant") its causal chain, using commands in the View menu. This produces a new plan graph, with only the requested objects.
+When viewing an ancestor thread, only parent Tasks are displayed. When viewing a descendant thread, all objects that can be reached by following links are displayed.
+ 
+The Thread view can be used to answer the following questions:
+<ul>
+<li>How was this Task satisfied?</li>
+<li>Who participated in the solution for this Task?</li>
+<li>What are the requirements associated with this Task?</li>
+<li>Who generated the requirements for this Task?</li>
+</ul>
+</p>
+
+<b>Display Attributes</b>
+<br> 
+For each node in one of the graph views, double-clicking on the node retrieves a set of attributes for that object. These are a sub-set of the attributes available from the Blackboard. Note that the "Find" button on this window will scroll the main graph to the appropriate node.
+
 <h2>
 Notes:</h2>
 If the Society Monitor is unable to contact a running society, confirm
@@ -263,5 +324,9 @@ csmart/monitor/PSP_CommunityProvider.PSP: org.cougaar.tools.csmart.ui.psp.PSP_Co
 csmart/monitor/PSP_Metrics.PSP: org.cougaar.tools.csmart.ui.psp.PSP_Metrics</li>
 </ul>
 
+<br><br>
+<!-- hhmts start -->
+Last modified: Mon Oct 29 15:39:45 EST 2001
+<!-- hhmts end -->
 </body>
 </html>

@@ -160,7 +160,7 @@ public class CSMARTGraph extends Graph
       for (int i = 0; i < dotPaths.length; i++) {
 	dotExecutable = dotPaths[i] + dotNames[j];
 	try {
-	  System.out.println("Looking for " + dotExecutable);
+          //	  System.out.println("Looking for " + dotExecutable);
 	  dotFile = new File(dotExecutable);
 	} catch (NullPointerException e) {
 	  //System.out.println("CSMARTGraph: Could not open file handle for " + dotExecutable");
@@ -551,6 +551,8 @@ public class CSMARTGraph extends Graph
 	node.setAttribute(name, (String)o);
       else if (o instanceof Double)
         node.setAttribute(name, ((Double)o).toString());
+      else if (o instanceof Float)
+	node.setAttribute(name, ((Float)o).toString());
       else if (o instanceof Long)
         node.setAttribute(name, ((Long)o).toString());
       else if (o instanceof Vector) {

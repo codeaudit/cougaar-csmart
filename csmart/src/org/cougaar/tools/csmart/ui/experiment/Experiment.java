@@ -90,7 +90,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     this.expID = expID;
     this.trialID = trialID;
     inDatabase = true;
-    System.out.println("Experiment: " + expID + " Trial: " + trialID);
+    //    System.out.println("Experiment: " + expID + " Trial: " + trialID);
   }
 
   public void setExperimentID(String expID) {
@@ -326,7 +326,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    */
   public Experiment copy(Organizer organizer, Object context) {
     String uniqueName = organizer.generateExperimentName(getExperimentName());
-    Experiment experimentCopy = new Experiment(uniqueName);
+    Experiment experimentCopy = null;
+    if (inDatabase) 
+      experimentCopy = new Experiment(uniqueName, expID, trialID);
+    else
+      experimentCopy = new Experiment(uniqueName);
     for (int i = 0; i < getComponentCount(); i++) {
       ModifiableConfigurableComponent sc = getComponent(i);
       ModifiableConfigurableComponent copiedSC = organizer.copyComponent(sc, context);
@@ -384,7 +388,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       }
     }
 
-    // copy results directory???
+    // copy the results directory; results from the copied experiment
+    // will be stored in this directory under the copied experiment name
     experimentCopy.setResultDirectory(getResultDirectory());
     
     return experimentCopy;
@@ -696,10 +701,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       // Now ask each component in turn to add its stuff
       for (int i = 0; i < components.size(); i++) {
         ComponentProperties soc = (ComponentProperties) components.get(i);
-        System.out.println(soc + ".addComponentData");
+//          System.out.println(soc + ".addComponentData");
         soc.addComponentData(theSoc);
       }
       pdb.setPreexistingItems(theSoc); // Record these items so additions can be detected
+//        pdb.setImpacts(impacts);
 
       // then give everyone a chance to modify what they've collectively produced
       for (int i = components.size() - 1; i >= 0; i--) {
@@ -709,6 +715,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       if (pdb.populate(theSoc, 1)) {
         setCloned(true);        // If not cloned before, we certainly are now
       }
+      pdb.setMetrics(metrics);
       pdb.close();
     } catch (Exception sqle) {
       sqle.printStackTrace();

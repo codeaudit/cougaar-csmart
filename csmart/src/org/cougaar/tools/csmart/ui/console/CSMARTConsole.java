@@ -1094,8 +1094,8 @@ public class CSMARTConsole extends JFrame {
     NodeServesClient nsc = null;
     try {
       HostServesClient hsc = communitySupport.getHost(hostName, DEFAULT_PORT);
-      System.out.println("Host: " + hostName + " port: " + DEFAULT_PORT + 
-                         " name: " + uniqueNodeName);
+      //      System.out.println("Host: " + hostName + " port: " + DEFAULT_PORT + 
+      //                         " name: " + uniqueNodeName);
       nsc = hsc.createNode(uniqueNodeName, properties, null,
                            listener, filter, configWriter);
       if (nsc != null)
@@ -1150,15 +1150,15 @@ public class CSMARTConsole extends JFrame {
       if(fileFilter.accept(thisFile))
 	return true;
     }
-//      int n = experiment.getMetricCount();
-//      for (int i = 0; i < n; i++) {
-//        MetricComponent metricComponent = experiment.getMetric(i);
-//        java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
-//        if (fileFilter == null)
-//  	continue;
-//        if(fileFilter.accept(thisFile))
-//  	return true;
-//      }
+    int nmetrics = experiment.getMetricCount();
+    for (int i = 0; i < nmetrics; i++) {
+      MetricComponent metricComponent = experiment.getMetric(i);
+      java.io.FileFilter fileFilter = metricComponent.getResultFileFilter();
+      if (fileFilter == null)
+	continue;
+      if(fileFilter.accept(thisFile))
+	return true;
+    }
     return false;
   }
 

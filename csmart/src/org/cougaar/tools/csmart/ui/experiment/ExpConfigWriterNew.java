@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.Date;
+import java.text.DateFormat;
 
 import org.cougaar.tools.server.ConfigurationWriter;
 
@@ -257,7 +258,9 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
       writeLeafData(configDir, children[i]);
     }
   }
-  
+
+  protected DateFormat myDateFormat = DateFormat.getInstance(); 
+
   private void writeAgentFile(File configDir, AgentComponentData ac) throws IOException {
     PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, ac.getName() + ".ini")));
     try {
@@ -322,13 +325,20 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
       while(iter.hasNext()) {
 	RelationshipData rel = (RelationshipData)iter.next();
 
-	if(assetData.isEntity()) {	  
+	if (assetData.isEntity()) {	  
 	  writer.print(quote(rel.getRole()) + "  ");
 	  writer.print(quote(rel.getItem()) + "  ");
 	  writer.print(quote(rel.getType()) + "  ");
 	  writer.print(quote(rel.getSupported()) + "  ");
-	  writer.print(quote(new Date(rel.getStartTime()).toString()) + "  ");
-	  writer.println(quote(new Date(rel.getEndTime()).toString()));
+          long startTime = rel.getStartTime();
+          long endTime = rel.getEndTime();
+          if (startTime == 0L || endTime == 0L) {
+            writer.print(quote("") + "  ");
+            writer.println(quote(""));
+          } else {
+            writer.print(quote(myDateFormat.format(new Date(startTime))) + "  ");
+            writer.println(quote(myDateFormat.format(new Date(endTime))));
+          }
 	} else if(assetData.isOrg()) {
 	  writer.print(rel.getType() + " ");
 	  writer.print(quote(rel.getSupported()) + " ");

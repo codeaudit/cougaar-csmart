@@ -103,7 +103,7 @@ public class CMTAgent
 
   private void initDBProperties() throws IOException {
     dbp = DBProperties.readQueryFile(DBUtils.DATABASE, DBUtils.QUERY_FILE);
-    dbp.setDebug(true);
+    //    dbp.setDebug(true);
   }
 
   private static String getNonNullString(ResultSet rs, int ix, String query)
@@ -173,7 +173,6 @@ public class CMTAgent
       try {
 	Statement stmt = conn.createStatement();	
 	String query = DBUtils.getQuery(QUERY_AGENT_RELATIONS, substitutions);
-	System.out.println(query);
 	
 	ResultSet rs = stmt.executeQuery(query);
 	while(rs.next()) {

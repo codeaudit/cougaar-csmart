@@ -1494,8 +1494,7 @@ public class Organizer extends JScrollPane {
     try {
       Connection conn = DBUtils.getConnection();
       Map substitutions = new HashMap();
-      substitutions.put(":trial_id", trialId);
-      substitutions.put(":assemblyMatch", assemblyMatch);
+      substitutions.put(":component_type", ComponentData.HOST);
       Statement stmt = conn.createStatement();
       String query = DBUtils.getQuery(EXPT_HOST_QUERY, substitutions);
       //      System.out.println("Organizer: Get hosts query: " + query);
@@ -1598,6 +1597,64 @@ public class Organizer extends JScrollPane {
   }
 
 
+  private List checkForMetrics(String trialId, String exptId) {
+    ArrayList metricList = new ArrayList();
+
+    try {
+      Connection conn = DBUtils.getConnection();
+      Map substitutions = new HashMap();
+      substitutions.put(":trial_id", trialId);
+      substitutions.put(":expt_id", exptId);
+      Statement stmt = conn.createStatement();
+      String query = DBUtils.getQuery("queryMetrics", substitutions);
+      ResultSet rs = stmt.executeQuery(query);
+      while(rs.next()) {
+        String metric = rs.getString(1);
+        metricList.add(metric);
+      }
+      rs.close();
+      stmt.close();
+      conn.close();   
+    } catch (SQLException se) {
+      System.err.println("Caught SQL exception: " + se);
+      se.printStackTrace();
+    }    
+    
+    return metricList;
+  }
+
+  private void setMetricComponentProperties(String trialId, String metricId, MetricComponent mc) {
+    Map substitutions = new HashMap();
+
+    substitutions.put(":trial_id", trialId);
+    substitutions.put(":metric_id", metricId);
+
+    try {
+      Connection conn = DBUtils.getConnection();
+      Statement stmt = conn.createStatement();
+      String query = DBUtils.getQuery("queryMetricProperties", substitutions);
+
+      ResultSet rs = stmt.executeQuery(query);
+      while(rs.next()) {
+        String propname = rs.getString(1);
+        System.out.println("Have Property: " + propname);
+        Property prop = mc.getProperty(propname);
+        Class propClass = prop.getPropertyClass();
+        Constructor constructor = propClass.getConstructor(new Class[] {String.class});
+        Object value = constructor.newInstance(new Object[] {rs.getString(2)});
+        prop.setValue(value);
+      }
+      rs.close();
+      stmt.close();
+      conn.close();   
+    } catch (SQLException se) {
+      System.err.println("Caught SQL exception: " + se);
+      se.printStackTrace();
+    } catch (Exception e ) {
+      System.err.println("[setMetricComponentProperties] Caught exception: " + e);
+    }
+  }
+
   /**
    * Create a CMT society with the specified assembly ids
    * (which define threads and groups) and
@@ -1629,6 +1686,24 @@ public class Organizer extends JScrollPane {
     Experiment experiment = new Experiment((String)experimentName, 
                                            experimentId, trialId);
     experiment.setCloned(isCloned);
+    List metrics = checkForMetrics(trialId, experimentId);
+    if( metrics.size() != 0 ) {
+      Iterator metIter = metrics.iterator();
+      while( metIter.hasNext() ) {
+        String dbMet = (String)metIter.next();
+        for(int i=0; i < metComboItems.length; i++) {
+          ComboItem item = (ComboItem)metComboItems[i];
+          if(dbMet.equals(item.name)) {
+            MetricComponent mc = createMet(dbMet, item.cls);
+            setMetricComponentProperties(trialId, dbMet, mc);
+            experiment.addMetric(mc);
+            addMetricToWorkspace(mc, node);
+            break;
+          }
+        }
+      }
+    }
+
     experiment.addSocietyComponent((SocietyComponent)soc);
     // Add all Nodes.
     addAgents(experiment, nodes, soc.getAgents(), trialId, assemblyMatch);
@@ -2107,10 +2182,21 @@ public class Organizer extends JScrollPane {
     
     // use the base copy method in ComponentProperties
     society.copy(societyCopy);
+    boolean builtIn = false;
+    for (int i = 0; i < socComboItems.length; i++) 
+      if (((ComboItem)(socComboItems[i])).cls.isInstance(societyCopy)) {
+        builtIn = true;
+        break;
+      }
+    // don't add societies from database experiments to the workspace
+    if (!builtIn) {
+      societyNames.add(societyCopy.getSocietyName());
+      return societyCopy;
+    }
+    // add society to workspace
     if (context == null)
-      // add copy as sibling of original
-      workspace.setSelection(addSocietyToWorkspace(societyCopy, 
-			    (DefaultMutableTreeNode)findNode(society).getParent()));
+      workspace.setSelection(addSocietyToWorkspace(societyCopy,
+                             (DefaultMutableTreeNode)findNode(society).getParent()));
     else
       workspace.setSelection(addSocietyToWorkspace(societyCopy, (DefaultMutableTreeNode)context));
     return societyCopy;

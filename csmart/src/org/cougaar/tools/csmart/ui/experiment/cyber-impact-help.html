@@ -6,19 +6,68 @@
 
   <body>
     <h1>Cyber Impact Configuration Help</h1>
-    
-    <ul>
-      <li>Target         [String, agent name]</li>
-      <li>Time           [String, milliseconds]</li>
-      <li>Type           [String, see below]</li>
-      <li>Intensity      [Double, 0 - ?]</li>
-      <li>Duration       [Long, 0 - ?]</li>
-    </ul>
 
-    A Cyber impact effects a specific agent specified in 'Target'.  A 'Time'
-    is specified to indicate when the cyber attack starts.  There are
-    x 'Types' of cyber attacks defined below that can be used to impact a society.  
-    Once a impact is started, it continues for the lenght of the 'Duration', and
-    impacts the society with the specified 'Intensity'.
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#TARGET">Target</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#TIME">Time</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#TYPE">Type</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#INTENSITY">Intensity</a></td>
+	  <td>Double</td>
+	  <td>0.0 - 1.0</td>
+	</tr>
+	<tr>
+	  <td><a href="#DURATION">Duration</a></td>
+	  <td>Long</td>
+	  <td>0 - MAX</td>
+	</tr>
+    </table>  
+    <br><br>
+    
+    A Cyber impact effects a specific <a href="#TARGET">agent</a>.  The Cyber attack
+    starts the specified <a href="#TIME">start time</a> and continues for the
+    <a href="#DURATION">duration</a> specified.
+
+    <a name="TARGET"><h3>Target</h3></a>
+    The target is the fully qualified agent name that is the target of the cyber attack.
+
+    <a name="TIME"><h3>Time</h3></a>
+    Time is the time, in milliseconds, when the cyber event starts.
+
+    <a name="TYPE"><h3>Type</h3></a>
+    Type is the type of cyber attack.  Currently, there are 4 defined cyber impacts:
+    "DoS Node", "DoS Network", "Kill Node" and "Isolate Node".
+
+    <a name="INTENSITY"><h3>Intensity</h3></a>
+    Intensity defines the intensity of the attack, the larger the number, the
+    more severe the attack.
+
+    <a name="DURATION"><h3>Duration</h3></a>
+    Duration is the length of the cyber attack.
+
+<br><br>
+<!-- hhmts start -->
+Last modified: Wed Oct 31 10:28:15 EST 2001
+<!-- hhmts end -->
   </body>
 </html>
+
+

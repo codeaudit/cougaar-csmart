@@ -1,3 +1,10 @@
+2001-10-29  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ExpConfigWriterNew.java (Repository):
+	Fix Bug #655.
+	Write zero dates (null dates) as empty strings and let the
+	defaulting happen in the config reader.
+
 2001-10-18  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* Experiment.java (Repository):

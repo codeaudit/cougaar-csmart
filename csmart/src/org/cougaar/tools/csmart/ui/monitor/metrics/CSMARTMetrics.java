@@ -32,6 +32,7 @@ import com.klg.jclass.util.swing.JCExitFrame;
 
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
+import org.cougaar.tools.csmart.util.Sorting;
 
 import java.util.Vector;
 import java.util.Iterator;
@@ -88,6 +89,8 @@ public class CSMARTMetrics extends JPanel {
 
     chart = new JCChart(JCChart.STACKING_BAR);
 
+    chart.getLegend().setVisible(true);
+
     add("Center", chart);
 
     // set bar data source from table model
@@ -111,9 +114,9 @@ public class CSMARTMetrics extends JPanel {
     for (int i = 0; barIter.hasNext(); i++) {
       ChartDataViewSeries thisSeries = (ChartDataViewSeries) barIter.next();
       thisSeries.getStyle().setFillColor(seriesColors[i]);
+      thisSeries.setVisibleInLegend(true);
     }
-    
-    chart.getLegend().setVisible(true);
+
   }
 
   /**
@@ -247,3 +250,4 @@ public class CSMARTMetrics extends JPanel {
     f.setVisible(true);
   }
 }
+
