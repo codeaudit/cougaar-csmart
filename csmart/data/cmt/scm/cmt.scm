@@ -504,7 +504,7 @@
   (add-asb-oplan-agent-attr assembly_id cfw_group_id threads "('093FF')")
   (print "add-asb-oplan-agent-attr completed")
   (newline)
-  "done"
+  assembly_id
   )
 
 (define (add-base-asb-agents cfw_group_id assembly_id)
@@ -2006,14 +2006,19 @@
 		    "   " asb-prefix "EXPT_TRIAL_ORG_MULT" 
 		    "   where multiplier >1"
 		    "   and expt_id=" (sqlQuote experiment_id))
-		    )
 		    '((.getString "ORG_GROUP_ID")(.getInt "MULTIPLIER"))))
        )
     (.add threads "STRATEGIC-TRANS")
     (.add threads "THEATER-TRANS")
     (set! threads (order-threads threads))
     (println (list 'create-cmt-asb assembly_description cfw_group_id threads "" clones))
-    (create-cmt-asb assembly_description cfw_group_id threads "" clones)
+    (set! assembly_id (create-cmt-asb assembly_description cfw_group_id threads "" clones))
+    (dbu (string-append
+	  "update "
+	  asb-prefix "expt_trial_assembly" 
+	  "   set assembly_id="(sqlQuote assembly_id)
+	  "   where expt_id="(sqlQuote experiment_id)
+	  "   and assembly_id like 'CMT-%'"))
     ))
 
 (define (listif bool item)
@@ -2031,3 +2036,14 @@
    ))
 
 
+(define (expt_agents expt_id)
+  (query-set
+   (string-append
+    "select aa.component_alib_id from "
+    asb-prefix "expt_trial_assembly ta,"
+    asb-prefix "asb_agent aa"
+    "   where "
+    "   ta.expt_id="(sqlQuote expt_id)
+    "   and ta.assembly_id=aa.assembly_id"
+    )
+   "component_alib_id"))
