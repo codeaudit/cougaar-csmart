@@ -1437,9 +1437,11 @@
 ;; THREAD_ID			 NOT NULL VARCHAR2(50)
 ;;
 
-(define (isULThreadSelected trial_id thread_id)
-  (let
-      ((threadSelected #f))
+(define (isULThreadSelected trial_id thread_name)
+  
+  (let*
+      ((thread_id (get-thread-id thread_name))
+       (threadSelected #f))
     (define (do-entry rs)
       (cond
        ((.next rs)
