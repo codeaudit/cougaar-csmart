@@ -324,7 +324,7 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
 	  writer.print(quote(rel.getStartTime()) + "  ");
 	  writer.println(quote(rel.getStopTime()));
 	} else if(assetData.isOrg()) {
-	  writer.print(quote(rel.getType()) + " ");
+	  writer.print(rel.getType() + " ");
 	  writer.print(quote(rel.getCluster()) + " ");
 	  writer.println(quote(rel.getRole()));
 	} else if(assetData.isTPOrg()){
