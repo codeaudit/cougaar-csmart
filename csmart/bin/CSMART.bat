@@ -44,10 +44,10 @@ REM CD %TEMP%
 
 REM start the classpath with the optional COUGAAR_DEV_PATH
 SET DEVPATH=
-IF NOT "%COUGAAR_DEV_PATH%" == "" SET DEVPATH=%COUGAAR_DEV_PATH%
+IF NOT "%COUGAAR_DEV_PATH%" == "" SET DEVPATH=-Dorg.cougaar.class.path=%COUGAAR_DEV_PATH%
 
 REM Start CSMART using Bootstrapper
-SET MYCLASSPATH=%DEVPATH%;%COUGAAR_INSTALL_PATH%\lib\core.jar
+SET MYCLASSPATH=%COUGAAR_INSTALL_PATH%\lib\core.jar
 
 SET MYMEMORY=-Xms100m -Xmx300m
 SET MYPROPERTIES=-Dorg.cougaar.install.path=%COUGAAR_INSTALL_PATH%
@@ -61,6 +61,6 @@ SET MYDELAY=-Dorg.cougaar.tools.csmart.startdelay=0
 
 @ECHO ON
 
-java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %MYEXCEL% %MYDELAY% -classpath %MYCLASSPATH% org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
+java.exe %MYPROPERTIES% %MYMEMORY% %MYCONFIGPATH% %MYEXCEL% %MYDELAY% %DEVPATH% -classpath %MYCLASSPATH% org.cougaar.core.node.Bootstrapper org.cougaar.tools.csmart.ui.viewer.CSMART
 
 :L_END
