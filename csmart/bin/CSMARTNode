@@ -20,7 +20,7 @@
 # </copyright>
 
 
-# Sample script for running a Node using CSMART PlugIns on Unix machines
+# Sample script for running a Node using CSMART Plugins on Unix machines
 # Edit this file to reflect your preferences, and replace the Node script in CIP/bin
 # Alternatively, merge the differences in this script into your existing Node script
 # Additions contained in this script:
@@ -67,7 +67,7 @@ set MYCONFIGS="$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
 #set MYDOMAINS="-Dorg.cougaar.domain.alp=org.cougaar.glm.GLMDomain"
 set MYDOMAINS=""
 #set MYPROPERTIES="$MYDOMAINS -Dorg.cougaar.system.path=$COUGAAR3RDPARTY -Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Duser.timezone=GMT"
-set MYPROPERTIES="$MYDOMAINS -Dorg.cougaar.system.path=$COUGAAR3RDPARTY -Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Duser.timezone=GMT -Dorg.cougaar.core.agent.startTime=08/10/2005 -Dorg.cougaar.planning.ldm.lps.ComplainingLP.level=0 -Dorg.cougaar.core.agent.SharedPlugInManager.watching=false"
+set MYPROPERTIES="$MYDOMAINS -Dorg.cougaar.system.path=$COUGAAR3RDPARTY -Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Duser.timezone=GMT -Dorg.cougaar.core.agent.startTime=08/10/2005 -Dorg.cougaar.planning.ldm.lps.ComplainingLP.level=0 -Dorg.cougaar.core.agent.SharedPluginManager.watching=false"
 
 # This line for CSMART specific properties
 set MYPROPERTIES="${MYPROPERTIES} -Dorg.cougaar.config.path=$MYCONFIGS"
