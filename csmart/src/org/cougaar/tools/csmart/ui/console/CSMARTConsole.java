@@ -70,7 +70,6 @@ public class CSMARTConsole extends JFrame {
   CommunityServesClient communitySupport;
   SocietyComponent societyComponent;
   Experiment experiment;
-  boolean isEditable;
   int currentTrial; // index of currently running trial in experiment
   long startTrialTime; // in msecs
   long startExperimentTime;
@@ -156,12 +155,11 @@ public class CSMARTConsole extends JFrame {
   /**
    * Create and show console GUI.
    */
-  public CSMARTConsole(CSMART csmart) {
+  public CSMARTConsole(CSMART csmart, Experiment experiment) {
     this.csmart = csmart;
+    this.experiment = experiment;
     console = this;
-    experiment = csmart.getExperiment();
-    isEditable = experiment.isEditable();
-    experiment.setEditable(false); // not editable while we have it
+    experiment.setRunInProgress(true);
     currentTrial = -1;
     societyComponent = experiment.getSocietyComponent(0);
     desktop = new ConsoleDesktop();
@@ -371,16 +369,15 @@ public class CSMARTConsole extends JFrame {
 
     // create trial progress panel for time labels
     JPanel trialProgressPanel = createHorizontalPanel(false);
-    if (!experiment.isInDatabase()) {
-      trialProgressPanel.add(trialTimeLabel);
-      trialProgressPanel.add(Box.createRigidArea(HGAP10));
-      progressPanel.add(trialProgressBar,
-		      new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
-					     GridBagConstraints.WEST,
-					     GridBagConstraints.HORIZONTAL,
-                                             new Insets(5, 0, 0, 0),
-					     0, 0));
-    }
+    // only when not in database
+//        trialProgressPanel.add(trialTimeLabel);
+//        trialProgressPanel.add(Box.createRigidArea(HGAP10));
+//        progressPanel.add(trialProgressBar,
+//  		      new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0,
+//  					     GridBagConstraints.WEST,
+//  					     GridBagConstraints.HORIZONTAL,
+//                                               new Insets(5, 0, 0, 0),
+//  					     0, 0));
     trialProgressPanel.add(experimentTimeLabel);
     progressPanel.add(trialProgressPanel,
 		      new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0,
@@ -464,16 +461,15 @@ public class CSMARTConsole extends JFrame {
     jif.setLocation(0, 0);
     jif.setVisible(true);
     desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
-    if (!experiment.isInDatabase()) {
-      PropertyEditorPanel trialViewer = 
-        new PropertyEditorPanel(experiment.getComponentsAsArray());
-      jif = new JInternalFrame("Trial Values", true, false, true, true);
-      jif.getContentPane().add(trialViewer);
-      jif.setSize(300, 300);
-      jif.setLocation(310, 0);
-      jif.setVisible(true);
-      desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
-    }
+    // only when not in database
+//        PropertyEditorPanel trialViewer = 
+//          new PropertyEditorPanel(experiment.getComponentsAsArray(), false);
+//        jif = new JInternalFrame("Trial Values", true, false, true, true);
+//        jif.getContentPane().add(trialViewer);
+//        jif.setSize(300, 300);
+//        jif.setLocation(310, 0);
+//        jif.setVisible(true);
+//        desktop.add(jif, JLayeredPane.DEFAULT_LAYER);
     panel.add(desktop,
 	      new GridBagConstraints(0, 2, 1, 1, 1.0, 1.0,
 				     GridBagConstraints.WEST,
@@ -495,7 +491,6 @@ public class CSMARTConsole extends JFrame {
     // this frame
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
-	updateExperimentEditability();
 	exitMenuItem_actionPerformed(e);
       }
     });
@@ -503,23 +498,6 @@ public class CSMARTConsole extends JFrame {
     pack();
     setSize(700, 600);
     setVisible(true);
-  }
-
-  /**
-   * If experiment has trial results it's no longer editable.
-   */
-  private void updateExperimentEditability() {
-    if (isEditable) { // only need to update if was editable
-      Trial[] trials = experiment.getTrials();
-      for (int i = 0; i < trials.length; i++) {
-	TrialResult[] results = trials[i].getTrialResults();
-	if (results.length != 0) {
-	  isEditable = false;
-	  break;
-	}
-      }
-      experiment.setEditable(isEditable);
-    }
   }
 
   /**
@@ -1166,15 +1144,8 @@ public class CSMARTConsole extends JFrame {
       Properties properties = getNodeMinusD(nodeComponent);
       String[] args = getNodeArguments(nodeComponent);
 
-      if (!experiment.isInDatabase()) {
-        // Can't change the name of the Nodes when running
-        // from the database, cause it needs to load those names
-        uniqueNodeName = nodeName + currentTrial;
-        properties.setProperty("org.cougaar.node.name", uniqueNodeName);
-        properties.setProperty("org.cougaar.filename", uniqueNodeName + ".ini");
-      } else
-        properties.setProperty("org.cougaar.experiment.id", 
-                               experiment.getTrialID());
+      properties.setProperty("org.cougaar.experiment.id", 
+                             experiment.getTrialID());
 
       //Don't override if it's already set
       if (properties.getProperty("org.cougaar.core.persistence.clear") 
@@ -1595,7 +1566,8 @@ public class CSMARTConsole extends JFrame {
   private void exitMenuItem_actionPerformed(AWTEvent e) {
     stopExperiments();
     updateExperimentControls(experiment, false);
-    updateExperimentEditability();
+    //    updateExperimentEditability();
+    experiment.setRunInProgress(false);
 
     // If this was this frame's exit menu item, we have to remove
     // the window from the list
@@ -1868,7 +1840,7 @@ public class CSMARTConsole extends JFrame {
   }
 
   public static void main(String[] args) {
-    CSMARTConsole console = new CSMARTConsole(null);
+    CSMARTConsole console = new CSMARTConsole(null, null);
     // for debugging, create our own society
     SocietyComponent sc = (SocietyComponent)new org.cougaar.tools.csmart.society.scalability.ScalabilityXSociety();
     console.setSocietyComponent(sc);
