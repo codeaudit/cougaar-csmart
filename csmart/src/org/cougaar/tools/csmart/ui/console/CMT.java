@@ -525,7 +525,7 @@ public class CMT {
 	    }
 	}
     }
-
+  
     public static int getMultiplier(String trial_id, String group_name) {
 	String group_id = getGroupId(trial_id,group_name);
 	Map subs = new HashMap();
@@ -626,6 +626,14 @@ public class CMT {
 	if ( set.contains("CLASS-9")){threads[i]= "CLASS-9"; i++;}
 	return threads;
     }
+
+  public static String getAssemblyId(String experimentId) {
+    Map subs = new HashMap();
+    subs.put(":experiment_id", experimentId);
+    subs.put(":match_pattern", "%}");
+    return query1String("getAssemblyIDOnExpt", subs);
+  }
+
 
 
     /**
