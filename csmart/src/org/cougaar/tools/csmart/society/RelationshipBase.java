@@ -31,6 +31,9 @@ import org.cougaar.util.log.Logger;
 /**
  * RelationshipBase.java
  *
+ * A component Representing a relationship.
+ * In a prototype-dat.ini file, a relationship is:
+ * <role> <item> <type> <otherCluster> <start time> <stop time>
  *
  * Created: Fri Feb 22 12:32:59 2002
  *
@@ -49,8 +52,11 @@ public class RelationshipBase
   public static final String PROP_ROLE = "Role";
   public static final String PROP_ROLE_DESC = "Roles performed by this relationship";
 
-  public static final String PROP_ITEM = "Item";
-  public static final String PROP_ITEM_DESC = "Item";
+  public static final String PROP_ITEM = "Item Id";
+  public static final String PROP_ITEM_DESC = "Item Identification";
+
+  public static final String PROP_TYPEID = "Type Id";
+  public static final String PROP_TYPEID_DESC = "Type Identification";
 
   public static final String PROP_SUPPORTED = "Supported Agent";
   public static final String PROP_SUPPORTED_DESC = "Agent Supported by this relationship";
@@ -58,6 +64,7 @@ public class RelationshipBase
   private Property propType;
   private Property propRole;
   private Property propItem;
+  private Property propTypeId;
   private Property propSupported;
   private RelationshipData relationship;
 
@@ -75,16 +82,23 @@ public class RelationshipBase
   // which this doesn't build with -- should they be
   // added here as allowedValues?
   public void initProperties() {
+    if(log.isDebugEnabled()) {
+      log.debug("In RelationshipBase initProperties()");
+    }
+
     propType = addProperty(PROP_TYPE, relationship.getType());
     propType.setToolTip(PROP_TYPE_DESC);
-    HashSet allowedTypes = new HashSet();
-    allowedTypes.add(new StringRange("Supporting"));
-    allowedTypes.add(new StringRange("Subordinate"));
-    propType.setAllowedValues(allowedTypes);
+//     HashSet allowedTypes = new HashSet();
+//     allowedTypes.add(new StringRange("Supporting"));
+//     allowedTypes.add(new StringRange("Subordinate"));
+//     allowedTypes.add(new StringRange("StrategicTransportionProvider"));
+//     propType.setAllowedValues(allowedTypes);
     propRole = addProperty(PROP_ROLE, relationship.getRole());
     propRole.setToolTip(PROP_ROLE_DESC);
     propItem = addProperty(PROP_ITEM, relationship.getItem());
     propItem.setToolTip(PROP_ITEM_DESC);
+    propTypeId = addProperty(PROP_TYPEID, relationship.getTypeId());
+    propTypeId.setToolTip(PROP_TYPEID_DESC);
     propSupported = addProperty(PROP_SUPPORTED, relationship.getSupported());
     propSupported.setToolTip(PROP_SUPPORTED_DESC);
   }
