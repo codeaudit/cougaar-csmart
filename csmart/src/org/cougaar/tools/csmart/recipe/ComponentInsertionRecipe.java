@@ -34,7 +34,10 @@ import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
+
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
+
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 
 import org.cougaar.tools.csmart.society.AgentComponent;

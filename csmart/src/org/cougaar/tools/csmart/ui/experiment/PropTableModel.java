@@ -27,6 +27,7 @@ import java.lang.reflect.Array;
 
 import org.cougaar.tools.csmart.core.property.ComponentProperties;
 import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.PropertyHelper;
 import org.cougaar.tools.csmart.core.property.InvalidPropertyValueException;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 

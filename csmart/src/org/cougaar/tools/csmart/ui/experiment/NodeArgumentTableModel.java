@@ -26,6 +26,7 @@ import java.util.*;
 import java.lang.reflect.Array;
 
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
+import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 
 /**
  * Creates a table of Node Arguments;

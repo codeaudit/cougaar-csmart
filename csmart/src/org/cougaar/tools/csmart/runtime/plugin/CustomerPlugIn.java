@@ -18,7 +18,7 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.plugin;
+package org.cougaar.tools.csmart.runtime.plugin;
 
 import java.util.HashMap;
 import java.util.Vector;

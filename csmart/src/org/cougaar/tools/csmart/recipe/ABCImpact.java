@@ -18,7 +18,7 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.ui.experiment;
+package org.cougaar.tools.csmart.recipe;
 
 import java.io.Serializable;
 import java.net.URL;
@@ -29,14 +29,20 @@ import java.util.Collection;
 
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.core.property.ModificationListener;
+import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
+
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
+import org.cougaar.tools.csmart.core.cdata.LeafComponentData;
+import org.cougaar.tools.csmart.core.cdata.GenericLeafComponentData;
+
 import org.cougaar.tools.csmart.society.AgentComponent;
 
 /**

@@ -1,4 +1,4 @@
-core.property.name 
+/**
  * <copyright>
  *  Copyright 2001 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).

@@ -24,11 +24,11 @@ import junit.framework.*;
 import java.util.Iterator;
 import java.util.Collection;
 
-import org.cougaar.tools.csmart.core.data.ComponentData;
-import org.cougaar.tools.csmart.core.data.LeafComponentData;
-import org.cougaar.tools.csmart.core.data.AgentComponentData;
-import org.cougaar.tools.csmart.core.data.RelationshipData;
-import org.cougaar.tools.csmart.core.data.GenericComponentData;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.LeafComponentData;
+import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
+import org.cougaar.tools.csmart.core.cdata.RelationshipData;
+import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;

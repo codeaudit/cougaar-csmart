@@ -29,7 +29,7 @@ import java.util.Enumeration;
 
 import junit.framework.*;
 
-import org.cougaar.tools.csmart.ldm.plugin.customer.*;
+import org.cougaar.tools.csmart.runtime.ldm.plugin.customer.*;
 
 /**
  * Test the TaskFileParser in a fairly trivial way.<br>

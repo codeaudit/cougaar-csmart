@@ -22,6 +22,8 @@ package org.cougaar.tools.csmart.society.scalability;
 
 import org.cougaar.tools.server.ConfigurationWriter;
 
+import org.cougaar.tools.csmart.core.property.TestGUI;
+
 import javax.swing.JButton;
 import java.awt.event.*;
 import java.io.File;

@@ -29,16 +29,24 @@ import java.util.Collection;
 import java.util.StringTokenizer;
 import java.util.HashSet;
 
+import org.cougaar.tools.csmart.core.property.ComponentProperties;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.range.StringRange;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
+import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.PGPropData;
+
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 
 import org.cougaar.tools.csmart.society.AgentComponent;

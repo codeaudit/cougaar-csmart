@@ -26,7 +26,7 @@ import java.util.Vector;
 import java.util.StringTokenizer;
 import java.util.Enumeration;
 
-import org.cougaar.tools.csmart.ldm.plugin.customer.*;
+import org.cougaar.tools.csmart.runtime.ldm.plugin.customer.*;
 
 /**
  * A Simple Parser that parses New Task files.

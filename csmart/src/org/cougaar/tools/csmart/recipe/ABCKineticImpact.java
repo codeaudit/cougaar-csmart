@@ -18,7 +18,7 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.ui.experiment;
+package org.cougaar.tools.csmart.recipe;
 
 import java.io.Serializable;
 

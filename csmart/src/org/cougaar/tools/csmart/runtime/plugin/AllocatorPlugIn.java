@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.plugin;
+package org.cougaar.tools.csmart.runtime.plugin;
 
 import java.io.InputStream;
 import java.io.BufferedReader;

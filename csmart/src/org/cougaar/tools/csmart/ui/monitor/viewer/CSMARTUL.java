@@ -23,17 +23,18 @@ package org.cougaar.tools.csmart.ui.monitor.viewer;
 
 //import att.grappa.GrappaConstants;
 
-import org.cougaar.util.ConfigFinder;
-import org.cougaar.core.society.UID;
+import org.cougaar.tools.csmart.ui.Browser;
 
-import org.cougaar.tools.csmart.ui.component.CompositeName;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
+
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
-import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.ExperimentListener;
+
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames;
 import org.cougaar.tools.csmart.ui.monitor.community.ULCommunityFrame;
 import org.cougaar.tools.csmart.ui.monitor.community.ULCommunityNode;
@@ -46,13 +47,18 @@ import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTFrame;
 import org.cougaar.tools.csmart.ui.monitor.generic.CSMARTGraph;
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.monitor.generic.UIProperties;
+import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetrics;
+import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetricsFrame;
 import org.cougaar.tools.csmart.ui.psp.ThreadUtils;
+
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetrics;
-import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetricsFrame;
+
 import org.cougaar.util.PropertyTree;
+import org.cougaar.util.ConfigFinder;
+import org.cougaar.core.util.UID;
+import org.cougaar.core.node.Bootstrapper;
 
 import java.awt.event.*;
 import java.awt.Frame;
@@ -62,8 +68,6 @@ import java.io.File;
 import java.net.URL;
 import java.util.*;
 import javax.swing.*;
-import org.cougaar.tools.csmart.ui.Browser;
-import org.cougaar.core.society.Bootstrapper;
 
 /**
  * The user interface for the CSMART Society.

@@ -20,7 +20,8 @@
  */
 package org.cougaar.tools.csmart.society.abc;
 
-import org.cougaar.tools.csmart.ui.component.*;
+import org.cougaar.tools.csmart.core.property.TestGUI;
+
 import javax.swing.JButton;
 import java.awt.event.*;
 import java.io.File;

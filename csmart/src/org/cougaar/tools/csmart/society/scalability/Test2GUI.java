@@ -23,6 +23,8 @@ package org.cougaar.tools.csmart.society.scalability;
 import javax.swing.JButton;
 import java.awt.event.*;
 
+import org.cougaar.tools.csmart.core.property.TestGUI;
+
 public class Test2GUI extends TestGUI {
     ScalabilityXLevel level;
 

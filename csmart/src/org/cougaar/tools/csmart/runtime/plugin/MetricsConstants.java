@@ -18,7 +18,7 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.plugin;
+package org.cougaar.tools.csmart.runtime.plugin;
 
 import org.cougaar.planning.ldm.plan.Verb;
 import org.cougaar.planning.ldm.plan.Role;
