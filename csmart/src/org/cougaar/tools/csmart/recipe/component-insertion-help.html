@@ -39,8 +39,8 @@ A Component Insertion Recipe contains the following parameters:
   components to be modified, the components to be inserted and the
   arguments of the inserted components.
 </p>
-  <a name="TARGET_QUERY"><h3>Target Component Selection Query</h3></a>
 <p>
+  <a name="TARGET_QUERY"><h3>Target Component Selection Query</h3></a>
   This query lists the target components and should return
   COMPONENT_ALIB_ID values such as appear in the
   V4_ALIB_COMPONENT.COMPONENT_ALIB_ID column. It is not necessary for
@@ -51,8 +51,8 @@ A Component Insertion Recipe contains the following parameters:
   true if the assembly_id is in the set of assemblies of the current
   experiment trial.
 </p>
-<a name="INSERTION_QUERY"><h3>Inserted Component Specification Query</h3></a>
 <p>
+<a name="INSERTION_QUERY"><h3>Inserted Component Specification Query</h3></a>
   The second query is used to obtain descriptions of the components
   that are to be inserted. It is executed once for each target
   component. A row should be returned for each component to be
@@ -75,8 +75,8 @@ A Component Insertion Recipe contains the following parameters:
   the target is an agent the insertion point would be
   Node.AgentManager.Agent
 </p>
-<a name="INSERTION_ARGS_QUERY"><h3>Inserted Component Arguments</h3></a>
 <p>
+<a name="INSERTION_ARGS_QUERY"><h3>Inserted Component Arguments</h3></a>
   The third query is performed for each inserted component. Each row
   returned corresponds to a parameter of the component and consists of
   two parts: name and value. If both are non-null, the parameter is

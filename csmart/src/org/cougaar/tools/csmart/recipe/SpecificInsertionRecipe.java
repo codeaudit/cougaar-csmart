@@ -96,11 +96,19 @@ public class SpecificInsertionRecipe extends ModifiableConfigurableComponent
       });
     propArgs.setToolTip(PROP_ARGS_DESC);
 
-    propTargetComponentQuery = addProperty(PROP_TARGET_COMPONENT_QUERY, PROP_TARGET_COMPONENT_QUERY_DFLT);
+    propTargetComponentQuery =
+      addRecipeQueryProperty(PROP_TARGET_COMPONENT_QUERY,
+                             PROP_TARGET_COMPONENT_QUERY_DFLT);
     propTargetComponentQuery.setToolTip(PROP_TARGET_COMPONENT_QUERY_DESC);
 
   }
-  
+
+  private Property addRecipeQueryProperty(String name, String dflt) {
+    Property prop = addProperty(new RecipeQueryProperty(this, name, dflt));
+    prop.setPropertyClass(String.class);
+    return prop;
+  }
+
   private void updatePropCount(Integer newCount) {
     int count = newCount.intValue();
     variableProps = new Property[count];

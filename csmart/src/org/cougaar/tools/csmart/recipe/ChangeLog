@@ -1,5 +1,16 @@
 2001-11-12  Ray Tomlinson  <RTomlinson@bbn.com>
 
+	* SpecificInsertionRecipe.java:
+	Use RecipeQueryProperty for properties instead of vanilla
+	ConfigurableComponentProperty to get valid value checking based on
+	available queries.
+
+	* component-insertion-recipe-description.html:
+	Help documentation.
+
+	* component-insertion-help.html:
+	Help documentation.
+
 	* RecipeQueryProperty.java (Repository):
 	New class overrides getAllowedValues based on the available
 	querys.
