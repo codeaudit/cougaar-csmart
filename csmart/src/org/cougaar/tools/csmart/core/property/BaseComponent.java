@@ -25,6 +25,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
@@ -75,6 +76,14 @@ public interface BaseComponent extends ComposableComponent, Serializable {
    * their properties until this method is called;
    **/
   void initProperties();
+
+  /**
+   * Set a bunch of Properties at once. Used when creating a component
+   * from the database.
+   *
+   * @param props a <code>Map</code> of <code>String</code> property names and <code>Object</code> values
+   */
+  void setProperties(Map props);
   
   /**
    * Get a <code>URL</code> for a description of the component. May return <code>null</code>.

@@ -27,6 +27,7 @@ import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -40,17 +41,17 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import javax.swing.event.EventListenerList;
 import java.lang.reflect.Array;
-import java.util.Arrays;
+import java.lang.reflect.Constructor;
 
 import org.cougaar.util.FilteredIterator;
 import org.cougaar.util.UnaryPredicate;
+import org.cougaar.util.log.Logger;
 
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.name.SimpleName;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
@@ -59,7 +60,6 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
  *
  * This method can be overridden by specific components.
  */
-
 public abstract class ConfigurableComponent
   implements ComposableComponent, BaseComponent, ConfigurableComponentListener
 {
@@ -184,6 +184,51 @@ public abstract class ConfigurableComponent
   }
 
   public abstract void initProperties();
+
+  /**
+   * Set a bunch of Properties at once. Used when creating a component
+   * from the database. Default implementation just iterates through
+   * the map. Note that the properties <em>must</em> have been previously
+   * created in <code>initProperties()</code>
+   *
+   * @param props a <code>Map</code> of <code>String</code> property names and <code>Object</code> values
+   */
+  public void setProperties(Map props) {
+    for (Iterator i = props.keySet().iterator(); i.hasNext(); ) {
+      try {
+        String propName = (String) i.next();
+        String propValue = (String) props.get(propName);
+        Property prop = getProperty(propName);
+        if (prop == null) {
+          if(log.isErrorEnabled()) {
+            log.error("Unknown property: " + propName + "=" + propValue + " in component " + this.toString());
+          }
+	  if (log.isDebugEnabled()) {
+	    log.debug("Component " + getShortName() + " has properties: ");
+	    for (Iterator pnames = getPropertyNames(); pnames.hasNext(); ) {
+	      log.debug((String)pnames.next().toString());
+	    }
+	  }
+        } else {
+          Class propClass = prop.getPropertyClass();
+	  if (log.isDebugEnabled() && propClass == null) {
+	    log.debug("null prop class for Prop name: " + propName + ", value " + propValue + " property: " + prop.toString());
+	  }
+          Constructor constructor = 
+            propClass.getConstructor(new Class[] {String.class});
+          Object value = constructor.newInstance(new Object[] {propValue});
+          prop.setValue(value);
+	  if (log.isDebugEnabled()) {
+	    log.debug("Setting value for property " + prop.getName().toString() + " with label " + prop.getLabel());
+	  }
+        }
+      } catch (Exception e) {
+	if (log.isErrorEnabled()) {
+	  log.error("Exception setting component properties", e);
+	}
+      }
+    }
+  }
 
   /**
    * Get a <code>URL</code> for a description of the component. May return <code>null</code>.
@@ -593,8 +638,8 @@ public abstract class ConfigurableComponent
   /**
    * Adds a new Invisible Property to the component.
    *
-   * @param p <code>Property</code> to add.
-   * @return a <code>Property</code> value
+   * @param p <code/>Property</code> to add.
+   * @return a <code/>Property</code> value
    */
   public Property addInvisibleProperty(Property p) {
     return addProperty(p, false);
@@ -652,19 +697,19 @@ public abstract class ConfigurableComponent
 
 
   /**
-   * Gets an <code>Iterator</code> of all properties Local to this component.
+   * Gets an <code/>Iterator</code> of all properties Local to this component.
    *
-   * @return an <code>Iterator</code> of all local properties
+   * @return an <code/>Iterator</code> of all local properties
    */
   public Iterator getLocalPropertyNames() {
     return new FilteredIterator(getPropertyNames(), localPropertyNamePredicate);
   }
 
   /**
-   * Gets an <code>Iterator</code> of all properties Local to this component, sorted.
+   * Gets an <code/>Iterator</code> of all properties Local to this component, sorted.
    * 
    *
-   * @return an <code>Iterator</code> of all sorted local properties
+   * @return an <code/>Iterator</code> of all sorted local properties
    */
   public Iterator getSortedLocalPropertyNames() {
     ArrayList names = new ArrayList();
@@ -694,9 +739,9 @@ public abstract class ConfigurableComponent
   };
     
   /**
-   * Gets an <code>Iterator</code> of all Property Names in this component.
+   * Gets an <code/>Iterator</code> of all Property Names in this component.
    *
-   * @return an <code>Iterator</code> value
+   * @return an <code/>Iterator</code> value
    */
   public Iterator getPropertyNames() {
     for (Iterator i = getMyProperties().keySet().iterator(); i.hasNext(); ) {
@@ -759,7 +804,7 @@ public abstract class ConfigurableComponent
    * If a property is not visible, it cannot be seen in the GUI.
    *
    * @param prop Property to check visiblity
-   * @return a <code>boolean</code> value
+   * @return a <code/>boolean</code> value
    */
 
   public boolean isPropertyVisible(Property prop) {
@@ -768,9 +813,9 @@ public abstract class ConfigurableComponent
   }
 
   /**
-   * Gets a <code>List</code> of all Properties in this component.
+   * Gets a <code/>List</code> of all Properties in this component.
    *
-   * @return a <code>List</code> value
+   * @return a <code/>List</code> value
    */
   public List getPropertyNamesList() {
     List props = new ArrayList();
@@ -785,7 +830,7 @@ public abstract class ConfigurableComponent
    * Copies a BaseComponent Object
    *
    * @param result Object to copy
-   * @return a <code>BaseComponent</code> value
+   * @return a <code/>BaseComponent</code> value
    */
   public BaseComponent copy(BaseComponent result) {
     // Make sure we're copying apples into apples

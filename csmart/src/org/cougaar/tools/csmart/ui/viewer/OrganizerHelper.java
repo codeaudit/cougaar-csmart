@@ -567,7 +567,7 @@ public class OrganizerHelper {
       }
     } catch (SQLException se) {
       if(log.isErrorEnabled()) {
-        log.error("Caught SQL exception gettin DBRecipe " + query, se);
+        log.error("Caught SQL exception getting DBRecipe " + query, se);
       }
     }    
     return null;
@@ -575,32 +575,44 @@ public class OrganizerHelper {
 
   private void setRecipeComponentProperties(DbRecipe dbRecipe, 
                                             RecipeComponent rc) {
-    for (Iterator i = dbRecipe.props.keySet().iterator(); i.hasNext(); ) {
-      try {
-        String propName = (String) i.next();
-        String propValue = (String) dbRecipe.props.get(propName);
-        Property prop = rc.getProperty(propName);
-        if (prop == null) {
-          if(log.isErrorEnabled()) {
-            log.error("Unknown property: " + propName + "=" + propValue);
-          }
-        } else {
-          Class propClass = prop.getPropertyClass();
-	  if (log.isDebugEnabled() && propClass == null) {
-	    log.debug("null prop class for Prop name: " + propName + ", value " + propValue + " property: " + prop.toString());
-	  }
-          Constructor constructor = 
-            propClass.getConstructor(new Class[] {String.class});
-          Object value = constructor.newInstance(new Object[] {propValue});
-          prop.setValue(value);
-        }
-      } catch (Exception e) {
-	if (log.isErrorEnabled()) {
-	  log.error("Exception setting recipe component properties", e);
-	}
-      }
-    }
+    if (rc != null && dbRecipe != null && dbRecipe.props != null)
+      rc.setProperties(dbRecipe.props);
   }
+//     for (Iterator i = dbRecipe.props.keySet().iterator(); i.hasNext(); ) {
+//       try {
+//         String propName = (String) i.next();
+//         String propValue = (String) dbRecipe.props.get(propName);
+//         Property prop = rc.getProperty(propName);
+//         if (prop == null) {
+//           if(log.isErrorEnabled()) {
+//             log.error("Unknown property: " + propName + "=" + propValue + " in recipe " + dbRecipe.toString());
+//           }
+// 	  if (log.isDebugEnabled()) {
+// 	    log.debug("Recipe " + rc.getRecipeName() + " has properties: ");
+// 	    for (Iterator pnames = rc.getPropertyNames(); pnames.hasNext(); ) {
+// 	      log.debug((String)pnames.next().toString());
+// 	    }
+// 	  }
+//         } else {
+//           Class propClass = prop.getPropertyClass();
+// 	  if (log.isDebugEnabled() && propClass == null) {
+// 	    log.debug("null prop class for Prop name: " + propName + ", value " + propValue + " property: " + prop.toString());
+// 	  }
+//           Constructor constructor = 
+//             propClass.getConstructor(new Class[] {String.class});
+//           Object value = constructor.newInstance(new Object[] {propValue});
+//           prop.setValue(value);
+// 	  if (log.isDebugEnabled()) {
+// 	    log.debug("Setting value for property " + prop.getName().toString() + " with label " + prop.getLabel());
+// 	  }
+//         }
+//       } catch (Exception e) {
+// 	if (log.isErrorEnabled()) {
+// 	  log.error("Exception setting recipe component properties", e);
+// 	}
+//       }
+//     }
+//   }
 
   private static Class[] constructorArgTypes = {String.class};
 
