@@ -193,4 +193,11 @@ public class ExperimentDB {
 	CMT.updateCMTAssembly(experimentId);
     }
 
+//   public static String getAssemblyId(String experimentId) {
+//     return CMT.getAssemblyId(experimentId);
+//   }
+
+  public static void deleteCMTAssembly(String experimentId) {
+    CMT.reallyClearCMTasb(CMT.getAssemblyId(experimentId));
+  }
 }
