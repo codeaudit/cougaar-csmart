@@ -23,24 +23,61 @@ package  org.cougaar.tools.csmart.util;
 import java.io.*;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Properties;
 import java.util.Set;
 
 public class ReadOnlyProperties extends Properties implements Serializable {
     protected Set readOnlyKeys = null;
+    private PropertiesObservable observable;
+
+    public ReadOnlyProperties() {
+      super();
+      init();
+    }
 
     public ReadOnlyProperties(Set readOnlyKeys) {
         super();
         this.readOnlyKeys = readOnlyKeys;
+        init();
     }
 
     public ReadOnlyProperties(Set readOnlyKeys, Properties defaults) {
         super(defaults);
         this.readOnlyKeys = readOnlyKeys;
+        init();
     }
+
+  private void init() {
+    if (observable == null)
+      observable = new PropertiesObservable();
+  }
+
+  public void addObserver(Observer o) {
+    observable.addObserver(o);
+  }
+
+  public void deleteObserver(Observer o) {
+    observable.deleteObserver(o);
+  }
+
+  private void fireChange() {
+    if (observable == null)
+      observable = new PropertiesObservable();
+    observable.fireChange();
+  }
 
     public void setReadOnlyProperty(String key, String newValue) {
         super.put(key, newValue);
+        //        System.out.println("Setting read only property: " + key);
+        fireChange();
+    }
+
+    public Object setProperty(String key, String newValue) {
+      //        System.out.println("Setting property: " + key);
+        fireChange();
+        return super.setProperty(key, newValue);
     }
 
     public boolean isReadOnly(Object key) {
@@ -56,6 +93,9 @@ public class ReadOnlyProperties extends Properties implements Serializable {
 
     public Object put(Object key, Object val) {
         if (isReadOnly(key)) return null;
+        if (val.equals(super.get(key))) return val; // no change
+        //        System.out.println("Putting property: " + key);
+        fireChange();
         return super.put(key, val);
     }
 
@@ -66,10 +106,15 @@ public class ReadOnlyProperties extends Properties implements Serializable {
             if (isReadOnly(key)) continue;
             super.put(key, entry.getValue());
         }
+        //        System.out.println("Put all");
+        fireChange();
     }
 
     public Object remove(Object key) {
         if (isReadOnly(key)) return null;
+        if (!super.contains(key)) return null; // no change
+        //        System.out.println("Removing: " + key);
+        fireChange();
         return super.remove(key);
     }
 
@@ -79,5 +124,14 @@ public class ReadOnlyProperties extends Properties implements Serializable {
             if (isReadOnly(key)) continue;
             keys.remove();
         }
+        //        System.out.println("Clearing");
+        fireChange();
     }
+
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+  }
+
 }
