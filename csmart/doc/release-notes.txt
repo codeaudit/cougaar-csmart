@@ -52,7 +52,7 @@ Asset=true in component AGG-Agent
   Nodes by default (bug 1587).
 
 Release 9.4:
-This release constitues the last major Cougaar release for this
+This release constitutes the last major Cougaar release for this
 calendar year.  This release includes some database schema changes,
 and a new communities editing tool. It also includes numerous
 usability improvements, and incorporates all of the changes made after
