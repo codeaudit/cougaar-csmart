@@ -488,7 +488,12 @@ public class ExperimentINIWriter implements ConfigurationWriter {
             log.info("Writing out new INI file format");
           }
           if (assetData.isEntity()) {	  
-            writer.print(rel.getType() + "  ");
+	    // AMH: Must write not the Type but the role if
+	    // the type says Supporting
+	    if (rel.getType().equals("Supporting"))
+	      writer.print(quote(rel.getRole()) + "  ");
+	    else
+	      writer.print(rel.getType() + "  ");
             writer.print(quote(rel.getItemId()) + "  ");
             writer.print(quote(rel.getTypeId()) + "  ");
             writer.print(quote(rel.getSupported()) + "  ");
@@ -506,7 +511,7 @@ public class ExperimentINIWriter implements ConfigurationWriter {
             writer.print(quote(rel.getSupported()) + " ");
             writer.println(quote(rel.getRole()));
           } else if(assetData.isTPOrg()){
-            // To Do: Deals with Realtionship.ini file
+            // To Do: Deals with Relationship.ini file
 	    // FIXME!!!!!
           } else {
             throw new RuntimeException("Asset Data Type Must be set: Entity, Org or TPOrg");
