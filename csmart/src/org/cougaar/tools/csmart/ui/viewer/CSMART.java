@@ -34,6 +34,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import org.cougaar.core.society.Bootstrapper;
+import org.cougaar.util.Parameters;
+
+import org.cougaar.tools.csmart.societies.database.DBUtils;
 
 // tools created by this user interface
 
@@ -126,12 +129,18 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   static JTextField dbConfigField;
   static JTextField dbNameField;
   static JPasswordField dbPasswordField;
-  static String dbConfig = "jdbc:oracle:thin:@eiger.alpine.bbn.com:1521:alp";
-  static String dbName = "society_config";
-  static String dbPassword = "s0ciety_c0nfig";
+  static String dbConfig;
+  static String dbName;
+  static String dbPassword;
 
   public CSMART() {
     setTitle("CSMART");
+
+    // Setup the database parameters.
+    dbConfig = Parameters.findParameter(DBUtils.DATABASE);
+    dbName = Parameters.findParameter(DBUtils.USER);
+    dbPassword = Parameters.findParameter(DBUtils.PASSWORD);
+      
     //    CSMART.inDBMode(true);
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
