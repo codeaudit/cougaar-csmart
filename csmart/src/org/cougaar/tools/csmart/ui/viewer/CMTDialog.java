@@ -304,7 +304,13 @@ public class CMTDialog extends JDialog {
     }
 
     if (modified) {
-      ExperimentDB.updateCMTAssembly(experimentId);
+      String newCMTasb = ExperimentDB.updateCMTAssembly(experimentId);
+      if (forceRecomputeBox.isSelected()) {
+	System.out.println("new CMTasb is: "+newCMTasb);
+	ExperimentDB.deleteCMTAssembly(experimentId);
+	newCMTasb = ExperimentDB.updateCMTAssembly(experimentId);
+	System.out.println("new CMTasb is: "+newCMTasb);
+      }
       trialId = ExperimentDB.getTrialId(experimentId);
     }
   }
