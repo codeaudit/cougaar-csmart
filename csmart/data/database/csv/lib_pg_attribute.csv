@@ -5,7 +5,7 @@ PG_ATTRIBUTE_LIB_ID,PG_NAME,ATTRIBUTE_NAME,ATTRIBUTE_TYPE,AGGREGATE_TYPE,BLANK
 "TypeIdentificationPG|TypeIdentification","TypeIdentificationPG","TypeIdentification","String","SINGLE"
 "TypeIdentificationPG|AlternateTypeIdentification","TypeIdentificationPG","AlternateTypeIdentification","String","SINGLE"
 "TypeIdentificationPG|Nomenclature","TypeIdentificationPG","Nomenclature","String","SINGLE"
-"ClusterPG|ClusterIdentifier","ClusterPG","ClusterIdentifier","ClusterIdentifier","SINGLE"
+"ClusterPG|MessageAddress","ClusterPG","MessageAddress","MessageAddress","SINGLE"
 "OrganizationPG|Roles","OrganizationPG","Roles","Role","COLLECTION"
 "OrganizationPG|Service","OrganizationPG","Service","Service","SINGLE"
 "OrganizationPG|Agency","OrganizationPG","Agency","Agency","SINGLE"
