@@ -402,6 +402,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   // Dump out the ini files for the first trial to the local results directory
   private void dumpINIs() {
     experiment.dumpINIFiles();
+    modified = false;
   }
   
   private void saveHelper() {
