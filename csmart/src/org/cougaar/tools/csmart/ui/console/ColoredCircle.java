@@ -21,52 +21,76 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics2D;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
 import java.util.Collections;
 import java.util.Map;
 import javax.swing.Icon;
 
-/** Create a colored circle icon from the color specified.
+/** Create a Colored circle icon from the color specified.
  *  Used in legends.
  */
 
 public class ColoredCircle implements Icon {
-  Image img;
+  /** The width of the outline, if any **/
+  private static final int STROKE_WIDTH = 2;
+  /** The margin around the circle to prevent clipping **/
+  private static final int MARGIN = STROKE_WIDTH / 2;
+  /** An image to draw on top of the circle, if desired. **/
+  protected Image img;
+  /** The main color of the circle. **/
   Color color;
+  /** The size of the circle (width and height) **/
   int width;
+  /** Should the outline be drawn. Set by subclass **/
+  protected boolean selected = false;
+  /** Hints on how to render the circle. **/
   static final Map hints =
-  Collections.singletonMap(RenderingHints.KEY_ANTIALIASING, 
-			   RenderingHints.VALUE_ANTIALIAS_ON);
-  //  static final Stroke wideStroke = new BasicStroke(4);
+    Collections.singletonMap(RenderingHints.KEY_ANTIALIASING, 
+                             RenderingHints.VALUE_ANTIALIAS_ON);
+  /** A wide stroke to draw the outline if any. **/
+  static final Stroke wideStroke = new BasicStroke(STROKE_WIDTH);
 
   /**
-   * Create a colored circle icon.
+   * Create a Colored circle icon.
    * @param c the color
    * @param width the width
-   */
-
+   **/
   public ColoredCircle(Color c, int width, Image img) {
     this.color = c;
     this.width = width;
     this.img = img;
   }
 
+  /**
+   * Paint the icon into the given Component as the specified
+   * location.
+   **/
   public void paintIcon(Component c, Graphics g, int x, int y) {
-    Color oldColor = g.getColor();
-    RenderingHints oldHints = ((Graphics2D)g).getRenderingHints();
-    //    Stroke oldStroke = ((Graphics2D)g).getStroke();
-    g.setColor(color);
-    ((Graphics2D)g).addRenderingHints(hints);
-    //    ((Graphics2D)g).setStroke(wideStroke);
-    //    g.drawOval(x+2,y+2,width-4,width-4);
-    g.fillOval(x, y, width, width);
-    // offset is circle width - icon width (16) divided by 2 (to align centers)
+    Graphics2D g2d = (Graphics2D) g;
+    Color oldColor = g2d.getColor();
+    RenderingHints oldHints = g2d.getRenderingHints();
+    g2d.addRenderingHints(hints);
+    g2d.setColor(color);
+    g2d.fillOval(x + MARGIN, y + MARGIN, width - 2 * MARGIN, width - 2 * MARGIN);
+    if (selected) {
+      Stroke oldStroke = g2d.getStroke();
+      g2d.setStroke(wideStroke);
+      g2d.setColor(Color.darkGray);
+      g2d.drawOval(x + MARGIN, y + MARGIN, width - 2 * MARGIN, width - 2 * MARGIN);
+      g2d.setStroke(oldStroke);
+    }
     if (img != null)
-      ((Graphics2D)g).drawImage(img, new AffineTransform(1f,0f,0f,1f,x+2,y+2), null);
-    g.setColor(oldColor);
-    ((Graphics2D)g).setRenderingHints(oldHints);
-    //    ((Graphics2D)g).setStroke(oldStroke);
+      g2d.drawImage(img, new AffineTransform(1f, 0f, 0f, 1f, x+2, y+2), null);
+    g2d.setColor(oldColor);
+    g2d.setRenderingHints(oldHints);
   }
   
   public int getIconWidth() { return width; }
