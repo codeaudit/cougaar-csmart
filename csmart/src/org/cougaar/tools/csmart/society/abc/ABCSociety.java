@@ -29,13 +29,13 @@ import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
-import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.tools.server.ConfigurationWriter;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.society.SocietyBase;
 
 import java.io.FileFilter;
 import java.io.Serializable;
@@ -90,8 +90,8 @@ public class ABCSociety
 
   private HashMap  commPerLevel = new HashMap(25);
 
-  private List hosts = new ArrayList();
-  private List nodes = new ArrayList();
+//   private List hosts = new ArrayList();
+//   private List nodes = new ArrayList();
 
   /**
    * Creates a new <code>ABCSociety</code> instance.

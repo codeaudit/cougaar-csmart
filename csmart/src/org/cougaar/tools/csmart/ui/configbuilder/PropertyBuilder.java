@@ -28,7 +28,6 @@ import java.net.URL;
 import java.sql.SQLException;
 
 import org.cougaar.tools.csmart.ui.Browser;
-import org.cougaar.tools.csmart.society.abc.ABCSocietyComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.db.PDbBase;
