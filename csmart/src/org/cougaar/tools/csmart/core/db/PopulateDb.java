@@ -891,18 +891,30 @@ public class PopulateDb extends PDbBase {
     csaAssemblyId = assemblyId;
     substitutions.put(":assembly_id:", assemblyId);
     executeUpdate(dbp.getQuery("insertAssemblyId", substitutions));
-    if (cmtAsbID == null || cmtAsbID.equals("")) {
-      substitutions.put(":soc_desc:", societyName);
-    } else {
-      // cmtAssemblyId = cmtAsbID;
 
+    if (societyName == null) {
+      if (cmtAsbID != null && ! cmtAsbID.equals(""))
+	societyName = getAssemblyDesc(cmtAsbID);
+      else
+	societyName = "New Society";
+    }
+
+    substitutions.put(":soc_desc:", societyName);
+
+    if (cmtAsbID != null && ! cmtAsbID.equals("")) {
+      // Created from an old Assembly
+
+      // If the name we're using is not the same as that of the old Society
+      // we're OK. If it is, modify the name slightly
+      if (societyName.equals(getAssemblyDesc(cmtAsbID)))
+	substitutions.put(":soc_desc:", societyName + "-modified");
       // Putting the old AssemblyID in the society name is a bit ugly.
       //      substitutions.put(":soc_desc:", societyName + " based on " + cmtAsbID);
-      substitutions.put(":soc_desc:", societyName + "-modified");
 
       // Came from a CMT assembly. Copy the OPLAN stuff
       copyOPLANData(cmtAsbID, assemblyId);
     }
+
     executeUpdate(dbp.getQuery("updateAssemblyDesc", substitutions));
 
     return assemblyId;
