@@ -180,7 +180,6 @@ public class Organizer extends JScrollPane {
 
   protected AbstractAction buildExperimentAction =
     new AbstractAction(ActionUtil.BUILD_ACTION, 
-                       //                       new ImageIcon(getClass().getResource("EB16.gif"))) {
                        new ImageIcon(getClass().getResource("Experiment16t.gif"))) {
 	public void actionPerformed(ActionEvent e) {
 	  organizer.startExperimentBuilder();
@@ -234,6 +233,13 @@ public class Organizer extends JScrollPane {
     new AbstractAction(ActionUtil.CONFIGURE_ACTION, 
                        new ImageIcon(getClass().getResource("SB16.gif"))) {
 	public void actionPerformed(ActionEvent e) {
+          // if this was invoked from a popup menu
+          // then take down the menu as this could be a long operation
+//            Component c = ((Component)e.getSource()).getParent();
+//            if (c instanceof JPopupMenu) {
+//              System.out.println("Taking down popup menu");
+//              c.setVisible(false);
+//            }
 	  organizer.startBuilder();
 	}
       };
@@ -558,6 +564,18 @@ public class Organizer extends JScrollPane {
   protected String generateRecipeName(String name, 
                                       boolean allowExistingName) {
     return recipeNames.generateUniqueName(name, allowExistingName);
+  }
+
+  /**
+   * Generate an unique name with no user input.
+   */
+
+  protected String generateExperimentName(String name) {
+    return experimentNames.generateName(name);
+  }
+
+  protected String generateSocietyName(String name) {
+    return societyNames.generateName(name);
   }
 
   ///////////////////////////////////
@@ -964,7 +982,7 @@ public class Organizer extends JScrollPane {
   // are children of the experiment and also at the "top level"
   // these names are currently added twice and not deleted
   // when the experiment is deleted
-  private void addExperimentAndComponentsToWorkspace(Experiment experiment,
+  protected void addExperimentAndComponentsToWorkspace(Experiment experiment,
                                        DefaultMutableTreeNode node) {
     DefaultMutableTreeNode expNode = 
       addExperimentToWorkspace(experiment, node);

@@ -173,11 +173,16 @@ public class CSMART extends JFrame {
     "PA.gif"
   };
 
+  private CSMART csmart;
+
+  private Experiment experimentToEdit;
+
   /**
    * Constructor for top level class in CSMART.
    */
   public CSMART() {
     setTitle("CSMART");
+    csmart = this;
 
     createLog();
 
@@ -517,86 +522,94 @@ public class CSMART extends JFrame {
    * @param alwaysNew if true create a new configuration builder, otherwise re-use existing one
    */
   protected void runBuilder(ModifiableComponent cc, 
-                         boolean alwaysNew) {
+                            boolean alwaysNew) {
     // note that cc is guaranteed non-null when this is called
+    if (cc instanceof Experiment) {
+      runBuilderOnExperiment((Experiment)cc);
+      return;
+    }
+
     ModifiableComponent originalComponent = null;
     Experiment experiment = null;
-    if (cc instanceof Experiment) {
-      experiment = (Experiment)cc;
-      // copy the original experiment and put the copy in the workspace
-      Experiment experimentCopy = organizer.copyExperiment(experiment, false);
-      if (experimentCopy == null)
-        return;
-      // remove all the components from the copy
-      SocietyComponent sc = experimentCopy.getSocietyComponent();
-      if (sc != null)
-        experimentCopy.removeComponent(sc);
-      RecipeComponent[] recipes = experimentCopy.getRecipeComponents();
-      for (int i = 0; i < recipes.length; i++)
-        experimentCopy.removeRecipeComponent(recipes[i]);
-      // remove components from the workspace
-      organizer.removeChildren(experimentCopy);
-      // create a new society based on the society component data
-      // in the original experiment
-      ComponentData cdata = experiment.getSocietyComponentData();
-      cdata.setName(cdata.getName() + " Society");
-      cc = new SocietyCDataComponent(cdata,
-         ((SocietyComponent)experiment.getSocietyComponent()).getAssemblyId());
-      cc.initProperties();
-      // get an unique name for the society and if the
-      // user cancels out, then cancel this operation
-      String name = ((SocietyComponent)cc).getSocietyName();
-      String newName = 
-        organizer.getUniqueSocietyName(name, true);
-      if (newName == null)
-        return;
-      else if (!newName.equals(name))
-        cc.setName(newName);
-      // Save this new society:
-      ((SocietyComponent)cc).saveToDatabase();
-      // put the new society in the copy of the experiment
-      experimentCopy.addSocietyComponent((SocietyComponent)cc);
-      // also put the new society in the workspace
-      organizer.addSociety((SocietyComponent)cc);
-      // and add the society to the workspace as a child of the experiment
-      organizer.addChildren(experimentCopy);
-      // edit the society within the newly created experiment
-      experiment = experimentCopy;
-    } else {
-      // if configuring a component in an experiment, get the experiment
-      DefaultMutableTreeNode selectedNode = organizer.getSelectedNode();
-      if (selectedNode.getUserObject() != null &&
-          selectedNode.getUserObject().equals(cc)) {
-        DefaultMutableTreeNode parentNode = 
-          (DefaultMutableTreeNode)selectedNode.getParent();
-        if (parentNode.getUserObject() != null &&
-            parentNode.getUserObject() instanceof Experiment) {
-          experiment = (Experiment)parentNode.getUserObject();
-          // copy the component, so it's modified only in the experiment
-          if (cc instanceof SocietyComponent) {
-            SocietyComponent society = (SocietyComponent)cc;
-            String newName =
-              organizer.generateSocietyName(society.getSocietyName(), 
-                                            false);
-            SocietyComponent societyCopy = (SocietyComponent)society.copy(newName);
-            originalComponent = cc;
-            cc = societyCopy;
-          } else if (cc instanceof RecipeComponent) {
-            RecipeComponent recipe = (RecipeComponent)cc;
-            String newName =
-              organizer.generateRecipeName(recipe.getRecipeName(), false);
-            if (newName == null)
-              return;
-            RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
-            originalComponent = cc;
-            cc = recipeCopy;
-          }
+    // if configuring a component in an experiment, get the experiment
+    DefaultMutableTreeNode selectedNode = organizer.getSelectedNode();
+    if (selectedNode.getUserObject() != null &&
+        selectedNode.getUserObject().equals(cc)) {
+      DefaultMutableTreeNode parentNode = 
+        (DefaultMutableTreeNode)selectedNode.getParent();
+      if (parentNode.getUserObject() != null &&
+          parentNode.getUserObject() instanceof Experiment) {
+        experiment = (Experiment)parentNode.getUserObject();
+        // copy the component, so it's modified only in the experiment
+        if (cc instanceof SocietyComponent) {
+          SocietyComponent society = (SocietyComponent)cc;
+          String newName =
+            organizer.generateSocietyName(society.getSocietyName(), false);
+          if (newName == null)
+            return;
+          SocietyComponent societyCopy = 
+            (SocietyComponent)society.copy(newName);
+          originalComponent = cc;
+          cc = societyCopy;
+        } else if (cc instanceof RecipeComponent) {
+          RecipeComponent recipe = (RecipeComponent)cc;
+          String newName =
+            organizer.generateRecipeName(recipe.getRecipeName(), false);
+          if (newName == null)
+            return;
+          RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
+          originalComponent = cc;
+          cc = recipeCopy;
         }
       }
     }
     JFrame tool = 
       (JFrame)new PropertyBuilder(this, cc, originalComponent, experiment);
     addTool(CONFIGURATION_BUILDER, cc.getShortName(), tool);
+  }
+
+  private void runBuilderOnExperiment(Experiment experiment) {
+    Thread configureThread = null;
+    experimentToEdit = null;
+    configureThread = 
+      new ConfigureThread("ConfigureExperiment", experiment);
+    GUIUtils.timeConsumingTaskStart(csmart);
+    try {
+      configureThread.start();
+    } catch (RuntimeException re) {
+      if (log.isErrorEnabled()) {
+        log.error("Runtime exception creating experiment", re);
+      }
+    }
+    // wait for the above to finish, and then edit the new society
+    if (configureThread != null) {
+      try {
+        configureThread.join();
+      } catch (InterruptedException ie) {
+        if (log.isErrorEnabled()) {
+          log.error("Interrupted exception creating experiment", ie);
+        }
+      }
+      if (experimentToEdit == null)
+        return;
+      organizer.addExperimentAndComponentsToWorkspace(experimentToEdit,
+             (DefaultMutableTreeNode)organizer.getSelectedNode().getParent());
+      SocietyComponent originalSociety = 
+        experimentToEdit.getSocietyComponent();
+      String copyName = 
+        organizer.generateSocietyName(originalSociety.getSocietyName(), false);
+      if (copyName == null) {
+        GUIUtils.timeConsumingTaskEnd(csmart);
+        return;
+      }
+      SocietyComponent societyCopy = 
+        (SocietyComponent)originalSociety.copy(copyName);
+      JFrame tool = 
+        (JFrame)new PropertyBuilder(csmart, societyCopy, originalSociety,
+                                    experimentToEdit);
+      addTool(CONFIGURATION_BUILDER, societyCopy.getShortName(), tool);
+      GUIUtils.timeConsumingTaskEnd(csmart);
+    }
   }
 
   /**
@@ -937,6 +950,46 @@ public class CSMART extends JFrame {
   {
     ois.defaultReadObject();
     createLog();
+  }
+
+  // Configure an experiment by combining its societies and recipes
+  // into a single society.
+  class ConfigureThread extends Thread {
+    Experiment experiment;
+
+    ConfigureThread(String name, Experiment experiment) {
+      this.experiment = experiment;
+    }
+
+    public void run() {
+      // copy the original experiment and put the copy in the workspace
+      String newName = 
+        organizer.generateExperimentName(experiment.getExperimentName());
+      experimentToEdit = (Experiment)experiment.copy(newName);
+      if (experimentToEdit == null) {
+        return;
+      }
+      // remove all the components from the copy
+      SocietyComponent sc = experimentToEdit.getSocietyComponent();
+      if (sc != null)
+        experimentToEdit.removeComponent(sc);
+      RecipeComponent[] recipes = experimentToEdit.getRecipeComponents();
+      for (int i = 0; i < recipes.length; i++)
+        experimentToEdit.removeRecipeComponent(recipes[i]);
+      // create a new society based on the society component data
+      // in the original experiment
+      ComponentData cdata = experiment.getSocietyComponentData();
+      newName = organizer.generateSocietyName(cdata.getName());
+      cdata.setName(newName);
+      SocietyComponent newSociety = 
+        new SocietyCDataComponent(cdata,
+         ((SocietyComponent)experiment.getSocietyComponent()).getAssemblyId());
+      newSociety.initProperties();
+      // Save this new society
+      newSociety.saveToDatabase();
+      // put the new society in the copy of the experiment
+      experimentToEdit.addSocietyComponent(newSociety);
+    }
   }
 
 }
