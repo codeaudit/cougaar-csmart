@@ -78,7 +78,7 @@ import org.cougaar.tools.scalability.performance.jni.CpuClock;
  * included with the scalability module.  See the Scalability module's install
  * instructions for installing the CpuClock library. If you do not install
  * this library, you will see a warning exception, which can be ignored.<br>
- * <br>
+ * <br>x1
  * Memory used by Node in Megabytes<br>
  * Total memory allocated to the Node in megabytes<br>
  * <br>
@@ -794,7 +794,7 @@ public class MetricsPlugin
         
     public MessageWatcher() {
       //            me = getAgentIdentifier();
-      me = getBindingSite().getAgentIdentifier();
+      me = MetricsPlugin.this.getBindingSite().getAgentIdentifier();
     }
         
     public void messageSent(Message m) {

@@ -405,7 +405,7 @@ public class MetricsInitializerPlugin
     public synchronized void expire() {
       if (!expired) {
         expired = true;
-        blackboard.signalClientActivity();
+        MetricsInitializerPlugin.this.blackboard.signalClientActivity();
       }
     }
     public boolean hasExpired() { return expired; }
