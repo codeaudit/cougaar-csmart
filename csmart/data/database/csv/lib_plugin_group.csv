@@ -23,7 +23,7 @@ SubsistenceDemand,100,\N
 InventoryManagement,105,\N
 SubsistenceInventoryManagement,110,\N
 InventoryPolicy,115,\N
-FeedingPolicy,120,\N
+PolicyManager,120,\N
 Sourcing,125,\N
 BlackJack-Sourcing,130,\N
 DLAHQ,135,\N

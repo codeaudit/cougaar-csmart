@@ -39,6 +39,7 @@ ORGTYPE_ID,DESCRIPTION,BLANK
 "INFBN","Infantry Battalion"
 "MSB","Main Support Battalion"
 "ARBN","Armored BN"
+"ARMY-HQ","Army Headquarters"
 "AVN-RGT","Aviation Regiment"
 "AVNBDE","Aviation Brigade"
 "AVNBN","Aviation Battalion"
