@@ -65,6 +65,8 @@ import org.cougaar.util.Parameters;
 import org.cougaar.util.log.Logger;
 
 public class CSMARTConsole extends JFrame {
+  private static final String DEFAULT_BOOTSTRAP_CLASS = "org.cougaar.bootstrap.BootStrapper";
+  private static final String DEFAULT_NODE_CLASS = "org.cougaar.core.node.Node";
   public static final String COMMAND_ARGUMENTS = "Command$Arguments";
   private static final String[] emptyStringArray = {};
   // number of characters displayed in the node output window
@@ -1185,18 +1187,24 @@ public class CSMARTConsole extends JFrame {
   public Properties getNodeMinusD(NodeComponent nc) {
     Properties result = new Properties();
     Properties props = nc.getArguments();
+    boolean foundclass = false;
     for (Enumeration e = props.propertyNames(); e.hasMoreElements(); ) {
       String pname = (String) e.nextElement();
       if (pname.equals(COMMAND_ARGUMENTS)) continue;
+      if (pname.equals(Experiment.BOOTSTRAP_CLASS)) foundclass = true;
       result.put(pname, props.getProperty(pname));
+      
     }
     // make sure that the classname is "Node"
     //
     // this can be removed once the CMT and all "node.props"
     // are sure to have this property.
-    result.put(
-        "java.class.name", 
-        "org.cougaar.core.node.Node");
+
+    // FIXME! We must allow users to specify the bootstrapper class!!
+    if (foundclass = false) 
+      result.put(
+		 Experiment.BOOTSTRAP_CLASS, 
+		 DEFAULT_BOOTSTRAP_CLASS);
     return result;
   }
 
@@ -1205,6 +1213,8 @@ public class CSMARTConsole extends JFrame {
     String commandArguments =
       props.getProperty(COMMAND_ARGUMENTS);
     if (commandArguments == null) {
+      // Warning: If you are running the bootstrapper and supply
+      // nothing here, nothing will run!
       return Collections.EMPTY_LIST;
     }
     StringTokenizer tokens = 
@@ -1223,8 +1233,6 @@ public class CSMARTConsole extends JFrame {
    * so that it can update it.
    * Returns true if successful and false otherwise.
    */
-
-
   private void prepareToCreateNodes() {
     // first need to set configuration file name property in ALL nodes
     // as these are all used by each experiment configuration writer
@@ -1250,7 +1258,7 @@ public class CSMARTConsole extends JFrame {
       // if not connected to database
       // and properties.setProperty generates a null pointer exception
       // when passed a null value
-      properties.setProperty("org.cougaar.experiment.id", 
+      properties.setProperty(Experiment.EXPERIMENT_ID, 
                              experiment.getTrialID());
 
       //Don't override if it's already set
