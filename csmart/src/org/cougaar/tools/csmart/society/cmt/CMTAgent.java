@@ -33,8 +33,18 @@ import java.sql.Timestamp;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.DBConnectionPool;
 
-import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.core.db.DBUtils;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
+import org.cougaar.tools.csmart.core.property.Property;
+
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
+import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
+import org.cougaar.tools.csmart.core.cdata.RelationshipData;
+import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
+
+import org.cougaar.tools.csmart.society.AgentComponent;
 
 public class CMTAgent 
   extends ConfigurableComponent 
