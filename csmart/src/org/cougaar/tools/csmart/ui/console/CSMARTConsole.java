@@ -107,6 +107,7 @@ public class CSMARTConsole extends JFrame {
   private static final String ABOUT_CSMART_ITEM = "About CSMART";
   private static final String ABOUT_DOC = "../help/about-csmart.html";
   private static final String HELP_MENU_ITEM = "Help";
+  private static final String LEGEND_MENU_ITEM = "Legend";
 
   // for pop-up menu on node status buttons
   private static final String ABOUT_MENU = "About";
@@ -150,6 +151,8 @@ public class CSMARTConsole extends JFrame {
   String dbConfig = "jdbc:oracle:thin:@eiger.alpine.bbn.com:1521:alp";
   String dbName = "society_config";
   String dbPassword = "s0ciety_c0nfig";
+
+  Legend legend; // the node status lamp legend
 
   /**
    * Create and show console GUI.
@@ -214,7 +217,15 @@ public class CSMARTConsole extends JFrame {
 	}
       });
     helpMenu.add(aboutMenuItem);
-
+    legend = new Legend();
+    JMenuItem legendMenuItem = new JMenuItem(LEGEND_MENU_ITEM);
+    legendMenuItem.addActionListener(new ActionListener() {
+	public void actionPerformed(ActionEvent e) {
+          legend.setVisible(true);
+	}
+      });
+    helpMenu.add(legendMenuItem);
+    
     JMenu notifyMenu = new JMenu(NOTIFY_MENU);
     JMenuItem notifyMenuItem = new JMenuItem(NOTIFY_MENU_ITEM);
     notifyMenuItem.addActionListener(new ActionListener() {
@@ -523,10 +534,12 @@ public class CSMARTConsole extends JFrame {
   /**
    * Create a button representing a node.
    */
-  private JRadioButton createStatusButton(String nodeName, String hostName) {
+  private NodeStatusButton createStatusButton(String nodeName, String hostName) {
     // use unknown color
-    JRadioButton button = 
-      new JRadioButton(new ColoredCircle(unknownStatus, 20));
+    //    JRadioButton button = 
+    //      new JRadioButton(new ColoredCircle(unknownStatus, 20));
+    NodeStatusButton button =
+      new NodeStatusButton(new ColoredCircle(unknownStatus, 20));
     button.setSelectedIcon(new SelectedColoredCircle(unknownStatus, 20));
     button.setToolTipText(nodeName + ":" + hostName + ":unknown");
     button.setActionCommand(nodeName);
@@ -579,10 +592,16 @@ public class CSMARTConsole extends JFrame {
   private void resetNodeStatus() {
     ConsoleNodeListener listener = 
       (ConsoleNodeListener)nodeListeners.get(selectedNodeName);
-    listener.clearError();
+    //    listener.clearError();
     ConsoleTextPane consoleTextPane =
       (ConsoleTextPane)nodePanes.get(selectedNodeName);
     consoleTextPane.clearNotify();
+    Enumeration buttons = statusButtons.getElements();
+    while (buttons.hasMoreElements()) {
+      NodeStatusButton button = (NodeStatusButton)buttons.nextElement();
+      if (button.getActionCommand().equals(selectedNodeName)) 
+        button.clearError();
+    }
   }
 
   /**
@@ -1068,12 +1087,12 @@ public class CSMARTConsole extends JFrame {
       uniqueNodeName = nodeName + currentTrial;
     }
     
-    ConsoleStyledDocument doc = new ConsoleStyledDocument();
-    ConsoleTextPane stdoutPane = new ConsoleTextPane(doc);
-    JScrollPane scrollPane = new JScrollPane(stdoutPane);
-
     // create a status button
-    JRadioButton statusButton = createStatusButton(nodeName, hostName);
+    NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
+
+    ConsoleStyledDocument doc = new ConsoleStyledDocument();
+    ConsoleTextPane stdoutPane = new ConsoleTextPane(doc, statusButton);
+    JScrollPane scrollPane = new JScrollPane(stdoutPane);
 
     // create a node event listener to get events from the node
     NodeEventListener listener = null;
@@ -1083,7 +1102,7 @@ public class CSMARTConsole extends JFrame {
 					 nodeComponent,
                                          logFileName,
 					 statusButton,
-                                         stdoutPane);
+                                         doc);
     } catch (Exception e) {
       System.err.println("Unable to create output for: " + nodeName);
       e.printStackTrace();
@@ -1098,6 +1117,7 @@ public class CSMARTConsole extends JFrame {
 
     // note that these properties augment any properties that
     // are passed to the server in a properties file on startup
+    // TODO: DBMode should be dependent on society selected
     Properties properties = new Properties();
     properties.put("org.cougaar.node.name", uniqueNodeName);
     String nameServerPorts = "8888:5555";
@@ -1106,45 +1126,33 @@ public class CSMARTConsole extends JFrame {
     properties.put("org.cougaar.name.server", 
 		   nameServerHostName + ":" + nameServerPorts);
     int port = 8484;
-    if (!CSMART.inDBMode()) 
+    properties.put("org.cougaar.control.port", Integer.toString(port));
+    if (!CSMART.inDBMode()) {
       properties.put("org.cougaar.filename", uniqueNodeName + ".ini");
-    else {
+    } else {
       properties.put("org.cougaar.configuration.database", dbConfig);
       properties.put("org.cougaar.configuration.user", dbName);
       properties.put("org.cougaar.configuration.password", dbPassword);
       properties.put("org.cougaar.experiment.id", 
-                     experiment.getExperimentID());
+                     "\"SMALL-135-TRANS|TRIAL-A\"");
+                     //                     experiment.getExperimentID());
     }
-    properties.put("org.cougaar.control.port", Integer.toString(port));
     // set configuration file names in nodesToRun
     for (int i = 0; i < nodesToRun.length; i++) 
       ((ConfigurableComponent)nodesToRun[i]).addProperty("ConfigurationFileName", 
 				nodesToRun[i].getShortName() + currentTrial);
 
-    // FIXME:
-    // Doesn't this write the config files in the local, client-side directory!!!
-    // It shouldn't be doing this!!!
-    
-    // write the configuration files
-    // Note that this configWriter, if in DB Mode, does very little
-    ConfigurationWriter configWriter = 
-      experiment.getConfigurationWriter(nodesToRun);
-    try {
-      configWriter.writeConfigFiles(new File("."));
-    } catch (Exception e) {
-      JOptionPane.showMessageDialog(this,
-				    "Cannot write configuration on: " + 
-				    hostName +
-				    "; check that server is running");
-      e.printStackTrace();
-      return false;
-    }
+    ConfigurationWriter configWriter = null;
+    if (!CSMART.inDBMode()) 
+      configWriter = experiment.getConfigurationWriter(nodesToRun);
 
     // create the node
     try {
       HostServesClient hsc = communitySupport.getHost(hostName, port);
+      System.out.println("Host: " + hostName + " port: " + port + " name: " +
+                         uniqueNodeName);
       NodeServesClient nsc = hsc.createNode(uniqueNodeName, properties, null,
-      					    listener, filter, configWriter);
+                                            listener, filter, configWriter);
       if (nsc != null)
 	runningNodes.put(nodeComponent, nsc);
     } catch (Exception e) {

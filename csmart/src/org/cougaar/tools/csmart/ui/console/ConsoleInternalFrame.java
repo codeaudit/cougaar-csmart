@@ -31,6 +31,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
 
 import com.klg.jclass.chart.JCChart;
 
@@ -57,9 +58,11 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private static final String STATUS_MENU = "Status";
   private static final String HISTORY_ACTION = "Utilization History";
   private static final String DISPLAY_MENU = "Display";
-  private static final String DISPLAY_ACTION = "Set Screen Buffer Size...";
-  private static final String DISPLAY_ALL_ACTION = "Display All";
+  //  private static final String DISPLAY_ACTION = "Set Screen Buffer Size...";
+  //  private static final String DISPLAY_ALL_ACTION = "Display All";
+  private static final String DISPLAY_LOG_ACTION = "Display Log";
   private static final String SELECT_ALL_ACTION = "Select All";
+  private static final String FILTER_ACTION = "Filter...";
   private static final String NOTIFY_MENU = "Notify";
   private static final String NOTIFY_ACTION = "Notify When...";
   private static final String NOTIFY_NEXT_ACTION = "Notify Next";
@@ -77,6 +80,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private String notifyCondition;
   private JRadioButton statusButton;
   private String logFileName;
+  private ConsoleNodeOutputFilter filter;
 
   public ConsoleInternalFrame(NodeComponent node, 
                               ConsoleNodeListener listener,
@@ -93,6 +97,8 @@ public class ConsoleInternalFrame extends JInternalFrame {
     this.statusButton = statusButton;
     this.logFileName = logFileName;
     consoleTextPane = (ConsoleTextPane)pane.getViewport().getView();
+    filter = new ConsoleNodeOutputFilter();
+    listener.setFilter(filter);
     // get host component by getting the experiment and 
     // searching its hosts for one with this node.
     Experiment experiment = 
@@ -155,24 +161,36 @@ public class ConsoleInternalFrame extends JInternalFrame {
     traceAction.setEnabled(false);
     controlMenu.add(traceAction);
     JMenu displayMenu = new JMenu(DISPLAY_MENU);
-    Action displayAction = new AbstractAction(DISPLAY_ACTION) {
+    //    Action displayAction = new AbstractAction(DISPLAY_ACTION) {
+    //      public void actionPerformed(ActionEvent e) {
+    //        display_actionPerformed();
+    //      }
+    //    };
+    //    displayMenu.add(displayAction);
+    //    Action displayAllAction = new AbstractAction(DISPLAY_ALL_ACTION) {
+    //      public void actionPerformed(ActionEvent e) {
+    //        displayAll_actionPerformed();
+    //      }
+    //    };
+    //    displayMenu.add(displayAllAction);
+    Action displayLogAction = new AbstractAction(DISPLAY_LOG_ACTION) {
       public void actionPerformed(ActionEvent e) {
-        display_actionPerformed();
+        displayLog_actionPerformed();
       }
     };
-    displayMenu.add(displayAction);
-    Action displayAllAction = new AbstractAction(DISPLAY_ALL_ACTION) {
-      public void actionPerformed(ActionEvent e) {
-        displayAll_actionPerformed();
-      }
-    };
-    displayMenu.add(displayAllAction);
+    displayMenu.add(displayLogAction);
     Action selectAllAction = new AbstractAction(SELECT_ALL_ACTION) {
       public void actionPerformed(ActionEvent e) {
         selectAll_actionPerformed();
       }
     };
     displayMenu.add(selectAllAction);
+    Action filterAction = new AbstractAction(FILTER_ACTION) {
+      public void actionPerformed(ActionEvent e) {
+        filter_actionPerformed();
+      }
+    };
+    displayMenu.add(filterAction);
     JMenu searchMenu = new JMenu(SEARCH_MENU);
     searchAction = new AbstractAction(SEARCH_ACTION) {
       public void actionPerformed(ActionEvent e) {
@@ -449,44 +467,62 @@ public class ConsoleInternalFrame extends JInternalFrame {
    * Change number of characters displayed in the node's output pane.
    */
 
-  public void display_actionPerformed() {
-    ConsoleStyledDocument doc = 
-      (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
-    int n = doc.getBufferSize();
-    String tmp = "";
-    if (n != -1)
-      tmp = String.valueOf(n);
-    String s = 
-      (String)JOptionPane.showInputDialog(this,
-                                          "Enter Screen Buffer Size",
-                                          "Screen Buffer Size",
-                                          JOptionPane.QUESTION_MESSAGE,
-                                          null, null, tmp);
-    try {
-      n = Integer.parseInt(s);
-    } catch (NumberFormatException nfe) {
-      System.out.println("Not a valid number: " + s);
-      return;
-    }
-    doc.setBufferSize(n);
-  }
+//    public void display_actionPerformed() {
+//      ConsoleStyledDocument doc = 
+//        (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
+//      int n = doc.getBufferSize();
+//      String tmp = "";
+//      if (n != -1)
+//        tmp = String.valueOf(n);
+//      String s = 
+//        (String)JOptionPane.showInputDialog(this,
+//                                            "Enter Screen Buffer Size",
+//                                            "Screen Buffer Size",
+//                                            JOptionPane.QUESTION_MESSAGE,
+//                                            null, null, tmp);
+//      try {
+//        n = Integer.parseInt(s);
+//      } catch (NumberFormatException nfe) {
+//        System.out.println("Not a valid number: " + s);
+//        return;
+//      }
+//      doc.setBufferSize(n);
+//    }
 
-  /**
-   * Display entire log in node's output pane.
-   */
+//    /**
+//     * Display entire log in node's output pane.
+//     */
 
-  public void displayAll_actionPerformed() {
-    ConsoleStyledDocument doc = 
-      (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
-    doc.setBufferSize(-1);
-  }
+//    public void displayAll_actionPerformed() {
+//      ConsoleStyledDocument doc = 
+//        (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
+//      doc.setBufferSize(-1);
+//    }
 
   /**
    * Select everything in the node's output pane.
+   * TODO: this only works if the user has explicitly set the caret(?) using left mouse click
    */
 
   public void selectAll_actionPerformed() {
-    consoleTextPane.selectAll();
+    System.out.println("Selecting all...");
+    consoleTextPane.setCaretPosition(0);
+    consoleTextPane.moveCaretPosition(consoleTextPane.getDocument().getLength());
+    System.out.println("Done Selecting all...");
+  }
+
+  public void filter_actionPerformed() {
+    ConsoleStyledDocument doc = 
+      (ConsoleStyledDocument)consoleTextPane.getStyledDocument();
+    filter.setBufferSize(doc.getBufferSize());
+    filter.setVisible(true);
+    int n = filter.getBufferSize();
+    if (n != 0)
+      doc.setBufferSize(n);
+  }
+
+  private void displayLog_actionPerformed() {
+    listener.fillFromLogFile();
   }
 
   /**

@@ -24,7 +24,6 @@ package org.cougaar.tools.csmart.ui.console;
 import java.awt.Color;
 import java.io.*;
 import java.util.Hashtable;
-import javax.swing.JRadioButton;
 import javax.swing.SwingUtilities;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
@@ -46,22 +45,24 @@ public class ConsoleNodeListener implements NodeEventListener {
   private CSMARTConsole console;
   private NodeComponent nodeComponent;
   private String nodeName;
+  private String logFileName;
   private Writer logFile;
   private SimpleAttributeSet[] atts;
   private StripChartFrame chartFrame;
   private JCChart chart;
   private StripChartSource idleTimeDataModel;
-  private JRadioButton statusButton;
+  private NodeStatusButton statusButton;
   private long firsttime = 0l;
   private String notifyCondition = null;
   private boolean haveError = false;
-  private ConsoleTextPane textPane;
+  private ConsoleStyledDocument doc;
+  private ConsoleNodeOutputFilter filter = null;
 
   public ConsoleNodeListener(CSMARTConsole console,
 			     NodeComponent nodeComponent,
 			     String logFileName, 
-			     JRadioButton statusButton,
-                             ConsoleTextPane textPane) throws IOException {
+			     NodeStatusButton statusButton,
+                             ConsoleStyledDocument doc) throws IOException {
 
     this.console = console;
     this.nodeComponent = nodeComponent;
@@ -71,10 +72,11 @@ public class ConsoleNodeListener implements NodeEventListener {
     this.statusButton = statusButton;
 			       
     // wrap and capture to a log
+    this.logFileName = logFileName;
     this.logFile = new BufferedWriter(new FileWriter(logFileName));
 
-    // save the GUI text pane
-    this.textPane = textPane;
+    // save the document that contains node output
+    this.doc = doc;
 
     // create our attributes
     // stdout is black, stderr is red, heartbeat messages are green,
@@ -160,6 +162,17 @@ public class ConsoleNodeListener implements NodeEventListener {
     final NodeEvent myNodeEvent = nodeEvent; // for swing utilities
     final int nodeEventType = nodeEvent.getType();
     final String nodeEventDescription = getNodeEventDescription(nodeEvent);
+
+    // write stdout/stderr/etc to log file
+    try {
+      logFile.write(nodeEventDescription);
+    } catch (Exception e) {
+    }
+
+    // ignore events user isn't interested in
+    if (filter != null && !filter.includeEventInDisplay(nodeEvent))
+      return;
+
     final SimpleAttributeSet style = getNodeEventStyle(nodeEventType);
     double nodeEventValue = 0;
     long nodeTimestamp = 0;
@@ -171,12 +184,6 @@ public class ConsoleNodeListener implements NodeEventListener {
     final double idleTime = nodeEventValue;
     final long timestamp = nodeTimestamp;
 
-    // write stdout/stderr/etc to log file
-    try {
-      logFile.write(nodeEventDescription);
-    } catch (Exception e) {
-    }
-
     // must use swing "invokeLater" to be thread-safe
     try {
       SwingUtilities.invokeLater(new Runnable() {
@@ -185,10 +192,10 @@ public class ConsoleNodeListener implements NodeEventListener {
             handleIdleUpdate(idleTime, timestamp);
           else {
             updateStatus(myNodeEvent);
-            if (textPane.appendString(nodeEventDescription, style)) {
-              colorStatusButton(CSMARTConsole.notifyStatus);
-              haveError = true;
-            }
+            //            if (doc.appendString(nodeEventDescription, style)) {
+            //              colorStatusButton(CSMARTConsole.notifyStatus);
+            //              haveError = true;
+            doc.appendString(nodeEventDescription, style);
           }
 	}
       });
@@ -219,10 +226,6 @@ public class ConsoleNodeListener implements NodeEventListener {
       System.out.println("Exception writing to log file: " + e);
     }
 
-    // 
-    // bug here if "userDisplay" is destroyed
-    //
-
     // must use swing "invokeLater" to be thread-safe
     // collects descriptions of the same type and batch writes them to display
     // handles idle updates separately
@@ -235,11 +238,13 @@ public class ConsoleNodeListener implements NodeEventListener {
 	  // get the first description which is not an idle update
 	  for (int i = 0; i < n; i++) {
 	    NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(i);
+            if (filter != null && !filter.includeEventInDisplay(nodeEvent))
+              continue; // skip events user isn't interested in
 	    int nodeEventType = nodeEvent.getType();
 	    if (nodeEventType == NodeEvent.IDLE_UPDATE) {
 	      String s = nodeEvent.getMessage();
 	      handleIdleUpdate(getIdleness(s), getTimestamp(s));
-	    } else {
+            } else {
 	      updateStatus(nodeEvent);
 	      prevType = nodeEventType;
 	      prevDescription = getNodeEventDescription(nodeEvent);
@@ -248,10 +253,12 @@ public class ConsoleNodeListener implements NodeEventListener {
 	    }
 	  }
 	  if (nextEventIndex == -1)
-	    return; // all the events were idle updates
+	    return; // all the events were idle updates or ignored
 	  // start batching descriptions
 	  for (int j = nextEventIndex; j < n; j++) {
 	    NodeEvent nodeEvent = (NodeEvent)nodeEvents.get(j);
+            if (filter != null && !filter.includeEventInDisplay(nodeEvent))
+              continue; // skip events user isn't interested in
 	    int nodeEventType = nodeEvent.getType();
 	    String description = getNodeEventDescription(nodeEvent);
 	    updateStatus(nodeEvent);
@@ -261,21 +268,25 @@ public class ConsoleNodeListener implements NodeEventListener {
 	    } else if (nodeEventType == prevType) {
 	      prevDescription += description;
 	    } else {
-              if (textPane.appendString(prevDescription, 
-                                        getNodeEventStyle(prevType))) {
-                colorStatusButton(CSMARTConsole.notifyStatus);
-                haveError = true;
-              }
+              //              if (doc.appendString(prevDescription, 
+              //                                        getNodeEventStyle(prevType))) {
+              //                colorStatusButton(CSMARTConsole.notifyStatus);
+              //                haveError = true;
+              //              }
+              doc.appendString(prevDescription, 
+                               getNodeEventStyle(prevType));
 	      prevDescription = description;
 	      prevType = nodeEventType;
 	    }
 	  }
 	  // write the last batch of descriptions
-          if (textPane.appendString(prevDescription,
-                                    getNodeEventStyle(prevType))) {
-            colorStatusButton(CSMARTConsole.notifyStatus);
-            haveError = true;
-          }
+          //          if (doc.appendString(prevDescription,
+          //                                    getNodeEventStyle(prevType))) {
+          //            colorStatusButton(CSMARTConsole.notifyStatus);
+          //            haveError = true;
+          //          }
+          doc.appendString(prevDescription,
+                           getNodeEventStyle(prevType));
 	}
       });
     } catch (RuntimeException e) {
@@ -320,17 +331,23 @@ public class ConsoleNodeListener implements NodeEventListener {
     double result = 1/Math.log(idleTime);
     result = (result + 1)*50; // in range 0 to 100
     if (result <= 16)
-      colorStatusButton(CSMARTConsole.lowBusyStatus);
+      //      colorStatusButton(CSMARTConsole.lowBusyStatus);
+      statusButton.setStatus(NodeStatusButton.STATUS_LOW_BUSY);
     else if (result > 16 && result <= 33)
-      colorStatusButton(CSMARTConsole.mediumLowBusyStatus);
+      //      colorStatusButton(CSMARTConsole.mediumLowBusyStatus);
+      statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_LOW_BUSY);
     else if (result > 33 && result <= 50)
-      colorStatusButton(CSMARTConsole.mediumBusyStatus);
+      //      colorStatusButton(CSMARTConsole.mediumBusyStatus);
+      statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_BUSY);
     else if (result > 50 && result <= 67)
-      colorStatusButton(CSMARTConsole.mediumHighBusyStatus);
+      //      colorStatusButton(CSMARTConsole.mediumHighBusyStatus);
+      statusButton.setStatus(NodeStatusButton.STATUS_MEDIUM_HIGH_BUSY);
     else if (result > 67 && result <= 83)
-      colorStatusButton(CSMARTConsole.highBusyStatus);
+      //      colorStatusButton(CSMARTConsole.highBusyStatus);
+      statusButton.setStatus(NodeStatusButton.STATUS_HIGH_BUSY);
     else if (result > 83)
-      colorStatusButton(CSMARTConsole.busyStatus);
+      //      colorStatusButton(CSMARTConsole.busyStatus);
+      statusButton.setStatus(NodeStatusButton.STATUS_BUSY);
 
     // reset times to 0. Maybe this looks better?
     if (firsttime > 0) {
@@ -344,32 +361,39 @@ public class ConsoleNodeListener implements NodeEventListener {
 
   private void updateStatus(NodeEvent nodeEvent) {
     int nodeEventType = nodeEvent.getType();
-    if (nodeEventType == NodeEvent.NODE_CREATED) 
-      colorStatusButton(CSMARTConsole.idleStatus);
-    else if (nodeEventType == NodeEvent.NODE_DESTROYED) {
-      colorStatusButton(CSMARTConsole.errorStatus);
-      console.nodeStopped(nodeComponent);
-    } else if (nodeEventType == NodeEvent.STANDARD_ERR) {
-      colorStatusButton(CSMARTConsole.stdErrStatus);
-      haveError = true;
-    }
+//      if (nodeEventType == NodeEvent.NODE_CREATED) 
+//        colorStatusButton(CSMARTConsole.idleStatus);
+//      else if (nodeEventType == NodeEvent.NODE_DESTROYED) {
+//        colorStatusButton(CSMARTConsole.errorStatus);
+//        console.nodeStopped(nodeComponent);
+//      } else if (nodeEventType == NodeEvent.STANDARD_ERR) {
+//        colorStatusButton(CSMARTConsole.stdErrStatus);
+//        haveError = true;
+//      }
+      if (nodeEventType == NodeEvent.NODE_CREATED) 
+        statusButton.setStatus(NodeStatusButton.STATUS_IDLE);
+      else if (nodeEventType == NodeEvent.NODE_DESTROYED) {
+        statusButton.setStatus(NodeStatusButton.STATUS_ERROR);
+      } else if (nodeEventType == NodeEvent.STANDARD_ERR) {
+        statusButton.setStatus(NodeStatusButton.STATUS_STD_ERROR);
+      }
   }
 
   // color the node's status button according to type of node event received
   // but don't change the color after an error has occurred
-  private void colorStatusButton(Color statusColor) {
-    if (!haveError) {
-      statusButton.setIcon(new ColoredCircle(statusColor, 20));
-      statusButton.setSelectedIcon(new SelectedColoredCircle(statusColor, 20));
-      String s = statusButton.getToolTipText((java.awt.event.MouseEvent)null);
-      int index = s.lastIndexOf(':');
-      if (index != -1) {
-        s = s.substring(0, index+1) + 
-          CSMARTConsole.getStatusColorDescription(statusColor);
-        statusButton.setToolTipText(s);
-      }
-    } 
-  }
+//    private void colorStatusButton(Color statusColor) {
+//      if (!haveError) {
+//        statusButton.setIcon(new ColoredCircle(statusColor, 20));
+//        statusButton.setSelectedIcon(new SelectedColoredCircle(statusColor, 20));
+//        String s = statusButton.getToolTipText((java.awt.event.MouseEvent)null);
+//        int index = s.lastIndexOf(':');
+//        if (index != -1) {
+//          s = s.substring(0, index+1) + 
+//            CSMARTConsole.getStatusColorDescription(statusColor);
+//          statusButton.setToolTipText(s);
+//        }
+//      } 
+//    }
 
   /**
    * Clear an error; if the node status button was set because of a notify
@@ -381,14 +405,23 @@ public class ConsoleNodeListener implements NodeEventListener {
     haveError = false;
   }
 
-  /**
-   * Get the log file.
-   * @return the log file
-   */
+//    /**
+//     * Get the log file name.
+//     * @return the log file name
+//     */
 
-  public Writer getLogFile() {
-    return logFile;
-  }
+//    public String getLogFileName() {
+//      return logFileName;
+//    }
+
+//    /**
+//     * Get the log file.
+//     * @return the log file
+//     */
+
+//    public Writer getLogFile() {
+//      return logFile;
+//    }
 
   /**
    * Flush and close the log file.
@@ -400,6 +433,29 @@ public class ConsoleNodeListener implements NodeEventListener {
     } catch (Exception e) {
       System.out.println("Exception closing log file: " + e);
     }
+  }
+
+  /**
+   * Close the log file, fill the display with the contents of the log file,
+   * and re-open the log file for appending.
+   */
+
+  public void fillFromLogFile() {
+    try {
+      logFile.close();
+      doc.fillFromLogFile(logFileName);
+      logFile = new BufferedWriter(new FileWriter(logFileName, true));
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+  }
+
+  /**
+   * Set the console node output filter used to filter events displayed.
+   */
+
+  public void setFilter(ConsoleNodeOutputFilter filter) {
+    this.filter = filter;
   }
 
 }

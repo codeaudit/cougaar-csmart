@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Thu Sep 06 13:26:09 EDT 2001 from D:\CSMART\Cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartAssets.def - DO NOT HAND EDIT */
+/* @generated Thu Oct 04 10:52:30 EDT 2001 from D:\cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartAssets.def - DO NOT HAND EDIT */
 package org.cougaar.tools.csmart.ldm.asset;
 import org.cougaar.domain.planning.ldm.asset.*;
 import java.io.ObjectOutputStream;

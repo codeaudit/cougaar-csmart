@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-/* @generated Tue May 15 11:07:43 EDT 2001 from csmartProps.def - DO NOT HAND EDIT */
+/* @generated Thu Oct 04 10:52:34 EDT 2001 from D:\cougaar\csmart\src\org\cougaar\tools\csmart\ldm\asset\csmartProps.def - DO NOT HAND EDIT */
 /** Additional methods for HappinessPG
  * offering mutators (set methods) for the object's owner
  **/

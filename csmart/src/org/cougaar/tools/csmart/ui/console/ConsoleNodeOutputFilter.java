@@ -41,7 +41,7 @@ public class ConsoleNodeOutputFilter extends JDialog {
   private final String ON = "On";
   Box box = new Box(BoxLayout.Y_AXIS);
   private JPanel filterPanel;
-  private JRadioButton noneButton;
+  private JRadioButton allButton;
   private JRadioButton sizeButton;
   private JTextField sizeTF;
   private JCheckBox allCB;
@@ -53,9 +53,10 @@ public class ConsoleNodeOutputFilter extends JDialog {
   private JCheckBox idlenessCB;
   private JCheckBox heartbeatCB;
   boolean[] msgArray = { false, false, false, false, false, false, false };
-  private boolean allSelected;
+  private boolean allSelected = true;
 
   public ConsoleNodeOutputFilter() {
+    super((java.awt.Frame)null, "Filter", true); // modal dialog
     filterPanel = new JPanel(new BorderLayout());
 
     // ok and cancel buttons panel
@@ -210,14 +211,14 @@ public class ConsoleNodeOutputFilter extends JDialog {
     Font titleFont = font.deriveFont(Font.ITALIC);
     bufferEventsTitledBorder.setTitleFont(titleFont);
     bufferEventsPanel.setBorder(bufferEventsTitledBorder);
-    noneButton = new JRadioButton("All");
+    allButton = new JRadioButton("All");
     sizeButton = new JRadioButton("Buffer Size");
-    noneButton.setSelected(true);
+    allButton.setSelected(true);
     ButtonGroup bufferButtonGroup = new ButtonGroup();
-    bufferButtonGroup.add(noneButton);
+    bufferButtonGroup.add(allButton);
     bufferButtonGroup.add(sizeButton);
     sizeTF = new JTextField(15);
-    bufferEventsPanel.add(noneButton);
+    bufferEventsPanel.add(allButton);
     bufferEventsPanel.add(sizeButton);
     bufferEventsPanel.add(sizeTF);
     box.add(bufferEventsPanel);
@@ -249,19 +250,38 @@ public class ConsoleNodeOutputFilter extends JDialog {
   }
 
   /**
-   * Return buffer size.
+   * Set buffer size displayed in dialog.
+   */
+
+  public void setBufferSize(int n) {
+    if (n != -1) {
+      sizeTF.setText(Integer.toString(n));
+      sizeButton.setSelected(true);
+    } else {
+      sizeTF.setText("");
+      allButton.setSelected(true);
+    }
+  }
+
+  /**
+   * Return buffer size; -1 implies buffer is unlimited; 0 implies 
+   * error (couldn't parse user input).
+   * @return buffer size; -1 for unlimited; 0 implies error 
    */
 
   public int getBufferSize() {
-    String size = sizeTF.getText();
-    System.out.println("text is " + size);
-    try {
-      int bufferSize = Integer.parseInt(size);
-      return bufferSize;
-    }catch (NumberFormatException e) { 
-      System.err.println("Couldn't parse int");
-      return 0;
-    }
+    if (sizeButton.isSelected()) {
+      String size = sizeTF.getText();
+      System.out.println("text is " + size);
+      try {
+        int bufferSize = Integer.parseInt(size);
+        return bufferSize;
+      }catch (NumberFormatException e) { 
+        System.err.println("Couldn't parse int");
+        return 0;
+      }
+    } else
+      return -1;
   }
 
   ActionListener allCBSelected = new ActionListener() {

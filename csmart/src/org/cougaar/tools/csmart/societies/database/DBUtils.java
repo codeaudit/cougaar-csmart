@@ -66,7 +66,6 @@ public class DBUtils {
     valid = (Parameters.findParameter(DBUtils.DATABASE) == null) ? false : true;
     valid &= (Parameters.findParameter(DBUtils.USER) == null) ? false : true;
     valid &= (Parameters.findParameter(DBUtils.PASSWORD) == null) ? false : true;
-
     return valid;
   }
 
@@ -122,10 +121,14 @@ public class DBUtils {
 	    }
 	  }
 	} catch (ClassNotFoundException e) {
-	} catch (SQLException se) {}   
-      } catch(IOException e) {}   
+          System.out.println("Class not found: " + e);
+	} catch (SQLException se) {
+          System.out.println("Sql exception: " + se);
+        }
+      } catch(IOException e) {
+        System.out.println("io exception: " + e);
+      }
     }
-
     return valid;
   }
 

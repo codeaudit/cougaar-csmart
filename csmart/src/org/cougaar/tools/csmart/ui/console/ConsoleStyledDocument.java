@@ -34,8 +34,6 @@ import javax.swing.text.DefaultStyledDocument;
 
 public class ConsoleStyledDocument extends DefaultStyledDocument {
   // DefaultStyledDocument buffer size is 4096
-  //  static int MAX_CHARACTERS = DefaultStyledDocument.BUFFER_SIZE_DEFAULT;
-  //  static int MIN_REMOVE_CHARACTERS = 800;
   int bufferSize;
   int minRemoveSize;
 
@@ -44,42 +42,15 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
     minRemoveSize = (int)(bufferSize * .2);
   }
 
-  // works with non-random access file
-//    public void fillFromLogFile(String logFileName) {
-//      AttributeSet a = new javax.swing.text.SimpleAttributeSet();
-//      try {
-//        // clear document
-//        remove(0, getLength());
-//      } catch (Exception e) {
-//        System.out.println(e);
-//        e.printStackTrace();
-//      }
-//      // read log file contents into document
-//      BufferedReader reader = null;
-//      try {
-//        reader = new BufferedReader(new FileReader(logFileName));
-//      } catch (FileNotFoundException fnfe) {
-//        System.out.println(fnfe);
-//      }
-//      try {
-//        while (true) {
-//          String s = reader.readLine();
-//          if (s != null) {
-//            System.out.println("Inserting: " + s + " at: " + getLength());
-//            insertString(getLength(), s, a);
-//          } else
-//            break;
-//        }
-//      } catch (IOException ioe) {
-//        System.out.println(ioe);
-//      } catch (BadLocationException ble) {
-//        System.out.println(ble);
-//      }
-//      bufferSize = -1; // don't trim document any more
-//    }
+  /**
+   * Fill document from log file.  Reads log file contents into buffer.
+   * Caller must close log file prior to calling this method
+   * and re-open log file for appending.
+   * Sets screen buffer size to display all output (i.e. no limit).
+   * @param logFileName name of the log file from which to fill document
+   */
 
-  // for random access file
-  public void fillFromLogFile(RandomAccessFile logFile) {
+  public void fillFromLogFile(String logFileName) {
     AttributeSet a = new javax.swing.text.SimpleAttributeSet();
     try {
       // clear document
@@ -89,12 +60,16 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
       e.printStackTrace();
     }
     // read log file contents into document
+    BufferedReader reader = null;
     try {
-      logFile.seek(0);
+      reader = new BufferedReader(new FileReader(logFileName));
+    } catch (FileNotFoundException fnfe) {
+      System.out.println(fnfe);
+    }
+    try {
       while (true) {
-        String s = logFile.readLine();
+        String s = reader.readLine();
         if (s != null) {
-          System.out.println("Inserting: " + s + " at: " + getLength());
           insertString(getLength(), s, a);
         } else
           break;
@@ -107,31 +82,37 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
     bufferSize = -1; // don't trim document any more
   }
 
+  /**
+   * Append a string to the display buffer.  This appends the entire
+   * string, and then trims the buffer to the size specified
+   * in the setBufferSize method if necessary.  The entire string is
+   * appended so that listeners can "see" the new string and act on
+   * it (for example, highlight it).
+   * @param s string to insert in the styled document
+   * @param a attribute set to use in the styled document
+   */
+
   public void appendString(String s, AttributeSet a) {
     try {
-      if (bufferSize == -1) { // display everything, no limit on buffer size
-        super.insertString(getLength(), s, a);
+      super.insertString(getLength(), s, a);
+      if (bufferSize == -1) // display everything, no limit on buffer size
         return;
-      }
       int len = s.length();
       // special case, the string is larger than the buffer
       // just insert the end of the string
       if (len >= bufferSize) {
-        remove(0, getLength());
-        super.insertString(0, s.substring(len - bufferSize), a);
+        int tmp = len-bufferSize;
+        remove(0, getLength() - bufferSize);
         return;
       }
-      int bufferLength = getLength();
-      int neededSpace = bufferLength + len;
-      // if appending string will exceed buffer length
-      // then remove at least the first 20% of buffer
-      if (neededSpace > bufferSize) {
-        int tmp = Math.max(neededSpace - bufferSize, minRemoveSize);
+      // if appending string exceeded buffer length
+      // then remove at least the first 20% of the buffer
+      if (getLength() > bufferSize) {
+        int tmp = Math.max(getLength() - bufferSize, minRemoveSize);
         // don't remove more characters than exist
-        tmp = Math.min(tmp, bufferLength);
+        tmp = Math.min(tmp, getLength());
         remove(0, tmp);
       }
-      super.insertString(getLength(), s, a);
     } catch (BadLocationException ble) {
       System.out.println("Bad location exception: " + ble +
                          " " + ble.offsetRequested());
@@ -163,6 +144,40 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
     return bufferSize;
   }
 
+  // for random access file
+//    public void fillFromLogFile(RandomAccessFile logFile) {
+//      AttributeSet a = new javax.swing.text.SimpleAttributeSet();
+//      try {
+//        // clear document
+//        remove(0, getLength());
+//      } catch (Exception e) {
+//        System.out.println(e);
+//        e.printStackTrace();
+//      }
+//      // read log file contents into document
+//      try {
+//        RandomAccessFile logFile = new RandomAccessFile(logFileName, "r");
+//        logFile.seek(0);
+//        while (true) {
+//          String s = logFile.readLine();
+//          if (s != null) {
+//            System.out.println("Inserting: " + s + " at: " + getLength());
+//            insertString(getLength(), s, a);
+//          } else {
+//            logFile.close();
+//            break;
+//          }
+//        }
+//      } catch (FileNotFoundException fnfe) {
+//        System.out.println(fnfe);
+//      } catch (IOException ioe) {
+//        System.out.println(ioe);
+//      } catch (BadLocationException ble) {
+//        System.out.println(ble);
+//      }
+//      bufferSize = -1; // don't trim document any more
+//    }
+
   public static void main(String[] args) {
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
     AttributeSet a = new javax.swing.text.SimpleAttributeSet();
@@ -170,35 +185,26 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
     // abc, abcde, fghij, vwxyz
     doc.setBufferSize(5);
     try {
-      //      BufferedWriter logFile = new BufferedWriter(new FileWriter("tmp"));
-      RandomAccessFile logFile = 
-        new RandomAccessFile("tmp-ra", "rw");
-      logFile.writeChars("abc");
+      BufferedWriter logFile = new BufferedWriter(new FileWriter("tmp"));
+      logFile.write("abc");
       doc.appendString("abc", a);
       System.out.println(doc.getText(0, doc.getLength()));
-      logFile.writeChars("de");
+      logFile.write("de");
       doc.appendString("de", a);
       System.out.println(doc.getText(0, doc.getLength()));
-      logFile.writeChars("fghij");
+      logFile.write("fghij");
       doc.appendString("fghij", a);
       System.out.println(doc.getText(0, doc.getLength()));
-      logFile.writeChars("klmnopqrstuvwxyz");
+      logFile.write("klmnopqrstuvwxyz");
       doc.appendString("klmnopqrstuvwxyz", a);
       System.out.println(doc.getText(0, doc.getLength()));
-      // for non-random access file
-      //      logFile.close();
-      //      doc.fillFromLogFile("tmp");
-      //      System.out.println(doc.getText(0, doc.getLength()));
-      //      logFile = new BufferedWriter(new FileWriter("tmp", true));
-      //      logFile.write("12345");
-      //      doc.appendString("12345", a);
-
-      doc.fillFromLogFile(logFile);
+      logFile.close();
+      doc.fillFromLogFile("tmp");
       System.out.println(doc.getText(0, doc.getLength()));
-      System.out.println("Final document");
-      logFile.seek(logFile.length());
-      logFile.writeChars("12345");
+      logFile = new BufferedWriter(new FileWriter("tmp", true));
+      logFile.write("12345");
       doc.appendString("12345", a);
+      System.out.println("Final document");
       System.out.println(doc.getText(0, doc.getLength()));
       logFile.close();
     } catch (Exception e) {

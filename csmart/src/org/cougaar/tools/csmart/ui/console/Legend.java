@@ -40,8 +40,7 @@ public class Legend extends JDialog {
     JButton okButton = new JButton("OK");
     okButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        //MEK - how do we just close this window?
-        System.exit(0);
+        setVisible(false);
       }
     });
     buttonPanel.add(okButton);

@@ -209,8 +209,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * @return a <code>boolean</code>, true if there is a valid CMT DB connection
    */
   public static boolean inDBMode(boolean checkConnection) {
-    if (checkConnection)
+    if (checkConnection) {
       CSMART.dbMode = DBUtils.isValidDBConnection();
+      System.out.println("CSMART DB MODE: " + CSMART.dbMode);
+    }
     return CSMART.dbMode;
   }
   
