@@ -41,6 +41,7 @@ public class RelationshipData implements Serializable {
   private String type = null;
   private String role = null;
   private String item = null;
+  private String typeId = null;
   private long startTime = 0L;
   private long endTime = 0L;
   private String supported = null;
@@ -93,6 +94,14 @@ public class RelationshipData implements Serializable {
    */
   public String getItem() {
     return this.item;
+  }
+
+  public void setTypeId(String typeId) {
+    this.typeId = typeId;
+  }
+
+  public String getTypeId() {
+    return this.typeId;
   }
 
   /**
@@ -178,6 +187,7 @@ public class RelationshipData implements Serializable {
     sb.append("Type: " + type);
     sb.append(" Role: " + role);
     sb.append(" Item: " + item);
+    sb.append(" TypeId: " + typeId);
     sb.append(" Start Time: " + startTime);
     sb.append(" End Time: " + endTime);
     sb.append(" Supported: " + supported);
