@@ -573,8 +573,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     // The given set of nodes is potentially fewer than the full set in the society
     // Note the ugly this parameter...
     ExpConfigWriterNew test = new ExpConfigWriterNew(getComponents(), nodes, this);
+
+    return test;
     //    System.err.println(this + " created test write: " + test);
-    return new ExperimentConfigWriter(societies, impacts, nodes);
+    //return new ExperimentConfigWriter(societies, impacts, nodes);
   }
 
   /**
