@@ -83,6 +83,7 @@
 	   <pathelement location="${sys}/jcchart451K.jar" />
 	   <pathelement location="${sys}/junit.jar" />
            <pathelement location="${sys}/servlet.jar" />
+           <pathelement location="${sys}/log4j.jar" />
 	</path>
 
 	<!-- Backwards compatibility -->
