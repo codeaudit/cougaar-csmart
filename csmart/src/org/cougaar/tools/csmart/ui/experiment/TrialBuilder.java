@@ -37,13 +37,11 @@ public class TrialBuilder extends JPanel {
   int deleteRowIndex; // row to delete
   Experiment experiment;
   boolean isEditable;
-  boolean isRunnable;
   boolean needUpdate = true; // need to update display
 
   public TrialBuilder(Experiment experiment) {
     this.experiment = experiment;
     isEditable = experiment.isEditable();
-    isRunnable = experiment.isRunnable();
     trialTable = new JTable();
     // don't allow user to reorder columns
     trialTable.getTableHeader().setReorderingAllowed(false);
@@ -72,15 +70,8 @@ public class TrialBuilder extends JPanel {
     if (this.experiment != null &&
 	this.experiment.equals(newExperiment))
       return; // no change
-
-    // restore editable flag on previous experiment
-    if (isEditable) 
-      experiment.setEditable(isEditable);
-    if (isRunnable)
-      experiment.setRunnable(isRunnable);
     experiment = newExperiment;
     isEditable = newExperiment.isEditable();
-    isRunnable = newExperiment.isRunnable();
     if (isShowing())
       updateDisplay();
     else

@@ -271,16 +271,15 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     hcb = 
       new HostConfigurationBuilder(experiment, this);
     tabbedPane.add("Configurations", hcb);
+    threadBuilder = new ThreadBuilder(experiment);
+    tabbedPane.add("Threads", threadBuilder);
     // only display trial builder for non-database experiments
-    if (experiment.isInDatabase()) {
-      threadBuilder = new ThreadBuilder(experiment);
-      tabbedPane.add("Threads", threadBuilder);
-    } else {
-      trialBuilder = new TrialBuilder(experiment);
-      tabbedPane.add("Trials", trialBuilder);
-    }
+    //    trialBuilder = new TrialBuilder(experiment);
+    //    tabbedPane.add("Trials", trialBuilder);
     // after starting all the editors, set experiment editability to false
-    experiment.setEditInProgress(true);
+    // if we're really editing and not just viewing
+    if (experiment.isEditable())
+      experiment.setEditInProgress(true);
     getContentPane().add(tabbedPane);
     pack();
     setSize(650, 400);
@@ -308,15 +307,8 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   }
 
   private void exit() {
-    //    saveSilently(); // if experiment from database was modified, save it
-    if (modified)
-      saveAs();
-    // before exiting, restore experiment's and society's editability
-    // FIXME Restore on society!!!!
+    saveSilently(); // if experiment from database was modified, save it
     experiment.setEditInProgress(false);
-    // If the experiment now has a society and is otherwise runnable, say so
-    if (experiment.getSocietyComponentCount() > 0)
-      experiment.setRunnable(true);
   }
 
   /**
@@ -327,9 +319,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
    */
 
   public void reinit(Experiment newExperiment) {
-    //    saveSilently();
-    if (modified)
-      saveAs();
+    saveSilently();
     // restore editable flag on previous experiment
     experiment.setEditInProgress(false);
     experiment = newExperiment;
@@ -337,27 +327,8 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     hcb.reinit(experiment);
     // only display trial builder for non-database experiments
     // only display thread builder for database experiments
-    if (experiment.isInDatabase()) {
-      if (trialBuilder != null) {
-        tabbedPane.remove(trialBuilder);
-        trialBuilder = null;
-      }
-      if (threadBuilder == null) {
-        threadBuilder = new ThreadBuilder(experiment);
-        tabbedPane.add("Threads", threadBuilder);
-      } else
-        threadBuilder.reinit(experiment);
-    } else {
-      if (trialBuilder == null) {
-        trialBuilder = new TrialBuilder(experiment);
-        tabbedPane.add("Trials", trialBuilder);
-      } else
-        trialBuilder.reinit(experiment);
-      if (threadBuilder != null) {
-        tabbedPane.remove(threadBuilder);
-        threadBuilder = null;
-      }
-    }
+    threadBuilder.reinit(experiment);
+    // trialBuilder.reinit(experiment);
     experiment.setEditInProgress(true);
   }
 
@@ -378,8 +349,6 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
    */
 
   private void save() {
-    if (!experiment.isInDatabase())
-      return;
     if (!modified) {
       String[] msg = {
         "No modifications were made.",
@@ -400,14 +369,12 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
    * Silently save experiment from database if modified.
    */
 
-//    private void saveSilently() {
-//      if (modified && experiment.isInDatabase())
-//        saveHelper();
-//    }
+  private void saveSilently() {
+    if (modified)
+      saveHelper();
+  }
 
   private void saveAs() {
-    if (!experiment.isInDatabase())
-      return;
     if (!modified) 
       setModified(true);
     // get unique name in both database and CSMART or

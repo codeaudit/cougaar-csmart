@@ -54,7 +54,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   Experiment experiment;
   ExperimentBuilder experimentBuilder;
   boolean isEditable;
-  boolean isRunnable;
   SocietyComponent societyComponent;
   JPopupMenu hostRootMenu;
   JPopupMenu hostHostMenu;
@@ -95,7 +94,6 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     this.experimentBuilder = experimentBuilder;
     hostConfigurationBuilder = this; // for inner class dialogs
     isEditable = experiment.isEditable();
-    isRunnable = experiment.isRunnable();
     initDisplay();
   }
 
@@ -433,14 +431,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void reinit(Experiment newExperiment) {
-    // restore editable flag on previous experiment
-    if (isEditable)
-      experiment.setEditable(isEditable);
-    if (isRunnable)
-      experiment.setRunnable(isRunnable);
     experiment = newExperiment;
-    isEditable = newExperiment.isEditable();
-    isRunnable = newExperiment.isRunnable();
+    isEditable = experiment.isEditable();
     // if this pane is being displayed, then bring it up-to-date
     if (isShowing())
       update(); 
@@ -609,10 +601,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
   private void addUnassignedNodesFromExperiment() {
     Set unassignedNodes;
-    if (experiment.isInDatabase())
-      unassignedNodes = new TreeSet(dbBaseComponentComparator);
-    else
-      unassignedNodes = new TreeSet(builtInBaseComponentComparator);
+    unassignedNodes = new TreeSet(dbBaseComponentComparator);
     HostComponent[] hosts = experiment.getHosts();
     NodeComponent[] nodes = experiment.getNodes();
     unassignedNodes.addAll(Arrays.asList(nodes));
@@ -658,27 +647,24 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
   };
       
-  private static Comparator builtInBaseComponentComparator = new Comparator() {
-    public int compare(Object o1, Object o2) {
-      BaseComponent c1 = (BaseComponent) o1;
-      BaseComponent c2 = (BaseComponent) o2;
+//    private static Comparator builtInBaseComponentComparator = new Comparator() {
+//      public int compare(Object o1, Object o2) {
+//        BaseComponent c1 = (BaseComponent) o1;
+//        BaseComponent c2 = (BaseComponent) o2;
 
-      if (c1 instanceof NodeComponent || c2 instanceof NodeComponent)
-	return c1.getShortName().compareTo(c2.getShortName());
-      else // agent name comparison
-	return c1.getFullName().compareTo(c2.getFullName());
-    }
-  };
+//        if (c1 instanceof NodeComponent || c2 instanceof NodeComponent)
+//  	return c1.getShortName().compareTo(c2.getShortName());
+//        else // agent name comparison
+//  	return c1.getFullName().compareTo(c2.getFullName());
+//      }
+//    };
 
   /**
    * Add unassigned agents to unassigned agents tree.
    */
   private void addUnassignedAgentsFromExperiment() {
     Set unassignedAgents;
-    if (experiment.isInDatabase())
-      unassignedAgents = new TreeSet(dbBaseComponentComparator);
-    else
-      unassignedAgents = new TreeSet(builtInBaseComponentComparator);
+    unassignedAgents = new TreeSet(dbBaseComponentComparator);
     AgentComponent[] agents = experiment.getAgents();
     NodeComponent[] nodes = experiment.getNodes();
     unassignedAgents.addAll(Arrays.asList(agents));

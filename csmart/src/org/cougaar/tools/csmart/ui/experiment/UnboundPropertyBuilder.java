@@ -45,7 +45,6 @@ public class UnboundPropertyBuilder extends JPanel {
   private ExperimentTree tree;
   private Experiment experiment;
   private boolean isEditable;
-  private boolean isRunnable;
   private DefaultMutableTreeNode root;
   private DefaultMutableTreeNode societies;
   private DefaultMutableTreeNode recipes;
@@ -168,7 +167,6 @@ public class UnboundPropertyBuilder extends JPanel {
     this.experiment = experiment;
     this.experimentBuilder = experimentBuilder;
     isEditable = experiment.isEditable();
-    isRunnable = experiment.isRunnable();
     root = new DefaultMutableTreeNode();
     model = new DefaultTreeModel(root);
     societies = new DefaultMutableTreeNode(ExperimentTree.SOCIETIES);
@@ -246,14 +244,8 @@ public class UnboundPropertyBuilder extends JPanel {
    */
 
   public void reinit(Experiment newExperiment) {
-    // restore editable flag on previous experiment
-    if (isEditable) 
-      experiment.setEditable(isEditable);
-    if (isRunnable)
-      experiment.setRunnable(isRunnable);
     experiment = newExperiment;
     isEditable = newExperiment.isEditable();
-    isRunnable = newExperiment.isRunnable();
     initDisplay();
   }
 
@@ -304,16 +296,15 @@ public class UnboundPropertyBuilder extends JPanel {
     for (int i = 0; i < nSocieties; i++) {
       SocietyComponent society = (SocietyComponent) ((DefaultMutableTreeNode) societies.getChildAt(i)).getUserObject();
       societyComponentsAry[i] = society;
-      society.setEditable(false); // so society editability tracks experiment editability
+      //      society.setEditable(false); // so society editability tracks experiment editability
     }
     experiment.setSocietyComponents(societyComponentsAry);
     int nRecipes = recipes.getChildCount();
     RecipeComponent[] recipeAry = new RecipeComponent[nRecipes];
     for (int i = 0; i < nRecipes; i++) {
       recipeAry[i] =
-	//  (Recipe) ((DefaultMutableTreeNode) recipes.getChildAt(i)).getUserObject();
-              (RecipeComponent) ((DefaultMutableTreeNode) recipes.getChildAt(i)).getUserObject();
-      recipeAry[i].setEditable(false);
+        (RecipeComponent) ((DefaultMutableTreeNode) recipes.getChildAt(i)).getUserObject();
+      //      recipeAry[i].setEditable(false);
     }
     experiment.setRecipes(recipeAry);
     experiment.invalidateTrials(); // and force experiment to recreate trials
@@ -352,10 +343,10 @@ public class UnboundPropertyBuilder extends JPanel {
       DefaultMutableTreeNode node = 
 	(DefaultMutableTreeNode)parent.getChildAt(i);
       // make removed society component editable again
-      Object userObject = node.getUserObject();
-      if (userObject != null &&
-	  userObject instanceof ModifiableComponent)
-	((ModifiableComponent)userObject).setEditable(true);
+//        Object userObject = node.getUserObject();
+//        if (userObject != null &&
+//  	  userObject instanceof ModifiableComponent)
+//  	((ModifiableComponent)userObject).setEditable(true);
     }
     parent.removeAllChildren();
     model.nodeStructureChanged(parent);
@@ -377,10 +368,10 @@ public class UnboundPropertyBuilder extends JPanel {
     for (int i = 0; i < nodes.length; i++) {
       model.removeNodeFromParent(nodes[i]);
       // make removed society component editable again
-      Object userObject = nodes[i].getUserObject();
-      if (userObject != null &&
-	  userObject instanceof ModifiableComponent)
-	((ModifiableComponent)userObject).setEditable(true);
+//        Object userObject = nodes[i].getUserObject();
+//        if (userObject != null &&
+//  	  userObject instanceof ModifiableComponent)
+//  	((ModifiableComponent)userObject).setEditable(true);
     }
     propModel.clear(); // selected items were removed, so clear prop table
   }

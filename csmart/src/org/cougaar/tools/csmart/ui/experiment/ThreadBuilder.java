@@ -175,14 +175,6 @@ public class ThreadBuilder extends JPanel {
     if (this.experiment != null && this.experiment.equals(newExperiment))
       return; // no change
     experiment = newExperiment;
-    // restore editable flag on previous experiment
-//      if (isEditable)
-//        experiment.setEditable(isEditable);
-//      if (isRunnable)
-//        experiment.setRunnable(isRunnable);
-//      experiment = newExperiment;
-//      isEditable = newExperiment.isEditable();
-//      isRunnable = newExperiment.isRunnable();
     if (isShowing())
       updateDisplay();
     else
