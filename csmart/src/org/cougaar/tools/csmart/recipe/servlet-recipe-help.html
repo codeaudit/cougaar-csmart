@@ -1,0 +1,90 @@
+<html>
+<head>
+<title>Servlet Group Insertion Recipe Help</title>
+</head>
+<body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+<h1>Servlet Group Insertion Recipe Configuration Help</h1>
+The Servlet Group Insertion Recipe allows users to select groups of
+individual servlets from the list of available servlets below.  These 
+servlets can be added to individual agents as appropriate or to all agents 
+based on the query selected by the user. The target query comes from the  
+file 'PopulateDb.q' or the user created file 'recipeQueries.q'.
+<br>
+    <h2>Component Fields</h2>
+    <table width="400">
+	<tr>
+	  <td><b>Name</b></td>
+	  <td><b>Type</b></td>
+	  <td><b>Range</b></td>
+	</tr>
+	<tr>
+	  <td><a href="#SERVLET">Servlet</a></td>
+	  <td>String</td>
+	  <td>True, False</td>
+	</tr>
+	<tr>
+	  <td><a href="#TARGET_QUERY">Target Component Selection Query</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#NUM_SERV">_Number of New Servlets</a></td>
+	  <td>Integer</td>
+	  <td>0 - MAX</td>
+	</tr>
+	<tr>
+	  <td><a href="#CLASSNAME">Classname of Servlet</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+	<tr>
+	  <td><a href="#PATH">Path of Servlet</a></td>
+	  <td>String</td>
+	  <td></td>
+	</tr>
+
+    </table>  
+    <br><br>
+<h2>Parameters</h2>
+<a name="SERVLET"><h3>Servlet</h3></a>
+Specifies whether the particular corresponding servlet will be
+loaded.  If the values is <i>True</i>, the agent will contain the
+following: <br>
+org.cougaar.core.servlet.SimpleServletComponent(<i>'servlet class name','path'</i>)<br>
+
+The above item will <b>NOT</b> be included if the value is <i>False</i><br>
+<em>Note: Users requiring a servlet loader other than SimpleServletComponent
+should use Specific Insertion Recipe to add their servlet.</em><br>
+
+<a name="TARGET_QUERY"><h3>Target Agent Selection Query</h3></a>
+Specifies a defined query in a .q file.  This query is used to
+selected the exact components that should be modified with this
+recipe. Base, sample queries are in
+CIP/configs/common/PopulateDb.q<br>
+Users should create their own queries in a file called
+"recipeQueries.q", which should be placed somplace on the Cougaar
+Config Path: in the directory from which you run CSMART, or in
+CIP/configs/common, for example.<br>
+<em>IMPORTANT: All recipes query names must begin with "recipeQuery"!</em><br>
+
+<a name="NUM_SERV"><h3>_Number of New Servlets</h3></a>
+The number of new servlets that you would like to add that are not included
+in the list presented.  If you set this number to greater than 0 (and hit
+return to set your selection), then a number of new fields appear, one
+pair, appropriately numbered, for each new servlet you add:
+
+<a name="CLASSNAME"><h3>Classname of Servlet</h3></a>
+The full classname of the servlet that you wish to add.  For example
+for the PlanViewServlet, the classname is as follows:<br>
+org.cougaar.planning.servlet.PlanViewServlet<br>
+
+<a name="PATH"><h3>Path of Servlet</h3></a>
+The path that the browser uses to find the particular servlet.  Generally the 
+path begins with a '/'. For example
+for the PlanViewServlet, the path is as follows:<br>
+/tasks<br>
+
+</body></html>
+
+<!-- Last Modified: $Date: 2002-01-24 19:30:31 $ -->
+<!-- By $Author: mkappler $ -->
