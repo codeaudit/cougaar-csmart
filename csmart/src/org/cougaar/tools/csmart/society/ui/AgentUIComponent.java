@@ -46,9 +46,18 @@ public class AgentUIComponent
   private static final String DEFAULT_CLASS = "org.cougaar.core.agent.ClusterImpl";
 
   /** Agent Classname Property Definitions **/
+
+  /** Classname Property Definition **/
   public static final String PROP_CLASSNAME = "Classname";
+
+  /** Classname Description Property Definition **/
   public static final String PROP_CLASSNAME_DESC = "Name of the Agent Class";
   
+  /**
+   * Creates a new <code>AgentUIComponent</code> instance.
+   *
+   * @param name Name of the Component
+   */
   public AgentUIComponent(String name) {
     super(name);
     this.name = name;
@@ -62,11 +71,22 @@ public class AgentUIComponent
     log = CSMART.createLogger(this.getClass().getName());
   }
 
+  /**
+   * Initializes all local Properties
+   *
+   */
   public void initProperties() {
     Property p = addProperty(PROP_CLASSNAME, new String(DEFAULT_CLASS));
     p.setToolTip(PROP_CLASSNAME_DESC);
   }
 
+  /**
+   * Adds any relevent data to the global <code>ComponentData</code> tree.
+   * No modifications are made in the method, only additions.
+   *
+   * @param data Pointer to the global tree
+   * @return an updated <code>ComponentData</code> value
+   */
   public ComponentData addComponentData(ComponentData data) {
     // Process AssetData
     Iterator iter = 
@@ -96,5 +116,4 @@ public class AgentUIComponent
    
     return data;
   }
-
 }
