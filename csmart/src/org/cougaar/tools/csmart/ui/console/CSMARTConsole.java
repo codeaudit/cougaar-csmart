@@ -860,7 +860,7 @@ public class CSMARTConsole extends JFrame {
   /**
    * Stop all experiments.  Called before exiting CSMART.
    */
-  private void stopExperiments() {
+  public void stopExperiments() {
     stopAllNodes(); // stop the nodes
     destroyOldNodes(); // kill all their outputs
     unsetTrialValues(); // unset values from last trial
