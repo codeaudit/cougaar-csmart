@@ -4,14 +4,28 @@
     
 set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
 
-# Due to some static members, the Society Monitor cannot rely on the Bootstrapper to find all jars
+# Use the Bootstrapper to find Jar files.
 # All of the peculiarly Society Monitor required Jars are listed here for convenience
+# COUGAAR bootstrapping classpath will be:
+#  $COUGAAR_DEV_PATH	if defined
+#  $COUGAAR_INSTALL_PATH/lib/core.jar
+#
+# Plus any explicitly added entries - for us, the CSMART Jar file
     
-# Must add other Jars which the Bootstrapper gives you when you run Node
-set LIBPATHS = "${COUGAAR_INSTALL_PATH}/lib/csmart.jar:${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/server.jar"
+# once running, jar files will be searched for in (in order):
+#  -Dorg.cougaar.class.path 	like classpath
+#  $CLASSPATH		(Cougaar bootstrapping path from above)
+#  $COUGAAR_INSTALL_PATH/lib/*
+#  $COUGAAR_INSTALL_PATH/plugins/*
+#  -Dorg.cougaar.system.path=$COUGAAR3RDPARTY
+#  $COUGAAR_INSTALL_PATH/sys/*
+#
+    
+# Base jar files used by Society Monitor
+#set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/csmart.jar:${COUGAAR_INSTALL_PATH}/lib/server.jar"
 
-# Third party jars are in CIP/sys - Grappa and Xerces are required on CLASSPATH due to static members
-set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/sys/xerces.jar:${COUGAAR_INSTALL_PATH}/sys/grappa1_2_bbn.jar:${COUGAAR_INSTALL_PATH}/sys/jcchart451K.jar"
+# Third party jars are in CIP/sys
+#set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/sys/xerces.jar:${COUGAAR_INSTALL_PATH}/sys/grappa1_2_bbn.jar:${COUGAAR_INSTALL_PATH}/sys/jcchart451K.jar"
 
 if ($?COUGAAR_DEV_PATH) then
     set LIBPATHS = "${COUGAAR_DEV_PATH}:${LIBPATHS}"
@@ -25,9 +39,9 @@ set MYCONFIGPATH="-Dorg.cougaar.config.path=${COUGAAR_INSTALL_PATH}/csmart/data/
 set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -classpath $LIBPATHS"
 
 if ($?COUGAAR_DEV_PATH) then
-   echo java $javaargs org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
+   echo java $javaargs org.cougaar.core.society.Bootstrapper org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
 endif
 
-exec java $javaargs org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
+exec java $javaargs org.cougaar.core.society.Bootstrapper org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL
 
 

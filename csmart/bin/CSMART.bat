@@ -17,8 +17,8 @@ REM Note that the CSMART Jar file must be specified (as well as core),
 REM to get started.
 REM To not use the Bootstrapper, set org.cougaar.useBootstrapper=false
 
-REM add csmart.jar Before other items
-SET LIBPATHS=%COUGAAR_INSTALL_PATH%\lib\csmart.jar;%LIBPATHS%
+REM add csmart.jar, explicitly
+SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\csmart.jar
 
 REM for CSMART environment, use the following
 rem SET LIBPATHS=%LIBPATHS%;%COUGAAR_INSTALL_PATH%\lib\server.jar

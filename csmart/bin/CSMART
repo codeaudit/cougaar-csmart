@@ -8,12 +8,30 @@ set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/core.jar
 # Next section lists Jar files required for CSMART. Note that by default CSMART uses the Cougaar
 # Bootstrapper, which should find the jar files automatically (searching CIP/lib, plugins, sys, etc).
 # One need only include the CSMART and core jar files
+
+# COUGAAR bootstrapping classpath will be:
+#  $COUGAAR_DEV_PATH	if defined
+#  $COUGAAR_INSTALL_PATH/lib/core.jar
+#
+# Plus any explicitly added entries - for us, the CSMART Jar file
+    
+# once running, jar files will be searched for in (in order):
+#  -Dorg.cougaar.class.path 	like classpath
+#  $CLASSPATH		(Cougaar bootstrapping path from above)
+#  $COUGAAR_INSTALL_PATH/lib/*
+#  $COUGAAR_INSTALL_PATH/plugins/*
+#  -Dorg.cougaar.system.path=$COUGAAR3RDPARTY
+#  $COUGAAR_INSTALL_PATH/sys/*
+#
+    
 # To run without the Bootstrapper, set org.cougaar.useBootstrapper=false
 # The Jars peculiar to CSMART and their usual locations are listed here as a convenience
     
-# Must add other Jars which the Bootstrapper gives you when you run Node
-set LIBPATHS = "${COUGAAR_INSTALL_PATH}/lib/csmart.jar:${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/server.jar"
-
+# Add CSMART jar explicitly to get started
+set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/csmart.jar"
+    
+#set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/lib/server.jar"
+    
 # Third party jars are in CIP/sys
 # set LIBPATHS = "${LIBPATHS}:${COUGAAR_INSTALL_PATH}/sys/xerces.jar:${COUGAAR_INSTALL_PATH}/sys/grappa1_2_bbn.jar:${COUGAAR_INSTALL_PATH}/sys/jcchart451K.jar"
     
