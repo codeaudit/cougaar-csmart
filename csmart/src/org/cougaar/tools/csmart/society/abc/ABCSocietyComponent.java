@@ -18,7 +18,7 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.society.abc;
 
 import java.io.File;
 import java.io.FileFilter;

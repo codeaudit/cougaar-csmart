@@ -19,7 +19,7 @@
  * </copyright>
  */
 
-package org.cougaar.tools.csmart.ui.component;
+package org.cougaar.tools.csmart.society.abc;
 
 import java.util.ArrayList;
 import java.util.HashSet;
