@@ -30,7 +30,6 @@ public class RelationshipData implements Serializable {
   public static final String SUPPORTING = "Supporting";
 
   private String cluster = null;
-  private String relationship = null;
   private String type = null;
   private String role = null;
   private String item = null;
@@ -50,14 +49,6 @@ public class RelationshipData implements Serializable {
     return this.cluster;
   }
   
-  public void setRelationship(String relationship) {
-    this.relationship = relationship;
-  }
-
-  public String getRelationship() {
-    return this.relationship;
-  }
-
   public void setType(String type) {
     this.type = type;
   }
