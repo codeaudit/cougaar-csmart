@@ -63,7 +63,7 @@ public class AgentCDataComponent
    *
    */
   public void initProperties() {
-    initProperties();
+    super.initProperties();
     Property p = addProperty(PROP_CLASSNAME, new String(cdata.getClassName()));
     p.setToolTip(PROP_CLASSNAME_DESC);
 
