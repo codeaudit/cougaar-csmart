@@ -79,9 +79,9 @@ public class PSP_CommunityProvider extends PSP_BaseAdapter implements PlanServic
 	  //	    return true;
 	}
 	return false;
+      }
       };
-    };
-  };
+  }
 
 
   /**

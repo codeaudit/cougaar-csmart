@@ -70,7 +70,7 @@ public class PSP_Plan extends PSP_BaseAdapter implements PlanServiceProvider, UI
 	    o instanceof PlanElement)
 	  return true;
 	return false;
-      };
+      }
     };
   }
 

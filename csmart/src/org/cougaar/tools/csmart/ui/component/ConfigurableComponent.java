@@ -84,7 +84,7 @@ public abstract class ConfigurableComponent
         firePropertyRemoved(e);
       }
     }
-  };
+  }
 
   protected EventListenerList getEventListenerList() {
     if (listeners == null) listeners = new EventListenerList();

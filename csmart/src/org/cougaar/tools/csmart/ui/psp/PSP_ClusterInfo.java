@@ -78,8 +78,8 @@ public class PSP_ClusterInfo extends PSP_BaseAdapter implements PlanServiceProvi
 	    return true;
 	}
 	return false;
+      }
       };
-    };
   }
 
   /**
