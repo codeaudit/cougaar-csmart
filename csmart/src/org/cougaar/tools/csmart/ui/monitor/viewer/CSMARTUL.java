@@ -40,6 +40,7 @@ import org.cougaar.tools.csmart.ui.monitor.plan.ULPlanFrame;
 import org.cougaar.tools.csmart.ui.monitor.plan.ULPlanNode;
 import org.cougaar.tools.csmart.ui.monitor.society.ULSocietyFrame;
 import org.cougaar.tools.csmart.ui.monitor.society.ULSocietyNode;
+import org.cougaar.tools.csmart.ui.monitor.xml.XMLFrame;
 //import org.cougaar.tools.csmart.ui.monitor.topology.TopologyFrame;
 import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
@@ -78,6 +79,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private static final String EXIT_MENU_ITEM = "Exit";
   private static final String WINDOW_MENU = "Window";
   private static final String OPEN_GRAPH_MENU_ITEM = "Open Graph...";
+  private static final String OPEN_XML_MENU_ITEM = "Open XML File...";
   private static final String OPEN_METRIC_MENU_ITEM = "Open Metric...";
   private static final String SEPARATOR = "Separator";
 
@@ -176,6 +178,10 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     openGraphMenuItem.setToolTipText("Open a saved graph view.");
     openGraphMenuItem.addActionListener(this);
     openMenu.add(openGraphMenuItem);
+    JMenuItem openXMLMenuItem = new JMenuItem(OPEN_XML_MENU_ITEM);
+    openXMLMenuItem.setToolTipText("Open an xml file.");
+    openXMLMenuItem.addActionListener(this);
+    openMenu.add(openXMLMenuItem);
     JMenuItem openMetricMenuItem = new JMenuItem(OPEN_METRIC_MENU_ITEM);
     openMetricMenuItem.setToolTipText("Open a saved metrics view.");
     openMetricMenuItem.addActionListener(this);
@@ -234,19 +240,19 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
     if (csmart == null) {
       addWindowListener(new WindowAdapter() {
-	public void windowClosing(WindowEvent e) {
-	  System.exit(0);
-	}
-      });
+          public void windowClosing(WindowEvent e) {
+            System.exit(0);
+          }
+        });
       // if running standalone, then manage the windows created by this tool
       NamedFrame.getNamedFrame().addObserver(this);
     } else {
-      // if running under csmart, close windows we created when we're closed
+    // if running under csmart, close windows we created when we're closed
       addWindowListener(new WindowAdapter() {
-	public void windowClosing(WindowEvent e) {
-	  closeSubWindows();
-	}
-      });
+          public void windowClosing(WindowEvent e) {
+            closeSubWindows();
+          }
+        });
     }
 
     pack();
@@ -274,10 +280,10 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       if (nodes == null || nodes.length == 0)
         continue;
       for (int j = 0; j < nodes.length; j++) {
-	AgentComponent[] agents = nodes[j].getAgents();
-	// skip nodes that have no agents
-	if (agents == null || agents.length == 0)
-	  continue;
+ 	AgentComponent[] agents = nodes[j].getAgents();
+ 	// skip nodes that have no agents
+ 	if (agents == null || agents.length == 0)
+ 	  continue;
         // potential hosts and nodes
         agentHost = hosts[i].getShortName();
         Properties arguments = nodes[j].getArguments();
@@ -370,6 +376,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 //       makeTopologyGraph();
     } else if (s.equals(OPEN_GRAPH_MENU_ITEM)) {
       openGraph();
+    } else if (s.equals(OPEN_XML_MENU_ITEM)) {
+      openXMLFile();
     } else if (s.equals(OPEN_METRIC_MENU_ITEM)) {
       openMetrics();
     } else if (s.equals(MONITOR_MENU_ITEM)) {
@@ -428,6 +436,15 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     }
   }
 
+  private void openXMLFile() {
+    File file = readFile("xml", "xml files");
+    if (file != null && file.canRead()) {
+      CSMARTGraph graph = XMLFrame.createGraph(file);
+      if (graph != null)
+        new XMLFrame("Test", graph);
+    }
+  }
+
   private void openGraph() {
     File file = readFile("dot", "graph files");
     if (file != null && file.canRead()) {
@@ -437,9 +454,9 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       String fileName = file.getName();
       String graphType = 
 	(String)graph.getAttributeValue(CSMARTGraph.GRAPH_TYPE);
-      if (graphType == null)
-	return;
-      if (graphType.equals(CSMARTGraph.GRAPH_TYPE_COMMUNITY))
+      if (graphType.equals(CSMARTGraph.GRAPH_TYPE_XML))
+        new XMLFrame("Test", graph);
+      else if (graphType.equals(CSMARTGraph.GRAPH_TYPE_COMMUNITY))
 	new ULCommunityFrame(NamedFrame.COMMUNITY + ": <" + fileName + ">", graph);
       else if (graphType.equals(CSMARTGraph.GRAPH_TYPE_SOCIETY))
 	new ULSocietyFrame(NamedFrame.AGENT + ": <" + fileName + ">", graph);
@@ -508,11 +525,10 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private static void setExperimentToMonitor() {
     // ask user to select experiment from running experiments
     Experiment[] exp = CSMART.getRunningExperiments();
-
     Vector experimentNames = new Vector(exp.length + 1);
     for (int i = 0; i < exp.length; i++) {
       if (! experimentNames.contains(exp[i].getExperimentName()))
-	experimentNames.add(exp[i].getExperimentName());
+ 	experimentNames.add(exp[i].getExperimentName());
     }
     experimentNames.add("No experiment -- custom URL");
     JComboBox cb = new JComboBox(experimentNames);

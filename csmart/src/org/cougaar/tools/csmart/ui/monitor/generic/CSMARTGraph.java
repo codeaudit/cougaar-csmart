@@ -32,6 +32,7 @@ import java.awt.*;
 import java.io.*;
 import java.net.InetAddress;
 import java.rmi.server.UID;
+import java.util.regex.PatternSyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -41,6 +42,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
 
 /**
  * Display graph representing arbitrary objects.
@@ -56,6 +58,7 @@ public class CSMARTGraph extends Graph
   public static final String GRAPH_TYPE_PLAN = "Plan";
   public static final String GRAPH_TYPE_EVENTS = "Events";
   public static final String GRAPH_TYPE_THREAD = "Thread";
+  public static final String GRAPH_TYPE_XML = "XML";
   private static final String COLOR_SELECT = "colorSelect";
   private static final String RANK_ATTRIBUTE = "rank";
   private static final String RANK_SAME = "same";
@@ -873,10 +876,17 @@ public class CSMARTGraph extends Graph
 
   private void customizeGraph() {
     String graphType = (String)getAttributeValue(GRAPH_TYPE);
-    if (graphType != null && graphType.equals(GRAPH_TYPE_SOCIETY))
-      setAttribute(GrappaConstants.RANKDIR_ATTR, "TB");
-    else
-      setAttribute(GrappaConstants.RANKDIR_ATTR, "LR");
+    if (graphType != null) {
+//       if (graphType.equals(GRAPH_TYPE_SOCIETY) || 
+//           graphType.equals(GRAPH_TYPE_XML))
+//         setAttribute(GrappaConstants.RANKDIR_ATTR, "TB");
+//       else
+//         setAttribute(GrappaConstants.RANKDIR_ATTR, "LR");
+      if (graphType != null && graphType.equals(GRAPH_TYPE_SOCIETY))
+        setAttribute(GrappaConstants.RANKDIR_ATTR, "TB");
+      else
+        setAttribute(GrappaConstants.RANKDIR_ATTR, "LR");
+    }
     setNodeAttribute(GrappaConstants.FONTSIZE_ATTR, "12");
     setNodeAttribute(GrappaConstants.FONTNAME_ATTR, "Helvetica");
     // TODO: determine how to set selection color as this doesn't work
@@ -980,7 +990,7 @@ public class CSMARTGraph extends Graph
    * @return               vector of att.grappa.Element
    */
 
-  private Vector getHeadElements(Node node, Vector results) {
+  public Vector getHeadElements(Node node, Vector results) {
     Enumeration edges = node.outEdgeElements();
     while (edges.hasMoreElements()) {
       Edge edge = (Edge)edges.nextElement();
@@ -1420,6 +1430,37 @@ public class CSMARTGraph extends Graph
     return nodes;
   }
 
+  public Vector getNodesByRegex(String attributeNameRegex, 
+                                String attributeValueRegex) {
+    Vector nodes = new Vector();
+    try {
+      GraphEnumeration ge = elements(GrappaConstants.NODE);
+      while (ge.hasMoreElements()) {
+	Element e = ge.nextGraphElement();
+        Enumeration attrs = e.getAttributePairs();
+        while (attrs.hasMoreElements()) {
+          Attribute attr = (Attribute)attrs.nextElement();
+          String name = attr.getName();
+          String value = attr.getStringValue();
+          if (name.matches(attributeNameRegex) &&
+              value.matches(attributeValueRegex)) {
+            nodes.addElement(e);
+            break;
+          }
+        }
+      }
+    } catch (NullPointerException e) {
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTGraph: ", e);
+      }
+    } catch (PatternSyntaxException pse) {
+      if(log.isErrorEnabled()) {
+        log.error("CSMARTGraph: ", pse);
+      }
+    }
+    return nodes;
+  }
+
   /** 
    * Mark nodes for which the attribute value is
    * less than the given value.  Use the specified color to mark.
@@ -1709,7 +1750,7 @@ public class CSMARTGraph extends Graph
           continue;
 	}
  	edge.setAttribute(INVISIBLE_ATTRIBUTE, "true");
-	edge.visible = false;
+ 	edge.visible = false;
       }
       lastNode = node;
     }
