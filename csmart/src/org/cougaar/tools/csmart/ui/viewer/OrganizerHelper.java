@@ -70,6 +70,12 @@ public class OrganizerHelper {
   private DBConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(null);
 
+  private Organizer organizer;
+
+  public OrganizerHelper(Organizer organizer) {
+    this.organizer = organizer;
+  }
+
   /**
    * Create an experiment.
    * @return Experiment the new experiment or null if any error
@@ -101,8 +107,11 @@ public class OrganizerHelper {
       
       if(id != null) {
         String societyName = DBUtils.getSocietyName(id);
-        soc = new SocietyDBComponent(societyName, id);
-        soc.initProperties();
+        soc = (SocietyDBComponent)organizer.getSociety(societyName);
+        if (soc == null) {
+          soc = new SocietyDBComponent(societyName, id);
+          soc.initProperties();
+        } 
       } else {
         soc = null;
       }
@@ -144,13 +153,13 @@ public class OrganizerHelper {
       Iterator metIter = recipes.iterator();
       while (metIter.hasNext()) {
         DbRecipe dbRecipe = (DbRecipe) metIter.next();
-        RecipeComponent mc = createRecipe(dbRecipe.name, dbRecipe.cls);
-        setRecipeComponentProperties(dbRecipe, mc);
-	((RecipeBase)mc).resetModified();
-
-	// FIXME! Needed?
-	((RecipeBase)mc).installListeners();
-
+        RecipeComponent mc = organizer.getRecipe(dbRecipe.name);
+        if (mc == null) {
+          mc = createRecipe(dbRecipe.name, dbRecipe.cls);
+          setRecipeComponentProperties(dbRecipe, mc);
+          ((RecipeBase)mc).resetModified();
+          ((RecipeBase)mc).installListeners();
+        }
         AgentComponent[] recagents = mc.getAgents(); 
         if (recagents != null && recagents.length > 0) {
           agents.addAll(Arrays.asList(recagents));
@@ -207,7 +216,6 @@ public class OrganizerHelper {
         log.error("RuntimeException saving experiment " + experimentName, e);
       }
     }
-    //    soc.resetModified();
     experiment.resetModified(); // the experiment is NOT modified at this point
     return experiment;
   }
@@ -624,11 +632,14 @@ public class OrganizerHelper {
               new DbRecipe(rs.getString(2), Class.forName(rs.getString(3)));
             getRecipeProperties(dbRecipe, conn, substitutions);
             dbRecipe.name = recipeName;
-            rc = createRecipe(dbRecipe.name, dbRecipe.cls);
-            setRecipeComponentProperties(dbRecipe, rc);
-            ((RecipeBase)rc).resetModified();
-            ((RecipeBase)rc).installListeners();
-            //return rc;
+            rc = organizer.getRecipe(dbRecipe.name);
+            if (rc == null) {
+              rc = createRecipe(dbRecipe.name, dbRecipe.cls);
+              setRecipeComponentProperties(dbRecipe, rc);
+              ((RecipeBase)rc).resetModified();
+              ((RecipeBase)rc).installListeners();
+            }
+            return rc;
           } catch (ClassNotFoundException cnfe) {
             if(log.isErrorEnabled()) {
               log.error("for recipe", cnfe);
@@ -656,48 +667,12 @@ public class OrganizerHelper {
     if (rc != null && dbRecipe != null && dbRecipe.props != null)
       rc.setProperties(dbRecipe.props);
   }
-//     for (Iterator i = dbRecipe.props.keySet().iterator(); i.hasNext(); ) {
-//       try {
-//         String propName = (String) i.next();
-//         String propValue = (String) dbRecipe.props.get(propName);
-//         Property prop = rc.getProperty(propName);
-//         if (prop == null) {
-//           if(log.isErrorEnabled()) {
-//             log.error("Unknown property: " + propName + "=" + propValue + " in recipe " + dbRecipe.toString());
-//           }
-// 	  if (log.isDebugEnabled()) {
-// 	    log.debug("Recipe " + rc.getRecipeName() + " has properties: ");
-// 	    for (Iterator pnames = rc.getPropertyNames(); pnames.hasNext(); ) {
-// 	      log.debug((String)pnames.next().toString());
-// 	    }
-// 	  }
-//         } else {
-//           Class propClass = prop.getPropertyClass();
-// 	  if (log.isDebugEnabled() && propClass == null) {
-// 	    log.debug("null prop class for Prop name: " + propName + ", value " + propValue + " property: " + prop.toString());
-// 	  }
-//           Constructor constructor = 
-//             propClass.getConstructor(new Class[] {String.class});
-//           Object value = constructor.newInstance(new Object[] {propValue});
-//           prop.setValue(value);
-// 	  if (log.isDebugEnabled()) {
-// 	    log.debug("Setting value for property " + prop.getName().toString() + " with label " + prop.getLabel());
-// 	  }
-//         }
-//       } catch (Exception e) {
-// 	if (log.isErrorEnabled()) {
-// 	  log.error("Exception setting recipe component properties", e);
-// 	}
-//       }
-//     }
-//   }
-
   private static Class[] singleStringConstructor = {String.class};
 
   private static Class[] twoStringConstructor = {String.class, String.class};
 
   private static Class[] multiConstructor = {String.class, String[].class};
-
+  
   public RecipeComponent createRecipe(String name, Class cls) {
     createLogger();
     
@@ -706,6 +681,8 @@ public class OrganizerHelper {
       RecipeComponent recipe =
   	(RecipeComponent) constructor.newInstance(new String[] {name});
       recipe.initProperties();
+      ((RecipeBase)recipe).resetModified();
+      ((RecipeBase)recipe).installListeners();
       return recipe;
     } catch (Exception e) {
       if (log.isErrorEnabled()) {

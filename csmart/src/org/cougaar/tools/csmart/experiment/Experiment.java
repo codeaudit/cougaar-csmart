@@ -56,6 +56,7 @@ import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.core.property.name.ComponentName;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.recipe.RecipeBase;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyBase;
@@ -144,7 +145,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   // Mark whether the experiment has been modified
   // and should be saved
   private boolean modified = true;
-  private boolean societyModified = false;
 
   ////////////////////////////////////////////
   // Constructors
@@ -312,7 +312,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     if (this.societyComponent != null)
       removeSocietyComponent();
     this.societyComponent = society;
-    societyModified = society.isModified();
     installListeners((ModifiableConfigurableComponent)society);
     fireModification();
   }
@@ -528,7 +527,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @return whether or not an experiment is runnable
    */
   public boolean isRunnable() {
-    if (!hasConfiguration() || hasUnboundProperties() || modified || societyModified)
+    if (!hasConfiguration() || hasUnboundProperties() || modified)
       return false;
     return !runInProgress; // allow user to run experiment they're editing
   }
@@ -1098,27 +1097,22 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   /**
    * If the experiment was saved, let the listeners know,
    * but don't mark our modified flag.
-   * If the society was changed, tell the listeners that the
+   * If the society or any recipe was changed, tell the listeners that the
    * experiment changed.
-   * If the society was saved (and the experiment was otherwise unmodified), 
-   * tell the listeners that the experiment
-   * is saved (i.e. no longer modified).
+   * If the society or recipe was saved, ignore this,
+   * as the experiment must still be saved.
    */
   private void notifyExperimentListeners(ModificationEvent e) {
-    if (e.getWhatChanged() == EXPERIMENT_SAVED)
+    if (e.getWhatChanged() == EXPERIMENT_SAVED) {
       super.fireModification();
-    else if (e.getSource().equals(societyComponent)) {
-      boolean wasModified = isModified();
-      if (e.getWhatChanged() == SocietyBase.SOCIETY_SAVED) {
-        societyModified = false;
-      } else {
-        societyModified = true;
-      }
-      // notify listeners only if overall modification status changed
-      if (isModified() != wasModified)
-        super.fireModification();
-    } else
-      fireModification();
+      return;
+    }
+    if (e.getWhatChanged() == SocietyBase.SOCIETY_SAVED ||
+        e.getWhatChanged() == RecipeBase.RECIPE_SAVED)
+      return;
+    // an experiment, society, or recipe was changed, 
+    // mark this experiment as modified, and notify the listeners
+    fireModification();
   }
 
   public void fireModification() {
@@ -2138,7 +2132,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * @return true if experiment has been modified
    */
   public boolean isModified() {
-    return modified || societyModified;
+    return modified;
   }
 
   /**

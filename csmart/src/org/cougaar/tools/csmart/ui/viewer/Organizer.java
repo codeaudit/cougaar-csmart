@@ -69,6 +69,7 @@ import org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe;
 import org.cougaar.tools.csmart.recipe.RecipeList;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.society.db.SocietyDBComponent;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.tools.csmart.society.ui.SocietyUIComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -112,7 +113,10 @@ public class Organizer extends JScrollPane {
   private UniqueNameSet folderNames = new UniqueNameSet("Folder");
 
   // define helper class
-  private OrganizerHelper helper = new OrganizerHelper();
+  private OrganizerHelper helper;
+
+  private ArrayList societies = new ArrayList();
+  private ArrayList recipes = new ArrayList();
   
   /**
    * Construct a workspace, i.e. an user interface for a tree
@@ -123,6 +127,7 @@ public class Organizer extends JScrollPane {
   public Organizer(CSMART csmart) {
     this(csmart, null);
     organizer = this;
+    helper = new OrganizerHelper(this);
   }
   
   /**
@@ -135,7 +140,7 @@ public class Organizer extends JScrollPane {
    */
   public Organizer(CSMART csmart, String workspaceFileName) {
     createLogger();
-    
+    helper = new OrganizerHelper(this);
     initRecipes();
 
     setPreferredSize(new Dimension(400, 100));
@@ -241,6 +246,43 @@ public class Organizer extends JScrollPane {
       metNameClassItems[i] = new NameClassItem(RecipeList.getRecipeName(i), 
                                             RecipeList.getRecipeClass(i));
     }
+  }
+
+  private void addSocietyToList(SocietyComponent sc) {
+    if (!societies.contains(sc)) {
+      societies.add(sc);
+    }
+  }
+
+  private void removeSocietyFromList(SocietyComponent sc) {
+    societies.remove(sc);
+  }
+
+  public SocietyComponent getSociety(String name) {
+    for (int i = 0; i < societies.size(); i++) {
+      SocietyComponent sc = (SocietyComponent)societies.get(i);
+      if (sc.getSocietyName().equals(name))
+        return sc;
+    }
+    return null;
+  }
+
+  private void addRecipeToList(RecipeComponent rc) {
+    if (!recipes.contains(rc))
+      recipes.add(rc);
+  }
+
+  private void removeRecipeFromList(RecipeComponent rc) {
+    recipes.remove(rc);
+  }
+
+  public RecipeComponent getRecipe(String name) {
+    for (int i = 0; i < recipes.size(); i++) {
+      RecipeComponent rc = (RecipeComponent)recipes.get(i);
+      if (rc.getRecipeName().equals(name))
+        return rc;
+    }
+    return null;
   }
 
   ///////////////////////////////////////  
@@ -520,6 +562,7 @@ public class Organizer extends JScrollPane {
       parentNode = (DefaultMutableTreeNode)node.getParent();
     DefaultMutableTreeNode newNode = 
       addSocietyToWorkspace(sc, (DefaultMutableTreeNode)parentNode);
+    addSocietyToList(sc);
   }
   
   /////////////////////////////////
@@ -892,21 +935,35 @@ public class Organizer extends JScrollPane {
     } // end of else block
   } // end of selectExpFromDB
 
+  // return true if component is in workspace
+  // and is not the child of an experiment
+  private boolean isInWorkspace(ModifiableComponent mc) {
+    Enumeration nodes = root.depthFirstEnumeration();
+    while (nodes.hasMoreElements()) {
+      DefaultMutableTreeNode node = 
+	(DefaultMutableTreeNode)nodes.nextElement();
+      if (node.getUserObject().equals(mc)) {
+        DefaultMutableTreeNode parentNode =
+          (DefaultMutableTreeNode)node.getParent();
+        Object parentObject = parentNode.getUserObject();
+        if (parentObject != null && !(parentObject instanceof Experiment)) 
+          return true;
+      }
+    }
+    return false;
+  }
+
   private void addExperimentAndComponentsToWorkspace(Experiment experiment,
                                        DefaultMutableTreeNode node) {
     DefaultMutableTreeNode expNode = 
       addExperimentToWorkspace(experiment, node);
     SocietyComponent societyComponent = experiment.getSocietyComponent();
     String societyName = societyComponent.getSocietyName();
-    // add editable societies and recipes as siblings of experiment
-    // only if these aren't already in the workspace
-    if (!societyNames.contains(societyName)) {
-      societyNames.add(societyName);
+    if (!isInWorkspace(societyComponent))
       addSocietyToWorkspace(societyComponent, node);
-    }
     RecipeComponent[] recipes = experiment.getRecipeComponents();
     for (int i = 0; i < recipes.length; i++)
-      if (!recipeNames.contains(recipes[i].getRecipeName()))
+      if (!isInWorkspace(recipes[i]))
         addRecipeToWorkspace(recipes[i], node);
     // add non-editable societies and recipes
     // as children of experiment
@@ -1160,43 +1217,11 @@ public class Organizer extends JScrollPane {
 	return;
     }
     model.removeNodeFromParent(societyNode);
-//      int result =
-//        JOptionPane.showConfirmDialog(this,
-//                                      "Delete society " +
-//                                      society.getSocietyName() +
-//                                      " from all experiments?",
-//                                      "Delete Society",
-//                                      JOptionPane.YES_NO_OPTION,
-//                                      JOptionPane.WARNING_MESSAGE);
-//      if (result == JOptionPane.NO_OPTION) {
-//        return; // just delete this node
-//      }
-
-//      // delete society from all experiments in the workspace
-//      // and warn user to resave them
-//      displayExperimentsInWorkspace(society);
-//      ArrayList nodesToDelete = new ArrayList();
-//      Enumeration nodes = root.depthFirstEnumeration(); 
-//      while (nodes.hasMoreElements()) {
-//        DefaultMutableTreeNode node = 
-//          (DefaultMutableTreeNode)nodes.nextElement();
-//        Object o = node.getUserObject();
-//        if (o instanceof Experiment) {
-//          Experiment exp = (Experiment)o;
-//          if (exp.getSocietyComponent().equals(society))
-//            exp.removeSocietyComponent();
-//        } else if (society.equals(o)) {
-//          nodesToDelete.add(node);
-//        }
-//      }
-//      // remove nodes containing this society
-//      for (int i = 0; i < nodesToDelete.size(); i++)
-//        model.removeNodeFromParent((DefaultMutableTreeNode)nodesToDelete.get(i));
-
     // if deleted last reference to society in the workspace
     // ask if society should be deleted from database and delete it
     if (findNodeNamed(society.getSocietyName()) != null)
         return;
+    removeSocietyFromList(society);
     int answer =
       JOptionPane.showConfirmDialog(this,
                                     "Delete society " +
@@ -1215,7 +1240,6 @@ public class Organizer extends JScrollPane {
 	}
       }
     }
-    societyNames.remove(society.getSocietyName());
   }
 
   protected void deleteRecipe() {
@@ -1531,11 +1555,18 @@ public class Organizer extends JScrollPane {
       return;
     }
     model.removeNodeFromParent(componentNode);
+    // only remove name if the component is nowhere else in the workspace
     if (component instanceof SocietyComponent) {
-      societyNames.remove(component.getShortName());
+      if (findNode(component) == null) {
+        societyNames.remove(component.getShortName());
+        removeSocietyFromList((SocietyComponent)component);
+      }
       addSocietyToWorkspace((SocietyComponent)newComponent, expNode);
     } else if (component instanceof RecipeComponent) {
-      recipeNames.remove(component.getShortName());
+      if (findNode(component) == null) {
+        recipeNames.remove(component.getShortName());
+        removeRecipeFromList((RecipeComponent)component);
+      }
       addRecipeToWorkspace((RecipeComponent)newComponent, expNode);
     }
   }
@@ -1796,6 +1827,7 @@ public class Organizer extends JScrollPane {
     societyNames.add(sc.getSocietyName());
     workspace.setSelection(newNode);
     installListeners(sc);
+    addSocietyToList(sc);
     return newNode;
   }
 
@@ -1807,6 +1839,7 @@ public class Organizer extends JScrollPane {
     recipeNames.add(recipe.getRecipeName());
     workspace.setSelection(newNode);
     installListeners(recipe);
+    addRecipeToList(recipe);
     return newNode;
   }
   
@@ -2072,12 +2105,14 @@ public class Organizer extends JScrollPane {
 	    DefaultMutableTreeNode node =
 	      (DefaultMutableTreeNode) e.nextElement();
 	    Object o = node.getUserObject();
-	    if (o instanceof Experiment) {
-	      ((Experiment)o).addModificationListener(myModificationListener);
-	      // This used to be just Societies, but do it for everything...
-	    } else if (o instanceof ModifiableComponent) {
-	      installListeners((ModifiableComponent) o);
-	    }
+            if (o instanceof ModifiableComponent)
+  	      installListeners((ModifiableComponent) o);
+            if (o instanceof SocietyComponent &&
+                getSociety(((SocietyComponent)o).getSocietyName()) == null)
+              addSocietyToList((SocietyComponent)o);
+            else if (o instanceof RecipeComponent &&
+                     getRecipe(((RecipeComponent)o).getRecipeName()) == null)
+              addRecipeToList((RecipeComponent)o);
 	  } // end of for loop
 //          } catch (ClassNotFoundException cnfe) {
 //          } catch (InvalidClassException ice) {
@@ -2189,16 +2224,13 @@ public class Organizer extends JScrollPane {
     };
   
   protected boolean exitAllowed() {
-    //    synchronized(root) {
     synchronized(lockObject) {
       if (updateNeeded) {
 	nextUpdate = System.currentTimeMillis();
-        //	root.notify();
         lockObject.notify();
 	while (updateNeeded) {
 	  try {
             lockObject.wait();
-            //	    root.wait();
 	  } catch (InterruptedException ie) {
 	  }
 	}
@@ -2241,7 +2273,6 @@ public class Organizer extends JScrollPane {
 	super.start();
       }
       public void run() {
-        //	synchronized (root) {
 	synchronized (lockObject) {
 	  while (true) {
 	    try {
@@ -2249,16 +2280,13 @@ public class Organizer extends JScrollPane {
 	      if (updateNeeded && now > nextUpdate) {
 		save(workspaceFileName);
 		updateNeeded = false;
-                //		root.notifyAll(); // In case anyone's waiting for the update to finish
                 lockObject.notifyAll(); // In case anyone's waiting for the update to finish
 	      } else if (updateNeeded) {
 		long delay = nextUpdate - now;
 		if (delay > 0) {
-                  //		  root.wait(delay);
                   lockObject.wait(delay);
-                            }
+                }
 	      } else {
-                //		root.wait();
                 lockObject.wait();
 	      }
 	    } catch (InterruptedException ie) {
@@ -2269,11 +2297,9 @@ public class Organizer extends JScrollPane {
     };
   
   private void update() {
-    //    synchronized (root) {
     synchronized (lockObject) {
       nextUpdate = System.currentTimeMillis() + UPDATE_DELAY;
       updateNeeded = true;
-      //      root.notify();
       lockObject.notify();
     }
   }
