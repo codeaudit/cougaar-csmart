@@ -43,8 +43,20 @@ public class NodeArgumentDialog extends JDialog {
     // ok and cancel buttons panel
     JPanel buttonPanel = new JPanel();
     JButton okButton = new JButton("OK");
+    // if user confirms the dialog and hasn't terminated editing a table cell
+    // then get the value from that cell editor and set it in the cell
     okButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
+        Component c = argTable.getEditorComponent();
+        if (c != null)
+          if (c instanceof JTextField) {
+            int rowIndex = argTable.getEditingRow();
+            int colIndex = argTable.getEditingColumn();
+            if (rowIndex != -1 && colIndex != -1)
+              argTable.getModel().setValueAt(((JTextField)c).getText(),
+                                             rowIndex, colIndex);
+          } else
+            System.out.println("Unexpected editor class: " + c.getClass());
         setVisible(false);
       }
     });
