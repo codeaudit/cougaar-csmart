@@ -11,7 +11,14 @@
 The Experiment Controller is used to control running an experiment. 
 The Experiment Controller is enabled only when an experiment 
 is selected in the workspace.
-<p>The Experiment Controller collects and displays all output from the nodes in the experiment, and provides several facilities for automatically and manually searching this ouput, and notifying the user of error conditions.
+<p>The Experiment Controller collects and displays all output from the nodes in the experiment, and provides several facilities for automatically and manually searching this ouput, and notifying the user of error conditions.<br>
+The Experiment Controller also allows the user to run through all Trials
+automatically, to stop after a Trial completes, or to abort a Trial.
+Trials are defined in the Experiment Builder.
+A Trial is one "run" of a Society with all Unbound Properties bound
+to one set of values as specified in the Experiment Builder.<br>  
+<i>Note: Currently, Experiments do not use Societies with Unbound Properties; these experiments 
+have one trial, and the user interface is simplified accordingly.</i>
 <p>Note that you must separately launch the AppServer on each host used in
 the experiment. See the installation instructions for running the Server.
 <br>
@@ -20,9 +27,9 @@ A typical usage would be to <ol>
 <li>Start the AppServers.</li>
 <li>Set the node output <a href="#FILTER">filters</a>, <a href="#VSIZE">view buffer size</a>, and
 <a href="#Notify">notifications</a>.</li>
-<li>Start the experiment</li>
-<li>Monitor the node's output</li>
-<li><a href="#GLS">Publish</a> the OPLAN and send GLS Root</li>
+<li>Start the Experiment</li>
+<li>Monitor the Node's output</li>
+<li><a href="#GLS">Publish</a> the OPLAN and send GLS Root, where appropriate</li>
 <li>Launch the Society Monitor</li>
 </ol>
 <p>
@@ -117,7 +124,8 @@ Windows menu.</li> The types of messages that can be displayed are:
 </li>
 <li>Idle: Controls the color of the node status button and provides data for the Utilization History graph (which can be displayed from the Node Window Menu).
 </li>
-<li>Heartbeat: An "@" written periodically to indicate that the Node is running.
+<li>Heartbeat: An "@" written periodically to indicate that the Node
+is running. (Obsolete)
 </li>
 </ul>
 </ul>
@@ -202,13 +210,16 @@ publishing an Oplan, and sending or rescinding the GLS Root task. This
 interface uses a servlet to communicate with the command node (usually
 NCA). To use this interface:
 <ul>
-<li>Wait for the Node creation to quiesce.</li>
+<li>Wait for the Node creation to quiesce (this wait is very important).</li>
 <li>Hit the "Connect" button, and</li>
 <li>then immediately the "Publish OPLAN"
 button.</li>
 <li>Wait for the OPLAN publishing work to quiesce.</li>
 <li>Publish GLS Root</li>
 <li>You may then rescind that task, or publish another</li>
+<li>If after publishing the OPLAN the GLS UI does not update to
+reflect that, you may have hit the "Connect" button too early. For
+this run, try instead the standalone CIP/bin/GLSInit.[bat/sh] UI.</li>
 </ul>
 <br>
 <h3>Notes:</h3>
