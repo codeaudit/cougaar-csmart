@@ -27,6 +27,7 @@ import javax.swing.*;
 
 import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.tools.csmart.core.db.CMT;
 import org.cougaar.tools.csmart.experiment.Experiment;
 
 public class ThreadBuilder extends JPanel {
@@ -38,10 +39,7 @@ public class ThreadBuilder extends JPanel {
     "Ammunition (Class 5)",
     "Spare Parts (Class 9)"
   };
-  // thread names passed to database
-  private static final String[] ULDBThreads = {
-    "CLASS-1", "CLASS-3", "CLASS-4", "CLASS-5", "CLASS-9"
-  };
+  // thread names passed to database will be CMT.ULDBThreads
   private String[] groupNames;
   private ArrayList groupCheckBoxes = new ArrayList();
   private ArrayList ULThreadCheckBoxes = new ArrayList();
@@ -89,7 +87,7 @@ public class ThreadBuilder extends JPanel {
     for (int i = 0; i < ULThreads.length; i++) {
       JCheckBox cb = new JCheckBox(ULThreads[i]);
       boolean sel = 
-        ExperimentDB.isULThreadSelected(trialId, ULDBThreads[i]);
+        ExperimentDB.isULThreadSelected(trialId, CMT.ULDBThreads[i]);
       ULThreadCheckBoxes.add(cb);
       cb.setSelected(sel);
       originalThreadSelected.add(new Boolean(sel));
