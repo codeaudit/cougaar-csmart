@@ -1167,7 +1167,7 @@ public class PopulateDb extends PDbBase {
     if (data.getType().equals(ComponentData.AGENT)) {
       if (!assemblyId.equals(hnaAssemblyId)) {
 	// isAdded: was this agent just added to the hierarchy
-	populateAgent(data, isAdded);
+	populateAgent(data, true);
 	result = true;
       } else {
 	// If this is an Agent and we're in the CSHNA assembly,
@@ -1493,18 +1493,19 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":attribute_name:", sqlQuote(propName));
     // FIXME:  Below is a hack, as an attempt to run past this point.
     // Really should figure out why propSubtype is sometimes null.
-    substitutions.put(":attribute_type:", 
-                      sqlQuote((propSubtype == null) ? "String" : propSubtype));
+    if(propSubtype == null && log.isWarnEnabled()) {
+      log.warn("PropSubtype is NULL for: " + propName + "(type)" + propType);
+    }
+
     if(propType.equalsIgnoreCase("Collection")) {
       substitutions.put(":aggregate_type:", sqlQuote("COLLECTION"));
+      substitutions.put(":attribute_type:", 
+                        sqlQuote((propSubtype == null) ? "String" : propSubtype));
     } else {
       substitutions.put(":aggregate_type:", sqlQuote("SINGLE"));
+      substitutions.put(":attribute_type:", sqlQuote(propType)); 
     }
-    log.debug("att_lib: " + substitutions.get(":attribute_lib_id:"));
-    log.debug("pg_name: " + substitutions.get(":pg_name:"));
-    log.debug("att_name: " + substitutions.get(":attribute_name:"));
-    log.debug("att_type: " + substitutions.get(":attribute_type:"));
-    log.debug("agg_type: " + substitutions.get(":aggregate_type:"));
+    log.debug("attribute_type: " + substitutions.get(":attribute_type:"));
     executeUpdate(dbp.getQuery("insertLibPGAttribute", substitutions));
   }
 
