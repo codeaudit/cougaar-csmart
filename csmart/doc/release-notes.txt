@@ -8,15 +8,34 @@ mysql -f -u [user] -p[pw] [db] < mysqldump.9.2.txt
   Adaptive Logistics thread, the configuration CFW database now supports
   multiple plugins of the same class in the same Agent. If you plan to
   run the Adaptive Logistics society, you must re-load your
-  configuration database, following the instructions in InstallAndTest.html
+  configuration database, following the instructions in
+  InstallAndTest.html
+- Added the CommunityPlugin to all regular Agents in base 1AD CSMART Experiments. You no
+  longer need to add it to your Agents. However, you must still add it
+  to any NodeAgents where you want to do community work.
+- In addition, note that the default configs/common/LDMDomains.ini now
+  loads the Community Domain, so no recipe is required to do so.
 - New Communities editing window. This window allows users to easily
   create new Communities with arbitrary attributes, and add Agents (or
   Communities) to those Communities, with arbitrary attributes. All
   community data is stored on a per-experiment basis, and loaded at
   run-time using the standard DBInitializer. To use this editor,
   select the "Communities" tab in the Experiment Builder.
-- CSMART code changes to correctly handle various database IDs. (bug 1465)
-- Bug 1466: But configuration database url in the version info CSMART prints.
+- CSMART code changes to correctly handle various database IDs. (bug
+  1465)
+- Bug 533: Improved javadoc to include @property tags
+- Bug 1428: Now deleted or renamed queries in recipeQueries.q are
+  reflected in the recipe query drop-down and at save time. Note that,
+  as before, if you remove a query, any recipes that used it will not be
+  invalid and need to be both modified and re-saved.
+- Bug 1469: Changed label for using built-in recipes to say "From
+  Template" for clarity - no functionality changed.
+- Bug 789: Add the Cougaar javadoc Parameters.html to the Experiment
+  Builder Help menu for ideas on some Node Properties to set.
+- Bug 1439: If a drop-down list is open (ie in the Configuration
+  Builder) and you kill that window, you get an NPE. This appears to be
+  a JDK bug, and will be logged as a warning.
+- Bug 1466: Put configuration database url in the version info CSMART prints.
 - Force Agent Insertion recipes to always include an Org Asset. This
   way, all non-Node Agents appear in the CSMART Society Monitor. (bug
   1446)
@@ -24,7 +43,7 @@ mysql -f -u [user] -p[pw] [db] < mysqldump.9.2.txt
   (bug 1447).
 - Bug 1441: Restrict recipe arguments that need to be positive to a
   positive range.
-- Bug 1474: Allow Nodes and Hosts to have same name, but not Nodes and Agents.
+- Bug 1474 (partial fix): Allow Nodes and Hosts to have same name, but not Nodes and Agents.
 - Bug 1446: Include the JDBC URL for the CSMART DB in the version
   information printed on error and at startup. And re-enable it on the
   Help menu under Show Version.
