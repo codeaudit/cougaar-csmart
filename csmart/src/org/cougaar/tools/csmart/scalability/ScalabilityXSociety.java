@@ -325,7 +325,8 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
     int nLevels = getLevelCount();
     int providerCount = 0;
     for (int i = 0; i < nLevels; i++) {
-      providerCount += agentCount[Math.min(i, agentCount.length)];
+      // AMH - dont access spot in array equal to length, only to length-1
+      providerCount += agentCount[Math.min(i, agentCount.length - 1)];
     }
     if (propProviderCount != null) {
       propProviderCount.setValue(new Integer(providerCount));
