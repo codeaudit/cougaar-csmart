@@ -200,7 +200,7 @@ public class UnboundPropertyBuilder extends JPanel {
     tree.expandNode(societies);
     tree.expandNode(recipes);
     tree.addMouseListener(mouseListener);
-    tree.setPreferredSize(new Dimension(250, 200));
+    //    tree.setPreferredSize(new Dimension(250, 200));
     model.addTreeModelListener(myTreeModelListener);
     tree.addTreeSelectionListener(myTreeSelectionListener);
 
