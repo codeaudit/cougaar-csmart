@@ -18,22 +18,16 @@ Builder, any unbound properties (properties for which no value was assigned in
 the Configuration Builder) will be displayed.
 You will then be able
 to specify a set of experimental trials varying the values of those properties.
-You may also add External Impacts to subject the
-running society to, or Experimental Metrics to collect. To add a recipe
-to your experiment, create one in your workspace organizer,
+You may also add Recipes to the experiment to modify the behavior of the society in various ways (collect run-time statistics, add simulated behaviors, etc).
+To add a recipe to your experiment, create one in your workspace organizer,
 and drag it into the appropriate folder here. 
 <br>
 <b>Metric Recipe Note:</b> 
-All societies use the same hard-wired set of metrics. To tune how those
+All built-in societies use the same hard-wired set of metrics. To tune how those
 metrics are collected, use the society-specific parameters. 
 <br>
-<b>Impact Recipe Note:</b>
-The only choice for an Impact with any functionality is the &quot;ABC Impact&quot;
-type. This impact only works in part, and cannot effect a society. This
-will be possible with the next patch release of Cougaar core, which will
-have the necessary Binder support. This impact must be configured by creating
-an appropriate impact component and dragging it into the experiment. Note that all 
-changes to your experiment are saved automatically in your workspace.
+Note that all 
+changes to your experiment are saved automatically in your workspace, but you should explicitly select File->Save to ensure your changes are saved to the database, when using database societies.
 <br>&nbsp;
 <h3>Societies</h3>
 An experiment is currently restricted to include one society. However,
@@ -42,13 +36,13 @@ that society may then be varied across one or more dimensions.
 Each variation on a society to be run as part of an experiment is a trial.
 A trial represents a full specification of one run in an experiment. Thus
 it includes a society, specific values for some otherwise un-specified
-parameters, the set of impacts and metrics to be collected, and the specific
+parameters, the set of recipes to be collected, and the specific
 hardware to be used. Associated with a trial may also be some metrics results.
 Note that experiments from databases cannot currently be modified to produce
 multiple trials.
 <h2>Recipes</h2>
-An experiment an contain any number of recipes.  Recipes are defined modifications
-to a specific society.
+An experiment can contain any number of recipes.  Recipes are defined modifications
+to a specific society, and will be applied in the order in which they are listed under the Recipes folder.
 
 <h3>Impact Recipes</h3>
 Use the Experiment Builder to include a set of simulated external impacts
@@ -66,20 +60,12 @@ Typically, these statistics come from the core Metrics Service. In future,
 they will also come from the QuO run-time kernel service, or other user-specified
 sources.
 <br>As the society runs, these metrics are typically recorded in results
-files (one per agent). Use the <a href="../analyzer/help.html">Performance Analyzer</a> to retrieve these results
-files for client-side analysis.
-<br>For this release, the societies specify the metrics, which come primarily
-from the Metrics Service. Use the <a href="../builder/help.html">Configuration Builder</a> to tune the frequency
-of collection. The set of metrics collected is currently identical in each
-society, and not yet tunable. As the society runs, periodic statistic snapshots
+files (one per agent). Use the <a href="../analyzer/help.html">Performance Analyzer</a> to retrieve these results files for client-side analysis.
+As the society runs, periodic statistic snapshots
 are collected, and written to a tab separated value text file (one file
 per agent). See <a href="../../societies/abcsociety/basic-metric-help.html">Basic Metric Help</a> for detailed metrics collection information.
 <br><br>
 Additional Impacts and Metrics will be available in a future release.
-<br><br>Future releases will support specifying which metrics should be collected
-for a given experiment. Currently, all societies record the same metrics.
-The details of when the societies record those numbers are controlled from
-the Configuration Builder tool.
 <h3>Component Recipes</h3>
 Component Recipes provide the ability to add a new component to a specific set
 of agents within a society.  For more information on Component Recipies,
@@ -88,13 +74,13 @@ see the documentation for a specific Component Recipe.
 <h3>Using the Experiment Builder</h3>
 The following explains usage of each of the tabbed panes:
 <h4>Properties</h4>
-To edit the tree on the left, create a Society, Impact or Metric in your 
+To edit the tree on the left, create a Society or Recipe in your 
 workspace organizer and drag it into the appropriate folder in the tree.
 To delete an item in the tree, position the mouse over the item and click the
 right mouse button; a pop-up window will be displayed allowing you to delete
 the item, or, for a folder, to delete all the items in the folder.
 <br>
-To edit Unbound Properties in the table, select a Society, Impact or Metric in the tree on the left.  The Unbound Properties (properties for which no value 
+To edit Unbound Properties in the table, select a Society or Recipe in the tree on the left.  The Unbound Properties (properties for which no value 
 was set in the Configuration Builder) are displayed on the right.  Enter a
 set of comma separated values to be used in trials.
 <br>
@@ -109,13 +95,13 @@ The configuration of Hosts, Unassigned Nodes, and Unassigned Agents
 can be modified using pop-up menus or by drag-and-drop. Agents can be dropped
 on nodes; nodes can be dropped on hosts. Create, delete, and rename hosts
 and nodes by right clicking on a host or node to display a pop-up menu
-with these options. Agents are created by Societies and cannot be created,
+with these options. Agents are created by Societies or Recipes and cannot be created,
 deleted or renamed in the Experiment Builder. Unassigned Agents are
 agents not assigned to a node.
 
 <ol>
 <li>
-In the Hosts tree, create an entry for each host to be used in the experiment.
+In the Hosts tree, create an entry for each host to be used in the experiment. Note that for database experiments, the hosts defined for the experiment are saved and will re-appear here when others use this experiment. 
 An entry for a host can be created:
 
 <ul>
@@ -138,7 +124,7 @@ usually indicates a problem in specifying the host name. Try using an IP address
 host name.</li></ul></li>
 
 <li>
-Create a node or nodes for each host to be used in the experiment. Click
+Create a node or nodes for each host to be used in the experiment. Note that for database experiments, the full set of Nodes available in the Database is displayed in the unassigned window by default.  Click
 the right mouse button over the host folder in the "Hosts" tree, and select
 "New Node" from the menu. A pop-up dialog is displayed in which to enter
 the name of the node.</li>
