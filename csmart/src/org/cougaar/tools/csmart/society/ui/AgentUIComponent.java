@@ -36,6 +36,7 @@ import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.AgentBase;
 import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.society.BinderBase;
+import org.cougaar.tools.csmart.society.ComponentBase;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
 
@@ -83,6 +84,12 @@ public class AgentUIComponent
 
   protected void addBinders() {
 //     ContainerBase container = new ContainerBase("Binders");
+//     container.initProperties();
+//     addChild(container);
+  }
+
+  protected void addComponents() {
+//     ContainerBase container = new ContainerBase("Other Components");
 //     container.initProperties();
 //     addChild(container);
   }
