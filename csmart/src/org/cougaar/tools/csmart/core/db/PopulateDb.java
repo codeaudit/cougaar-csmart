@@ -289,6 +289,9 @@ public class PopulateDb extends PDbBase {
     private void cleanTrial(String cmtType, String hnaType, String csmiType, String oldTrialId)
         throws SQLException
     {
+      if(log.isDebugEnabled()) {
+        log.debug("Cleaning: " + cmtType +", " + hnaType+", " + csmiType+", " + oldTrialId);
+      }
         substitutions.put(":trial_id:", oldTrialId);
         substitutions.put(":cmt_type:", cmtType);
         substitutions.put(":hna_type:", hnaType);
@@ -310,8 +313,14 @@ public class PopulateDb extends PDbBase {
             assembliesToDelete.append(")");
             substitutions.put(":assemblies_to_clean:", assembliesToDelete.toString());
             executeUpdate(dbp.getQuery("cleanTrialAssembly", substitutions));
+            executeUpdate(dbp.getQuery("cleanASBAssembly", substitutions));
+            executeUpdate(dbp.getQuery("cleanASBComponentArg", substitutions));
+            executeUpdate(dbp.getQuery("cleanASBComponentHierarchy", substitutions));
         }
         rs.close();
+        if(log.isDebugEnabled()) {
+          log.debug("Substitutions: " + substitutions);
+        }
         executeUpdate(dbp.getQuery("cleanTrialRecipe", substitutions));
     }
 
