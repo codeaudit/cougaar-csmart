@@ -21,10 +21,10 @@
 
 package org.cougaar.tools.csmart.ui.analyzer;
 
-import org.cougaar.tools.csmart.ui.component.SocietyComponent;
-import org.cougaar.tools.csmart.ui.component.RecipeComponent;
-import org.cougaar.tools.csmart.ui.component.MetricComponent;
-import org.cougaar.tools.csmart.ui.experiment.Experiment;
+import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.recipe.MetricComponent;
+import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.util.Parameters;
 
