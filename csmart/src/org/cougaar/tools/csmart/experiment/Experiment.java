@@ -209,10 +209,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     defaultNodeArguments.put(COMPLAININGLP_LEVEL, COMPLAININGLP_LEVEL_DFLT);
     defaultNodeArguments.put(TRANSPORT_ASPECTS, TRANSPORT_ASPECTS_DFLT);
     defaultNodeArguments.put(CONTROL_PORT, Integer.toString(APP_SERVER_DEFAULT_PORT));
-    // Class of Node to run
+    // Class of Node to run. This is the first argument to the BOOTSTRAP_CLASS
+    // below.
     defaultNodeArguments.put(CSMARTConsole.COMMAND_ARGUMENTS, DEFAULT_NODE_CLASS);
 
-    // Class of bootstrapper to use
+    // Class of bootstrapper to use. The actual class being executed
     defaultNodeArguments.put(BOOTSTRAP_CLASS, DEFAULT_BOOTSTRAP_CLASS);
 
     if (DBUtils.dbMode) {
@@ -1431,9 +1432,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     if (agents != null && agents.length > 0) {
       for (int j = 0; j < agents.length; j++) {
         generateAgentComponent(agents[j], nc, parent.getOwner());
-        if(log.isDebugEnabled()) {
-          log.debug("Remember Agent: " + agents[j].getShortName());
-        }
+//         if(log.isDebugEnabled()) {
+//           log.debug("Remember Agent: " + agents[j].getShortName());
+//         }
         writtenAgents.add(agents[j]);
       }
     }
@@ -1741,7 +1742,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     for (int i = 0, n = components.size(); i < n; i++) {
       BaseComponent soc = (BaseComponent) components.get(i);
       if(log.isDebugEnabled()) {
-        log.debug(soc + ".addComponentData");
+        log.debug(soc.getFullName().toString() + ".addComponentData");
       }
       // Warning: This is a no-op in general
       // for recipes that use RecipeBase. AgentInsertion and ABCImpact
@@ -1791,7 +1792,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       pdb.close();
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
-	log.error("dumpINIFiles error with pdb", e);
+	log.error("allowModifyCData error with pdb", e);
       }
     }
     return componentModified;
