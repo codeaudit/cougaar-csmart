@@ -7,8 +7,8 @@ See csmart/doc/InstallandTest.html or the User's Guide for more information.
 Summary:
 After creating a database per the instructions referenced above, you load
 it with data from files contained here.
-First, load the data in the Domain-MySQL.ZIP file. (It has recently
-changed, with release 9.4.1.)
+First, load the data in the Domain-MySQL.ZIP file. (It was
+changed with release 9.4.1.)
 Then, to load the configuration information (necessary to "clean" your
 installation, and when upgrading to the most recent Cougaar version),
 use ./scripts/mysql/load_1ad_mysql.sh[bat] 
@@ -67,6 +67,13 @@ Sub-directories:
 
                 Contains the subdirectory - 
                    sql/:
+		        cluster-id-removal.sql - SQL script intented
+				to be run by hand by users, to replace
+				ClusterIdentifier (obsolete as of 10.0) with
+				MessageAddress. Note that CSMART will replace these
+				on a case-by-case basis if you load your experiment
+				and re-save it.
+		   
                         dump_db.sql - SQL script that generates a '.csv' file
                                       for each table in the configuration database.
                                       Called by the 'dump_1ad_mysql.sh' script.
