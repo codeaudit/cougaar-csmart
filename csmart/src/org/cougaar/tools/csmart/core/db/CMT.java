@@ -615,9 +615,13 @@ public class CMT {
     DBUtils.executeQuerySet("cloneExperimentEXPT_TRIAL",subs, QUERY_FILE);
     DBUtils.executeQuerySet("cloneExperimentEXPT_TRIAL_THREAD",subs, QUERY_FILE);
     DBUtils.executeQuerySet("cloneExperimentEXPT_TRIAL_ORG_MULT",subs, QUERY_FILE);
+
     // do both runtime & config!!
     DBUtils.executeQuerySet("cloneExperimentEXPT_TRIAL_ASSEMBLY",subs, QUERY_FILE);
     DBUtils.executeQuerySet("cloneExperimentEXPT_TRIAL_CONFIG_ASSEMBLY",subs, QUERY_FILE);
+
+    // what about recipes?
+    //    DBUtils.executeQuerySet("cloneExperimentEXPT_TRIAL_MOD_RECIPE",subs, QUERY_FILE);
     return new_expt_id;
   }
   
