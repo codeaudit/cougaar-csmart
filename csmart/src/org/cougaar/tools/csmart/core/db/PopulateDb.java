@@ -2509,7 +2509,7 @@ public class PopulateDb extends PDbBase {
       String societyName = data.getName();
       return sqlQuote(componentType + "|" + societyName);
     }
-    ComponentData parent = data.getParent();
+    //ComponentData parent = data.getParent();
     return sqlQuote(componentType + "|" + getFullName(data));
   }
 
@@ -2559,8 +2559,13 @@ public class PopulateDb extends PDbBase {
     String result = data.getAlibID();
     if (result == null) {
       String componentType = data.getType();
-      if (componentType.equals(ComponentData.PLUGIN)) {
-	ComponentData anc = findAncestorOfType(data, ComponentData.AGENT);
+      if (componentType.equals(ComponentData.PLUGIN) || componentType.equals(ComponentData.NODEBINDER) || componentType.equals(ComponentData.AGENTBINDER)) {
+	ComponentData anc = data.getParent();
+	if (componentType.equals(ComponentData.NODEBINDER) && ! anc.getType().equals(ComponentData.NODE)) {
+	  if (log.isWarnEnabled()) {
+	    log.warn("Got Node Binder whose parent is not a node: " + data);
+	  }
+	}
 	if (anc == null) {
 	  return data.getName();
 	} else {
@@ -2576,32 +2581,6 @@ public class PopulateDb extends PDbBase {
 	    result = agentName + "|" + data.getName();
 	  }
 	}
-      } else if (componentType.equals(ComponentData.NODEBINDER)) {
-	ComponentData anc = findAncestorOfType(data, ComponentData.NODE);
-	if (anc == null) {
-	  return data.getName();
-	} else {
-	  String nodeName = anc.getName();
-	  if (data.getName().startsWith(nodeName + "|")) {
-	    result = data.getName();
-	  } else {
-	    result = nodeName + "|" + data.getName();
-	  }
-	  //result = nodeName + "|" + data.getClassName();
-	}
-      } else if (componentType.equals(ComponentData.AGENTBINDER)) {
-	ComponentData anc = findAncestorOfType(data, ComponentData.AGENT);
-	if (anc == null) {
-	  return data.getName();
-	} else {
-	  String agentName = anc.getName();
-	  if (data.getName().startsWith(agentName + "|")) {
-	    result = data.getName();
-	  } else {
-	    result = agentName + "|" + data.getName();
-	  }
-	  //result = agentName + "|" + data.getClassName();
-	}
       } else if (componentType.equals(ComponentData.SOCIETY)) {
 	result = ComponentData.SOCIETY + "|" + data.getName();
       } else if (componentType.equals(ComponentData.AGENT)) {
@@ -2609,7 +2588,17 @@ public class PopulateDb extends PDbBase {
       } else {
 	// This says that unexpected componentTypes
 	// have AlibIDs that are their name. Is this right?
-	result = data.getName();
+	ComponentData parent = data.getParent();
+	if (parent != null) {
+	  String pname = parent.getName();
+	  if (data.getName().startsWith(pname + "|")) {
+	    result = data.getName();
+	  } else {
+	    result = pname + "|" + data.getName();
+	  }
+	} else {
+	  result = data.getName();
+	}
       }
       data.setAlibID(result);
     }
