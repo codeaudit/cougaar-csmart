@@ -814,16 +814,20 @@ public class CSMARTConsole extends JFrame {
         AgentComponent[] agents = nodes[j].getAgents();
         for (int k = 0; k < agents.length; k++) {
           if (agents[k].getShortName().equals("NCA")) {
-            int port = CSMARTUL.agentPort;
+            //            int port = CSMARTUL.agentPort;
+            int port = 8800;
             Properties arguments = nodes[j].getArguments();
             if (arguments != null) {
-              String s = arguments.getProperty(CSMARTUL.AGENT_PORT);
+              //              String s = arguments.getProperty(CSMARTUL.AGENT_PORT);
+              String s = 
+                arguments.getProperty("org.cougaar.lib.web.http.port");
               if (s != null) {
                 try {
                   port = Integer.parseInt(s);
                 } catch (Exception e) {
                   if (log.isErrorEnabled())
-                    log.error("Exception parsing " + CSMARTUL.AGENT_PORT + " : ", e);
+                    log.error("Exception parsing " + 
+                              "org.cougaar.lib.web.http.port" + " : ", e);
                 }
               }
             }
