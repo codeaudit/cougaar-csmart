@@ -26,14 +26,12 @@ of agents, or parameters for a given Plugin.</li>
 
 <li>
 <b>Experiment Builder: </b>Assemble the pieces of an Experiment, by
-adding one or more Recipes to the basic society (including Impacts or Metrics). Use this tool to assign agents to nodes, and nodes to hosts, and set run-time command line arguments for the nodes.  
-<br>
-For database experiments, this tool allows the user to add Recipes (Impacts and Metrics and others) to experiments, and to map agents to nodes, and nodes to hosts.  Multiple trials are not supported in database experiments. In general however, you use this tool for constructing multiple trials, varying parameters
-of your society, or to understand some behavior in more detail. To run a Society, you must include it in an Experiment. </li>
+adding one or more Recipes to the basic society (including Metrics). Use this tool to assign agents to nodes, and nodes to hosts, and set run-time command line arguments for the nodes.  
+</li>
 
 <li>
 <b>Experiment Controller: </b>
-Run, stop or abort the experiment, and display output from the experiment. Output from the Nodes can be filtered or searched, and CSMART can notify you of certain Strings in the output. This is often referred to as the "CSMART Console", for it is the interface for running large Cougaar societies.</li>
+Run, stop or abort the experiment, and display output from the experiment. Output from the Nodes can be filtered or searched, and CSMART can notify you of certain Strings in the output. This is often referred to as the "CSMART Console", for it is the interface for running Cougaar societies.</li>
 
 <li>
 <b>Society Monitor: </b>Examine a running society (or saved data from a
@@ -52,12 +50,15 @@ run a Node, using one of the supplied Server startup scripts.
 of the Servers.<br><br>
 <h3>Configuring an Experiment</h3>
 Currently, CSMART allows building
-and running two types of experiments:
+and running three types of experiments:
 <ul>
 <li>
 experiments based on more elaborate Cougaar societies in which the basic society definition is obtained from a database, referred to as "database" experiments</li>
 <li>
-experiments based on very regular societies, most suitable for scalability and other such testing, referred to as "built-in" experiments (temporarily disabled)</li>
+experiments based on simple Cougaar societies which are defined in files. (These are typically legacy societies, such as simple examples and tutorials.)
+</li>
+<li>
+experiments and societies that are defined entirely from the user interface.  (This approach would be used to define entirely new, but relatively simple societies.)
 </ul>
 <p><b>To run an experiment from the database:</b>
 <ol>
@@ -71,32 +72,29 @@ experiment.</li>
 displayed. You must select at least one thread (or class of supply).
 When you exit the dialog, any modified information is written to the
 database.</li>
+<li>Select the Configuration Builder if you need to modify the societies
+or recipes in the experiment. When you exit this tool, any modified information is written to the database.</li>
 <li>Select the Experiment Builder and assign agents to nodes and nodes
-to hosts.  When you exit this tool, any modified information is
-written to the database.</li>
+to hosts.  Also use this tool to specify node arguments.  When you exit this tool, any modified information is written to the database.</li>
 <li>Select the Experiment Controller and select the "Run" button near the top of its window.</li>
 </ol>
 <p><b>To run a tool:</b>
 <ul>
 <li>
-Select the desired experiment, recipe or society (possibly creating a new society
-or experiment),</li>
+Select the desired experiment, society or recipe (possibly creating a new experiment, society
+or recipe),</li>
 
 <li>
-Select a function (edit, run) on the menu on the selected experiment or
-society in the Workspace, or</li>
-<li> Select the desired function from the File menu, or </li>
+Select the desired tool on the pop-up menu on the selected experiment, society or recipe
+in the Workspace, or</li>
+<li> Select the desired tool from the File menu, or </li>
 <li>
-Select the appropriate toolbar button.</li>
+Select the appropriate tool from the toolbar button.</li>
 </ul>
-<b>To activate a tool:</b> The CSMART tools are activated as follows. Note
-that if a folder is selected, then all items in the folder are selected.
-Hence, multiple experiments and societies can be selected at once.
+<b>To activate a tool:</b> The CSMART tools are activated as follows.
 <ul>
 <li>
-<b>Configuration Builder: </b>Enabled when a recipe is selected. When the Configuration Builder
-tool is selected, a separate Configuration Builder is launched for each
-selected recipe.</li>
+<b>Configuration Builder: </b>Enabled when a society or recipe is selected.</li>
 
 <li>
 <b>Experiment Builder: </b>Enabled when an experiment is selected. When the Experiment Builder
@@ -127,39 +125,34 @@ to create, edit, rename or delete folders, experiments, societies, and recipes. 
 automatically saved in the current working directory, under the name you
 give your workspace. To open a previously saved workspace, use the File
 menu option. You may organize items in the workspace however your prefer.
+<p>
+Entries in the workspace that are displayed in red have been modified since they were read from the database (or have not been entered in the database).  Save societies or recipes in the database by invoking the Configuration Builder on them; on exit from the Configuration Builder, the societies or recipes being configured will be saved in the database.  Similarly, save experiments in the database by invoking the Experiment Builder on them; on exit from the Experiment Builder, the experiment being built will be saved in the database.  Entries in the workspace that are displayed in gray cannot be edited; entries are typically grayed out temporarily when editing other related information.  For example, when editing an experiment, the experiment's society and recipes cannot be modified.
 <ul>
 <li>
-<b>Select an item: </b>Point to the item and click the left mouse button.
-Selecting a folder selects all the items in the folder.</li>
+<b>Select an item: </b>Point to the item and click the left mouse button.</li>
 
 <li>
-<b>Create, edit, rename, or delete: </b>Point to the item and click the
+<b>Configure, build, rename, copy, or delete: </b>Point to the item and click the
 right mouse button; select the appropriate action from the pop-up menu
-displayed. You may access the same functions from the File menu in the Launcher window.  You may also rename components by clicking on the name directly.</li>
+displayed. You may access the same functions from the File menu in the Launcher window.</li>
 
 <li>
 <b>Arrange items in workspace: </b>Point to the item, hold the left mouse
 button and drag the item to a new location.</li>
 </ul>
-Once you have created an initial society or experiment, use the appropriate
-tools to fine tune your component. Then run your experiment using the Experiment
-Controller.
+
 <h3>Societies</h3>
-For CSMART purposes, a Society is a collection of Cougaar Agents, grouped
-into one or more Communities. Societies are constructed from a template,
-and then parametrized to fully specify the desired Communities, Agents,
-and Plugins. For database experiments, the society is
-specified as part of the experiment and cannot be reconfigured with
-the Configuration Builder.
+For CSMART purposes, a Society is a collection of Cougaar Agents
 <h3>Experiments</h3>
-To run a society, it must be included in an Experiment. An Experiment is, in general, 
+To run a society, it must be included in an Experiment. 
+(An Experiment is, in general, 
 made up of one or more trials. Trials are constructed by varying some parameter
 - a Plugin parameter, which Agents are run, what Recipes are included,
 the distribution of Agents to Nodes or Nodes to Hosts, etc. For each trial,
 there may be some results - statistics about the run that are collected
 by one of the specified metrics (see below).  Experiments created from
-a database cannot vary any parameter, and thus have only one trial. Experiments
-from a database are also preconfigured to include a society, which can be modified by recipes.
+a database cannot vary any parameter, and thus have only one trial.)
+Experiments from a database are also preconfigured to include a society, which can be modified by recipes.
 <h3>Recipes</h3>
 A Recipe is a set of rules for modifying a society, by adding one or
 more components to the society. Recipes are meant to be used for
@@ -172,7 +165,8 @@ for any society.
 Workspace" pop-up menu. Then select "Built In" or "From Database". You
 will get a list of the available recipes of each type. Once you have
 loaded the recipe, you may configure it by selecting "Configure" from
-the pop-up menu on the recipe or from the File menu.
+the pop-up menu on the recipe or from the File menu, or by selecting the
+Configuration Builder from the toolbar.
 <br><br>To add a recipe to an Experiment, drag it onto the "Recipes"
 folder in the Experiment Builder. Recipes can also be duplicated,
 deleted, or renamed by using the pop-up menu or File menu options.
@@ -191,8 +185,8 @@ on the MessageTransport or some other mechanism).
 <h3>Menus</h3>
 <h4>File Menu</h4>
 The File menu provides quick access to functions also available on the
-pop-up menu off of items in the workspace, plus other items.<br>
-Items available only off this menu:<br>
+pop-up menus on items in the workspace, plus other items.<br>
+The items available only on the File menu are:<br>
 <ul><li>Open Workspacee...: Open the named workspace file (for use
 when you previously renamed your workspace).</li>
 <li>Save New Results In..: Set the directory where Node log files and
@@ -200,10 +194,9 @@ results files will be stored. Defaults to CIP/results</li>
 <li>Exit: Quit CSMART</li>
 </ul>
 
-Items available off of pop-up menus in the workspace:
-<ul><li>New Experiment </li>
+Items that are available on pop-up menus in the workspace:
+<ul><li>New Experiment with a sub-menu for defining the experiment from the database, a file, or the user interface</li>
 <li>New Recipe - with sub-items for From Database (pre-configured) or Built In</li>
-<li>New Society (temporarily disabled)</li>
 <li>New Folder</li>
 <li>Configure (enabled when a society or recipe is selected)</li>
 <li>Build (enabled for experiments)</li>
@@ -215,7 +208,6 @@ your workspace)</li>
 <li>Delete Recipe From Database (to delete recipes not also in your
 workspace)</li>
 <li>Rename</li>
-<li>Save To Database (to force a save now)</li>
 </ul>
 <br>
 
