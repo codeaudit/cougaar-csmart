@@ -1447,7 +1447,7 @@
 	)))
     (with-query-jdbc (string-append 
 		      "select THREAD_ID from " 
-		      asb-prefix "trial_thread tt"
+		      asb-prefix "expt_trial_thread tt"
 		      "   where tt.trial_id="(sqlQuote trial_id)
 		      "   and tt.thread_id="(sqlQuote thread_id)
 		      )
