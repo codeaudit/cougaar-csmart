@@ -132,6 +132,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   private static final int MSECS_PER_MINUTE = 60000;
   private static final int MSECS_PER_HOUR = 3600000;
 
+  private Date runStart = null;
+  
   /**
    * Create and show console GUI.
    */
@@ -355,8 +357,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 			 new HostConfigurationBuilder(experiment));
     // TODO: society component should be non-editable at this point
     configTabbedPane.add("Trial Values", 
-			 //			 new PropertyEditorPanel((ModifiableConfigurableComponent)societyComponent));
 			 new PropertyEditorPanel(experiment.getComponentsAsArray()));
+    //			 new PropertyEditorPanel((ModifiableConfigurableComponent)societyComponent));
 
     // create tabbed panes for running nodes, tabs are added dynamically
     tabbedPane = new JTabbedPane();
@@ -559,6 +561,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     ConfigurationWriter configWriter = 
       experiment.getConfigurationWriter(nodesToRun);
     boolean haveRunningNode = false;
+    runStart = new Date();
     for (int i = 0; i < nodesToRun.length; i++) {
       NodeComponent nodeComponent = nodesToRun[i];
       if (createNode(nodeComponent, nodeComponent.toString(), 
@@ -816,7 +819,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * stop the timers; and
    * unset the property values used in the experiment.
    */
-
   private void experimentFinished() {
     trialProgressBar.setValue(experiment.getTrialCount() + 1);
     updateExperimentControls(experiment, false);
@@ -1217,10 +1219,12 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     if (resultDir == null)
       return; // can't save, user didn't specify metrics directory
     Trial trial = experiment.getTrials()[currentTrial];
+    if (runStart == null)
+      runStart = new Date();
     String dirname = resultDir.getAbsolutePath() + File.separatorChar + 
       experiment.getExperimentName() + File.separatorChar +
       trial.getShortName() + File.separatorChar +
-      "Results-" + fileDateFormat.format(new Date());
+      "Results-" + fileDateFormat.format(runStart);
     try {
       File f = new File(dirname);
       // guarantee that directories exist
@@ -1231,7 +1235,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       }
       String myHostName = InetAddress.getLocalHost().getHostName();
       URL url = new URL("file", myHostName, dirname);
-      trial.addTrialResult(new TrialResult(new Date(), url));
+      trial.addTrialResult(new TrialResult(runStart, url));
     } catch (Exception e) {
       System.out.println("Exception creating trial results URL: " + e);
       e.printStackTrace();
@@ -1267,7 +1271,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    * agent name + date + .log
    */
   private String getLogFileName(String agentName) {
-    return agentName + fileDateFormat.format(new Date()) + ".log";
+    return agentName + fileDateFormat.format(runStart) + ".log";
   }
 
   /**
