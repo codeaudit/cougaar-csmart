@@ -19,19 +19,29 @@
 #  PERFORMANCE OF THE COUGAAR SOFTWARE.
 # </copyright>
 
-
 # Sample script for running a Node using CSMART Plugins on Unix machines
 # Edit this file to reflect your preferences, and replace the Node script in CIP/bin
 # Alternatively, merge the differences in this script into your existing Node script
 # Additions contained in this script:
-# 1) Search csmart/data/common for config files - to ensure csmart and glm domains are loaded,
-#    amd the CSMART PSPs are loaded. Also, some UI properties are specified there
+# 1) Search csmart/data/common for config files - to ensure csmart and glm domains are loaded
+#    Also, some UI properties are specified there
 
-# Users may want to customize the MYLOG level set below
-    
+
 # Environment variables
-# COUGAAR_INSTALL_PATH = the head of the Cougaar install.
+# COUGAAR_INSTALL_PATH = the head of the alp install.
 # COUGAAR3RDPARTY = a directory containing 3rd party jar files
+#
+# COUGAAR bootstrapping classpath will be:
+#  $COUGAAR_DEV_PATH	if defined
+#  $COUGAAR_INSTALL_PATH/lib/core.jar
+#
+# once running, jar files will be searched for in (in order):
+#  -Dorg.cougaar.class.path 	like classpath
+#  $CLASSPATH		(alp bootstrapping path from above)
+#  $COUGAAR_INSTALL_PATH/lib/*
+#  $COUGAAR_INSTALL_PATH/plugins/*
+#  -Dorg.cougaar.system.path=$COUGAAR3RDPARTY
+#  $COUGAAR_INSTALL_PATH/sys/*
 #
 
 if (! $?COUGAAR_INSTALL_PATH) then
@@ -39,6 +49,7 @@ if (! $?COUGAAR_INSTALL_PATH) then
     exit
 endif
 
+# set COUGAAR_INSTALL_PATH=/alpine/demo98
 if (! $?COUGAAR3RDPARTY) then
     setenv COUGAAR3RDPARTY /opt/cougaar-jars
 endif
@@ -49,10 +60,22 @@ if (! $?COUGAAR_WORKSPACE) then
 endif
 
 set LIBPATHS=$COUGAAR_INSTALL_PATH/lib/bootstrap.jar
+
+# Optional environment variable COUGAAR_DEV_PATH can be
+# used to point to custom developer code: one or more colon separated
+# directories/jars/zips. It may also be left unset.
+
 set devp=""
 if ($?COUGAAR_DEV_PATH) then
     set devp="-Dorg.cougaar.class.path=${COUGAAR_DEV_PATH}"
 endif
+
+# domains are now usually defined by the config file LDMDomains.ini.
+# But you may still use properties if you wish.
+#set MYDOMAINS="-Dorg.cougaar.domain.alp=org.cougaar.glm.GLMDomain"
+set MYDOMAINS=""
+set MYPROPERTIES="$MYDOMAINS -Dorg.cougaar.system.path=$COUGAAR3RDPARTY -Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Duser.timezone=GMT -Dorg.cougaar.core.agent.startTime=08/10/2005 -Dorg.cougaar.planning.ldm.lps.ComplainingLP.level=0 -Dorg.cougaar.workspace=$COUGAAR_WORKSPACE"
+set MYMEMORY=""
 
 
 # Can point to remote configurations by setting the property
@@ -61,20 +84,11 @@ endif
 # and ends with an escaped semi-colon
 set MYCONFIGS="$COUGAAR_INSTALL_PATH/csmart/data/common/\;"
 
-# domains are now usually defined by the config file LDMDomains.ini.
-# But you may still use properties if you wish.
-#set MYDOMAINS="-Dorg.cougaar.domain.alp=org.cougaar.glm.GLMDomain"
-set MYDOMAINS=""
-#set MYPROPERTIES="$MYDOMAINS -Dorg.cougaar.system.path=$COUGAAR3RDPARTY -Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Duser.timezone=GMT"
-set MYPROPERTIES="$MYDOMAINS -Dorg.cougaar.system.path=$COUGAAR3RDPARTY -Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH -Duser.timezone=GMT -Dorg.cougaar.core.agent.startTime=08/10/2005 -Dorg.cougaar.planning.ldm.lps.ComplainingLP.level=0 -Dorg.cougaar.core.agent.SharedPluginManager.watching=false -Dorg.cougaar.workspace=$COUGAAR_WORKSPACE"
-
 # This line for CSMART specific properties
 set MYPROPERTIES="${MYPROPERTIES} -Dorg.cougaar.config.path=$MYCONFIGS"
 
 # To collect message statistics on the RMI Message transport:
 set MYPROPERTIES="${MYPROPERTIES} -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect"
-
-set MYMEMORY=""
 
 set node = $argv[1]
 set rest="$argv[2-]"
@@ -102,8 +116,8 @@ endif
 set osargs=""
 set os=`uname`
 if ("$os" == "Linux") then
-    # only run with green threads, since SMP is still rare
-    set osargs="-green"
+    # No green threads in jdk 1.3.1
+    # set osargs="-green"
     # set some system runtime limits
     limit stacksize 16m    #up from 8m
     limit coredumpsize 0   #down from 1g
@@ -111,13 +125,14 @@ if ("$os" == "Linux") then
     #setenv JAVA_COMPILER javacomp
 endif
 
-#set javaargs="$osargs $MYPROPERTIES $MYMEMORY -classpath $LIBPATHS -Dorg.cougaar.core.message.isLogging=true -Djava.rmi.server.logCalls=true -Dsun.rmi.server.exceptionTrace=true -Dsun.rmi.transport.tcp.readTimeout=150000 "
-set javaargs="-Xbootclasspath/p:${COUGAAR_INSTALL_PATH}/lib/javaiopatch.jar $osargs $devp $MYPROPERTIES $MYMEMORY -classpath $LIBPATHS"
+#set javaargs="$osargs $MYPROPERTIES $MYMEMORY -classpath $LIBPATHS -Dorg.cougaar.message.isLogging=true -Djava.rmi.server.logCalls=true -Dsun.rmi.server.exceptionTrace=true -Dsun.rmi.transport.tcp.readTimeout=150000 "
+set javaargs="-Xbootclasspath/p:${COUGAAR_INSTALL_PATH}/lib/javaiopatch.jar $osargs $devp $MYPROPERTIES $MYMEMORY -classpath $LIBPATHS org.cougaar.bootstrap.Bootstrapper org.cougaar.core.node.Node"
+#set javaargs="$osargs $MYPROPERTIES $MYMEMORY -classpath $LIBPATHS -Dorg.cougaar.nameserver.verbosity=20"
 
 if ($?COUGAAR_DEV_PATH) then
-    echo java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.core.node.Node $args
+    echo java $javaargs $args
 endif
 
-
 # exec instead of eval
-exec java $javaargs org.cougaar.bootstrap.Bootstrapper org.cougaar.core.node.Node $args
+exec java $javaargs $args
+
