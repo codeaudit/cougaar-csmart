@@ -117,7 +117,7 @@ public class AssetFileComponent
 
     if (aad == null) {
       if (log.isErrorEnabled()) {
-	log.error("Got no AgentAssetData from which to initialize! Perhaps retry with the directory you are loading from on your org.couaar.config.path?");
+	log.error("Got no AgentAssetData from which to initialize! Perhaps retry with the directory you are loading from on your org.cougaar.config.path?");
       }
       return;
     }
