@@ -59,12 +59,13 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
   private DateFormat myDateFormat = DateFormat.getInstance();
   private PropGroupData propGroup = null;
   private transient Logger log = null;
-
+  private String clusterName;
   /**
    * Creates a new <code>AssetDataCallbackImpl</code> instance.
    *
    */
-  public AssetDataCallbackImpl (){
+  public AssetDataCallbackImpl (String clusterName){
+    this.clusterName = clusterName;
     log = CSMART.createLogger(this.getClass().getName());
   }
   // implementation of org.cougaar.planning.plugin.AssetDataCallback interface
@@ -249,22 +250,25 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
 
     PGPropData data = new PGPropData();
     data.setName(name);
-    
+
     int i;
     if ((i = type.indexOf("<")) >= 0) {
       int j = type.lastIndexOf(">");
       data.setType(type.substring(0, i).trim());
       data.setSubType(type.substring(i + 1, j).trim());
-      if(log.isInfoEnabled()) {
-        log.info("Type: " + type.substring(0, i).trim() );
-        log.info("Subtype: " + type.substring(i + 1, j).trim());
-      }
     } else {
       data.setType(type);
     }
 
     if(data.getName().equals("HomeLocation")) {
       data.setValue(parseHomeLocation((String)arguments[0]));
+    // This is a serious hack!  For now, can not see any way around it.
+    // The bug this is trying to fix is that in the INI files, 
+    // the ItemIdentification is not always the Agent name.
+    // We need to correct this or there will be runtime issues.
+    } else if (name.equals("ItemIdentification") && 
+               !arguments[0].equals(clusterName)) {
+      data.setValue(clusterName);
     } else {
       if(arguments[0] instanceof Collection) {
         Iterator iter = ((Collection)arguments[0]).iterator();
