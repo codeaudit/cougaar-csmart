@@ -29,7 +29,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.lang.reflect.Field;
+import java.net.InetAddress;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Hashtable;
@@ -124,7 +126,8 @@ public class CSMART extends JFrame {
   private static final String VERSION_ACTION = "Show CSMART Version";
   private static final String ABOUT_CSMART_ACTION = "About CSMART";
   private static final String HELP_ACTION = "About Launcher";
-
+  private static final String CSMART_LISTENER = "CSMART-";
+  private static String listenerId;
   private transient Logger log;
 
   private Action[] helpActions = {
@@ -196,6 +199,14 @@ public class CSMART extends JFrame {
       log.shout(writeDebug());
     }
 
+    String hostName = "";
+    try {
+      InetAddress myAddr = InetAddress.getLocalHost();
+      hostName = myAddr.getHostName();
+    } catch (Exception e) {
+    }
+    listenerId = CSMART_LISTENER + hostName + "-" +
+      new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
     resultDir = initResultDir();
 
     organizer = new Organizer(this);
@@ -220,6 +231,10 @@ public class CSMART extends JFrame {
     setSize(w, h);
     setLocation((screenSize.width - w)/2, (screenSize.height - h)/2);
     setVisible(true);
+  }
+
+  public static String getNodeListenerId() {
+    return listenerId;
   }
 
   // must be called whenever there's a new organizer (i.e. new workspace)
@@ -491,8 +506,9 @@ public class CSMART extends JFrame {
 
   private void exit() {
     if (organizer.exitAllowed()) {
-      if (console != null)
-	console.stopExperiments();
+      // don't stop experiments when exiting CSMART
+      //      if (console != null)
+      //	console.stopExperiments();
       System.exit(0);
     }
   }
