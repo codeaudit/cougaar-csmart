@@ -50,8 +50,6 @@ endif
 # edit the following property:
 #set MYEXCEL="-Dorg.cougaar.tools.csmart.excelpath=C:/Program Files/Microsoft Office/Office/excel.exe"
 set MYEXCEL=""
-# The delay between starting nodes, in milliseconds
-set MYDELAY="-Dorg.cougaar.tools.csmart.startdelay=0"
 
 set MYMEMORY="-Xms100m -Xmx300m"
 set MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY -Dorg.cougaar.workspace=$COUGAAR_WORKSPACE $devp"

@@ -65,9 +65,6 @@ MYEXCEL=-Dorg.cougaar.tools.csmart.excelpath=""
 
 MYMEMORY="-Xms100m -Xmx300m"
 
-# The delay between starting nodes, in milliseconds
-MYDELAY="-Dorg.cougaar.tools.csmart.startdelay=0"
-
 MYPROPERTIES="-Dorg.cougaar.install.path=$COUGAAR_INSTALL_PATH $MYEXCEL $MYDELAY $DEVPATH"
 
 # It is possible to disable use of the workspace file: Your work

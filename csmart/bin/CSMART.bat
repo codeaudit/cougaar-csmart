@@ -60,9 +60,6 @@ REM Edit the following line to reflect your local installation
 REM This is used by the Performance Analyzer
 SET MYEXCEL=-Dorg.cougaar.tools.csmart.excelpath="C:\Program Files\Microsoft Office\Office\excel.exe"
 
-REM Number of milliseconds to wait after starting each node
-SET MYDELAY=-Dorg.cougaar.tools.csmart.startdelay=0
-
 REM It is possible to disable use of the workspace file: Your work
 REM will only be saved to the database when you explicitly save,
 REM and will not be restored from the workspace file. You will have to
