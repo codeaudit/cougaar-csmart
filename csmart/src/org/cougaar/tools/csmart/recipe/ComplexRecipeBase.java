@@ -42,6 +42,12 @@ import org.cougaar.tools.csmart.recipe.cdata.ComplexRecipeCDataComponent;
 /**
  * ComplexRecipeBase.java
  *
+ * Base component for a ComplexRecipe.  A ComplexRecipe is a recipe that requires
+ * storage in both the recipe tables and an assembly in the asb table.
+ * The primary key is an assembly Id which is a hidden property of the recipe.
+ * This key is stored as the only argument in the recipe args table.
+ * On load, the assembly Id is used to obtain all recipe related data from the
+ * assembly tables.
  *
  * Created: Thu Jun 20 13:52:13 2002
  *
@@ -52,7 +58,11 @@ import org.cougaar.tools.csmart.recipe.cdata.ComplexRecipeCDataComponent;
 public class ComplexRecipeBase extends RecipeBase 
   implements ComplexRecipeComponent, Serializable {
 
+  /** Identifier String for the hidden Assembly Id Property **/
   public static final String ASSEMBLY_PROP = "Assembly Id";
+
+  /** Identifier Tag for a ComplexRecipe **/
+  public static final String RECIPE_CLASS = "##RECIPE_CLASS##";
 
   protected String assemblyId = null;
   protected String oldAssemblyId = null;
@@ -60,7 +70,6 @@ public class ComplexRecipeBase extends RecipeBase
 
   private Property propAssemblyId;
 
-  public static final String RECIPE_CLASS = "##RECIPE_CLASS##";
 
   public ComplexRecipeBase (String name){
     super(name);
@@ -71,6 +80,14 @@ public class ComplexRecipeBase extends RecipeBase
     this.assemblyId = assemblyId;
   }
 
+  /**
+   * Save the recipe to the database.  This save performs the
+   * saving of all data to the assembly tables.  It then calls
+   * it's parents save to save the assembly Id and recipe name
+   * to the recipe tables.
+   *
+   * @return a <code>boolean</code> value
+   */
   public boolean saveToDatabase() {
     // First, save the new recipe assembly.
     saveInProgress = true;
@@ -135,6 +152,10 @@ public class ComplexRecipeBase extends RecipeBase
     return ret;
   }
 
+  /**
+   * Initializes the hidden assembly id property.
+   *
+   */
   public void initProperties() {
     propAssemblyId = addProperty(ASSEMBLY_PROP, ((assemblyId != null) ? assemblyId : ""));
     propAssemblyId.setVisible(false);
@@ -147,7 +168,6 @@ public class ComplexRecipeBase extends RecipeBase
    */
   public String getAssemblyId() {
     return this.assemblyId;
-//     return propAssemblyId.getValue().toString();
   }
 
   private ComponentData getComponentData() {
@@ -171,6 +191,12 @@ public class ComplexRecipeBase extends RecipeBase
     return addComponentData(cd);
   }
 
+  /**
+   * Adds all the component data relevant to this recipe.
+   *
+   * @param data 
+   * @return a <code>ComponentData</code> value
+   */
   public ComponentData addComponentData(ComponentData data) {
     ComponentData[] children = data.getChildren();
     for(int i=0; i < children.length; i++) {
@@ -212,6 +238,12 @@ public class ComplexRecipeBase extends RecipeBase
     parent.addChild((ComponentData)ac);
   }
 
+  /**
+   * Copies a ComplexRecipe
+   *
+   * @param name 
+   * @return a <code>ModifiableComponent</code> value
+   */
   public ModifiableComponent copy(String name) {
     
     ComponentData cdata = getComponentData();
