@@ -363,7 +363,7 @@ public class PDbBase {
             return result;
         } catch (SQLException sqle) {
           if(log.isErrorEnabled()) {
-            log.error("SQLException query: " + query);
+            log.error("SQLException query: " + query, sqle);
           }
           if (pwlog != null) {
             pwlog.println("SQLException query: " + query);
@@ -392,7 +392,7 @@ public class PDbBase {
             return result;
         } catch (SQLException sqle) {
           if(log.isErrorEnabled()) {
-            log.error("SQLException query: " + query);
+            log.error("SQLException query: " + query, sqle);
           }
             if (pwlog != null) {
                 pwlog.println("SQLException query: " + query);
@@ -507,6 +507,10 @@ public class PDbBase {
     protected static String sqlQuote(String s) {
         if (s == null) return "null";
         int quoteIndex = s.indexOf('\'');
+	// If the string already starts & ends with a single quote, we're done
+	if (quoteIndex == 0 && s.lastIndexOf('\'') == s.length() - 1)
+	  return s;
+	  
         while (quoteIndex >= 0) {
             s = s.substring(0, quoteIndex) + "''" + s.substring(quoteIndex + 1);
             quoteIndex = s.indexOf('\'', quoteIndex + 2);
