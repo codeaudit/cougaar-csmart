@@ -23,8 +23,6 @@ package org.cougaar.tools.csmart.ui.experiment;
 
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.tools.csmart.ui.component.AgentComponent;
-import org.cougaar.tools.server.ConfigurationWriter;
-import org.cougaar.tools.csmart.ui.component.NodeComponent;
 
 public class LowImpact implements Impact {
     private String name;
@@ -47,20 +45,6 @@ public class LowImpact implements Impact {
     }
 
   public AgentComponent[] getAgents() {
-    return null;
-  }
-
-  public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes) {
-    return null;
-  }
-
-  /**
-   * This is the opportunity for an impact to specify additional
-   * components to load into non-Impact Agents
-   *
-   * @return a <code>String</code> Node file addition, possibly null
-   */
-  public String getNodeFileAddition() {
     return null;
   }
 }

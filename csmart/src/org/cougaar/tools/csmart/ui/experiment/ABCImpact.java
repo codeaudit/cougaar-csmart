@@ -250,30 +250,30 @@ public class ABCImpact
     }
   }
     
-  /**
-   * This is the opportunity for an impact to specify additional
-   * components to load into non-Impact Agents
-   *
-   * @return a <code>String</code> Node file addition, possibly null
-   */
-  public String getNodeFileAddition() {
-    StringBuffer buf = new StringBuffer();
-    ComponentData data = createBinderComponentData();
+//    /**
+//     * This is the opportunity for an impact to specify additional
+//     * components to load into non-Impact Agents
+//     *
+//     * @return a <code>String</code> Node file addition, possibly null
+//     */
+//    public String getNodeFileAddition() {
+//      StringBuffer buf = new StringBuffer();
+//      ComponentData data = createBinderComponentData();
 
-    buf.append(data.getName());
-    buf.append(" = ");
-    buf.append(data.getClassName());
-    buf.append("(");
-    Object[] params = data.getParameters();
-    for(int i=0; i < params.length; i++) {
-      if((i+1) == params.length) {
-	buf.append(params[i] + ")\n");
-      } else {
-	buf.append(params[i] + ", ");
-      }
-    }
-    return buf.toString();
-  }
+//      buf.append(data.getName());
+//      buf.append(" = ");
+//      buf.append(data.getClassName());
+//      buf.append("(");
+//      Object[] params = data.getParameters();
+//      for(int i=0; i < params.length; i++) {
+//        if((i+1) == params.length) {
+//  	buf.append(params[i] + ")\n");
+//        } else {
+//  	buf.append(params[i] + ", ");
+//        }
+//      }
+//      return buf.toString();
+//    }
 
   private ComponentData createBinderComponentData() {
     ComponentData data = new GenericComponentData();

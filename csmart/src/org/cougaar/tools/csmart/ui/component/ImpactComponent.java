@@ -43,14 +43,6 @@ public interface ImpactComponent extends ModifiableComponent, ComponentPropertie
    * @return array of agent components
    */
   AgentComponent[] getAgents();
-
-  /**
-   * This is the opportunity for an impact to specify additional
-   * components to load into non-Impact Agents
-   *
-   * @return a <code>String</code> Node file addition, possibly null
-   */
-  String getNodeFileAddition();
 }
 
 

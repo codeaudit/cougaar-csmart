@@ -47,14 +47,6 @@ public interface MetricComponent extends ModifiableComponent, ComponentPropertie
    * @return file filter for cleanup
    */
    FileFilter getCleanupFileFilter();
-
-  /**
-   * Get a configuration writer for this metric.
-   * @param nodes the <code>NodeComponent[]</code> of the full experiment
-   * @param nodeFileAddition a <code>String</code> to add Services to every Node file
-   * @return a <code>ConfigurationWriter</code> to write out all config data for this metric
-   */
-   ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes, String nodeFileAddition);
 }
 
 
