@@ -77,7 +77,7 @@ public class DBConfigWriter implements ConfigurationWriter {
       System.out.println(soc + ".addComponentData");
       soc.addComponentData(theSoc);
     }
-    PopulateDb pdb = new PopulateDb("CMS_", exp.getExperimentID(), exp.getTrialID());
+    PopulateDb pdb = new PopulateDb("CSM_", exp.getExperimentID(), exp.getTrialID());
     pdb.setDebug(true);
     pdb.setReadOnlyComponents(theSoc);
     
