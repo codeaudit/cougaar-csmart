@@ -422,8 +422,12 @@ implements PropertiesListener, Serializable, SocietyComponent, ModificationListe
       Property myProp = getProperty(name);
       if (myProp == propLevelCount) continue;
       if (myProp == propAgentCount) continue;
-      // TODO: this appears to return null for some properties
-      Property hisProp = result.getProperty(name);
+      // compose the correct name for the property
+      // name must be prepended by new society name
+      String s = name.toString();
+      ComponentName hisPropName = 
+	new ComponentName(result, s.substring(societyName.length()));
+      Property hisProp = result.getProperty(hisPropName);
       try {
 	Object o = PropertyHelper.validateValue(myProp, myProp.getValue());
 	if (o != null)
