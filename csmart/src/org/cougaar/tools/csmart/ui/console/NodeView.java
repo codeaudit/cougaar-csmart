@@ -104,7 +104,7 @@ public class NodeView extends JInternalFrame {
   private Properties properties;
   private java.util.List args;
   private ConsoleNodeListener listener;
-  private JRadioButton statusButton;
+  private NodeStatusButton statusButton;
   private String logFileName;
   private RemoteProcess remoteNode;
   private CSMARTConsole console;
@@ -956,6 +956,5 @@ public class NodeView extends JInternalFrame {
     ois.defaultReadObject();
     createLogger();
   }
-
 }
 
