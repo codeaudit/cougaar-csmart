@@ -35,6 +35,15 @@ refconfigdb.zip:
 
 Sub-directories:
 
+   new/:
+	Contains table definitions, structure, loading scripts to define
+	the new "refconfig" database OPLAN and Organizations tables.
+	Users of the 1AD society need not edit or use these files.
+	However, if you want to use the same query files and tables,
+	you may use the contents of this directory to add to or edit
+	the contents of these tables. Sub-directories mirror fairly 
+	closely the structure of the directories below....
+
    csv/:
         Contains a '.csv' file for each table to be created in the 
         configuration database.  These files can be loaded into a
