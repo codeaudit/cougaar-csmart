@@ -46,6 +46,7 @@ import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentListener;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
@@ -1117,13 +1118,15 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * Checks for modification event being EXPERIMENT_SAVED
    * in which case, it does not mark the experiment modified.
    */
-  ModificationListener myModificationListener = 
-    new ModificationListener() {
-        public void modified(ModificationEvent e) {
-          // tell listeners on experiment that experiment was modified
-          notifyExperimentListeners(e);
-        }
-      };
+//    ModificationListener myModificationListener = 
+//      new ModificationListener() {
+//          public void modified(ModificationEvent e) {
+//            // tell listeners on experiment that experiment was modified
+//            notifyExperimentListeners(e);
+//          }
+//        };
+
+  ModificationListener myModificationListener = new MyModificationListener();
 
   /**
    * If the experiment was saved, let the listeners know,
@@ -1168,18 +1171,19 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     boolean temp = modified;
     createLogger();
     createObserver();
+    // these are reinstalled in ConfigurableComponent
     // reinstall listeners
-    if (societyComponent != null)
-      installListeners((ModifiableConfigurableComponent)societyComponent);
-    RecipeComponent[] recipes = getRecipeComponents();
-    for (int i = 0; i < recipes.length; i++)
-      installListeners((ModifiableConfigurableComponent)recipes[i]);
-    HostComponent[] hostComponents = getHostComponents();
-    for (int i = 0; i < hostComponents.length; i++)
-      installListeners((ModifiableConfigurableComponent)hostComponents[i]);
-    NodeComponent[] nodeComponents = getNodeComponents();
-    for (int i = 0; i < nodeComponents.length; i++)
-      installListeners((ModifiableConfigurableComponent)nodeComponents[i]);
+//      if (societyComponent != null)
+//        installListeners((ModifiableConfigurableComponent)societyComponent);
+//      RecipeComponent[] recipes = getRecipeComponents();
+//      for (int i = 0; i < recipes.length; i++)
+//        installListeners((ModifiableConfigurableComponent)recipes[i]);
+//      HostComponent[] hostComponents = getHostComponents();
+//      for (int i = 0; i < hostComponents.length; i++)
+//        installListeners((ModifiableConfigurableComponent)hostComponents[i]);
+//      NodeComponent[] nodeComponents = getNodeComponents();
+//      for (int i = 0; i < nodeComponents.length; i++)
+//        installListeners((ModifiableConfigurableComponent)nodeComponents[i]);
     modified = temp;
   }
 
@@ -1915,7 +1919,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     generateHNACDATA();
 
     boolean mods = askComponentsToAddCDATA();
-
     return mods |= allowModifyCData();
   }
 
@@ -2201,6 +2204,13 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     modified = false;
     // tell listeners experiment is now saved
     fireModification(new ModificationEvent(this, EXPERIMENT_SAVED));
+  }
+
+  class MyModificationListener implements ModificationListener, ConfigurableComponentListener {
+    // tell listeners on experiment that experiment was modified
+    public void modified(ModificationEvent e) {
+      notifyExperimentListeners(e);
+    }
   }
 
 } // end of Experiment.java

@@ -36,6 +36,7 @@ import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.ComposableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentListener;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
@@ -446,12 +447,14 @@ public abstract class SocietyBase
         }
       };
 
-  ModificationListener myModificationListener = 
-    new ModificationListener() {
-        public void modified(ModificationEvent e) {
-          fireModification();
-        }
-      };
+  ModificationListener myModificationListener = new MyModificationListener();
+
+//    ModificationListener myModificationListener = 
+//      new ModificationListener() {
+//          public void modified(ModificationEvent e) {
+//            fireModification();
+//          }
+//        };
 
   public int addChild(ComposableComponent c) {
     ((ModifiableConfigurableComponent)c).addModificationListener(myModificationListener);
@@ -463,6 +466,13 @@ public abstract class SocietyBase
     ((ModifiableConfigurableComponent)c).removeModificationListener(myModificationListener);
     fireModification();
     super.removeChild(c);
+  }
+
+
+  class MyModificationListener implements ModificationListener, ConfigurableComponentListener {
+    public void modified(ModificationEvent e) {
+      fireModification();
+    }
   }
 
 }// SocietyBase
