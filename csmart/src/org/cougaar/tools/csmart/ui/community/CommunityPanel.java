@@ -62,13 +62,13 @@ public class CommunityPanel extends JPanel {
   private JPopupMenu parentEntityMenu;
   private JPopupMenu entityMenu;
 
+  // actions on menus and pop-up menus
   public Action viewCommunityAction = new AbstractAction(VIEW_COMMUNITY_ACTION) {
       public void actionPerformed(ActionEvent e) {
         displayCommunityInformation();
       }
     };
 
-  // actions on pop-up menus
   public AbstractAction newCommunityAction = new AbstractAction(NEW_COMMUNITY_ACTION) {
       public void actionPerformed(ActionEvent e) {
         createCommunity();
@@ -330,13 +330,23 @@ public class CommunityPanel extends JPanel {
       new CommunityTreeObject(communityName, "Community");
     DefaultMutableTreeNode node = new DefaultMutableTreeNode(cto, true);
     TreePath selectedPath = communityTree.getSelectionPath();
+    // if nothing in community tree selected, add new community to root
     if (selectedPath == null) {
       DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
       model.insertNodeInto(node, root, root.getChildCount());
     } else {
       DefaultMutableTreeNode selectedNode = 
         (DefaultMutableTreeNode)selectedPath.getLastPathComponent();
-      model.insertNodeInto(node, selectedNode, selectedNode.getChildCount());
+      CommunityTreeObject selectedObject =
+        (CommunityTreeObject)selectedNode.getUserObject();
+      // if community is selected, add new community as its child
+      if (selectedObject.isCommunity())
+        model.insertNodeInto(node, selectedNode, selectedNode.getChildCount());
+      else {
+        // if non-community is selected, add new community to root
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
+        model.insertNodeInto(node, root, root.getChildCount());
+      }
     }
     communityTree.scrollPathToVisible(new TreePath(node.getPath()));
     // add community info to database
