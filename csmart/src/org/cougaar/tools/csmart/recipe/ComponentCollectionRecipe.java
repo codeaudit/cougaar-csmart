@@ -20,47 +20,32 @@
  */ 
 package org.cougaar.tools.csmart.recipe;
 
+import org.cougaar.core.agent.SimpleAgent;
+import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
+import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
+import org.cougaar.tools.csmart.core.db.PDbBase;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.society.ComponentBase;
+import org.cougaar.tools.csmart.society.PropGroupComponent;
+import org.cougaar.tools.csmart.society.RelationshipComponent;
+import org.cougaar.util.log.Logger;
+
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
-
-import org.cougaar.core.agent.SimpleAgent;
-import org.cougaar.util.log.Logger;
-
-import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
-import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
-import org.cougaar.tools.csmart.core.cdata.PGPropData;
-import org.cougaar.tools.csmart.core.cdata.PropGroupData;
-import org.cougaar.tools.csmart.core.cdata.RelationshipData;
-import org.cougaar.tools.csmart.core.db.PDbBase;
-import org.cougaar.tools.csmart.core.db.PopulateDb;
-import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
-import org.cougaar.tools.csmart.core.property.ModifiableComponent;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.ModificationEvent;
-import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.PropertyEvent;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
-import org.cougaar.tools.csmart.core.property.range.IntegerRange;
-import org.cougaar.tools.csmart.core.property.range.StringRange;
-import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.society.ComponentBase;
-import org.cougaar.tools.csmart.society.PluginComponent;
-import org.cougaar.tools.csmart.society.PropGroupComponent;
-import org.cougaar.tools.csmart.society.RelationshipComponent;
 
 /**
  * Recipe to add a complete Agent to the society.  This agent

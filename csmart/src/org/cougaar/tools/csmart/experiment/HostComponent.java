@@ -21,9 +21,6 @@
 
 package org.cougaar.tools.csmart.experiment;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 
 /**

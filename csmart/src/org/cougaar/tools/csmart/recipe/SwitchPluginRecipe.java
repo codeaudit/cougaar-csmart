@@ -20,16 +20,15 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import java.io.Serializable;
-import java.net.URL;
-
 import org.cougaar.core.agent.Agent;
 import org.cougaar.core.agent.AgentManager;
-import org.cougaar.core.plugin.PluginManager;
 import org.cougaar.core.plugin.PluginBase;
-
+import org.cougaar.core.plugin.PluginManager;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.property.Property;
+
+import java.io.Serializable;
+import java.net.URL;
 
 /**
  * SwitchPluginRecipe.java

@@ -20,13 +20,16 @@
  */
 package org.cougaar.tools.csmart.util;
 
-import java.sql.*;
-import java.io.IOException;
-
 import org.cougaar.bootstrap.Bootstrapper;
-import org.cougaar.util.Parameters;
-import org.cougaar.util.DBProperties;
 import org.cougaar.util.DBConnectionPool;
+import org.cougaar.util.DBProperties;
+import org.cougaar.util.Parameters;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Utility class for use by csmart/bin/exportExperiment script

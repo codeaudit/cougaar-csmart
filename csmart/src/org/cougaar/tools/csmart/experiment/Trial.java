@@ -21,13 +21,12 @@
 
 package org.cougaar.tools.csmart.experiment;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+
+import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * A trial represents a run of an Experiment. In future it

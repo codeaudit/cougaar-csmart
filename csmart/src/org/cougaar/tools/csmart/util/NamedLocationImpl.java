@@ -21,7 +21,7 @@
 
 package org.cougaar.tools.csmart.util;
 
-import java.io.*;
+
 
 /**
  * A location (as a <code>LatLonPoint</code>) with a name.

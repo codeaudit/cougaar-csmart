@@ -21,8 +21,9 @@
 
 package org.cougaar.tools.csmart.util.parser;
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 /**
  * A Simple Parser that parses comma delimited files.

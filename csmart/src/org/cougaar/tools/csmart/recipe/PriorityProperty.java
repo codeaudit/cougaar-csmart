@@ -20,15 +20,16 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import org.cougaar.util.log.Logger;
 import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentProperty;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.log.Logger;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * PriorityProperty: Legitimate ComponentPrioritys come from <code>ComponentDescription</code>

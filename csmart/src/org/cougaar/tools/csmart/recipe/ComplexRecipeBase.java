@@ -20,30 +20,12 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import java.io.IOException;
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.cougaar.core.agent.Agent;
 import org.cougaar.core.agent.SimpleAgent;
-import org.cougaar.util.DBProperties;
-
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
@@ -54,12 +36,26 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.ComponentBase;
-import org.cougaar.tools.csmart.society.PluginBase;
-import org.cougaar.tools.csmart.society.SocietyComponentCreator;
 import org.cougaar.tools.csmart.society.cdata.AgentCDataComponent;
 import org.cougaar.tools.csmart.society.cdata.BaseCDataComponent;
 import org.cougaar.tools.csmart.society.db.AgentDBComponent;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
+import org.cougaar.util.DBProperties;
+
+import java.io.IOException;
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * ComplexRecipeBase.java

@@ -20,22 +20,22 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import java.io.IOException;
-import java.util.*;
-import java.sql.SQLException;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
+import org.cougaar.core.agent.Agent;
+import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentProperty;
-import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
-import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-
-import org.cougaar.core.agent.Agent;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.log.Logger;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Extends ConfigurableComponentProperty in order to override the

@@ -21,17 +21,22 @@
 
 package org.cougaar.tools.csmart.experiment;
 
-import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.util.ReadOnlyProperties;
-import java.io.Serializable;
-import java.util.*;
+import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 import org.cougaar.util.log.Logger;
-import java.io.ObjectInputStream;
+
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.Properties;
 
 /**
  * Maintains information about a node and generates the

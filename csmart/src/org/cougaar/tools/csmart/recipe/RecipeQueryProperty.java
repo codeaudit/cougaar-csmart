@@ -20,22 +20,20 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import java.io.IOException;
-import java.io.File;
-import java.util.TreeSet;
-import java.util.Iterator;
-import java.util.Set;
-
-import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentProperty;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-
 import org.cougaar.util.ConfigFinder;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.log.Logger;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Extends ConfigurableComponentProperty in order to override the

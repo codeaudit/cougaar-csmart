@@ -20,24 +20,22 @@
  */
 package org.cougaar.tools.csmart.util;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-
 import org.apache.xerces.parsers.DOMParser;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.log.Logger;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
-import org.cougaar.util.ConfigFinder;
-import org.cougaar.util.log.Logger;
-
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintWriter;
 
 /**
  * XMLUtils.java

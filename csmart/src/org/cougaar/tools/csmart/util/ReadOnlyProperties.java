@@ -20,10 +20,11 @@
  */
 package  org.cougaar.tools.csmart.util;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
 import java.util.Set;

@@ -20,12 +20,13 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import java.util.Set;
-import java.util.HashSet;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponentProperty;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentProperty;
+import org.cougaar.tools.csmart.core.property.range.StringRange;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**

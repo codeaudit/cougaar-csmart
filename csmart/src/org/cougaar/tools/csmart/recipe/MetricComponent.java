@@ -23,8 +23,6 @@ package org.cougaar.tools.csmart.recipe;
 
 import java.io.FileFilter;
 
-import org.cougaar.tools.csmart.recipe.RecipeComponent;
-
 /**
  * Interface marking all Metric components. <br>
  * These are configurable components that can be added to an experiment.

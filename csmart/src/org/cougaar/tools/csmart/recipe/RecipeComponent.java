@@ -21,8 +21,6 @@
 
 package org.cougaar.tools.csmart.recipe;
 
-import java.net.URL;
-
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 

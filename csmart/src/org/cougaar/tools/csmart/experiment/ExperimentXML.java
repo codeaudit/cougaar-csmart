@@ -20,12 +20,13 @@
  */
 package org.cougaar.tools.csmart.experiment;
 
-import java.io.File;
-import java.io.IOException;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentDataXML;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.log.Logger;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * ExperimentXML.java

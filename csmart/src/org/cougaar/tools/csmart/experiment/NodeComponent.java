@@ -21,12 +21,10 @@
 
 package org.cougaar.tools.csmart.experiment;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
-
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
+
+import java.util.Properties;
 
 /**
  * The interface for adding and removing nodes from a society.

@@ -22,12 +22,6 @@ package org.cougaar.tools.csmart.recipe;
 
 
 
-import java.io.Serializable;
-import java.net.URL;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Set;
 import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
@@ -36,7 +30,12 @@ import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapt
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.range.IntegerRange;
-import org.cougaar.tools.csmart.society.AgentComponent;
+
+import java.io.Serializable;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Set;
 
 public class SpecificInsertionRecipe extends RecipeBase
   implements Serializable

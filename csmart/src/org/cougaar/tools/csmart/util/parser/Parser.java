@@ -21,8 +21,7 @@
 
 package org.cougaar.tools.csmart.util.parser;
 
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
 
 /**
  * Parser    <br><br>

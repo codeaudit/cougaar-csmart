@@ -20,7 +20,39 @@
  */
 package org.cougaar.tools.csmart.experiment;
 
-import java.awt.Component;
+import org.cougaar.core.agent.SimpleAgent;
+import org.cougaar.core.node.Node;
+import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
+import org.cougaar.tools.csmart.core.db.CMT;
+import org.cougaar.tools.csmart.core.db.CommunityDbUtils;
+import org.cougaar.tools.csmart.core.db.DBConflictHandler;
+import org.cougaar.tools.csmart.core.db.DBUtils;
+import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentListener;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModificationEvent;
+import org.cougaar.tools.csmart.core.property.ModificationListener;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.recipe.RecipeBase;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.society.AgentBase;
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.society.SocietyBase;
+import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.util.ReadOnlyProperties;
+import org.cougaar.util.Parameters;
+import org.cougaar.util.log.Logger;
+
+import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -30,46 +62,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.*;
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
-import org.cougaar.core.agent.SimpleAgent;
-import org.cougaar.core.node.Node;
-import org.cougaar.util.Parameters;
-import org.cougaar.util.log.Logger;
-
-import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
-import org.cougaar.tools.csmart.core.db.DBConflictHandler;
-import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.tools.csmart.core.db.ExperimentDB;
-import org.cougaar.tools.csmart.core.db.CMT;
-import org.cougaar.tools.csmart.core.db.PopulateDb;
-import org.cougaar.tools.csmart.core.db.CommunityDbUtils;
-import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponentListener;
-import org.cougaar.tools.csmart.core.property.ModifiableComponent;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.ModificationEvent;
-import org.cougaar.tools.csmart.core.property.ModificationListener;
-import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.name.ComponentName;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
-import org.cougaar.tools.csmart.experiment.ExperimentHost;
-import org.cougaar.tools.csmart.recipe.RecipeBase;
-import org.cougaar.tools.csmart.recipe.RecipeComponent;
-import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.society.AgentBase;
-import org.cougaar.tools.csmart.society.SocietyBase;
-import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
-import org.cougaar.tools.csmart.society.ui.SocietyUIComponent;
-import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
-import org.cougaar.tools.csmart.util.ReadOnlyProperties;
+import java.util.List;
 
 /**
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>

@@ -20,11 +20,14 @@
  */
 package  org.cougaar.tools.csmart.util;
 
-import org.cougaar.planning.ldm.plan.Location;
 import org.cougaar.planning.ldm.measure.Latitude;
 import org.cougaar.planning.ldm.measure.Longitude;
+import org.cougaar.planning.ldm.plan.Location;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * Courtesy of <a href="http://openmap.bbn.com">Openmap</a><br>
