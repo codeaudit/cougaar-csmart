@@ -50,8 +50,8 @@ public class SpecificInsertionRecipe extends RecipeBase
     "Class name of the component. (usually same as Class Name)";
 
   private static final String PROP_TYPE = "Type of Insertion";
-  private static final String PROP_TYPE_DFLT = "";
-  private static final String PROP_TYPE_DESC = "Type of Insertion: plugin, binder, etc.";
+  private static final String PROP_TYPE_DFLT = ComponentData.PLUGIN;
+  private static final String PROP_TYPE_DESC = "Type of Component being inserted";
 
   private static final String PROP_CLASS = "Class Name";
   private static final String PROP_CLASS_DFLT = "";
@@ -92,7 +92,7 @@ public class SpecificInsertionRecipe extends RecipeBase
     propName = addProperty(PROP_NAME, PROP_NAME_DFLT);
     propName.setToolTip(PROP_NAME_DESC);
 
-    propType = addProperty(PROP_TYPE, PROP_TYPE_DFLT);
+    propType = addComponentTypeProperty(PROP_TYPE, PROP_TYPE_DFLT);
     propType.setToolTip(PROP_TYPE_DESC);
 
     propClass = addProperty(PROP_CLASS, PROP_CLASS_DFLT);
@@ -120,6 +120,11 @@ public class SpecificInsertionRecipe extends RecipeBase
    */
   public URL getDescription() {
     return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
+  }
+
+  private Property addComponentTypeProperty(String name, String dflt) {
+    Property prop = addProperty(new ComponentTypeProperty(this, name, dflt));
+    return prop;
   }
 
   private Property addRecipeQueryProperty(String name, String dflt) {
