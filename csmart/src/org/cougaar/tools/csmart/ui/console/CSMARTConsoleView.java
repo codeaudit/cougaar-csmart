@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.ui.console;
 
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.XMLExperiment;
+import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.experiment.HostConfigurationBuilder;
 import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
@@ -1369,6 +1370,14 @@ public class CSMARTConsoleView extends JFrame implements Observer {
         try {
           exp.doParse(isValidating);
           model.setXMLFile(chooser.getSelectedFile());
+          if(isValidating) {
+            // Since we cannot modify XML, if it has been validated once, don't validate it again.
+            NodeComponent nodes[] = exp.getNodeComponents();
+            for (int i = 0; i < nodes.length; i++) {
+              NodeComponent node = nodes[i];
+              node.addArgument("org.cougaar.core.node.validate", "false");
+            }
+          }
           model.setExperiment(exp);
 
         } catch(Exception e) {
