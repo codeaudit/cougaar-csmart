@@ -24,17 +24,12 @@ package org.cougaar.tools.csmart.ui.console;
 import java.awt.Color;
 import java.awt.Point;
 import java.awt.Rectangle;
-import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
-import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
-import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.Document;
 import javax.swing.text.Highlighter;
 import javax.swing.text.Position;
-import javax.swing.text.SimpleAttributeSet;
 
 /**
  * A scrolled text pane that contains a ConsoleStyledDocument and supports
@@ -123,10 +118,11 @@ public class ConsoleTextPane extends JScrollPane {
 
   public static void main(String[] args) {
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
-    AttributeSet a = new SimpleAttributeSet();
+    javax.swing.text.AttributeSet a = 
+      new javax.swing.text.SimpleAttributeSet();
     doc.appendString("abcdefghijklmnopqrstuvwxyzdef", a);
     ConsoleTextPane pane = new ConsoleTextPane(doc);
-    JFrame frame = new JFrame();
+    javax.swing.JFrame frame = new javax.swing.JFrame();
     frame.getContentPane().add(pane);
     frame.pack();
     frame.setSize(200, 200);

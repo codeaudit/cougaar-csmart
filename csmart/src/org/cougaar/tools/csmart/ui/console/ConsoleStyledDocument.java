@@ -24,7 +24,6 @@ package org.cougaar.tools.csmart.ui.console;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
-import javax.swing.text.SimpleAttributeSet;
 
 public class ConsoleStyledDocument extends DefaultStyledDocument {
   static int MAX_CHARACTERS = 1000;
@@ -50,7 +49,7 @@ public class ConsoleStyledDocument extends DefaultStyledDocument {
 
   public static void main(String[] args) {
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
-    AttributeSet a = new SimpleAttributeSet();
+    AttributeSet a = new javax.swing.text.SimpleAttributeSet();
     // with MAX_CHARACTER = 5 this prints:
     // abc, abcde, fghij, vwxyz
     try {
