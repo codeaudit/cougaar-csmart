@@ -200,18 +200,28 @@ public class CSMARTConsoleModel extends Observable {
    * @param running -- The new running state.
    */
   public void setRunning(boolean running) {
-    try {
-      createAllNodes();
-      createAllNodeViews();
-      startNodes();
-      isRunning = running;
-    } catch(IllegalStateException ise) {
-      setChanged();
-      notifyObservers(RUN_FAILED);
-      JOptionPane.showMessageDialog(null, ("Cannot start run,  " + ise.getMessage()),
-                                    "Cannot start run",JOptionPane.ERROR_MESSAGE);
+    if(running) {
+      try {
+        createAllNodes();
+        createAllNodeViews();
+        startNodes();
+      } catch(IllegalStateException ise) {
+        setChanged();
+        notifyObservers(RUN_FAILED);
+        running = false;
+        JOptionPane.showMessageDialog(null, ("Cannot start run,  " + ise.getMessage()),
+                                      "Cannot start run",JOptionPane.ERROR_MESSAGE);
 
+      }
+    } else {
+      Enumeration enum = this.nodeModels.elements();
+      while (enum.hasMoreElements()) {
+        NodeModel nm = (NodeModel) enum.nextElement();
+        System.out.println("Stopping Node: " + nm.getNodeName());
+        nm.stop();
+      }
     }
+    isRunning = running;
     setChanged();
     notifyObservers(TOGGLE_RUNNING_STATE);
   }
