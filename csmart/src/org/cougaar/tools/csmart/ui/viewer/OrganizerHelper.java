@@ -752,6 +752,10 @@ public class OrganizerHelper {
     return recipeList;
   }
 
+  /**
+   * Get the available recipe names from the database for user selection.
+   * @return Map of Recipe names to database IDs
+   **/
   public static Map getRecipeNamesFromDatabase() {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui.viewer.OrganizerHelper");
     
@@ -765,7 +769,17 @@ public class OrganizerHelper {
         query = DBUtils.getQuery("queryLibRecipes", substitutions);
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
-          recipes.put(rs.getString(2), rs.getString(1));
+	  String id = rs.getString(1).trim();
+	  String name = rs.getString(2).trim();
+
+	  // Ignore bad Recipe name / IDs
+	  if (id == null || id.equals("") || name == null || name.equals("")) {
+	    if (log.isWarnEnabled()) {
+	      log.warn("getRecipeNames: Got bad Recipe name / ID: " + name + "/ " + id);
+	    }
+	    continue;
+	  }
+          recipes.put(name, id);
         }
         rs.close();
         stmt.close();
