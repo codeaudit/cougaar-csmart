@@ -16,8 +16,9 @@ The Experiment Controller allows the user to run through all Trials
 automatically, to stop after a Trial completes, or to abort a Trial.
 Trials are defined in the Experiment Builder.
 A Trial is one "run" of a Society with all Unbound Properties bound
-to one set of values as specified in the Experiment Builder.  Note that some experiments do not use Societies with Unbound Properties; these experiments
-have one trial, and the user interface is simplified accordingly.
+to one set of values as specified in the Experiment Builder.<br>  
+<i>Note: Some experiments do not use Societies with Unbound Properties; these experiments 
+have one trial, and the user interface is simplified accordingly.</i>
 <p>The Experiment Controller also collects and displays all output from the nodes in the experiment, and provides several facilities for automatically and manually searching this ouput, and notifying the user of error conditions.
 <p>Note that you must separately launch the Server on each host used in
 the experiment. See the installation instructions for running the Server.
@@ -79,6 +80,8 @@ Experiment Builder.
 The Trial time indicates the time that the Trial has been running.
 The Experiment time indicates the total time that the Experiment has
 been running.
+The progress bar and trial time are not displayed for experiments with one
+trial.
 <h3>Saving Experiment Results</h3>
 At the end of the first trial, the first time that the Experiment is run,
 the user is queried for a folder or directory in which to store the results.
@@ -160,5 +163,9 @@ loader", usually indicate a classpath problem. Be sure that both server.jar
 and csmart.jar are on the classpath used to run the server, the classpath
 defined in the server properties file, and in the classpath for running
 CSMART.<br>
+<br><br>
+<!-- hhmts start -->
+Last modified: Mon Oct 29 14:53:47 EST 2001
+<!-- hhmts end -->
 </body>
 </html>
