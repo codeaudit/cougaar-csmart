@@ -45,11 +45,6 @@ public interface ImpactComponent extends ModifiableComponent, ComponentPropertie
   AgentComponent[] getAgents();
 
   /**
-   * Get a configuration writer for this Impact.
-   */
-  ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes);
-
-  /**
    * This is the opportunity for an impact to specify additional
    * components to load into non-Impact Agents
    *
