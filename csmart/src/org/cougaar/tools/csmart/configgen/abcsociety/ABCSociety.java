@@ -567,33 +567,33 @@ public class ABCSociety
     }
   }
 
-    public AgentComponent[] getAgents() {
-        Collection communities = getDescendentsOfClass(ABCCommunity.class);
-	Iterator iter = communities.iterator();
-	ArrayList agents = new ArrayList();
-	while(iter.hasNext()) {
-	  ABCCommunity c = (ABCCommunity)iter.next();
-	  agents.addAll(c.getDescendentsOfClass(ABCAgent.class));
-	}
-
-        return (AgentComponent[]) agents.toArray(new AgentComponent[agents.size()]);
+  public AgentComponent[] getAgents() {
+    Collection communities = getDescendentsOfClass(ABCCommunity.class);
+    Iterator iter = communities.iterator();
+    ArrayList agents = new ArrayList();
+    while(iter.hasNext()) {
+      ABCCommunity c = (ABCCommunity)iter.next();
+      agents.addAll(c.getDescendentsOfClass(ABCAgent.class));
     }
 
-    public NodeComponent[] getNodes() {
-        return (NodeComponent[]) nodes.toArray(new NodeComponent[nodes.size()]);
-    }
+    return (AgentComponent[]) agents.toArray(new AgentComponent[agents.size()]);
+  }
 
-    public HostComponent[] getHosts() {
-        return (HostComponent[]) hosts.toArray(new HostComponent[hosts.size()]);
-    }
+  public NodeComponent[] getNodes() {
+    return (NodeComponent[]) nodes.toArray(new NodeComponent[nodes.size()]);
+  }
 
-    public void addModificationListener(ModificationListener l) {
-        getEventListenerList().add(ModificationListener.class, l);
-    }
+  public HostComponent[] getHosts() {
+    return (HostComponent[]) hosts.toArray(new HostComponent[hosts.size()]);
+  }
 
-    public void removeModificationListener(ModificationListener l) {
-      getEventListenerList().remove(ModificationListener.class, l);
-    }
+  public void addModificationListener(ModificationListener l) {
+    getEventListenerList().add(ModificationListener.class, l);
+  }
+
+  public void removeModificationListener(ModificationListener l) {
+    getEventListenerList().remove(ModificationListener.class, l);
+  }
 
   protected void fireModification() {
     fireModification(new ModificationEvent(this, ModificationEvent.SOMETHING_CHANGED));
@@ -708,4 +708,42 @@ public class ABCSociety
       ((ABCSociety)result).changeSociety();
     return result;
   }
+
+
+  public void processData(ComponentData data) {
+    ComponentData[] children = data.getChildren();
+
+    // This seams like it can be more efficient.
+    for(int i=0; i < children.length; i++) {
+      ComponentData child = children[i];
+      if(child.getType() == ComponentData.AGENT) {
+
+	Iterator iter = ((Collection)getDescendentsOfClass(ABCAgent.class)).iterator();
+
+	while(iter.hasNext()) {
+	  ABCAgent agent = (ABCAgent)iter.next();
+	  if(child.getName().equals(agent.getFullName().toString())) {
+	    child.setOwner(this);
+	    agent.addComponentData(child);
+	  }
+	}		
+      } else {
+	// Process it's children.
+	processData(child);
+      }      
+    }
+  }
+
+  public ComponentData addComponentData(ComponentData data) {
+    ComponentData[] children = data.getChildren();
+
+    processData(data);
+
+    return data;
+  }
+
+  public ComponentData modifyComponentData(ComponentData data) {
+    return data;
+  }
+
 }
