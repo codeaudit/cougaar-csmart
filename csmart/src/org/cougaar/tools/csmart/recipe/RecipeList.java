@@ -47,6 +47,7 @@ public class RecipeList {
     new NameClassPair("Servlet Group Insertion", ServletGroupInsertionRecipe.class),
     new NameClassPair("Adaptivity Support", AdaptivitySupportRecipe.class),
     new NameClassPair("Complete Agent", CompleteAgentRecipe.class),
+    new NameClassPair("Component Collection", ComponentCollectionRecipe.class),
     //    new NameClassPair("Switch Plugin", SwitchPluginRecipe.class),
   };
 
