@@ -80,6 +80,8 @@ import org.cougaar.tools.csmart.ui.experiment.PropTableModelBase;
 import org.cougaar.tools.csmart.ui.util.ComboDialog;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.recipe.ComplexRecipeComponent;
 
 /**
  * Panel that holds the PropertyEditor for editing the properties of a <code>ModifiableConfigurableComponent</code>. <br>
@@ -100,6 +102,7 @@ public class PropertyEditorPanel extends JPanel
   JPopupMenu relationshipsMenu;
   JPopupMenu baseComponentMenu;
   JPopupMenu agentMenu;
+  JPopupMenu completeAgentMenu;
   DefaultMutableTreeNode root;
   PropertyTable propertyTable = null;
   JScrollPane tableScrollPane;
@@ -199,6 +202,9 @@ public class PropertyEditorPanel extends JPanel
         }
       };
   private Object[] societyMenuItems = {
+    addAgentAction
+  };
+  private Object[] completeAgentMenuItems = {
     addAgentAction
   };
   private Object[] bindersMenuItems = {
@@ -307,6 +313,7 @@ public class PropertyEditorPanel extends JPanel
     tree.addMouseListener(myMouseListener);
     // create popup menus to be displayed in tree
     societyMenu = new JPopupMenu();
+    completeAgentMenu = new JPopupMenu();
     baseComponentMenu = new JPopupMenu();
     agentMenu = new JPopupMenu();
     bindersMenu = new JPopupMenu();
@@ -317,6 +324,8 @@ public class PropertyEditorPanel extends JPanel
     relationshipsMenu = new JPopupMenu();
     for (int i = 0; i < societyMenuItems.length; i++)
       societyMenu.add((Action)societyMenuItems[i]);
+    for (int i = 0; i < completeAgentMenuItems.length; i++)
+      completeAgentMenu.add((Action)completeAgentMenuItems[i]);
     for (int i = 0; i < baseComponentMenuItems.length; i++)
       baseComponentMenu.add((Action)baseComponentMenuItems[i]);
     for (int i = 0; i < agentMenuItems.length; i++)
@@ -625,6 +634,8 @@ public class PropertyEditorPanel extends JPanel
       agentMenu.show(tree, x, y);
     else if (o instanceof RelationshipComponent)
       agentMenu.show(tree, x, y);
+    else if (o instanceof ComplexRecipeComponent)
+      completeAgentMenu.show(tree, x, y);
     else if (o instanceof BaseComponent)
       baseComponentMenu.show(tree, x, y);
     else if (log.isErrorEnabled())
