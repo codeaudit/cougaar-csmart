@@ -52,6 +52,7 @@ import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -109,6 +110,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
   private transient Logger log;
   private transient boolean modified = true;
+  private transient boolean fromFile = false;
 
   /**
    * Build an experiment around a society or recipes.
@@ -121,6 +123,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     this(name);
     createLogger();
     setSocietyComponent(societyComponent);
+    if(societyComponent instanceof SocietyFileComponent) {
+      fromFile = true;
+    }
     setRecipes(recipes);
     setDefaultNodeArguments();
   }
@@ -789,9 +794,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       theSoc.setOwner(this); // the experiment
       theSoc.setParent(null);
       addDefaultNodeArguments(theSoc);
-      PopulateDb pdb =
-        new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
-                       getExperimentID(), trialID, true, ch);
+      PopulateDb pdb = null;
+      if(fromFile) {
+        pdb =
+          new PopulateDb("CSHNA", "CSMI", getExperimentName(),
+                         null, null, ch);
+      } else {
+        pdb =
+          new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
+                         getExperimentID(), trialID, ch);
+      }
       setExperimentID(pdb.getExperimentId());
       setTrialID(pdb.getTrialId()); // sets trial id and -D argument
 
