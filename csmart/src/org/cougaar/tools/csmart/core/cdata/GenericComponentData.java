@@ -381,7 +381,7 @@ public class GenericComponentData implements ComponentData, Serializable {
     buf.append("Name: " + getName());
     buf.append(", Type: " + getType());
     buf.append(", Class: " + getClassName());
-    buf.append(", PRiority: " + getPriority());
+    buf.append(", Priority: " + getPriority());
     if (owner != null) {
       buf.append(", Owner: " + getOwner());
     }
