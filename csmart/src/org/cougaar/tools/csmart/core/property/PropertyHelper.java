@@ -126,13 +126,13 @@ public class PropertyHelper {
   {
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.core.property.PropertyHelper");
 
-    if(log.isDebugEnabled()) {
-      log.debug("validateValue(Class, Set, Object) \n" +
-                cls + "\n"  +
-                "Set: " + validValues + "\n"+
-                "Object: " + newValue + "\n" +
-                "Object Class: " + newValue.getClass());
-    }
+ //    if(log.isDebugEnabled()) {
+//        log.debug("validateValue(Class, Set, Object) \n" +
+//                 cls + "\n"  +
+//                 "Set: " + validValues + "\n"+
+//                 "Object: " + newValue + "\n" +
+//                 "Object Class: " + newValue.getClass());
+//     }
     if (cls == null) return newValue;
     if (cls.isArray()) {
       if (!newValue.getClass().isArray()) {
