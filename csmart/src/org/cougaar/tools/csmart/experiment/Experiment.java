@@ -45,6 +45,7 @@ import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.db.DBConflictHandler;
 import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.tools.csmart.core.db.CMT;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
@@ -1134,7 +1135,52 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     }
     experimentCopy.setCommAsbID(newAsbid);
 
+    // FIXME: Must duplicate the expt_trial_thread information
+    // Else must recognize & fix problem on load in Organizer / CMTDialog
+
+    // FIXME: Only do this sometimes maybe?
+    experimentCopy.storeSelectedThreads(getSelectedThreads());
+
     return experimentCopy;
+  }
+
+  // Retrieve from the DB the threads selected in this experiment.
+  // Do not store on the local experiment, but instead return a list
+  // which will be stored on the copy
+  private List getSelectedThreads() {
+    if (trialID == null || getSocietyComponent() == null)
+      return null;
+    List threads = new ArrayList();
+
+    for (int i = 0; i < CMT.ULDBThreads.length; i++) {
+      if (ExperimentDB.isULThreadSelected(trialID, CMT.ULDBThreads[i]))
+	threads.add(CMT.ULDBThreads[i]);
+    }
+    if (threads.isEmpty())
+      return null;
+    else 
+      return threads;
+  }
+
+  // List of the CMT style threads selected for this Experiment
+  // This should be non-null only when we copied the experiment
+  // and have not yet saved it.
+  private List selThreads = null;
+
+  // Stash away the list of CMT style threads seleced in this experiment
+  public void storeSelectedThreads(List threads) {
+    this.selThreads = threads;
+  }
+  
+  // If there are any locally storead Threads, save them in DB
+  // if we can.
+  private void saveSelectedThreads() {
+    if (selThreads == null || selThreads.isEmpty() || expID == null || expID.equals("") || trialID == null || trialID.equals(""))
+      return;
+    
+    for (int i = 0; i < CMT.ULDBThreads.length; i++)
+      ExperimentDB.setULThreadSelected(trialID, CMT.ULDBThreads[i], selThreads.contains(CMT.ULDBThreads[i]));
+    selThreads = null;
   }
 
   /**
@@ -1773,6 +1819,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
       setExperimentID(pdb.getExperimentId());
       setTrialID(pdb.getTrialId()); // sets trial id and -D argument
+
+      // Save back to DB the selected threads, if necc
+      saveSelectedThreads();
 
       // store in the DB the community assembly ID being used
       pdb.setCommAssemblyId(commAsb);
