@@ -23,13 +23,16 @@ package org.cougaar.tools.csmart.recipe;
 
 
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import org.cougaar.core.agent.ClusterImpl;
@@ -40,6 +43,7 @@ import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.cdata.PGPropData;
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
+import org.cougaar.tools.csmart.core.db.PDbBase;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
@@ -338,14 +342,29 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
     // The only way to preserve the target overrides in the children is to make them
     // arguments of the parent, save, and then remove them from the parent.
 
+    Map targets = new HashMap();
     for(int i=0; i < getChildCount(); i ++) {
       ComponentBase child = (ComponentBase)getChild(i);
       if(child.getProperty(PROP_TARGET_COMPONENT_QUERY) != null) {
-        addProperty(("$$CP=" + child.getComponentClassName() + "-" + i), child.getProperty(PROP_TARGET_COMPONENT_QUERY).getValue());
+        targets.put(("$$CP=" + child.getComponentClassName() + "-" + i), child.getProperty(PROP_TARGET_COMPONENT_QUERY).getValue());
       }
     }
 
     boolean retVal = super.saveToDatabase();
+
+    try {
+      PDbBase.saveTargetOverrides(this, targets);
+    } catch (SQLException sqle) {
+      if(log.isErrorEnabled()) {
+        log.error("Error saving target overrides to database", sqle);
+      }
+      retVal = false;
+    } catch (IOException ioe) {
+      if(log.isErrorEnabled()) {
+        log.error("Error saving target overrides to database", ioe);
+      }
+      retVal = false;
+    }
 
     return retVal;
   }
