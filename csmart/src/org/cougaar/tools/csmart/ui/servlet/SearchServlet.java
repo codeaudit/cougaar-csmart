@@ -83,17 +83,17 @@ import org.cougaar.tools.csmart.ui.servlet.TranslateUtils;
  *   <li>a starting Set of UID Strings (either POSTed as a 
  *       serialized Java <code>List</code> or, if not POSTed, sent as a 
  *       single "?uid=.." URL parameter)</li>
- * <ul>
+ * </ul>
  * The result is a List of <code>PropertyTree</code>s for all the
  * related UniqueObjects.
  * 
  * <p>
- * Can be loaded manually by including this line in an agent's .ini configuration file: <ul>
+ * Can be loaded manually by including this line in an agent's .ini configuration file: <br>
  *   plugin = org.cougaar.core.servlet.SimpleServletComponent(org.cougaar.tools.csmart.ui.servlet.SearchServlet, 
  *   /CSMART_SearchServlet)
  *
  * <p>
- * Is loaded from a URL on a CSMART machine, on agent 'Agent': <ul>
+ * Is loaded from a URL on a CSMART machine, on agent 'Agent': <br>
  *   http://localhost:port/$Agent/CSMART_SearchServlet
  *
  * @see TranslateUtils
@@ -377,14 +377,14 @@ public class SearchServlet
       }
       int n = ((l != null) ? l.size() : 0);
       out.print("\n<h3>Found UniqueObjects["+n+"]:</h3><p>"+
-		"<i>Note: links will appear in TASKS.PSP's lower-left frame</i>"+
+		"<i>Note: links will appear in the task servlet's lower-left frame</i>"+
 		"<p><ol>\n");
       String hrefBase =
 	"<a"+
 	" target=\"itemFrame\""+
 	" href=\"/$"+
 	URLEncoder.encode(cid.toString())+
-	"/alpine/demo/TASKS.PSP?uid=";
+	"/tasks?uid=";
       // print objs
       for (int i = 0; i < n; i++) {
 	UniqueObject ui = (UniqueObject)l.get(i);
@@ -392,7 +392,7 @@ public class SearchServlet
 	UID uid = ui.getUID();
 	if (uid != null) {
 	  String suid = ui.getUID().toString();
-	  // mode must match TASKS.PSP
+	  // mode must match tasks servlet
 	  int mode =
 	    ((ui instanceof Task) ? 3 :
 	     (ui instanceof PlanElement) ? 5 :
