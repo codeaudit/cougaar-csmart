@@ -33,6 +33,8 @@ cat $HEADER_PATH/asb_component_arg_header.csv $DATA_PATH/asb_component_arg_data.
 cat $HEADER_PATH/asb_component_hierarchy_header.csv $DATA_PATH/asb_component_hierarchy_data.csv > $CSV_PATH/asb_component_hierarchy.csv
 cat $HEADER_PATH/asb_oplan_header.csv $DATA_PATH/asb_oplan_data.csv > $CSV_PATH/asb_oplan.csv
 cat $HEADER_PATH/asb_oplan_agent_attr_header.csv $DATA_PATH/asb_oplan_agent_attr_data.csv > $CSV_PATH/asb_oplan_agent_attr.csv
+cat $HEADER_PATH/lib_oplan_header.csv $DATA_PATH/lib_oplan_data.csv > $CSV_PATH/lib_oplan.csv
+cat $HEADER_PATH/oplan_agent_attr_header.csv $DATA_PATH/oplan_agent_attr_data.csv > $CSV_PATH/oplan_agent_attr.csv
 cat $HEADER_PATH/expt_experiment_header.csv $DATA_PATH/expt_experiment_data.csv > $CSV_PATH/expt_experiment.csv
 cat $HEADER_PATH/expt_trial_header.csv $DATA_PATH/expt_trial_data.csv > $CSV_PATH/expt_trial.csv
 cat $HEADER_PATH/expt_trial_assembly_header.csv $DATA_PATH/expt_trial_assembly_data.csv > $CSV_PATH/expt_trial_assembly.csv
@@ -80,4 +82,14 @@ cat $HEADER_PATH/lib_role_thread_header.csv $DATA_PATH/lib_role_thread_data.csv 
 cat $HEADER_PATH/lib_thread_header.csv $DATA_PATH/lib_thread_data.csv > $CSV_PATH/lib_thread.csv
 cat $HEADER_PATH/community_entity_attribute_header.csv $DATA_PATH/community_entity_attribute_data.csv > $CSV_PATH/community_entity_attribute.csv
 cat $HEADER_PATH/community_attribute_header.csv $DATA_PATH/community_attribute_data.csv > $CSV_PATH/community_attribute.csv
+cat $HEADER_PATH/dual_header.csv $DATA_PATH/dual_data.csv > $CSV_PATH/dual.csv
+cat $HEADER_PATH/fdm_unit_header.csv $DATA_PATH/fdm_unit_data.csv > $CSV_PATH/fdm_unit.csv
+cat $HEADER_PATH/fdm_unit_equipment_header.csv $DATA_PATH/fdm_unit_equipment_data.csv > $CSV_PATH/fdm_unit_equipment.csv
+cat $HEADER_PATH/fdm_transportable_item_header.csv $DATA_PATH/fdm_transportable_item_data.csv > $CSV_PATH/fdm_transportable_item.csv
+cat $HEADER_PATH/fdm_transportable_item_detail_header.csv $DATA_PATH/fdm_transportable_item_detail_data.csv > $CSV_PATH/fdm_transportable_item_detail.csv
+cat $HEADER_PATH/fdm_unfrmd_srvc_occ_rnk_subcat_header.csv $DATA_PATH/fdm_unfrmd_srvc_occ_rnk_subcat_data.csv > $CSV_PATH/fdm_unfrmd_srvc_occ_rnk_subcat.csv
+cat $HEADER_PATH/fdm_unfrmd_srvc_occptn_header.csv $DATA_PATH/fdm_unfrmd_srvc_occptn_data.csv > $CSV_PATH/fdm_unfrmd_srvc_occptn.csv
+cat $HEADER_PATH/fdm_unfrmd_srvc_rnk_header.csv $DATA_PATH/fdm_unfrmd_srvc_rnk_data.csv > $CSV_PATH/fdm_unfrmd_srvc_rnk.csv
+cat $HEADER_PATH/fdm_unit_billet_header.csv $DATA_PATH/fdm_unit_billet_data.csv > $CSV_PATH/fdm_unit_billet.csv
+cat $HEADER_PATH/geoloc_header.csv $DATA_PATH/geoloc_data.csv > $CSV_PATH/geoloc.csv
 
