@@ -202,19 +202,45 @@ public class PDbBase {
    **/
   private boolean isRecipeEqual(String[] recipeIdAndClass, 
                                 RecipeComponent rc) {
-    if (!recipeIdAndClass[1].equals(rc.getClass().getName()))
+    if (!recipeIdAndClass[1].equals(rc.getClass().getName())) {
+      if (log.isDebugEnabled()) {
+	log.debug("isRecipeEqual got new class " + rc.getClass().getName() + " compared to " + recipeIdAndClass[1]);
+      }
       return false; // different class
+    }
 
+    // The bulk of a Complex recipe is in the Assembly.
+    // Although inefficient, to be safe, pretend they are always different
+    if (rc instanceof ComplexRecipeComponent) {
+      if (log.isDebugEnabled()) {
+	log.debug("isRecipeEqual got a ComplexRecipe: " + rc.getClass().getName());
+      }
+      return false;
+    }
+
+    // Build up a HashMap of the current properties of the recipe.
+    // This must match how the properties are saved below in
+    // insertLibRecipe
     Map newProps = new HashMap();
-    for (Iterator j = rc.getProperties(); j.hasNext(); ) {
-      Property prop = (Property) j.next();
+    for (Iterator j = rc.getLocalPropertyNames(); j.hasNext(); ) {
+      CompositeName pname = (CompositeName) j.next();
+      Property prop = rc.getProperty(pname);
+      if (prop == null) {
+	prop = rc.getInvisibleProperty(pname);
+	if (prop == null) {
+	  continue;
+	}
+      }
       Object val = prop.getValue();
       if (val == null) continue; // Don't write null values
       String sval = val.toString();
       if (sval.equals("")) continue; // Don't write empty values
-      newProps.put(prop.getName().last().toString(), sval);
+      String name = pname.last().toString();
+      newProps.put(name, sval);
     }
 
+    // Now build up a map of the current properties of the recipe.
+    // This must match OrganizerHelper.getRecipeProperties
     Map oldProps = new HashMap();
     substitutions.put(":recipe_id:", recipeIdAndClass[0]);
     ResultSet rs = null;
@@ -240,6 +266,12 @@ public class PDbBase {
         return false;
       }
     }
+
+//     if (log.isDebugEnabled()) {
+//       log.debug("isRecipeEqual comparing hashes. Old is size: " + oldProps.size() + " and new is " + newProps.size());
+//       log.debug("and to equals we get: " + oldProps.equals(newProps));
+//     }
+
     return oldProps.equals(newProps);
   }
 
@@ -316,27 +348,32 @@ public class PDbBase {
    * then just update the database recipe (by removing it
    * and inserting the new recipe using the same id).
    **/
-  private String insertLibRecipe(RecipeComponent rc,
-				 String recipeId) throws SQLException {
-
-    if (rc instanceof ComplexRecipeComponent) {
-      return insertComplexLibRecipe(rc, recipeId);
-    } else {
-      return insertSimpleLibRecipe(rc, recipeId);
-    }
-  }
-
-  private String insertSimpleLibRecipe(RecipeComponent rc, 
-                                       String recipeId) throws SQLException {
+  private String insertLibRecipe(RecipeComponent rc, String recipeId) {
     try {
-      if (recipeId != null)
-	removeLibRecipeNamed(rc.getRecipeName());
-      else
+      if (recipeId != null) {
+	// The recipe is already in the DB. We are replacing the old definition.
+	substitutions.put(":recipe_id:", recipeId);
+	substitutions.put(":java_class:", rc.getClass().getName());
+
+	if (log.isDebugEnabled()) {
+	  log.debug("insertLibRecipe updating old ID " + recipeId + " with new class " + rc.getClass().getName() + " and name " + rc.getRecipeName());
+	}
+	
+	// Clean out the old arguments
+	executeUpdate(dbp.getQuery("deleteLibRecipeArgs", substitutions));
+
+	// Make sure the class and name are correc
+	executeUpdate(dbp.getQuery("updateLibRecipe", substitutions));
+      } else {
+	// Creating a new recipe
 	recipeId = getNextId("queryMaxRecipeId", "RECIPE-");
-      substitutions.put(":recipe_id:", recipeId);
-      substitutions.put(":java_class:", rc.getClass().getName());
-      substitutions.put(":description:", "No description available");
-      executeUpdate(dbp.getQuery("insertLibRecipe", substitutions));
+	substitutions.put(":recipe_id:", recipeId);
+	substitutions.put(":java_class:", rc.getClass().getName());
+	substitutions.put(":description:", "No description available");
+	executeUpdate(dbp.getQuery("insertLibRecipe", substitutions));
+      }
+
+      // Now save all the recipe arguments
       int order = 0;
       for (Iterator j = rc.getLocalPropertyNames(); j.hasNext(); ) {
 	CompositeName pname = (CompositeName) j.next();
@@ -365,52 +402,7 @@ public class PDbBase {
       }
       return recipeId;
     } catch (SQLException sqle) {
-      System.out.println("Exception in insertLibRecipe: " + sqle);
-      return null;
-    }
-  }
-
-  private String insertComplexLibRecipe(RecipeComponent rc, 
-                                       String recipeId) throws SQLException {
-    try {
-      if (recipeId != null)
-	removeLibRecipeNamed(rc.getRecipeName());
-      else
-	recipeId = getNextId("queryMaxRecipeId", "RECIPE-");
-      substitutions.put(":recipe_id:", recipeId);
-      substitutions.put(":java_class:", rc.getClass().getName());
-      substitutions.put(":description:", "Complex Recipe Component");
-      executeUpdate(dbp.getQuery("insertLibRecipe", substitutions));
-      int order = 0;
-      for (Iterator j = rc.getLocalPropertyNames(); j.hasNext(); ) {
-	CompositeName pname = (CompositeName) j.next();
-	Property prop = rc.getProperty(pname);
-	if (prop == null) {
-          prop = rc.getInvisibleProperty(pname);
-          if (prop == null) {
-            if (log.isErrorEnabled()) {
-              log.error("Saving recipe " + rc.getRecipeName() + " under ID " + recipeId + " couldn't find property " + pname + ". Will continue.", new Throwable());
-            }
-            continue;
-          }
-	}
-	Object val = prop.getValue();
-	if (val == null) continue; // Don't write null values
-	String sval = val.toString();
-	if (sval.equals("")) continue; // Don't write empty values
-	String name = pname.last().toString();
-	substitutions.put(":arg_name:", name);
-	substitutions.put(":arg_value:", sval);
-	substitutions.put(":arg_order:", String.valueOf(order++));
-        if(log.isDebugEnabled()) {
-          log.debug("Write prop: " + name + " and val: " + sval + " to database");
-        }
-	executeUpdate(dbp.getQuery("insertLibRecipeProp", substitutions));
-      }
-      return recipeId;
-    } catch (SQLException sqle) {
-      System.out.println("Exception in insertLibRecipe: " + sqle);
-      Thread.dumpStack();
+      log.error("Exception saving recipe " + rc.getRecipeName() + " in insertLibRecipe", sqle);
       return null;
     }
   }
