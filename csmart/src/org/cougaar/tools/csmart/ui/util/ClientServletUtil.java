@@ -40,14 +40,14 @@ public class ClientServletUtil {
   // names of servlets used by CSMART
   public static final String COMMUNITY_SERVLET = 
     "CSMART_CommunityProviderServlet";
-  public static final String CLUSTER_SERVLET = 
-    "CSMART_ClusterInfoServlet";
+  public static final String AGENT_INFO_SERVLET = 
+    "CSMART_AgentInfoServlet";
   public static final String PLAN_SERVLET = "CSMART_PlanServlet";
   public static final String SEARCH_SERVLET = "CSMART_SearchServlet";
   public static final String METRICS_SERVLET = "CSMART_MetricsServlet";
   // servlet to get the URLs of all agents in the society
   public static final String AGENT_PROVIDER_SERVLET =
-    "CSMART_ClusterProviderServlet";
+    "CSMART_AgentProviderServlet";
 
   /**
    * Contact the agent provider servlet at the specified URL,
@@ -221,7 +221,3 @@ public class ClientServletUtil {
   }
 
 }
-
-
-
-
