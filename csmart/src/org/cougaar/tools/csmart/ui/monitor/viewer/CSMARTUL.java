@@ -47,7 +47,7 @@ import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.monitor.generic.UIProperties;
 import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetrics;
 import org.cougaar.tools.csmart.ui.monitor.metrics.CSMARTMetricsFrame;
-import org.cougaar.tools.csmart.ui.psp.ThreadUtils;
+//import org.cougaar.tools.csmart.ui.psp.ThreadUtils;
 
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
@@ -75,10 +75,18 @@ import javax.swing.*;
 
 public class CSMARTUL extends JFrame implements ActionListener, Observer {
   // names of PSPs used by this client
-  private static final String PSP_COMMUNITY = "PSP_CommunityProvider.PSP";
-  private static final String PSP_CLUSTER = "PSP_ClusterInfo.PSP";
-  private static final String PSP_PLAN = "PSP_Plan.PSP";
-  private static final String PSP_METRICS = "PSP_Metrics.PSP";
+  //  private static final String PSP_COMMUNITY = "PSP_CommunityProvider.PSP";
+  //  private static final String PSP_CLUSTER = "PSP_ClusterInfo.PSP";
+  //  private static final String PSP_PLAN = "PSP_Plan.PSP";
+  //  private static final String PSP_METRICS = "PSP_Metrics.PSP";
+
+  // names of servlets used by this client
+  private static final String PSP_COMMUNITY = 
+    "CSMART_CommunityProviderServlet";
+  private static final String PSP_CLUSTER = 
+    "CSMART_ClusterInfoServlet";
+  private static final String PSP_PLAN = "CSMART_PlanServlet";
+  private static final String PSP_METRICS = "CSMART_MetricsServlet";
 
   private static final String FILE_MENU = "File";
   private static final String NEW_MENU_ITEM = "New";
@@ -103,7 +111,11 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   private JMenu windowMenu;
   private static String agentURL = null; // agent to contact initially
   private static String agentHost = "localhost";
-  private static int agentPort = 5555;
+  //  private static int agentPort = 5555;
+  private static int agentPort = 8800;
+  private static String agentPortString = "8800";
+  // maps host to port, but port used is currently hardcoded
+  // TODO: how should this work?
   private static CSMARTAgentMap agentMap;
   // these mappings are determined once,
   private static Hashtable communityToAgents = null;
@@ -297,9 +309,7 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
         break;
       }
     }
-    //    agentHost = hosts[0].getShortName();
-    agentPort = 5555; // default
-    agentURL = "http://" + agentHost + ":5555/"; 
+    agentURL = "http://" + agentHost + ":" + agentPortString + "/"; 
     agentMap = new CSMARTAgentMap(agentHost, agentPort);
   }
 
@@ -481,12 +491,15 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
 
   /**
    * Query user for agent URL. Only used if not running under CSMART.
+   * If running under CSMART, CSMART picks the first host that has
+   * nodes and agents and builds a URL from that and the default agentPort.
    */
 
   private static void getAgentURL() {
     if (agentURL != null)
       return; // only ask user for agent locations once
-    JTextField tf = new JTextField("http://localhost:5555/");
+    JTextField tf = new JTextField("http://localhost:" +
+                                   agentPortString + "/");
     JPanel panel = new JPanel();
     panel.add(new JLabel("Agent URL:"));
     panel.add(tf);
@@ -522,7 +535,8 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   }
 
   /**
-   * Query user for agent URL and get names of agents.
+   * Query user for agent URL and get names of agents from that URL.
+   * The user is only queried once, unless we fail to contact the agent.
    */
 
   private static Vector getAgents() {
@@ -678,10 +692,10 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
     String filterValue = filter.getIgnoreObjectTypes();
     int filterLimit  = filter.getNumberOfObjects();
     String baseURL =
-      PSPId + "?" +
-      PropertyNames.PLAN_OBJECTS_TO_IGNORE +
-      "=" +
-      filterValue;
+        PSPId + "?" +
+        PropertyNames.PLAN_OBJECTS_TO_IGNORE +
+        "=" +
+        filterValue;
 
     // query
     Collection objectsFromPSP =

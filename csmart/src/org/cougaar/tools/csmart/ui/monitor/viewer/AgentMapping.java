@@ -21,24 +21,30 @@
 
 package org.cougaar.tools.csmart.ui.monitor.viewer;
 
-public class CSMARTAgentMap implements AgentMapping {
-  String agentHost;
-  int agentPort;
-
-  public CSMARTAgentMap(String agentHost, int agentPort) {
-    this.agentHost = agentHost;
-    this.agentPort = agentPort;
-  }
+/**
+ * Maps an agent name to the PSP host and port for that agent, for
+ * use by <tt>ThreadUtils</code>.
+ *
+ * @see ThreadUtils
+ */
+public interface AgentMapping {
 
   /**
-   * AgentMapping interface.
+   * Get the host for an agent's PSP server.
+   * <p>
+   * PSP queries are more efficient if the host for this specific agent 
+   * is known, but the existing PSP proxy mechanism should allow the user to
+   * specify one PSP host for all agents.
    */
+  String getHost(String agentName);
 
-  public String getHost(String agentName) {
-    return agentHost;
-  }
-
-  public int getPort(String agentName) {
-    return agentPort;
-  }
+  /**
+   * Get the port address for an agent's PSP server.
+   * <p>
+   * Typically this is "5555", but the user might configure this 
+   * port to a different address.
+   *
+   * @see #getHost(String)
+   */
+  int getPort(String agentName);
 }
