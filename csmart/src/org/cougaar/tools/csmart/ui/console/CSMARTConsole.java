@@ -188,7 +188,7 @@ public class CSMARTConsole extends JFrame {
   private static final String HELP_MENU = "Help";
   private static final String ABOUT_CONSOLE_ITEM = "About Experiment Controller";
   private static final String ABOUT_CSMART_ITEM = "About CSMART";
-  private static final String LEGEND_MENU_ITEM = "Legend";
+  private static final String LEGEND_MENU_ITEM = "Node Status Legend";
   protected static final String ABOUT_DOC = "/org/cougaar/tools/csmart/ui/help/about-csmart.html";
   private static final String HELP_DOC = "help.html";
 
@@ -421,7 +421,7 @@ public class CSMARTConsole extends JFrame {
     int result = JOptionPane.showConfirmDialog(this, pollPanel, 
                                                "Polling Interval",
                                                JOptionPane.OK_CANCEL_OPTION);
-    if (result == JOptionPane.CANCEL_OPTION)
+    if (result != JOptionPane.OK_OPTION)
       return asPollInterval;
     String s = pollField.getText().trim();
 
@@ -628,7 +628,7 @@ public class CSMARTConsole extends JFrame {
 	  int result = JOptionPane.showConfirmDialog(CSMARTConsole.this, "Really kill all running Nodes on all known AppServers?", 
 						     "Kill All Nodes",
 						     JOptionPane.OK_CANCEL_OPTION);
-	  if (result == JOptionPane.CANCEL_OPTION)
+	  if (result != JOptionPane.OK_OPTION)
 	    return;
 
 	  if (log.isDebugEnabled())
@@ -692,15 +692,7 @@ public class CSMARTConsole extends JFrame {
 	}
       });
     helpMenu.add(helpMenuItem);
-    JMenuItem aboutMenuItem = new JMenuItem(ABOUT_CSMART_ITEM);
-    aboutMenuItem.addActionListener(new ActionListener() {
-	public void actionPerformed(ActionEvent e) {
-	  URL about = (URL)this.getClass().getResource(ABOUT_DOC);
-	  if (about != null)
-	    Browser.setPage(about);
-	}
-      });
-    helpMenu.add(aboutMenuItem);
+
     legend = new Legend();
     JMenuItem legendMenuItem = new JMenuItem(LEGEND_MENU_ITEM);
     legendMenuItem.addActionListener(new ActionListener() {
@@ -710,6 +702,16 @@ public class CSMARTConsole extends JFrame {
       });
     helpMenu.add(legendMenuItem);
     
+    JMenuItem aboutMenuItem = new JMenuItem(ABOUT_CSMART_ITEM);
+    aboutMenuItem.addActionListener(new ActionListener() {
+	public void actionPerformed(ActionEvent e) {
+	  URL about = (URL)this.getClass().getResource(ABOUT_DOC);
+	  if (about != null)
+	    Browser.setPage(about);
+	}
+      });
+    helpMenu.add(aboutMenuItem);
+
     JMenuBar menuBar = new JMenuBar();
     menuBar.add(fileMenu);
     menuBar.add(viewMenu);
@@ -2581,7 +2583,7 @@ public class CSMARTConsole extends JFrame {
 						 JOptionPane.OK_CANCEL_OPTION,
 						 JOptionPane.QUESTION_MESSAGE,
 						 null);
-      if (result == JOptionPane.CANCEL_OPTION) {
+      if (result != JOptionPane.OK_OPTION) {
 	//  User wants to return to the console?
 	// Set boolean for CSMART main UI to check
 	dontClose = true;
@@ -2746,6 +2748,7 @@ public class CSMARTConsole extends JFrame {
       sizeButton.setSelected(true);
       sizeTF.setText(String.valueOf(currentViewSize));
     }
+    String oldTFVal = sizeTF.getText();
     ButtonGroup bufferButtonGroup = new ButtonGroup();
     bufferButtonGroup.add(allButton);
     bufferButtonGroup.add(sizeButton);
@@ -2753,29 +2756,40 @@ public class CSMARTConsole extends JFrame {
     bufferEventsPanel.add(sizeButton);
     bufferEventsPanel.add(sizeTF);
     
-    int result = JOptionPane.showConfirmDialog(null,
+    int newViewSize = 0;
+    while (true) {
+      int result = JOptionPane.showConfirmDialog(null,
                                                bufferEventsPanel,
                                                "Node View",
                                                JOptionPane.OK_CANCEL_OPTION,
                                                JOptionPane.QUESTION_MESSAGE,
                                                null);
-    if (result == JOptionPane.CANCEL_OPTION)
-      return -2; // user cancelled
-    int newViewSize = 0;
-    if (allButton.isSelected()) {
-      newViewSize = -1;
-    } else {
-      try {
-        newViewSize = Integer.parseInt(sizeTF.getText());
-      } catch (NumberFormatException e) {
-        if(log.isErrorEnabled()) {
-          log.error("Exception setting view size", e);
-        }
-        return currentViewSize;
+      if (result != JOptionPane.OK_OPTION)
+	return -2; // user cancelled
+      newViewSize = 0;
+      if (allButton.isSelected()) {
+	return -1;
+      } else {
+	try {
+	  newViewSize = Integer.parseInt(sizeTF.getText());
+	} catch (NumberFormatException e) {
+	  if(log.isErrorEnabled()) {
+	    log.error("Bad new view size: " + sizeTF.getText());
+	  }
+	}
+	if (newViewSize < 1) {
+	  // Invalid size. Show error message.
+	  JOptionPane.showMessageDialog(null,
+					"Invalid buffer size. Must be a whole number, at least 1.", 
+					"Invalid entry", 
+					JOptionPane.WARNING_MESSAGE);
+	  sizeTF.setText(oldTFVal);
+	} else {
+	  // Legitimate result
+	  break;
+	}
       }
-      if (newViewSize < 1)
-	return currentViewSize;
-    }
+    } // end of while loop
     return newViewSize;
   }
   
@@ -2859,7 +2873,7 @@ public class CSMARTConsole extends JFrame {
     int result = JOptionPane.showConfirmDialog(this, notifyPanel, 
                                                "Notification",
                                                JOptionPane.OK_CANCEL_OPTION);
-    if (result == JOptionPane.CANCEL_OPTION)
+    if (result != JOptionPane.OK_OPTION)
       return;
     String s = notifyField.getText();
     if (s == null || s.length() == 0)
