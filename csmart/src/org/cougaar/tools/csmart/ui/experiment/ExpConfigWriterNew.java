@@ -32,6 +32,7 @@ import org.cougaar.tools.csmart.ui.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.component.*;
 
 
+import org.cougaar.tools.csmart.ui.component.ComponentName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.configgen.abcsociety.ABCAgent;
 import org.cougaar.tools.csmart.configgen.abcsociety.ABCSociety;
@@ -86,6 +87,9 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
       nc.setClassName(""); // leave this out?? FIXME
       nc.setOwner(exp); // the experiment? FIXME
       nc.setParent(theSoc);
+      ComponentName name = 
+	  new ComponentName((ConfigurableComponent)nodesToWrite[i], "ConfigurationFileName");
+      nc.addParameter(((ComponentProperties)nodesToWrite[i]).getProperty(name).getValue().toString());
       theSoc.addChild(nc);
       addAgents(nodesToWrite[i], nc);
     }
@@ -166,7 +170,11 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
   } // end of writeLeafData  
   
   private void writeNodeFile(File configDir, ComponentData nc) throws IOException {
-    PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, nc.getName() + ".ini")));
+   Object[] parameters = nc.getParameters();
+   String configFileName = (String)parameters[0] + ".ini";
+   System.out.println("Config file: " + configFileName);
+   PrintWriter writer = new PrintWriter(new FileWriter(new File(configDir, configFileName)));
+   System.out.println("Print writer is: " + writer);
     try {
     // loop over children
     // if there are binder or such, do those
