@@ -21,11 +21,13 @@
 
 package org.cougaar.tools.csmart.ui.component;
 
+import java.io.Serializable;
+
 /** 
  * Interface that contains all data
  * associated with a component.
  */
-public interface ComponentData {
+public interface ComponentData extends Serializable {
 
   /** Component Types **/
   String SOCIETY = "Society";

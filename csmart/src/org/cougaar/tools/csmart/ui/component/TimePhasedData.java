@@ -21,6 +21,8 @@
 
 package org.cougaar.tools.csmart.ui.component;
 
+import java.io.Serializable;
+
 /**
  * Data Structure for Time Phased Data.
  * The time-phased data string is in the format:
@@ -28,7 +30,7 @@ package org.cougaar.tools.csmart.ui.component;
  * mm/dd/yyyy hh:mm am
  *
  */
-public class TimePhasedData {
+public class TimePhasedData implements Serializable {
 
   /** Start time for the time phased object **/
   String startTime = null;

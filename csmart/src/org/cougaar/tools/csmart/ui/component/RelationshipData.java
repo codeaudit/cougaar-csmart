@@ -21,8 +21,9 @@
 package org.cougaar.tools.csmart.ui.component;
 
 import java.util.Iterator;
+import java.io.Serializable;
 
-public class RelationshipData {
+public class RelationshipData implements Serializable {
   
   public static final String SUPERIOR = "Superior";
   public static final String SUPPORTING = "Supporting";
