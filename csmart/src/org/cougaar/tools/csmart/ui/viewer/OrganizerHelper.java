@@ -193,6 +193,78 @@ public class OrganizerHelper {
 	log.debug("Combining old expts recipes with those from this");
       }
       recipes.addAll(defaultRecipes);
+
+      PopulateDb pdbc = null;
+      String commAsb = null;
+      try {
+	pdbc = new PopulateDb(experimentId, trialId);
+	commAsb = pdbc.getNewCommAsbFromExpt(origExperimentId, origTrialId);
+      } catch (SQLException sqle) {
+	log.error("createExperiment couldnt get new commAsb based on orig expt " + origExperimentId + " for new experiment " + experimentId, sqle);
+      } catch (IOException ioe) {
+	log.error("createExperiment couldnt get new commAsb based on orig expt " + origExperimentId + " for new experiment " + experimentId, ioe);
+      } finally {
+	try {
+	  if (pdbc != null)
+	    pdbc.close();
+	} catch (SQLException se) {}
+      }
+      experiment.setCommAsbID(commAsb);
+      if (log.isDebugEnabled()) {
+	log.debug("createExpt got new comm asb based on old expt " + origExperimentId + " of " + commAsb);
+      }
+    } else if (origExperimentId != null && origExperimentId.equals(experiment)) {
+      if (log.isDebugEnabled()) {
+	log.debug("createExpt had no orig or orig same as this. Try reading previous comm ASB from db");
+      }
+
+      // just loading a previous experiment from the DB.
+      // get its comm ASB
+      PopulateDb pdbc = null;
+      String commAsb = null;
+      try {
+	pdbc = new PopulateDb(experimentId, trialId);
+	commAsb = pdbc.getCommAsbForExpt(experimentId, trialId);
+      } catch (SQLException sqle) {
+	log.error("createExperiment couldnt get commAsb for expt " + experimentId, sqle);
+      } catch (IOException ioe) {
+	log.error("createExperiment couldnt get commAsb for expt " + experimentId, ioe);
+      } finally {
+	try {
+	  if (pdbc != null)
+	    pdbc.close();
+	} catch (SQLException se) {}
+      }
+      experiment.setCommAsbID(commAsb);
+      if (log.isDebugEnabled()) {
+	log.debug("createExpt got comm asb for expt " + experimentId + " of " + commAsb);
+      }
+    }
+
+    // If somehow still have no comm ASB, create a new one
+    if (experiment.getCommAsbID() == null) {
+      if (log.isDebugEnabled()) {
+	log.debug("createExpt somehow still no Comm ASB. Create a new one");
+      }
+      PopulateDb pdbc = null;
+      String commAsb = null;
+      try {
+	pdbc = new PopulateDb(experimentId, trialId);
+	commAsb = pdbc.getNewCommAssembly();
+      } catch (SQLException sqle) {
+	log.error("createExperiment couldnt get new commAsb for expt " + experimentId, sqle);
+      } catch (IOException ioe) {
+	log.error("createExperiment couldnt get new commAsb for expt " + experimentId, ioe);
+      } finally {
+	try {
+	  if (pdbc != null)
+	    pdbc.close();
+	} catch (SQLException se) {}
+      }
+      experiment.setCommAsbID(commAsb);
+      if (log.isDebugEnabled()) {
+	log.debug("createExpt got comm asb for expt " + experimentId + " of " + commAsb);
+      }
     }
 
     if (recipes.size() != 0) {
