@@ -347,15 +347,6 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
 
     boolean retVal = super.saveToDatabase();
 
-    // Save is finished, remove the properties from the parent.
-    Iterator iter = getProperties();
-    while(iter.hasNext()) {
-      Property p = (Property)iter.next();
-      if(p.getName().last().toString().startsWith("$$CP")) {
-        removeProperty(p);
-      }
-    }
-
     return retVal;
   }
 
