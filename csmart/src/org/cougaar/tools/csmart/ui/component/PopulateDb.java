@@ -31,19 +31,34 @@ public class PopulateDb {
     public static final String INSERT_RELATIONSHIP = "insertRelationship";
     public static final String QUERY_LIB_PG_ATTRIBUTE = "queryLibPGAttribute";
     public static final String QUERY_MAX_ASSEMBLY_ID = "queryMaxAssemblyId";
+    public static final String QUERY_MAX_TRIAL_ID = "queryMaxTrialId";
+    public static final String QUERY_MAX_EXPT_ID = "queryMaxExptId";
     public static final String INSERT_ASSEMBLY_ID = "insertAssemblyId";
+    public static final String INSERT_TRIAL_ID = "insertTrialId";
+    public static final String INSERT_EXPT_ID = "insertExptId";
     public static final String INSERT_TRIAL_ASSEMBLY = "insertTrialAssembly";
     public static final String CLEAN_TRIAL_ASSEMBLY = "cleanTrialAssembly";
     public static final String CHECK_ALIB_COMPONENT = "checkAlibComponent";
+    public static final String COPY_CMT_ASSEMBLIES = "copyCMTAssemblies";
     public static final String CLONE_SET_ID = "1";
-    private Map substitutions = new HashMap();
+    private Map substitutions = new HashMap() {
+        public Object put(Object key, Object val) {
+            if (val == null) throw new IllegalArgumentException("Null value for " + key);
+            return super.put(key, val);
+        }
+    };
     private DBProperties dbp;
-    private String assemblyId;
+    private String exptId;
+    private String trialId;
+    private String hnaAssemblyId;
+    private String csmAssemblyId;
 
     private Connection dbConnection;
     private Statement stmt;
     private Map propertyInfos = new HashMap();
     private Set readOnlyComponents = new HashSet();
+    private Set writableComponents = new HashSet();
+    private boolean writeEverything = false;
     private boolean debug = false;
 
     /**
@@ -149,9 +164,15 @@ public class PopulateDb {
      * @param assemblyId is used to identify all components added to
      * the database.
      **/
-    public PopulateDb(String assemblyType, String exptId, String trialId)
+    public PopulateDb(String cmtType, String hnaType, String csmType,
+                      String exptId, String trialId, boolean createNew)
         throws SQLException, IOException
     {
+        if (cmtType == null) throw new IllegalArgumentException("null cmtType");
+        if (hnaType == null) throw new IllegalArgumentException("null hnaType");
+        if (csmType == null) throw new IllegalArgumentException("null csmType");
+        if (exptId == null) throw new IllegalArgumentException("null exptId");
+        if (trialId == null) throw new IllegalArgumentException("null trialId");
         dbp = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
         dbp.setDebug(true);
         String database = dbp.getProperty("database");
@@ -169,19 +190,124 @@ public class PopulateDb {
         }
         dbConnection = DBConnectionPool.getConnection(database, username, password);
         stmt = dbConnection.createStatement();
-        setAssemblyId(assemblyType, exptId, trialId);
+        this.exptId = exptId;
+        this.trialId = trialId;
+        substitutions.put(":cmt_type", cmtType);
+        if (createNew) {
+            cloneTrial(hnaType, trialId);
+            writeEverything = true;
+        } else {
+            cleanTrial(csmType, trialId);
+            writeEverything = false;
+        }
+        hnaAssemblyId = addAssembly(hnaType);
+        csmAssemblyId = addAssembly(csmType);
     }
 
-    public String getAssemblyId() {
-        return assemblyId;
+    public String getExperimentId() {
+        return exptId;
     }
 
-    private void setAssemblyId(String assemblyType, String exptId, String trialId)
+    public String getHNAAssemblyId() {
+        return hnaAssemblyId;
+    }
+
+    public String getCSMAssemblyId() {
+        return csmAssemblyId;
+    }
+
+    private void cloneTrial(String idType, String oldTrialId)
         throws SQLException
     {
-        String assemblyIdPrefix = assemblyType + "-";
-        substitutions.put(":assembly_id_pattern", assemblyIdPrefix + "____");
-        substitutions.put(":assembly_type", assemblyType);
+        newExperiment(idType);
+        newTrial(idType);
+        copyCMTAssemblies(oldTrialId, trialId);
+    }
+
+    /**
+     * Clean out a trial by removing all assemblies except the CMT and
+     * idType assemblies
+     **/
+    private void cleanTrial(String csmType, String oldTrialId)
+        throws SQLException
+    {
+        substitutions.put(":trial_id:", oldTrialId);
+        substitutions.put(":csm_id_pattern:", csmType + "-____");
+        executeUpdate(stmt, dbp.getQuery(CLEAN_TRIAL_ASSEMBLY, substitutions));
+    }
+
+    private void newExperiment(String idType) throws SQLException {
+        String exptIdPrefix = idType + "-";
+        substitutions.put(":expt_id_pattern:", exptIdPrefix + "____");
+        substitutions.put(":expt_type:", idType);
+        DecimalFormat exptIdFormat =
+            new DecimalFormat(exptIdPrefix + "0000");
+        ResultSet rs =
+            executeQuery(stmt, dbp.getQuery(QUERY_MAX_EXPT_ID,
+                                            substitutions));
+        exptId = null;
+        if (rs.next()) {
+            String maxId = rs.getString(1);
+            if (maxId != null) {
+                try {
+                    int n = exptIdFormat.parse(maxId).intValue();
+                    exptId = exptIdFormat.format(n + 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Use default
+                }
+            }
+        }
+        if (exptId == null) exptId = exptIdFormat.format(1);
+        substitutions.put(":expt_id:", exptId);
+        substitutions.put(":description:", exptId);
+        substitutions.put(":name:", exptId);
+        executeUpdate(stmt, dbp.getQuery(INSERT_EXPT_ID, substitutions));
+    }
+
+    public String getTrialId() {
+        return trialId;
+    }
+
+    private void newTrial(String idType)
+        throws SQLException
+    {
+        String trialIdPrefix = idType + "-";
+        substitutions.put(":trial_id_pattern", trialIdPrefix + "____:");
+        substitutions.put(":trial_type:", idType);
+        DecimalFormat trialIdFormat =
+            new DecimalFormat(trialIdPrefix + "0000");
+        ResultSet rs =
+            executeQuery(stmt, dbp.getQuery(QUERY_MAX_TRIAL_ID,
+                                            substitutions));
+        trialId = null;
+        if (rs.next()) {
+            String maxId = rs.getString(1);
+            if (maxId != null) {
+                try {
+                    int n = trialIdFormat.parse(maxId).intValue();
+                    trialId = trialIdFormat.format(n + 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Use default
+                }
+            }
+        }
+        if (trialId == null) trialId = trialIdFormat.format(1);
+        substitutions.put(":trial_id:", trialId);
+        substitutions.put(":expt_id:", exptId);
+        substitutions.put(":description:", "Modified Trial");
+        substitutions.put(":name:", "Modified Trial");
+        executeUpdate(stmt, dbp.getQuery(INSERT_TRIAL_ID, substitutions));
+    }
+
+    private String addAssembly(String idType)
+        throws SQLException
+    {
+        String assemblyId;
+        String assemblyIdPrefix = idType + "-";
+        substitutions.put(":assembly_id_pattern:", assemblyIdPrefix + "____");
+        substitutions.put(":assembly_type:", idType);
         DecimalFormat assemblyIdFormat =
             new DecimalFormat(assemblyIdPrefix + "0000");
         ResultSet rs =
@@ -201,16 +327,27 @@ public class PopulateDb {
             }
         }
         if (assemblyId == null) assemblyId = assemblyIdFormat.format(1);
-        substitutions.put(":assembly_id", sqlQuote(assemblyId));
-        substitutions.put(":expt_id", exptId);
-        substitutions.put(":trial_id", trialId);
+        substitutions.put(":assembly_id:", sqlQuote(assemblyId));
+        substitutions.put(":expt_id:", exptId);
+        substitutions.put(":trial_id:", trialId);
         executeUpdate(stmt, dbp.getQuery(INSERT_ASSEMBLY_ID, substitutions));
-        executeUpdate(stmt, dbp.getQuery(CLEAN_TRIAL_ASSEMBLY, substitutions));
         executeUpdate(stmt, dbp.getQuery(INSERT_TRIAL_ASSEMBLY, substitutions));
+        return assemblyId;
+    }
+
+    private void copyCMTAssemblies(String oldTrialId, String newTrialId)
+        throws SQLException
+    {
+        substitutions.put(":old_trial_id:", oldTrialId);
+        substitutions.put(":new_trial_id:", newTrialId);
+        executeUpdate(stmt, dbp.getQuery(COPY_CMT_ASSEMBLIES, substitutions));
+    }
+
+    public void addWritableComponent(ComponentData data) {
+        writableComponents.add(data);
     }
 
     public void setReadOnlyComponents(ComponentData data) {
-        System.out.println("readonly component " + data.getName());
         readOnlyComponents.add(data);
         ComponentData[] children = data.getChildren();
         for (int i = 0; i < children.length; i++) {
@@ -285,39 +422,67 @@ public class PopulateDb {
      * @param insertionOrder the position among siblings that the
      * component should occupy.
      **/
-    public void populate(ComponentData data, float insertionOrder)
+    public boolean populate(ComponentData data, float insertionOrder)
         throws SQLException
     {
-        if (needsPopulating(data)) {
-            ComponentData parent = data.getParent();
-            substitutions.put(":component_name", sqlQuote(data.getName()));
-            substitutions.put(":component_lib_id", getComponentLibId(data));
-            substitutions.put(":component_alib_id", getComponentAlibId(data));
-            substitutions.put(":component_category", getComponentCategory(data));
+        return populate(data, insertionOrder, false);
+    }
+
+    /**
+     * This is inordinately difficult because of the haphazard way the
+     * the db is populated. Our aim is two-fold: to write an assembly
+     * describing the host-node-agent assignments and to write a
+     * different assembly describing the effect of impacts an metrics.
+     * Both types of assemblies have agent-node assigments. The
+     * distinction is made using the readOnlyComponents Set.
+     * Components in this set are either part of the CMT assembly
+     * (which we don't touch) or are part of the CSMART assembly if
+     * they involve agent-node assignments
+     **/
+    private boolean populate(ComponentData data, float insertionOrder, boolean force)
+        throws SQLException
+    {
+        boolean result = writeEverything;
+        boolean isAgent = data.getType().equals(ComponentData.AGENT);
+        boolean isNode = data.getType().equals(ComponentData.NODE);
+        boolean isAdded = isAdded(data);
+        if (force || isAdded) {
+            substitutions.put(":component_name:", sqlQuote(data.getName()));
+            substitutions.put(":component_lib_id:", getComponentLibId(data));
+            substitutions.put(":component_alib_id:", getComponentAlibId(data));
+            substitutions.put(":component_category:", getComponentCategory(data));
             ResultSet rs = executeQuery(stmt, dbp.getQuery(CHECK_ALIB_COMPONENT, substitutions));
             if (rs.next()) {    // Already exists
                 // Use the one that is there
             } else {
                 executeUpdate(stmt, dbp.getQuery(INSERT_ALIB_COMPONENT, substitutions));
+                Object[] params = data.getParameters();
+                for (int i = 0; i < params.length; i++) {
+                    substitutions.put(":argument_value:", sqlQuote(params[i].toString()));
+                    substitutions.put(":argument_order:", sqlQuote(String.valueOf(i + 1)));
+                    executeUpdate(stmt, dbp.getQuery(INSERT_COMPONENT_ARG, substitutions));
+                    result = true;
+                }
+                result = true;
             }
             rs.close();
-            if (parent != null) {
-                substitutions.put(":parent_component_alib_id", getComponentAlibId(parent));
-                substitutions.put(":insertion_order", String.valueOf(insertionOrder));
-                executeUpdate(stmt, dbp.getQuery(INSERT_COMPONENT_HIERARCHY, substitutions));
-            }
-            Object[] params = data.getParameters();
-            for (int i = 0; i < params.length; i++) {
-                substitutions.put(":argument_value", sqlQuote(params[i].toString()));
-                substitutions.put(":argument_order", sqlQuote(String.valueOf(i + 1)));
-                executeUpdate(stmt, dbp.getQuery(INSERT_COMPONENT_ARG, substitutions));
-            }
-            if (data.getType().equals(ComponentData.AGENT)) {
+            if (isAgent) {
+                // Must be a metric or impact agent because that's all that gets added
                 populateAgent(data);
+                result = true;
+                force = true;   // Force writing of all plugins, too
             }
-        } else {
-            System.out.println("Database write not needed for "
-                               + data.getName());
+        }
+
+        ComponentData parent = data.getParent();
+        if (parent != null) {
+            if (force || isAgent || isNode || isAdded) {
+                substitutions.put(":parent_component_alib_id:", getComponentAlibId(parent));
+                substitutions.put(":insertion_order:", String.valueOf(insertionOrder));
+                substitutions.put(":assembly_id:", sqlQuote(isAdded ? csmAssemblyId : hnaAssemblyId));
+                executeUpdate(stmt, dbp.getQuery(INSERT_COMPONENT_HIERARCHY, substitutions));
+                result = true;
+            }
         }
 
         ComponentData[] children = data.getChildren();
@@ -327,8 +492,9 @@ public class PopulateDb {
         // insertion order of all new children should be the their
         // index  in the array as well.
         for (int i = 0, n = children.length; i < n; i++) {
-            populate(children[i], i);
+            result |= populate(children[i], i, force);
         }
+        return result;
     }
 
     /**
@@ -338,21 +504,21 @@ public class PopulateDb {
     private void populateAgent(ComponentData data) throws SQLException {
         AgentAssetData assetData = data.getAgentAssetData();
         if (assetData == null) return;
-        substitutions.put(":component_lib_id", getComponentLibId(data));
-        substitutions.put(":agent_org_prototype", sqlQuote(assetData.getAssetClass()));
+        substitutions.put(":component_lib_id:", getComponentLibId(data));
+        substitutions.put(":agent_org_prototype:", sqlQuote(assetData.getAssetClass()));
         executeUpdate(stmt, dbp.getQuery(INSERT_AGENT_ORG, substitutions));
         RelationshipData[] relationships = assetData.getRelationshipData();
         for (int i = 0; i < relationships.length; i++) {
             RelationshipData r = relationships[i];
             if (r.getRole().equals(RelationshipData.SUPERIOR)) {
-                substitutions.put(":role", sqlQuote("Subordinate"));
+                substitutions.put(":role:", sqlQuote("Subordinate"));
             } else {
-                substitutions.put(":role", sqlQuote(r.getRole()));
+                substitutions.put(":role:", sqlQuote(r.getRole()));
             }
-            substitutions.put(":supporting", getComponentAlibId(data));
-            substitutions.put(":supported", getAgentAlibId(r.getCluster()));
-            substitutions.put(":start_date", sqlQuote(r.getStartTime()));
-            substitutions.put(":stop_date", sqlQuote(r.getStopTime()));
+            substitutions.put(":supporting:", getComponentAlibId(data));
+            substitutions.put(":supported:", getAgentAlibId(r.getCluster()));
+            substitutions.put(":start_date:", sqlQuote(r.getStartTime()));
+            substitutions.put(":stop_date:", sqlQuote(r.getStopTime()));
             executeUpdate(stmt, dbp.getQuery(INSERT_RELATIONSHIP, substitutions));
         }
         PropGroupData[] pgs = assetData.getPropGroups();
@@ -363,39 +529,35 @@ public class PopulateDb {
             for (int j = 0; j < props.length; j++) {
                 PGPropData prop = props[i];
                 PropertyInfo propInfo = getPropertyInfo(pgName, prop.getName());
-                substitutions.put(":component_alib_id", getComponentAlibId(data));
-                substitutions.put(":pg_attribute_lib_id", propInfo.getAttributeLibId());
-                substitutions.put(":start_date", sqlQuote("2000-01-01 00:00:00"));
-                substitutions.put(":end_date", sqlQuote(null));
+                substitutions.put(":component_alib_id:", getComponentAlibId(data));
+                substitutions.put(":pg_attribute_lib_id:", propInfo.getAttributeLibId());
+                substitutions.put(":start_date:", sqlQuote("2000-01-01 00:00:00"));
+                substitutions.put(":end_date:", sqlQuote(null));
                 if (propInfo.isCollection()) {
                     if (!prop.isListType())
                         throw new RuntimeException("Property is not a collection: "
                                                + propInfo.toString());
                     String[] values = ((PGPropMultiVal) prop.getValue()).getValuesStringArray();
                     for (int k = 0; k < values.length; k++) {
-                        substitutions.put(":attribute_value", sqlQuote(values[k]));
-                        substitutions.put(":attribute_order", String.valueOf(k + 1));
+                        substitutions.put(":attribute_value:", sqlQuote(values[k]));
+                        substitutions.put(":attribute_order:", String.valueOf(k + 1));
                         executeUpdate(stmt, dbp.getQuery(INSERT_ATTRIBUTE, substitutions));
                     }
                 } else {
                     if (prop.isListType())
                         throw new RuntimeException("Property is not a single value: "
                                                + propInfo.toString());
-                    substitutions.put(":attribute_value", sqlQuote(prop.getValue().toString()));
-                    substitutions.put(":attribute_order", "1");
+                    substitutions.put(":attribute_value:", sqlQuote(prop.getValue().toString()));
+                    substitutions.put(":attribute_order:", "1");
                     executeUpdate(stmt, dbp.getQuery(INSERT_ATTRIBUTE, substitutions));
                 }
             }
         }
     }
 
-    /**
-     * Override this to select which components should be written to
-     * the database. Default implementation writes all non-readonly
-     * components.
-     **/
-    protected boolean needsPopulating(ComponentData data) {
-        return !readOnlyComponents.contains(data);
+    private boolean isAdded(ComponentData data) {
+        if (readOnlyComponents.contains(data)) return false;
+        return true;
     }
 
     /**
@@ -408,8 +570,8 @@ public class PopulateDb {
         PropertyInfo result = (PropertyInfo) propertyInfos.get(key);
         if (result == null) {
             Statement stmt = dbConnection.createStatement();
-            substitutions.put(":pg_name", pgName);
-            substitutions.put(":attribute_name", propName);
+            substitutions.put(":pg_name:", pgName);
+            substitutions.put(":attribute_name:", propName);
             ResultSet rs = executeQuery(stmt, dbp.getQuery(QUERY_LIB_PG_ATTRIBUTE, substitutions));
             while (rs.next()) {
                 PropertyKey key1 = new PropertyKey(rs.getString(1), rs.getString(2));
@@ -464,8 +626,11 @@ public class PopulateDb {
         if (componentType.equals(ComponentData.AGENT)) {
             return getAgentAlibId(data.getName());
         }
+        if (componentType.equals(ComponentData.NODE)) {
+            return sqlQuote(data.getName());
+        }
         ComponentData parent = data.getParent();
-        return sqlQuote(assemblyId + "|" + getFullName(data));
+        return sqlQuote(getFullName(data));
     }
 
     /**
