@@ -43,7 +43,7 @@ Select the "Stop" button to stop the experiment.
 If the Society in the experiment is configured to stop automatically,
 then this merely stops the experiment when the society stops (no societies
 currently stop automatically).
-If the society is not configured to stop automatically, 
+If the society is not configured to stop automatically,
 then this stops the experiment immediately.
 </li>
 </ul>
@@ -58,7 +58,7 @@ leaving them running.</li>
 <p>
 <b>Information from a Running Experiment</b>
 <br>When you start an experiment, a window is created to capture the
-output of each node.  
+output of each node.
 The node's window displays information about a node in a running experiment; a brief description of the node's status can also be displayed by selecting that node's &quot;Node Status&quot; button.
 <ul>
 <li>
@@ -86,7 +86,7 @@ Node Status Legend: A legend explaining the colors of the node status button.
 </li>
 </ul>
 </ul>
-In addition, the "Configuration" 
+In addition, the "Configuration"
 window displays the Host-Node-Agent configuration which was specified in
 the Experiment Builder (if you started the experiment from this Console). To see the current dynamic configuration, use
 the Topology view in the Society Monitor.
@@ -106,6 +106,11 @@ The Experiment Controller menus are as follows:
 <ul>
 <li>File</li>
 <ul>
+<li><a name="XML">Load Society XML</a>:  Loads in an ACME XML file.  This file is correctly
+parsed and the Host/Node/Agent mapping is displayed in the host configuration window.  Right
+clicking on any Component in the configuration window will display the arguments (or sub
+components when the selected component is an agent) of the selected component.
+While not 100% supported yet, XML societies can be run from the Console once loaded.</li>
 <li>Close: Close the Experiment Controller.</li>
 </ul>
 <li><a NAME=View>View</a></li>
@@ -178,7 +183,7 @@ will be enabled. By selecting one or more Nodes to attach to, you get
 a Node output window, exactly as if you had started that Node using
 the Run button. You can then individually kill and restart that Node,
 as usual. At that point, hitting "Stop" will stop all the Nodes which
-you are monitoring -- both those started from a local experiment, and 
+you are monitoring -- both those started from a local experiment, and
 those to which you attached.<br>
 <ul>
 <li>View: View a list of the Application Servers being monitored.</li>
@@ -288,7 +293,7 @@ running CSMART.<br>
 <p>Finally, with Cougaar 9.2.1 or better, be sure that your AppServer properties file
 contains the "java.Xbootclasspath/p" argument, which is now
 required (without this you will see a message like "Fatal error
-java.lang.NoSuchMethodException: newInstanceFromDesc"). In addition, 
+java.lang.NoSuchMethodException: newInstanceFromDesc"). In addition,
 some Cougaar Nodes (particularly those running an AggAgent) should be run using the JDK Hotspot Server VM, not the
 Client VM that comes with the JRE. To do so, your AppServer properties
 file must include the java.server argument, and JDK_HOME/bin must be
@@ -304,9 +309,12 @@ reverse nslookup each machine name.</li>
 Cougaar.</li>
 <li>Node machine has incorrect cougaar.rc or other data file</li>
 </ul>
+<p>If you are running from an XML society, and the nameserver cannot be
+located (you see alot of !'s).  You have the nameserver defined at <i>localhost</i>, which
+is an error.
 <br><br>
 <!-- hhmts start -->
-Last modified: Tue Apr 30 14:53:47 EST 2002
+Last modified: Fri Apr 18 2003
 <!-- hhmts end -->
 </body>
 </html>
