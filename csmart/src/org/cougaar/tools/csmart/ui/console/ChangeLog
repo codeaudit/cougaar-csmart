@@ -1,3 +1,367 @@
+2002-01-30  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsole.java: use new method to send leaf data to the server.
+
+2002-01-30  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* ConsoleInternalFrame.java:
+	Fixed layout problems in dialog that displays information about nodes.
+
+	* CSMARTConsole.java:
+	Removed references to trials in Console user interface.
+	Made name passed to HostServseClient.createNode be unique.
+	Added support for multiple running experiments.
+	Added call to create the GLSClient GUI from Jim Winston.
+
+2002-01-29  Aaron Helsinger  <ahelsing@clarinet.bbn.com>
+
+	* CSMARTConsole.java: Multiple cleanup changes:
+	1) Codify that experiments only ever have 1 society
+	2) Use global dbMode flag in experiment
+	3) Use a pop-up window to indicate where ini files being written
+	4) Don't tell the user to save their experiment before writing ini
+	files. Just save it.
+	5) Add a help menu item to main CSMART window that shows the
+	writeDebug() info (which I hope to expand)
+
+2002-01-29  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsole.java, ConsoleFontChooser.java, ConsoleInternalFrame.java, ConsoleNodeListener.java, ConsoleStyledDocument.java, ConsoleTextPane.java, StripChartSource.java:
+	Fixed Bug 1023.
+
+	Added a readObject method to each class that calls the createLogger()
+
+2002-01-28  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* help.html: Updated documentation.
+
+2002-01-24  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsole.java, ConsoleFontChooser.java, ConsoleInternalFrame.java, ConsoleNodeListener.java, ConsoleStyledDocument.java, ConsoleTextPane.java, StripChart.java, StripChartSource.java:
+	Added Logging code.
+
+	Removed all system.out and system.err calls
+
+2002-01-24  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* CSMARTConsole.java: Set and clear experiment runInProgress flag.
+	Remove references to experiment.isInDatabase.
+	Don't modifiy experiment editability.
+	Take experiment as argument in constructor.
+
+2002-01-16  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* CSMARTConsole.java:
+	Remove unneeded code for setting results directory.
+
+	* CSMARTConsole.java: Get results directory from CSMART.
+
+	* CSMARTConsole.java:
+	Fixed bug with dragging nodes within a tree in the Host-Node-Agent tree
+	that was causing the nodes to be lost.
+	Fixed problem in CSMARTConsole; needed to write ConfigurationFileName property
+	to all nodes before starting any of them.
+
+2002-01-14  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* CSMARTConsole.java, ConsoleInternalFrame.java:
+	Moved APP_SERVER_DEFAULT_PORT and NAME_SERVER_PORTS to Experiment.
+	Use BaseComponent, renamed from ComponentProperties.
+
+2002-01-10  Noelle Givler  <ngivler@clarinet.bbn.com>
+
+	* CSMARTConsole.java: Removed typo introduced in the previous check in.
+
+	* CSMARTConsole.java:
+	Don't override org.cougaar.core.persistence.clear if user has set explicitly.
+
+	* CSMARTConsole.java:
+	Don't overwrite setting of org.cougaar.core.persistence.clear if user has
+	explicitly set.
+
+2002-01-09  Aaron Helsinger  <ahelsing@clarinet.bbn.com>
+
+	* ConsoleInternalFrame.java: More repacking related fixes
+
+	* CSMARTConsole.java, ConsoleInternalFrame.java:
+	More repackaging related fixes to imports, etc
+
+2002-01-09  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* CSMARTConsole.java: Fixed imports.
+
+2002-01-09  Aaron Helsinger  <ahelsing@clarinet.bbn.com>
+
+	* CompoundWriter.java, DocumentWriter.java: obsolete files
+
+2002-01-09  Brian Krisler  <bkrisler@bbn.com>
+
+	* CSMARTConsole.java, ConsoleDesktop.java, ConsoleInternalFrame.java, ConsoleNodeListener.java:
+	moved to different packages
+
+	* NodeArgumentDialog.java, NodeArgumentTableModel.java, CMT.java, ExperimentDB.java:
+	moved to different package
+
+2002-01-09  Aaron Helsinger  <ahelsing@clarinet.bbn.com>
+
+	* CMT.java:
+	A cleaner check to avoid deleting base experiments - avoid any with ID EXPT-*
+
+	* CMT.java:
+	Cleanup from yesterday - restore the check to avoid deleting base experiments. This time, a somewhat cleaner implementation.
+
+	* CMT.java: Remove some comments, fix typo in base expt name
+
+	* CMT.java, ExperimentDB.java:
+	More changes from the branch - add in more tables to clear when clearing an assembly, add in class 8 stuff, make updateCMTAssembly return a String. Rusty to confirm all changes are valid.
+
+2002-01-08  Rusty Bobrow  <rusty@clarinet.bbn.com>
+
+	* ExperimentDB.java, CMT.java:
+	Modifications to allow forceable updating of CMT assemblies for an experiment
+
+2002-01-08  Brian Krisler  <bkrisler@bbn.com>
+
+	* ExperimentDB.java, CMT.java:
+	Fix Bug 985.  Add an option to force database fix in CMT.
+
+2002-01-08  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* ConsoleInternalFrame.java: Fixed imports.
+
+2001-12-31  Beth DePass  <bdepass@clarinet.bbn.com>
+
+	* CSMARTConsole.java: Cougaar9.0 repackaging
+
+2001-12-19  Brian Krisler  <bkrisler@bbn.com>
+
+	* ExperimentDB.java:
+	Added a database access method to delete an AssemblyId
+
+	* CMT.java:
+	Added a method to get the assemblyId based on the experimentId
+
+2001-12-19  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* CSMARTConsole.java, ConsoleInternalFrame.java:
+	Fixed bug 780 -- launch nodes in separate thread.  In the experiment
+	controller, the user can now stop or abort a run while it is in the process
+	of starting (i.e. creating nodes).
+
+2001-12-18  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* ConsoleInternalFrame.java:
+	Fix to information displayed about a plugin in ExperimentController.
+
+	* ConsoleInternalFrame.java:
+	Added list of plugins to the information that is displayed when the Info menu item
+	is selected on the Node output window in the ExperimentController.
+
+2001-12-12  Aaron Helsinger  <ahelsing@clarinet.bbn.com>
+
+	* ConsoleNodeOutputFilter.java, help.html: Fixes from branch:
+
+	Fixed bug #495; eliminated references to "cluster" in user interface;
+	use "agent" instead.
+	Fixed bug 688; in Society Monitor tool, Plan view, remove filtering of
+	direct objects and optionally filter out assets instead.
+
+2001-12-11  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* help.html, ConsoleNodeOutputFilter.java:
+	Fixed bug #495; eliminated references to "cluster" in user interface;
+	use "agent" instead.
+
+2001-12-10  Aaron Helsinger  <ahelsing@clarinet.bbn.com>
+
+	* CMT.java, CSMARTConsole.java, ChangeLog, ConsoleInternalFrame.java, NodeArgumentDialog.java, NodeArgumentTableModel.java:
+	Merge changes from 862 branch. See branch comments. Changes include:
+	CSMART Console: Fixed bug 824 -- make "exception" be the default notification string.
+	HostConfigurationBuilder: Ensure that node names and agent names are unique as they occupy the
+	same name space.  Fixes bug 810.
+	ui/console:
+	Fixed bugs 771, 891, 893:
+	Can provide local and global command line arguments from a file (use the
+	"Command Line Arguments" and "Global Command Line Arguments" menu items
+	on the node in ExperimentBuilder -- there's a new button in the pop-up dialog
+	-- "Read From File").
+	Prevent user editing arguments that shouldn't be edited (such as node
+	name).
+
+	* ReadOnlyProperties.java:
+	Fix bug 893
+	Extends java.util.Properties by adding a Set of keys that should
+	be immutable (or mutable only in a controlled way). The put,
+	putAll, remove, and clear methods are overridden to disallow
+	modifications or removal of the read-only keys. Additional methods
+	allow these values to be changed when needed.
+
+	* Experiment.java:
+	Fix bug 893
+	Change defaultNodeArguments to be ReadOnlyProperties. Make the
+	"...experiment.id" property be read-only and set its value
+	whenever the trialId is changed.
+	Simplify the copying of properties when copying the node.
+
+	* ExperimentNode.java:
+	Fix bug 893
+	Change "arguments" to be ReadOnlyProperties. Make the
+	"...node.name" property be readonly and set its value only when
+	renaming the node.
+	Simplify the copying of properties when copying the node.
+
+	* NodeComponent.java:
+	Fix bug 893
+	Remove the setArguments method. It is unnecessary and problematic
+	since it implies that the arguments of a node can be alter in a
+	will-nilly fashion. The only permitted actions are the editing of
+	the Properties returned by getArguments().
+
+	Experiment: Changed default node argument from:
+	org.cougaar.core.cluster.persistence.enabled
+	to
+	org.cougaar.core.cluster.persistence.enable (no final d)
+
+	If user exits Experiment Builder and hasn't modified the experiment,
+	then don't query about saving the experiment.
+	If user selects Save As menu item, then just save the experiment,
+	regardless of whether or not it's been modified.
+	These are additional fixes on bug 883.
+
+	CSMARTConsole: Fixed bug 851 -- if user doesn't specify results (metrics) directory,
+	then don't run the experiment (in ExperimentController).
+
+	CMT.java: Fix bug 885
+	Remove code that tries to remove the society component when
+	deleting an experiment. This violates foreign key constraints
+	against the component_hierarchy and component_arg tables. Let the
+	assembly cleanup code take care of this.
+
+	ui/viewer:
+	Allow re-use of experiment name when configuring an experiment (bug #883).
+	Experiment: Removed isCloned/setCloned methods; no longer used.
+	ExperimentBuilder: Added Save As menu item and method; call SaveAs method when user exits
+	ExperimentBuilder (by closing window or invoking File-Close menu item).
+	CMTDialog: Allow user to save experiment under original name.
+	CSMART: Pass through "allowExistingName" flag to getUniqueExperimentName.
+	Organizer: Added flag to getUniqueExperimentName to allow reuse of existing name.
+	Removed use of Experiment isCloned/setCloned.
+
+	ui/component:
+	* PDbBase.java:
+	* PopulateDb.java:
+	Fix bug 883.
+	Clone the experiment being saved if and only if its name is
+	different from the name in the database for the experiment
+	identified by the experiment id. Ignore arg saying whether to
+	createNew or not. If the name differs, it must be cloned. If the
+	name is the same it cannot be cloned.
+	Set experiment and trial descriptions rationally. Select
+	experiment and trial ids more reasonbably.
+
+	* Organizer.java:
+	Fix bug 882
+	When reading society and node properties replace all default
+	values with values from the database if there are _any_ values in
+	the database.
+
+	* HostConfigurationBuilder.java:
+	* Experiment.java:
+	More Fix bug 853
+	Fix problem in retaining nameserver host property. This
+	computation was done far too often including cases where the
+	complete list of hosts nodes and agents was not available.
+	Move the code to do this computation from builder to Experiment.
+	Do the computation before handing out the experiments list of
+	Nodes. This insures that any code that looks at the nodes'
+	properties will see an up=to=date computation of this property.
+
+
+	* Organizer.java:
+	Fix bug 878
+	Allow deletion if the recipe differs as well as if it exists.
+
+	* Experiment.java:
+	Fix bug 876
+	Save agent properties. This allows recipe added agents to be
+	marked with a property so they can be identified when read from
+	the database. This allows old recipe agents to be removed.
+
+	* PopulateDb.java:
+	Fix bug 876
+	Provide a way to repopulate the CMT part of an experiment. The CMT
+	part is normal read-only, but if a recipe deletes some part of the
+	CMT assembly, the only way to represent that is to replace the old
+	CMT with a new omitting or changing as necessary.
+
+	* PDbBase.java:
+	Fix bug 876
+	Save only local properties for a recipe.
+
+	* GenericComponentData.java:
+	Fix bug 876
+	setChildren must clear old children before setting new ones
+	otherwise they just keep building up.
+
+	* ConfigurableComponent.java:
+	* ComponentProperties.java:
+	Fix bug 876
+	Provide mechanism to indicate removed (renamed) agents.
+
+	* PopulateDb.java:
+	Fix bug 875
+	Improve detection of inserted/replaced arguments to not falsely
+	indicate removal when none has happened.
+
+	* CMTAgent.java:
+	Fix bug 876
+	Allow construction without assemblyId for the case where the agent
+	has not yet been put in the database.
+
+	Fixed Bug: #873
+	Agent Insertion Recipe now provides the ability to
+	toggle the inclusion of OrgAssets and ItemIdentificationPG's.
+	If an OrgAsset is Included, a ClusterPG is created as well.
+	ItemIdentificationPG's are required for all agents except
+	Prototypes.
+
+	Fixed bug #841 -- allow forced editing of a recipe that is included
+	in an experiment that has been run.
+
+2001-12-10  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* CSMARTConsole.java:
+	Fixed bug 824 -- make "exception" be the default notification string.
+
+2001-12-06  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* ConsoleInternalFrame.java, NodeArgumentDialog.java, NodeArgumentTableModel.java, CSMARTConsole.java:
+	Fixed bugs 771, 891, 893:
+	Can provide local and global command line arguments from a file (use the
+	"Command Line Arguments" and "Global Command Line Arguments" menu items
+	on the node in ExperimentBuilder -- there's a new button in the pop-up dialog
+	-- "Read From File").
+	Prevent user editing arguments that shouldn't be edited (such as node name).
+
+2001-12-05  Ray Tomlinson  <tomlinso@clarinet.bbn.com>
+
+	* ChangeLog: *** empty log message ***
+
+2001-12-05  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* CSMARTConsole.java:
+	Fixed bug 851 -- if user doesn't specify results (metrics) directory,
+	then don't run the experiment (in ExperimentController).
+
+2001-12-05  Ray Tomlinson  <tomlinso@clarinet.bbn.com>
+
+	* CMT.java: * CMT.java:
+	Fix bug 885
+	Remove code that tries to remove the society component when
+	deleting an experiment. This violates foreign key constraints
+	against the component_hierarchy and component_arg tables. Let the
+	assembly cleanup code take care of this.
+
 2001-12-05  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* CMT.java:

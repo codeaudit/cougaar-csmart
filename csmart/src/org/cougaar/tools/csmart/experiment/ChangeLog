@@ -1,0 +1,100 @@
+2002-01-30  Brian Krisler  <bkrisler@bbn.com>
+
+	* ExperimentINIWriter.java: Added logger
+
+	* Experiment.java, LeafOnlyConfigWriter.java:
+	Implemented new method to send LeafData to the server.
+	We now nolonger send across a ConfigWriter.
+
+2002-01-30  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* Experiment.java, ExperimentHost.java:
+	Allow user to edit a running experiment and run an editing experiment.
+	Commented out references to logging in ExperimentHost that were causing NPEs.
+
+2002-01-29  Aaron Helsinger  <ahelsing@clarinet.bbn.com>
+
+	* Experiment.java: Multiple cleanup changes:
+	1) Codify that experiments only ever have 1 society
+	2) Use global dbMode flag in experiment
+	3) Use a pop-up window to indicate where ini files being written
+	4) Don't tell the user to save their experiment before writing ini
+	files. Just save it.
+	5) Add a help menu item to main CSMART window that shows the
+	writeDebug() info (which I hope to expand)
+
+	* ExperimentNode.java:
+	Comment out some debug logging that is too verbous even for debug level
+
+2002-01-29  Brian Krisler  <bkrisler@bbn.com>
+
+	* Experiment.java, ExperimentHost.java, ExperimentINIWriter.java, ExperimentNode.java, LeafOnlyConfigWriter.java, Trial.java:
+	Fixed Bug 1023.
+
+	Added a readObject method to each class that calls the createLogger()
+
+2002-01-25  Aaron Helsinger  <ahelsing@clarinet.bbn.com>
+
+	* Experiment.java: update copyright
+
+2002-01-24  Brian Krisler  <bkrisler@bbn.com>
+
+	* Experiment.java, ExperimentHost.java, ExperimentINIWriter.java, ExperimentNode.java, LeafOnlyConfigWriter.java, Trial.java:
+	Added Logging code.
+
+	Removed all system.out and system.err calls
+
+2002-01-24  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* Experiment.java:
+	Fixed experiment copy method so that it copies recipes as well as societies.
+
+	* Experiment.java: Removed isInDatabase and setInDatabase methods.
+	Editability/runnability changes.
+
+2002-01-16  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* Experiment.java, ExperimentHost.java, ExperimentNode.java, LeafOnlyConfigWriter.java:
+	Removed print statements.
+
+2002-01-14  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* Experiment.java, ExperimentINIWriter.java, ExperimentNode.java, HostComponent.java, LeafOnlyConfigWriter.java, NodeComponent.java:
+	Renamed ComponentProperties to BaseComponent.
+	Experiment:
+	Import BaseComponent and ModifiableComponent interfaces.
+	Remove imports of ui package classes.
+	Defined APP_SERVER_DEFAULT_PORT and NAME_SERVER_PORTS (moved from CSMARTConsole).
+	Defined DBUtils.DATABASE, USER, and PASSWORD (moved from CSMART).
+	Use ModifiableComponent interface instead of ModifiableConfigurableComponent class.
+	Modified copy method so that it no longer uses the ui Organizer class.
+
+2002-01-10  Aaron Helsinger  <ahelsing@clarinet.bbn.com>
+
+	* ExpConfigWriterNew.java: Rename to something a little better
+
+	* ExperimentINIWriter.java, Experiment.java:
+	Rename ExpConfigWriterNew to something a _little_ better
+
+2002-01-09  Aaron Helsinger  <ahelsing@clarinet.bbn.com>
+
+	* ExpConfigWriterNew.java: More repacking related fixes
+
+	* Experiment.java: More repackaging related fixes to imports, etc
+
+	* ExperimentTree.java, TrialBuilder.java, TrialTableModel.java, ExperimentBuilder.java:
+	files should have stayed in ui/experiment and have been replaced
+
+	* ExpConfigWriterNew.java, Experiment.java, ExperimentHost.java, HostComponent.java, LeafOnlyConfigWriter.java, NodeComponent.java:
+	fix imports
+
+2002-01-09  Ginny Travers  <travers@clarinet.bbn.com>
+
+	* Experiment.java, ExperimentHost.java, ExperimentListener.java, ExperimentNode.java, HostComponent.java, LeafOnlyConfigWriter.java, NodeComponent.java, Trial.java, TrialResult.java, ExpConfigWriterNew.java:
+	Fixed package names for classes that really should be in this package.
+
+2002-01-09  Brian Krisler  <bkrisler@bbn.com>
+
+	* LeafOnlyConfigWriter.java, NodeComponent.java, Trial.java, TrialBuilder.java, TrialResult.java, TrialTableModel.java, ExpConfigWriterNew.java, Experiment.java, ExperimentBuilder.java, ExperimentHost.java, ExperimentListener.java, ExperimentNode.java, ExperimentTree.java, HostComponent.java:
+	New package for classes that effect experiments
+
