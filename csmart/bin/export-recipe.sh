@@ -25,7 +25,7 @@
 # from the recipeQueries.q file
 # Note: multi-word recipe names must be in double quotes
 
-if [ "x$1" = "x" ]; then
+if [ "x$4" = "x" ]; then
   echo "Usage: export-recipe.sh [Recipe Name] [Config DB Username] [Password] [MySQL Config DB database name] [Optional: MySQL DB host name]"
   exit
 fi

@@ -25,7 +25,7 @@
 # Note that multi-word experiment names or suffixes must
 # be in double quotes
 
-if [ "x$1" = "x" ]; then
+if [ "x$6" = "x" ]; then
   echo "Usage: copy-experiment.sh [Old Experiment Name] [Suffix to add to Exp Name] [Config DB Username] [Password] [MySQL Config DB database name] [export] [Optional: MySQL DB host name]"
   exit
 fi

@@ -25,7 +25,7 @@
 # Run this only _after_ running copy-experiment
 # Note that multi-word experiment names must be in double quotes
 
-if [ "x$1" = "x" ]; then
+if [ "x$4" = "x" ]; then
   echo "Usage: exportExperiment.sh [Experiment to export] [DB Username] [DB Password] [DB name] [Optional: host name]"
   exit
 fi

@@ -1,7 +1,7 @@
 #!/bin/sh
 # 
 # <copyright>
-# Copyright 2001 BBNT Solutions, LLC
+# Copyright 2001,2002 BBNT Solutions, LLC
 # under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
 
 # This program is free software; you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 
 # Delete the temporary database created when copying
 # or exporting an experiment or recipe
-if [ "x$1" = "x" ]; then
+if [ "x$3" = "x" ]; then
   echo "Usage: delete-temp-db.sh [Config DB Username] [Password] [MySQL Config DB database name] [Optional: MySQL DB host name]"
   exit
 fi

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # <copyright>
-#  Copyright 2001 BBNT Solutions, LLC
+#  Copyright 2001,2002 BBNT Solutions, LLC
 #  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
 # 
 #  This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 # Finally, note that the experiment name should be in double quotes,
 # if it is multiple words
     
-if [ "x$1" = "x" ]; then
+if [ "x$6" = "x" ]; then
   echo "Usage: switchPlugin-class.sh [Old fully qual'ed plugin class] [New plugin class] [Experiment name to update] [Config DB Username] [Password] [MySQL Config DB database name] [Optional: MySQL DB Host]"
   exit
 fi
