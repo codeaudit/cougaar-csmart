@@ -84,7 +84,7 @@ public abstract class DNDTree
         dragSourceNodes = null;
       }
       public void mouseReleased(MouseEvent e) {
-        if (dragSourceNodes == null) super.mousePressed(pressEvent);
+        if (dragSourceNodes == null && pressEvent != null) super.mousePressed(pressEvent);
       }
     }
   }
