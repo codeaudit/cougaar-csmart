@@ -99,7 +99,17 @@ public class AssetFileComponent
       AssetDataCallbackImpl callback = new AssetDataCallbackImpl(clusterName);
       AssetDataFileReader reader = new AssetDataFileReader();
       reader.readAsset(filename, callback);
+      // Warning: the above line will cause a FileNotFoundException
+      // Any time you use a new-style INI
+      // file that is not your config path
       aad = callback.getAgentAssetData();
+    }
+
+    if (aad == null) {
+      if (log.isErrorEnabled()) {
+	log.error("Got no AgentAssetData from which to initialize! Perhaps retry with the directory you are loading from on your org.couaar.config.path?");
+      }
+      return;
     }
 
     this.iniFormat = aad.getIniFormat();
