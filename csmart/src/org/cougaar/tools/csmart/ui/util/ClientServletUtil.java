@@ -96,9 +96,8 @@ public class ClientServletUtil {
     Vector urls = new Vector();
     String s = r.readLine();
     while (s != null) {
+      urls.add(URLString + "/$" + s + "/");
       s = r.readLine();
-      if (s != null)
-        urls.add(URLString + "/$" + s + "/");
     }
     return urls;
   }
