@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
-import org.cougaar.planning.plugin.AssetDataCallback;
+import org.cougaar.planning.plugin.asset.AssetDataCallback;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.PGPropMultiVal;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
@@ -68,7 +68,7 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     this.clusterName = clusterName;
     log = CSMART.createLogger(this.getClass().getName());
   }
-  // implementation of org.cougaar.planning.plugin.AssetDataCallback interface
+  // implementation of org.cougaar.planning.plugin.asset.AssetDataCallback interface
 
   /**
    * Parses out the correct type.  Collections

@@ -22,7 +22,8 @@
 package org.cougaar.tools.csmart.runtime.plugin;
 
 import org.cougaar.core.service.DomainService;
-import org.cougaar.core.domain.RootFactory;
+import org.cougaar.core.service.UIDService;
+import org.cougaar.planning.ldm.PlanningFactory;
 
 import org.cougaar.core.service.BlackboardService;
 import org.cougaar.core.component.ServiceRevokedListener;
@@ -39,7 +40,7 @@ import org.cougaar.core.service.LoggingService;
 
 /**
  * CSMART Base Plugin. Provide convenience methods.<br>
- * Get a hook to the <code>RootFactory</code>
+ * Get a hook to the <code>PlanningFactory</code>
  */
 public abstract class CSMARTPlugin
     extends ComponentPlugin
@@ -50,10 +51,11 @@ public abstract class CSMARTPlugin
   //
 
   private DomainService domainService = null;
+  private UIDService uidService = null;
   protected LoggingService log = null;
 
   /** Root LDM Factory */
-  protected RootFactory theLDMF;
+  protected PlanningFactory theLDMF;
 
   /** Identifier of Plugin */
   private UID id = null;
@@ -83,15 +85,10 @@ public abstract class CSMARTPlugin
   public void load() throws StateModelException {
     // FIXME!!! What about ThreadingChoice??
     super.load();
+    uidService = (UIDService)
+      getServiceBroker().getService(this, UIDService.class, null);
     domainService = (DomainService)
-      getServiceBroker().getService(this, DomainService.class, 
-				    new ServiceRevokedListener() {
-					public void serviceRevoked(ServiceRevokedEvent re) {
-					  if (DomainService.class.equals(re.getService()))
-					    domainService  = null;
-					}
-				      });        
-
+      getServiceBroker().getService(this, DomainService.class, null);
     log = (LoggingService)
       getServiceBroker().getService(this, LoggingService.class, null);
 
@@ -103,10 +100,10 @@ public abstract class CSMARTPlugin
     // Also get the Root factory
     this.theLDMF =
       ((domainService != null) ?
-       ((RootFactory)domainService.getFactory()) : null);
+       ((PlanningFactory)domainService.getFactory("planning")) : null);
     
     // Give each Plugin a UID to uniquely identify it
-    this.id = theLDMF.getNextUID();
+    this.id = uidService.nextUID();
 
   } // end of load()
 

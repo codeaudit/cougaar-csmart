@@ -22,8 +22,8 @@ package org.cougaar.tools.csmart.runtime.plugin;
 
 import org.cougaar.core.blackboard.IncrementalSubscription;
 import org.cougaar.core.agent.service.alarm.Alarm;
-import org.cougaar.core.plugin.SimplePlugin;
-import org.cougaar.core.plugin.util.PluginHelper;
+import org.cougaar.planning.plugin.legacy.SimplePlugin;
+import org.cougaar.planning.plugin.util.PluginHelper;
 
 import org.cougaar.planning.ldm.asset.*;
 import org.cougaar.planning.ldm.plan.*;

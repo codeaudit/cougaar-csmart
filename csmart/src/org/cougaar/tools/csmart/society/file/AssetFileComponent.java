@@ -26,7 +26,7 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import org.cougaar.planning.plugin.AssetDataFileReader;
+import org.cougaar.planning.plugin.asset.AssetDataFileReader;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.AssetDataCallbackImpl;

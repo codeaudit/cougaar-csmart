@@ -33,14 +33,14 @@ import org.cougaar.core.service.NodeMetricsService;
 import org.cougaar.core.mts.MessageAddress;
 import org.cougaar.core.mts.Message;
 
-import org.cougaar.core.service.PrototypeRegistryService;
+import org.cougaar.planning.service.PrototypeRegistryService;
 
 import org.cougaar.planning.ldm.asset.Asset;
 import org.cougaar.planning.ldm.asset.AbstractAsset;
 import org.cougaar.planning.ldm.plan.AllocationResult;
 import org.cougaar.planning.ldm.plan.AspectType;
 import org.cougaar.planning.ldm.plan.Allocation;
-import org.cougaar.planning.ldm.plan.Directive;
+import org.cougaar.core.blackboard.Directive;
 import org.cougaar.planning.ldm.plan.Notification;
 import org.cougaar.planning.ldm.plan.PlanElement;
 import org.cougaar.planning.ldm.plan.Role;
