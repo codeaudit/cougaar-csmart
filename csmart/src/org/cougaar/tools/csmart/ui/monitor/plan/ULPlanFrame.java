@@ -38,16 +38,24 @@ public class ULPlanFrame extends CSMARTFrame {
   private static final String CHILDREN_MENU_ITEM = "Children";
   private static final String COLOR_PARENTS = "colorParents";
   private static final String COLOR_CHILDREN = "colorChildren";
+  // MEK
+  private static final String FIND_PLAN_OBJECTS_MENU_ITEM = "Find Plan Objects";
+  private Hashtable communityToAgents;
+  private ULPlanFinder finder;
+  // MEK
   private JDialog legendDialog;
   private ULPlanFilter filter;
   private static UIProperties properties = null;
   private JMenuItem threadUpMenuItem;
   private JMenuItem threadDownMenuItem;
 
-  public ULPlanFrame(String title, CSMARTGraph graph, ULPlanFilter filter) {
+  public ULPlanFrame(String title, CSMARTGraph graph, ULPlanFilter filter, Hashtable communityToAgents) {
     super(title, graph);
     setProperties();
     this.filter = filter;
+    this.communityToAgents = communityToAgents;
+    this.graph = graph;
+
   }
 
   public void customize() {
@@ -60,6 +68,7 @@ public class ULPlanFrame extends CSMARTFrame {
     threadDownMenuItem.setEnabled(false);
     insertMenuItem(CSMARTFrame.SHOW_MENU, PARENTS_MENU_ITEM, 0, this);
     insertMenuItem(CSMARTFrame.SHOW_MENU, CHILDREN_MENU_ITEM, 1, this);
+    insertMenuItem(CSMARTFrame.SELECT_MENU, FIND_PLAN_OBJECTS_MENU_ITEM, 1, this);
   }
 
   private void setProperties() {
@@ -134,7 +143,8 @@ public class ULPlanFrame extends CSMARTFrame {
       // TODO: can't copy filter here; filter is set with
       // values for the NEXT graph to be created, not with
       // the values used to create the current graph, which is what you need
-      new ULPlanFrame(NamedFrame.PLAN, newGraph, filter.copy());
+      //
+      new ULPlanFrame(NamedFrame.PLAN, newGraph, filter.copy(), communityToAgents);
       return;
     }
 
@@ -191,6 +201,11 @@ public class ULPlanFrame extends CSMARTFrame {
 	if (element instanceof Node)
 	  graph.markHeads((Node)element, COLOR_CHILDREN);
       }
+      return;
+    }
+    if (command.equals(FIND_PLAN_OBJECTS_MENU_ITEM)) {
+      finder = new ULPlanFinder(this, graph, communityToAgents);
+      finder.displayFinder();
       return;
     }
 
@@ -331,3 +346,5 @@ public class ULPlanFrame extends CSMARTFrame {
 
 
 }
+
+
