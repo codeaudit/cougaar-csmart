@@ -36,6 +36,8 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import org.cougaar.core.society.Bootstrapper;
+
 // tools created by this user interface
 
 import org.cougaar.tools.csmart.ui.analyzer.Analyzer;
@@ -46,6 +48,7 @@ import org.cougaar.tools.csmart.ui.experiment.*;
 
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
+import org.cougaar.tools.csmart.ui.component.ComponentProperties;
 import org.cougaar.tools.csmart.ui.component.HostComponent;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
@@ -54,8 +57,7 @@ import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
 
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
-import org.cougaar.core.society.Bootstrapper;
-import org.cougaar.tools.csmart.ui.component.ComponentProperties;
+import org.cougaar.tools.csmart.societies.database.DBUtils;
 
 /**
  * Top level CSMART user interface.
@@ -85,6 +87,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   protected static final String ABOUT_CSMART_ITEM = "About CSMART";
   protected static final String ABOUT_DOC = "../help/about-csmart.html";
   protected static final String HELP_MENU_ITEM = "Help";
+
+  private boolean dbMode = false;
 
   private String[] helpMenuItems = {
     HELP_MENU_ITEM, ABOUT_CSMART_ITEM
@@ -188,6 +192,27 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     setVisible(true);
   }
 
+  /**
+   * Check to see if CSMART is running in the CMT-DB connected mode
+   * @return a <code>boolean</code> whether have a valid CMT database connection
+   */
+  public boolean inDBMode() {
+    return inDBMode(false);
+  }
+  
+  /**
+   * Check to see if CSMART is running in the CMT-DB connected mode, rechecking
+   * the database connection optionally.
+   *
+   * @param checkConnection a <code>boolean</code> indicating whether to re-check the database connection
+   * @return a <code>boolean</code>, true if there is a valid CMT DB connection
+   */
+  public boolean inDBMode(boolean checkConnection) {
+    if (checkConnection)
+      dbMode = DBUtils.isValidDBConnection();
+    return dbMode;
+  }
+  
   public void saveWorkspace() {
     organizer.save();
   }

@@ -21,28 +21,28 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
-import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.util.*;
 import java.awt.event.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.*;
+import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
+import java.util.*;
+import javax.swing.*;
+import javax.swing.tree.*;
+import javax.swing.event.*;
+
 import org.cougaar.tools.csmart.ui.component.*;
-import org.cougaar.tools.csmart.ui.experiment.ABCImpact;
+import org.cougaar.tools.csmart.ui.experiment.*;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.societies.abcsociety.ABCSociety;
-import org.cougaar.tools.csmart.societies.cmt.CMTSociety;
-import org.cougaar.tools.csmart.ui.experiment.*;
 import org.cougaar.tools.csmart.societies.abcsociety.BasicMetric;
+import org.cougaar.tools.csmart.societies.cmt.CMTSociety;
 import org.cougaar.tools.csmart.societies.database.DBUtils;
 
 /**
@@ -856,7 +856,7 @@ public class Organizer extends JScrollPane {
     ArrayList tmpNames = new ArrayList(10);
     Map substitutions = new HashMap();
 
-    if(DBUtils.isValidDBConnection()) {
+    if(csmart.inDBMode()) {
       try {
 	substitutions.put(":assembly_type", "CMT");
 	Connection conn = DBUtils.getConnection();
@@ -888,11 +888,13 @@ public class Organizer extends JScrollPane {
     // add in ComboItems for societies such as scalability and abc
     for (int i = 0; i < socComboItems.length; i++)
       values.add(socComboItems[i]);
-    // add in society names from database
-    try {
-      values.addAll(getSocietyNamesFromDB());
-    } catch (IndexOutOfBoundsException e) {
-      System.out.println("Organizer: Exception: " + e);
+    if (csmart.inDBMode()) {
+      // add in society names from database
+      try {
+	values.addAll(getSocietyNamesFromDB());
+      } catch (IndexOutOfBoundsException e) {
+	System.out.println("Organizer: Exception: " + e);
+      }
     }
     Object answer =
       JOptionPane.showInputDialog(this, "Select Society Type",
@@ -922,7 +924,7 @@ public class Organizer extends JScrollPane {
 	if (ok != JOptionPane.OK_OPTION) return null;
       }
       sc = createSoc(name, item.cls);
-    } else {
+    } else if (csmart.inDBMode()) {
       // create a society from a database
       // answer is the society name obtained from the database
       sc = CMTSociety.loadCMTSociety((String)answer);    
