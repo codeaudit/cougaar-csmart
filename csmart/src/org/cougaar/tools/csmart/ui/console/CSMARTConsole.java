@@ -541,6 +541,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
     setTrialValues();
     if (nodesToRun.length != 0) {
+      // query user for results directory before running the first time
+      getResultDir(); 
       createNodes();
       // select tabbed pane and status button for first node
       String firstNodeName = nodesToRun[0].getShortName();
@@ -620,13 +622,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   public void stopButton_actionPerformed(ActionEvent e) {
     stopButton.setSelected(true); // indicate stopping
     stopButton.setEnabled(false); // disable until experiment stops
-    // determine if societies in an experiment are self terminating
-    //    Experiment experiment = csmart.getExperiment();
-    // if user selects another experiment in the organizer, ignore it!
-    //    if (experiment == null) {
-    //      System.err.println("Console lost the experiment!!!");
-    //      return;
-    //    }
     int nSocieties = experiment.getSocietyComponentCount();
     boolean isSelfTerminating = true;
     for (int i = 0; i < nSocieties; i++) {
@@ -636,10 +631,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	break;
       }
     }
-    // just tell the experiment to stop after the current trial
     // societies in experiment will self terminate
     if (isSelfTerminating) {
-      //      experiment.stop();
       userStoppedTrials = true;
       return;
     }
@@ -655,12 +648,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	stopAllNodes();
     } else
       stopAllNodes();
-    // Tell the societies that they are no longer running
-    // Tell the experiment it is no longer running
-    
-    // Dont save the results here - they already get saved when you call
-    // stopAllNodes() when it calls trialFinished()
-    //saveResults();
   }
 
   /**
@@ -1202,8 +1189,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       return null;
     resultDir = chooser.getSelectedFile();
     experiment.setResultDirectory(resultDir);
-    // TODO: shouldn't save happen automatically whenever an experiment is changed?
-    csmart.saveWorkspace(); // force csmart to save the change
     return resultDir;
   }
 
@@ -1217,7 +1202,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   private void saveResults() {
     if (currentTrial < 0)
       return; // nothing to save
-    File resultDir = getResultDir();
+    File resultDir = experiment.getResultDirectory();
     if (resultDir == null)
       return; // can't save, user didn't specify metrics directory
     Trial trial = experiment.getTrials()[currentTrial];
