@@ -443,7 +443,7 @@ public class TestPopulateDb extends TestCase {
      * stored in the with an assembly id that is identified as CMT.
      **/
     private void populateCMT() throws SQLException, IOException {
-        pdb = new PopulateDb(CMT_TYPE, CMT_TYPE, CMT_TYPE,
+        pdb = new PopulateDb(CMT_TYPE, CMT_TYPE, CMT_TYPE, "REGRESSION Experiment",
                              exptId, trialId, true);
         pdb.setDebug(true);
         
