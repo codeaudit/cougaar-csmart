@@ -58,8 +58,6 @@ PLUGIN_ARG_ID,THREAD_ID,BLANK
 "org.cougaar.mlm.plugin.ldm.LDMSQLPlugin|fdm_equip.q|0","BASE",
 "org.cougaar.logistics.plugin.policy.LogisticsPolicyManagerPlugin|POLICY=ArmyFeedingPolicy.ldm.xml|0","BASE",
 "org.cougaar.logistics.plugin.policy.LogisticsPolicyManagerPlugin|DESTINATION=Subordinate|1","BASE",
-"org.cougaar.logistics.plugin.policy.LogisticsPolicyManagerPlugin|POLICY=LimitResourcesPolicy.ldm.xml|2","BASE",
-"org.cougaar.logistics.plugin.policy.LogisticsPolicyManagerPlugin|DESTINATION=Subordinate|3","BASE",
 "org.cougaar.logistics.plugin.policy.LogisticsPolicyManagerPlugin|POLICY=InventoryPolicy-ARBN.ldm.xml|0","BASE",
 "org.cougaar.logistics.plugin.policy.LogisticsPolicyManagerPlugin|POLICY=InventoryPolicy-CORPS-ENGBN.ldm.xml|0","BASE",
 "org.cougaar.logistics.plugin.policy.LogisticsPolicyManagerPlugin|POLICY=InventoryPolicy-CORPS-MAINTCO.ldm.xml|0","BASE",
