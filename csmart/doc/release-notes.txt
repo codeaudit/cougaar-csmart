@@ -64,6 +64,16 @@ mysql -f -u [user] -p[pw] [db] < mysqldump.txt
   want to do community work.
 - In addition, note that the default configs/common/LDMDomains.ini now
   loads the Community Domain, so no recipe is required to do so.
+- Added standard Mobility support. The mobility domain is also now
+  included in LDMDomains.in. The MoveAgentServlet is now part of the
+  Default_Servlets recipe that comes with base experiments (labeled MobilityServlet). Note that if
+  you want this servlet available in NodeAgents you must separately add
+  it there, or change the target query in the Default_Servlets
+  recipe. Finally, there are two other default recipes now included in
+  experiments for adding the other two required mobility
+  components. These are the NodeMobilityPlugin and the
+  AgentMobilityPlugin recipes. Most users need not modify these
+  recipes.
 - If a drop-down list is open (ie in the Configuration
   Builder) and you kill that window, you get an NPE. This appears to be
   a JDK bug, and will be logged as a warning. (bug 1439)
