@@ -115,9 +115,8 @@ public class RelationshipData implements Serializable {
 
   /**
    * Sets the start time for the time-phased object
-   * Data is in the format of: 03/25/1959 12:00 am
    *
-   * @param String start time.
+   * @param start 
    */
   public void setStartTime(long start) {
     this.startTime = start;
@@ -125,9 +124,8 @@ public class RelationshipData implements Serializable {
 
   /**
    * Sets the End time for the time-phased object.
-   * Data is in the format of: 03/25/1959 12:00 am
    *
-   * @param String end time.
+   * @param end 
    */
   public void setEndTime(long end) {
     this.endTime = end;
