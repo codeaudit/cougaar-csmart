@@ -52,6 +52,7 @@ public class ConsoleTextPane extends JTextPane {
   Object searchHighlightReference;
   Object notifyHighlightReference;
   NodeStatusButton statusButton;
+  int notifyCount;
 
   public ConsoleTextPane(ConsoleStyledDocument doc, 
                          NodeStatusButton statusButton) {
@@ -156,6 +157,7 @@ public class ConsoleTextPane extends JTextPane {
       notifyCondition = s;
     else {
       notifyCondition = s.toLowerCase();
+      notifyCount = 0;
       doc.addDocumentListener(new MyDocumentListener());
     }
   }
@@ -169,6 +171,17 @@ public class ConsoleTextPane extends JTextPane {
     notifyPosition = null;
     if (notifyHighlightReference != null)
       highlighter.removeHighlight(notifyHighlightReference);
+    notifyCount = 0;
+  }
+
+  /**
+   * Return number of occurrences of notify string received from the
+   * node.  This number is reset when a new notify string is specified
+   * or when the node status is reset (via clearNotify).
+   */
+
+  public int getNotifyCount() {
+    return notifyCount;
   }
 
   /**
@@ -241,14 +254,19 @@ public class ConsoleTextPane extends JTextPane {
     public void insertUpdate(DocumentEvent e) {
       // if there's already a highlighted notify condition, 
       // then don't highlight a new one
-      if (notifyPosition != null)
-        return;
+      //      if (notifyPosition != null)
+      //        return;
       Document doc = e.getDocument();
       try {
         String newContent = doc.getText(e.getOffset(), e.getLength());
         newContent = newContent.toLowerCase();
         int index = newContent.indexOf(notifyCondition);
         if (index != -1) {
+          notifyCount++;
+          // if there's already a highlighted notify condition, 
+          // then don't highlight a new one
+          if (notifyPosition != null)
+            return;
           int startOffset = doc.getEndPosition().getOffset() -
             newContent.length() + index - 1;
           int endOffset = startOffset + notifyCondition.length();

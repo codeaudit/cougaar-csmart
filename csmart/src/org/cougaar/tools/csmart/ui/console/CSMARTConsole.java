@@ -104,7 +104,9 @@ public class CSMARTConsole extends JFrame {
   private static final String ABOUT_DOC = "../help/about-csmart.html";
   private static final String HELP_MENU_ITEM = "Help";
   private static final String LEGEND_MENU_ITEM = "Legend";
-
+  private static final String STATUS_MENU = "Status";
+  private static final String RESET_STATUS_MENU_ITEM = "Reset";
+ 
   // for pop-up menu on node status buttons
   private static final String ABOUT_MENU = "About";
   private static final String ABOUT_ACTION = "About";
@@ -216,10 +218,20 @@ public class CSMARTConsole extends JFrame {
     });
     notifyMenu.add(notifyMenuItem);
 
+    JMenu statusMenu = new JMenu(STATUS_MENU);
+    JMenuItem resetStatusMenuItem = new JMenuItem(RESET_STATUS_MENU_ITEM);
+    resetStatusMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        resetStatusMenuItem_actionPerformed();
+      }
+    });
+    statusMenu.add(resetStatusMenuItem);
+
     JMenuBar menuBar = new JMenuBar();
     menuBar.add(fileMenu);
     menuBar.add(helpMenu);
     menuBar.add(notifyMenu);
+    menuBar.add(statusMenu);
     getRootPane().setJMenuBar(menuBar);
 
     // create panel which contains
@@ -1116,8 +1128,19 @@ public class CSMARTConsole extends JFrame {
 				nodesToRun[i].getShortName() + currentTrial);
 
     ConfigurationWriter configWriter = null;
-    if (!CSMART.inDBMode()) 
+    // TODO: can't write configWriter in createNode; get marshalling error
+    // get two different errors depending on whether we're writing
+    // a scalability society or an abc society
+    if (!CSMART.inDBMode()) {
       configWriter = experiment.getConfigurationWriter(nodesToRun);
+      // workaround for running locally, just write config files
+//        try {
+//          configWriter.writeConfigFiles(new File("."));
+//        } catch (Exception e) {
+//          System.out.println("Could not write config files");
+//        }
+//        configWriter = null;
+    }
 
     // create the node
     try {
@@ -1361,6 +1384,24 @@ public class CSMARTConsole extends JFrame {
     if (e instanceof ActionEvent)
       NamedFrame.getNamedFrame().removeFrame(this);
     dispose();
+  }
+
+  /**
+   * Reset status for all nodes. Resets the "notify" position
+   * in the text pane and resets the error flag of the node status button.
+   */
+  private void resetStatusMenuItem_actionPerformed() {
+    Enumeration textPanes = nodePanes.elements();
+    while (textPanes.hasMoreElements()) {
+      ConsoleTextPane textPane = (ConsoleTextPane)textPanes.nextElement();
+      textPane.clearNotify();
+    }
+    Enumeration buttons = statusButtons.getElements();
+    while (buttons.hasMoreElements()) {
+      NodeStatusButton button = (NodeStatusButton)buttons.nextElement();
+        button.clearError();
+    }
+
   }
 
   private String getElapsedTimeLabel(String prefix, long startTime) {

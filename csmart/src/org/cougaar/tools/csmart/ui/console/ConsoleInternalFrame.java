@@ -273,17 +273,31 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(10, 0, 5, 5),
                                           0, 0));
-    String status = "";
     // get status from tool tip text; ought to be a better way
-    String s = statusButton.getToolTipText();
-    int index = s.lastIndexOf(":");
-    if (index != -1)
-      status = s.substring(index+1);
+    //    String s = statusButton.getToolTipText();
+    //    int index = s.lastIndexOf(":");
+    //    if (index != -1)
+    //      status = s.substring(index+1);
+    String status = ((NodeStatusButton)statusButton).getStatusDescription();
     aboutPanel.add(new JLabel(status),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
                                           GridBagConstraints.WEST,
                                           GridBagConstraints.HORIZONTAL,
                                           new Insets(10, 0, 5, 0),
+                                          0, 0));
+    x = 0;
+    aboutPanel.add(new JLabel("Notify Conditions Found:"),
+                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 5, 5),
+                                          0, 0));
+    int notifyCount = consoleTextPane.getNotifyCount();
+    aboutPanel.add(new JLabel(Integer.toString(notifyCount)),
+                   new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.HORIZONTAL,
+                                          new Insets(0, 0, 5, 0),
                                           0, 0));
     x = 0;
     aboutPanel.add(new JLabel("Log File Name:"),
