@@ -26,6 +26,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EventListener;
@@ -37,6 +38,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import javax.swing.event.EventListenerList;
+
 import org.cougaar.util.FilteredIterator;
 import org.cougaar.util.UnaryPredicate;
 
@@ -147,6 +149,16 @@ public abstract class ConfigurableComponent
 
   public abstract void initProperties();
 
+  /**
+   * Get a <code>URL</code> for a description of the component. May return <code>null</code>.<br>
+   * This default implementation returns <code>null</code>.
+   *
+   * @return an <code>URL</code> describing this component.
+   */
+  public URL getDescription() {
+    return null;
+  }
+  
   protected ConfigurableComponent getAncestorOfClass(Class cls) {
     ConfigurableComponent parent = getParent();
     if (parent == null) return null;
