@@ -34,9 +34,12 @@ public class AgentComponentData extends GenericComponentData {
   ArrayList roles = null;
   ArrayList communities = null;
   ArrayList relationships = null;
+  private static final String defClassName = "org.cougaar.core.cluster.ClusterImpl";
 
   /** Default Constructor **/
   public AgentComponentData() {
+    type = ComponentData.AGENT;
+    className = defClassName;
     roles = new ArrayList();
     communities = new ArrayList();
     relationships = new ArrayList();
