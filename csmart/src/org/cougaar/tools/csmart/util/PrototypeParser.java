@@ -222,9 +222,8 @@ public class PrototypeParser {
       }
     }
     if(haveItemId == false) {
-      String uic = aad.getUIC();
-      aad.addPropertyGroup(setItemIdentificationPG(uic, uic.substring(uic.indexOf("/")+1), "")); 
-
+      String name = clusterId.substring(clusterId.lastIndexOf(File.separatorChar)+1);
+      aad.addPropertyGroup(setItemIdentificationPG(name, name, ""));
    }
 
     return aad;
@@ -327,7 +326,11 @@ public class PrototypeParser {
           if(subType != null) {
             propData.setSubType(subType);
           }
-          propData.setValue(getValue(parseArgs(dataType, tokens.sval)));
+          if(propData.getName().equals("HomeLocation")) {
+            propData.setValue(parseHomeLocation(tokens.sval));
+          } else {
+            propData.setValue(getValue(parseArgs(dataType, tokens.sval)));
+          }
 
           newVal = tokens.nextToken();
           member = tokens.sval;
@@ -351,7 +354,8 @@ public class PrototypeParser {
   }
 
   private String parseHomeLocation(String argument) {
-    return argument.substring(argument.indexOf("=")+1, argument.indexOf(","));
+    return argument.substring(0, argument.indexOf(","));
+//     return argument.substring(argument.indexOf("=")+1, argument.indexOf(","));
   }
 
   private Object getValue(Object arg) {
