@@ -1769,7 +1769,7 @@ public class Organizer extends JScrollPane {
       substitutions.put(":comp_alib_id", comp_alib_id);
       Statement stmt = conn.createStatement();
       String query = DBUtils.getQuery(COMPONENT_ARGS_QUERY, substitutions);
-      System.out.println("Organizer " + COMPONENT_ARGS_QUERY + ": "  + query);
+      //      System.out.println("Organizer " + COMPONENT_ARGS_QUERY + ": "  + query);
       ResultSet rs = stmt.executeQuery(query);
       while(rs.next()) {
         String param = rs.getString(1);
@@ -1780,10 +1780,10 @@ public class Organizer extends JScrollPane {
           String pvalue = param.substring(ix2 + 1);
           Property prop = cc.getProperty(pname);
           if (prop == null) {
-            System.out.println("adding " + pname + "=" + pvalue);
+	    //            System.out.println("adding " + pname + "=" + pvalue);
             cc.addProperty(pname, pvalue);
           } else {
-            System.out.println("setting " + pname + "=" + pvalue);
+	    //            System.out.println("setting " + pname + "=" + pvalue);
             prop.setValue(pvalue);
           }
         }
