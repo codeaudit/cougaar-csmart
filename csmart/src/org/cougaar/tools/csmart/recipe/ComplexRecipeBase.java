@@ -20,6 +20,7 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -42,10 +43,12 @@ import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.society.PluginBase;
 import org.cougaar.tools.csmart.society.SocietyComponentCreator;
 import org.cougaar.tools.csmart.society.cdata.AgentCDataComponent;
 import org.cougaar.tools.csmart.society.db.AgentDBComponent;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
+import org.cougaar.util.DBProperties;
 
 /**
  * ComplexRecipeBase.java
@@ -69,10 +72,10 @@ public class ComplexRecipeBase extends RecipeBase
   /** Identifier String for the hidden Assembly Id Property **/
   public static final String ASSEMBLY_PROP = "Assembly Id";
 
-  /** Identifier Tag for a ComplexRecipe **/
-  public static final String RECIPE_CLASS = "##RECIPE_CLASS##";
 
   private static final String QUERY_AGENT_NAMES = "queryAgentNames";
+  private static final String QUERY_PLUGIN_NAME = "queryPluginNames";
+  private static final String QUERY_PLUGIN_ARGS = "queryComponentArgs";
 
   public static final String PROP_TARGET_COMPONENT_QUERY = "Target Component Selection Query";
   public static final String PROP_TARGET_COMPONENT_QUERY_DFLT = "recipeQuerySelectNothing";
@@ -84,15 +87,20 @@ public class ComplexRecipeBase extends RecipeBase
   private boolean saveInProgress = false;
   protected ComponentData cdata = null;
   private Property propAssemblyId;
+  private String name = null;
+  private Map substitutions = new HashMap();
+  private transient DBProperties dbp;
 
 
   public ComplexRecipeBase (String name){
     super(name);
+    this.name = name;
   }
   
   public ComplexRecipeBase (String name, String assemblyId){
     super(name);
     this.assemblyId = assemblyId;
+    this.name = name;
   }
 
   public ComplexRecipeBase (ComponentData cdata, String assemblyId) {
@@ -201,18 +209,33 @@ public class ComplexRecipeBase extends RecipeBase
     } else if (cdata != null) {
       initFromCData();
     }
-
   }
 
   private void initFromDatabase() {
+    if(assemblyId != null) {
+      try {
+        dbp = DBProperties.readQueryFile(DBUtils.QUERY_FILE);
+      } catch (IOException ioe) {
+        if(log.isErrorEnabled()) {
+          log.error("IO Exception reading Query File", ioe);
+        }
+      }
+
+      initAgentsFromDb();
+      initPluginsFromDb();
+      initBindersFromDb();
+      // After reading the soc from the DB, it is not modified.
+      //      modified = false;
+      modified = false;
+      fireModification(new ModificationEvent(this, RECIPE_SAVED));
+    }
+  }
+
+  private void initAgentsFromDb() {
     Map substitutions = new HashMap();
     if (assemblyId != null) {
       substitutions.put(":assemblyMatch", DBUtils.getListMatch(assemblyId));
       substitutions.put(":insertion_point", "Node.AgentManager.Agent");
-
-      // FIXME:
-      // It would be really nice to be able to handle Binders and other non-Agent
-      // top-level things
 
       try {
 	Connection conn = DBUtils.getConnection();
@@ -238,11 +261,63 @@ public class ComplexRecipeBase extends RecipeBase
         }
 	throw new RuntimeException("Error" + e);
       }
-      // After reading the soc from the DB, it is not modified.
-      //      modified = false;
-      modified = false;
-      fireModification(new ModificationEvent(this, RECIPE_SAVED));
     }    
+  }
+
+  private void initPluginsFromDb() {
+    String assemblyMatch = DBUtils.getListMatch(assemblyId);
+    if (assemblyMatch != null) {
+      substitutions.put(":assemblyMatch", assemblyMatch);
+      substitutions.put(":agent_name", name);
+    }
+
+    // Get Plugin Names, class names, and parameters
+    try {
+      Connection conn = DBUtils.getConnection();
+      String query = "";
+      substitutions.put(":comp_type:", "= '" + ComponentData.PLUGIN + "'");
+      try {
+        Statement stmt = conn.createStatement();	
+        query = dbp.getQuery(QUERY_PLUGIN_NAME, substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        while(rs.next()) {
+          String pluginClassName = rs.getString(1);
+          String pluginName = rs.getString(4);
+          String priority = rs.getString(6).intern();
+          PluginBase plugin = new PluginBase(pluginName, pluginClassName, priority);
+          plugin.initProperties();
+          String alibId = rs.getString(2);
+          String libId = rs.getString(3);
+          plugin.setAlibID(alibId);
+          plugin.setLibID(libId);
+          substitutions.put(":comp_alib_id", alibId);
+          substitutions.put(":comp_id", rs.getString(3));
+          Statement stmt2 = conn.createStatement();
+          String query2 = dbp.getQuery(QUERY_PLUGIN_ARGS, substitutions);
+          ResultSet rs2 = stmt2.executeQuery(query2);
+          while (rs2.next()) {
+            String arg = rs2.getString(1);
+            plugin.addParameter(arg);
+          }
+          rs2.close();
+          stmt2.close();
+          addChild(plugin);
+        } // end of loop over plugins to add
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("Exception", e);
+      }
+      throw new RuntimeException("Error" + e);
+    }
+  }
+
+  private void initBindersFromDb() {
+    System.out.println("Not implemented yet");
   }
 
   private void initFromCData() {
@@ -285,7 +360,7 @@ public class ComplexRecipeBase extends RecipeBase
     return this.assemblyId;
   }
 
-  private ComponentData getComponentData() {
+  protected ComponentData getComponentData() {
     ComponentData cd = new GenericComponentData();
     cd.setType(ComponentData.RECIPE);
     cd.setClassName(RECIPE_CLASS);
