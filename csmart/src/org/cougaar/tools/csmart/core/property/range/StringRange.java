@@ -67,5 +67,30 @@ public class StringRange extends RangeBase implements Range {
   public String toString() {
     return value;
   }
+
+  /**
+   * Two StringRanges are equal if their values are equal.
+   * Also, A StringRange is equal to a String if the value equals the String
+   *
+   * @param o an <code>Object</code> to compare
+   * @return a <code>boolean</code>, true if the value is equal
+   */
+  public boolean equals(Object o) {
+    if (o instanceof StringRange) {
+      StringRange other = (StringRange)o;
+      if (value != null && value.equals(other.getMinimumValue()))
+	return true;
+      if (value == null && other.getMinimumValue() == null)
+	return true;
+    } else if (o instanceof String) {
+      String so = (String)o;
+      if (value != null && value.equals(so))
+	return true;
+      if (value == null && so == null)
+	return true;
+    }
+    return false;
+  }
+      
 }
 
