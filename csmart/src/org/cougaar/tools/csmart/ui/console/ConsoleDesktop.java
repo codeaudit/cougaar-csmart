@@ -43,10 +43,11 @@ public class ConsoleDesktop extends JDesktopPane {
                            JScrollPane pane,
                            JRadioButton statusButton,
                            String logFileName,
-                           NodeServesClient nsc) {
+                           NodeServesClient nsc,
+                           CSMARTConsole console) {
     JInternalFrame frame = 
       new ConsoleInternalFrame(node, listener, pane,
-                               statusButton, logFileName, nsc);
+                               statusButton, logFileName, nsc, console);
     frame.addInternalFrameListener(frameListener);
     addFrame(frame, true);
     myFrames.put(node.getShortName(), frame);

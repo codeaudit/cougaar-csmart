@@ -27,6 +27,8 @@ import java.awt.Component;
 import java.awt.event.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.*;
 import javax.swing.tree.*;
 import javax.swing.*;
@@ -43,6 +45,7 @@ import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.configuration.ConsoleDNDTree;
 import org.cougaar.tools.csmart.ui.configuration.ConsoleTreeObject;
+import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.console.ExperimentDB;
 import org.cougaar.tools.csmart.ui.console.NodeArgumentDialog;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
@@ -175,7 +178,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
         cmdLineNodeMenuItem_actionPerformed(hostTree);
       }
     });
-    cmdLineNodeInHostMenuItem.setEnabled(false);
+    cmdLineNodeInHostMenuItem.setEnabled(true);
     JMenuItem deleteNodeInHostMenuItem = new JMenuItem(DELETE_MENU_ITEM);
     deleteNodeInHostMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -265,7 +268,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	cmdLineNodeMenuItem_actionPerformed(nodeTree);
       }
     });
-    cmdLineNodeMenuItem.setEnabled(false);
+    cmdLineNodeMenuItem.setEnabled(true);
     JMenuItem deleteNodeMenuItem = new JMenuItem(DELETE_MENU_ITEM);
     deleteNodeMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -384,6 +387,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     }
     hostTree.getModel().addTreeModelListener(this);
     nodeTree.getModel().addTreeModelListener(this);
+    setNameServerHostName(); // set name server host name in all nodes
   }
 
   /**
@@ -429,7 +433,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       NodeComponent[] nodes = hostComponent.getNodes();
       for (int j = 0; j < nodes.length; j++) {
 	NodeComponent nodeComponent = nodes[j];
-        addDefaultPropertiesToNode((ConfigurableComponent)nodeComponent);
+        addDefaultArgumentsToNode((ConfigurableComponent)nodeComponent);
 	cto = new ConsoleTreeObject(nodeComponent);
 	DefaultMutableTreeNode nodeTreeNode = 
 	  new DefaultMutableTreeNode(cto, true);
@@ -452,6 +456,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   private void addHostsFromFile() {
+    // this may silently fail, but that's ok, cause the file is optional
     String pathName = Util.getPath("hosts.txt");
     if (pathName == null)
       return;
@@ -514,7 +519,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     Iterator iter = unassignedNodes.iterator();
     while (iter.hasNext()) {
       NodeComponent node = (NodeComponent)iter.next();
-      addDefaultPropertiesToNode((ConfigurableComponent)node);
+      addDefaultArgumentsToNode((ConfigurableComponent)node);
       ConsoleTreeObject cto = new ConsoleTreeObject(node);
       DefaultMutableTreeNode newNodeTreeNode = 
 	new DefaultMutableTreeNode(cto, true);
@@ -671,7 +676,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       return;
     DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
     NodeComponent nodeComponent = experiment.addNode(nodeName);
-    addDefaultPropertiesToNode((ConfigurableComponent)nodeComponent);
+    addDefaultArgumentsToNode((ConfigurableComponent)nodeComponent);
     DefaultMutableTreeNode newNode =
       new DefaultMutableTreeNode(new ConsoleTreeObject(nodeComponent));
     model.insertNodeInto(newNode,
@@ -1067,49 +1072,32 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
    */
 
   public void cmdLineNodeMenuItem_actionPerformed(JTree tree) {
-    ArrayList names = new ArrayList();
-    ArrayList values = new ArrayList();
+    Vector names = new Vector();
+    Vector values = new Vector();
     NodeArgumentDialog dialog = new NodeArgumentDialog();
     DefaultMutableTreeNode selectedNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
-    ConfigurableComponent component = 
-      (ConfigurableComponent)cto.getComponent();
-    Iterator i = component.getPropertyNames();
-    while (i.hasNext()) {
-      CompositeName name = (CompositeName)i.next();
-      names.add(name);
-      values.add(component.getProperty(name).getValue());
+    NodeComponent nodeComponent = (NodeComponent)cto.getComponent();
+    Vector data = new Vector();
+    Properties properties = nodeComponent.getArguments();
+    Enumeration propertyNames = properties.propertyNames();
+    while (propertyNames.hasMoreElements()) {
+      String name = (String)propertyNames.nextElement();
+      Vector row = new Vector(2);
+      row.add(name);
+      row.add(properties.getProperty(name));
+      data.add(row);
     }
-    dialog.setArguments(names, values);
+    dialog.setData(data);
     dialog.setVisible(true);
-    ArrayList newNames = dialog.getNodeArgumentNames();
-    ArrayList newValues = dialog.getNodeArgumentValues();
-    i = component.getPropertyNames();
-    while (i.hasNext()) {
-      CompositeName name = (CompositeName)i.next();
-      if (!newNames.contains(name)) {
-        System.out.println("Remove: " + name);
-        // TODO: remove property
-      }
+    Vector newData = dialog.getData();
+    Properties newProperties = new Properties();
+    for (int i = 0; i < newData.size(); i++) {
+      Vector row = (Vector)newData.get(i);
+      newProperties.setProperty((String)row.get(0), (String)row.get(1));
     }
-    for (int j = 0; j < names.size(); j++) {
-      Object newName = newNames.get(j);
-      if (newName instanceof CompositeName) {
-        System.out.println("Existing name: " + newName);
-        // existing name, check if user changed value
-        Property p = component.getProperty((CompositeName)newName);
-        Object value = p.getValue();
-        Object newValue = newValues.get(j);
-        if (value != newValue) {
-          System.out.println("Setting new value: " + newValue);
-          p.setValue(newValue); 
-        }
-      } else { // newName is a string, it must be a new name
-        System.out.println("Adding new property: " + newName + " " + newValues.get(j));
-        component.addProperty((String)newName, newValues.get(j));
-      }
-    }
+    nodeComponent.setArguments(newProperties);
   }
 
   /**
@@ -1148,6 +1136,8 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   }
 
   // find first server host and use that as name server
+  // note that if the user changed the name server host name, that this
+  // will overwrite it
   private void setNameServerHostName() {
     String newNameServerHostName = "";
     HostComponent[] hosts = experiment.getHosts();
@@ -1163,36 +1153,49 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     }
     // set new server host name in all nodes
-    if (!newNameServerHostName.equals(nameServerHostName)) {
-      nameServerHostName = newNameServerHostName;
-      NodeComponent[] nodes = experiment.getNodes();
-      for (int i = 0; i < nodes.length; i++) {
-        ConfigurableComponent node = (ConfigurableComponent)nodes[i];
-        node.addProperty("org.cougaar.name.server",
-                         nameServerHostName + ":8888:5555");
-      }
+    nameServerHostName = newNameServerHostName;
+    NodeComponent[] nodes = experiment.getNodes();
+    for (int i = 0; i < nodes.length; i++) {
+      NodeComponent node = nodes[i];
+      Properties arguments = node.getArguments();
+      arguments.setProperty("org.cougaar.name.server",
+                            nameServerHostName + ":8888:5555");
+      node.setArguments(arguments);
     }
   }
 
-  private void addDefaultPropertiesToNode(ConfigurableComponent node) {
-    // note that this is overwritten with a unique name in the console
-    // when running without a database
-    node.addProperty("org.cougaar.node.name", node.getShortName());
+  /**
+   * Adds default arguments to a node, if and only if, there are
+   * no arguments on the node.
+   */
+
+  private void addDefaultArgumentsToNode(ConfigurableComponent node) {
+    if (((NodeComponent)node).getArguments() != null)
+      return;
+    Properties properties = new Properties();
     String nameServerPorts = "8888:5555";
-    node.addProperty("org.cougaar.tools.server.nameserver.ports", 
-                     nameServerPorts);
-    node.addProperty("org.cougaar.name.server", 
-                     nameServerHostName + ":" + nameServerPorts);
-    node.addProperty("org.cougaar.control.port", "8484");
+    properties.put("org.cougaar.tools.server.nameserver.ports", 
+                   nameServerPorts);
+    properties.put("org.cougaar.name.server", 
+  		   nameServerHostName + ":" + nameServerPorts);
+    properties.put("org.cougaar.control.port", 
+                   Integer.toString(CSMARTConsole.APP_SERVER_DEFAULT_PORT));
     if (experiment.isInDatabase()) {
-      node.addProperty("org.cougaar.configuration.database",
-                       CSMART.getDatabaseConfiguration());
-      node.addProperty("org.cougaar.configuration.user", 
-                       CSMART.getDatabaseUserName());
-      node.addProperty("org.cougaar.configuration.password",
-                       CSMART.getDatabaseUserPassword());
-      node.addProperty("org.cougaar.experiment.id", experiment.getTrialID());
+      properties.put("org.cougaar.configuration.database", 
+                     CSMART.getDatabaseConfiguration());
+      properties.put("org.cougaar.configuration.user", 
+                     CSMART.getDatabaseUserName());
+      properties.put("org.cougaar.configuration.password", 
+                     CSMART.getDatabaseUserPassword());
+      properties.put("org.cougaar.experiment.id", experiment.getTrialID());
     }
+    try {
+      properties.put("env.DISPLAY", InetAddress.getLocalHost().getHostName() +
+                     ":0.0");
+    } catch (UnknownHostException uhe) {
+      System.out.println(uhe);
+    }
+    ((NodeComponent)node).setArguments(properties);
   }
 
   /**

@@ -130,6 +130,13 @@ public abstract class DNDTree
       if (target.getAllowsChildren()) {
         int action = isDroppable(possibleFlavors, target);
 //          System.out.println("Action is " + action);
+        // if can't drop on the target, see if you can drop on its parent
+        if (action == DnDConstants.ACTION_NONE) {
+          target = (DefaultMutableTreeNode)target.getParent();
+          if (target != null)
+            action = isDroppable(possibleFlavors, target);
+          return action;
+        }
         return action;
       } else {
 	// target doesn't allow children, but maybe can be sibling
@@ -157,14 +164,36 @@ public abstract class DNDTree
     int action = DnDConstants.ACTION_NONE;
     DefaultMutableTreeNode target = getDropTarget(event.getLocation());
     DefaultMutableTreeNode after = null;
-    if (target != null && !target.getAllowsChildren()) {
-      after = target;
-      target = (DefaultMutableTreeNode) after.getParent();
+//      // if the target does not allow children, then drop on its parent
+//      if (target != null && !target.getAllowsChildren()) {
+//        after = target;
+//        target = (DefaultMutableTreeNode) after.getParent();
+//      }
+//      if (target != null) {
+//        Transferable transferable = event.getTransferable();
+//        action = addElement(transferable, target, after);
+//  //        System.out.println("Action " + action);
+//      }
+    if (target != null) {
+      // if the target allows children, but not of this type, 
+      // then drop on the parent, after the original target
+      if (target.getAllowsChildren()) {
+        DataFlavor[] possibleFlavors = event.getCurrentDataFlavors();
+        if (isDroppable(possibleFlavors, target) == DnDConstants.ACTION_NONE) {
+          after = target;
+          target = (DefaultMutableTreeNode)after.getParent();
+        }
+      } else {
+        // the target does not allow children, so drop on its parent
+        // after the original target
+        after = target;
+        target = (DefaultMutableTreeNode) after.getParent();
+      }
     }
     if (target != null) {
       Transferable transferable = event.getTransferable();
       action = addElement(transferable, target, after);
-//        System.out.println("Action " + action);
+      //        System.out.println("Action " + action);
     }
     boolean success;
     switch (action) {

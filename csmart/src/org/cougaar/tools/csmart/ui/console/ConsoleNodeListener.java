@@ -431,6 +431,14 @@ public class ConsoleNodeListener implements NodeEventListener {
   public ConsoleNodeOutputFilter getFilter() {
     return filter;
   }
+
+  /**
+   * Return the document being filled by this listener.
+   */
+
+  public ConsoleStyledDocument getDocument() {
+    return doc;
+  }
 }
 
 

@@ -82,7 +82,7 @@ public class ConsoleDNDTree extends DNDTree {
     Object userObject = node.getUserObject();
     ConsoleTreeObject cto = (ConsoleTreeObject)userObject;
     if (cto.isHost())
-      return false;
+      return true;
     if (node.getParent() == null)
       return false; // don't ever drag root
     return true;

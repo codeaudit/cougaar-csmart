@@ -25,8 +25,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.border.*;
-import java.util.Iterator;
-import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
 import java.util.Vector;
 
 // TODO: add listeners to the table so that we can detect a change
@@ -34,9 +33,7 @@ import java.util.Vector;
 
 public class NodeArgumentDialog extends JDialog {
   JTable argTable;
-  NodeArgumentTableModel nodeArgTableModel;
-  ArrayList names;
-  ArrayList values;
+  DefaultTableModel nodeArgTableModel;
 
   public NodeArgumentDialog() {
     super((Frame)null, true); // display modal dialog
@@ -71,42 +68,82 @@ public class NodeArgumentDialog extends JDialog {
     tablePanel.setLayout(new BorderLayout());
     tablePanel.add(scrollPane, BorderLayout.CENTER);
 
+    // add buttons to add/delete properties
+    JPanel tableButtonPanel = new JPanel();
+    JButton addButton = new JButton("Add Property");
+    addButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        Vector newData = new Vector(2);
+        newData.add("");
+        newData.add("");
+        ((DefaultTableModel)argTable.getModel()).addRow(newData);
+      }
+    });
+    tableButtonPanel.add(addButton);
+    JButton deleteButton = new JButton("Delete Property");
+    deleteButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        int i = argTable.getSelectedRow();
+        if (i != -1)
+          ((DefaultTableModel)argTable.getModel()).removeRow(i);
+      }
+    });
+    tableButtonPanel.add(deleteButton);
+
+    tablePanel.add(tableButtonPanel, BorderLayout.SOUTH);
+
     nodeArgPanel.add(tablePanel, BorderLayout.CENTER);
     nodeArgPanel.add(buttonPanel, BorderLayout.SOUTH);
     getContentPane().add(nodeArgPanel);
     pack();
   }
 
-  public void setArguments(ArrayList names, ArrayList values) {
-    this.names = names;
-    this.values =  values;
-    argTable.setForeground(Color.black);
-    nodeArgTableModel = new NodeArgumentTableModel(names, values);
+  /**
+   * Set the data to display in the table.
+   * The data argument is a vector of vectors; data.size() is the
+   * number of rows.
+   */
+
+  public void setData(Vector data) {
+    Vector columnNames = new Vector(2);
+    columnNames.add("Name");
+    columnNames.add("Value");
+    nodeArgTableModel = new DefaultTableModel(data, columnNames);
     argTable.setModel(nodeArgTableModel);
   }
-  
-  public ArrayList getNodeArgumentNames() {
-    nodeArgTableModel.getNodeArgumentNames();
-    return names;
+
+  /**
+   * Return the data from the table.
+   * The return value is a vector of vectors; the size is the
+   * number of rows.
+   */
+
+  public Vector getData() {
+    return nodeArgTableModel.getDataVector();
   }
 
-  public ArrayList getNodeArgumentValues() {
-    nodeArgTableModel.getNodeArgumentValues();
-    return values;
-  }
-    
   public static void main(String[] args) {
     NodeArgumentDialog nad = new NodeArgumentDialog();
+    Vector data = new Vector();
+    Vector row = new Vector();
+    row.add("Color");
+    row.add("Red");
+    data.add(row);
+    row = new Vector();
+    row.add("Number");
+    row.add("33");
+    data.add(row);
+    row = new Vector();
+    row.add("Day");
+    row.add("Friday");
+    data.add(row);
+    nad.setData(data);
     nad.setVisible(true);
-    ArrayList names = new ArrayList();
-    ArrayList values = new ArrayList();
-    names.add("Me");
-    names.add("you");
-    names.add("them");
-    values.add("one");
-    values.add("two");
-    values.add("three");
-    nad.setArguments(names, values);
+    Vector newData = nad.getData();
+    for (int i = 0; i < newData.size(); i++) {
+      row = (Vector)newData.get(i);
+      System.out.println(row.get(0) + ":" + row.get(1));
+    }
   }
 
 }

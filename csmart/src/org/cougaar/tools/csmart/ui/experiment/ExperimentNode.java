@@ -27,6 +27,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Maintains information about a node and generates the
@@ -42,6 +43,7 @@ public class ExperimentNode
 
   private List agents = new ArrayList();
   private Experiment experiment;
+  private Properties arguments = null;
 
   public ExperimentNode(String nodeName, Experiment experiment) {
       super(nodeName);
@@ -92,4 +94,19 @@ public class ExperimentNode
     fireModification();
   }
 
+  /**
+   * Set arguments.
+   */
+
+  public void setArguments(Properties arguments) {
+    this.arguments = arguments;
+  }
+
+  /**
+   * Get arguments.
+   */
+
+  public Properties getArguments() {
+    return arguments;
+  }
 }

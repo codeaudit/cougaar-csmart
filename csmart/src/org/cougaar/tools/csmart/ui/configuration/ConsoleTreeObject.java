@@ -106,18 +106,31 @@ public class ConsoleTreeObject implements Serializable {
   public boolean allowsDataFlavor(DataFlavor flavor) {
     if (flavor instanceof CSMARTDataFlavor) {
       CSMARTDataFlavor cflavor = (CSMARTDataFlavor) flavor;
+      // if dropping an agent
+      // if the drop site is a Node component or 
+      // the drop site is the root of a tree that allows agents
+      // then its ok
       if (flavorEquals(cflavor, ConsoleDNDTree.agentFlavor)) {
         return isNode() || isRoot() && allowedClass == AgentComponent.class;
       }
+      // same as above, except dropping multiple agents
       if (flavorEquals(cflavor, ConsoleDNDTree.agentArrayFlavor)) {
         return isNode() || isRoot() && allowedClass == AgentComponent.class;
       }
+      // if dropping a Node component
+      // if the drop site is a Host component or
+      // the drop site is the root of a tree that allows node components
+      // then its ok
       if (flavorEquals(cflavor, ConsoleDNDTree.nodeFlavor)) {
         return isHost() || isRoot() && allowedClass == NodeComponent.class;
       }
+      // same as above, except dropping multiple nodes
       if (flavorEquals(cflavor, ConsoleDNDTree.nodeArrayFlavor)) {
         return isHost() || isRoot() && allowedClass == NodeComponent.class;
       }
+      // if dropping a Host component
+      // if the drop site is the root of a tree that allows host components
+      // then its ok
       if (flavorEquals(cflavor, ConsoleDNDTree.hostFlavor)) {
         return isRoot() && allowedClass == HostComponent.class;
       }

@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.ui.component;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * The interface for adding and removing nodes from a society.
@@ -50,4 +51,16 @@ public interface NodeComponent extends ComponentProperties {
    */
 
   AgentComponent[] getAgents();
+
+  /**
+   * Set arguments.
+   */
+
+  void setArguments(Properties arguments);
+
+  /**
+   * Get arguments.
+   */
+
+  Properties getArguments();
 }

@@ -30,18 +30,24 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
 
 import com.klg.jclass.chart.JCChart;
 
 import org.cougaar.tools.csmart.ui.component.ComponentName;
+import org.cougaar.tools.csmart.ui.component.CompositeName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.HostComponent;
 import org.cougaar.tools.csmart.ui.component.NodeComponent;
 import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
+import org.cougaar.tools.server.CommunityServesClient;
+import org.cougaar.tools.server.rmi.ClientCommunityController;
+import org.cougaar.tools.server.ConfigurationWriter;
+import org.cougaar.tools.server.HostServesClient;
+import org.cougaar.tools.server.NodeEventFilter;
 import org.cougaar.tools.server.NodeServesClient;
 import org.cougaar.tools.server.system.ProcessStatus;
 
@@ -87,19 +93,23 @@ public class ConsoleInternalFrame extends JInternalFrame {
   private Action findNextAction;
   private Action notifyAction;
   private Action notifyNextAction;
+  private Action startAction;
+  private Action stopAction;
   private HostComponent host;
   private String hostName;
   private JRadioButton statusButton;
   private String logFileName;
   private ConsoleNodeOutputFilter filter;
   private NodeServesClient nodeServer;
+  private CSMARTConsole console;
 
   public ConsoleInternalFrame(NodeComponent node, 
                               ConsoleNodeListener listener,
                               JScrollPane pane,
                               JRadioButton statusButton,
                               String logFileName,
-                              NodeServesClient nodeServer) {
+                              NodeServesClient nodeServer,
+                              CSMARTConsole console) {
     super("",   // title
           true, //resizable
           false, //not closable, because they can't be recreated
@@ -110,6 +120,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
     this.statusButton = statusButton;
     this.logFileName = logFileName;
     this.nodeServer = nodeServer;
+    this.console = console;
     consoleTextPane = (ConsoleTextPane)pane.getViewport().getView();
     // get host component by getting the experiment and 
     // searching its hosts for one with this node.
@@ -240,8 +251,9 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
     // control menu
     JMenu controlMenu = new JMenu(CONTROL_MENU);
-    Action startAction = new AbstractAction(START_ACTION) {
+    startAction = new AbstractAction(START_ACTION) {
       public void actionPerformed(ActionEvent e) {
+        restart_actionPerformed();
       }
     };
     startAction.setEnabled(false);
@@ -252,11 +264,11 @@ public class ConsoleInternalFrame extends JInternalFrame {
     };
     moveAction.setEnabled(false);
     controlMenu.add(moveAction);
-    Action stopAction = new AbstractAction(STOP_ACTION) {
+    stopAction = new AbstractAction(STOP_ACTION) {
       public void actionPerformed(ActionEvent e) {
+        stop_actionPerformed();
       }
     };
-    stopAction.setEnabled(false);
     controlMenu.add(stopAction);
     Action traceAction = new AbstractAction(STACK_TRACE_ACTION) {
       public void actionPerformed(ActionEvent e) {
@@ -655,6 +667,29 @@ public class ConsoleInternalFrame extends JInternalFrame {
     listener.setFilter(filter);
   }
 
+  /**
+   * Enable restart command after nodeStopped message has been received
+   * by the node listener.
+   */
+
+  public void enableRestart() {
+    startAction.setEnabled(true);
+  }
+
+  private void restart_actionPerformed() {
+    startAction.setEnabled(false);
+    NodeServesClient newNodeServer = console.restartNode(node);
+    if (newNodeServer != null) {
+      nodeServer = newNodeServer;
+      stopAction.setEnabled(true);
+    }
+  }
+
+  private void stop_actionPerformed() {
+    stopAction.setEnabled(false);
+    console.stopNode(node);
+  }
+
   private void trace_actionPerformed() {
     try {
       nodeServer.dumpThreads();
@@ -701,14 +736,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                            GridBagConstraints.NONE,
                                            new Insets(10, 0, 5, 5),
                                            0, 0));
-//      String s = 
-//        (String)JOptionPane.showInputDialog(this,
-//                                            "Search string:",
-//                                            "Notification",
-//                                            JOptionPane.QUESTION_MESSAGE,
-//                                            null, null, 
-//                                          consoleTextPane.getNotifyCondition());
-//    setNotification(s);
     int result = JOptionPane.showConfirmDialog(this, notifyPanel, 
                                                "Notification",
                                                JOptionPane.OK_CANCEL_OPTION);

@@ -54,8 +54,8 @@ import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.util.Parameters;
 
 public class CSMARTConsole extends JFrame {
-  // must match port used in org.cougaar.tools.server package
-  private static final int DEFAULT_PORT = 8484;
+  // org.cougaar.control.port; port for contacting applications server
+  public static final int APP_SERVER_DEFAULT_PORT = 8484;
   // number of characters displayed in the node output window
   private static final int DEFAULT_VIEW_SIZE = 50000;
   CSMART csmart; // top level viewer, gives access to save method, etc.
@@ -295,7 +295,7 @@ public class CSMARTConsole extends JFrame {
     runButton.setToolTipText("Start running experiment");
     runButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-	runButton_actionPerformed(e);
+	runButton_actionPerformed();
       }
     });
     runButton.setFocusPainted(false);
@@ -317,7 +317,7 @@ public class CSMARTConsole extends JFrame {
     abortButton.setToolTipText("Interrupt experiment");
     abortButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-	abortButton_actionPerformed(e);
+	abortButton_actionPerformed();
       }
     });
     abortButton.setFocusPainted(false);
@@ -545,6 +545,16 @@ public class CSMARTConsole extends JFrame {
     }
   }
 
+  private NodeStatusButton getNodeStatusButton(String nodeName) {
+    Enumeration buttons = statusButtons.getElements();
+    while (buttons.hasMoreElements()) {
+      NodeStatusButton button = (NodeStatusButton)buttons.nextElement();
+      if (button.getActionCommand().equals(nodeName))
+        return button;
+    }
+    return null;
+  }
+
   /**
    * Clears the error in the console node listener so it 
    * updates the status button again.
@@ -555,12 +565,9 @@ public class CSMARTConsole extends JFrame {
     ConsoleTextPane consoleTextPane =
       (ConsoleTextPane)nodePanes.get(selectedNodeName);
     consoleTextPane.clearNotify();
-    Enumeration buttons = statusButtons.getElements();
-    while (buttons.hasMoreElements()) {
-      NodeStatusButton button = (NodeStatusButton)buttons.nextElement();
-      if (button.getActionCommand().equals(selectedNodeName)) 
-        button.clearError();
-    }
+    NodeStatusButton button = getNodeStatusButton(selectedNodeName);
+    if (button != null)
+      button.clearError();
   }
 
   /**
@@ -619,7 +626,7 @@ public class CSMARTConsole extends JFrame {
    * tabbed pane for it.
    */
 
-  private void runButton_actionPerformed(ActionEvent e) {
+  private void runButton_actionPerformed() {
     destroyOldNodes(); // Get rid of any old stuff before creating the new
     userStoppedTrials = false;
     ArrayList nodesToUse = new ArrayList();
@@ -682,6 +689,12 @@ public class CSMARTConsole extends JFrame {
    */
 
   private void createNodes() {
+    // first set configuration file name in all node components
+    for (int i = 0; i < nodesToRun.length; i++) {
+      NodeComponent nodeComponent = nodesToRun[i];
+      ((ConfigurableComponent)nodeComponent).addProperty("ConfigurationFileName",
+                                 nodeComponent.getShortName() + currentTrial);
+    }
     String tmp =
       Parameters.findParameter("org.cougaar.tools.csmart.startdelay");
     int delay = 1;
@@ -828,7 +841,7 @@ public class CSMARTConsole extends JFrame {
    * Abort all nodes, (using NodeServesClient interface which is
    * returned by createNode).
    */
-  private void abortButton_actionPerformed(ActionEvent e) {
+  private void abortButton_actionPerformed() {
     //    aborting = true;
     userStoppedTrials = true;
     stopAllNodes();
@@ -939,12 +952,14 @@ public class CSMARTConsole extends JFrame {
   public void nodeStopped(NodeComponent nodeComponent) {
     oldNodes.put(nodeComponent, runningNodes.get(nodeComponent));
     runningNodes.remove(nodeComponent);
-
+    // enable restart command on node output window
+    desktop.getNodeFrame(nodeComponent.getShortName()).enableRestart();
     // if any node has stopped, then don't kill the rest of the nodes
     // when any node has stopped, kill the rest of the nodes
     // unless we're already killing the other nodes
     //    if (!stopping) 
     //      stopAllNodes();
+
     // when all nodes have stopped, save results
     // run the next trial and update the gui controls
     if (runningNodes.isEmpty()) {
@@ -1005,14 +1020,9 @@ public class CSMARTConsole extends JFrame {
    */
 
   private void selectStatusButton(String nodeName) {
-    Enumeration buttons = statusButtons.getElements();
-    while (buttons.hasMoreElements()) {
-      JRadioButton button = (JRadioButton)buttons.nextElement();
-      if (button.getActionCommand().equals(nodeName)) {
-	button.setSelected(true);
-	break;
-      }
-    }
+    NodeStatusButton button = getNodeStatusButton(nodeName);
+    if (button != null)
+      button.setSelected(true);
   }
 
   /**
@@ -1020,15 +1030,25 @@ public class CSMARTConsole extends JFrame {
    */
 
   private void removeStatusButton(String nodeName) {
-    Enumeration buttons = statusButtons.getElements();
-    while (buttons.hasMoreElements()) {
-      JRadioButton button = (JRadioButton)buttons.nextElement();
-      if (button.getActionCommand().equals(nodeName)) {
-	statusButtons.remove(button);
-	buttonPanel.remove(button);
-	break;
-      }
+    NodeStatusButton button = getNodeStatusButton(nodeName);
+    if (button != null) {
+      statusButtons.remove(button);
+      buttonPanel.remove(button);
     }
+  }
+
+  public static int getAppServerPort(Properties properties) {
+    int port = APP_SERVER_DEFAULT_PORT;
+    if (properties == null)
+      return port;
+    try {
+      String tmp = properties.getProperty("org.cougaar.control.port");
+      if (tmp != null)
+        port = Integer.parseInt(tmp);
+    } catch (NumberFormatException nfe) {
+      // use default port
+    }
+    return port;
   }
 
   /**
@@ -1042,11 +1062,25 @@ public class CSMARTConsole extends JFrame {
     // create an unique node name to circumvent server problems
     String uniqueNodeName = nodeName;
 
-    // Can't change the name of the Nodes when running
-    // from the database, cause it needs to load those names
+    // get arguments from NodeComponent and pass them to ApplicationServer
+    // note that these properties augment any properties that
+    // are passed to the server in a properties file on startup
+    Properties properties = nodeComponent.getArguments();
+
     if (!experiment.isInDatabase()) {
+      // Can't change the name of the Nodes when running
+      // from the database, cause it needs to load those names
       uniqueNodeName = nodeName + currentTrial;
-    }
+      properties.setProperty("org.cougaar.node.name", uniqueNodeName);
+      properties.setProperty("org.cougaar.filename", uniqueNodeName + ".ini");
+    } else
+      properties.setProperty("org.cougaar.experiment.id", 
+                             experiment.getTrialID());
+    // update properties on node
+    nodeComponent.setArguments(properties); 
+    // set configuration file name as node component property; why?
+    //    ((ConfigurableComponent)nodeComponent).addProperty("ConfigurationFileName",
+    //                              nodeName + currentTrial);
     
     // create a status button
     NodeStatusButton statusButton = createStatusButton(nodeName, hostName);
@@ -1080,49 +1114,16 @@ public class CSMARTConsole extends JFrame {
     nodePanes.put(nodeName, textPane);
 
     NodeEventFilter filter = new NodeEventFilter(10);
-
-    // note that these properties augment any properties that
-    // are passed to the server in a properties file on startup
-    // TODO: DBMode should be dependent on society selected
-    Properties properties = new Properties();
-    properties.put("org.cougaar.node.name", uniqueNodeName);
-    String nameServerPorts = "8888:5555";
-    properties.put("org.cougaar.tools.server.nameserver.ports", 
-                   nameServerPorts);
-    properties.put("org.cougaar.name.server", 
-		   nameServerHostName + ":" + nameServerPorts);
-    properties.put("org.cougaar.control.port", Integer.toString(DEFAULT_PORT));
-    if (!experiment.isInDatabase()) {
-      properties.put("org.cougaar.filename", uniqueNodeName + ".ini");
-    } else {
-      properties.put("org.cougaar.configuration.database", 
-                     CSMART.getDatabaseConfiguration());
-      properties.put("org.cougaar.configuration.user", 
-                     CSMART.getDatabaseUserName());
-      properties.put("org.cougaar.configuration.password", 
-                     CSMART.getDatabaseUserPassword());
-      properties.put("org.cougaar.experiment.id", experiment.getTrialID());
-    }
-    try {
-      properties.put("env.DISPLAY", InetAddress.getLocalHost().getHostName() +
-                     ":0.0");
-    } catch (UnknownHostException uhe) {
-      System.out.println(uhe);
-    }
-    // set configuration file names in nodesToRun
-    for (int i = 0; i < nodesToRun.length; i++) 
-      ((ConfigurableComponent)nodesToRun[i]).addProperty("ConfigurationFileName", 
-				nodesToRun[i].getShortName() + currentTrial);
-
-    ConfigurationWriter configWriter = null;
-    configWriter = experiment.getConfigurationWriter(nodesToRun);
+    ConfigurationWriter configWriter = 
+      experiment.getConfigurationWriter(nodesToRun);
 
     // create the node
     NodeServesClient nsc = null;
     try {
-      HostServesClient hsc = communitySupport.getHost(hostName, DEFAULT_PORT);
-      //      System.out.println("Host: " + hostName + " port: " + DEFAULT_PORT + 
-      //                         " name: " + uniqueNodeName);
+      HostServesClient hsc = 
+        communitySupport.getHost(hostName, getAppServerPort(properties));
+      //      System.out.println("Properties:");
+      //      properties.list(System.out);
       nsc = hsc.createNode(uniqueNodeName, properties, null,
                            listener, filter, configWriter);
       if (nsc != null)
@@ -1144,10 +1145,104 @@ public class CSMARTConsole extends JFrame {
                          scrollPane,
                          statusButton,
                          logFileName,
-                         nsc);
+                         nsc,
+                         this);
     updateExperimentControls(experiment, true);
     startTimers();
     return true;
+  }
+
+  /** 
+   * Called from ConsoleInternalFrame (i.e. from menu on the node's output
+   * window) to stop a node.
+   * If this is the only node, then it is handled the same
+   * as selecting the Abort button on the console.
+   */
+
+  public void stopNode(NodeComponent node) {
+    if (runningNodes.size() == 1) {
+      abortButton_actionPerformed();
+      return;
+    }
+    NodeServesClient nsc = (NodeServesClient)runningNodes.get(node);
+    if (nsc == null)
+      return;
+    try {
+      nsc.flushNodeEvents();
+      nsc.destroy();
+    } catch (Exception ex) {
+      System.err.println("Unable to destroy node: " + ex);
+    }
+  }
+
+  /**
+   * Called from ConsoleInternalFrame (i.e. from menu on the node's output
+   * window) to restart the node.
+   * If this is the only node, then it is handled the same
+   * as selecting the Run button on the console.
+   */
+
+  public NodeServesClient restartNode(NodeComponent nodeComponent) {
+    if (oldNodes.size() + runningNodes.size() == 1) {
+      runButton_actionPerformed();
+      return null; // it doesn't matter what we return, the caller is going away
+    }
+    CommunityServesClient communitySupport = new ClientCommunityController();
+    HostServesClient hostServer = null;
+    Properties properties = nodeComponent.getArguments();
+    // get host component by searching hosts for one with this node.
+    String hostName = null;
+    HostComponent[] hosts = experiment.getHosts();
+    for (int i = 0; i < hosts.length; i++) {
+      NodeComponent[] nodes = hosts[i].getNodes();
+      for (int j = 0; j < nodes.length; j++) {
+        if (nodes[j].equals(nodeComponent)) {
+          hostName = hosts[i].getShortName();
+          break;
+        }
+      }
+    }
+    try {
+      hostServer = 
+        communitySupport.getHost(hostName, getAppServerPort(properties));
+    } catch (Exception e) {
+      System.out.println(e);
+      return null;
+    }
+    // close the log file and remove the old node event listener
+    String nodeName = nodeComponent.getShortName();
+    ConsoleNodeListener listener = 
+      (ConsoleNodeListener)nodeListeners.remove(nodeName);
+    listener.closeLogFile();
+    // reuse old document
+    ConsoleStyledDocument doc = listener.getDocument();
+    // create a node event listener to get events from the node
+    String logFileName = getLogFileName(nodeName);
+    try {
+      listener = new ConsoleNodeListener(this,
+					 nodeComponent,
+                                         logFileName,
+					 getNodeStatusButton(nodeName),
+                                         doc);
+    } catch (Exception e) {
+      System.err.println("Unable to create output for: " + nodeName);
+      e.printStackTrace();
+      return null;
+    }
+    if (displayFilter != null)
+      listener.setFilter(displayFilter);
+    nodeListeners.put(nodeName, listener);
+
+    NodeServesClient nsc = null;
+    try {
+      nsc = hostServer.createNode(nodeName, properties, null,
+                                  listener, new NodeEventFilter(10), null);
+      if (nsc != null)
+        runningNodes.put(nodeComponent, nsc);
+    } catch (Exception e) {
+      System.out.println(e);
+    }
+    return nsc;
   }
 
   private void startTimers() {
@@ -1296,10 +1391,18 @@ public class CSMARTConsole extends JFrame {
       // Skip hosts that have no node
       if (! hostsToUse.contains(hostName))
 	continue;
-      
+
+      // get host port from first node on this host
+      // TODO: note that if the user specified different server ports for
+      // different nodes on the same host, this won't work
+      Properties properties = null;
+      NodeComponent[] nodes = hosts[i].getNodes();
+      if (nodes.length != 0) 
+        properties = nodes[0].getArguments();
       HostServesClient hostInfo = null;
       try {
-	hostInfo = communitySupport.getHost(hostName, DEFAULT_PORT);
+	hostInfo = 
+          communitySupport.getHost(hostName, getAppServerPort(properties));
       } catch (java.rmi.UnknownHostException uhe) {
 	JOptionPane.showMessageDialog(this,
 				      "Unknown host: " + hostName,
