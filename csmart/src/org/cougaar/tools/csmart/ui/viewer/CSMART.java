@@ -932,19 +932,19 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	organizer.addExperiment();
 	experiments = organizer.getSelectedExperiments();
       }
-      if (experiments.length == 1)
+      if (experiments != null && experiments.length == 1)
 	runExperimentBuilder(experiments[0], false);
-      else if (experiments.length > 1)
+      else if (experiments != null && experiments.length > 1)
 	runMultipleExperimentBuilders(experiments);
     } else if (s.equals(views[3])) {
       Experiment[] experiments = organizer.getSelectedExperiments();
-      if (experiments.length > 0)
+      if (experiments != null && experiments.length > 0)
         runConsole(experiments[0]);
     } else if (s.equals(views[4])) {
       runMonitor();
     } else if (s.equals(views[5])) {
       Experiment[] experiments = organizer.getSelectedExperiments();
-      if (experiments.length > 0)
+      if (experiments != null && experiments.length > 0)
         runAnalyzer(experiments[0]);
     } else { // a frame selected from the window menu
       JFrame f = NamedFrame.getNamedFrame().getFrame(s);
