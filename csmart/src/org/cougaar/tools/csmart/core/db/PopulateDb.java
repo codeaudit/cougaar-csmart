@@ -138,7 +138,6 @@ public class PopulateDb extends PDbBase {
 	// Save this ID someplace? The creator stuffs
 	// it in the CSA slot
         assemblyId = createCSAAssembly(cmtAsbID, societyName);
-	cmtAssemblyId = assemblyId;
       } catch( SQLException se ) {
         if(log.isErrorEnabled()) {
           log.error("createCSAAssembly error: ", se);
@@ -147,7 +146,7 @@ public class PopulateDb extends PDbBase {
     }
 
     substitutions.put(":assembly_id:", sqlQuote(assemblyId));
-    cmtAssemblyId = assemblyId;
+    this.cmtAssemblyId = assemblyId;
 
     // OK, at this point we're ready to save out the society
 
@@ -871,7 +870,7 @@ public class PopulateDb extends PDbBase {
     // and return the new ID
     // which will be 
     if (log.isDebugEnabled()) {
-      log.debug("Creating new CSA : " + (cmtAsbID != null ? "based on soc: " + cmtAsbID : "from scratch") + ": " + societyName);
+      log.debug("Creating new CSA " + (cmtAsbID != null ? "based on soc: " + cmtAsbID : "from scratch") + " named " + societyName);
     }
     String assemblyIdPrefix = csaType + "-";
     substitutions.put(":assembly_id_pattern:", assemblyIdPrefix + "____");
