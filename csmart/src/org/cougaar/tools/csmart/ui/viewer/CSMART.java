@@ -529,17 +529,25 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   public void runExperimentBuilder(Experiment experiment, boolean alwaysNew,
 				   boolean openForEditing) {
     if (!experiment.isEditable() && openForEditing) {
-      int result = JOptionPane.showConfirmDialog(this,
-				    experiment.getShortName() + " is not editable; create copy?",
-				    "Experiment Not Editable",
-				    JOptionPane.YES_NO_OPTION,
-				    JOptionPane.WARNING_MESSAGE);
-      if (result != JOptionPane.YES_OPTION) {
-	openForEditing = false;
-	//	return;
-      } else {
-	experiment = organizer.copyExperiment(experiment, null);
-      }
+      Object[] options = { "Edit", "View", "Copy", "Cancel" };
+      int result = 
+        JOptionPane.showOptionDialog(this,
+                                     experiment.getShortName() + " has been run",
+                                     "Experiment Not Editable",
+                                     JOptionPane.DEFAULT_OPTION,
+                                     JOptionPane.WARNING_MESSAGE,
+                                     null,
+                                     options,
+                                     options[0]);
+      if (result == 0) {
+        // edit it anyway
+        experiment.setEditable(true);
+      } else if (result == 2) {
+        // copy it
+        experiment = organizer.copyExperiment(experiment, null);
+      } else if (result != 1)
+        // user cancelled
+        return;
     }
     Class[] paramClasses = { CSMART.class, Experiment.class };
     Object[] params = new Object[2];
