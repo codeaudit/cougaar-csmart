@@ -987,6 +987,9 @@ public class CSMARTConsole extends JFrame {
     Collection values = nodeToNodeInfo.values();
     for (Iterator i = values.iterator(); i.hasNext(); ) {
       NodeInfo ni = (NodeInfo)i.next();
+
+      // FIXME: Right here I could check that the process name will
+      // be unique, and perhaps use a different nodeName if necessary
       NodeCreationInfo nci = prepareToCreateNode(ni.appServer, 
                                                  ni.nodeName, ni.hostName,
                                                  ni.properties, ni.args);
@@ -1377,9 +1380,12 @@ public class CSMARTConsole extends JFrame {
     JInternalFrame[] frames = desktop.getAllFrames();
     for (int i = 0; i < frames.length; i++) {
       String s = frames[i].getTitle();
+//       if (log.isDebugEnabled()) {
+// 	log.debug("Considering toggling restart for frame " + s + ". Will tell it: " + !isRunning);
+//       }
       if (!s.equals(configWindowTitle) && !s.equals(tValsWindowTitle) &&
           !s.equals(glsWindowTitle))
-        ((ConsoleInternalFrame)frames[i]).enableRestart(false);
+        ((ConsoleInternalFrame)frames[i]).enableRestart(!isRunning);
     }
   }
 
@@ -1609,6 +1615,10 @@ public class CSMARTConsole extends JFrame {
                                  groupName,
                                  nci.properties,
                                  nci.args);
+
+	// FIXME: Check that a process with description desc is not
+	// already running on server nci.remoteAppServer?
+
         RemoteListenableConfig conf =
           new RemoteListenableConfig(nci.listener, 
                                      CSMART.getNodeListenerId(), 
@@ -1620,6 +1630,11 @@ public class CSMARTConsole extends JFrame {
                            CSMART.getNodeListenerId() +
                            " for: " + procName);
       } catch (Exception e) {
+	// FIXME: Could look for exception: java.lang.RuntimeException: 
+	// Process name "Experiment for minitestconfig-MiniNode" is already 
+	// in use by another (running) process
+	// which indicates the process is already running, basically
+
         if (log.isErrorEnabled()) {
           log.error("CSMARTConsole: cannot create node: " + 
                     nci.nodeName, e);
@@ -1804,18 +1819,52 @@ public class CSMARTConsole extends JFrame {
    */
   private void attachButton_actionPerformed() {
     attachButton.setSelected(false);
+    // Before getting this list, make sure our list of possible
+    // things to attach to is up-to-date
+    appServerSupport.haveNewNodes();
     ArrayList nodesToAttach = appServerSupport.getNodesToAttach();
     if (nodesToAttach == null)
       return;
     for (int i = 0; i < nodesToAttach.size(); i++) {
       NodeInfo nodeInfo = (NodeInfo)nodesToAttach.get(i);
+      boolean haveAlready = false;
+      String name = nodeInfo.nodeName;
+      synchronized (runningNodesLock) {
+	if (runningNodes.get(nodeInfo.nodeName) != null) {
+	  haveAlready = true;
+	}
+      }
+      if (haveAlready) {
+	if (log.isDebugEnabled()) {
+	  log.debug("Already have attached node of name " + nodeInfo.nodeName);
+	}
+	// So how do I get the old process name?
+	NodeInfo old = (NodeInfo)nodeToNodeInfo.get(nodeInfo.nodeName);
+	if (old.processName.equals(nodeInfo.processName)) {
+	  if (log.isDebugEnabled()) {
+	    log.debug("They have the same process name: " + nodeInfo.processName);
+	  }
+	  // FIXME: Maybe compare nodeInfo.properties too?
+	  if (log.isDebugEnabled()) {
+	    log.debug("Asked to attach to already attached node " + nodeInfo.nodeName);
+	  }
+	  continue;
+	} else {
+	  // Going to allow attaching
+	  // But need to pretend it has a different name or else
+	  // I'll have trouble stopping it and whatnot
+
+	  // Must effectively reset nodeInfo.nodeName
+	  name = name + "-attached";
+	}
+      } // end of block to see if this Node already attached
       runStart = new Date();
       NodeCreationInfo nci = prepareToCreateNode(nodeInfo.appServer,
-                                                 nodeInfo.nodeName,
+                                                 name,
                                                  nodeInfo.hostName,
                                                  nodeInfo.properties,
                                                  nodeInfo.args);
-      nodeToNodeInfo.put(nodeInfo.nodeName, nodeInfo);
+      nodeToNodeInfo.put(name, nodeInfo);
       RemoteProcess remoteNode = null;
       // add listener to node
       try {
@@ -1837,7 +1886,7 @@ public class CSMARTConsole extends JFrame {
         continue;
       }
       synchronized (runningNodesLock) {
-        runningNodes.put(nodeInfo.nodeName, remoteNode);
+        runningNodes.put(name, remoteNode);
       }
       addStatusButton(nci.statusButton);
       ConsoleInternalFrame frame = 
@@ -1996,7 +2045,7 @@ public class CSMARTConsole extends JFrame {
     File resultDir = csmart.getResultDir();
     String experimentName = "Experiment";
     String trialName = "Trial 1";
-    if (experiment != null && usingExperiment) {
+    if (experiment != null && usingExperiment && currentTrial >= 0) {
       resultDir = experiment.getResultDirectory();
       experimentName = experiment.getExperimentName();
       trialName = experiment.getTrials()[currentTrial].getShortName();
