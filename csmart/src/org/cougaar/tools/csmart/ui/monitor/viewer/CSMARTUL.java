@@ -609,19 +609,16 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
       agentURLs = ClientServletUtil.getAgentURLs(agentURL);
       if (agentURLs == null)
 	JOptionPane.showMessageDialog(null,
-                              agentURL + "/" +
-                              ClientServletUtil.AGENT_PROVIDER_SERVLET +
+                              agentURL +
 			      " returned null; no information to graph.");
       else if (agentURLs.size() == 0)
 	JOptionPane.showMessageDialog(null,
-                                      agentURL + "/" +
-                                   ClientServletUtil.AGENT_PROVIDER_SERVLET +
+                                      agentURL +
                            " returned no agents; no information to graph.");
     } catch (Exception e) {
        JOptionPane.showMessageDialog(null,
                                      "Failed to contact: " + 
-                                     agentURL + "/" +
-                                     ClientServletUtil.AGENT_PROVIDER_SERVLET +
+                                     agentURL +
                                      "; no information to graph.");
     }
 
