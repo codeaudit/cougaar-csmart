@@ -40,7 +40,14 @@ import org.cougaar.util.log.Logger;
 /**
  * AssetDataCallbackImpl.java
  *
- *
+ * Implements {@link AssetDataCallback}.  This class is
+ * the guts behind parsing a prototype-dat.ini file.  Some
+ * of the methods are implemented to do what we need, meaning
+ * the original callback was for actually creating a valid
+ * asset object where we just want to parse the data.  Because
+ * of that, some methods may look to be named weird, based on
+ * their actual function.
+ * <br><br>
  * Created: Fri Mar  8 12:40:31 2002
  *
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
@@ -53,11 +60,22 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
   private PropGroupData propGroup = null;
   private transient Logger log = null;
 
+  /**
+   * Creates a new <code>AssetDataCallbackImpl</code> instance.
+   *
+   */
   public AssetDataCallbackImpl (){
     log = CSMART.createLogger(this.getClass().getName());
   }
   // implementation of org.cougaar.planning.plugin.AssetDataCallback interface
 
+  /**
+   * Parses out the correct type.  Collections
+   * are enclosed in '< >' and Measures start with '/'
+   *
+   * @param type String with type to be parsed
+   * @return a parsed type as a <code>String</code> value
+   */
   public String getType(String type) {
     int i;
     if ((i = type.indexOf("<")) > -1) { // deal with collections 
@@ -70,6 +88,13 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     }
   }
 
+  /**
+   * Gets the <code>AgentAssetData</code> created with this callback.
+   * If the <code>AgentAssetData</code> has not been
+   * created yet, null is returned.
+   *
+   * @return a current <code>AgentAssetData</code> object
+   */
   public AgentAssetData getAgentAssetData() {
     if(log.isWarnEnabled() && assetData == null) {
       log.warn("Warning: assetData is null");
@@ -77,10 +102,21 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     return assetData;
   }
 
+  /**
+   * Gets an instance of the <code>ConfigFinder</code>
+   *
+   * @return a valid <code>ConfigFinder</code> instance
+   */
   public ConfigFinder getConfigFinder() {
     return ConfigFinder.getInstance();
   }
 
+  /**
+   * Creates an <code>AgentAssetData</code> and assigns
+   * its class name.
+   *
+   * @param assetClassName - Name of the Asset Class
+   */
   public void createMyLocalAsset(String assetClassName) {
     if(log.isDebugEnabled()) {
       log.debug("Creating Asset of class: " + assetClassName);
@@ -89,10 +125,21 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     assetData.setAssetClass(assetClassName);
   }
 
+  /**
+   * Checks if a local asset exists.
+   *
+   * @return a <code>boolean</code> value
+   */
   public boolean hasMyLocalAsset() {
     return (assetData != null);
   }
 
+  /**
+   * Creates a <code>PropGroupData</code> with the given name
+   *
+   * @param propGroupName Name of the new property group
+   * @exception Exception if an error occurs
+   */
   public void createPropertyGroup(String propGroupName) throws Exception {
     if(log.isDebugEnabled()) {
       log.debug("Create PropertyGroup: " + propGroupName);
@@ -100,6 +147,13 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     propGroup = new PropGroupData(propGroupName);
   }
 
+  /**
+   * Parses the given expression.
+   *
+   * @param type Unparsed Type(s)
+   * @param arg  Unparsed Argument(s)
+   * @return an <code>Object</code> value
+   */
   public Object parseExpr(String type, String arg) {
     int i;
 
@@ -163,6 +217,13 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     }    
   }
 
+  /**
+   * Parses a Date
+   *
+   * @param dateString Date string to parse 
+   * @return a <code>long</code> value
+   * @exception ParseException if an error occurs
+   */
   public long parseDate(String dateString) throws ParseException {
     if(log.isDebugEnabled()) {
       log.debug("Parsing Date: " + dateString);
@@ -176,6 +237,9 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
    * This implementation Creates the PGPropData for the passed in
    * name.
    *
+   * @param setterName Not used
+   * @param type Type of <code>PGPropData</code>
+   * @param arguments Arguments for the <code>PGPropData</code>
    */
   public void callSetter(String setterName, String type, Object[] arguments) {
     String name = setterName.substring(3);
@@ -205,18 +269,41 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     propGroup.addProperty(data);
   }
 
+  /**
+   * Not implemented
+   *
+   * @param latStr 
+   * @param lonStr 
+   */
   public void setLocationSchedule(String latStr, String lonStr) {
     // Not really sure what to do here.
   }
 
+  /**
+   * Returns the default start time
+   * {@link TimeSpan#MIN_VALUE}
+   *
+   * @return a <code>long</code> value
+   */
   public long getDefaultStartTime() {
     return TimeSpan.MIN_VALUE;
   }
 
+  /**
+   * Returns the default end time
+   * {@link TimeSpan#MAX_VALUE}
+   *
+   * @return a <code>long</code> value
+   */
   public long getDefaultEndTime() {
     return TimeSpan.MAX_VALUE;
   }
 
+  /**
+   * Adds a new Property to the asset.
+   * This method is required by the callback
+   *
+   */
   public void addPropertyToAsset() {
     if(log.isDebugEnabled()) {
       log.debug("Adding Property group: "+propGroup.getName()+" to asset");
@@ -224,6 +311,16 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     assetData.addPropertyGroup(propGroup);
   }
 
+  /**
+   * Adds a new Relationship to the asset.
+   *
+   * @param typeId Type Id for the new Relationship
+   * @param itemId Item Id for the new Relationship
+   * @param otherClusterId Other Cluster referenced in new Relationship
+   * @param roleName Role performed in new Relationship
+   * @param start Start time for new Relationship
+   * @param end Stop time for new Relationship
+   */
   public void addRelationship(String typeId, String itemId, String otherClusterId, String roleName, long start, long end) {
 
     RelationshipData rd = new RelationshipData();
