@@ -2,11 +2,11 @@
  * <copyright>
  *  Copyright 2001-2002 BBNT Solutions, LLC
  *  under sponsorship of the Defense Advanced Research Projects Agency (DARPA).
- * 
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the Cougaar Open Source License as published by
  *  DARPA on the Cougaar Open Source Website (www.cougaar.org).
- * 
+ *
  *  THE COUGAAR SOFTWARE AND ANY DERIVATIVE SUPPLIED BY LICENSOR IS
  *  PROVIDED 'AS IS' WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR
  *  IMPLIED, INCLUDING (BUT NOT LIMITED TO) ALL IMPLIED WARRANTIES OF
@@ -21,20 +21,16 @@
 
 package org.cougaar.tools.csmart.ui.monitor.xml;
 
-import java.io.PrintWriter;
-import java.util.Vector;
-
 import org.xml.sax.Attributes;
-import org.xml.sax.Parser;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXNotRecognizedException;
 import org.xml.sax.SAXNotSupportedException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.helpers.ParserAdapter;
-import org.xml.sax.helpers.ParserFactory;
+import org.xml.sax.helpers.XMLReaderFactory;
+
+import java.util.Vector;
 
 /**
  * Parse an XML document using a SAX Parser and convert elements into
@@ -63,7 +59,7 @@ public class XMLHandler extends DefaultHandler {
   protected static final String DYNAMIC_VALIDATION_FEATURE_ID = "http://apache.org/xml/features/validation/dynamic";
 
   // default settings
-  
+
   /** Default parser name. */
   protected static final String DEFAULT_PARSER_NAME = "org.apache.xerces.parsers.SAXParser";
 
@@ -120,14 +116,14 @@ public class XMLHandler extends DefaultHandler {
   }
 
   /** Characters. */
-  public void characters(char ch[], 
+  public void characters(char ch[],
                          int start, int length) throws SAXException {
   }
 
   /** Ignorable whitespace. */
   public void ignorableWhitespace(char ch[], int start, int length)
     throws SAXException {
-  } 
+  }
 
   /** Processing instruction. */
   public void processingInstruction(String target, String data)
@@ -141,7 +137,7 @@ public class XMLHandler extends DefaultHandler {
   /** Warning. */
   public void warning(SAXParseException ex) throws SAXException {
     printError("Warning", ex);
-  } 
+  }
 
   /** Error. */
   public void error(SAXParseException ex) throws SAXException {
@@ -151,7 +147,7 @@ public class XMLHandler extends DefaultHandler {
   /** Fatal error. */
   public void fatalError(SAXParseException ex) throws SAXException {
     printError("Fatal Error", ex);
-  } 
+  }
 
   /** Prints the error message. */
   protected void printError(String type, SAXParseException ex) {
@@ -176,7 +172,7 @@ public class XMLHandler extends DefaultHandler {
     System.err.print(ex.getMessage());
     System.err.println();
     System.err.flush();
-    
+
   } // printError(String,SAXParseException)
 
   public static void main(String argv[]) {
@@ -189,9 +185,8 @@ public class XMLHandler extends DefaultHandler {
 
     // variables
     XMLHandler xmlHandler = new XMLHandler();
-    PrintWriter out = new PrintWriter(System.out);
     XMLReader parser = null;
-    
+
     // unclear which of these are needed
     boolean namespaces = DEFAULT_NAMESPACES;
     boolean namespacePrefixes = DEFAULT_NAMESPACE_PREFIXES;
@@ -221,9 +216,8 @@ public class XMLHandler extends DefaultHandler {
           }
           catch (Exception e) {
             try {
-              Parser sax1Parser = ParserFactory.makeParser(parserName);
-              parser = new ParserAdapter(sax1Parser);
-              System.err.println("warning: Features and properties not supported on SAX1 parsers.");
+              parser = null;
+              System.err.println("error: Unable to instantiate parser ("+parserName+")");
             }
             catch (Exception ex) {
               parser = null;
