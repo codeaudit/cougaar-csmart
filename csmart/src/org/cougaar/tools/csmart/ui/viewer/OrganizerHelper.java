@@ -180,6 +180,9 @@ public class OrganizerHelper {
     AgentComponent[] allagents = (AgentComponent[])agents.toArray(new AgentComponent[agents.size()]); 
 
     experiment.addSocietyComponent((SocietyComponent)soc);
+
+    // Retrieve the Agent/Node mapping. Add the Nodes to the Experiment
+    // And set the properties for the Nodes.
     // Add all Nodes.
     addAgents(experiment, nodes, allagents, trialId, assemblyMatch);
     // Add all Hosts.
@@ -307,7 +310,7 @@ public class OrganizerHelper {
         Statement stmt = conn.createStatement();
         query = DBUtils.getQuery(EXPT_HOST_QUERY, substitutions);
         if(log.isDebugEnabled()) {
-        log.debug("Organizer: Get hosts query: " + query);
+	  log.debug("Organizer: Get hosts query: " + query);
         }
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
@@ -417,6 +420,9 @@ public class OrganizerHelper {
           ResultSet rs;
           String nodeName = (String)iter.next();
           nodeComponent = experiment.addNode(nodeName);
+// 	  if (log.isDebugEnabled()) {
+// 	    log.debug("Adding node " + nodeName + " to experiment");
+// 	  }
           setComponentProperties(nodeComponent, nodeName, assemblyMatch);
           substitutions.put(":parent_name", nodeName);
           substitutions.put(":comp_alib_id", nodeName);
@@ -437,9 +443,9 @@ public class OrganizerHelper {
               AgentComponent ac = agents[i];
               if (ac.getShortName().equals(aName)) {
                 nodeComponent.addAgent(ac);
-                //                if(log.isDebugEnabled()) {
-                //                  log.debug("OrganizerHelper:  Adding agent named:  " + ac.getShortName());
-                //                }
+// 		if(log.isDebugEnabled()) {
+// 		  log.debug("OrganizerHelper:  Adding agent named:  " + ac.getShortName() + " to Node " + nodeComponent.getShortName());
+// 		}
                 break;
               }	    
             } 	  
@@ -494,9 +500,9 @@ public class OrganizerHelper {
         substitutions.put(":comp_alib_id", comp_alib_id);
         Statement stmt = conn.createStatement();
         query = DBUtils.getQuery(COMPONENT_ARGS_QUERY, substitutions);
-        if(log.isDebugEnabled()) {
-          log.debug("OrganizerHelper " + COMPONENT_ARGS_QUERY + ": "  + query);
-        }
+//         if(log.isDebugEnabled()) {
+//           log.debug("OrganizerHelper " + COMPONENT_ARGS_QUERY + ": "  + query);
+//         }
         
         ResultSet rs = stmt.executeQuery(query);
         while(rs.next()) {
