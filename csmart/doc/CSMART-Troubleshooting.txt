@@ -290,3 +290,9 @@ tmp_alib_component_"
 this probably indicates a corrupted database due to
 carriage-return/newline issues on loading the CSMART configuration
 database. Try editing the file and removing excess ^Ms. See bug# 1321.
+
+- If you are running CSMART on a laptop and cannot connect to the database
+when the computer is not on a network, check your cougaar.rc.  It cannot
+contain your host name.  It must always say "localhost".  Ensure that
+have have the correct permissions in mysql to run as <username>@localhost.
+See the CSMART Install docs for more information on setting mysql permissions. 
