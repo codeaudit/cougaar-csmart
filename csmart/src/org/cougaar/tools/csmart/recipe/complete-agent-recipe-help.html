@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>Complete Agent Recipe Help</title>
+</head>
+<body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+<h1>Complete Agent Recipe Configuration Help</h1>
+The Complete Agent Recipe allows users to create an arbitrary agent
+for inclusion in a society. Note however that added agents will not have
+any Oplan related information in the database.
+<br>
+<p>Within an Agent, there are 4 Categories in which you may add
+components: Plugins, Binders (of Plugins), Other Components (whose
+insertion point falls within the Agent), and Asset Data (ie Entity or
+Organization Assets).
+<p>To add an Agent, use the pop-up menu on the Recipe Folder.
+<p>To remove an Agent, use the pop-up menu on the Agent folder.
+<p>To add a Plugin, Binder, or Other Component, use the pop-up menu on
+that folder. The drop-down lists of components are editable, and are
+populated from the list of Plugins / Binders currently known in the database.
+<p>To edit a parameter in your Asset, edit the values in the right pane.
+Within an Asset, you may add Relationships or
+PropertyGroups. For each case, to add another one, use the
+corresponding pop-up menu.
+<p>To add a Parameter to or remove a Plugin, Binder, or Other
+Component, use the pop-up menu on that component. When adding
+parameters to these components, parameters are automatically named so
+that they will be added at runtime in the order in which you add them
+here, named "param-0", "param-1", etc.
+<p>When adding parameters to PropertyGroups,
+you will be asked for a parameter name. Note that the names of
+parameters of Property Groups include the type of Object used to fill
+in that value. For example, OrganizationPG has one Parameter, whose name is:<br>
+Roles (Role)<br>
+and whose value is a list, something like "TransportationProvider, StrategicTransportationProvider". This means that the slot in
+the PropertyGroup is called "Roles", and the Java Class of each object
+is "Role". In this case, there are many values, so the slot contains a
+Collection.<br>
+The "INI" equivalent lines would be something like:<br>
+<pre>[OrganizationPG]
+Roles                    Collection&lt;Role&gt;       "TransportationProvider, StrategicTransportationProvider"
+</pre><br>
+<b>Spelling errors, referring to a non-existent field
+or Property Group, or other errors will not be noticed until runtime.</b>
+<p>To remove a parameter, use the pop-up menu on that parameter. Note
+that the remaining parameters will continue to be added according to
+the numbers given in their names.
+<p>Times should be specified in a standard Java parsable format, eg:
+MM/DD/YY HH:MI AM.
+<p>Elements in a collection should be separated by a comma and a space.
+<p>Components within agents now have a <tt>Priority</tt> field.  The priority
+indicates the load priority of the component in it's container relative to
+other children components loaded at the same time at the same containment point.
+
+The default component priority is: <tt>COMPONENT</tt>
+
+</body></html>
+
+<!-- Last Modified: $Date: 2002-06-25 19:29:20 $ -->
+<!-- By $Author: bkrisler $ -->
