@@ -8,15 +8,11 @@
 <body text="#000000" bgcolor="#FFFFFF" link="#0000FF" vlink="#800080">
 
 <h2>Cougaar Society Management, Analysis, and Reporting Tool</h2>
-<br>CSMART is a loosely integrated collection of tools for running Cougaar
-societies and understanding the results. Currently, CSMART allows building
-and running two types of experiments:
-<ul>
-<li>
-experiments based on very regular societies, most suitable for scalability and other such testing, referred to as "built-in" experiments</li>
-<li>
-experiments based on more elaborate Cougaar societies in which the basic society definition is obtained from a database, referred to as "database" experiments</li>
-</ul>
+<br>CSMART is a loosely integrated collection of tools for configuratin and running Cougaar
+societies, and understanding the results. For complete details, see
+the CSMART User's Guide on the Cougaar web site (<a
+href="http://www.cougaar.org">http://www.cougaar.org</a>). CSMART is used to create a society configuration, store it in a configuration database, and then run adn control that society. For details on installing CSMART, see the User's Guide, or the included Installation guide (csmart/doc/InstallAndTest.html).<br>
+
 <h3>CSMART Tool Launcher</h3>
 The CSMART Tool Launcher is the primary interface to CSMART, and integrates
 the various CSMART tools. From this interface, users create societies,
@@ -27,18 +23,18 @@ order. The tools and their functions are:
 <ul>
 <li>
 <b>Configuration Builder: </b>Edit society or recipe properties, such as the number
-of agents, or parameters for a given Plugin. (Not used for database experiments.)</li>
+of agents, or parameters for a given Plugin.</li>
 
 <li>
 <b>Experiment Builder: </b>Put together the pieces of an Experiment, by
-adding a Society to it, and one or more Recipes (including Impacts or Metrics). This is also the tool where you assign agents to nodes, and nodes to hosts, and set run-time command line arguments for the nodes.  
+adding one or more Recipes to the basic society (including Impacts or Metrics). This is the tool where you assign agents to nodes, and nodes to hosts, and set run-time command line arguments for the nodes.  
 <br>
 For database experiments, this tool allows the user to add Recipes (Impacts and Metrics and others) to experiments, and to map agents to nodes, and nodes to hosts.  Multiple trials are not supported in database experiments. In general however, you use this tool for constructing multiple trials, varying parameters
 of your society, or to understand some behavior in more detail. To run a Society, you must include it in an Experiment. </li>
 
 <li>
 <b>Experiment Controller: </b>
-Run, stop or abort the experiment, and display output from the experiment.</li>
+Run, stop or abort the experiment, and display output from the experiment. Output from the Nodes can be filtered or searched, and CSMART can notify you of certain Strings in the output. This is often referred to as the "CSMART Console", for it is the interface for running large Cougaar societies.</li>
 
 <li>
 <b>Society Monitor: </b>Examine a running society (or saved data from a
@@ -54,13 +50,31 @@ in progress, or a completed experiment.</li>
 Be sure to separately run the Node Server on each host where you want to
 run a Node, using one of the supplied Server startup scripts.
 <br>To quit CSMART, select File->Exit from the main window, and kill each
-of the Servers.<b></b>
+of the Servers.<br><br>
+<h3>Configuring an Experiment</h3>
+Currently, CSMART allows building
+and running two types of experiments:
+<ul>
+<li>
+experiments based on more elaborate Cougaar societies in which the basic society definition is obtained from a database, referred to as "database" experiments</li>
+<li>
+experiments based on very regular societies, most suitable for scalability and other such testing, referred to as "built-in" experiments (temporarily disabled)</li>
+</ul>
 <p><b>To run an experiment from the database:</b>
 <ol>
 <li>
-Click the right mouse button on the "Default Workspace" to display a pop-up menu, or use the File menu.  Select "New Experiment -&gt; From Database" to display a list of experiments defined in the database.  Select the experiment from the database and provide a name for the experiment.</li>
-<li>Select the threads and groups for the experiment from the dialog displayed. When you exit the dialog, any modified information is written to the database.</li>
-<li>Select the Experiment Builder and assign agents to nodes and nodes to hosts.  When you exit this tool, any modified information is written to the database.</li>
+Click the right mouse button on the "Default Workspace" to display a
+pop-up menu, or use the File menu.  Select "New Experiment -&gt; From
+Database" to display a list of experiments defined in the database.
+Select the experiment from the database and provide a name for the
+experiment.</li>
+<li>Select the threads and groups for the experiment from the dialog
+displayed. You must select at least one thread (or class of supply).
+When you exit the dialog, any modified information is written to the
+database.</li>
+<li>Select the Experiment Builder and assign agents to nodes and nodes
+to hosts.  When you exit this tool, any modified information is
+written to the database.</li>
 <li>Select the Experiment Controller and select the "Run" button near the top of its window.</li>
 </ol>
 <p><b>To run a tool:</b>
@@ -83,12 +97,12 @@ Hence, multiple experiments and societies can be selected at once.
 <li>
 <b>Configuration Builder: </b>Always enabled. When the Configuration Builder
 tool is selected, a separate Configuration Builder is launched for each
-selected society or recipe. If no recipe is selected, a new recipe is created. (Not used for database experiments.)</li>
+selected society or recipe. If no recipe is selected, a new recipe is created. In some situations, the user is prompted whether they want to edit, copy, or view the recipe for which they opened the Configuration Builder. In view mode, the component is not modifiable, but the user may view the current configuration.</li>
 
 <li>
 <b>Experiment Builder: </b>Always enabled. When the Experiment Builder
 tool is selected, a separate Experiment Builder is launched for each selected
-experiment. If no experiment is selected, a new one is created.</li>
+experiment. In some situations, the user is prompted to edit, copy, or view the selected Experiment. In View mode, the experiment is not modifiable, but the user may view the current configuration.</li>
 
 <li>
 <b>Experiment Controller: </b>Activated if an experiment that contains
@@ -113,8 +127,6 @@ to create, edit, rename or delete folders, experiments, societies, and recipes. 
 automatically saved in the current working directory, under the name you
 give your workspace. To open a previously saved workspace, use the File
 menu option. You may organize items in the workspace however your prefer.
-In the future, you will be able to export and import components to facilitate
-sharing work.
 <ul>
 <li>
 <b>Select an item: </b>Point to the item and click the left mouse button.
@@ -132,8 +144,7 @@ button and drag the item to a new location.</li>
 Once you have created an initial society or experiment, use the appropriate
 tools to fine tune your component. Then run your experiment using the Experiment
 Controller.
-<h3>
-Societies</h3>
+<h3>Societies</h3>
 For CSMART purposes, a Society is a collection of Cougaar Agents, grouped
 into one or more Communities. Societies are constructed from a template,
 and then parametrized to fully specify the desired Communities, Agents,
@@ -142,13 +153,13 @@ Builder to tailor a society.  For database experiments, the society is
 specified as part of the experiment and cannot be reconfigured with
 the Configuration Builder.
 <h3>Experiments</h3>
-To run a society, it must be included in an Experiment. An Experiment is
+To run a society, it must be included in an Experiment. An Experiment is, in general, 
 made up of one or more trials. Trials are constructed by varying some parameter
 - a Plugin parameter, which Agents are run, what Recipes are included,
 the distribution of Agents to Nodes or Nodes to Hosts, etc. For each trial,
 there may be some results - statistics about the run that are collected
 by one of the specified metrics (see below).  Experiments created from
-a database already include a society.
+a database cannot vary any parameter, and thus have only one trial.
 <h3>Recipes</h3>
 A Recipe is a set of rules for modifying a society, by adding one or
 more components to the society. Recipes are meant to be used for
@@ -157,29 +168,15 @@ these and saving them, users can then retrieve recipes from the
 database for later reuse. For example, one recipe might add a certain
 plugin to every agent in the society. This Recipe could then be used
 for any society.
-<br>To create a recipe, select "New Recipe" from the "Default
+<br>To create a recipe, select "New Recipe" from the File menu or "Default
 Workspace" pop-up menu. Then select "Built In" or "From Database". You
 will get a list of the available recipes of each type. Once you have
 loaded the recipe, you may configure it by selecting "Configure" from
-the pop-up menu on the recipe. Be sure to save the recipe when done.
+the pop-up menu on the recipe or from the File menu. Be sure to save the recipe when done.
 <br>To add a recipe to an Experiment, drag it onto the "Recipes"
 folder in the Experiment Builder. Recipes can also be duplicated,
-deleted, or renamed by using the pop-up menu.
-<h3>
-Impacts</h3>
-An impact is a kind of recipe, an external effect you wish to impose on a running Cougaar
-society. For example, loading the network with background traffic, killing
-nodes, telling the system some inventory has been lost, etc. These impacts
-might be real (really loading up the network), or simulated (via a Binder
-on the MessageTransport or some other mechanism).
-<br>CSMART allows the user to specify that certain impacts should be included
-in a given experimental run. Currently, the only real impact is the ABC
-Impact. 
-<br>ABC Impacts are simulated cyber attacks on the cyber resources of the
-Cougaar society. 
-<br>For details on the ABC Impacts, see the user's guide.
-<h3>
-Metrics</h3>
+deleted, or renamed by using the pop-up menu or File menu options.
+<h4>Metrics</h4>
 A metric is a kind of recipe, a set of run-time statistics about the running society, which
 you wish to collect. CSMART allows you to add one or more to your experiment.
 Examples might include average and peak CPU utilization, total number of
@@ -188,6 +185,12 @@ tasks in the log plan, etc.
 metrics. Database societies do not, and you may add one. The frequency
 of sampling however is controlled from within the Society
 Configuration tool. See the User's guide for further details.
+<h4>Impacts</h4>
+An impact is a kind of recipe, an external effect you wish to impose on a running Cougaar
+society. For example, loading the network with background traffic, killing
+nodes, telling the system some inventory has been lost, etc. These impacts
+might be real (really loading up the network), or simulated (via a Binder
+on the MessageTransport or some other mechanism).
 <h3>
 Notes:</h3>
 
