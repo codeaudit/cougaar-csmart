@@ -186,6 +186,8 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     Vector names = new Vector();
     for (int i = 0; i < workspaceExperiments.size(); i++) 
       names.add(((Experiment)workspaceExperiments.get(i)).getExperimentName());
+    // FIXME: This allows duplicates if the experiment is both
+    // in the workspace and the DB
     names.addAll(databaseExperimentNames);
     if (names.size() == 0)
       return; // no experiments were affected
