@@ -736,6 +736,11 @@ public class ConsoleInternalFrame extends JInternalFrame {
    * by the node listener.
    */
 
+//    public void enableRestart(boolean enable) {
+//      startAction.setEnabled(enable);
+//      stopAction.setEnabled(!enable);
+//    }
+
   public void enableRestart() {
     startAction.setEnabled(true);
     stopAction.setEnabled(false);
@@ -874,7 +879,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
       if (!agentChildren[i].getType().equals(ComponentData.PLUGIN))
         continue;
       StringBuffer sb = new StringBuffer();
-      sb.append(agentChildren[i].getClass().getName());
+      sb.append(agentChildren[i].getClassName());
       if (agentChildren[i].parameterCount() != 0) {
         sb.append("(");
         Object[] params = agentChildren[i].getParameters();
