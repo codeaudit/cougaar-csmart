@@ -91,7 +91,7 @@ public abstract class RecipeBase
 
   /**
    * Called when a new property has been added to the
-   * society. 
+   * recipe. 
    *
    * @param PropertyEvent Event for the new property
    */
