@@ -793,7 +793,7 @@ public class MetricsPlugin
         
     public MessageWatcher() {
       //            me = getAgentIdentifier();
-      me = MetricsPlugin.this.getBindingSite().getAgentIdentifier();
+      me = MetricsPlugin.this.getAgentIdentifier();
     }
         
     public void messageSent(Message m) {
