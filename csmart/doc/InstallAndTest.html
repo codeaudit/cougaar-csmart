@@ -180,11 +180,7 @@ very similar for WinNT.
     "csmart/data/CMT-MySQL.ZIP" (after unzipping it).  For later reference when
     creating your "cougaar.rc", suppose the database will be on host 
     "myhost".  Be sure you have started the database, using the
-    appropriate "mysqld" executable. Note that CSMART assumes the
-    configuration database is installed in the same database instance
-    as the Cougaar military domain database. In addition, CSMART
-    assumes that the military domain database in MySQL was named
-    "cougaar", as per the default installation procedure. Here we name
+    appropriate "mysqld" executable. Here we name
     the database "mycoug":
       <pre>
         $ mysql -u root -p
@@ -201,9 +197,7 @@ very similar for WinNT.
   "myname" with password "mypass" who can only access the database
   locally (and therefore not useful for running a distributed Cougaar
   society). Note that the user must have select, insert, update, create,
-  delete, and drop priviledges on the configuration database, and must
-  also have select priviledges on selected tables from the Cougaar
-  military domain database ("cougaar.GEOLOC" in particular).
+  delete, and drop priviledges on the configuration database.
        <pre>
        $ mysql
        mysql&gt; grant all on mycoug.* to myname@"localhost" identified by 'mypass';
@@ -217,10 +211,10 @@ very similar for WinNT.
   <pre>
      mysql -u myname -p mycoug &lt; create-dummy-dual.sql
      [supply password 'mypass]
-  </pre>       
-  <li>Once you have imported the CMT MySQL datafile, be sure to follow
-  the same steps to import the Cougaar domain plugin MySQL database on
-  the same machine.<li><p>
+  </pre></li>       
+
+    <li>Once you have imported the CMT MySQL datafile, be sure to follow
+  the same steps to import the Cougaar domain plugin MySQL database.</li><p>
       
   <li>The database is now ready.  You must now create a "cougaar.rc"
     for the database users (<a href="http://www.cougaar.org">Cougaar</a>
@@ -644,11 +638,17 @@ installation using
 
     <li>Right-click, select "New Experiment", then select "From Database" to load a pre-configured experiment.</li><p>
 
-    <li>Select "SMALL 3ID WITH TRANSCOM".  A UI to select "Threads &amp; Groups" will
+    <li>Select "SMALL 3ID WITH TRANSCOM".  You may be prompted to pick a unique name for your experiment. Then a UI to select "Threads &amp; Groups" will
       popup.</li><p>
 
-    <li>Configure the "Threads &amp; Groups".  At least one Thread must be
-      selected, telling the society which military classes of supplies to process.  For this test select "class 1" (food).</li><p>
+    <li>Configure the "Threads &amp; Groups".  NOTE: Although no
+    threads appear to be selected, the experiment will do something
+    interesting. MYSQL Note: Currently, MySQL users should always
+    click 'OK' in this window, <em>without</em> changing any thread
+    selections. In this screen, you may modify the set of threads
+    (military classes of supply) which the society will process.  For
+    a simple test, either select nothing, or select "class 1"
+    (food).</li><p>
 
     <li>Select "Yes" to modify the experiment.  Give the modified
       experiment a name, such as "My Test", then click "Yes" to save
