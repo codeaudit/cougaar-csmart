@@ -204,8 +204,10 @@ public class DBUtils {
 	username = dbProps.getProperty("username");
 	password = dbProps.getProperty("password");
         if(log.isDebugEnabled()) {
-          log.debug("getConnection: DATABASE="+DATABASE+", QUERY_FILE="+ QUERY_FILE);
-          log.debug("getConnection: database="+database+", username="+ username);
+          log.debug("getConnection(): \n DATABASE=" + DATABASE + 
+                    "\n QUERY_FILE=" + QUERY_FILE + 
+                    "\n database=" + database + 
+                    "\n username=" + username);
         }
 	String dbtype = dbProps.getDBType();
 	String driverParam = "driver." + dbtype;
