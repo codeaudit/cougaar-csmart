@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.binder;
 import java.util.List;
 
 import org.cougaar.core.component.*;
+import org.cougaar.core.agent.*;
 import org.cougaar.core.society.*;
 import org.cougaar.core.mts.*;
 
@@ -48,6 +49,10 @@ public class SlowMessageTransportServiceFilter
   private double samplesPerSecond;
   private double inMessagesPerSecond;
   private double outMessagesPerSecond;
+
+  public SlowMessageTransportServiceFilter() {
+    System.out.println("\n\n SlowMT created\n\n");
+  }
 
   protected Class getBinderClass(Object child) {
     return SlowMessageTransportServiceFilterBinder.class;
@@ -90,6 +95,9 @@ public class SlowMessageTransportServiceFilter
   public SlowMessageTransportServiceProxy createSlowMessageTransportServiceProxy(
       MessageTransportService origMT,
       Object requestor) {
+
+    System.out.println("\n\nCreate slow MT for "+requestor+"\n\n");
+
     // create a new wrapped MessageTransportService
     //
     // requestor should be an Agent
@@ -124,9 +132,26 @@ public class SlowMessageTransportServiceFilter
     }
 
     protected ContainerAPI createContainerProxy() {
-      // parent's API is fine ... might replace later
-      return getContainer();
+      return new SlowMessageTransportFilteringBinderProxy();
     }
+
+    protected final AgentManagerForBinder getAgentManager() {
+      return (AgentManagerForBinder) getContainer();
+    }
+
+    protected class SlowMessageTransportFilteringBinderProxy 
+      extends ServiceFilterContainerProxy
+      implements AgentManagerForBinder, ClusterManagementServesCluster
+    {
+      public String getName() {
+        return getAgentManager().getName();
+      }
+
+      public void registerAgent(Agent agent) {
+        getAgentManager().registerAgent(agent);
+      }
+    };
+
 
     protected ServiceBroker createFilteringServiceBroker(ServiceBroker sb) {
       return new SlowMessageTransportFilteringServiceBroker(sb);
