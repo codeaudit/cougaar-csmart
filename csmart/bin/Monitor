@@ -55,9 +55,15 @@ set DEVPATH = ""
 if ($?COUGAAR_DEV_PATH) then
     set DEVPATH = "-Dorg.cougaar.class.path=${COUGAAR_DEV_PATH}"
 endif
-    
+ 
+if ($?COUGAAR3RDPARTY) then
+	set TRDPARTY = "-Dorg.cougaar.system.path=${COUGAAR3RDPARTY}
+else
+	set TRDPARTY = "-Dorg.cougaar.system.path=${COUGAAR_INSTALL_PATH}/sys"
+endif
+   
 set MYMEMORY="-Xms100m -Xmx300m"
-set MYPROPERTIES="-Dorg.cougaar.install.path=${COUGAAR_INSTALL_PATH} -Dorg.cougaar.system.path=${COUGAAR3RDPARTY} ${DEVPATH}"
+set MYPROPERTIES="-Dorg.cougaar.install.path=${COUGAAR_INSTALL_PATH} ${TRDPARTY} ${DEVPATH}"
 set MYCONFIGPATH="-Dorg.cougaar.config.path=${COUGAAR_INSTALL_PATH}/csmart/data/common/\;"
 
 set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -classpath $LIBPATHS"
