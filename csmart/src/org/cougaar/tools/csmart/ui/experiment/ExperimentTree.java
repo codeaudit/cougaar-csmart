@@ -124,6 +124,9 @@ public class ExperimentTree extends DNDTree {
         Object userObject = target.getUserObject();
         if (userObject instanceof String) {
             if (userObject.equals(SOCIETIES)) {
+		// only allow one society per experiment for now
+		if (target.getChildCount() > 0)
+		    return DnDConstants.ACTION_NONE;
                 return testFlavors(possibleFlavors, societyFlavor);
             }
             if (userObject.equals(IMPACTS)) {
