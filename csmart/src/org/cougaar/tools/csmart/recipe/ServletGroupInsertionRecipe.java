@@ -163,7 +163,8 @@ public class ServletGroupInsertionRecipe extends RecipeBase
 	  log.warn("Unable to find servlets.txt! Report bug 2000.");
 	  log.warn("config.path= " + System.getProperty("org.cougaar.config.path"));
 	  log.warn("Trying again with verbose on: ");
-	  cf.setVerbose(true);
+          // MIK: removed because the method was removed (it hasn't done anything for a long time)
+	  //cf.setVerbose(true);
 	  try {
 	    inputFile = cf.locateFile("servlets.txt");
 	  } catch(Exception e) {
