@@ -65,6 +65,7 @@ public class PopulateDb extends PDbBase {
   private String trialId;
 
   private static final String CSATYPE = "CSA";
+  private static final String RCPTYPE = "RCP";
   private static final String REAL_CMT_TYPE = "CMT";
   private static final String REAL_CSMI_TYPE = "CSMI";
   private static final String REAL_CSHNA_TYPE = "CSHNA";
@@ -116,14 +117,17 @@ public class PopulateDb extends PDbBase {
    * in which case we get the previous CMT assembly ID.
    */
   public PopulateDb(String cmtAsbID, String societyName,
-		    String assemblyId, DBConflictHandler ch)
+		    String assemblyId, DBConflictHandler ch, boolean isRecipe)
     throws SQLException, IOException
   {
     super();
     createLogger();
     if (ch == null) throw new IllegalArgumentException("null conflict handler");
     this.conflictHandler = ch;
-    this.cmtType = CSATYPE;
+    if (isRecipe)
+      this.cmtType = RCPTYPE;
+    else
+      this.cmtType = CSATYPE;
     this.exptId = null;
     this.trialId = null;
     substitutions.put(":cmt_type:", cmtType);
@@ -142,7 +146,10 @@ public class PopulateDb extends PDbBase {
       try {
 	// Save this ID someplace? The creator stuffs
 	// it in the CSA slot
-        assemblyId = createCSAAssembly(cmtAsbID, societyName);
+        if (isRecipe)
+          assemblyId = createCSAAssembly(cmtAsbID, societyName, RCPTYPE);
+        else
+          assemblyId = createCSAAssembly(cmtAsbID, societyName, CSATYPE);
       } catch( SQLException se ) {
         if(log.isErrorEnabled()) {
           log.error("createCSAAssembly error: ", se);
@@ -168,6 +175,9 @@ public class PopulateDb extends PDbBase {
     String asbmatch = DBUtils.getAssemblyMatch(tmp);
     substitutions.put(":assembly_match:", asbmatch);
   } // End of constructor for saving just a society
+
+
+
 
   /**
    * Creates a new <code>PopulateDb</code> for saving an Experiment
@@ -993,45 +1003,51 @@ public class PopulateDb extends PDbBase {
    * @param societyName a <code>String</code> name for the new society
    * @return a <code>String</code> CSA assembly ID
    */
-  public String createCSAAssembly(String cmtAsbID, String societyName) throws SQLException {
-    // whatever the current cmtAssemblyId (possibly really a CSA)
-    // create a new CSA assembly from it:
+  public String createCSAAssembly(String oldAsbID, String name, String type) 
+    throws SQLException {
+    // whatever the current oldAssemblyId (possibly really a CSA)
+    // create a new (RCP or CSA) assembly from it:
     // entry in asb_assembly and copy any oplan rows
     // and return the new ID
     // which will be 
     if (log.isDebugEnabled()) {
-      log.debug("Creating new CSA " + (cmtAsbID != null ? "based on soc: " + cmtAsbID : "from scratch") + " named " + societyName);
+      log.debug("Creating new " + type + " " + (oldAsbID != null ? "based on soc: " + oldAsbID : "from scratch") + " named " + name);
     }
-    String assemblyIdPrefix = CSATYPE + "-";
+    String assemblyIdPrefix = type + "-";
     substitutions.put(":assembly_id_pattern:", assemblyIdPrefix + "____");
-    substitutions.put(":assembly_type:", CSATYPE);
+    substitutions.put(":assembly_type:", type);
     String assemblyId = getNextId("queryMaxAssemblyId", assemblyIdPrefix);
-    csaAssemblyId = assemblyId;
+    if(type.equals(CSATYPE)) {
+      csaAssemblyId = assemblyId;
+    }
     substitutions.put(":assembly_id:", sqlQuote(assemblyId));
     executeUpdate(dbp.getQuery("insertAssemblyId", substitutions));
 
-    if (societyName == null) {
-      if (cmtAsbID != null && ! cmtAsbID.equals(""))
-	societyName = getAssemblyDesc(cmtAsbID);
-      else
-	societyName = "New Society";
+    if (name == null) {
+      if (oldAsbID != null && ! oldAsbID.equals(""))
+	name = getAssemblyDesc(oldAsbID);
+      else if (type.equals(RCPTYPE)) {
+        name = "New Recipe";
+      } else {
+	name = "New Society";
+      }
     }
 
-    substitutions.put(":soc_desc:", societyName);
+    substitutions.put(":soc_desc:", name);
 
-    if (cmtAsbID != null && ! cmtAsbID.equals("")) {
+    if (oldAsbID != null && ! oldAsbID.equals("")) {
       // Created from an old Assembly
 
       // If the name we're using is not the same as that of the old Society
       // we're OK. If it is, modify the name slightly
-      if (societyName.equals(getAssemblyDesc(cmtAsbID)))
-	substitutions.put(":soc_desc:", societyName + "-modified");
+      if (name.equals(getAssemblyDesc(oldAsbID)))
+	substitutions.put(":soc_desc:", name + "-modified");
       // Putting the old AssemblyID in the society name is a bit ugly.
       //      substitutions.put(":soc_desc:", societyName + " based on " + cmtAsbID);
 
       substitutions.put(":assembly_id:", sqlQuote(assemblyId));
       // Came from a CMT assembly. Copy the OPLAN stuff
-      copyOPLANData(cmtAsbID, assemblyId);
+      copyOPLANData(oldAsbID, assemblyId);
     }
 
     substitutions.put(":assembly_id:", sqlQuote(assemblyId));
@@ -2152,7 +2168,7 @@ public class PopulateDb extends PDbBase {
       componentWasRemoved = false;
 
       // Create a new CSA based on what was in cmtAssemblyID
-      csaAssemblyId = createCSAAssembly(cmtAssemblyId, getAssemblyDesc(cmtAssemblyId));
+      csaAssemblyId = createCSAAssembly(cmtAssemblyId, getAssemblyDesc(cmtAssemblyId), CSATYPE);
       
       // Delete any existing CSA / CMT in runtime for this experiment, completely if necc
       cleanOldRuntimeSocietyAssemblies();
@@ -2197,6 +2213,64 @@ public class PopulateDb extends PDbBase {
 
     return result;
   }
+
+  public boolean populateRCP(ComponentData data)
+    throws SQLException  {
+    // For storing the old cmtAssid if we have to change it
+    String oldid = null;
+
+    // reset the flag noticing that something was modified while saving
+    componentWasRemoved = false;
+
+    // Create a new RCP based on what was in cmtAssemblyID
+    String rcpAssemblyId = createCSAAssembly(null, "", RCPTYPE);
+    
+    // Delete any existing CSA / CMT in runtime for this experiment, completely if necc
+    //cleanOldRuntimeSocietyAssemblies();
+
+    // Must also delete any CSMI assembly that exists so far. 
+    // Although I suppose we _might_ end up using one -- if we got called here
+    // earlier due to some bug, whatever is there is suspect
+    // Only partially clean it out (not out of asb_assembly)
+    if (csmiAssemblyId != null) {
+      cleanAssembly(csmiAssemblyId, true);
+      
+    }
+
+    // FIXME: What if a recipe modified the Agents in use? Must I
+    // remove the CSHNA assembly as well?
+    
+    // Add this new assembly to the runtime assemblies for this experiment
+    substitutions.put(":assembly_type:", RCPTYPE);
+//     addAssemblyToRuntime(csaAssemblyId);
+    
+    // For purposes of populate, this is the society definition
+//     cmtAssemblyId = csaAssemblyId;
+    
+    setAssemblyMatch();
+
+    if (log.isDebugEnabled()) {
+      log.debug("populateRCP saving into " + cmtAssemblyId);
+    }
+
+    // 
+    componentArgs.clear();
+
+    //Save the full given tree into a CSA assembly, which should already
+    // exist. Someone else must put the entry for this assembly
+    // in the runtime or config time places, as necessary
+    boolean result = populate(data, 1f, rcpAssemblyId);
+
+    // Restore the original cmtAssid if necc, for use by fixAssemblies
+    if (oldid != null)
+      cmtAssemblyId = oldid;
+
+    return result;
+  }
+
+
+
+
 
   /**
    * Force save of component data as new CMT assembly in component_arg and hierachy tables.

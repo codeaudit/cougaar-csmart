@@ -56,6 +56,7 @@ import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.recipe.ComplexRecipeComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
@@ -317,6 +318,16 @@ public class PDbBase {
    **/
   private String insertLibRecipe(RecipeComponent rc,
 				 String recipeId) throws SQLException {
+
+    if (rc instanceof ComplexRecipeComponent) {
+      return insertComplexLibRecipe(rc, recipeId);
+    } else {
+      return insertSimpleLibRecipe(rc, recipeId);
+    }
+  }
+
+  private String insertSimpleLibRecipe(RecipeComponent rc, 
+                                       String recipeId) throws SQLException {
     try {
       if (recipeId != null)
 	removeLibRecipeNamed(rc.getRecipeName());
@@ -347,6 +358,53 @@ public class PDbBase {
 	substitutions.put(":arg_name:", name);
 	substitutions.put(":arg_value:", sval);
 	substitutions.put(":arg_order:", String.valueOf(order++));
+        if(log.isDebugEnabled()) {
+          log.debug("Write prop: " + name + " and val: " + sval + " to database");
+        }
+	executeUpdate(dbp.getQuery("insertLibRecipeProp", substitutions));
+      }
+      return recipeId;
+    } catch (SQLException sqle) {
+      System.out.println("Exception in insertLibRecipe: " + sqle);
+      return null;
+    }
+  }
+
+  private String insertComplexLibRecipe(RecipeComponent rc, 
+                                       String recipeId) throws SQLException {
+    try {
+      if (recipeId != null)
+	removeLibRecipeNamed(rc.getRecipeName());
+      else
+	recipeId = getNextId("queryMaxRecipeId", "RECIPE-");
+      substitutions.put(":recipe_id:", recipeId);
+      substitutions.put(":java_class:", rc.getClass().getName());
+      substitutions.put(":description:", "Complex Recipe Component");
+      executeUpdate(dbp.getQuery("insertLibRecipe", substitutions));
+      int order = 0;
+      for (Iterator j = rc.getLocalPropertyNames(); j.hasNext(); ) {
+	CompositeName pname = (CompositeName) j.next();
+	Property prop = rc.getProperty(pname);
+	if (prop == null) {
+          prop = rc.getInvisibleProperty(pname);
+          if (prop == null) {
+            if (log.isErrorEnabled()) {
+              log.error("Saving recipe " + rc.getRecipeName() + " under ID " + recipeId + " couldn't find property " + pname + ". Will continue.", new Throwable());
+            }
+            continue;
+          }
+	}
+	Object val = prop.getValue();
+	if (val == null) continue; // Don't write null values
+	String sval = val.toString();
+	if (sval.equals("")) continue; // Don't write empty values
+	String name = pname.last().toString();
+	substitutions.put(":arg_name:", name);
+	substitutions.put(":arg_value:", sval);
+	substitutions.put(":arg_order:", String.valueOf(order++));
+        if(log.isDebugEnabled()) {
+          log.debug("Write prop: " + name + " and val: " + sval + " to database");
+        }
 	executeUpdate(dbp.getQuery("insertLibRecipeProp", substitutions));
       }
       return recipeId;
