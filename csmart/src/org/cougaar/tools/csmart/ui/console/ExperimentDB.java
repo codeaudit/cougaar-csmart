@@ -163,17 +163,16 @@ public class ExperimentDB {
 
     public static void setGroupSelected(String trialId, String groupName, 
 					boolean selected) {
-	System.out.println("Group: " + groupName +
-			   " selected: " + selected);
+	call("setGroupSelected", trialId,groupName,new Boolean(selected));
     }
     
     public static int getMultiplier(String trialId, String groupName) {
-	return 1;
+	Integer i = (Integer)call("getMultiplier", trialId,groupName);
+	return i.intValue();
     }
 
-    public static void setMultiplier(String trialId, String groupName, 
-				     int value) {
-	System.out.println("Group: " + groupName + " value: " + value);
+    public static void setMultiplier(String trialId, String groupName, int value) {
+	call("setMultiplier",trialId, groupName, new Integer(value));
     }
 
     /**
@@ -213,22 +212,22 @@ public class ExperimentDB {
     public static Object load(java.io.Reader in) {
 	return Scheme.load(new InputPort(in)); }
     public static Object load(String in) {
-	System.out.println("Trying to load: "+in);
+//  	System.out.println("Trying to load: "+in);
 	return load(new java.io.StringReader(in)); }
     public static Object call(String p) {
-	//  	System.out.println("call("+p+")");
+//  	System.out.println("call("+p+")");
 	loadCMT();
 	return getGlobalProcedure(p).apply(Pair.EMPTY); }
     public static Object call(String p, Object a1) {
-	//  	System.out.println("call("+p+","+a1+")");
+//  	System.out.println("call("+p+","+a1+")");
 	loadCMT();
 	return getGlobalProcedure(p).apply(list(a1)); }
     public static Object call(String p, Object a1, Object a2) {
-	//  	System.out.println("call("+p+","+a1+","+a2+")");
+//  	System.out.println("call("+p+","+a1+","+a2+")");
 	loadCMT();
 	return getGlobalProcedure(p).apply(list(a1, a2)); }
     public static Object call(String p, Object a1, Object a2, Object a3) {
-	//  	System.out.println("call("+p+","+a1+","+a2+","+a3+")");
+//  	System.out.println("call("+p+","+a1+","+a2+","+a3+")");
 	loadCMT();
 	return getGlobalProcedure(p).apply(list(a1, a2, a3)); }
 

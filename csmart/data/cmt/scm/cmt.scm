@@ -100,7 +100,13 @@
 	 ""))))
 
 (define (query-1-int query name)
-  (query-1-result query .getInt name))
+  (let
+      ((res
+	(query-1-result query .getInt name)))
+    (if
+     (.equals "" res)
+     #null
+     res)))
 
 (define (query-1-string query name)
   (query-1-result query .getString name))
@@ -1444,6 +1450,7 @@
       (cond
        ((.next rs)
 	(.put ht (.getString rs "DESCRIPTION")(.getString rs "ORG_GROUP_ID"))
+	(do-entry rs)
 	)))
     (with-query-jdbc (string-append 
 		      "select og.ORG_GROUP_ID, og.DESCRIPTION from " 
@@ -1505,7 +1512,6 @@
        ((.next rs)
 	(set! threadSelected #t)
 	)))
-    (println (list 'isULThreadSelected trial_id thread_name thread_id threadSelected))
     (with-query-jdbc (string-append 
 		      "select THREAD_ID from " 
 		      asb-prefix "expt_trial_thread tt"
@@ -1564,20 +1570,117 @@
 ;;  }
 
 (define (isGroupSelected trial_id group_name)
-  #f
-)
+  (let*
+      ((groupSelected #f)
+       (group_id (get-group-id trial_id group_name)))
+    (define (do-entry rs)
+      (cond
+       ((.next rs)
+	(set! groupSelected #t)
+	)))
+    (with-query-jdbc (string-append 
+		      "select org_group_id from " 
+		      asb-prefix "EXPT_TRIAL_ORG_MULT om"
+		      "   where om.trial_id="(sqlQuote trial_id)
+		      "   and om.org_group_id="(sqlQuote group_id)
+		      )
+		     do-entry
+		     )
+    groupSelected
+    ))
+
+
+;;CREATE TABLE V4_EXPT_TRIAL_ORG_MULT(
+;;    EXPT_ID      VARCHAR2(50)    NOT NULL,
+;;    TRIAL_ID     VARCHAR2(50)    NOT NULL,       
+;;    CFW_ID          VARCHAR2(50)    NOT NULL,
+;;    ORG_GROUP_ID    VARCHAR2(50)    NOT NULL,
+;;    MULTIPLIER	    NUMBER,
+;;    DESCRIPTION     VARCHAR2(50),
+;;
+
+(define (get-group-id trial_id group_name)
+  (query-1-string
+   (string-append
+    "select og.ORG_GROUP_ID from"
+    "   " asb-prefix "EXPT_EXPERIMENT exp,"
+    "   " asb-prefix "EXPT_TRIAL et,"
+    "   " cfw-prefix "CFW_GROUP_MEMBER gm,"
+    "   " cfw-prefix "CFW_ORG_GROUP og"
+    "   where et.trial_id="(sqlQuote trial_id)
+    "   and exp.expt_id=et.expt_id"
+    "   and exp.cfw_group_id =gm.cfw_group_id"
+    "   and og.cfw_id=gm.cfw_id"
+    "   and og.description="(sqlQuote group_name))
+   "ORG_GROUP_ID"))  
 
 (define (setGroupSelected trial_id group_name selected)
-  ()
-)
+  (let
+      ((group_id (get-group-id trial_id group_name)))
+    (cond
+     ((isGroupSelected trial_id group_id)
+      (if (not selected)
+	  (dbu
+	   (string-append 
+	    "delete from " 
+	    asb-prefix "EXPT_TRIAL_ORG_MULT om"
+	    "   where om.trial_id="(sqlQuote trial_id)
+	    "   and om.org_group_id in"
+	    "   (select from " cfw-prefix "CFW_ORG_GROUP og,")
+	   ))))
+    (selected
+     (dbu (string-append
+	   "insert into " asb-prefix "EXPT_TRIAL_ORG_MULT"
+	   "   select distinct "
+	   "   et.expt_id,"
+	   "   et.trial_id,"
+	   "   gm.cfw_id,"
+	   "   om.org_group_id,"
+	   "   1,"
+	   "   null"
+	   "   from "
+	   asb-prefix "EXPT_EXPERIMENT exp,"
+	   asb-prefix "EXPT_TRIAL et,"
+	   cfw-prefix "CFW_GROUP_MEMBER gm,"
+	   cfw-prefix "CFW_ORG_GROUP og"
+	   "   where et.trial_id="(sqlQuote trial_id)
+	   "   and exp.expt_id=et.expt_id"
+	   "   and exp.cfw_group_id =gm.cfw_group_id"
+	   "   and og.cfw_id=gm.cfw_id"
+	   "   and og.org_group_id="(sqlQuote group_id))
+	  ))))
 
 (define (getMultiplier trial_id group_name)
-  1
-)
+  (let*
+      ((group_id (get-group-id trial_id group_name))
+       (mult
+	(query-1-int
+	 (string-append 
+	  "select om.MULTIPLIER from " 
+	  asb-prefix "EXPT_TRIAL_ORG_MULT om"
+	  "   where om.trial_id="(sqlQuote trial_id)
+	  "   and om.org_group_id="(sqlQuote group_id)
+	  )
+	 "MULTIPLIER"
+	 )))
+    (if
+     (eq? mult #null)
+     1
+     mult)))
 
 (define (setMultiplier trial_id group_name value)
-  ()
-)
+  (let
+      ((group_id (get-group-id trial_id group_name)))
+    (dbu
+     (string-append 
+      "update " asb-prefix "EXPT_TRIAL_ORG_MULT"
+      "set MULTIPLIER= " value
+      "   where om.trial_id="(sqlQuote trial_id)
+      "   and om.org_group_id="(sqlQuote group_id)
+      )
+     )
+    )
+  )
 
 (define (setSocietyTemplate experiment_id cfw_group_id)
   (cond
@@ -1798,13 +1901,3 @@
     (println (list 'create-cmt-asb assembly_description cfw_group_id threads "" clones))
     (create-cmt-asb assembly_description cfw_group_id threads "" clones)
     ))
-
-
-
-
-
-
-
-
-
-
