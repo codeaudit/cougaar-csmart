@@ -97,6 +97,12 @@ public class AgentFileComponent
 
     ComponentDescription[] desc = 
       ComponentConnector.parseFile(filename);
+    if (desc == null) {
+      if (log.isWarnEnabled()) {
+	log.warn("No data found in file " + filename);
+      }
+      return;
+    }
     for (int i=0; i < desc.length; i++) {
       String name = desc[i].getName();
       String insertionPoint = desc[i].getInsertionPoint();
@@ -129,6 +135,12 @@ public class AgentFileComponent
 
     ComponentDescription[] desc = 
       ComponentConnector.parseFile(filename);
+    if (desc == null) {
+      if (log.isWarnEnabled()) {
+	log.warn("No data found in file " + filename);
+      }
+      return;
+    }
     for (int i=0; i < desc.length; i++) {
       String name = desc[i].getName();
       String insertionPoint = desc[i].getInsertionPoint();
@@ -163,6 +175,12 @@ public class AgentFileComponent
 
     ComponentDescription[] desc = 
       ComponentConnector.parseFile(filename);
+    if (desc == null) {
+      if (log.isWarnEnabled()) {
+	log.warn("No data found in file " + filename);
+      }
+      return;
+    }
     for (int i=0; i < desc.length; i++) {
       String name = desc[i].getName();
       String insertionPoint = desc[i].getInsertionPoint();
