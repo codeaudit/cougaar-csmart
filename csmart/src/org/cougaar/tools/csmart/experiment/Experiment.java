@@ -335,6 +335,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     for (int i = 0; i < recipes.size(); i++)
       removeListeners((ModifiableConfigurableComponent)recipes.get(i));
     recipes.clear();
+    // FIXME: Remove duplicates?
     for (int i = 0; i < newRecipes.length; i++)
       installListeners((ModifiableConfigurableComponent)newRecipes[i]);
     recipes.addAll(Arrays.asList(newRecipes));
