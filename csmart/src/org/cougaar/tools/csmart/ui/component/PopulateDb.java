@@ -2,14 +2,20 @@ package org.cougaar.tools.csmart.ui.component;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Connection;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Date;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.FileWriter;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.DBConnectionPool;
@@ -42,7 +48,7 @@ public class PopulateDb {
     public static final String CLEAN_TRIAL_ASSEMBLY = "cleanTrialAssembly";
     public static final String CHECK_ALIB_COMPONENT = "checkAlibComponent";
     public static final String COPY_CMT_ASSEMBLIES = "copyCMTAssemblies";
-    public static final String CLONE_SET_ID = "1";
+    public static final String CLONE_SET_PREFIX = "";
     private Map substitutions = new HashMap() {
         public Object put(Object key, Object val) {
             if (val == null) throw new IllegalArgumentException("Null value for " + key);
@@ -62,6 +68,7 @@ public class PopulateDb {
     private Set writableComponents = new HashSet();
     private boolean writeEverything = false;
     private boolean debug = false;
+    private PrintWriter log;
 
     /**
      * Inner class to serve as the key to information about
@@ -176,6 +183,7 @@ public class PopulateDb {
         if (csmType == null) throw new IllegalArgumentException("null csmType");
         if (exptId == null) throw new IllegalArgumentException("null exptId");
         if (trialId == null) throw new IllegalArgumentException("null trialId");
+        log = new PrintWriter(new FileWriter("PopulateDbQuery.log"));
         dbp = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
         dbp.setDebug(true);
         String database = dbp.getProperty("database");
@@ -375,9 +383,16 @@ public class PopulateDb {
     private void executeUpdate(Statement stmt, String query) throws SQLException {
         if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
         try {
+            long startTime = 0;
+            if (log != null)
+                startTime = System.currentTimeMillis();
             stmt.executeUpdate(query);
+            if (log != null) {
+                long endTime = System.currentTimeMillis();
+                log.println((endTime - startTime) + " " + query);
+            }
         } catch (SQLException sqle) {
-            if (debug) sqle.printStackTrace();
+            System.err.println("SQLException query: " + query);
             throw sqle;
         }
     }
@@ -390,9 +405,17 @@ public class PopulateDb {
     private ResultSet executeQuery(Statement stmt, String query) throws SQLException {
         if (query == null) throw new IllegalArgumentException("executeQuery: null query");
         try {
-            return stmt.executeQuery(query);
+            long startTime = 0;
+            if (log != null)
+                startTime = System.currentTimeMillis();
+            ResultSet rs = stmt.executeQuery(query);
+            if (log != null) {
+                long endTime = System.currentTimeMillis();
+                log.println((endTime - startTime) + " " + query);
+            }
+            return rs;
         } catch (SQLException sqle) {
-            if (debug) sqle.printStackTrace();
+            System.err.println("SQLException query: " + query);
             throw sqle;
         }
     }
@@ -563,18 +586,30 @@ public class PopulateDb {
         RelationshipData[] relationships = assetData.getRelationshipData();
         for (int i = 0; i < relationships.length; i++) {
             RelationshipData r = relationships[i];
-            if (r.getRole().equals(RelationshipData.SUPERIOR)) {
-                substitutions.put(":role:", sqlQuote("Subordinate"));
-            } else {
-                substitutions.put(":role:", sqlQuote(r.getRole()));
-            }
+            long startTime = r.getStartTime();
+            long endTime = r.getEndTime();
+            substitutions.put(":role:", sqlQuote(r.getRole()));
             substitutions.put(":supporting:", getComponentAlibId(data));
-            substitutions.put(":supported:", getAgentAlibId(r.getCluster()));
-            substitutions.put(":start_date:", sqlQuote(r.getStartTime()));
-            substitutions.put(":end_date:", sqlQuote(r.getStopTime()));
-            ResultSet rs = executeQuery(stmt, dbp.getQuery(CHECK_RELATIONSHIP, substitutions));
-            if (!rs.next())
-                executeUpdate(stmt, dbp.getQuery(INSERT_RELATIONSHIP, substitutions));
+            substitutions.put(":supported:", getAgentAlibId(r.getSupported()));
+            substitutions.put(":start_date:", "?");
+            substitutions.put(":end_date:", "?");
+            String query = dbp.getQuery(CHECK_RELATIONSHIP, substitutions);
+            PreparedStatement pstmt = dbConnection.prepareStatement(query);
+            pstmt.setTimestamp(1, new Timestamp(r.getStartTime()));
+            ResultSet rs = pstmt.executeQuery();
+            if (!rs.next()) {
+                query = dbp.getQuery(INSERT_RELATIONSHIP, substitutions);
+                PreparedStatement pstmt2 = dbConnection.prepareStatement(query);
+                pstmt2.setTimestamp(1, new Timestamp(startTime));
+                if (endTime > 0L) {
+                    pstmt2.setTimestamp(2, new Timestamp(endTime));
+                } else {
+                    pstmt2.setNull(2, Types.TIMESTAMP);
+                }
+                pstmt2.executeUpdate();
+                pstmt2.close();
+            }
+            pstmt.close();
         }
     }
 
@@ -663,7 +698,7 @@ public class PopulateDb {
      * use a fixed CLONE_SET_ID.
      **/
     private String getAgentAlibId(String agentName) {
-        return sqlQuote(CLONE_SET_ID + "-" + agentName);
+        return sqlQuote(CLONE_SET_PREFIX + agentName);
     }
 
     private String getFullName(ComponentData data) {
