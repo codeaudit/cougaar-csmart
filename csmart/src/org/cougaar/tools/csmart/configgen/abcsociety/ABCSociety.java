@@ -66,13 +66,13 @@ public class ABCSociety
   public static final String PROP_STARTTIME = ABCAgent.PROP_STARTTIME;
   public static final String PROP_STOPTIME = ABCAgent.PROP_STOPTIME;
 
-  // Props for metrics:
-  public static final String PROP_NUMBPROVIDERS = ABCAgent.PROP_NUMBPROVIDERS;
-  public static final String PROP_SAMPLEINTERVAL = ABCAgent.PROP_SAMPLEINTERVAL;
-  public static final String PROP_STARTDELAY = ABCAgent.PROP_STARTDELAY;
-  public static final String PROP_MAXNUMBSAMPLES = ABCAgent.PROP_MAXNUMBSAMPLES;
-  public static final String PROP_INITIALIZER = ABCAgent.PROP_INITIALIZER;
-  // End of props for metrics
+//   // Props for metrics:
+//   public static final String PROP_NUMBPROVIDERS = ABCAgent.PROP_NUMBPROVIDERS;
+//   public static final String PROP_SAMPLEINTERVAL = ABCAgent.PROP_SAMPLEINTERVAL;
+//   public static final String PROP_STARTDELAY = ABCAgent.PROP_STARTDELAY;
+//   public static final String PROP_MAXNUMBSAMPLES = ABCAgent.PROP_MAXNUMBSAMPLES;
+//   public static final String PROP_INITIALIZER = ABCAgent.PROP_INITIALIZER;
+//   // End of props for metrics
 
   
   private boolean isRunning = false;
@@ -84,13 +84,13 @@ public class ABCSociety
   private Property propStopTime;
   private Property propTaskVerb;
 
-  // Props for metrics
-  private Property propInitializer;
-  private Property propSampleInterval;
-  private Property propNumbProviders;
-  private Property propStartDelay;
-  private Property propMaxSamples;
-  // End of props for metrics
+//   // Props for metrics
+//   private Property propInitializer;
+//   private Property propSampleInterval;
+//   private Property propNumbProviders;
+//   private Property propStartDelay;
+//   private Property propMaxSamples;
+//   // End of props for metrics
 
   private HashMap  commPerLevel = new HashMap(25);
 
@@ -168,50 +168,50 @@ public class ABCSociety
     });
     propStopTime.setToolTip(ABCAgent.PROP_STOPTIME_DESC);
 
-    // Stuff for metrics:
-    propInitializer = addProperty(PROP_INITIALIZER, ABCAgent.PROP_INITIALIZER_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
-    propInitializer.setToolTip(ABCAgent.PROP_INITIALIZER_DESC);
+//     // Stuff for metrics:
+//     propInitializer = addProperty(PROP_INITIALIZER, ABCAgent.PROP_INITIALIZER_DFLT,
+//                                 new ConfigurableComponentPropertyAdapter() {
+// 	public void propertyValueChanged(PropertyEvent e) {
+// 	}
+//     });
+//     propInitializer.setToolTip(ABCAgent.PROP_INITIALIZER_DESC);
 
-    propSampleInterval = addProperty(PROP_SAMPLEINTERVAL, ABCAgent.PROP_SAMPLEINTERVAL_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
-    propSampleInterval.setToolTip(ABCAgent.PROP_SAMPLEINTERVAL_DESC);
+//     propSampleInterval = addProperty(PROP_SAMPLEINTERVAL, ABCAgent.PROP_SAMPLEINTERVAL_DFLT,
+//                                 new ConfigurableComponentPropertyAdapter() {
+// 	public void propertyValueChanged(PropertyEvent e) {
+// 	}
+//     });
+//     propSampleInterval.setToolTip(ABCAgent.PROP_SAMPLEINTERVAL_DESC);
 
-    propMaxSamples = addProperty(PROP_MAXNUMBSAMPLES, ABCAgent.PROP_MAXNUMBSAMPLES_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
-    propMaxSamples.setToolTip(ABCAgent.PROP_MAXNUMBSAMPLES_DESC);
+//     propMaxSamples = addProperty(PROP_MAXNUMBSAMPLES, ABCAgent.PROP_MAXNUMBSAMPLES_DFLT,
+//                                 new ConfigurableComponentPropertyAdapter() {
+// 	public void propertyValueChanged(PropertyEvent e) {
+// 	}
+//     });
+//     propMaxSamples.setToolTip(ABCAgent.PROP_MAXNUMBSAMPLES_DESC);
 
-    propStartDelay = addProperty(PROP_STARTDELAY, ABCAgent.PROP_STARTDELAY_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
-    propStartDelay.setToolTip(ABCAgent.PROP_STARTDELAY_DESC);
+//     propStartDelay = addProperty(PROP_STARTDELAY, ABCAgent.PROP_STARTDELAY_DFLT,
+//                                 new ConfigurableComponentPropertyAdapter() {
+// 	public void propertyValueChanged(PropertyEvent e) {
+// 	}
+//     });
+//     propStartDelay.setToolTip(ABCAgent.PROP_STARTDELAY_DESC);
 
-    propNumbProviders = addProperty(PROP_NUMBPROVIDERS, ABCAgent.PROP_NUMBPROVIDERS_DFLT,
-                                new ConfigurableComponentPropertyAdapter() {
-	public void propertyValueChanged(PropertyEvent e) {
-	}
-    });
-    propNumbProviders.setToolTip(ABCAgent.PROP_NUMBPROVIDERS_DESC);
-    // End of stuff for metrics
+//     propNumbProviders = addProperty(PROP_NUMBPROVIDERS, ABCAgent.PROP_NUMBPROVIDERS_DFLT,
+//                                 new ConfigurableComponentPropertyAdapter() {
+// 	public void propertyValueChanged(PropertyEvent e) {
+// 	}
+//     });
+//     propNumbProviders.setToolTip(ABCAgent.PROP_NUMBPROVIDERS_DESC);
+//     // End of stuff for metrics
 
     propTaskVerb = addProperty(PROP_TASKVERB, PROP_TASKVERB_DFLT);
     propTaskVerb.setToolTip(ABCTask.PROP_TASKVERB_DESC);
 
     buildDefaultCommunity();
 
-    // For metrics:
-    addInitializer();
+//     // For metrics:
+//     addInitializer();
   }
   
   /**
@@ -351,12 +351,12 @@ public class ABCSociety
 	addChild(child);
 	child.addPropertiesListener(this);
 	addPropertyAlias(child, propTaskVerb, PROP_TASKVERB);
-	// Stuff for metrics:
-	addPropertyAlias(child, propSampleInterval, PROP_SAMPLEINTERVAL);
-	addPropertyAlias(child, propMaxSamples, PROP_MAXNUMBSAMPLES);
-	addPropertyAlias(child, propStartDelay, PROP_STARTDELAY);
-	addPropertyAlias(child, propNumbProviders, PROP_NUMBPROVIDERS);
-	// End of stuff for metrics
+// 	// Stuff for metrics:
+// 	addPropertyAlias(child, propSampleInterval, PROP_SAMPLEINTERVAL);
+// 	addPropertyAlias(child, propMaxSamples, PROP_MAXNUMBSAMPLES);
+// 	addPropertyAlias(child, propStartDelay, PROP_STARTDELAY);
+// 	addPropertyAlias(child, propNumbProviders, PROP_NUMBPROVIDERS);
+// 	// End of stuff for metrics
 	addPropertyAlias(child, propStartTime, PROP_STARTTIME);
 	addPropertyAlias(child, propStopTime, PROP_STOPTIME);
 
@@ -383,23 +383,23 @@ public class ABCSociety
 	  setSupplies(child, externalProviders);
 	}
 
-	// Stuff for metrics:
-	if(i == 1 && count == 0 ) {
-	  propInitializer.setValue(child.getProperty(ABCCommunity.PROP_FIRSTAGENT).getValue());
-	}
-	// Hide this value from the GUI, it should never been seen by the user.
-	setPropertyVisible(child.getProperty(ABCCommunity.PROP_FIRSTAGENT), false);
-	// End of stuff for metrics
+// 	// Stuff for metrics:
+// 	if(i == 1 && count == 0 ) {
+// 	  propInitializer.setValue(child.getProperty(ABCCommunity.PROP_FIRSTAGENT).getValue());
+// 	}
+// 	// Hide this value from the GUI, it should never been seen by the user.
+// 	setPropertyVisible(child.getProperty(ABCCommunity.PROP_FIRSTAGENT), false);
+// 	// End of stuff for metrics
 
 	count++;
 	crntCommunity++;
       }
     }
-    // These are for metrics:
-    propNumbProviders.setValue(new Long(getCommunityCount() * 4L));
-    setPropertyVisible(propInitializer, false);
-    addInitializer();
-    // end of stuff for metrics
+//     // These are for metrics:
+//     propNumbProviders.setValue(new Long(getCommunityCount() * 4L));
+//     setPropertyVisible(propInitializer, false);
+//     addInitializer();
+//     // end of stuff for metrics
 
   }
 
@@ -410,12 +410,12 @@ public class ABCSociety
    * that all other agents within the society reference
    * for metrics collection.
    */
-  private void addInitializer() {
-    for(int i=0; i < getChildCount(); i++) {
-      ABCCommunity comm = (ABCCommunity)getChild(i);
-      comm.addAliasInitializer(propInitializer);
-    }
-  }
+//   private void addInitializer() {
+//     for(int i=0; i < getChildCount(); i++) {
+//       ABCCommunity comm = (ABCCommunity)getChild(i);
+//       comm.addAliasInitializer(propInitializer);
+//     }
+//   }
 
   /**
    * Constructs a default ABC Society
@@ -434,12 +434,12 @@ public class ABCSociety
 	addChild(child);
 	child.addPropertiesListener(this);
 	addPropertyAlias(child, propTaskVerb, PROP_TASKVERB);
-	// Stuff for metrics:
-	addPropertyAlias(child, propSampleInterval, PROP_SAMPLEINTERVAL); 
-	addPropertyAlias(child, propMaxSamples, PROP_MAXNUMBSAMPLES);
-	addPropertyAlias(child, propStartDelay, PROP_STARTDELAY);
-	addPropertyAlias(child, propNumbProviders, PROP_NUMBPROVIDERS);
-	// end of stuff for metrics
+// 	// Stuff for metrics:
+// 	addPropertyAlias(child, propSampleInterval, PROP_SAMPLEINTERVAL); 
+// 	addPropertyAlias(child, propMaxSamples, PROP_MAXNUMBSAMPLES);
+// 	addPropertyAlias(child, propStartDelay, PROP_STARTDELAY);
+// 	addPropertyAlias(child, propNumbProviders, PROP_NUMBPROVIDERS);
+// 	// end of stuff for metrics
 	addPropertyAlias(child, propStartTime, PROP_STARTTIME);
 	addPropertyAlias(child, propStopTime, PROP_STOPTIME);
 
@@ -504,10 +504,10 @@ public class ABCSociety
 	  setSupplies(child, externalProviders);
 	}
 
-	// This is for metrics:
-	if(i == 1 && count == 0 ) {
-	  propInitializer.setValue(child.getProperty(ABCCommunity.PROP_FIRSTAGENT).getValue());
-	}
+// 	// This is for metrics:
+// 	if(i == 1 && count == 0 ) {
+// 	  propInitializer.setValue(child.getProperty(ABCCommunity.PROP_FIRSTAGENT).getValue());
+// 	}
 	// Hide this value from the GUI, it should never been seen by the user.
 	setPropertyVisible(child.getProperty(ABCCommunity.PROP_FIRSTAGENT), false);
 	// End of stuff for metrics
@@ -517,10 +517,10 @@ public class ABCSociety
       }
     }
     
-    // These are for metrics:
-    propNumbProviders.setValue(new Long(getCommunityCount() * 4L));
-    setPropertyVisible(propInitializer, false);
-    setPropertyVisible(propNumbProviders, false);
+//     // These are for metrics:
+//     propNumbProviders.setValue(new Long(getCommunityCount() * 4L));
+//     setPropertyVisible(propInitializer, false);
+//     setPropertyVisible(propNumbProviders, false);
   }
 
   /**
