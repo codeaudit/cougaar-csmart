@@ -21,10 +21,23 @@
 package org.cougaar.tools.csmart.util;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StreamTokenizer;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+import org.cougaar.core.agent.ClusterIdentifier;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -34,6 +47,8 @@ import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.Reflect;
+import org.cougaar.util.TimeSpan;
 import org.cougaar.util.log.Logger;
 
 
@@ -49,22 +64,14 @@ import org.cougaar.util.log.Logger;
 
 public class PrototypeParser {
 
-  private static Calendar myCalendar = Calendar.getInstance();
-
-  private static long DEFAULT_START_TIME = -1;
-  private static long DEFAULT_END_TIME = -1;
-
   private Logger log;
+  private String clusterId;
+  private DateFormat myDateFormat = DateFormat.getInstance(); 
 
-
-  static {
-    myCalendar.set(1990, 0, 1, 0, 0, 0);
-    DEFAULT_START_TIME = myCalendar.getTime().getTime();
-
-    myCalendar.set(2010, 0, 1, 0, 0, 0);
-    DEFAULT_END_TIME = myCalendar.getTime().getTime();   
-  }
-
+  private static TrivialTimeSpan ETERNITY = 
+    new TrivialTimeSpan(TimeSpan.MIN_VALUE,
+                        TimeSpan.MAX_VALUE);
+  
   public PrototypeParser (){
     log = CSMART.createLogger(this.getClass().getName());
   }
@@ -80,21 +87,31 @@ public class PrototypeParser {
     return pp.parsePrototypeFile(agentName);
   }
 
-  private AgentAssetData parsePrototypeFile(String agentName) {
-    String filename = agentName + "-prototype-ini.dat";
+  public String getFileName() {
+    return clusterId + "-prototype-ini.dat";
+  }
 
-    // Use the same domainname for all org assets now
-    String uic = "";
-    String className = "";
-    String unitName = null;
+  public long parseDate(String dateString) throws ParseException {
+    return myDateFormat.parse(dateString).getTime();
+  }
+
+  public long getDefaultStartTime() {
+    return TimeSpan.MIN_VALUE;
+  }
+
+  public long getDefaultEndTime() {
+    return TimeSpan.MAX_VALUE;
+  }
+
+  public AgentAssetData parsePrototypeFile(String cId) {
+    clusterId = cId;
     String dataItem = "";
     int newVal;
 
+    String filename = getFileName();
     BufferedReader input = null;
     Reader fileStream = null;
-
     AgentAssetData aad = new AgentAssetData(null);
-    aad.setType(AgentAssetData.ORG);
 
     try {
       fileStream = 
@@ -112,186 +129,278 @@ public class PrototypeParser {
       newVal = tokens.nextToken();
       // Parse the prototype-ini file
       while (newVal != StreamTokenizer.TT_EOF) {
-          if (tokens.ttype == StreamTokenizer.TT_WORD) {
-            dataItem = tokens.sval;
-            if (dataItem.equals("[Prototype]")) {
-              tokens.nextToken();
-              className = tokens.sval;
-              aad.setAssetClass(className);
-              if(log.isDebugEnabled()) {
-                log.debug("AgentAssetData Class: " + aad.getAssetClass());
-              }
-              newVal = tokens.nextToken();
-            } else if (dataItem.equals("[UniqueId]")) {
-              tokens.nextToken();
-              aad.setUniqueID(tokens.sval);
-              if(log.isDebugEnabled()) {
-                log.debug("AgentAssetData UniqueID: " + aad.getUniqueID());
-              }
-              newVal = tokens.nextToken();
-            } else if (dataItem.equals("[UnitName]")) {
-              // This field is optional 
-              tokens.nextToken();
-              aad.setUnitName(tokens.sval);
-              if(log.isDebugEnabled()) {
-                log.debug("AgentAssetData UnitName: " + aad.getUnitName());
-              }
-              newVal = tokens.nextToken();
-            } else if (dataItem.equals("[UIC]")) {
-              if (className != null) {
-                tokens.nextToken();
-	      	uic = tokens.sval;
-
-		// This is a silly fix to a dumb bug
-		if (!uic.startsWith("UIC/")) {
-		  uic = "UIC/" + uic;
-		}
-                aad.setUIC(uic);
-                if(log.isDebugEnabled()) {
-                  log.debug("AgentAssetData UIC: " + aad.getUIC());
-                }
-//                 aad.addPropertyGroup(setTypeIdentificationPG());
-	      	// Use unitName if it occurred, else use agentName
-                aad.addPropertyGroup(setItemIdentificationPG(uic, 
-                                                 (unitName!=null) ? unitName : agentName,
-                                                 agentName));
-
-                aad.addPropertyGroup(setClusterPG(agentName));                
-              } else {
-                if(log.isErrorEnabled()) {
-                  log.error("PrototypeParser Error: [Prototype] value is null");
-                }
-              }
-              newVal = tokens.nextToken();
-            } else if (dataItem.equals("[Relationship]")) {
-              newVal = setRelationshipData(newVal, tokens, aad);
-            } else if (dataItem.equals("[AssignmentPG]")) {
-              newVal = setAssignmentPG(newVal, tokens, aad);
-            } else if (dataItem.substring(0,1).equals("[")) {
-              // We've got a property or capability
-              newVal = setGenericPropertyPG(dataItem, newVal, tokens, aad);
-            } else {
-              // If the token you read is not one of the valid
-              // choices from above
-              if(log.isErrorEnabled()) {
-                log.error("PrototypeParser Incorrect token: " + dataItem);
-              }
-            }
-          } else {
-            throw new RuntimeException("Format error in \""+filename+"\".");
+        if (tokens.ttype != StreamTokenizer.TT_WORD)
+          formatError("ttype: " + tokens.ttype + " sval: " + tokens.sval);
+        dataItem = tokens.sval;
+        if (dataItem.equals("[Prototype]")) {
+          newVal = tokens.nextToken();
+          String assetClassName = tokens.sval;
+          aad.setAssetClass(assetClassName);
+          if(log.isDebugEnabled()) {
+            log.debug("AgentAssetData Class: " + aad.getAssetClass());
           }
+          newVal = tokens.nextToken();
+          continue;
+        }
+        if (dataItem.equals("[Relationship]")) {
+          if(log.isDebugEnabled()) {
+            log.debug("Parsing Relationship");
+          }
+          newVal = fillRelationships(newVal, tokens, aad);
+          continue;
+        }
+        if (dataItem.equals("[LocationSchedulePG]")) {
+          if(log.isDebugEnabled()) {
+            log.debug("Parsing LocationSchedulePG");
+          }
+          // parser language is currently incapable of expressing a 
+          // complex schedule, so here we hack in some minimal support.
+//           newVal = setLocationSchedulePG(dataItem, newVal, tokens);
+          continue;
+        }
+        if (dataItem.equals("[UniqueId]")) {
+          newVal = tokens.nextToken();
+          aad.setUniqueID(tokens.sval);
+          if(log.isDebugEnabled()) {
+            log.debug("Parsing UniqueId: " + aad.getUniqueID());
+          }
+          newVal = tokens.nextToken();
+          continue;
+        }
+        if (dataItem.equals("[UIC]")) {
+          newVal = tokens.nextToken();
+          aad.setUIC(tokens.sval);
+          if(log.isDebugEnabled()) {
+            log.debug("Parsing UIC: " + aad.getUIC());
+          }
+          newVal = tokens.nextToken();
+          continue;
+        }
+        if (dataItem.startsWith("[")) {
+          if(log.isDebugEnabled()) {
+            log.debug("Parsing Item [");
+          }
+          // We've got a property or capability
+           newVal = setPropertyForAsset(dataItem, newVal, tokens, aad);
+          continue;
+        }
+        // if The token you read is not one of the valid
+        // choices from above
+        formatError("Incorrect token: " + dataItem);
       }
 
-      // For each organization, the following code sets
-      // CapableRoles and Relationship slots for the
-      // AssignedPG property
-      // It adds the property to the organization and
-      // adds the organization to ccv2 collections
-//       NewAssignedPG assignedCap = (NewAssignedPG)getFactory().createPropertyGroup(AssignedPGImpl.class);
-//       Collection roles =  org.getOrganizationPG().getRoles();
-//       if (roles != null) {
-//         assignedCap.setRoles(new ArrayList(roles));
-//       }
+      // Closing BufferedReader
+      if (input != null)
+	input.close();
 
-//       org.setAssignedPG(assignedCap);
-      
-//       // set up this asset's available schedule
-//       myCalendar.set(1990, 0, 1, 0, 0, 0);
-//       Date start = myCalendar.getTime();
-//       // set the end date of the available schedule to 01/01/2010
-//       myCalendar.set(2010, 0, 1, 0, 0, 0);
-//       Date end = myCalendar.getTime();
-//       NewSchedule availsched = getFactory().newSimpleSchedule(start, end);
-//       // set the available schedule
-//       ((NewRoleSchedule)org.getRoleSchedule()).setAvailableSchedule(availsched);
-
-//       if (relationship.equals(GLMRelationship.SELF)) {
-//         Relationship selfRelationship = 
-//           getFactory().newRelationship(Constants.Role.SELF, org, org,
-//                                        ETERNITY);  
-//         org.getRelationshipSchedule().add(selfRelationship);
-//         org.setLocal(true);
-
-//         publish(org);
-//       	selfOrg = org;
-//       } 
-
-//       // Closing BufferedReader
-//       if (input != null)
-// 	input.close();
-
-//       //only generates a NoSuchMethodException for AssetSkeleton because of a coding error
-//       //if we are successul in creating it here  it then the AssetSkeletomn will end up with two copies
-//       //the add/search criteria in AssetSkeleton is for a Vecotr and does not gurantee only one instance of 
-//       //each class.  Thus the Org allocator plugin fails to recognixe the correct set of cpabilities.
+      // Only generates a NoSuchMethodException for AssetSkeleton
+      // because of a coding error. If we are successul in creating it
+      // here it then the AssetSkeleton will end up with two copies
+      // the add/search criteria in AssetSkeleton is for a Vector and
+      // does not gurantee only one instance of each class. Thus the
+      // Org allocator plugin fails to recognize the correct set of
+      // capabilities.
       
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
         log.error("Exception", e);
       }
     }
-
     return aad;
   } 
 
+  private void formatError(String msg) {
+    throw new RuntimeException("Error parsing " + getFileName() + ": "
+                               + msg);
+  }
 
-  protected int setRelationshipData(int newVal, 
-                                    StreamTokenizer tokens,
-                                    AgentAssetData aad) {
+  /**
+   * Fills in myRelationships with arrays of relationship, 
+   * clusterName and capableroles triples.
+   */
+  protected int fillRelationships(int newVal, StreamTokenizer tokens,
+                                  AgentAssetData aad) throws IOException {
 
     if(log.isDebugEnabled()) {
-      log.debug("Entering setRelationship");
+      log.debug("Entering fillRelationships");
     }
 
     RelationshipData rd = null;
 
-    int x = 0;
-    try {
-      while (newVal != StreamTokenizer.TT_EOF) {
-        rd = new RelationshipData();
-        String organization_array[] = new String[3]; // An array of relationship, clusterName and capableroles triples
-        newVal = tokens.nextToken();
-        // Parse [Relationship] part of prototype-ini file
-        if ((tokens.ttype == StreamTokenizer.TT_WORD) && 
-            !(tokens.sval.substring(0,1).equals("["))) {
-          rd.setType(tokens.sval);
+    newVal = tokens.nextToken();
+    while ((newVal != StreamTokenizer.TT_EOF) &&
+           (!tokens.sval.substring(0,1).equals("["))) {
+
+      String roleName = "";
+      String itemId = "";
+      String typeId = "";
+      String otherClusterId = "";
+      long start = getDefaultStartTime();
+      long end = getDefaultEndTime();
+          
+      for (int i = 0; i < 3; i++) {
+        if ((tokens.sval.length()) > 0  &&
+            (tokens.sval.substring(0,1).equals("["))) {
+          throw new RuntimeException("Unexpected character: " + 
+                                     tokens.sval);
+        }
+            
+        switch (i) {
+        case 0:
+          roleName = tokens.sval.trim();
           if(log.isDebugEnabled()) {
-            log.debug("Relationship Type: " + rd.getType());
+            log.debug("fillRelationships: roleName = " + roleName);
           }
-          newVal = tokens.nextToken();
-          rd.setItem(tokens.sval);
+          break;
+
+        case 1:
+          otherClusterId = tokens.sval.trim();
           if(log.isDebugEnabled()) {
-            log.debug("Relationship Item: " + rd.getItem());
+            log.debug("fillRelationships: otherClusterId = " + otherClusterId);
           }
-          newVal = tokens.nextToken();
-          rd.setRole(tokens.sval);
+          break;
+
+        case 2:
+          typeId = tokens.sval.trim();
           if(log.isDebugEnabled()) {
-            log.debug("Relationship Role: " + rd.getRole());
+            log.debug("fillRelationships: typeId = " + typeId);
           }
-        } else {
+          break;
+          
+        case 3:
+          itemId = tokens.sval.trim();
           if(log.isDebugEnabled()) {
-            log.debug("break");
+            log.debug("fillRelationships: itemId = " + itemId);
           }
-          // Reached a left bracket "[", want to exit block
+          break;
+
+        case 4:
+          if (!tokens.sval.equals("")) {
+            try {
+              start = parseDate(tokens.sval);
+            } catch (java.text.ParseException pe) {
+              if(log.isErrorEnabled()) {
+                log.error("Unable to parse: " + tokens.sval + 
+                                 ". Start time defaulting to " + 
+                                 getDefaultStartTime(), pe);
+              }
+            }
+          }
+          break;
+
+        case 5:
+          if (!tokens.sval.equals("")) {
+            try {
+              end = parseDate(tokens.sval);
+            } catch (java.text.ParseException pe) {
+              if(log.isErrorEnabled()) {
+                log.error("Unable to parse: " + tokens.sval + 
+                          ". End time defaulting to " + 
+                          getDefaultEndTime(), pe);
+                
+              }
+            }
+          }
           break;
         }
-        x++;
-        aad.addRelationship(rd);
-      } //while
-    } catch (Exception e) {
-      if(log.isErrorEnabled()) {
-        log.error("Exception", e);
+        newVal = tokens.nextToken();
       }
-    }
-
-    if(log.isDebugEnabled()) {
-      log.debug("Exiting setRelationship");
-    }
-
+      rd = new RelationshipData();
+      rd.setType(typeId);
+      rd.setItem(itemId);
+      rd.setRole(roleName);
+      rd.setSupported(otherClusterId);
+      rd.setStartTime(start);
+      rd.setEndTime(end);
+      aad.addRelationship(rd);
+    } //while
     return newVal;
   }
 
+
+  /**
+   * Creates the property, fills in the slots based on what's in the
+   * prototype-ini file and then sets it for (or adds it to) the asset
+   **/
+  protected int setPropertyForAsset(String prop, int newVal,
+                                    StreamTokenizer tokens, AgentAssetData aad)
+    throws IOException
+  {
+    String propertyName = prop.substring(1, prop.length()-1).trim();
+    if(log.isDebugEnabled()) {
+      log.debug("Creating PropGroupData: " + propertyName);
+    }
+    PropGroupData pgData = new PropGroupData(propertyName);
+    PGPropData propData = null;
+    try {
+      newVal = tokens.nextToken();
+      String member = tokens.sval;
+      // Parse through the property section of the file
+      while (newVal != StreamTokenizer.TT_EOF) {
+        if ((tokens.ttype == StreamTokenizer.TT_WORD)
+            && !(tokens.sval.substring(0,1).equals("["))) {
+          propData = new PGPropData();
+          propData.setName(member);
+          if(log.isDebugEnabled()) {
+            log.debug("Name: " + propData.getName());
+          }
+          newVal = tokens.nextToken();
+          String dataType = tokens.sval;
+          newVal = tokens.nextToken();
+          propData.setType(getType(dataType));
+          if(log.isDebugEnabled()) {
+            log.debug(propertyName + " Type: " + propData.getType());
+          }
+          String subType = getSubType(dataType);
+          if(subType != null) {
+            propData.setSubType(subType);
+            if(log.isDebugEnabled()) {
+              log.debug(propertyName + " Subtype: " + subType);
+            }
+          }
+          propData.setValue(getValue(parseArgs(dataType, tokens.sval)));
+
+          newVal = tokens.nextToken();
+          member = tokens.sval;
+          pgData.addProperty(propData);
+        } else {
+          // Reached a left bracket "[", want to exit block
+          break;
+        }
+      } //while
+
+      // Add the property to the asset
+      aad.addPropertyGroup(pgData);
+    } catch (IOException e) {
+      throw e;
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("Exception during parse", e);
+      }
+    }
+    return newVal;
+  }
+
+  private Object getValue(Object arg) {
+    if(arg instanceof Collection) {
+      if(log.isDebugEnabled()) {
+        log.debug("MultiVal");
+      }
+      Iterator iter = ((Collection)arg).iterator();
+      PGPropMultiVal multi = new PGPropMultiVal();
+      while(iter.hasNext()) {
+        multi.addValue((String)iter.next());
+      }
+      return multi;
+    } else {
+      return arg;
+    }
+  }
+
   private PropGroupData setTypeIdentificationPG() {
+    if(log.isDebugEnabled()) {
+      log.debug("Added TypeIdentification");
+    }
     PropGroupData pgData = new PropGroupData(PropGroupData.TYPE_IDENTIFICATION);
     PGPropData propData = new PGPropData();
     propData.setName("TypeIdentification");
@@ -306,6 +415,10 @@ public class PrototypeParser {
                                                 String nomenclature, 
                                                 String altid) {
 
+    if(log.isDebugEnabled()) {
+      log.debug("In setItemIdentificationPG("+id+", "+nomenclature+", "+altid+")");
+    }
+
     PropGroupData pgData = new PropGroupData(PropGroupData.ITEM_IDENTIFICATION);
     PGPropData propData = new PGPropData();
     propData.setName("ItemIdentification");
@@ -319,16 +432,21 @@ public class PrototypeParser {
     propData.setValue(nomenclature);
     pgData.addProperty(propData);
 
-    propData = new PGPropData();
-    propData.setName("AlternateItemIdentification");
-    propData.setType("String");
-    propData.setValue(altid);
-    pgData.addProperty(propData);
+    // Note: Currently the database doesn't support an AltId for Item.
+    // why is this?  
+//     propData = new PGPropData();
+//     propData.setName("AlternateItemIdentification");
+//     propData.setType("String");
+//     propData.setValue(altid);
+//     pgData.addProperty(propData);
 
     return pgData;
   }
 
   private PropGroupData setClusterPG(String name) {
+    if(log.isDebugEnabled()) {
+      log.debug("Added ClusterPG: " + name);
+    }
 
     PropGroupData pgData = new PropGroupData(PropGroupData.CLUSTER);
     PGPropData propData = new PGPropData();
@@ -341,6 +459,9 @@ public class PrototypeParser {
   }
 
   private PropGroupData setCommunityPG() {
+    if(log.isDebugEnabled()) {
+      log.debug("Added CommunityPG");
+    }
     PropGroupData pgData = new PropGroupData(PropGroupData.COMMUNITY);
     PGPropData propData = new PGPropData();
     propData.setName("TimeSpan");
@@ -405,54 +526,106 @@ public class PrototypeParser {
     return newVal;
   }
 
-  /**
-   * Creates the property, fills in the slots based on what's in the prototype-ini file
-   * and then sets it for (or adds it to) the organization
-   */
-  protected int setGenericPropertyPG(String prop, int newVal, 
-                                           StreamTokenizer tokens, AgentAssetData aad) {
+  // This needs to be modified to just return values.
+  // It should not create the types.
+  protected Object parseArgs(String type, String arg) {
+    int i;
 
-    if(log.isDebugEnabled()) {
-      log.debug("Entering setPropertyForOrganization: " + prop);
-    }
+    type = type.trim();
+    arg = arg.trim();
 
-    String propertyName = prop.substring(1, prop.length()-1);
-
-    PropGroupData pgData = new PropGroupData(propertyName);
-    
-    try {
-      newVal = tokens.nextToken();
-      String propName = "New" + propertyName;
-      // Parse through the property section of the file
-      while (newVal != StreamTokenizer.TT_EOF) {
-        PGPropData propData = new PGPropData();
-        propData.setName(tokens.sval);
-        if ((tokens.ttype == StreamTokenizer.TT_WORD) && !(tokens.sval.substring(0,1).equals("["))) {
-          newVal = tokens.nextToken();
-          propData.setType(tokens.sval);
-          newVal = tokens.nextToken();
-          propData.setValue(tokens.sval);
-          // Call appropriate setters for the slots of the property
-//           Object arg = parseExpr(dataType, tokens.sval);
-
-//           createAndCallSetter(property, propName, "set" + member, 
-//                               getType(dataType), arg);
-          newVal = tokens.nextToken();
-          pgData.addProperty(propData);
-        } else {
-          // Reached a left bracket "[", want to exit block
-          break;
-        }
-      } //while
-    } catch (Exception e) {
-      if(log.isErrorEnabled()) {
-        log.error("Exception", e);
+    if ((i = type.indexOf("<")) >= 0) {
+      int j = type.lastIndexOf(">");
+      String ctype = type.substring(0, i).trim();
+      String etype = type.substring(i + 1, j).trim();
+      Collection c = null;
+      if (ctype.equals("Collection") || ctype.equals("List")) {
+        c = new ArrayList();
+      } else {
+        throw new RuntimeException("Unparsable collection type: "+type);
       }
-    }
 
-    aad.addPropertyGroup(pgData);
-    return newVal;
+      Vector l = org.cougaar.util.StringUtility.parseCSV(arg);
+      for (Iterator it = l.iterator(); it.hasNext();) {
+        c.add((String)parseE(etype, (String)it.next()));
+      }
+      if(log.isDebugEnabled()) {
+        log.debug("Collection Size: " + c.size());
+      }
+      return c;
+    } else if ((i = type.indexOf("/")) >= 0) {
+      // Handle Measure Object Here.
+      return arg;
+    } else {
+      return arg;
+    }    
   }
 
+  private Object parseE(String type, String arg) {
+    int i;
+
+    type = type.trim();
+    arg = arg.trim();
+
+    if ((i = type.indexOf("<")) >= 0) {
+      int j = type.lastIndexOf(">");
+      String ctype = type.substring(0, i).trim();
+      String etype = type.substring(i + 1, j).trim();
+      Collection c = null;
+      if (ctype.equals("Collection") || ctype.equals("List")) {
+        c = new ArrayList();
+      } else {
+        throw new RuntimeException("Unparsable collection type: "+type);
+      }
+
+      Vector l = org.cougaar.util.StringUtility.parseCSV(arg);
+      for (Iterator it = l.iterator(); it.hasNext();) {
+        c.add((String)parseE(etype, (String)it.next()));
+      }
+      return c;
+    } else if ((i = type.indexOf("/")) >= 0) {
+      // Measure Object.  How should we handle this?
+      return arg;
+    } else {
+      return arg;
+    }    
+  }
+
+  private String getType(String type) {
+    int i;
+    if ((i = type.indexOf("<")) > -1) { // deal with collections 
+      return type.substring(0,i);
+    } else {
+      return type;
+    }
+  }
+
+  private String getSubType(String type) {
+    int i;
+    if ((i = type.indexOf("<")) > -1) { // deal with collections 
+      int j = type.lastIndexOf(">");
+      return type.substring(i+1,j);
+    } else {
+      return type;
+    }
+  }
+
+  private static class TrivialTimeSpan implements TimeSpan {
+    long myStart;
+    long myEnd;
+
+    public TrivialTimeSpan(long start, long end) {
+      myStart = start;
+      myEnd = end;
+    }
+
+    public long getStartTime() {
+      return myStart;
+    }
+
+    public long getEndTime() {
+      return myEnd;
+    }
+  }
 
 }// PrototypeParser
