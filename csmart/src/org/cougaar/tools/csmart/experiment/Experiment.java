@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.experiment;
 
 import java.io.File;
 import java.io.ObjectInputStream;
+import java.io.OutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.InetAddress;
@@ -105,6 +106,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private List configAssemblyIDs = new ArrayList();
 
   private ComponentData theWholeSoc = null;
+  private transient LeafOnlyConfigWriter configWriter = null;
 
   private transient Logger log;
 
@@ -791,20 +793,48 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @param nodes a <code>NodeComponent[]</code> list of the nodes in the run
    * @return a <code>ConfigurationWriter</code> to write out the config data
    */
-  public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes) {
-    // The given set of nodes is potentially fewer than the full set in the society
-    // Note the ugly this parameter...
+
+//   public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes) {
+//     // The given set of nodes is potentially fewer than the full set in the society
+//     // Note the ugly this parameter...
+//     if (inDatabase) {
+//       // Send a config writer that only writes LeafComponentData
+//       try {
+//         return new LeafOnlyConfigWriter(getComponents(), nodes, this);
+//       } catch (Exception e) {
+//         e.printStackTrace();
+//         return null;
+//       }
+//     } else {
+//       return new ExperimentINIWriter(getComponents(), nodes, this);
+//     }
+//   }
+
+  private void createConfigWriter() {
+    configWriter = new LeafOnlyConfigWriter(getSocietyComponentData());
+  }
+
+  public Iterator getConfigFiles(NodeComponent[] nodes) {
     if (DBUtils.dbMode) {
       // Send a config writer that only writes LeafComponentData
       try {
-        return new LeafOnlyConfigWriter(getComponents(), nodes, this);
+        //        configWriter = new LeafOnlyConfigWriter(getComponents(), nodes, this);
+        createConfigWriter();
+        return configWriter.getFileNames();
       } catch (Exception e) {
-        e.printStackTrace();
+        if(log.isErrorEnabled()) {
+          log.error("Exception, creating config writer", e);
+        }
         return null;
       }
     } else {
-      return new ExperimentINIWriter(getComponents(), nodes, this);
-    }
+      //      return new ExperimentINIWriter(getComponents(), nodes, this);
+      return null;
+    }    
+  }
+
+  public void writeContents(String filename, OutputStream out) throws Exception {
+    configWriter.writeFile(filename, out);
   }
 
   public void saveToDb(DBConflictHandler ch) {
@@ -856,7 +886,11 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       // Some components will want access to the complete set of Nodes
       // in the society, etc. To get that, they must get back to the
       // root soc object, and do a getOwner and go from there. Ugly.
-    
+
+      if(log.isDebugEnabled()) {
+        log.debug("Adding All Components");
+      }
+
       // Now ask each component in turn to add its stuff
       boolean componentWasRemoved = false;
       for (int i = 0, n = components.size(); i < n; i++) {
@@ -893,6 +927,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   // the local results directory for that trial
   public void dumpINIFiles() {
     ExperimentINIWriter cw = null;
+    theWholeSoc = null;
     if (DBUtils.dbMode) {
       if (theWholeSoc == null) {
 	// write it to the db
@@ -1363,7 +1398,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   // writers and in the saveToDb method above
   // saveToDb creates host component data; the config writers and this do not
   public ComponentData getSocietyComponentData() {
-    if (DBUtils.dbMode)
+    if (DBUtils.dbMode && theWholeSoc != null)
       return theWholeSoc;
     theWholeSoc = new GenericComponentData();
     theWholeSoc.setType(ComponentData.SOCIETY);
@@ -1432,6 +1467,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   {
     ois.defaultReadObject();
     createLogger();
+    createConfigWriter();
   }
 
 } // end of Experiment.java
