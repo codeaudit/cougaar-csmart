@@ -1,5 +1,26 @@
 CSMART Release Notes
 
+Release 10.0:
+This is a major Cougaar release.
+
+- Bugs 2071 and 2072: Avoid runtime exceptions in the Console if the
+  current trial counter somehow gets out of line. This does not
+  avoid the counter from getting off, but should avoid runtime errors
+  if this happens. 
+
+Release 9.4.1.3:
+A further patch release to support Fall 2002 efforts.
+
+- Bug 2218: Large societies, under heavy load, may "thrash" when you
+  try to stop the run by hitting "Stop" in the Console. The result is
+  a long wait time to kill the society, and many messages like:
+10:55:13,970 WARN  [CSMARTConsole] - Remote Process for NCA-NODE says it is not 
+alive. Marking it dead.
+
+  The fix is to turn down AppServer polling when the user is stopping
+  the society, and in case of certain timeout problems while killing
+  the Node, retry up to 5 times.
+
 Release 9.4.1.2:
 This patch release includes additional fixes to support the Fall 2002
 Ultra*Log integration. These include performance improvements, and
