@@ -127,6 +127,10 @@ public abstract class RecipeBase
     return data;
   }
 
+  /**
+   * Save the recipe to the database.
+   * @return boolean true if save was successful
+   */
   public boolean saveToDatabase() {
     boolean result = false;
     try {
@@ -140,6 +144,28 @@ public abstract class RecipeBase
       result = false;
     }
     return result;
+  }
+
+  /**
+   * Return true if recipe is different than in the database.
+   * @return boolean true if recipe is different than in database
+   */
+  public boolean isModified() {
+    try {
+      PDbBase pdb = new PDbBase();
+      switch (pdb.recipeExists(this)) {
+        case PDbBase.RECIPE_STATUS_EXISTS:
+          return false;
+        case PDbBase.RECIPE_STATUS_DIFFERS:
+        case PDbBase.RECIPE_STATUS_ABSENT:
+          return true;
+      }
+    } catch (Exception sqle) {
+      if(log.isErrorEnabled()) {
+        log.error("Exception", sqle);
+      }
+    }
+    return false;
   }
 
   private void readObject(ObjectInputStream ois)

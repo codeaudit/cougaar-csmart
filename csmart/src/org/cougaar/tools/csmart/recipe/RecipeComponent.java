@@ -46,7 +46,17 @@ public interface RecipeComponent extends ModifiableComponent {
    */
   AgentComponent[] getAgents();
 
+  /**
+   * Save the recipe to the database.
+   * @return boolean true if save was successful
+   */
   boolean saveToDatabase();
+
+  /**
+   * Return true if recipe is different than in the database.
+   * @return boolean true if recipe is different than in database
+   */
+  boolean isModified();
 }
 
 
