@@ -15,7 +15,7 @@ and running two types of experiments:
 <li>
 experiments based on very regular societies, most suitable for scalability and other such testing, referred to as "built-in" experiments</li>
 <li>
-experiments based on more elaborate Cougaar societies in which the basic society definition is obtained from a databse, referred to as "database" experiments</li>
+experiments based on more elaborate Cougaar societies in which the basic society definition is obtained from a database, referred to as "database" experiments</li>
 </ul>
 <h3>CSMART Tool Launcher</h3>
 The CSMART Tool Launcher is the primary interface to CSMART, and integrates
@@ -30,17 +30,11 @@ order. The tools and their functions are:
 of agents, or parameters for a given Plugin. (Not used for database experiments.)</li>
 
 <li>
-<b>Configuration Helper: </b>Ensure that a configuration is consistent.
-Not yet available. This may utilize Plugin contracts, etc to help the user
-build complete societies.</li>
-
-<li>
 <b>Experiment Builder: </b>Put together the pieces of an Experiment, by
-adding a Society to it, and one or more Recipes (including Impacts or Metrics). Use this tool for constructing multiple trials, varying parameters
-of your society, or to understand some behavior in more detail. To run a Society,
-you must include it in an Experiment. This is also the tool where you assign agents to nodes, and nodes to hosts.
+adding a Society to it, and one or more Recipes (including Impacts or Metrics). This is also the tool where you assign agents to nodes, and nodes to hosts, and set run-time command line arguments for the nodes.  
 <br>
-For database experiments, this tool allows the user to add Recipes (Impacts and Metrics and others) to experiments, and to map agents to nodes, and nodes to hosts.  Multiple trials are not supported in database experiments.</li>
+For database experiments, this tool allows the user to add Recipes (Impacts and Metrics and others) to experiments, and to map agents to nodes, and nodes to hosts.  Multiple trials are not supported in database experiments. In general however, you use this tool for constructing multiple trials, varying parameters
+of your society, or to understand some behavior in more detail. To run a Society, you must include it in an Experiment. </li>
 
 <li>
 <b>Experiment Controller: </b>
@@ -64,7 +58,7 @@ of the Servers.<b></b>
 <p><b>To run an experiment from the database:</b>
 <ol>
 <li>
-Click the right mouse button on the "Default Workspace" to display a pop-up menu.  Select "New Experiment-From Database" to display a list of experiments defined in the database.  Select the experiment from the database and provide a name for the experiment.</li>
+Click the right mouse button on the "Default Workspace" to display a pop-up menu, or use the File menu.  Select "New Experiment -&gt; From Database" to display a list of experiments defined in the database.  Select the experiment from the database and provide a name for the experiment.</li>
 <li>Select the threads and groups for the experiment from the dialog displayed. When you exit the dialog, any modified information is written to the database.</li>
 <li>Select the Experiment Builder and assign agents to nodes and nodes to hosts.  When you exit this tool, any modified information is written to the database.</li>
 <li>Select the Experiment Controller and select the "Run" button near the top of its window.</li>
@@ -72,13 +66,13 @@ Click the right mouse button on the "Default Workspace" to display a pop-up menu
 <p><b>To run a tool:</b>
 <ul>
 <li>
-Select the desired experiment or society (possibly creating a new society
+Select the desired experiment, recipe or society (possibly creating a new society
 or experiment),</li>
 
 <li>
 Select a function (edit, run) on the menu on the selected experiment or
 society in the Workspace, or</li>
-
+<li> Select the desired function from the File menu, or </li>
 <li>
 Select the appropriate toolbar button.</li>
 </ul>
@@ -89,10 +83,7 @@ Hence, multiple experiments and societies can be selected at once.
 <li>
 <b>Configuration Builder: </b>Always enabled. When the Configuration Builder
 tool is selected, a separate Configuration Builder is launched for each
-selected society. If no society is selected, a new society is created. (Not used for database experiments.)</li>
-
-<li>
-<b>Configuration Helper: </b><i>Not yet available.</i></li>
+selected society or recipe. If no recipe is selected, a new recipe is created. (Not used for database experiments.)</li>
 
 <li>
 <b>Experiment Builder: </b>Always enabled. When the Experiment Builder
@@ -111,7 +102,8 @@ this tool in its stand-alone form. See the User's Guide for details.</li>
 <li>
 <b>Performance Analyzer: </b>Activated if an experiment is selected.</li>
 </ul>
-CSMART automatically saves your workspace as you go, in the current working
+Be sure to select File -&gt; Save before exiting each tool to ensure your work is saved to the database.
+In addition, CSMART automatically saves your workspace as you go, in the current working
 directory. To retrieve previously saved work, Select File-> Open Workspace
 from the main CSMART window. Look for the file named according to your
 workspace name.<b></b>
@@ -131,7 +123,7 @@ Selecting a folder selects all the items in the folder.</li>
 <li>
 <b>Create, edit, rename, or delete: </b>Point to the item and click the
 right mouse button; select the appropriate action from the pop-up menu
-displayed. You may also rename components by clicking on the name directly.</li>
+displayed. You may access the same functions from the File menu in the Launcher window.  You may also rename components by clicking on the name directly.</li>
 
 <li>
 <b>Arrange items in workspace: </b>Point to the item, hold the left mouse
