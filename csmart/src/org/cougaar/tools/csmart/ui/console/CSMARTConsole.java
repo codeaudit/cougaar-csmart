@@ -1293,13 +1293,17 @@ public class CSMARTConsole extends JFrame {
         // if not connected to database
         // and properties.setProperty generates a null pointer exception
         // when passed a null value
-        properties.setProperty(Experiment.EXPERIMENT_ID, 
+	if (experiment.getTrialID() != null)
+	  properties.setProperty(Experiment.EXPERIMENT_ID, 
                                experiment.getTrialID());
+	else {
+	  log.error("Null trial ID for experiment!");
+	}
 
         //Don't override if it's already set
-        if (properties.getProperty("org.cougaar.core.persistence.clear") 
+        if (properties.getProperty(Experiment.PERSIST_CLEAR) 
             == null) {
-          properties.setProperty("org.cougaar.core.persistence.clear",
+          properties.setProperty(Experiment.PERSIST_CLEAR,
                                  "true");
         }
 
@@ -1547,7 +1551,7 @@ public class CSMARTConsole extends JFrame {
       }
     }
     Properties properties = getNodeMinusD(nodeComponent, hostName);
-    properties.remove("org.cougaar.core.persistence.clear");
+    properties.remove(Experiment.PERSIST_CLEAR);
     java.util.List args = getNodeArguments(nodeComponent);
     int remotePort = getAppServerPort(properties);
     try {
