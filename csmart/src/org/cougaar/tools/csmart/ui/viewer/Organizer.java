@@ -190,11 +190,11 @@ public class Organizer extends JScrollPane {
       }
   };
   private Action[] impactAction = {
-    //          new AbstractAction("Edit", new ImageIcon(getClass().getResource("SB16.gif"))) {
-    //              public void actionPerformed(ActionEvent e) {
-    //                  startBuilder(popupNode, e.getActionCommand().equals("Edit"));
-    //              }
-    //          },
+    new AbstractAction("Edit", new ImageIcon(getClass().getResource("SB16.gif"))) {
+      public void actionPerformed(ActionEvent e) {
+	startBuilder(popupNode, e.getActionCommand().equals("Edit"));
+      }
+    },
     //          new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
     //              public void actionPerformed(ActionEvent e) {
     //                  startConsole(popupNode);
@@ -432,7 +432,7 @@ public class Organizer extends JScrollPane {
   public ImpactComponent[] getSelectedImpacts() {
     return (ImpactComponent[]) getSelectedLeaves(ImpactComponent.class);
   }
-  
+    
   //public Metric[] getSelectedMetrics() {
   //  return (Metric[]) getSelectedLeaves(Metric.class);
   //}
@@ -1053,14 +1053,14 @@ public class Organizer extends JScrollPane {
       
       // Special case code for ABC Impacts:
       File xmlfile = null; // to read in
-      if (item.name.equals("ABCImpact")) {
-	// Use a fileChooser to get the name of the file
-	// if we had some other directory to start from,
-	// we could pass in that parameter
-	xmlfile = ABCImpact.getImpactFile(null, this);
-	if (xmlfile == null)
-	  return;
-      }
+//       if (item.name.equals("ABCImpact")) {
+// 	// Use a fileChooser to get the name of the file
+// 	// if we had some other directory to start from,
+// 	// we could pass in that parameter
+// 	xmlfile = ABCImpact.getImpactFile(null, this);
+// 	if (xmlfile == null)
+// 	  return;
+//       }
       while (true) {
 	name = (String) JOptionPane.showInputDialog(this, "Enter Impact Name",
 						    "Name Impact",
@@ -1083,8 +1083,8 @@ public class Organizer extends JScrollPane {
 	addImpactToWorkspace(impact, node);
       workspace.setSelection(newNode);
       // If this is an ABCImpact, set the XML File as specified above
-      if (xmlfile != null && impact instanceof ABCImpact)
-	((ABCImpact)impact).setFile(xmlfile);
+//       if (xmlfile != null && impact instanceof ABCImpact)
+// 	((ABCImpact)impact).setFile(xmlfile);
     }
   }
 
@@ -1173,6 +1173,18 @@ public class Organizer extends JScrollPane {
 					       JOptionPane.OK_CANCEL_OPTION,
 					       JOptionPane.ERROR_MESSAGE);
 	if (ok != JOptionPane.OK_OPTION) return;
+      }
+      try {
+	Constructor constructor = item.cls.getConstructor(constructorArgTypes);
+// 	Metric metric =
+// 	  (Metric) constructor.newInstance(new String[] {name});
+	MetricComponent metric =
+		  (MetricComponent) constructor.newInstance(new String[] {name});
+	DefaultMutableTreeNode newNode =
+	  addMetricToWorkspace(metric, node);
+	workspace.setSelection(newNode);
+      } catch (Exception e) {
+	e.printStackTrace();
       }
       MetricComponent mc = createMet(name, item.cls);
       if (mc == null)
@@ -1712,7 +1724,7 @@ public class Organizer extends JScrollPane {
     // FIXME!! Once ABCImpact has been made a component,
     // get rid of this special case
     if (impact instanceof ABCImpact) {
-      impactCopy = ((ABCImpact)impact).copy(this, context);
+      //impactCopy = ((ABCImpact)impact).copy(this, context);
     } else {
       impactCopy = createImp(generateImpactName(impact.getImpactName()), impact.getClass());
       impact.copy(impactCopy);
