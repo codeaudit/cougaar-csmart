@@ -58,6 +58,7 @@ public interface ComponentProperties extends Serializable {
 
   ComponentData addComponentData(ComponentData data);
   ComponentData modifyComponentData(ComponentData data);
+  ComponentData modifyComponentData(ComponentData data, PopulateDb pdb);
 
   ComponentProperties copy(ComponentProperties result);
 }

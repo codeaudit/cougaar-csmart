@@ -666,7 +666,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       // then give everyone a chance to modify what they've collectively produced
       for (int i = components.size() - 1; i >= 0; i--) {
         ComponentProperties soc = (ComponentProperties) components.get(i);
-        soc.modifyComponentData(theSoc);
+        soc.modifyComponentData(theSoc, pdb);
       }
       if (pdb.populate(theSoc, 1)) {
         setCloned(true);        // If not cloned before, we certainly are now

@@ -46,6 +46,7 @@ import org.cougaar.tools.csmart.societies.abcsociety.ABCSociety;
 import org.cougaar.tools.csmart.societies.abcsociety.BasicMetric;
 import org.cougaar.tools.csmart.societies.cmt.CMTSociety;
 import org.cougaar.tools.csmart.societies.database.DBUtils;
+import org.cougaar.tools.csmart.recipe.ComponentInsertionRecipe;
 
 /**
  * The Organizer holds all the component a user creates
@@ -86,6 +87,7 @@ public class Organizer extends JScrollPane {
   // The stand-alone recipes that can be created in CSMART
   private Object[] metComboItems = {
     new ComboItem("Basic Metric", BasicMetric.class),
+    new ComboItem("Component Insertion", ComponentInsertionRecipe.class),
     new ComboItem("Empty Metric", EmptyMetric.class),
     new ComboItem("ABCImpact", ABCImpact.class),
   };

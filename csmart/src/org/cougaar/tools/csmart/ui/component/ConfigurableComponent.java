@@ -639,6 +639,14 @@ public abstract class ConfigurableComponent
     return data;
   }
 
+  /**
+   * Default implementation of new form of modifyComponentData invokes
+   * the old form without the pdb argument
+   **/
+  public ComponentData modifyComponentData(ComponentData data, PopulateDb pdb) {
+    return modifyComponentData(data);
+  }
+
   private void setSerializableListeners(List l) {
     EventListenerList ll = getEventListenerList();
     for (Iterator i = l.iterator(); i.hasNext(); ) {

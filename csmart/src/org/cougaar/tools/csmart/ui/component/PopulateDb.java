@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.io.IOException;
@@ -374,16 +375,10 @@ public class PopulateDb extends PDbBase {
         boolean isAdded = isAdded(data);
         substitutions.put(":assembly_id:", sqlQuote(isAdded ? csmiAssemblyId : hnaAssemblyId));
         if (!isSociety) {
-            substitutions.put(":component_name:", sqlQuote(data.getName()));
-            substitutions.put(":component_lib_id:", getComponentLibId(data));
-            substitutions.put(":component_alib_id:", getComponentAlibId(data));
-            substitutions.put(":component_category:", getComponentCategory(data));
+            addComponentDataSubstitutions(data);
             ResultSet rs = executeQuery(stmt, dbp.getQuery("checkLibComponent", substitutions));
             if (rs.next()) {    // Already exists
             } else {            // Need to add it
-                substitutions.put(":component_class:", sqlQuote(data.getClassName()));
-                substitutions.put(":insertion_point:", getComponentInsertionPoint(data));
-                substitutions.put(":description:", sqlQuote("Added " + data.getType()));
                 executeUpdate(dbp.getQuery("insertLibComponent", substitutions));
             }
             rs.close();
@@ -417,8 +412,8 @@ public class PopulateDb extends PDbBase {
         if (parent != null) {
             String parentType = parent.getType();
             if (!parentType.equals(ComponentData.SOCIETY)) {
-                substitutions.put(":parent_component_alib_id:", getComponentAlibId(parent));
-                substitutions.put(":component_alib_id:", getComponentAlibId(data));
+                substitutions.put(":parent_component_alib_id:", sqlQuote(getComponentAlibId(parent)));
+                substitutions.put(":component_alib_id:", sqlQuote(getComponentAlibId(data)));
                 substitutions.put(":insertion_order:", String.valueOf(insertionOrder));
                 ResultSet rs =
                     executeQuery(stmt, dbp.getQuery("checkComponentHierarchy", substitutions));
@@ -441,6 +436,16 @@ public class PopulateDb extends PDbBase {
         return result;
     }
 
+    private void addComponentDataSubstitutions(ComponentData data) {
+        substitutions.put(":component_name:", sqlQuote(data.getName()));
+        substitutions.put(":component_lib_id:", getComponentLibId(data));
+        substitutions.put(":component_alib_id:", sqlQuote(getComponentAlibId(data)));
+        substitutions.put(":component_category:", getComponentCategory(data));
+        substitutions.put(":component_class:", sqlQuote(data.getClassName()));
+        substitutions.put(":insertion_point:", getComponentInsertionPoint(data));
+        substitutions.put(":description:", sqlQuote("Added " + data.getType()));
+    }
+
     /**
      * Special processing for an agent component because agents
      * represent organizations have relationships and property groups.
@@ -461,7 +466,7 @@ public class PopulateDb extends PDbBase {
                 for (int j = 0; j < props.length; j++) {
                     PGPropData prop = props[i];
                     PropertyInfo propInfo = getPropertyInfo(pgName, prop.getName());
-                    substitutions.put(":component_alib_id:", getComponentAlibId(data));
+                    substitutions.put(":component_alib_id:", sqlQuote(getComponentAlibId(data)));
                     substitutions.put(":pg_attribute_lib_id:", propInfo.getAttributeLibId());
                     substitutions.put(":start_date:", sqlQuote("2000-01-01 00:00:00"));
                     substitutions.put(":end_date:", sqlQuote(null));
@@ -493,7 +498,7 @@ public class PopulateDb extends PDbBase {
             long startTime = r.getStartTime();
             long endTime = r.getEndTime();
             substitutions.put(":role:", sqlQuote(r.getRole()));
-            substitutions.put(":supporting:", getComponentAlibId(data));
+            substitutions.put(":supporting:", sqlQuote(getComponentAlibId(data)));
             substitutions.put(":supported:", getAgentAlibId(r.getSupported()));
             substitutions.put(":start_date:", "?");
             substitutions.put(":end_date:", "?");
@@ -515,6 +520,36 @@ public class PopulateDb extends PDbBase {
             }
             pstmt.close();
         }
+    }
+
+    public Set executeQuery(String queryName) throws SQLException {
+        Statement stmt = dbConnection.createStatement();
+        ResultSet rs = executeQuery(stmt, dbp.getQuery(queryName, substitutions));
+        Set results = new HashSet();
+        while (rs.next()) {
+            results.add(rs.getString(1));
+        }
+        rs.close();
+        stmt.close();
+        return results;
+    }
+
+    public String[][] executeQueryForComponent(String queryName, ComponentData cd) throws SQLException {
+        addComponentDataSubstitutions(cd);
+        Statement stmt = dbConnection.createStatement();
+        ResultSet rs = executeQuery(stmt, dbp.getQuery(queryName, substitutions));
+        List rows = new ArrayList();
+        int ncols = rs.getMetaData().getColumnCount();
+        while (rs.next()) {
+            String[] row = new String[ncols];
+            for (int i = 0; i < ncols; i++) {
+                row[i] = rs.getString(i + 1);
+            }
+            rows.add(row);
+        }
+        rs.close();
+        stmt.close();
+        return (String[][]) rows.toArray(new String[rows.size()][]);
     }
 
     private boolean isAdded(ComponentData data) {
@@ -614,20 +649,23 @@ public class PopulateDb extends PDbBase {
      * of component has a different convention for constructing its
      * alib id.
      **/
-    private String getComponentAlibId(ComponentData data) {
-        if (data == null) return sqlQuote(null);
+    public String getComponentAlibId(ComponentData data) {
+        if (data == null) return null;
         String result = data.getAlibID();
-        if (result != null) return sqlQuote(result);
-        String componentType = data.getType();
-        if (componentType.equals(ComponentData.PLUGIN)) {
-            String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
-            return sqlQuote(agentName + "|" + data.getClassName());
+        if (result == null) {
+            String componentType = data.getType();
+            if (componentType.equals(ComponentData.PLUGIN)) {
+                String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
+                result = agentName + "|" + data.getClassName();
+            } else if (componentType.equals(ComponentData.BINDER)) {
+                String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
+                result = agentName + "|" + data.getClassName();
+            } else {
+                result = data.getName();
+            }
+            data.setAlibID(result);
         }
-        if (componentType.equals(ComponentData.BINDER)) {
-            String agentName = findAncestorOfType(data, ComponentData.AGENT).getName();
-            return sqlQuote(agentName + "|" + data.getClassName());
-        }
-        return sqlQuote(data.getName());
+        return result;
     }
 
     /**
