@@ -190,6 +190,39 @@ public final class SocietyFinder {
 
 
   /**
+   * Locate an actual file in the config path. This will skip over
+   * elements of org.cougaar.config.path that are not file: urls.
+   **/
+  public File locateFile(String aFilename) {
+    if (aFilename == null)
+      return null;
+    File result = new File(aFilename);
+    if (result.exists())
+      return result;
+    for (int i = 0 ; i < configPath.size() ; i++) {
+      URL url = (URL) configPath.get(i);
+      if (url.getProtocol().equals("file")) {
+        try {
+          URL fileURL = new URL(url, aFilename);
+          result = new File(fileURL.getFile());
+          //if (verbose) { System.err.print("Looking for "+result+": "); }
+          if (result.exists()) {
+            //if (verbose) { System.err.println("Found it. File " + aFilename + 
+            //                   " is " + fileURL); }
+            return result;
+          } else {
+            //if (verbose) { System.err.println(); }
+          }
+        }
+        catch (MalformedURLException mue) {
+          continue;
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
    * Opens an InputStream to access the named file. The file is sought
    * in all the places specified in configPath.
    * @throws IOException if the resource cannot be found.
