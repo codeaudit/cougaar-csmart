@@ -81,7 +81,7 @@ public class ConfigurableComponentPropertyTest extends TestCase {
 
   public void testValueSet() {
     ccp.setValue(new Integer(34));
-    assert("Test isValueSet()", ccp.isValueSet());
+    assertTrue("Test isValueSet()", ccp.isValueSet());
   }
 
   public static Test suite() {
