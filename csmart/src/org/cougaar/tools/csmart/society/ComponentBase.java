@@ -110,7 +110,19 @@ public class ComponentBase
     // add self to data
     ComponentData self = new GenericComponentData();
 
-    self.setType(getComponentType());
+    // If the user specified the long version of common insertion points,
+    // translate to the short version for consistency
+    if (getComponentType().equalsIgnoreCase("Node.AgentManager.Binder")) {
+      self.setType(ComponentData.NODEBINDER);
+    } else if (getComponentType().equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Binder")) {
+      self.setType(ComponentData.AGENTBINDER);
+    } else if (getComponentType().equalsIgnoreCase("Node.AgentManager.Agent.PluginManager.Plugin")) {
+      self.setType(ComponentData.PLUGIN);
+    } else if (getComponentType().equalsIgnoreCase("Node.AgentManager.Agent")) {
+      self.setType(ComponentData.AGENT);
+    } else {
+      self.setType(getComponentType());
+    }
 
     self.setOwner(this);
     self.setParent(data);
