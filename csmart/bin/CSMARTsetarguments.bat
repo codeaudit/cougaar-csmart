@@ -21,16 +21,15 @@ REM "</copyright>"
 
 
 REM CSMART version of COUGAAR_INSTALL_PATH/bin/setarguments.bat
+REM Use this _only_ if running ABC Nodes stand-alone.
+
 REM Rename this as CIP/bin/setarguments.bat, or merge the differences
 REM from here into your existing script.
 REM Differences are:
-REM 2) Be sure to search csmart/data/common in looking for config
-REM   files, first! This ensures that the CSMART default.psps.xml is
-REM   used, to load the CSMART PSPs, and that the CSMART
+REM Be sure to search csmart/data/common in looking for config
+REM   files, first! This ensures that the CSMART
 REM   LDMDomains.ini is used, to load both the csmart and glm domains.
 REM   This is included to also load CSMART UI properties.
-
-REM Users may want to customize the MYLOG level set below
 
 REM Domains are now usually defined by the config file LDMDomains.ini
 REM But you may still use properties if you wish.
@@ -54,6 +53,6 @@ SET MYPROPERTIES=%MYPROPERTIES% -Dorg.cougaar.config.path=%MYCONFIG% -Dorg.couga
 
 REM To collect statistics on Message Transport, the following is required
 REM This may only work with RMI Transport
-SET MYPROPERTIES=%MYPROPERTIES% -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
+SET MYPROPERTIES=-server -Xbootclasspath/p:%COUGAAR_INSTALL_PATH%\lib\javaiopatch.jar %MYPROPERTIES% -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
 
 SET MYMEMORY=-Xms100m -Xmx300m
