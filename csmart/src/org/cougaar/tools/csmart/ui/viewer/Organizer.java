@@ -2163,8 +2163,11 @@ public class Organizer extends JScrollPane {
 
   ModificationListener myModificationListener = new ModificationListener() {
       public void modified(ModificationEvent event) {
+        DefaultMutableTreeNode changedNode = findNode(event.getSource());
+        if (changedNode != null)
+          model.nodeChanged(changedNode);
         if (event.getSource() instanceof Experiment) {
-          model.nodeChanged(findNode(event.getSource()));
+          //          model.nodeChanged(findNode(event.getSource()));
           try {
             Class[] noTypes = new Class[0];
             experimentNames.clear();

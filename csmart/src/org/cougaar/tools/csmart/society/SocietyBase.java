@@ -43,6 +43,7 @@ import org.cougaar.tools.csmart.core.property.ModificationListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.PropertyListener;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.society.cdata.SocietyCDataComponent;
@@ -138,14 +139,6 @@ public abstract class SocietyBase
   }
 
   /**
-   * Set the assembly id for this Society.
-   * @param assemblyId the assembly id for this Society
-   */
-  //  public void setAssemblyId(String assemblyId) {
-//    this.assemblyId = assemblyId;
-  //  }
-
-  /**
    * Get the assembly id for this Society.
    * @return a <code>String</code> which is the assembly id for this Society
    */
@@ -237,29 +230,6 @@ public abstract class SocietyBase
   public ComponentData modifyComponentData(ComponentData data) {
     return data;
   }
-
-  /**
-   * Called when a new property has been added to the
-   * society. 
-   *
-   * @param PropertyEvent Event for the new property
-   */
-//    public void propertyAdded(PropertyEvent e) {
-//      Property addedProperty = e.getProperty();
-//      Property myProperty = getProperty(addedProperty.getName().last().toString());
-//      if (myProperty != null) {
-//        setPropertyVisible(addedProperty, true);
-//      }
-//      fireModification();
-//    }
-
-  /**
-   * Called when a property has been removed from the society
-   * @param e The <code>PropertyEvent</code> describing the removed property.
-   */
-//    public void propertyRemoved(PropertyEvent e) {
-//      fireModification();
-//    }
 
   /**
    * Adds any relevent <code>ComponentData</code> for this component.
@@ -426,41 +396,29 @@ public abstract class SocietyBase
     super.fireModification();
   }
 
-  // Add my own properties listener?
-  // Add my own modification listener & a separate type for
-  // society_saved?
-
   private void installListeners() {
-    //    addModificationListener(myModificationListener);
-    //    addPropertiesListener(myPropertiesListener);
     addPropertiesListener(this);
+    for (Iterator i = getPropertyNames(); i.hasNext(); ) {
+      Property p = getProperty((CompositeName)i.next());
+      p.addPropertyListener(myPropertyListener);
+    }
   }
 
-  ModificationListener myModificationListener = 
-    new ModificationListener() {
-        public void modified(ModificationEvent e) {
-          fireModification(); // tell my listeners that I was modified
-        }
-      };
+  public void propertyAdded(PropertyEvent e) {
+    Property addedProperty = e.getProperty();
+    Property myProperty = 
+      getProperty(addedProperty.getName().last().toString());
+    if (myProperty != null) {
+      setPropertyVisible(addedProperty, true);
+    }
+    addedProperty.addPropertyListener(myPropertyListener);
+    fireModification();
+  }
 
-  //  PropertiesListener myPropertiesListener =
-  //    new PropertiesListener() {
-        public void propertyAdded(PropertyEvent e) {
-          Property addedProperty = e.getProperty();
-          Property myProperty = 
-            getProperty(addedProperty.getName().last().toString());
-          if (myProperty != null) {
-            setPropertyVisible(addedProperty, true);
-          }
-          addedProperty.addPropertyListener(myPropertyListener);
-          fireModification();
-        }
-
-        public void propertyRemoved(PropertyEvent e) {
-          e.getProperty().removePropertyListener(myPropertyListener);
-          fireModification();
-        }
-  //      };
+  public void propertyRemoved(PropertyEvent e) {
+    e.getProperty().removePropertyListener(myPropertyListener);
+    fireModification();
+  }
 
   PropertyListener myPropertyListener =
     new PropertyListener() {
@@ -472,18 +430,5 @@ public abstract class SocietyBase
           fireModification();
         }
       };
-
-  /**
-   * Indicate that the society is up-to-date with respect to the database.
-   * Use with caution!  The only reason to reset this flag 
-   * is that when an society is created from the database, its components
-   * are built-up from the database information, and thus the society
-   * appears to be modified.
-   */
-//    public void resetModified() {
-//      modified = false;
-//      // tell listeners society is now saved
-//      fireModification(new ModificationEvent(this, SOCIETY_SAVED));
-//    }
 
 }// SocietyBase

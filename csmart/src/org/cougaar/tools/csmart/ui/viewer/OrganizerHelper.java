@@ -43,6 +43,7 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.experiment.HostComponent;
 import org.cougaar.tools.csmart.experiment.NodeComponent;
+import org.cougaar.tools.csmart.recipe.RecipeBase;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
@@ -619,6 +620,8 @@ public class OrganizerHelper {
             dbRecipe.name = recipeName;
             RecipeComponent rc = createRecipe(dbRecipe.name, dbRecipe.cls);
             setRecipeComponentProperties(dbRecipe, rc);
+            ((RecipeBase)rc).resetModified();
+            ((RecipeBase)rc).installListeners();
             return rc;
           } catch (ClassNotFoundException cnfe) {
             if(log.isErrorEnabled()) {

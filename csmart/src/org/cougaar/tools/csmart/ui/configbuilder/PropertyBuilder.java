@@ -116,24 +116,30 @@ public class PropertyBuilder extends JFrame implements ActionListener {
     setVisible(true);
   }
 
+  // if we modified a component in an experiment, 
+  // update the experiment and update the workspace view
+  // and save the component in the database
+  // if we modified a component not in the database,
+  // save the component
   private void exit() {
     propertyEditor.stopEditing(); // accept any edit in progress
     propertyEditor.exit();
-    // if we modified a component in an experiment, 
-    // update the experiment and update the workspace view
-    // and save the component in the database
-    if (isModified() && experiment != null) {
-      if (configComponent instanceof SocietyComponent) {
-        SocietyComponent society = (SocietyComponent)configComponent;
-        experiment.removeSocietyComponent();
-        experiment.addSocietyComponent(society);
-        CSMART.getOrganizer().replaceComponent(experiment, originalComponent, society);
-      } else if (configComponent instanceof RecipeComponent) {
-        RecipeComponent recipe = (RecipeComponent)configComponent;
-        experiment.removeRecipeComponent((RecipeComponent)originalComponent);
-        experiment.addRecipeComponent(recipe);
-        CSMART.getOrganizer().replaceComponent(experiment, originalComponent, recipe);
+    if (isModified()) {
+      if (experiment != null) {
+        if (configComponent instanceof SocietyComponent) {
+          SocietyComponent society = (SocietyComponent)configComponent;
+          experiment.removeSocietyComponent();
+          experiment.addSocietyComponent(society);
+          CSMART.getOrganizer().replaceComponent(experiment, originalComponent, society);
+        } else if (configComponent instanceof RecipeComponent) {
+          RecipeComponent recipe = (RecipeComponent)configComponent;
+          experiment.removeRecipeComponent((RecipeComponent)originalComponent);
+          experiment.addRecipeComponent(recipe);
+          CSMART.getOrganizer().replaceComponent(experiment, originalComponent, recipe);
+        }
       }
+      System.out.println("Saving component to database: " + configComponent.getShortName());
+      // TODO: need to mark all experiments that contain this society as needing saving
       saveToDatabase();
     }
   }

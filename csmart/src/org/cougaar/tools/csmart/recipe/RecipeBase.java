@@ -31,13 +31,16 @@ import org.cougaar.util.log.Logger;
 
 import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.ModificationListener;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.PropertyListener;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.range.BooleanRange;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 
@@ -56,6 +59,11 @@ public abstract class RecipeBase
   implements RecipeComponent, PropertiesListener  {
 
   protected transient Logger log;
+
+  public boolean modified = true;
+
+  // modification event
+  public static final int RECIPE_SAVED = 3;
 
   public RecipeBase (String name){
     super(name);
@@ -101,11 +109,17 @@ public abstract class RecipeBase
     if (myProperty != null) {
       setPropertyVisible(addedProperty, true);
     }
+    addedProperty.addPropertyListener(myPropertyListener);
+    fireModification();
   }
+
   /**
-   * Called when a property has been removed from the society
+   * Called when a property has been removed from the recipe.
    */
-  public void propertyRemoved(PropertyEvent e) {}
+  public void propertyRemoved(PropertyEvent e) {
+    e.getProperty().removePropertyListener(myPropertyListener);
+    fireModification();
+  }
 
   /**
    * Most recipes do not contain agents.
@@ -133,8 +147,9 @@ public abstract class RecipeBase
    */
   public boolean saveToDatabase() {
     boolean result = false;
+    PDbBase pdb = null;
     try {
-      PDbBase pdb = new PDbBase();
+      pdb = new PDbBase();
       pdb.insureLibRecipe(this);
       result = true;
     } catch (Exception sqle) {
@@ -142,6 +157,18 @@ public abstract class RecipeBase
         log.error("Exception", sqle);
       }
       result = false;
+    }
+    try {
+      if (pdb != null)
+        pdb.close();
+    } catch (Exception sqle) {
+      if(log.isErrorEnabled()) {
+        log.error("Exception", sqle);
+      }
+    }
+    if (result) {
+      modified = false;
+      fireModification(new ModificationEvent(this, RECIPE_SAVED));
     }
     return result;
   }
@@ -151,21 +178,50 @@ public abstract class RecipeBase
    * @return boolean true if recipe is different than in database
    */
   public boolean isModified() {
-    try {
-      PDbBase pdb = new PDbBase();
-      switch (pdb.recipeExists(this)) {
-        case PDbBase.RECIPE_STATUS_EXISTS:
-          return false;
-        case PDbBase.RECIPE_STATUS_DIFFERS:
-        case PDbBase.RECIPE_STATUS_ABSENT:
-          return true;
-      }
-    } catch (Exception sqle) {
-      if(log.isErrorEnabled()) {
-        log.error("Exception", sqle);
-      }
+    return modified;
+  }
+
+  public void fireModification() {
+    modified = true;
+    super.fireModification();
+  }
+
+  public void installListeners() {
+    addPropertiesListener(this);
+    for (Iterator i = getPropertyNames(); i.hasNext(); ) {
+      Property p = getProperty((CompositeName)i.next());
+      p.addPropertyListener(myPropertyListener);
     }
-    return false;
+  }
+
+  PropertyListener myPropertyListener =
+    new PropertyListener() {
+        public void propertyValueChanged(PropertyEvent e) {
+          fireModification();
+        }
+
+        public void propertyOtherChanged(PropertyEvent e) {
+          fireModification();
+        }
+      };
+
+  public ModifiableComponent copy(String name) {
+    ModifiableComponent copiedComponent = super.copy(name);
+    if (copiedComponent != null)
+      ((RecipeBase)copiedComponent).modified = this.modified;
+    return copiedComponent;
+  }
+
+  /**
+   * Indicate that the recipe is up-to-date with respect to the database.
+   * Use with caution!  The only reason to reset this flag 
+   * is that when a recipe is created from the database, 
+   * it appears to be modified.
+   */
+  public void resetModified() {
+    modified = false;
+    // tell listeners recipe is now saved
+    fireModification(new ModificationEvent(this, RECIPE_SAVED));
   }
 
   private void readObject(ObjectInputStream ois)
@@ -173,6 +229,8 @@ public abstract class RecipeBase
   {
     ois.defaultReadObject();
     createLogger();
+    modified = false;
+    installListeners();
   }
 
 }// RecipeBase

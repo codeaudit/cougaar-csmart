@@ -1452,10 +1452,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     dialog.setVisible(true);
     if (dialog.getValue() != JOptionPane.OK_OPTION)
       return; // user cancelled
-    // tell experiment listeners that experiment has been modified
-    // TODO: experiment must register itself as a listener on its properties
     dialog.updateProperties();
-    //    experiment.fireModification();
   }
 
   /**
