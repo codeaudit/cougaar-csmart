@@ -183,7 +183,7 @@ REPLACE INTO tempcopy.v4_asb_agent_relation
       AND EA.ASSEMBLY_ID = AA.ASSEMBLY_ID
       AND E.NAME = ':oldExpt';
 
-RE{LACE INTO v4_asb_agent_relation 
+REPLACE INTO v4_asb_agent_relation 
     (ASSEMBLY_ID, ROLE, SUPPORTING_COMPONENT_ALIB_ID, SUPPORTED_COMPONENT_ALIB_ID, START_DATE, END_DATE) 
   SELECT DISTINCT * FROM tempcopy.v4_asb_agent_relation;
 
