@@ -112,7 +112,6 @@ public class ExperimentTree extends DNDTree {
             DataFlavor flavor = possibleFlavors[i];
             if (flavor instanceof CSMARTDataFlavor) {
                 CSMARTDataFlavor cflavor = (CSMARTDataFlavor) flavor;
-                System.out.println(cflavor.getSourceClassName());
                 if (cflavor.equals(testFlavor)) {
                     if (getClass().getName()
                         .equals(cflavor.getSourceClassName())) {
@@ -184,9 +183,10 @@ public class ExperimentTree extends DNDTree {
                     }
                 }
                 Object userData = t.getTransferData(flavor);
-                if ((userData instanceof ModifiableConfigurableComponent) &&
-                    !((ModifiableConfigurableComponent)userData).isEditable())
-                  return DnDConstants.ACTION_NONE;
+//                 if ((userData instanceof ModifiableConfigurableComponent) &&
+//                     !((ModifiableC1onfigurableComponent)userData).isEditable()) {
+//                   return DnDConstants.ACTION_NONE;
+//                 }
                 DefaultMutableTreeNode node =
                     new DefaultMutableTreeNode(userData, false);
                 int ix = target.getChildCount();
