@@ -91,7 +91,7 @@ public abstract class ConfigurableComponent
     }
 
     public void propertyRemoved(PropertyEvent e) {
-      if (isPropertyVisible(e.getProperty())) {
+      if (e.getProperty().isVisible()) {
         firePropertyRemoved(e);
       }
     }
@@ -716,7 +716,7 @@ public abstract class ConfigurableComponent
    */
   public void removeProperty(Property prop) {
     boolean wasVisible = isPropertyVisible(prop);
-    if (!wasVisible) return; // if it's not visible, then it's not my property
+    if (!wasVisible) return; // if it's not visible, then it's not my property 
     Object oldValue = getMyProperties().remove(prop.getName());
     if (oldValue == null) { // was someone else's property, ignore
       if (log.isErrorEnabled())
