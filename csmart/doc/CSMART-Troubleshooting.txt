@@ -47,8 +47,14 @@ include Metrics
 found, then make sure that your org.cougaar.config.path as specified
 in your AppServer properties file ends with an (escaped) semi-colon,
 to ensure that the current directory is on the search path.
-- If you see an error about the Mylib library when running SingleCluster, this
-indicates that the metrics Plugins could not find the named library,
+- If you see an error about the Mylib library when running
+SingleCluster or running a society with the BasicMetric included, an
+error something like:
+
+CpuClock exception: java.lang.UnsatisfiedLinkError: no mylib in
+  java.library.path
+
+this indicates that the metrics Plugins could not find the named library,
 available in scalability/bin. If on a Windows or Linux i386 machine, be sure
 this libary is in a directory on your path. Otherwise, you may safely
 ignore this error.
