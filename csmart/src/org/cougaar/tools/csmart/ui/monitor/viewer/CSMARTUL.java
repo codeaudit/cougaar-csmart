@@ -140,14 +140,46 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
    * Create and display user interface.
    */
 
-  public CSMARTUL(CSMART csmart) {
-    this.csmart = csmart;
+  private void refreshAgents() {
     if (csmart != null) {
+      if (experiment == csmart.getRunningExperiment()) {
+	// have the experiment already.
+	// could things have changed though?
+	return;
+      }
+      if (listener != null && experiment != null)
+	experiment.removeExperimentListener(listener);
+      // If you dont clear these out, then monitoring
+      // two experiments from the same CSMART run
+      // means the second run cant view the society
+      if (agentURL != null) {
+	agentURL = null; // agent to contact initially
+	CSMARTAgentMap agentMap = null;
+	communityToAgents = null;
+	agentToCommunity = null;
+	agentToURL = null;
+      }
       experiment = csmart.getRunningExperiment();
       setHostToMonitor(experiment);
-      listener = new MyExperimentListener(this);
+      if (listener == null)
+	listener = new MyExperimentListener(this);
       experiment.addExperimentListener(listener);
+      return;
     }
+    // Otherwise, were running monitor standalone.
+    // We still need to be able to refresh things, if there is
+    // a new society running. How? FIXME!!
+  }
+  
+  public CSMARTUL(CSMART csmart) {
+    this.csmart = csmart;
+    refreshAgents();
+//      if (csmart != null) {
+//        experiment = csmart.getRunningExperiment();
+//        setHostToMonitor(experiment);
+//        listener = new MyExperimentListener(this);
+//        experiment.addExperimentListener(listener);
+//      }
 
     // create one version of properties for all objects
     // and set them in CSMARTGraph because it can't address CSMARTUL
@@ -243,7 +275,6 @@ public class CSMARTUL extends JFrame implements ActionListener, Observer {
   /**
    * Sets monitor host to first host in running experiment.
    */
-
   private void setHostToMonitor(Experiment experiment) {
     HostComponent[] hosts = experiment.getHosts();
     agentHost = hosts[0].getShortName();
