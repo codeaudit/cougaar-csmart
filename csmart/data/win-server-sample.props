@@ -5,11 +5,9 @@
 #Property files should usually end with a ".props" extension.  The
 #syntax is trivial and is defined by the JDK Properties.load() method.
 
-# when true, the server will report on various activities
-org.cougaar.tools.server.verbose=false
-
 # some standard memory settings
-org.cougaar.tools.server.vm.memory=-Xms100m -Xmx300m
+java.Xms100m 
+java.Xmx300m
 
 # The classpath to use to run nodes - defaults to the classpath of the 
 # server environment. Note that only core.jar needs to be in here.
@@ -23,7 +21,10 @@ org.cougaar.install.path=D\:\\CSMART\\Cougaar
 
 # may specify additional -D arguments
 # Note that the Statistics arg is for RMI message transport statistics
-org.cougaar.vm.arguments=-Duser.timezone=GMT -Dcsmart.log.severity=PROBLEM -Dorg.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0 -Dorg.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
+user.timezone=GMT 
+csmart.log.severity=PROBLEM 
+org.cougaar.domain.planning.ldm.lps.ComplainingLP.level=0 
+org.cougaar.message.transport.aspects=org.cougaar.core.mts.StatisticsAspect
 
 #In addition, the console will send the following properties to the
 #server in order to start the Node 
@@ -33,10 +34,6 @@ org.cougaar.vm.arguments=-Duser.timezone=GMT -Dcsmart.log.severity=PROBLEM -Dorg
 # Note that backslashes, colons, and semi-colons must all be backslash-escaped
 #org.cougaar.config=
 org.cougaar.config.path=D\:\\CSMART\\Cougaar\\csmart\\data\\common\;
-
-# additional arguments to Node
-# no default, optional
-org.cougaar.node.arguments= -c
 
 # Communications server and ports.
 # Defines where the nameserver will run and which port the
