@@ -66,7 +66,10 @@ public class PopulateDb extends PDbBase {
   private String hnaType;
   private String csmiType;
   private String hnaAssemblyId;
+  private String cmtAssemblyId;
   private String csmiAssemblyId;
+  private static String csaType = "CSA";
+  private String csaAssemblyId;
 
   private Map propertyInfos = new HashMap();
   private Set alibComponents = new HashSet();
@@ -234,6 +237,60 @@ public class PopulateDb extends PDbBase {
   }
 
   /**
+   * Construct a PDB for saving just a non-CMT society. 
+   * However, the society may have come froma CMT society,
+   * in which case we get the previous CMT assembly ID.
+   */
+  public PopulateDb(String cmtAsbID, String societyName,
+		    String assemblyId, DBConflictHandler ch)
+    throws SQLException, IOException
+  {
+    super();
+    createLogger();
+    if (ch == null) throw new IllegalArgumentException("null conflict handler");
+    this.conflictHandler = ch;
+    this.cmtType = csaType;
+    substitutions.put(":cmt_type:", cmtType);
+    if (assemblyId != null) {
+      // Society already in DB.
+      // check by looking it up?
+
+      // Treat this assemblyId as a CSA? As a CMT?
+      // If its a CMT could the other be a CMT?
+      // Would the other every be filled in? Only if the new
+      // was a CSA and the other indicated the config time CMT
+      // assembly this comes from.
+      // FIXME!!
+
+      // Remove the previous definition of that assembly
+      // in preparation for saving this definition?
+      // Or will the over-write work OK?
+      substitutions.put(":assembly_id:", sqlQuote(assemblyId));
+      //      executeUpdate(dbp.getQuery("deleteAssembly"), substitutions);
+      //      executeUpdate(dbp.getQuery("cleanASBAssembly", substitutions));
+      // must set :assemblies_to_clean:
+      //substitutions.put(":assemblies_to_clean:", "('" + assemblyId + "')");
+      //      executeUpdate(dbp.getQuery("cleanASBComponentArg", substitutions));
+      //executeUpdate(dbp.getQuery("cleanASBComponentHierarchy", substitutions));
+      // What about clearing out the asb_agent tables?
+    } else {
+      // Create new CSA assembly to hold the data, copying OPLAN info if any
+      // Also set the csaAssemblyId and cmtAssemblyId parameters
+      try {
+        assemblyId = createCSAAssembly(cmtAsbID, societyName);
+      } catch( SQLException se ) {
+        if(log.isErrorEnabled()) {
+          log.error("createCSAAssembly error: ", se);
+        }
+      } 
+    }
+
+    // OK, at this point we're ready to save out the society: asb_component_arg,
+    // asb_component_hierarchy, and the asb_agent tables
+
+  }
+
+  /**
    * Construct a PopulateDb where there is no CMT assembly
    * @param hnaType the hna assembly type
    * @param csmiType the csmi assembly type
@@ -341,6 +398,14 @@ public class PopulateDb extends PDbBase {
     return csmiAssemblyId;
   }
 
+  public String getCSAAssemblyId() {
+    return csaAssemblyId;
+  }
+
+  public String getCMTAssemblyId() {
+    return cmtAssemblyId;
+  }
+
   // Create a new experiment, trial where the trial has all the CMT threads 
   // and assemblies that the old one did. The only thing not copied is the recipes.
   private void cloneTrial(String oldTrialId, String experimentName, String description)
@@ -373,36 +438,115 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":cmt_type:", cmtType);
     substitutions.put(":hna_type:", hnaType);
     substitutions.put(":csmi_type:", csmiType);
+
+    //FIXME: Must not delete CSA assembly if same assembly listed
+    // in config-time table. Maybe do this by saying the cmtType is CSA?
     // Get all non-cmtType assemblies in runtime table
     // Should it also look in config table?
+
+    // check that each Assembly it finds is not
+    // referenced by another experiment. If it is, then we only delete from 
+    // trial_assembly and trial_config_assembly
     ResultSet rs =
       executeQuery(stmt, dbp.getQuery("queryAssembliesToClean", substitutions));
     if (rs.next()) {
       boolean first = true;
       StringBuffer assembliesToDelete = new StringBuffer();
       assembliesToDelete.append("(");
+      StringBuffer assembliesToReallyDelete = new StringBuffer();
+      assembliesToReallyDelete.append("(");
+      boolean rfirst = true;
+      String asb = null;
       do {
 	if (first) {
 	  first = false;
 	} else {
 	  assembliesToDelete.append(", ");
 	}
-	assembliesToDelete.append(sqlQuote(rs.getString(1)));
+	asb = rs.getString(1);
+	// if asb not used
+	if (! isAssemblyUsed(asb)) {
+	  if (log.isDebugEnabled()) {
+	    log.debug("assembly " + asb + " not used, except in trial " + trialId + " which we are deleting");
+	  }
+	  if (rfirst) {
+	    rfirst = false;
+	  } else {
+	    assembliesToReallyDelete.append(", ");
+	  }
+	  assembliesToReallyDelete.append(sqlQuote(asb));
+	}
+	assembliesToDelete.append(sqlQuote(asb));
       } while (rs.next());
       assembliesToDelete.append(")");
+      assembliesToReallyDelete.append(")");
       substitutions.put(":assemblies_to_clean:", assembliesToDelete.toString());
+      if (log.isDebugEnabled()) {
+	log.debug("Assemblies to delete from trial " + trialId + ": " + assembliesToDelete);
+      }
       // This deletes the references in the runtime table
-      // Must delete from config table too?
       executeUpdate(dbp.getQuery("cleanTrialAssembly", substitutions));
-      executeUpdate(dbp.getQuery("cleanASBAssembly", substitutions));
-      executeUpdate(dbp.getQuery("cleanASBComponentArg", substitutions));
-      executeUpdate(dbp.getQuery("cleanASBComponentHierarchy", substitutions));
+      // Add delete from config table. I expect this to do nothing,
+      // but it doesnt hurt
+      executeUpdate(dbp.getQuery("cleanTrialConfigAssembly", substitutions));
+
+      // now really delete those that are unused.
+      // where if this is true there were none
+      if (! rfirst) {
+	substitutions.put(":assemblies_to_clean:", assembliesToReallyDelete.toString());
+	cleanAssemblies();
+      }
     }
     rs.close();
     if(log.isDebugEnabled()) {
       log.debug("Substitutions: " + substitutions);
     }
     executeUpdate(dbp.getQuery("cleanTrialRecipe", substitutions));
+  }
+
+  private void removeConfigAssembly(String assembly_id) throws SQLException {
+    if (assembly_id == null || assembly_id.equals(""))
+      return;
+    substitutions.put(":assemblies_to_clean:", sqlQuote("(" + assembly_id + ")"));
+    executeUpdate(dbp.getQuery("cleanTrialConfigAssembly", substitutions));
+  }
+
+  private void removeRuntimeAssembly(String assembly_id) throws SQLException {
+    if (assembly_id == null || assembly_id.equals(""))
+      return;
+    substitutions.put(":assemblies_to_clean:", sqlQuote("(" + assembly_id + ")"));
+    executeUpdate(dbp.getQuery("cleanTrialAssembly", substitutions));
+  }
+
+  // Delete complete definition of a single assembly
+  // This assembly must not be referenced by any trial,
+  // but nothing checks this
+  private void cleanAssembly(String assembly_id) throws SQLException {
+    if (assembly_id == null || assembly_id.equals(""))
+      return;
+    substitutions.put(":assemblies_to_clean:", sqlQuote("(" + assembly_id + ")"));
+    cleanAssemblies();
+  }
+
+  // Delete complete definition of the assemblies listed
+  // in the assemblies_to_clean substitution
+  // These assemblies should not be used by any trial,
+  // but nothing checks this
+  private void cleanAssemblies() throws SQLException {
+    if (log.isDebugEnabled()) {
+      log.debug("Deleting assemblies using substitutions: " + substitutions);
+    }
+    
+    executeUpdate(dbp.getQuery("cleanASBAssembly", substitutions));
+    executeUpdate(dbp.getQuery("cleanASBComponentArg", substitutions));
+    executeUpdate(dbp.getQuery("cleanASBComponentHierarchy", substitutions));
+    
+    // Add in asb_agent and asb_oplan tables
+    executeUpdate(dbp.getQuery("cleanASBAgent", substitutions));
+    executeUpdate(dbp.getQuery("cleanASBAgentPGAttr", substitutions));
+    executeUpdate(dbp.getQuery("cleanASBAgentRel", substitutions));
+    executeUpdate(dbp.getQuery("cleanASBOplan", substitutions));
+    executeUpdate(dbp.getQuery("cleanASBOplanAAttr", substitutions));
   }
 
   // Deals solely with expt_experiment table
@@ -452,6 +596,40 @@ public class PopulateDb extends PDbBase {
     return trialId;
   }
 
+  /**
+   * Create a new CSA assembly ID, copying the OPLAN info
+   * for the given base assembly if any.
+   *
+   * @param cmtAsbID a <code>String</code> base society assembly which this will be copied from, possibly null
+   * @param societyName a <code>String</code> name for the new society
+   * @return a <code>String</code> CSA assembly ID
+   */
+  public String createCSAAssembly(String cmtAsbID, String societyName) throws SQLException {
+    // whatever the current cmtAssemblyId (possibly really a CSA)
+    // create a new CSA assembly from it:
+    // entry in asb_assembly and copy any oplan rows
+    // and return the new ID
+    // which will be 
+    String assemblyIdPrefix = csaType + "-";
+    substitutions.put(":assembly_id_pattern:", assemblyIdPrefix + "____");
+    substitutions.put(":assembly_type:", csaType);
+    String assemblyId = getNextId("queryMaxAssemblyId", assemblyIdPrefix);
+    csaAssemblyId = assemblyId;
+    substitutions.put(":assembly_id:", assemblyId);
+    executeUpdate(dbp.getQuery("insertAssemblyId", substitutions));
+    if (cmtAsbID == null || cmtAsbID.equals("")) {
+      substitutions.put(":soc_desc:", csaType + " Assembly defining society " + societyName);
+    } else {
+      cmtAssemblyId = cmtAsbID;
+      substitutions.put(":soc_desc:", csaType + " Assembly defining society " + societyName + " based on assembly " + cmtAsbID);
+      // Came from a CMT assembly. Copy the OPLAN stuff
+      copyOPLANData(cmtAsbID, assemblyId);
+    }
+    executeUpdate(dbp.getQuery("updateAssemblyDesc", substitutions));
+
+    return assemblyId;
+  }
+
   // Add a new assembly of the given type to the current trial's
   // RUNTIME assemblies, returning the new ID
   private String addAssembly(String idType)
@@ -467,6 +645,34 @@ public class PopulateDb extends PDbBase {
     executeUpdate(dbp.getQuery("insertAssemblyId", substitutions));
     executeUpdate(dbp.getQuery("insertTrialAssembly", substitutions));
     return assemblyId;
+  }
+
+  private void addAssemblyToConfig(String assembly_id) throws SQLException {
+    substitutions.put(":assembly_id:", sqlQuote(assembly_id));
+    substitutions.put(":trial_id:", trialId);
+    executeUpdate(dbp.getQuery("insertTrialConfigAssembly", substitutions));
+  }    
+
+  /**
+   * See if the given Assembly is referenced by _any_ Trial.
+   *
+   * @param assembly_id a <code>String</code> assembly to check
+   * @return a <code>boolean</code>, true if used
+   * @exception SQLException if an error occurs
+   */
+  public boolean isAssemblyUsed(String assembly_id) throws SQLException {
+    // See if anyone uses this assembly ID anywhere
+    substitutions.put(":assembly_id:", sqlQuote(assembly_id));
+    substitutions.put(":trial_id:", trialId);
+    ResultSet rs = executeQuery(stmt, dbp.getQuery("checkUsedAssembly",
+					     substitutions));
+    // If not
+    if (!rs.next()) { 
+      rs.close();
+      return false;
+    }
+    rs.close();
+    return true;
   }
 
   // Copy assemblies of type cmtType in RUNTIME expt_trial_assembly from old ID to new
@@ -496,6 +702,231 @@ public class PopulateDb extends PDbBase {
       String queryName = queries.nextToken();
       executeUpdate(dbp.getQuery(queryName, substitutions));
     }
+  }
+
+  /**
+   * Copy all OPLAN entries for the given old Assembly into the given new one.
+   * No check is made first to see if there are any such rows.
+   *
+   * @param oldAssemblyID a <code>String</code> assembly with OPLAN data to copy from
+   * @param newAssemblyID a <code>String</code> new assembly to copy OPLAN data to
+   * @exception SQLException if an error occurs
+   */
+  public void copyOPLANData(String oldAssemblyID, String newAssemblyID) 
+    throws SQLException
+  {
+    substitutions.put(":old_assembly_id:", oldAssemblyID);
+    substitutions.put(":new_assembly_id:", newAssemblyID);
+    String qs = dbp.getQuery("copyOPLANQueryNames", substitutions);
+    StringTokenizer queries = new StringTokenizer(qs);
+    while (queries.hasMoreTokens()) {
+      String queryName = queries.nextToken();
+      executeUpdate(dbp.getQuery(queryName, substitutions));
+    }
+  }
+
+  /**
+   * Ensure the experiment's assemblies are recorded appropriately. 
+   * Called after saving an experiment. 
+   * This will: <ul>
+   * <li>Ensure have only the new HNA assembly, both runtime and config</li>
+   * <li>Ensure have a society assembly (CMT or CSA)</li>
+   * <li>Ensure runtime has a complete definition, possibly
+   * including a CSMI assembly</li>
+   * </ul><br>
+   *
+   * @return a <code>boolean</code> false on error
+   * @exception SQLException if an error occurs
+   */
+  public boolean fixAssemblies() throws SQLException {
+    // return false on error
+    // 1: delete any HNA assembly referenced in config (if not referenced elsewhere)
+    // --- find any HNA in config
+    // Use queryConfigTrialAssemblies and loop through? (returns assembly_ids
+    // and just uses the trial_id)
+    ResultSet rs = executeQuery(stmt, dbp.getQuery("queryConfigTrialAssemblies", substitutions));
+    String assid;
+    
+    boolean configHasNewHNA = false;
+    boolean configShouldHaveCMT = false;
+    // Should we have a CMT?
+    // Answer: yes if cmtAssemblyId is not null?
+    // I should probably know before my loop through what I should have:
+    // In general however, cmtAssemblyId might really have a CSA assembly
+    // so be careful.
+    
+    while (rs.next()) {
+      assid = rs.getString(1);
+      if (assid.startsWith(hnaType)) {
+	// This is an HNA assembly ID
+	if (! assid.equals(hnaAssemblyId)) {
+	  // And not the current one
+	  // So remove it for this Trial and potentially all
+	  removeConfigAssembly(assid);
+	  if (! isAssemblyUsed(assid))
+	    cleanAssembly(assid);
+	} else {
+	  // This is the new HNA assembly somehow already there
+	  configHasNewHNA = true;
+	}
+      } else {
+	// This should be a CMT or CSA assembly, and only one.
+	if (assid.startsWith(cmtType)) {
+	  if (! assid.equals(cmtAssemblyId)) {
+	    // an old CMT assembly still listed somehow. Delete it!
+	    removeConfigAssembly(assid);
+	    
+	    // Completely, if necessary
+	    if (! isAssemblyUsed(assid))
+	      cleanAssembly(assid);	    
+	  } else {
+	    // This is the current CMT in the config area. Good.
+	    // But should it be a CSA instead? If so, probably an error, right?
+	    // Also, do we have a CSA in here already? If so, an error.
+	  }
+	} else if (assid.startsWith(csaType)) {
+	  if (! assid.equals(csaAssemblyId)) {
+	    // and old CSA assembly still listed somehow. Delete it!
+	    removeConfigAssembly(assid);
+
+	    // Completely, if necessary
+	    if (! isAssemblyUsed(assid))
+	      cleanAssembly(assid);	    
+	  } else {
+	    // This is the current CSA in the config area.
+	    // This is only good if there's no CMT.
+	    // Is there?
+	    // If so, error
+	  }
+	} else {
+	  // What kind of assembly is this. Delete it!
+	    removeConfigAssembly(assid);
+
+	  // Completely, if necessary
+	  if (! isAssemblyUsed(assid))
+	    cleanAssembly(assid);	    
+	}
+      }
+    }
+    rs.close();
+    
+    // 2: copy into config-time ref to runtime HNA if not already there
+    if (! configHasNewHNA)
+      addAssemblyToConfig(hnaAssemblyId);
+    
+    // 3: Ensure config-time has a CMT _or_ CSA
+    // use queryConfigTrialAssemblies -- see above
+    // and cmtType and csaType
+    // if has both => error
+    //--- do what? Delete the CSA, assuming it was erroneously written
+    // there when should have only been in runtime?
+    // Maybe check that there are at least some recipes first?
+    // Or assume that this is an experiment originally created
+    // from a CMT society, and the CSA is correct?
+
+    // if has none then no society. This is OK, but then it should
+    // not have  CMT, CSA, or CSMI in runtim
+
+    // if no CMT
+    // and no CSA
+    // Then ensure no CSMI in runtime. nor CMT or CSA
+
+    // 4: Ensure run-time has a CMT _or_ CSA (only CSA if CSA in config_time)
+    // use queryTrialAssemblies
+    // and cmtType and csaType
+    rs = executeQuery(stmt, dbp.getQuery("queryConfigTrialAssemblies", substitutions));
+    assid = null;
+    while (rs.next()) {
+      assid = rs.getString(1);
+      if (assid.startsWith(hnaType)) {
+	// This is an HNA assembly ID
+	if (! assid.equals(hnaAssemblyId)) {
+	  // And not the current one
+	  // So remove it for this Trial and potentially all
+	  removeRuntimeAssembly(assid);
+
+	  if (! isAssemblyUsed(assid))
+	    cleanAssembly(assid);
+
+	  // But more importantly, this is really an error!
+	} else {
+	  // This is the new HNA assembly already there, as expected
+	}
+      } else {
+	// This should be a CMT or CSA assembly
+	if (assid.startsWith(cmtType)) {
+	  if (! assid.equals(cmtAssemblyId)) {
+	    // an old CMT assembly still listed somehow. Delete it!
+	    removeRuntimeAssembly(assid);
+
+	    // Completely, if necessary
+	    if (! isAssemblyUsed(assid))
+	      cleanAssembly(assid);	    
+	  } else {
+	    // This is the current CMT in the runtime area. Fine, 
+	    // but there better not be a CSA in runtime
+	    // or a CSA in config,
+	    // and better be same CMT in config
+	    // Otherwise, an error
+	  }
+	} else if (assid.startsWith(csaType)) {
+	  if (! assid.equals(csaAssemblyId)) {
+	    // an old CSA assembly still listed somehow Or perhaps
+	    // it is allowed for societies configured from CSA?
+
+	    // If it is wrong, remove it.
+	    removeRuntimeAssembly(assid);
+
+	    // Completely, if necessary
+	    if (! isAssemblyUsed(assid))
+	      cleanAssembly(assid);	    
+	  } else {
+	    // This is the current CSA in the runtime area.
+	    // This is only good if there's no CMT also in runtime
+	    // and either same CSA in config time or no CSMI here
+	    // otherwise, error
+	  }
+	} else if (assid.startsWith(csmiType)) {
+	  if (! assid.equals(csmiAssemblyId)) {
+	    // not an expected CSMI. delete it
+	    removeRuntimeAssembly(assid);
+
+	    // Completely, if necessary
+	    if (! isAssemblyUsed(assid))
+	      cleanAssembly(assid);	    
+	  } else {
+	    // Got our CSMI. Make sure have either CMT or CSA as well, and if CSA,
+	    // it is also in config time
+	  }
+	} else {
+	  // What kind of assembly is this. Delete it!
+	  removeRuntimeAssembly(assid);
+
+	  // Completely, if necessary
+	  if (! isAssemblyUsed(assid))
+	    cleanAssembly(assid);	    
+	}
+      }
+    }
+    rs.close();
+
+    // Should have neither if config-time had neither
+    // if config had and runtime does not: this will not
+    // be runnable. It at least should not have a CSMI either. But
+    // really it makes no sense.
+    // if config did not and runtime does not, that is OK (should
+    // not have a CSMI either)
+    // if config had CMT and runtime has CMT, it had better be the _same_.
+    // if it is not same, then ERROR
+    // if config had CMT and runtme has CSA, that is OK.
+    // if config has CSA and runtime has CMT - ERROR
+    // if runtime has _both_ => ERROR. If config has same CMT then likely
+    // could remove the CMT ref in runtime, but don't know for sure
+
+    // 5: Ensure run-time only has a CSMI if run-time has a CMT or run-time
+    // has same CSA as in config-time
+    // 6: Ensure config-time has no CSMI
+    return true;
   }
 
   /**
@@ -530,6 +961,7 @@ public class PopulateDb extends PDbBase {
     executeUpdate(dbp.getQuery("insertTrialRecipe", substitutions));
   }
 
+
   /**
    * Populate the HNA assembly for a particular item. Children are
    * populated recursively. Agent components get additional
@@ -556,6 +988,16 @@ public class PopulateDb extends PDbBase {
     return populate(data, 1f, csmiAssemblyId);
   }
 
+  public boolean populateCSA(ComponentData data)
+    throws SQLException
+  {
+    //Save the full given tree into a CSA assembly, which should already
+    // exist. Someone else must put the entry for this assembly
+    // in the runtime or config time places, as necessary
+    return populate(data, 1f, csaAssemblyId);
+    // or should that be cmtAssemblyId);
+  }
+
   /**
    * Force save of component data as new CMT assembly in component_arg and hierachy tables.
    * Does not effect OPLAN, PGs, relationships, etc. 
@@ -566,9 +1008,13 @@ public class PopulateDb extends PDbBase {
   public boolean repopulateCMT(ComponentData data)
     throws SQLException
   {
-    // I don't think this is every used.
+    // I don't think this is ever used.
     // Also, I wonder if it would work: Will the CMT ID match to line
     // up with the OPLAN, etc stuff? 
+
+    // FIXME: Careful! If this is applied with a real CMT assembly,
+    // the newly written version of cleanTrial will delete stuff from the 
+    // OPLAN tables, which can't be restored!!!
 
     // Force the CMT assembly to be removed
     cleanTrial("", "", "", trialId);
@@ -604,9 +1050,7 @@ public class PopulateDb extends PDbBase {
 	oldArgs.add(new Argument(rs.getString(1), rs.getFloat(2)));
       }
       rs.close();
-      // if populating a HNA assembly, then skip this step
-      if ((parent != null) && !assemblyId.equals(hnaAssemblyId)) {
-        //      if (parent != null) {
+      if (parent != null) {
 	// Is given component in runtime hierarchy?
 	rs = executeQuery(stmt, dbp.getQuery("checkComponentHierarchy",
 					     substitutions));
@@ -629,6 +1073,10 @@ public class PopulateDb extends PDbBase {
     }
 
     // FIXME: THIS MUST BE CHANGED SOMEHOW!!!!
+    // If I sense a removal / modification, set some 
+    // flag and abort probably...
+
+
     // The new args must only contain additions. There must be no
     // deletions or alterations of the old args nor is it allowed
     // to change the relative order of the existing arguments. If
@@ -692,10 +1140,40 @@ public class PopulateDb extends PDbBase {
       result = true;
     }
 
+    // FIXME:::
+    // Save in the CSHNA only the fact that an agent is within a Node
+    // if I can, Probably I have to save its args as well - which 
+    // is just the name, no biggy.
+    // But I don't want to save the Agent definition there.
+    // Also, the insureAlibId call above creates the component_alib_id
+    // which I suppose is OK.
+
+    // So far so good. But I also only want to call the populateAgent thing
+    // if I have to, right? And then only save out the info
+    // I have to, right? That's the isAdded thing.
+    // Or maybe I can call this whenever I have an Agent
+    // and am not in the HNA assembly?
+    // No, I only want to write that out if 
+    // it isn't already someplace else...
+    // How do I do that?
+
+    // Already we only save in the hierarchy if its not already there.
+    // That takes care of the existence of plugins, binders
+    // in the society. Then the logic above is all crazy
+    // to only do added arguments that were new
+    // And this populateAgent is probably doing similar.
+    // What I need is more complex....
+
     if (data.getType().equals(ComponentData.AGENT)) {
-      // isAdded: was this agent just added to the hierarchy
-      populateAgent(data, isAdded);
-      result = true;
+      if (!assemblyId.equals(hnaAssemblyId)) {
+	// isAdded: was this agent just added to the hierarchy
+	populateAgent(data, isAdded);
+	result = true;
+      } else {
+	// If this is an Agent and we're in the CSHNA assembly,
+	// don't save the plugins, etc now. Just return.
+	return result;
+      }
     }
 
     ComponentData[] children = data.getChildren();
@@ -801,8 +1279,15 @@ public class PopulateDb extends PDbBase {
     if (alibComponents.contains(id)) return; // Already present
     // may need to be added
     insureLib();
+    String query1 = dbp.getQuery("checkAlibComponent", substitutions);
+    if (log.isDebugEnabled()) {
+      log.debug("insureAlib doing query " + query1);
+    }
     ResultSet rs = executeQuery(stmt, dbp.getQuery("checkAlibComponent", substitutions));
     if (!rs.next()) {
+      if (log.isDebugEnabled()) {
+	log.debug("insureAlib query got nothing - will insert alibcomponent " + id);
+      }
       executeUpdate(dbp.getQuery("insertAlibComponent", substitutions));
     } else {
       String[] subvars = {
@@ -1102,7 +1587,7 @@ public class PopulateDb extends PDbBase {
       return sqlQuote("Node.AgentManager.Agent.PluginManager.Plugin");
     }
     if (componentType.equals(ComponentData.NODEBINDER)) {
-      return sqlQuote("Node.Agent.Binder");
+      return sqlQuote("Node.AgentManager.Binder");
     }
     if (componentType.equals(ComponentData.AGENTBINDER)) {
       return sqlQuote("Node.AgentManager.Agent.PluginManager.Binder");
@@ -1119,6 +1604,7 @@ public class PopulateDb extends PDbBase {
     if (componentType.equals(ComponentData.SOCIETY)) {
       return sqlQuote("Society");
     }
+    // FIXME: Node Agent? ENCLAVE? Randome others?
     return sqlQuote(null);
   }
 
