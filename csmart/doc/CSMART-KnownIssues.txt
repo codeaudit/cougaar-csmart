@@ -16,5 +16,8 @@ CSMART contains a few known issues:
 
 * Some relationship arrows in the Agent View erroneously point 2 ways
 
+* Running a node on a multiprocessor machines may result in the CSMART
+  console freezing up
+
 For up to date information on these and other CSMART issues see:
 http://www.cougaar.org/bugs
