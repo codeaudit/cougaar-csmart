@@ -1477,26 +1477,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
           log.error("Experiment has no society; cannot save it to database.");
         return;
       }
-      if (sc instanceof SocietyFileComponent ||
-          sc instanceof SocietyUIComponent) {
-	// Created with a SocietyFileComponent
-	// Have no CMT assembly, nor previous
-	// experiment or trial ID.
 
-	// FIXME: Save it in a CSA and CSMI!
-	// new PopulateDb("CSA", "CSHNA", "CSMI"....
+      pdb =
+	new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
+		       getExperimentID(), trialID, ch, sc.getAssemblyId());
 
-	// So save it all in the CSMI assembly
-        pdb =
-          new PopulateDb("CSHNA", "CSMI", getExperimentName(),
-                         null, null, ch);
-      } else {
-	// We'll clear out the old non-CMT assemblies,
-	// save everything in CMT / CSMI
-        pdb =
-          new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
-                         getExperimentID(), trialID, ch);
-      }
       setExperimentID(pdb.getExperimentId());
       setTrialID(pdb.getTrialId()); // sets trial id and -D argument
 
@@ -1513,7 +1498,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       // Gather the HostNodeAgent stuff
       generateHNACDATA();
       if(log.isErrorEnabled() && completeSociety == null) {
-        log.error("Society Data is null!");
+        log.error("save: Society Data is null!");
       }
 
       // Save what we have so far in the CSHNA assembly
@@ -1527,16 +1512,30 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       // So this, currently destroys the orig CMT
       // Note also it does not effect Agent asset data
       // or relationships or OPLAN stuff
-      if (componentWasRemoved) pdb.repopulateCMT(completeSociety);
-      // FIXME: Replace above with populateCSA or some such
+      if (componentWasRemoved) {
+	if (log.isDebugEnabled()) {
+	  log.debug("save: After adding CDATA, got a removed.");
+	}
+	pdb.populateCSA(completeSociety);
+      } else {
+	if (log.isDebugEnabled()) {
+	  log.debug("save: Done adding CDATA, ready to modify.");
+	}
+      }
 
       // then give everyone a chance to modify what they've collectively produced
       for (int i = 0, n = components.size(); i < n; i++) {
         BaseComponent soc = (BaseComponent) components.get(i);
         soc.modifyComponentData(completeSociety, pdb);
         if (soc.componentWasRemoved()) {
-          pdb.repopulateCMT(completeSociety);
+	  if (log.isDebugEnabled()) {
+	    log.debug("save: After modifying CDATA by comp " + soc.getShortName() + ", got a removed.");
+	  }
+          pdb.populateCSA(completeSociety);
         }
+	// Incrementally save
+	// so that later recipes have the benefit
+	// of the earlier modifications
         pdb.populateCSMI(completeSociety);
       }
       pdb.setModRecipes(recipes);
