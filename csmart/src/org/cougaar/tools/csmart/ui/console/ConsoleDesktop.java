@@ -23,6 +23,13 @@ package org.cougaar.tools.csmart.ui.console;
 
 import java.beans.PropertyVetoException;
 import java.util.Hashtable;
+import java.awt.event.ComponentListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.Component;
+import java.awt.Point;
+import java.awt.Dimension;
+import java.awt.Insets;
 import javax.swing.*;
 import javax.swing.event.InternalFrameListener;
 
@@ -30,7 +37,23 @@ import org.cougaar.tools.csmart.ui.component.NodeComponent;
 import org.cougaar.tools.server.NodeServesClient;
 
 public class ConsoleDesktop extends JDesktopPane {
+  private static final int M = 20;
   Hashtable myFrames = new Hashtable();
+  ComponentListener myComponentListener = new ComponentAdapter() {
+    public void componentMoved(ComponentEvent e) {
+      ConsoleDesktop.this.componentMoved(e.getComponent());
+    }
+    public void componentShown(ComponentEvent e) {
+      ConsoleDesktop.this.componentMoved(e.getComponent());
+    }
+    public void componentResized(ComponentEvent e) {
+      ConsoleDesktop.this.componentResized(e.getComponent());
+    }
+  };
+
+  public ConsoleDesktop() {
+    this.addComponentListener(myComponentListener);
+  }
 
   /**
    * Add a node output frame to the desktop.
@@ -55,6 +78,32 @@ public class ConsoleDesktop extends JDesktopPane {
 
   public ConsoleInternalFrame getNodeFrame(String nodeName) {
     return (ConsoleInternalFrame)myFrames.get(nodeName);
+  }
+
+  protected void addImpl(Component c, Object constraints, int index) {
+    componentMoved(c);
+    super.addImpl(c, constraints, index);
+    c.addComponentListener(myComponentListener);
+  }
+
+  private void componentMoved(Component c) {
+    if (c == this) return;      // Don't care about this
+    Point loc = c.getLocation();
+    Insets insets = this.getInsets();
+    int x = Math.max(0, Math.min(loc.x, this.getWidth() - insets.left - insets.right - M));
+    int y = Math.max(0, Math.min(loc.y, this.getHeight() - insets.top - insets.bottom - M));
+    if (loc.x > x || loc.y > y) {
+      c.setLocation(x, y);
+    }
+  }
+
+  private void componentResized(Component c) {
+    System.out.println("resized " + c);
+    if (c != this) return;      // Don't care about these
+    JInternalFrame[] frames = getAllFrames();
+    for (int i = 0; i < frames.length; i++) {
+      componentMoved(frames[i]);
+    }
   }
 
   /**
