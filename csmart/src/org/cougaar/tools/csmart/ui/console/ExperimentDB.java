@@ -65,20 +65,30 @@ public class ExperimentDB {
 	return (Hashtable)call("getExperimentNames");
     }
 
-  /**
-   * Returns true if experiment name is in database and false otherwise.
-   * Used to guarantee that experiment names in database are unique.
-   * @param experimentName human readable experiment name
-   * @return true if name is unique and false otherwise
-   */
 
-  public static boolean isExperimentNameInDatabase(String experimentName) {
-    Hashtable experimentNamesHT = getExperimentNames();
-    Set namesInDB = experimentNamesHT.keySet();
-    if (namesInDB != null && namesInDB.contains(experimentName))
-      return true;
-    return false;
-  }
+
+    /*
+     * Deletes the given experiment from the database. Gets rid of the trial and associated other data.
+     * Does not get rid of the CMT assembly or other assemblies.
+     */
+    public static void deleteExperiment(String experimentId) {
+	call("deleteExperiment",experimentId);
+    }
+
+    /**
+     * Returns true if experiment name is in database and false otherwise.
+     * Used to guarantee that experiment names in database are unique.
+     * @param experimentName human readable experiment name
+     * @return true if name is unique and false otherwise
+     */
+
+    public static boolean isExperimentNameInDatabase(String experimentName) {
+	Hashtable experimentNamesHT = getExperimentNames();
+	Set namesInDB = experimentNamesHT.keySet();
+	if (namesInDB != null && namesInDB.contains(experimentName))
+	    return true;
+	return false;
+    }
 
     /*
      * Returns hashtable where the keys are human readable names (Strings) and
@@ -227,22 +237,22 @@ public class ExperimentDB {
     public static Object load(java.io.Reader in) {
 	return Scheme.load(new InputPort(in)); }
     public static Object load(String in) {
-//  	System.out.println("Trying to load: "+in);
+	//  	System.out.println("Trying to load: "+in);
 	return load(new java.io.StringReader(in)); }
     public static Object call(String p) {
-//  	System.out.println("call("+p+")");
+	//  	System.out.println("call("+p+")");
 	loadCMT();
 	return getGlobalProcedure(p).apply(Pair.EMPTY); }
     public static Object call(String p, Object a1) {
-//  	System.out.println("call("+p+","+a1+")");
+	//  	System.out.println("call("+p+","+a1+")");
 	loadCMT();
 	return getGlobalProcedure(p).apply(list(a1)); }
     public static Object call(String p, Object a1, Object a2) {
-//  	System.out.println("call("+p+","+a1+","+a2+")");
+	//  	System.out.println("call("+p+","+a1+","+a2+")");
 	loadCMT();
 	return getGlobalProcedure(p).apply(list(a1, a2)); }
     public static Object call(String p, Object a1, Object a2, Object a3) {
-//  	System.out.println("call("+p+","+a1+","+a2+","+a3+")");
+	//  	System.out.println("call("+p+","+a1+","+a2+","+a3+")");
 	loadCMT();
 	return getGlobalProcedure(p).apply(list(a1, a2, a3)); }
 

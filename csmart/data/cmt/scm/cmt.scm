@@ -368,30 +368,57 @@
   (clear-cmt-asb  assembly_id))
 
 (define (clear-cmt-asb  assembly_id)
-  (print (list (string-append "delete from " asb-prefix "asb_component_hierarchy where assembly_id = " (sqlQuote assembly_id))
-	       (dbu (string-append "delete from " asb-prefix "asb_component_hierarchy where assembly_id = " (sqlQuote assembly_id)))))
-  (print (list (string-append "delete from " asb-prefix "asb_agent where assembly_id = " (sqlQuote assembly_id))
-	       (dbu (string-append "delete from " asb-prefix "asb_agent where assembly_id = " (sqlQuote assembly_id)))))
-  (print (list (string-append "delete from " asb-prefix "asb_agent_pg_attr where assembly_id = " (sqlQuote assembly_id))
-	       (dbu (string-append "delete from " asb-prefix "asb_agent_pg_attr where assembly_id = " (sqlQuote assembly_id)))))
-  (print (list (string-append "delete from " asb-prefix "asb_agent_relation where assembly_id = " (sqlQuote assembly_id))
-	       (dbu (string-append "delete from " asb-prefix "asb_agent_relation where assembly_id = " (sqlQuote assembly_id)))))
-  (print (list (string-append "delete from " asb-prefix "asb_component_arg where assembly_id = " (sqlQuote assembly_id))
-	       (dbu (string-append "delete from " asb-prefix "asb_component_arg where assembly_id = " (sqlQuote assembly_id)))))
-  (print (list (string-append "delete from " asb-prefix "asb_oplan_agent_attr where assembly_id = " (sqlQuote assembly_id))
-	       (dbu (string-append "delete from " asb-prefix "asb_oplan_agent_attr where assembly_id = " (sqlQuote assembly_id)))))
-  (print (list (string-append "delete from " asb-prefix "asb_oplan where assembly_id = " (sqlQuote assembly_id))
-	       (dbu (string-append "delete from " asb-prefix "asb_oplan where assembly_id = " (sqlQuote assembly_id)))))
-  (print (list (string-append "delete from " asb-prefix "asb_assembly where assembly_id = " (sqlQuote assembly_id))
-	       (dbu (string-append "delete from " asb-prefix "asb_assembly where assembly_id = " (sqlQuote assembly_id)))))
+  (let
+      ((unused-asbs
+	(query-set
+	 (string-append
+	  "select assembly_id from "
+	  asb-prefix "asb_assembly aa"
+	  "   where aa.assembly_type='CMT'"
+	  "   and aa.assembly_id not in"
+	  "   (select assembly_id from "
+	  asb-prefix "expt_trial_assembly)"
+	  )
+	 "assembly_id")))
+    (cond
+     ((.contains unused-asbs assembly_id)
+      ;; don't start deletion if the assembly is in use by an experiment
+      (print (list (string-append "delete from " asb-prefix "asb_component_hierarchy where assembly_id = " (sqlQuote assembly_id))
+		   (dbu (string-append "delete from " asb-prefix "asb_component_hierarchy where assembly_id = " (sqlQuote assembly_id)))))
+      (print (list (string-append "delete from " asb-prefix "asb_agent where assembly_id = " (sqlQuote assembly_id))
+		   (dbu (string-append "delete from " asb-prefix "asb_agent where assembly_id = " (sqlQuote assembly_id)))))
+      (print (list (string-append "delete from " asb-prefix "asb_agent_pg_attr where assembly_id = " (sqlQuote assembly_id))
+		   (dbu (string-append "delete from " asb-prefix "asb_agent_pg_attr where assembly_id = " (sqlQuote assembly_id)))))
+      (print (list (string-append "delete from " asb-prefix "asb_agent_relation where assembly_id = " (sqlQuote assembly_id))
+		   (dbu (string-append "delete from " asb-prefix "asb_agent_relation where assembly_id = " (sqlQuote assembly_id)))))
+      (print (list (string-append "delete from " asb-prefix "asb_component_arg where assembly_id = " (sqlQuote assembly_id))
+		   (dbu (string-append "delete from " asb-prefix "asb_component_arg where assembly_id = " (sqlQuote assembly_id)))))
+      (print (list (string-append "delete from " asb-prefix "asb_oplan_agent_attr where assembly_id = " (sqlQuote assembly_id))
+		   (dbu (string-append "delete from " asb-prefix "asb_oplan_agent_attr where assembly_id = " (sqlQuote assembly_id)))))
+      (print (list (string-append "delete from " asb-prefix "asb_oplan where assembly_id = " (sqlQuote assembly_id))
+		   (dbu (string-append "delete from " asb-prefix "asb_oplan where assembly_id = " (sqlQuote assembly_id)))))
+      (print (list (string-append "delete from " asb-prefix "asb_assembly where assembly_id = " (sqlQuote assembly_id))
+		   (dbu (string-append "delete from " asb-prefix "asb_assembly where assembly_id = " (sqlQuote assembly_id)))))
 
-  ;;(dbu (string-append "delete from " asb-prefix "alib_component"))
-;;  (print (list (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id))
-;;	       (dbu (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id)))))
-  )
+      ;;(dbu (string-append "delete from " asb-prefix "alib_component"))
+      ;;  (print (list (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id))
+      ;;	       (dbu (string-append "delete from " asb-prefix "asb_assembly  where assembly_id = " (sqlQuote assembly_id)))))
+      ))))
 
-
-
+(define (clear-unused-cmt-assemblies)
+  (map*
+   clear-cmt-asb
+   (query-set
+    (string-append
+     "select assembly_id from "
+     asb-prefix "asb_assembly aa"
+     "   where aa.assembly_type='CMT'"
+     "   and aa.assembly_id not in"
+     "   (select assembly_id from "
+     asb-prefix "expt_trial_assembly)"
+     )
+    "assembly_id")
+   ))
 
 (define (use-threads tlist)
   (let
@@ -432,78 +459,89 @@
 
 
 (define (create-cmt-asb assembly_description cfw_g_id threads version clones)
+  (clear-unused-cmt-assemblies)
   ;; intentionally setting a global variable for debugging purposes
-  (print "clear-cmt-assembly started")
-  (print (time (clear-cmt-assembly cfw_g_id threads version) 1))
-  (print "clear-cmt-assembly completed")
+  ;;  (print "clear-cmt-assembly started")
+  ;;  (print (time (clear-cmt-assembly cfw_g_id threads version) 1))
+  ;;  (print "clear-cmt-assembly completed")
   (set! assembly_id (get-assembly-id cfw_g_id threads version clones))
-  (set! cfw_group_id cfw_g_id)
-  (set! threads (use-threads threads))
-  (newline)
   (cond
-   ((= 0 (dbu (string-append
-	       "update " asb-prefix "asb_assembly set assembly_id = assembly_id where assembly_id = "
-	       (sqlQuote assembly_id))))
-    (dbu (string-append
-	  "insert into " asb-prefix "asb_assembly values ("
-	  (sqlQuote assembly_id)","
-	  "'CMT',"
-	  (sqlQuote assembly_description)")"))
-    (print (string-append "inserted assembly_id " assembly_id " into " asb-prefix "ASB_ASSEMBLY table"))))
+   (
+    (not
+     (= 0 (dbu (string-append
+		"update " asb-prefix "asb_assembly set assembly_id = assembly_id where assembly_id = "
+		(sqlQuote assembly_id)))))
+    (println `(Not creating new assembly for ,assembly_id which is already in the DB))
+    )
+   (else
+    (set! cfw_group_id cfw_g_id)
+    (set! threads (use-threads threads))
+    (newline)
+    (cond
+     ((= 0 (dbu (string-append
+		 "update " asb-prefix "asb_assembly set assembly_id = assembly_id where assembly_id = "
+		 (sqlQuote assembly_id))))
+      (dbu (string-append
+	    "insert into " asb-prefix "asb_assembly values ("
+	    (sqlQuote assembly_id)","
+	    "'CMT',"
+	    (sqlQuote assembly_description)")"))
+      (print (string-append "inserted assembly_id " assembly_id " into " asb-prefix "ASB_ASSEMBLY table"))))
 
-  (newline)
-  (print "add-agent-alib-components started")
-  (add-agent-alib-components cfw_g_id threads clones)
-  (print "add-agent-alib-components completed")
+    (newline)
+    (print "add-agent-alib-components started")
+    (add-agent-alib-components cfw_g_id threads clones)
+    (print "add-agent-alib-components completed")
 
-  (newline)
-  (print "add-base-asb-agents started")
-  (print (time (add-base-asb-agents  cfw_group_id assembly_id)1))
-  (print "add-base-asb-agents completed")
+    (newline)
+    (print "add-base-asb-agents started")
+    (print (time (add-base-asb-agents  cfw_group_id assembly_id)1))
+    (print "add-base-asb-agents completed")
 
-  (newline)
-  (print "add-cloned-asb-agents started")
-  (for-each (lambda (clone-inst)
-	      (add-cloned-asb-agents 
-	       (first clone-inst)
-	       (second clone-inst) assembly_id)
-	      )
-	    clones)
-  (print "add-cloned-asb-agents completed")
+    (newline)
+    (print "add-cloned-asb-agents started")
+    (for-each (lambda (clone-inst)
+		(add-cloned-asb-agents 
+		 (first clone-inst)
+		 (second clone-inst) assembly_id)
+		)
+	      clones)
+    (print "add-cloned-asb-agents completed")
 
-  (newline)
-  ;; this must occur AFTER the asb_agents table is filled in, to allow for handling multiplicity
-  (print "add-new-plugin-alib-components started")
-  (add-new-plugin-alib-components cfw_group_id assembly_id threads)
-  (print "add-new-plugin-alib-components completed")
+    (newline)
+    ;; this must occur AFTER the asb_agents table is filled in, to allow for handling multiplicity
+    (print "add-new-plugin-alib-components started")
+    (add-new-plugin-alib-components cfw_group_id assembly_id threads)
+    (print "add-new-plugin-alib-components completed")
   
-  (newline)
-  (print "add-plugin-asb-component-hierarchy started")
-  (print (time (add-plugin-asb-component-hierarchy assembly_id cfw_group_id threads) 1))
-  (print "add-plugin-asb-component-hierarchy completed")
+    (newline)
+    (print "add-plugin-asb-component-hierarchy started")
+    (print (time (add-plugin-asb-component-hierarchy assembly_id cfw_group_id threads) 1))
+    (print "add-plugin-asb-component-hierarchy completed")
   
-  (newline)
-  (print "add-agent-name-component-arg started")
-  (print (time (add-agent-name-component-arg assembly_id cfw_group_id threads) 1))
-  (print "add-agent-name-component-arg completed")
-  (newline)
-  (print "add-asb-agent-pg-attr started")
-  (print (time (add-asb-agent-pg-attr assembly_id cfw_group_id threads) 1))
-  (print "add-asb-agent-pg-attr completed")
-  (newline)
-  (print "add-all-asb-agent-relations started")
-  (add-all-asb-agent-relations assembly_id cfw_group_id threads)
-  (print "add-all-asb-agent-relations completed")
-  (newline)
-  (print "add-all-asb-agent-hierarchy-relations started")
-  (add-all-asb-agent-hierarchy-relations assembly_id cfw_group_id threads)
-  (print "add-all-asb-agent-hierarchy-relations completed")
-  (add-plugin-args assembly_id cfw_group_id threads)
-  (newline)
-  (print "add-asb-oplan-agent-attr started")
-  (add-asb-oplan-agent-attr assembly_id cfw_group_id threads "('093FF')")
-  (print "add-asb-oplan-agent-attr completed")
-  (newline)
+    (newline)
+    (print "add-agent-name-component-arg started")
+    (print (time (add-agent-name-component-arg assembly_id cfw_group_id threads) 1))
+    (print "add-agent-name-component-arg completed")
+    (newline)
+    (print "add-asb-agent-pg-attr started")
+    (print (time (add-asb-agent-pg-attr assembly_id cfw_group_id threads) 1))
+    (print "add-asb-agent-pg-attr completed")
+    (newline)
+    (print "add-all-asb-agent-relations started")
+    (add-all-asb-agent-relations assembly_id cfw_group_id threads)
+    (print "add-all-asb-agent-relations completed")
+    (newline)
+    (print "add-all-asb-agent-hierarchy-relations started")
+    (add-all-asb-agent-hierarchy-relations assembly_id cfw_group_id threads)
+    (print "add-all-asb-agent-hierarchy-relations completed")
+    (add-plugin-args assembly_id cfw_group_id threads)
+    (newline)
+    (print "add-asb-oplan-agent-attr started")
+    (add-asb-oplan-agent-attr assembly_id cfw_group_id threads "('093FF')")
+    (print "add-asb-oplan-agent-attr completed")
+    (newline)
+    ))
   assembly_id
   )
 
@@ -1957,6 +1995,7 @@
 	"delete from "
 	asb-prefix "expt_experiment"
 	"   where expt_id=" (sqlQuote experiment_id)))
+  (clear-unused-cmt-assemblies)
   )
 
 (define (query-set query col)
