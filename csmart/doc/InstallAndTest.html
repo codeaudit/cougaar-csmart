@@ -178,9 +178,29 @@ very similar for WinNT.
 
   <li>Download and install MySQL from 
     <a href="http://www.mysql.org/">http://www.mysql.org/</a>.
-    Version "3.23" will work. But on Linux, be sure to use 3.23.45 or better. (For security reasons, be sure to change the default users' passwords.)</li><p>
+    Version "3.23" will work. But on Linux, be sure to use 3.23.45 or
+    better. (For security reasons, be sure to change the default
+    users' passwords.)</li><p>
 
-  <li>There are two MySQL database snapshots available. One to support the military logistics domain plugins, and one for the CSMART configuration database. These instructions will help with both, but for further details on the plugin database, see the release <a href="../../doc/index.html">documentation</a> for details.  Load the 
+  <li>You must set a MySQL variable to force table names to be
+  lowercase. On Windows, this is the default. But you must set it
+  explicitly for Unix (and it won't hurt on Windows). On Unix, create
+  a file "/etc/my.cnf" ("C:\my.cnf" on Windows). In this file, in the
+  "mysqld" section, you must add a line, as follows:<pre>
+  [mysqld]
+  set-variable   =   lower_case_table_names=1
+  </pre>
+  Then you must restart your MySQL server. This will ensure that when
+  you load tables into MySQL, and when you access them, all uppercase
+  table names are converted to lowercase. If you see errors where
+  tables like GEOLOC are claimed to be missing, this is a likely
+  culprit.<li><p>
+
+  <li>There are two MySQL database snapshots available. One to support
+  the military logistics domain plugins, and one for the CSMART
+  configuration database. These instructions will help with both, but
+  for further details on the plugin database, see the release <a
+  href="../../doc/index.html">documentation</a> for details.  Load the
     <a href="http://www.cougaar.org">Cougaar</a>
     MySQL database snapshot from the file 
     "csmart/data/CMT-MySQL.ZIP" (after unzipping it).  For later reference when
@@ -194,7 +214,7 @@ very similar for WinNT.
         mysql&gt; create database mycoug
         mysql&gt; -&gt; ;
         mysql&gt; exit;
-        $ mysql -u root -p mycoug &lt; CMT-MySQL.txt
+        $ mysql -u root -p mycoug &lt; [CMT MySQL data dump, eg 1ad_dump.sql]
 	[supply root password set during installation]
       </pre><br>
       Note that if you have a previous database you wish to replace, the command to drop the old database first is "drop database mycoug;"</li><p>
