@@ -20,35 +20,35 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.db.PopulateDb;
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
-import java.util.Iterator;
-import org.cougaar.tools.csmart.recipe.RecipeComponent;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
-import org.cougaar.tools.csmart.core.property.BaseComponent;
-import java.net.URL;
-import java.util.List;
-import org.cougaar.tools.csmart.core.property.ModificationListener;
-import org.cougaar.tools.csmart.core.property.PropertyEvent;
-import java.util.HashSet;
-import org.cougaar.tools.csmart.core.property.range.StringRange;
-import org.cougaar.util.log.Logger;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import java.io.ObjectInputStream;
 import java.io.IOException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Iterator;
 
+import org.cougaar.util.log.Logger;
+
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
+import org.cougaar.tools.csmart.core.property.PropertiesListener;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ModificationListener;
+import org.cougaar.tools.csmart.core.property.PropertyEvent;
+import org.cougaar.tools.csmart.core.property.range.StringRange;
+
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
- * RecipeBase.java *
+ * Holds basic recipe functionality
  *
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
- * @version 1.0
  */
-
 public abstract class RecipeBase 
   extends ModifiableConfigurableComponent 
   implements RecipeComponent, PropertiesListener  {
@@ -71,28 +71,11 @@ public abstract class RecipeBase
     return getShortName();
   }
 
-  /**
-   *
-   * @return <description>
-   */
-//   public URL getDescription()
-//   {
-//     return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
-//   }
-
-  /**
-   *
-   * @param param1 <description>
-   */
   public void addModificationListener(ModificationListener l)
   {
     getEventListenerList().add(ModificationListener.class, l);
   }
 
-  /**
-   *
-   * @param param1 <description>
-   */
   public void removeModificationListener(ModificationListener l)
   {
     getEventListenerList().remove(ModificationListener.class, l);
