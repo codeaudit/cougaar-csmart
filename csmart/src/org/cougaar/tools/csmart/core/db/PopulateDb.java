@@ -547,16 +547,10 @@ public class PopulateDb extends PDbBase {
             rs = executeQuery(stmt, dbp.getQuery("queryComponentArgs", substitutions));
             oldArgs = new TreeSet();
             while (rs.next()) {
-              if(log.isDebugEnabled()) {
-                log.debug("Adding Old Arg: " + rs.getString(1));
-              }
-                oldArgs.add(new Argument(rs.getString(1), rs.getFloat(2)));
+              oldArgs.add(new Argument(rs.getString(1), rs.getFloat(2)));
             }
             rs.close();
             if (parent != null) {
-              if(log.isDebugEnabled()) {
-                log.debug("PopulateDb:populate, Parent is not null");
-              }
                 rs = executeQuery(stmt, dbp.getQuery("checkComponentHierarchy",
                                                      substitutions));
                 if (!rs.next()) {
@@ -573,9 +567,6 @@ public class PopulateDb extends PDbBase {
         SortedSet newArgs = new TreeSet();
         Object[] params = data.getParameters();
         for (int i = 0; i < params.length; i++) {
-          if(log.isDebugEnabled()) {
-            log.debug("PopulateDb:populate; Param: " + params[i]);
-          }
             newArgs.add(new Argument(params[i].toString(), i));
         }
         // The new args must only contain additions. There must be no
@@ -584,9 +575,6 @@ public class PopulateDb extends PDbBase {
         // there are fewer newArgs than oldArgs, there is clearly a
         // violation of this premise.
         int excess = newArgs.size() - oldArgs.size();
-        if(log.isDebugEnabled()) {
-          log.debug("excess: " + excess);
-        }
         if (excess < 0) {
             throw new IllegalArgumentException("Attempt to remove "
                                                + (-excess)
@@ -640,9 +628,6 @@ public class PopulateDb extends PDbBase {
             substitutions.put(":argument_value:", sqlQuote(arg.argument));
             substitutions.put(":argument_order:", sqlQuote(String.valueOf(arg.order)));
             executeUpdate(dbp.getQuery("insertComponentArg", substitutions));
-            if(log.isDebugEnabled()) {
-              log.debug("Adding oldArg: " + arg);
-            }
             oldArgs.add(arg);
             result = true;
         }
@@ -818,9 +803,6 @@ public class PopulateDb extends PDbBase {
         substitutions.put(":agent_lib_name:", sqlQuote(data.getName()));
         substitutions.put(":component_name:", sqlQuote(data.getName()));
         if (isAdded) {
-          if(log.isDebugEnabled()) {
-            log.debug("isAdded is true!");
-          }
             // finish populating a new agent
             ResultSet rs = executeQuery(stmt, dbp.getQuery("checkAgentOrg", substitutions));
             if (!rs.next()) {
@@ -850,13 +832,7 @@ public class PopulateDb extends PDbBase {
                             throw new RuntimeException("Property is not a collection: "
                                                        + propInfo.toString());
                         String[] values = ((PGPropMultiVal) prop.getValue()).getValuesStringArray();
-                        if(log.isDebugEnabled()) {
-                          log.debug("Prop: " + prop.getName() + "::"+prop.toString());
-                        }
                         for (int k = 0; k < values.length; k++) {
-                          if(log.isDebugEnabled()) {
-                            log.debug("Adding value: " + values[k]);
-                          }
                             substitutions.put(":attribute_value:", sqlQuote(values[k]));
                             substitutions.put(":attribute_order:", String.valueOf(k + 1));
                             executeUpdate(dbp.getQuery("insertAttribute", substitutions));
@@ -954,9 +930,6 @@ public class PopulateDb extends PDbBase {
         PropertyKey key = new PropertyKey(pgName, propName);
         PropertyInfo result = (PropertyInfo) propertyInfos.get(key);
         if (result == null) {
-          if(log.isDebugEnabled()) {
-            log.debug("getPropertyInfo, result is null");
-          }
             Statement stmt = dbConnection.createStatement();
             substitutions.put(":pg_name:", pgName);
             substitutions.put(":attribute_name:", propName);
@@ -972,9 +945,6 @@ public class PopulateDb extends PDbBase {
                 
                 propertyInfos.put(key1, info);
                 if (key1.equals(key)) {
-                  if(log.isDebugEnabled()) {
-                    log.debug("getPropertyInfo, found a result");
-                  }
                   result = info;
                 }
 
