@@ -608,10 +608,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   protected void runBuilder(ModifiableComponent cc, 
                          boolean alwaysNew) {
     // note that cc is guaranteed non-null when this is called
-    Class[] paramClasses = 
-      { CSMART.class, ModifiableComponent.class, Experiment.class };
-    Object[] params = new Object[3];
-    params[0] = this;
+    ModifiableComponent originalComponent = null;
+    //    Class[] paramClasses = 
+    //      { CSMART.class, ModifiableComponent.class, ModifiableComponent.class,
+    //        Experiment.class };
+    //    Object[] params = new Object[3];
+    //    params[0] = this;
     Experiment experiment = null;
     if (cc instanceof Experiment) {
       experiment = (Experiment)cc;
@@ -630,14 +632,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       // in the original experiment
       ComponentData cdata = experiment.getSocietyComponentData();
       cdata.setName(cdata.getName() + " Society");
-      cc = new SocietyCDataComponent(cdata);
-
+      cc = new SocietyCDataComponent(cdata,
+         ((SocietyComponent)experiment.getSocietyComponent()).getAssemblyId());
       // Copy the old society assembly_id into the new
       // so it can copy the OPLAN info, if any
-      ((SocietyComponent)cc).setAssemblyId(((SocietyComponent)experiment.getSocietyComponent()).getAssemblyId());
-
+      //      ((SocietyComponent)cc).setAssemblyId(((SocietyComponent)experiment.getSocietyComponent()).getAssemblyId());
       cc.initProperties();
-
       // Save this new society:
       ((SocietyComponent)cc).saveToDatabase();
       // put the new society in the copy of the experiment
@@ -664,39 +664,48 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
             String newName =
               organizer.generateSocietyName(society.getSocietyName());
             SocietyComponent societyCopy = (SocietyComponent)society.copy(newName);
-            experiment.removeSocietyComponent();
-            experiment.addSocietyComponent(societyCopy);
+            originalComponent = cc;
+            //            experiment.removeSocietyComponent();
+            //            experiment.addSocietyComponent(societyCopy);
             // remove old society from workspace and add new society
-            organizer.replaceComponent(experiment, society, societyCopy);
+            //            organizer.replaceComponent(experiment, society, societyCopy);
             cc = societyCopy;
+            if (societyCopy.isModified())
+              System.out.println("CSMART: society is modified");
           } else if (cc instanceof RecipeComponent) {
             RecipeComponent recipe = (RecipeComponent)cc;
             String newName =
               organizer.generateRecipeName(recipe.getRecipeName());
             RecipeComponent recipeCopy = (RecipeComponent)recipe.copy(newName);
-            experiment.removeRecipeComponent(recipe);
-            experiment.addRecipeComponent(recipeCopy);
+            originalComponent = cc;
+            //            experiment.removeRecipeComponent(recipe);
+            //            experiment.addRecipeComponent(recipeCopy);
             // remove old recipe from workspace and add new recipe
-            organizer.replaceComponent(experiment, recipe, recipeCopy);
+            //            organizer.replaceComponent(experiment, recipe, recipeCopy);
             cc = recipeCopy;
           }
         }
       }
     }
-    params[1] = cc;
-    params[2] = experiment;
-    createTool(CONFIGURATION_BUILDER, PropertyBuilder.class, 
-	       alwaysNew, cc.getShortName(), (ModifiableComponent)cc,
-	       paramClasses, params);
+    JFrame tool = 
+      (JFrame)new PropertyBuilder(this, cc, originalComponent, experiment);
+    addTool(CONFIGURATION_BUILDER, cc.getShortName(), tool);
+//      params[1] = cc;
+//      params[2] = originalComponent;
+//      params[3] = experiment;
+//      alwaysNew = true; // TODO: maybe remove reuse of these tools?
+//      createTool(CONFIGURATION_BUILDER, PropertyBuilder.class, 
+//  	       alwaysNew, cc.getShortName(), (ModifiableComponent)cc,
+//  	       paramClasses, params);
   }
 
-  private void runMultipleBuilders(ModifiableComponent[] comps) {
-    for (int i = 0; i < comps.length; i++) {
-      String s = CONFIGURATION_BUILDER + ": " + comps[i].getShortName();
-      if (NamedFrame.getNamedFrame().getFrame(s) == null) 
-  	runBuilder(comps[i], true);
-    }
-  }
+//    private void runMultipleBuilders(ModifiableComponent[] comps) {
+//      for (int i = 0; i < comps.length; i++) {
+//        String s = CONFIGURATION_BUILDER + ": " + comps[i].getShortName();
+//        if (NamedFrame.getNamedFrame().getFrame(s) == null) 
+//    	runBuilder(comps[i], true);
+//      }
+//    }
 
   /**
    * Determine if an experiment is being edited in the ExperimentBuilder.
@@ -799,13 +808,16 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     // remove the children of the experiment in the tree
     // to avoid confusion while editing the experiment
     organizer.removeChildren(experiment);
-    Class[] paramClasses = { CSMART.class, Experiment.class };
-    Object[] params = new Object[2];
-    params[0] = this;
-    params[1] = experiment;
-    createTool(EXPERIMENT_BUILDER, ExperimentBuilder.class, 
-	       alwaysNew, experiment.getExperimentName(), experiment,
-	       paramClasses, params);
+//      Class[] paramClasses = { CSMART.class, Experiment.class };
+//      Object[] params = new Object[2];
+//      params[0] = this;
+//      params[1] = experiment;
+//      createTool(EXPERIMENT_BUILDER, ExperimentBuilder.class, 
+//  	       alwaysNew, experiment.getExperimentName(), experiment,
+    //	       paramClasses, params);
+    JFrame tool =
+      (JFrame)new ExperimentBuilder(this, experiment);
+    addTool(EXPERIMENT_BUILDER, experiment.getExperimentName(), tool);
   }
 
   /**
@@ -813,10 +825,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * then start a new experiment builder to edit this experiment.
    */
 
-  private void runMultipleExperimentBuilders(Experiment[] experiments) {
-    for (int i = 0; i < experiments.length; i++) 
-      runExperimentBuilder(experiments[i], true);
-  }
+//    private void runMultipleExperimentBuilders(Experiment[] experiments) {
+//      for (int i = 0; i < experiments.length; i++) 
+//        runExperimentBuilder(experiments[i], true);
+//    }
 
   /**
    * Run the specified experiment.  The experiment must be runnable.
@@ -838,15 +850,18 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       enableConsoleTool(false);
       return;
     }
-    Class[] paramClasses = { CSMART.class, Experiment.class };
-    Object[] params = new Object[2];
-    params[0] = this;
-    params[1] = experiment;
-    console = (CSMARTConsole)createNewTool(EXPERIMENT_CONTROLLER,
-					   CSMARTConsole.class, 
-					   experiment.getExperimentName(),
-					   experiment, 
-                                           paramClasses, params);
+//      Class[] paramClasses = { CSMART.class, Experiment.class };
+//      Object[] params = new Object[2];
+//      params[0] = this;
+//      params[1] = experiment;
+//      console = (CSMARTConsole)createNewTool(EXPERIMENT_CONTROLLER,
+//  					   CSMARTConsole.class, 
+//  					   experiment.getExperimentName(),
+//  					   experiment, 
+//                                             paramClasses, params);
+    JFrame tool =
+      (JFrame)new CSMARTConsole(this, experiment);
+    addTool(EXPERIMENT_CONTROLLER, experiment.getExperimentName(), tool);
   }
 
   /**
@@ -859,12 +874,14 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       runningExperiment = (Experiment)runningExperiments.get(0);
       name = runningExperiment.getExperimentName();
     }
-    Class[] paramClasses = { CSMART.class, Experiment.class };
-    Object[] params = new Object[2];
-    params[0] = this;
-    params[1] = runningExperiment;
-    createTool(SOCIETY_MONITOR, CSMARTUL.class, name, null,
-               paramClasses, params);
+//      Class[] paramClasses = { CSMART.class, Experiment.class };
+//      Object[] params = new Object[2];
+//      params[0] = this;
+//      params[1] = runningExperiment;
+//      createTool(SOCIETY_MONITOR, CSMARTUL.class, name, null,
+//                 paramClasses, params);
+    JFrame tool = (JFrame)new CSMARTUL(this, runningExperiment);
+    addTool(SOCIETY_MONITOR, name, tool);
   }
 
   /**
@@ -872,13 +889,15 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * @param experiment the experiment to analyze
    */
   protected void runAnalyzer(Experiment experiment) {
-    Class[] paramClasses = { CSMART.class, Experiment.class };
-    Object[] params = new Object[2];
-    params[0] = this;
-    params[1] = experiment;
-    createTool(PERFORMANCE_ANALYZER, Analyzer.class, 
-	       experiment.getExperimentName(), experiment, 
-               paramClasses, params);
+//      Class[] paramClasses = { CSMART.class, Experiment.class };
+//      Object[] params = new Object[2];
+//      params[0] = this;
+//      params[1] = experiment;
+//      createTool(PERFORMANCE_ANALYZER, Analyzer.class, 
+//  	       experiment.getExperimentName(), experiment, 
+//                 paramClasses, params);
+    JFrame tool = (JFrame)new Analyzer(this, experiment);
+    addTool(PERFORMANCE_ANALYZER, experiment.getExperimentName(), tool);
   }
 
   private void noSocietySelected() {
@@ -986,53 +1005,69 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       if (about != null)
 	Browser.setPage(about);
     } else if (s.indexOf(CONFIGURATION_BUILDER) != -1) {
-      // Configuration Builder is used to edit both societies and recipes
-      ArrayList components = new ArrayList();
-      RecipeComponent[] recipes = organizer.getSelectedRecipes();
-      if (recipes != null) 
-        for (int i = 0; i < recipes.length; i++)
-          components.add(recipes[i]);
-      SocietyComponent[] societies = organizer.getSelectedSocieties();
-      if (societies != null)
-        for (int i = 0; i < societies.length; i++)
-          components.add(societies[i]);
-      // TODO: get society out of experiment
-      Experiment[] experiments = organizer.getSelectedExperiments();
-      if (experiments != null)
-        for (int i = 0; i < experiments.length; i++)
-          components.add(experiments[i]);
-      // if no recipes or societies, then try to create a society
-//        if (components.size() == 0) {
-//  	organizer.addSociety();
-//  	societies = organizer.getSelectedSocieties();
-//          if (societies != null)
-//            for (int i = 0; i < societies.length; i++)
-//              components.add(societies[i]);
-//        }
-      if (components.size() == 1)
-	runBuilder((ModifiableComponent)components.get(0), false);
-      else if (components.size() > 1) {
-	runMultipleBuilders((ModifiableComponent[])components.toArray(new ModifiableComponent[components.size()]));
-      }
+      Object userObject = organizer.getSelectedObject();
+      if (userObject instanceof Experiment ||
+          userObject instanceof SocietyComponent ||
+          userObject instanceof RecipeComponent)
+        runBuilder((ModifiableComponent)userObject, false);
     } else if (s.indexOf(EXPERIMENT_BUILDER) != -1) {
-      Experiment[] experiments = organizer.getSelectedExperiments();
-      if (experiments == null || experiments.length == 0) {
-        //	organizer.addExperiment();
-	experiments = organizer.getSelectedExperiments();
-      }
-      if (experiments != null && experiments.length == 1)
-	runExperimentBuilder(experiments[0], false);
-      else if (experiments != null && experiments.length > 1)
-	runMultipleExperimentBuilders(experiments);
+      Object userObject = organizer.getSelectedObject();
+      if (userObject instanceof Experiment)
+        runExperimentBuilder((Experiment)userObject, false);
     } else if (s.indexOf(EXPERIMENT_CONTROLLER) != -1) {
-      Experiment[] experiments = organizer.getSelectedExperiments();
-      if (experiments != null) {
-        for (int i = 0; i < experiments.length; i++) 
-          if (experiments[i].isRunnable()) {
-            runConsole(experiments[i]);
-            break;
-          }
-      }
+      Object userObject = organizer.getSelectedObject();
+      if (userObject instanceof Experiment &&
+          ((Experiment)userObject).isRunnable())
+        runConsole((Experiment)userObject);
+
+      
+//        // Configuration Builder is used to edit both societies and recipes
+//        ArrayList components = new ArrayList();
+//        RecipeComponent[] recipes = organizer.getSelectedRecipes();
+//        if (recipes != null) 
+//          for (int i = 0; i < recipes.length; i++)
+//            components.add(recipes[i]);
+//        SocietyComponent[] societies = organizer.getSelectedSocieties();
+//        if (societies != null)
+//          for (int i = 0; i < societies.length; i++)
+//            components.add(societies[i]);
+//        // TODO: get society out of experiment
+//        Experiment[] experiments = organizer.getSelectedExperiments();
+//        if (experiments != null)
+//          for (int i = 0; i < experiments.length; i++)
+//            components.add(experiments[i]);
+//        // if no recipes or societies, then try to create a society
+//  //        if (components.size() == 0) {
+//  //  	organizer.addSociety();
+//  //  	societies = organizer.getSelectedSocieties();
+//  //          if (societies != null)
+//  //            for (int i = 0; i < societies.length; i++)
+//  //              components.add(societies[i]);
+//  //        }
+//        if (components.size() == 1)
+//  	runBuilder((ModifiableComponent)components.get(0), false);
+//        else if (components.size() > 1) {
+//  	runMultipleBuilders((ModifiableComponent[])components.toArray(new ModifiableComponent[components.size()]));
+//        }
+//      } else if (s.indexOf(EXPERIMENT_BUILDER) != -1) {
+//        Experiment[] experiments = organizer.getSelectedExperiments();
+//        if (experiments == null || experiments.length == 0) {
+//          //	organizer.addExperiment();
+//  	experiments = organizer.getSelectedExperiments();
+//        }
+//        if (experiments != null && experiments.length == 1)
+//  	runExperimentBuilder(experiments[0], false);
+//        else if (experiments != null && experiments.length > 1)
+//  	runMultipleExperimentBuilders(experiments);
+//      } else if (s.indexOf(EXPERIMENT_CONTROLLER) != -1) {
+//        Experiment[] experiments = organizer.getSelectedExperiments();
+//        if (experiments != null) {
+//          for (int i = 0; i < experiments.length; i++) 
+//            if (experiments[i].isRunnable()) {
+//              runConsole(experiments[i]);
+//              break;
+//            }
+//        }
     } else if (s.indexOf(SOCIETY_MONITOR) != -1) {
       // only run one society monitor
       // if user selects "Society Monitor" and its running
@@ -1044,9 +1079,12 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
       else
         societyMonitorFrame.toFront();
     } else if (s.indexOf(PERFORMANCE_ANALYZER) != -1) {
-      Experiment[] experiments = organizer.getSelectedExperiments();
-      if (experiments != null && experiments.length > 0)
-        runAnalyzer(experiments[0]);
+      //      Experiment[] experiments = organizer.getSelectedExperiments();
+      //      if (experiments != null && experiments.length > 0)
+      //        runAnalyzer(experiments[0]);
+      Object userObject = organizer.getSelectedObject();
+      if (userObject instanceof Experiment)
+        runAnalyzer((Experiment)userObject);
     } else { // a frame selected from the window menu
       JFrame f = NamedFrame.getNamedFrame().getFrame(s);
       if (f != null) {
@@ -1063,70 +1101,48 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
    * that accepts a single CSMART argument.
    */
 
-  private JFrame createNewTool(String toolName, Class toolClass, 
-			       String docName, Object argument,
-			       Class[] paramClasses, Object[] params) {
-    return createTool(toolName, toolClass, true, docName, argument, 
-		      paramClasses, params);
-  }
+//    private JFrame createNewTool(String toolName, Class toolClass, 
+//  			       String docName, Object argument,
+//  			       Class[] paramClasses, Object[] params) {
+//      return createTool(toolName, toolClass, true, docName, argument, 
+//  		      paramClasses, params);
+//    }
 
-  private JFrame createTool(String toolName, Class toolClass, 
-			    String docName, Object argument,
-			    Class[] paramClasses, Object[] params) {
-    return createTool(toolName, toolClass, false, docName, argument,
-		      paramClasses, params);
-  }
+//    private JFrame createTool(String toolName, Class toolClass, 
+//  			    String docName, Object argument,
+//  			    Class[] paramClasses, Object[] params) {
+//      return createTool(toolName, toolClass, false, docName, argument,
+//  		      paramClasses, params);
+//    }
 
-  private JFrame createTool(String toolName, Class toolClass, 
-			    boolean alwaysNew, String docName,
-			    Object argument, Class[] paramClasses, Object[] params) {
-    JFrame tool = null;
-    String title = toolName;
-    if (docName != null && docName.length() != 0)
-      title = title + ": " + docName;
-    // try to reuse tool
-    if (!alwaysNew) {
-      // first try to get tool displaying the same document
-      tool = NamedFrame.getNamedFrame().getFrame(title);
-      // if have tool displaying another document, reuse the tool
-      if (tool == null) {
-	tool = NamedFrame.getNamedFrame().getToolFrame(toolName, docName);
-	if (tool != null) {
-	  // set item to edit when reuse tools
-	  if (tool instanceof ExperimentBuilder)
-	    ((ExperimentBuilder)tool).reinit((Experiment)argument);
-	  else if (tool instanceof PropertyBuilder)
-	    ((PropertyBuilder)tool).reinit((ModifiableComponent)argument);
-	  else if (tool instanceof Analyzer)
-	    ((Analyzer)tool).reinit((Experiment)argument);
-          enableCSMARTTools(); // update tools
-	}
-      }
-      // if have tool window, just bring it to the front and return
-      if (tool != null) {
-	tool.toFront();
-	tool.setState(Frame.NORMAL);
-	return tool;
-      }
-    }
+  /**
+   * For re-using tools, get a tool with the given name,
+   * and optionally the given document name.
+   */
+//    private JFrame getTool(String toolName, String docName) {
+//      JFrame tool = null;
+//      String title = toolName;
+//      if (docName != null && docName.length() != 0)
+//        title = title + ": " + docName;
+//      // first try to get tool displaying the same document
+//      tool = NamedFrame.getNamedFrame().getFrame(title);
+//      // if have tool displaying another document, reuse the tool
+//      if (tool == null)
+//        tool = NamedFrame.getNamedFrame().getToolFrame(toolName, docName);
+//      // if have tool window, just bring it to the front and return
+//      if (tool != null) {
+//        tool.toFront();
+//        tool.setState(Frame.NORMAL);
+//      }
+//      return tool;
+//    }
 
-    // create a new tool
-    try {
-      if (paramClasses == null) {
-	paramClasses = new Class[1];
-	paramClasses[0] = CSMART.class;
-	params = new Object[1];
-	params[0] = this;
-      }
-      Constructor constructor = toolClass.getConstructor(paramClasses);
-      tool = (JFrame) constructor.newInstance(params);
-    } catch (Exception exc) {
-      if(log.isErrorEnabled()) {
-        log.error("CSMART: " + exc, exc);
-      }
-      return null;
-    }
-    NamedFrame.getNamedFrame().addFrame(title, tool);
+  /**
+   * Add the tool to the menu of windows CSMART maintains,
+   * and set up a listener to update the menu when the tool is exited.
+   */
+  private void addTool(String toolName, String docName, JFrame tool) {
+    NamedFrame.getNamedFrame().addFrame(toolName + ": " + docName, tool);
     final JFrame frameArg = tool;
     tool.addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
@@ -1134,8 +1150,67 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
 	frameArg.dispose();
       }
     });
-    return tool;
   }
+
+//    private JFrame createTool(String toolName, Class toolClass, 
+//  			    boolean alwaysNew, String docName,
+//  			    Object argument, Class[] paramClasses, Object[] params) {
+//      JFrame tool = null;
+//      String title = toolName;
+//      if (docName != null && docName.length() != 0)
+//        title = title + ": " + docName;
+//      // try to reuse tool
+//      if (!alwaysNew) {
+//        // first try to get tool displaying the same document
+//        tool = NamedFrame.getNamedFrame().getFrame(title);
+//        // if have tool displaying another document, reuse the tool
+//        if (tool == null) {
+//  	tool = NamedFrame.getNamedFrame().getToolFrame(toolName, docName);
+//  	if (tool != null) {
+//  	  // set item to edit when reuse tools
+//  	  if (tool instanceof ExperimentBuilder)
+//  	    ((ExperimentBuilder)tool).reinit((Experiment)argument);
+//  	  else if (tool instanceof PropertyBuilder)
+//  	    ((PropertyBuilder)tool).reinit((ModifiableComponent)argument);
+//  	  else if (tool instanceof Analyzer)
+//  	    ((Analyzer)tool).reinit((Experiment)argument);
+//            enableCSMARTTools(); // update tools
+//  	}
+//        }
+//        // if have tool window, just bring it to the front and return
+//        if (tool != null) {
+//  	tool.toFront();
+//  	tool.setState(Frame.NORMAL);
+//  	return tool;
+//        }
+//      }
+
+//      // create a new tool
+//      try {
+//        if (paramClasses == null) {
+//  	paramClasses = new Class[1];
+//  	paramClasses[0] = CSMART.class;
+//  	params = new Object[1];
+//  	params[0] = this;
+//        }
+//        Constructor constructor = toolClass.getConstructor(paramClasses);
+//        tool = (JFrame) constructor.newInstance(params);
+//      } catch (Exception exc) {
+//        if(log.isErrorEnabled()) {
+//          log.error("CSMART: " + exc, exc);
+//        }
+//        return null;
+//      }
+//      NamedFrame.getNamedFrame().addFrame(title, tool);
+//      final JFrame frameArg = tool;
+//      tool.addWindowListener(new WindowAdapter() {
+//        public void windowClosing(WindowEvent e) {
+//  	NamedFrame.getNamedFrame().removeFrame(frameArg);
+//  	frameArg.dispose();
+//        }
+//      });
+//      return tool;
+//    }
 
   /**
    * Start up CSMART main UI. <br>

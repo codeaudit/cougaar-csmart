@@ -91,6 +91,7 @@ public class Organizer extends JScrollPane {
   private String workspaceFileName;
   private CSMART csmart;
   private DefaultMutableTreeNode root;
+  private Object lockObject = new Object();
   DefaultTreeModel model;
   private OrganizerTree workspace;
   private Organizer organizer;
@@ -1467,7 +1468,7 @@ public class Organizer extends JScrollPane {
   // Replace Component in Experiment
   ///////////////////////////////
 
-  protected void replaceComponent(Experiment experiment,
+  public void replaceComponent(Experiment experiment,
                                ModifiableComponent component,
                                ModifiableComponent newComponent) {
     // find experiment node
@@ -2153,13 +2154,16 @@ public class Organizer extends JScrollPane {
     };
   
   protected boolean exitAllowed() {
-    synchronized(root) {
+    //    synchronized(root) {
+    synchronized(lockObject) {
       if (updateNeeded) {
 	nextUpdate = System.currentTimeMillis();
-	root.notify();
+        //	root.notify();
+        lockObject.notify();
 	while (updateNeeded) {
 	  try {
-	    root.wait();
+            lockObject.wait();
+            //	    root.wait();
 	  } catch (InterruptedException ie) {
 	  }
 	}
@@ -2202,21 +2206,25 @@ public class Organizer extends JScrollPane {
 	super.start();
       }
       public void run() {
-	synchronized (root) {
+        //	synchronized (root) {
+	synchronized (lockObject) {
 	  while (true) {
 	    try {
 	      long now = System.currentTimeMillis();
 	      if (updateNeeded && now > nextUpdate) {
 		save(workspaceFileName);
 		updateNeeded = false;
-		root.notifyAll(); // In case anyone's waiting for the update to finish
+                //		root.notifyAll(); // In case anyone's waiting for the update to finish
+                lockObject.notifyAll(); // In case anyone's waiting for the update to finish
 	      } else if (updateNeeded) {
 		long delay = nextUpdate - now;
 		if (delay > 0) {
-		  root.wait(delay);
+                  //		  root.wait(delay);
+                  lockObject.wait(delay);
                             }
 	      } else {
-		root.wait();
+                //		root.wait();
+                lockObject.wait();
 	      }
 	    } catch (InterruptedException ie) {
 	    }
@@ -2226,10 +2234,12 @@ public class Organizer extends JScrollPane {
     };
   
   private void update() {
-    synchronized (root) {
+    //    synchronized (root) {
+    synchronized (lockObject) {
       nextUpdate = System.currentTimeMillis() + UPDATE_DELAY;
       updateNeeded = true;
-      root.notify();
+      //      root.notify();
+      lockObject.notify();
     }
   }
 

@@ -181,6 +181,7 @@ public class OrganizerHelper {
         log.error("RuntimeException", e);
       }
     }
+    soc.resetModified();
     experiment.resetModified(); // the experiment is NOT modified at this point
     return experiment;
   }

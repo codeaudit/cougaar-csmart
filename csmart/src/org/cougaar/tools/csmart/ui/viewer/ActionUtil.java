@@ -302,11 +302,12 @@ public class ActionUtil {
           action.equals(DELETE_EXPERIMENT_FROM_DATABASE_ACTION) ||
           action.equals(DELETE_RECIPE_FROM_DATABASE_ACTION)) 
         return true;
-      if (doPopup)
-        return false;
-      DefaultMutableTreeNode rootNode = 
-        (DefaultMutableTreeNode)organizer.getSelectedNode();
-      return isActionAllowedOnFolder(action, organizer, rootNode);
+      //      if (doPopup)
+      //        return false;
+      return false;
+      //      DefaultMutableTreeNode rootNode = 
+      //        (DefaultMutableTreeNode)organizer.getSelectedNode();
+      //      return isActionAllowedOnFolder(action, organizer, rootNode);
     } // end handling root
 
     Object selectedObject = organizer.getSelectedObject();
@@ -348,26 +349,26 @@ public class ActionUtil {
     if (!nodes.hasMoreElements() && !node.isRoot()) 
       return action.equals(DELETE_ACTION);
 
-    boolean actionAllowed = false;
-    while (nodes.hasMoreElements()) {
-      DefaultMutableTreeNode nextNode = 
-        (DefaultMutableTreeNode)nodes.nextElement();
-      Object o = nextNode.getUserObject();
-      if (o instanceof String) 
-        actionAllowed = 
-          isActionAllowedOnFolder(action, organizer, nextNode);
-      else if (o instanceof Experiment)
-        actionAllowed =
-          isActionAllowedOnExperiment(action, organizer, (Experiment)o);
-      else if (o instanceof SocietyComponent)
-        actionAllowed =
-          isActionAllowedOnSociety(action, organizer, (SocietyComponent)o);
-      else if (o instanceof RecipeComponent)
-        actionAllowed =
-          isActionAllowedOnRecipe(action, organizer, (RecipeComponent)o);
-      if (actionAllowed)
-        return true;
-    }
+//      boolean actionAllowed = false;
+//      while (nodes.hasMoreElements()) {
+//        DefaultMutableTreeNode nextNode = 
+//          (DefaultMutableTreeNode)nodes.nextElement();
+//        Object o = nextNode.getUserObject();
+//        if (o instanceof String) 
+//          actionAllowed = 
+//            isActionAllowedOnFolder(action, organizer, nextNode);
+//        else if (o instanceof Experiment)
+//          actionAllowed =
+//            isActionAllowedOnExperiment(action, organizer, (Experiment)o);
+//        else if (o instanceof SocietyComponent)
+//          actionAllowed =
+//            isActionAllowedOnSociety(action, organizer, (SocietyComponent)o);
+//        else if (o instanceof RecipeComponent)
+//          actionAllowed =
+//            isActionAllowedOnRecipe(action, organizer, (RecipeComponent)o);
+//        if (actionAllowed)
+//          return true;
+//      }
     return false;
   }
 
