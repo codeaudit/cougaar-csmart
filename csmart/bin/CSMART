@@ -64,16 +64,14 @@ set MYCONFIGPATH="-Dorg.cougaar.config.path=$COUGAAR_INSTALL_PATH/csmart/data/co
 
 set MYCLASSPATH = "${COUGAAR_INSTALL_PATH}/lib/bootstrap.jar"
 
-if ($?COUGAAR_DEV_PATH) then
-    set MYCLASSPATH = "${COUGAAR_DEV_PATH}:${MYCLASSPATH}"
-endif
-
 #set javaargs="$MYPROPERTIES $MYMEMORY $MYCONFIGPATH -cp $MYCLASSPATH -Dorg.cougaar.tools.server.verbose=true"
 
 set javaargs="$MYPROPERTIES $MYDEBUG $MYMEMORY $MYCONFIGPATH -cp $MYCLASSPATH -Dorg.cougaar.tools.server.verbose=true"
 
+# Dev path is set by the bootstrapper when defined.  It is added to the front
+# of the classpath.
 if ($?COUGAAR_DEV_PATH) then
-   echo java $javaargs org.cougaar.tools.csmart.ui.viewer.CSMART
+   echo "COUGAAR_DEV_PATH defined, using it."
 endif
 
 #echo "Cmd"
