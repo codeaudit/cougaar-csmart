@@ -25,7 +25,7 @@ import java.awt.*;
 import java.util.*;
 import javax.swing.*;
 
-import org.cougaar.tools.csmart.ui.console.ExperimentDB;
+import org.cougaar.tools.csmart.core.db.ExperimentDB;
 
 public class ThreadBuilder extends JPanel {
   // thread names displayed for user

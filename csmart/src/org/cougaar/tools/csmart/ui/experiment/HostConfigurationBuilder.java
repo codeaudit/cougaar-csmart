@@ -32,21 +32,21 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
-import org.cougaar.tools.csmart.ui.component.AgentComponent;
+import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.component.ComponentName;
-import org.cougaar.tools.csmart.ui.component.ComponentProperties;
+import org.cougaar.tools.csmart.core.property.ComponentProperties;
 import org.cougaar.tools.csmart.ui.component.SimpleName;
 import org.cougaar.tools.csmart.ui.component.CompositeName;
-import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
-import org.cougaar.tools.csmart.ui.component.HostComponent;
-import org.cougaar.tools.csmart.ui.component.NodeComponent;
-import org.cougaar.tools.csmart.ui.component.Property;
-import org.cougaar.tools.csmart.ui.component.SocietyComponent;
-import org.cougaar.tools.csmart.ui.configuration.ConsoleDNDTree;
-import org.cougaar.tools.csmart.ui.configuration.ConsoleTreeObject;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.experiment.HostComponent;
+import org.cougaar.tools.csmart.experiment.NodeComponent;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.ui.tree.ConsoleDNDTree;
+import org.cougaar.tools.csmart.ui.tree.ConsoleTreeObject;
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
-import org.cougaar.tools.csmart.ui.console.NodeArgumentDialog;
-import org.cougaar.tools.csmart.ui.experiment.Experiment;
+import org.cougaar.tools.csmart.ui.experiment.NodeArgumentDialog;
+import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.ui.tree.DNDTree;
 import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
@@ -104,7 +104,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     // tree of hosts and assigned nodes and agents
     DefaultMutableTreeNode root = 
       new DefaultMutableTreeNode(new ConsoleTreeObject("Hosts", 
-		       "org.cougaar.tools.csmart.ui.component.HostComponent"));
+		       "org.cougaar.tools.csmart.experiment.HostComponent"));
     // setting "askAllowsChildren" forces empty nodes that can have
     // children to be displayed as "folders" rather than leaf nodes
     DefaultTreeModel model = createModel(experiment, root, true);
@@ -287,7 +287,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     JSplitPane bottomPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
     // tree of unassigned nodes
     ConsoleTreeObject cto = new ConsoleTreeObject("Nodes (unassigned)", 
-                 "org.cougaar.tools.csmart.ui.component.NodeComponent");
+                 "org.cougaar.tools.csmart.experiment.NodeComponent");
     root = new DefaultMutableTreeNode(cto, true);
     model = createModel(experiment, root, true);
     nodeTree = new ConsoleDNDTree(model);
@@ -393,7 +393,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
     // tree of unassigned agents
     cto = new ConsoleTreeObject("Agents (unassigned)", 
-		"org.cougaar.tools.csmart.ui.component.AgentComponent");
+		"org.cougaar.tools.csmart.society.AgentComponent");
     root = new DefaultMutableTreeNode(cto, true);
     model = createModel(experiment, root, true);
     agentTree = new ConsoleDNDTree(model);
