@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
@@ -59,8 +61,8 @@ public class PopulateDb extends PDbBase {
     private String csmiAssemblyId;
 
     private Map propertyInfos = new HashMap();
-    private Set preexistingItems = new HashSet();
-    private Set writableComponents = new HashSet();
+    private Set alibComponents = new HashSet();
+    private Map componentArgs = new HashMap();
     private boolean writeEverything = false;
 
     /**
@@ -162,9 +164,14 @@ public class PopulateDb extends PDbBase {
     }
 
     /**
-     * Constructor from an assembly id.
-     * @param assemblyId is used to identify all components added to
-     * the database.
+     * Constructor
+     * @param cmtType the cmt assembly type
+     * @param hnaType the hna assembly type
+     * @param csmiType the csmi assembly type
+     * @param experimentName the name of the experiment being written
+     * @param exptId the experiment id of the source experiment
+     * @param trialId the trial id
+     * @param createNew clone the experiment first
      **/
     public PopulateDb(String cmtType, String hnaType, String csmiType,
                       String experimentName,
@@ -339,21 +346,6 @@ public class PopulateDb extends PDbBase {
     }
 
     public void setPreexistingItems(ComponentData data) {
-        preexistingItems.add(data);
-        for (int i = 0, n = data.parameterCount(); i < n; i++) {
-            preexistingItems.add(data.getParameter(i));
-        }
-        AgentAssetData aad = data.getAgentAssetData();
-        if (aad != null) {
-            for (int i = 0, n = aad.getRelationshipCount(); i < n; i++) {
-                RelationshipData rd = aad.getRelationship(i);
-                preexistingItems.add(rd);
-            }
-        }
-        ComponentData[] children = data.getChildren();
-        for (int i = 0; i < children.length; i++) {
-            setPreexistingItems(children[i]);
-        }
     }
 
     public void setModRecipes(List recipes) throws SQLException, IOException {
@@ -375,89 +367,138 @@ public class PopulateDb extends PDbBase {
     }
 
     /**
-     * Populate the tables for a particular item. Children are
+     * Populate the HNA assembly for a particular item. Children are
      * populated recursively. Agent components get additional
      * processing related to the organization they represent.
      * @param data the ComponentData of the starting point
      * @param insertionOrder the position among siblings that the
      * component should occupy.
      **/
-    public boolean populate(ComponentData data, float insertionOrder)
+    public boolean populateHNA(ComponentData data, float insertionOrder)
         throws SQLException
     {
-        return populate(data, insertionOrder, false);
+        return populate(data, insertionOrder, hnaAssemblyId);
     }
 
     /**
-     * This is inordinately difficult because of the haphazard way the
-     * the db is populated. Our aim is two-fold: to write an assembly
-     * describing the host-node-agent assignments and to write a
-     * different assembly describing the effect of recipes.
-     * Both types of assemblies have agent-node assigments. The
-     * distinction is made using the preexistingItems Set.
-     * Components in this set are either part of the CMT assembly
-     * (which we don't touch) or are part of the CSMART assembly if
-     * they involve agent-node assignments
+     * Populate the CSMI assembly for a particular item. Children are
+     * populated recursively. Agent components get additional
+     * processing related to the organization they represent.
+     * @param data the ComponentData of the starting point
+     * @param insertionOrder the position among siblings that the
+     * component should occupy.
      **/
-    private boolean populate(ComponentData data, float insertionOrder, boolean force)
+    public boolean populateCSMI(ComponentData data, float insertionOrder)
         throws SQLException
     {
-        boolean result = writeEverything;
-        boolean isAgent = data.getType().equals(ComponentData.AGENT);
-        boolean isSociety = data.getType().equals(ComponentData.SOCIETY);
-        boolean isAdded = isAdded(data);
-        substitutions.put(":assembly_id:", sqlQuote(isAdded ? csmiAssemblyId : hnaAssemblyId));
-        addComponentDataSubstitutions(data);
-        ResultSet rs = executeQuery(stmt, dbp.getQuery("checkLibComponent", substitutions));
-        if (rs.next()) {    // Already exists
-        } else {            // Need to add it
-            executeUpdate(dbp.getQuery("insertLibComponent", substitutions));
-        }
-        rs.close();
-        rs = executeQuery(stmt, dbp.getQuery("checkAlibComponent", substitutions));
-        if (rs.next()) {    // Already exists
-            // Use the one that is there
-        } else {
-            executeUpdate(dbp.getQuery("insertAlibComponent", substitutions));
-            result = true;
-        }
-        rs.close();
-        Object[] params = data.getParameters();
-        for (int i = 0; i < params.length; i++) {
-//              System.out.println(data.getName() + " param value = " + params[i]);
-            substitutions.put(":argument_value:", sqlQuote(params[i].toString()));
-            substitutions.put(":argument_order:", sqlQuote(String.valueOf(i + 1)));
-            rs = executeQuery(stmt, dbp.getQuery("checkComponentArg", substitutions));
-            if(rs.next()) { // Already Exists
-              // Use the one that is there
-            } else {
-              executeUpdate(dbp.getQuery("insertComponentArg", substitutions));
-              result = true;
-            }
-        }
-        if (isAgent) {
-            // Must be a recipe agent because that's all that gets added
-            populateAgent(data, isAdded);
-            result = true;
-            force = true;   // Force writing of all plugins, too
-        }
+        return populate(data, insertionOrder, csmiAssemblyId);
+    }
 
+    /**
+     * This is inordinately difficult
+     **/
+    private boolean populate(ComponentData data, float insertionOrder, String assemblyId)
+        throws SQLException
+    {
+        boolean result = false;
         ComponentData parent = data.getParent();
-        if (parent != null) {
-            String parentType = parent.getType();
-            substitutions.put(":parent_component_alib_id:",
-                              sqlQuote(getComponentAlibId(parent)));
-            substitutions.put(":component_alib_id:",
-                              sqlQuote(getComponentAlibId(data)));
-            substitutions.put(":insertion_order:", String.valueOf(insertionOrder));
-            rs = executeQuery(stmt, dbp.getQuery("checkComponentHierarchy",
-                                                 substitutions));
-            if (!rs.next()) {
-                executeUpdate(dbp.getQuery("insertComponentHierarchy",
-                                           substitutions));
-                result = true;
+        String id = getComponentAlibId(data);
+        boolean isAdded = false;
+        addComponentDataSubstitutions(data);
+        substitutions.put(":assembly_id:", sqlQuote(assemblyId));
+        substitutions.put(":insertion_order:", String.valueOf(insertionOrder));
+        SortedSet oldArgs = (SortedSet) componentArgs.get(id);
+        if (oldArgs == null) {  // Don't know what the current args are
+            insureAlib();       // Insure that the alib and lib components are defined
+            ResultSet rs;
+            rs = executeQuery(stmt, dbp.getQuery("queryComponentArgs", substitutions));
+            oldArgs = new TreeSet();
+            while (rs.next()) {
+                oldArgs.add(new Argument(rs.getString(1), rs.getFloat(2)));
             }
             rs.close();
+            if (parent != null) {
+                rs = executeQuery(stmt, dbp.getQuery("checkComponentHierarchy",
+                                                     substitutions));
+                if (!rs.next()) {
+                    executeUpdate(dbp.getQuery("insertComponentHierarchy",
+                                               substitutions));
+                    isAdded = true;
+                    result = true; // Modified the experiment in the database 
+                }
+                rs.close();
+            }
+            componentArgs.put(id, oldArgs); // Avoid doing this again
+        }
+        // Now build a SortedSet of what the args should be
+        SortedSet newArgs = new TreeSet();
+        Object[] params = data.getParameters();
+        for (int i = 0; i < params.length; i++) {
+            newArgs.add(new Argument(params[i].toString(), i));
+        }
+        // The new args must only contain additions. There must be no
+        // deletions or alterations of the old args nor is it allowed
+        // to change the relative order of the existing arguments. If
+        // there are fewer newArgs than oldArgs, there is clearly a
+        // violation of this premise.
+        int excess = newArgs.size() - oldArgs.size();
+        if (excess < 0) {
+            throw new IllegalArgumentException("Attempt to remove "
+                                               + (-excess)
+                                               + " args from "
+                                               + data);
+        }
+        // Prepare to iterate through both old and new args.
+        // argsToInsert accumulates the new arguments to be inserted.
+        // Each of the new args is compared with the next unaccounted
+        // for old arg. If the new arg has a value different from the
+        // next old arg it is assumed to be an insertion since
+        // deletions and modifications are disallowed. But, if the
+        // excess new arg count has been reduced to zero, then no new
+        // args are possible because there won't be enought old args
+        // to match the remaining new ones so we throw an exception.
+        // The argument order is interpolated between the preceding
+        // and following old argument.
+        Iterator newIter = newArgs.iterator();
+        Iterator oldIter = oldArgs.iterator();
+        List argsToInsert = new ArrayList();
+        float prev = Float.NaN;
+        while (oldIter.hasNext()) {
+            Argument newArg = (Argument) newIter.next();
+            Argument oldArg = (Argument) oldIter.next();
+            while (!newArg.argument.equals(oldArg.argument)) {
+                // Assume arguments were inserted
+                excess--;
+                if (excess < 0) {
+                    throw new IllegalArgumentException("Component args cannot be modified or removed: " + data);
+                }
+                if (Float.isNaN(prev)) prev = oldArg.order - 1f;
+                argsToInsert.add(new Argument(newArg.argument, (prev + oldArg.order) * 0.5f));
+                newArg = (Argument) newIter.next();
+            }
+            prev = oldArg.order;
+        }
+        // Finally, any remaining new args are appended
+        if (Float.isNaN(prev)) prev = 0f;
+        while (newIter.hasNext()) {
+            Argument newArg = (Argument) newIter.next();
+            prev += 1f;
+            argsToInsert.add(new Argument(newArg.argument, prev));
+        }
+        // Now write all the new arguments that were not previously
+        // present to the database.
+        for (Iterator i = argsToInsert.iterator(); i.hasNext(); ) {
+            Argument arg = (Argument) i.next();
+            substitutions.put(":argument_value:", sqlQuote(arg.argument));
+            substitutions.put(":argument_order:", sqlQuote(String.valueOf(arg.order)));
+            executeUpdate(dbp.getQuery("insertComponentArg", substitutions));
+            oldArgs.add(arg);
+            result = true;
+        }
+
+        if (data.getType().equals(ComponentData.AGENT)) {
+            populateAgent(data, isAdded);
+            result = true;
         }
 
         ComponentData[] children = data.getChildren();
@@ -465,11 +506,32 @@ public class PopulateDb extends PDbBase {
         // The following assumes that the insertion order of old
         // children equals their index in the array and that the
         // insertion order of all new children should be the their
-        // index  in the array as well.
+        // index in the array as well.
         for (int i = 0, n = children.length; i < n; i++) {
-            result |= populate(children[i], i, force);
+            result |= populate(children[i], i, assemblyId);
         }
         return result;
+    }
+
+    private void insureLib() throws SQLException {
+        ResultSet rs = executeQuery(stmt, dbp.getQuery("checkLibComponent", substitutions));
+        if (!rs.next()) {       // Need to add it
+            executeUpdate(dbp.getQuery("insertLibComponent", substitutions));
+        }
+        rs.close();
+    }
+
+    private void insureAlib() throws SQLException {
+        String id = (String) substitutions.get(":component_alib_id:");
+        if (alibComponents.contains(id)) return; // Already present
+        // may need to be added
+        insureLib();
+        ResultSet rs = executeQuery(stmt, dbp.getQuery("checkAlibComponent", substitutions));
+        if (!rs.next()) {
+            executeUpdate(dbp.getQuery("insertAlibComponent", substitutions));
+        }
+        alibComponents.add(id); // Avoid re-querying later
+        rs.close();
     }
 
     private void addComponentDataSubstitutions(ComponentData data) {
@@ -480,20 +542,32 @@ public class PopulateDb extends PDbBase {
         substitutions.put(":component_class:", sqlQuote(data.getClassName()));
         substitutions.put(":insertion_point:", getComponentInsertionPoint(data));
         substitutions.put(":description:", sqlQuote("Added " + data.getType()));
+        ComponentData parent = data.getParent();
+        if (parent != null) {
+            substitutions.put(":parent_component_alib_id:",
+                              sqlQuote(getComponentAlibId(parent)));
+        } else {
+            substitutions.remove(":parent_component_alib_id:");
+        }
     }
 
     /**
      * Special processing for an agent component because agents
-     * represent organizations have relationships and property groups.
+     * represent organizations having relationships and property groups.
+     * The substitutions Map already has most of the needed substitutions
      **/
     private void populateAgent(ComponentData data, boolean isAdded) throws SQLException {
         AgentAssetData assetData = data.getAgentAssetData();
         if (assetData == null) return;
-        substitutions.put(":component_lib_id:", getComponentLibId(data));
-        substitutions.put(":agent_org_prototype:", sqlQuote(assetData.getAssetClass()));
+        substitutions.put(":agent_org_class:", sqlQuote(assetData.getAssetClass()));
+        substitutions.put(":agent_lib_name:", sqlQuote(data.getName()));
         if (isAdded) {
             // finish populating a new agent
-            executeUpdate(dbp.getQuery("insertAgentOrg", substitutions));
+            ResultSet rs = executeQuery(stmt, dbp.getQuery("checkAgentOrg", substitutions));
+            if (!rs.next()) {
+                executeUpdate(dbp.getQuery("insertAgentOrg", substitutions));
+            }
+            rs.close();
             PropGroupData[] pgs = assetData.getPropGroups();
             for (int i = 0; i < pgs.length; i++) {
                 PropGroupData pg = pgs[i];
@@ -586,11 +660,6 @@ public class PopulateDb extends PDbBase {
         rs.close();
         stmt.close();
         return (String[][]) rows.toArray(new String[rows.size()][]);
-    }
-
-    private boolean isAdded(ComponentData data) {
-        if (preexistingItems.contains(data)) return false;
-        return true;
     }
 
     /**
@@ -709,7 +778,6 @@ public class PopulateDb extends PDbBase {
               String nodeName =
                 findAncestorOfType(data, ComponentData.NODE).getName();
               result = nodeName + "|" + data.getClassName();
-              System.out.println("Result = " + result);
             } else if (componentType.equals(ComponentData.AGENTBINDER)) {
                 String agentName =
                     findAncestorOfType(data, ComponentData.AGENT).getName();
@@ -757,5 +825,31 @@ public class PopulateDb extends PDbBase {
             if (parent.getType().equals(type)) return parent;
         }
         return null;
+    }
+
+    private static class Argument implements Comparable {
+        public String argument;
+        public float order;
+        public Argument(String a, float f) {
+            argument = a;
+            order = f;
+        }
+
+        public int compareTo(Object o) {
+            Argument that = (Argument) o;
+            float diff = this.order - that.order;
+            if (diff < 0) return -1;
+            if (diff > 0) return 1;
+            return this.argument.compareTo(that.argument);
+        }
+
+        public boolean equals(Object o) {
+            if (o instanceof Argument) return compareTo(o) == 0;
+            return false;
+        }
+
+        public String toString() {
+            return "[" + order + "]=" + argument;
+        }
     }
 }

@@ -195,7 +195,6 @@ public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
         comp.setParent(data);
         comp.setOwner(this);
         data.addChild(comp);
-        System.out.println("Inserted " + comp + " into " + data.getName());
       }
     }
     if (data.childCount() > 0) {

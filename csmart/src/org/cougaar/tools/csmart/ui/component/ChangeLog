@@ -1,10 +1,15 @@
-2001-11-27  Ray Tomlinson  <RTomlinson@bbn.com>
+2001-11-28  Ray Tomlinson  <RTomlinson@bbn.com>
 
-	* PDbBase.java:
-	Make query logging option controlled by
-	csmart.PopulateDb.log.enable property. If true, all queries
-	executes are logged to a file named PopulateDb<datetime>.log
-	preceded by the time to execute the query.
+	* PopulateDb.java:
+	Substantial rewrite of the saving of component data to the
+	database. Redesigned to permit multiple calls to the populate
+	method where the increment produced between call may be very
+	small.
+	Added paranoia checks for deleting or reordering arguments.
+
+	* AgentAssetData.java:
+	getPropGroups has apparently never been called. It threw a cast
+	class exception trying to case a String[] into a PropGroupData[].
 
 2001-11-26  Ray Tomlinson  <RTomlinson@bbn.com>
 

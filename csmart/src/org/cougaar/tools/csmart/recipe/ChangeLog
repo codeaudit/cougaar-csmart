@@ -1,3 +1,8 @@
+2001-11-28  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* ComponentInsertionRecipe.java:
+	Remove debug println.
+
 2001-11-14  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* SpecificInsertionRecipe.java: 

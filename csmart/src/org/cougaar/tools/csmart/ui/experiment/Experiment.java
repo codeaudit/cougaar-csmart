@@ -720,20 +720,19 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       // root soc object, and do a getOwner and go from there. Ugly.
     
       // Now ask each component in turn to add its stuff
-      for (int i = 0; i < components.size(); i++) {
+      for (int i = 0, n = components.size(); i < n; i++) {
         ComponentProperties soc = (ComponentProperties) components.get(i);
 //          System.out.println(soc + ".addComponentData");
         soc.addComponentData(theSoc);
       }
-      pdb.setPreexistingItems(theSoc); // Record these items so additions can be detected
+
+      if (pdb.populateHNA(theSoc, 1)) setCloned(true);
 
       // then give everyone a chance to modify what they've collectively produced
-      for (int i = components.size() - 1; i >= 0; i--) {
+      for (int i = 0, n = components.size(); i < n; i++) {
         ComponentProperties soc = (ComponentProperties) components.get(i);
         soc.modifyComponentData(theSoc, pdb);
-      }
-      if (pdb.populate(theSoc, 1)) {
-        setCloned(true);        // If not cloned before, we certainly are now
+        if (pdb.populateCSMI(theSoc, 1)) setCloned(true);
       }
       pdb.setModRecipes(recipes);
       pdb.close();
@@ -773,6 +772,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         AgentComponentData ac = new AgentComponentData();
         ac.setName(agents[j].getShortName());
         ac.setClassName(ClusterImpl.class.getName());
+        ac.addParameter(agents[j].getShortName()); // Agents have one parameter, the agent name
         // FIXME!!
         ac.setOwner(null); // the society that contains this agent FIXME!!!
         ac.setParent(nc);

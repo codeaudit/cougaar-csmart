@@ -205,7 +205,7 @@ public class AgentAssetData implements Serializable {
    * @return property groups
    */
   public PropGroupData[] getPropGroups() {
-    return (PropGroupData[])propGroups.toArray(new String[propGroups.size()]);
+    return (PropGroupData[]) propGroups.toArray(new PropGroupData[propGroups.size()]);
   }
 
   /**

@@ -1,3 +1,12 @@
+2001-11-28  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* Experiment.java:
+	Accomodate changes to PopulateDb. Call populate after applying
+	each recipe. Always apply recipes in forward order instead of
+	backward.
+	Add one parameter to all agent component data consisting of the
+	agent name.
+
 2001-11-27  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* Experiment.java:
