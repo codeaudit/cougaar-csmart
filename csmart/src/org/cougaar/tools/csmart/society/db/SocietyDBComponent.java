@@ -144,6 +144,9 @@ public class SocietyDBComponent
   }
 
   public ModifiableComponent copy(String name) {
+    if (log.isDebugEnabled()) {
+      log.debug("Copying society " + this.getSocietyName() + " with assembly " + getAssemblyId() + " into new name " + name);
+    }
     String assemblyID = getAssemblyId();
     ModifiableComponent sc = new SocietyDBComponent(name, assemblyID);
     sc.initProperties();

@@ -158,6 +158,9 @@ public class SocietyFileComponent
    * @return a <code>ModifiableComponent</code> which is a copy of this object
    */
   public ModifiableComponent copy(String name) {
+    if (log.isDebugEnabled()) {
+      log.debug("Copying society " + this.getSocietyName() + " with assembly " + getAssemblyId() + " into new name " + name);
+    }
     ModifiableComponent societyCopy; 
 
     if (filenames != null)
