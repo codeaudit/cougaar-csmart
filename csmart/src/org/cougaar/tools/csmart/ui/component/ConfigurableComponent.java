@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -463,6 +464,20 @@ public abstract class ConfigurableComponent
     return new FilteredIterator(getPropertyNames(), localPropertyNamePredicate);
   }
 
+  public Iterator getSortedLocalPropertyNames() {
+    ArrayList names = new ArrayList();
+    Iterator iter = new FilteredIterator(getPropertyNames(), localPropertyNamePredicate);
+    
+    while(iter.hasNext()) {
+      names.add(iter.next());
+    }
+
+    Collections.sort(names);
+
+    return names.iterator();
+
+  }
+
   /**
    * Test if a Property is local to this component. Local properties
    * have names beginning with the name of this component and have one
@@ -546,14 +561,13 @@ public abstract class ConfigurableComponent
     return props;
   }
 
-
   public ComponentProperties copy(ComponentProperties result) {
     // Make sure we're copying apples into apples
     // The result can be a sub-class, but we want it
     // to at least have the same set of properties
     if (! (this.getClass().isAssignableFrom(result.getClass())))
       return null;
-    Iterator iter = getLocalPropertyNames();
+    Iterator iter = getSortedLocalPropertyNames();
     while(iter.hasNext()) {
       CompositeName name = (CompositeName)iter.next();
       Property myProp = getProperty(name);
@@ -577,8 +591,9 @@ public abstract class ConfigurableComponent
 	  hisProp.setValue(null); // no specific value
 	} else {
 	  Object o = PropertyHelper.validateValue(myProp, myProp.getValue());
-	  if (o != null)
-	    hisProp.setValue(o);
+	  if (o != null) {
+            hisProp.setValue(o);
+          }
 	}
       } catch (InvalidPropertyValueException e) {
 	System.out.println(getClass().getName() + e);
