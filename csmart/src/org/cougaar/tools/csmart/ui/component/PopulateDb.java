@@ -61,7 +61,7 @@ public class PopulateDb {
     private String exptId;
     private String trialId;
     private String hnaAssemblyId;
-    private String csmAssemblyId;
+    private String csmiAssemblyId;
 
     private Connection dbConnection;
     private Statement stmt;
@@ -188,7 +188,7 @@ public class PopulateDb {
         if (trialId == null) throw new IllegalArgumentException("null trialId");
         log = new PrintWriter(new FileWriter("PopulateDbQuery.log"));
         dbp = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
-        dbp.setDebug(true);
+//          dbp.setDebug(true);
         String database = dbp.getProperty("database");
         String username = dbp.getProperty("username");
         String password = dbp.getProperty("password");
@@ -207,6 +207,7 @@ public class PopulateDb {
         updateStmt = dbConnection.createStatement();
         this.exptId = exptId;
         this.trialId = trialId;
+        substitutions.put(":expt_id:", exptId);
         substitutions.put(":cmt_type:", cmtType);
         if (createNew) {
             cloneTrial(hnaType, trialId, experimentName);
@@ -216,7 +217,10 @@ public class PopulateDb {
             writeEverything = false;
         }
         hnaAssemblyId = addAssembly(hnaType);
-        csmAssemblyId = addAssembly(csmiType);
+        if (hnaType.equals(csmiType))
+            csmiAssemblyId = hnaAssemblyId;
+        else
+            csmiAssemblyId = addAssembly(csmiType);
         setAssemblyMatch();
     }
 
@@ -235,8 +239,8 @@ public class PopulateDb {
         return hnaAssemblyId;
     }
 
-    public String getCSMAssemblyId() {
-        return csmAssemblyId;
+    public String getCSMIAssemblyId() {
+        return csmiAssemblyId;
     }
 
     private void cloneTrial(String idType, String oldTrialId, String experimentName)
@@ -321,7 +325,6 @@ public class PopulateDb {
         }
         if (trialId == null) trialId = trialIdFormat.format(1);
         substitutions.put(":trial_id:", trialId);
-        substitutions.put(":expt_id:", exptId);
         substitutions.put(":description:", "Modified Trial");
         substitutions.put(":trial_name:", trialName);
         executeUpdate(dbp.getQuery(INSERT_TRIAL_ID, substitutions));
@@ -354,7 +357,6 @@ public class PopulateDb {
         }
         if (assemblyId == null) assemblyId = assemblyIdFormat.format(1);
         substitutions.put(":assembly_id:", sqlQuote(assemblyId));
-        substitutions.put(":expt_id:", exptId);
         substitutions.put(":trial_id:", trialId);
         executeUpdate(dbp.getQuery(INSERT_ASSEMBLY_ID, substitutions));
         executeUpdate(dbp.getQuery(INSERT_TRIAL_ASSEMBLY, substitutions));
@@ -494,7 +496,7 @@ public class PopulateDb {
         boolean isAgent = data.getType().equals(ComponentData.AGENT);
         boolean isSociety = data.getType().equals(ComponentData.SOCIETY);
         boolean isAdded = isAdded(data);
-        substitutions.put(":assembly_id:", sqlQuote(isAdded ? csmAssemblyId : hnaAssemblyId));
+        substitutions.put(":assembly_id:", sqlQuote(isAdded ? csmiAssemblyId : hnaAssemblyId));
         if (!isSociety) {
             substitutions.put(":component_name:", sqlQuote(data.getName()));
             substitutions.put(":component_lib_id:", getComponentLibId(data));
