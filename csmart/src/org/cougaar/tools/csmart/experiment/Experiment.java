@@ -1547,6 +1547,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       return;
     }
     modified = false;
+    fireModification(); // tell listeners experiment is now saved
   }
 
   private void saveToDb() {
@@ -1911,6 +1912,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
     // put the one node on that host
     host.addNode(node);
+  }
+
+  public boolean isModified() {
+    return modified;
   }
 
 } // end of Experiment.java
