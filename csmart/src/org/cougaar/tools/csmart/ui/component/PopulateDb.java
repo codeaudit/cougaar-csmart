@@ -4,8 +4,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.Connection;
-import java.util.Map;
+import java.text.DecimalFormat;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.io.IOException;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.Parameters;
@@ -27,6 +30,10 @@ public class PopulateDb {
     public static final String INSERT_ATTRIBUTE = "insertAttribute";
     public static final String INSERT_RELATIONSHIP = "insertRelationship";
     public static final String QUERY_LIB_PG_ATTRIBUTE = "queryLibPGAttribute";
+    public static final String QUERY_MAX_ASSEMBLY_ID = "queryMaxAssemblyId";
+    public static final String INSERT_ASSEMBLY_ID = "insertAssemblyId";
+    public static final String INSERT_TRIAL_ASSEMBLY = "insertTrialAssembly";
+    public static final String CHECK_ALIB_COMPONENT = "checkAlibComponent";
     public static final String CLONE_SET_ID = "1";
     private Map substitutions = new HashMap();
     private DBProperties dbp;
@@ -35,41 +42,77 @@ public class PopulateDb {
     private Connection dbConnection;
     private Statement stmt;
     private Map propertyInfos = new HashMap();
+    private Set readOnlyComponents = new HashSet();
+    private boolean debug = false;
 
+    /**
+     * Inner class to serve as the key to information about
+     * PropertyInfo that has been resolved. The key consists of the
+     * property group name and the property name within that group.
+     **/
     private static class PropertyKey {
         private String pgName;
         private String propName;
         private int hc;
 
+        /**
+         * Constructor from property group name and property name
+         **/
         public PropertyKey(String pgName, String propName) {
             this.pgName = pgName;
             this.propName = propName;
             hc = pgName.hashCode() + propName.hashCode();
         }
 
+        /**
+         * Get the property group name part of the key
+         * @return the property group name of this key
+         **/
         public String getPGName() {
             return pgName;
         }
 
+        /**
+         * Get the property name part of the key
+         * @return the property name of this key
+         **/
         public String getPropName() {
             return propName;
         }
 
+        /**
+         * The usual Object.hashCode() method
+         **/
         public int hashCode() {
             return hc;
         }
 
+        /**
+         * Equality comparison.
+         * @return true if both the property group name and the
+         * property name are equal
+         **/
         public boolean equals(Object o) {
             if (!(o instanceof PropertyKey)) return false;
             PropertyKey that = (PropertyKey) o;
             return this.pgName.equals(that.pgName) &&
                 that.propName.equals(that.propName);
         }
+
+        /**
+         * @return concatenation of property group name and property
+         * name separated with vertical bar.
+         **/
         public String toString() {
             return pgName + "|" + propName;
         }
     }
 
+    /**
+     * Inner class for recording information about a property within a
+     * property group. Used to record information from the database to
+     * avoid fetching the same information multiple times.
+     **/
     private static class PropertyInfo {
         PropertyKey key;
         String attributeLibId;
@@ -100,8 +143,16 @@ public class PopulateDb {
         }
     }
 
-    public PopulateDb(String assemblyId) throws SQLException, IOException, ClassNotFoundException {
+    /**
+     * Constructor from an assembly id.
+     * @param assemblyId is used to identify all components added to
+     * the database.
+     **/
+    public PopulateDb(String assemblyIdPrefix, String exptId, String trialId)
+        throws SQLException, IOException
+    {
         dbp = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
+        dbp.setDebug(true);
         String database = dbp.getProperty("database");
         String username = dbp.getProperty("username");
         String password = dbp.getProperty("password");
@@ -110,38 +161,102 @@ public class PopulateDb {
         String driverClass = Parameters.findParameter(driverParam);
         if (driverClass == null)
             throw new SQLException("Unknown driver " + driverParam);
-        Class.forName(driverClass);
+        try {
+            Class.forName(driverClass);
+        } catch (ClassNotFoundException cnfe) {
+            throw new SQLException("Driver class not found: " + driverClass);
+        }
         dbConnection = DBConnectionPool.getConnection(database, username, password);
         stmt = dbConnection.createStatement();
-        this.assemblyId = assemblyId;
-        substitutions.put(":assembly_id", sqlQuote(assemblyId));
+        setAssemblyId(assemblyIdPrefix, exptId, trialId);
     }
 
-    private static void executeUpdate(Statement stmt, String query) throws SQLException {
+    public String getAssemblyId() {
+        return assemblyId;
+    }
+
+    private void setAssemblyId(String assemblyIdPrefix, String exptId, String trialId)
+        throws SQLException
+    {
+        substitutions.put(":assembly_id_pattern", assemblyIdPrefix + "____");
+        DecimalFormat assemblyIdFormat =
+            new DecimalFormat(assemblyIdPrefix + "0000");
+        ResultSet rs =
+            executeQuery(stmt, dbp.getQuery(QUERY_MAX_ASSEMBLY_ID,
+                                            substitutions));
+        assemblyId = null;
+        if (rs.next()) {
+            String maxId = rs.getString(1);
+            if (maxId != null) {
+                try {
+                    int n = assemblyIdFormat.parse(maxId).intValue();
+                    assemblyId = assemblyIdFormat.format(n + 1);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    // Use default
+                }
+            }
+        }
+        if (assemblyId == null) assemblyId = assemblyIdFormat.format(1);
+        substitutions.put(":assembly_id", sqlQuote(assemblyId));
+        substitutions.put(":expt_id", exptId);
+        substitutions.put(":trial_id", trialId);
+        executeUpdate(stmt, dbp.getQuery(INSERT_ASSEMBLY_ID, substitutions));
+        executeUpdate(stmt, dbp.getQuery(INSERT_TRIAL_ASSEMBLY, substitutions));
+    }
+
+    public void setReadOnlyComponents(ComponentData data) {
+        System.out.println("readonly component " + data.getName());
+        readOnlyComponents.add(data);
+        ComponentData[] children = data.getChildren();
+        for (int i = 0; i < children.length; i++) {
+            setReadOnlyComponents(children[i]);
+        }
+    }
+
+    /**
+     * Utility method to perform an executeUpdate statement. Also
+     * additional code to be added for each executeUpdate for
+     * debugging purposes.
+     **/
+    private void executeUpdate(Statement stmt, String query) throws SQLException {
         if (query == null) throw new IllegalArgumentException("executeUpdate: null query");
         try {
             stmt.executeUpdate(query);
         } catch (SQLException sqle) {
-            sqle.printStackTrace();
-            System.exit(-1);
+            if (debug) sqle.printStackTrace();
             throw sqle;
         }
     }
 
-    private static ResultSet executeQuery(Statement stmt, String query) throws SQLException {
+    /**
+     * Utility method to perform an executeQuery statement. Also
+     * additional code to be added for each executeQuery for
+     * debugging purposes.
+     **/
+    private ResultSet executeQuery(Statement stmt, String query) throws SQLException {
         if (query == null) throw new IllegalArgumentException("executeQuery: null query");
         try {
             return stmt.executeQuery(query);
         } catch (SQLException sqle) {
-            sqle.printStackTrace();
+            if (debug) sqle.printStackTrace();
             throw sqle;
         }
     }
 
+    /**
+     * Enables debugging
+     **/
     public void setDebug(boolean newDebug) {
+        debug = newDebug;
         dbp.setDebug(newDebug);
     }
 
+    /**
+     * Indicates that this is no longer needed. Closes the database
+     * connection. Well-behaved users of this class will close when
+     * done. Otherwise, the finalizer will close it.
+     **/
     public void close() throws SQLException {
         dbConnection.commit();
         dbConnection.close();
@@ -157,50 +272,63 @@ public class PopulateDb {
     }
 
     /**
-     * Populating the table for a particular item is pretty much just
-     * the insertion of a row into the ALIB_COMPONENT and ASB_HIERARCHY table.
+     * Populate the tables for a particular item. Children are
+     * populated recursively. Agent components get additional
+     * processing related to the organization they represent.
+     * @param data the ComponentData of the starting point
+     * @param insertionOrder the position among siblings that the
+     * component should occupy.
      **/
-    public void populate(ComponentData data, float insertionOrder) throws SQLException {
-        ComponentData parent = data.getParent();
-        substitutions.put(":component_name", sqlQuote(data.getName()));
-        substitutions.put(":component_lib_id", getComponentLibId(data));
-        substitutions.put(":component_alib_id", getComponentAlibId(data));
-        substitutions.put(":component_category", getComponentCategory(data));
-        executeUpdate(stmt, dbp.getQuery(INSERT_ALIB_COMPONENT, substitutions));
-        if (parent != null) {
-            substitutions.put(":parent_component_alib_id", getComponentAlibId(parent));
-            substitutions.put(":insertion_order", String.valueOf(insertionOrder));
-            executeUpdate(stmt, dbp.getQuery(INSERT_COMPONENT_HIERARCHY, substitutions));
+    public void populate(ComponentData data, float insertionOrder)
+        throws SQLException
+    {
+        if (needsPopulating(data)) {
+            ComponentData parent = data.getParent();
+            substitutions.put(":component_name", sqlQuote(data.getName()));
+            substitutions.put(":component_lib_id", getComponentLibId(data));
+            substitutions.put(":component_alib_id", getComponentAlibId(data));
+            substitutions.put(":component_category", getComponentCategory(data));
+            ResultSet rs = executeQuery(stmt, dbp.getQuery(CHECK_ALIB_COMPONENT, substitutions));
+            if (rs.next()) {    // Already exists
+                // Use the one that is there
+            } else {
+                executeUpdate(stmt, dbp.getQuery(INSERT_ALIB_COMPONENT, substitutions));
+            }
+            rs.close();
+            if (parent != null) {
+                substitutions.put(":parent_component_alib_id", getComponentAlibId(parent));
+                substitutions.put(":insertion_order", String.valueOf(insertionOrder));
+                executeUpdate(stmt, dbp.getQuery(INSERT_COMPONENT_HIERARCHY, substitutions));
+            }
+            Object[] params = data.getParameters();
+            for (int i = 0; i < params.length; i++) {
+                substitutions.put(":argument_value", sqlQuote(params[i].toString()));
+                substitutions.put(":argument_order", sqlQuote(String.valueOf(i + 1)));
+                executeUpdate(stmt, dbp.getQuery(INSERT_COMPONENT_ARG, substitutions));
+            }
+            if (data.getType().equals(ComponentData.AGENT)) {
+                populateAgent(data);
+            }
+        } else {
+            System.out.println("Database write not needed for "
+                               + data.getName());
         }
-        Object[] params = data.getParameters();
-        for (int i = 0; i < params.length; i++) {
-            substitutions.put(":argument_value", sqlQuote(params[i].toString()));
-            substitutions.put(":argument_order", sqlQuote(String.valueOf(i + 1)));
-            executeUpdate(stmt, dbp.getQuery(INSERT_COMPONENT_ARG, substitutions));
-        }
-        if (data.getType().equals(ComponentData.AGENT)) {
-            populateAgent(data);
-        }
+
         ComponentData[] children = data.getChildren();
-        System.out.println(children.length + " children");
-        int i0 = -1;
-        float insertionPoint = 0f;
-        for (int i = 0, n = children.length; i <= n; i++) {
-            if (i == n || !needsPopulating(children[i])) {
-                if (i0 >= 0) {
-                    float step = 1f / (i - i0 + 1f);
-                    for (int j = i0; j < i; j++) {
-                        populate(children[j], insertionPoint + (j - i0 + 1f) * step);
-                    }
-                    i0 = -1;    // Nothing deferred
-                }
-            }
-            if (i < n && i0 < 0 && needsPopulating(children[i])) {
-                i0 = i;
-            }
+
+        // The following assumes that the insertion order of old
+        // children equals their index in the array and that the
+        // insertion order of all new children should be the their
+        // index  in the array as well.
+        for (int i = 0, n = children.length; i < n; i++) {
+            populate(children[i], i);
         }
     }
 
+    /**
+     * Special processing for an agent component because agents
+     * represent organizations have relationships and property groups.
+     **/
     private void populateAgent(ComponentData data) throws SQLException {
         AgentAssetData assetData = data.getAgentAssetData();
         if (assetData == null) return;
@@ -255,10 +383,20 @@ public class PopulateDb {
         }
     }
 
-    private boolean needsPopulating(ComponentData data) {
-        return true;
+    /**
+     * Override this to select which components should be written to
+     * the database. Default implementation writes all non-readonly
+     * components.
+     **/
+    protected boolean needsPopulating(ComponentData data) {
+        return !readOnlyComponents.contains(data);
     }
 
+    /**
+     * Get the PropertyInfo for a pg/prop pair. If the information is
+     * not in the propertyInfos cache, the cache is filled from the
+     * database.
+     **/
     private PropertyInfo getPropertyInfo(String pgName, String propName) throws SQLException {
         PropertyKey key = new PropertyKey(pgName, propName);
         PropertyInfo result = (PropertyInfo) propertyInfos.get(key);
@@ -267,18 +405,27 @@ public class PopulateDb {
             substitutions.put(":pg_name", pgName);
             substitutions.put(":attribute_name", propName);
             ResultSet rs = executeQuery(stmt, dbp.getQuery(QUERY_LIB_PG_ATTRIBUTE, substitutions));
-            if (!rs.next()) throw new RuntimeException("No such property: " + pgName + "|" + propName);
-            result = new PropertyInfo(key,
-                                      rs.getString(1),
-                                      rs.getString(2),
-                                      rs.getString(3));
+            while (rs.next()) {
+                PropertyKey key1 = new PropertyKey(rs.getString(1), rs.getString(2));
+                PropertyInfo info = new PropertyInfo(key1,
+                                                     rs.getString(3),
+                                                     rs.getString(4),
+                                                     rs.getString(5));
+                propertyInfos.put(key1, info);
+                if (key1.equals(key)) result = info;
+            }
             rs.close();
             stmt.close();
-            propertyInfos.put(key, result);
         }
         return result;
     }
 
+    /**
+     * Get the component lib id of the underlying lib component for
+     * the component described by the specified ComponentData. Each
+     * type of component has a different convention for constructing
+     * its lib id.
+     **/
     private String getComponentLibId(ComponentData data) {
         if (data == null) return sqlQuote(null);
         String componentType = data.getType();
@@ -295,7 +442,9 @@ public class PopulateDb {
     }
 
     /**
-     * Create a component alib id for this component
+     * Create a component alib id for this component. Again, each kind
+     * of component has a different convention for constructing its
+     * alib id.
      **/
     private String getComponentAlibId(ComponentData data) {
         if (data == null) return sqlQuote(null);
@@ -311,6 +460,12 @@ public class PopulateDb {
         return sqlQuote(assemblyId + "|" + getFullName(data));
     }
 
+    /**
+     * The convention for the alib id of an agent component is that it
+     * is the base agent name prefixed with a clone set id and a
+     * hyphen. We are not present concerned with clone set ids, so we
+     * use a fixed CLONE_SET_ID.
+     **/
     private String getAgentAlibId(String agentName) {
         return sqlQuote(CLONE_SET_ID + "-" + agentName);
     }
@@ -321,15 +476,27 @@ public class PopulateDb {
         return getFullName(parent) + "|" + data.getName();
     }
 
+    /**
+     * We have conveniently arranged that the type of a ComponentData
+     * is the same as the category of a database component. We simple
+     * wrap it in quotes and return.
+     **/
     private String getComponentCategory(ComponentData data) {
         return sqlQuote(data.getType());
     }
 
+    /**
+     * Quote a string for SQL. We don't double quotes that appear in
+     * strings because we have no cases where such quotes occur.
+     **/
     private static String sqlQuote(String s) {
         if (s == null) return "null";
         return "'" + s + "'";
     }
 
+    /**
+     * Search up the parent links for an ancestor of a particular type.
+     **/
     private ComponentData findAncestorOfType(ComponentData data, String type) {
         for (ComponentData parent = data.getParent(); parent != null; parent = parent.getParent()) {
             if (parent.getType().equals(type)) return parent;
