@@ -143,9 +143,11 @@ public class AgentCDataComponent
 
   protected void addAssetData() {
     // add asset data components
-    BaseComponent asset = 
-      (BaseComponent)new AssetCDataComponent(cdata.getAgentAssetData());
-    asset.initProperties();
-    addChild(asset);
+    if (cdata.getAgentAssetData() != null) {
+      BaseComponent asset = 
+	(BaseComponent)new AssetCDataComponent(cdata.getAgentAssetData());
+      asset.initProperties();
+      addChild(asset);
+    }
   }
 } // End of AgentCDataComponent
