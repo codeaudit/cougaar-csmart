@@ -60,7 +60,7 @@ public abstract class RecipeBase
 
   protected transient Logger log;
 
-  public boolean modified = true;
+  protected boolean modified = true;
 
   // modification event
   public static final int RECIPE_SAVED = 3;
@@ -68,6 +68,7 @@ public abstract class RecipeBase
   public RecipeBase (String name){
     super(name);
     createLogger();
+    installListeners();
   }
 
   private void createLogger() {
@@ -109,9 +110,9 @@ public abstract class RecipeBase
     Property myProperty = getProperty(addedProperty.getName().last().toString());
     if (myProperty != null) {
       setPropertyVisible(addedProperty, true);
+      addedProperty.addPropertyListener(myPropertyListener);
+      fireModification();
     }
-    addedProperty.addPropertyListener(myPropertyListener);
-    fireModification();
   }
 
   /**
@@ -233,7 +234,6 @@ public abstract class RecipeBase
   {
     ois.defaultReadObject();
     createLogger();
-    modified = false;
     installListeners();
   }
 
