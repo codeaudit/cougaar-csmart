@@ -459,9 +459,11 @@ public class ScalabilityXAgent
       writer.close();
     }
   }
-  public void writePrototypeIniFile(File configDir) throws IOException {
-    File iniFile = new File(configDir, getFullName() + "-prototype-ini.dat");
-    PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
+//   public void writePrototypeIniFile(File configDir) throws IOException {
+//     File iniFile = new File(configDir, getFullName() + "-prototype-ini.dat");
+//     PrintWriter writer = new PrintWriter(new FileWriter(iniFile));
+
+  public void writePrototypeIniFile(PrintWriter writer) {
     try {
       writer.println("[Prototype] CombatOrganization");
       writer.println();
@@ -502,6 +504,7 @@ public class ScalabilityXAgent
       plugin = new GenericComponentData();
       plugin.setOwner(this);
       plugin.setParent(data);
+      plugin.setType(ComponentData.PLUGIN);
       data.addChild(sxp.addComponentData(plugin));      
     }
    
