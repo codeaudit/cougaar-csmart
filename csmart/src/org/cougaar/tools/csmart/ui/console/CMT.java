@@ -613,7 +613,6 @@ public class CMT {
 	String username;
 	String password;
 	Connection conn = null;
-
 	if(isValidRCFile()) {
 	    try {	
 		dbProps = DBProperties.readQueryFile(DATABASE, QUERY_FILE);
@@ -626,7 +625,6 @@ public class CMT {
 		if(driverClass == null) 
 		    throw new SQLException("Unknown driver " + driverParam);
 		Class.forName(driverClass);
-		System.out.println("DBConnectionPool.getConnection("+database+","+username+","+password+")");
 		conn = DBConnectionPool.getConnection(database, username, password);
 	    } catch(IOException e) {
 		// Need to log something here.

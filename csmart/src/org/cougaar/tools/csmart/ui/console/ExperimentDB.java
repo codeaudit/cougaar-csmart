@@ -29,13 +29,6 @@ import java.util.Set;
 import org.cougaar.tools.csmart.societies.database.DBUtils;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.util.DBProperties;
-import silk.InputPort;
-import silk.Pair;
-import silk.Procedure;
-import silk.SI;
-import silk.Scheme;
-import silk.Symbol;
-import silk.U;
 
   /**
    * Interface to the database.
@@ -43,26 +36,6 @@ import silk.U;
    */
 
 public class ExperimentDB {
-    public static boolean cmtLoaded=false;
-    public static void loadCMT(){
-	if(!cmtLoaded){
-	    File cmfFile = new File(System.getProperty("org.cougaar.install.path"), "/csmart/data/cmt/scm/cmt.scm");
-	    try{
-		System.out.println("Trying to load file: "+cmfFile);
-		load(new FileReader(cmfFile));
-	    } catch (java.io.FileNotFoundException e){
-		e.printStackTrace();
-	    }
-	    try{
-		cmtLoaded=true;
-		call("setDBConnection",DBUtils.getConnection());
-	    } catch (java.sql.SQLException e){
-		e.printStackTrace();
-	    }
-
-	}
-    }
-
 
     /*
      * Returns hashtable where the keys are human readable names (Strings) and
@@ -218,55 +191,5 @@ public class ExperimentDB {
     public static void updateCMTAssembly(String experimentId) {
 	CMT.updateCMTAssembly(experimentId);
     }
-
-    /**Silk utility functions
-     **/
-
-    /** Returns the global procedure named s. **/
-    public static Procedure getGlobalProcedure(String s) {
-	return U.toProc(getGlobalValue(s)); }
-    public static Object getGlobalValue(String s) {
-	// KRA 01MAY01: Kludge. You can't do
-	// Symbol.intern(s).getGlobalValue() because global values of
-	// Generic methods are looked up at analyze() time.
-	return eval(Symbol.intern(s)); }
-    public static Object eval(Object it) {
-	return Scheme.evalToplevel(it); }
-
-    /** Load Scheme expressions from a  Reader, or String. **/
-    public static Object load(java.io.Reader in) {
-	return Scheme.load(new InputPort(in)); }
-    public static Object load(String in) {
-	//  	System.out.println("Trying to load: "+in);
-	return load(new java.io.StringReader(in)); }
-    public static Object call(String p) {
-	//  	System.out.println("call("+p+")");
-	loadCMT();
-	return getGlobalProcedure(p).apply(Pair.EMPTY); }
-    public static Object call(String p, Object a1) {
-	//  	System.out.println("call("+p+","+a1+")");
-	loadCMT();
-	return getGlobalProcedure(p).apply(list(a1)); }
-    public static Object call(String p, Object a1, Object a2) {
-	//  	System.out.println("call("+p+","+a1+","+a2+")");
-	loadCMT();
-	return getGlobalProcedure(p).apply(list(a1, a2)); }
-    public static Object call(String p, Object a1, Object a2, Object a3) {
-	//  	System.out.println("call("+p+","+a1+","+a2+","+a3+")");
-	loadCMT();
-	return getGlobalProcedure(p).apply(list(a1, a2, a3)); }
-
-    public static Pair list() { return Pair.EMPTY; }
-    public static Pair list(Object a1) { return new Pair(a1, Pair.EMPTY); }
-    public static Pair list(Object a1, Object a2) {
-	return new Pair(a1, new Pair(a2, Pair.EMPTY)); }
-    public static Pair list(Object a1, Object a2, Object a3) {
-	return new Pair(a1, new Pair(a2, new Pair(a3, Pair.EMPTY))); }
-    public static Pair list(Object a1, Object a2, Object a3, Object a4) {
-	return new Pair(a1, list(a2,a3,a4));}
-    public static Pair list(Object a1, Object a2, Object a3, Object a4, Object a5) {
-	return new Pair(a1, new Pair (a2,list(a3,a4,a5)));}
-    public static Pair list(Object a1, Object a2, Object a3, Object a4, Object a5, Object a6) {
-	return new Pair(a1, new Pair (a2,new Pair(a3, list(a4,a5,a6))));}
 
 }
