@@ -149,7 +149,6 @@ public class Analyzer extends JFrame implements ActionListener {
    * and run excel on file chosen by user, or if no experiment,
    * then display file chooser, then use default results directory.
    */
-
   private void showExcelFile() {
     File resultsDir = null;
     if (experiment == null)
@@ -163,6 +162,7 @@ public class Analyzer extends JFrame implements ActionListener {
         return;
     }
     JFileChooser fileChooser = new JFileChooser(resultsDir);
+    fileChooser.setDialogTitle("Select results file to analyze");
     if (experiment != null) {
       resultsDir = new File(resultsDir, experiment.getExperimentName());
       fileChooser.setFileFilter(new MyFileFilter(experiment));
@@ -172,7 +172,11 @@ public class Analyzer extends JFrame implements ActionListener {
       return;
     if (fileChooser.getSelectedFile().isDirectory())
       return; // user specified a directory, not a file
+    if (! fileChooser.getSelectedFile().canRead())
+      return; // Cant read that file
+
     String filePathName = fileChooser.getSelectedFile().getPath();
+
     String excel = 
       Parameters.findParameter("org.cougaar.tools.csmart.excelpath");
     
@@ -182,6 +186,9 @@ public class Analyzer extends JFrame implements ActionListener {
       }
       return;
     }
+
+    // FIXME: Bug 1886: test that the file pointed to by the excel
+    // parameter exists here. Perhaps prompt for one?
     
     String[] cmds = { excel, "" };
     if(log.isInfoEnabled()) {
