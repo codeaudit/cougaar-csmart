@@ -25,8 +25,6 @@ import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import java.io.Serializable;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.*;
 
 /**
@@ -62,35 +60,8 @@ public class ExperimentNode
    */
 
   private void addDefaultArgumentsToNode(String nodeName) {
-    arguments = new Properties();
-    arguments.put("org.cougaar.core.cluster.persistence.enabled", "false");
-    arguments.put("user.timezone", "GMT");
-    arguments.put("org.cougaar.core.cluster.startTime", "08/10/2005");
-    arguments.put("csmart.log.severity", "PROBLEM");
-    arguments.put("org.cougaar.domain.planning.ldm.lps.ComplainingLP.level",
-                  "0");
-    arguments.put("org.cougaar.message.transport.aspects",
-                  "org.cougaar.core.mts.StatisticsAspect");
-    arguments.put("org.cougaar.tools.server.nameserver.ports", 
-                  CSMARTConsole.NAME_SERVER_PORTS);
-    arguments.put("org.cougaar.control.port", 
-                  Integer.toString(CSMARTConsole.APP_SERVER_DEFAULT_PORT));
-    if (experiment.isInDatabase()) {
-      arguments.put("org.cougaar.configuration.database", 
-                    CSMART.getDatabaseConfiguration());
-      arguments.put("org.cougaar.configuration.user", 
-                    CSMART.getDatabaseUserName());
-      arguments.put("org.cougaar.configuration.password", 
-                    CSMART.getDatabaseUserPassword());
-      arguments.put("org.cougaar.experiment.id", experiment.getTrialID());
-      arguments.put("org.cougaar.node.name", nodeName);
-    }
-    try {
-      arguments.put("env.DISPLAY", InetAddress.getLocalHost().getHostName() +
-                     ":0.0");
-    } catch (UnknownHostException uhe) {
-      System.out.println(uhe);
-    }
+    arguments = new Properties(experiment.getDefaultNodeArguments());
+    arguments.put("org.cougaar.node.name", nodeName);
   }
 
   public int getAgentCount() {
