@@ -170,8 +170,8 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
 	} else {
 	  // What is the prefix line I write here?
 	  // FIXME!!!!!!
-	  // This assumes the type is always the prefix.
-	  writer.print(children[i].getType() + " = ");
+	  // This assumes the name is always the prefix.
+	  writer.print(children[i].getName() + " = ");
 	  writeChildLine(writer, children[i]);
 	  // Could one of these guys have children?
 	  writeChildrenOfComp(writer, configDir, children[i]);
@@ -262,6 +262,123 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
       // FIXME!!!!
       writer.println("This is the prototype ini file");
       // FIXME!!!!!
+
+      // This might look different for Organization or Entities, right?
+
+      // Here is what Scalability does:
+//        writer.println("[Prototype] CombatOrganization");
+//        writer.println();
+//        writer.println("[UniqueId] \"UTC/CombatOrg\"");
+//        writer.println();
+//        writer.println("[UIC] \"UIC/" + agent.getName() + "\"");
+//        writer.println();
+//        writer.println("[Relationship]");
+//        for (Iterator iter = supporting.iterator(); iter.hasNext(); ) {
+//          writer.println("Supporting \"" + ((ScalabilityXAgent) iter.next()).getFullName() + "\" \"ScalabilityProvider\"");
+//        }
+//        if (superior != null) {
+//          writer.println("Supporting \"" + superior.getFullName() + "\" \"ScalabilityControlProvider\"");
+//          writer.println("Supporting \"" + superior.getFullName() + "\" \"ScalabilityStatisticsProvider\"");
+//          writer.println("Superior  \"" + superior.getFullName() + "\" \"\"");
+//        }
+//        writer.println();
+//        writer.println("[TypeIdentificationPG]");
+//        writer.println("TypeIdentification String \"UTC/RTOrg\"");
+//        writer.println("Nomenclature String \"" + agent.getName() + "\"");
+//        writer.println();
+//        writer.println("[ClusterPG]");
+//        writer.println("ClusterIdentifier ClusterIdentifier \"" + agent.getName() + "\"");
+//        writer.println();
+//        writer.println("[OrganizationPG]");
+//        writer.println("Roles Collection<Role> \"ScalabilityProvider, ScalabilityControlProvider, ScalabilityStatisticsProvider\"");
+
+      // And here is what ABC Does:
+
+//        writer.println("[Prototype] Entity");
+//        writer.println();
+//        writer.println("[Relationship]");
+//        writer.println("#Role     ItemIdentification      TypeIdentification     Cluster   Start    End");
+//        Iterator iter = getAllRoles().iterator();
+//        while(iter.hasNext()) {
+//  	String role = (String)iter.next();
+//  	String[] supplies = (String[])getProperty(PROP_SUPPLIES).getValue();
+//  	for(int i=0; i < supplies.length; i++) {
+//  	  String type = supplies[i].substring(supplies[i].lastIndexOf(".")+1);
+//  	  writer.println("\"" + role + "\"  \"" + supplies[i].trim() + "\"  \"" + type + "\" \"" + supplies[i].trim() 
+//  			 + "\" \"\" \"\"");	  
+//  	}
+
+//  	// Add MetricPlugin Role.
+//  	String initializer = (String)getProperty(PROP_INITIALIZER).getValue();
+//  	writer.println("\"MetricsControlProvider\"  \"" + initializer +
+//  		       "\"  \"" + initializer.substring(initializer.lastIndexOf(".")+1) + 
+//  		       "\"  \"" + initializer + "\"  \"\"  \"\"");
+//        }
+//        writer.println();
+//        writer.println("[ItemIdentificationPG]");
+//        writer.println("ItemIdentification String \"" + getFullName().toString() + "\"");
+//        // Make these next two be Community#.Customer/Provider#
+//        // maybe getName().get(1).toString() or getName().get(1).toString() + "." + getName().get(2).toString()
+//        writer.println("Nomenclature String \"" + getFullName().get(1).toString() + "." + getFullName().get(2).toString() + "\"");
+//        writer.println("AlternateItemIdentification String \"" + getFullName().get(1).toString() + "." + getFullName().get(2).toString() + "\"");
+//        //      writer.println("Nomenclature String \"" + getName().get(2).toString() + "\"");
+//        //      writer.println("AlternateItemIdentification String \"" + getName().get(2).toString() + "\"");
+//        writer.println();
+//        writer.println("[TypeIdentificationPG]");
+//        writer.println("TypeIdentification String \"" + getFullName().get(2).toString() + "\"");
+//        writer.println("Nomenclature String \"" + getFullName().get(2).toString() + "\"");
+//        writer.println("AlternateTypeIdentification String \"" + getFullName().get(2).toString() + "\"");
+//        writer.println();
+//        writer.println("[ClusterPG]");
+//        writer.println("ClusterIdentifier ClusterIdentifier \"" + getFullName().toString() + "\"");
+//        writer.println();
+//        writer.println("[EntityPG]");
+//        writer.print("Roles Collection<Role> ");
+//        // Only print the quoted collection of roles if there are any
+//        if (! getAllRoles().isEmpty()) {
+//  	iter = getAllRoles().iterator();
+//  	String role = null;
+//  	// No comma before the first role
+//  	if (iter.hasNext()) {
+//  	  role = (String)iter.next();
+//  	  // If this agent is a customer, dont write this as having provider roles
+//  	  // say it has the customer equivalent
+//  	  if (type.equalsIgnoreCase("customer")) {
+//  //  	    if (role.endsWith("rovider"))
+//  //  	      role = Role.getRole(role).getConverse().getName();
+//  	    // For now, just skip writing out the role
+//  	    while (role.endsWith("rovider") && iter.hasNext())
+//  	      role = (String)iter.next();
+//  	    if (role.endsWith("rovider"))
+//  	      role = null;
+//  	  }
+//  	  if (role != null) {
+//  	    writer.print("\"");
+//  	    writer.print(role);
+//  	  }
+//  	}
+//  	// For all subsequent roles, do a comma, a space, then the role
+//  	while(iter.hasNext()) {
+//  	  role = (String)iter.next();
+//  	  // If this agent is a customer, dont write this as having provider roles
+//  	  // say it has the customer equivalent
+//  	  if (type.equalsIgnoreCase("customer"))
+//  	    if (role.endsWith("rovider"))
+//  	      //	      role = Role.getRole(role).getConverse().getName();
+//  	      continue;
+//  	  writer.print(", " + role);
+//  	  //	writer.print(" \"" + iter.next() + "\" ");
+//  	}
+//  	// close the list of roles with quotes
+//  	writer.print("\"");
+//        } // end of printing Collection of Roles
+//        writer.println();
+//        writer.println();
+//        writer.println("[CommunityPG]");
+//        writer.println("TimeSpan TimeSpan \"\"");
+//        writer.print("Communities    Collection<String> ");
+//        writer.println("\"" + getFullName().get(1).toString() + "\"");
+      
     } catch (Exception e) {
       System.out.println("Error writing config file: " + e);
     }
