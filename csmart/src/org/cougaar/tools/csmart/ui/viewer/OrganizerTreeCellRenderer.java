@@ -23,6 +23,7 @@ package org.cougaar.tools.csmart.ui.viewer;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTree;
@@ -65,20 +66,38 @@ public class OrganizerTreeCellRenderer extends DefaultTreeCellRenderer {
       if (((Experiment)o).isModified()) {
         c.setForeground(Color.red);
       }
-      if (c instanceof JLabel)
-        ((JLabel)c).setIcon(new ImageIcon(getClass().getResource("Experiment20t.gif")));
+      if (c instanceof JLabel) {
+	URL image = getClass().getResource("Experiment20t.gif");
+	if (image != null) {
+	  ImageIcon ii = new ImageIcon(image);
+	  if (ii != null)
+	    ((JLabel)c).setIcon(ii);
+	}
+      }
     } else if (o instanceof SocietyComponent) {
       if (((SocietyComponent)o).isModified()) {
         c.setForeground(Color.red);
       }
-      if (c instanceof JLabel)
-        ((JLabel)c).setIcon(new ImageIcon(getClass().getResource("Society16t.gif")));
+      if (c instanceof JLabel) {
+	URL image = getClass().getResource("Society16t.gif");
+	if (image != null) {
+	  ImageIcon ii = new ImageIcon(image);
+	  if (ii != null)
+	    ((JLabel)c).setIcon(ii);
+	}
+      }
     } else if (o instanceof RecipeComponent) {
       if (((RecipeComponent)o).isModified()) {
         c.setForeground(Color.red);
       }
-      if (c instanceof JLabel)
-        ((JLabel)c).setIcon(new ImageIcon(getClass().getResource("Recipe16t.gif")));
+      if (c instanceof JLabel) {
+	URL image = getClass().getResource("Recipe16t.gif");
+	if (image != null) {
+	  ImageIcon ii = new ImageIcon(image);
+	  if (ii != null)
+	    ((JLabel)c).setIcon(ii);
+	}
+      }
     }
     if (organizer.isNodeInUse(node))
       c.setForeground(Color.gray);
