@@ -138,15 +138,16 @@ public class AssetDBComponent
           RelationshipData rData = new RelationshipData();
 	  if (rel == null) {
 	    if (log.isErrorEnabled()) {
-	      log.error("Bug 1304: Null RelationshipBase at child spot # " + i);
+	      log.error("Please report seeing Bug 1304: Null RelationshipBase at child spot # " + i + " out of " + container.getChildCount() + " for Asset " + assetData.getUnitName() + " and agent " + agentName + " in assembly " + assemblyID, new Throwable());
 	    }
 	  } else if (rel.getProperty(RelationshipBase.PROP_TYPE) == null) {
 	    if (log.isErrorEnabled()) {
-	      log.error("Bug 1304: Null Relationship type for relationship at child spot #" + i);
+	      log.error("Please report seeing Bug 1304: Null Relationship type for relationship at child spot #" + i + " out of " + container.getChildCount() + " for Asset " + assetData.getUnitName() + " and agent " + agentName + " in assembly " + assemblyID, new Throwable());
 	    }
+	  } else {
+	    // Bug 1304 is an NPE in the next line
+	    rData.setType((String)rel.getProperty(RelationshipBase.PROP_TYPE).getValue());
 	  }
-	  // Bug 1304 is an NPE in the next line
-          rData.setType((String)rel.getProperty(RelationshipBase.PROP_TYPE).getValue());
           rData.setRole((String)rel.getProperty(RelationshipBase.PROP_ROLE).getValue());
           rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
           rData.setSupported((String)rel.getProperty(RelationshipBase.PROP_SUPPORTED).getValue());

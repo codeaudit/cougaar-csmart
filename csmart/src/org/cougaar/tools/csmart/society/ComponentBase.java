@@ -208,8 +208,8 @@ public class ComponentBase
       boolean isdiff = false;
       ComponentData kid = children[i];
       if (kid == null) {
-	if (log.isWarnEnabled()) {
-	  log.warn("Bug 1279: Child " + i + " is null in " + parent.getName());
+	if (log.isErrorEnabled()) {
+	  log.error("Please report seeing Bug 1279: Child " + i + " out of " + parent.childCount() + " is null in " + parent.getName() + " while considering adding " + self.getName(), new Throwable());
 	}
 	// FIXME: Maybe do a parent.setChildren with a new list that doesn't include
 	// the null?
