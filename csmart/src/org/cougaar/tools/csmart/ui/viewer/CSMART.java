@@ -108,7 +108,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   // based on selection in the workspace
   private static JMenu fileMenu;
   private static JMenu newRecipeMenu;
-  private static JMenuItem newExperimentMenuItem;
+  private static JMenu newExperimentMenu;
   private static JMenuItem newSocietyMenuItem;
   private static JMenuItem newFolderMenuItem;
   private static JMenuItem configureMenuItem;
@@ -173,6 +173,24 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     "PA.gif"
   };
 
+  private Action[] newExperimentActions = {
+    new AbstractAction(ActionUtil.NEW_EXPERIMENT_FROM_DB_ACTION) {
+        public void actionPerformed(ActionEvent e) {
+          organizer.selectExperimentFromDatabase();
+        }
+      },
+    new AbstractAction(ActionUtil.NEW_EXPERIMENT_FROM_FILE_ACTION) {
+        public void actionPerformed(ActionEvent e) {
+          organizer.createExperimentFromFile();
+        }
+      },
+    new AbstractAction(ActionUtil.NEW_EXPERIMENT_FROM_UI_ACTION) {
+        public void actionPerformed(ActionEvent e) {
+          organizer.createExperimentFromUI();
+        }
+      }
+  };
+
   private Action[] newRecipeActions = {
     new AbstractAction("From Database") {
         public void actionPerformed(ActionEvent e) {
@@ -215,20 +233,17 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     newResultsMenuItem.addActionListener(this);
     newResultsMenuItem.setToolTipText("Select a directory for saving results");
     fileMenu.add(newResultsMenuItem);
-    newExperimentMenuItem = new JMenuItem(ActionUtil.NEW_EXPERIMENT_ACTION);
-    newExperimentMenuItem.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          organizer.selectExperimentFromDatabase();
-        }
-      });
-    fileMenu.add(newExperimentMenuItem);
+
+    newExperimentMenu = new JMenu(ActionUtil.NEW_EXPERIMENT_ACTION);
+    for (int i = 0; i < newExperimentActions.length; i++)
+      newExperimentMenu.add(newExperimentActions[i]);
+    fileMenu.add(newExperimentMenu);
+
     newRecipeMenu = new JMenu(ActionUtil.NEW_RECIPE_ACTION);
     for (int i = 0; i < newRecipeActions.length; i++)
       newRecipeMenu.add(newRecipeActions[i]);
     fileMenu.add(newRecipeMenu);
-    if(log.isDebugEnabled()) {
-      log.debug("Enable Society Menu");
-    }
+
     newFolderMenuItem = new JMenuItem(ActionUtil.NEW_FOLDER_ACTION);
     newFolderMenuItem.addActionListener(new ActionListener() {
         public void actionPerformed(ActionEvent e) {
