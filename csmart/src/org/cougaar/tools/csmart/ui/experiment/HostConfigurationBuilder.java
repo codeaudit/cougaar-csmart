@@ -33,9 +33,11 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 
 import org.cougaar.tools.csmart.ui.component.AgentComponent;
+import org.cougaar.tools.csmart.ui.component.ComponentName;
 import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
 import org.cougaar.tools.csmart.ui.component.HostComponent;
 import org.cougaar.tools.csmart.ui.component.NodeComponent;
+import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.configuration.ConsoleDNDTree;
 import org.cougaar.tools.csmart.ui.configuration.ConsoleTreeObject;
@@ -61,7 +63,10 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
   private static final String NEW_HOST_MENU_ITEM = "New Host";
   private static final String NEW_NODE_MENU_ITEM = "New Node";
   private static final String DELETE_MENU_ITEM = "Remove";
-  //  private static final String DESCRIBE_MENU_ITEM = "Describe";
+  private static final String DESCRIPTION_MENU_ITEM = "Description";
+  private static final String NODE_COMMAND_LINE_MENU_ITEM = "Command Line Arguments";
+  private static final String HOST_TYPE_MENU_ITEM = "Type";
+  private static final String HOST_LOCATION_MENU_ITEM = "Location";
 
   public HostConfigurationBuilder(Experiment experiment) {
     this.experiment = experiment;
@@ -128,19 +133,57 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 	newNodeInHostMenuItem_actionPerformed(e);
       }
     });
+    JMenuItem hostDescriptionMenuItem = 
+      new JMenuItem(DESCRIPTION_MENU_ITEM);
+    hostDescriptionMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+	hostDescriptionMenuItem_actionPerformed(e);
+      }
+    });
+    JMenuItem hostLocationMenuItem = new JMenuItem(HOST_LOCATION_MENU_ITEM);
+    hostLocationMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+	hostLocationMenuItem_actionPerformed(e);
+      }
+    });
+    JMenuItem hostTypeMenuItem = new JMenuItem(HOST_TYPE_MENU_ITEM);
+    hostTypeMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+	hostTypeMenuItem_actionPerformed(e);
+      }
+    });
+    JMenuItem describeNodeInHostMenuItem = 
+      new JMenuItem(DESCRIPTION_MENU_ITEM);
+    describeNodeInHostMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        describeNodeMenuItem_actionPerformed(hostTree);
+      }
+    });
+    JMenuItem cmdLineNodeInHostMenuItem = 
+      new JMenuItem(NODE_COMMAND_LINE_MENU_ITEM);
+    cmdLineNodeInHostMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        cmdLineNodeMenuItem_actionPerformed(hostTree);
+      }
+    });
     JMenuItem deleteNodeInHostMenuItem = new JMenuItem(DELETE_MENU_ITEM);
     deleteNodeInHostMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	deleteNodeInHostMenuItem_actionPerformed(e);
       }
     });
+
     // init pop-up menus
-    // TODO: handle describe menu items
     hostRootMenu.add(newHostMenuItem);
 
+    hostHostMenu.add(hostDescriptionMenuItem);
+    hostHostMenu.add(hostTypeMenuItem);
+    hostHostMenu.add(hostLocationMenuItem);
     hostHostMenu.add(newNodeInHostMenuItem);
     hostHostMenu.add(deleteHostMenuItem);
 
+    hostNodeMenu.add(describeNodeInHostMenuItem);
+    hostNodeMenu.add(cmdLineNodeInHostMenuItem);
     hostNodeMenu.add(deleteNodeInHostMenuItem);
     
     // attach a mouse listener to the host tree to display menu 
@@ -202,12 +245,26 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
       }
     });
     nodeRootMenu.add(newNodeMenuItem);
+    JMenuItem describeNodeMenuItem = new JMenuItem(DESCRIPTION_MENU_ITEM);
+    describeNodeMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+	describeNodeMenuItem_actionPerformed(nodeTree);
+      }
+    });
+    JMenuItem cmdLineNodeMenuItem = new JMenuItem(NODE_COMMAND_LINE_MENU_ITEM);
+    cmdLineNodeMenuItem.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+	cmdLineNodeMenuItem_actionPerformed(nodeTree);
+      }
+    });
     JMenuItem deleteNodeMenuItem = new JMenuItem(DELETE_MENU_ITEM);
     deleteNodeMenuItem.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
 	deleteNodeMenuItem_actionPerformed(e);
       }
     });
+    nodeNodeMenu.add(describeNodeMenuItem);
+    nodeNodeMenu.add(cmdLineNodeMenuItem);
     nodeNodeMenu.add(deleteNodeMenuItem);
 
     // attach a mouse listener to the node tree to display menu 
@@ -891,6 +948,102 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
 
   public void deleteNodeMenuItem_actionPerformed(ActionEvent e) {
     deleteNodeFromTree(nodeTree);
+  }
+
+  /**
+   * Helper method to get value of property of selected node in specified tree.
+   */
+
+  private String getPropertyOfNode(JTree tree, String name) {
+    DefaultMutableTreeNode selectedNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
+    ConfigurableComponent component = 
+      (ConfigurableComponent)cto.getComponent();
+    Property prop = component.getProperty(new ComponentName(component, name));
+    if (prop == null)
+      return null;
+    return (String)prop.getValue();
+  }
+
+  /**
+   * Helper method to set vaue of property of selected node in specified tree.
+   */
+
+  private void setPropertyOfNode(JTree tree, String name, String value) {
+    DefaultMutableTreeNode selectedNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    ConsoleTreeObject cto = (ConsoleTreeObject)selectedNode.getUserObject();
+    ConfigurableComponent component = 
+      (ConfigurableComponent)cto.getComponent();
+    component.addProperty(name, value);
+  }
+
+    
+  public void hostDescriptionMenuItem_actionPerformed(ActionEvent e) {
+    String description = getPropertyOfNode(hostTree, "Description");
+    String s = (String)JOptionPane.showInputDialog(this,
+                                           "Enter Host Description",
+                                           "Host Description",
+                                           JOptionPane.QUESTION_MESSAGE,
+                                           null, null, description);
+    if (s != null && s.length() != 0) 
+      setPropertyOfNode(hostTree, "Description", s);
+  }
+
+  public void hostTypeMenuItem_actionPerformed(ActionEvent e) {
+    String machineType = getPropertyOfNode(hostTree, "MachineType");
+    String[] machineTypes = { "Linux", "Solaris", "Windows" };
+    String s = (String)JOptionPane.showInputDialog(this,
+                                           "Enter Host Machine Type",
+                                           "Host Machine Type",
+                                           JOptionPane.QUESTION_MESSAGE,
+                                           null, machineTypes, machineType);
+    if (s != null && s.length() != 0) 
+      setPropertyOfNode(hostTree, "MachineType", s);
+  }
+
+  public void hostLocationMenuItem_actionPerformed(ActionEvent e) {
+    String location = getPropertyOfNode(hostTree, "Location");
+    String s = (String)JOptionPane.showInputDialog(this,
+                                           "Enter Host Location",
+                                           "Host Location",
+                                           JOptionPane.QUESTION_MESSAGE,
+                                           null, null, location);
+    if (s != null && s.length() != 0) 
+      setPropertyOfNode(hostTree, "Location", s);
+  }
+
+  /**
+   * Pop-up input dialog to get node description from user.
+   * Called with the tree from which this menu item was invoked.
+   */
+
+  public void describeNodeMenuItem_actionPerformed(JTree tree) {
+    String description = getPropertyOfNode(tree, "Description");
+    String s = (String)JOptionPane.showInputDialog(this,
+                                           "Enter Node Description",
+                                           "Node Description",
+                                           JOptionPane.QUESTION_MESSAGE,
+                                           null, null, description);
+    if (s != null && s.length() != 0) 
+      setPropertyOfNode(tree, "Description", s);
+  }
+
+  /**
+   * Pop-up input dialog to get node command line arguments from user.
+   * Called with the tree from which this menu item was invoked.
+   */
+
+  public void cmdLineNodeMenuItem_actionPerformed(JTree tree) {
+    String cmdLineArgs = getPropertyOfNode(tree, "Command Line Arguments");
+    String s = (String)JOptionPane.showInputDialog(this,
+                                           "Enter Command Line Arguments",
+                                           "Command Line Arguments",
+                                           JOptionPane.QUESTION_MESSAGE,
+                                           null, null, cmdLineArgs);
+    if (s != null && s.length() != 0) 
+      setPropertyOfNode(tree, "CmdLineArgs", s);
   }
 
   private DefaultTreeModel createModel(final Experiment experiment, DefaultMutableTreeNode node, boolean askKids) {

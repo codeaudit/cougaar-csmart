@@ -50,9 +50,11 @@ public class ExperimentNode
   public ExperimentNode(String nodeName, Experiment experiment) {
       super(nodeName);
       this.experiment = experiment;
+      addProperty("Experiment", experiment);
   }
 
   public void initProperties() {
+    addProperty("AgentNames", new ArrayList());
   }
 
   public int getAgentCount() {
@@ -64,6 +66,11 @@ public class ExperimentNode
   }
 
   public void addAgent(AgentComponent agent) {
+    Property prop = getProperty("AgentNames");
+    if (prop == null) 
+      prop = addProperty("AgentNames", new ArrayList());
+    ArrayList names = (ArrayList)prop.getValue();
+    names.add(agent.getShortName());
     agents.add(agent);
     fireModification();
   }
@@ -73,6 +80,13 @@ public class ExperimentNode
   }
 
   public void removeAgent(AgentComponent agent) {
+    Property prop = getProperty("AgentNames");
+    if (prop != null) {
+      ArrayList names = (ArrayList)prop.getValue();
+      int index = names.indexOf(agent.getShortName());
+      if (index != -1)
+        names.remove(agent.getShortName());
+    }
     agents.remove(agent);
     fireModification();
   }

@@ -55,6 +55,7 @@ public class ExperimentHost
   }
 
   public void initProperties() {
+    addProperty("NodeNames", new ArrayList());
   }
 
   public int getNodeCount() {
@@ -66,6 +67,11 @@ public class ExperimentHost
   }
 
   public void addNode(NodeComponent node) {
+    Property prop = getProperty("NodeNames");
+    if (prop == null) 
+      prop = addProperty("NodeNames", new ArrayList());
+    ArrayList names = (ArrayList)prop.getValue();
+    names.add(node.getShortName());
     ExperimentNode sa = (ExperimentNode) node;
     nodes.add(sa);
     fireModification();
@@ -76,6 +82,13 @@ public class ExperimentHost
   }
 
   public void removeNode(NodeComponent node) {
+    Property prop = getProperty("NodeNames");
+    if (prop != null) {
+      ArrayList names = (ArrayList)prop.getValue();
+      int index = names.indexOf(node.getShortName());
+      if (index != -1)
+        names.remove(node.getShortName());
+    }
     nodes.remove(node);
     fireModification();
   }
