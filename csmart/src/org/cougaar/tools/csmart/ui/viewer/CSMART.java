@@ -58,8 +58,13 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.cougaar.Version;
 import org.cougaar.bootstrap.Bootstrapper;
+import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.log.Logger;
+import org.cougaar.util.log.LoggerFactory;
+
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
@@ -78,9 +83,7 @@ import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
 import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
-import org.cougaar.util.ConfigFinder;
-import org.cougaar.util.log.Logger;
-import org.cougaar.util.log.LoggerFactory;
+
 
 /**
  * Top level CSMART user interface.
@@ -474,7 +477,8 @@ public class CSMART extends JFrame {
    * @param experiment the experiment to add
    */
   public void addRunningExperiment(Experiment experiment) {
-    runningExperiments.add(experiment);
+    if (! runningExperiments.contains(experiment))
+      runningExperiments.add(experiment);
   }
 
   /**
@@ -804,7 +808,7 @@ public class CSMART extends JFrame {
    * and set up a listener to update the menu when the tool is exited.
    */
   private void addTool(String toolName, String docName, JFrame tool) {
-    NamedFrame.getNamedFrame().addFrame(toolName + ": " + docName, tool);
+    NamedFrame.getNamedFrame().addFrame(toolName + ((docName != null && ! docName.trim().equals("")) ? (": " + docName) : ""), tool);
     final boolean isConsole = (toolName == EXPERIMENT_CONTROLLER);
     tool.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
     
@@ -887,17 +891,19 @@ public class CSMART extends JFrame {
     if (workspaceFileChooser == null) {
       workspaceFileChooser = 
 	new JFileChooser(System.getProperty("org.cougaar.install.path"));
+      workspaceFileChooser.setDialogTitle("Select workspace file");
       String[] filters = { "bin" };
       ExtensionFileFilter filter = 
 	new ExtensionFileFilter(filters, "workspace file");
       workspaceFileChooser.addChoosableFileFilter(filter);
     }
-    if (workspaceFileChooser.showOpenDialog(this) == 
-	JFileChooser.CANCEL_OPTION)
+    if (workspaceFileChooser.showOpenDialog(this) != 
+	JFileChooser.APPROVE_OPTION)
       return;
     File file = workspaceFileChooser.getSelectedFile();
     if (file == null)
       return;
+    // FIXME: Test it is writable / readable?
     organizer.exitAllowed();
     getContentPane().remove(organizer);
     organizer = new Organizer(this, file.getPath());
@@ -929,6 +935,7 @@ public class CSMART extends JFrame {
 
   private void setResultDir() {
     JFileChooser chooser = new JFileChooser(getResultDirName());
+    chooser.setDialogTitle("Select directory for results");
     chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
 	public boolean accept (File f) {
@@ -937,8 +944,14 @@ public class CSMART extends JFrame {
 	public String getDescription() {return "All Directories";}
       });
     int result = chooser.showDialog(this, "Select Results Directory");
-    if (result == JFileChooser.APPROVE_OPTION)
-      resultDir = chooser.getSelectedFile();
+    if (result != JFileChooser.APPROVE_OPTION)
+      return;
+    File res = chooser.getSelectedFile();
+
+    if (res == null || !res.exists())
+      return;
+
+    resultDir = chooser.getSelectedFile();
   }
 
   /**
