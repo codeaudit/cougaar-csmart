@@ -223,7 +223,8 @@ public class ExpConfigWriterNew implements ConfigurationWriter {
 	  // Write the children of this agent if there are any
 	  // write the leaf components of this agent
 	  writeAgentFile(configDir, (AgentComponentData)children[i]);
-	} else if (!children[i].getType().equals(ComponentData.BINDER)) {
+	} else if (!children[i].getType().equals(ComponentData.NODEBINDER) 
+                   || !children[i].getType().equals(ComponentData.AGENTBINDER)) {
 	  System.err.println("Got a child of a Node that wasn't an Agent: " + children[i]);
 	}
       }
