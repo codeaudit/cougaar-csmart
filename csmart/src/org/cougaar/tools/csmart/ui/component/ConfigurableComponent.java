@@ -257,12 +257,12 @@ public abstract class ConfigurableComponent
 
     for(int i=0; i < getChildCount(); i++) {
       cc = getChild(i);
-      if(cc.getFullName().equals(childName)){
-	break;
+      if(cc.getShortName().equals(childName.toString())){
+	return cc;
       }
     }
 
-    return cc;
+    return null;
   }
 
   /**
