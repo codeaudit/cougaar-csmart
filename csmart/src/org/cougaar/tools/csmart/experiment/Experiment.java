@@ -21,60 +21,85 @@
 
 package org.cougaar.tools.csmart.experiment;
 
+
+
 import java.io.File;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
-import java.io.IOException;
-import java.net.URL;
+import java.lang.IndexOutOfBoundsException;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.*;
 import javax.swing.JOptionPane;
-
-import org.cougaar.tools.csmart.core.db.ExperimentDB;
-import org.cougaar.tools.csmart.core.db.DBUtils;
-import org.cougaar.tools.csmart.core.db.PopulateDb;
-import org.cougaar.tools.csmart.core.db.DBConflictHandler;
-import org.cougaar.tools.csmart.core.property.ModifiableComponent;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.ModificationListener;
-import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.core.property.ModificationEvent;
-import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.core.property.name.ComponentName;
-import org.cougaar.tools.csmart.core.property.name.CompositeName;
-
+import org.cougaar.core.agent.ClusterImpl;
+import org.cougaar.core.node.Node;
+import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
-import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
-
-import org.cougaar.tools.csmart.society.SocietyComponent;
-import org.cougaar.tools.csmart.society.AgentComponent;
-import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
+import org.cougaar.tools.csmart.core.db.DBConflictHandler;
+import org.cougaar.tools.csmart.core.db.DBUtils;
+import org.cougaar.tools.csmart.core.db.ExperimentDB;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
+import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
+import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.core.property.ModificationEvent;
+import org.cougaar.tools.csmart.core.property.ModificationListener;
+import org.cougaar.tools.csmart.core.property.Property;
+import org.cougaar.tools.csmart.core.property.name.ComponentName;
+import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
-
+import org.cougaar.tools.csmart.society.AgentComponent;
+import org.cougaar.tools.csmart.society.SocietyComponent;
+import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
-
-import org.cougaar.core.node.Node;
-import org.cougaar.core.agent.ClusterImpl;
 import org.cougaar.util.Parameters;
 import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.experiment.ExperimentHost;
 
 /**
  * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
  * Computes the trials, and the configuration data for running a trial.
  */
 public class Experiment extends ModifiableConfigurableComponent implements ModificationListener, java.io.Serializable {
+
+  // Define some Node Args
+  public static final String EXPERIMENT_ID = "org.cougaar.experiment.id";
+  public static final String PERSISTENCE_ENABLE = "org.cougaar.core.persistence.enable";
+  public static final String TIMEZONE = "user.timezone";
+  public static final String AGENT_STARTTIME = "org.cougaar.agent.startTime";
+  public static final String COMPLAININGLP_LEVEL = 
+    "org.cougaar.planning.ldm.lps.ComplainingLp.level";  
+  public static final String TRANSPORT_ASPECTS = "org.cougaar.message.transport.aspects";
+  public static final String CONTROL_PORT = "org.cougaar.control.port";
+  public static final String CONFIG_DATABASE = "org.coguaar.configuration.database";
+  public static final String CONFIG_USER = "org.cougaar.configuration.user";
+  public static final String CONFIG_PASSWD = "org.cougaar.configuration.password";
+  public static final String ENV_DISPLAY = "env.DISPLAY";
+  
+  // Define some Defaults
+  public static final String PERSISTENCE_DFLT = "false";
+  public static final String TIMEZONE_DFLT = "GMT";
+  public static final String AGENT_STARTTIME_DFLT = "08/10/2005";
+  public static final String COMPLAININGLP_LEVEL_DFLT = "0";
+  public static final String TRANSPORT_ASPECTS_DFLT = 
+    "org.cougaar.core.mts.StatisticsAspect";
   // org.cougaar.control.port; port for contacting applications server
   public static final int APP_SERVER_DEFAULT_PORT = 8484;
   public static final String NAME_SERVER_PORTS = "8888:5555";
+
+
+
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
   public static final String PROP_PREFIX = "PROP$";
-  private SocietyComponent society = null;
+
+  // Member Variables
+  private SocietyComponent societyComponent = null;
   private List hosts = new ArrayList();
   private List nodes = new ArrayList();
   private List recipes = new ArrayList();
@@ -101,7 +126,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private String trialID = null;
   // Soon Experiment's Trials will have TrialIDs
 
-  private ComponentData theWholeSoc = null;
+  private ComponentData completeSociety = null;
   private transient LeafOnlyConfigWriter configWriter = null;
 
   private transient Logger log;
@@ -116,40 +141,54 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   // experiments? Such societies reloaded from DB?
   // Experiments with recipes that do modify / remove?
   private transient boolean fromFile = false;
+  
 
-  /**
-   * Build an experiment around a society or recipes.
-   */
+
+  ////////////////////////////////////////////
+  // Constructors
+  ////////////////////////////////////////////
+
   public Experiment(String name, SocietyComponent societyComponent,
 		    RecipeComponent[] recipes)
   {
     this(name);
-    createLogger();
+    init();
     setSocietyComponent(societyComponent);
     if(societyComponent instanceof SocietyFileComponent) {
       // Will use PopulateDb without CMT assembly
       fromFile = true;
     }
-    setRecipes(recipes);
-    setDefaultNodeArguments();
+    setRecipeComponents(recipes);
+    if(log.isDebugEnabled()) {
+      log.debug("Experiment: " + name);
+    }
   }
-
 
   public Experiment(String name) {
     super(name);
-    createLogger();
-    setDefaultNodeArguments();
+    init();
+    if(log.isDebugEnabled()) {
+      log.debug("Experiment: " + name);
+    }
   }
 
   public Experiment(String name, String expID, String trialID) {
     super(name);
-    createLogger();
     this.expID = expID;
     this.trialID = trialID;
-    setDefaultNodeArguments();
+    init();
     if(log.isDebugEnabled()) {
       log.debug("Experiment: " + expID + " Trial: " + trialID);
     }
+  }
+
+  ////////////////////////////////////////////
+  // Private Operations.
+  ////////////////////////////////////////////
+  
+  private void init() {
+    createLogger();
+    setDefaultNodeArguments();
   }
 
   private void createLogger() {
@@ -157,160 +196,285 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   private void setDefaultNodeArguments() {
-    defaultNodeArguments = new ReadOnlyProperties(Collections.singleton("org.cougaar.experiment.id"));
-    defaultNodeArguments.put("org.cougaar.core.persistence.enable", "false");
-    defaultNodeArguments.put("user.timezone", "GMT");
-    defaultNodeArguments.put("org.cougaar.core.agent.startTime", "08/10/2005");
-    defaultNodeArguments.put("org.cougaar.planning.ldm.lps.ComplainingLP.level",
-                             "0");
-    defaultNodeArguments.put("org.cougaar.message.transport.aspects",
-                             "org.cougaar.core.mts.StatisticsAspect");
-    defaultNodeArguments.put("org.cougaar.control.port", 
-                             Integer.toString(APP_SERVER_DEFAULT_PORT));
+    defaultNodeArguments = 
+      new ReadOnlyProperties(Collections.singleton(EXPERIMENT_ID));
+    defaultNodeArguments.put(PERSISTENCE_ENABLE, PERSISTENCE_DFLT);
+    defaultNodeArguments.put(TIMEZONE, TIMEZONE_DFLT);
+    defaultNodeArguments.put(AGENT_STARTTIME, AGENT_STARTTIME_DFLT);
+    defaultNodeArguments.put(COMPLAININGLP_LEVEL, COMPLAININGLP_LEVEL_DFLT);
+    defaultNodeArguments.put(TRANSPORT_ASPECTS, TRANSPORT_ASPECTS_DFLT);
+    defaultNodeArguments.put(CONTROL_PORT, Integer.toString(APP_SERVER_DEFAULT_PORT));
     if (DBUtils.dbMode) {
-      defaultNodeArguments.put("org.cougaar.configuration.database", 
+      defaultNodeArguments.put(CONFIG_DATABASE, 
 			       Parameters.findParameter(DBUtils.DATABASE));
-      defaultNodeArguments.put("org.cougaar.configuration.user", 
+      defaultNodeArguments.put(CONFIG_USER, 
 			       Parameters.findParameter(DBUtils.USER));
-      defaultNodeArguments.put("org.cougaar.configuration.password", 
+      defaultNodeArguments.put(CONFIG_PASSWD, 
 			       Parameters.findParameter(DBUtils.PASSWORD));
-      defaultNodeArguments.setReadOnlyProperty("org.cougaar.experiment.id", getTrialID());
+      defaultNodeArguments.setReadOnlyProperty(EXPERIMENT_ID, getTrialID());
     }
     try {
-      defaultNodeArguments
-        .put("env.DISPLAY", InetAddress.getLocalHost().getHostName() +
-             ":0.0");
+      defaultNodeArguments.put(ENV_DISPLAY, 
+                               InetAddress.getLocalHost().getHostName() + ":0.0");
     } catch (UnknownHostException uhe) {
-      System.out.println(uhe);
+      if(log.isErrorEnabled()) {
+        log.error("UnknownHost Exception", uhe);
+      }
     }
-  }
-
-  public Properties getDefaultNodeArguments() {
-    return defaultNodeArguments;
-  }
-
-  public void setExperimentID(String expID) {
-    this.expID = expID;
-  }
-
-  public void setTrialID(String trialID) {
-    this.trialID = trialID;
-    defaultNodeArguments.setReadOnlyProperty("org.cougaar.experiment.id", trialID);
-  }
-
-  public void setName(String newName) {
-    super.setName(newName);
-    fireModification();
-  }
-  public String getExperimentName() {
-    return getShortName();
-  }
-  public void setSocietyComponent(SocietyComponent soc) {
-    society = soc;
-  }
-  public void setRecipes(RecipeComponent[] ary) {
-    recipes.clear();
-    recipes.addAll(Arrays.asList(ary));
-  }
-  public void addSocietyComponent(SocietyComponent sc) {
-    if (society == null) {
-      setSocietyComponent (sc);
-    } else {
-      throw new IllegalArgumentException("Already have a society in experiment " + this);
-    }
-  }
-  public void addRecipe(RecipeComponent recipe) {
-    if (!recipes.contains(recipe)) recipes.add(recipe);
-  }
-  
-  public void addComponent(ModifiableComponent comp) {
-    if (comp instanceof SocietyComponent)
-      addSocietyComponent((SocietyComponent)comp);
-    else if (comp instanceof RecipeComponent)
-      addRecipe((RecipeComponent)comp);
-  }
-  public void removeSociety(SocietyComponent sc) {
-    society = null;
-  }
-  public void removeRecipe(RecipeComponent recipe) {
-    recipes.remove(recipe);
-  }
-  public void removeComponent(ModifiableComponent comp) {
-    if (comp instanceof SocietyComponent)
-      removeSociety((SocietyComponent)comp);
-    if (comp instanceof RecipeComponent)
-      removeRecipe((RecipeComponent)comp);
-    // Must handle random components!!!
-  }
-  public int getSocietyComponentCount() {
-    return (society == null ? 0 : 1);
-  }
-  public int getComponentCount() {
-    return getSocietyComponentCount() + recipes.size();
-  }
-  public int getRecipeCount() {
-    return recipes.size();
-  }
-
-  public SocietyComponent getSocietyComponent(int i) {
-    if (i != 0) {
-      throw new IllegalArgumentException("Asked for society " + i + " when only 1, index 0, allowed");
-    }
-    return society;
-  }
-
-  public SocietyComponent getSocietyComponent() {
-    return society;
-  }
-
-  public RecipeComponent getRecipe(int i) {
-    return (RecipeComponent) recipes.get(i);
-  }
-  public RecipeComponent[] getRecipes() {
-    return (RecipeComponent[])recipes.toArray(new RecipeComponent[recipes.size()]);
-  }
-  private ModifiableComponent getComponent(int i) {
-    // What a hack!!!
-    if (i < getSocietyComponentCount())
-      return (ModifiableComponent)getSocietyComponent();
-    else if (i < getComponentCount()) 
-      return (ModifiableComponent)(getRecipe(i - (getSocietyComponentCount())));
-    else
-      return null;
-  }
-      
-  public String toString() {
-    return getShortName();
   }
 
   /**
-   * Set edit in progress.  Used by UI tools to indicate that an
-   * experiment is being edited.  Note that this is distinct from
-   * setting the editability flag, which indicates whether the experiment
-   * can ever be edited.
+   * Determines if any results exist for this Experiment/Trial
+   *
+   * @return a <code>boolean</code> value
    */
-  public void setEditInProgress(boolean newEditInProgress) {
-    editInProgress = newEditInProgress;
+  private boolean hasResults() {
+    Trial[] trials = getTrials();
+    for (int i = 0; i < trials.length; i++) {
+      TrialResult[] results = trials[i].getTrialResults();
+      if (results.length != 0) 
+        return true;
+    }
+    return false;
   }
+
+
+
+
+  ////////////////////////////////////////////
+  // Society Component Operations.
+  ////////////////////////////////////////////
+
+
+
+  // Public Methods
+
+  /**
+   * Adds a <code>societyComponent</code> to this Experiment.
+   *
+   * @param sc 
+   * @exception IllegalArgumentException if an error occurs
+   */
+  public void addSocietyComponent(SocietyComponent sc) throws IllegalArgumentException {
+    if (this.societyComponent == null) {
+      setSocietyComponent(sc);
+    } else {
+      throw new IllegalArgumentException("Already have a societyComponent in experiment " + this);
+    }
+  }
+
+  /**
+   * Removes the <code>SocietyComponent</code> from this experiment
+   *
+   */
+  public void removeSocietyComponent() {
+    this.societyComponent = null;
+  }
+
+  /**
+   * Returns the total number of Societies in this experiment.
+   * Since experiments can only have 1 society, this returns
+   * a 0 or 1 value.
+   *
+   * @return an <code>int</code> value
+   */
+  public int getSocietyComponentCount() {
+    return (this.societyComponent == null ? 0 : 1);
+  }
+
+  /**
+   * Return the <code>SocietyComponent</code>
+   *
+   * @return a <code>SocietyComponent</code> value
+   */
+  public SocietyComponent getSocietyComponent() {
+    return this.societyComponent;
+  }
+
+  // Private Methods
+
+  private void setSocietyComponent(SocietyComponent society) {
+    this.societyComponent = society;
+  }
+
+
+
+  ////////////////////////////////////////////
+  // Recipe Component Operations.
+  ////////////////////////////////////////////
+
+
+
+  /**
+   * Adds an array of <code>RecipeComponent</code>s to this
+   * experiment.
+   *
+   * @param ary RecipeComponents
+   */
+  public void setRecipeComponents(RecipeComponent[] ary) {
+    this.recipes.clear();
+    this.recipes.addAll(Arrays.asList(ary));
+  }
+
+
+  /**
+   * Adds a <code>RecipeComponent</code> to this Experiment
+   *
+   * @param recipe - <code>RecipeComponent</code> to add to Experiment
+   */
+  public void addRecipeComponent(RecipeComponent recipe) throws IllegalArgumentException {
+    if (!recipes.contains(recipe)) {
+      recipes.add(recipe);
+    } else {
+      throw new IllegalArgumentException("Recipe already exists in experiment");
+    }
+  }
+  
+  /**
+   * Removes the specified <code>RecipeComponent</code>.
+   *
+   * @param recipe 
+   */
+  public void removeRecipeComponent(RecipeComponent recipe) {
+    this.recipes.remove(recipe);
+  }
+
+  /**
+   * Returns the total number of recipes in this experiment.
+   *
+   * @return an <code>int</code> value
+   */
+  public int getRecipeComponentCount() {
+    return this.recipes.size();
+  }
+
+  /**
+   * Gets a specific recipe based on Index.
+   *
+   * @param i 
+   * @return a <code>RecipeComponent</code> value
+   * @exception IndexOutOfBoundsException if an error occurs
+   */
+  public RecipeComponent getRecipeComponent(int i) throws IndexOutOfBoundsException {
+    return (RecipeComponent) recipes.get(i);
+  }
+
+  /**
+   * Gets all <code>RecipeComponents</code> for this experiment.
+   *
+   * @return a <code>RecipeComponent[]</code> value
+   */
+  public RecipeComponent[] getRecipeComponents() {
+    return (RecipeComponent[])recipes.toArray(new RecipeComponent[recipes.size()]);
+  }
+
+
+
+  ////////////////////////////////////////////
+  // Generic Component Operations.
+  ////////////////////////////////////////////
+
+
+  // Public Methods
+
+  /**
+   * Adds a new component to this experiment.
+   * Currently only two Component Types are accepted:
+   * <br><code>SocietyComponent</code>
+   * <br><code>RecipeComponent</code>
+   *
+   * @param comp
+   * @exception IllegalArgumentException if an error occurs
+   */
+  public void addComponent(ModifiableComponent comp) throws IllegalArgumentException {
+    if (comp instanceof SocietyComponent) {
+      try {
+        addSocietyComponent((SocietyComponent)comp);
+      } catch (IllegalArgumentException e) {
+        if(log.isErrorEnabled()) {
+          log.error("SocietyComponent already set");
+        }
+      }
+    } else if (comp instanceof RecipeComponent) {
+      addRecipeComponent((RecipeComponent)comp);
+    } else {
+      throw new IllegalArgumentException("Unsupported Component Type" + this);
+    }
+  }
+
+
+  /**
+   * Removes the given component from the Experiment.
+   * If the component is not supported, an exception
+   * is throw.
+   *
+   * @param comp
+   * @exception IllegalArgumentException if an error occurs
+   */
+  public void removeComponent(ModifiableComponent comp) throws IllegalArgumentException {
+    if (comp instanceof SocietyComponent) {
+      removeSocietyComponent();
+    } else if (comp instanceof RecipeComponent) {
+      removeRecipeComponent((RecipeComponent)comp);
+    } else {
+      throw new IllegalArgumentException("Unsupported Component Type");
+    }
+  }
+
+  /**
+   * Returns the total number of Components
+   * (Recipe and Society) in this experiment.
+   *
+   * @return an <code>int</code> value
+   */
+  public int getComponentCount() {
+    return getSocietyComponentCount() + recipes.size();
+  }
+
+
+  /**
+   * @return a <code>ModifiableConfigurableComponent[]</code> array of 
+   * all the components in the experiment
+   */
+  public ModifiableComponent[] getComponentsAsArray() {
+    List comps = getComponents();
+    ModifiableComponent[] compArray = 
+      (ModifiableComponent[])comps.toArray(new ModifiableComponent[comps.size()]);
+    return compArray;
+  }
+
+
+  // Private Methods
+
+  // get all the Societies, Recipes
+  private List getComponents() {
+    List comps = new ArrayList();
+    for (int i = 0; i < getRecipeComponentCount(); i++) {
+      comps.add(getRecipeComponent(i));
+    }
+    comps.add(getSocietyComponent());
+    return comps;
+  }
+
+
+
+
+
+  ////////////////////////////////////////////
+  // Component Runnable Operations.
+  ////////////////////////////////////////////
+
+
 
   /**
    * Set run in progress.  Used by UI tools to indicate that an
    * experiment is being run.  Note that this is distinct from
    * setting the runnability flag, which indicates whether the experiment
    * can ever be run.
+   * @param newRunInProgress 
    */
   public void setRunInProgress(boolean newRunInProgress) {
     runInProgress = newRunInProgress;
-  }
-
-  /**
-   * Return whether or not experiment is being edited.
-   * Note that the experiment may be viewed (but not edited) in an editor,
-   * even if this flag is not set.
-   * @return boolean whether or not experiment is being edited
-   */
-  public boolean isEditInProgress() {
-    return editInProgress;
   }
 
   /**
@@ -322,8 +486,47 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   /**
-   * Returns true if user could override editability.
+   * Return whether or not experiment is runnable.  An experiment is runnable:
+   * if it has a host-node-agent mapping, and
+   * it has no unbound properties, and
+   * it's not being edited or run
+   * @return whether or not an experiment is runnable
    */
+  public boolean isRunnable() {
+    if (!hasConfiguration() || hasUnboundProperties())
+      return false;
+    //    return !editInProgress && !runInProgress;
+    return !runInProgress; // allow user to run experiment they're editing
+  }
+
+
+
+  ////////////////////////////////////////////
+  // Component Editable Operations.
+  ////////////////////////////////////////////
+
+
+
+  /**
+   * Set edit in progress.  Used by UI tools to indicate that an
+   * experiment is being edited.  Note that this is distinct from
+   * setting the editability flag, which indicates whether the experiment
+   * can ever be edited.
+   * @param newEditInProgress 
+   */
+  public void setEditInProgress(boolean newEditInProgress) {
+    editInProgress = newEditInProgress;
+  }
+
+  /**
+   * Return whether or not experiment is being edited.
+   * Note that the experiment may be viewed (but not edited) in an editor,
+   * even if this flag is not set.
+   * @return boolean whether or not experiment is being edited
+   */
+  public boolean isEditInProgress() {
+    return editInProgress;
+  }
 
   /**
    * Returns true if experiment is editable: 
@@ -341,16 +544,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       return !hasResults();
   }
 
-  private boolean hasResults() {
-    Trial[] trials = getTrials();
-    for (int i = 0; i < trials.length; i++) {
-      TrialResult[] results = trials[i].getTrialResults();
-      if (results.length != 0) 
-        return true;
-    }
-    return false;
-  }
-
   /**
    * Make an experiment editable even if
    * it has experiment results.
@@ -364,19 +557,265 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     fireModification();
   }
 
+
+
+
+
+  ////////////////////////////////////////////
+  //  Trial Operations.
+  ////////////////////////////////////////////
+
+
+
+
   /**
-   * Return whether or not experiment is runnable.  An experiment is runnable:
-   * if it has a host-node-agent mapping, and
-   * it has no unbound properties, and
-   * it's not being edited or run
-   * @return whether or not an experiment is runnable
+   * Sets the current Trial ID.
+   *
+   * @param trialID - New Trial ID
    */
-  public boolean isRunnable() {
-    if (!hasConfiguration() || hasUnboundProperties())
-      return false;
-    //    return !editInProgress && !runInProgress;
-    return !runInProgress; // allow user to run experiment they're editing
+  public void setTrialID(String trialID) {
+    this.trialID = trialID;
+    defaultNodeArguments.setReadOnlyProperty(EXPERIMENT_ID, trialID);
   }
+
+  public String getTrialID() {
+    if (DBUtils.dbMode) {
+      return trialID;
+    } else {
+      return null;
+    }
+  }
+
+  /**
+   * Return whether or not the experiment has a valid set of trials.
+   * The trials may be invalid because something about the experiment
+   * has changed (i.e. the set of configurable components, the
+   * unbound variables of a component, the variation scheme)
+   * and the trials have not been recomputed.  This supports recomputing
+   * trials only as needed.
+   * @return boolean indicating whether or not the trials are valid
+   */
+
+  public boolean hasValidTrials() {
+    return hasValidTrials;
+  }
+
+  /**
+   * Indicate that the experiment does not have valid trials; should
+   * be called when some aspect of the experiment or its components
+   * changes so as to invalidate trials.
+   */
+
+  public void invalidateTrials() {
+    hasValidTrials = false;
+  }
+
+
+  /**
+   * Return the trials defined for this experiment.  Computes trials
+   * if necessary.
+   * @return array of Trials
+   */
+  public Trial[] getTrials() {
+    if (hasValidTrials)
+      return (Trial[])trials.toArray(new Trial[trials.size()]);
+
+    getTrialCount(); // update trial count
+
+    // get lists of unbound properties and their experimental values
+    List properties = new ArrayList();
+    List experimentValues = new ArrayList();
+    // Get Society Components.
+    ModifiableComponent comp = getSocietyComponent();
+    List propertyNames = comp.getPropertyNamesList();
+    for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
+      Property property = comp.getProperty((CompositeName)j.next());
+      List values = property.getExperimentValues();
+      if (values != null && values.size() != 0) {
+        properties.add(property);
+        experimentValues.add(values);
+      }
+    }
+
+    // Get Recipe Components.
+    int n = getRecipeComponentCount();
+    for (int i = 0; i < n; i++) {
+      comp = getRecipeComponent(i);
+      propertyNames = comp.getPropertyNamesList();
+      for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
+	Property property = comp.getProperty((CompositeName)j.next());
+	List values = property.getExperimentValues();
+	if (values != null && values.size() != 0) {
+	  properties.add(property);
+	  experimentValues.add(values);
+	}
+      }
+    }
+
+    // handle simple case of no properties to vary
+    int nProperties = properties.size();
+    if (nProperties == 0) {
+      hasValidTrials = true;
+      numberOfTrials = 1;
+      Trial trial = new Trial("Trial 1");
+      trial.initProperties();
+      trials = new ArrayList(1);
+      trials.add(trial);
+      variationScheme = VARY_ONE_DIMENSION;
+      return (Trial[])trials.toArray(new Trial[trials.size()]);
+    }
+
+    // create trials according to variation scheme
+    if (variationScheme.equals(VARY_ONE_DIMENSION)) 
+      return getUnivariateTrials(properties, experimentValues);
+    else if (variationScheme.equals(VARY_TWO_DIMENSION)) 
+      return getBivariateTrials(properties, experimentValues);
+    else if (variationScheme.equals(VARY_SEQUENTIAL) ||
+	     variationScheme.equals(VARY_RANDOM))
+      return getMultivariateTrials(properties, experimentValues);
+    else {
+      System.out.println("Variation scheme not implemented: " + 
+			 variationScheme);
+      return null;
+    }
+  }
+
+
+  public void addTrial(Trial trial) {
+    trials.add(trial);
+    numberOfTrials++;
+  }
+
+  public void removeTrial(int trialIndex) {
+    trials.remove(trialIndex);
+    numberOfTrials--;
+    if (numberOfTrials == 0)
+      numberOfTrials = 1;
+  }
+
+  /**
+   * Get the number of trials. Recomputes the number of trials if necessary.
+   * @return number of trials
+   */
+  public int getTrialCount() {
+    if (hasValidTrials) 
+      return numberOfTrials;
+    ArrayList experimentValueCounts = new ArrayList(100);
+
+    // Get Society Components
+    ModifiableComponent comp = getSocietyComponent();
+    Iterator names = comp.getPropertyNames();
+    while (names.hasNext()) {
+      Property property = comp.getProperty((CompositeName)names.next());
+      List values = property.getExperimentValues();
+      if (values != null)
+        experimentValueCounts.add(new Integer(values.size()));
+    }
+
+    // Get Recipe Components
+    int n = getRecipeComponentCount();
+    for (int i = 0; i < n; i++) {
+      comp = getRecipeComponent(i);
+      names = comp.getPropertyNames();
+      while (names.hasNext()) {
+	Property property = comp.getProperty((CompositeName)names.next());
+	List values = property.getExperimentValues();
+	if (values != null)
+	  experimentValueCounts.add(new Integer(values.size()));
+      }
+    }
+    // one dimension: sum the counts of experiment values
+    // but only count nominal value the first time
+    if (variationScheme.equals(VARY_ONE_DIMENSION)) {
+      numberOfTrials = 0;
+      for (int i = 0; i < experimentValueCounts.size(); i++)
+	numberOfTrials = numberOfTrials + 
+	  ((Integer)experimentValueCounts.get(i)).intValue() - 1;
+      numberOfTrials++; // add one to use nominal value for first time
+    }
+    // sequential or random: (all combinations): multiply counts
+    else if (variationScheme.equals(VARY_RANDOM) ||
+	     variationScheme.equals(VARY_SEQUENTIAL)) {
+      numberOfTrials = 1;
+      for (int i = 0; i < experimentValueCounts.size(); i++)
+	numberOfTrials = numberOfTrials *
+	  ((Integer)experimentValueCounts.get(i)).intValue();
+    }
+    // two dimension: ???
+    if (numberOfTrials == 0)
+      numberOfTrials = 1;  // always assume at least one trial
+    return numberOfTrials;
+  }
+
+
+  // Private Methods
+
+  private Trial[] getMultivariateTrials(List properties, 
+					List experimentValues) {
+    trials = new ArrayList(numberOfTrials);
+    for (int i = 0; i < numberOfTrials; i++) {
+      Trial trial = new Trial("Trial " + (i+1));
+      trial.initProperties();
+      trials.add(trial);
+    }
+    int nProperties = properties.size();
+    // how many times to copy each value in the experiment values
+    // to the trials
+    int nCopies = 1;
+    for (int i = 0; i < nProperties; i++) {
+      addParameterValues(trials,
+			 (Property)properties.get(i),
+			 (List)experimentValues.get(i),
+			 nCopies);
+      nCopies = nCopies * ((List)(experimentValues.get(i))).size();
+    }
+    hasValidTrials = true;
+    return (Trial[])trials.toArray(new Trial[trials.size()]);
+  }
+
+  private Trial[] getUnivariateTrials(List properties, List experimentValues) {
+    trials = new ArrayList(numberOfTrials);
+    int propToVaryIndex = 0; // index of property being varied
+    int k = 0; // index into values of property being varied
+    int nProperties = properties.size();
+    for (int i = 0; i < numberOfTrials; i++) {
+      Trial trial = new Trial("Trial " + (i+1));
+      trial.initProperties();
+      for (int j = 0; j < nProperties; j++) {
+	List parameterValues = (List)experimentValues.get(j);
+	Object value;
+	if (j == propToVaryIndex)
+	  value = parameterValues.get(k++);
+	else
+	  value = parameterValues.get(0);
+	trial.addTrialParameter((Property)properties.get(j), value);
+      }
+      // if we've stepped through all the values of the property being varied
+      // then vary the next property
+      if (((List)experimentValues.get(propToVaryIndex)).size() == k) {
+	k = 1; // after first pass, skip nominal values
+	propToVaryIndex++;
+      }
+      trials.add(trial);
+    }
+    hasValidTrials = true;
+    return (Trial[])trials.toArray(new Trial[trials.size()]);
+  }
+
+  private Trial[] getBivariateTrials(List properties, List experimentValues) {
+    hasValidTrials = true;
+    return null;
+  }
+
+
+
+
+  ////////////////////////////////////////////
+  // Basic Operations.
+  ////////////////////////////////////////////
+
+
+
 
   /**
    * Stop after the current trial.
@@ -392,8 +831,73 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    */
   public void experimentStopped() {
     // Tell the Societies in the experiment they are no longer running?
-    if (society != null)
-      society.setRunning(false);
+    if (societyComponent != null)
+      societyComponent.setRunning(false);
+  }
+
+  /**
+   * Returns the Default Node Arguments
+   * 
+   * @return a <code>Properties</code> object containing all default Node Args.
+   */
+  public Properties getDefaultNodeArguments() {
+    return defaultNodeArguments;
+  }
+
+  /**
+   * Sets the Experiment ID for this Experiment.
+   *
+   * @param expID 
+   */
+  public void setExperimentID(String expID) {
+    this.expID = expID;
+  }
+
+  public String getExperimentID() {
+    if (DBUtils.dbMode) {
+      return expID;
+    } else {
+      return null;
+    }
+  }
+
+
+
+  public File getResultDirectory() {
+    return resultDirectory;
+  }
+
+  public void setResultDirectory(File resultDirectory) {
+    this.resultDirectory = resultDirectory;
+    fireModification();
+  }
+
+  /**
+   * Sets the Name of this Component.
+   *
+   * @param newName - New Component Name
+   */
+  public void setName(String newName) {
+    super.setName(newName);
+    fireModification();
+  }
+
+  /**
+   * Returns the Name of this Experiment
+   *
+   * @return a <code>String</code> value
+   */
+  public String getExperimentName() {
+    return getShortName();
+  }
+
+  /**
+   * Returns the name of this component
+   *
+   * @return a <code>String</code> value
+   */
+  public String toString() {
+    return this.getShortName();
   }
 
   /**
@@ -412,20 +916,23 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     newProps.clear();
     newProps.putAll(getDefaultNodeArguments());
 
-    // this copies the society and the recipes
-    for (int i = 0; i < getComponentCount(); i++) {
-      ModifiableComponent mc = getComponent(i);
+    // Copy the society component
+    ModifiableComponent society = getSocietyComponent();
+    ModifiableComponent copiedSocietyComponent = null;
+    copiedSocietyComponent = society.copy("Society for " + uniqueName);
+    if (copiedSocietyComponent != null)
+      experimentCopy.addComponent(copiedSocietyComponent);
+    
+    // Copy the recipe components
+    for (int i = 0; i < getRecipeComponentCount(); i++) {
+      ModifiableComponent mc = getRecipeComponent(i);
       ModifiableComponent copiedComponent = null;
-      if (mc instanceof SocietyComponent) {
-        copiedComponent = mc.copy("Society for " + uniqueName);
-      } else if (mc instanceof RecipeComponent) {
-        copiedComponent = mc.copy("Recipe for " + uniqueName);
-      }
+      copiedComponent = mc.copy("Recipe for " + uniqueName);
       if (copiedComponent != null)
         experimentCopy.addComponent(copiedComponent);
     }
     // copy hosts
-    HostComponent[] hosts = getHosts();
+    HostComponent[] hosts = getHostComponents();
     HostComponent[] nhosts = new HostComponent[hosts.length];
     for (int i = 0; i < hosts.length; i++) {
       nhosts[i] = experimentCopy.addHost(hosts[i].getShortName().toString());
@@ -433,7 +940,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       nhosts[i].setMonitoringPort(hosts[i].getMonitoringPort());
     }
     // copy nodes
-    NodeComponent[] nodes = getNodes();
+    NodeComponent[] nodes = getNodeComponents();
     NodeComponent[] nnodes = new NodeComponent[nodes.length];
     for (int i = 0; i < nodes.length; i++) {
       nnodes[i] = ((ExperimentNode)nodes[i]).copy(experimentCopy);
@@ -486,7 +993,20 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     // (if all the sub-pieces were also components)
   }
 
+  /**
+   * Get component data for the society in the experiment.
+   * If the experiment is not in the database, then it
+   * constructs the society component data here.
+   * @return ComponentData the component data for the society
+   */
+
+  public ComponentData getSocietyComponentData() {
+    saveToDb(); // if modified, update component data and save to database
+    return completeSociety;
+  }
+
   public void modified(ModificationEvent e) {
+    // This method needs to be implemented.
     fireModification();
     modified = true;
   }
@@ -495,29 +1015,123 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     super.fireModification();
   }
 
-  public HostComponent addHost(String name) {
-    // FIXME! This allows 2 Hosts with the same name!
-    ExperimentHost result = new ExperimentHost(name);
-    hosts.add(result);
-    result.addModificationListener(this);
-    fireModification();
-    return result;
+
+  // Private Methods
+
+  private void addDefaultNodeArguments(ComponentData theSoc) {
+    Properties props = getDefaultNodeArguments();
+    for (Iterator i = props.entrySet().iterator(); i.hasNext(); ) {
+      Map.Entry entry = (Map.Entry) i.next();
+      theSoc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
+    }
   }
 
+  private void readObject(ObjectInputStream ois)
+    throws IOException, ClassNotFoundException
+  {
+    ois.defaultReadObject();
+    createLogger();
+    modified = true; // causes config writer to write the ComponentData tree
+    createConfigWriter();
+  }
+
+  private void addPropertiesAsParameters(ComponentData cd, BaseComponent cp)
+  {
+    for (Iterator it = cp.getPropertyNames(); it.hasNext(); ) {
+      ComponentName pname = (ComponentName) it.next();
+      Property prop = cp.getProperty(pname);
+      if (prop != null) {
+        Object pvalue = prop.getValue();
+        if (pvalue instanceof String)
+          cd.addParameter(PROP_PREFIX + pname.last() + "=" + pvalue);
+      }
+    }
+  }
+
+  private void addParameterValues(List trials,
+				  Property property, 
+				  List values, int nCopies) {
+    int x = 0;
+    int j = 0;
+    int nValues = values.size();
+    for (int i = 0; i < numberOfTrials; i++) {
+      ((Trial)trials.get(i)).addTrialParameter(property, values.get(j));
+      x++;
+      if (x >= nCopies) {
+	x = 0;
+	j++;
+	if (j >= nValues)
+	  j = 0;
+      }
+    }
+  }
+
+
+
+
+
+
+  ////////////////////////////////////////////
+  // Host Component Operations.
+  ////////////////////////////////////////////
+
+
+  // Public Methods
+
+  /**
+   * Adds the Given Host to the Experiment
+   * If the given host already exists, an exception is thrown.
+   *
+   * @param name - Name of the new Host
+   * @return a <code>HostComponent</code> for this host.
+   * @exception IllegalArgumentException if an error occurs
+   */
+  public HostComponent addHost(String name) throws IllegalArgumentException {
+    if(hostExists(name)) {
+      throw new IllegalArgumentException("Host Already Exists in Society");
+    } else {
+      return addHostComponent(new ExperimentHost(name));
+    }
+  }
+
+  public HostComponent[] getHostComponents() {
+    return (HostComponent[]) hosts.toArray(new HostComponent[hosts.size()]);
+  }
+
+
+  /**
+   * Removes the given host from the experiment.
+   *
+   * @param hostComponent - <code>HostComponent</code> to remove.
+   */
   public void removeHost(HostComponent hostComponent) {
-    ExperimentHost sc = (ExperimentHost) hostComponent;
     hosts.remove(hostComponent);
-    sc.dispose();           // Let the host disassociate itself from nodes
-    sc.removeModificationListener(this);
+    // Let the host disassociate itself from nodes
+    ((ExperimentHost)hostComponent).dispose();           
+    ((ExperimentHost)hostComponent).removeModificationListener(this);
     fireModification();
   }
 
-  public void renameHost(HostComponent hostComponent, String name) {
-    // FIXME! This allows 2 Hosts with the same name!
-    hosts.remove(hostComponent);
-    hostComponent.setName(name);
-    hosts.add(hostComponent);
-    fireModification();
+  /**
+   * Renames a host in the Experiment.
+   * If a host with the given name already exists, an exception
+   * is thrown.
+   *
+   * @param hostComponent - <code>HostComponent</code> of the host to be renamed.
+   * @param name - New Host Name
+   * @exception IllegalArgumentException if an error occurs
+   */
+  public void renameHost(HostComponent hostComponent, String name) 
+    throws IllegalArgumentException {
+    ExperimentHost testHost = new ExperimentHost(name);
+    if(hosts.contains(testHost)) {
+      throw new IllegalArgumentException("Host Already Exists in Society");
+    } else {
+      hosts.remove(hostComponent);
+      hostComponent.setName(name);
+      hosts.add(hostComponent);
+      fireModification();
+    }
   }
 
   /**
@@ -545,7 +1159,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       }
     }
 
-    HostComponent[] hosts = getHosts();
+    HostComponent[] hosts = getHostComponents();
   hostLoop:
     for (int i = 0; i < hosts.length; i++) {
       NodeComponent[] nodes = hosts[i].getNodes();
@@ -586,21 +1200,51 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
   }
 
-  private void addNodeComponent(ExperimentNode node) {
-    nodes.add(node);
-    node.addModificationListener(this);
+
+  // Private Methods
+
+  private boolean hostExists(String name) {
+    return (hosts.contains(new ExperimentHost(name))) ? true : false;
+  }
+
+  private ExperimentHost addHostComponent(ExperimentHost host) {
+    hosts.add(host);
+    host.addModificationListener(this);
     fireModification();
+    return host;
   }
 
-  public NodeComponent addNode(String name) {
-    // FIXME! This allows 2 Nodes with the same name. Of itself, that's
-    // OK, but on the same Host, that would be bad, and in general
-    // its confusing.
-    ExperimentNode result = new ExperimentNode(name, this);
-    addNodeComponent(result);
-    return result;
+
+  ////////////////////////////////////////////
+  // Node Component Operations.
+  ////////////////////////////////////////////
+
+  // Public 
+
+
+  /**
+   * Adds a new node to this experiment.  If the node
+   * currently exists, an exception is thrown.
+   *
+   * @param name - Name of new Node
+   * @return a <code>NodeComponent</code> value
+   * @exception IllegalArgumentException if an error occurs
+   */
+  public NodeComponent addNode(String name) throws IllegalArgumentException {
+    if(!nodeExists(name)) {
+      ExperimentNode result = new ExperimentNode(name, this);
+      addNodeComponent(result);
+      return result;
+    } else {
+      throw new IllegalArgumentException("Node already exists");
+    }
   }
 
+  /**
+   * Removes the specified node from the Experiment
+   *
+   * @param nc <code>NodeComponent</code> of the Node to remove
+   */
   public void removeNode(NodeComponent nc) {
     ExperimentNode sc = (ExperimentNode) nc;
     nodes.remove(nc);
@@ -609,40 +1253,156 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     fireModification();
   }
 
-  public void renameNode(NodeComponent nc, String name) {
-    // FIXME! This allows 2 Nodes with the same name!
-    nodes.remove(nc);
-    nc.setName(name);
-    //fireModification();
-    nodes.add(nc);
-    fireModification();
-  }
-
-  // get all the Societies, Recipes
-  private List getComponents() {
-    List comps = new ArrayList();
-    for (int i = 0; i < getComponentCount(); i++) {
-      comps.add(getComponent(i));
+  /**
+   * Renames a currently existing Node in this Experiment.
+   * If a node with the new name already exists, an exception is thrown
+   *
+   * @param nc - Node Component of the Node to change name
+   * @param name - New Name
+   * @exception IllegalArgumentException if an error occurs
+   */
+  public void renameNode(NodeComponent nc, String name) throws IllegalArgumentException {
+    if(nodeExists(name)) {
+      throw new IllegalArgumentException("Node name already exists!");
+    } else {
+      nodes.remove(nc);
+      nc.setName(name);
+      nodes.add(nc);
+      fireModification();
     }
-    return comps;
   }
 
   /**
-   * @return a <code>ModifiableConfigurableComponent[]</code> array of all the components in the experiment
+   * Reconcile agents in nodes with agents in society,
+   * so that if a society has been reconfigured such that
+   * it no longer contains some agents, those agents are also
+   * removed from the nodes.
    */
-  public ModifiableComponent[] getComponentsAsArray() {
-    List comps = getComponents();
-    ModifiableComponent[] compArray = (ModifiableComponent[])comps.toArray(new ModifiableComponent[comps.size()]);
-    return compArray;
+  public NodeComponent[] getNodeComponents() {
+    NodeComponent[] result = getNodesInner();
+    updateNameServerHostName(); // Be sure this is update-to-date
+    return result;
+  }
+
+
+  // Private
+
+  private void addNodes() {
+    NodeComponent[] nodesToWrite = getNodeComponents();
+    for (int i = 0; i < nodesToWrite.length; i++) {
+      ComponentData nc = new GenericComponentData();
+      nc.setType(ComponentData.NODE);
+      nc.setName(nodesToWrite[i].getShortName());
+      nc.setClassName("org.cougaar.core.node.Node"); // leave this out?? FIXME
+      nc.setOwner(this);
+      nc.setParent(completeSociety);
+      ComponentName name = 
+	  new ComponentName((ConfigurableComponent)nodesToWrite[i], "ConfigurationFileName");
+      try {
+	nc.addParameter(((BaseComponent)nodesToWrite[i]).getProperty(name).getValue().toString());
+      } catch (NullPointerException e) {
+	nc.addParameter(nc.getName() + ".ini");
+      }
+      completeSociety.addChild(nc);
+      addAgents(nodesToWrite[i], nc);
+    }
+  }
+
+  private boolean nodeExists(String name) {
+    return (nodes.contains(new ExperimentNode(name, this))) ? true : false;
+  }
+
+  private void addNodeComponent(ExperimentNode node) {
+    nodes.add(node);
+    node.addModificationListener(this);
+    fireModification();
+  }
+
+  private NodeComponent[] getNodesInner() {
+    List agents = getAgentsList();
+    for (Iterator i = nodes.iterator(); i.hasNext(); ) {
+      NodeComponent nc = (NodeComponent) i.next();
+      AgentComponent[] nodeAgent = nc.getAgents();
+      for (int j = 0; j < nodeAgent.length; j++) {
+	if (!agents.contains(nodeAgent[j]))
+	  nc.removeAgent(nodeAgent[j]);
+      }
+    }
+    return (NodeComponent[]) nodes.toArray(new NodeComponent[nodes.size()]);
+  }
+
+  // returns a collection of all agents written.
+  private Collection generateNodeComponent(NodeComponent node, ComponentData parent) {
+    Set writtenAgents = new HashSet();
+
+    ComponentData nc = new GenericComponentData();
+    nc.setType(ComponentData.NODE);
+    nc.setName(node.getShortName());
+    nc.setClassName(Node.class.getName()); // leave this out?? FIXME
+    nc.setOwner(this); // the experiment? FIXME
+    nc.setParent(parent);
+    ComponentName name = 
+      new ComponentName((ConfigurableComponent) node, "ConfigurationFileName");
+    nc.addParameter(node.getShortName());
+    Properties props = node.getArguments();
+    for (Iterator i = props.entrySet().iterator(); i.hasNext(); ) {
+      Map.Entry entry = (Map.Entry) i.next();
+      nc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
+    }
+    addPropertiesAsParameters(nc, node);
+    if(log.isDebugEnabled()) {
+      log.debug("Adding: " + nc.getName() + " to " + parent.getName());
+    }
+    parent.addChild(nc);
+    AgentComponent[] agents = node.getAgents();
+    if (agents != null && agents.length > 0) {
+      for (int j = 0; j < agents.length; j++) {
+        generateAgentComponent(agents[j], nc, parent.getOwner());
+        if(log.isDebugEnabled()) {
+          log.debug("Remember Agent: " + agents[j].getShortName());
+        }
+        writtenAgents.add(agents[j]);
+      }
+    }
+    if(log.isDebugEnabled()) {
+      log.debug("# Agents for node: " + nc.getName() + " is: " + writtenAgents.size());
+    }
+    return writtenAgents;
   }
   
+
+
+  ////////////////////////////////////////////
+  // Agent Component Operations.
+  ////////////////////////////////////////////
+
+
+  // Public
+
+  public List getAgentsList() {
+    List agents = getAgentsInSociety();
+    if (agents == null)
+      agents = new ArrayList();
+    List other = getAgentsInRecipes();
+    if (other != null && (! other.isEmpty()))
+      agents.addAll(other);
+    return agents;
+  }
+  
+  public AgentComponent[] getAgents() {
+    List agents = getAgentsList();
+    return (AgentComponent[])agents.toArray(new AgentComponent[agents.size()]);
+  }
+
+  // Private 
+
   /**
    * Get the agents from the society in the experiment.
    */
   private List getAgentsInSociety() {
     List agents = new ArrayList();
-    if (society != null) {
-      AgentComponent[] sags = society.getAgents();
+    if (societyComponent != null) {
+      AgentComponent[] sags = societyComponent.getAgents();
       if (sags != null && sags.length > 0)
 	agents.addAll(Arrays.asList(sags));
     }
@@ -671,115 +1431,45 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return agents;
   }
 
-  public List getAgentsList() {
-    List agents = getAgentsInSociety();
-    if (agents == null)
-      agents = new ArrayList();
-    List other = getAgentsInRecipes();
-    if (other != null && (! other.isEmpty()))
-      agents.addAll(other);
-    return agents;
+  private void generateAgentComponent(AgentComponent agent, 
+                             ComponentData parent, 
+                             ConfigurableComponent owner) {
+    if(log.isDebugEnabled()) {
+      log.debug("Adding Agent: " + agent.getShortName() + "To " + parent.getName());
+    }
+
+    AgentComponentData ac = new AgentComponentData();
+    ac.setName(agent.getShortName());
+    ac.setClassName(ClusterImpl.class.getName());
+    ac.addParameter(agent.getShortName()); // Agents have one parameter, the agent name
+    ac.setOwner(owner);
+    ac.setParent(parent);
+    addPropertiesAsParameters(ac, agent);
+    parent.addChild((ComponentData)ac);
   }
+
+  private void addAgents(NodeComponent node, ComponentData nc) {
+    AgentComponent[] agents = node.getAgents();
+    if (agents == null || agents.length == 0)
+      return;
+    for (int i = 0; i < agents.length; i++) {
+      AgentComponentData ac = new AgentComponentData();
+      ac.setName(agents[i].getFullName().toString());
+      // FIXME!!
+      ac.setOwner(null); // the society that contains this agent FIXME!!!
+      ac.setParent(nc);
+      nc.addChild((ComponentData)ac);
+    }
+  }
+
+
+
+
+
+  ////////////////////////////////////////////
+  // Database Specific Operations
+  ////////////////////////////////////////////
   
-  public AgentComponent[] getAgents() {
-    List agents = getAgentsList();
-    return (AgentComponent[])agents.toArray(new AgentComponent[agents.size()]);
-  }
-
-  /**
-   * Reconcile agents in nodes with agents in society,
-   * so that if a society has been reconfigured such that
-   * it no longer contains some agents, those agents are also
-   * removed from the nodes.
-   */
-  public NodeComponent[] getNodes() {
-    NodeComponent[] result = getNodesInner();
-    updateNameServerHostName(); // Be sure this is update-to-date
-    return result;
-  }
-
-  private NodeComponent[] getNodesInner() {
-    List agents = getAgentsList();
-    for (Iterator i = nodes.iterator(); i.hasNext(); ) {
-      NodeComponent nc = (NodeComponent) i.next();
-      AgentComponent[] nodeAgent = nc.getAgents();
-      for (int j = 0; j < nodeAgent.length; j++) {
-	if (!agents.contains(nodeAgent[j]))
-	  nc.removeAgent(nodeAgent[j]);
-      }
-    }
-    return (NodeComponent[]) nodes.toArray(new NodeComponent[nodes.size()]);
-  }
-
-  public HostComponent[] getHosts() {
-    return (HostComponent[]) hosts.toArray(new HostComponent[hosts.size()]);
-  }
-
-  public File getResultDirectory() {
-    return resultDirectory;
-  }
-
-  public void setResultDirectory(File resultDirectory) {
-    this.resultDirectory = resultDirectory;
-    fireModification();
-  }
-
-//    public boolean isCloned() {
-//      return cloned;
-//    }
-
-//    public void setCloned(boolean newCloned) {
-//      cloned = newCloned;
-//    }
-
-  public String getExperimentID() {
-    if (DBUtils.dbMode) {
-      return expID;
-    } else {
-      return null;
-    }
-  }
-
-  public String getTrialID() {
-    if (DBUtils.dbMode) {
-      return trialID;
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * An Experiment now has a configuration writer that
-   * lets all the components write themselves out
-   */
-
-  private void createConfigWriter() {
-    configWriter = new LeafOnlyConfigWriter(getSocietyComponentData());
-  }
-
-  public Iterator getConfigFiles(NodeComponent[] nodes) {
-    if (DBUtils.dbMode) {
-      // Send a config writer that only writes LeafComponentData
-      try {
-        //        configWriter = new LeafOnlyConfigWriter(getComponents(), nodes, this);
-        createConfigWriter();
-        return configWriter.getFileNames();
-      } catch (Exception e) {
-        if(log.isErrorEnabled()) {
-          log.error("Exception, creating config writer", e);
-        }
-        return null;
-      }
-    } else {
-      //      return new ExperimentINIWriter(getComponents(), nodes, this);
-      return null;
-    }    
-  }
-
-  public void writeContents(String filename, OutputStream out) throws Exception {
-    configWriter.writeFile(filename, out);
-  }
-
   /**
    * If the experiment has been modified, save it to the database.
    * This creates the full ComponentData tree and then uses
@@ -796,16 +1486,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
     try {
       updateNameServerHostName(); // Be sure this is up-to-date
-      Set writtenNodes = new HashSet();
       List components = getComponents();
-      NodeComponent[] nodesToWrite = getNodes();
-      ComponentData theSoc = new GenericComponentData();
-      theSoc.setType(ComponentData.SOCIETY);
-      theSoc.setName(getExperimentName()); // this should be experiment: trial FIXME
-      theSoc.setClassName("java.lang.Object"); // Must not be null
-      theSoc.setOwner(this); // the experiment
-      theSoc.setParent(null);
-      addDefaultNodeArguments(theSoc);
+
+      boolean componentWasRemoved = generateCompleteSociety();
+
       PopulateDb pdb = null;
       if(fromFile) {
 	// Created with a SocietyFileComponent
@@ -825,75 +1509,51 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       setExperimentID(pdb.getExperimentId());
       setTrialID(pdb.getTrialId()); // sets trial id and -D argument
 
-      // For each node, create a GenericComponentData, and add it to the society
-      for (Iterator i = hosts.iterator(); i.hasNext(); ) {
-        ExperimentHost host = (ExperimentHost) i.next();
-        ComponentData hc = new GenericComponentData();
-        hc.setType(ComponentData.HOST);
-        hc.setName(host.getShortName());
-        hc.setClassName("");
-        hc.setOwner(this);
-        hc.setParent(theSoc);
-        addPropertiesAsParameters(hc, host);
-        theSoc.addChild(hc);
-        NodeComponent[] nodes = host.getNodes();
-        for (int j = 0; j < nodes.length; j++) {
-          saveNodeToDb(nodes[j], hc);
-          writtenNodes.add(nodes[j]);
-        }
-      }
-      for (int i = 0; i < nodesToWrite.length; i++) {
-        if (writtenNodes.contains(nodesToWrite[i])) continue;
-        saveNodeToDb(nodesToWrite[i], theSoc);
-        writtenNodes.add(nodesToWrite[i]);
-      }
-
       // Some components will want access to the complete set of Nodes
       // in the society, etc. To get that, they must get back to the
       // root soc object, and do a getOwner and go from there. Ugly.
 
-      if(log.isDebugEnabled()) {
-        log.debug("Adding All Components");
-      }
 
       // So far we've just created the pdb (which
       // sets up the Experimet & Trial IDs, and puts the CMT assembly
       // in the right place if necc, and clears out the other 
       // assemblies (CSMI, CSHNA)
 
-      // Now ask each component in turn to add its stuff
-      boolean componentWasRemoved = false;
-      for (int i = 0, n = components.size(); i < n; i++) {
-        BaseComponent soc = (BaseComponent) components.get(i);
-        if(log.isDebugEnabled()) {
-          log.debug(soc + ".addComponentData");
-        }
-        soc.addComponentData(theSoc);
-	// Components can notice here if they had to remove
-	// a component (or, I suppose, modify)
-        componentWasRemoved |= soc.componentWasRemoved();
-	// Note that no current component returns true here
-      }
+//       // Now ask each component in turn to add its stuff
+//       boolean componentWasRemoved = false;
+//       for (int i = 0, n = components.size(); i < n; i++) {
+//         BaseComponent soc = (BaseComponent) components.get(i);
+//         if(log.isDebugEnabled()) {
+//           log.debug(soc + ".addComponentData");
+//         }
+//         soc.addComponentData(completeSociety);
+// 	// Components can notice here if they had to remove
+// 	// a component (or, I suppose, modify)
+//         componentWasRemoved |= soc.componentWasRemoved();
+// 	// Note that no current component returns true here
+//       }
       // If any component removed something, we need
       // to recreate the CMT assembly (under the original ID)
       // So this, currently destroys the orig CMT
       // Note also it does not effect Agent asset data
       // or relationships or OPLAN stuff
-      if (componentWasRemoved) pdb.repopulateCMT(theSoc);
-      pdb.populateHNA(theSoc);
+      if (componentWasRemoved) pdb.repopulateCMT(completeSociety);
+      if(log.isErrorEnabled() && completeSociety == null) {
+        log.error("Society Data is null!");
+      }
+      pdb.populateHNA(completeSociety);
 
       // then give everyone a chance to modify what they've collectively produced
       for (int i = 0, n = components.size(); i < n; i++) {
         BaseComponent soc = (BaseComponent) components.get(i);
-        soc.modifyComponentData(theSoc, pdb);
+        soc.modifyComponentData(completeSociety, pdb);
         if (soc.componentWasRemoved()) {
-          pdb.repopulateCMT(theSoc);
+          pdb.repopulateCMT(completeSociety);
         }
-        pdb.populateCSMI(theSoc);
+        pdb.populateCSMI(completeSociety);
       }
       pdb.setModRecipes(recipes);
       pdb.close();
-      theWholeSoc = theSoc;
     } catch (Exception sqle) {
       if (log.isErrorEnabled())
 	log.error("Error saving experiment to database: ", sqle);
@@ -918,6 +1578,86 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       });
   }
 
+
+
+
+  public boolean generateCompleteSociety() {
+    Set savedNodes = new HashSet();
+    Set savedAgents = new HashSet();
+    NodeComponent[] nodesToWrite = getNodeComponents();
+    AgentComponent[] agentsToWrite = getAgents();
+    List components = getComponents();
+
+    completeSociety = new GenericComponentData();
+
+    completeSociety.setType(ComponentData.SOCIETY);
+    completeSociety.setName(getExperimentName()); // this should be experiment: trial FIXME
+    completeSociety.setClassName("java.lang.Object"); // Must not be null
+    completeSociety.setOwner(this); // the experiment
+    completeSociety.setParent(null);
+    addDefaultNodeArguments(completeSociety);
+
+    // For each node, create a GenericComponentData, and add it to the society
+    for (Iterator i = hosts.iterator(); i.hasNext(); ) {
+      ExperimentHost host = (ExperimentHost) i.next();
+      ComponentData hc = new GenericComponentData();
+      if(log.isDebugEnabled()) {
+        log.debug("Processing Host: " + host.getShortName());
+      }
+      hc.setType(ComponentData.HOST);
+      hc.setName(host.getShortName());
+      hc.setClassName("");
+      hc.setOwner(this);
+      hc.setParent(completeSociety);
+      addPropertiesAsParameters(hc, host);
+      completeSociety.addChild(hc);
+      NodeComponent[] nodes = host.getNodes();
+      for (int j = 0; j < nodes.length; j++) {
+        savedAgents.addAll(generateNodeComponent(nodes[j], hc));
+        savedNodes.add(nodes[j]);
+      }
+    }
+    for (int i = 0; i < nodesToWrite.length; i++) {
+      if (savedNodes.contains(nodesToWrite[i])) continue;
+      savedAgents.addAll(generateNodeComponent(nodesToWrite[i], completeSociety));
+      savedNodes.add(nodesToWrite[i]);
+    }
+    for (int i = 0; i < agentsToWrite.length; i++) {
+      if (savedAgents.contains(agentsToWrite[i])) {
+        if(log.isDebugEnabled()) {
+          log.debug("Skipping Agent: " + agentsToWrite[i].getShortName());
+        }
+        continue;
+      }
+      if(log.isDebugEnabled()) {
+        log.debug("Writing Agent: " + agentsToWrite[i].getShortName());
+      }
+      generateAgentComponent(agentsToWrite[i], completeSociety, this);
+      savedAgents.add(agentsToWrite[i]);
+    }
+
+    // Now ask each component in turn to add its stuff
+    boolean componentWasRemoved = false;
+    for (int i = 0, n = components.size(); i < n; i++) {
+      BaseComponent soc = (BaseComponent) components.get(i);
+      if(log.isDebugEnabled()) {
+        log.debug(soc + ".addComponentData");
+      }
+      soc.addComponentData(completeSociety);
+      // Components can notice here if they had to remove
+      // a component (or, I suppose, modify)
+      componentWasRemoved |= soc.componentWasRemoved();
+      // Note that no current component returns true here
+    }
+
+    return componentWasRemoved;
+  }
+
+  ////////////////////////////////////////////
+  // Configuration Writer Specific Operations
+  ////////////////////////////////////////////
+
+
   /** 
    * Dump out the INI files for the first trial to
    * the local results directory for that trial.
@@ -927,14 +1667,29 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    */
 
   public void dumpINIFiles() {
-    ExperimentINIWriter cw = null;
-    if (DBUtils.dbMode) {
-      saveToDb();
-      if (theWholeSoc == null)
-        return;
-      cw = new ExperimentINIWriter(theWholeSoc);
-    } else
-      cw = new ExperimentINIWriter(getComponents(), getNodes(), this);
+
+    // Generate the complete Society
+    generateCompleteSociety();
+
+    // then give everyone a chance to modify what they've collectively produced
+    List components = getComponents();
+    for (int i = 0, n = components.size(); i < n; i++) {
+      BaseComponent soc = (BaseComponent) components.get(i);
+      soc.modifyComponentData(completeSociety);
+    }
+
+    ExperimentINIWriter cw = new ExperimentINIWriter(completeSociety);
+
+//     if (DBUtils.dbMode) {
+//       if(log.isDebugEnabled()) {
+//         log.debug("dumpINIFiles: Save to Db");
+//       }
+// //       saveToDb();
+//       if (completeSociety == null)
+//         return;
+//     } else {
+//       cw = new ExperimentINIWriter(completeSociety);
+//     }
 
     File resultDir = getResultDirectory();
     // if user didn't specify results directory, save in local directory
@@ -971,64 +1726,51 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     }
   }
   
-  private void addDefaultNodeArguments(ComponentData theSoc) {
-    Properties props = getDefaultNodeArguments();
-    for (Iterator i = props.entrySet().iterator(); i.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) i.next();
-      theSoc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
-    }
-  }
-
-  private void saveNodeToDb(NodeComponent node, ComponentData parent) {
-    ComponentData nc = new GenericComponentData();
-    nc.setType(ComponentData.NODE);
-    nc.setName(node.getShortName());
-    nc.setClassName(Node.class.getName()); // leave this out?? FIXME
-    nc.setOwner(this); // the experiment? FIXME
-    nc.setParent(parent);
-    ComponentName name = 
-      new ComponentName((ConfigurableComponent) node, "ConfigurationFileName");
-    nc.addParameter(node.getShortName());
-    Properties props = node.getArguments();
-    for (Iterator i = props.entrySet().iterator(); i.hasNext(); ) {
-      Map.Entry entry = (Map.Entry) i.next();
-      nc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
-    }
-    addPropertiesAsParameters(nc, node);
-    parent.addChild(nc);
-    AgentComponent[] agents = node.getAgents();
-    if (agents != null && agents.length > 0) {
-      for (int j = 0; j < agents.length; j++) {
-        AgentComponentData ac = new AgentComponentData();
-        ac.setName(agents[j].getShortName());
-        ac.setClassName(ClusterImpl.class.getName());
-        ac.addParameter(agents[j].getShortName()); // Agents have one parameter, the agent name
-        if(log.isDebugEnabled()) {
-          log.debug("Adding agent: " + 
-                    agents[j].getShortName() +
-                    " to: " + node.getShortName());
+  public Iterator getConfigFiles(NodeComponent[] nodes) {
+    if (DBUtils.dbMode) {
+      // Send a config writer that only writes LeafComponentData
+      try {
+        //        configWriter = new LeafOnlyConfigWriter(getComponents(), nodes, this);
+        createConfigWriter();
+        return configWriter.getFileNames();
+      } catch (Exception e) {
+        if(log.isErrorEnabled()) {
+          log.error("Exception, creating config writer", e);
         }
-        // FIXME!!
-        ac.setOwner(null); // the society that contains this agent FIXME!!!
-        ac.setParent(nc);
-        addPropertiesAsParameters(ac, agents[j]);
-        nc.addChild((ComponentData)ac);
+        return null;
       }
-    }
+    } else {
+      //      return new ExperimentINIWriter(getComponents(), nodes, this);
+      return null;
+    }    
   }
 
-  private void addPropertiesAsParameters(ComponentData cd, BaseComponent cp)
-  {
-    for (Iterator it = cp.getPropertyNames(); it.hasNext(); ) {
-      ComponentName pname = (ComponentName) it.next();
-      Property prop = cp.getProperty(pname);
-      if (prop != null) {
-        Object pvalue = prop.getValue();
-        if (pvalue instanceof String)
-          cd.addParameter(PROP_PREFIX + pname.last() + "=" + pvalue);
-      }
-    }
+  public void writeContents(String filename, OutputStream out) throws Exception {
+    configWriter.writeFile(filename, out);
   }
+
+
+  // Private Methods
+
+  /**
+   * An Experiment now has a configuration writer that
+   * lets all the components write themselves out
+   */
+
+  private void createConfigWriter() {
+    configWriter = new LeafOnlyConfigWriter(getSocietyComponentData());
+  }
+
+
+
+
+
+  ////////////////////////////////////////////
+  // Variation Specific Operations
+  ////////////////////////////////////////////
+
+
+
 
   /**
    * Get possible experiment variation schemes, i.e. 
@@ -1063,29 +1805,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     this.variationScheme = variationScheme;
   }
 
-  /**
-   * Return whether or not the experiment has a valid set of trials.
-   * The trials may be invalid because something about the experiment
-   * has changed (i.e. the set of configurable components, the
-   * unbound variables of a component, the variation scheme)
-   * and the trials have not been recomputed.  This supports recomputing
-   * trials only as needed.
-   * @return boolean indicating whether or not the trials are valid
-   */
-
-  public boolean hasValidTrials() {
-    return hasValidTrials;
-  }
-
-  /**
-   * Indicate that the experiment does not have valid trials; should
-   * be called when some aspect of the experiment or its components
-   * changes so as to invalidate trials.
-   */
-
-  public void invalidateTrials() {
-    hasValidTrials = false;
-  }
 
   /**
    * If the experiment has still unbound properties,
@@ -1096,10 +1815,24 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
    * @return a <code>boolean</code> value
    */
   public boolean hasUnboundProperties() {
-    int n = getComponentCount();
+    // First handle Societies
+    ModifiableComponent comp = getSocietyComponent();
+    List propertyNames = comp.getPropertyNamesList();
+    for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
+      Property property = comp.getProperty((CompositeName)j.next());
+      if (! property.isValueSet()) {
+        List values = property.getExperimentValues();
+        if (values == null || values.size() == 0) {
+          return true;
+        }
+      }
+    }
+
+    // Now handle Recipes
+    int n = getRecipeComponentCount();
     for (int i = 0; i < n; i++) {
-      ModifiableComponent comp = getComponent(i);
-      List propertyNames = comp.getPropertyNamesList();
+      comp = getRecipeComponent(i);
+      propertyNames = comp.getPropertyNamesList();
       for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
 	Property property = comp.getProperty((CompositeName)j.next());
 	if (! property.isValueSet()) {
@@ -1113,6 +1846,19 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return false;
   }
 
+
+
+
+
+
+  ////////////////////////////////////////////
+  // Configuratoin Specific Operations
+  ////////////////////////////////////////////
+
+
+
+
+
   /**
    * If the experiment has at least one host with at least one node
    * with at least one agent, that is a configuration.
@@ -1123,7 +1869,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (hosts.isEmpty() || nodes.isEmpty() || getAgents() == null || getAgents().length == 0) {
       return false;
     }
-    HostComponent[] hosts = getHosts();
+    HostComponent[] hosts = getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       if (hosts[i] == null)
 	continue;
@@ -1176,247 +1922,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
 
     // put the one node on that host
     host.addNode(node);
-  }
-  
-  /**
-   * Return the trials defined for this experiment.  Computes trials
-   * if necessary.
-   * @return array of Trials
-   */
-  public Trial[] getTrials() {
-    if (hasValidTrials)
-      return (Trial[])trials.toArray(new Trial[trials.size()]);
-
-    getTrialCount(); // update trial count
-
-    // get lists of unbound properties and their experimental values
-    List properties = new ArrayList();
-    List experimentValues = new ArrayList();
-    int n = getComponentCount();
-    for (int i = 0; i < n; i++) {
-      ModifiableComponent comp = getComponent(i);
-      List propertyNames = comp.getPropertyNamesList();
-      for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
-	Property property = comp.getProperty((CompositeName)j.next());
-	List values = property.getExperimentValues();
-	if (values != null && values.size() != 0) {
-	  properties.add(property);
-	  experimentValues.add(values);
-	}
-      }
-    }
-
-    // handle simple case of no properties to vary
-    int nProperties = properties.size();
-    if (nProperties == 0) {
-      hasValidTrials = true;
-      numberOfTrials = 1;
-      Trial trial = new Trial("Trial 1");
-      trial.initProperties();
-      trials = new ArrayList(1);
-      trials.add(trial);
-      variationScheme = VARY_ONE_DIMENSION;
-      return (Trial[])trials.toArray(new Trial[trials.size()]);
-    }
-
-    // create trials according to variation scheme
-    if (variationScheme.equals(VARY_ONE_DIMENSION)) 
-      return getUnivariateTrials(properties, experimentValues);
-    else if (variationScheme.equals(VARY_TWO_DIMENSION)) 
-      return getBivariateTrials(properties, experimentValues);
-    else if (variationScheme.equals(VARY_SEQUENTIAL) ||
-	     variationScheme.equals(VARY_RANDOM))
-      return getMultivariateTrials(properties, experimentValues);
-    else {
-      System.out.println("Variation scheme not implemented: " + 
-			 variationScheme);
-      return null;
-    }
-  }
-
-  private Trial[] getUnivariateTrials(List properties, List experimentValues) {
-    trials = new ArrayList(numberOfTrials);
-    int propToVaryIndex = 0; // index of property being varied
-    int k = 0; // index into values of property being varied
-    int nProperties = properties.size();
-    for (int i = 0; i < numberOfTrials; i++) {
-      Trial trial = new Trial("Trial " + (i+1));
-      trial.initProperties();
-      for (int j = 0; j < nProperties; j++) {
-	List parameterValues = (List)experimentValues.get(j);
-	Object value;
-	if (j == propToVaryIndex)
-	  value = parameterValues.get(k++);
-	else
-	  value = parameterValues.get(0);
-	trial.addTrialParameter((Property)properties.get(j), value);
-      }
-      // if we've stepped through all the values of the property being varied
-      // then vary the next property
-      if (((List)experimentValues.get(propToVaryIndex)).size() == k) {
-	k = 1; // after first pass, skip nominal values
-	propToVaryIndex++;
-      }
-      trials.add(trial);
-    }
-    hasValidTrials = true;
-    return (Trial[])trials.toArray(new Trial[trials.size()]);
-  }
-
-  private Trial[] getBivariateTrials(List properties, List experimentValues) {
-    hasValidTrials = true;
-    return null;
-  }
-
-  public void addTrial(Trial trial) {
-    trials.add(trial);
-    numberOfTrials++;
-  }
-
-  public void removeTrial(int trialIndex) {
-    trials.remove(trialIndex);
-    numberOfTrials--;
-    if (numberOfTrials == 0)
-      numberOfTrials = 1;
-  }
-
-  /**
-   * Get the number of trials. Recomputes the number of trials if necessary.
-   * @return number of trials
-   */
-  public int getTrialCount() {
-    if (hasValidTrials) 
-      return numberOfTrials;
-    ArrayList experimentValueCounts = new ArrayList(100);
-    int n = getComponentCount();
-    for (int i = 0; i < n; i++) {
-      ModifiableComponent comp = getComponent(i);
-      Iterator names = comp.getPropertyNames();
-      while (names.hasNext()) {
-	Property property = comp.getProperty((CompositeName)names.next());
-	List values = property.getExperimentValues();
-	if (values != null)
-	  experimentValueCounts.add(new Integer(values.size()));
-      }
-    }
-    // one dimension: sum the counts of experiment values
-    // but only count nominal value the first time
-    if (variationScheme.equals(VARY_ONE_DIMENSION)) {
-      numberOfTrials = 0;
-      for (int i = 0; i < experimentValueCounts.size(); i++)
-	numberOfTrials = numberOfTrials + 
-	  ((Integer)experimentValueCounts.get(i)).intValue() - 1;
-      numberOfTrials++; // add one to use nominal value for first time
-    }
-    // sequential or random: (all combinations): multiply counts
-    else if (variationScheme.equals(VARY_RANDOM) ||
-	     variationScheme.equals(VARY_SEQUENTIAL)) {
-      numberOfTrials = 1;
-      for (int i = 0; i < experimentValueCounts.size(); i++)
-	numberOfTrials = numberOfTrials *
-	  ((Integer)experimentValueCounts.get(i)).intValue();
-    }
-    // two dimension: ???
-    if (numberOfTrials == 0)
-      numberOfTrials = 1;  // always assume at least one trial
-    return numberOfTrials;
-  }
-
-  private void addParameterValues(List trials,
-				  Property property, 
-				  List values, int nCopies) {
-    int x = 0;
-    int j = 0;
-    int nValues = values.size();
-    for (int i = 0; i < numberOfTrials; i++) {
-      ((Trial)trials.get(i)).addTrialParameter(property, values.get(j));
-      x++;
-      if (x >= nCopies) {
-	x = 0;
-	j++;
-	if (j >= nValues)
-	  j = 0;
-      }
-    }
-  }
-
-  private Trial[] getMultivariateTrials(List properties, 
-					List experimentValues) {
-    trials = new ArrayList(numberOfTrials);
-    for (int i = 0; i < numberOfTrials; i++) {
-      Trial trial = new Trial("Trial " + (i+1));
-      trial.initProperties();
-      trials.add(trial);
-    }
-    int nProperties = properties.size();
-    // how many times to copy each value in the experiment values
-    // to the trials
-    int nCopies = 1;
-    for (int i = 0; i < nProperties; i++) {
-      addParameterValues(trials,
-			 (Property)properties.get(i),
-			 (List)experimentValues.get(i),
-			 nCopies);
-      nCopies = nCopies * ((List)(experimentValues.get(i))).size();
-    }
-    hasValidTrials = true;
-    return (Trial[])trials.toArray(new Trial[trials.size()]);
-  }
-
-  /**
-   * Get component data for the society in the experiment.
-   * If the experiment is not in the database, then it
-   * constructs the society component data here.
-   * @return ComponentData the component data for the society
-   */
-
-  public ComponentData getSocietyComponentData() {
-    saveToDb(); // if modified, update component data and save to database
-    return theWholeSoc;
-  }
-
-  private void addNodes() {
-    NodeComponent[] nodesToWrite = getNodes();
-    for (int i = 0; i < nodesToWrite.length; i++) {
-      ComponentData nc = new GenericComponentData();
-      nc.setType(ComponentData.NODE);
-      nc.setName(nodesToWrite[i].getShortName());
-      nc.setClassName("org.cougaar.core.node.Node"); // leave this out?? FIXME
-      nc.setOwner(this);
-      nc.setParent(theWholeSoc);
-      ComponentName name = 
-	  new ComponentName((ConfigurableComponent)nodesToWrite[i], "ConfigurationFileName");
-      try {
-	nc.addParameter(((BaseComponent)nodesToWrite[i]).getProperty(name).getValue().toString());
-      } catch (NullPointerException e) {
-	nc.addParameter(nc.getName() + ".ini");
-      }
-      theWholeSoc.addChild(nc);
-      addAgents(nodesToWrite[i], nc);
-    }
-  }
-
-  private void addAgents(NodeComponent node, ComponentData nc) {
-    AgentComponent[] agents = node.getAgents();
-    if (agents == null || agents.length == 0)
-      return;
-    for (int i = 0; i < agents.length; i++) {
-      AgentComponentData ac = new AgentComponentData();
-      ac.setName(agents[i].getFullName().toString());
-      // FIXME!!
-      ac.setOwner(null); // the society that contains this agent FIXME!!!
-      ac.setParent(nc);
-      nc.addChild((ComponentData)ac);
-    }
-  }
-
-  private void readObject(ObjectInputStream ois)
-    throws IOException, ClassNotFoundException
-  {
-    ois.defaultReadObject();
-    createLogger();
-    modified = true; // causes config writer to write the ComponentData tree
-    createConfigWriter();
   }
 
 } // end of Experiment.java
