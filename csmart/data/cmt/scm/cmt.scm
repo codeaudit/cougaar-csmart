@@ -286,28 +286,9 @@
 
 
 
-(define (get-asb-org-data-sql assembly_id cfw_group_id)
-   (string-append 
-    "select " (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
-    (sqlQuote  assembly_id)
-    "|| '|' ||  org.org_id AS COMPONENT_ID,"
-    "org.org_id as COMPONENT_NAME,"
-    "null as PARENT_COMPONENT_ID,"
-    "org.org_id as COMPONENT_LIB_ID,"
-    "'agent' as COMONENT_CATEGOR,"
-    "1 as INSERTION_ORDER "
-    " from v1_cfw_group_org go, v1_lib_organization org  where cfw_group_id=" 
-    (sqlQuote  cfw_group_id)
-    "               and org.org_id=go.org_id"
-    " order by org.org_id"
-    )
-)
 
-(define (view_plugin_components assembly_id cfw_group_id)
-  (view-query  
-   (getrefDBConnection)
-   (get-asb-plugin-data-sql assembly_id cfw_group_id)
-   ))
+
+
 
 
 ;;select '3ID-135-CMT'as ASSEMBLY_ID,'3ID-135-CMT'|| '|' ||  pl.plugin_class AS COMPONENT_ID,
@@ -327,27 +308,337 @@
 ;;    and pg.plugin_group_id = pl.plugin_group_id order by org.org_id;
 ;;
 ;;
-(define (get-asb-plugin-data-sql assembly_id cfw_group_id)
+(define (get-plugin-asb-component-hierarchy-sql assembly_id cfw_group_id)
   (string-append 
-   "select " (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
-   (sqlQuote  assembly_id)
-   "|| '|' ||  pl.plugin_class AS COMPONENT_ID,"
-   "pl.plugin_class as COMPONENT_NAME,"
-   "null as PARENT_COMPONENT_ID,"
-   "org.org_id as COMPONENT_LIB_ID,"
-   "'plugin' as COMONENT_CATEGOR,"
-   "1 as INSERTION_ORDER "
-   " from v1_cfw_group_org go, v1_lib_organization org, v1_cfw_org_orgtype ot, v1_cfw_orgtype_plugin_grp pg, v1_cfw_plugin_group_member pl"
-   "   where cfw_group_id=" 
-   (sqlQuote  cfw_group_id)
-   "    and org.org_id=go.org_id"
-   "    and org.org_id=ot.org_id"
-   "    and ot.orgtype_id=pg.orgtype_id" 
-   "    and pg.plugin_group_id = pl.plugin_group_id"
-   " order by org.org_id"
+  "select distinct " (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
+   "go.org_id || '|' ||  pl.plugin_class AS COMPONENT_ALIB_ID,"
+   "go.org_id as PARENT_COMPONENT_ALIB_ID,"
+   "(pl.plugin_class_order+(5* pg.plugin_group_order)) as INSERTION_ORDER"
+
+   " from v1_cfw_group_org go,"
+   "v1_cfw_org_orgtype ot,"
+   "v1_cfw_group_member gm,"
+   "v1_cfw_orgtype_plugin_grp opg,"
+   "v1_lib_plugin_group pg,"
+   "v1_cfw_plugin_group_member pl"
+   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
+
+   "   and go.org_id =ot.org_id"
+   "   and gm.cfw_id=ot.cfw_id"
+
+   "   and ot.orgtype_id=opg.orgtype_id"
+   "   and gm.cfw_id=opg.cfw_id"
+
+   "   and pg.plugin_group_id = pl.plugin_group_id"
+   "   and pg.plugin_group_id = opg.plugin_group_id"
+   "   and ('plugin'  || '|' || pl.plugin_class) in (select component_lib_id from v4_lib_component)"
+   ;;"   order by go.org_id,(pl.plugin_class_order+(5 * pg.plugin_group_order))"
    )
 )
 
+(define (add-plugin-asb-component-hierarchy assembly_id cfw_group_id)
+  (dbu
+   (string-append 
+    "insert into v4_asb_component_hierarchy "
+    (get-plugin-asb-component-hierarchy-sql assembly_id cfw_group_id))))
+
+;; must be run before inserting hierarchy to fix foreign key constraints
+
+(define (clear-cmt-assembly)
+  (dbu "delete from v4_asb_component_hierarchy")
+  (dbu "delete from v4_asb_agent_pg_attr")
+  (dbu "delete from v4_asb_agent_relation")
+  (dbu "delete from v4_alib_component")
+  (dbu "delete from v4_asb_assembly")
+)
+
+
+(define (create-cmt-asb assembly_description cfw_g_id)
+  ;; intentionally setting a global variable for debugging purposes
+  (set! assembly_id (string-append "CMT-ASB-" cfw_group_id))
+  (set! cfw_group_id cfw_g_id)
+  (print "update_cmt_lib_items started")
+  (print (time (update_cmt_lib_items cfw_g_id) 1))
+  (print "update_cmt_lib_items completed")
+  (cond
+   ((= 0 (dbu (string-append
+	       "update v4_asb_assembly set assembly_id = assembly_id where assembly_id = "
+	       (sqlQuote assembly_id))))
+    (dbu (string-append
+	  "insert into v4_asb_assembly values ("
+	  (sqlQuote assembly_id)","
+	  "'CMT',"
+	  (sqlQuote assembly_description)")"))
+    (print (string-append "inserted assembly-id " assembly_id " into V4_ASB_ASSEMBLY table"))))
+  (print "")
+  (print "add-plugin-asb-component-hierarchy started")
+  (print (time (add-plugin-asb-component-hierarchy assembly_id cfw_group_id) 1))
+  (print "add-plugin-asb-component-hierarchy completed")
+  (print "")
+  (print "add-asb-agent-pg-attr started")
+  (print (time (add-asb-agent-pg-attr assembly_id cfw_group_id) 1))
+  (print "add-plugin-asb-component-hierarchy completed")
+  (print "")
+  (print "add-asb-agent-relation started")
+  (print (time (add-asb-agent-relation assembly_id cfw_group_id)1))
+  (print "add-asb-agent-relation completed")
+  (print "")
+  (print "add-asb-agent-hierarchy-relation started")
+  (print (time (add-asb-agent-hierarchy-relation assembly_id cfw_group_id)1))
+  (print "add-asb-agent-hierarchy-relation completed")
+  )
+
+
+(define (update_cmt_lib_items cfw_g_id)
+  (add-new-plugin-alib-component cfw_group_id)
+  (add-new-agent-alib-component cfw_group_id))
+
+
+(define (get-agent-alib-component-sql cfw_group_id)
+  (string-append 
+  "select distinct go.org_id as COMPONENT_ALIB_ID,"
+  "org.org_name as COMPONENT_NAME,"
+  "org.org_id as COMPONENT_LIB_ID,"
+  "'agent' as COMPONENT_TYPE"
+     " from v1_cfw_group_org go,"
+   " v1_lib_organization org,"
+   " v4_lib_component comp"
+   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and go.org_id =org.org_id"
+   "   and org.org_id=comp.component_lib_id"
+   "   and go.org_id not in (select component_alib_id from v4_alib_component)"
+   ;;"   order by go.org_id,(pl.plugin_class_order+(5 * pg.plugin_group_order))"
+   )
+)
+
+(define (add-new-agent-alib-component cfw_group_id)
+  (dbu
+   (string-append 
+    "insert into v4_alib_component "
+    (get-agent-alib-component-sql cfw_group_id))))
+
+
+(define (get-plugin-alib-component-sql cfw_group_id)
+  (string-append 
+  "select distinct go.org_id || '|' ||  pl.plugin_class AS COMPONENT_ALIB_ID,"
+  "go.org_id || '|' ||  pl.plugin_class as COMPONENT_NAME,"
+   "'plugin'  || '|' || pl.plugin_class AS component_lib_id,"
+   "'plugin' AS COMPONENT_TYPE"
+   " from v1_cfw_group_org go,"
+   "v1_cfw_org_orgtype ot,"
+   "v1_cfw_group_member gm,"
+   "v1_cfw_orgtype_plugin_grp pg,"
+   "v1_cfw_plugin_group_member pl"
+   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
+
+   "   and go.org_id =ot.org_id"
+   "   and gm.cfw_id=ot.cfw_id"
+
+   "   and ot.orgtype_id=pg.orgtype_id"
+   "   and gm.cfw_id=pg.cfw_id"
+
+   "   and pg.plugin_group_id = pl.plugin_group_id"
+   "   and gm.cfw_id=pg.cfw_id"
+   "   and go.org_id || '|' ||  pl.plugin_class not in (select component_alib_id from v4_alib_component)"
+   "   and ('plugin'  || '|' || pl.plugin_class) in (select component_lib_id from v4_lib_component)"
+   )
+)
+
+(define (add-new-plugin-alib-component cfw_group_id)
+  (dbu
+   (string-append 
+    "insert into v4_alib_component "
+    (get-plugin-alib-component-sql cfw_group_id))))
+
+
+(define (get-asb-agent-pg-attr-sql assembly_id cfw_group_id)
+  (string-append 
+   "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
+   "go.org_id AS COMPONENT_ALIB_ID,"
+   "pga.pg_attribute_lib_id as PG_ATTRIBUTE_LIB_ID,"
+   "pga.attribute_value as ATTRIBUTE_VALUE,"
+   "pga.attribute_order as ATTRIBUTE_ORDER,"
+   "pga.start_date as START_DATE,"
+   "pga.end_date as END_DATE"
+
+
+   "   from v1_cfw_group_org go,"
+   "   v1_cfw_group_member gm,"
+   "   v1_cfw_org_pg_attr pga,"
+   "   v4_lib_pg_attribute lpga"
+
+   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
+
+   "   and go.org_id =pga.org_id"
+   "   and gm.cfw_id =pga.cfw_id"
+   "   and lpga.pg_attribute_lib_id=pga.pg_attribute_lib_id"
+
+   "   and not exists "
+   "   (select assembly_id from v4_asb_agent_pg_attr px"
+   "     where px.assembly_id="(sqlQuote assembly_id)
+   "     and px.component_alib_id=go.org_id"
+   "     and px.pg_attribute_lib_id=pga.pg_attribute_lib_id"
+   "     and px.start_date=pga.start_date)"
+   )
+)
+
+(define (add-asb-agent-pg-attr assembly_id cfw_group_id)
+  (dbu
+   (string-append 
+    "insert into v4_asb_agent_pg_attr "
+    (get-asb-agent-pg-attr-sql assembly_id cfw_group_id))))
+
+
+
+(define (get-asb-agent-relation-sql assembly_id cfw_group_id)
+  (string-append 
+   "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
+   "orgrel.role as ROLE,"
+   "orgrel.org_id as SUPPORTING_COMPONENT_ALIB_ID,"
+   "ogom.org_id as SUPPORTED_COMPONENT_ALIB_ID,"
+   "orgrel.start_date as START_DATE,"
+   "orgrel.end_date as END_DATE"
+
+
+   "   from"
+   "   v1_cfw_group_org go,"
+   "   v1_cfw_group_member gm,"
+   "   v1_cfw_org_og_relation orgrel,"
+   "   v1_cfw_org_group_org_member ogom"
+
+
+   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
+
+   "   and go.org_id = orgrel.org_id"
+   "   and gm.cfw_id = orgrel.cfw_id"
+   "   and ogom.cfw_id = orgrel.cfw_id"
+   "   and ogom.org_group_id = orgrel.org_group_id"
+ 
+   "   and not exists "
+   "   (select assembly_id from v4_asb_agent_relation ar"
+   "     where ar.assembly_id="(sqlQuote assembly_id)
+   "     and ar.supporting_component_alib_id=orgrel.org_id"
+   "     and ar.supported_component_alib_id =ogom.org_id"
+   "     and ar.role=orgrel.role"
+   "     and ar.start_date=orgrel.start_date)"
+   )
+)
+
+(define (add-asb-agent-relation assembly_id cfw_group_id)
+  (dbu
+   (string-append 
+    "insert into v4_asb_agent_relation "
+    (get-asb-agent-relation-sql assembly_id cfw_group_id))))
+
+
+(define (get-asb-agent-hierarchy-relation-sql assembly_id cfw_group_id)
+  (string-append 
+   "select distinct " (sqlQuote assembly_id) " as ASSEMBLY_ID,"
+   "'Subordinate' as ROLE,"
+   "oh.org_id as SUPPORTING_COMPONENT_ALIB_ID,"
+   "oh.superior_org_id as SUPPORTED_COMPONENT_ALIB_ID,"
+   "to_date('1-JAN-2001') as START_DATE,"
+   "null as END_DATE"
+
+   "   from"
+   "   v1_cfw_group_org go,"
+   "   v1_cfw_group_org go_child,"
+   "   v1_cfw_group_member gm,"
+   "   v1_cfw_org_hierarchy oh"
+
+   "   where"
+   "   go.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and go_child.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
+
+   "   and gm.cfw_id = oh.cfw_id"
+   "   and oh.org_id=go_child.org_id"
+   "   and oh.superior_org_id=go.org_id"
+   "   and not exists"
+   "   (select assembly_id from v4_asb_agent_relation ar"
+   "     where ar.assembly_id="(sqlQuote assembly_id)
+   "     and ar.supporting_component_alib_id=oh.org_id"
+   "     and ar.supported_component_alib_id =oh.superior_org_id"
+   "     and ar.role='Subordinate'"
+   "     and ar.start_date=to_date('1-JAN-2001'))"
+   )
+)
+
+(define (add-asb-agent-hierarchy-relation assembly_id cfw_group_id)
+  (dbu
+   (string-append 
+    "insert into v4_asb_agent_relation "
+    (get-asb-agent-hierarchy-relation-sql assembly_id cfw_group_id))))
+
+
+
+;; may not be needed
+(define (get-plugin-lib-component-sql assembly_id cfw_group_id)
+  (string-append 
+  "select distinct pl.plugin_class AS component_lib_id,"
+   "'plugin' AS COMPONENT_TYPE,"
+   " pl.plugin_class AS component_class"
+   " from v1_cfw_group_org go,"
+   "v1_cfw_org_orgtype ot,"
+   "v1_cfw_group_member gm,"
+   "v1_cfw_orgtype_plugin_grp pg,"
+   "v1_cfw_plugin_group_member pl"
+   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
+
+   "   and go.org_id =ot.org_id"
+   "   and gm.cfw_id=ot.cfw_id"
+
+   "   and ot.orgtype_id=pg.orgtype_id"
+   "   and gm.cfw_id=pg.cfw_id"
+
+   "   and pg.plugin_group_id = pl.plugin_group_id"
+   "   and gm.cfw_id=pg.cfw_id"
+   " and go.org_id || '|' ||  pl.plugin_class not in (select component_alib_id from v4_alib_component)"
+   )
+)
+;; may not be needed
+(define (add-new-plugin-lib-component assembly_id cfw_group_id)
+  (dbu
+   (string-append 
+    "insert into v4_lib_component "
+    (get-plugin-lib-component-sql assembly_id cfw_group_id))))
+
+
+;; testing code
+(define (get-plugin-component-lib-id-sql assembly_id cfw_group_id)
+  (string-append 
+  "select distinct 'plugin'  || '|' || pl.plugin_class AS component_lib_id"
+   " from v1_cfw_group_org go,"
+   "v1_cfw_org_orgtype ot,"
+   "v1_cfw_group_member gm,"
+   "v1_cfw_orgtype_plugin_grp pg,"
+   "v1_cfw_plugin_group_member pl"
+   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
+
+   "   and go.org_id =ot.org_id"
+   "   and gm.cfw_id=ot.cfw_id"
+
+   "   and ot.orgtype_id=pg.orgtype_id"
+   "   and gm.cfw_id=pg.cfw_id"
+
+   "   and pg.plugin_group_id = pl.plugin_group_id"
+   "   and gm.cfw_id=pg.cfw_id"
+   "   and ('plugin'  || '|' || pl.plugin_class) not in (select component_lib_id from v4_lib_component)"
+   " order by 'plugin'  || '|' || pl.plugin_class"
+   )
+)
+
+
+ ;; temporary hack for testing
+(set! cfw_group_id "3ID-CFW-GRP-A")
+(set! assembly_id "ASB1")
+(set! assembly_description "test assembly 1")
 
 
 (define (voc)
@@ -363,13 +654,7 @@
     (view_plugin_components assembly_id cfw_group_id)))
     
 
-(define (insert_org_components assembly_id cfw_group_id)
-  (string-append 
-   "insert into v3_asb_component"
-   "("
-   (get-asbcomponent-data-sql assembly_id cfw_group_id)
-   ")"
-))
+
 
 (define (vq query)
   (view-query    
@@ -381,3 +666,73 @@
    (getrefDBConnection)
    query))
 
+(define (dbu query)
+  (db-update
+   (getrefDBConnection)
+   query))
+
+(define (missing-asb-component-hierarchy-plugin-sql assembly_id cfw_group_id)
+  (string-append 
+  "select distinct " (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
+   "go.org_id || '|' ||  pl.plugin_class AS COMPONENT_ALIB_ID,"
+   "go.org_id as PARENT_COMPONENT_ALIB_ID,"
+   "(pl.plugin_class_order+(5* pg.plugin_group_order)) as INSERTION_ORDER"
+
+   " from v1_cfw_group_org go,"
+   "v1_cfw_org_orgtype ot,"
+   "v1_cfw_group_member gm,"
+   "v1_cfw_orgtype_plugin_grp opg,"
+   "v1_lib_plugin_group pg,"
+   "v1_cfw_plugin_group_member pl"
+   "   where go.cfw_group_id=" (sqlQuote  cfw_group_id)
+   "   and gm.cfw_group_id=" (sqlQuote  cfw_group_id)
+
+   "   and go.org_id =ot.org_id"
+   "   and gm.cfw_id=ot.cfw_id"
+
+   "   and ot.orgtype_id=opg.orgtype_id"
+   "   and gm.cfw_id=opg.cfw_id"
+
+   "   and pg.plugin_group_id = pl.plugin_group_id"
+   "   and pg.plugin_group_id = opg.plugin_group_id"
+   "   and (go.org_id || '|' ||  pl.plugin_class) not in (select component_alib_id from v4_alib_component)"
+   "   and ('plugin'  || '|' || pl.plugin_class) in (select component_lib_id from v4_lib_component)"
+   ;;"   order by go.org_id,(pl.plugin_class_order+(5 * pg.plugin_group_order))"
+   )
+)
+
+(define (view_plugin_components assembly_id cfw_group_id)
+  (view-query  
+   (getrefDBConnection)
+   (get-asb-plugin-data-sql assembly_id cfw_group_id)
+   ))
+
+
+
+
+
+;;(define (get-org-asb-org-data-sql assembly_id cfw_group_id)
+;;   (string-append 
+;;    "select " (sqlQuote  assembly_id) "as ASSEMBLY_ID,"
+;;    (sqlQuote  assembly_id)"|| '|' ||  org.org_id AS COMPONENT_ID,"
+;;    "org.org_id as COMPONENT_NAME,"
+;;    "null as PARENT_COMPONENT_ID,"
+;;    "org.org_id as COMPONENT_LIB_ID,"
+;;    "'agent' as COMONENT_CATEGOR,"
+;;    "1 as INSERTION_ORDER "
+;;    " from v1_cfw_group_org go, v1_lib_organization org  where cfw_group_id=" 
+;;    (sqlQuote  cfw_group_id)
+;;    "               and org.org_id=go.org_id"
+;;    " order by org.org_id"
+;;    )
+;;)
+;;
+;;(define (add_org_components assembly_id cfw_group_id)
+;;  (string-append 
+;;   "insert into v3_asb_component"
+;;   "("
+;;   (get-asb-org-data-sql assembly_id cfw_group_id)
+;;   ")"
+;;))
+;;
+;;
