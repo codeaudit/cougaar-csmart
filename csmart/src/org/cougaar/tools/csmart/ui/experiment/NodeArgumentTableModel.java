@@ -33,7 +33,6 @@ import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
  * first column is Argument name
  * second column is Argument Value
  */
-
 public class NodeArgumentTableModel extends AbstractTableModel {
   Properties props;
   ArrayList names = new ArrayList();
@@ -67,7 +66,6 @@ public class NodeArgumentTableModel extends AbstractTableModel {
   /**
    * Check for editability of read only property values.
    */
-
   public boolean isCellEditable(int row, int col) {
     if ((col == 0 || col == 1)) {
       if (props instanceof ReadOnlyProperties) {
@@ -111,13 +109,29 @@ public class NodeArgumentTableModel extends AbstractTableModel {
     if (rowIndex < 0 || rowIndex >= getRowCount() ||
 	columnIndex < 0 || columnIndex >= getColumnCount())
       return; // index out of range
+
+    // trim whitespace off of the value.
+    if (aValue instanceof String) {
+      aValue = ((String)aValue).trim();
+    }
+
+    // See if the value really changed. If not, return
+    if ((aValue == null && getValueAt(rowIndex, columnIndex) == null) || (aValue != null && aValue.equals(getValueAt(rowIndex, columnIndex)))) {
+      return;
+    }
+
     // changing the name or value makes it local
     if (columnIndex == 0) { // it's a name
+      // What if aValue is now null or empty? Is that allowed? I think not.
+      if (aValue == null || aValue.toString().equals("")) {
+	return;
+      }
       names.set(rowIndex, aValue);
     } else if (columnIndex == 1) { // it's a value
       values.set(rowIndex, aValue);
     } else if (columnIndex == 2)
       return; // global flag is not editable
+
     fireTableCellUpdated(rowIndex, columnIndex);
     if (isLocal) {
       globalFlags.set(rowIndex, "");
@@ -141,8 +155,16 @@ public class NodeArgumentTableModel extends AbstractTableModel {
   /**
    * If name exists, set value to new value, else add new row.
    */
-
   public void addRow(String name, String value) {
+    if (name == null || value == null)
+      return;
+
+    // Trim excess whitespace off of value and name
+    if (value != null)
+      value = value.trim();
+    if (name != null)
+      name = name.trim();
+
     int index = names.indexOf(name);
     if (index == -1) {
       names.add(name);
@@ -174,7 +196,6 @@ public class NodeArgumentTableModel extends AbstractTableModel {
    * Update properties based on table values.
    * @return true if any modifications, false otherwise
    */
-
   public boolean updateProperties() {
     boolean isModified = false;
     // add new or modified properties
