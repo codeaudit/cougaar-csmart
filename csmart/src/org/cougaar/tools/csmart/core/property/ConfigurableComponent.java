@@ -204,12 +204,6 @@ public abstract class ConfigurableComponent
           if(log.isErrorEnabled()) {
             log.error("Unknown property: " + propName + "=" + propValue + " in component " + this.toString());
           }
-	  if (log.isDebugEnabled()) {
-	    log.debug("Component " + getShortName() + " has properties: ");
-	    for (Iterator pnames = getPropertyNames(); pnames.hasNext(); ) {
-	      log.debug((String)pnames.next().toString());
-	    }
-	  }
         } else {
           Class propClass = prop.getPropertyClass();
 	  if (log.isDebugEnabled() && propClass == null) {
@@ -335,9 +329,8 @@ public abstract class ConfigurableComponent
     ((ConfigurableComponent)c).addPropertiesListener(myPropertiesListener);
     children.add(c);
     c.setParent(this);
-    for (Iterator i = ((ConfigurableComponent)c).getPropertyNames(); i.hasNext(); ) {
-      CompositeName name = (CompositeName) i.next();
-      Property prop = getProperty(name);
+    for (Iterator i = ((ConfigurableComponent)c).getProperties(); i.hasNext(); ) {
+      Property prop = (Property) i.next();
       if (prop != null) firePropertyAdded(prop);
     }
     return children.size() - 1;
@@ -360,9 +353,8 @@ public abstract class ConfigurableComponent
   public void removeChild(ComposableComponent c) {
     if (children == null || c.getParent() != this) return;
     ((ConfigurableComponent)c).removePropertiesListener(myPropertiesListener);
-    for (Iterator i = ((ConfigurableComponent)c).getPropertyNames(); i.hasNext(); ) {
-      CompositeName name = (CompositeName) i.next();
-      Property prop = getProperty(name);
+    for (Iterator i = ((ConfigurableComponent)c).getProperties(); i.hasNext(); ) {
+      Property prop = (Property) i.next();
       if (prop != null) firePropertyRemoved(prop);
     }
     children.remove(c);
@@ -564,7 +556,9 @@ public abstract class ConfigurableComponent
     for (int i = 0, n = getChildCount(); i < n; i++) {
       Property result = 
         ((ConfigurableComponent)getChild(i)).getProperty(name);
-      if (result != null) return result;
+      if (result != null) {
+        return result;
+      }
     }
     return null;
   }
@@ -750,10 +744,6 @@ public abstract class ConfigurableComponent
    * @return an <code/>Iterator</code> value
    */
   public Iterator getPropertyNames() {
-    for (Iterator i = getMyProperties().keySet().iterator(); i.hasNext(); ) {
-      Object key = i.next();
-      Object val = getMyProperties().get(key);
-    }
     return new Iterator() {
       Iterator currentIterator = getMyProperties().keySet().iterator();
       int nextChildIndex = 0;
@@ -786,6 +776,41 @@ public abstract class ConfigurableComponent
         throw new UnsupportedOperationException();
       }
     };
+  }
+
+  public Iterator getProperties() {
+    return new Iterator() {
+        Iterator currentIterator = getMyProperties().values().iterator();
+        int nextChildIndex = 0;
+        Property pendingProp = null;
+        public boolean hasNext() {
+          while (pendingProp == null) {
+            while (!currentIterator.hasNext()) {
+              if (nextChildIndex >= getChildCount()) {
+                return false;
+              }
+              currentIterator = 
+                ((ConfigurableComponent)getChild(nextChildIndex++)).getProperties();
+            }
+            pendingProp = (Property) currentIterator.next();
+            if (pendingProp != null) {
+              pendingProp = null;
+            }
+          }
+          return true;
+        }
+        
+        public Object next() {
+          if (pendingProp == null && !hasNext())
+            throw new NoSuchElementException();
+          Object result = pendingProp;
+          pendingProp = null;
+          return result;
+        }
+        public void remove() {
+          throw new UnsupportedOperationException();
+        }
+      };
   }
 
   /**
