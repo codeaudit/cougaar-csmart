@@ -23,9 +23,10 @@ CORPS-POL-SUPPLYBN,Corps: POL Supply Battalion, ,1
 CORPS-POL-SUPPLYCO,Corps: POL Supply Company, ,2
 CORPS-REAR,Corps Rear, ,1
 CORPS-RPRPTCO,Corps: Repair Part Company, ,1
-CORPS-SSCO,Corps: Supply and Servcie Company, ,2
+CORPS-SSCO,Corps: Supply and Service Company, ,2
 CORPS-SUPPLYCO,Corps: Supply Company, ,1
 CORPS-TCBN,Corps: TCBN, ,2
+CORPS-TCBN-VISHNU,Corps: TCBN using Vishnu Allocator, ,0
 CSB,Corps Support Battalion, ,1
 CSG,Corps Support Group, ,2
 DASB,Division Air Support Battalion, ,1
@@ -53,7 +54,8 @@ THEATER-SPTGP,Theater: Support Group, ,1
 THEATER-SSCO,Theater: Supply and Service Company, ,1
 THEATER-SUPPLYCO,Theater: Supply Company, ,1
 THEATER-TCBN,Theater: TCBN, ,1
-THEATER-TRANSGP,Theater : Transportation Group, ,1
+THEATER-TCBN-VISHNU,Theater: TCBN using Vishnu Allocator, ,0
+THEATER-TRANSGP,Theater: Transportation Group, ,1
 TRANSCOM-CONUSGround,TRANSCOM: CONUSGround, ,1
 TRANSCOM-GlobalAir,TRANSCOM: GlobalAir, ,1
 TRANSCOM-GlobalSea,TRANSCOM: GlobalSea, ,1
