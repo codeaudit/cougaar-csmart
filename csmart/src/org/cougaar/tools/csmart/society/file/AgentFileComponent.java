@@ -69,9 +69,6 @@ public class AgentFileComponent
     this.classname = classname;
     this.filename = filename;
     createLogger();
-    if(log.isDebugEnabled()) {
-      log.debug("Creating Agent: " + name);
-    }
   }
 
   private void createLogger() {
