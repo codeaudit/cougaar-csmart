@@ -314,6 +314,7 @@ public final class ThreadUtils {
       String agentName, 
       List uids,
       int limit) {
+    // FIXME Use secure mode if necessary!!!
     String agentURL = ClientServletUtil.makeURL(am.getHost(agentName),
                                                 am.getPort(agentName));
     Logger log = CSMART.createLogger("org.cougaar.tools.csmart.ui");

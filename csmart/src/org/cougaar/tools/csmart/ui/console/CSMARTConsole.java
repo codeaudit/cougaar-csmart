@@ -825,6 +825,8 @@ public class CSMARTConsole extends JFrame {
                 }
               }
             }
+	    // FIXME Somebody better set GLS_PROTOCOL to be the right thing, based on 
+	    // whether security is needed
             return GLS_PROTOCOL + "://" + hosts[i].getShortName() + ":" + port + "/$" + agent;
           }
         }
