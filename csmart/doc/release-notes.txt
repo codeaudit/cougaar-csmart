@@ -20,7 +20,7 @@ Database changes:
   Adaptive Logistics thread). Note that with this change, certain
   Classes of Supply (Threads) are disabled until next year. After reloading your
   CSMART database, you must include the new adaptive jar files in your
-  CIP/lib. Also note that you should re-create from scratch any
+  CIP/lib to run the 1AD-based societies. Also note that you should re-create from scratch any
   1AD-based societies that you use, to take advantage of the new Plugins.
 - Updated the domain data in the CSMART database to avoid some
   errors (bug 1531). You must reload the .sql file you get from unzipping
@@ -64,6 +64,11 @@ Recipe changes
   configurable recipe.  We suggest using this recipe instead of using
   the AgentInsertionRecipe with multiple SpecificInsertionRecipes to
   fill out the contents of the Agent.
+- Also added a very powerful new Recipe, called "Component Collection"
+  that allows specifying an arbitrary collection of Components to add
+  all at once. This would be useful if, for example, your new feature
+  requires adding a Plugin in every Node, a different Plugin in every
+  Agent, plus adding another whole new Agent with its components.
 - Added a Community Plugin recipe to base experiments. By including
   this recipe, all Agents and Node Agents will get the Community
   Plugin, allowing full Community and ABA support in all Agents and
@@ -72,7 +77,10 @@ Recipe changes
   missing the ClusterPG and ItemIdentificationPG, resulting in runtime
   Exceptions.
 
-Other major new changes and features:
+Console and AppServer changes:
+- There have been extensive changes to the Application Server, and to
+the CSMART Console (aka Experiment Controller) to take advantage of
+these. For most users, these changes need not change how your society runs.
 - Console (aka Experiment Controller) has new menu items and
   functionality, to support "discovery" of new Nodes that are created
   on an AppServer by a process other than CSMART. By selecting
@@ -87,38 +95,57 @@ Other major new changes and features:
   There's a new property that can be added to the "server.props":
       org.cougaar.tools.server.swallowOutputConnectionException=true
   which, when set, ?????!!!!!!
-- The menu items in the Organizer and Experiment Builder have been
-  split up, for ease of use. No functionality has changed. (Bug 1581)
+- The Console (Experiment Controller) tries hard to find the GLS
+  Servlet to connect the client UI (bug 1560). You MUST
+  specify the web server http or https port for the NCA agent through
+  the CSMART Experiment Builder in order for CSMART to accurately find
+  the GLS Init Servlet. If it can't find it, you can specify it explicitly.
+- The Console's window showing Agent contents will now show the load
+  priority of the component, and will also show the components in the
+  Node Agent.
+- We have sped up stopping a run, by talking to each node in parallel (bug
+  1416).
+- Keep node log files up-to-date (bug 931).
+- Keep Node Info windows a little smaller and add scrollbars (bug
+  1525)
+
+Communities related changes:
 - You may now import a communities.xml file into your experiment (bug
   1454), augmenting any existing community definition for that
-  experiment. (Courtesy of Mobile Intelligence, Inc).
+  experiment. (Courtesy of Mobile Intelligence, Inc). You will be
+  prompted to do so when creating an Experiment from INI files- simply
+  hit cancel if there is none. You may also do so from the Community
+  pane in the Experiment Builder, by selecting the pop-up menu on the
+  root folder in the Tree on the right.
 - When dumping out INI files, a communities.xml file is also generated
-  (bug 1453, also courtesty of Mobile Intelligence, Inc).
+  (bug 1453, also courtesy of Mobile Intelligence, Inc).
+- When dragging Hosts or Nodes onto a community in the Community
+  editor, show only the resulting Agents in the Community, not the
+  Nodes or Hosts. Bug 1578.
+- Community View now shows communities collapsed initially (bug 1522).
+- Experiment export scripts now export communities correctly (bug 1563).
+- Handle dragging in Host and Nodes and Agents consistently in the
+  Community Editor (bug 1523).
+
+Other new features:
+- The menu items in the Organizer and Experiment Builder have been
+  split up, for ease of use. No functionality has changed. (Bug 1581)
 - Unsupported feature: INI files dumped from the Experiment Builder
   now _may_ be runnable, with one small edit. You must edit the Agent
   INI file that contains the GLSInitServlet, usually named
   "NCA". Follow the instructions in the comment. Note however that you
   must have previously saved your Experiment to the database. Again,
   this functionality is not fully supported.
-- Console tries hard to find the GLS Servlet (bug 1560). You MUST
-  specify the web server http or https port for the NCA agent through
-  the CSMART Experiment Builder in order for CSMART to accurately find
-  the GLS Init Servlet. If it can't find it, you can specify it explicitly.
-- When dragging Hosts or Nodes onto a community in the Community
-  editor, show only the resulting Agents in the Community, not the
-  Nodes or Hosts. Bug 1578.
-- Community View now shows communities collapsed initially (bug 1522).
-- Allow loading multiple recipes from the database at once. Also allow
-  dragging multiple recipes at once into an Experiment. Simply use
-  Ctrl-click or Shift-click to select more than one recipe. (Bug 932)
-- Allow viewing contents of an Agent from the Experiment Builder (bug
-  1470).
-- Console's window showing Agent contents will now show the load
-  priority of the component, and will also show the components in the
-  Node Agent.
-- Speed up stopping a run, by talking to each node in parallel (bug
-  1416).
-- Experiment export scripts now export communities correctly (bug 1563).
+- Allow loading multiple recipes from the database at once. To do so,
+  simply Control- or Shift-click to select the set of recipes you want
+  to load. We also now allow dragging multiple recipes at once into an
+  Experiment. Simply use Ctrl-click or Shift-click to select more than
+  one recipe. (Bug 932)
+- You can now view the contents of an Agent or Node from the Experiment Builder (bug
+  1470). Simply invoke the pop-up menu on the Node or Agent you want
+  to view, and select "Show Components".
+
+Other Bug fixes:
 - If CSMART crashes, and you were using the workspace file, bring
   components back as fully editable and usable as possible.
 - When renaming a Recipe, change only the name in the database rather
@@ -134,11 +161,6 @@ Other major new changes and features:
   1443).
 - If Topology servlet not loaded, show only one error dialog (not one
   per Agent). Bug 1585.
-- Handle dragging in Host and Nodes and Agents consistently in the
-  Community Editor (bug 1523).
-- Keep node log files up-to-date (bug 931).
-- Keep Node Info windows a little smaller and add scrollbars (bug
-  1525)
 - Extra checks to avoid disturbing base assemblies (bug 1554)
 
 Release 9.4:
