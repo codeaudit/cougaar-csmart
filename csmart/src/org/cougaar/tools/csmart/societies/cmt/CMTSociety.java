@@ -30,8 +30,6 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 
-import org.cougaar.util.DBProperties;
-import org.cougaar.util.DBConnectionPool;
 import org.cougaar.tools.csmart.ui.component.AgentComponent;
 import org.cougaar.tools.csmart.ui.component.ComponentData;
 import org.cougaar.tools.csmart.ui.component.ModificationListener;
@@ -63,7 +61,6 @@ public class CMTSociety
   private String database;
   private String username;
   private String password;
-  transient private DBProperties dbp;
   private Map substitutions = new HashMap();
 
   // FIXME - are these right constructors?
@@ -127,39 +124,31 @@ public class CMTSociety
     StringBuffer assemblyMatch = null;
 
     if (assemblyID.size() != 0) {
-      try {
-	dbp = DBProperties.readQueryFile(DBUtils.DATABASE, DBUtils.QUERY_FILE);
-	database = dbp.getProperty("database");
-	username = dbp.getProperty("username");
-	password = dbp.getProperty("password");
-	assemblyMatch = new StringBuffer();
-	assemblyMatch.append("in (");
-	Iterator iter = assemblyID.iterator();
-	boolean first = true;
-	while (iter.hasNext()) {
-	  String val = (String)iter.next();
-	  if (first) {
-	    first = false;
-	  } else {
-	    assemblyMatch.append(", ");
-	  }
-	  assemblyMatch.append("'");
-	  assemblyMatch.append(val);
-	  assemblyMatch.append("'");
+      assemblyMatch = new StringBuffer();
+      assemblyMatch.append("in (");
+      Iterator iter = assemblyID.iterator();
+      boolean first = true;
+      while (iter.hasNext()) {
+	String val = (String)iter.next();
+	if (first) {
+	  first = false;
+	} else {
+	  assemblyMatch.append(", ");
 	}
-	assemblyMatch.append(")");
-      
-	substitutions.put(":assemblyMatch", assemblyMatch.toString());
-	substitutions.put(":insertion_point", "Node.AgentManager.Agent");
-      } catch(IOException e) {
-	throw new RuntimeException("Error: " + e);
+	assemblyMatch.append("'");
+	assemblyMatch.append(val);
+	assemblyMatch.append("'");
       }
+      assemblyMatch.append(")");
+      
+      substitutions.put(":assemblyMatch", assemblyMatch.toString());
+      substitutions.put(":insertion_point", "Node.AgentManager.Agent");
 
       try {
-	Connection conn = DBConnectionPool.getConnection(database, username, password);
+	Connection conn = DBUtils.getConnection();
 	try {
 	  Statement stmt = conn.createStatement();
-	  String query = dbp.getQuery(QUERY_AGENT_NAMES, substitutions);
+	  String query = DBUtils.getQuery(QUERY_AGENT_NAMES, substitutions);
 	  ResultSet rs = stmt.executeQuery(query);
 	  while (rs.next()) {
 	    String agentName = getNonNullString(rs, 1, query);
@@ -174,7 +163,6 @@ public class CMTSociety
 	e.printStackTrace();
 	throw new RuntimeException("Error" + e);
       }
-    
     }    
   }
 
