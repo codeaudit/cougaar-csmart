@@ -1,5 +1,9 @@
 CSMART Release Notes
 
+Release 10.4:
+This release includes a major reworking on the Console.
+
+
 Release 10.3:
 This patch release includes updates to various 1AD configurations, and
 related changes to database table definitions.
