@@ -34,37 +34,38 @@ if [%4] == [] (
 ) 
 
 REM FIXME: Must rename copyRecipeForExport.sql!!!
+if exist cpRec.sql del cpRec.sql
 copy %COUGAAR_INSTALL_PATH%\csmart\bin\copyRecipeForExport.sql .\cpRec.sql
 
 %COUGAAR_INSTALL_PATH%\\csmart\\data\\database\\scripts\\sed.exe s/":recipeName"/%1/ cpRec.sql > fixrec.sql
 
-del cpRec.sql
+if exist cpRec.sql del cpRec.sql
 
 REM This next will cause an error if temp db already exists
 REM but deleting it would cause an error if it didnt
 if [%5] == [] (
-  call mysql -f -u %2 -p%3 %4 < fixrec.sql
+  mysql -f -u %2 -p%3 %4 < fixrec.sql
 ) else (
-  call mysql -f -u %2 -p%3 -h %5 %4 < fixrec.sql
+  mysql -f -u %2 -p%3 -h %5 %4 < fixrec.sql
 )
 
-del fixrec.sql
+if exist fixrec.sql del fixrec.sql
 
 REM do the dump
 echo Exporting recipe %1....
 if [%5] == [] (
-  call mysqldump -q -l --add-locks -c -t -n -r "rt-exprt.sql" -u %2 -p%3 tempcopy 
+  mysqldump -q -l --add-locks -c -t -n -r "rt-exprt.sql" -u %2 -p%3 tempcopy 
 ) else (
-  call mysqldump -q -l --add-locks -c -t -n -r "rt-exprt.sql" -u %2 -p%3 -h %5 tempcopy
+  mysqldump -q -l --add-locks -c -t -n -r "rt-exprt.sql" -u %2 -p%3 -h %5 tempcopy
 )
 
 
 REM munge export script - replace INSERT with REPLACE
 REM Do I need to do more than these tables?
 call %COUGAAR_INSTALL_PATH%\\csmart\\data\\database\\scripts\\sed.exe s/'INSERT INTO v4_lib_mod_recipe'/'REPLACE INTO v4_lib_mod_recipe'/ rt-exprt.sql > r-export.sql
-del rt-exprt.sql
-del ".\%1-export.sql"
-move r-export.sql ".\%1-export.sql"
+if exist rt-exprt.sql del rt-exprt.sql
+if exist ".\%1-export.sql" del ".\%1-export.sql"
+if exist r-export.sql move r-export.sql ".\%1-export.sql"
 
 REM tell user name of export file, to load with -f option
 echo
@@ -74,7 +75,6 @@ echo Note the use of the -f option, to ignore errors about duplicate rows.
 REM get the names of the queries to copy
 echo You must be sure to separately copy the following queries as well:
 
-REM FIXME!!! Next stuff doesnt work yet. the percent sign confuses it...
 if [%5] == [] (
    mysql -s -e "select distinct arg_value from tempcopy.v4_lib_mod_recipe_arg where arg_value like 'recipeQuery%%';" -u %2 -p%3 %4
 ) else (
@@ -83,7 +83,7 @@ if [%5] == [] (
 
 echo
 REM delete the temp db
-%COUGAAR_INSTALL_PATH%\\csmart\\bin\\delete-temp-db.bat %2 %3 %4 %5
+call %COUGAAR_INSTALL_PATH%\\csmart\\bin\\delete-temp-db.bat %2 %3 %4 %5
 
 echo Done.
 
