@@ -26,6 +26,7 @@ import java.awt.event.*;
 import java.net.URL;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 import org.cougaar.tools.csmart.ui.Browser;
 import org.cougaar.tools.csmart.ui.console.ExperimentDB;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
@@ -54,13 +55,26 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   private CSMART csmart;
   private JTabbedPane tabbedPane;
   private UnboundPropertyBuilder propertyBuilder;
-  private HostConfigurationBuilder hostConfigurationBuilder;
+  private HostConfigurationBuilder hcb;
   private TrialBuilder trialBuilder;
   private ThreadBuilder threadBuilder;
   private boolean modified = false;
   private JMenu findMenu;
   private PopulateDb.ConflictHandler saveToDbConflictHandler =
     GUIUtils.createSaveToDbConflictHandler(this);
+  // items in file menu specific to selected node in HostConfigurationBuilder
+  private JMenuItem globalCommandLineMenuItem;
+  private JMenuItem newHostMenuItem;
+  private JMenu newNodeMenu;
+  private JMenuItem newUnassignedNodeMenuItem;
+  private JMenuItem newAssignedNodeMenuItem;
+  private JMenuItem commandLineMenuItem;
+  private JMenuItem describeHostMenuItem;
+  private JMenuItem describeNodeMenuItem;
+  private JMenuItem hostTypeMenuItem;
+  private JMenuItem hostLocationMenuItem;
+  private JMenuItem deleteHostMenuItem;
+  private JMenuItem deleteNodeMenuItem;
 
   private Action helpAction = new AbstractAction(HELP_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
@@ -103,17 +117,17 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   private Action[] findActions = {
     new AbstractAction(FIND_HOST_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
-        hostConfigurationBuilder.findHost();
+        hcb.findHost();
       }
     },
     new AbstractAction(FIND_NODE_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
-        hostConfigurationBuilder.findNode();
+        hcb.findNode();
       }
     },
     new AbstractAction(FIND_AGENT_MENU_ITEM) {
       public void actionPerformed(ActionEvent e) {
-        hostConfigurationBuilder.findAgent();
+        hcb.findAgent();
       }
     }
   };
@@ -129,14 +143,107 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
     JMenu fileMenu = new JMenu(FILE_MENU);
+    fileMenu.setToolTipText("Configure hosts and nodes, save, or quit");
+    globalCommandLineMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.GLOBAL_COMMAND_LINE_MENU_ITEM);
+    globalCommandLineMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.setGlobalCommandLine();
+        }
+      });
+    fileMenu.add(globalCommandLineMenuItem);
+    newHostMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.NEW_HOST_MENU_ITEM);
+    newHostMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.createHost();
+        }
+      });
+    fileMenu.add(newHostMenuItem);
+    newNodeMenu = new JMenu(HostConfigurationBuilder.NEW_NODE_MENU_ITEM);
+    newUnassignedNodeMenuItem = new JMenuItem("Unassigned");
+    newUnassignedNodeMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.createUnassignedNode();
+        }
+      });
+    newNodeMenu.add(newUnassignedNodeMenuItem);
+    newAssignedNodeMenuItem = new JMenuItem("On Host");
+    newAssignedNodeMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.createAssignedNode();
+        }
+      });
+    newNodeMenu.add(newAssignedNodeMenuItem);
+    fileMenu.add(newNodeMenu);
+    commandLineMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.NODE_COMMAND_LINE_MENU_ITEM);
+    commandLineMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.setNodeCommandLine();
+        }
+      });
+    fileMenu.add(commandLineMenuItem);
+    describeHostMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.DESCRIBE_HOST_MENU_ITEM);
+    describeHostMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.setHostDescription();
+        }
+      });
+    fileMenu.add(describeHostMenuItem);
+    describeNodeMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.DESCRIBE_NODE_MENU_ITEM);
+    describeNodeMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.setNodeDescription();
+        }
+      });
+    fileMenu.add(describeNodeMenuItem);
+    hostTypeMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.HOST_TYPE_MENU_ITEM);
+    hostTypeMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.setHostType();
+        }
+      });
+    fileMenu.add(hostTypeMenuItem);
+    hostLocationMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.HOST_LOCATION_MENU_ITEM);
+    hostLocationMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.setHostLocation();
+        }
+      });
+    fileMenu.add(hostLocationMenuItem);
+    deleteHostMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.DELETE_HOST_MENU_ITEM);
+    deleteHostMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.deleteHost();
+        }
+      });
+    fileMenu.add(deleteHostMenuItem);
+    deleteNodeMenuItem = 
+      new JMenuItem(HostConfigurationBuilder.DELETE_NODE_MENU_ITEM);
+    deleteNodeMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          hcb.deleteNode();
+        }
+      });
+    fileMenu.add(deleteNodeMenuItem);
+    fileMenu.addSeparator();
     for (int i = 0; i < fileActions.length; i++) {
       fileMenu.add(fileActions[i]);
     }
+    fileMenu.addMenuListener(myMenuListener);
     findMenu = new JMenu(FIND_MENU);
+    findMenu.setToolTipText("Find a host, node, or agent.");
     for (int i = 0; i < findActions.length; i++) {
       findMenu.add(findActions[i]);
     }
     JMenu helpMenu = new JMenu(HELP_MENU);
+    helpMenu.setToolTipText("Display documentation.");
     for (int i = 0; i < helpActions.length; i++) {
       helpMenu.add(helpActions[i]);
     }
@@ -148,7 +255,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     tabbedPane = new JTabbedPane();
     tabbedPane.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
-        if (tabbedPane.getSelectedComponent().equals(hostConfigurationBuilder))
+        if (tabbedPane.getSelectedComponent().equals(hcb))
           findMenu.setEnabled(true);
         else
           findMenu.setEnabled(false);
@@ -156,9 +263,9 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     });
     propertyBuilder = new UnboundPropertyBuilder(experiment, this);
     tabbedPane.add("Properties", propertyBuilder);
-    hostConfigurationBuilder = 
+    hcb = 
       new HostConfigurationBuilder(experiment, this);
-    tabbedPane.add("Configurations", hostConfigurationBuilder);
+    tabbedPane.add("Configurations", hcb);
     // only display trial builder for non-database experiments
     if (experiment.isInDatabase()) {
       threadBuilder = new ThreadBuilder(experiment);
@@ -222,7 +329,7 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     experiment.setEditInProgress(false);
     experiment = newExperiment;
     propertyBuilder.reinit(experiment);
-    hostConfigurationBuilder.reinit(experiment);
+    hcb.reinit(experiment);
     // only display trial builder for non-database experiments
     // only display thread builder for database experiments
     if (experiment.isInDatabase()) {
@@ -335,31 +442,81 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     }
   }
 
-  //  private void doSave() {
-//      if (experiment.isCloned()) {
-//        experiment.saveToDb(saveToDbConflictHandler);
-//        return;
-//      }
-    // get unique name in both database and CSMART
-//      if (ExperimentDB.isExperimentNameInDatabase(experiment.getShortName())) {
-//        String name = csmart.getUniqueExperimentName(experiment.getShortName(),
-//                                                     true);
-//        if (name == null)
-//          return;
-//        experiment.setName(name);
-//      }
-    //    experiment.saveToDb(saveToDbConflictHandler);
-//    experiment.setCloned(true);
-  //  }
+  /**
+   * Enable/disable entries in the File menu dependent on what
+   * is selected in the organizer.
+   */
 
-//    private void find() {
-//      String s = JOptionPane.showInputDialog(this, "Find Host, Node or Agent:",
-//                                             "Find", JOptionPane.PLAIN_MESSAGE);
-//      if (s == null)
-//        return;
-//      s = s.trim();
-//      if (s.length() == 0)
-//        return;
-//      hostConfigurationBuilder.find(s);
-//    }
+  private MenuListener myMenuListener =
+    new MenuListener() {
+      public void menuCanceled(MenuEvent e) {
+      }
+      public void menuDeselected(MenuEvent e) {
+      }
+      public void menuSelected(MenuEvent e) {
+        // if host configuration builder not selected
+        // disable all the menu commands for it
+        if (!tabbedPane.getSelectedComponent().equals(hcb)) {
+          globalCommandLineMenuItem.setEnabled(false);
+          newHostMenuItem.setEnabled(false);
+          newNodeMenu.setEnabled(false);
+          commandLineMenuItem.setEnabled(false);
+          describeHostMenuItem.setEnabled(false);
+          describeNodeMenuItem.setEnabled(false);
+          hostTypeMenuItem.setEnabled(false);
+          hostLocationMenuItem.setEnabled(false);
+          deleteHostMenuItem.setEnabled(false);
+          deleteNodeMenuItem.setEnabled(false);
+          return;
+        }
+        // enable "global command line" command 
+        // if either root, or any set of hosts or nodes is selected
+        DefaultMutableTreeNode[] hostsInHostTree = 
+          hcb.getSelectedHostsInHostTree();
+        DefaultMutableTreeNode[] nodesInHostTree = 
+          hcb.getSelectedNodesInHostTree();
+        DefaultMutableTreeNode[] nodesInNodeTree = 
+          hcb.getSelectedNodesInNodeTree();
+        boolean isHostRootSelected = hcb.isHostTreeRootSelected();
+        boolean isNodeRootSelected = hcb.isNodeTreeRootSelected();
+        newHostMenuItem.setEnabled(isHostRootSelected);
+        if (isHostRootSelected || isNodeRootSelected ||
+            (hostsInHostTree != null) ||
+            (nodesInHostTree != null) ||
+            (nodesInNodeTree != null))
+          globalCommandLineMenuItem.setEnabled(true);
+        else
+          globalCommandLineMenuItem.setEnabled(false);
+        // enable "new node" command if unassigned nodes root is selected
+        // or one host is selected in the host tree
+        newUnassignedNodeMenuItem.setEnabled(isNodeRootSelected);
+        if (hostsInHostTree != null && hostsInHostTree.length == 1) {
+          newAssignedNodeMenuItem.setText("On " + 
+                                          hostsInHostTree[0].toString());
+          newAssignedNodeMenuItem.setEnabled(true);
+        } else 
+          newAssignedNodeMenuItem.setEnabled(false);
+        newNodeMenu.setEnabled(newAssignedNodeMenuItem.isEnabled() ||
+                               newUnassignedNodeMenuItem.isEnabled());
+        // enable "new host" command if host tree root is selected
+        newHostMenuItem.setEnabled(isHostRootSelected);
+        // if a single node is selected
+        // enable "command line arguments"
+        int nodeCount = 0;
+        if (nodesInHostTree != null)
+          nodeCount = nodesInHostTree.length;
+        if (nodesInNodeTree != null)
+          nodeCount += nodesInNodeTree.length;
+        commandLineMenuItem.setEnabled(nodeCount == 1);
+        describeHostMenuItem.setEnabled(hostsInHostTree != null);
+        describeNodeMenuItem.setEnabled(nodesInHostTree != null ||
+                                        nodesInNodeTree != null);
+        hostTypeMenuItem.setEnabled(hostsInHostTree != null);
+        hostLocationMenuItem.setEnabled(hostsInHostTree != null);
+        deleteHostMenuItem.setEnabled(hostsInHostTree != null);
+        deleteNodeMenuItem.setEnabled(nodesInHostTree != null ||
+                                      nodesInNodeTree != null);
+      }
+    };
+
 }
