@@ -21,9 +21,7 @@ Linux/Solaris versions of this file.
 
 Also note: To get access to the CPU related metrics, you will need to
 install the Mylib.dll/.so in your path: $COUGAAR_INSTALL_PATH/csmart/bin 
-or JDK_HOME/bin work well. This library can be installed from the 
-scalability module per its installation instructions 
-(scalability/bin/Install.txt) but the society runs fine without it.
+or JDK_HOME/bin work well. 
 
 
 Some key parameters that you will want to locally edit:
