@@ -91,4 +91,10 @@ public interface SocietyComponent extends ModifiableComponent {
    */
   boolean isSelfTerminating();
 
+  /**
+   * Save society to database.
+   */
+
+  void saveToDatabase();
+
 }

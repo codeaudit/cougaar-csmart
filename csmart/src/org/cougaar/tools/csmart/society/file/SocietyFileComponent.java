@@ -25,6 +25,7 @@ import java.util.Iterator;
 import org.cougaar.core.component.ComponentDescription;
 import org.cougaar.tools.csmart.core.cdata.ComponentConnector;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.society.SocietyBase;
 import org.cougaar.tools.csmart.society.file.AgentFileComponent;
@@ -103,6 +104,13 @@ public class SocietyFileComponent
       agent.initProperties();
       addChild(agent);
     }
+  }
+
+  public ModifiableComponent copy(String name) {
+    ModifiableComponent societyCopy = 
+      new SocietyFileComponent(name, filenames);
+    societyCopy.initProperties();
+    return societyCopy;
   }
 
 }

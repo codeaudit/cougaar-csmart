@@ -74,6 +74,7 @@ public abstract class SocietyBase
   private void createLogger() {
     log = CSMART.createLogger(this.getClass().getName());
   }
+
   /**
    * Returns the name of this Society
    *
@@ -244,6 +245,10 @@ public abstract class SocietyBase
       }      
     }
     return data;
+  }
+
+  public void saveToDatabase() {
+    System.out.println("SocietyBase: WARNING: save to database not implemented");
   }
 
   private void readObject(ObjectInputStream ois)
