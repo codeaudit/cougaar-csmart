@@ -1,3 +1,8 @@
+2001-10-15  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* TestPopulateDb.java (Repository):
+	Adapt to new constructor adding exptid and trialid.
+
 2001-10-11  Ray Tomlinson  <RTomlinson@HEFEWEIZEN>
 
 	* TestPopulateDb.java (Repository):
