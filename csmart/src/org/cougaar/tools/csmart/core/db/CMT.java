@@ -56,7 +56,7 @@ import org.cougaar.util.log.Logger;
 public class CMT {
   
   static final String QUERY_FILE = "CMT.q";
-  static final String asbPrefix="v4_";
+  static final String asbPrefix="";
   // SHOULD REVISE CODE TO USE SINGLE dbp INSTANCE FOR ALL QUERIES
   protected static DBProperties dbp = null;
   
