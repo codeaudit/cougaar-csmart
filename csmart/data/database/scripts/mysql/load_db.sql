@@ -1062,10 +1062,10 @@ DROP TABLE IF EXISTS v6_cfw_plugin_group_member;
 CREATE TABLE v6_cfw_plugin_group_member (
   CFW_ID varchar(50) binary NOT NULL default '',
   PLUGIN_GROUP_ID varchar(50) binary NOT NULL default '',
-  PLUGIN_CLASS varchar(100) binary NOT NULL default '',
+  PLUGIN_ID varchar(100) binary NOT NULL default '',
   PLUGIN_CLASS_ORDER decimal(68,30) default NULL,
-  PRIMARY KEY  (CFW_ID,PLUGIN_GROUP_ID,PLUGIN_CLASS),
-  KEY PLUGIN_CLASS (PLUGIN_CLASS),
+  PRIMARY KEY  (CFW_ID,PLUGIN_GROUP_ID,PLUGIN_ID),
+  KEY PLUGIN_ID (PLUGIN_ID),
   KEY PLUGIN_GROUP_ID (PLUGIN_GROUP_ID),
   KEY CFW_ID (CFW_ID)
 ) TYPE=MyISAM;
@@ -1077,7 +1077,7 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/cfw_plugin_group_member.csv.tmp'
         OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
-    (CFW_ID,PLUGIN_GROUP_ID,PLUGIN_CLASS,PLUGIN_CLASS_ORDER);
+    (CFW_ID,PLUGIN_GROUP_ID,PLUGIN_ID,PLUGIN_CLASS_ORDER);
 
 #
 # Table structure for table 'v6_lib_org_group'
@@ -1148,7 +1148,7 @@ DROP TABLE IF EXISTS v6_lib_plugin_arg;
 CREATE TABLE v6_lib_plugin_arg (
   PLUGIN_ARG_ID varchar(150) binary NOT NULL default '',
   ARGUMENT_ORDER decimal(68,30) NOT NULL default '0.000000000000000000000000000000',
-  PLUGIN_CLASS varchar(100) binary NOT NULL default '',
+  PLUGIN_ID varchar(100) binary NOT NULL default '',
   ARGUMENT varchar(100) binary NOT NULL default '',
   ARGUMENT_TYPE varchar(50) binary default NULL,
   UNIQUE KEY PK_V6_LIB_PLUGIN_ARG (PLUGIN_ARG_ID)
@@ -1161,7 +1161,7 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_arg.csv.tmp'
         OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
-    (PLUGIN_ARG_ID,ARGUMENT_ORDER,PLUGIN_CLASS,ARGUMENT,ARGUMENT_TYPE);
+    (PLUGIN_ARG_ID,ARGUMENT_ORDER,PLUGIN_ID,ARGUMENT,ARGUMENT_TYPE);
 
 #
 # Table structure for table 'v6_lib_plugin_arg_thread'
@@ -1212,9 +1212,9 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_group.csv.tmp'
 
 DROP TABLE IF EXISTS v6_lib_plugin_ref;
 CREATE TABLE v6_lib_plugin_ref (
-  PLUGIN_CLASS varchar(100) binary NOT NULL default '',
+  PLUGIN_ID varchar(100) binary NOT NULL default '',
   DESCRIPTION varchar(100) binary default NULL,
-  UNIQUE KEY PK_V6_LIB_PLUGIN_REF (PLUGIN_CLASS)
+  UNIQUE KEY PK_V6_LIB_PLUGIN_REF (PLUGIN_ID)
 ) TYPE=MyISAM;
 
 LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_ref.csv.tmp'
@@ -1224,7 +1224,7 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_ref.csv.tmp'
         OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
-    (PLUGIN_CLASS,DESCRIPTION);
+    (PLUGIN_ID,DESCRIPTION);
 
 #
 # Table structure for table 'v6_lib_plugin_thread'
@@ -1232,11 +1232,11 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_ref.csv.tmp'
 
 DROP TABLE IF EXISTS v6_lib_plugin_thread;
 CREATE TABLE v6_lib_plugin_thread (
-  PLUGIN_CLASS varchar(100) binary NOT NULL default '',
+  PLUGIN_ID varchar(100) binary NOT NULL default '',
   THREAD_ID varchar(50) binary NOT NULL default '',
   DESCRIPTION varchar(100) binary default NULL,
-  PRIMARY KEY  (PLUGIN_CLASS,THREAD_ID),
-  KEY PLUGIN_CLASS (PLUGIN_CLASS),
+  PRIMARY KEY  (PLUGIN_ID,THREAD_ID),
+  KEY PLUGIN_ID (PLUGIN_ID),
   KEY THREAD_ID (THREAD_ID)
 ) TYPE=MyISAM;
 
@@ -1247,7 +1247,7 @@ LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_plugin_thread.csv.tmp'
         OPTIONALLY ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
     IGNORE 1 LINES
-    (PLUGIN_CLASS,THREAD_ID,DESCRIPTION);
+    (PLUGIN_ID,THREAD_ID,DESCRIPTION);
 
 #
 # Table structure for table 'v6_lib_role_ref'
