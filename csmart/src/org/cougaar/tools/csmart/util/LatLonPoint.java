@@ -10,6 +10,8 @@
 package  org.cougaar.tools.csmart.util;
 
 import org.cougaar.domain.planning.ldm.plan.Location;
+import org.cougaar.domain.planning.ldm.measure.Latitude;
+import org.cougaar.domain.planning.ldm.measure.Longitude;
 
 import java.io.*;
 
@@ -25,6 +27,8 @@ import java.io.*;
  * <p>
  * <strong>Normalized Longitude:</strong><br>
  * -180&deg; &lt;= &lambda; &lt;= 180&deg;<br>
+ *
+ * Also supports conversion to/from Cougaar core <code>Latitude</code> and <code>Longitude</code>
  *
  * @see Location
  */
@@ -59,6 +63,19 @@ public class LatLonPoint
         radlon_ = EarthConstants.degToRad(lon_);
     }
 
+  /**
+   * Creates a new <code>LatLonPoint</code> from the core measures
+   *
+   * @param lat a <code>Latitude</code>
+   * @param lon a <code>Longitude</code> 
+   */
+  public LatLonPoint (Latitude lat, Longitude lon) {
+    lat_ = normalize_latitude((float)lat.getDegrees());
+    lon_ = wrap_longitude((float)lon.getDegrees());
+    radlat_ = EarthConstants.degToRad(lat_);
+    radlon_ = EarthConstants.degToRad(lon_);
+  }
+  
     /**
      * Construct a LatLonPoint from raw float lat/lon in radians.
      *
@@ -132,7 +149,16 @@ public class LatLonPoint
         radlat_ = EarthConstants.degToRad(lat_);
     }
 
-    /**
+  /**
+   * Set latitude from core Latitude object.
+   * @param lat <code>Latitidue</code>
+   */
+  public void setLatitude (Latitude lat) {
+    lat_ = normalize_latitude((float)lat.getDegrees());
+    radlat_ = EarthConstants.degToRad(lat_);
+  }
+  
+  /**
      * Set longitude.
      * @param lon longitude in decimal degrees
      */
@@ -141,7 +167,12 @@ public class LatLonPoint
         radlon_ = EarthConstants.degToRad(lon_);
     }
 
-    /**
+  public void setLongitude (Longitude lon) {
+        lon_ = wrap_longitude((float)lon.getDegrees());
+        radlon_ = EarthConstants.degToRad(lon_);
+  }
+  
+  /**
      * Set latitude and longitude.
      * @param lat latitude in decimal degrees
      * @param lon longitude in decimal degrees
@@ -186,6 +217,13 @@ public class LatLonPoint
         return  lat_;
     }
 
+  /**
+   * Get normalized Latitude.
+   */
+  public Latitude getLatitudeObject() {
+    return Latitude.newLatitude(lat_);
+  }
+  
     /**
      * Get wrapped longitude.
      * @return float longitude in decimal degrees
@@ -195,6 +233,14 @@ public class LatLonPoint
         return  lon_;
     }
 
+  /**
+   * Get wrapped longitude.
+   * @return Longitude
+   */
+  public Longitude getLongitudeObject() {
+    return Longitude.newLongitude(lon_);
+  }
+  
     /**
      * Determines whether two LatLonPoints are equal.
      * @param obj Object
