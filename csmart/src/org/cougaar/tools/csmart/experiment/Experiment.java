@@ -1570,7 +1570,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     return (nodes.contains(new ExperimentNode(name, this))) ? true : false;
   }
 
-  private boolean agentNameUnique(String name) {
+  public boolean agentNameUnique(String name) {
     if (name == null || name.equals(""))
       return false;
 
