@@ -1018,7 +1018,9 @@ public class Organizer extends JScrollPane {
     if (!experiment.isEditable()) {
       int result = 
         JOptionPane.showConfirmDialog(this,
-                                 "Experiment is not editable; delete anyway?",
+                                      "Experiment " +
+                                      experiment.getExperimentName() +
+                                      " is not editable; delete anyway?",
                                       "Experiment Not Editable",
                                       JOptionPane.YES_NO_OPTION,
                                       JOptionPane.WARNING_MESSAGE);
@@ -1031,7 +1033,9 @@ public class Organizer extends JScrollPane {
     // ask if experiment should be deleted from database
     int result = 
       JOptionPane.showConfirmDialog(this,
-                                    "Delete experiment from database?",
+                                    "Delete experiment " +
+                                    experiment.getExperimentName() + 
+                                    " from database?",
                                     "Delete Experiment From Database",
                                     JOptionPane.YES_NO_OPTION,
                                     JOptionPane.WARNING_MESSAGE);
@@ -1077,7 +1081,9 @@ public class Organizer extends JScrollPane {
         if (status == PDbBase.RECIPE_STATUS_EXISTS || status == PDbBase.RECIPE_STATUS_DIFFERS) {
           int answer =
             JOptionPane.showConfirmDialog(this,
-                                          "Delete recipe from database?",
+                                          "Delete recipe " +
+                                          rc.getRecipeName() +
+                                          " from database?",
                                           "Delete Recipe",
                                           JOptionPane.YES_NO_OPTION);
           if (answer == JOptionPane.YES_OPTION) {
