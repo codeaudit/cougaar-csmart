@@ -103,4 +103,16 @@ public interface SocietyComponent extends ModifiableComponent {
    * @return a <code>boolean</code>, false on error
    */
   boolean saveToDatabase();
+
+  /**
+   * Set the assembly id for this Society.
+   * @param assemblyId the assembly id for this Society
+   */
+  void setAssemblyId(String assemblyId);
+
+  /**
+   * Get the assembly id for this Society.
+   * @return a <code>String</code> which is the assembly id for this Society
+   */
+  String getAssemblyId();
 }
