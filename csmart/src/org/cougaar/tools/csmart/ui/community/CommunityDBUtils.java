@@ -88,6 +88,8 @@ public class CommunityDBUtils {
         log.error("Caught SQL exception executing query: " + query, se);
       }
     } 
+    if (results == null || results.isEmpty() && log.isDebugEnabled())
+      log.debug("doQuery got no results for " + query);
     return results;
   }
 
