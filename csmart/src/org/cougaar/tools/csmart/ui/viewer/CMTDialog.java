@@ -88,8 +88,8 @@ public class CMTDialog extends JDialog {
     for (int i = 0; i < ULThreads.length; i++) {
       JCheckBox cb = new JCheckBox(ULThreads[i]);
       
-      if (DBUtils.isMySQL())
-	cb.setEnabled(false); // MySQL DB
+//        if (DBUtils.isMySQL())
+//  	cb.setEnabled(false); // MySQL DB
       
       ULThreadCheckBoxes.add(cb);
       boolean sel = ExperimentDB.isULThreadSelected(trialId, ULDBThreads[i]);
@@ -120,8 +120,8 @@ public class CMTDialog extends JDialog {
       String groupName = (String)groupNames[i];
       JCheckBox groupCB = new JCheckBox(groupName);
       
-      if (DBUtils.isMySQL())
-	groupCB.setEnabled(false); // MySQL DB
+//        if (DBUtils.isMySQL())
+//  	groupCB.setEnabled(false); // MySQL DB
       
       boolean sel = ExperimentDB.isGroupSelected(trialId, groupName);
       groupCheckBoxes.add(groupCB);
