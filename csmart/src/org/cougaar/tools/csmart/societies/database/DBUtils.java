@@ -210,4 +210,17 @@ public class DBUtils {
     return assemblyMatch.toString();
   }
 
+  public static final boolean isMySQL() {
+    DBProperties dbProps;
+
+    if(isValidRCFile()) {
+      try {	
+	dbProps = DBProperties.readQueryFile(QUERY_FILE);
+	String dbtype = dbProps.getDBType();
+	return (dbtype != null && dbtype.equals("mysql"));
+      } catch(IOException e) {}      
+    }
+      
+    return false;
+  }
 }
