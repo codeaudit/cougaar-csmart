@@ -959,10 +959,24 @@ public class PropertyEditorPanel extends JPanel
    */
   private void addRelationship() {
     Vector relationships = new Vector();
-    AgentComponent[] agents = 
-      ((SocietyComponent)componentToConfigure).getAgents();
-    for (int i = 0; i < agents.length; i++)
-      relationships.add(agents[i].getShortName());
+
+    DefaultMutableTreeNode selNode =
+      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+    // relationship configurable components are created from relationship data
+    RelationshipData relData = new RelationshipData();
+
+    if (componentToConfigure instanceof ComplexRecipeComponent) {
+      Set agentNames = DBUtils.dbGetAgentNames();
+      for (Iterator i = agentNames.iterator(); i.hasNext();) {
+        relationships.add((String)i.next());
+      }
+    } else {
+
+      AgentComponent[] agents = 
+        ((SocietyComponent)componentToConfigure).getAgents();
+      for (int i = 0; i < agents.length; i++)
+        relationships.add(agents[i].getShortName());
+    }
     String relName = 
       (String)ComboDialog.showDialog(this, "Relationship With Agent", relationships);
     if (relName == null)
@@ -973,14 +987,11 @@ public class PropertyEditorPanel extends JPanel
       if (relName.length() == 0)
         return;
     }
-    DefaultMutableTreeNode selNode =
-      (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-    // relationship configurable components are created from relationship data
-    RelationshipData relData = new RelationshipData();
     relData.setSupported(relName);
     relData.setItemId(relName);
     relData.setType("");
     relData.setRole("");
+    
     RelationshipComponent relationship = new RelationshipBase(relData);
     addBaseComponent(relationship);
   }
