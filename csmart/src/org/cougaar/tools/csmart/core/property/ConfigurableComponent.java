@@ -909,6 +909,7 @@ public abstract class ConfigurableComponent
     Property p = null;
     if (newVisible) {
       p = (Property) getMyProperties().get(name);
+      // Property may not exist in map yet.
       if(p != null) {
         if (!p.isVisible()) firePropertyAdded(prop);
       }
@@ -934,6 +935,7 @@ public abstract class ConfigurableComponent
 
   public boolean isPropertyVisible(Property prop) {
     Property p = (Property)getMyProperties().get(prop.getName());
+    // If the society is fresh from the db, props don't exist in map yet.
     if(p == null) return false;
     return p.isVisible();
   }
