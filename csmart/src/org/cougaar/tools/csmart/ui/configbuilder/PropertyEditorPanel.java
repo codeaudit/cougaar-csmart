@@ -50,6 +50,7 @@ import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
@@ -697,10 +698,6 @@ public class PropertyEditorPanel extends JPanel
    * representing the binder, and add it to the agent node in the tree.
    */
   private void addBinder() {
-    // FIXME: Get the class from the user
-    // and provide a drop-down, just like for binders...
-
-    // get plugins from all existing agents
     Enumeration components = componentToNode.keys();
     ArrayList binderNames = new ArrayList();
     ArrayList binderClasses = new ArrayList();
@@ -955,14 +952,6 @@ public class PropertyEditorPanel extends JPanel
   }
 
   private void addParameter(boolean getName) {
-    // FIXME:
-    // This probably should not used named parameter.
-    // or if it does, compute the names automatically,
-    // and have them be in ascending alphabetical order within
-    // the component.
-    // FIXME
-    // boolean getName = true;
-
     DefaultMutableTreeNode selNode =
       (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
     ModifiableComponent cc = 
@@ -992,16 +981,33 @@ public class PropertyEditorPanel extends JPanel
     value = value.trim(); // trim white space
     if (value.length() == 0) return;
 
-    if (getName) {
-      Property p = cc.addProperty(name, value);
-    } else {
-      if (cc instanceof MiscComponent) {
-	Property p = ((MiscComponent)cc).addParameter(value);
+    if (getName)
+      cc.addProperty(name, value);
+    else
+      cc.addProperty(generateName((ConfigurableComponent)cc), value);
+  }
+
+  private String generateName(ConfigurableComponent cc) {
+    // get all properties
+    Iterator i = cc.getSortedLocalPropertyNames();
+    // find the highest numbered property of the form param-x
+    int lastParamNumber = -1;
+    while (i.hasNext()) {
+      String name = ((CompositeName)i.next()).last().toString();
+      int index = name.indexOf("param-");
+      if (index == -1)
+        continue;
+      try {
+        lastParamNumber = Integer.parseInt(name.substring(index+6));
+      } catch (NumberFormatException nfe) {
+        System.out.println("NFE: " + nfe);
+        // just ignore
       }
-      // In general you have to give both a name and a value
-      // So if it is not a ComponentBase, what name would we give?
-      // FIXME!!
     }
+    // generate next highest numbered name
+    lastParamNumber++;
+    String name = "param-" + String.valueOf(lastParamNumber);
+    return name;
   }
 
   /**
