@@ -805,15 +805,10 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       theSoc.setOwner(this); // the experiment
       theSoc.setParent(null);
       addDefaultNodeArguments(theSoc);
-      //      PopulateDb pdb =
-      //        new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
-      //                       getExperimentID(), trialID, !isCloned(), ch);
-      // TODO: isCloned argument to PopulateDB is going away
       PopulateDb pdb =
         new PopulateDb("CMT", "CSHNA", "CSMI", getExperimentName(),
                        getExperimentID(), trialID, true, ch);
       setExperimentID(pdb.getExperimentId());
-      //      trialID = pdb.getTrialId();
       setTrialID(pdb.getTrialId()); // sets trial id and -D argument
 
       // For each node, create a GenericComponentData, and add it to the society
@@ -859,7 +854,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       }
       if (componentWasRemoved) pdb.repopulateCMT(theSoc);
       pdb.populateHNA(theSoc);
-      //      if (pdb.populateHNA(theSoc)) setCloned(true);
 
       // then give everyone a chance to modify what they've collectively produced
       for (int i = 0, n = components.size(); i < n; i++) {
@@ -869,7 +863,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
           pdb.repopulateCMT(theSoc);
         }
         pdb.populateCSMI(theSoc);
-        //        if (pdb.populateCSMI(theSoc)) setCloned(true);
       }
       pdb.setModRecipes(recipes);
       pdb.close();
