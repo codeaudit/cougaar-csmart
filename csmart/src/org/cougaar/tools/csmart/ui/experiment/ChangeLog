@@ -1,3 +1,29 @@
+2001-11-19  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* HostConfigurationBuilder.java:
+	Add menu items to allow editing of default node command line
+	arguments.
+	Separate -D options from other arguments.
+
+	* ExperimentNode.java:
+	Get default node arguments from
+	Experiment.etDefaultNodeArguments()
+
+	* Experiment.java:
+	Add getDefaultNodeArguments to supply the default values for all
+	node options. Move initialization code to here from NodeComponent.
+	Save node arguments to database.
+	Set default node arguments as arguments of the society component
+	data.
+
+	* ExperimentBuilder.java:
+	Fix bug 778.
+	Add modification listener so ExperimentBuilder knows if the
+	property builder (editor) makes changes to the experiment. Also,
+	(belt and suspenders approach) allow save of unmodified experiment
+	after informing the user that no changes have been made. User can
+	save it anyway (or not as she chooses).
+
 2001-11-07  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* ExperimentTree.java:

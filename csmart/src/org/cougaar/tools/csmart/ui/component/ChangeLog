@@ -1,3 +1,10 @@
+2001-11-19  Ray Tomlinson  <RTomlinson@bbn.com>
+
+	* PopulateDb.java:
+	Remove code to skip writing society components to the database.
+	Add cases for computing the alib_id, lib_id and insertion point of
+	a society component.
+
 2001-11-14  Ray Tomlinson  <RTomlinson@bbn.com>
 
 	* PopulateDb.java:
