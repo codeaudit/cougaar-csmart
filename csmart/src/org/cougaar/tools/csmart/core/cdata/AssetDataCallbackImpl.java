@@ -327,7 +327,7 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
     rd.setItem(itemId);
     rd.setTypeId(typeId);
     rd.setType(roleName);
-    rd.setRole("");   // Role (as we know it) does not exist in this format.
+    rd.setRole(roleName);
     rd.setStartTime(start);
     rd.setEndTime(end);
     rd.setSupported(otherClusterId);
