@@ -223,7 +223,8 @@ public class UnboundPropertyBuilder extends JPanel {
     trialCountField.setEditable(false);
     trialPanel.add(trialLabel);
     trialPanel.add(trialCountField);
-    add(trialPanel, BorderLayout.NORTH);
+    // don't add trial panel cause there are no trials
+    //    add(trialPanel, BorderLayout.NORTH);
     add(splitPane, BorderLayout.CENTER);
     splitPane.setDividerLocation(100);
     for (int i = 0; i < popupActions.length; i++) {
@@ -312,6 +313,9 @@ public class UnboundPropertyBuilder extends JPanel {
 
   /**
    * Display the correct popup menu.
+   * Don't display popup for Societies folder or for individual
+   * societies.  The only option on these popup folders is to delete
+   * the societies, and that is not allowed.
    */
   private void doPopup(MouseEvent e) {
     TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
@@ -322,14 +326,14 @@ public class UnboundPropertyBuilder extends JPanel {
       (DefaultMutableTreeNode) selPath.getLastPathComponent();
     Object o = popupNode.getUserObject();
     if (o instanceof SocietyComponent) {
-      popupMenu.show(tree, e.getX(), e.getY());
+      //      popupMenu.show(tree, e.getX(), e.getY());
     } else if (o instanceof RecipeComponent) {
       //} else if (o instanceof Recipe) {
       popupMenu.show(tree, e.getX(), e.getY());
     } else if (o instanceof Experiment) {
       popupMenu.show(tree, e.getX(), e.getY());
     } else if (popupNode == societies) {
-      societiesMenu.show(tree, e.getX(), e.getY());
+      //      societiesMenu.show(tree, e.getX(), e.getY());
     } else if (popupNode == recipes) {
       recipesMenu.show(tree, e.getX(), e.getY());
     }
