@@ -40,10 +40,9 @@ import java.io.ObjectInputStream;
 import java.io.IOException;
 
 /**
- * Provides method definitions for abstract methods in DNDTree.
- * Encapsulates all information specific to the drag-and-drop
- * trees in the Console tool, leaving DNDTree as the generic
- * drag-and-drop tree class.
+ * Provides method definitions for abstract methods in DNDTree
+ * to support Host, Node and Agent trees in the Community Panel
+ * of the Experiment Builder.
  */
 
 public class EntityDNDTree extends DNDTree {

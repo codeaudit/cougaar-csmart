@@ -23,7 +23,10 @@ package org.cougaar.tools.csmart.ui.util;
 
 import org.cougaar.util.ConfigFinder;
 
+import java.awt.*;
 import java.io.File;
+import java.util.ArrayList;
+import javax.swing.*;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
@@ -67,6 +70,83 @@ public class Util {
   public static NamedFrame getNamedFrame() {
     return NamedFrame.getNamedFrame();
   }
+
+  /**
+   * Display a list of objects in a dialog.
+   * @param parent the parent component of the dialog
+   * @param values a list of values
+   * @param title the title for the dialog
+   * @param prompt a prompt displayed above the list
+   */
+  public static void showObjectsInList(Component parent,
+                                       ArrayList values, String title, 
+                                       String prompt) {
+    displayList(parent, values, title, prompt, false);
+  }
+
+  /**
+   * Display a list of objects in a dialog and return an
+   * array of objects selected by the user.
+   * @param parent the parent component of the dialog
+   * @param values a list of values
+   * @param title the title for the dialog
+   * @param prompt a prompt displayed above the list
+   * @return the objects selected by the user
+   */
+  public static Object[] getObjectsFromList(Component parent,
+                                            ArrayList values, String title,
+                                            String prompt) {
+    return displayList(parent, values, title, prompt, true);
+  }
+
+  private static  Object[] displayList(Component parent,
+                                       ArrayList values, String title,
+                                       String prompt, boolean allowSelection) {
+    JList list = new JList(values.toArray());
+    JScrollPane jsp = 
+      new JScrollPane(list,
+                      ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
+                      ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+    jsp.setPreferredSize(new Dimension(400, 100));
+    JPanel infoPanel = new JPanel();
+    infoPanel.setLayout(new GridBagLayout());
+    list.setBackground(infoPanel.getBackground());
+    int x = 0;
+    int y = 0;
+    infoPanel.add(new JLabel(prompt),
+                   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(10, 0, 5, 5),
+                                          0, 0));
+    infoPanel.add(jsp,
+                   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
+                                          GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 5, 0),
+                                          0, 0));
+    if (allowSelection) {
+      int result = JOptionPane.showOptionDialog(parent, infoPanel, 
+                                                title,
+                                                JOptionPane.OK_CANCEL_OPTION,
+                                                JOptionPane.PLAIN_MESSAGE,
+                                                null, null, null);
+      if (result == JOptionPane.OK_OPTION) 
+        return list.getSelectedValues();
+      else
+        return null;
+    } else {
+      Object[] options = { "OK" };
+      JOptionPane.showOptionDialog(parent, infoPanel,
+                                   title,
+                                   JOptionPane.OK_OPTION,
+                                   JOptionPane.PLAIN_MESSAGE, null,
+                                   options, options[0]);
+      return null;
+    }
+  }
+
+
 
 }
 

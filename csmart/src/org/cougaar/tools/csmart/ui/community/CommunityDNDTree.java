@@ -40,10 +40,9 @@ import java.io.ObjectInputStream;
 import java.io.IOException;
 
 /**
- * Provides method definitions for abstract methods in DNDTree.
- * Encapsulates all information specific to the drag-and-drop
- * trees in the Console tool, leaving DNDTree as the generic
- * drag-and-drop tree class.
+ * Provides method definitions for abstract methods in DNDTree
+ * to support Community tree in the Community Panel of
+ * the Experiment Builder.
  */
 
 public class CommunityDNDTree extends DNDTree {
@@ -112,12 +111,6 @@ public class CommunityDNDTree extends DNDTree {
                                            String name, String type,
                                            String communityName) {
     DefaultTreeModel model = (DefaultTreeModel)getModel();
-    DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
-    if (node == null) {
-      root.removeAllChildren();
-      model.nodeStructureChanged(root);
-      node = root;
-    }
     DefaultMutableTreeNode newNode =
       new DefaultMutableTreeNode(new CommunityTreeObject(name, type, communityName),
 				 (type.equals("Root") || 
@@ -246,6 +239,9 @@ public class CommunityDNDTree extends DNDTree {
   /** 
    * Add an element by copying the user object in the source
    * and creating a new tree node for it.
+   * Hosts are not added, only their children.
+   * Nodes (node agents) are added and their children are
+   * added at the same level (i.e. the hierarchy is flattened).
    */
 
   private boolean addElement(DefaultMutableTreeNode source,
@@ -261,45 +257,56 @@ public class CommunityDNDTree extends DNDTree {
     if (before != null)
       ix = model.getIndexOfChild(target, before);
     CommunityTreeObject cto = (CommunityTreeObject)source.getUserObject();
+    // if node is a host, then just add its descendants
+    if (cto.isHost()) {
+      copyChildren(source, target, ix);
+      DefaultMutableTreeNode insertionPointNode =
+        (DefaultMutableTreeNode)target.getChildAt(ix);
+      scrollPathToVisible(new TreePath(insertionPointNode.getPath()));
+      return true;
+    }
     CommunityTreeObject newCTO = cto.copy();
     DefaultMutableTreeNode newNode =
-      new DefaultMutableTreeNode(newCTO, newCTO.allowsChildren());
+      new DefaultMutableTreeNode(newCTO, false);
     if (isDuplicate(newNode, target) || isInCommunity(newNode, target)) {
       return false;
     }
-    model.insertNodeInto(newNode, target, ix);
+    model.insertNodeInto(newNode, target, ix++);
     // copy the source node's descendants, recursively
-    copyChildren(source, newNode);
+    copyChildren(source, target, ix);
     scrollPathToVisible(new TreePath(newNode.getPath()));
     return true;
   }
 
   /**
-   * Add an element by getting the user object out of the source
-   * and creating a new tree node for it; 
-   * recurse for all the node's descendants;
+   * Add an element by getting the user object out of the source node
+   * and creating a new tree node for it,
+   * and adding it as a child of the parent node;
+   * recurse for all the node's descendants, flattening the hierarchy,
+   * i.e. all nodes are added to the parentNode.
    * nodes must be added "top-down" in order for the model listener
    * to correctly add them to the database.
    * Reject duplicates.  Sibling nodes and nodes in the same community
    * must be unique.
    */
-  private void copyChildren(DefaultMutableTreeNode oldNode,
-                            DefaultMutableTreeNode newNode) {
+  private void copyChildren(DefaultMutableTreeNode sourceNode,
+                            DefaultMutableTreeNode parentNode,
+                            int insertionIndex) {
     DefaultTreeModel model = (DefaultTreeModel)getModel();
-    int nChildren = oldNode.getChildCount();
+    int nChildren = sourceNode.getChildCount();
     for (int i=0; i < nChildren; i++) {
       DefaultMutableTreeNode oldChildNode = 
-        (DefaultMutableTreeNode)oldNode.getChildAt(i);
+        (DefaultMutableTreeNode)sourceNode.getChildAt(i);
       CommunityTreeObject cto = 
         (CommunityTreeObject)oldChildNode.getUserObject();
       CommunityTreeObject newCTO = cto.copy();
       DefaultMutableTreeNode newChildNode =
-        new DefaultMutableTreeNode(newCTO, newCTO.allowsChildren());
-      if (isDuplicate(newChildNode, newNode) ||
-          isInCommunity(newChildNode, newNode))
+        new DefaultMutableTreeNode(newCTO, false);
+      if (isDuplicate(newChildNode, parentNode) ||
+          isInCommunity(newChildNode, parentNode))
         continue;
-      model.insertNodeInto(newChildNode, newNode, newNode.getChildCount());
-      copyChildren(oldChildNode, newChildNode);
+      model.insertNodeInto(newChildNode, parentNode, insertionIndex++);
+      copyChildren(oldChildNode, parentNode, insertionIndex);
     }
   }
 

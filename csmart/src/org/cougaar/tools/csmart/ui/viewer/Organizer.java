@@ -74,6 +74,7 @@ import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.db.SocietyDBComponent;
 import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.tools.csmart.society.ui.SocietyUIComponent;
+import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 /**
@@ -1122,36 +1123,26 @@ public class Organizer extends JScrollPane {
                                     JOptionPane.INFORMATION_MESSAGE);
       return;
     }
-    JComboBox cb = new JComboBox(dbRecipeNames.toArray());
-    cb.setEditable(false);
-    JPanel panel = new JPanel();
-    panel.add(new JLabel("Select Recipe:"));
-    panel.add(cb);
-    int result = 
-      JOptionPane.showConfirmDialog(null, panel, "Recipe",
-                                    JOptionPane.OK_CANCEL_OPTION,
-                                    JOptionPane.PLAIN_MESSAGE);
-    if (result != JOptionPane.OK_OPTION)
+    Object[] selectedRecipes = 
+      Util.getObjectsFromList(this, new ArrayList(dbRecipeNames),
+                              "Recipes", "Select Recipes");
+    if (selectedRecipes == null)
       return;
-    String recipeName = (String)cb.getSelectedItem();
-    String recipeId = (String) recipeNamesHT.get(recipeName);
-    if (recipeNames.contains(recipeName))
-      recipeName = recipeNames.getUniqueName(recipeName, false);
-    else
-      recipeName = recipeNames.getUniqueName(recipeName, true);
-    //    recipeName = recipeNames.getUniqueName(recipeName, false);
-    if (recipeName == null)
-      return;
-    // get name from user
-    // produce an unique name for CSMART if necessary
-//      if (recipeNames.contains(recipeName)) {
-//        recipeName = generateRecipeName(recipeName, false);
-//        if (recipeName == null)
-//          return;
-//      }
-    RecipeComponent rc = helper.getDatabaseRecipe(recipeId, recipeName);
-    if (rc != null)
-      addRecipeToWorkspace(rc, getSelectedNode());
+    // where to put the new recipes
+    DefaultMutableTreeNode parentNode = getSelectedNode();
+    if (parentNode == null)
+      parentNode = root;
+    for (int i = 0; i < selectedRecipes.length; i++) {
+      String recipeName = (String)selectedRecipes[i];
+      String recipeId = (String) recipeNamesHT.get(recipeName);
+      if (recipeNames.contains(recipeName))
+        recipeName = recipeNames.getUniqueName(recipeName, false);
+      if (recipeName == null)
+        return;
+      RecipeComponent rc = helper.getDatabaseRecipe(recipeId, recipeName);
+      if (rc != null)
+        addRecipeToWorkspace(rc, parentNode);
+    }
   }
 
   ////////////////////////////////////

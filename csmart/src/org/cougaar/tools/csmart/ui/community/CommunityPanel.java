@@ -675,8 +675,10 @@ public class CommunityPanel extends JPanel {
     communityTableUtils.getAllCommunityInfo(communityName);
     communityTree.getModel().removeTreeModelListener(treeModelListener);
 
-    // Note that this clears out any communities currently being displayed!
-    addToTree(communityTree.addNode(null, communityName, "Community", null),
+    removeAllChildren(communityTree);
+    DefaultMutableTreeNode root =
+      (DefaultMutableTreeNode)communityTree.getModel().getRoot();
+    addToTree(communityTree.addNode(root, communityName, "Community", null),
               communityName);
     communityTree.getModel().addTreeModelListener(treeModelListener);
   }
@@ -686,6 +688,9 @@ public class CommunityPanel extends JPanel {
     if (communityNames == null || communityNames.size() == 0)
       return;
     communityTree.getModel().removeTreeModelListener(treeModelListener);
+    removeAllChildren(communityTree);
+    DefaultMutableTreeNode root =
+      (DefaultMutableTreeNode)communityTree.getModel().getRoot();
     for (Iterator iter = communityNames.iterator(); iter.hasNext(); ) {
       String communityName = (String)iter.next();
       communityName = communityName.trim();
@@ -694,7 +699,9 @@ public class CommunityPanel extends JPanel {
 // 	  log.debug("putAllComms adding " + communityName);
 // 	}
 	// This first argument must point to the tree root
-	addToTree(communityTree.addNode((DefaultMutableTreeNode)communityTree.getModel().getRoot(), communityName, "Community", null),
+        // so that the new nodes are added to the root
+	addToTree(communityTree.addNode(root, communityName, 
+                                        "Community", null),
 		  communityName);
       }
     }

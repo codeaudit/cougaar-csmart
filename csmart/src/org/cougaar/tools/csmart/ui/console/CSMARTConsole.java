@@ -65,6 +65,7 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.GUIUtils;
 import org.cougaar.tools.csmart.ui.util.ClientServletUtil;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
+import org.cougaar.tools.csmart.ui.util.Util;
 import org.cougaar.tools.csmart.util.ResultsFileFilter;
 
 /**
@@ -115,6 +116,7 @@ public class CSMARTConsole extends JFrame {
   private Legend legend; // the node status lamp legend
   private CSMARTConsole console;
   private GLSClient glsClient = null;
+  private AppServerList appServers; // array of AppServerDescription
   private transient Logger log;
 
   // gui controls
@@ -148,6 +150,11 @@ public class CSMARTConsole extends JFrame {
   private static final String FIND_HOST_MENU_ITEM = "Find Host...";
   private static final String FIND_NODE_MENU_ITEM = "Find Node...";
   private static final String FIND_AGENT_MENU_ITEM = "Find Agent...";
+  private static final String APP_SERVER_MENU = "Application Server";
+  private static final String VIEW_APP_SERVER_ITEM = "View";
+  private static final String ADD_APP_SERVER_ITEM = "Add...";
+  private static final String DELETE_APP_SERVER_ITEM = "Delete...";
+  private static final String REFRESH_APP_SERVER_ITEM = "Refresh";
   private static final String HELP_MENU = "Help";
   private static final String ABOUT_CONSOLE_ITEM = "About Experiment Controller";
   private static final String ABOUT_CSMART_ITEM = "About CSMART";
@@ -177,6 +184,7 @@ public class CSMARTConsole extends JFrame {
   public CSMARTConsole(CSMART csmart, Experiment experiment) {
     this.csmart = csmart;
     this.experiment = experiment;
+    createLogger();
     console = this;
     currentTrial = -1;
     remoteHostRegistry = RemoteHostRegistry.getInstance();
@@ -185,7 +193,9 @@ public class CSMARTConsole extends JFrame {
     nodeListeners = new Hashtable();
     nodePanes = new Hashtable();
     nodeToNodeInfo = new Hashtable();
-    createLogger();
+    appServers = new AppServerList();
+    if (experiment != null)
+      getAppServersFromExperiment();
     initGui();
   }
 
@@ -303,6 +313,41 @@ public class CSMARTConsole extends JFrame {
     });
     notifyMenu.add(resetNotifyMenuItem);
 
+    JMenu appServerMenu = new JMenu(APP_SERVER_MENU);
+    appServerMenu.setToolTipText("Display, add, and delete list of Application Servers.");
+    JMenuItem displayMenuItem = new JMenuItem(VIEW_APP_SERVER_ITEM);
+    displayMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          displayAppServers();
+        }
+      });
+    displayMenuItem.setToolTipText("Display list of Application Servers.");
+    appServerMenu.add(displayMenuItem);
+    JMenuItem addMenuItem = new JMenuItem(ADD_APP_SERVER_ITEM);
+    addMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          addAppServer();
+        }
+      });
+    addMenuItem.setToolTipText("Add an Application Server.");
+    appServerMenu.add(addMenuItem);
+    JMenuItem deleteMenuItem = new JMenuItem(DELETE_APP_SERVER_ITEM);
+    deleteMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          deleteAppServers();
+        }
+      });
+    deleteMenuItem.setToolTipText("Ignore Application Servers.");
+    appServerMenu.add(deleteMenuItem);
+    JMenuItem refreshMenuItem = new JMenuItem(REFRESH_APP_SERVER_ITEM);
+    refreshMenuItem.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent e) {
+          refreshAppServers();
+        }
+      });
+    refreshMenuItem.setToolTipText("Refresh list of Application Servers");
+    appServerMenu.add(refreshMenuItem);
+
     JMenu helpMenu = new JMenu(HELP_MENU);
     JMenuItem helpMenuItem = new JMenuItem(ABOUT_CONSOLE_ITEM);
     helpMenuItem.addActionListener(new ActionListener() {
@@ -336,6 +381,7 @@ public class CSMARTConsole extends JFrame {
     menuBar.add(viewMenu);
     menuBar.add(findMenu);
     menuBar.add(notifyMenu);
+    menuBar.add(appServerMenu);
     menuBar.add(helpMenu);
     getRootPane().setJMenuBar(menuBar);
 
@@ -2073,24 +2119,61 @@ public class CSMARTConsole extends JFrame {
   }
 
   /**
-   * Ask user for host name and port for AppServer and return AppServer.
+   * Called from menu to display known app servers.
    */
-  private RemoteHost getAppServerFromUser() {
+  private void displayAppServers() {
+    Util.showObjectsInList(this, appServers, "Application Servers", 
+                           "Application Servers");
+  }
+
+  /**
+   * Called from menu to recontact known app servers;
+   * app servers that don't respond are automatically removed from the list.
+   */
+  private void refreshAppServers() {
+    for (int i = 0; i < appServers.size(); i++) {
+      AppServerDescription asd = (AppServerDescription)appServers.get(i);
+      RemoteHost rh = getAppServer(asd.hostName, asd.remotePort);
+      if (rh == null) {
+        appServers.remove(asd);
+        i--;
+      }
+    }
+  }
+
+  /**
+   * Called from menu to delete app servers from the list of known servers.
+   */
+  private void deleteAppServers() {
+    Object[] appServersToDelete =
+      Util.getObjectsFromList(this, appServers, "Application Servers",
+                              "Select Application Servers To Ignore:");
+    if (appServersToDelete == null) return;
+    for (int i = 0; i < appServersToDelete.length; i++)
+      appServers.remove(appServersToDelete[i]);
+  }
+
+  /**
+   * Called from menu to query user for a hostname and port
+   * for a new app server.
+   * If create AppServer successfully, then add it to the list of appServers.
+   */
+  private void addAppServer() {
     JTextField tf = new JTextField("", 20);
     JPanel panel = new JPanel();
-    panel.add(new JLabel("AppServer HostName:Port:"));
+    panel.add(new JLabel("Enter HostName:Port:"));
     panel.add(tf);
     int result = 
-      JOptionPane.showOptionDialog(null, panel, "AppServer Host:Port",
+      JOptionPane.showOptionDialog(null, panel, "Add Application Server",
 				   JOptionPane.OK_CANCEL_OPTION,
 				   JOptionPane.PLAIN_MESSAGE,
 				   null, null, null);
     if (result != JOptionPane.OK_OPTION)
-      return null;
+      return;
     String s = tf.getText();
     int index = s.indexOf(':');
     if (index == -1)
-      return null;
+      return;
     String hostName = s.substring(0, index);
     hostName = hostName.trim();
     String port = s.substring(index+1);
@@ -2099,13 +2182,14 @@ public class CSMARTConsole extends JFrame {
     try {
       remotePort = Integer.parseInt(port);
     } catch (Exception e) {
-      return null;
+      return;
     }
-    return getAppServer(hostName, remotePort);
+    RemoteHost appServer = getAppServer(hostName, remotePort);
+    if (appServer != null)
+      appServers.add(new AppServerDescription(appServer, hostName, remotePort));
   }
 
-  private ArrayList getAppServersFromExperiment() {
-    ArrayList appServers = new ArrayList();
+  private void getAppServersFromExperiment() {
     HostComponent[] hosts = experiment.getHostComponents();
     for (int i = 0; i < hosts.length; i++) {
       String hostName = hosts[i].getShortName();
@@ -2116,37 +2200,20 @@ public class CSMARTConsole extends JFrame {
         int remotePort = getAppServerPort(properties);
         RemoteHost appServer = getAppServer(hostName, remotePort);
         if (appServer != null)
-          appServers.add(appServer);
+          appServers.add(new AppServerDescription(appServer, 
+                                                  hostName, remotePort));
       }
     }
-    return appServers;
-  }
-
-  /**
-   * Get all AppServers (RemoteHost objects) from experiment (if non-null)
-   * or ask user for name and port of app server.
-   */
-  private ArrayList getAppServers() {
-    ArrayList appServers = null;
-    if (experiment != null)
-      appServers = getAppServersFromExperiment();
-    if (appServers == null || appServers.size() == 0) {
-      RemoteHost appServer = getAppServerFromUser();
-      if (appServer != null) {
-        appServers = new ArrayList();
-        appServers.add(appServer);
-      }
-    }
-    return appServers;
   }
 
   /**
    * Return map of ProcessDescription to RemoteHost (appserver).
    */
-  private Hashtable getProcessDescriptions(ArrayList appServers) {
+  private Hashtable getProcessDescriptions() {
     Hashtable nodeToAppServer = new Hashtable();
     for (int i = 0; i < appServers.size(); i++) {
-      RemoteHost appServer = (RemoteHost)appServers.get(i);
+      AppServerDescription desc = (AppServerDescription)appServers.get(i);
+      RemoteHost appServer = desc.appServer;
       java.util.List someNodes = null;
       try {
         someNodes = appServer.listProcessDescriptions();
@@ -2166,39 +2233,11 @@ public class CSMARTConsole extends JFrame {
    * Display all process descriptions from app servers and return the process
    * descriptions that the user selects.
    */
-  private ProcessDescription[] getNodesToAttach(ProcessDescription[] nodes) {
-    JList nodeList = new JList(nodes);
-    JScrollPane jsp = 
-      new JScrollPane(nodeList,
-                      ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
-                      ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-    jsp.setPreferredSize(new Dimension(400, 100));
-    JPanel infoPanel = new JPanel();
-    infoPanel.setLayout(new GridBagLayout());
-    nodeList.setBackground(infoPanel.getBackground());
-    int x = 0;
-    int y = 0;
-    infoPanel.add(new JLabel("Select Nodes:"),
-                   new GridBagConstraints(x++, y, 1, 1, 0.0, 0.0,
-                                          GridBagConstraints.WEST,
-                                          GridBagConstraints.NONE,
-                                          new Insets(10, 0, 5, 5),
-                                          0, 0));
-    infoPanel.add(jsp,
-                   new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
-                                          GridBagConstraints.WEST,
-                                          GridBagConstraints.NONE,
-                                          new Insets(0, 0, 5, 0),
-                                          0, 0));
-    int result = JOptionPane.showConfirmDialog(this, infoPanel, 
-                                               "Attach to Nodes",
-                                               JOptionPane.OK_CANCEL_OPTION);
-//      if (result == JOptionPane.OK_OPTION) 
-//        return (ProcessDescription[])nodeList.getSelectedValues();
-//      else
-//        return null;
-    if (result == JOptionPane.OK_OPTION) {
-      Object[] selected = nodeList.getSelectedValues();
+
+  private ProcessDescription[] getNodesToAttach(ArrayList nodes) {
+    Object[] selected = 
+      Util.getObjectsFromList(this, nodes, "Attach to Nodes", "Select Nodes:");
+    if (selected != null) {
       ArrayList sel = new ArrayList(selected.length);
       for (int i = 0; i < selected.length; i++)
         sel.add(selected[i]);
@@ -2215,13 +2254,13 @@ public class CSMARTConsole extends JFrame {
    */
   private void attachButton_actionPerformed() {
     attachButton.setSelected(false);
-    ArrayList appServers = getAppServers();
-    if (appServers == null || appServers.size() == 0)
+    if (appServers.size() == 0)
       return;
-    Hashtable nodeToAppServer = getProcessDescriptions(appServers);
+    Hashtable nodeToAppServer = getProcessDescriptions();
     Set pds = nodeToAppServer.keySet();
-    ProcessDescription[] attachToNodes = 
-      getNodesToAttach((ProcessDescription[])pds.toArray(new ProcessDescription[pds.size()]));
+    if (pds.size() == 0)
+      return;
+    ProcessDescription[] attachToNodes = getNodesToAttach(new ArrayList(pds));
     //    printInfoFromAppServer(attachToNodes);
     nodeToNodeInfo.clear(); // clear all previous info on nodes
     for (int i = 0; i < attachToNodes.length; i++) {
@@ -2253,13 +2292,6 @@ public class CSMARTConsole extends JFrame {
     experiment = null; // pretend we don't know about any experiment
     runButton_actionPerformed();
   }
-
-  // TODO: add menu items to list and define Application Servers
-  // list Application Servers lists all servers entered by the user or 
-  // found in the experiment
-  // add Application Server queries the user for a host name and port
-  // and tries to find an appserver there
-  // delete Application Server allows the user to delete one
 
   /**
    * Used by ConsoleInternalFrame to get values from experiment
@@ -2506,6 +2538,47 @@ public class CSMARTConsole extends JFrame {
       this.hostName = hostName;
       this.properties = properties;
       this.args = args;
+    }
+  }
+
+  /**
+   * This contains the information about an application server,
+   * needed to "display app servers" for the user.
+   */
+
+  class AppServerDescription {
+    RemoteHost appServer;
+    String hostName;
+    int remotePort;
+
+    public AppServerDescription(RemoteHost appServer, String hostName,
+                                int remotePort) {
+      this.appServer = appServer;
+      this.hostName = hostName;
+      this.remotePort = remotePort;
+    }
+
+    public String toString() {
+      return hostName + ":" + remotePort;
+    }
+  }
+
+  /**
+   * This ignores app servers found on the same host and port
+   * as an existing app server.
+   * TODO: need to worry about app server(s) that are restarted?
+   */
+  class AppServerList extends ArrayList {
+    public void add(AppServerDescription desc) {
+      if (desc == null) return;
+      for (int i = 0; i < size(); i++) {
+        AppServerDescription asd = (AppServerDescription)get(i);
+        if (desc.hostName.equals(asd.hostName) &&
+            desc.remotePort == asd.remotePort) {
+          return;
+        }
+      }
+      super.add(desc);
     }
   }
   
