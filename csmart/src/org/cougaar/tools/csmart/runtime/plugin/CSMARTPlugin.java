@@ -106,8 +106,7 @@ public abstract class CSMARTPlugin
        ((RootFactory)domainService.getFactory()) : null);
     
     // Give each Plugin a UID to uniquely identify it
-    //    this.id = theLDMF.getUIDServer().nextUID();
-    // FIXME!!!!!
+    this.id = theLDMF.getNextUID();
 
   } // end of load()
 
