@@ -18,10 +18,7 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-
 package org.cougaar.tools.csmart.experiment;
-
-
 
 import java.io.File;
 import java.io.IOException;
@@ -34,8 +31,12 @@ import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.util.*;
 import javax.swing.JOptionPane;
+
 import org.cougaar.core.agent.ClusterImpl;
 import org.cougaar.core.node.Node;
+import org.cougaar.util.Parameters;
+import org.cougaar.util.log.Logger;
+
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
@@ -62,8 +63,6 @@ import org.cougaar.tools.csmart.society.file.SocietyFileComponent;
 import org.cougaar.tools.csmart.society.ui.SocietyUIComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
-import org.cougaar.util.Parameters;
-import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.experiment.ExperimentHost;
 
 /**
@@ -224,13 +223,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
 
-
-
   ////////////////////////////////////////////
   // Society Component Operations.
   ////////////////////////////////////////////
-
-
 
   // Public Methods
 
@@ -310,8 +305,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   // Recipe Component Operations.
   ////////////////////////////////////////////
 
-
-
   /**
    * Adds an array of <code>RecipeComponent</code>s to this
    * experiment.
@@ -384,12 +377,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     return (RecipeComponent[])recipes.toArray(new RecipeComponent[recipes.size()]);
   }
 
-
-
   ////////////////////////////////////////////
   // Generic Component Operations.
   ////////////////////////////////////////////
-
 
   // Public Methods
 
@@ -417,7 +407,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       throw new IllegalArgumentException("Unsupported Component Type" + this);
     }
   }
-
 
   /**
    * Removes the given component from the Experiment.
@@ -447,7 +436,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     return getSocietyComponentCount() + recipes.size();
   }
 
-
   /**
    * @return a <code>ModifiableConfigurableComponent[]</code> array of 
    * all the components in the experiment
@@ -458,7 +446,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       (ModifiableComponent[])comps.toArray(new ModifiableComponent[comps.size()]);
     return compArray;
   }
-
 
   // Private Methods
 
@@ -473,15 +460,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     return comps;
   }
 
-
-
-
-
   ////////////////////////////////////////////
   // Component Runnable Operations.
   ////////////////////////////////////////////
-
-
 
   /**
    * Set run in progress.  Used by UI tools to indicate that an
@@ -517,12 +498,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
 
-
   ////////////////////////////////////////////
   // Component Editable Operations.
   ////////////////////////////////////////////
-
-
 
   /**
    * Set edit in progress.  Used by UI tools to indicate that an
@@ -572,15 +550,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
 
-
-
-
   ////////////////////////////////////////////
   //  Trial Operations.
   ////////////////////////////////////////////
-
-
-
 
   /**
    * Sets the current Trial ID.
@@ -609,7 +581,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * trials only as needed.
    * @return boolean indicating whether or not the trials are valid
    */
-
   public boolean hasValidTrials() {
     return hasValidTrials;
   }
@@ -619,11 +590,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * be called when some aspect of the experiment or its components
    * changes so as to invalidate trials.
    */
-
   public void invalidateTrials() {
     hasValidTrials = false;
   }
-
 
   /**
    * Return the trials defined for this experiment.  Computes trials
@@ -697,7 +666,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     }
   }
 
-
   public void addTrial(Trial trial) {
     trials.add(trial);
     numberOfTrials++;
@@ -766,7 +734,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     return numberOfTrials;
   }
 
-
   // Private Methods
 
   private Trial[] getMultivariateTrials(List properties, 
@@ -827,14 +794,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
 
-
-
   ////////////////////////////////////////////
   // Basic Operations.
   ////////////////////////////////////////////
-
-
-
 
   /**
    * Stop after the current trial.
@@ -879,8 +841,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       return null;
     }
   }
-
-
 
   public File getResultDirectory() {
     return resultDirectory;
@@ -942,6 +902,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       copiedSocietyComponent = society.copy("Society for " + uniqueName);
       if (copiedSocietyComponent != null) {
         // FIXME: Must save the copied society to the DB!
+	//FIXME !!
         experimentCopy.addComponent(copiedSocietyComponent);
       }
     }
@@ -952,7 +913,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       ModifiableComponent copiedComponent = null;
       copiedComponent = mc.copy("Recipe for " + uniqueName);
       if (copiedComponent != null) {
-	// FIXME: Must'nt we save the copied recipes to the DB!
         experimentCopy.addComponent(copiedComponent);
       }
     }
@@ -1024,7 +984,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * constructs the society component data here.
    * @return ComponentData the component data for the society
    */
-
   public ComponentData getSocietyComponentData() {
     saveToDb(); // if modified, update component data and save to database
     return completeSociety;
@@ -1039,7 +998,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * Checks for modification event being EXPERIMENT_SAVED
    * in which case, it does not mark the experiment modified.
    */
-
   ModificationListener myModificationListener = 
     new ModificationListener() {
         public void modified(ModificationEvent e) {
@@ -1146,14 +1104,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
 
-
-
-
-
   ////////////////////////////////////////////
   // Host Component Operations.
   ////////////////////////////////////////////
-
 
   // Public Methods
 
@@ -1176,7 +1129,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public HostComponent[] getHostComponents() {
     return (HostComponent[]) hosts.toArray(new HostComponent[hosts.size()]);
   }
-
 
   /**
    * Removes the given host from the experiment.
@@ -1290,13 +1242,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     return host;
   }
 
-
   ////////////////////////////////////////////
   // Node Component Operations.
   ////////////////////////////////////////////
 
   // Public 
-
 
   /**
    * Adds a new node to this experiment.  If the node
@@ -1420,11 +1370,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
   
 
-
   ////////////////////////////////////////////
   // Agent Component Operations.
   ////////////////////////////////////////////
-
 
   // Public
 
@@ -1722,7 +1670,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   // Configuration Writer Specific Operations
   ////////////////////////////////////////////
 
-
   /** 
    * Dump out the INI files for the first trial to
    * the local results directory for that trial.
@@ -1804,37 +1751,27 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     configWriter.writeFile(filename, out);
   }
 
-
   // Private Methods
 
   /**
    * An Experiment now has a configuration writer that
    * lets all the components write themselves out
    */
-
   private void createConfigWriter() {
     if(configWriter == null) {
       configWriter = new LeafOnlyConfigWriter(getSocietyComponentData());
     }
   }
 
-
-
-
-
   ////////////////////////////////////////////
   // Variation Specific Operations
   ////////////////////////////////////////////
-
-
-
 
   /**
    * Get possible experiment variation schemes, i.e. 
    * univariate, bivariate, multivariate, random.
    * @return the variation schemes which can being used in this experiment
    */
-
   public static String[] getVariationSchemes() {
     return variationSchemes;
   }
@@ -1844,7 +1781,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * univariate, bivariate, multivariate, or random.
    * @return the variation scheme being used in this experiment
    */
-
   public String getVariationScheme() {
     return variationScheme;
   }
@@ -1854,14 +1790,12 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
    * univariate, bivariate, multivariate, or random.
    * @param the variation scheme to use in this experiment
    */
-
   public void setVariationScheme(String variationScheme) {
     if (this.variationScheme != null &&
 	!(this.variationScheme.equals(variationScheme)))
       hasValidTrials = false; // new variation scheme, invalidates trials
     this.variationScheme = variationScheme;
   }
-
 
   /**
    * If the experiment has still unbound properties,
@@ -1907,17 +1841,9 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   }
 
 
-
-
-
-
   ////////////////////////////////////////////
   // Configuratoin Specific Operations
   ////////////////////////////////////////////
-
-
-
-
 
   /**
    * If the experiment has at least one host with at least one node
