@@ -875,6 +875,10 @@ public class CSMARTConsole extends JFrame {
    * unset the property values used, and update the gui.
    */
   private void trialFinished() {
+    Collection c = nodeListeners.values();
+    for (Iterator i = c.iterator(); i.hasNext(); )
+      ((ConsoleNodeListener)i.next()).closeLogFile();
+    nodeListeners.clear();
     trialTimer.stop();
     saveResults();
     updateExperimentControls(experiment, false);
@@ -960,7 +964,7 @@ public class CSMARTConsole extends JFrame {
 
     // create node event filter with no buffering
     // so that idle display is "smooth"
-    NodeEventFilter filter = new NodeEventFilter(100);
+    NodeEventFilter filter = new NodeEventFilter(10);
     Properties properties = new Properties();
     properties.put("org.cougaar.node.name", uniqueNodeName);
     String nameServerPorts = "8888:5555";

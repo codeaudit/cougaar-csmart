@@ -373,12 +373,38 @@ public class ConsoleNodeListener implements NodeEventListener {
     } 
   }
 
+  /**
+   * Specify a string that this listener watches for; if the string
+   * is detected in the standard output stream, then the node status
+   * button color is set to blue and remains set until the user resets
+   * it via the reset menu item on the status button pop-up menu.
+   * @param s string to watch for in standard output
+   */
+
   public void setNotifyCondition(String s) {
     notifyCondition = s.toLowerCase();
   }
 
+  /**
+   * Clear an error; if the node status button was set because of a notify
+   * condition or output on the standard error channel, then resume updating
+   * the status button using messages from the node.
+   */
+
   public void clearError() {
     haveError = false;
+  }
+
+  /**
+   * Flush and close the log file.
+   */
+
+  public void closeLogFile() {
+    try {
+      logFile.close();
+    } catch (Exception e) {
+      System.out.println("Exception closing log file: " + e);
+    }
   }
 }
 

@@ -26,9 +26,9 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
 public class ConsoleStyledDocument extends DefaultStyledDocument {
-  static int MAX_CHARACTERS = 1000;
-  static int MIN_REMOVE_CHARACTERS = 200;
   // DefaultStyledDocument buffer size is 4096
+  static int MAX_CHARACTERS = DefaultStyledDocument.BUFFER_SIZE_DEFAULT;
+  static int MIN_REMOVE_CHARACTERS = 800;
 
   public void appendString(String s, AttributeSet a) {
     try {
