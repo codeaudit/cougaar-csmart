@@ -22,15 +22,13 @@ package org.cougaar.tools.csmart.recipe;
 
 import java.io.Serializable;
 
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 
 public class ABCKineticImpact
-  extends ModifiableConfigurableComponent
-  implements PropertiesListener, Serializable {
+  extends RecipeBase
+  implements Serializable {
 
 
   private static final String DESCRIPTION_RESOURCE_NAME = "kinetic-impact-description.html";
@@ -142,23 +140,4 @@ public class ABCKineticImpact
 
     return sb;
   }
-
-  /**
-   * Called when a new property has been added to the
-   * society. 
-   *
-   * @param PropertyEvent Event for the new property
-   */
-  public void propertyAdded(PropertyEvent e) {
-    Property addedProperty = e.getProperty();
-    Property myProperty = getProperty(addedProperty.getName().last().toString());
-    if (myProperty != null) {
-      setPropertyVisible(addedProperty, true);
-    }
-  }
-  /**
-   * Called when a property has been removed from the society
-   */
-  public void propertyRemoved(PropertyEvent e) {}
-
 }

@@ -30,16 +30,11 @@ import java.util.ArrayList;
 
 import org.cougaar.util.DBProperties;
 
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
-
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
-
 import org.cougaar.tools.csmart.core.db.PopulateDb;
-
 import org.cougaar.tools.csmart.society.AgentComponent;
 
 /**
@@ -81,8 +76,8 @@ import org.cougaar.tools.csmart.society.AgentComponent;
  * "="). The same substitutions are available, except they refer to
  * the component being inserted.
  **/
-public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
-    implements RecipeComponent, PropertiesListener, Serializable
+public class ComponentInsertionRecipe extends RecipeBase
+    implements Serializable
 {
   private static final String DESCRIPTION_RESOURCE_NAME = "component-insertion-recipe-description.html";
   private static final String BACKUP_DESCRIPTION =
@@ -91,24 +86,28 @@ public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
   /** Target Component Property Definitions **/
   public static final String PROP_TARGET_COMPONENT_QUERY = "Target Component Selection Query";
   public static final String PROP_TARGET_COMPONENT_QUERY_DFLT = "recipeQuerySelectNothing";
-  public static final String PROP_TARGET_COMPONENT_QUERY_DESC = "The query name for selecting components to modify";
+  public static final String PROP_TARGET_COMPONENT_QUERY_DESC 
+    = "The query name for selecting components to modify";
 
   /** Insertion Component Property Definitions **/
-  public static final String PROP_INSERTION_COMPONENT_QUERY = "Insertion Component Specification Query";
+  public static final String PROP_INSERTION_COMPONENT_QUERY 
+    = "Insertion Component Specification Query";
   public static final String PROP_INSERTION_COMPONENT_QUERY_DFLT = "recipeQuerySelectNothing";
-  public static final String PROP_INSERTION_COMPONENT_QUERY_DESC = "The query name for specifying components to insert";
+  public static final String PROP_INSERTION_COMPONENT_QUERY_DESC 
+    = "The query name for specifying components to insert";
 
   /** Insertion Component Property Arg Definitions **/
-  public static final String PROP_INSERTION_COMPONENT_ARG_QUERY = "Insertion Component Arg Specification Query";
-  public static final String PROP_INSERTION_COMPONENT_ARG_QUERY_DFLT = "recipeQuerySelectNothing";
-  public static final String PROP_INSERTION_COMPONENT_ARG_QUERY_DESC = "The query name for specifying args of components to insert";
+  public static final String PROP_INSERTION_COMPONENT_ARG_QUERY 
+    = "Insertion Component Arg Specification Query";
+  public static final String PROP_INSERTION_COMPONENT_ARG_QUERY_DFLT 
+    = "recipeQuerySelectNothing";
+  public static final String PROP_INSERTION_COMPONENT_ARG_QUERY_DESC 
+    = "The query name for specifying args of components to insert";
 
   // Props for metrics
   private Property propTargetComponentQuery;
   private Property propInsertionComponentQuery;
   private Property propInsertionComponentArgQuery;
-
-  private boolean editable = true;
 
   public ComponentInsertionRecipe() {
     super("Component Insertion Recipe");
@@ -135,34 +134,10 @@ public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
     propInsertionComponentQuery.setToolTip(PROP_INSERTION_COMPONENT_ARG_QUERY_DESC);
   }
 
-  public String getRecipeName() {
-    return getShortName();
-  }
-
   private Property addRecipeQueryProperty(String name, String dflt) {
     Property prop = addProperty(new RecipeQueryProperty(this, name, dflt));
     prop.setPropertyClass(String.class);
     return prop;
-  }
-
-  private void adjustParameterCount() {
-  }
-
-  /**
-   * Get the agents, both assigned and unassigned.
-   * Only return new agents.
-   * @return array of agent components
-   */
-  public AgentComponent[] getAgents() {
-    // This recipe adds no new agents
-    return null;
-  }
-
-  /**
-   * Add all components as "modifications"
-   **/
-  public ComponentData addComponentData(ComponentData data) {
-    return data;
   }
 
   /**
@@ -223,52 +198,5 @@ public class ComponentInsertionRecipe extends ModifiableConfigurableComponent
 	modifyComponentData(children[i], pdb, targets);
       }
     }
-  }
-
-  ///////////////////////////////////////////
-  // Boilerplate stuff added below... Necessary?
-  
-  // Implement PropertyListener
-  /**
-   * Called when a new property has been added to the
-   * society. 
-   *
-   * @param PropertyEvent Event for the new property
-   */
-  public void propertyAdded(PropertyEvent e) {
-    Property addedProperty = e.getProperty();
-    Property myProperty = getProperty(addedProperty.getName().last().toString());
-    if (myProperty != null) {
-      setPropertyVisible(addedProperty, true);
-    }
-  }
-
-  /**
-   * Called when a property has been removed from the society
-   */
-  public void propertyRemoved(PropertyEvent e) {
-    // FIXME - do something?
-  }
-  // end of PropertyListener implementation
-
-  public URL getDescription() {
-    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
-  }
-
-  /**
-   * Returns whether or not the component can be edited.
-   * @return true if component can be edited and false otherwise
-   */
-  public boolean isEditable() {
-    //    return !isRunning;
-    return editable;
-  }
-
-  /**
-   * Set whether or not the component can be edited.
-   * @param editable true if component is editable and false otherwise
-   */
-  public void setEditable(boolean editable) {
-    this.editable = editable;
   }
 }

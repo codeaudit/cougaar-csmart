@@ -41,51 +41,45 @@ import org.cougaar.util.DBProperties;
  * value.
  **/
 public class RecipeQueryProperty extends ConfigurableComponentProperty {
-    public RecipeQueryProperty(ConfigurableComponent c, String name, Object value) {
-        super(c, name, value);
-    }
+  public RecipeQueryProperty(ConfigurableComponent c, String name, Object value) {
+    super(c, name, value);
+  }
 
-    public Set getAllowedValues() {
-        return getAvailableQueries();
-    }
+  public Set getAllowedValues() {
+    return getAvailableQueries();
+  }
 
-//      public void setValue(Object newValue) {
-//          if (!getAllowedValues().contains(newValue))
-//              throw new IllegalArgumentException("Unknown query: " + newValue);
-//          super.setValue(newValue);
-//      }
+  private static Set availableQueries = null;
 
-    private static Set availableQueries = null;
-
-    private static Set getAvailableQueries() {
-        if (availableQueries == null) {
-            try {
-                availableQueries = new HashSet();
-		// Get the base queries
-                for (Iterator i = DBProperties.readQueryFile(PDbBase.QUERY_FILE).keySet().iterator();
-                     i.hasNext(); ) {
-                    String s = i.next().toString();
-                    if (s.startsWith("recipeQuery"))
-                        availableQueries.add(new StringRange(s));
-                }
-
-		// Get the user defined queries from recipeQueries.q
-		try {
-		  for (Iterator i = DBProperties.readQueryFile(RecipeComponent.RECIPE_QUERY_FILE).keySet().iterator();
-		       i.hasNext(); ) {
-                    String s = i.next().toString();
-                    if (s.startsWith("recipeQuery"))
-		      availableQueries.add(new StringRange(s));
-		  }
-		} catch (FileNotFoundException e) {
-		  // this is normal if a user has no separate recipe query file.
-		}
-                
-            } catch (IOException ioe) {
-                ioe.printStackTrace();
-                availableQueries = Collections.EMPTY_SET;
-            }
+  private static Set getAvailableQueries() {
+    if (availableQueries == null) {
+      try {
+        availableQueries = new HashSet();
+        // Get the base queries
+        for (Iterator i = DBProperties.readQueryFile(PDbBase.QUERY_FILE).keySet().iterator();
+             i.hasNext(); ) {
+          String s = i.next().toString();
+          if (s.startsWith("recipeQuery"))
+            availableQueries.add(new StringRange(s));
         }
-        return availableQueries;
+
+        // Get the user defined queries from recipeQueries.q
+        try {
+          for (Iterator i = DBProperties.readQueryFile(RecipeComponent.RECIPE_QUERY_FILE).keySet().iterator();
+               i.hasNext(); ) {
+            String s = i.next().toString();
+            if (s.startsWith("recipeQuery"))
+              availableQueries.add(new StringRange(s));
+          }
+        } catch (FileNotFoundException e) {
+          // this is normal if a user has no separate recipe query file.
+        }
+                
+      } catch (IOException ioe) {
+        ioe.printStackTrace();
+        availableQueries = Collections.EMPTY_SET;
+      }
     }
+    return availableQueries;
+  }
 }

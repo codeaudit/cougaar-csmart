@@ -9,9 +9,7 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import java.io.File;
 import java.io.FileFilter;
-import java.net.URL;
 
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 

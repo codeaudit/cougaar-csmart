@@ -48,7 +48,6 @@ public class AgentQueryProperty extends ConfigurableComponentProperty {
     }
 
     public Set getAllowedValues() {
-      //      return getAvailableQueries();
       return null;
     }
 

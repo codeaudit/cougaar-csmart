@@ -25,8 +25,6 @@ import java.sql.SQLException;
 import java.net.URL;
 import java.util.Set;
 
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -34,11 +32,12 @@ import org.cougaar.tools.csmart.core.db.PopulateDb;
 
 import org.cougaar.tools.csmart.society.AgentComponent;
 
-public class ParameterInsertionRecipe extends ModifiableConfigurableComponent
-  implements RecipeComponent, PropertiesListener, Serializable
+public class ParameterInsertionRecipe extends RecipeBase
+  implements Serializable
 {
   
-  private static final String DESCRIPTION_RESOURCE_NAME = "parameter-insertion-recipe-description.html";
+  private static final String DESCRIPTION_RESOURCE_NAME 
+    = "parameter-insertion-recipe-description.html";
   private static final String BACKUP_DESCRIPTION = 
     "ParameterInsertionRecipe provides a method for inserting new Parameters into a PSP";
 
@@ -84,18 +83,6 @@ public class ParameterInsertionRecipe extends ModifiableConfigurableComponent
     Property prop = addProperty(new RecipeQueryProperty(this, name, dflt));
     prop.setPropertyClass(String.class);
     return prop;
-  }
-
-  public String getRecipeName() {
-    return getShortName();
-  }
-
-  public AgentComponent[] getAgents() {
-    return null;
-  }
-
-  public ComponentData addComponentData(ComponentData data) {
-    return data;
   }
 
   public ComponentData modifyComponentData(ComponentData data, PopulateDb pdb) {
@@ -152,53 +139,6 @@ public class ParameterInsertionRecipe extends ModifiableConfigurableComponent
 	modifyComponentData(children[i], pdb, targets);
       }
     }      
-  }
-
-  ///////////////////////////////////////////
-  // Boilerplate stuff added below... Necessary?
-  
-  // Implement PropertyListener
-  /**
-   * Called when a new property has been added to the
-   * society. 
-   *
-   * @param PropertyEvent Event for the new property
-   */
-  public void propertyAdded(PropertyEvent e) {
-    Property addedProperty = e.getProperty();
-    Property myProperty = getProperty(addedProperty.getName().last().toString());
-    if (myProperty != null) {
-      setPropertyVisible(addedProperty, true);
-    }
-  }
-
-  /**
-   * Called when a property has been removed from the society
-   */
-  public void propertyRemoved(PropertyEvent e) {
-    // FIXME - do something?
-  }
-  // end of PropertyListener implementation
-
-  public URL getDescription() {
-    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
-  }
-
-  /**
-   * Returns whether or not the component can be edited.
-   * @return true if component can be edited and false otherwise
-   */
-  public boolean isEditable() {
-    //    return !isRunning;
-    return editable;
-  }
-
-  /**
-   * Set whether or not the component can be edited.
-   * @param editable true if component is editable and false otherwise
-   */
-  public void setEditable(boolean editable) {
-    this.editable = editable;
   }
 
 }// ParameterInsertionRecipe

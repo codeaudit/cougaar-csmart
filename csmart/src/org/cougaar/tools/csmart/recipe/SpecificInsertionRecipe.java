@@ -26,8 +26,6 @@ import java.net.URL;
 import java.util.Set;
 import java.util.Iterator;
 
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
@@ -38,16 +36,18 @@ import org.cougaar.tools.csmart.core.db.PopulateDb;
 
 import org.cougaar.tools.csmart.society.AgentComponent;
 
-public class SpecificInsertionRecipe extends ModifiableConfigurableComponent
-  implements RecipeComponent, PropertiesListener, Serializable
+public class SpecificInsertionRecipe extends RecipeBase
+  implements Serializable
 {
-  private static final String DESCRIPTION_RESOURCE_NAME = "specific-insertion-recipe-description.html";
+  private static final String DESCRIPTION_RESOURCE_NAME = 
+    "specific-insertion-recipe-description.html";
   private static final String BACKUP_DESCRIPTION = 
     "SpecificInsertionRecipe provides a method for inserting Components into an experiment";
 
   private static final String PROP_NAME = "Component Name";
   private static final String PROP_NAME_DFLT = "";
-  private static final String PROP_NAME_DESC = "Class name of the component. (usually same as Class Name)";
+  private static final String PROP_NAME_DESC = 
+    "Class name of the component. (usually same as Class Name)";
 
   private static final String PROP_TYPE = "Type of Insertion";
   private static final String PROP_TYPE_DFLT = "";
@@ -70,7 +70,8 @@ public class SpecificInsertionRecipe extends ModifiableConfigurableComponent
 
   private static final String PROP_TARGET_COMPONENT_QUERY = "Target Component Selection Query";
   private static final String PROP_TARGET_COMPONENT_QUERY_DFLT = "recipeQuerySelectNothing";
-  private static final String PROP_TARGET_COMPONENT_QUERY_DESC = "The query name for selecting components to modify";
+  private static final String PROP_TARGET_COMPONENT_QUERY_DESC = 
+    "The query name for selecting components to modify";
 
   private Property propName;
   private Property propType;
@@ -78,8 +79,6 @@ public class SpecificInsertionRecipe extends ModifiableConfigurableComponent
   private Property propArgs;
   private Property propTargetComponentQuery;
   private Property[] variableProps = null;
-
-  private boolean editable = true;
 
   public SpecificInsertionRecipe() {
     super("Specific Component Recipe");
@@ -141,21 +140,6 @@ public class SpecificInsertionRecipe extends ModifiableConfigurableComponent
     }      
   }
 
-  public String getRecipeName() {
-    return getShortName();
-  }
-
-  private void adjustParameterCount() {
-  }
-
-  public AgentComponent[] getAgents() {
-    return null;
-  }
-
-  public ComponentData addComponentData(ComponentData data) {
-    return data;
-  }
-
   public ComponentData modifyComponentData(ComponentData data, PopulateDb pdb) {
     try {
       Set targets = pdb.executeQuery(propTargetComponentQuery.getValue().toString());
@@ -195,52 +179,4 @@ public class SpecificInsertionRecipe extends ModifiableConfigurableComponent
       }
     }
   }
-
-  ///////////////////////////////////////////
-  // Boilerplate stuff added below... Necessary?
-  
-  // Implement PropertyListener
-  /**
-   * Called when a new property has been added to the
-   * society. 
-   *
-   * @param PropertyEvent Event for the new property
-   */
-  public void propertyAdded(PropertyEvent e) {
-    Property addedProperty = e.getProperty();
-    Property myProperty = getProperty(addedProperty.getName().last().toString());
-    if (myProperty != null) {
-      setPropertyVisible(addedProperty, true);
-    }
-  }
-
-  /**
-   * Called when a property has been removed from the society
-   */
-  public void propertyRemoved(PropertyEvent e) {
-    // FIXME - do something?
-  }
-  // end of PropertyListener implementation
-
-  public URL getDescription() {
-    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
-  }
-
-  /**
-   * Returns whether or not the component can be edited.
-   * @return true if component can be edited and false otherwise
-   */
-  public boolean isEditable() {
-    //    return !isRunning;
-    return editable;
-  }
-
-  /**
-   * Set whether or not the component can be edited.
-   * @param editable true if component is editable and false otherwise
-   */
-  public void setEditable(boolean editable) {
-    this.editable = editable;
-  }
-
 }

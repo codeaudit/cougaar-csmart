@@ -27,10 +27,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Collection;
 
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
-import org.cougaar.tools.csmart.core.property.ModificationListener;
-import org.cougaar.tools.csmart.core.property.ModificationEvent;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
@@ -57,9 +53,8 @@ import org.cougaar.tools.csmart.society.AgentComponent;
  * @see org.cougaar.tools.csmart.runtime.plugin.ScriptedEventPlugIn
  */
 public class ABCImpact 
-  extends ModifiableConfigurableComponent
-  implements PropertiesListener, Serializable, ImpactComponent {
-  private String name;
+  extends RecipeBase
+  implements Serializable, ImpactComponent {
 
   // These should be removed when we switch to ComponentData method
   private String xmlFileContents;
@@ -109,7 +104,6 @@ public class ABCImpact
   private ImpactAgentComponent transducerAgent;
   private ImpactAgentComponent generatorAgent;
 
-  private boolean editable = true;
   private ArrayList agentNames = null;
 
   public ABCImpact() {
@@ -195,20 +189,12 @@ public class ABCImpact
     addChild(generatorAgent);
 
     // Remove this hack when we switch to ComponentData
-    rweFile = (String) getFullName().toString() + "_Impacts.xml";
-    societyFile = (String) getFullName().toString() + "_Society.dat";
+//     rweFile = (String) getFullName().toString() + "_Impacts.xml";
+//     societyFile = (String) getFullName().toString() + "_Society.dat";
 
-  }
-
-  public void setName(String newName) {
-    this.name = newName;
   }
 
   public String getImpactName() {
-    return name;
-  }
-  
-  public String getRecipeName() {
     return name;
   }
   
@@ -288,7 +274,7 @@ public class ABCImpact
     lcd.setValue(sb);
 
     // Remove when we switch to componentData.
-    societyFileContents = sb.toString();
+//     societyFileContents = sb.toString();
 
     return lcd;
   }
@@ -343,53 +329,10 @@ public class ABCImpact
 
     // This will eventually get removed, used now to
     // support the old method of file writing.
-    xmlFileContents = sb.toString();
+//     xmlFileContents = sb.toString();
 
     return lcd;
   }
-
-  public URL getDescription() {
-    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
-  }
-
-  public boolean isEditable() {
-    return this.editable;
-  }
-
-  public void setEditable(boolean editable) {
-    this.editable = editable;
-  }
-
-  public void addModificationListener(ModificationListener l) {
-    getEventListenerList().add(ModificationListener.class, l);
-  }
-
-  public void removeModificationListener(ModificationListener l) {
-    getEventListenerList().remove(ModificationListener.class, l);
-  }
-
-  public void fireModification() {
-    fireModification(new ModificationEvent(this, ModificationEvent.SOMETHING_CHANGED));
-  }
-
-  /**
-   * Called when a new property has been added to the
-   * society. 
-   *
-   * @param PropertyEvent Event for the new property
-   */
-  public void propertyAdded(PropertyEvent e) {
-    Property addedProperty = e.getProperty();
-    Property myProperty = getProperty(addedProperty.getName().last().toString());
-    if (myProperty != null) {
-      setPropertyVisible(addedProperty, true);
-    }
-  }
-
-  /**
-   * Called when a property has been removed from the society
-   */
-  public void propertyRemoved(PropertyEvent e) {}
 
   public ComponentData addComponentData(ComponentData data) {
 

@@ -29,8 +29,6 @@ import org.cougaar.tools.csmart.util.ResultsFileFilter;
 
 import org.cougaar.tools.csmart.experiment.Experiment;
 
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
@@ -48,8 +46,8 @@ import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
  * The user can specify the sample interval, the start delay, and the maximum
  * number of samples to take.<br>
  */
-public class BasicMetric extends ModifiableConfigurableComponent
-  implements MetricComponent, PropertiesListener, Serializable {
+public class BasicMetric extends RecipeBase
+  implements MetricComponent, Serializable {
   private static final String DESCRIPTION_RESOURCE_NAME = "basic-metric-description.html";
   private static final String BACKUP_DESCRIPTION =
     "BasicMetric provides basic runtime performance metrics";
@@ -122,8 +120,6 @@ public class BasicMetric extends ModifiableConfigurableComponent
   private static final String MetricsInitializerPlugIn_name =
     "org.cougaar.tools.csmart.runtime.plugin.MetricsInitializerPlugin";
   private static final String MetricControl_Role = "MetricsControlProvider";
-
-  private boolean editable = true;
 
   private transient int numAgs2 = 0;
 
@@ -222,23 +218,6 @@ public class BasicMetric extends ModifiableConfigurableComponent
     return getShortName();
   }
 
-  public String getRecipeName() {
-    return getShortName();
-  }
-
-  /**
-   * Get the agents, both assigned and unassigned.
-   * Only return new agents.
-   * @return array of agent components
-   */
-  public AgentComponent[] getAgents() {
-    // This metric adds no new agents
-    return null;
-  }
-
-  //  public HostComponent[] getHosts() {return null;}
-  //  public NodeComponent[] getNodes() {return null;}
-
   /**
    * Return a file filter which can be used to fetch
    * the metrics files for this experiment.
@@ -263,10 +242,6 @@ public class BasicMetric extends ModifiableConfigurableComponent
   private transient int numAgents = 0; // numAgents collecting stats
   private transient RelationshipData metricRelate = null; // name of agent doing controling
   
-  public ComponentData addComponentData(ComponentData data) {
-    return data;
-  }
-
   private ComponentData addInitPICD(ComponentData data) {
     GenericComponentData plugin = new GenericComponentData();
     plugin.setType(ComponentData.PLUGIN);
@@ -347,13 +322,6 @@ public class BasicMetric extends ModifiableConfigurableComponent
   }
 
   private ComponentData addMetricsComponentData(ComponentData data) {
-    //    System.out.println("BasicMetric in addCD on data: " + data);
-    // The Basic Metric needs to add its plugin to each Agent in the society.
-    // Plus, it should pick one agent in the society, and add the initializer to that agent
-    // plus, it needs one of the args to the initializer to be the total number of agents in the society
-    // Finally, it needs to add a relationship to every agent in the society with
-    // that initializer
-    // FIXME!!!
 
     ComponentData picd = null;
 
@@ -392,52 +360,5 @@ public class BasicMetric extends ModifiableConfigurableComponent
       }
     }
     return picd;
-  }
-
-  ///////////////////////////////////////////
-  // Boilerplate stuff added below... Necessary?
-  
-  // Implement PropertyListener
-  /**
-   * Called when a new property has been added to the
-   * society. 
-   *
-   * @param PropertyEvent Event for the new property
-   */
-  public void propertyAdded(PropertyEvent e) {
-    Property addedProperty = e.getProperty();
-    Property myProperty = getProperty(addedProperty.getName().last().toString());
-    if (myProperty != null) {
-      setPropertyVisible(addedProperty, true);
-    }
-  }
-
-  /**
-   * Called when a property has been removed from the society
-   */
-  public void propertyRemoved(PropertyEvent e) {
-    // FIXME - do something?
-  }
-  // end of PropertyListener implementation
-
-  public URL getDescription() {
-    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
-  }
-
-  /**
-   * Returns whether or not the component can be edited.
-   * @return true if component can be edited and false otherwise
-   */
-  public boolean isEditable() {
-    //    return !isRunning;
-    return editable;
-  }
-
-  /**
-   * Set whether or not the component can be edited.
-   * @param editable true if component is editable and false otherwise
-   */
-  public void setEditable(boolean editable) {
-    this.editable = editable;
   }
 } // end of BasicMetric.java

@@ -29,16 +29,12 @@ import java.util.Collection;
 import java.util.StringTokenizer;
 import java.util.HashSet;
 
-import org.cougaar.tools.csmart.core.property.BaseComponent;
-import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
-import org.cougaar.tools.csmart.core.property.PropertiesListener;
 import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponentPropertyAdapter;
 import org.cougaar.tools.csmart.core.property.PropertyEvent;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
-
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
@@ -51,12 +47,10 @@ import org.cougaar.tools.csmart.core.db.PopulateDb;
 
 import org.cougaar.tools.csmart.society.AgentComponent;
 
-public class AgentInsertionRecipe extends ModifiableConfigurableComponent
-  implements RecipeComponent, PropertiesListener, Serializable
+public class AgentInsertionRecipe extends RecipeBase
+  implements Serializable
 {
   private static final String DESCRIPTION_RESOURCE_NAME = "agent-insertion-recipe-description.html";
-  private static final String BACKUP_DESCRIPTION = 
-    "AgentInsertionRecipe provides a method for inserting new Agents into an experiment";
 
   private static final String TRUE = "True";
   private static final String FALSE = "False";
@@ -121,8 +115,6 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   private Property propPSPParameter;
   private Property propOrgAsset;
   private Property propItemPG;
-
-  private boolean editable = true;
 
   public AgentInsertionRecipe() {
     super("Agent Component Recipe");
@@ -217,9 +209,6 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
   public String getRecipeName() {
     return getShortName();
   }
-
-//   private void adjustParameterCount() {
-//   }
 
   private void initAgents() {
     boolean childrenOK = true;
@@ -400,54 +389,6 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
     return pgd;
   }
 
-  ///////////////////////////////////////////
-  // Boilerplate stuff added below... Necessary?
-  
-  // Implement PropertyListener
-  /**
-   * Called when a new property has been added to the
-   * society. 
-   *
-   * @param PropertyEvent Event for the new property
-   */
-  public void propertyAdded(PropertyEvent e) {
-    Property addedProperty = e.getProperty();
-    Property myProperty = getProperty(addedProperty.getName().last().toString());
-    if (myProperty != null) {
-      setPropertyVisible(addedProperty, true);
-    }
-  }
-
-  /**
-   * Called when a property has been removed from the society
-   */
-  public void propertyRemoved(PropertyEvent e) {
-    // FIXME - do something?
-  }
-  // end of PropertyListener implementation
-
-  public URL getDescription() {
-    return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
-  }
-
-  /**
-   * Returns whether or not the component can be edited.
-   * @return true if component can be edited and false otherwise
-   */
-  public boolean isEditable() {
-    //    return !isRunning;
-    return editable;
-  }
-
-  /**
-   * Set whether or not the component can be edited.
-   * @param editable true if component is editable and false otherwise
-   */
-  public void setEditable(boolean editable) {
-    this.editable = editable;
-  }
-
-
   // Simple Agent Component.
   class InsertAgentComponent extends ConfigurableComponent 
     implements AgentComponent, Serializable {
@@ -514,8 +455,6 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
           plugin.setOwner(this);
           data.addChild(plugin);
         }
-        //        data = addAssetData(data);
-
       }
       else if (data.childCount() > 0) {
         // for each child, call this same method.
@@ -531,101 +470,10 @@ public class AgentInsertionRecipe extends ModifiableConfigurableComponent
       return data;
     }
 
-//     private ComponentData addAssetData(ComponentData data) {
-//       AgentAssetData assetData = new AgentAssetData((AgentComponentData)data);
-
-//       assetData.setType(AgentAssetData.ORG);
-//       assetData.setAssetClass(propAssetClass.getValue().toString());
-//       assetData.setUniqueID("UTC/RTOrg");
-//       if(propRelations != null ) {
-//         for(int i=0; i < propRelations.length; i++) {        
-//           RelationshipData rd = new RelationshipData();
-//           String supported = (String)propRelations[i].getValue();
-//           String role = (String)propRoles[i].getValue();
-//           rd.setSupported(supported);
-//           rd.setRole(role);
-//           // Add the role to the asset as well.
-//           assetData.addRole(role);
-//           assetData.addRelationship(rd);
-//         }
-//       }
-//       assetData.addPropertyGroup(createTypeIdentificationPG());
-
-//       if ((propOrgAsset.getValue().toString().equals(TRUE))) {
-//         assetData.addPropertyGroup(createClusterPG());
-//       }
-
-//       if ((propItemPG.getValue().toString().equals(TRUE))) {
-//         assetData.addPropertyGroup(createItemIdentificationPG());
-//       }
-
-//       data.addAgentAssetData(assetData);
-      
-//       return data;
-//     }
-
-//     private PropGroupData createClusterPG() {
-//       PropGroupData pgd = new PropGroupData(PropGroupData.CLUSTER);
-
-//       PGPropData pgData = new PGPropData();
-//       pgData.setName("ClusterIdentifier");
-//       pgData.setType("String");
-//       pgData.setValue(this.getShortName());
-//       pgd.addProperty(pgData);
-
-//       return pgd;
-//     }
-
-//     private PropGroupData createTypeIdentificationPG() {
-//       PropGroupData pgd = new PropGroupData(PropGroupData.TYPE_IDENTIFICATION);
-
-//       // Add Type Identification
-//       PGPropData pgData = new PGPropData();
-//       pgData.setName("TypeIdentification");
-//       pgData.setType("String");
-//       pgData.setValue(propType.getValue().toString());
-//       pgd.addProperty(pgData);
-
-//       // Add Nomenclature
-//       pgData = new PGPropData();
-//       pgData.setName("Nomenclature");
-//       pgData.setType("String");
-//       pgData.setValue(propNomenclature.getValue().toString());
-//       pgd.addProperty(pgData);
-      
-//       // Add AltTypeIdentification
-//       pgData = new PGPropData();
-//       pgData.setName("AlternateTypeIdentification");
-//       pgData.setType("String");
-//       pgData.setValue(propAltTypeId.getValue().toString());
-//       pgd.addProperty(pgData);
-
-//       return pgd;
-//     }
-
-//     private PropGroupData createItemIdentificationPG() {
-//       PropGroupData pgd = new PropGroupData(PropGroupData.ITEM_IDENTIFICATION);
-
-//       PGPropData pgData = new PGPropData();
-//       pgData.setName("ItemIdentification");
-//       pgData.setType("String");
-//       pgData.setValue(this.getShortName());
-//       pgd.addProperty(pgData);
-
-//       pgData = new PGPropData();
-//       pgData.setName("Nomenclature");
-//       pgData.setType("String");
-//       pgData.setValue(this.getShortName());
-//       pgd.addProperty(pgData);
-
-//       return pgd;
-//     }
 
     public boolean equals(Object o) {
       if (o instanceof AgentComponent) {
         AgentComponent that = (AgentComponent)o;
-//  	System.out.println(this + " has short name " + this.getShortName());
-//  	System.out.println("Compared to " + that + " which has short name " + that.getShortName());
         if (!this.getShortName().equals(that.getShortName())  ) {
           return false;
         }     
