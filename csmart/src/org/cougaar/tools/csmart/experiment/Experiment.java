@@ -85,7 +85,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public static final String AGENT_STARTTIME = "org.cougaar.agent.startTime";
   public static final String COMPLAININGLP_LEVEL = 
     "org.cougaar.planning.ldm.lps.ComplainingLP.level";  
-  public static final String TRANSPORT_ASPECTS = "org.cougaar.message.transport.aspects";
   public static final String CONTROL_PORT = "org.cougaar.control.port";
   public static final String CONFIG_DATABASE = "org.cougaar.configuration.database";
   public static final String CONFIG_USER = "org.cougaar.configuration.user";
@@ -105,8 +104,7 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
   public static final String TIMEZONE_DFLT = "GMT";
   public static final String AGENT_STARTTIME_DFLT = "08/10/2005";
   public static final String COMPLAININGLP_LEVEL_DFLT = "0";
-  public static final String TRANSPORT_ASPECTS_DFLT = 
-    "org.cougaar.core.mts.StatisticsAspect";
+
   // org.cougaar.control.port; port for contacting applications server
   public static final int APP_SERVER_DEFAULT_PORT = 8484;
   public static final String NAME_SERVER_PORTS = "8888:5555";
@@ -245,7 +243,6 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     defaultNodeArguments.put(TIMEZONE, TIMEZONE_DFLT);
     defaultNodeArguments.put(AGENT_STARTTIME, AGENT_STARTTIME_DFLT);
     defaultNodeArguments.put(COMPLAININGLP_LEVEL, COMPLAININGLP_LEVEL_DFLT);
-    defaultNodeArguments.put(TRANSPORT_ASPECTS, TRANSPORT_ASPECTS_DFLT);
     defaultNodeArguments.put(CONTROL_PORT, Integer.toString(APP_SERVER_DEFAULT_PORT));
 
     // By default, we tell the AppServer to ignore connection errors
@@ -2338,10 +2335,11 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
     if (resultDir != null)
       path = resultDir.getAbsolutePath();
     JFileChooser chooser = new JFileChooser(path);
+    chooser.setDialogTitle("Select HNA Export file to apply");
     chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
     chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
 	public boolean accept (File f) {
-	  return (f.isDirectory() || (f.isFile()) && 
+	  return (f.isDirectory() || (f.isFile()) && f.canRead() && 
             (f.getName().endsWith("xml") || f.getName().endsWith("XML")));
 	}
 	public String getDescription() {return "HNA XML Files";}
@@ -2352,6 +2350,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
       if(result != JFileChooser.APPROVE_OPTION)
         return;
       file = chooser.getSelectedFile();
+      if (file != null && (! file.canRead() || file.isDirectory()))
+	file = null;
     }
 
     if (log.isInfoEnabled()) {
