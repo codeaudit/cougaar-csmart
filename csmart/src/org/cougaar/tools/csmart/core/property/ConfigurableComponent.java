@@ -909,13 +909,19 @@ public abstract class ConfigurableComponent
     Property p = null;
     if (newVisible) {
       p = (Property) getMyProperties().get(name);
-      if (!p.isVisible()) firePropertyAdded(prop);
+      if(p != null) {
+        if (!p.isVisible()) firePropertyAdded(prop);
+      }
     } else {
       p = (Property)getMyProperties().get(name);
-      if (p.isVisible()) firePropertyRemoved(prop);
+      if(p != null) {
+        if (p.isVisible()) firePropertyRemoved(prop);
+      }
     }
-    p.setVisible(newVisible);
-    getMyProperties().put(name, p);
+    if(p != null) {
+      p.setVisible(newVisible);
+      getMyProperties().put(name, p);
+    }
   }
 
   /**
@@ -928,6 +934,7 @@ public abstract class ConfigurableComponent
 
   public boolean isPropertyVisible(Property prop) {
     Property p = (Property)getMyProperties().get(prop.getName());
+    if(p == null) return false;
     return p.isVisible();
   }
 
@@ -1091,7 +1098,9 @@ public abstract class ConfigurableComponent
   public boolean hasUnboundProperties() {
     for (Iterator i = getPropertyNames(); i.hasNext(); ) {
       Property prop = (Property) getProperty((CompositeName) i.next());
-      if (!prop.isValueSet()) return true;
+      if(prop != null) {
+        if (!prop.isValueSet()) return true;
+      }
     }
     return false;
   }
