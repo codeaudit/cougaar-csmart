@@ -2,56 +2,65 @@ CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PAR
 1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD,,,
 1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD,,,
 1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD,,,
-1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD,,,
 1AD-CBT-DMD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD,,,
 1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD,,,
 1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD,,,
 1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD,,,
-1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD,,,
 1AD-CBT-DMD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD,,,
 1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD,,,
 1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD,,,
 1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD,,,
-1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD,,,
 1AD-CBT-DMD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD,,,
-1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
+1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD,,,
+1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD,,,
+1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD,,,
 1AD-CBT-DMD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
 1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
 1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
 1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CBT-DMD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
 1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
 1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
 1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CBT-DMD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
 1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
 1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
 1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CBT-DMD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
 1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|Ammunition|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,Ammunition,0,ADD
 1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|BulkPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,BulkPOL,0,ADD
 1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|ClassISubsistence|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,ClassISubsistence,0,ADD
-1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CBT-DMD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|PackagedPOL|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,PackagedPOL,0,ADD
-1AD-CFW,ALL,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0,,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,16-CSG-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,16-CSG-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,1-AD-DIV-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,1-AD-DIV-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,1-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,21-TSC-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,21-TSC-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,29-SPTGP-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,29-SPTGP-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,2-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,37-TRANSGP-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,37-TRANSGP-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,3-BDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,3-SUPCOM-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,3-SUPCOM-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,5-CORPS-ARTY-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,5-CORPS-REAR-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,7-CSG-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,7-CSG-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
+1AD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
+1AD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
+1AD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
+1AD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|MaintainInventory|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,MaintainInventory,0,ADD
 1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|BulkPOL|0, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,BulkPOL,2,BASE
 1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|PackagedPOL|0, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,PackagedPOL,3,BASE
 1AD-CFW,ALL,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|Ammunition|0, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,0,SUPPLY_PROJECTION_ARGS,Ammunition,1,BASE
@@ -84,7 +93,6 @@ CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PAR
 1AD-CFW,AVNBDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,AVNBDE,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,AVNBDE,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-1AD-CFW,AVNBDE-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
 1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,AVNBN-ATTACK,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
@@ -227,7 +235,6 @@ CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PAR
 1AD-CFW,DASB,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
 1AD-CFW,DASB,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-FSB.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-FSB.ldm.xml,0,BASE
 1AD-CFW,DASB,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+FuelsSourcingAllocator|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +FuelsSourcingAllocator,1,BASE
-1AD-CFW,DISCOM-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
 1AD-CFW,DISCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,DISCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
 1AD-CFW,DISCOM-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+ConsumableInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +ConsumableInventory,0,BASE
@@ -240,7 +247,6 @@ CFW_ID,ORG_CONTEXT,PLUGIN_ARG_ID,BLANK,PLUGIN_CLASS,ARG_ORDER,PARAMETER_TYPE,PAR
 1AD-CFW,DIVARTY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+PackagedPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +PackagedPOLInventory,0,BASE
 1AD-CFW,DIVARTY,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|-DLAInventoryManager|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, -DLAInventoryManager,0,BASE
 1AD-CFW,DIVARTY,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn|InventoryPolicy-ARBN.ldm.xml|0, ,org.cougaar.domain.mlm.plugin.ldm.XMLPolicyPlugIn,0,INVENTORY_MANAGEMENT_POLICY_FILE,InventoryPolicy-ARBN.ldm.xml,0,BASE
-1AD-CFW,DIVARTY-1-AD-OGT,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn|StrategicTransportation|0, ,org.cougaar.domain.mlm.plugin.organization.GLSExpanderPlugIn,0,GLS_EXPANDER_ARGS,StrategicTransportation,0,ADD
 1AD-CFW,DIV-HQ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn|1AD_allocation_rules.xml|0, ,org.cougaar.domain.mlm.plugin.generic.GenericTablePlugIn,0,ALLOCATION_RULES,IAD_allocation_rules.xml,0,BASE
 1AD-CFW,DIV-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+AmmunitionInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +AmmunitionInventory,0,BASE
 1AD-CFW,DIV-HQ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn|+BulkPOLInventory|0, ,mil.darpa.log.alpine.blackjack.plugins.AntsInventoryPlugIn,0,INVENTORY_MANAGEMENT_ARGS, +BulkPOLInventory,0,BASE
@@ -392,12 +398,12 @@ TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.GroundTranspo
 TRANSCOM-CFW,TRANSCOM-CONUSGround,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, ,,,,,,
 TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.pkg.glmtrans.plugins.base.GLMTransOneToManyExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,
 TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.pkg.glmtrans.plugins.TranscomVishnuPlugIn|envFile=GLMT.TRANSCOM.env.xml|0, ,,,,,,
-TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.lib.plugin.UTILLdmXMLPlugIn|ldmFile=GLMT.TRANSCOM.ldm.xml|0, ,,,,,,
-TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,
-TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.GenericVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, ,,,,,,
-TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, ,,,,,,
-TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, ,,,,,,
-TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|defaultFormat=GLMT.ShipPacker.dff.xml|1, ,,,,,,
+TRANSCOM-CFW,TRANSCOM-HQ,org.cougaar.lib.plugin.UTILLdmXMLPlugIn|ldmFile=GLMT.TRANSCOM.ldm.xml|0, 
+TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, 
+TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.GenericVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, 
+TRANSCOM-CFW,TRANSCOM-PlanePacker,org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, 
+TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|envFile=GLMT.Transport.env.xml|0, 
+TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|defaultFormat=GLMT.ShipPacker.dff.xml|1, 
 TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, 
 TRANSCOM-CFW,TRANSCOM-ShipPacker,org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0, 
 TRANSCOM-CFW,TRANSCOM-TheaterGround,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.Transport.env.xml|0, 
