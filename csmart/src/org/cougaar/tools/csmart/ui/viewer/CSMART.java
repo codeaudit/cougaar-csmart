@@ -21,6 +21,13 @@
 
 package org.cougaar.tools.csmart.ui.viewer;
 
+
+
+
+
+
+
+// tools created by this user interface
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -35,20 +42,19 @@ import java.util.Hashtable;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Properties;
-
-import javax.swing.Action;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
+import javax.swing.Action;
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JFileChooser;
-import javax.swing.JToolBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JMenuBar;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-
+import javax.swing.JToolBar;
+import javax.swing.WindowConstants;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.event.TreeModelEvent;
@@ -56,21 +62,8 @@ import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.cougaar.Version;
 import org.cougaar.bootstrap.Bootstrapper;
-import org.cougaar.util.ConfigFinder;
-import org.cougaar.util.log.Logger;
-import org.cougaar.util.log.LoggerFactory;
-
-// tools created by this user interface
-
-import org.cougaar.tools.csmart.ui.analyzer.Analyzer;
-import org.cougaar.tools.csmart.ui.configbuilder.PropertyBuilder;
-import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
-import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
-import org.cougaar.tools.csmart.ui.experiment.ExperimentBuilder;
-
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.db.ExperimentDB;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
@@ -81,9 +74,17 @@ import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.SocietyComponent;
 import org.cougaar.tools.csmart.society.cdata.SocietyCDataComponent;
 import org.cougaar.tools.csmart.ui.Browser;
+import org.cougaar.tools.csmart.ui.analyzer.Analyzer;
+import org.cougaar.tools.csmart.ui.configbuilder.PropertyBuilder;
+import org.cougaar.tools.csmart.ui.console.CSMARTConsole;
+import org.cougaar.tools.csmart.ui.experiment.ExperimentBuilder;
 import org.cougaar.tools.csmart.ui.monitor.generic.ExtensionFileFilter;
+import org.cougaar.tools.csmart.ui.monitor.viewer.CSMARTUL;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
 import org.cougaar.tools.csmart.ui.util.Util;
+import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.log.Logger;
+import org.cougaar.util.log.LoggerFactory;
 
 /**
  * Top level CSMART user interface.
@@ -307,6 +308,8 @@ public class CSMART extends JFrame {
     buildButton = (JButton)toolBar.getComponentAtIndex(1);
     runButton = (JButton)toolBar.getComponentAtIndex(2);
     enableCSMARTTools();
+
+    setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
     // if user closes this window, quit
     addWindowListener(new WindowAdapter() {
