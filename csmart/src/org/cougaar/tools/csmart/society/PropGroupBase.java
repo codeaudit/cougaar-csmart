@@ -84,13 +84,17 @@ public class PropGroupBase
     int index = name.lastIndexOf('.');
     if (index != -1)
       name = name.substring(index+1);
-    name = name.substring(0, name.indexOf("("));
+      name = name.substring(0, ((name.indexOf("(") == -1) ? name.length() : name.indexOf("(")));
     return name.trim();
   }
 
   private String getType(Property prop) {
     String name = prop.getName().toString();
-    return name.substring(name.indexOf("(")+1, name.indexOf(")"));
+    int typeStart = name.indexOf("(");
+    if (typeStart == -1)
+      return new String("String");
+    else
+      return name.substring(name.indexOf("(")+1, name.indexOf(")"));
   }
 
   private PGPropData getProp(String name) {
