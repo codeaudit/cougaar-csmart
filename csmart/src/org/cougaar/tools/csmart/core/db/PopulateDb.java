@@ -517,6 +517,13 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":csmi_type:", csmiType);
     substitutions.put(":csa_type:", CSATYPE);
 
+    if (oldTrialId != null && ! oldTrialId.startsWith("EXPT-")) {
+      if (log.isInfoEnabled()) {
+	log.info("cleanTrial asked to clean an original trial, wont do it", new Throwable());
+      }
+      return;
+    }
+
     // check that each Assembly it finds is not
     // referenced by another experiment. If it is, then we only delete from 
     // trial_assembly and trial_config_assembly
@@ -552,6 +559,12 @@ public class PopulateDb extends PDbBase {
 	assembliesToDelete.append(", ");
       }
       asb = ctrs.getString(1);
+      if (asb != null && asb.startsWith(REAL_CMT_TYPE) && asb.indexOf("134589") != -1) {
+	if (log.isInfoEnabled()) {
+	  log.info("clnTrial found base CMT assembly " + asb + "- skipping");
+	}
+	continue;
+      }
       assembliesToDelete.append(sqlQuote(asb));
 
       // if asb not used other than the current trial
@@ -617,6 +630,12 @@ public class PopulateDb extends PDbBase {
   private void removeConfigAssembly(String assembly_id) throws SQLException {
     if (assembly_id == null || assembly_id.equals(""))
       return;
+    if (trialId == null || ! trialId.startsWith("EXPT-")) {
+      if (log.isInfoEnabled()) {
+	log.info("rmConfAsb asked to remove from base trial " + trialId, new Throwable());
+      }
+      return;
+    }
     if (log.isDebugEnabled()) {
       log.debug("Removing assembly from config for trial " + trialId + ": " + assembly_id);
     }
@@ -635,6 +654,12 @@ public class PopulateDb extends PDbBase {
   private void removeRuntimeAssembly(String assembly_id) throws SQLException {
     if (assembly_id == null || assembly_id.equals(""))
       return;
+    if (trialId == null || ! trialId.startsWith("EXPT-")) {
+      if (log.isInfoEnabled()) {
+	log.info("rmRunAsb asked to remove from base trial " + trialId, new Throwable());
+      }
+      return;
+    }
     substitutions.put(":trial_id:", trialId);
     substitutions.put(":expt_id:", exptId);
     substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
@@ -727,6 +752,7 @@ public class PopulateDb extends PDbBase {
   private void cleanAssembly(String assembly_id, boolean partial) throws SQLException {
     if (assembly_id == null || assembly_id.equals(""))
       return;
+    // FIXME: Put in check for a base CMT assembly here? Also base community assembly
     substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
     cleanAssemblies(partial);
   }
@@ -737,6 +763,7 @@ public class PopulateDb extends PDbBase {
   private void cleanAssembly(String assembly_id) throws SQLException {
     if (assembly_id == null || assembly_id.equals(""))
       return;
+    // FIXME: Put in check for a base CMT assembly here? Also base community assembly
     substitutions.put(":assemblies_to_clean:", "(" + sqlQuote(assembly_id) + ")");
     cleanAssemblies(false);
   }
@@ -794,6 +821,12 @@ public class PopulateDb extends PDbBase {
       if (assid == null || assid.equals(csmiAssemblyId) || assid.equals(hnaAssemblyId) || assid.equals(commAssemblyId)) {
 	if (log.isDebugEnabled()) {
 	  log.debug("removeOrphan not touching asb used in current trial (" + trialId + ": " + assid);
+	}
+	continue;
+      }
+      if (assid.startsWith(REAL_CMT_TYPE) || assid.startsWith(CSATYPE)) {
+	if (log.isInfoEnabled()) {
+	  log.info("rmOrphanNonSoc got a CMT or CSA: " + assid);
 	}
 	continue;
       }
@@ -1252,6 +1285,18 @@ public class PopulateDb extends PDbBase {
    * @exception SQLException if an error occurs
    */
   public boolean isAssemblyUsed(String assembly_id) throws SQLException {
+    if (assembly_id == null || assembly_id.equals(""))
+      return false;
+
+    if (assembly_id.startsWith(REAL_CMT_TYPE) && assembly_id.indexOf("134589") != -1) {
+      if (log.isInfoEnabled()) {
+	log.info("isAsbUsed got base CMT asb to ask is used: " + assembly_id, new Throwable());
+      }
+      return true;
+    }
+
+    // FIXME: Put in check for the base community assembly here?
+
     // See if anyone uses this assembly ID anywhere
     substitutions.put(":assembly_id:", sqlQuote(assembly_id));
     substitutions.put(":trial_id:", trialId);
@@ -1368,6 +1413,13 @@ public class PopulateDb extends PDbBase {
    */
   public boolean fixAssemblies() throws SQLException {
     // return false on error
+
+    if (trialId == null || ! trialId.startsWith("EXPT-")) {
+      if (log.isInfoEnabled()) {
+	log.info("fixAsb for base trial (" + trialId + ")? Skip out with error.", new Throwable());
+      }
+      return false;
+    }
 
     // 1: delete any HNA assembly referenced in config (if not referenced elsewhere)
     // --- find any HNA in config
