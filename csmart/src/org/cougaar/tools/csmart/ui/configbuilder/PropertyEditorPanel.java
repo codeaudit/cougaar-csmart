@@ -723,10 +723,19 @@ public class PropertyEditorPanel extends JPanel
         }
       }
     }
+    // add in binder names and classes from the database
+    Set dbBinderClasses = DBUtils.dbGetBinderClasses();
+    for (Iterator i = dbBinderClasses.iterator(); i.hasNext(); ) {
+      String dbBinderClass = (String)i.next();
+      if (!binderClasses.contains(dbBinderClass)) {
+        binderNames.add(dbBinderClass); // binder names & classes are the same
+        binderClasses.add(dbBinderClass);
+      }
+    }
     ArrayList sortedNames = (ArrayList)binderNames.clone();
     Collections.sort(sortedNames);
     String name = 
-      (String)ComboDialog.showDialog(this, "Binder", new Vector(sortedNames));
+      (String)ComboDialog.showDialog(this, "Select Binder or Enter New Name", new Vector(sortedNames));
     if (name == null)
       return;
     name = name.trim();
