@@ -16,9 +16,11 @@ import java.net.URL;
 import java.util.*;
 
 import org.cougaar.core.cluster.*;
+import org.cougaar.core.society.UID;
 import org.cougaar.domain.planning.ldm.asset.Asset;
 import org.cougaar.domain.planning.ldm.asset.CommunityPG;
 import org.cougaar.domain.planning.ldm.asset.Entity;
+import org.cougaar.domain.planning.ldm.plan.HasRelationships;
 import org.cougaar.lib.planserver.*;
 import org.cougaar.tools.csmart.ui.monitor.PropertyNames; 
 import org.cougaar.util.PropertyTree;
@@ -57,9 +59,13 @@ public class PSP_CommunityProvider extends PSP_BaseAdapter implements PlanServic
       public boolean execute(Object obj) {
 	if (obj instanceof Asset) {
 	  Asset asset = (Asset)obj;
-	  if ((asset.hasCommunityPG(new Date().getTime())) &&
-	      (asset.hasClusterPG()))
+	  if ((asset instanceof HasRelationships) &&
+	      ((HasRelationships)asset).isLocal() &&
+	      asset.hasClusterPG())
 	    return true;
+	  //	  if ((asset.hasCommunityPG(new Date().getTime())) &&
+	  //	      (asset.hasClusterPG()))
+	  //	    return true;
 	}
 	return false;
       };
@@ -103,8 +109,8 @@ public class PSP_CommunityProvider extends PSP_BaseAdapter implements PlanServic
     int n = 0; // unique index for relationships
     while (iter.hasNext()) {
       Asset asset = (Asset)iter.next();
-      System.out.println("Have asset: " + asset.toString());
       PropertyTree properties = new PropertyTree();
+      properties.put(PropertyNames.UID_ATTR, getUIDAsString(asset.getUID()));
       String name = asset.getItemIdentificationPG().getNomenclature();
       properties.put(PropertyNames.AGENT_NAME, name);
       CommunityPG communityPG = asset.getCommunityPG(new Date().getTime());
@@ -119,9 +125,17 @@ public class PSP_CommunityProvider extends PSP_BaseAdapter implements PlanServic
       }
       if (communityName != null)
 	properties.put(PropertyNames.AGENT_COMMUNITY_NAME, communityName);
+      URL url = psc.lookupURL(psc.getServerPlugInSupport().getClusterIDAsString());
+      if (url != null)
+	properties.put(PropertyNames.AGENT_URL, url.toString());
       results.add(properties);
     }
     return results;
+  }
+
+  private static final String getUIDAsString(final UID uid) {
+    return
+      ((uid != null) ? uid.toString() : "null");
   }
 
   /**
