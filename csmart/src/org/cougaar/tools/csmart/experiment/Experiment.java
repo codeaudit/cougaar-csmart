@@ -1302,6 +1302,8 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 //      for (int i = 0; i < nodeComponents.length; i++)
 //        installListeners((ModifiableConfigurableComponent)nodeComponents[i]);
     modified = temp;
+    editInProgress = false;
+    runInProgress = false;
   }
 
   // Put a bunch of Prop$ as parameters to the given component.
