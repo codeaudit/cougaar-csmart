@@ -1316,11 +1316,14 @@ public class Organizer extends JScrollPane {
     Collection trialNames = new ArrayList();
     ArrayList assemblyIDs = new ArrayList();
     ArrayList nodes = new ArrayList();
+    Connection conn = null;
+    Object trial = null;
+    Object answer = null;
 
     experimentNames = getExperimentNamesFromDB();
     if (experimentNames == null)
       return null;
-    Object answer = JOptionPane.showInputDialog(this, "Select Experiment",
+    answer = JOptionPane.showInputDialog(this, "Select Experiment",
                                                 "Select Experiment",
                                                 JOptionPane.QUESTION_MESSAGE,
                                                 null,
@@ -1333,7 +1336,7 @@ public class Organizer extends JScrollPane {
     if(csmart.inDBMode()) {
       try {
 	substitutions.put(":expt_id", (String)dbExptMap.get(answer));
-	Connection conn = DBUtils.getConnection();
+	conn = DBUtils.getConnection();
 	Statement stmt = conn.createStatement();
 	String query = DBUtils.getQuery(EXPT_TRIAL_QUERY, substitutions);
 	ResultSet rs = stmt.executeQuery(query);
@@ -1350,7 +1353,7 @@ public class Organizer extends JScrollPane {
 	    conn.close();
 	    return null;
 	  }
-	  Object trial = JOptionPane.showInputDialog(this, "Select Trial",
+	  trial = JOptionPane.showInputDialog(this, "Select Trial",
 						     "Select Trial",
 						     JOptionPane.QUESTION_MESSAGE,
 						     null,
@@ -1373,6 +1376,7 @@ public class Organizer extends JScrollPane {
 	  rs.close();
 	  stmt.close();
 
+	  // Query for all Node Names.
 	  StringBuffer assemblyMatch = new StringBuffer();
 	  assemblyMatch.append("in (");
 	  Iterator iter = assemblyIDs.iterator();
@@ -1401,20 +1405,50 @@ public class Organizer extends JScrollPane {
 	  rs.close();
 	  stmt.close();
 
+// 	  // Query for all Agent-Node Mappings.
+// 	  StringBuffer assemblyMatch = new StringBuffer();
+// 	  assemblyMatch.append("in (");
+// 	  Iterator iter = assemblyIDs.iterator();
+// 	  boolean first = true;
+// 	  while (iter.hasNext()) {
+// 	    String val = (String)iter.next();
+// 	    if (first) {
+// 	      first = false;
+// 	    } else {
+// 	      assemblyMatch.append(", ");
+// 	    }
+// 	    assemblyMatch.append("'");
+// 	    assemblyMatch.append(val);
+// 	    assemblyMatch.append("'");
+// 	  }
+// 	  assemblyMatch.append(")");
+      
+// 	  substitutions.put(":assemblyMatch", assemblyMatch.toString());
+
+// 	  stmt = conn.createStatement();
+// 	  query = DBUtils.getQuery(EXPT_NODE_QUERY, substitutions);
+// 	  rs = stmt.executeQuery(query);
+// 	  while(rs.next()) {
+// 	    nodes.add(rs.getString(1));
+// 	  }
+// 	  rs.close();
+// 	  stmt.close();
+	  
 	  conn.close();
-      } catch (SQLException se) {
+      } catch (SQLException se) {      
 	System.out.println("Caught SQL exception: " + se);
 	se.printStackTrace();
-      }   
+      }
     }
 
     CMTSociety soc = new CMTSociety(assemblyIDs);
     soc.initProperties();
-    Experiment experiment = new Experiment((String)answer, (String)dbExptMap.get(answer));
+    Experiment experiment = new Experiment((String)answer, (String)dbExptMap.get(answer), (String)dbTrialMap.get(trial));
     DefaultMutableTreeNode newNode =
       addExperimentToWorkspace(experiment, node);
     experiment.addSocietyComponent((SocietyComponent)soc);
 
+    // Add all Nodes.
     Iterator iter = nodes.iterator();
     while(iter.hasNext()) {
       experiment.addNode((String)iter.next());
