@@ -23,6 +23,8 @@ package org.cougaar.tools.csmart.ui.viewer;
 
 import java.awt.event.*;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -168,7 +170,33 @@ public class Organizer extends JScrollPane {
       }
     };
     workspace.setCellEditor(myEditor);
-  
+
+    // if a node represents an experiment
+    // and that experiment needs to be saved to the database, 
+    // then draw the experiment in red
+    DefaultTreeCellRenderer myRenderer = new DefaultTreeCellRenderer() {
+        public Component getTreeCellRendererComponent(JTree tree,
+                                                      Object value,
+                                                      boolean sel,
+                                                      boolean expanded,
+                                                      boolean leaf,
+                                                      int row,
+                                                      boolean hasFocus) {
+          Component c = 
+            super.getTreeCellRendererComponent(tree, value, sel,
+                                               expanded, leaf, row, hasFocus);
+          DefaultMutableTreeNode node = 
+            (DefaultMutableTreeNode)value;
+          Object o = node.getUserObject();
+          if (o instanceof Experiment) {
+            if (((Experiment)o).isModified()) {
+              c.setForeground(Color.red);
+            }
+          }
+          return c;
+        }
+      };
+    workspace.setCellRenderer(myRenderer);
     workspace.setExpandsSelectedPaths(true);
     workspace.addTreeSelectionListener(mySelectionListener);
     workspace.addAncestorListener(myAncestorListener);
@@ -772,7 +800,8 @@ public class Organizer extends JScrollPane {
 					cmtDialog.getExperimentId(), 
 					trialId);
               if (experiment != null)
-                addDatabaseExperimentToWorkspace(experiment);
+                addExperimentAndComponentsToWorkspace(experiment,
+                                                      getSelectedNode());
             }
           }
           GUIUtils.timeConsumingTaskEnd(organizer);
@@ -786,22 +815,22 @@ public class Organizer extends JScrollPane {
     }
   }
 
-  private void addDatabaseExperimentToWorkspace(Experiment experiment) {
-    DefaultMutableTreeNode selectedNode = getSelectedNode();
+  private void addExperimentAndComponentsToWorkspace(Experiment experiment,
+                                       DefaultMutableTreeNode node) {
     DefaultMutableTreeNode expNode = 
-      addExperimentToWorkspace(experiment, selectedNode);
+      addExperimentToWorkspace(experiment, node);
     SocietyComponent societyComponent = experiment.getSocietyComponent();
     String societyName = societyComponent.getSocietyName();
     // add editable societies and recipes as siblings of experiment
     // only if these aren't already in the workspace
     if (!societyNames.contains(societyName)) {
       societyNames.add(societyName);
-      addSocietyToWorkspace(societyComponent, selectedNode);
+      addSocietyToWorkspace(societyComponent, node);
     }
     RecipeComponent[] recipes = experiment.getRecipeComponents();
     for (int i = 0; i < recipes.length; i++)
       if (!recipeNames.contains(recipes[i].getRecipeName()))
-        addRecipeToWorkspace(recipes[i], selectedNode);
+        addRecipeToWorkspace(recipes[i], node);
     // add non-editable societies and recipes
     // as children of experiment
     addSocietyToWorkspace(societyComponent, expNode);
@@ -896,7 +925,7 @@ public class Organizer extends JScrollPane {
       }
     }
     // add copy as sibling of original
-    addExperimentToWorkspace(experimentCopy, node);
+    addExperimentAndComponentsToWorkspace(experimentCopy, node);
     return experimentCopy;
   }
   
@@ -1489,30 +1518,36 @@ public class Organizer extends JScrollPane {
 
   /**
    * Get names of experiments in workspace that contain the society.
+   * Mark the experiments as modified.
    */
   private ArrayList getExperimentNamesInWorkspace(SocietyComponent society) {
     ArrayList results = new ArrayList();
     ArrayList experiments = getExperiments();
     for (int i = 0; i < experiments.size(); i++) {
       Experiment experiment = (Experiment)experiments.get(i);
-      if (experiment.getSocietyComponent().equals(society))
+      SocietyComponent sc = experiment.getSocietyComponent();
+      if (sc != null && sc.equals(society)) {
+        experiment.modified(new ModificationEvent(this, 0));
         results.add(experiment.getExperimentName());
+      }
     }
     return results;
   }
 
   /**
    * Get names of experiments in workspace that contain the recipe.
+   * Mark the experiments as modified.
    */
   private ArrayList getExperimentNamesInWorkspace(RecipeComponent recipe) {
     ArrayList results = new ArrayList();
     ArrayList experiments = getExperiments();
     for (int i = 0; i < experiments.size(); i++) {
-      Experiment exp = (Experiment)experiments.get(i);
-      RecipeComponent[] recipes = exp.getRecipeComponents();
+      Experiment experiment = (Experiment)experiments.get(i);
+      RecipeComponent[] recipes = experiment.getRecipeComponents();
       for (int j = 0; j < recipes.length; j++) {
         if (recipes[j].equals(recipe)) {
-          results.add(exp.getExperimentName());
+          experiment.modified(new ModificationEvent(this, 0));
+          results.add(experiment.getExperimentName());
           break;
         }
       }
