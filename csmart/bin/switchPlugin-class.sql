@@ -1,7 +1,7 @@
 -- SQL to change a plugin class in a copied experiment
 -- used by switchPlugin-class.sh
 
--- v4_lib_component table
+-- lib_component table
 CREATE TEMPORARY TABLE TEMPTAB AS 
  SELECT 
 	CONCAT('plugin|',':newP') AS COMPONENT_LIB_ID, 
@@ -9,16 +9,16 @@ CREATE TEMPORARY TABLE TEMPTAB AS
        	':newP' AS COMPONENT_CLASS,
        	INSERTION_POINT, 
        	CONCAT(DESCRIPTION, '-modified') AS DESCRIPTION        	
- FROM v4_lib_component 
+ FROM lib_component 
  WHERE COMPONENT_CLASS = ':oldP';
 
-REPLACE INTO v4_lib_component 
+REPLACE INTO lib_component 
     (COMPONENT_LIB_ID, COMPONENT_TYPE, COMPONENT_CLASS, INSERTION_POINT, DESCRIPTION) 
  SELECT * FROM TEMPTAB;
 
 DROP TABLE TEMPTAB;
 
--- v4_alib_component table
+-- alib_component table
 CREATE TEMPORARY TABLE TEMPTAB AS 
 SELECT 
   CONCAT(SUBSTRING(COMPONENT_ALIB_ID,1,INSTR(COMPONENT_ALIB_ID,'|')),':newP') AS COMPONENT_ALIB_ID, 
@@ -26,10 +26,10 @@ SELECT
   CONCAT('plugin|',':newP') AS COMPONENT_LIB_ID, 
   COMPONENT_TYPE, 
   CLONE_SET_ID 
- FROM v4_alib_component 
+ FROM alib_component 
  WHERE COMPONENT_LIB_ID = CONCAT('plugin|',':oldP');
 
-REPLACE INTO v4_alib_component 
+REPLACE INTO alib_component 
   (COMPONENT_ALIB_ID, COMPONENT_NAME , COMPONENT_LIB_ID, COMPONENT_TYPE , CLONE_SET_ID) 
 SELECT * FROM TEMPTAB;
 
@@ -47,14 +47,14 @@ DROP TABLE TEMPTAB;
 ------ that takes that assembly_id, and have a GUI to 
 ------ to take the old plugin class (drop-down?) and the new one (check if its already there?)
 
--- v4_asb_component_arg table
-UPDATE v4_asb_component_arg SET COMPONENT_ALIB_ID = 
+-- asb_component_arg table
+UPDATE asb_component_arg SET COMPONENT_ALIB_ID = 
   CONCAT(SUBSTRING(COMPONENT_ALIB_ID,1,INSTR(COMPONENT_ALIB_ID,'|')),':newP')
 WHERE COMPONENT_ALIB_ID LIKE '%|:oldP'
   AND ASSEMBLY_ID = ':assID';
 
--- v4_asb_component_hierarchy
-UPDATE IGNORE v4_asb_component_hierarchy SET COMPONENT_ALIB_ID = 
+-- asb_component_hierarchy
+UPDATE IGNORE asb_component_hierarchy SET COMPONENT_ALIB_ID = 
   CONCAT(SUBSTRING(COMPONENT_ALIB_ID,1,INSTR(COMPONENT_ALIB_ID,'|')),':newP')
 WHERE COMPONENT_ALIB_ID LIKE '%|:oldP'
       AND ASSEMBLY_ID = ':assID';
@@ -64,7 +64,7 @@ WHERE COMPONENT_ALIB_ID LIKE '%|:oldP'
 -- then the second run will not replace the original plugin
 -- in the above update, due to the primary key.
 -- So we delete any remaining instances with this command.
-DELETE FROM v4_asb_component_hierarchy
+DELETE FROM asb_component_hierarchy
 WHERE COMPONENT_ALIB_ID LIKE '%|:oldP'
       AND ASSEMBLY_ID = ':assID';
 

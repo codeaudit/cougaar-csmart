@@ -9,10 +9,10 @@
 -- And of course the caller still only
 -- Likes getting one assembly
 SELECT DISTINCT AA.ASSEMBLY_ID
- FROM v4_asb_component_hierarchy aa,
-     v4_expt_experiment E,
-     v4_expt_trial ET,
-     v4_expt_trial_assembly EA
+ FROM asb_component_hierarchy aa,
+     expt_experiment E,
+     expt_trial ET,
+     expt_trial_assembly EA
   WHERE AA.COMPONENT_ALIB_ID LIKE '%|:oldP'
       AND E.EXPT_ID = ET.EXPT_ID
       AND ET.TRIAL_ID = EA.TRIAL_ID

@@ -4,39 +4,39 @@
 
 CREATE DATABASE tempcopy;
 
--- v4_lib_mod_recipe
-DROP TABLE IF EXISTS tempcopy.v4_lib_mod_recipe;
+-- lib_mod_recipe
+DROP TABLE IF EXISTS tempcopy.lib_mod_recipe;
 
-CREATE TABLE tempcopy.v4_lib_mod_recipe AS
+CREATE TABLE tempcopy.lib_mod_recipe AS
   SELECT DISTINCT
     CONCAT(MOD_RECIPE_LIB_ID, NAME) AS MOD_RECIPE_LIB_ID,
     CONCAT(NAME, '-cpy') AS NAME,
     JAVA_CLASS,
     DESCRIPTION
   FROM
-    v4_lib_mod_recipe
+    lib_mod_recipe
   WHERE
     NAME = ':recipeName';
 
--- v4_lib_mod_recipe_arg
-DROP TABLE IF EXISTS tempcopy.v4_lib_mod_recipe_arg;
+-- lib_mod_recipe_arg
+DROP TABLE IF EXISTS tempcopy.lib_mod_recipe_arg;
 
-CREATE TABLE tempcopy.v4_lib_mod_recipe_arg AS
+CREATE TABLE tempcopy.lib_mod_recipe_arg AS
   SELECT DISTINCT
     CONCAT(AA.MOD_RECIPE_LIB_ID, AT.NAME) AS MOD_RECIPE_LIB_ID,
     AA.ARG_NAME,
     AA.ARG_ORDER,
     AA.ARG_VALUE
   FROM
-    v4_lib_mod_recipe_arg AA,
-    v4_lib_mod_recipe AT
+    lib_mod_recipe_arg AA,
+    lib_mod_recipe AT
   WHERE
     AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
     AND AT.NAME = ':recipeName';
 
 -- must also update the one arg value with the new Assembly ID
 -- If necessary
-UPDATE tempcopy.v4_lib_mod_recipe_arg
+UPDATE tempcopy.lib_mod_recipe_arg
    SET ARG_VALUE = LEFT(CONCAT(ARG_VALUE, '-:recipeName'),50)
   WHERE ARG_NAME = 'Assembly Id';
 
@@ -47,16 +47,16 @@ UPDATE tempcopy.v4_lib_mod_recipe_arg
 -- other scripts will need to be more careful
 
 -- asb_assembly
-DROP TABLE IF EXISTS tempcopy.v4_asb_assembly;
+DROP TABLE IF EXISTS tempcopy.asb_assembly;
 
-CREATE TABLE tempcopy.v4_asb_assembly AS
+CREATE TABLE tempcopy.asb_assembly AS
   SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:recipeName'),50) AS ASSEMBLY_ID,
     AB.ASSEMBLY_TYPE AS ASSEMBLY_TYPE, 
     AB.DESCRIPTION AS DESCRIPTION 
-  FROM v4_asb_assembly AB, 
-    v4_lib_mod_recipe_arg AA,
-    v4_lib_mod_recipe AT
+  FROM asb_assembly AB, 
+    lib_mod_recipe_arg AA,
+    lib_mod_recipe AT
   WHERE 
         AA.ARG_NAME = 'Assembly Id'
     AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
@@ -64,9 +64,9 @@ CREATE TABLE tempcopy.v4_asb_assembly AS
     AND AA.ARG_VALUE = AB.ASSEMBLY_ID;
 
 -- asb_component_hierarchy
-DROP TABLE IF EXISTS tempcopy.v4_asb_component_hierarchy;
+DROP TABLE IF EXISTS tempcopy.asb_component_hierarchy;
 
-CREATE TABLE tempcopy.v4_asb_component_hierarchy AS
+CREATE TABLE tempcopy.asb_component_hierarchy AS
   SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:recipeName'),50) AS ASSEMBLY_ID,
     AB.COMPONENT_ALIB_ID AS COMPONENT_ALIB_ID, 
@@ -74,9 +74,9 @@ CREATE TABLE tempcopy.v4_asb_component_hierarchy AS
     AB.PRIORITY AS PRIORITY,
     AB.INSERTION_ORDER AS INSERTION_ORDER 
    FROM 
-     v4_asb_component_hierarchy AB,
-     v4_lib_mod_recipe_arg AA,
-     v4_lib_mod_recipe AT
+     asb_component_hierarchy AB,
+     lib_mod_recipe_arg AA,
+     lib_mod_recipe AT
     WHERE
         AA.ARG_NAME = 'Assembly Id'
     AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
@@ -84,9 +84,9 @@ CREATE TABLE tempcopy.v4_asb_component_hierarchy AS
     AND AA.ARG_VALUE = AB.ASSEMBLY_ID;
 
 -- asb_agent
-DROP TABLE IF EXISTS tempcopy.v4_asb_agent;
+DROP TABLE IF EXISTS tempcopy.asb_agent;
 
-CREATE TABLE tempcopy.v4_asb_agent AS
+CREATE TABLE tempcopy.asb_agent AS
   SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:recipeName'),50) AS ASSEMBLY_ID,
     AB.COMPONENT_ALIB_ID AS COMPONENT_ALIB_ID, 
@@ -94,9 +94,9 @@ CREATE TABLE tempcopy.v4_asb_agent AS
     AB.CLONE_SET_ID AS CLONE_SET_ID, 
     AB.COMPONENT_NAME AS COMPONENT_NAME 
    FROM 
-     v4_asb_agent AB,
-     v4_lib_mod_recipe_arg AA,
-     v4_lib_mod_recipe AT
+     asb_agent AB,
+     lib_mod_recipe_arg AA,
+     lib_mod_recipe AT
     WHERE 
         AA.ARG_NAME = 'Assembly Id'
     AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
@@ -104,9 +104,9 @@ CREATE TABLE tempcopy.v4_asb_agent AS
     AND AA.ARG_VALUE = AB.ASSEMBLY_ID;
 
 -- asb_agent_pg_attr
-DROP TABLE IF EXISTS tempcopy.v4_asb_agent_pg_attr;
+DROP TABLE IF EXISTS tempcopy.asb_agent_pg_attr;
 
-CREATE TABLE tempcopy.v4_asb_agent_pg_attr AS
+CREATE TABLE tempcopy.asb_agent_pg_attr AS
   SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:recipeName'),50) AS ASSEMBLY_ID,
     AB.COMPONENT_ALIB_ID AS COMPONENT_ALIB_ID, 
@@ -115,9 +115,9 @@ CREATE TABLE tempcopy.v4_asb_agent_pg_attr AS
     AB.ATTRIBUTE_ORDER AS ATTRIBUTE_ORDER, 
     AB.START_DATE AS START_DATE, 
     AB.END_DATE AS END_DATE 
-  FROM  v4_asb_agent_pg_attr AB,
-     v4_lib_mod_recipe_arg AA,
-     v4_lib_mod_recipe AT
+  FROM  asb_agent_pg_attr AB,
+     lib_mod_recipe_arg AA,
+     lib_mod_recipe AT
   WHERE 
         AA.ARG_NAME = 'Assembly Id'
     AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
@@ -125,9 +125,9 @@ CREATE TABLE tempcopy.v4_asb_agent_pg_attr AS
     AND AA.ARG_VALUE = AB.ASSEMBLY_ID;
 
 -- asb_agent_relation
-DROP TABLE IF EXISTS tempcopy.v4_asb_agent_relation;
+DROP TABLE IF EXISTS tempcopy.asb_agent_relation;
 
-CREATE TABLE tempcopy.v4_asb_agent_relation AS
+CREATE TABLE tempcopy.asb_agent_relation AS
  SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:recipeName'),50) AS ASSEMBLY_ID,
   AB.ROLE AS ROLE, 
@@ -135,9 +135,9 @@ CREATE TABLE tempcopy.v4_asb_agent_relation AS
   AB.SUPPORTED_COMPONENT_ALIB_ID AS SUPPORTED_COMPONENT_ALIB_ID, 
   AB.START_DATE AS START_DATE, 
   AB.END_DATE AS END_DATE 
- FROM v4_asb_agent_relation AB, 
-     v4_lib_mod_recipe_arg AA,
-     v4_lib_mod_recipe AT
+ FROM asb_agent_relation AB, 
+     lib_mod_recipe_arg AA,
+     lib_mod_recipe AT
  WHERE 
         AA.ARG_NAME = 'Assembly Id'
     AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
@@ -145,17 +145,17 @@ CREATE TABLE tempcopy.v4_asb_agent_relation AS
     AND AA.ARG_VALUE = AB.ASSEMBLY_ID;
 
 -- asb_component_arg
-DROP TABLE IF EXISTS tempcopy.v4_asb_component_arg;
+DROP TABLE IF EXISTS tempcopy.asb_component_arg;
 
-CREATE TABLE tempcopy.v4_asb_component_arg AS
+CREATE TABLE tempcopy.asb_component_arg AS
  SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:recipeName'),50) AS ASSEMBLY_ID,
   AB.COMPONENT_ALIB_ID AS COMPONENT_ALIB_ID, 
   AB.ARGUMENT AS ARGUMENT, 
   AB.ARGUMENT_ORDER AS ARGUMENT_ORDER 
-  FROM v4_asb_component_arg AB, 
-     v4_lib_mod_recipe_arg AA,
-     v4_lib_mod_recipe AT
+  FROM asb_component_arg AB, 
+     lib_mod_recipe_arg AA,
+     lib_mod_recipe AT
  WHERE 
         AA.ARG_NAME = 'Assembly Id'
     AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
@@ -163,9 +163,9 @@ CREATE TABLE tempcopy.v4_asb_component_arg AS
     AND AA.ARG_VALUE = AB.ASSEMBLY_ID;
 
 -- asb_oplan_agent_attr
-DROP TABLE IF EXISTS tempcopy.v4_asb_oplan_agent_attr;
+DROP TABLE IF EXISTS tempcopy.asb_oplan_agent_attr;
 
-CREATE TABLE tempcopy.v4_asb_oplan_agent_attr AS
+CREATE TABLE tempcopy.asb_oplan_agent_attr AS
  SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:recipeName'),50) AS ASSEMBLY_ID,
   AB.OPLAN_ID AS OPLAN_ID, 
@@ -175,9 +175,9 @@ CREATE TABLE tempcopy.v4_asb_oplan_agent_attr AS
   AB.ATTRIBUTE_NAME AS ATTRIBUTE_NAME,
   AB.END_CDAY AS END_CDAY, 
   AB.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE 
-FROM v4_asb_oplan_agent_attr AB, 
-     v4_lib_mod_recipe_arg AA,
-     v4_lib_mod_recipe AT
+FROM asb_oplan_agent_attr AB, 
+     lib_mod_recipe_arg AA,
+     lib_mod_recipe AT
  WHERE 
         AA.ARG_NAME = 'Assembly Id'
     AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
@@ -185,18 +185,18 @@ FROM v4_asb_oplan_agent_attr AB,
     AND AA.ARG_VALUE = AB.ASSEMBLY_ID;
 
 -- asb_oplan
-DROP TABLE IF EXISTS tempcopy.v4_asb_oplan;
+DROP TABLE IF EXISTS tempcopy.asb_oplan;
 
-CREATE TABLE tempcopy.v4_asb_oplan AS
+CREATE TABLE tempcopy.asb_oplan AS
   SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:recipeName'),50) AS ASSEMBLY_ID,
    AB.OPLAN_ID AS OPLAN_ID, 
    AB.OPERATION_NAME AS OPERATION_NAME,
    AB.PRIORITY AS PRIORITY, 
    AB.C0_DATE AS C0_DATE 
-  FROM v4_asb_oplan AB, 
-     v4_lib_mod_recipe_arg AA,
-     v4_lib_mod_recipe AT
+  FROM asb_oplan AB, 
+     lib_mod_recipe_arg AA,
+     lib_mod_recipe AT
   WHERE 
         AA.ARG_NAME = 'Assembly Id'
     AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
@@ -214,8 +214,8 @@ CREATE TABLE tempcopy.community_attribute AS
    AB.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE
   FROM
    community_attribute AB,
-     v4_lib_mod_recipe_arg AA,
-     v4_lib_mod_recipe AT
+     lib_mod_recipe_arg AA,
+     lib_mod_recipe AT
   WHERE
         AA.ARG_NAME = 'Assembly Id'
     AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
@@ -234,8 +234,8 @@ CREATE TABLE tempcopy.community_entity_attribute AS
    AB.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE
   FROM
    community_entity_attribute AB,
-     v4_lib_mod_recipe_arg AA,
-     v4_lib_mod_recipe AT
+     lib_mod_recipe_arg AA,
+     lib_mod_recipe AT
   WHERE
         AA.ARG_NAME = 'Assembly Id'
     AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID

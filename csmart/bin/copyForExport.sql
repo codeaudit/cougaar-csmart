@@ -1,10 +1,10 @@
 -- COPY REFERENCE STUFF USED BY AN EXPERIMENT FOR EXPORT
 
--- v4_alib_component
-DROP TABLE IF EXISTS tempcopy.v4_alib_component2;
-DROP TABLE IF EXISTS tempcopy.v4_alib_component;
+-- alib_component
+DROP TABLE IF EXISTS tempcopy.alib_component2;
+DROP TABLE IF EXISTS tempcopy.alib_component;
 
-CREATE TABLE tempcopy.v4_alib_component2 AS
+CREATE TABLE tempcopy.alib_component2 AS
   SELECT DISTINCT
     AA.COMPONENT_ALIB_ID,
     AA.COMPONENT_NAME,
@@ -12,11 +12,11 @@ CREATE TABLE tempcopy.v4_alib_component2 AS
     AA.COMPONENT_TYPE,
     AA.CLONE_SET_ID
   FROM
-    v4_alib_component AA,
-    v4_asb_component_hierarchy AH,
-    v4_expt_trial_assembly EA,
-    v4_expt_trial ET,
-    v4_expt_experiment E
+    alib_component AA,
+    asb_component_hierarchy AH,
+    expt_trial_assembly EA,
+    expt_trial ET,
+    expt_experiment E
   WHERE
     E.NAME = ':exptName'
     AND E.EXPT_ID = ET.EXPT_ID
@@ -24,7 +24,7 @@ CREATE TABLE tempcopy.v4_alib_component2 AS
     AND EA.ASSEMBLY_ID = AH.ASSEMBLY_ID
     AND (AH.COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID OR AH.PARENT_COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID);
 
-REPLACE INTO tempcopy.v4_alib_component2
+REPLACE INTO tempcopy.alib_component2
   (COMPONENT_ALIB_ID, COMPONENT_NAME, COMPONENT_LIB_ID, COMPONENT_TYPE, CLONE_SET_ID) 
   SELECT DISTINCT
     AA.COMPONENT_ALIB_ID,
@@ -33,11 +33,11 @@ REPLACE INTO tempcopy.v4_alib_component2
     AA.COMPONENT_TYPE,
     AA.CLONE_SET_ID
   FROM
-    v4_alib_component AA,
-    v4_asb_component_hierarchy AH,
-    v4_expt_trial_config_assembly EA,
-    v4_expt_trial ET,
-    v4_expt_experiment E
+    alib_component AA,
+    asb_component_hierarchy AH,
+    expt_trial_config_assembly EA,
+    expt_trial ET,
+    expt_experiment E
   WHERE
     E.NAME = ':exptName'
     AND E.EXPT_ID = ET.EXPT_ID
@@ -46,7 +46,7 @@ REPLACE INTO tempcopy.v4_alib_component2
     AND (AH.COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID OR AH.PARENT_COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID);
 
 -- Add in those from recipe assembly
- REPLACE INTO tempcopy.v4_alib_component2
+ REPLACE INTO tempcopy.alib_component2
    (COMPONENT_ALIB_ID, COMPONENT_NAME, COMPONENT_LIB_ID, COMPONENT_TYPE, CLONE_SET_ID) 
    SELECT DISTINCT
      AA.COMPONENT_ALIB_ID,
@@ -55,12 +55,12 @@ REPLACE INTO tempcopy.v4_alib_component2
      AA.COMPONENT_TYPE,
      AA.CLONE_SET_ID
    FROM
-     v4_alib_component AA,
-     v4_asb_component_hierarchy AH,
-     v4_expt_trial_mod_recipe EA,
-     v4_lib_mod_recipe_arg MA,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+     alib_component AA,
+     asb_component_hierarchy AH,
+     expt_trial_mod_recipe EA,
+     lib_mod_recipe_arg MA,
+     expt_trial ET,
+     expt_experiment E
    WHERE
      E.NAME = ':exptName'
      AND E.EXPT_ID = ET.EXPT_ID
@@ -70,7 +70,7 @@ REPLACE INTO tempcopy.v4_alib_component2
      AND MA.ARG_VALUE = AH.ASSEMBLY_ID
      AND (AH.COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID OR AH.PARENT_COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID);
 
- CREATE TABLE tempcopy.v4_alib_component AS
+ CREATE TABLE tempcopy.alib_component AS
    SELECT DISTINCT
      COMPONENT_ALIB_ID,
      COMPONENT_NAME,
@@ -78,14 +78,14 @@ REPLACE INTO tempcopy.v4_alib_component2
      COMPONENT_TYPE,
      CLONE_SET_ID
    FROM
-     tempcopy.v4_alib_component2;
+     tempcopy.alib_component2;
 
- DROP TABLE tempcopy.v4_alib_component2;
+ DROP TABLE tempcopy.alib_component2;
 
- -- v4_lib_component
- DROP TABLE IF EXISTS tempcopy.v4_lib_component;
+ -- lib_component
+ DROP TABLE IF EXISTS tempcopy.lib_component;
 
- CREATE TABLE tempcopy.v4_lib_component AS
+ CREATE TABLE tempcopy.lib_component AS
    SELECT DISTINCT
      AA.COMPONENT_LIB_ID,
      AA.COMPONENT_TYPE,
@@ -93,46 +93,46 @@ REPLACE INTO tempcopy.v4_alib_component2
      AA.INSERTION_POINT,
      AA.DESCRIPTION
    FROM
-     v4_lib_component AA,
-     tempcopy.v4_alib_component AC
+     lib_component AA,
+     tempcopy.alib_component AC
    WHERE
      AA.COMPONENT_LIB_ID = AC.COMPONENT_LIB_ID;
 
- -- v4_lib_mod_recipe
- DROP TABLE IF EXISTS tempcopy.v4_lib_mod_recipe;
+ -- lib_mod_recipe
+ DROP TABLE IF EXISTS tempcopy.lib_mod_recipe;
 
- CREATE TABLE tempcopy.v4_lib_mod_recipe AS
+ CREATE TABLE tempcopy.lib_mod_recipe AS
    SELECT DISTINCT
      CONCAT(AA.MOD_RECIPE_LIB_ID, AA.NAME) AS MOD_RECIPE_LIB_ID,
      CONCAT(AA.NAME, '-cpy') AS NAME,
      AA.JAVA_CLASS,
      AA.DESCRIPTION
    FROM
-     v4_lib_mod_recipe AA,
-     v4_expt_trial_mod_recipe ER,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+     lib_mod_recipe AA,
+     expt_trial_mod_recipe ER,
+     expt_trial ET,
+     expt_experiment E
    WHERE
      AA.MOD_RECIPE_LIB_ID = ER.MOD_RECIPE_LIB_ID
      AND ER.TRIAL_ID = ET.TRIAL_ID
      AND ET.EXPT_ID = E.EXPT_ID
      AND E.NAME = ':exptName';
 
- -- v4_lib_mod_recipe_arg
- DROP TABLE IF EXISTS tempcopy.v4_lib_mod_recipe_arg;
+ -- lib_mod_recipe_arg
+ DROP TABLE IF EXISTS tempcopy.lib_mod_recipe_arg;
 
- CREATE TABLE tempcopy.v4_lib_mod_recipe_arg AS
+ CREATE TABLE tempcopy.lib_mod_recipe_arg AS
    SELECT DISTINCT
      CONCAT(AA.MOD_RECIPE_LIB_ID, AT.NAME) AS MOD_RECIPE_LIB_ID,
      AA.ARG_NAME,
      AA.ARG_ORDER,
      AA.ARG_VALUE
    FROM
-     v4_lib_mod_recipe_arg AA,
-     v4_lib_mod_recipe AT,
-     v4_expt_trial_mod_recipe ER,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+     lib_mod_recipe_arg AA,
+     lib_mod_recipe AT,
+     expt_trial_mod_recipe ER,
+     expt_trial ET,
+     expt_experiment E
    WHERE
      AA.MOD_RECIPE_LIB_ID = ER.MOD_RECIPE_LIB_ID
      AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
@@ -141,7 +141,7 @@ REPLACE INTO tempcopy.v4_alib_component2
      AND E.NAME = ':exptName';
 
  -- update assembly_id arg_value here
-UPDATE tempcopy.v4_lib_mod_recipe_arg
+UPDATE tempcopy.lib_mod_recipe_arg
    SET ARG_VALUE = LEFT(CONCAT(ARG_VALUE, '-:exptName'),50)
   WHERE ARG_NAME = 'Assembly Id';
 
@@ -152,17 +152,17 @@ UPDATE tempcopy.v4_lib_mod_recipe_arg
 -- Also, the new assembly_id is old with -:exptName (not -:recipeName)
 
 -- asb_assembly
- REPLACE INTO tempcopy.v4_asb_assembly
+ REPLACE INTO tempcopy.asb_assembly
    (ASSEMBLY_ID, ASSEMBLY_TYPE, DESCRIPTION) 
   SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:exptName'),50) AS ASSEMBLY_ID,
     AB.ASSEMBLY_TYPE AS ASSEMBLY_TYPE, 
     AB.DESCRIPTION AS DESCRIPTION 
-  FROM v4_asb_assembly AB, 
-     v4_lib_mod_recipe_arg AA,
-     v4_expt_trial_mod_recipe ER,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+  FROM asb_assembly AB, 
+     lib_mod_recipe_arg AA,
+     expt_trial_mod_recipe ER,
+     expt_trial ET,
+     expt_experiment E
   WHERE 
          AA.ARG_NAME = 'Assembly Id'
      AND AA.ARG_VALUE = AB.ASSEMBLY_ID
@@ -172,7 +172,7 @@ UPDATE tempcopy.v4_lib_mod_recipe_arg
      AND E.NAME = ':exptName';
 
 -- asb_component_hierarchy
-REPLACE INTO tempcopy.v4_asb_component_hierarchy
+REPLACE INTO tempcopy.asb_component_hierarchy
  (ASSEMBLY_ID, COMPONENT_ALIB_ID, PARENT_COMPONENT_ALIB_ID, PRIORITY, INSERTION_ORDER)
   SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:exptName'),50) AS ASSEMBLY_ID,
@@ -181,11 +181,11 @@ REPLACE INTO tempcopy.v4_asb_component_hierarchy
     AB.PRIORITY AS PRIORITY,
     AB.INSERTION_ORDER AS INSERTION_ORDER 
    FROM 
-     v4_asb_component_hierarchy AB,
-     v4_lib_mod_recipe_arg AA,
-     v4_expt_trial_mod_recipe ER,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+     asb_component_hierarchy AB,
+     lib_mod_recipe_arg AA,
+     expt_trial_mod_recipe ER,
+     expt_trial ET,
+     expt_experiment E
   WHERE 
          AA.ARG_NAME = 'Assembly Id'
      AND AA.ARG_VALUE = AB.ASSEMBLY_ID
@@ -195,7 +195,7 @@ REPLACE INTO tempcopy.v4_asb_component_hierarchy
      AND E.NAME = ':exptName';
 
 -- asb_agent
-REPLACE INTO tempcopy.v4_asb_agent
+REPLACE INTO tempcopy.asb_agent
   (ASSEMBLY_ID, COMPONENT_ALIB_ID, COMPONENT_LIB_ID, CLONE_SET_ID, COMPONENT_NAME)
   SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:exptName'),50) AS ASSEMBLY_ID,
@@ -204,11 +204,11 @@ REPLACE INTO tempcopy.v4_asb_agent
     AB.CLONE_SET_ID AS CLONE_SET_ID, 
     AB.COMPONENT_NAME AS COMPONENT_NAME 
    FROM 
-     v4_asb_agent AB,
-     v4_lib_mod_recipe_arg AA,
-     v4_expt_trial_mod_recipe ER,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+     asb_agent AB,
+     lib_mod_recipe_arg AA,
+     expt_trial_mod_recipe ER,
+     expt_trial ET,
+     expt_experiment E
   WHERE 
          AA.ARG_NAME = 'Assembly Id'
      AND AA.ARG_VALUE = AB.ASSEMBLY_ID
@@ -218,7 +218,7 @@ REPLACE INTO tempcopy.v4_asb_agent
      AND E.NAME = ':exptName';
 
 -- asb_agent_pg_attr
-REPLACE INTO tempcopy.v4_asb_agent_pg_attr
+REPLACE INTO tempcopy.asb_agent_pg_attr
  (ASSEMBLY_ID, COMPONENT_ALIB_ID, PG_ATTRIBUTE_LIB_ID, ATTRIBUTE_VALUE, ATTRIBUTE_ORDER, START_DATE, END_DATE)
   SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:exptName'),50) AS ASSEMBLY_ID,
@@ -228,11 +228,11 @@ REPLACE INTO tempcopy.v4_asb_agent_pg_attr
     AB.ATTRIBUTE_ORDER AS ATTRIBUTE_ORDER, 
     AB.START_DATE AS START_DATE, 
     AB.END_DATE AS END_DATE 
-  FROM  v4_asb_agent_pg_attr AB,
-     v4_lib_mod_recipe_arg AA,
-     v4_expt_trial_mod_recipe ER,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+  FROM  asb_agent_pg_attr AB,
+     lib_mod_recipe_arg AA,
+     expt_trial_mod_recipe ER,
+     expt_trial ET,
+     expt_experiment E
   WHERE 
          AA.ARG_NAME = 'Assembly Id'
      AND AA.ARG_VALUE = AB.ASSEMBLY_ID
@@ -242,7 +242,7 @@ REPLACE INTO tempcopy.v4_asb_agent_pg_attr
      AND E.NAME = ':exptName';
 
 -- asb_agent_relation
-REPLACE INTO tempcopy.v4_asb_agent_relation
+REPLACE INTO tempcopy.asb_agent_relation
  (ASSEMBLY_ID, ROLE, SUPPORTING_COMPONENT_ALIB_ID, SUPPORTED_COMPONENT_ALIB_ID, START_DATE, END_DATE)
  SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:exptName'),50) AS ASSEMBLY_ID,
@@ -251,11 +251,11 @@ REPLACE INTO tempcopy.v4_asb_agent_relation
   AB.SUPPORTED_COMPONENT_ALIB_ID AS SUPPORTED_COMPONENT_ALIB_ID, 
   AB.START_DATE AS START_DATE, 
   AB.END_DATE AS END_DATE 
- FROM v4_asb_agent_relation AB, 
-     v4_lib_mod_recipe_arg AA,
-     v4_expt_trial_mod_recipe ER,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+ FROM asb_agent_relation AB, 
+     lib_mod_recipe_arg AA,
+     expt_trial_mod_recipe ER,
+     expt_trial ET,
+     expt_experiment E
   WHERE 
          AA.ARG_NAME = 'Assembly Id'
      AND AA.ARG_VALUE = AB.ASSEMBLY_ID
@@ -265,18 +265,18 @@ REPLACE INTO tempcopy.v4_asb_agent_relation
      AND E.NAME = ':exptName';
 
 -- asb_component_arg
-REPLACE INTO tempcopy.v4_asb_component_arg
+REPLACE INTO tempcopy.asb_component_arg
   (ASSEMBLY_ID, COMPONENT_ALIB_ID, ARGUMENT, ARGUMENT_ORDER)
  SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:exptName'),50) AS ASSEMBLY_ID,
   AB.COMPONENT_ALIB_ID AS COMPONENT_ALIB_ID, 
   AB.ARGUMENT AS ARGUMENT, 
   AB.ARGUMENT_ORDER AS ARGUMENT_ORDER 
-  FROM v4_asb_component_arg AB, 
-     v4_lib_mod_recipe_arg AA,
-     v4_expt_trial_mod_recipe ER,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+  FROM asb_component_arg AB, 
+     lib_mod_recipe_arg AA,
+     expt_trial_mod_recipe ER,
+     expt_trial ET,
+     expt_experiment E
   WHERE 
          AA.ARG_NAME = 'Assembly Id'
      AND AA.ARG_VALUE = AB.ASSEMBLY_ID
@@ -286,7 +286,7 @@ REPLACE INTO tempcopy.v4_asb_component_arg
      AND E.NAME = ':exptName';
 
 -- asb_oplan_agent_attr
-REPLACE INTO tempcopy.v4_asb_oplan_agent_attr
+REPLACE INTO tempcopy.asb_oplan_agent_attr
  (ASSEMBLY_ID, OPLAN_ID, COMPONENT_ALIB_ID, COMPONENT_ID, START_CDAY, ATTRIBUTE_NAME, END_CDAY, ATTRIBUTE_VALUE)
  SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:exptName'),50) AS ASSEMBLY_ID,
@@ -297,11 +297,11 @@ REPLACE INTO tempcopy.v4_asb_oplan_agent_attr
   AB.ATTRIBUTE_NAME AS ATTRIBUTE_NAME,
   AB.END_CDAY AS END_CDAY, 
   AB.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE 
-FROM v4_asb_oplan_agent_attr AB, 
-     v4_lib_mod_recipe_arg AA,
-     v4_expt_trial_mod_recipe ER,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+FROM asb_oplan_agent_attr AB, 
+     lib_mod_recipe_arg AA,
+     expt_trial_mod_recipe ER,
+     expt_trial ET,
+     expt_experiment E
   WHERE 
          AA.ARG_NAME = 'Assembly Id'
      AND AA.ARG_VALUE = AB.ASSEMBLY_ID
@@ -311,7 +311,7 @@ FROM v4_asb_oplan_agent_attr AB,
      AND E.NAME = ':exptName';
 
 -- asb_oplan
-REPLACE INTO tempcopy.v4_asb_oplan
+REPLACE INTO tempcopy.asb_oplan
  (ASSEMBLY_ID, OPLAN_ID, OPERATION_NAME, PRIORITY, C0_DATE)
   SELECT DISTINCT 
     LEFT(CONCAT(AA.ARG_VALUE, '-:exptName'),50) AS ASSEMBLY_ID,
@@ -319,11 +319,11 @@ REPLACE INTO tempcopy.v4_asb_oplan
    AB.OPERATION_NAME AS OPERATION_NAME,
    AB.PRIORITY AS PRIORITY, 
    AB.C0_DATE AS C0_DATE 
-  FROM v4_asb_oplan AB, 
-     v4_lib_mod_recipe_arg AA,
-     v4_expt_trial_mod_recipe ER,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+  FROM asb_oplan AB, 
+     lib_mod_recipe_arg AA,
+     expt_trial_mod_recipe ER,
+     expt_trial ET,
+     expt_experiment E
   WHERE 
          AA.ARG_NAME = 'Assembly Id'
      AND AA.ARG_VALUE = AB.ASSEMBLY_ID
@@ -342,10 +342,10 @@ REPLACE INTO tempcopy.community_attribute
    AB.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE
   FROM
    community_attribute AB,
-     v4_lib_mod_recipe_arg AA,
-     v4_expt_trial_mod_recipe ER,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+     lib_mod_recipe_arg AA,
+     expt_trial_mod_recipe ER,
+     expt_trial ET,
+     expt_experiment E
   WHERE 
          AA.ARG_NAME = 'Assembly Id'
      AND AA.ARG_VALUE = AB.ASSEMBLY_ID
@@ -365,10 +365,10 @@ REPLACE INTO tempcopy.community_entity_attribute
    AB.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE
   FROM
    community_entity_attribute AB,
-     v4_lib_mod_recipe_arg AA,
-     v4_expt_trial_mod_recipe ER,
-     v4_expt_trial ET,
-     v4_expt_experiment E
+     lib_mod_recipe_arg AA,
+     expt_trial_mod_recipe ER,
+     expt_trial ET,
+     expt_experiment E
   WHERE 
          AA.ARG_NAME = 'Assembly Id'
      AND AA.ARG_VALUE = AB.ASSEMBLY_ID
