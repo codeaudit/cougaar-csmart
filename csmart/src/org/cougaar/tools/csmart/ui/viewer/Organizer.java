@@ -63,7 +63,7 @@ public class Organizer extends JScrollPane {
   private static final String EXPT_TRIAL_QUERY = "queryTrials";
   private static final String EXPT_NODE_QUERY = "queryNodes";
   private static final String EXPT_HOST_QUERY = "queryHosts";
-
+  private static final String COMPONENT_ARGS_QUERY = "queryComponentArgs";
   private static final long UPDATE_DELAY = 5000L;
 
   private boolean updateNeeded = false;
@@ -1361,7 +1361,7 @@ public class Organizer extends JScrollPane {
       return;
     String experimentName = (String)cb.getSelectedItem();
     String experimentId = (String)experimentNamesMap.get(experimentName);
-    ExperimentDB.deleteExperiment(experimentId);
+    ExperimentDB.deleteExperiment(experimentId, experimentName);
   }
 
   /**
@@ -1448,7 +1448,7 @@ public class Organizer extends JScrollPane {
     try {
       Connection conn = DBUtils.getConnection();
       Map substitutions = new HashMap();
-      substitutions.put(":component_type", ComponentData.HOST);
+      substitutions.put(":assemblyMatch", assemblyMatch);
       Statement stmt = conn.createStatement();
       String query = DBUtils.getQuery(EXPT_HOST_QUERY, substitutions);
       //      System.out.println("Organizer: Get hosts query: " + query);
@@ -1747,10 +1747,51 @@ public class Organizer extends JScrollPane {
     // Add all Hosts.
     Iterator hostIter = hosts.iterator();
     while (hostIter.hasNext()) {
-      experiment.addHost((String)hostIter.next());
+      String hostName = (String) hostIter.next();
+      HostComponent hc = experiment.addHost(hostName);
+      setComponentProperties((ConfigurableComponent) hc, hostName, assemblyMatch);
     }
     mapNodesToHosts(experiment, assemblyMatch);
     workspace.setSelection(addExperimentToWorkspace(experiment, node));
+  }
+
+  private void setComponentProperties(ConfigurableComponent cc,
+                                      String comp_alib_id,
+                                      String assemblyMatch)
+  {
+    try {
+      Connection conn = DBUtils.getConnection();
+      Map substitutions = new HashMap();
+      substitutions.put(":assemblyMatch", assemblyMatch);
+      substitutions.put(":comp_alib_id", comp_alib_id);
+      Statement stmt = conn.createStatement();
+      String query = DBUtils.getQuery(COMPONENT_ARGS_QUERY, substitutions);
+      System.out.println("Organizer " + COMPONENT_ARGS_QUERY + ": "  + query);
+      ResultSet rs = stmt.executeQuery(query);
+      while(rs.next()) {
+        String param = rs.getString(1);
+        if (param.startsWith(Experiment.PROP_PREFIX)) {
+          int ix1 = Experiment.PROP_PREFIX.length();
+          int ix2 = param.indexOf('=', ix1);
+          String pname = param.substring(ix1, ix2);
+          String pvalue = param.substring(ix2 + 1);
+          Property prop = cc.getProperty(pname);
+          if (prop == null) {
+            System.out.println("adding " + pname + "=" + pvalue);
+            cc.addProperty(pname, pvalue);
+          } else {
+            System.out.println("setting " + pname + "=" + pvalue);
+            prop.setValue(pvalue);
+          }
+        }
+      }
+      rs.close();
+      stmt.close();
+      conn.close();
+    } catch (SQLException se) {      
+      System.err.println("Caught SQL exception: " + se);
+      se.printStackTrace();
+    }
   }
 
   private void setDefaultNodeArguments(Experiment experiment,
@@ -1913,11 +1954,12 @@ public class Organizer extends JScrollPane {
         return;
 
       final String id = experiment.getExperimentID();
+      final String name = experiment.getShortName();
       GUIUtils.timeConsumingTaskStart(organizer);
       try {
         new Thread("DeleteExperiment") {
           public void run() {
-            ExperimentDB.deleteExperiment(id);
+            ExperimentDB.deleteExperiment(id, name);
             GUIUtils.timeConsumingTaskEnd(organizer);
           }
         }.start();

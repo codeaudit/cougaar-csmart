@@ -53,8 +53,8 @@ public class ExperimentDB {
      * Deletes the given experiment from the database. Gets rid of the trial and associated other data.
      * Does not get rid of the CMT assembly or other assemblies.
      */
-    public static void deleteExperiment(String experimentId) {
-	CMT.deleteExperiment(experimentId);
+    public static void deleteExperiment(String experimentId, String experimentName) {
+	CMT.deleteExperiment(experimentId, experimentName);
     }
 
     /**

@@ -27,7 +27,9 @@ import java.sql.ResultSet;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -51,6 +53,8 @@ import org.cougaar.util.DBConnectionPool;
  * the configuration database with some or all of the components
  * described by the data. The selection of applicable components is
  * still an issue.
+ * @property csmart.PopulateDb.log.enable if true enables the logging
+ * of executed queries to a file named PopulateDb<datetime>.log.
  **/
 public class PDbBase {
     public static final int RECIPE_STATUS_ABSENT = 0;
@@ -58,6 +62,12 @@ public class PDbBase {
     public static final int RECIPE_STATUS_DIFFERS = 2;
 
     public static final String QUERY_FILE = "PopulateDb.q";
+
+    private static final String PROP_LOG_QUERIES = "csmart.PopulateDb.log.enable";
+    private static final String DFLT_LOG_QUERIES = "false";
+    private static boolean logQueries =
+        System.getProperty(PROP_LOG_QUERIES, DFLT_LOG_QUERIES).equals("true");
+        
     protected Map substitutions = new HashMap() {
         public Object put(Object key, Object val) {
             if (val == null) throw new IllegalArgumentException("Null value for " + key);
@@ -78,7 +88,8 @@ public class PDbBase {
     public PDbBase()
         throws SQLException, IOException
     {
-        //        log = new PrintWriter(new FileWriter("PopulateDbQuery.log"));
+        if (logQueries)
+            log = new PrintWriter(new FileWriter(getLogName()));
         dbp = DBProperties.readQueryFile(QUERY_FILE);
         try {
             dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
@@ -103,6 +114,11 @@ public class PDbBase {
         dbConnection.setAutoCommit(false);
         stmt = dbConnection.createStatement();
         updateStmt = dbConnection.createStatement();
+    }
+
+    DateFormat logDateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+    private String getLogName() {
+        return "PopulateDb" + logDateFormat.format(new Date()) + ".log";
     }
 
     /**
@@ -319,6 +335,11 @@ public class PDbBase {
      * done. Otherwise, the finalizer will close it.
      **/
     public synchronized void close() throws SQLException {
+        if (log != null) {
+            log.flush();
+            log.close();
+            log = null;
+        }
         if (dbConnection != null) {
             if (!dbConnection.getAutoCommit()) dbConnection.commit();
             dbConnection.close();

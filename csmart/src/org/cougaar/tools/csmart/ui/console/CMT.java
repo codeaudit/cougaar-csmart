@@ -649,7 +649,7 @@ public class CMT {
      * Does not get rid of the CMT assembly or other assemblies.
      */
 
-    public static void deleteExperiment(String experiment_id) {
+    public static void deleteExperiment(String experiment_id, String experiment_name) {
 	boolean doIt = true;
 	if(experiment_id.equals("EXPT_TRANS")){
 	    doIt=false;
@@ -668,6 +668,7 @@ public class CMT {
 	    return;
 	String expt_id = sqlQuote(experiment_id);
 	String trial_id = sqlQuote(getTrialId(experiment_id));
+        String society_id = sqlQuote("society|" + experiment_name);
 	ArrayList queries = new ArrayList();
 	queries.add(makeDeleteQuery(asbPrefix+"expt_trial_assembly", "expt_id", expt_id));
 	queries.add(makeDeleteQuery(asbPrefix+"expt_trial_thread", "expt_id", expt_id));
@@ -677,6 +678,8 @@ public class CMT {
 	queries.add(makeDeleteQuery(asbPrefix+"expt_trial_mod_recipe", "trial_id", trial_id));
 	queries.add(makeDeleteQuery(asbPrefix+"expt_trial", "expt_id", expt_id));
 	queries.add(makeDeleteQuery(asbPrefix+"expt_experiment", "expt_id", expt_id));
+        queries.add(makeDeleteQuery(asbPrefix+"alib_component", "component_alib_id",
+                                    society_id));
 	executeQueries(queries);
 	clearUnusedCMTassemblies();
     }

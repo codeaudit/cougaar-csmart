@@ -43,6 +43,7 @@ import org.cougaar.core.cluster.ClusterImpl;
  */
 public class Experiment extends ModifiableConfigurableComponent implements ModificationListener, java.io.Serializable {
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
+  public static final String PROP_PREFIX = "-DPROP$";
   private List societies = new ArrayList();
   private List hosts = new ArrayList();
   private List nodes = new ArrayList();
@@ -702,6 +703,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         hc.setClassName("");
         hc.setOwner(this);
         hc.setParent(theSoc);
+        addPropertiesAsParameters(hc, host);
         theSoc.addChild(hc);
         NodeComponent[] nodes = host.getNodes();
         for (int j = 0; j < nodes.length; j++) {
@@ -765,6 +767,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       Map.Entry entry = (Map.Entry) i.next();
       nc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
     }
+    addPropertiesAsParameters(nc, node);
     parent.addChild(nc);
     AgentComponent[] agents = node.getAgents();
     if (agents != null && agents.length > 0) {
@@ -776,6 +779,17 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
         ac.setOwner(null); // the society that contains this agent FIXME!!!
         ac.setParent(nc);
         nc.addChild((ComponentData)ac);
+      }
+    }
+  }
+
+  private void addPropertiesAsParameters(ComponentData cd, ComponentProperties cp)
+  {
+    for (Iterator it = cp.getPropertyNames(); it.hasNext(); ) {
+      ComponentName pname = (ComponentName) it.next();
+      Property prop = cp.getProperty(pname);
+      if (prop != null) {
+        cd.addParameter(PROP_PREFIX + pname.last() + "=" + prop.getValue());
       }
     }
   }
