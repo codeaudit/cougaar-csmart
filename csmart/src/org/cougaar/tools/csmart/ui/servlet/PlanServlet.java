@@ -43,7 +43,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cougaar.core.logging.NullLoggingServiceImpl;
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
@@ -82,14 +81,11 @@ public class PlanServlet
    * Cougaar hook
    */
   private SimpleServletSupport support;
-  private transient Logger log;
 
-  public PlanServlet(SimpleServletSupport support) {
-    super();
+  public void setSimpleServletSupport(SimpleServletSupport support) {
     this.support = support;
-    log = (Logger) NullLoggingServiceImpl.getNullLoggingServiceImpl();
     if ( !  ( "/CSMART_PlanServlet".equals(support.getPath()) ) ) {
-      System.out.println("Error in servlet path: " + support.getPath());
+      support.getLog().error("Incorrect servlet path: " + support.getPath());
     }
   }
   
@@ -143,9 +139,6 @@ public class PlanServlet
     /* limit on number of PropertyTrees to return; see javadocs above */
     int limit = Integer.MAX_VALUE;
 
-    private transient Logger log = 
-      (Logger) NullLoggingServiceImpl.getNullLoggingServiceImpl();
- 
     /* since "PlanProvider" is a static inner class, here
      * we hold onto the support API.
      *
@@ -153,9 +146,11 @@ public class PlanServlet
      * the "support" from the outer class.
      */    
     SimpleServletSupport support;
+    private Logger log;
     
     public PlanProvider(SimpleServletSupport support) {
       this.support = support;
+      this.log = support.getLog();
     }
     
     /**

@@ -34,7 +34,6 @@ import java.util.Vector;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cougaar.core.logging.NullLoggingServiceImpl;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
 import org.cougaar.planning.ldm.plan.AllocationResult;
@@ -66,15 +65,11 @@ public class MetricsServlet
   extends HttpServlet
 {
   private SimpleServletSupport support;
-  private transient Logger log;
 
-  public MetricsServlet(SimpleServletSupport support) {
-    super();
+  public void setSimpleServletSupport(SimpleServletSupport support) {
     this.support = support;
-    log = (Logger) NullLoggingServiceImpl.getNullLoggingServiceImpl();
-
     if ( !  ( "/CSMART_MetricsServlet".equals(support.getPath()) ) ) {
-      System.out.println("Error in servlet path: " + support.getPath());
+      support.getLog().error("Incorrect servlet path: " + support.getPath());
     }
   }
   
@@ -126,8 +121,7 @@ public class MetricsServlet
      * the "support" from the outer class.
      */      
     private SimpleServletSupport support;
-
-    private transient Logger log = (Logger)NullLoggingServiceImpl.getNullLoggingServiceImpl();
+    private Logger log;
     
     /* Inner class constructor
      * 
@@ -135,6 +129,7 @@ public class MetricsServlet
      */
     public MetricProvider(SimpleServletSupport support) {
       this.support = support;
+      this.log = support.getLog();
     }
     
     /* Obtains Task Predicate */

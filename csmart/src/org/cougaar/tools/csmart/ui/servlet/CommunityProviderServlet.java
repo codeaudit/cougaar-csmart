@@ -37,7 +37,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.cougaar.core.logging.NullLoggingServiceImpl;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
 import org.cougaar.planning.ldm.asset.Asset;
@@ -65,15 +64,11 @@ public class CommunityProviderServlet
   extends HttpServlet
 {
   private SimpleServletSupport support;
-  private transient Logger log;
 
-  public CommunityProviderServlet(SimpleServletSupport support) {
-    super();
+  public void setSimpleServletSupport(SimpleServletSupport support) {
     this.support = support;
-    log = (Logger)NullLoggingServiceImpl.getNullLoggingServiceImpl();
-
     if ( !  ( "/CSMART_CommunityProviderServlet".equals(support.getPath()) ) ) {
-      System.out.println("Error in servlet path: " + support.getPath());
+      support.getLog().error("Incorrect servlet path: " + support.getPath());
     }
   }
 
@@ -112,7 +107,6 @@ public class CommunityProviderServlet
      * parameters from the URL:
      */
     ServletOutputStream out; 
-    Logger log = (Logger)NullLoggingServiceImpl.getNullLoggingServiceImpl();
 
     /* since "ClusterProvider" is a static inner class, here
      * we hold onto the support API.
@@ -121,10 +115,12 @@ public class CommunityProviderServlet
      * the "support" from the outer class.
      */      
     private SimpleServletSupport support;
+    private Logger log;
     
     // inner class constructor
     public CommunityProvider(SimpleServletSupport support) {
       this.support = support;
+      this.log = support.getLog();
     }
    
     /**

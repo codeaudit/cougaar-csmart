@@ -76,15 +76,12 @@ public class AgentInfoServlet
   private SimpleServletSupport support;
   
   /**
-   * Creates a new <code>AgentInfoServlet</code> instance.
-   *
    * @param support <code>SimpleServletSupport</code> object
    */
-  public AgentInfoServlet(SimpleServletSupport support) {
-    super();
+  public void setSimpleServletSupport(SimpleServletSupport support) {
     this.support = support;
-     if ( !  ( "/CSMART_AgentInfoServlet".equals(support.getPath()) ) ) {
-      System.err.println("Error in servlet path: " + support.getPath());
+    if ( !  ( "/CSMART_AgentInfoServlet".equals(support.getPath()) ) ) {
+      support.getLog().error("Incorrect servlet path: " + support.getPath());
     }
   }
   

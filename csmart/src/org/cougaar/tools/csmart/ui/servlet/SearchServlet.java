@@ -50,7 +50,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.cougaar.core.agent.ClusterIdentifier;
-import org.cougaar.core.logging.NullLoggingServiceImpl;
 import org.cougaar.core.servlet.ServletUtil;
 import org.cougaar.core.servlet.SimpleServletSupport;
 import org.cougaar.core.util.UID;
@@ -359,8 +358,6 @@ public class SearchServlet
 				      Set startUIDs,
 				      boolean isDown,
 				      List l) {
-      Logger log = (Logger) NullLoggingServiceImpl.getNullLoggingServiceImpl();
-
       int nStartUIDs = ((startUIDs != null) ? startUIDs.size() : 0);
       out.print(
 		"<html><head><title>Search results</title></head><body>\n"+
@@ -392,8 +389,8 @@ public class SearchServlet
           URLEncoder.encode(cid.toString(), "UTF-8")+
           "/tasks?uid=";
         } catch(UnsupportedEncodingException e) {
-          if (log.isErrorEnabled())
-            log.error("Exception Encoding ", e);
+          // should never happen -- UTF-8 is always valid.
+          System.err.println("Exception Encoding: "+e.getMessage());
         }
 
       // print objs

@@ -64,15 +64,12 @@ public class AgentProviderServlet
   private SimpleServletSupport support;
   
   /**
-   * Creates a new <code>AgentProviderServlet</code> instance.
-   *
    * @param support Support Servlet
    */
-  public AgentProviderServlet(SimpleServletSupport support) {
-    super();
+  public void setSimpleServletSuppport(SimpleServletSupport support) {
     this.support = support;
     if ( !  ( "/CSMART_AgentProviderServlet".equals(support.getPath()) ) ) {
-      System.out.println("Error in servlet path: " + support.getPath());
+      support.getLog().error("Incorrect servlet path: " + support.getPath());
     }
   }
 
