@@ -120,6 +120,9 @@ public class ExperimentBuilder extends JFrame {
       experiment.setEditable(isEditable);
     if (isRunnable)
       experiment.setRunnable(isRunnable);
+    // If the experiment now has a society and is otherwise runnable, say so
+    if (experiment.getSocietyComponentCount() > 0)
+      experiment.setRunnable(true);
   }
 
   /**
