@@ -47,6 +47,7 @@ import org.cougaar.util.log.Logger;
 
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
