@@ -18,16 +18,11 @@
  *  PERFORMANCE OF THE COUGAAR SOFTWARE.
  * </copyright>
  */
-
 package org.cougaar.tools.csmart.ui.component;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
 /**
- * AgentComponentData extends ComponentData and adds in
- * fields specific to an Agent such as all communites
- * that it belongs to, all of its roles and all its relationships.
+ * AgentComponentData extends ComponentData and fills in the
+ * Agent values of some fields.
  */
 public class AgentComponentData extends GenericComponentData {
 
