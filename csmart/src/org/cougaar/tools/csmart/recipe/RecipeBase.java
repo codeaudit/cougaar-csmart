@@ -20,18 +20,22 @@
  */
 package org.cougaar.tools.csmart.recipe;
 
-import java.io.ObjectInputStream;
+
+
+
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Iterator;
-
-import org.cougaar.util.log.Logger;
-
-import org.cougaar.tools.csmart.core.db.PopulateDb;
+import java.util.List;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.db.PDbBase;
+import org.cougaar.tools.csmart.core.db.PopulateDb;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
+import org.cougaar.tools.csmart.core.property.ComposableComponent;
+import org.cougaar.tools.csmart.core.property.ConfigurableComponentListener;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 import org.cougaar.tools.csmart.core.property.ModifiableConfigurableComponent;
 import org.cougaar.tools.csmart.core.property.ModificationEvent;
@@ -43,11 +47,10 @@ import org.cougaar.tools.csmart.core.property.PropertyListener;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.range.BooleanRange;
 import org.cougaar.tools.csmart.core.property.range.StringRange;
-
 import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.society.AgentComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import org.cougaar.tools.csmart.core.db.PDbBase;
+import org.cougaar.util.log.Logger;
 
 /**
  * Holds basic recipe functionality
@@ -138,7 +141,6 @@ public abstract class RecipeBase
     Property addedProperty = e.getProperty();
     Property myProperty = getProperty(addedProperty.getName().last().toString());
     if (myProperty != null) {
-      setPropertyVisible(addedProperty, true);
       addedProperty.addPropertyListener(myPropertyListener);
       fireModification();
     }
@@ -158,7 +160,10 @@ public abstract class RecipeBase
    * @return an <code>AgentComponent[]</code> value
    */
   public AgentComponent[] getAgents() {
-    return null;
+    ArrayList agents = 
+      new ArrayList(getDescendentsOfClass(AgentComponent.class));
+    return (AgentComponent[])agents.toArray(new AgentComponent[agents.size()]);
+//     return null;
   }
 
   /**
@@ -226,7 +231,8 @@ public abstract class RecipeBase
     addPropertiesListener(this);
     for (Iterator i = getLocalPropertyNames(); i.hasNext(); ) {
       Property p = getProperty((CompositeName)i.next());
-      p.addPropertyListener(myPropertyListener);
+      if(p != null) 
+        p.addPropertyListener(myPropertyListener);
     }
   }
 
@@ -240,6 +246,29 @@ public abstract class RecipeBase
           fireModification();
         }
       };
+
+
+  ModificationListener myModificationListener = new MyModificationListener();
+  
+  public int addChild(ComposableComponent c) {
+    ((ModifiableConfigurableComponent)c).addModificationListener(myModificationListener);
+    fireModification();
+    return super.addChild(c);
+  }
+
+  public void removeChild(ComposableComponent c) {
+    ((ModifiableConfigurableComponent)c).removeModificationListener(myModificationListener);
+    fireModification();
+    super.removeChild(c);
+  }
+
+  class MyModificationListener implements ModificationListener, ConfigurableComponentListener {
+    public void modified(ModificationEvent e) {
+      // don't propagate modifications when we're saving
+      if (!saveInProgress)
+        fireModification();
+    }
+  }
 
   // Bug 1357: Add in own ModificationListener as per SocietyBase, it check on saveInProgress?
 
