@@ -95,8 +95,8 @@ public class CMTDialog extends JDialog {
       boolean sel = ExperimentDB.isULThreadSelected(trialId, ULDBThreads[i]);
       cb.setSelected(sel);
       originalThreadSelected.add(new Boolean(sel));
-      if (i == (ULThreads.length-1))
-        cb.setEnabled(false); // spare parts
+      //if (i == (ULThreads.length-1))
+      //  cb.setEnabled(false); // spare parts
       bottomPanel.add(cb,
                       new GridBagConstraints(x, y++, 1, 1, 0.0, 0.0,
                                              GridBagConstraints.WEST,
