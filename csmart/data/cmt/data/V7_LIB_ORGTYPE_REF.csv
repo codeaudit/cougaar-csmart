@@ -1,41 +1,64 @@
-ALPORGTYPE,DESCRIPTION,BLANK
-3ID-OTHER,Other Members of 3ID-DIV, 
-AMMO-SUPPLY,Ammunition Supply, 
-ARBN,Armored BN, 
-AVNBN-ATTACK,Aviation BN - Attack, 
-AVNBN-TRANSPORT,Aviation BN - Transport, 
-BDE-HHC,BDE HHC, 
-CAVSQDN,Cavalry SQDN, 
-CORPS-MAINT,Corps Level Maintenance Org, 
-DASB,Division Air Support BN, 
-DISCOM-HHC,Division Support Command Headquarters, 
-DIV-HHC,Division HHC, 
-DLAHQ,DLA Headqaurters, 
-ENGBN,Engineer BN, 
-FABN,Field Artillery BN, 
-FSB,Forward Support BN, 
-IBCT-OTHER,Other IBCT Units, 
-IBCT-SPTBN,Support BN for the IBCT, 
-INFBN,Infantry BN, 
-IOC,Ammunition Provider, 
-JTF-HHC,JTF Headquarters, 
-MATERIEL-SUPPLY,"Materiel Supply (Includes Subsistence, Consumables, Medical, etc.: Not ammuniton or BulkPOL)", 
-MEDICAL,Medical Units, 
-MEDICAL-SUPPLY,Medical Supply Units, 
-MSB,Main Support BN, 
-NCA,National Command Authority, 
-POL-SUPPLY,POL Supply (Includes packaged POL), 
-SPTGP-HHC,Support Group Command Headquarters, 
-SPTGP-UNIT,Members of the 24-SPTGP-FP, 
-SUPPORTED-CINC-HHC,Supported CINC Headquarters, 
-THEATER-CONSTRUCTION,Perform Construction inTheater, 
-THEATER-TRANSPORT,Theater Transportation Scheduler (Using universal allocator), 
-THEATER-TRANSPORT-VISHNU,Theater Transportation Provider (Using Vishnu GA scheduler), 
-TRANSCOM,USTRANSCOM Headquarters, 
-TRANS-TERMINAL,Transportation Terminal Manager, 
-GLOBAL-AIR,Global Air transportation manager,
-GLOBAL-SEA,Global Sea transportation manager,
-CONUS-GROUND,CONUS ground transportation provider,
-PLANE-PACKER,Airplane scheduling provider,
-SHIP-PACKER,Ship scheduling provider,
-THEATER-GROUND,Theater ground transportation provider,
+ORGTYPE_ID,DESCRIPTION,BLANK,COUNT
+ARBN,Armored BN, ,5
+AVN-RGT,Aviation Regiment, ,1
+AVNBDE,Aviation Brigade, ,2
+AVNBN,Aviation Battalion, ,2
+AWR,Army War Reserves, ,1
+BDE-HQ,Brigade HQ, ,3
+CAVSQDN,Cavalry Squadron, ,1
+CMD-PASS-THRU,Command Pass Through, ,5
+CONUS-DLA-SUPPLY,CONUS: DLA Supply, ,1
+CONUS-FORSCOM,CONUS: FORSCOM, ,1
+CONUS-NCA,CONUS: NCA, ,1
+CONUS-ORD-SUPPLY,CONUS: Ord Supply, ,1
+CORPS-ARTY,Corps: Artillery HQ, ,1
+CORPS-ENGBN,Corps: ENGBN, ,2
+CORPS-FLDSVC-CO,CORPS: Field Service Company, ,1
+CORPS-HQ,Corps HQ, ,1
+CORPS-MAINTBN,Corps: Maintenance Battalion, ,2
+CORPS-MAINTCO,Corps: Maintenance Company, ,5
+CORPS-ORD-MGR,Corps: Ordnance Manager (BN or CO), ,2
+CORPS-OTHER,Corps: Other, ,24
+CORPS-POL-SUPPLYBN,Corps: POL Supply Battalion, ,1
+CORPS-POL-SUPPLYCO,Corps: POL Supply Company, ,2
+CORPS-REAR,Corps Rear, ,1
+CORPS-RPRPTCO,Corps: Repair Part Company, ,1
+CORPS-SSCO,Corps: Supply and Servcie Company, ,2
+CORPS-SUPPLYCO,Corps: Supply Company, ,1
+CORPS-TCBN,Corps: TCBN, ,2
+CSB,Corps Support Battalion, ,1
+CSG,Corps Support Group, ,2
+DASB,Division Air Support Battalion, ,1
+DISCOM-HQ,DISCOM HQ, ,1
+DIV-HQ,Division HQ, ,1
+DIV-OTHER,Division: Other, ,5
+DIVARTY,Division Artillery HQ, ,1
+ENGBDE,(Division) Engineering Brigade HQ, ,1
+ENGBN,(Division) Engineering Battalion, ,3
+FABDE,(Division) Field Artillery Brigade HQ, ,1
+FABN,(Division) Field Artillery Battalion, ,7
+FABTRY,Field Artillery Battery, ,1
+FSB,Forward Support Battalion, ,3
+INFBN,Infantry Battalion, ,4
+MSB,Main Support Battalion, ,1
+SUPCOM-HQ,Support Command HQ, ,1
+THEATER-HNS,Theater: Host Nation Support, ,1
+THEATER-MAINTBN,Theater: Maintenance BN, ,1
+THEATER-ORD-MGR,Theater: Ordnance Manager (BN or CO), ,1
+THEATER-OTHER,Theater: Other, ,14
+THEATER-PERISHABLE-SUPPLYCO,Theater: Perishable Supply Company, ,1
+THEATER-POL-SUPPLYCO,Theater: POL Supply Company, ,1
+THEATER-POL-TCBN,Theater POL TCBN, ,1
+THEATER-SPTGP,Theater: Support Group, ,1
+THEATER-SSCO,Theater: Supply and Service Company, ,1
+THEATER-SUPPLYCO,Theater: Supply Company, ,1
+THEATER-TCBN,Theater: TCBN, ,1
+THEATER-TRANSGP,Theater : Transportation Group, ,1
+TRANSCOM-CONUSGround,TRANSCOM: CONUSGround, ,1
+TRANSCOM-GlobalAir,TRANSCOM: GlobalAir, ,1
+TRANSCOM-GlobalSea,TRANSCOM: GlobalSea, ,1
+TRANSCOM-HQ,TRANSCOM HQ, ,2
+TRANSCOM-PlanePacker,TRANSCOM: PlanePacker, ,1
+TRANSCOM-ShipPacker,TRANSCOM: ShipPacker, ,1
+TRANSCOM-TheaterGround,TRANSCOM: TheaterGround, ,1
+TSC,Theater Support Command, ,1
