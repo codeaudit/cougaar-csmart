@@ -702,13 +702,6 @@ public class CSMARTConsole extends JFrame {
       runButton.setEnabled(false);
       return; // nothing to run
     }
-
-    // query user for results directory before running the first time
-    //    if (getResultDir() == null) {
-    //      runButton.setSelected(false);
-    //      return; // abort running if user doesn't specify results directory
-    //    }
-
     // set where to store results
     experiment.setResultDirectory(csmart.getResultDir());
 
@@ -1492,39 +1485,6 @@ public class CSMARTConsole extends JFrame {
       e.printStackTrace();
     }
   }
-
-  /**
-   * Get the directory in which to store the metrics file.
-   * If no directory is set, then display a file chooser, initted
-   * to the cougaar install path, for the user to choose a directory.
-   */
-//    private File getResultDir() {
-//      File resultDir = experiment.getResultDirectory();
-//      if (resultDir != null)
-//        return resultDir;
-//      String resultDirName = ".";
-//      try {
-//        resultDirName = System.getProperty("org.cougaar.install.path");
-//      } catch (RuntimeException e) {
-//        // just use default
-//      }
-//      if (resultDirName == null)
-//        resultDirName = ".";
-//      JFileChooser chooser = new JFileChooser(resultDirName);
-//      chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-//      chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
-//  	public boolean accept (File f) {
-//  	  return f.isDirectory();
-//  	}
-//  	public String getDescription() {return "All Directories";}
-//        });
-//      int result = chooser.showDialog(this, "Select Results (Metrics) Storage Directory");
-//      if (result != JFileChooser.APPROVE_OPTION)
-//        return null;
-//      resultDir = chooser.getSelectedFile();
-//      experiment.setResultDirectory(resultDir);
-//      return resultDir;
-//    }
 
   /**
    * Create a file for the results of this trial.
