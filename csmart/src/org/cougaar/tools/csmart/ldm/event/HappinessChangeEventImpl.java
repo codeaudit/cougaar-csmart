@@ -18,8 +18,8 @@ import org.cougaar.core.cluster.ClusterIdentifier;
  * <code>PlanElement</code>'s result.<br>
  *
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
- * @see AllocationResult
- * @see CustomerPlugIn
+ * @see org.cougaar.domain.planning.ldm.plan.PlanElement
+ * @see org.cougaar.tools.csmart.plugin.CustomerPlugIn
  */
 public class HappinessChangeEventImpl implements NewHappinessChangeEvent {
   

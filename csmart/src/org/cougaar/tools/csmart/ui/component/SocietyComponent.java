@@ -98,7 +98,7 @@ public interface SocietyComponent extends ModifiableComponent, ComponentProperti
    * Self terminating nodes cause a NODE_DESTROYED event
    * to be generated (see org.cougaar.tools.server.NodeEvent).
    * @return true if society is self terminating
-   * @see NodeEvent
+   * @see org.cougaar.tools.server.NodeEvent
    */
   public boolean isSelfTerminating();
 

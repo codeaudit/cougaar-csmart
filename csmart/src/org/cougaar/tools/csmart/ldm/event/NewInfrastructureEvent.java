@@ -37,7 +37,7 @@ public interface NewInfrastructureEvent
    *   NODE_BUSY
    *   NODE_DOWN
    * </pre>
-   * @see Constants
+   * @see org.cougaar.tools.csmart.Constants
    */
   public void setType(String type);
   

@@ -39,7 +39,7 @@ public interface InfrastructureEvent
    *   <tt>Constants.InfEventType.NODE_BUSY</tt>
    *   <tt>Constants.InfEventType.NODE_DOWN</tt>
    * </pre>
-   * @see Constants
+   * @see org.cougaar.tools.csmart.Constants
    * @see #isWireType()
    * @see #isNodeType()
    * @see #isBusyType()

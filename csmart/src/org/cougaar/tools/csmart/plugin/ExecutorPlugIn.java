@@ -40,7 +40,7 @@ import org.cougaar.tools.csmart.Constants;
  * is not yet visible.
  * <br>
  * The returned response will have Aspect values for END_TIME.<br>
- * @see ThermalResourceModelBG
+ * @see org.cougaar.tools.csmart.ldm.asset.ThermalResourceModelBG
  * @see SimpleInventoryPG
  * @see CSMARTPlugIn
  */

@@ -33,7 +33,7 @@ import org.cougaar.tools.csmart.ldm.event.InfrastructureEvent;
  * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
  * @see RealWorldEvent
  * @see InfrastructureEvent
- * @see CSMARTDomain
+ * @see org.cougaar.tools.csmart.ldm.CSMARTDomain
  */
 public class ImpactsLP extends LogPlanLogicProvider implements MessageLogicProvider, EnvelopeLogicProvider {
   public ImpactsLP(LogPlanServesLogicProvider logplan, ClusterServesLogicProvider cluster) {

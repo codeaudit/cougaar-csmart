@@ -19,7 +19,7 @@ import java.util.Collections;
  * An ABC Society can have 1 or more tasks.  <br>
  * The defined task is used when creating a Task File.
  * <br>
- * @see ABCTaskFile.java
+ * @see ABCTaskFile
  */
 
 public class ABCTask

@@ -356,7 +356,7 @@ public class ULPlanNode implements NodeObject {
    * By convention, attribute names are defined with underbars in place
    * of spaces, and the underbars are removed by the table model
    * attached to the JTable that displays the attributes.
-   * @see CSMARTFrame#getAttributeTableModel
+   * @see org.cougaar.tools.csmart.ui.monitor.generic.CSMARTFrame#getAttributeTableModel
    */
 
   public PropertyTree getProperties() {
