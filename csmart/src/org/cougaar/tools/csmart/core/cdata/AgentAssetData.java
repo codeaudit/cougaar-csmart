@@ -127,16 +127,6 @@ public class AgentAssetData implements Serializable {
   }
 
   /**
-   * Assigns an agent to this asset data.
-   *
-   * @param agent an <code>AgentComponentData</code> for
-   * the agent associated with this asset.
-   */
-  public void setAgent(AgentComponentData agent) {
-    this.agent = agent;
-  }
-  
-  /**
    * Returns the type of asset.
    *
    * @return an <code>int</code> value
