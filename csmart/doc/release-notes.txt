@@ -1,5 +1,83 @@
 CSMART Release Notes
 
+Release 9.4.1.1:
+This release includes bug fixes to support the Fall 2002 Ultra*Log
+integration, not found in time for the 9.4.1 release.
+CSMART fixes include multiple usability enhancements.
+
+Significant Bugs fixed:
+- Remove the default Global Command Line argument to load Message
+  Transport aspects (org.cougaar.message.transport.aspects) - these
+  should be loaded through Recipes now. (Bug 1944)
+- When adding an Agent in the Configuration Builder, and empty (all
+  spaces) name means to cancel the addition. Trim excess whitespace
+  off of agent names. (bug 1882)
+- Changing the value of a property in the Configuration Builder from
+  null to not-null gave an NPE. (bug 1885)
+- Do not allow empty host or node names in Experiment Builder,
+  trimming any excess spacess off the names. (bug 1890)
+- When querying for a file, selecting none means to cancel the
+  action. Additionally, closing the window means to cancel. And if
+  trying to read in a file, complain if the file does not exist. (bugs
+  1894, 1893 - initializing a society from files, 1895 - importing HNA,
+  1899 - importing communities, 1906 - reading Java properties file)
+- Do not allow empty Attribute IDs when editing communities. (bug
+  1905)
+- Do not allow empty community names, trimming excess whitespace. (bug 1900)
+- When editing an Agent in the Configuration Builder, do not allow
+  removing the AssetData folder, since it cannot be re-added. To not
+  include an Organization or Entity asset, simply leave out the
+  OrgData and OrgReport Plugins (or AssetData, etc), and remove any
+  PropertyGroups and Relationships. (bug 1883)
+- Avoid a rare NPE when trying to load communities from a bad file
+  (bug 1902)
+- Trim off whitespace in command line argument names and values, and
+  do not permit empty names. (bug 1909)
+
+Other bugs fixed:
+- Re-enable the "About CSMART" help menu items in the Sociey Monitor
+  (bug 1910)
+- Remove the "Org Groups" section of the Threads view in the
+  Experiment Builder and in the CMT Dialog, if there are none in the
+  experiment. (bugs 1892, 1888)
+- Put a reasonable label on a number of dialogs. (bugs 1881 - new
+  Experiment from file, 1896 - import HNA,
+  1907 - apply command line arguments from file, 1918 - save a Society
+  Monitor graph, 1916 - open a saved Society Monitor graph) 
+- Ensure that all OK/Cancel dialogs treat closing the window like
+  Cancel, and not like OK. (bugs 1926, 1928, 1930, 1916, 1888)
+- Clean up and clarify the dialog to set the Refresh interval in the
+  Society Monitor topology view: Closing the window or canceling is not
+  an error, setting the interval to 0 means no auto-refresh. (Bug
+  1912)
+- Allow specifying no protocol or no port when entering a URL to
+  monitor in the Society Monitor. No port means to use the standard
+  defaults for the protocol (80 or 443). (bug 1878)
+- Clarify and fix the behavior of Save and Save As in the various
+  Society Monitor views. These now behave as expected: Save is disabled
+  until the view has a file to save under, Save As defaults to the
+  previously selected file, if any, otherwise allows you to select a
+  file. (bug 1919)
+- Clarify and fix the dialog to get a Thread size limit in the Society
+  Monitor. Negative values mean unlimited size, 0 or empty means to
+  cancel, and invalid numbers require re-entering the dialog. Bug
+  1923.
+- Allow re-entering a value when entering a bad number in the Console'
+  "Set View Size" dialog. (bug 1928)
+- Capitalize Node status descriptions in the Console (bug 1875)
+- Re-order items in the Experiment Controller's Help menu. (Bug 1925)
+- Clean up tool frame label when opening a tool without a selected
+  Experiment. (Bug 1879)
+- In the console's Node Info screen, the table of command line
+  arguments should not be editable. (bug 1874)
+- Remove an erroneous error check when editing communities. (bug 1904)
+- Avoid listing experiment twice in Society Monitor "Monitor..."
+  dialog (bug 1914)
+- Further cleanup various help files for readability (bugs 1880, 1913)
+- Remove some overly-verbose debug logging in the Society Monitor.
+  (bugs 1922, 1921)
+
+
 Release 9.4.1:
 This release includes bug fixes and feature enhancements to support UL
 fall integration not available in time for the 9.4 release. In
