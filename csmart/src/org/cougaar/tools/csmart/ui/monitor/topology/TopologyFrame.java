@@ -189,12 +189,14 @@ public class TopologyFrame extends JFrame {
     return topologyService.getAgentLocations();
   }
 
+  // update with the latest info
   private void refresh(ArrayList newValues) {
     model.updateValues(newValues);
     sorter.updateModel();
     topologyTree.setValues(newValues);
   }
 
+  // Create the tree representation of topology info
   private JTree createTree(ArrayList values) {
     DefaultMutableTreeNode root = 
       new DefaultMutableTreeNode(new TopologyTreeObject("Hosts"), true);
@@ -205,6 +207,7 @@ public class TopologyFrame extends JFrame {
     return topologyTree;
   }
 
+  // Create the table of topology info
   private JTable createTable(ArrayList values) {
     model = new TopologyTableModel(values);
     sorter = new TableSorter(model);
@@ -213,10 +216,12 @@ public class TopologyFrame extends JFrame {
     return table;
   }
 
+  // Testing purposes, run standalone
   public static void main(String[] args) {
     new TopologyFrame("Topology", "victoria.bbn.com", 8800, "NCA");
   }
 
+  /** Thread to refresh the display **/
   class RefreshTask extends TimerTask {
     public void run() {
       final ArrayList values = TopologyFrame.this.getAgentLocations();
