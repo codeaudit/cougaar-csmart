@@ -71,8 +71,8 @@ public class TopologyFrame extends JFrame {
   private TopologyTree topologyTree;
   private TopologyTableModel model;
   private TableSorter sorter;
-  private Timer timer = null;
-  private int refreshInterval;
+  private Timer timer = null; // timer to auto-refresh data
+  private int refreshInterval = 0; // default, no auto-refresh
   private TopologyService topologyService;
 
   private Action closeAction = new AbstractAction(CLOSE_ACTION) {
@@ -91,25 +91,42 @@ public class TopologyFrame extends JFrame {
   private Action setRefreshIntervalAction = 
     new AbstractAction(SET_REFRESH_INTERVAL_ACTION) {
       public void actionPerformed(ActionEvent e) {
-        String s = 
-          JOptionPane.showInputDialog("Set Refresh Interval (in seconds):");
-        try {
-          refreshInterval = Integer.parseInt(s);
-        } catch (NumberFormatException nfe) {
-          JOptionPane.showMessageDialog(null,
-            "Refresh interval must be specified as a number of seconds.",
-                                        "Illegal Number",
-                                        JOptionPane.ERROR_MESSAGE);
-          refreshInterval = 0;
-        }
-        if (refreshInterval <= 0)
-          return;
+
+	// As long as we don't have a valid interval,
+	// keep asking
+	int newVal = -1;
+	while (newVal < 0) {
+	  String s = 
+	    JOptionPane.showInputDialog("Set Auto Refresh Interval (in seconds), 0 to cancel: ", Integer.toString(refreshInterval));
+	  // But if the user types in nothing, treat it as a cancel
+	  if (s == null || s.trim().equals("") || s.trim().equals(Integer.toString(refreshInterval)))
+	    return;
+	  try {
+	    newVal = Integer.parseInt(s);
+	  } catch (NumberFormatException nfe) {
+	    JOptionPane.showMessageDialog(null,
+					  "Refresh interval must be specified as a number of seconds.",
+					  "Illegal Number",
+					  JOptionPane.ERROR_MESSAGE);
+	  }
+	}
+	
+	// If user made no change, we're done.
+	if (newVal == refreshInterval)
+	  return;
+	
+	refreshInterval = newVal;
+	
         // cancel any existing timer
         if (timer != null)
           timer.cancel();
-        // refresh now and every refreshInterval
-        timer = new Timer();
-        timer.schedule(new RefreshTask(), 0, (long)(refreshInterval * 1000));
+
+	// If refreshInterval set to 0, no timer needed
+	if (refreshInterval > 0) {
+	  // refresh now and every refreshInterval
+	  timer = new Timer();
+	  timer.schedule(new RefreshTask(), 0, (long)(refreshInterval * 1000));
+	}
       }
     };
 
@@ -156,7 +173,7 @@ public class TopologyFrame extends JFrame {
     getRootPane().setJMenuBar(menuBar);
 
     ArrayList values = getAgentLocations();
-    if (values == null) 
+    if (values == null || values.isEmpty()) 
       JOptionPane.showMessageDialog(null,
                                     "No information received from society");
     JTable table = createTable(values);
