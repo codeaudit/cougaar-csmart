@@ -123,6 +123,7 @@ public class SwitchPluginRecipe extends RecipeBase
       return data;
 
     // If the user typed in the full insertion point of a common one, use the shorthand
+    // We really arent supporting the Agent case now...
     if (type.equalsIgnoreCase("Node.AgentManager.Agent"))
       type = ComponentData.AGENT;
     else if (type.equalsIgnoreCase("Node.AgentManager.Binder")) 
@@ -137,11 +138,17 @@ public class SwitchPluginRecipe extends RecipeBase
       // Is it the right class?
       if (data.getClassName().equals(oldClass)) {
 
-	// FIXME!!!
-	// Change AlibID
-	// Change Name
+	// unset AlibID - let PopulateDb recreate
+	data.setAlibID(null);
+
 	// Then change classname
 	data.setClassName(newClass);
+
+	// Warning: It is possible the old plugin was already there. So we need to check
+	// that the name we are setting is in fact still unique. Steal code
+	// from PluginBase
+	// Change Name
+	// FIXME!
 
 	// Mark the fact we did a modification
 	compRemoved = true;
