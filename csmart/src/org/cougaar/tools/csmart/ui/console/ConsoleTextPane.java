@@ -227,18 +227,35 @@ public class ConsoleTextPane extends JTextPane {
     return false;
   }
 
+  // for testing, print keymap with recursion
+  static void printKeymap(javax.swing.text.Keymap m, int indent) {
+    javax.swing.KeyStroke[] k = m.getBoundKeyStrokes();
+    for (int i = 0; i < k.length; i++) {
+      for (int j = 0; j < indent; j++)
+        System.out.print(" ");
+      System.out.print("Keystroke <" +
+        java.awt.event.KeyEvent.getKeyModifiersText(k[i].getModifiers()) +
+        " " + java.awt.event.KeyEvent.getKeyText(k[i].getKeyCode()) + "> ");
+      javax.swing.Action a = m.getAction(k[i]);
+      System.out.println((String)a.getValue(javax.swing.Action.NAME));
+    }
+    m = m.getResolveParent();
+    if (m != null)
+      printKeymap(m, indent + 2);
+  }
+
   public static void main(String[] args) {
     ConsoleStyledDocument doc = new ConsoleStyledDocument();
     javax.swing.text.AttributeSet a = 
       new javax.swing.text.SimpleAttributeSet();
     ConsoleTextPane pane = 
       new ConsoleTextPane(doc, new NodeStatusButton((javax.swing.Icon)null));
-    //    doc.setBufferSize(20);
+    doc.setBufferSize(20);
     doc.appendString("abcdefghijklmnopqrstuvw", a);
-    //    pane.setNotifyCondition("now is the time for all good men");
+    // for debugging, print the keymap for this text component
+    //    printKeymap(pane.getKeymap(), 0);
+    pane.setNotifyCondition("now is the time for all good men");
     doc.appendString("now is the time for all good men", a);
-    pane.setCaretPosition(0);
-    pane.moveCaretPosition(pane.getDocument().getLength());
     JScrollPane scrollPane = new JScrollPane(pane);
     javax.swing.JDesktopPane desktop = new javax.swing.JDesktopPane();
     javax.swing.JInternalFrame internalFrame = 
@@ -264,10 +281,6 @@ public class ConsoleTextPane extends JTextPane {
   class MyDocumentListener implements DocumentListener {
 
     public void insertUpdate(DocumentEvent e) {
-      // if there's already a highlighted notify condition, 
-      // then don't highlight a new one
-      //      if (notifyPosition != null)
-      //        return;
       Document doc = e.getDocument();
       try {
         String newContent = doc.getText(e.getOffset(), e.getLength());

@@ -273,11 +273,6 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(10, 0, 5, 5),
                                           0, 0));
-    // get status from tool tip text; ought to be a better way
-    //    String s = statusButton.getToolTipText();
-    //    int index = s.lastIndexOf(":");
-    //    if (index != -1)
-    //      status = s.substring(index+1);
     String status = ((NodeStatusButton)statusButton).getStatusDescription();
     aboutPanel.add(new JLabel(status),
                    new GridBagConstraints(x, y++, 1, 1, 1.0, 0.0,
@@ -473,14 +468,12 @@ public class ConsoleInternalFrame extends JInternalFrame {
 
   /**
    * Select everything in the node's output pane.
-   * TODO: this only works if the user has explicitly set the caret(?) using left mouse click
+   * Note that the focus must be requested before the select action will work.
    */
 
   private void selectAll_actionPerformed() {
-    System.out.println("Selecting all...");
-    consoleTextPane.setCaretPosition(0);
-    consoleTextPane.moveCaretPosition(consoleTextPane.getDocument().getLength());
-    System.out.println("Done Selecting all...");
+    consoleTextPane.requestFocus();
+    consoleTextPane.selectAll();
   }
 
   private void filter_actionPerformed() {
