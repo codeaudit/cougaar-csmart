@@ -33,18 +33,27 @@ import java.io.Serializable;
  * <li> Role: This is a role performed by this asset. </li>
  * </ul>
  *
+ * There are two type of ini file formats: <br>
+ * "Supporting"    "1BDE"   "StrategicTransportProvider" <br>
+ * Where the fields are: <br>
+ * <Type>   <Supported Cluster>  <Role>
+ * <br>and<br>
+ * "StrategicTransportProvider" "UIC/1BDE" "UTC/RTOrg" "1BDE" "" "" <br>
+ * Where the fields are: <br>
+ * <Type> <ItemId> <TypeId> <Supported Cluster> <Start Time> <Stop Time>
+ *
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  * @version 1.0
  */
 public class RelationshipData implements Serializable {
   
-  private String type = null;
-  private String role = null;
-  private String item = null;
-  private String typeId = null;
+  private String type = "";
+  private String role = "";
+  private String itemId = "";
+  private String typeId = "";
   private long startTime = 0L;
   private long endTime = 0L;
-  private String supported = null;
+  private String supported = "";
 
   /** Types of relationships **/
   // (not really important if everything else is correct)
@@ -77,23 +86,23 @@ public class RelationshipData implements Serializable {
   }
 
   /**
-   * Sets the Item of a relationship, this
+   * Sets the ItemId of a relationship, this
    * is usually the agent name we are forming
    * a relationship with.
    *
-   * @param item name
+   * @param itemId name
    */
-  public void setItem(String item) {
-    this.item = item;
+  public void setItemId(String itemId) {
+    this.itemId = itemId;
   }
 
   /**
-   * Gets the Item for this relationship
+   * Gets the ItemId for this relationship
    *
-   * @return an item name
+   * @return an itemId name
    */
-  public String getItem() {
-    return this.item;
+  public String getItemId() {
+    return this.itemId;
   }
 
   public void setTypeId(String typeId) {
@@ -186,7 +195,7 @@ public class RelationshipData implements Serializable {
     StringBuffer sb = new StringBuffer(300);
     sb.append("Type: " + type);
     sb.append(" Role: " + role);
-    sb.append(" Item: " + item);
+    sb.append(" ItemId: " + itemId);
     sb.append(" TypeId: " + typeId);
     sb.append(" Start Time: " + startTime);
     sb.append(" End Time: " + endTime);
