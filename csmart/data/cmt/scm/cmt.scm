@@ -78,7 +78,7 @@
 
 (define (with-query-jdbc query ex)
   (let((q query))
-    ;;(println (string-append "(with-query-jdbc " query " " ex))
+    (println (string-append "(with-query-jdbc " query))
     (let* ((stmt (createStatement (getrefDBConnection)))
 	   (rs (.executeQuery stmt query))
 	   (answer (ex rs)))
@@ -1230,6 +1230,7 @@
    query))
 
 (define (dbu query)
+  (println (string-append "dbu:" query))
   (db-update
    (getrefDBConnection)
    query))
@@ -1454,28 +1455,45 @@
     threadSelected
     ))
 
-(define (setULThreadSelected  trial_id,thread_name, selected) 
-  (if
-   selected
+(define (get-thread-id thread_name)
   (cond
+   ((.equals "Subsistence (Class 1)" thread_name)
+    "CLASS-1")
+   ((.equals "Fuel (Class 3)" thread_name)
+    "CLASS-3")
+   ((.equals "Construction Material (Class 4)" thread_name)
+    "CLASS-4")
+   ((.equals "Ammunition (Class 5)" thread_name)
+    "CLASS-5")
+   ((.equals "Spare Parts (Class 9)" thread_name)
+    "CLASS-9")))
+
+(define (setULThreadSelected trial_id thread_name) 
+  (let
+      ((thread_id (get-thread-id thread_name)))
+    (cond
      ;; don't insert twice
      ((= 0 (dbu (string-append
-		 "update " asb-prefix "EXPT_EXPERIMENT set expt_id = expt_id  where EXPT_ID = "
-		 (sqlQuote experiment_id))))
+		 "update " asb-prefix "EXPT_TRIAL_THREAD tt"
+		 " set THREAD_ID=THREAD_ID" 
+		 "   where tt.trial_id="(sqlQuote trial_id)
+		 "   and tt.thread_id="(sqlQuote thread_id)
+		 )))
       (dbu (string-append 
-	    "insert into " asb-prefix
-	    "EXPT_EXPERIMENT values ("
-	    (sqlQuote experiment_id)","
-	    (sqlQuote experiment_id)","
-	    (sqlQuote experiment_id)","
-	    (sqlQuote cfw_group_id)")"))
-      ))
-   (string-append 
-    "select THREAD_ID from " 
-    asb-prefix "trial_thread tt"
-    "   where tt.trial_id"(sqlQuote trial_id)
-    "   and tt.thread_id="(sqlQuote thread_id)
-    )))
+	    "insert into " asb-prefix "EXPT_TRIAL_THREAD"
+	    "    select expt_id, trial_id, " (sqlQuote thread_id)
+	    "    from V4_EXPT_TRIAL where trial_id = " (sqlQuote trial_id)
+	    ))))))
+
+(define (setULThreadNotSelected trial_id thread_name) 
+  (let
+      ((thread_id (get-thread-id thread_name)))
+    (dbu (string-append 
+	  "delete from " asb-prefix "EXPT_TRIAL_THREAD tt"
+	  "   where tt.trial_id="(sqlQuote trial_id)
+	  "   and tt.thread_id="(sqlQuote thread_id)
+	  )))
+  )
 
 
 ;;  public static boolean isGroupSelected(String trialId, String groupName) {
@@ -1531,6 +1549,7 @@
 (define (addNodeAssignments nodeTable assemblyName)
   (let
       ((assembly_id assemblyName))
+    (addCSMARTAssembly assembly_id assemblyName)
     (for-each*
      (lambda (nodeName)
        (for-each*
@@ -1547,33 +1566,34 @@
 		       "   " asb-prefix "ALIB_COMPONENT node,"
 		       "   " asb-prefix "ALIB_COMPONENT agent"
 		       "   where"
-		       "   node.COMPONENT_NAME="(sqlQuote nodeName)
+		       "   assembly_id = " (sqlQuote assembly_id) 
+		       "   and node.COMPONENT_NAME="(sqlQuote nodeName)
 		       "   and agent.COMPONENT_NAME="(sqlQuote agentName)
 		       "   and b.component_alib_id=agent.component_alib_id"
 		       "   and b.parent_component_alib_id=node.component_alib_id"
 		       ")")))
 	    (dbu (string-append 
-		  "insert into " asb-prefix "update " asb-prefix "ASB_COMPONENT_HIERARCHY"
-		  "   select " (sqlQuote assembly_id) ",agent.component_alib_id,node.component_alib_id,0"
+		  "insert into " asb-prefix "ASB_COMPONENT_HIERARCHY"
+		  "   select distinct " (sqlQuote assembly_id) ",agent.component_alib_id,node.component_alib_id,0"
 		  "   from "
-		  "   " asb-prefix "ASB_COMPONENT_HIERARCHY b,"
 		  "   " asb-prefix "ALIB_COMPONENT node,"
 		  "   " asb-prefix "ALIB_COMPONENT agent"
 		  "   where"
 		  "   node.COMPONENT_NAME="(sqlQuote nodeName)
 		  "   and agent.COMPONENT_NAME="(sqlQuote agentName)
-		  "   and b.component_alib_id=agent.component_alib_id"
-		  "   and b.parent_component_alib_id=node.component_alib_id"
 		  ))
 	    ))
 	  )
 	(.get nodeTable nodeName)))
-     (.keySet nodeTable)))
+     (.keySet nodeTable))
+    assembly_id
+    )
   )
 
 (define (addMachineAssignments machineTable assemblyName)
   (let
       ((assembly_id assemblyName))
+    (addCSMARTAssembly assembly_id assemblyName)
     (for-each*
      (lambda (machineName)
        (for-each*
@@ -1590,28 +1610,38 @@
 		       "   " asb-prefix "ALIB_COMPONENT machine,"
 		       "   " asb-prefix "ALIB_COMPONENT node"
 		       "   where"
-		       "   machine.COMPONENT_NAME="(sqlQuote machineName)
+		       "   assembly_id = " (sqlQuote assembly_id) 
+		       "   and machine.COMPONENT_NAME="(sqlQuote machineName)
 		       "   and node.COMPONENT_NAME="(sqlQuote nodeName)
 		       "   and b.component_alib_id=node.component_alib_id"
 		       "   and b.parent_component_alib_id=machine.component_alib_id"
 		       ")")))
 	    (dbu (string-append 
-		  "insert into " asb-prefix "update " asb-prefix "ASB_COMPONENT_HIERARCHY"
-		  "   select " (sqlQuote assembly_id) ",node.component_alib_id,machine.component_alib_id,0"
+		  "insert into " asb-prefix "ASB_COMPONENT_HIERARCHY"
+		  "   select distinct " (sqlQuote assembly_id) ",node.component_alib_id,machine.component_alib_id,0"
 		  "   from "
-		  "   " asb-prefix "ASB_COMPONENT_HIERARCHY b,"
 		  "   " asb-prefix "ALIB_COMPONENT machine,"
 		  "   " asb-prefix "ALIB_COMPONENT node"
 		  "   where"
 		  "   machine.COMPONENT_NAME="(sqlQuote machineName)
 		  "   and node.COMPONENT_NAME="(sqlQuote nodeName)
-		  "   and b.component_alib_id=node.component_alib_id"
-		  "   and b.parent_component_alib_id=machine.component_alib_id"
 		  ))
 	    ))
 	  )
 	(.get machineTable machineName)))
      (.keySet machineTable))
-    assemblyName)
+    assembly_id)
   )
 
+
+(define (addCSMARTAssembly assembly_id assembly_description)
+  (cond
+   ((= 0 (dbu (string-append
+	       "update " asb-prefix "asb_assembly set assembly_id = assembly_id where assembly_id = "
+	       (sqlQuote assembly_id))))
+    (dbu (string-append
+	  "insert into " asb-prefix "asb_assembly values ("
+	  (sqlQuote assembly_id)","
+	  "'CSMART',"
+	  (sqlQuote assembly_description)")"))
+    )))
