@@ -20,19 +20,20 @@
  */
 package org.cougaar.tools.csmart.core.cdata;
 
+
+
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
-
-import org.cougaar.util.log.Logger;
-import org.cougaar.util.ConfigFinder;
-import org.cougaar.core.node.INIParser;
 import org.cougaar.core.component.ComponentDescription;
-
+import org.cougaar.core.node.INIParser;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.viewer.SocietyFinder;
+import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.log.Logger;
 
 /**
  * ComponentConnector.java
@@ -171,13 +172,21 @@ public class ComponentConnector {
   }
 
   public static String getAgentName(ComponentDescription desc) {
-    Vector v = (Vector)desc.getParameter();
-    return (String)v.get(0);
+    if(desc.getParameter() != null) {
+      Vector v = (Vector)desc.getParameter();
+      return (String)v.get(0);
+    } else {
+      return null;
+    }
   }
 
   public static Iterator getPluginProps(ComponentDescription desc) {
-    Vector v = (Vector)desc.getParameter();
-    return v.iterator();
+    if(desc.getParameter() != null) {
+      Vector v = (Vector)desc.getParameter();
+      return v.iterator();
+    } else {
+      return Collections.EMPTY_LIST.iterator();
+    }
   }
 
 //   public static ComponentData createComponentData(String compName, 
