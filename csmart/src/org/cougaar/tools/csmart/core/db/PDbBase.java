@@ -39,21 +39,25 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.StringTokenizer;
 import java.io.IOException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.FileWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+
+import org.cougaar.util.ConfigFinder;
+import org.cougaar.util.DBConnectionPool;
 import org.cougaar.util.DBProperties;
 import org.cougaar.util.Parameters;
-import org.cougaar.util.DBConnectionPool;
+import org.cougaar.util.log.Logger;
 
 import org.cougaar.tools.csmart.core.property.Property;
-import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
-import org.cougaar.util.log.Logger;
+import org.cougaar.tools.csmart.recipe.RecipeComponent;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
-import java.io.ObjectInputStream;
+
 /**
  * This class takes a structure of ComponentData objects and populates
  * the configuration database with some or all of the components
@@ -90,6 +94,8 @@ public class PDbBase {
   protected boolean debug = false;
   protected PrintWriter pwlog;
 
+  protected static long rQFileLastMod = 0l; // When was recipeQueries.q last modified
+
   /**
    * Constructor
    **/
@@ -101,15 +107,31 @@ public class PDbBase {
     if (logQueries)
       pwlog = new PrintWriter(new FileWriter(getLogName()));
     dbp = DBProperties.readQueryFile(QUERY_FILE);
-    try {
-      // This next line _always_ re-parses the query file.
-      dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
-    } catch (FileNotFoundException e) {
-      // This is normal if a user has no separate recipe query file.
-      if (log.isDebugEnabled()) {
-	log.debug("No " + RecipeComponent.RECIPE_QUERY_FILE + " file found.");
+
+    // When was the RQ file last modified?
+    File rqfile = ConfigFinder.getInstance().locateFile(RecipeComponent.RECIPE_QUERY_FILE);
+    long newMod = 0l;
+    if (rqfile != null) {
+      try {
+	newMod = rqfile.lastModified();
+      } catch (SecurityException se) {
       }
     }
+
+    // Only read in the RQ file if it was modified since we last read it in
+    if (newMod != rQFileLastMod) {
+      try {
+	// This next line _always_ re-parses the query file.
+	dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
+	rQFileLastMod = newMod;
+      } catch (FileNotFoundException e) {
+	// This is normal if a user has no separate recipe query file.
+	if (log.isDebugEnabled()) {
+	  log.debug("No " + RecipeComponent.RECIPE_QUERY_FILE + " file found.");
+	}
+      }
+    }
+
     //        dbp.setDebug(true);
     String database = dbp.getProperty("database");
     String username = dbp.getProperty("username");
