@@ -82,6 +82,12 @@ public class PopulateDb extends PDbBase {
   // This is a list of component ALIB IDs
   private List addedAgents = new ArrayList();
 
+  // Flag to indicate that during a save, a component
+  // was apparently removed.
+  // This indicates to the caller that they must
+  // call populateCSA
+  public boolean componentWasRemoved = false;
+
   // Unused flag to decide if the whole society
   // must be written out, or only the additions
   // Gets set in constructor
@@ -292,9 +298,14 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":trial_id:", trialId); 
 
     if (societyId != null) {
-      if (cmtType.equals(getAssemblyType(societyId)))
+      if (cmtType.equals(getAssemblyType(societyId))) {
+
+	// This following line is causing me problems, I believe,
+	// and causing things to save when they don't need to
+	// FIXME!!!!!!
 	// So if the society is a CMT society, call cleanTrial
 	cleanTrial(cmtType, hnaType, csmiType, trialId);
+      }
       
       // Putting the society ID in the cmt slot
       // Even though it may really be a CSA assembly
@@ -1178,6 +1189,9 @@ public class PopulateDb extends PDbBase {
   {
     // If this is saving an Experiment, we create a CSA assembly:
     if (exptId != null && trialId != null) {
+      // reset the flag noticing that something was modified while saving
+      componentWasRemoved = false;
+
       // Create a new CSA based on what was in cmtAssemblyID
       csaAssemblyId = createCSAAssembly(cmtAssemblyId, getAssemblyDesc(cmtAssemblyId));
       
@@ -1227,13 +1241,12 @@ public class PopulateDb extends PDbBase {
   public boolean repopulateCMT(ComponentData data)
     throws SQLException
   {
-    // I don't think this is ever used.
-    // Also, I wonder if it would work: Will the CMT ID match to line
-    // up with the OPLAN, etc stuff? 
-
     // FIXME: Careful! If this is applied with a real CMT assembly,
     // the newly written version of cleanTrial will delete stuff from the 
     // OPLAN tables, which can't be restored!!!
+
+    // I believe this is only used by TestPopulateDb, which does just
+    // about nothing anyhow.
 
     // Force the CMT assembly to be removed
     cleanTrial("", "", "", trialId);
@@ -1271,13 +1284,6 @@ public class PopulateDb extends PDbBase {
       rs.close();
       if (parent != null) {
 
-	// FIXME: When saving a society, this uses trial and so
-	// will always return false.
-	// It should use assembly_match, but then I must
-	// be careful that assembly_match does not have both
-	// a CMT and a CSA assembly - only the ones in the runtime
-	// FIXME!!!
-
 	// Is given component in runtime hierarchy?
 	String cchq = dbp.getQuery("checkComponentHierarchy", substitutions);
 	if (log.isDebugEnabled()) {
@@ -1295,11 +1301,6 @@ public class PopulateDb extends PDbBase {
 	    // was not previously in the hierarchy.
 	    // It does not mean that the Agent itself
 	    // was not already in the CMT assembly, for example
-	    // So what I really want to do
-	    // is now see if the same component is a _parent_
-	    // in the hierarchy
-	    // Or maybe, see if it is in v4_asb_agent for one
-	    // of the relevant assemblies?
 	    // It doesn't really matter: 
 	    // all the insertions in populateAgent check
 	    // for themselves before doing inserts
@@ -1320,11 +1321,13 @@ public class PopulateDb extends PDbBase {
     for (int i = 0; i < params.length; i++) {
       newArgs.add(new Argument(params[i].toString(), i));
     }
+    
+    // For debugging, dump out the old & new arguments now:
+
 
     // FIXME: THIS MUST BE CHANGED SOMEHOW!!!!
     // If I sense a removal / modification, set some 
     // flag and abort probably...
-
 
     // The new args must only contain additions. There must be no
     // deletions or alterations of the old args nor is it allowed
@@ -1333,11 +1336,25 @@ public class PopulateDb extends PDbBase {
     // violation of this premise.
     int excess = newArgs.size() - oldArgs.size();
     if (excess < 0) {
+      if (log.isInfoEnabled()) {
+	log.info("Attempt to remove "	 + (-excess)
+					 + " args from "
+					 + data);
+      }
+      // Throw something I'll recognize
+      // Catch it in the Experiment, so I know to call populateCSA
+      // FIXME!!!
+      componentWasRemoved = true;
       throw new IllegalArgumentException("Attempt to remove "
 					 + (-excess)
 					 + " args from "
 					 + data);
+    } else {
+      if (log.isInfoEnabled()) {
+	log.info("Count new args minus old is: " + excess);
+      }
     }
+
     // Prepare to iterate through both old and new args.
     // argsToInsert accumulates the new arguments to be inserted.
     // Each of the new args is compared with the next unaccounted
@@ -1356,6 +1373,11 @@ public class PopulateDb extends PDbBase {
     while (oldIter.hasNext()) {
       Argument newArg = (Argument) newIter.next();
       Argument oldArg = (Argument) oldIter.next();
+      if (log.isInfoEnabled()) {
+	log.info("Comp args for " + data.getName() + ". New " + newArg.toString() + ", Old: " + oldArg.toString());
+	// print out the number, the values....
+      }
+		 
       while (!newArg.argument.equals(oldArg.argument)) {
 	if(log.isWarnEnabled()) {
 	  log.warn("newArg != oldArg, new: " +newArg.toString() + " old: " + oldArg.toString());
@@ -1363,14 +1385,21 @@ public class PopulateDb extends PDbBase {
 	// Assume arguments were inserted
 	excess--;
 	if (excess < 0) {
-	  throw new IllegalArgumentException("Component args cannot be modified or removed: " + data);
+	  if (log.isInfoEnabled()) {
+	    log.info("Component args cannot be modified or removed: " + data);
+	  }
+	  // FIXME: Throw something recognizable that the experiment
+	  // can catch and call populateCSA
+	  componentWasRemoved = true;
+	  //throw new IllegalArgumentException("Component args cannot be modified or removed: " + data);
 	}
 	if (Float.isNaN(prev)) prev = oldArg.order - 1f;
 	argsToInsert.add(new Argument(newArg.argument, (prev + oldArg.order) * 0.5f));
 	newArg = (Argument) newIter.next();
-      }
+      } // end of loop while argument values differ
       prev = oldArg.order;
-    }
+    } // loop over old arguments
+
     // Finally, any remaining new args are appended
     if (Float.isNaN(prev)) prev = 0f;
     while (newIter.hasNext()) {
@@ -1389,37 +1418,16 @@ public class PopulateDb extends PDbBase {
       result = true;
     }
 
-    // FIXME:::
-    // Save in the CSHNA only the fact that an agent is within a Node
-    // if I can, Probably I have to save its args as well - which 
-    // is just the name, no biggy.
-    // But I don't want to save the Agent definition there.
-    // Also, the insureAlibId call above creates the component_alib_id
-    // which I suppose is OK.
-
-    // So far so good. But I also only want to call the populateAgent thing
-    // if I have to, right? And then only save out the info
-    // I have to, right? That's the isAdded thing.
-    // Or maybe I can call this whenever I have an Agent
-    // and am not in the HNA assembly?
-    // No, I only want to write that out if 
-    // it isn't already someplace else...
-    // How do I do that?
-
-    // Already we only save in the hierarchy if its not already there.
-    // That takes care of the existence of plugins, binders
-    // in the society. Then the logic above is all crazy
-    // to only do added arguments that were new
-    // And this populateAgent is probably doing similar.
-    // What I need is more complex....
-
-    //FIXME: If the user added a new agent
-    // then isAdded is only true for the HNA assembly
-    // so populateAgent will not save all the data!
-    // I want to not save this under the HNA assembly if I can though
+    // For agents, only keep going if this isn't the HNA assembly
     if (data.getType().equals(ComponentData.AGENT)) {
       if (!assemblyId.equals(hnaAssemblyId)) {
-	// isAdded: was this agent just added to the hierarchy
+	// was this agent added to the hierarchy
+	// since we saved its AgentData
+	// Note however that this means that recipes
+	// will have trouble adding relationships!!!
+	// If the checks in this method are good,
+	// I should get rid of this whole addedAgents thing
+	// FIXME!!!!!!!!
 	if (addedAgents.contains(id)) {
 	  if (log.isDebugEnabled()) {
 	    log.debug("Calling populateAgent for agent alib_id: " + id + " in assembly " + assemblyId);
