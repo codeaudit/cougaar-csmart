@@ -10,6 +10,7 @@ InstallAndTest.html)
 - Fixes to improve accuracy of debug output INI files
 - Fix support for adding Node Binders with recipes
 - Add support for adding plugins, binders to Node Agents via recipes
+- Add support for adding arbitrary components to agents
 - Move to JDK1.4
 - Bug fixes
 
