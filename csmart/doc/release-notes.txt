@@ -17,7 +17,8 @@ This is a minor patch release, preparing for future work.
   oplan and OrgAssets as reference data, as well as the 1AD Domain
   data contained in the other local dump. Use this as the definition
   of the org.cougaar.refconfig database when running 1AD societies
-  from XML files. See configs/ul/Readme.txt
+  from XML files. See configs/ul/Readme.txt. See also the added /new 
+  directory for table definition files, and the associated Readme.
 
 Release 10.0:
 This is a major Cougaar release, incorporating all previous fixes plus
