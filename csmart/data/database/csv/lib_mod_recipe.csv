@@ -1,0 +1,3 @@
+MOD_RECIPE_LIB_ID,NAME,JAVA_CLASS,DESCRIPTION,BLANK
+"RECIPE-CSMART-Servlets","CSMART_Servlets","org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe","No description available"
+"RECIPE-Default-Servlets","Default_Servlets","org.cougaar.tools.csmart.recipe.ServletGroupInsertionRecipe","No description available"
