@@ -410,7 +410,17 @@ public class GenericComponentData implements ComponentData, Serializable {
 //        if (this.getAlibID() != null && that.getAlibID() != null) {
 //  	return (this.getAlibID().equals(that.getAlibID()));
 //        } else
-      if (this.getName().equals(that.getName())) {
+      if (this.getName() == null) {
+	if (this.getClassName() != null && this.getClassName().equals(that.getClassName()) && this.getType() != null && this.getType().equals(that.getType()) && this.parameterCount() == that.parameterCount()) {
+	  for (int j = 0; j < that.parameterCount(); j++) {
+	    if (! that.getParameter(j).equals(this.getParameter(j))) {
+	      return false;
+	    }
+	  }
+	  // FIXME: Compare the children?
+	  return true;
+	}
+      } else if (this.getName().equals(that.getName())) {
 	return true;
       }
     }
