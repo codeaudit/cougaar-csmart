@@ -19,13 +19,19 @@ csmart/data/database directory description:
 
 This directory contains several subdirectories as well as a zip file.
 
-Zip file:
+Zip files:
 
 "Domain-MySQL.ZIP" contains a datafile called "1ad_domain_data_dump.sql"
 which is the sql script to be run to load all domain data tables into 
 the CSMART configuration database. If you are upgrading from version
 9.4 or below of Cougaar, you should re-load this data as an additional
 table and new domain data have been added.
+
+refconfigdb.zip:
+   This is a dump that includes all of the data in the above data dump,
+   PLUS reference OPLAN and Military Organization data for the UltraLog 1AD
+   societies. This should define a new "refconfig" database, if you want
+   to run a 1AD society strictly from XML files + reference data.
 
 Sub-directories:
 
