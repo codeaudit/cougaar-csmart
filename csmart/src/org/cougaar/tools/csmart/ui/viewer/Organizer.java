@@ -34,10 +34,11 @@ import java.io.*;
 import java.lang.reflect.Constructor;
 import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.experiment.ABCImpact;
-import org.cougaar.tools.csmart.ui.experiment.Metric;
+//import org.cougaar.tools.csmart.ui.experiment.Metric;
 import org.cougaar.tools.csmart.scalability.ScalabilityXSociety;
 import org.cougaar.tools.csmart.configgen.abcsociety.ABCSociety;
 import org.cougaar.tools.csmart.ui.experiment.*;
+import org.cougaar.tools.csmart.configgen.abcsociety.BasicMetric;
 
 /**
  * The Organizer holds all the component a user creates
@@ -59,39 +60,6 @@ public class Organizer extends JScrollPane {
   private DefaultMutableTreeNode root;
   DefaultTreeModel model;
   private OrganizerTree workspace;
-  // to guarantee unique names
-  private static class UniqueNameSet extends HashSet {
-    private String prefix;
-    private int nameCounter = 0;
-    public UniqueNameSet(String prefix) {
-      this.prefix = prefix;
-    }
-    public void init(Object[] things, Method getNameMethod) {
-      Object[] noArgs = new Object[0];
-      for (int i = 0; i < things.length; i++) {
-	try {
-	  String name = (String) getNameMethod.invoke(things[i], noArgs);
-	  add(name);
-	} catch (Exception e) {
-	  System.out.println("Reading: " + things[i]);
-	  e.printStackTrace();
-	}
-      }
-    }
-    
-    public String generateName() {
-      return generateName(prefix);
-    }
-    public String generateName(String name) {
-      if (contains(name)) {
-	String base = name;
-	do {
-	  name = base + ++nameCounter;
-	} while (contains(name));
-      }
-      return name;
-    }
-  }
 
   // The societies which can be created in CSMART
   private Object[] socComboItems = {
@@ -104,12 +72,17 @@ public class Organizer extends JScrollPane {
     new ComboItem("ABCImpact", ABCImpact.class)
   };
 
+  // The stand-alone metrics that can be created in CSMART
+  private Object[] metComboItems = {
+    new ComboItem("Basic Metric", BasicMetric.class),
+    new ComboItem("Empty Metric", EmptyMetric.class)
+  };
+
   // Define Unique Name sets
   private UniqueNameSet societyNames = new UniqueNameSet("Society");
   private UniqueNameSet experimentNames = new UniqueNameSet("Experiment");
   private UniqueNameSet impactNames = new UniqueNameSet("Impact");
   private UniqueNameSet metricNames = new UniqueNameSet("Metric");
-  //    private UniqueNameSet agentNames = new UniqueNameSet("Agent");
   private UniqueNameSet componentNames = new UniqueNameSet("Component");
   
   // Define menus
@@ -122,7 +95,7 @@ public class Organizer extends JScrollPane {
   private JPopupMenu treeMenu = new JPopupMenu();
   private JPopupMenu rootMenu = new JPopupMenu();
   
-  // Define actions on for use on menus
+  // Define actions for use on menus
   private Action[] rootAction = {
     new AbstractAction("Rename") {
 	public void actionPerformed(ActionEvent e) {
@@ -219,7 +192,7 @@ public class Organizer extends JScrollPane {
   private Action[] impactAction = {
     //          new AbstractAction("Edit", new ImageIcon(getClass().getResource("SB16.gif"))) {
     //              public void actionPerformed(ActionEvent e) {
-    //                  startBuilder(popupNode);
+    //                  startBuilder(popupNode, e.getActionCommand().equals("Edit"));
     //              }
     //          },
     //          new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
@@ -283,11 +256,11 @@ public class Organizer extends JScrollPane {
       }
   };
   private Action[] metricAction = {
-    //          new AbstractAction("Edit", new ImageIcon(getClass().getResource("SB16.gif"))) {
-    //              public void actionPerformed(ActionEvent e) {
-    //                  startBuilder(popupNode);
-    //              }
-    //          },
+    new AbstractAction("Edit", new ImageIcon(getClass().getResource("SB16.gif"))) {
+	public void actionPerformed(ActionEvent e) {
+	  startBuilder(popupNode, e.getActionCommand().equals("Edit"));
+	}
+      },
     //          new AbstractAction("Run", new ImageIcon(getClass().getResource("EC16.gif"))) {
     //              public void actionPerformed(ActionEvent e) {
     //                  startConsole(popupNode);
@@ -357,6 +330,7 @@ public class Organizer extends JScrollPane {
 	}
       }
   };
+
   private MouseListener mouseListener = new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
 	if (e.isPopupTrigger()) doPopup(e);
@@ -368,7 +342,74 @@ public class Organizer extends JScrollPane {
 	if (e.isPopupTrigger()) doPopup(e);
       }
     };
+
+  ////////////////////////////////
+  // Constructors
+  public Organizer(CSMART csmart) {
+    this(csmart, null);
+  }
   
+  public Organizer(CSMART csmart, String workspaceFileName) {
+    setPreferredSize(new Dimension(400, 100));
+    JPanel panel = new JPanel(new BorderLayout());
+    setViewportView(panel);
+    this.csmart = csmart;
+    if (workspaceFileName == null) {
+      this.workspaceFileName = DEFAULT_FILE_NAME;
+    } else {
+      this.workspaceFileName = workspaceFileName;
+    }
+    restore(this.workspaceFileName);
+    if (root == null) {
+      root = new DefaultMutableTreeNode(null, true);
+      //            model = new DefaultTreeModel(root);
+      model = createModel(this, root);
+    }
+    // 	System.out.println("Organizer: setting root name to: " +
+    // 			   this.workspaceFileName);
+    //         String rootName = this.workspaceFileName;
+    //         int extpos = this.workspaceFileName.lastIndexOf('.');
+    //         if (extpos >= 0) {
+    //             rootName = rootName.substring(0, extpos);
+    //         }
+    //         root.setUserObject(rootName);
+    model.setAsksAllowsChildren(true);
+    model.addTreeModelListener(myModelListener);
+    workspace = new OrganizerTree(model);
+    workspace.setExpandsSelectedPaths(true);
+    for (int i = 0; i < rootAction.length; i++) {
+      rootMenu.add(rootAction[i]);
+    }
+    for (int i = 0; i < societyAction.length; i++) {
+      societyMenu.add(societyAction[i]);
+    }
+    for (int i = 0; i < componentAction.length; i++) {
+      componentMenu.add(componentAction[i]);
+    }
+    for (int i = 0; i < impactAction.length; i++) {
+      impactMenu.add(impactAction[i]);
+    }
+    for (int i = 0; i < metricAction.length; i++) {
+      metricMenu.add(metricAction[i]);
+    }
+    for (int i = 0; i < experimentAction.length; i++) {
+      experimentMenu.add(experimentAction[i]);
+    }
+    for (int i = 0; i < treeAction.length; i++) {
+      treeMenu.add(treeAction[i]);
+    }
+    workspace.addTreeSelectionListener(mySelectionListener);
+    workspace.addAncestorListener(myAncestorListener);
+    workspace.addMouseListener(mouseListener);
+    workspace.setSelection(root);
+    expandTree(); // fully expand workspace tree
+    panel.add(workspace);
+    setViewportView(panel);
+    updater.start();
+  }
+  
+  ////////////////////////////////////////////////
+  // Methods to get the user's selection
   private DefaultMutableTreeNode getSelectedNode() {
     TreePath selPath = workspace.getSelectionPath();
     if (selPath == null) return null;
@@ -387,14 +428,14 @@ public class Organizer extends JScrollPane {
     return (ImpactComponent[]) getSelectedLeaves(ImpactComponent.class);
   }
   
-  public Metric[] getSelectedMetrics() {
-    return (Metric[]) getSelectedLeaves(Metric.class);
+  //public Metric[] getSelectedMetrics() {
+  //  return (Metric[]) getSelectedLeaves(Metric.class);
+  //}
+  
+  public MetricComponent[] getSelectedMetrics() {
+    return (MetricComponent[]) getSelectedLeaves(MetricComponent.class);
   }
-  
-  //      public MetricComponent[] getSelectedMetrics() {
-  //          return (MetricComponent[]) getSelectedLeaves(MetricComponent.class);
-  //      }
-  
+ 
   public Experiment[] getSelectedExperiments() {
     return (Experiment[]) getSelectedLeaves(Experiment.class);
   }
@@ -429,14 +470,14 @@ public class Organizer extends JScrollPane {
     return (ImpactComponent[]) getLeaves(ImpactComponent.class, node);
   }
   
-  private Metric[] getMetrics(TreeNode node) {
-    return (Metric[]) getLeaves(Metric.class, node);
+  //private Metric[] getMetrics(TreeNode node) {
+  //  return (Metric[]) getLeaves(Metric.class, node);
+  // }
+  
+  private MetricComponent[] getMetrics(TreeNode node) {
+    return (MetricComponent[]) getLeaves(MetricComponent.class, node);
   }
-  
-  //    private MetricComponent[] getMetrics(TreeNode node) {
-  //        return (MetricComponent[]) getLeaves(MetricComponent.class, node);
-  //    }
-  
+ 
   private Experiment[] getExperiment(TreeNode node) {
     return (Experiment[]) getLeaves(Experiment.class, node);
   }
@@ -467,12 +508,14 @@ public class Organizer extends JScrollPane {
     if (selNode == null) return null;
     return selNode.getUserObject();
   }
-  
+
+  // End of methods to get the User's selection
+  ////////////////////////////////////  
+
   /**
    * Popup appropriate menu, but first disable appropriate commands
    * if component is not editable.
    */
-  
   private void doPopup(MouseEvent e) {
     TreePath selPath = workspace.getPathForLocation(e.getX(), e.getY());
     if (selPath == null) return;
@@ -488,11 +531,11 @@ public class Organizer extends JScrollPane {
     } else if (o instanceof ImpactComponent) {
       configureImpactMenu(((ImpactComponent)o).isEditable());
       impactMenu.show(workspace, e.getX(), e.getY());
-    } else if (o instanceof Metric) {
+      //} else if (o instanceof Metric) {
+      //metricMenu.show(workspace, e.getX(), e.getY());
+    } else if (o instanceof MetricComponent) {
+      configureMetricMenu(((MetricComponent)o).isEditable());
       metricMenu.show(workspace, e.getX(), e.getY());
-      //      } else if (o instanceof MetricComponent) {
-      //      configureMetricMenu(((MetricComponent)o).isEditable());
-      //        metricMenu.show(workspace, e.getX(), e.getY());
     } else if (o instanceof Experiment) {
       configureExperimentMenu(((Experiment)o));
       experimentMenu.show(workspace, e.getX(), e.getY());
@@ -631,26 +674,26 @@ public class Organizer extends JScrollPane {
       experiment = new Experiment(experimentNames.generateName(name),
 				  new SocietyComponent[] {sc},
 				  new ImpactComponent[0],
-				  new Metric[0]);
-      //				  new MetricComponent[0]);
+				  //				  new Metric[0]);
+      				  new MetricComponent[0]);
     } else if (o instanceof ImpactComponent) {
       ImpactComponent impact = (ImpactComponent) o;
       String name = "Experiment for " + impact.getImpactName();
       experiment = new Experiment(experimentNames.generateName(name),
 				  new SocietyComponent[0],
 				  new ImpactComponent[] {impact},
-				  new Metric[0]);
-      //				  new MetricComponent[0]);
-      //    } else if (o instanceof MetricComponent) {
-      //      MetricComponent metric = (MetricComponent) o;
-    } else if (o instanceof Metric) {
-      Metric metric = (Metric) o;
-      String name = "Experiment for " + metric.getName();
+				  //			  new Metric[0]);
+      				  new MetricComponent[0]);
+    } else if (o instanceof MetricComponent) {
+      MetricComponent metric = (MetricComponent) o;
+      //} else if (o instanceof Metric) {
+      //Metric metric = (Metric) o;
+      String name = "Experiment for " + metric.getMetricName();
       experiment = new Experiment(experimentNames.generateName(name),
 				  new SocietyComponent[0],
 				  new ImpactComponent[0],
-				  new Metric[] {metric});
-      //				  new MetricComponent[] {metric});
+				  //				  new Metric[] {metric});
+      				  new MetricComponent[] {metric});
     } else if (o instanceof Experiment) {
       experiment = (Experiment) o;
     } else if (o instanceof String) {
@@ -697,7 +740,8 @@ public class Organizer extends JScrollPane {
       experiment = new Experiment(name,
 				  new SocietyComponent[] {sc},
 				  new ImpactComponent[0],
-				  new Metric[0]);
+				  //				  new Metric[0]);
+				  new MetricComponent[0]);
       DefaultMutableTreeNode parent = 
 	(DefaultMutableTreeNode) node.getParent();
       DefaultMutableTreeNode newNode =
@@ -718,24 +762,15 @@ public class Organizer extends JScrollPane {
       csmart.runExperimentBuilder(experiment, false, true);
     }
     // At this point the user may not have created a configuration.
-    if (! experiment.hasConfiguration())
-      experiment.createDefaultConfiguration();
     // So they really can't run the console quite yet.
     // We'll create a default configuration for them
+    if (! experiment.hasConfiguration())
+      experiment.createDefaultConfiguration();
+
+    // Start up the console on the experiment
     csmart.runConsole(experiment);
   }
   
-  private static class ComboItem {
-    public String name;
-    public Class cls;
-    public ComboItem(String name, Class cls) {
-      this.cls = cls;
-      this.name = name;
-    }
-    public String toString() {
-      return name;
-    }
-  }
   private int nameCounter = 0;
   
   private static Class[] constructorArgTypes = {String.class};
@@ -899,8 +934,8 @@ public class Organizer extends JScrollPane {
       renameImpact(node);
     } else if (societyComponent instanceof Experiment) {
       renameExperiment(node);
-      //      } else if (societyComponent instanceof MetricComponent) {
-      //        renameMetric(node);
+    } else if (societyComponent instanceof MetricComponent) {
+      renameMetric(node);
     }
     String name = JOptionPane.showInputDialog("New component name");
     renameComponent(node, name);
@@ -981,9 +1016,9 @@ public class Organizer extends JScrollPane {
       deleteImpact(node);
     else if (component instanceof Experiment)
       deleteExperiment(node);
+    else if (component instanceof MetricComponent)
+      deleteMetric(node);
     else {
-      //      else if (component instanceof MetricComponent)
-      //        deleteMetric(node);
       if (!component.isEditable()) {
 	int result = JOptionPane.showConfirmDialog(this,
 						   "Component is in use; delete anyway?",
@@ -1107,19 +1142,15 @@ public class Organizer extends JScrollPane {
   }
   
   private void newMetric(DefaultMutableTreeNode node) {
-    Object[] values = {
-      new ComboItem("Some Metric", SomeMetric.class),
-      //      new ComboItem("Basic Metrics", BasicMetric.class),
-      new ComboItem("Mo Metric", MoMetric.class)
-    };
+    Object[] values = metComboItems;
     Object answer =
       JOptionPane.showInputDialog(this, "Select Metric Type",
 				  "Select Metric",
 				  JOptionPane.QUESTION_MESSAGE,
 				  null,
 				  values,
-				  //				  "Basic Metric");
-				  "Mo Metric");
+				  "Empty Metric");
+				  //"Mo Metric");
     if (answer instanceof ComboItem) {
       ComboItem item = (ComboItem) answer;
       String name = metricNames.generateName(item.name);
@@ -1138,29 +1169,38 @@ public class Organizer extends JScrollPane {
 					       JOptionPane.ERROR_MESSAGE);
 	if (ok != JOptionPane.OK_OPTION) return;
       }
-      try {
-	Constructor constructor = item.cls.getConstructor(constructorArgTypes);
-	Metric metric =
-	  (Metric) constructor.newInstance(new String[] {name});
-	//	MetricComponent metric =
-	//	  (MetricComponent) constructor.newInstance(new String[] {name});
-	DefaultMutableTreeNode newNode =
-	  addMetricToWorkspace(metric, node);
-	workspace.setSelection(newNode);
-      } catch (Exception e) {
-	e.printStackTrace();
-      }
+      MetricComponent mc = createMet(name, item.cls);
+      if (mc == null)
+	return;
+      DefaultMutableTreeNode newNode =
+	addMetricToWorkspace(mc, node);
+      workspace.setSelection(newNode);
+    }
+  } // end of newMetric
+
+  private MetricComponent createMet(String name, Class cls) {
+    try {
+      Constructor constructor = cls.getConstructor(constructorArgTypes);
+      //  	Metric metric =
+      //  	  (Metric) constructor.newInstance(new String[] {name});
+      MetricComponent metric =
+	(MetricComponent) constructor.newInstance(new String[] {name});
+      metric.initProperties();
+      return metric;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
     }
   }
   
-  //  private DefaultMutableTreeNode addMetricToWorkspace(MetricComponent metric,
-  private DefaultMutableTreeNode addMetricToWorkspace(Metric metric,
+  private DefaultMutableTreeNode addMetricToWorkspace(MetricComponent metric,
+ //private DefaultMutableTreeNode addMetricToWorkspace(Metric metric,
 						      DefaultMutableTreeNode node) {
     DefaultMutableTreeNode newNode = 
       new DefaultMutableTreeNode(metric, false);
     addNode(node, newNode);
-    metricNames.add(metric.getName());
-    //      installListeners(sc);
+    metricNames.add(metric.getMetricName());
+    //installListeners(metric);
     return newNode;
   }
   
@@ -1171,11 +1211,11 @@ public class Organizer extends JScrollPane {
   
   // Separate method for use from model...
   private void renameMetric(DefaultMutableTreeNode node, String name) {
-//      MetricComponent metric =
-//        (MetricComponent) node.getUserObject();
-    Metric metric =
-      (Metric) node.getUserObject();
-    if (name == null || name.equals(metric.getName()) || name.equals("")) return;
+      MetricComponent metric =
+        (MetricComponent) node.getUserObject();
+      //    Metric metric =
+      //(Metric) node.getUserObject();
+    if (name == null || name.equals(metric.getMetricName()) || name.equals("")) return;
     while (true) {
       if (!metricNames.contains(name)) break;
       int ok = JOptionPane.showConfirmDialog(this,
@@ -1188,9 +1228,9 @@ public class Organizer extends JScrollPane {
       if (name == null || name.equals("")) return;
     }
     if (name != null) {
-      metricNames.remove(metric.getName());
+      metricNames.remove(metric.getMetricName());
       metric.setName(name);
-      metricNames.add(metric.getName());
+      metricNames.add(metric.getMetricName());
       model.nodeChanged(node); // update the model...
     }
   }
@@ -1198,7 +1238,7 @@ public class Organizer extends JScrollPane {
   private void deleteMetric(DefaultMutableTreeNode node) {
     if (node == null) return;
     model.removeNodeFromParent(node);
-    metricNames.remove(((Metric) node.getUserObject()).getName());
+    metricNames.remove(((MetricComponent) node.getUserObject()).getMetricName());
   }
   
   private DefaultMutableTreeNode newExperiment(DefaultMutableTreeNode node) {
@@ -1375,8 +1415,8 @@ public class Organizer extends JScrollPane {
 			     Experiment.class.getMethod("getExperimentName", noTypes));
 	impactNames.init(getLeaves(ImpactComponent.class, root),
 			 ImpactComponent.class.getMethod("getImpactName", noTypes));
-	metricNames.init(getLeaves(Metric.class, root),
-			 Metric.class.getMethod("getName", noTypes));
+	metricNames.init(getLeaves(MetricComponent.class, root),
+			 MetricComponent.class.getMethod("getMetricName", noTypes));
 	componentNames.init(getLeaves(ModifiableConfigurableComponent.class, root),
 			    ModifiableConfigurableComponent.class.getMethod("getShortName", noTypes));
 	return;
@@ -1530,69 +1570,6 @@ public class Organizer extends JScrollPane {
         public void ancestorMoved(AncestorEvent e) {}
       };
   
-  public Organizer(CSMART csmart) {
-    this(csmart, null);
-  }
-  
-  public Organizer(CSMART csmart, String workspaceFileName) {
-    setPreferredSize(new Dimension(400, 100));
-    JPanel panel = new JPanel(new BorderLayout());
-    setViewportView(panel);
-    this.csmart = csmart;
-    if (workspaceFileName == null) {
-      this.workspaceFileName = DEFAULT_FILE_NAME;
-    } else {
-      this.workspaceFileName = workspaceFileName;
-    }
-    restore(this.workspaceFileName);
-    if (root == null) {
-      root = new DefaultMutableTreeNode(null, true);
-      //            model = new DefaultTreeModel(root);
-      model = createModel(this, root);
-    }
-    // 	System.out.println("Organizer: setting root name to: " +
-    // 			   this.workspaceFileName);
-    //         String rootName = this.workspaceFileName;
-    //         int extpos = this.workspaceFileName.lastIndexOf('.');
-    //         if (extpos >= 0) {
-    //             rootName = rootName.substring(0, extpos);
-    //         }
-    //         root.setUserObject(rootName);
-    model.setAsksAllowsChildren(true);
-    model.addTreeModelListener(myModelListener);
-    workspace = new OrganizerTree(model);
-    workspace.setExpandsSelectedPaths(true);
-    for (int i = 0; i < rootAction.length; i++) {
-      rootMenu.add(rootAction[i]);
-    }
-    for (int i = 0; i < societyAction.length; i++) {
-      societyMenu.add(societyAction[i]);
-    }
-    for (int i = 0; i < componentAction.length; i++) {
-      componentMenu.add(componentAction[i]);
-    }
-    for (int i = 0; i < impactAction.length; i++) {
-      impactMenu.add(impactAction[i]);
-    }
-    for (int i = 0; i < metricAction.length; i++) {
-      metricMenu.add(metricAction[i]);
-    }
-    for (int i = 0; i < experimentAction.length; i++) {
-      experimentMenu.add(experimentAction[i]);
-    }
-    for (int i = 0; i < treeAction.length; i++) {
-      treeMenu.add(treeAction[i]);
-    }
-    workspace.addTreeSelectionListener(mySelectionListener);
-    workspace.addAncestorListener(myAncestorListener);
-    workspace.addMouseListener(mouseListener);
-    workspace.setSelection(root);
-    expandTree(); // fully expand workspace tree
-    panel.add(workspace);
-    setViewportView(panel);
-    updater.start();
-  }
-  
 //      public void setRoot(ObjectInputStream init) {
 //          root = (DefaultMutableTreeNode) init.readObject();
 //      }
@@ -1644,16 +1621,21 @@ public class Organizer extends JScrollPane {
     workspace.addTreeSelectionListener(listener);
   }
   
+
+  ////////////////////////////////////
+  // Stuff to copy items
+  
   /**
    * Copy an experiment.
    */
-  
   private void copyExperimentInNode(DefaultMutableTreeNode node) {
     copyExperiment((Experiment)node.getUserObject(), node.getParent());
   }
   
   public Experiment copyExperiment(Experiment experiment, Object context) {
     // context is the tree node of the folder containing the experiment
+    // Fixme: if make Experiment hold everything in properties, then can
+    // use the Component copy method
     Experiment experimentCopy = experiment.copy(this, context);
     if (context == null)
       // add copy as sibling of original
@@ -1667,10 +1649,6 @@ public class Organizer extends JScrollPane {
   
   private void copySocietyInNode(DefaultMutableTreeNode node) {
     copySociety((SocietyComponent)node.getUserObject(), node.getParent());
-  }
-  
-  private void copyComponentInNode(DefaultMutableTreeNode node) {
-    copyComponent((ModifiableConfigurableComponent)node.getUserObject(), node.getParent());
   }
   
   public SocietyComponent copySociety(SocietyComponent society, 
@@ -1690,6 +1668,10 @@ public class Organizer extends JScrollPane {
     return societyCopy;
   }
   
+  private void copyComponentInNode(DefaultMutableTreeNode node) {
+    copyComponent((ModifiableConfigurableComponent)node.getUserObject(), node.getParent());
+  }
+  
   public ModifiableConfigurableComponent copyComponent(ModifiableConfigurableComponent comp, 
 						       Object context) {
     if (comp instanceof SocietyComponent)
@@ -1698,9 +1680,9 @@ public class Organizer extends JScrollPane {
       return (ModifiableConfigurableComponent)copyImpact((ImpactComponent)comp, context);
     else if (comp instanceof Experiment)
       return (ModifiableConfigurableComponent)copyExperiment((Experiment)comp, context);
-    //      else if (comp instanceof MetricComponent)
-    //        return (ModifiableConfigurableComponent)copyMetric((MetricComponent)comp, context);
-    //    ModifiableConfigurableComponent compCopy = comp.copy(this, context);
+    else if (comp instanceof MetricComponent)
+      return (ModifiableConfigurableComponent)copyMetric((MetricComponent)comp, context);
+    //ModifiableConfigurableComponent compCopy = comp.copy(this, context);
     // FIXME!!!
     ModifiableConfigurableComponent compCopy = comp;
     if (context == null)
@@ -1718,6 +1700,8 @@ public class Organizer extends JScrollPane {
   
   public ImpactComponent copyImpact(ImpactComponent impact, Object context) {
     ImpactComponent impactCopy = null;
+    // FIXME!! Once ABCImpact has been made a component,
+    // get rid of this special case
     if (impact instanceof ABCImpact) {
       impactCopy = ((ABCImpact)impact).copy(this, context);
     } else {
@@ -1732,10 +1716,14 @@ public class Organizer extends JScrollPane {
     return impactCopy;
   }
   
-  //  public MetricComponent copyMetric(MetricComponent metric, Object context) {
-  //    MetricComponent metricCopy = metric.copy(this, context);
-  public Metric copyMetric(Metric metric, Object context) {
-    Metric metricCopy = metric.copy(this, context);
+  public MetricComponent copyMetric(MetricComponent metric, Object context) {
+    // FIXME!!!!
+    MetricComponent metricCopy = createMet(generateMetricName(metric.getMetricName()), metric.getClass());
+    metric.copy(metricCopy);
+    //public Metric copyMetric(Metric metric, Object context) {
+    // Fixme: once only metrics are components,
+    // get rid of this & do real component copy
+    //Metric metricCopy = metric.copy(this, context);
     if (context == null)
       workspace.setSelection(addMetricToWorkspace(metricCopy, (DefaultMutableTreeNode)findNode(metric).getParent()));
     else 
@@ -1785,8 +1773,8 @@ public class Organizer extends JScrollPane {
 	    
 	  } else if (aNode.getUserObject() instanceof ImpactComponent) {
 	    myorg.renameImpact(aNode, newValue.toString());
-	  } else if (aNode.getUserObject() instanceof Metric) {
-	    //	  } else if (aNode.getUserObject() instanceof MetricComponent) {
+	    //} else if (aNode.getUserObject() instanceof Metric) {
+	  } else if (aNode.getUserObject() instanceof MetricComponent) {
 	    myorg.renameMetric(aNode, newValue.toString());
 	  } else if (aNode.getUserObject() instanceof Experiment) {
 	    myorg.renameExperiment(aNode, newValue.toString());
@@ -1802,5 +1790,52 @@ public class Organizer extends JScrollPane {
 	  }	  
 	}
       };
+  }
+
+  // to guarantee unique names
+  private static class UniqueNameSet extends HashSet {
+    private String prefix;
+    private int nameCounter = 0;
+    public UniqueNameSet(String prefix) {
+      this.prefix = prefix;
+    }
+    public void init(Object[] things, Method getNameMethod) {
+      Object[] noArgs = new Object[0];
+      for (int i = 0; i < things.length; i++) {
+	try {
+	  String name = (String) getNameMethod.invoke(things[i], noArgs);
+	  add(name);
+	} catch (Exception e) {
+	  System.out.println("Reading: " + things[i]);
+	  e.printStackTrace();
+	}
+      }
+    }
+    
+    public String generateName() {
+      return generateName(prefix);
+    }
+    public String generateName(String name) {
+      if (contains(name)) {
+	String base = name;
+	do {
+	  name = base + ++nameCounter;
+	} while (contains(name));
+      }
+      return name;
+    }
+  } // end of UniqueNameSet definition
+
+  // Class for holding name/Class pairs in UIs
+  private static class ComboItem {
+    public String name;
+    public Class cls;
+    public ComboItem(String name, Class cls) {
+      this.cls = cls;
+      this.name = name;
+    }
+    public String toString() {
+      return name;
+    }
   }
 }

@@ -28,6 +28,12 @@ import org.cougaar.tools.csmart.ui.component.*;
 import org.cougaar.tools.csmart.ui.viewer.Organizer;
 import org.cougaar.tools.server.ConfigurationWriter;
 
+/**
+ * A CSMART Experiment. Holds the components being run, and the configuration of host/node/agents.<br>
+ * Computes the trials, and the configuration data for running a trial.
+ *
+ * @author <a href="mailto:ahelsing@bbn.com">Aaron Helsinger</a>
+ */
 public class Experiment extends ModifiableConfigurableComponent implements ModificationListener, java.io.Serializable {
   private static final String DESCRIPTION_RESOURCE_NAME = "description.html";
   private List societies = new ArrayList();
@@ -52,7 +58,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private boolean runnable = true;
 
   public Experiment(String name, SocietyComponent[] societyComponents,
-		    ImpactComponent[] impacts, Metric[] metrics)
+		    ImpactComponent[] impacts, MetricComponent[] metrics)
   {
     this(name);
     setSocietyComponents(societyComponents);
@@ -63,6 +69,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public Experiment(String name) {
     super(name);
   }
+  
   public void setName(String newName) {
     super.setName(newName);
     fireModification();
@@ -78,7 +85,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     impacts.clear();
     impacts.addAll(Arrays.asList(ary));
   }
-  public void setMetrics(Metric[] ary) {
+  public void setMetrics(MetricComponent[] ary) {
     metrics.clear();
     metrics.addAll(Arrays.asList(ary));
   }
@@ -88,7 +95,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void addImpact(ImpactComponent impact) {
     if (!impacts.contains(impact)) impacts.add(impact);
   }
-  public void addMetric(Metric metric) {
+  public void addMetric(MetricComponent metric) {
     if (!metrics.contains(metric)) metrics.add(metric);
   }
   
@@ -97,8 +104,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       addSocietyComponent((SocietyComponent)comp);
     else if (comp instanceof ImpactComponent)
       addImpact((ImpactComponent)comp);
-//      else if (comp instanceof MetricComponent)
-//        addMetric((MetricComponent)comp);
+    else if (comp instanceof MetricComponent)
+      addMetric((MetricComponent)comp);
     // handle others!!!
   }
   public void removeSociety(SocietyComponent sc) {
@@ -107,7 +114,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public void removeImpact(ImpactComponent impact) {
     impacts.remove(impact);
   }
-  public void removeMetric(Metric metric) {
+  public void removeMetric(MetricComponent metric) {
     metrics.remove(metric);
   }
   public void removeComponent(ModifiableConfigurableComponent comp) {
@@ -115,16 +122,16 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       removeSociety((SocietyComponent)comp);
     if (comp instanceof ImpactComponent)
       removeImpact((ImpactComponent)comp);
-//      if (comp instanceof MetricComponent)
-//        removeMetric((MetricComponent)comp);
+    if (comp instanceof MetricComponent)
+      removeMetric((MetricComponent)comp);
     // Must handle random components!!!
   }
   public int getSocietyComponentCount() {
     return societies.size();
   }
   public int getComponentCount() {
-    //    return societies.size() + impacts.size() + metrics.size();
-    return societies.size() + impacts.size();
+    return societies.size() + impacts.size() + metrics.size();
+	//return societies.size() + impacts.size();
     // this is a kludge
   }
   public int getImpactCount() {
@@ -139,8 +146,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   public ImpactComponent getImpact(int i) {
     return (ImpactComponent) impacts.get(i);
   }
-  public Metric getMetric(int i) {
-    return (Metric) metrics.get(i);
+  public MetricComponent getMetric(int i) {
+    return (MetricComponent) metrics.get(i);
   }
   
   public ModifiableConfigurableComponent getComponent(int i) {
@@ -149,8 +156,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       return (ModifiableConfigurableComponent)getSocietyComponent(i);
     else if (i < getImpactCount() + getSocietyComponentCount())
       return (ModifiableConfigurableComponent)getImpact(i - getSocietyComponentCount());
-//      else
-//        return (ModifiableConfigurableComponent)(getMetric(i = getSocietyComponentCount() + getImpactCount()));
+    else if (i < getComponentCount()) 
+      return (ModifiableConfigurableComponent)(getMetric(i - (getSocietyComponentCount() + getImpactCount())));
     else
       return null;
   }
@@ -280,12 +287,12 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       experimentCopy.addComponent(copiedSC);
     }
     
-    // Remove this once Metric stuff is fixed!!!!
-    for (int i = 0; i < metrics.size(); i++) {
-      Metric metric = (Metric)metrics.get(i);
-      Metric copiedMetric = organizer.copyMetric(metric, context);
-      experimentCopy.addMetric(copiedMetric);
-    }
+//      // Remove this once Metric stuff is fixed!!!!
+//      for (int i = 0; i < metrics.size(); i++) {
+//        Metric metric = (Metric)metrics.get(i);
+//        Metric copiedMetric = organizer.copyMetric(metric, context);
+//        experimentCopy.addMetric(copiedMetric);
+//      }
 
     // What about copying Hosts & Nodes????
     NodeComponent[] nodes = getNodes();
@@ -365,11 +372,13 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     return getClass().getResource(DESCRIPTION_RESOURCE_NAME);
   }
 
-  /**
-   * The following code to support hosts and nodes was removed from
-   * ScalabilityXSociety.
-   */
   public void initProperties() {
+    // put all the properties in here
+    // the list of components are children
+    // the editability & runability are properties
+    // the hosts, trials, etc should all be properties
+    // then we wouldn't need the special copy mechanism
+    // (if all the sub-pieces were also components)
   }
 
   public void modified(ModificationEvent e) {
@@ -462,9 +471,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   private List getAgentsInMetrics() {
     List agents = new ArrayList();
     for (int i = 0; i < metrics.size(); i++) {
-      Metric impact = (Metric)impacts.get(i);
-      //      MetricComponent impact = (MetricComponent)impacts.get(i);
-      //      agents.addAll(Arrays.asList(impact.getAgents()));
+      MetricComponent impact = (MetricComponent)impacts.get(i);
+      agents.addAll(Arrays.asList(impact.getAgents()));
     }
     return agents;
   }
@@ -596,12 +604,14 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       List propertyNames = comp.getPropertyNamesList();
       for (Iterator j = propertyNames.iterator(); j.hasNext(); ) {
 	Property property = comp.getProperty((CompositeName)j.next());
-	List values = property.getExperimentValues();
-	if (! property.isValueSet() && (values == null || values.size() == 0)) {
-	  return true;
+	if (! property.isValueSet()) {
+	  List values = property.getExperimentValues();
+	  if (values == null || values.size() == 0) {
+	    return true;
+	  }
 	}
-      }
-    }
+      } // end of loop over this components properties
+    } // end of loop over all components in experiment
     return false;
   }
 
@@ -848,7 +858,8 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     hasValidTrials = true;
     return (Trial[])trials.toArray(new Trial[trials.size()]);
   }
-}
+} // end of Experiment.java
+
 
 
 

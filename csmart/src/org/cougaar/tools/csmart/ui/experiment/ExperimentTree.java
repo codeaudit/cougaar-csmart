@@ -54,8 +54,8 @@ public class ExperimentTree extends DNDTree {
             theData = aNode.getUserObject();
             if (theData instanceof ImpactComponent)
                 flavors = new DataFlavor[] {impactFlavor};
-	    //            else if (theData instanceof MetricComponent)
-            else if (theData instanceof Metric)
+	    else if (theData instanceof MetricComponent)
+	      //else if (theData instanceof Metric)
                 flavors = new DataFlavor[] {metricFlavor};
             else if (theData instanceof ModifiableConfigurableComponent)
                 flavors = new DataFlavor[] {componentFlavor};

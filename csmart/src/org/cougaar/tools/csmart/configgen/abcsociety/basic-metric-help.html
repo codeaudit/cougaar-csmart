@@ -1,0 +1,18 @@
+<html>
+<head>
+<title>Basic Metric Help</title>
+</head>
+<body TEXT="#000000" LINK="#0000ff" VLINK="#800080" BGCOLOR="#ffffff">
+<h1>Basic Metric Configuration Help</h1>
+The Basic Metric collects rudimentary run-time performance metrics for any society to which it is added. The results can then be viewed in the Performance Analyzer.<br>
+<ul>
+<li>Max number of metric samples     [Integer, 0 - MAX]</li>
+<li>Metric sample interval           [Integer, seconds, 0 - 60]</li>
+<li>Metric start delay               [ Integer, seconds, 0 -  MAX]</li>
+</ul>
+Throughout task production, metrics are collected for each agent.  Once the 
+agent is started, it will start producing metrics at 'Metrics: Start Delay' + 
+current time.  The agent will then continue to report its metrics at every 
+interval 'Metrics: Sample Interval' (seconds) until the requested number of metrics samples
+'Metrics: Maximum Number of Samples' are collected.<br>
+</body></html>

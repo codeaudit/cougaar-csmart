@@ -49,8 +49,8 @@ public class OrganizerTree extends DNDTree {
                              OrganizerTree.class,
                              "Impact");
     public static final CSMARTDataFlavor metricFlavor =
-      //        new CSMARTDataFlavor(MetricComponent.class,
-        new CSMARTDataFlavor(Metric.class,
+      new CSMARTDataFlavor(MetricComponent.class,
+			   //   new CSMARTDataFlavor(Metric.class,
                              null,
                              OrganizerTree.class,
                              "Metric");
@@ -78,8 +78,8 @@ public class OrganizerTree extends DNDTree {
                 flavors = new DataFlavor[] {societyFlavor};
             else if (theData instanceof ImpactComponent)
                 flavors = new DataFlavor[] {impactFlavor};
-	    //            else if (theData instanceof MetricComponent)
-            else if (theData instanceof Metric)
+	    else if (theData instanceof MetricComponent)
+	      //else if (theData instanceof Metric)
                 flavors = new DataFlavor[] {metricFlavor};
             else if (theData instanceof Experiment)
                 flavors = new DataFlavor[] {experimentFlavor};

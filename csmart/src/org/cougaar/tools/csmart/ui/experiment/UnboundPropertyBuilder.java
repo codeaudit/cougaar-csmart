@@ -34,6 +34,7 @@ import org.cougaar.tools.csmart.ui.component.Property;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.component.ImpactComponent;
 import org.cougaar.tools.csmart.ui.component.ModifiableConfigurableComponent;
+import org.cougaar.tools.csmart.ui.component.MetricComponent;
 
 public class UnboundPropertyBuilder extends JPanel {
   private static final String REMOVE_MENU_ITEM = "Remove";
@@ -286,8 +287,6 @@ public class UnboundPropertyBuilder extends JPanel {
   private void displayEditorForNode(DefaultMutableTreeNode node) {
     if (node == null) return;
     Object o = (node.getUserObject());
-    // FIXME!!!! Must I add in the unbound properties from the Metrics & Impacts here??
-    // Or is this a one-by-one kind of thing?
     if (o instanceof ModifiableConfigurableComponent) {
       propModel.clear(); // clear out any previous table entries
       propModel.setComponentProperties((ModifiableConfigurableComponent) o);
@@ -317,13 +316,13 @@ public class UnboundPropertyBuilder extends JPanel {
     }
     experiment.setImpacts(impactAry);
     int nMetrics = metrics.getChildCount();
-    //    MetricComponent[] metricAry = new MetricComponent[nMetrics];
-    Metric[] metricAry = new Metric[nMetrics];
+        MetricComponent[] metricAry = new MetricComponent[nMetrics];
+	//Metric[] metricAry = new Metric[nMetrics];
     for (int i = 0; i < nMetrics; i++) {
       metricAry[i] =
-        (Metric) ((DefaultMutableTreeNode) metrics.getChildAt(i)).getUserObject();
-      //        (MetricComponent) ((DefaultMutableTreeNode) metrics.getChildAt(i)).getUserObject();
-      //metricAry[i].setEditable(false);
+	//  (Metric) ((DefaultMutableTreeNode) metrics.getChildAt(i)).getUserObject();
+              (MetricComponent) ((DefaultMutableTreeNode) metrics.getChildAt(i)).getUserObject();
+      metricAry[i].setEditable(false);
     }
     experiment.setMetrics(metricAry);
     experiment.invalidateTrials(); // and force experiment to recreate trials
@@ -344,8 +343,8 @@ public class UnboundPropertyBuilder extends JPanel {
       popupMenu.show(tree, e.getX(), e.getY());
     } else if (o instanceof ImpactComponent) {
       popupMenu.show(tree, e.getX(), e.getY());
-      //    } else if (o instanceof MetricComponent) {
-    } else if (o instanceof Metric) {
+    } else if (o instanceof MetricComponent) {
+      //} else if (o instanceof Metric) {
       popupMenu.show(tree, e.getX(), e.getY());
     } else if (o instanceof Experiment) {
       popupMenu.show(tree, e.getX(), e.getY());
@@ -420,9 +419,7 @@ public class UnboundPropertyBuilder extends JPanel {
   /**
    * Add metric component to tree.
    */
-
-  //  private void addMetric(MetricComponent metric) {
-  private void addMetric(Metric metric) {
+  private void addMetric(MetricComponent metric) {
     DefaultMutableTreeNode node = new DefaultMutableTreeNode(metric, false);
     model.insertNodeInto(node, metrics, metrics.getChildCount());
   }
