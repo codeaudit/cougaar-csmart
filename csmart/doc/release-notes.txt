@@ -76,6 +76,11 @@ Recipe changes
 - Bug 1596: OrgAssets created using the AgentInsertionRecipe were
   missing the ClusterPG and ItemIdentificationPG, resulting in runtime
   Exceptions.
+- The Parameter Insertion Recipe now explicity modifies _all_
+  components that match the given name in an Agent, not just the first
+  one. That "name" is also interpreted as a "Class" or as a "Name"
+  (these two slots are usually the same, and only differ if you have
+  two components of the same class in the same Agent).
 
 Console and AppServer changes:
 - There have been extensive changes to the Application Server, and to
@@ -89,12 +94,21 @@ these. For most users, these changes need not change how your society runs.
   to them, at which point CSMART will allow monitoring these Nodes as
   though CSMART had started them originally. Note that if your CSMART
   process dies (or you kill it without stopping your society), all
-  Nodes will continue to run. You must either restart your AppServers,
-  or use CSMART to connect to the AppServers and kill the Nodes. This
-  fixes bugs 997, 1022, and partially addresses 1028. !!!!FIXME!!!!!
-  There's a new property that can be added to the "server.props":
+  Nodes will continue to run (due to the inclusion in the default
+  Global Command Line Arguments of the new property
       org.cougaar.tools.server.swallowOutputConnectionException=true
-  which, when set, ?????!!!!!!
+  Once CSMART has died, you can restart it and re-connect to the Nodes
+  if you like. Or you may kill them (from the Application Server menu
+  item). 
+
+  The console keeps a list of Application Servers that it will monitor
+  for new Nodes. This list is usually the set of servers defined in
+  your experiment. But you can add to or remove from this list, via
+  the menu items on the "Application Server" menu. By default, CSMART
+  polls the known Application Servers every 30 seconds. This frequency
+  is configurable, also via the menu item on the "Application Server"
+  menu (you may disable polling by setting the frequency to 0).
+  This fixes bugs 997, 1022, and partially addresses 1028. 
 - The Console (Experiment Controller) tries hard to find the GLS
   Servlet to connect the client UI (bug 1560). You MUST
   specify the web server http or https port for the NCA agent through
