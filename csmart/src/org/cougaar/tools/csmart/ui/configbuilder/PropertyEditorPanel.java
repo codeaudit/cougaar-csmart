@@ -48,6 +48,7 @@ import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.db.DBUtils;
 import org.cougaar.tools.csmart.core.property.name.CompositeName;
 import org.cougaar.tools.csmart.core.property.BaseComponent;
 import org.cougaar.tools.csmart.core.property.ConfigurableComponent;
@@ -802,10 +803,19 @@ public class PropertyEditorPanel extends JPanel
         }
       }
     }
+    // add in plugin names and classes from database
+    Set dbPluginClasses = DBUtils.dbGetPluginClasses();
+    for (Iterator i = dbPluginClasses.iterator(); i.hasNext(); ) {
+      String dbPluginClass = (String)i.next();
+      if (!pluginClasses.contains(dbPluginClass)) {
+        pluginNames.add(dbPluginClass); // name and class are the same
+        pluginClasses.add(dbPluginClass);
+      }
+    }
     ArrayList sortedNames = (ArrayList)pluginNames.clone();
     Collections.sort(sortedNames);
     String name = 
-      (String)ComboDialog.showDialog(this, "Plugin", new Vector(sortedNames));
+      (String)ComboDialog.showDialog(this, "Select Plugin or Enter New Name", new Vector(sortedNames));
     if (name == null)
       return;
     name = name.trim();
