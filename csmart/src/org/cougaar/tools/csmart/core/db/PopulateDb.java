@@ -1069,6 +1069,8 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":new_trial_id:", newTrialId);
     String qs = dbp.getQuery("copyCMTAssembliesQueryNames", substitutions);
     StringTokenizer queries = new StringTokenizer(qs);
+    // Note that PDbBase in executeUpdate already shares a connection,
+    // so we should be OK.
     while (queries.hasMoreTokens()) {
       String queryName = queries.nextToken();
       executeUpdate(dbp.getQuery(queryName, substitutions));
@@ -1105,6 +1107,8 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":new_trial_id:", newTrialId);
     String qs = dbp.getQuery("copyCMTThreadsQueryNames", substitutions);
     StringTokenizer queries = new StringTokenizer(qs);
+    // Note that executeUpdate in PDbBase uses a shared connection,
+    // so we should be OK.
     while (queries.hasMoreTokens()) {
       String queryName = queries.nextToken();
       executeUpdate(dbp.getQuery(queryName, substitutions));
@@ -1128,6 +1132,8 @@ public class PopulateDb extends PDbBase {
     substitutions.put(":new_assembly_id:", newAssemblyID);
     String qs = dbp.getQuery("copyOPLANQueryNames", substitutions);
     StringTokenizer queries = new StringTokenizer(qs);
+    // Note that executeUpdate in PDbBase uses a shared connection,
+    // so we should be OK.
     while (queries.hasMoreTokens()) {
       String queryName = queries.nextToken();
       if (log.isDebugEnabled()) {
