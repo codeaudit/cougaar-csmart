@@ -1103,7 +1103,8 @@ public class Organizer extends JScrollPane {
       new DefaultMutableTreeNode(recipe, false);
     addNode(node, newNode);
     recipeNames.add(recipe.getRecipeName());
-    //installListeners(recipe);
+    if (recipe instanceof ModifiableConfigurableComponent)
+      installListeners(((ModifiableConfigurableComponent)recipe));
     return newNode;
   }
   
