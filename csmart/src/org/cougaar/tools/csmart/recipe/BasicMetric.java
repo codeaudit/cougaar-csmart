@@ -76,6 +76,7 @@ public class BasicMetric extends RecipeBase
   // Directory to saveresults files in - default "."
   public static final String PROP_RESULTSDIR = "Metrics results directory";
   public static final String PROP_RESULTSDIR_DFLT = ".";
+  // FIXME: Should use org.cougaar.workspace -- see bug 1668
   public static final String PROP_RESULTSDIR_DESC = "Relative path in which to save results files";
   private Property propResultsDir;
   
@@ -240,6 +241,7 @@ public class BasicMetric extends RecipeBase
     // Switch to using the actual resultsDir prop
     // when we allow the user to edit it. See above in initProperties.
     plugin.addParameter(PROP_RESULTSDIR_DFLT); // dir for Results files
+    // FIXME: See bug 1668
     plugin.addParameter(getProperty(PROP_TVERB).getValue()); // Task Verb to search for
     addParameter(plugin, PROP_BBSERV);
     addParameter(plugin, PROP_PRSERV);

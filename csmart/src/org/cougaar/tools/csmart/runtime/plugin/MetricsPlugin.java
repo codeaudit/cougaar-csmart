@@ -144,7 +144,9 @@ public class MetricsPlugin
   implements MetricsConstants
 {
   public static final String RESULTS_FILENAME_SUFFIX = "_results.txt";
-  private static final String DEFAULT_DIRECTORY = "."; // cwd
+  //  private static String DEFAULT_DIRECTORY = System.getProperty("org.cougaar.workspace", ".");
+  // See bug 1668 and related comments in CSMARTConsole
+  private static final String DEFAULT_DIRECTORY = ".";
   private Role MetricsProviderRole = Role_MetricsProvider;
   private Asset dummyAsset;     // We assign the statistics tasks to this asset
   private ClusterIdentifier ourCluster;
