@@ -1,5 +1,42 @@
 CSMART Release Notes
 
+Release v8.6.2, Cougaar v8.6.2:
+A patch release, with multiple usability improvements. Emphasis
+is on supporting much larger societies, the 1AD society in particular,
+running off of MySQL databases.
+- Upgrade DB to use 1AD society
+
+- Metrics and Impacts merged into general purpose concept: Recipes.
+Use Recipes to define steps to take to modify an experiment. Recipes
+typically add a plugin, binder, or agent to one or more spots in a 
+society.
+
+- MySQL Thread selection now supported
+
+- Class 9 Threads now work
+
+- Store hosts, nodes with experiment. Permit deleting hosts from experiment
+
+- Save all host, node attributes in database
+
+- Support setting non -D arguments, global -D arguments on Nodes (with
+defaults provided), showing thes in Node info screen on console
+
+- Support a delay between Node launches, default to 0
+
+- Sort hosts, nodes, and support find operations
+
+- Allow user to force edit of a previously run experiment
+
+- Better support for data validation in Config Builder
+
+- Add ability to individually kill & restart Nodes
+
+- Support plan view filtering by agent
+
+- Add tab in ExperimentBuilder to show selected threads & groups
+
+
 Release v8.6.0, Cougaar v8.6.0:
 CSMART is now the preferred means for running large Cougaar
 societies. Beginning with this release, CSMART version numbers track

@@ -9,19 +9,15 @@ CSMART contains a few known issues:
   then you need to update your version of Java to jdk1.3.1_01 (see
   http://developer.java.sun.com/developer/bugParade/bugs/4189244.html).
 
-* Impacts currently cannot be used with a Database society.
-
-* CMT Societies cannot be configured with a MySQL database.
-
-* The Configuration database must be installed in the same database as
-  an installation of the Cougaar military domain database (which, in a
-  MySQL database must be named 'cougaar' which is the default when
-  installing this database from the Cougaar install package).
-  
 * An experiment removed from the database may still show up in your
   CSMART workspace.
 
-* Copying experiments in certain circumstances results in lost Agents.
+* Selecting groups in the Thread/Group view does not work
+
+* Some relationship arrows in the Agent View erroneously point 2 ways
+
+* The Thread pane loses information (although the society retains
+  the necessary information).
 
 For up to date information on these and other CSMART issues see:
 http://www.cougaar.org/bugs
