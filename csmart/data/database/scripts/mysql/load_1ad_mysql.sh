@@ -39,8 +39,6 @@ if [ "x$COUGAAR_INSTALL_PATH" = "x" ] ; then
 fi
 
 mysql -u$1 -p$2 $3 < $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sql/drop_v4_v6.sql
-echo "Dropping indexes from database tables."
-mysql -u$1 -p$2 $3 < $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sql/csmart-db.drop-mysql-indexes.sql
 echo "Dropping tables from database."
 mysql -u$1 -p$2 $3 < $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sql/csmart-db.drop-mysql-tables.sql
 echo "Creating tables in database."
