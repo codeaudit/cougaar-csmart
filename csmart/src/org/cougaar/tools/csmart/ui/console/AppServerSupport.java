@@ -77,12 +77,14 @@ public class AppServerSupport {
       return null;
     RemoteHost remoteAppServer = null;
     try {
+      // Third argument is whether AppServer should be verbose
+      // -- it will print to STDOUT in the CSMART window
       remoteAppServer = 
-        remoteHostRegistry.lookupRemoteHost(hostName, port, true);
+        remoteHostRegistry.lookupRemoteHost(hostName, port, false);
     } catch (Exception e) {
       if(log.isErrorEnabled()) {
         log.error("Unable to contact app-server on " + 
-                  hostName + " : " + port, e);
+                  hostName + " : " + port + ". Error: " + e);
       }
       JOptionPane.showMessageDialog(null,
                                     "Unable to contact app-server on " +
@@ -193,7 +195,7 @@ public class AppServerSupport {
         }
       } catch (Exception e) {
         if (log.isErrorEnabled()) {
-          log.error("Exception killing listener: ", e);
+          log.error("Exception killing listener for " + name + ": ", e);
         }
       }
     }
@@ -368,7 +370,7 @@ public class AppServerSupport {
       }
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
-        log.error("Exception searching for listeners", e);
+        log.error("Exception searching for listeners on process " + name, e);
       }
     }
     return false;
