@@ -911,10 +911,12 @@ public class PopulateDb extends PDbBase {
       // Putting the old AssemblyID in the society name is a bit ugly.
       //      substitutions.put(":soc_desc:", societyName + " based on " + cmtAsbID);
 
+      substitutions.put(":assembly_id:", assemblyId);
       // Came from a CMT assembly. Copy the OPLAN stuff
       copyOPLANData(cmtAsbID, assemblyId);
     }
 
+    substitutions.put(":assembly_id:", assemblyId);
     executeUpdate(dbp.getQuery("updateAssemblyDesc", substitutions));
 
     return assemblyId;
