@@ -561,6 +561,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       numberOfTrials = 1;  // always assume at least one trial
     return numberOfTrials;
   }
+
 }
 
 

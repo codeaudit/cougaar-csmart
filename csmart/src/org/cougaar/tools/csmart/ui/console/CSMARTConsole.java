@@ -10,7 +10,7 @@
 
 package org.cougaar.tools.csmart.ui.console;
 
-import java.io.File;
+import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.net.InetAddress;
@@ -42,6 +42,9 @@ import org.cougaar.tools.server.rmi.ClientCommunityController;
 import org.cougaar.tools.csmart.ui.Browser;
 
 public class CSMARTConsole extends JFrame implements ChangeListener {
+  // must match port used in org.cougaar.tools.server package
+  private static final int DEFAULT_PORT = 8484;
+
   CSMART csmart; // top level viewer, gives access to save method, etc.
   // Name of the remote registry that contains the runtime information.
   public static final String DEFAULT_SERVER_NAME = "ServerHook";
@@ -532,6 +535,8 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
    */
 
   private void setTrialValues() {
+    if (currentTrial >= 0)
+      unsetTrialValues(); // unset previous trial values
     currentTrial++;  // starts with 0
     Trial trial = experiment.getTrials()[currentTrial];
     trialNameLabel.setText(trial.getShortName());
@@ -540,6 +545,20 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     Object[] values = trial.getValues();
     for (int i = 0; i < properties.length; i++) 
       properties[i].setValue(values[i]);
+  }
+
+  /**
+   * Called when trial is finished; unset the property values
+   * that were used in the trial by setting their value to null.
+   */
+
+  private void unsetTrialValues() {
+    if (currentTrial < 0)
+      return;
+    Trial trial = experiment.getTrials()[currentTrial];
+    Property[] properties = trial.getParameters();
+    for (int i = 0; i < properties.length; i++) 
+      properties[i].setValue(null);
   }
 
   /**
@@ -588,6 +607,7 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	stopAllNodes();
     } else
       stopAllNodes();
+    saveResults();
   }
 
   /**
@@ -602,12 +622,19 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
   /**
    * Stop all experiments.  Called before exiting CSMART.
    */
+
   public void stopExperiments() {
     stopAllNodes(); // stop the nodes
     destroyOldNodes(); // kill all their outputs
+    unsetTrialValues(); // unset values from last trial
   }
 
-  // Stop the nodes, but don't kill the tabbed panes
+  /**
+   * Stop the nodes, but don't kill the tabbed panes.
+   * Used to stop trials in societies that aren't self terminating
+   * and used to abort trials.
+   */
+
   private void stopAllNodes() {
     Enumeration nodeComponents = runningNodes.keys();
     while (nodeComponents.hasMoreElements()) {
@@ -630,10 +657,10 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
       oldNodes.put(nodeComponent, nsc);
       runningNodes.remove(nodeComponent);
     }
-    updateExperimentControls(experiment, false);
-    trialTimer.stop();
-    if (!haveMoreTrials())
-      experimentTimer.stop();
+    trialFinished();
+    // experiment is stopped
+    if (!haveMoreTrials()) 
+      experimentFinished();
   }
 
   // Kill any existing tabbed panes or history charts
@@ -703,11 +730,10 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     //removeTabbedPane(nodeName);
     //removeStatusButton(nodeName);
 
-    // when all nodes have stopped
+    // when all nodes have stopped, save results
     // run the next trial and update the gui controls
     if (runningNodes.isEmpty()) {
-      updateExperimentControls(experiment, false);
-      trialTimer.stop();
+      trialFinished();
       if (haveMoreTrials()) {
 	if (!userStoppedTrials) {
 	  destroyOldNodes(); // destroy old guis before starting new ones
@@ -720,12 +746,32 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 	  runButton.setSelected(false);
 	}
       } else { // experiment is done
-	runButton.setEnabled(false);
-	runButton.setSelected(false);
-	trialTimer.stop();
-	experimentTimer.stop();
+	experimentFinished();
       }
     }
+  }
+
+  /**
+   * The trial is finished; stop the timer, save the results,
+   * unset the property values used, and update the gui.
+   */
+
+  private void trialFinished() {
+    trialTimer.stop();
+    saveResults();
+    updateExperimentControls(experiment, false);
+  }
+
+  /**
+   * The experiment is finished; disable and deselect the run button;
+   * stop the timers; and
+   * unset the property values used in the experiment.
+   */
+
+  private void experimentFinished() {
+    runButton.setEnabled(false);
+    runButton.setSelected(false);
+    experimentTimer.stop();
   }
 
   /**
@@ -975,11 +1021,15 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
 
     // create the node
     try {
-      NodeServesClient nsc = 
- 	communitySupport.createNode(hostName, port, regName,
-				    nodeName, properties,
-				    args, listener, filter, 
-				    configWriter);
+      // TODO: obtain most recent version of server and see if this works
+      //      HostServesClient hsc = communitySupport.createHost(hostName, port);
+      //      NodeServesClient nsc = hsc.createNode(nodeName, properties, args, 
+      //					    listener, filter, configWriter);
+       NodeServesClient nsc = 
+  	communitySupport.createNode(hostName, port, regName,
+ 				    nodeName, properties,
+ 				    args, listener, filter, 
+ 				    configWriter);
       if (nsc != null)
 	runningNodes.put(nodeComponent, nsc);
     } catch (Exception e) {
@@ -990,19 +1040,6 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
        e.printStackTrace();
        return;
     }
-
-    // create trial results with current time and add to experiment
-    // TODO: need to get results URL
-//     Trial trial = experiment.getTrials()[currentTrial];
-//     String filename = "Results.txt";
-//     try {
-//       String myHostName = InetAddress.getLocalHost().getHostName();
-//       URL url = new URL("File", myHostName, filename);
-//       trial.addTrialResult(new TrialResult(new Date(), url));
-//     } catch (Exception e) {
-//       System.out.println("Exception creating trial results URL: " + e);
-//       e.printStackTrace();
-//     }
     
     // only add gui controls if successfully created node
     tabbedPane.add(nodeName, stdoutPane);
@@ -1020,6 +1057,156 @@ public class CSMARTConsole extends JFrame implements ChangeListener {
     }
   }
 
+  /**
+   * This checks all the societies in the experiment to determine if
+   * any of them generated this metrics file.
+   * Creating a new File from the filename works because acceptFile
+   * just looks at the filename.
+   */
+
+  private boolean isMetricFile(String filename) {
+    File thisFile = new java.io.File(filename);
+    int n = experiment.getSocietyComponentCount();
+    for (int i = 0; i < n; i++) {
+      SocietyComponent societyComponent = experiment.getSocietyComponent(i);
+      java.io.FileFilter fileFilter = societyComponent.getMetricsFileFilter();
+      if (fileFilter == null)
+	return false;
+      return fileFilter.accept(thisFile);
+    }
+    return false;
+  }
+
+  /**
+   * Read remote files and copy to directory specified by experiment.
+   */
+
+  private void copyMetricsFiles(HostServesClient hostInfo,
+				String dirname) {
+    char[] cbuf = new char[1000];
+    try {
+      String[] filenames = hostInfo.list("./");
+      for (int i = 0; i < filenames.length; i++) {
+	if (!isMetricFile(filenames[i]))
+	  continue;
+	File newMetricsFile = 
+	  new File(dirname + File.separator + filenames[i]);
+	//	System.out.println("CSMARTConsole: saving results in: " +
+	//			   dirname + File.separatorChar + 
+	//			   filenames[i].substring(2));
+	InputStream is = hostInfo.open(filenames[i]);
+	BufferedReader reader = 
+	  new BufferedReader(new InputStreamReader(is), 1000);
+	BufferedWriter writer =
+	  new BufferedWriter(new FileWriter(newMetricsFile));
+	int len = 0;
+	while ((len = reader.read(cbuf, 0, 1000)) != -1) {
+	  writer.write(cbuf, 0, len);
+	}
+	reader.close();
+	writer.close();
+      }
+    } catch (Exception e) {
+      System.out.println("Analyzer: copyMetricsFiles: " + e);
+      e.printStackTrace();
+    }
+  }
+
+  /**
+   * Get the directory in which to store the metrics file.
+   * If no directory is set, then display a file chooser, initted
+   * to the cougaar install path, for the user to choose a directory.
+   */
+
+  private File getMetricsDir() {
+    File metricsDir = experiment.getMetricsDirectory();
+    if (metricsDir != null)
+      return metricsDir;
+
+    String metricsDirName = ".";
+    try {
+      metricsDirName = System.getProperty("org.cougaar.install.path");
+    } catch (RuntimeException e) {
+      // just use default
+    }
+    if (metricsDirName == null)
+      metricsDirName = ".";
+    JFileChooser chooser = new JFileChooser(metricsDirName);
+    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+	public boolean accept (File f) {
+	  return f.isDirectory();
+	}
+	public String getDescription() {return "All Directories";}
+      });
+    int result = chooser.showDialog(this, "Select Metrics Storage Directory");
+    if (result != JFileChooser.APPROVE_OPTION)
+      return null;
+    metricsDir = chooser.getSelectedFile();
+    experiment.setMetricsDirectory(metricsDir);
+    // TODO: shouldn't save happen automatically whenever an experiment is changed?
+    csmart.saveWorkspace(); // force csmart to save the change
+    return metricsDir;
+  }
+
+  /**
+   * Create a file for the results of this trial.
+   * Results file structure is:
+   * <ExperimentName>
+   *    <TrialName>
+   *       Results-<Timestamp>.results
+   */
+
+  private void saveResults() {
+    if (currentTrial < 0)
+      return; // nothing to save
+    File metricsDir = getMetricsDir();
+    Trial trial = experiment.getTrials()[currentTrial];
+    String dirname = metricsDir.getAbsolutePath() + File.separatorChar + 
+      experiment.getExperimentName() + File.separatorChar +
+      trial.getShortName() + File.separatorChar +
+      "Results-" + fileDateFormat.format(new Date());
+    try {
+      File f = new File(dirname);
+      // guarantee that directories exist
+      if (!f.mkdirs()) {
+	System.out.println("CSMARTConsole: Could not save results in: " +
+			   dirname);
+	return;
+      }
+      String myHostName = InetAddress.getLocalHost().getHostName();
+      URL url = new URL("file", myHostName, dirname);
+      trial.addTrialResult(new TrialResult(new Date(), url));
+    } catch (Exception e) {
+      System.out.println("Exception creating trial results URL: " + e);
+      e.printStackTrace();
+    }
+    HostComponent[] hosts = experiment.getHosts();
+    for (int i = 0; i < hosts.length; i++) {
+      String hostName = hosts[i].getShortName();
+      HostServesClient hostInfo = null;
+      try {
+	hostInfo = communitySupport.getHost(hostName, DEFAULT_PORT);
+      } catch (java.rmi.UnknownHostException uhe) {
+	JOptionPane.showMessageDialog(this,
+				      "Unknown host: " + hostName,
+				      "Unknown Host",
+				      JOptionPane.WARNING_MESSAGE);
+	continue;
+      } catch (Exception e) {
+	// This happens if you listed random hosts which you don't
+	// really intend to talk to
+	JOptionPane.showMessageDialog(this,
+				      "No response from host: " + hostName +
+				      "; check that server is running.",
+				      "No Response From Server",
+				      JOptionPane.WARNING_MESSAGE);
+	continue;
+      }
+      copyMetricsFiles(hostInfo, dirname);
+    }
+  }
+  
   /**
    * Create a log file name which is of the form:
    * agent name + date + .log

@@ -10,15 +10,9 @@
 
 package org.cougaar.tools.csmart.ui.analyzer;
 
-import org.cougaar.tools.csmart.ui.component.ConfigurableComponent;
-import org.cougaar.tools.csmart.ui.component.HostComponent;
 import org.cougaar.tools.csmart.ui.component.SocietyComponent;
 import org.cougaar.tools.csmart.ui.experiment.Experiment;
-import org.cougaar.tools.server.CommunityServesClient;
-import org.cougaar.tools.server.HostServesClient;
-import org.cougaar.tools.server.rmi.ClientCommunityController;
 import org.cougaar.tools.csmart.ui.util.NamedFrame;
-import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 import java.awt.GridLayout;
 import java.awt.event.*;
@@ -31,15 +25,11 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import org.cougaar.tools.csmart.ui.Browser;
 
 public class Analyzer extends JFrame implements ActionListener {
-  // port for fetching files from server
-  // must match port used in org.cougaar.tools.server package
-  private static final int DEFAULT_PORT = 8484;
   // system property; location of Excel
   private static final String EXCEL = "excel";
   // menu items
   private static final String FILE_MENU = "File";
   private static final String OPEN_MENU_ITEM = "Open";
-  private static final String RETRIEVE_MENU_ITEM = "Retrieve Metrics Files...";
   private static final String WINDOW_MENU = "Window";
   private static final String EXIT_MENU_ITEM = "Exit";
   private static final String HELP_MENU = "Help";
@@ -74,9 +64,6 @@ public class Analyzer extends JFrame implements ActionListener {
     JMenuItem openMenuItem = new JMenuItem(OPEN_MENU_ITEM);
     openMenuItem.addActionListener(this);
     fileMenu.add(openMenuItem);
-    JMenuItem retrieveMenuItem = new JMenuItem(RETRIEVE_MENU_ITEM);
-    retrieveMenuItem.addActionListener(this);
-    fileMenu.add(retrieveMenuItem);
     JMenuItem exitMenuItem = new JMenuItem(EXIT_MENU_ITEM);
     exitMenuItem.addActionListener(this);
     fileMenu.add(exitMenuItem);
@@ -121,141 +108,12 @@ public class Analyzer extends JFrame implements ActionListener {
   }
 
   /**
-   * Retrieve metrics files and copy them into directory specified by experiment.
-   */
-
-  private void getMetricsFiles() {
-    CommunityServesClient communitySupport = new ClientCommunityController();
-    HostComponent[] hosts = experiment.getHosts();
-    for (int i = 0; i < hosts.length; i++) {
-      String hostName = hosts[i].getShortName();
-      HostServesClient hostInfo = null;
-      try {
-	hostInfo = communitySupport.getHost(hostName, DEFAULT_PORT);
-      } catch (java.rmi.UnknownHostException uhe) {
-	JOptionPane.showMessageDialog(this,
-				      "Unknown host: " + hostName,
-				      "Unknown Host",
-				      JOptionPane.WARNING_MESSAGE);
-	continue;
-      } catch (Exception e) {
-	// This happens if you listed random hosts which you don't
-	// really intend to talk to
-	JOptionPane.showMessageDialog(this,
-				      "No response from host: " + hostName +
-				      "; check that server is running.",
-				      "No Response From Server",
-				      JOptionPane.WARNING_MESSAGE);
-	continue;
-      }
-      copyMetricsFiles(hostInfo);
-    }
-  }
-
-  /**
-   * Get the directory in which to store the metrics file.
-   * If no directory is set, then display a file chooser, initted
-   * to the cougaar install path, for the user to choose a directory.
-   */
-
-  private File getMetricsDir() {
-    File metricsDir = experiment.getMetricsDirectory();
-    if (metricsDir != null)
-      return metricsDir;
-
-    String metricsDirName = ".";
-    try {
-      metricsDirName = System.getProperty("org.cougaar.install.path");
-    } catch (RuntimeException e) {
-      // just use default
-    }
-    if (metricsDirName == null)
-      metricsDirName = ".";
-    JFileChooser chooser = new JFileChooser(metricsDirName);
-    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
-	public boolean accept (File f) {
-	  return f.isDirectory();
-	}
-	public String getDescription() {return "All Directories";}
-      });
-    int result = chooser.showDialog(this, "Select Metrics Storage Directory");
-    if (result != JFileChooser.APPROVE_OPTION)
-      return null;
-    metricsDir = chooser.getSelectedFile();
-    experiment.setMetricsDirectory(metricsDir);
-    // TODO: shouldn't save happen automatically whenever an experiment is changed?
-    csmart.saveWorkspace(); // force csmart to save the change
-    return metricsDir;
-  }
-
-  /**
-   * Read remote files and copy to directory specified by experiment.
-   */
-
-  private void copyMetricsFiles(HostServesClient hostInfo) {
-    File metricsDir = getMetricsDir();
-    if (metricsDir == null)
-      return;
-    char[] cbuf = new char[1000];
-    try {
-      String[] filenames = hostInfo.list("./");
-      for (int i = 0; i < filenames.length; i++) {
-	if (!isMetricFile(filenames[i]))
-	  continue;
-	File newMetricsFile = 
-	  new File(metricsDir.getPath() + File.separator + filenames[i]);
-	InputStream is = hostInfo.open(filenames[i]);
-	BufferedReader reader = 
-	  new BufferedReader(new InputStreamReader(is), 1000);
-	BufferedWriter writer =
-	  new BufferedWriter(new FileWriter(newMetricsFile));
-	int len = 0;
-	while ((len = reader.read(cbuf, 0, 1000)) != -1) {
-	  writer.write(cbuf, 0, len);
-	}
-	reader.close();
-	writer.close();
-      }
-    } catch (Exception e) {
-      System.out.println("Analyzer: copyMetricsFiles: " + e);
-      e.printStackTrace();
-    }
-  }
-
-  /**
-   * This checks all the societies in the experiment to determine if
-   * any of them generated this metrics file.
-   * Creating a new File from the filename works because acceptFile
-   * just looks at the filename.
-   */
-
-  private boolean isMetricFile(String filename) {
-    File thisFile = new java.io.File(filename);
-    int n = experiment.getSocietyComponentCount();
-    for (int i = 0; i < n; i++) {
-      SocietyComponent societyComponent = experiment.getSocietyComponent(i);
-      java.io.FileFilter fileFilter = societyComponent.getMetricsFileFilter();
-      if (fileFilter == null)
-	return false;
-      return fileFilter.accept(thisFile);
-    }
-    return false;
-  }
-
-  /**
    * Display file chooser on metrics directory specified by experiment
    * and run excel on file chosen by user.
    */
 
   private void showExcelFile() {
     File metricsDir = experiment.getMetricsDirectory();
-    // This should do the retrieve right here...
-    if (metricsDir == null) {
-      getMetricsDir();
-      metricsDir = experiment.getMetricsDirectory();
-    }
-    
     if (metricsDir == null) {
         JOptionPane.showMessageDialog(this, "No Metrics Directory for Experiment",
   				    "No Metrics Directory", 
@@ -267,6 +125,8 @@ public class Analyzer extends JFrame implements ActionListener {
     int result = fileChooser.showOpenDialog(this);
     if (result != JFileChooser.APPROVE_OPTION) 
       return;
+    if (fileChooser.getSelectedFile().isDirectory())
+      return; // user specified a directory, not a file
     String filePathName = fileChooser.getSelectedFile().getPath();
     String excel = "C:/Program Files/Microsoft Office/Office/EXCEL.EXE";
     try {
@@ -289,8 +149,6 @@ public class Analyzer extends JFrame implements ActionListener {
     String s = ((AbstractButton)e.getSource()).getActionCommand();
     if (s.equals(OPEN_MENU_ITEM)) {
       showExcelFile();
-    } else if (s.equals(RETRIEVE_MENU_ITEM)) {
-      getMetricsFiles();
     } else if (s.equals(EXCEL_LABEL)) {
       showExcelFile();
     } else if (s.equals(HELP_MENU_ITEM)) {
@@ -333,6 +191,8 @@ public class Analyzer extends JFrame implements ActionListener {
      */
 
     public boolean accept(File f) {
+      if (f.isDirectory())
+	return true; // allow user to go up/down through directory tree
       int n = experiment.getSocietyComponentCount();
       for (int i = 0; i < n; i++) {
 	SocietyComponent societyComponent = experiment.getSocietyComponent(i);
