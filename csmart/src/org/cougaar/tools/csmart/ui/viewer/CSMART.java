@@ -76,6 +76,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   // the running experiment; set by the console
   private static Experiment runningExperiment;
   private static CSMARTConsole console;
+  private static File resultDir;
   // the entries in the file menu; conditionally enabled
   // based on selection in the workspace
   private static JMenu fileMenu;
@@ -96,6 +97,7 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   // define strings here so we can easily change them
   private static final String FILE_MENU = "File";
   private static final String NEW_MENU_ITEM = "Open Workspace...";
+  private static final String NEW_RESULTS_MENU_ITEM = "Save New Results In...";
   private static final String EXIT_MENU_ITEM = "Exit";
   private static final String WINDOW_MENU = "Window";
   private static final String HELP_MENU = "Help";
@@ -171,6 +173,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
   public CSMART() {
     setTitle("CSMART");
 
+    resultDir = initResultDir();
+
     JMenuBar menuBar = new JMenuBar();
     getRootPane().setJMenuBar(menuBar);
     // set-up file menu which includes entries based on workspace selection
@@ -181,6 +185,10 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     newMenuItem.addActionListener(this);
     newMenuItem.setToolTipText("Create a new workspace.");
     fileMenu.add(newMenuItem);
+    JMenuItem newResultsMenuItem = new JMenuItem(NEW_RESULTS_MENU_ITEM);
+    newResultsMenuItem.addActionListener(this);
+    newResultsMenuItem.setToolTipText("Select a directory for saving results");
+    fileMenu.add(newResultsMenuItem);
     newExperimentMenu = new JMenu("New Experiment");
     for (int i = 0; i < newExperimentActions.length; i++)
       newExperimentMenu.add(newExperimentActions[i]);
@@ -340,8 +348,8 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
         }
         public void menuSelected(MenuEvent e) {
           int n = fileMenu.getItemCount();
-          // disable all but the first and last items
-          for (int i = 1; i < n-1; i++) {
+          // disable all but the first two and last items
+          for (int i = 2; i < n-2; i++) {
             JMenuItem menuItem = fileMenu.getItem(i);
             if (menuItem != null)
               menuItem.setEnabled(false);
@@ -725,10 +733,55 @@ public class CSMART extends JFrame implements ActionListener, Observer, TreeSele
     validate();
   }
 
+  private String getResultDirName() {
+    String resultDirName = ".";
+    try {
+      resultDirName = System.getProperty("org.cougaar.install.path");
+    } catch (RuntimeException e) {
+      // just use current directory
+      resultDirName = ".";
+    }
+    return resultDirName;
+  }
+
+  private File initResultDir() {
+    return new File(getResultDirName() + File.separatorChar + "results");
+  }
+
+  /**
+   * Set the directory in which to store the metrics file.
+   * Displays a file chooser, initted
+   * to the cougaar install path, for the user to choose a directory.
+   */
+
+  private void setResultDir() {
+    JFileChooser chooser = new JFileChooser(getResultDirName());
+    chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    chooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+	public boolean accept (File f) {
+	  return f.isDirectory();
+	}
+	public String getDescription() {return "All Directories";}
+      });
+    int result = chooser.showDialog(this, "Select Results Directory");
+    if (result == JFileChooser.APPROVE_OPTION)
+      resultDir = chooser.getSelectedFile();
+  }
+
+  /**
+   * Return directory in which to store results.
+   */
+
+  public File getResultDir() {
+    return resultDir;
+  }
+
   public void actionPerformed(ActionEvent e) {
     String s = ((AbstractButton)e.getSource()).getActionCommand();
     if (s.equals(NEW_MENU_ITEM)) {
       newWorkspace();
+    } else if (s.equals(NEW_RESULTS_MENU_ITEM)) {
+      setResultDir();
     } else if (s.equals(EXIT_MENU_ITEM)) {
       exit();
     } else if (s.equals(HELP_MENU_ITEM)) {
