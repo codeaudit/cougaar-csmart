@@ -571,14 +571,16 @@ public ComponentData addComponentData(ComponentData data) {
     // Add Asset Data PlugIn
     GenericComponentData plugin = new GenericComponentData();
     plugin.setType(ComponentData.PLUGIN);
-    plugin.setParent(this);
+    plugin.setParent(data);
     plugin.setName(AssetDataPlugIn_name);
+    plugin.setOwner(this);
     data.addChild(plugin);
 
     // Add Asset Report PlugIn
     plugin = new GenericComponentData();
     plugin.setType(ComponentData.PLUGIN);
-    plugin.setParent(this);
+    plugin.setParent(data);
+    plugin.setOwner(this);
     plugin.setName(AssetReportPlugIn_name);
     data.addChild(plugin);
 
@@ -591,19 +593,26 @@ public ComponentData addComponentData(ComponentData data) {
       addPropertyAlias(init, getProperty(PROP_STARTDELAY));
       addPropertyAlias(init, getProperty(PROP_MAXNUMBSAMPLES));
 
-      data.addChild(init.addComponentData(new GenericComponentData()));
+      plugin = new GenericComponentData();
+      plugin.setOwner(this);
+      plugin.setParent(data);
+      data.addChild(init.addComponentData(plugin));
     }
 
     for(int i = 0 ; i < getChildCount(); i++) {
       if(getChild(i) instanceof ABCPlugIn) {
 	ABCPlugIn pg = (ABCPlugIn) getChild(i);
-	data.addChild(pg.addComponentData(new GenericComponentData()));
+	plugin = new GenericComponentData();
+	plugin.setOwner(this);
+	plugin.setParent(data);
+	data.addChild(pg.addComponentData(plugin));
       }	
     }
 
     plugin = new GenericComponentData();
     plugin.setType(ComponentData.PLUGIN);
-    plugin.setParent(this);
+    plugin.setParent(data);
+    plugin.setOwner(this);
     plugin.setName(PlanServerPlugIn_name);
     data.addChild(plugin);
 
