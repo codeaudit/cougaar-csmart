@@ -167,5 +167,30 @@ Compiling CSMART
 - Compiling CSMART with Jikes 1.15 willl result is VerifyErrors in a few classes.  To
   avoid these erros, use Jikes 1.14.
 
+
+MySQL Database issues
+- If you get SQL errors, claiming that a table does not exist, eg
+error: Table 'mycoug.GEOLOC' doesn't exist
+(but which you believe does in fact exist), it may be a case issue - MySQL
+is case sensitive on table names. This solution applies to MySQL
+databases run on Unix.
+The correct version of the tables in the database are ALL LOWERCASE.
+To get all queries automatically converted to lowercase, you should
+set the following MySQL server parameter:
+lower_case_table_names.
+
+On Windows, this variable is defaulted to 1, on Unix, it is defaulted to 0.
+When set to 1, all table names are set to lower case on load and store.
+To solve the Unix case problem, create a file /etc/my.cnf and add:
+[mysqld]
+set-variable   =   lower_case_table_names=1
+
+Then restart your server.
+Note that if you have already loaded data into your Unix MySQL
+database, the table names may be uppercase in some instances. This
+will cause problems - you will need to reload your database, after
+setting the above parameter.
+
+  
 Be sure to check the Cougaar Bug list for known issues, at http://www.cougaar.org/bugs 
 If all else fails, send a query to cougaar-developers@cougaar.org
