@@ -1340,6 +1340,7 @@ public class HostConfigurationBuilder extends JPanel implements TreeModelListene
     Vector names = new Vector(components.length);
     for (int i = 0; i < components.length; i++)
       names.add(components[i].getShortName());
+    Collections.sort(names);
     String[] choices = (String[])names.toArray(new String[names.size()]);
     Object answer = 
       JOptionPane.showInputDialog(this, "Select " + label,
