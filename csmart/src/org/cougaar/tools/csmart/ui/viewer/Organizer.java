@@ -955,19 +955,21 @@ public class Organizer extends JScrollPane {
       deleteImpact(node);
     else if (component instanceof Experiment)
       deleteExperiment(node);
-    //      else if (component instanceof MetricComponent)
-    //        deleteMetric(node);
-    if (!component.isEditable()) {
-      int result = JOptionPane.showConfirmDialog(this,
-						 "Component is in use; delete anyway?",
-						 "Component Not Editable",
-						 JOptionPane.YES_NO_OPTION,
-						 JOptionPane.WARNING_MESSAGE);
-      if (result != JOptionPane.YES_OPTION)
-	return;
+    else {
+      //      else if (component instanceof MetricComponent)
+      //        deleteMetric(node);
+      if (!component.isEditable()) {
+	int result = JOptionPane.showConfirmDialog(this,
+						   "Component is in use; delete anyway?",
+						   "Component Not Editable",
+						   JOptionPane.YES_NO_OPTION,
+						   JOptionPane.WARNING_MESSAGE);
+	if (result != JOptionPane.YES_OPTION)
+	  return;
+      }
+      model.removeNodeFromParent(node);
+      componentNames.remove(component.getShortName());
     }
-    model.removeNodeFromParent(node);
-    componentNames.remove(component.getShortName());
   }
   
   private void newImpact(DefaultMutableTreeNode node) {
