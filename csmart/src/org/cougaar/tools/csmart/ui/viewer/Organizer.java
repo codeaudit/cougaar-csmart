@@ -1195,39 +1195,18 @@ public class Organizer extends JScrollPane {
       }
       try {
 	Constructor constructor = item.cls.getConstructor(constructorArgTypes);
-// 	Metric metric =
-// 	  (Metric) constructor.newInstance(new String[] {name});
 	MetricComponent metric =
 		  (MetricComponent) constructor.newInstance(new String[] {name});
+	metric.initProperties();
 	DefaultMutableTreeNode newNode =
 	  addMetricToWorkspace(metric, node);
 	workspace.setSelection(newNode);
       } catch (Exception e) {
 	e.printStackTrace();
       }
-      MetricComponent mc = createMet(name, item.cls);
-      if (mc == null)
-	return;
-      DefaultMutableTreeNode newNode =
-	addMetricToWorkspace(mc, node);
-      workspace.setSelection(newNode);
     }
   } // end of newMetric
 
-  private MetricComponent createMet(String name, Class cls) {
-    try {
-      Constructor constructor = cls.getConstructor(constructorArgTypes);
-      //  	Metric metric =
-      //  	  (Metric) constructor.newInstance(new String[] {name});
-      MetricComponent metric =
-	(MetricComponent) constructor.newInstance(new String[] {name});
-      metric.initProperties();
-      return metric;
-    } catch (Exception e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
   
   private DefaultMutableTreeNode addMetricToWorkspace(MetricComponent metric,
  //private DefaultMutableTreeNode addMetricToWorkspace(Metric metric,
