@@ -604,7 +604,9 @@ public class PopulateDb extends PDbBase {
 	oldArgs.add(new Argument(rs.getString(1), rs.getFloat(2)));
       }
       rs.close();
-      if (parent != null) {
+      // if populating a HNA assembly, then skip this step
+      if ((parent != null) && !assemblyId.equals(hnaAssemblyId)) {
+        //      if (parent != null) {
 	// Is given component in runtime hierarchy?
 	rs = executeQuery(stmt, dbp.getQuery("checkComponentHierarchy",
 					     substitutions));

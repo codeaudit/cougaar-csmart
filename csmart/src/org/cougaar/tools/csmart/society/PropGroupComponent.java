@@ -20,6 +20,7 @@
  */
 package org.cougaar.tools.csmart.society;
 
+import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.property.ModifiableComponent;
 
 /**
@@ -27,4 +28,6 @@ import org.cougaar.tools.csmart.core.property.ModifiableComponent;
  * that represent property groups. <br>
  */
 public interface PropGroupComponent extends ModifiableComponent {
+
+  PropGroupData getPropGroupData();
 }

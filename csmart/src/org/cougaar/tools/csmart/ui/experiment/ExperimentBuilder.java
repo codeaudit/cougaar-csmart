@@ -302,14 +302,17 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
     log = CSMART.createLogger(this.getClass().getName());
   }
 
+  // The user interface fires modification events to the experiment,
+  // so that the experiment saves itself when asked.
+
   private void setExperiment(Experiment newExperiment) {
-    if (experiment != null) {
-      experiment.removeModificationListener(this);
-    }
+    //    if (experiment != null) {
+    //      experiment.removeModificationListener(this);
+    //    }
     experiment = newExperiment;
-    if (experiment != null) {
-      experiment.addModificationListener(this);
-    }
+    //    if (experiment != null) {
+    //      experiment.addModificationListener(this);
+    //    }
   }
 
   public void modified(ModificationEvent e) {
@@ -345,10 +348,13 @@ public class ExperimentBuilder extends JFrame implements ModificationListener {
   /**
    * Called by HostConfigurationBuilder or UnboundPropertyBuilder
    * if they modify an experiment.
+   * Tell the experiment it's modified, so when we save the experiment,
+   * it writes itself to the database.
    */
 
   public void setModified(boolean modified) {
     this.modified = modified;
+    experiment.modified(new ModificationEvent(this, 0));
   }
 
   /**

@@ -20,17 +20,20 @@
  */
 package org.cougaar.tools.csmart.society.db;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.*;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
+import org.cougaar.tools.csmart.core.cdata.PGPropData;
 import org.cougaar.tools.csmart.core.cdata.PropGroupData;
 import org.cougaar.tools.csmart.core.cdata.RelationshipData;
 import org.cougaar.tools.csmart.core.db.DBUtils;
@@ -39,6 +42,7 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.society.AssetComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PropGroupBase;
+import org.cougaar.tools.csmart.society.PropGroupComponent;
 import org.cougaar.tools.csmart.society.RelationshipBase;
 
 public class AssetDBComponent
@@ -48,6 +52,9 @@ public class AssetDBComponent
   // query names
   private static final String QUERY_AGENT_ASSET_CLASS = "queryAgentAssetClass";
   private static final String QUERY_AGENT_RELATIONS = "queryAgentRelationships";
+  private static final String QUERY_PG_ID = "queryPGId";
+  private static final String QUERY_PG_ATTRS = "queryPGAttrs";
+  private static final String QUERY_PG_VALUES = "queryPGValues";
 
   /** Property Definitions **/
   public static final String PROP_TYPE = "Asset Type";
@@ -69,6 +76,9 @@ public class AssetDBComponent
   private Property propUIC;
   private String agentName;
   private List assemblyID;
+  private String assemblyMatch;
+  private Hashtable pgAttributes = new Hashtable();
+  private Hashtable propertyGroups = new Hashtable();
 
   public AssetDBComponent(String agentName, List assemblyID) {
     super("AssetData");
@@ -93,9 +103,9 @@ public class AssetDBComponent
     propUIC = addProperty(PROP_UIC, "UIC/" + agentName);
     propUIC.setToolTip(PROP_UIC_DESC);
 
-    //    addPropGroups();
-    RelationshipData[] relationshipData = getRelationshipData();
-    addRelationships(relationshipData);
+    getAssemblies(); // for use in database lookups
+    addPropGroups(); // add property groups from the database
+    addRelationships(getRelationshipData()); // add relationships from database
   }
 
   /**
@@ -142,15 +152,17 @@ public class AssetDBComponent
     return data;
   }
 
-  private RelationshipData[] getRelationshipData() {
+  private void getAssemblies() {
     // Get list of assemblies for use in query, ignoring CMT assemblies
-    String assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
+    assemblyMatch = DBUtils.getListMatch(assemblyID, "CMT");
 
     if (assemblyMatch != null) {
       substitutions.put(":assemblyMatch", assemblyMatch);
       substitutions.put(":agent_name", agentName);
     }
+  }
 
+  private RelationshipData[] getRelationshipData() {
     // creates relationships by creating RelationshipData
     // from the database and passing that as an argument
     // to RelationshipBase
@@ -167,12 +179,6 @@ public class AssetDBComponent
           String role = rs.getString(2);
           Timestamp startDate = rs.getTimestamp(3);
           Timestamp endDate = rs.getTimestamp(4);
-          //          rd.setType("");
-          //          rd.setItem("");
-          //          rd.setSupported(supported);
-          //          rd.setRole(role);
-          // TODO: is this correct handling of relationship data?
-          // start new code
           rd.setItem(supported);
           rd.setSupported(supported);
           if (role.equals("Subordinate")) {
@@ -182,7 +188,6 @@ public class AssetDBComponent
             rd.setRole(role);
             rd.setType("Supporting");
           }
-          // end new code
           if (startDate != null) {
             rd.setStartTime(startDate.getTime());
           }
@@ -214,18 +219,105 @@ public class AssetDBComponent
     }
   }
 
-//    private void addPropGroups(AgentAssetData aad) {
-//      Iterator iter = aad.getPropGroupsIterator();
-//      while(iter.hasNext()) {
-//        PropGroupData pgd = (PropGroupData)iter.next();
-//        PropGroupBase newPG = new PropGroupBase(pgd);
-//        if(log.isDebugEnabled()) {
-//          log.debug("Adding: " + pgd.getName());
-//        }
-//        newPG.initProperties();
-//        addChild(newPG);
-//      }
-//    }
+  private void addPropGroups() {
+    String pgName = "";
+    String pgAttrName = "";
+    String pgAttrType = "";
+    String pgValue = "";
+    String pgAggregateType = "";
+    Timestamp pgStartDate;
+    Timestamp pgEndDate;
+    try {
+      Connection conn = DBUtils.getConnection();
+      try {
+        Statement stmt = conn.createStatement();	
+        // get the propery group attribute lib ids for this agent
+        ArrayList pgAttrLibIds = new ArrayList();
+        String query = DBUtils.getQuery(QUERY_PG_ID, substitutions);
+        ResultSet rs = stmt.executeQuery(query);
+        while (rs.next()) {
+          pgAttrLibIds.add(rs.getString(1));
+        }
+        // get pg name and attribute names and types for each property group
+        for (int i = 0; i < pgAttrLibIds.size(); i++) {
+          substitutions.put(":pgAttrLibId", (String)pgAttrLibIds.get(i));
+          query = DBUtils.getQuery(QUERY_PG_ATTRS, substitutions);
+          rs = stmt.executeQuery(query);
+          while (rs.next()) {
+            pgName = rs.getString(1);
+            pgAttrName = rs.getString(2);
+            pgAttrType = rs.getString(3);
+            pgAggregateType = rs.getString(4);
+          }
+          pgAttributes.put((String)pgAttrLibIds.get(i),
+                           new PGAttr(pgName, pgAttrName, 
+                                      pgAttrType, pgAggregateType));
+        }
+        // get pg values for each property group
+        for (int i = 0; i < pgAttrLibIds.size(); i++) {
+          substitutions.put(":pgAttrLibId", (String)pgAttrLibIds.get(i));
+          query = DBUtils.getQuery(QUERY_PG_VALUES, substitutions);
+          rs = stmt.executeQuery(query);
+          while (rs.next()) {
+            if (pgAggregateType.equals("SINGLE")) {
+              if (pgAttrType.equals("String")) {
+                pgValue = rs.getString(1);
+                pgStartDate = rs.getTimestamp(2);
+                pgEndDate = rs.getTimestamp(3);
+                addPropertyGroup((String)pgAttrLibIds.get(i),
+                                 pgValue, pgStartDate, pgEndDate);
+              } else
+                System.out.println("AssetDBComponent: not implemented: " +
+                                   pgAttrType);
+            } else
+              System.out.println("AssetDBComponent: not implemented: " +
+                                 pgAggregateType);
+          }
+        }
+        rs.close();
+        stmt.close();
+      } finally {
+        conn.close();
+      }
+    } catch (Exception e) {
+      if(log.isErrorEnabled()) {
+        log.error("Exception", e);
+      }
+      throw new RuntimeException("Error" + e);
+    }
+    // after creating all the property group data
+    // create the property groups, initialize them and add them as children
+    // these steps must be done just once per property group
+    Iterator propGroupData = propertyGroups.values().iterator();
+    while (propGroupData.hasNext()) {
+      PropGroupData pgd = (PropGroupData)propGroupData.next();
+      PropGroupComponent newPG = new PropGroupBase(pgd);
+      newPG.initProperties();
+      addChild(newPG);
+    }
+  }
+
+  /**
+   * Adds a property group by creating PropGroupData and PGPropData
+   * for each property group and attribute respectively;
+   * then creates a PropGroupBase object from this data,
+   * and adds it as a child of this component.
+   */
+
+  private void addPropertyGroup(String attrLibId, String value,
+                                Timestamp startDate, Timestamp endDate) {
+    PGAttr pgAttr = (PGAttr)pgAttributes.get(attrLibId);
+    PropGroupData pgd = (PropGroupData)propertyGroups.get(pgAttr.getName());
+    if (pgd == null) {
+      pgd = new PropGroupData(pgAttr.getName());
+      propertyGroups.put(pgAttr.getName(), pgd);
+    }
+    PGPropData pgPropData = new PGPropData();
+    pgPropData.setName(pgAttr.getAttrName());
+    pgPropData.setType(pgAttr.getAttrType());
+    pgPropData.setValue(value);
+    pgd.addProperty(pgPropData);
+  }
 
   private String queryOrgClass() {
     String orgClass = null;
@@ -252,5 +344,40 @@ public class AssetDBComponent
       throw new RuntimeException("Error" + e);
     }
     return orgClass;
+  }
+
+  /**
+   * Information on a property group attribute.
+   */
+
+  class PGAttr implements Serializable {
+    String name;
+    String attrName;
+    String attrType;
+    String aggregateType;
+
+    public PGAttr(String name, String attrName, 
+                  String attrType, String aggregateType) {
+      this.name = name;
+      this.attrName = attrName;
+      this.attrType = attrType;
+      this.aggregateType = aggregateType;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public String getAttrName() {
+      return attrName;
+    }
+
+    public String getAttrType() {
+      return attrType;
+    }
+
+    public String getAggregateType() {
+      return aggregateType;
+    }
   }
 }

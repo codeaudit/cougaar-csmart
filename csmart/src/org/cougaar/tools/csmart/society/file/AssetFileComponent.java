@@ -34,6 +34,7 @@ import org.cougaar.tools.csmart.core.property.Property;
 import org.cougaar.tools.csmart.society.AssetComponent;
 import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PropGroupBase;
+import org.cougaar.tools.csmart.society.PropGroupComponent;
 import org.cougaar.tools.csmart.society.RelationshipBase;
 import org.cougaar.tools.csmart.util.PrototypeParser;
 import org.cougaar.tools.csmart.util.FileParseUtil;
@@ -153,9 +154,9 @@ public class AssetFileComponent
 
     // Add Property Groups.
     iter = 
-      ((Collection)getDescendentsOfClass(PropGroupBase.class)).iterator();
+      ((Collection)getDescendentsOfClass(PropGroupComponent.class)).iterator();
     while(iter.hasNext()) {
-      PropGroupBase pg = (PropGroupBase)iter.next();
+      PropGroupComponent pg = (PropGroupComponent)iter.next();
       assetData.addPropertyGroup(pg.getPropGroupData());
     }
 
@@ -178,7 +179,7 @@ public class AssetFileComponent
     Iterator iter = aad.getPropGroupsIterator();
     while(iter.hasNext()) {
       PropGroupData pgd = (PropGroupData)iter.next();
-      PropGroupBase newPG = new PropGroupBase(pgd);
+      PropGroupComponent newPG = new PropGroupBase(pgd);
       if(log.isDebugEnabled()) {
         log.debug("Adding: " + pgd.getName());
       }

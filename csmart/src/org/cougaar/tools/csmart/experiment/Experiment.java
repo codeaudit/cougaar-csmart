@@ -896,7 +896,7 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
       theWholeSoc = theSoc;
     } catch (Exception sqle) {
       if (log.isErrorEnabled())
-	log.error(sqle.toString());
+	log.error("Error saving experiment to database: ", sqle);
       return;
     }
     modified = false;

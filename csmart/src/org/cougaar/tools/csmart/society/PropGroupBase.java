@@ -74,7 +74,11 @@ public class PropGroupBase
 
   private String getName(Property prop) {
     String name = prop.getName().toString();
-    return name.substring(0, name.indexOf("("));
+    int index = name.lastIndexOf('.');
+    if (index != -1)
+      name = name.substring(index+1);
+    name = name.substring(0, name.indexOf("("));
+    return name.trim();
   }
 
   private String getType(Property prop) {
