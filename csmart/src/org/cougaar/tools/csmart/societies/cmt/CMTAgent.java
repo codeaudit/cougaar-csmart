@@ -74,55 +74,6 @@ public class CMTAgent
   public void initProperties() {
     String componentID = getShortName();
     String componentCategory = "agent";
-
-//      String componentID = new String("");
-//      String componentCategory = new String("");
-//      StringBuffer assemblyMatch = null;
-
-//      try {
-//        initDBProperties();
-//        assemblyMatch = new StringBuffer();
-//        assemblyMatch.append("in (");
-//        Iterator iter = assemblyID.iterator();
-//        boolean first = true;
-//        while (iter.hasNext()) {
-//  	String val = (String)iter.next();
-//  	if (first) {
-//  	  first = false;
-//  	} else {
-//  	  assemblyMatch.append(", ");
-//  	}
-//  	assemblyMatch.append("'");
-//  	assemblyMatch.append(val);
-//  	assemblyMatch.append("'");
-//        }
-//        assemblyMatch.append(")");
-
-//        substitutions.put(":assemblyMatch", assemblyMatch.toString());
-//        substitutions.put(":component_name", name);
-//      } catch(IOException e) {
-//        throw new RuntimeException("Error: " + e);
-//      }
-
-//      try {
-//        Connection conn = DBUtils.getConnection();
-//        try {
-//  	Statement stmt = conn.createStatement();
-//  	String query = dbp.getQuery(QUERY_AGENT_DATA, substitutions);
-//  	ResultSet rs = stmt.executeQuery(query);
-//  	while(rs.next()) {
-//  	  componentID = getNonNullString(rs, 1, query);
-//  	  componentCategory = getNonNullString(rs, 2, query);
-//  	}
-
-//        } finally {
-//  	conn.close();
-//        }
-//      } catch (Exception e) {
-//        e.printStackTrace();
-//        throw new RuntimeException("Error" + e);
-//      }
-
     propName = addProperty(PROP_AGENT_NAME, name,
 			   new ConfigurableComponentPropertyAdapter() {
 			     public void PropertyValueChanged(PropertyEvent e) {
