@@ -76,12 +76,17 @@ public class ConfigurableComponentTest extends TestCase {
 
   public void testgetChild() {
     SimpleName name = new SimpleName("ChildName");
+    SimpleName failed = new SimpleName("This should fail");
     SimpleComponent tmp = new SimpleComponent("ChildName");
+    SimpleComponent t2 = new SimpleComponent("NewChild");
 
     sc.addChild(tmp);
+    sc.addChild(t2);
+
     assertEquals("Test getChild(int)", tmp, sc.getChild(0));
  
-    assertEquals("Test getChild(CompositeName)", tmp, sc.getChild(name));
+    assertEquals("1. Test getChild(CompositeName)", tmp, sc.getChild(name));
+    assertNull("2. Test getChild(CompositeName)", sc.getChild(failed));
   }
 
   public void testaddProperty() {
