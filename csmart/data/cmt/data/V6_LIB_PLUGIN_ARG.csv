@@ -102,12 +102,12 @@ org.cougaar.mlm.plugin.sample.StrategicTransportProjectorPlugIn|OriginFile=None|
 org.cougaar.mlm.plugin.sample.UniversalAllocatorPlugIn|Supply|0,0,org.cougaar.mlm.plugin.sample.UniversalAllocatorPlugIn,Supply,UNIVERSAL_ALLOCATOR_ARGS, ,,
 org.cougaar.mlm.plugin.sample.UniversalAllocatorPlugIn|Transport|0,0,org.cougaar.mlm.plugin.sample.UniversalAllocatorPlugIn,Transport,UNIVERSAL_ALLOCATOR_ARGS, ,,
 mil.darpa.log.alpine.blackjack.plugins.TransportExpanderPlugIn|envFile=89-TKCO-CGO.env.xml|0,0,mil.darpa.log.alpine.blackjack.plugins.TransportExpanderPlugIn,envFile=89-TKCO-CGO.env.xml,VISHNU, ,,
-org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|envFile=89-TKCO-CGO.env.xml|0,0,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn,envFile=89-TKCO-CGO.env.xml,VISHNU, ,,
-org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|otherDataFormatFile=89-TKCO-CGO.odf.xml|1,1,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn,otherDataFormatFile=89-TKCO-CGO.odf.xml,VISHNU, ,,
-org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|otherDataFile=89-TKCO-CGO.odd.xml|2,2,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn,otherDataFile=89-TKCO-CGO.odd.xml,VISHNU, ,,
-org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|specsFile=89-TKCO-CGO.vsh.xml|3,3,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn,specsFile=89-TKCO-CGO.vsh.xml,VISHNU, ,,
-org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|gaFile=89-TKCO-CGO.ga.xml|4,4,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn,gaFile=89-TKCO-CGO.ga.xml,VISHNU, ,,
-org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|defaultFormat=89-TKCO-CGO.dff.xml|5,5,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn,defaultFormat=89-TKCO-CGO.dff.xml,VISHNU, ,,
+org.cougaar.glm.trans.plugins.GroundVishnuPlugIn|envFile=89-TKCO-CGO.env.xml|0,0,org.cougaar.glm.trans.plugins.GroundVishnuPlugIn,envFile=89-TKCO-CGO.env.xml,VISHNU, ,,
+org.cougaar.glm.trans.plugins.GroundVishnuPlugIn|otherDataFormatFile=89-TKCO-CGO.odf.xml|1,1,org.cougaar.glm.trans.plugins.GroundVishnuPlugIn,otherDataFormatFile=89-TKCO-CGO.odf.xml,VISHNU, ,,
+org.cougaar.glm.trans.plugins.GroundVishnuPlugIn|otherDataFile=89-TKCO-CGO.odd.xml|2,2,org.cougaar.glm.trans.plugins.GroundVishnuPlugIn,otherDataFile=89-TKCO-CGO.odd.xml,VISHNU, ,,
+org.cougaar.glm.trans.plugins.GroundVishnuPlugIn|specsFile=89-TKCO-CGO.vsh.xml|3,3,org.cougaar.glm.trans.plugins.GroundVishnuPlugIn,specsFile=89-TKCO-CGO.vsh.xml,VISHNU, ,,
+org.cougaar.glm.trans.plugins.GroundVishnuPlugIn|gaFile=89-TKCO-CGO.ga.xml|4,4,org.cougaar.glm.trans.plugins.GroundVishnuPlugIn,gaFile=89-TKCO-CGO.ga.xml,VISHNU, ,,
+org.cougaar.glm.trans.plugins.GroundVishnuPlugIn|defaultFormat=89-TKCO-CGO.dff.xml|5,5,org.cougaar.glm.trans.plugins.GroundVishnuPlugIn,defaultFormat=89-TKCO-CGO.dff.xml,VISHNU, ,,
 mil.darpa.log.alpine.blackjack.plugins.TransportAllocatorPlugIn|envFile=89-TKCO-CGO.env.xml|0,0,mil.darpa.log.alpine.blackjack.plugins.TransportAllocatorPlugIn,envFile=89-TKCO-CGO.env.xml,VISHNU, ,,
 org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn|uic='WH67AA'|1,1,org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn,uic='WH67AA',UIC, ,103-MIBN,WH67AA
 org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAP7AA'|1,1,org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAP7AA',UIC, ,10-ENGBN,WAP7AA
@@ -189,15 +189,15 @@ org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn|uic='WBAHAA'|1,1,org.cougaar.mlm.plugin.
 org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn|uic='WCMAAA'|1,1,org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn,uic='WCMAAA',UIC, ,96-TCCO-HET,WCMAAA
 org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn|uic='WAQRAA'|1,1,org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn,uic='WAQRAA',UIC, ,DIVARTY-3ID-HHB,WAQRAA
 org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn|uic='WJD1AA'|1,1,org.cougaar.mlm.plugin.ldm.LDMSQLPlugIn,uic='WJD1AA',UIC, ,ENGBDE-3ID-HHD,WJD1AA
-org.cougaar.pkg.glmtrans.plugins.base.GLMTransOneToManyExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,0,org.cougaar.pkg.glmtrans.plugins.base.GLMTransOneToManyExpanderPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE, ,TRANSCOM,
-org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,0,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE, ,CONUS_GROUND
-org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,0,org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE, ,PLANE_PACKER and CONUS_GROUND
-org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,0,org.cougaar.pkg.glmtrans.plugins.TransportAllocatorPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE, ,PLANE_PACKER
-org.cougaar.pkg.glmtrans.plugins.GenericVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,0,org.cougaar.pkg.glmtrans.plugins.GenericVishnuPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE, ,PLANE_PACKER
-org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,0,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE, ,SHIP_PACKER
-org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn|defaultFormat=GLMT.ShipPacker.dff.xml|1,1,org.cougaar.pkg.glmtrans.plugins.SeaVishnuPlugIn,defaultFormat=GLMT.ShipPacker.dff.xml,ENV_FILE, ,SHIP_PACKER
-org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn|envFile=GLMT.Transport.env.xml|0,0,org.cougaar.pkg.glmtrans.plugins.TransportExpanderPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE, ,THEATER_GROUND
-org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,0,org.cougaar.pkg.glmtrans.plugins.GroundVishnuPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE, ,THEATER_GROUND
-org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.Transport.env.xml|0,0,org.cougaar.pkg.glmtrans.plugins.GroundTransportAllocatorPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE, ,THEATER_GROUND
-org.cougaar.pkg.glmtrans.plugins.TranscomVishnuPlugIn|envFile=GLMT.TRANSCOM.env.xml|0,0,org.cougaar.pkg.glmtrans.plugins.TranscomVishnuPlugIn,envFile=GLMT.TRANSCOM.env.xml,ENV_FILE, ,TRANSCOM
+org.cougaar.glm.trans.plugins.base.GLMTransOneToManyExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,0,org.cougaar.glm.trans.plugins.base.GLMTransOneToManyExpanderPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE, ,TRANSCOM,
+org.cougaar.glm.trans.plugins.TransportExpanderPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,0,org.cougaar.glm.trans.plugins.TransportExpanderPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE, ,CONUS_GROUND
+org.cougaar.glm.trans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,0,org.cougaar.glm.trans.plugins.GroundTransportAllocatorPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE, ,PLANE_PACKER and CONUS_GROUND
+org.cougaar.glm.trans.plugins.TransportAllocatorPlugIn|envFile=GLMT.SimpleTransport.env.xml|0,0,org.cougaar.glm.trans.plugins.TransportAllocatorPlugIn,envFile=GLMT.SimpleTransport.env.xml,ENV_FILE, ,PLANE_PACKER
+org.cougaar.glm.trans.plugins.GenericVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,0,org.cougaar.glm.trans.plugins.GenericVishnuPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE, ,PLANE_PACKER
+org.cougaar.glm.trans.plugins.SeaVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,0,org.cougaar.glm.trans.plugins.SeaVishnuPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE, ,SHIP_PACKER
+org.cougaar.glm.trans.plugins.SeaVishnuPlugIn|defaultFormat=GLMT.ShipPacker.dff.xml|1,1,org.cougaar.glm.trans.plugins.SeaVishnuPlugIn,defaultFormat=GLMT.ShipPacker.dff.xml,ENV_FILE, ,SHIP_PACKER
+org.cougaar.glm.trans.plugins.TransportExpanderPlugIn|envFile=GLMT.Transport.env.xml|0,0,org.cougaar.glm.trans.plugins.TransportExpanderPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE, ,THEATER_GROUND
+org.cougaar.glm.trans.plugins.GroundVishnuPlugIn|envFile=GLMT.Transport.env.xml|0,0,org.cougaar.glm.trans.plugins.GroundVishnuPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE, ,THEATER_GROUND
+org.cougaar.glm.trans.plugins.GroundTransportAllocatorPlugIn|envFile=GLMT.Transport.env.xml|0,0,org.cougaar.glm.trans.plugins.GroundTransportAllocatorPlugIn,envFile=GLMT.Transport.env.xml,ENV_FILE, ,THEATER_GROUND
+org.cougaar.glm.trans.plugins.TranscomVishnuPlugIn|envFile=GLMT.TRANSCOM.env.xml|0,0,org.cougaar.glm.trans.plugins.TranscomVishnuPlugIn,envFile=GLMT.TRANSCOM.env.xml,ENV_FILE, ,TRANSCOM
 org.cougaar.lib.plugin.UTILLdmXMLPlugIn|ldmFile=GLMT.TRANSCOM.ldm.xml|0,0,org.cougaar.lib.plugin.UTILLdmXMLPlugIn,ldmFile=GLMT.TRANSCOM.ldm.xml,ENV_FILE, ,TRANSCOM
