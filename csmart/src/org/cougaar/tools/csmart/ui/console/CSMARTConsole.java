@@ -57,6 +57,7 @@ public class CSMARTConsole extends JFrame {
   // org.cougaar.control.port; port for contacting applications server
   public static final int APP_SERVER_DEFAULT_PORT = 8484;
   public static final String NAME_SERVER_PORTS = "8888:5555";
+  private static final String[] emptyStringArray = {};
   // number of characters displayed in the node output window
   private static final int DEFAULT_VIEW_SIZE = 50000;
   CSMART csmart; // top level viewer, gives access to save method, etc.
@@ -1056,13 +1057,27 @@ public class CSMARTConsole extends JFrame {
     return port;
   }
 
-  private Properties getNodeArguments(NodeComponent nc) {
+  private Properties getNodeMinusD(NodeComponent nc) {
     Properties result = new Properties();
     Properties props = nc.getArguments();
     for (Enumeration e = props.propertyNames(); e.hasMoreElements(); ) {
       String pname = (String) e.nextElement();
       if (pname.equals(HostConfigurationBuilder.COMMAND_ARGUMENTS)) continue;
       result.put(pname, props.getProperty(pname));
+    }
+    return result;
+  }
+
+  private String[] getNodeArguments(NodeComponent nc) {
+    Properties props = nc.getArguments();
+    String commandArguments =
+      props.getProperty(HostConfigurationBuilder.COMMAND_ARGUMENTS);
+    if (commandArguments == null) return emptyStringArray;
+    StringTokenizer tokens = new StringTokenizer(commandArguments.trim(), "\n");
+    String[] result = new String[tokens.countTokens()];
+    for (int i = 0; i < result.length; i++) {
+      result[i] = tokens.nextToken();
+      System.out.println("arg=" + result[i]);
     }
     return result;
   }
@@ -1081,7 +1096,8 @@ public class CSMARTConsole extends JFrame {
     // get arguments from NodeComponent and pass them to ApplicationServer
     // note that these properties augment any properties that
     // are passed to the server in a properties file on startup
-    Properties properties = getNodeArguments(nodeComponent);
+    Properties properties = getNodeMinusD(nodeComponent);
+    String[] args = getNodeArguments(nodeComponent);
 
     if (!experiment.isInDatabase()) {
       // Can't change the name of the Nodes when running
@@ -1140,7 +1156,7 @@ public class CSMARTConsole extends JFrame {
         communitySupport.getHost(hostName, getAppServerPort(properties));
       //      System.out.println("Properties:");
       //      properties.list(System.out);
-      nsc = hsc.createNode(uniqueNodeName, properties, null,
+      nsc = hsc.createNode(uniqueNodeName, properties, args,
                            listener, filter, configWriter);
       if (nsc != null)
 	runningNodes.put(nodeComponent, nsc);
@@ -1209,7 +1225,8 @@ public class CSMARTConsole extends JFrame {
     }
     CommunityServesClient communitySupport = new ClientCommunityController();
     HostServesClient hostServer = null;
-    Properties properties = getNodeArguments(nodeComponent);
+    Properties properties = getNodeMinusD(nodeComponent);
+    String[] args = getNodeArguments(nodeComponent);
     // get host component by searching hosts for one with this node.
     String hostName = null;
     HostComponent[] hosts = experiment.getHosts();
@@ -1255,7 +1272,7 @@ public class CSMARTConsole extends JFrame {
 
     NodeServesClient nsc = null;
     try {
-      nsc = hostServer.createNode(nodeName, properties, null,
+      nsc = hostServer.createNode(nodeName, properties, args,
                                   listener, new NodeEventFilter(10), null);
       if (nsc != null)
         runningNodes.put(nodeComponent, nsc);
@@ -1418,7 +1435,7 @@ public class CSMARTConsole extends JFrame {
       Properties properties = null;
       NodeComponent[] nodes = hosts[i].getNodes();
       if (nodes.length != 0) 
-        properties = getNodeArguments(nodes[0]);
+        properties = getNodeMinusD(nodes[0]);
       HostServesClient hostInfo = null;
       try {
 	hostInfo = 
