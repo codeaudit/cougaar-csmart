@@ -538,6 +538,8 @@ public class CSMARTConsole extends JFrame {
 
   private void displayNodeFrame(String nodeName) {
     JInternalFrame frame = desktop.getNodeFrame(nodeName);
+    if (frame == null)
+      return; // frame not created yet
     try {
       frame.setIcon(false);
       frame.setSelected(true);
