@@ -1,5 +1,9 @@
 CSMART contains a few known issues:
 
+* Loading components at variable Priority (new in Cougaar for 9.2.1)
+  is not yet supported from CSMART. All components will receive
+  Standard Priority.
+
 * Society Monitor will warn about an inability to contact Agents in
   which no CSMART Servlets are running. This will usually include all
   Node Agents. While not a bug, it is annoying. See bug # 1241
