@@ -21,19 +21,20 @@
 package org.cougaar.tools.csmart.recipe;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.net.URL;
 import java.sql.SQLException;
-import java.util.Set;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Set;
+
+import org.cougaar.tools.csmart.core.cdata.ComponentData;
 import org.cougaar.tools.csmart.core.cdata.GenericComponentData;
 import org.cougaar.tools.csmart.core.db.PopulateDb;
-import org.cougaar.tools.csmart.core.cdata.ComponentData;
-import java.net.URL;
 import org.cougaar.tools.csmart.core.property.Property;
 
-
 /**
- * AdaptivitySupportRecipe.java
+ * AdaptivitySupportRecipe: add standard adaptivity Engine pieces
+ * to selected Agents.
  *
  *
  * Created: Wed May 22 10:22:54 2002
@@ -41,7 +42,6 @@ import org.cougaar.tools.csmart.core.property.Property;
  * @author <a href="mailto:bkrisler@bbn.com">Brian Krisler</a>
  * @version 1.0
  */
-
 public class AdaptivitySupportRecipe extends RecipeBase implements Serializable {
 
   private static final String DESCRIPTION_RESOURCE_NAME = 
@@ -157,7 +157,7 @@ public class AdaptivitySupportRecipe extends RecipeBase implements Serializable 
       if(((Boolean)(propViewerServlet.getValue())).booleanValue()) {
         plugin = new GenericComponentData();
         plugin.setType(ComponentData.PLUGIN);
-        plugin.setClassName("org.cougaar.core.adaptivity.BlackBoardServletComponent");
+        plugin.setClassName("org.cougaar.core.servlet.BlackBoardServletComponent");
         plugin.setOwner(this);
         plugin.setParent(data);
         plugin.addParameter("org.cougaar.core.adaptivity.AEViewerServlet");
@@ -190,7 +190,7 @@ public class AdaptivitySupportRecipe extends RecipeBase implements Serializable 
     ArrayList list = new ArrayList();
     list.add("org.cougaar.core.adaptivity.AdaptivityEngine");
     list.add("org.cougaar.core.adaptivity.ConditionServiceProvider");
-    list.add("org.cougaar.core.adaptivity.OperationModeServiceProvider");
+    list.add("org.cougaar.core.adaptivity.OperatingModeServiceProvider");
     list.add("org.cougaar.core.adaptivity.OperatingModePolicyManager");
     
     return list.iterator();
