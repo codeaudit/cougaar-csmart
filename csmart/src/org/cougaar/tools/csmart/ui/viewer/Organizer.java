@@ -79,6 +79,7 @@ public class Organizer extends JScrollPane {
   private Organizer organizer;
   private Map dbExptMap = new HashMap();
   private Map dbTrialMap = new HashMap();
+  private CMTDialog cmtDialog;
 
   // The societies which can be created in CSMART
   private Object[] socComboItems = {
@@ -153,21 +154,21 @@ public class Organizer extends JScrollPane {
   };
   private Action[] newExperimentActions = {
     new AbstractAction("From Database") {
-	public void actionPerformed(ActionEvent e) {
-          GUIUtils.timeConsumingTaskStart(organizer);
-          try {
-            new Thread("SelectExperiment") {
-              public void run() {
-                selectExperimentFromDatabase(popupNode);
-                GUIUtils.timeConsumingTaskEnd(organizer);
-              }
-            }.start();
-          } catch (RuntimeException re) {
-            System.out.println("Runtime exception creating experiment: " + re);
-            re.printStackTrace();
-            GUIUtils.timeConsumingTaskEnd(organizer);
-          }
-  	}
+  	public void actionPerformed(ActionEvent e) {
+//            GUIUtils.timeConsumingTaskStart(organizer);
+//            try {
+//              new Thread("SelectExperiment") {
+//                public void run() {
+                  selectExperimentFromDatabase(popupNode);
+//                  GUIUtils.timeConsumingTaskEnd(organizer);
+//                }
+//              }.start();
+//            } catch (RuntimeException re) {
+//              System.out.println("Runtime exception creating experiment: " + re);
+//              re.printStackTrace();
+//              GUIUtils.timeConsumingTaskEnd(organizer);
+//            }
+    	}
     },
     new AbstractAction("Built In") {
 	public void actionPerformed(ActionEvent e) {
@@ -1308,7 +1309,6 @@ public class Organizer extends JScrollPane {
     addRecipeToWorkspace(mc, node);
   }
 
-  // CAUTION: this runs in a non-swing thread
   private void selectExperimentFromDatabase(DefaultMutableTreeNode node) {
     Map experimentNamesMap = ExperimentDB.getExperimentNames();
     Set keys = experimentNamesMap.keySet();
@@ -1324,7 +1324,7 @@ public class Organizer extends JScrollPane {
     if (result != JOptionPane.OK_OPTION)
       return;
     String experimentName = (String)cb.getSelectedItem();
-    String originalExperimentName = experimentName;
+    final String originalExperimentName = experimentName;
     String experimentId = (String)experimentNamesMap.get(experimentName);
     // produce an unique name for CSMART if necessary
     if (experimentNames.contains(experimentName)) {
@@ -1335,15 +1335,40 @@ public class Organizer extends JScrollPane {
     }
 
     // get threads and groups information
-    CMTDialog dialog = 
-      new CMTDialog(csmart, this, experimentName, experimentId);
-    dialog.processResults(); // a potentially long process
-    final String trialId = dialog.getTrialId();
-    if (trialId == null)
+    cmtDialog = new CMTDialog(csmart, this, experimentName, experimentId);
+    while (!cmtDialog.isULThreadSelected() && !cmtDialog.wasCancelled()) {
+      JOptionPane.showMessageDialog(this,
+                                    "You must select at least one thread.",
+                                    "No Thread Selected",
+                                    JOptionPane.ERROR_MESSAGE);
+      // TODO: the following doesn't work, so we recreate the dialog each time
+      //      cmtDialog.show();
+      //      cmtDialog.toFront();
+      cmtDialog = new CMTDialog(csmart, this, experimentName, experimentId);
+    }
+    if (cmtDialog.wasCancelled())
       return;
-    createCMTExperiment(node, originalExperimentName,
-                        dialog.getExperimentName(),
-                        dialog.getExperimentId(), trialId, dialog.isCloned());
+
+    final DefaultMutableTreeNode treeNode = node;
+    GUIUtils.timeConsumingTaskStart(organizer);
+    try {
+      new Thread("SelectExperiment") {
+        public void run() {
+          cmtDialog.processResults(); // a potentially long process
+          final String trialId = cmtDialog.getTrialId();
+          if (trialId != null)
+            createCMTExperiment(treeNode, originalExperimentName,
+                                cmtDialog.getExperimentName(),
+                                cmtDialog.getExperimentId(), 
+                                trialId, cmtDialog.isCloned());
+          GUIUtils.timeConsumingTaskEnd(organizer);
+        }
+      }.start();
+    } catch (RuntimeException re) {
+      System.out.println("Runtime exception creating experiment: " + re);
+      re.printStackTrace();
+      GUIUtils.timeConsumingTaskEnd(organizer);
+    }
   }
 
   // CAUTION: this runs in a non-swing thread
@@ -1696,6 +1721,7 @@ public class Organizer extends JScrollPane {
    * Create a CMT society with the specified assembly ids
    * (which define threads and groups) and
    * the specified nodes.
+   * Caution: this runs in a non-Swing thread and updates the Organizer tree
    */
 
   private void createCMTExperiment(DefaultMutableTreeNode node,
