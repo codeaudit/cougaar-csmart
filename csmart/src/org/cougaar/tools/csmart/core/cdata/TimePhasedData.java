@@ -22,6 +22,8 @@
 package org.cougaar.tools.csmart.core.cdata;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 /**
  * Data Structure for Time Phased Data.
@@ -32,36 +34,47 @@ import java.io.Serializable;
  */
 public class TimePhasedData implements Serializable {
 
-  /** Start time for the time phased object **/
-  String startTime = null;
-
-  /** Stop time for the time phased object **/
-  String stopTime = null;
+  private String startTime = null;
+  private String stopTime = null;
+  private SimpleDateFormat sdf;
 
   /**
    * Creates a new <code>TimePhasedData</code> instance.
    *
    */
   public TimePhasedData() {
+    sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm a");
   }
 
   /**
    * Sets the start time for the time-phased object
    * Data is in the format of: 03/25/1959 12:00 am
+   * or an empty String.  An empty String implies
+   * "ignore start time"
    *
-   * @param String start time.
+   * @param start 
+   * @exception ParseException if an error occurs
    */
-  public void setStartTime(String start) {
+  public void setStartTime(String start) throws ParseException {
+    if(!start.equals("")) {
+      sdf.parse(start);
+    }
     this.startTime = start;
   }
 
   /**
    * Sets the Stop time for the time-phased object.
    * Data is in the format of: 03/25/1959 12:00 am
+   * or an empty String. An empty String implies
+   * "ignore stop time"  
    *
-   * @param String stop time.
+   * @param stop 
+   * @exception ParseException if an error occurs
    */
-  public void setStopTime(String stop) {
+  public void setStopTime(String stop) throws ParseException {
+    if(!stop.equals("")) {
+      sdf.parse(stop);
+    }
     this.stopTime = stop;
   }
 
