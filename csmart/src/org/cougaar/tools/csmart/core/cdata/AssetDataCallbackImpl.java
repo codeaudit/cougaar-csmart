@@ -249,14 +249,7 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
 
     PGPropData data = new PGPropData();
     data.setName(name);
-    if(log.isDebugEnabled()) {
-      log.debug("setterName: " + setterName);
-      log.debug("type: " + type);
-      for(int i=0; i < arguments.length; i++) {
-        log.debug("Argument[" + i + "]: " + arguments[i]);
-      }
-    }
-
+    
     int i;
     if ((i = type.indexOf("<")) >= 0) {
       int j = type.lastIndexOf(">");
@@ -270,17 +263,25 @@ public class AssetDataCallbackImpl implements AssetDataCallback {
       data.setType(type);
     }
 
-    if(arguments[0] instanceof Collection) {
-      Iterator iter = ((Collection)arguments[0]).iterator();
-      PGPropMultiVal multi = new PGPropMultiVal();
-      while(iter.hasNext()) {
-        multi.addValue((String)iter.next());
-      }
-      data.setValue(multi);
+    if(data.getName().equals("HomeLocation")) {
+      data.setValue(parseHomeLocation((String)arguments[0]));
     } else {
-      data.setValue(arguments[0]);
+      if(arguments[0] instanceof Collection) {
+        Iterator iter = ((Collection)arguments[0]).iterator();
+        PGPropMultiVal multi = new PGPropMultiVal();
+        while(iter.hasNext()) {
+          multi.addValue((String)iter.next());
+        }
+        data.setValue(multi);
+      } else {
+        data.setValue(arguments[0]);
+      }
     }
     propGroup.addProperty(data);
+  }
+
+  private String parseHomeLocation(String argument) {
+    return argument.substring(argument.indexOf("=")+1, argument.indexOf(","));
   }
 
   /**
