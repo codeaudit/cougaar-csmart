@@ -28,6 +28,9 @@ reloaded, in particular to reflect the obsolesence of ClusterIdentifier.
   csmart/data/database/scripts/mysql/sql/cluster-id-removal.sql. In
   addition, at CSMART experiment load time, any instance of
   ClusterIdentifier will be replaced by MessageAddress. 
+- Replaced generic Completion Servlet in Default Servlets recipe with
+  the GLM specific completion servlet, to more accurately portray
+  society completion. (Bug 2524)
 - Updated AdaptivitySupport recipe to reflect core/planning split, and
   new fact that AEViewerServlet does not use
   BlackboardServletComponent.
@@ -35,7 +38,6 @@ reloaded, in particular to reflect the obsolesence of ClusterIdentifier.
   Complete Agent recipe instead.
 - Removed the old and obsolete Component Insertion Recipe. Use the
   Specific Insertion Recipe instead.
-- Code cleanup .... FIXME!!
 - Remove misleading "idleness" graphs in Console.
 - Remove unused multi-trial and property experimental-values code.
 - Performance improvement on experiment save: New modified flag on

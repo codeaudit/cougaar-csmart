@@ -25,12 +25,12 @@ Upgrade related issues
 - Note that the database schemas have changed, and the required
 properties in the AppServer system.props files have changed in recent
 versions. Please look carefully at the install instructions and sample
-server properties files.
+server properties files. When in doubt, reload your database.
 
 Running CSMART
 - Ensure that bootstrap.jar is on your CLASSPATH
 - Ensure that all jar files are from the same build
-- When you get a message at startup on STDOUT that says SHOUT [CSMART] - CSMART 9.2.1 built on.....
+- When you get a message at startup on STDOUT that says SHOUT [CSMART] - CSMART 10.0 built on.....
 This is not an error, but normal operation.
 - Messages about not finding Hosts.txt can be ignored. This is common.
 
@@ -42,7 +42,7 @@ installation specific server properties file.
 - Be sure that your versions of all jar files
 are all from the same build (this results in RMI exceptions
 occasionally).
-- On Windows, be sure to set SYSTEMROOT in your props file
+- On Windows, be sure to set env.SYSTEMROOT in your props file
 
 Linux Specific Issues
 - Various display issues have been noticed on Linux Systems.
@@ -190,15 +190,6 @@ this indicates that the metrics Plugins could not find the named library,
 available in scalability/bin. If on a Windows or Linux i386 machine, be sure
 this libary is in a directory on your path. Otherwise, you may safely
 ignore this error.
-
-- If you see an error like: java.lang.RuntimeException: Loaded plugin
-org.cougaar.tools.csmart.runtime.plugin.LocalAssetBuilder[localAssets.dat] without
-CSMART Factory? Did you include the csmart domain in
-configs/common/LDMDomains.ini?
-
-This indicates that you have not loaded the csmart domain. Copy csmart/data/common/LDMDomains.ini to CIP/configs/common, or that you have edited the version of
-LDMDomains that you are using to include the csmart domain:
-csmart=org.cougaar.tools.csmart.runtime.ldm.CSMARTDomain
 
 Running any other society
 - If on Windows you get an error at startup:
