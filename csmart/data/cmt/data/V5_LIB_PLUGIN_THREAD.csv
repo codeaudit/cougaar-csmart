@@ -13,7 +13,7 @@ mil.darpa.log.alpine.blackjack.plugins.LimitResourcesPolicyPlugIn,CLASS-4,Putsup
 mil.darpa.log.alpine.blackjack.plugins.LimitResourcesPolicyPlugIn,CLASS-5,PutsupaGUItoedittheLimitResourcesPolicy, 
 mil.darpa.log.alpine.blackjack.plugins.LimitResourcesPolicyPlugIn,CLASS-8,PutsupaGUItoedittheLimitResourcesPolicy, 
 mil.darpa.log.alpine.blackjack.plugins.LimitResourcesPolicyPlugIn,CLASS-9,PutsupaGUItoedittheLimitResourcesPolicy, 
-mil.darpa.log.alpine.blackjack.plugins.SubsistenceConsumerLDMPlugIn,BASE,SubsistenceConsumerLDM, 
+mil.darpa.log.alpine.blackjack.plugins.SubsistenceConsumerLDMPlugIn,CLASS-1,SubsistenceConsumerLDM, 
 mil.darpa.log.alpine.blackjack.plugins.SubsistenceInventoryPlugIn,CLASS-1,SubsistenceInventoryManager, 
 mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn,CLASS-1,SubsistenceLDM, 
 mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn,CLASS-1,SubsistenceProjection, 

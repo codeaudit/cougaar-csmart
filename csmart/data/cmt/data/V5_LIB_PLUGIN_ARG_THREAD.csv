@@ -44,7 +44,7 @@ mil.darpa.log.alpine.blackjack.plugins.SubsistenceLDMPlugIn|subsistence.q|0,BASE
 mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn|ClassISubsistence|0,CLASS-1, ,mil.darpa.log.alpine.blackjack.plugins.SubsistenceProjectionPlugIn,ClassISubsistence,0,SUBSISTENCE_PROJECTION_ARGS,43
 mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|Ammunition|1,CLASS-5, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,Ammunition,1,SUPPLY_PROJECTION_ARGS,44
 mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|BulkPOL|2,CLASS-3, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,BulkPOL,2,SUPPLY_PROJECTION_ARGS,45
-mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|Consumable|4,BASE, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,Consumable,4,SUPPLY_PROJECTION_ARGS,46
+mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|Consumable|4,CLASS-9, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,Consumable,4,SUPPLY_PROJECTION_ARGS,46
 mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn|PackagedPOL|3,CLASS-3, ,mil.darpa.log.alpine.blackjack.plugins.SupplyProjectionPlugIn,PackagedPOL,3,SUPPLY_PROJECTION_ARGS,47
 org.cougaar.domain.mlm.construction.ConstructionInventoryPlugIn|+ClassIVConstructionMaterialInventory|0,CLASS-4, ,org.cougaar.domain.mlm.construction.ConstructionInventoryPlugIn, +ClassIVConstructionMaterialInventory,0,CONSTRUCTION_INVENTORY_ARGS,48
 org.cougaar.domain.mlm.construction.ConstructionProjectionPlugIn|-ClassIVConstructionMaterialSupplyTasks|0,CLASS-4, ,org.cougaar.domain.mlm.construction.ConstructionProjectionPlugIn, -ClassIVConstructionMaterialSupplyTasks,0,CONSTRUCTION_PROJECTION_ARGS,49
