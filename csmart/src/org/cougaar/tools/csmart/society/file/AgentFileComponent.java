@@ -128,7 +128,8 @@ public class AgentFileComponent
   }
 
   private void addAssetData() {
-    BaseComponent asset = (BaseComponent)new AssetFileComponent(filename);
+    BaseComponent asset = 
+      (BaseComponent)new AssetFileComponent(filename, getShortName());
     asset.initProperties();
     addChild(asset);
   }
