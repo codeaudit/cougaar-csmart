@@ -4,32 +4,32 @@
 
 CREATE DATABASE tempcopy;
 
--- V4_LIB_MOD_RECIPE
-DROP TABLE IF EXISTS tempcopy.V4_LIB_MOD_RECIPE;
+-- v4_lib_mod_recipe
+DROP TABLE IF EXISTS tempcopy.v4_lib_mod_recipe;
 
-CREATE TABLE tempcopy.V4_LIB_MOD_RECIPE AS
+CREATE TABLE tempcopy.v4_lib_mod_recipe AS
   SELECT DISTINCT
     CONCAT(MOD_RECIPE_LIB_ID, '-cpy') AS MOD_RECIPE_LIB_ID,
     CONCAT(NAME, '-cpy') AS NAME,
     JAVA_CLASS,
     DESCRIPTION
   FROM
-    V4_LIB_MOD_RECIPE
+    v4_lib_mod_recipe
   WHERE
     NAME = ':recipeName';
 
--- V4_LIB_MOD_RECIPE_ARG
-DROP TABLE IF EXISTS tempcopy.V4_LIB_MOD_RECIPE_ARG;
+-- v4_lib_mod_recipe_arg
+DROP TABLE IF EXISTS tempcopy.v4_lib_mod_recipe_arg;
 
-CREATE TABLE tempcopy.V4_LIB_MOD_RECIPE_ARG AS
+CREATE TABLE tempcopy.v4_lib_mod_recipe_arg AS
   SELECT DISTINCT
     CONCAT(AA.MOD_RECIPE_LIB_ID, '-cpy') AS MOD_RECIPE_LIB_ID,
     AA.ARG_NAME,
     AA.ARG_ORDER,
     AA.ARG_VALUE
   FROM
-    V4_LIB_MOD_RECIPE_ARG AA,
-    V4_LIB_MOD_RECIPE AT
+    v4_lib_mod_recipe_arg AA,
+    v4_lib_mod_recipe AT
   WHERE
     AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
     AND AT.NAME = ':recipeName';

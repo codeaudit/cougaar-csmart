@@ -1,9 +1,9 @@
 -- COPY REFERENCE STUFF USED BY AN EXPERIMENT FOR EXPORT
 
--- V4_ALIB_COMPONENT
-DROP TABLE IF EXISTS tempcopy.V4_ALIB_COMPONENT;
+-- v4_alib_component
+DROP TABLE IF EXISTS tempcopy.v4_alib_component;
 
-CREATE TABLE tempcopy.V4_ALIB_COMPONENT AS
+CREATE TABLE tempcopy.v4_alib_component AS
   SELECT DISTINCT
     AA.COMPONENT_ALIB_ID,
     AA.COMPONENT_NAME,
@@ -11,11 +11,11 @@ CREATE TABLE tempcopy.V4_ALIB_COMPONENT AS
     AA.COMPONENT_TYPE,
     AA.CLONE_SET_ID
   FROM
-    V4_ALIB_COMPONENT AA,
-    V4_ASB_COMPONENT_HIERARCHY AH,
-    V4_EXPT_TRIAL_ASSEMBLY EA,
-    V4_EXPT_TRIAL ET,
-    V4_EXPT_EXPERIMENT E
+    v4_alib_component AA,
+    v4_asb_component_hierarchy AH,
+    v4_expt_trial_assembly EA,
+    v4_expt_trial ET,
+    v4_expt_experiment E
   WHERE
     E.NAME = ':exptName'
     AND E.EXPT_ID = ET.EXPT_ID
@@ -23,7 +23,7 @@ CREATE TABLE tempcopy.V4_ALIB_COMPONENT AS
     AND EA.ASSEMBLY_ID = AH.ASSEMBLY_ID
     AND (AH.COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID OR AH.PARENT_COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID);
 
-REPLACE INTO tempcopy.V4_ALIB_COMPONENT
+REPLACE INTO tempcopy.v4_alib_component
   (COMPONENT_ALIB_ID, COMPONENT_NAME, COMPONENT_LIB_ID, COMPONENT_TYPE, CLONE_SET_ID) 
   SELECT DISTINCT
     AA.COMPONENT_ALIB_ID,
@@ -32,11 +32,11 @@ REPLACE INTO tempcopy.V4_ALIB_COMPONENT
     AA.COMPONENT_TYPE,
     AA.CLONE_SET_ID
   FROM
-    V4_ALIB_COMPONENT AA,
-    V4_ASB_COMPONENT_HIERARCHY AH,
-    V4_EXPT_TRIAL_CONFIG_ASSEMBLY EA,
-    V4_EXPT_TRIAL ET,
-    V4_EXPT_EXPERIMENT E
+    v4_alib_component AA,
+    v4_asb_component_hierarchy AH,
+    v4_expt_trial_config_assembly EA,
+    v4_expt_trial ET,
+    v4_expt_experiment E
   WHERE
     E.NAME = ':exptName'
     AND E.EXPT_ID = ET.EXPT_ID
@@ -45,10 +45,10 @@ REPLACE INTO tempcopy.V4_ALIB_COMPONENT
     AND (AH.COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID OR AH.PARENT_COMPONENT_ALIB_ID = AA.COMPONENT_ALIB_ID);
 
 
--- V4_LIB_COMPONENT
-DROP TABLE IF EXISTS tempcopy.V4_LIB_COMPONENT;
+-- v4_lib_component
+DROP TABLE IF EXISTS tempcopy.v4_lib_component;
 
-CREATE TABLE tempcopy.V4_LIB_COMPONENT AS
+CREATE TABLE tempcopy.v4_lib_component AS
   SELECT DISTINCT
     AA.COMPONENT_LIB_ID,
     AA.COMPONENT_TYPE,
@@ -56,45 +56,45 @@ CREATE TABLE tempcopy.V4_LIB_COMPONENT AS
     AA.INSERTION_POINT,
     AA.DESCRIPTION
   FROM
-    V4_LIB_COMPONENT AA,
-    tempcopy.V4_ALIB_COMPONENT AC
+    v4_lib_component AA,
+    tempcopy.v4_alib_component AC
   WHERE
     AA.COMPONENT_LIB_ID = AC.COMPONENT_LIB_ID;
 
--- V4_LIB_MOD_RECIPE
-DROP TABLE IF EXISTS tempcopy.V4_LIB_MOD_RECIPE;
+-- v4_lib_mod_recipe
+DROP TABLE IF EXISTS tempcopy.v4_lib_mod_recipe;
 
-CREATE TABLE tempcopy.V4_LIB_MOD_RECIPE AS
+CREATE TABLE tempcopy.v4_lib_mod_recipe AS
   SELECT DISTINCT
     CONCAT(AA.MOD_RECIPE_LIB_ID, '-cpy') AS MOD_RECIPE_LIB_ID,
     CONCAT(AA.NAME, '-cpy') AS NAME,
     AA.JAVA_CLASS,
     AA.DESCRIPTION
   FROM
-    V4_LIB_MOD_RECIPE AA,
-    V4_EXPT_TRIAL_MOD_RECIPE ER,
-    V4_EXPT_TRIAL ET,
-    V4_EXPT_EXPERIMENT E
+    v4_lib_mod_recipe AA,
+    v4_expt_trial_mod_recipe ER,
+    v4_expt_trial ET,
+    v4_expt_experiment E
   WHERE
     AA.MOD_RECIPE_LIB_ID = ER.MOD_RECIPE_LIB_ID
     AND ER.TRIAL_ID = ET.TRIAL_ID
     AND ET.EXPT_ID = E.EXPT_ID
     AND E.NAME = ':exptName';
 
--- V4_LIB_MOD_RECIPE_ARG
-DROP TABLE IF EXISTS tempcopy.V4_LIB_MOD_RECIPE_ARG;
+-- v4_lib_mod_recipe_arg
+DROP TABLE IF EXISTS tempcopy.v4_lib_mod_recipe_arg;
 
-CREATE TABLE tempcopy.V4_LIB_MOD_RECIPE_ARG AS
+CREATE TABLE tempcopy.v4_lib_mod_recipe_arg AS
   SELECT DISTINCT
     CONCAT(AA.MOD_RECIPE_LIB_ID, '-cpy') AS MOD_RECIPE_LIB_ID,
     AA.ARG_NAME,
     AA.ARG_ORDER,
     AA.ARG_VALUE
   FROM
-    V4_LIB_MOD_RECIPE_ARG AA,
-    V4_EXPT_TRIAL_MOD_RECIPE ER,
-    V4_EXPT_TRIAL ET,
-    V4_EXPT_EXPERIMENT E
+    v4_lib_mod_recipe_arg AA,
+    v4_expt_trial_mod_recipe ER,
+    v4_expt_trial ET,
+    v4_expt_experiment E
   WHERE
     AA.MOD_RECIPE_LIB_ID = ER.MOD_RECIPE_LIB_ID
     AND ER.TRIAL_ID = ET.TRIAL_ID
