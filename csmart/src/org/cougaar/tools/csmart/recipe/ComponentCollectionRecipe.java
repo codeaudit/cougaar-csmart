@@ -107,9 +107,22 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
     super(cdata, assemblyId);
   }
 
+  // Do a normal setName, not silently changing just the recipe name,
+  // cause the free-floating components must have their names changed as well
+  public void setName(String newName) {
+    if (newName == null || newName.equals("") || newName.equals(getRecipeName())) 
+      return;
+
+    super.setName(newName);
+
+    // Must mark this recipe modified, cause the sub-component names have changed
+    // and must be changed in DB to restore correctly
+    // This is bug 2040
+    fireModification();
+  }
+
   /**
-   * Initialize any local Properties
-   *
+   * Create the local Parent target query, then call the parent to complete.
    */
   public void initProperties() {
     propTargetComponent =
@@ -121,8 +134,10 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
 
     // The super will set the parent target query
 
-    modified = false;
-    fireModification(new ModificationEvent(this, RECIPE_SAVED));
+    // FIXME: Super also deals with this modification stuff
+    // And it says that a copy (init from CDATA) is modified
+//     modified = false;
+//     fireModification(new ModificationEvent(this, RECIPE_SAVED));
 
   }
 
@@ -252,7 +267,6 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
     }
   } 
 
-
   public ComponentData getComponentData() {
     ComponentData cd = new GenericComponentData();
     cd.setType(ComponentData.RECIPE);
@@ -304,10 +318,26 @@ public class ComponentCollectionRecipe extends ComplexRecipeBase
   public ModifiableComponent copy(String name) {
     ComponentData cdata = getComponentData();
     cdata.setName(name);
+
+//     if (log.isDebugEnabled()) {
+//       log.debug(this + " produced CDATA: " + cdata);
+//       // Maybe look here to see if that param got added OK?
+//       ComponentData[] kids = cdata.getChildren();
+//       for (int i = 0; i < cdata.childCount(); i++) {
+// 	int params = kids[i].parameterCount();
+// 	log.debug("cdata.children["+i+"] has params: ");
+// 	for (int j = 0; j < params; j++) 
+// 	  log.debug("param["+j+"]= " + kids[i].getParameter(j));
+//       }
+//     }
+
     RecipeComponent component = new ComponentCollectionRecipe(cdata, null);
     component.initProperties();
 
-    ((ComponentCollectionRecipe)component).modified = this.modified;
+    // FIXME: This next line means if the original was not modified
+    // then the copy will not be modified, even though the copy
+    // will not be in the DB (no RCP assembly)
+    //    ((ComponentCollectionRecipe)component).modified = this.modified;
     ((ComponentCollectionRecipe)component).oldAssemblyId = getAssemblyId();
 
 
