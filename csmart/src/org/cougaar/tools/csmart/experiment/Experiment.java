@@ -618,9 +618,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
     if (newNameServer != null) {
       defaultNodeArgs.setProperty("org.cougaar.name.server", newNameServer);
     }
-    if(log.isWarnEnabled()) {
-      log.warn("org.cougaar.name.server=" + newNameServer);
-    }
   }
 
   private void addNodeComponent(ExperimentNode node) {
