@@ -45,6 +45,8 @@ public class TopologyService {
   public ArrayList getAgentLocations() {
     errors = new StringBuffer(200); // re-init the errors received
     Vector urls = CSMARTUL.getAgentURLs();
+    if (urls == null)
+      return null;
     for (int i = 0; i < urls.size(); i++) {
       // Bug 1585: If the servlet is not loaded, don't
       // pop up an error message for each Agent, but instead want one for all of them
