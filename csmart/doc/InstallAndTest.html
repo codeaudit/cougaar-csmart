@@ -792,10 +792,11 @@ installation using
 
     <li>Give the experiment a name, such as "My Test", then click "Yes" to save
       your modified name.  Your experiment name, "My Test", is added
-      to the list in the "Default Workspace".  A recipe, "Default Servlets" is also
-      added to the workspace.  This recipe defines the servlets that are a default
-      part of this experiment. Note that your society (Agents +
-      Plugins), plus this Recipe (and any others you add) are
+      to the list in the "Default Workspace".  Three recipes are also
+      added to your workspace. The first, "Default Servlets", defines the servlets that are a default
+      part of this experiment. The other two, "NodeMobilityPlugin" and
+      "AgentMobilityPlugin" are used to support Agent Mobility. Note that your society (Agents +
+      Plugins), plus these Recipes (and any others you add) are
       displayed twice. Once, within the Experiment to which you have
       added them. Operations on these items (rename, delete, edit)
       only effect the copy on that Experiment. These same societies &
@@ -812,7 +813,7 @@ installation using
     <ol>
     <li>Select "Default Workspace".</li><p>
 
-    <li>Right-click, select "New Recipe", select "Built in", select "Basic Metric", then
+    <li>Right-click, select "New Recipe", select "From Template", select "Basic Metric", then
       "OK".</li><p>
 
     <li>Give the metric a name -- "My Metric" is fine for this test.</li><p>
@@ -853,7 +854,7 @@ installation using
 
     <li>Select "GLM_TRANS" from the middle ("Nodes") panel.</li><p>
 
-    <li>Select the following seven Agents from the bottom ("Agents") panel.
+    <li>Select the following seven Agents from the right ("Agents") panel.
       Use the control-key to select multiple Agents:
       <ul>
           <li>CONUSGround</li>
@@ -874,14 +875,14 @@ installation using
       "1AD-Tiny".  Use the shift-key to select a range of
       names.</li><p>
 
-    <li>Select your machine's address from the top ("Hosts") panel.  If
-      your machine's name is not present then right-click in the top
+    <li>Select your machine's address from the left ("Hosts") panel.  If
+      your machine's name is not present then right-click in the left
       panel to add a new entry.  Make sure that you use either the
       full host name or the IP address -- sometimes the DNS lookup
-      causes problems.</li><p>
+      causes problems. Do _not_ use "localhost".</li><p>
 
     <li>Drag both "GLM_TRANS" and "1AD-TINY" onto your host
-      entry of the top ("Hosts") panel.  If you were testing a
+      entry of the left ("Hosts") panel.  If you were testing a
       multi-machine configuration then you would drag the Nodes onto
       multiple hosts.</li><p>
 
