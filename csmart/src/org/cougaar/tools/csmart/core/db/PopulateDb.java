@@ -134,7 +134,7 @@ public class PopulateDb extends PDbBase {
       // or the line in asb_assembly. Hence the second argument.
       cleanAssembly(assemblyId, true);
     } else {
-      // Create new CSA assembly to hold the data, copying OPLAN info if any
+      // Create new CSA assembly to hold the data
       // Also set the csaAssemblyId and cmtAssemblyId parameters
       try {
 	// Save this ID someplace? The creator stuffs
@@ -788,14 +788,10 @@ public class PopulateDb extends PDbBase {
     executeUpdate(dbp.getQuery("cleanASBComponentArg", substitutions));
     executeUpdate(dbp.getQuery("cleanASBComponentHierarchy", substitutions));
 
-    // Add in asb_agent and asb_oplan tables
+    // Add in asb_agent 
     executeUpdate(dbp.getQuery("cleanASBAgent", substitutions));
     executeUpdate(dbp.getQuery("cleanASBAgentPGAttr", substitutions));
     executeUpdate(dbp.getQuery("cleanASBAgentRel", substitutions));
-    if (! partial) {
-      executeUpdate(dbp.getQuery("cleanASBOplan", substitutions));
-      executeUpdate(dbp.getQuery("cleanASBOplanAAttr", substitutions));
-    }
 
     // Community tables too
     executeUpdate(dbp.getQuery("cleanASBComm", substitutions));
@@ -1005,7 +1001,7 @@ public class PopulateDb extends PDbBase {
     throws SQLException {
     // whatever the current oldAssemblyId (possibly really a CSA)
     // create a new (RCP or CSA) assembly from it:
-    // entry in asb_assembly and copy any oplan rows
+    // entry in asb_assembly 
     // and return the new ID
     // which will be
     if (log.isDebugEnabled()) {
@@ -1044,8 +1040,6 @@ public class PopulateDb extends PDbBase {
       //      substitutions.put(":soc_desc:", societyName + " based on " + cmtAsbID);
 
       substitutions.put(":assembly_id:", sqlQuote(assemblyId));
-      // Came from a CMT assembly. Copy the OPLAN stuff
-      copyOPLANData(oldAsbID, assemblyId);
     }
 
     substitutions.put(":assembly_id:", sqlQuote(assemblyId));
@@ -1405,33 +1399,6 @@ public class PopulateDb extends PDbBase {
     }
   }
 
-  /**
-   * Copy all OPLAN entries for the given old Assembly into the given new one.
-   * No check is made first to see if there are any such rows.
-   *
-   * @param oldAssemblyID a <code>String</code> assembly with OPLAN data to copy from
-   * @param newAssemblyID a <code>String</code> new assembly to copy OPLAN data to
-   * @exception SQLException if an error occurs
-   */
-  public void copyOPLANData(String oldAssemblyID, String newAssemblyID)
-    throws SQLException
-  {
-    if (oldAssemblyID == null || oldAssemblyID.equals("") || newAssemblyID == null || newAssemblyID.equals(""))
-      return;
-    substitutions.put(":old_assembly_id:", oldAssemblyID);
-    substitutions.put(":new_assembly_id:", newAssemblyID);
-    String qs = dbp.getQuery("copyOPLANQueryNames", substitutions);
-    StringTokenizer queries = new StringTokenizer(qs);
-    // Note that executeUpdate in PDbBase uses a shared connection,
-    // so we should be OK.
-    while (queries.hasMoreTokens()) {
-      String queryName = queries.nextToken();
-      if (log.isDebugEnabled()) {
-	log.debug("CopyOplan: doing query " + queryName);
-      }
-      executeUpdate(dbp.getQuery(queryName, substitutions));
-    }
-  }
 
   /**
    * Ensure the experiment's assemblies are recorded appropriately.

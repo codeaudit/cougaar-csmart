@@ -180,8 +180,6 @@ public class CMT {
     DBUtils.deleteItems(asbPrefix+"asb_agent_pg_attr", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_agent_relation", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_component_arg", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
-    DBUtils.deleteItems(asbPrefix+"asb_oplan_agent_attr", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
-    DBUtils.deleteItems(asbPrefix+"asb_oplan", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);
     DBUtils.deleteItems(asbPrefix+"asb_assembly", "assembly_id", DBUtils.sqlQuote(assembly_id), QUERY_FILE);    
 
     // Added community tables to those that get cleaned out
@@ -419,8 +417,6 @@ public class CMT {
 	DBUtils.executeQuerySet("addPluginAgentASBComponentArg",subs, QUERY_FILE);
 	DBUtils.executeQuerySet("addPluginOrgtypeASBComponentArg",subs, QUERY_FILE);
 	DBUtils.executeQuerySet("addPluginAllASBComponentArg",subs, QUERY_FILE);
-	DBUtils.executeQuerySet("addASBOplans",subs, QUERY_FILE);
-	DBUtils.executeQuerySet("addASBOplanAgentAttr",subs, QUERY_FILE);
       }
     }
     return assembly_id;
