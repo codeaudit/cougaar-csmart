@@ -491,7 +491,18 @@ public abstract class ExperimentBase extends ModifiableConfigurableComponent imp
     Properties props = getDefaultNodeArguments();
     for (Iterator i = props.entrySet().iterator(); i.hasNext();) {
       Map.Entry entry = (Map.Entry) i.next();
-      theSoc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
+      String entVal = entry.getKey().toString();
+      if(entVal.startsWith("-X")) {
+        if(entry.getValue().equals("") || entry.getValue() == null) {
+          theSoc.addParameter(entry.getKey());
+        } else {
+          theSoc.addParameter(entry.getKey() + "=" + entry.getValue());
+        }
+      } else if (entVal.startsWith("X:")) {
+        theSoc.addParameter("-X" + entry.getKey() + "=" + entry.getValue());
+      } else {
+        theSoc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
+      }
     }
   }
 
@@ -616,6 +627,7 @@ public abstract class ExperimentBase extends ModifiableConfigurableComponent imp
     String dfltNameServer = null;
     String nameServerHost = null;
     if (oldNameServer != null) {
+      dfltNameServer = oldNameServer;
       int colon = oldNameServer.indexOf(':');
       if (colon >= 0) {
         nameServerHost = oldNameServer.substring(0, colon);
@@ -849,7 +861,20 @@ public abstract class ExperimentBase extends ModifiableConfigurableComponent imp
     Properties props = node.getArguments();
     for (Iterator i = props.entrySet().iterator(); i.hasNext();) {
       Map.Entry entry = (Map.Entry) i.next();
-      nc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
+      String entVal = entry.getKey().toString();
+      if(entVal.startsWith("-X")) {
+        if(entry.getValue().equals("") || entry.getValue() == null) {
+          nc.addParameter(entry.getKey());
+        } else {
+          nc.addParameter(entry.getKey() + "=" + entry.getValue());
+        }
+      } else if (entVal.startsWith("X:")) {
+        nc.addParameter("-X" + entry.getKey() + "=" + entry.getValue());
+      } else {
+        nc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
+      }
+
+     // nc.addParameter("-D" + entry.getKey() + "=" + entry.getValue());
     }
     addPropertiesAsParameters(nc, node);
     if (log.isDebugEnabled()) {

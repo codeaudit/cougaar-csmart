@@ -579,6 +579,7 @@ public class NodeView extends JInternalFrame implements Observer {
 
     JOptionPane pane = new JOptionPane(aboutPanel, JOptionPane.PLAIN_MESSAGE);
     JInternalFrame infoFrame = pane.createInternalFrame(this, "Information: "  + nodeName + " (" + hostName + ")");
+    infoFrame.setSize(new Dimension(500, 500));
     infoFrame.setResizable(true);
     infoFrame.show();
   }

@@ -126,16 +126,34 @@ public class CreateNodeThread extends Thread {
       }
       return iae.toString();
     } catch (RuntimeException re) {
-      if (log.isErrorEnabled()) {
-        log.error("Cannot create node: " + model.getInfo().getNodeName(), re);
+      if (log.isWarnEnabled()) {
+        log.warn("Cannot create node: " + model.getInfo().getNodeName() + " Retrying with different name.");
       }
-      return re.toString();
+      try {
+        name = model.getInfo().getNodeName() + "-2";
+        desc =
+          new ProcessDescription(name, "csmart",
+                                 model.getInfo().getProperties(),
+                                 model.getInfo().getArgs());
+
+        remoteNode = model.getInfo().getAppServer().createRemoteProcess(desc, conf);
+        if (log.isDebugEnabled()) {
+          log.debug("Adding listener: " + CSMART.getNodeListenerId() + " for: " + name);
+        }
+        return null;  // no errors.
+      } catch(Exception e) {
+        if(log.isErrorEnabled()) {
+          log.error("Cannot create node with new name: " + model.getInfo().getNodeName(), e);
+          return e.toString();
+        }
+      }
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
         log.error("Cannot create node: " + model.getInfo().getNodeName(), e);
       }
       return e.toString();
     }
+    return null;  // no errors
   }
 
   /**

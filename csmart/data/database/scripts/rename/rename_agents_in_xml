@@ -165,11 +165,11 @@ sub fix_xml {
     my $type;
     my $before;
     my $old_name;
-    if ($line =~ /(<\s*(agent|node)\s+name\s*=\s*['"])([^'"]+)/) {
+    if ($line =~ /(<\s*(agent|node)\s+name\s*=\s*[\'\"])([^\'\"]+)/) {
       $type=$2;
       $before=$1;
       $old_name=$3;
-    } elsif ($line =~ /(<\s*facet\s+\S+_org_id\s*=\s*['"])([^'"]+)/) {
+    } elsif ($line =~ /(<\s*facet\s+\S+_org_id\s*=\s*[\'\"])([^\'\"]+)/) {
       $type="facet";
       $before=$1;
       $old_name=$2;
@@ -177,7 +177,7 @@ sub fix_xml {
       $type="node.name";
       $before=$1;
       $old_name=$2;
-    } elsif ($line =~ /(\s+name\s*=\s*['"])([^|]+)\|/) {
+    } elsif ($line =~ /(\s+name\s*=\s*[\'\"])([^|]+)\|/) {
       $type="component";
       $before=$1;
       $old_name=$2;

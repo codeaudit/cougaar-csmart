@@ -20,10 +20,11 @@ REM " PERFORMANCE OF THE COUGAAR SOFTWARE."
 REM "</copyright>"
 
 
-REM Load the RefConfiguration data contained in csmart/data/database/ref-csv
-REM This data comes with the distribution.
-REM You may also move the original data aside, and "dump" the data from a database
-REM for sharing, or editing and reloading
+REM Load the RefConfiguration data contained in
+REM csmart/data/database/ref-csv for use when running from XML files
+REM This fills in data for the cougaar.rc entry
+REM org.cougaar.refconfig.database
+
 REM Note that MySQL must be installed on the local machine, and
 REM Cougaar Install Path must be set
 
@@ -62,34 +63,10 @@ DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\scripts\mysql\sql\loadRef.sql
 
 REM Copy most files from the normal CSV dir. They are by definition the same
 
-IF NOT EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\alploc.csv GOTO L_4
-COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\alploc.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
-
-IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_transportable_item.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_transportable_item.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
-
-IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_transportable_item_detail.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_transportable_item_detail.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
-
-IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_unfrmd_srvc_occ_rnk_subcat.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_unfrmd_srvc_occ_rnk_subcat.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
-
-IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_unfrmd_srvc_occptn.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_unfrmd_srvc_occptn.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
-
-IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_unfrmd_srvc_rnk.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_unfrmd_srvc_rnk.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
-
-IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_unit.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_unit.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
-
-IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_unit_billet.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_unit_billet.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
-
-IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_unit_equipment.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\fdm_unit_equipment.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
-
-IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\geoloc.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\geoloc.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
-
 IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_pg_attribute.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_pg_attribute.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
 
 IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_organization.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\lib_organization.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
 
-IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\oplan.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\oplan.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
-
-IF EXIST %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\oplan_agent_attr.csv COPY %COUGAAR_INSTALL_PATH%\csmart\data\database\csv\oplan_agent_attr.csv %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv
 ECHO Past all copy
 GOTO L_5
 
@@ -107,9 +84,6 @@ mysql -u%1 -p%2 %3 < loadRef_new.sql
 
 DEL loadRef_new.sql
 DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv\*.tmp
-DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv\*loc.csv
-DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv\fdm*
-DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv\oplan*
 DEL %COUGAAR_INSTALL_PATH%\csmart\data\database\ref-csv\lib*
 
 ECHO Done.

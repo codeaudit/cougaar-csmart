@@ -160,9 +160,10 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
   <p>
    A database is required to run the larger
    <a href="http://www.cougaar.org">Cougaar</a>
-   societies and to run CSMART.  Typically a MySQL, Oracle, or 
-   PostGreSQL database is used. Only MySQL is currently supported for CSMART.
-   A single database can be shared with other CSMART users, but you
+   societies and to run either from CSMART or from an xml file.  
+   Typically a MySQL, Oracle, or PostGreSQL database is used.
+   Only MySQL is currently supported for CSMART and xml.
+   A single database can be shared with other users, but you
    must first arrange access to the database --
    these notes detail how to create your own database and <a href="../../doc/ReleaseNotes/10.4/DataAccess.html">cougaar.rc</a>
    password file.
@@ -176,9 +177,9 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
    These notes highlight a basic installation for MySQL.  You 
    <b>MUST</b> refer to the MySQL documentation for proper
    installation and security documentation!
-   <p><b>Converting from a 9.4 or earlier installation to a 9.4.1 or
+   <p><b>Converting from an earlier installation to a 10.4.1 or
    better installation:</b> The database formats have changed between
-   Cougaar versions 9.4 and 9.4.1. To upgrade, you should:
+   Cougaar versions 10.4 and 10.4.1. To upgrade, you should:
    <ol>
      <li>Export any recipes that you want to save, using the
      export scripts in csmart/bin (export-recipe.[sh/bat] and exportExperiment.[sh/bat]. Run with
@@ -189,9 +190,9 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
      Nodes to Hosts. </li>
      <li>Re-load, in their entirety, both the CSMART database and the
      Cougaar domain database, using the below instructions.</li>
-     <li>Run the script v4_v6_conversions.[bat/sh] on each of your
-     export files from above, to remove the now-obsolete "v4_"
-     prefixes from the table names.</>
+     <li>Edit your exports: Change "ClusterImpl" to
+     "SimpleAgent". Change "ClusterIdentifier" to
+     "MessageAddress". Delete any references to tables named "asb_oplan_*".</li>
      <li>Import your converted recipe or experiment exports into your new database,
      following the instructions that were given when you created the
      exports.</li>
@@ -233,19 +234,18 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
 
   <li>You may need two or more databases for your society. That is,
   your application may have its own runtime database, in addition to
-  the one for the CSMART
-  configuration database. These instructions will help with both, but
+  the one for the CSMART configuration database and/or xml-refconfig database. 
+  These instructions will help with both, but
   see any application specific documentation for further details on
-  the runtime database.  <br>
-<ul><li>For the 
-  CSMART configuration database, first create the database (if necessary).  
+  the runtime database.  <br> <br>
+<ul><li>To run from either CSMART or from XML files, first create a database (if necessary).  
   For later reference when
     creating your <a href="../../doc/ReleaseNotes/10.4/DataAccess.html">cougaar.rc</a>, 
     suppose the database will be on host 
     "myhost".  Be sure you have started the database, using the
     appropriate "mysqld" executable. Here we name
     the database "mycoug". Note that for creating the database and the
-  user, you will usually need root. Once you create the user that
+  user, you will usually need to be root. Once you create the user that
   Cougaar will use to contact the database, root should not be
   required or used.
       <pre>
@@ -254,8 +254,9 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
         mysql&gt; create database mycoug;
         mysql&gt; exit;
       </pre>        
-        <b>Note 1</b> Although it is not required, if a separate database is desired for the
-        domain data, follow the same steps to create a domain database.<br><p>
+        <b>Note 1</b> Although it is not required, if separate databases are desired for 
+        xml-refconfig data and CSMART configuration data,
+        follow the same steps to create individual databases.<br><p>
         <b>Note 2</b> If
 	you have a previous database you wish to replace, the command
 	to drop the old database first is "drop database
@@ -283,71 +284,81 @@ Java HotSpot(TM) Server VM (build 1.4.0-b92, mixed mode)
 
   </li>
 
-    <li>The CSMART configuration database tables are loaded from '.csv' 
-    files provided in "$CIP/csmart/data/database/csv" directory.
-    To load the database from these files, run the script 
-    "$CIP/csmart/data/database/scripts/mysql/load_1ad_mysql.sh[bat]". This will drop 
-    the old tables in the database first and load 
-    the new tables from the .csv files. Windows users are strongly
-    urged to install Cygwin and use the provided .sh version of the
-    load script, although it is not required.
+<li>Since Cougaar 10.2, it is possible to run Cougaar societies from
+either XML files or from CSMART. 
+<br><br>
+Thus you may choose to configure your database in one of three ways: <br><br>
 
+  1) To run only from XML files. <br>
+  2) To run only from CSMART. <br>
+  3) To run from either XML files or CSMART<br>
+<br>
+</li>
+
+<ol>
+  <li>To run ONLY from XML files, run the script 
+  "$CIP/csmart/data/database/scripts/mysql/load_xml_data.sh[bat]" as follows: 
       <pre>
-        $./load_1ad_mysql.sh [db username] [db password] [database name]       
+        $./load_xml_data.sh [db username] [db password] [database name] 
       </pre>
+    This script will load the xml-refconfig data This script performs a load of the 
+    xml-refconfig files from the "$CIP/csmart/data/database/ref-csv" directory.  
+    See additional notes on running from XML files below.
+    <br><br>
 
-    Optional later step for developers: To dump a snapshot of the CSMART configuration database (excludes domain data tables), 
-    run the script "$CIP/csmart/data/database/scripts/mysql/dump_1ad_mysql.sh[bat]".  
+</li><br><p>
 
+  <li>To run ONLY from the CSMART tool, run the script 
+  "$CIP/csmart/data/database/scripts/mysql/load_csmart_data.sh[bat]" as follows: 
       <pre>
-        $./dump_1ad_mysql.sh [db username] [db password] [database name]
+        $./load_csmart_data.sh [db username] [db password] [database name] 
       </pre>
+    This script will load the CSMART-configuration data This script performs a load of the 
+    CSMART-configuration files from the "$CIP/csmart/data/database/csv" directory.
+    <br><br>
+</li><br><p>
 
-    To run this script, the database user MUST have the 'File' privilege for the MySQL database.
-    By default the root user has this privilege however newly created users (see below) may not.
-    Once a user has been created, the following will alter the user's privileges to give the 
-    'File' privilege.    
+  <li>To run from EITHER XML or CSMART, run the script
+  "$CIP/csmart/data/database/scripts/mysql/load_xml_and_csmart.sh[bat]" as follows: 
       <pre>
-        $ mysql -u root -p
-	[supply root password set during installation]
-        mysql&gt; update mysql.user set File_priv = 'Y' where User = '<i>supply_user_name</i>';
-        mysql&gt; flush privileges;
-        mysql&gt; exit;
+        $./load_xml_and_csmart.sh [db username] [db password] [database name] 
       </pre>
+    This script will load the xml-refconfig and CSMART-configuration data 
+    into the same database. This script performs a load of the xml-refconfig files 
+    from the "$CIP/csmart/data/database/ref-csv" directory, and the 
+    CSMART-configuration files from the "$CIP/csmart/data/database/csv"
+    directory.
+    <br><br>
+    <b>Note: </b>For instructions on loading the xml-refconfig and 
+    CSMART configuration data into separate databases, see Step 4) below.
+</li><br><p>
 
-    The script will generate a set of '.csv' files for all configuration tables and place 
-    them in the directory "$CIP/csmart/data/database/csv".  The database tables can 
-    then be modified via the '.csv' files and reloaded as desired using the 
-    load_1ad_mysql.sh script.
+  <li>To load separate databases for each data subset (csmart-configuration
+  and xml-refconfig) simply run the following scripts individually:
+      <pre>
+  "$CIP/csmart/data/database/scripts/mysql/load_csmart_data.sh[bat]"
+  "$CIP/csmart/data/database/scripts/mysql/load_ref_data.sh[bat]"
+      </pre>
+    <b>Note: </b>Just be sure to build your <a href="../../doc/ReleaseNotes/10.4/DataAccess.html">cougaar.rc</a> 
+    file appropriately.
+</li><br><p>
 
-    <br><br><b>Note</b> Before dumping a current snapshot of the database, you must ensure that
-     this directory is empty.  You should usually rename or move the
-     files currently in this directory to save the original table data
-     definitions.</li></ul></li><p>
+</ol>
 
 <p>
       
-<li><a name="refconfigdb">
-Since Cougaar 10.2, it is possible to run Cougaar societies from
-XML</a>. To do so, you will need any required application /
-domain database, and a new "refconfig" database. (This
-is used in place of the CSMART configuration database at runtime.)
-This database contains the OPLAN and the entity or organization
-OrgAsset definitions.
-<p>
-To install this database, you should:
+<li>
+
+<p> To run from XML, you will need any required application /
+domain data, and new "refconfig" data. (This
+is used in place of the CSMART configuration data at runtime.)  You will need to:
 <ul>
-  <li>Create a new database for this data, using the procedures
+  <li>Load the xml-refconfig data into a database, using the procedures
   outlined above.</li>
   <li>Create a new entry for this database in your cougaar.rc
   file. Refer to this database as
   <i>org.cougaar.refconfig.database</i> (with .user and .password
   entries as well).</li>
-  <li>Load this database, using the supplied script "csmart/data/database/scripts/mysql/load_1ad_ref.sh":
-     <pre>
-        $./load_ref_data.sh [db username] [db password] [refconfig database name]       
-     </pre>
-  </li>
 </ul>
 </li>
 

@@ -176,7 +176,7 @@ sub fix_csv {
     or die "Unable to open $filename: $!\n";
   my $first_line=1;
   my $any_name_cols=0;
-  my $enable_clusterpg_hack=0;
+  my $hack_index=-1;
   my @name_cols;
   while (<FD>) {
     chomp;
@@ -195,13 +195,13 @@ sub fix_csv {
           }
           my $isName = defined($name_headers{$col});
           if (!$isName &&
-              $#name_cols == 2 &&
               $col eq "ATTRIBUTE_VALUE" &&
               ($filename =~ /cfw_org_pg_attr.csv$/ ||
+               $filename =~ /org_pg_attr.csv$/ ||
                $filename =~ /community_attribute.csv$/)) {
             # HACK!
             print STDERR "  Warning: Enabling custom ClusterPG/ItemId/Community handling\n";
-            $enable_clusterpg_hack=1;
+            $hack_index=$#name_cols+1;
             $isName=1;
           }
           if ($isName) {
@@ -215,16 +215,16 @@ sub fix_csv {
       } else {
         my $i=0;
         foreach $col (@cols) {
-          my $isQuoted = $col =~ /^"/;
+          my $isQuoted = $col =~ /^\"/;
           if ($isQuoted) {
-            $col =~ s/^"//;
-            $col =~ s/"$//;
+            $col =~ s/^\"//;
+            $col =~ s/\"$//;
           }
           if ($name_cols[$i]) {
             my $new_name=$table{$col};
 #            print STDERR "col[$i]: $col\n";
             if (defined($new_name)) {
-              if (!$enable_clusterpg_hack || $i != 3) {
+              if ($i != $hack_index) {
                 # typical case
                 $col=$new_name;
               } else {

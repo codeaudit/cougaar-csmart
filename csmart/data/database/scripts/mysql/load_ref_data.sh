@@ -21,9 +21,8 @@
 # </copyright>
 
 # Load the RefConfiguration data contained in csmart/data/database/ref-csv
-# This data comes with the distribution.
-# You may also move the original data aside, and "dump" the data from a database
-# for sharing, or editing and reloading
+# This script loads data for the cougaar.rc entry org.cougaar.refconfig.database
+
 # Note that MySQL must be installed on the local machine, and
 # Cougaar Install Path must be set
 
@@ -31,7 +30,11 @@
 # and use the optional "local" argument.
 
 if [ "x$3" = "x" ]; then
-  echo "Usage: load_ref_data.sh [RefConfig DB Username] [Password] [MySQL RefConfig DB database name] [local]"
+  echo "Load only the tables used to help configure societies running from XML files."
+  echo "Usage: load_ref_data.sh [RefConfig DB Username] [Password] [MySQL RefConfig DB database name] [DB host name [local]]"
+  echo "     Specify the hostname if the database is not local, or if you "
+  echo "            want to specify the 'local' keyword "
+  echo "   "
   echo "         -- use the 'local' keyword if running across a networked"
   echo "            drive. You must have MySQL v3.23.49 or better to use"
   echo "            the local option."
@@ -40,13 +43,21 @@ fi
 
 if [ "x$COUGAAR_INSTALL_PATH" = "x" ] ; then
   echo "You must set COUGAAR_INSTALL_PATH to the root of your Cougaar install."
-  echo "Usage: load_ref_data.sh [RefConfig DB Username] [Password] [MySQL RefConfig DB database name] [local]"
+  echo "Usage: load_ref_data.sh [RefConfig DB Username] [Password] [MySQL RefConfig DB database name] [DB host name [local]]"
+  echo "     Specify the hostname if the database is not local, or if you "
+  echo "            want to specify the 'local' keyword "
+  echo "   "
   echo "         -- use the 'local' keyword if running across a networked"
   echo "            drive. You must have MySQL v3.23.49 or better to use"
   echo "            the local option."
   exit
 fi
 
+user=$1
+pswd=$2
+database=$3
+host=$4
+local=$5
 
 #Change potential backslashes in COUGAAR_INSTALL_PATH to forward slashes
 echo $COUGAAR_INSTALL_PATH | tr '\\' '/' > newcip.txt
@@ -55,64 +66,17 @@ echo $COUGAAR_INSTALL_PATH | tr '\\' '/' > newcip.txt
 sed s/:cip/$(cat newcip.txt | sed 's/\//\\\//g')/ $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sql/load_ref_data.sql > load_ref_data_new.sql
 rm newcip.txt
 
-# Copy most files from the normal CSV dir. They are by definition the same
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/alploc.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/alploc.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
+# Copy some lib files from the normal CSV dir. They are by definition the same
+
+if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/lib_pg_attribute.csv" ]; then
+    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/lib_pg_attribute.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
 else
     echo "CSV files in csmart/data/database/csv missing for reference tables, and required!"
     exit
 fi
 
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_transportable_item.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_transportable_item.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
-fi
-
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_transportable_item_detail.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_transportable_item_detail.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
-fi
-
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unfrmd_srvc_occ_rnk_subcat.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unfrmd_srvc_occ_rnk_subcat.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
-fi
-
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unfrmd_srvc_occptn.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unfrmd_srvc_occptn.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
-fi
-
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unfrmd_srvc_rnk.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unfrmd_srvc_rnk.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
-fi
-
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unit.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unit.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
-fi
-
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unit_billet.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unit_billet.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
-fi
-
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unit_equipment.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/fdm_unit_equipment.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
-fi
-
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/geoloc.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/geoloc.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
-fi
-
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/lib_pg_attribute.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/lib_pg_attribute.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
-fi
-
 if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/lib_organization.csv" ]; then
     cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/lib_organization.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
-fi
-
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
-fi
-
-if [ -e "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv" ]; then
-    cp "$COUGAAR_INSTALL_PATH/csmart/data/database/csv/oplan_agent_attr.csv" "$COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv"
 fi
 
 # Done copying over files
@@ -125,26 +89,27 @@ else
     $COUGAAR_INSTALL_PATH/csmart/data/database/scripts/mysql/sedscr.sh $COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv/*.csv
 fi
 
-if [ "$4" = "local" ]; then
+if [ "$local" = "local" ]; then
     echo "Adding LOCAL to all lines"
     mv load_ref_data_new.sql load_ref_data_new_orig.sql
     sed "s/DATA INFILE/DATA LOCAL INFILE/g" load_ref_data_new_orig.sql > load_ref_data_new.sql
 fi
 
 echo "Loading '.csv' files to database."
-if [ "$4" = "local" ]; then
-    mysql --local-infile=1 -u$1 -p$2 $3 < load_ref_data_new.sql
+if [ "$local" = "local" ]; then
+    mysql --local-infile=1 -u$user -p$pswd -h$host $database < load_ref_data_new.sql
 else
-    mysql -u$1 -p$2 $3 < load_ref_data_new.sql
+    if [ "x$host" = "x" ]; then
+	mysql -u$user -p$pswd $database < load_ref_data_new.sql
+    else
+	mysql -u$user -p$pswd -h$host $database < load_ref_data_new.sql
+    fi
 fi
 
 rm load_ref_data_new.sql
 rm -f load_ref_data_new_orig.sql
 rm $COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv/*.tmp
-rm $COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv/fdm*
-rm $COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv/oplan*
-rm $COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv/*loc.csv
 rm $COUGAAR_INSTALL_PATH/csmart/data/database/ref-csv/lib*
 
-echo "Done."
+echo "Done loading xml ref data."
 

@@ -94,12 +94,6 @@ CREATE INDEX refalib_component29 ON asb_component_hierarchy(PARENT_COMPONENT_ALI
 CREATE INDEX refasb_assembly30 ON asb_component_hierarchy(ASSEMBLY_ID);
 ;
 ## 
-## INDEX: refalib_component99 
-##
-
-CREATE INDEX refalib_component99 ON oplan_agent_attr(ORG_ID);
-;
-## 
 ## INDEX: reflib_plugin_arg43 
 ##
 

@@ -4,9 +4,22 @@
 ## Project :      CSMART Database
 ## Author :       M. Kappler & J. Berliner
 ##
-## Date Created : Tuesday, July 09, 2002 16:57:59
-## Target DBMS : Oracle 8
-##
+
+
+#
+# Table structure for table 'dual'
+#
+
+DROP TABLE IF EXISTS dual;
+CREATE TABLE dual (
+  DUMMY char(1) binary default NULL
+) TYPE=MyISAM;
+
+#
+# Dumping data for table 'dual'
+#
+
+INSERT INTO dual (DUMMY) VALUES ('X');
 
 
 ## 
@@ -113,40 +126,6 @@ CREATE TABLE asb_component_hierarchy(
     UNIQUE KEY pk_asb_component_hierarchy (ASSEMBLY_ID, COMPONENT_ALIB_ID, PARENT_COMPONENT_ALIB_ID)
 ) TYPE=MyISAM 
 ;
-
-
-## 
-## TABLE: oplan 
-##
-
-CREATE TABLE oplan(
-    OPLAN_ID          VARCHAR(50)    BINARY NOT NULL DEFAULT '',
-    OPERATION_NAME    VARCHAR(50)    BINARY DEFAULT NULL,
-    PRIORITY          VARCHAR(50)    BINARY DEFAULT NULL,
-    MIN_PLANNING_OFFSET    DECIMAL(68,30)       DEFAULT NULL,
-    START_OFFSET    DECIMAL(68,30)         DEFAULT NULL,
-    END_OFFSET    DECIMAL(68,30)           DEFAULT NULL,
-    UNIQUE KEY pk_oplan (OPLAN_ID)
-) TYPE=MyISAM 
-;
-
-
-## 
-## TABLE: oplan_agent_attr 
-##
-
-CREATE TABLE oplan_agent_attr(
-    OPLAN_ID             VARCHAR(50)     BINARY NOT NULL DEFAULT '',
-    ORG_ID               VARCHAR(150)    BINARY NOT NULL DEFAULT '',
-    COMPONENT_ID         VARCHAR(50)     BINARY NOT NULL DEFAULT '',
-    START_CDAY           DECIMAL(68,30)          NOT NULL DEFAULT '0.000000000000000000000000000000',
-    ATTRIBUTE_NAME       VARCHAR(50)     BINARY NOT NULL DEFAULT '',
-    END_CDAY             DECIMAL(68,30) DEFAULT NULL,
-    ATTRIBUTE_VALUE      VARCHAR(50)    BINARY DEFAULT NULL,
-    UNIQUE KEY pk_oplan_agent_attr (OPLAN_ID, ORG_ID, COMPONENT_ID, START_CDAY, ATTRIBUTE_NAME)
-) TYPE=MyISAM 
-;
-
 
 ## 
 ## TABLE: alploc 
@@ -713,141 +692,3 @@ CREATE TABLE lib_thread(
 ) TYPE=MyISAM 
 ;
 
-
-##
-## fdm tables
-##
-
-CREATE TABLE fdm_unit (
-  ORG_ID varchar(50) default NULL,
-  UNIT_IDENTIFIER varchar(6) default NULL,
-  MILITARY_ORGANIZATION_CODE varchar(18) default NULL,
-  UL_CD char(3) default NULL,
-  UN_ABBRD_NM varchar(30) default NULL,
-  GELOC_CD varchar(4) default NULL,
-  UNT_CD varchar(5) default NULL,
-  UN_CMP_CD char(1) default NULL,
-  UN_NM varchar(50) default NULL
-) TYPE=MyISAM;
-
-CREATE TABLE fdm_unit_equipment (
-  ORG_ID varchar(50) default NULL,
-  TI_ID varchar(6) default NULL,
-  UNIT_IDENTIFIER varchar(6) default NULL,
-  UNIT_EQUIPMENT_QTY decimal(38,0) default NULL,
-  KEY UNIT_IDENTIFIER (UNIT_IDENTIFIER),
-  KEY TI_ID (TI_ID)
-) TYPE=MyISAM;
-
-CREATE TABLE fdm_transportable_item (
-  TI_ID varchar(6) default NULL,
-  SCL_CD char(2) default NULL,
-  TI_NM varchar(255) default NULL,
-  TI_CGO_CPCTY_QY decimal(126,0) default NULL,
-  TI_BLCK_BRC_SRC_ID varchar(4) default NULL,
-  FUEL_BURNER char(3) default NULL,
-  KEY TI_ID (TI_ID)
-) TYPE=MyISAM;
-
-CREATE TABLE fdm_transportable_item_detail (
-  TID_ID char(2) default NULL,
-  TI_ID varchar(6) default NULL,
-  SHPPNG_CNFGRTN_CD char(2) default NULL,
-  CGO_TP_CD char(1) default NULL,
-  CGO_XTNT_CD char(1) default NULL,
-  CGO_CNTZN_CD char(1) default NULL,
-  MATERIEL_ITEM_IDENTIFIER varchar(20) default NULL,
-  TYPE_PACK_CODE varchar(18) default NULL,
-  TID_RDBL_CD char(1) default NULL,
-  TID_LG_DM decimal(126,0) default NULL,
-  TID_WDTH_DM decimal(126,0) default NULL,
-  TID_EQ_TY_CD char(1) default NULL,
-  TID_HT_DM decimal(126,0) default NULL,
-  TID_WT decimal(126,0) default NULL,
-  TID_VL decimal(126,0) default NULL,
-  TID_CGO_CPCTY_QY decimal(126,0) default NULL,
-  TID_MAX_LDED_HT_DM decimal(126,0) default NULL,
-  TID_HVY_LFT_CD char(1) default NULL,
-  TID_AR_CGO_LD_CD char(1) default NULL,
-  TID_CB_DM decimal(126,0) default NULL,
-  TID_MN_GND_CLNC_DM decimal(126,0) default NULL,
-  TID_FTPRNT_AR decimal(126,0) default NULL,
-  TID_PLZTN_CD char(1) default NULL,
-  TID_CGO_CMPT_LG_DM decimal(126,0) default NULL,
-  TID_CGO_CMPT_WD_DM decimal(126,0) default NULL,
-  TID_CGO_CMPT_HT_DM decimal(126,0) default NULL,
-  TID_CGOCMPBD_HT_DM decimal(126,0) default NULL,
-  TID_CGO_BED_HT_DM decimal(126,0) default NULL,
-  TID_WHL_BS_DM decimal(126,0) default NULL,
-  TID_EMTY_LD_CLS_ID varchar(4) default NULL,
-  TID_LDED_LD_CLS_ID varchar(4) default NULL,
-  TID_MDL_ID varchar(14) default NULL,
-  KEY TI_ID (TI_ID),
-  KEY TID_ID (TID_ID),
-  KEY CGP_TP_CD (CGO_TP_CD),
-  KEY MATERIEL_ITEM_IDENTIFIER (MATERIEL_ITEM_IDENTIFIER)
-) TYPE=MyISAM;
-
-CREATE TABLE fdm_unfrmd_srvc_occ_rnk_subcat (
-  RANK_SUBCATEGORY_CODE varchar(10) default NULL,
-  RANK_SUBCATEGORY_TEXT varchar(30) default NULL
-) TYPE=MyISAM;
-
-CREATE TABLE fdm_unfrmd_srvc_occptn (
-  UNFRMD_SRVC_OCCPTN_CD varchar(8) default NULL,
-  SVC_CD char(1) default NULL,
-  RANK_SUBCATEGORY_CODE varchar(10) default NULL,
-  UNFRMD_SRVC_OCCPTN_TX varchar(120) default NULL,
-  KEY UNFRMD_SRVC_OCCPTN_CD (UNFRMD_SRVC_OCCPTN_CD),
-  KEY RANK_SUBCATEGORY_CODE (RANK_SUBCATEGORY_CODE)
-) TYPE=MyISAM;
-
-CREATE TABLE fdm_unfrmd_srvc_rnk (
-  UNFRMD_SRVC_RNK_CD char(2) default NULL,
-  SVC_CD char(1) default NULL,
-  PAY_GRD_CD varchar(4) default NULL,
-  USR_SHRT_NM varchar(6) default NULL,
-  USR_OFCR_IND_CD char(1) default NULL
-) TYPE=MyISAM;
-
-CREATE TABLE fdm_unit_billet (
-  ORG_ID varchar(50) default NULL,
-  UNIT_IDENTIFIER varchar(6) default NULL,
-  BILLET_ID varchar(18) default NULL,
-  SVC_CD char(1) default NULL,
-  UNFRMD_SRVC_RNK_CD char(2) default NULL,
-  UNFRMD_SRVC_OCCPTN_CD varchar(8) default NULL,
-  REQ_SEI_CD varchar(18) default NULL,
-  UNT_SVRC_CMPNT_CD char(1) default NULL,
-  TO_NUMBER varchar(6) default NULL,
-  TO_SUFFIX char(1) default NULL,
-  TO_LINE_NUMBER varchar(5) default NULL,
-  TO_RANK varchar(6) default NULL,
-  TO_STRENGTH decimal(38,0) default NULL,
-  KEY UNFRMD_SRVC_OCCPTN_CD (UNFRMD_SRVC_OCCPTN_CD),
-  KEY UNIT_UDENTIFIER (UNIT_IDENTIFIER)
-) TYPE=MyISAM;
-
-CREATE TABLE geoloc (
-  GEOLOC_CODE char(4) NOT NULL default '',
-  LOCATION_NAME char(17) default NULL,
-  INSTALLATION_TYPE_CODE char(3) default NULL,
-  COUNTRY_STATE_CODE char(2) default NULL,
-  COUNTRY_STATE_SHORT_NAME char(5) default NULL,
-  COUNTRY_STATE_LONG_NAME char(15) default NULL,
-  PROVINCE_CODE char(3) default NULL,
-  PROVINCE_NAME char(14) default NULL,
-  LATITUDE decimal(6,4) NOT NULL default '0.0000',
-  LONGITUDE decimal(7,4) NOT NULL default '0.0000',
-  LOGISTIC_PLANNING_CODE char(2) default NULL,
-  PRIME_GEOLOC_CODE char(4) default NULL,
-  RECORD_OWNER_UIC char(6) default NULL,
-  CIVIL_AVIATION_CODE char(4) default NULL,
-  GSA_STATE_CODE char(2) default NULL,
-  GSA_CITY_CODE char(4) default NULL,
-  GSA_COUNTY_CODE char(3) default NULL,
-  PRIMARY KEY  (GEOLOC_CODE),
-  KEY IX_GEOLOC_NAME (LOCATION_NAME),
-  KEY IX_GEOLOC_LAT_LONG (LATITUDE,LONGITUDE),
-  KEY IX_GEOLOC_CIVIL_AVIATION_CODE (CIVIL_AVIATION_CODE)
-) TYPE=MyISAM;

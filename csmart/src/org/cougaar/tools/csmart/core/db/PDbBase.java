@@ -100,7 +100,7 @@ public class PDbBase {
     createLogger();
     if (logQueries)
       pwlog = new PrintWriter(new FileWriter(getLogName()));
-    dbp = DBProperties.readQueryFile(QUERY_FILE, "csmart");
+    dbp = DBProperties.readQueryFile(QUERY_FILE, "csmart").unlock();
 
     // When was the RQ file last modified?
     File rqfile = ConfigFinder.getInstance("csmart").locateFile(RecipeComponent.RECIPE_QUERY_FILE);
@@ -113,7 +113,14 @@ public class PDbBase {
     }
 
     // Only read in the RQ file if it was modified since we last read it in
-    if (newMod != rQFileLastMod) {
+
+    // Hack for 10.4.1: Since rQFileLastMod is static and DBP.unlock returns a copy
+    // of the original without the recipeQueries.q, the second time we create a PDbBase,
+    // we wont reparse the recipeQueries.q and will have a DBP that does not include
+    // the queries in your recipeQueries.q
+    // This hack means you will _always_ re-parse the recipeQueries.q file
+    if (true) {
+      //if (newMod != rQFileLastMod) {
       try {
 	// If this wasnt our first read
 	// But the recipeQueries.q file has changed,
@@ -123,7 +130,7 @@ public class PDbBase {
 	  if (log.isDebugEnabled()) {
 	    log.debug("Doing forced reread of query files.");
 	  }
-	  dbp = DBProperties.reReadQueryFile(QUERY_FILE, "csmart");
+	  dbp = DBProperties.reReadQueryFile(QUERY_FILE, "csmart").unlock();
 	}
 
 	// This next line _always_ re-parses the query file.

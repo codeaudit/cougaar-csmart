@@ -1,0 +1,182 @@
+## 
+## TABLE: oplan 
+##
+
+DROP TABLE IF EXISTS oplan;
+CREATE TABLE oplan(
+    OPLAN_ID          VARCHAR(50)    BINARY NOT NULL DEFAULT '',
+    OPERATION_NAME    VARCHAR(50)    BINARY DEFAULT NULL,
+    PRIORITY          VARCHAR(50)    BINARY DEFAULT NULL,
+    MIN_PLANNING_OFFSET    DECIMAL(68,30)       DEFAULT NULL,
+    START_OFFSET    DECIMAL(68,30)         DEFAULT NULL,
+    END_OFFSET    DECIMAL(68,30)           DEFAULT NULL,
+    UNIQUE KEY pk_oplan (OPLAN_ID)
+) TYPE=MyISAM 
+;
+
+LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan.csv.tmp'
+    INTO TABLE oplan
+    FIELDS
+        TERMINATED BY ','
+        OPTIONALLY ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (OPLAN_ID,OPERATION_NAME,PRIORITY,MIN_PLANNING_OFFSET,START_OFFSET,END_OFFSET);
+
+
+## 
+## TABLE: oplan_agent_attr 
+##
+
+DROP TABLE IF EXISTS oplan_agent_attr;
+CREATE TABLE oplan_agent_attr(
+    OPLAN_ID             VARCHAR(50)     BINARY NOT NULL DEFAULT '',
+    STAGE_NUM            DECIMAL(68,30)          NOT NULL DEFAULT '0.000000000000000000000000000000',
+    ORG_ID               VARCHAR(150)    BINARY NOT NULL DEFAULT '',
+    START_HOUR           DECIMAL(68,30)          NOT NULL DEFAULT '0.000000000000000000000000000000',
+    END_HOUR             DECIMAL(68,30) DEFAULT NULL,
+    ATTRIBUTE_NAME       VARCHAR(50)     BINARY NOT NULL DEFAULT '',
+    ATTRIBUTE_VALUE      VARCHAR(50)    BINARY DEFAULT NULL,
+    UNIQUE KEY pk_oplan_agent_attr (OPLAN_ID, STAGE_NUM, ORG_ID, START_HOUR, ATTRIBUTE_NAME)
+) TYPE=MyISAM;
+
+LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_agent_attr.csv.tmp'
+    INTO TABLE oplan_agent_attr
+    FIELDS
+        TERMINATED BY ','
+        OPTIONALLY ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (OPLAN_ID,STAGE_NUM,ORG_ID,START_HOUR,END_HOUR,ATTRIBUTE_NAME,ATTRIBUTE_VALUE);
+;
+
+## 
+## INDEX: refalib_component99 
+##
+
+CREATE INDEX refalib_component99 ON oplan_agent_attr(ORG_ID);
+;
+
+#
+# Table structure for table 'oplan_stage'
+#
+
+DROP TABLE IF EXISTS oplan_stage;
+CREATE TABLE oplan_stage (
+  OPLAN_ID char(50) binary NOT NULL default '',
+  STAGE_NAME char(50) binary default NULL,
+  STAGE_NUM      decimal(68,30)         default NULL,
+  DESCRIPTION      VARCHAR(200)    BINARY DEFAULT NULL
+) TYPE=MyISAM;
+
+LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_stage.csv.tmp'
+    INTO TABLE oplan_stage
+    FIELDS
+        TERMINATED BY ','
+        OPTIONALLY ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (OPLAN_ID,STAGE_NAME,STAGE_NUM,DESCRIPTION);
+
+
+
+#
+# Table structure for table 'oplan_active_stage'
+#
+
+DROP TABLE IF EXISTS oplan_active_stage;
+CREATE TABLE oplan_active_stage (
+  OPLAN_ID char(50) binary NOT NULL default '',
+  ORG_ID char(50) binary NOT NULL default '',
+  STAGE_NUM      decimal(68,30)         default NULL
+) TYPE=MyISAM;
+
+LOAD DATA INFILE ':cip/csmart/data/database/csv/oplan_active_stage.csv.tmp'
+    INTO TABLE oplan_active_stage
+    FIELDS
+        TERMINATED BY ','
+        OPTIONALLY ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (OPLAN_ID,ORG_ID,STAGE_NUM);
+
+DROP TABLE IF EXISTS geoloc;
+CREATE TABLE geoloc (
+  GEOLOC_CODE char(4) NOT NULL default '',
+  LOCATION_NAME char(17) default NULL,
+  INSTALLATION_TYPE_CODE char(3) default NULL,
+  COUNTRY_STATE_CODE char(2) default NULL,
+  COUNTRY_STATE_SHORT_NAME char(5) default NULL,
+  COUNTRY_STATE_LONG_NAME char(15) default NULL,
+  PROVINCE_CODE char(3) default NULL,
+  PROVINCE_NAME char(14) default NULL,
+  LATITUDE decimal(6,4) NOT NULL default '0.0000',
+  LONGITUDE decimal(7,4) NOT NULL default '0.0000',
+  LOGISTIC_PLANNING_CODE char(2) default NULL,
+  PRIME_GEOLOC_CODE char(4) default NULL,
+  RECORD_OWNER_UIC char(6) default NULL,
+  CIVIL_AVIATION_CODE char(4) default NULL,
+  GSA_STATE_CODE char(2) default NULL,
+  GSA_CITY_CODE char(4) default NULL,
+  GSA_COUNTY_CODE char(3) default NULL,
+  PRIMARY KEY  (GEOLOC_CODE),
+  KEY IX_GEOLOC_NAME (LOCATION_NAME),
+  KEY IX_GEOLOC_LAT_LONG (LATITUDE,LONGITUDE),
+  KEY IX_GEOLOC_CIVIL_AVIATION_CODE (CIVIL_AVIATION_CODE)
+) TYPE=MyISAM;
+
+LOAD DATA INFILE ':cip/csmart/data/database/csv/geoloc.csv.tmp'
+    INTO TABLE geoloc 
+    FIELDS
+        TERMINATED BY ','
+        OPTIONALLY ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (GEOLOC_CODE,LOCATION_NAME,INSTALLATION_TYPE_CODE,COUNTRY_STATE_CODE,COUNTRY_STATE_SHORT_NAME,COUNTRY_STATE_LONG_NAME,PROVINCE_CODE,PROVINCE_NAME,LATITUDE,LONGITUDE,LOGISTIC_PLANNING_CODE,PRIME_GEOLOC_CODE,RECORD_OWNER_UIC,CIVIL_AVIATION_CODE,GSA_STATE_CODE,GSA_CITY_CODE,GSA_COUNTY_CODE);
+
+#
+# Table structure for table 'alploc'
+#
+
+DROP TABLE IF EXISTS alploc;
+CREATE TABLE alploc (
+  ALPLOC_CODE VARCHAR(50) BINARY NOT NULL DEFAULT '',
+  LOCATION_NAME VARCHAR(50) BINARY DEFAULT NULL,
+  LATITUDE DECIMAL(68,30) DEFAULT NULL,
+  LONGITUDE DECIMAL(68,30) DEFAULT NULL,
+  INSTALLATION_TYPE_CODE CHAR(3) BINARY DEFAULT NULL,
+  UNIQUE KEY pk_alploc (ALPLOC_CODE)
+) TYPE=MyISAM;
+
+LOAD DATA INFILE ':cip/csmart/data/database/csv/alploc.csv.tmp'
+    INTO TABLE alploc
+    FIELDS
+        TERMINATED BY ','
+        OPTIONALLY ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (ALPLOC_CODE,LOCATION_NAME,LATITUDE,LONGITUDE,INSTALLATION_TYPE_CODE);
+
+#
+# Table structure for table 'lib_organization'
+#
+
+DROP TABLE IF EXISTS lib_organization;
+CREATE TABLE lib_organization (
+  ORG_ID VARCHAR(50) BINARY NOT NULL DEFAULT '',
+  ORG_NAME VARCHAR(50) BINARY DEFAULT NULL,
+  UIC VARCHAR(50) BINARY DEFAULT NULL,
+  ORG_CLASS VARCHAR(50) BINARY DEFAULT NULL,
+  UNIQUE KEY pk_lib_organization (ORG_ID),
+  KEY reflib_org45 (ORG_NAME),
+  KEY reflib_org46 (ORG_ID)
+) TYPE=MyISAM;
+
+LOAD DATA INFILE ':cip/csmart/data/database/csv/lib_organization.csv.tmp'
+    INTO TABLE lib_organization
+    FIELDS
+        TERMINATED BY ','
+        OPTIONALLY ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (ORG_ID,ORG_NAME,UIC,ORG_CLASS);

@@ -177,47 +177,6 @@ CREATE TABLE tempcopy.asb_component_arg AS
     AND AT.NAME = ':recipeName'
     AND AA.ARG_VALUE = AB.ASSEMBLY_ID;
 
--- asb_oplan_agent_attr
-DROP TABLE IF EXISTS tempcopy.asb_oplan_agent_attr;
-
-CREATE TABLE tempcopy.asb_oplan_agent_attr AS
- SELECT DISTINCT 
-    LEFT(CONCAT(AA.ARG_VALUE, '-:recipeName'),50) AS ASSEMBLY_ID,
-  AB.OPLAN_ID AS OPLAN_ID, 
-  AB.COMPONENT_ALIB_ID AS COMPONENT_ALIB_ID, 
-  AB.COMPONENT_ID AS COMPONENT_ID, 
-  AB.START_CDAY AS START_CDAY, 
-  AB.ATTRIBUTE_NAME AS ATTRIBUTE_NAME,
-  AB.END_CDAY AS END_CDAY, 
-  AB.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE 
-FROM asb_oplan_agent_attr AB, 
-     lib_mod_recipe_arg AA,
-     lib_mod_recipe AT
- WHERE 
-        AA.ARG_NAME = 'Assembly Id'
-    AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
-    AND AT.NAME = ':recipeName'
-    AND AA.ARG_VALUE = AB.ASSEMBLY_ID;
-
--- asb_oplan
-DROP TABLE IF EXISTS tempcopy.asb_oplan;
-
-CREATE TABLE tempcopy.asb_oplan AS
-  SELECT DISTINCT 
-    LEFT(CONCAT(AA.ARG_VALUE, '-:recipeName'),50) AS ASSEMBLY_ID,
-   AB.OPLAN_ID AS OPLAN_ID, 
-   AB.OPERATION_NAME AS OPERATION_NAME,
-   AB.PRIORITY AS PRIORITY, 
-   AB.C0_DATE AS C0_DATE 
-  FROM asb_oplan AB, 
-     lib_mod_recipe_arg AA,
-     lib_mod_recipe AT
-  WHERE 
-        AA.ARG_NAME = 'Assembly Id'
-    AND AA.MOD_RECIPE_LIB_ID = AT.MOD_RECIPE_LIB_ID
-    AND AT.NAME = ':recipeName'
-    AND AA.ARG_VALUE = AB.ASSEMBLY_ID;
-
 -- community_attribute
 DROP TABLE IF EXISTS tempcopy.community_attribute;
 
@@ -340,10 +299,6 @@ CREATE TABLE tempcopy.lib_pg_attribute AS
      AP.PG_ATTRIBUTE_LIB_ID = LP.PG_ATTRIBUTE_LIB_ID;
 
 UPDATE tempcopy.asb_agent_pg_attr
-   SET COMPONENT_ALIB_ID = ':recipeName-cpy'
- WHERE COMPONENT_ALIB_ID = ':recipeName';
-
-UPDATE tempcopy.asb_oplan_agent_attr
    SET COMPONENT_ALIB_ID = ':recipeName-cpy'
  WHERE COMPONENT_ALIB_ID = ':recipeName';
 

@@ -1,5 +1,60 @@
 CSMART Release Notes
 
+Release 10.4.6:
+- Fixed bug where SocietyMonitor gave exceptions trying to communicate
+with Agents whose name started with '.' (a period).
+- Avoid NPE if no Cougaar-error available in header from servlets.
+- Add content to logs when encounter unexpected error talking to servlets.
+
+Release 10.4.5:
+With this release, the database load scripts on Unix (or Cygwin)
+support an optional "hostname" argument, allowing you to load data on
+a remote database. Note that if you use the "local" keyword (as on
+networked drives), then you MUST supply the hostname argument
+("localhost" will work) BEFORE the "local" keyword.
+
+Additionally, the Unix load scripts load_xml_db.sh and
+load_xml_and_csmart.sh will now infer the COUGAAR_INSTALL_PATH from
+their install location (ignoring any environment setting), and use
+that setting for the rest of the database load process.
+
+Added fix to ExperimentBase to actually use the -D arg for the nameserver.
+
+Release 10.4.2:
+This is a minor release. Oplan database tables have changed in 
+structure to support finer grained oplan definitions. As a result,
+you should reload your database using your preferred load script.
+
+Release 10.4.1:
+This is a minor patch release, which however includes significant
+re-working of database load procedures.
+
+- The scalability module was dropped. As a result, the CpuClock /
+  mylib.dll has been moved from that module to the CSMART module.
+
+- Oplan information has been moved to new oplan tables. As a result,
+  any recipe exports that mention the "asb_oplan" table will need to
+  be updated. Simply delete all lines from your recipe export ".sql"
+  files referencing that table. Alternately, import your export ".sql"
+  files using the mysql "-f" argument to keep going past load errors.
+
+  Additionally, you will need to re-load your database to get the new
+  oplan tables.
+
+- Database load scripts have been completely re-worked to simplify
+  loading databases. To run only from CSMART, run the script load_csmart_data.[sh/bat]. To
+  run only from XML, simply run the script load_xml_db.[sh/bat]. Most
+  users will want to run from either,
+  putting all data in a single database, and run the script load_xml_and_csmart.[sh/bat]. See the
+  InstallAndTest.html document for database installation details, and
+  the new requirements for the cougaar.rc file.
+
+- Note that ClusterImpl has been removed. Any exported experiments or
+  recipes should be edited to replace ClusterImpl with SimpleAgent.
+
+- Fixed a minor issue with sizing of the Node Info window in the
+  console.
+
 Release 10.4:
 This release includes a major reworking of the Console, and a new 
 option to run the console stand-alone from XML files.
@@ -919,3 +974,4 @@ Entities (like the ABC Society).
 
 - Old & new CSMART users should see the CSMART-Install document for
   new, simplified installation instructions.
+

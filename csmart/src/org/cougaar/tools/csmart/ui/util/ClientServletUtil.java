@@ -106,7 +106,12 @@ public class ClientServletUtil {
     Vector urls = new Vector();
     String s = r.readLine();
     while (s != null) {
-      urls.add(URLString + "/$" + s + "/");
+      if (s.indexOf('.') == 0) {
+ 	// This is an agent name that starts with a '.' -- no good!
+	// IE, the .comm entry in the WP
+ 	System.err.println("Skipping agent named " + s);
+      } else 
+	urls.add(URLString + "/$" + s + "/");
       s = r.readLine();
     }
     return urls;
@@ -221,14 +226,16 @@ public class ClientServletUtil {
 	if (resp != HttpURLConnection.HTTP_OK) {
           String cougaarError = 
             ((HttpURLConnection)connection).getHeaderField("Cougaar-error");
-          if (cougaarError.equals("agent"))
+	  if (cougaarError == null)
+	    errorMessage = "Error " + resp + ": " + ((HttpURLConnection)connection).getResponseMessage() + ").";
+	  else if (cougaarError.equals("agent"))
             errorMessage = "No such agent.";
           else if (cougaarError.equals("path"))
             errorMessage = "No such servlet.";
           else
-            errorMessage = "Unknown error.";
+            errorMessage = "Unknown error (" + cougaarError + ").";
           if (log.isWarnEnabled()) {
-            log.warn("Got 404 - file not found - trying to reach: " + urlSpec);
+            log.warn("Got " + resp + " - " + ((HttpURLConnection)connection).getResponseMessage() + " - trying to reach: " + urlSpec);
 	  }
 	  return new ServletResponse(urlSpec, null, errorMessage);
 	} else {

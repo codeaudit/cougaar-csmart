@@ -87,9 +87,9 @@ public class RecipeQueryProperty extends ConfigurableComponentProperty {
 	  if (log.isDebugEnabled()) {
 	    log.debug("Re-reading query files.");
 	  }
-	  dbp = DBProperties.reReadQueryFile(PDbBase.QUERY_FILE, "csmart");
+	  dbp = DBProperties.reReadQueryFile(PDbBase.QUERY_FILE, "csmart").unlock();
 	} else
-	  dbp = DBProperties.readQueryFile(PDbBase.QUERY_FILE, "csmart");
+	  dbp = DBProperties.readQueryFile(PDbBase.QUERY_FILE, "csmart").unlock();
       } catch (IOException ioe) {
 	if (log.isDebugEnabled()) {
 	  log.debug("Couldn't read " + PDbBase.QUERY_FILE);

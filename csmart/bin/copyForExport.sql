@@ -351,53 +351,6 @@ REPLACE INTO tempcopy.asb_component_arg
      AND ET.EXPT_ID = E.EXPT_ID
      AND E.NAME = ':exptName';
 
--- asb_oplan_agent_attr
-REPLACE INTO tempcopy.asb_oplan_agent_attr
- (ASSEMBLY_ID, OPLAN_ID, COMPONENT_ALIB_ID, COMPONENT_ID, START_CDAY, ATTRIBUTE_NAME, END_CDAY, ATTRIBUTE_VALUE)
- SELECT DISTINCT 
-    LEFT(CONCAT(AA.ARG_VALUE, '-:exptName'),50) AS ASSEMBLY_ID,
-  AB.OPLAN_ID AS OPLAN_ID, 
-  AB.COMPONENT_ALIB_ID AS COMPONENT_ALIB_ID, 
-  AB.COMPONENT_ID AS COMPONENT_ID, 
-  AB.START_CDAY AS START_CDAY, 
-  AB.ATTRIBUTE_NAME AS ATTRIBUTE_NAME,
-  AB.END_CDAY AS END_CDAY, 
-  AB.ATTRIBUTE_VALUE AS ATTRIBUTE_VALUE 
-FROM asb_oplan_agent_attr AB, 
-     lib_mod_recipe_arg AA,
-     expt_trial_mod_recipe ER,
-     expt_trial ET,
-     expt_experiment E
-  WHERE 
-         AA.ARG_NAME = 'Assembly Id'
-     AND AA.ARG_VALUE = AB.ASSEMBLY_ID
-     AND AA.MOD_RECIPE_LIB_ID = ER.MOD_RECIPE_LIB_ID
-     AND ER.TRIAL_ID = ET.TRIAL_ID
-     AND ET.EXPT_ID = E.EXPT_ID
-     AND E.NAME = ':exptName';
-
--- asb_oplan
-REPLACE INTO tempcopy.asb_oplan
- (ASSEMBLY_ID, OPLAN_ID, OPERATION_NAME, PRIORITY, C0_DATE)
-  SELECT DISTINCT 
-    LEFT(CONCAT(AA.ARG_VALUE, '-:exptName'),50) AS ASSEMBLY_ID,
-   AB.OPLAN_ID AS OPLAN_ID, 
-   AB.OPERATION_NAME AS OPERATION_NAME,
-   AB.PRIORITY AS PRIORITY, 
-   AB.C0_DATE AS C0_DATE 
-  FROM asb_oplan AB, 
-     lib_mod_recipe_arg AA,
-     expt_trial_mod_recipe ER,
-     expt_trial ET,
-     expt_experiment E
-  WHERE 
-         AA.ARG_NAME = 'Assembly Id'
-     AND AA.ARG_VALUE = AB.ASSEMBLY_ID
-     AND AA.MOD_RECIPE_LIB_ID = ER.MOD_RECIPE_LIB_ID
-     AND ER.TRIAL_ID = ET.TRIAL_ID
-     AND ET.EXPT_ID = E.EXPT_ID
-     AND E.NAME = ':exptName';
-
 -- community_attribute
 REPLACE INTO tempcopy.community_attribute
    (ASSEMBLY_ID, COMMUNITY_ID, ATTRIBUTE_ID, ATTRIBUTE_VALUE)
