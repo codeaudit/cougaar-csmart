@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.Collection;
 
-import org.cougaar.tools.server.ConfigurationWriter;
-
 import org.cougaar.tools.csmart.experiment.Experiment;
 import org.cougaar.tools.csmart.society.AgentComponent;
 
@@ -53,7 +51,7 @@ import java.util.ArrayList;
  * Note this should be fixed - it constructs the _complete_ ComponentData
  * and then inefficiently finds the Leaf files to write them.
  **/
-public class LeafOnlyConfigWriter {
+public class LeafOnlyConfigWriter implements ConfigurationWriter {
   transient NodeComponent[] nodesToWrite;
   transient List components;
   ComponentData theSoc;

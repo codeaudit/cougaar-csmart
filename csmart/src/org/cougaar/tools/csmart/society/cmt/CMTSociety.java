@@ -198,10 +198,9 @@ public class CMTSociety
   /**
    * Returns whether the society is self terminating or must
    * be manually terminated.
-   * Self terminating nodes cause a NODE_DESTROYED event
-   * to be generated (see org.cougaar.tools.server.NodeEvent).
+   * Self terminating nodes cause the app-server to send back
+   * a "process-destroyed" message when the node terminates.
    * @return true if society is self terminating
-   * @see org.cougaar.tools.server.NodeEvent
    */
   public boolean isSelfTerminating() {
     return false;

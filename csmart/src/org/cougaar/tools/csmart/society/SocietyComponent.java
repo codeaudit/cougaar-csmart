@@ -52,7 +52,7 @@ public interface SocietyComponent extends ModifiableComponent {
    * society is running.
    * The society is running from the moment that any node
    * is successfully created 
-   * (via org.cougaar.tools.server.CommunityServesClient.createNode)
+   * (via the app-server's "create" method)
    * until all nodes are terminated (aborted, self terminated, or
    * manually terminated).
    * @param flag indicating whether or not the society is running
@@ -85,10 +85,9 @@ public interface SocietyComponent extends ModifiableComponent {
   /**
    * Returns whether the society is self terminating or must
    * be manually terminated.
-   * Self terminating nodes cause a NODE_DESTROYED event
-   * to be generated (see org.cougaar.tools.server.NodeEvent).
+   * Self terminating nodes cause the app-server to send back
+   * a "process-destroyed" message when the node terminates.
    * @return true if society is self terminating
-   * @see org.cougaar.tools.server.NodeEvent
    */
   boolean isSelfTerminating();
 

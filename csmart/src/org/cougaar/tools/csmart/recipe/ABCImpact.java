@@ -46,8 +46,9 @@ import org.cougaar.tools.csmart.society.AgentComponent;
  * Includes static method for getting an XML file.<br>
  * <br>
  * getAgents will then return a Generator and Transducer Agent.
- * And the ConfigurationWriter will write them out, and also
- * be able to modify the Node.ini files as necessary.
+ * Dynamically generated ".ini" files will be created for both
+ * agents, and also the node ".ini" file(s) will be modified as 
+ * necessary.
  * 
  * @see org.cougaar.tools.csmart.runtime.ldm.event.RealWorldEvent
  * @see org.cougaar.tools.csmart.runtime.plugin.ScriptedEventPlugin

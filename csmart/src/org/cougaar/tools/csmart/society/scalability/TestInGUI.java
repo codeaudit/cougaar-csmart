@@ -20,8 +20,6 @@
  */
 package org.cougaar.tools.csmart.society.scalability;
 
-import org.cougaar.tools.server.ConfigurationWriter;
-
 import org.cougaar.tools.csmart.core.property.TestGUI;
 
 import javax.swing.JButton;
@@ -62,8 +60,7 @@ public class TestInGUI extends TestGUI {
 //                  NodeComponent[] nodes = society.getNodes();
 //                  for (int i = 0; i < nodes.length; i++) {
 //                      try {
-//                          ConfigurationWriter cw =
-//                              (ConfigurationWriter) nodes[i];
+//                          // disabled: create file writer for nodes[i]
 //                          cw.writeConfigFiles(new File("."));
 //                      } catch (Exception ex) {
 //                          ex.printStackTrace();

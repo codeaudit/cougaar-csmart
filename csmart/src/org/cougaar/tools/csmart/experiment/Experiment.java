@@ -58,7 +58,6 @@ import org.cougaar.tools.csmart.ui.viewer.CSMART;
 
 import org.cougaar.tools.csmart.util.ReadOnlyProperties;
 
-import org.cougaar.tools.server.ConfigurationWriter;
 import org.cougaar.core.node.Node;
 import org.cougaar.core.agent.ClusterImpl;
 import org.cougaar.util.Parameters;
@@ -151,8 +150,6 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
                              "0");
     defaultNodeArguments.put("org.cougaar.message.transport.aspects",
                              "org.cougaar.core.mts.StatisticsAspect");
-    defaultNodeArguments.put("org.cougaar.tools.server.nameserver.ports", 
-                             NAME_SERVER_PORTS);
     defaultNodeArguments.put("org.cougaar.control.port", 
                              Integer.toString(APP_SERVER_DEFAULT_PORT));
     if (DBUtils.dbMode) {
@@ -742,29 +739,9 @@ public class Experiment extends ModifiableConfigurableComponent implements Modif
   }
 
   /**
-   * An Experiment now has a ConfigurationWriter -
-   * one which lets all the components write themselves out
-   *
-   * @param nodes a <code>NodeComponent[]</code> list of the nodes in the run
-   * @return a <code>ConfigurationWriter</code> to write out the config data
+   * An Experiment now has a configuration writer that
+   * lets all the components write themselves out
    */
-
-//   public ConfigurationWriter getConfigurationWriter(NodeComponent[] nodes) {
-//     // The given set of nodes is potentially fewer than the full set in the society
-//     // Note the ugly this parameter...
-//     if (inDatabase) {
-//       // Send a config writer that only writes LeafComponentData
-//       try {
-//         return new LeafOnlyConfigWriter(getComponents(), nodes, this);
-//       } catch (Exception e) {
-//         e.printStackTrace();
-//         return null;
-//       }
-//     } else {
-//       return new ExperimentINIWriter(getComponents(), nodes, this);
-//     }
-//   }
-
   private void createConfigWriter() {
     configWriter = new LeafOnlyConfigWriter(getSocietyComponentData());
   }

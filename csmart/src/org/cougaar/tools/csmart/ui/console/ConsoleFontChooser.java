@@ -28,7 +28,6 @@ import java.awt.event.*;
 import javax.swing.border.*;
 import javax.swing.JColorChooser;
 
-import org.cougaar.tools.server.NodeEvent;
 import org.cougaar.util.log.Logger;
 import org.cougaar.tools.csmart.ui.viewer.CSMART;
 import java.io.ObjectInputStream;
@@ -197,7 +196,8 @@ public class ConsoleFontChooser extends JDialog {
   }
 
   // implement these methods to return the values the user selects
-  // message type will be one of the types defined in NodeEvent
+  // message type will be one of the types defined by the
+  // type of the node output (std-out, std-err, destroyed, etc)
   // plus define two new types in this file (SEARCH and NOTIFY)
 
   public int getFontSize(int messageType) {

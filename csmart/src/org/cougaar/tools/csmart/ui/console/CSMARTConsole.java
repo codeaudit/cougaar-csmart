@@ -1274,8 +1274,6 @@ public class CSMARTConsole extends JFrame {
       nodePanes.put(nodeName, textPane);
 
       NodeEventFilter filter = new NodeEventFilter(10);
-//       ConfigurationWriter configWriter = 
-//         experiment.getConfigurationWriter(nodesToRun);
       Iterator fileIter = experiment.getConfigFiles(nodesToRun);
 
       HostServesClient hsc = null;
