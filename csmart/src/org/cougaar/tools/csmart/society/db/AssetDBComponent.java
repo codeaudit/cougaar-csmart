@@ -21,15 +21,18 @@
 package org.cougaar.tools.csmart.society.db;
 
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.sql.Connection;
-import java.sql.Statement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.util.*;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.*;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
 import org.cougaar.tools.csmart.core.cdata.AgentComponentData;
 import org.cougaar.tools.csmart.core.cdata.ComponentData;
@@ -45,6 +48,7 @@ import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PropGroupBase;
 import org.cougaar.tools.csmart.society.PropGroupComponent;
 import org.cougaar.tools.csmart.society.RelationshipBase;
+import org.cougaar.util.TimeSpan;
 
 public class AssetDBComponent
   extends ModifiableConfigurableComponent
@@ -137,7 +141,20 @@ public class AssetDBComponent
           rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
           rData.setSupported((String)rel.getProperty(RelationshipBase.PROP_SUPPORTED).getValue());
 
-	  // FIXME Where are start & end time???
+          DateFormat df = DateFormat.getInstance();
+          try {
+            Date start = df.parse((String)rel.getProperty(RelationshipBase.PROP_STARTTIME).getValue());
+            Date end = df.parse((String)rel.getProperty(RelationshipBase.PROP_STOPTIME).getValue());
+            rData.setStartTime(start.getTime());
+            rData.setEndTime(end.getTime());
+          } catch(ParseException pe) {
+            if(log.isErrorEnabled()) {
+              log.error("Caught Exception parsing Date, using default dates.", pe);
+            }
+            rData.setStartTime(TimeSpan.MIN_VALUE);
+            rData.setEndTime(TimeSpan.MAX_VALUE);
+          }
+
           assetData.addRelationship(rData);
         }
       }

@@ -20,7 +20,10 @@
  */
 package org.cougaar.tools.csmart.society.file;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import org.cougaar.planning.plugin.AssetDataFileReader;
 import org.cougaar.tools.csmart.core.cdata.AgentAssetData;
@@ -36,8 +39,9 @@ import org.cougaar.tools.csmart.society.ContainerBase;
 import org.cougaar.tools.csmart.society.PropGroupBase;
 import org.cougaar.tools.csmart.society.PropGroupComponent;
 import org.cougaar.tools.csmart.society.RelationshipBase;
-import org.cougaar.tools.csmart.util.PrototypeParser;
 import org.cougaar.tools.csmart.util.FileParseUtil;
+import org.cougaar.tools.csmart.util.PrototypeParser;
+import org.cougaar.util.TimeSpan;
 
 public class AssetFileComponent
   extends ModifiableConfigurableComponent
@@ -152,8 +156,19 @@ public class AssetFileComponent
           rData.setItemId((String)rel.getProperty(RelationshipBase.PROP_ITEM).getValue());
           rData.setTypeId((String)rel.getProperty(RelationshipBase.PROP_TYPEID).getValue());
           rData.setSupported((String)rel.getProperty(RelationshipBase.PROP_SUPPORTED).getValue());
-
-	  // FIXME!!!! Start and End Times!!!
+          DateFormat df = DateFormat.getInstance();
+          try {
+            Date start = df.parse((String)rel.getProperty(RelationshipBase.PROP_STARTTIME).getValue());
+            Date end = df.parse((String)rel.getProperty(RelationshipBase.PROP_STOPTIME).getValue());
+            rData.setStartTime(start.getTime());
+            rData.setEndTime(end.getTime());
+          } catch(ParseException pe) {
+            if(log.isErrorEnabled()) {
+              log.error("Caught Exception parsing Date, using default dates.", pe);
+            }
+            rData.setStartTime(TimeSpan.MIN_VALUE);
+            rData.setEndTime(TimeSpan.MAX_VALUE);
+          }
 
           assetData.addRelationship(rData);
         }
