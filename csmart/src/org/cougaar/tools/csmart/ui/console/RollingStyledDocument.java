@@ -24,15 +24,44 @@ package org.cougaar.tools.csmart.ui.console;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.SimpleAttributeSet;
 
 public class RollingStyledDocument extends DefaultStyledDocument {
-  static int MAX_CHARACTERS = 200;
+  static int MAX_CHARACTERS = 1000;
 
   public void appendString(String s, AttributeSet a) {
     try {
-      if ((getLength() + s.length()) > MAX_CHARACTERS)
-        remove(0, s.length());
+      int len = s.length();
+      // special case, the string is larger than the document
+      // just insert the end of the string
+      if (len >= MAX_CHARACTERS) {
+        remove(0, MAX_CHARACTERS);
+        super.insertString(0, s.substring(len - MAX_CHARACTERS), a);
+        return;
+      }
+      int neededSpace = getLength() + len;
+      if (neededSpace > MAX_CHARACTERS)
+        remove(0, neededSpace - MAX_CHARACTERS);
       super.insertString(getLength(), s, a);
+    } catch (BadLocationException ble) {
+      System.out.println("Bad location exception: " + ble);
+    }
+  }
+
+  public static void main(String[] args) {
+    RollingStyledDocument doc = new RollingStyledDocument();
+    AttributeSet a = new SimpleAttributeSet();
+    // with MAX_CHARACTER = 5 this prints:
+    // abc, abcde, fghij, vwxyz
+    try {
+      doc.appendString("abc", a);
+      System.out.println(doc.getText(0, doc.getLength()));
+      doc.appendString("de", a);
+      System.out.println(doc.getText(0, doc.getLength()));
+      doc.appendString("fghij", a);
+      System.out.println(doc.getText(0, doc.getLength()));
+      doc.appendString("klmnopqrstuvwxyz", a);
+      System.out.println(doc.getText(0, doc.getLength()));
     } catch (BadLocationException ble) {
       System.out.println("Bad location exception: " + ble);
     }
