@@ -137,28 +137,28 @@ public class GenericComponentData implements ComponentData, Serializable {
       ComponentData kid = dkids[i];
       if (this.getType().equals(ComponentData.NODE)) {
 	if (kid.getType().equals(ComponentData.AGENT)) {
-          if(log.isDebugEnabled()) {
-	  log.debug("Got an agent at index: " + i);
-          }
+//            if(log.isDebugEnabled()) {
+//  	    log.debug("Got an agent at index: " + i);
+//            }
 	  if (firstother < 0)
 	    firstother = i;
 	} else if (kid.getType().equals(ComponentData.NODEBINDER)) {
-          if(log.isDebugEnabled()) {
-            log.debug("Got a nodebinder at index: " + i);
-          }
+//            if(log.isDebugEnabled()) {
+//              log.debug("Got a nodebinder at index: " + i);
+//            }
 	  lastbinder = i;
 	}
       } else if (this.getType().equals(ComponentData.AGENT)) {
 	if (kid.getType().equals(ComponentData.PLUGIN)) {
-          if(log.isDebugEnabled()) {
-            log.debug("Got a plugin at index: " + i);
-          }
+//            if(log.isDebugEnabled()) {
+//              log.debug("Got a plugin at index: " + i);
+//            }
 	  if (firstother < 0)
 	    firstother = i;	      
 	} else if (kid.getType().equals(ComponentData.AGENTBINDER)) {
-          if(log.isDebugEnabled()) {
-            log.debug("Got an agentbinder at index: " + i);
-          }
+//            if(log.isDebugEnabled()) {
+//              log.debug("Got an agentbinder at index: " + i);
+//            }
 	  lastbinder = i;
 	}
       }
@@ -168,9 +168,9 @@ public class GenericComponentData implements ComponentData, Serializable {
     
     // If this is a binder
     if (comp.getType().equals(ComponentData.NODEBINDER) || comp.getType().equals(ComponentData.AGENTBINDER)) {
-      if(log.isDebugEnabled()) {
-        log.debug("Comp being added is a binder");
-      }
+//        if(log.isDebugEnabled()) {
+//          log.debug("Comp being added is a binder");
+//        }
       // see if it is in node/agent at all
       if (this.getChildIndex(comp) >= 0) {
 	// if it is there
@@ -198,23 +198,23 @@ public class GenericComponentData implements ComponentData, Serializable {
 	  } // end of loop to add others
 	  this.setChildren((ComponentData [])dkidsnew.toArray(new ComponentData[dkidsnew.size()]));
 	} else {
-          if(log.isDebugEnabled()) {
-            log.debug(".. replaceing old version with new");
-          }
+//            if(log.isDebugEnabled()) {
+//              log.debug(".. replacing old version with new");
+//            }
 	  // else all agents/plugins are after it. Replace old with new
 	  this.setChild(this.getChildIndex(comp), comp);
 	}
       } else {
-          if(log.isDebugEnabled()) {
-            log.debug("Adding at index: " + (lastbinder + 1));
-          }
+//            if(log.isDebugEnabled()) {
+//              log.debug("Adding at index: " + (lastbinder + 1));
+//            }
 	// else if it is not there at all, insert it after last binder
 	this.addChild(lastbinder + 1, comp);
       }
     } else {
-      if(log.isDebugEnabled()) {
-        log.debug("Adding a non binder");
-      }
+//        if(log.isDebugEnabled()) {
+//          log.debug("Adding a non binder");
+//        }
       // else if its an agent or a plugin
       // see if it is there at all
       if (this.getChildIndex(comp) >= 0) {

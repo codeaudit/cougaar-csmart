@@ -312,10 +312,10 @@ public class CMTAgent
   public boolean equals(Object o) {
     if (o instanceof AgentComponent) {
       AgentComponent that = (AgentComponent)o;
-      if(log.isDebugEnabled()) {
-        log.debug(this + " has short name " + this.getShortName());
-        log.debug("Compared to " + that + " which has short name " + that.getShortName());
-      }
+//        if(log.isDebugEnabled()) {
+//          log.debug(this + " has short name " + this.getShortName());
+//          log.debug("Compared to " + that + " which has short name " + that.getShortName());
+//        }
 
       if (!this.getShortName().equals(that.getShortName())  ) {
 	return false;

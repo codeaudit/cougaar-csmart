@@ -96,10 +96,10 @@ public class ExperimentNode
       prop = addProperty("AgentNames", new ArrayList());
     ArrayList names = (ArrayList)prop.getValue();
     names.add(agent.getShortName());
-    if(log.isDebugEnabled()) {
-      log.debug("ExperimentNode: " + getShortName() +
-                " added agent: " + agent.getShortName());
-    }
+//      if(log.isDebugEnabled()) {
+//        log.debug("ExperimentNode: " + getShortName() +
+//                  " added agent: " + agent.getShortName());
+//      }
     agents.add(agent);
     fireModification();
   }
