@@ -2134,6 +2134,8 @@ public class PopulateDb extends PDbBase {
       // so that later recipes have the benefit
       // of the earlier modifications
       added = populate(data, 1f, hnaAssemblyId);
+      // Mark the CData tree as saved
+      data.resetModified();
     } catch (IllegalArgumentException iae) {
       if (! componentWasRemoved) 
 	throw iae;
@@ -2181,7 +2183,10 @@ public class PopulateDb extends PDbBase {
       return false;
     }
 
-    return populate(data, 1f, csmiAssemblyId);
+    boolean ret = populate(data, 1f, csmiAssemblyId);
+    // Mark the CData tree as saved
+    data.resetModified();
+    return ret;
   }
 
   /**
@@ -2256,6 +2261,8 @@ public class PopulateDb extends PDbBase {
     // exist. Someone else must put the entry for this assembly
     // in the runtime or config time places, as necessary
     boolean result = populate(data, 1f, cmtAssemblyId);
+    // Mark the CData tree as saved
+    data.resetModified();
 
     // Restore the original cmtAssid if necc, for use by fixAssemblies
     if (oldid != null)
@@ -2298,6 +2305,8 @@ public class PopulateDb extends PDbBase {
     // exist. Someone else must put the entry for this assembly
     // in the runtime or config time places, as necessary
     boolean result = populate(data, 1f, rcpAssemblyId);
+    // Mark the CData tree as saved
+    data.resetModified();
 
     // Restore the original cmtAssid if necc, for use by fixAssemblies
     if (oldid != null)
@@ -2341,6 +2350,26 @@ public class PopulateDb extends PDbBase {
     throws SQLException
   {
     boolean result = false;
+
+    // Recipes will have marked the component modified so we
+    // know if it has changed. However, the "base" is CMT / CSHNA,
+    // so we always need to do those. Ditto for CSA or RCP, where
+    // there is nothing being modified per se.
+    if (assemblyId.equals(csmiAssemblyId) && !data.isModified()) {
+      if (log.isDebugEnabled()) {
+	log.debug("populate: Comp not marked modified: " + data);
+	log.debug("populate: saving into a CSMI: " + assemblyId);
+	log.debug("populate: So we won't even bother to try to save this...");
+      }
+      return false;
+    } else {
+      if (log.isWarnEnabled()) {
+	if (! data.isModified())
+	  log.debug("populate: This CData marked not modified, but saving anyhow (assembly is " + assemblyId + "). CData: " + data);
+      } else if (log.isDebugEnabled()) 
+	log.debug("populate: data.isModified: " + data.isModified() + ". isCSMI: " + assemblyId.equals(csmiAssemblyId));
+    }
+
     ComponentData parent = data.getParent();
     String id = getComponentAlibId(data);
     addComponentDataSubstitutions(data);
@@ -2582,6 +2611,24 @@ public class PopulateDb extends PDbBase {
     }
     AgentAssetData assetData = data.getAgentAssetData();
     if (assetData == null) return;
+
+    if (! assetData.isModified()) {
+      if (log.isDebugEnabled())
+	log.debug("popAgent: Not marked modified.");
+
+      // Only return here if this is the CSMI assembly
+      String asb = (String)substitutions.get(":assembly_id:");
+      if (asb != null && asb.equals(sqlQuote(csmiAssemblyId))) {
+	if (log.isDebugEnabled())
+	  log.debug("popAgent: This is CSMI. So skip save!");
+	return;
+      } else if (log.isInfoEnabled()) {
+	log.info(" but this is not CSMI (" + asb + ") so save anyhow.");
+      }
+    } else if (log.isDebugEnabled()) {
+      log.debug("popAgent: is modified");
+    }
+
     substitutions.put(":agent_org_class:", sqlQuote(assetData.getAssetClass()));
     substitutions.put(":agent_lib_name:", sqlQuote(data.getName()));
     substitutions.put(":component_name:", sqlQuote(data.getName()));

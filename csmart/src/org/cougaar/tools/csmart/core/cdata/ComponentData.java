@@ -391,6 +391,22 @@ public interface ComponentData extends Serializable {
    */
   void setLibID(String libID);
 
+  /**
+   * Has this Component been modified by a recipe, requiring possible save?
+   */
+  boolean isModified();
+
+  /**
+   * The component has been saved. Mark it and all children as saved.
+   */
+  void resetModified();
+
+  /**
+   * The component has been modified from its initial state.
+   * Mark it and all ancestors modified.
+   **/
+  void fireModified();
+
 } // end of ComponentData.java
 
 

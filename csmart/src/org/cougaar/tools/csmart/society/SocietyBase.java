@@ -265,6 +265,11 @@ public abstract class SocietyBase
 	addComponentData(child);
       }      
     }
+
+    // Reset the modified flag so nothing needed in Experiment.java,
+    // and only recipe changes will appear in the tree
+    // see comment in Experiment.save
+    data.resetModified();
     return data;
   }
 

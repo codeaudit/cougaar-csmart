@@ -98,6 +98,9 @@ public class AgentAssetData implements Serializable {
   private List relats; // RelatData objects
 
   private int iniStyle = AgentAssetData.NEW_FORMAT;
+
+  // Flag if this object has been modified and needs to be (re) saved
+  private boolean modified = false;
   
   /**
    * Creates a new <code>AgentAssetData</code> instance.
@@ -247,6 +250,7 @@ public class AgentAssetData implements Serializable {
    */
   public void setAssetClass(String clss) {
     assetClass = clss;
+    fireModified();
   }
 
   /**
@@ -269,6 +273,7 @@ public class AgentAssetData implements Serializable {
    */
   public void setUniqueID(String uid) {
     uniqID = uid;
+    fireModified();
   }
 
   /**
@@ -291,6 +296,7 @@ public class AgentAssetData implements Serializable {
    */
   public void setUnitName(String unit) {
     unitname = unit;
+    fireModified();
   }
 
   /**
@@ -314,6 +320,7 @@ public class AgentAssetData implements Serializable {
    */
   public void setUIC(String uic) {
     this.uic = uic;
+    fireModified();
   }
 
   // Add stuff to set the list of roles/relats/pgs, 
@@ -333,6 +340,7 @@ public class AgentAssetData implements Serializable {
     for(int i=0; i < newPropgroups.length; i++) {
       propGroups.add(newPropgroups[i]);
     }
+    fireModified();
   }
 
   /**
@@ -344,6 +352,7 @@ public class AgentAssetData implements Serializable {
    */
   public void addPropertyGroup(PropGroupData propgroup) {
     this.propGroups.add(propgroup);
+    fireModified();
   }
 
   /**
@@ -356,6 +365,7 @@ public class AgentAssetData implements Serializable {
   public void setPropertyGroup(int index, PropGroupData propgroup) 
                               throws IndexOutOfBoundsException{
     this.propGroups.set(index, propgroup);
+    fireModified();
   }
 
   /**
@@ -398,6 +408,7 @@ public class AgentAssetData implements Serializable {
     for(int i=0; i < newRoles.length; i++) {
       roles.add(newRoles[i]);
     }
+    fireModified();
   }
 
   /**
@@ -407,6 +418,7 @@ public class AgentAssetData implements Serializable {
    */
   public void addRole(String role) {
     this.roles.add(role);
+    fireModified();
   }
 
   /**
@@ -418,6 +430,7 @@ public class AgentAssetData implements Serializable {
   public void setRole(int index, String role) 
                               throws IndexOutOfBoundsException{
     this.roles.set(index, role);
+    fireModified();
   }
 
   /**
@@ -458,6 +471,7 @@ public class AgentAssetData implements Serializable {
     for(int i=0; i < relationships.length; i++) {
       this.relats.add(relationships[i]);
     }
+    fireModified();
   }
 
   /**
@@ -468,6 +482,7 @@ public class AgentAssetData implements Serializable {
    */
   public void addRelationship(RelationshipData relationship) {
     this.relats.add(relationship);
+    fireModified();
   }
 
   /**
@@ -481,6 +496,7 @@ public class AgentAssetData implements Serializable {
   public void setRelationship(int index, RelationshipData relationship) 
                         throws IndexOutOfBoundsException {
     this.relats.set(index, relationship);
+    fireModified();
   }
 
   /**
@@ -521,5 +537,36 @@ public class AgentAssetData implements Serializable {
   public RelationshipData[] getRelationshipData() {
     return (RelationshipData[])relats.toArray(new RelationshipData[relats.size()]);
   }
-  
+
+  /**
+   * Has this Component been modified by a recipe, requiring possible save?
+   */
+  public boolean isModified() {
+    return modified;
+  }
+
+  /**
+   * The component has been modified from its initial state.
+   * Mark it and all ancestors modified.
+   **/
+  public void fireModified() {
+    // Problem: I only want to call this after the society generates
+    // the CData, and before the recipes are applied....
+
+    // make this private?
+
+    // If this is already modified, so will the parents
+    if (modified) return;
+    modified = true;
+    // recurse _up_
+    if (agent != null)
+      agent.fireModified();
+  }
+
+  /**
+   * The component has been saved. Mark it as saved.
+   */
+  public void resetModified() {
+    modified = false;
+  }
 } // end of AgentAssetData.java

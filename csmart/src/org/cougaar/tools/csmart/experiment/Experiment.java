@@ -1975,6 +1975,17 @@ public class Experiment extends ModifiableConfigurableComponent implements java.
 
       // Now let components add in their pieces
       componentWasRemoved = askComponentsToAddCDATA();
+      
+      // Recipes do their thing in modifyComponentData
+      // Assuming that is the case (big assumption),
+      // we clear the modified flag here, so that _only_ the
+      // recipe deltas will show up as modifications
+      // when we go to save the CSMI assembly later
+      // This breaks AgentInsertionRecipes and CompleteAgentRecipes,
+      // and perhaps all Complex recipes!!
+      // So instead, add resetModified() call to SocietyBase.addComponentData...
+      //completeSociety.resetModified();
+
 
       // If any component removed something, we need
       // to recreate the CMT assembly (under the original ID)

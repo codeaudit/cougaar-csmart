@@ -56,6 +56,8 @@ public class GenericComponentData implements ComponentData, Serializable {
 
   private transient Logger log;
 
+  // Flag: Recipe modified the component, so must compare it with DB on save
+  private boolean modified = false;
 
   public GenericComponentData() {
     createLogger();
@@ -79,7 +81,11 @@ public class GenericComponentData implements ComponentData, Serializable {
 	log.debug("setType got empty type in " + this, new Throwable());
       return;
     }
+    if (type.equals(this.type))
+      return;
     this.type = type;
+    //    log.debug(this + " fireModified due to changed type");
+    fireModified();
   }
 
   public String getName() {
@@ -87,7 +93,13 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void setName(String name) {
+    if (name == null && this.name == null)
+      return;
+    if (name != null && name.equals(this.name))
+      return;
     this.name = name;
+    //    log.debug(this + " fireModified due to changed name");
+    fireModified();
   }
 
   public String getClassName() {
@@ -95,7 +107,13 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void setClassName(String className) {
+    if (className == null && this.className == null)
+      return;
+    if (className != null && className.equals(this.className))
+      return;
     this.className = className;
+    //    log.debug(this + " fireModified due to changed classname");
+    fireModified();
   }
 
   public String getPriority() {
@@ -105,7 +123,11 @@ public class GenericComponentData implements ComponentData, Serializable {
   public void setPriority(String priority) {
     try {
       ComponentDescription.parsePriority(priority);
+      if (this.priority.equals(priority))
+	return;
       this.priority = priority;
+      //      log.debug(this + " fireModified due to changed priority");
+      fireModified();
     } catch(IllegalArgumentException e) {
       if(log.isErrorEnabled()) {
         log.error("IllegalArgumentException setting component priority", e);
@@ -115,7 +137,12 @@ public class GenericComponentData implements ComponentData, Serializable {
 
   public void setPriority(int priority) {
     try {
+      String old = this.priority;
       this.priority = ComponentDescription.priorityToString(priority);
+      if (old.equals(this.priority))
+	return;
+      //      log.debug(this + " fireModified due to changed priority");
+      fireModified();
     } catch(IllegalArgumentException e) {
       if(log.isErrorEnabled()) {
         log.error("IllegalArgumentException setting component priority", e);
@@ -134,18 +161,50 @@ public class GenericComponentData implements ComponentData, Serializable {
 
     this.children.clear();
     for(int i=0; i < child.length; i++) {
-      if (child[i] != null)
+      if (child[i] != null) {
 	this.children.add(child[i]);
-      else if (log.isDebugEnabled()) {
+	//	log.debug(this + " fireModified due to setChildren");
+	if (! child[i].isModified()) {
+	  if (log.isDebugEnabled())
+	    log.debug("where the child being added IS NOT MODIFIED!");
+	  child[i].fireModified();
+	} else {
+	  // If the child is already modified then it will not propagate
+	  // up, so call locally to be safe
+	  if (log.isDebugEnabled()) {
+	    if (! isModified())
+	      log.debug("setChildren where child was modified but parent(this) not!");
+	    else 
+	      log.debug("setChildren where both child & parent modified");
+	  }
+	  fireModified();
+	}
+	// or should I do child.fireModified()?
+      } else if (log.isDebugEnabled()) {
 	log.debug(getName() + ".setChildren got a null child at index " + i);
       }
     }
   }
 
   public void addChild(ComponentData child) {
-    if (child != null)
+    if (child != null) {
       this.children.add(child);
-    else {
+      //      log.debug(this + " fireModified due to addChild");
+      if (! child.isModified()) {
+	  if (log.isDebugEnabled())
+	    log.debug("addChild where the child being added IS NOT MODIFIED!");
+	child.fireModified();
+      } else {
+	  if (log.isDebugEnabled()) {
+	    if (! isModified())
+	      log.debug("addChild where child was modified but parent(this) not!");
+	    else 
+	      log.debug("addChild where child was modified and so was parent.");
+	  }
+	fireModified();
+      }
+      // or should I do child.fireModified()?
+    } else {
       if (log.isDebugEnabled()) 
 	log.debug(getName() + ".addChild got a null child");
       if (log.isErrorEnabled())
@@ -154,20 +213,51 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void addChild(int index, ComponentData child) {
-    if (child != null)
+    if (child != null) {
       this.children.add(index, child);
-      else {
+      //      log.debug(this + " fireModified due to addChild");
+      if (! child.isModified()) {
 	if (log.isDebugEnabled())
-	  log.debug(getName() + ".addChild got a null child to add at index " + index);
-	if (log.isErrorEnabled())
-	  log.error("addChild index, child", new Throwable());
+	  log.debug("addChild where the child being added IS NOT MODIFIED!");
+	child.fireModified();
+      } else {
+	if (log.isDebugEnabled()) {
+	  if (! isModified())
+	    log.debug("addChild where child was modified but parent(this) not!");
+	  else 
+	    log.debug("addChild where child was modified and so was parent.");
+	}
+	  
+	fireModified();
       }
+      // or should I do child.fireModified()?
+    } else {
+      if (log.isDebugEnabled())
+	log.debug(getName() + ".addChild got a null child to add at index " + index);
+      if (log.isErrorEnabled())
+	log.error("addChild index, child", new Throwable());
+    }
   }
 
   public void setChild(int index, ComponentData child) {
-    if (child != null)
+    if (child != null) {
       this.children.set(index, child);
-    else {
+      //      log.debug(this + " fireModified due to setChild");
+      if (! child.isModified()) {
+	if (log.isDebugEnabled())
+	  log.debug("addChild where the child being added IS NOT MODIFIED!");
+	child.fireModified();
+      } else {
+	if (log.isDebugEnabled()) {
+	  if (! isModified())
+	    log.debug("setChild where child was modified but parent(this) not!");
+	  else 
+	    log.debug("setChild where child was modified and so was parent.");
+	}
+	fireModified();
+      }
+      // or should I do child.fireModified()?
+    } else {
       if (log.isDebugEnabled())
 	log.debug(getName() + ".setChild got a null child to put at index " + index);
       if (log.isErrorEnabled())
@@ -318,15 +408,26 @@ public class GenericComponentData implements ComponentData, Serializable {
     this.parameters.clear();
     for(int i=0; i < params.length; i++) {
       this.parameters.add(params[i]);
-    }    
+    }
+    //    log.debug(this + " fireModified due to setParams");
+    fireModified();
   }
 
   public void addParameter(Object param) {
     this.parameters.add(param);
+    //    log.debug(this + " fireModified due to addParam");
+    fireModified();
   }
 
   public void setParameter(int index, Object param) {
+    if (index < 0 || index >= parameterCount()) {
+      if (log.isErrorEnabled())
+	log.error(this + " got illegal new param index " + index + " when parameters size is " + parameterCount());
+      return;
+    }
     this.parameters.set(index, param);
+    //    log.debug(this + " fireModified due to setParam");
+    fireModified();
   }
 
   public Object getParameter(int index) {
@@ -342,7 +443,20 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void setParent(ComponentData parent) {
+    if (parent == null && this.parent == null)
+      return;
+    // Is this next line expensive?
+//     if (parent != null && parent.equals(this.parent))
+//       return;
     this.parent = parent;
+//     log.debug(this + " fireMod due to setParent, where before this.mod=" + isModified() + ", and parent.isMod=" + parent.isModified());
+//     fireModified(); // really?
+    // Perhaps dont do this cause some code sets the parent
+    // on a component before deciding if it really needs to be
+    // added to the parent. And since fireModified will go up
+    // even if the chain is not complete going down, and saves go down,
+    // this risks marking the parent modified even if the parent
+    // will never get this child
   }
 
   public ConfigurableComponent getOwner() {
@@ -362,14 +476,17 @@ public class GenericComponentData implements ComponentData, Serializable {
     for(int i = 0 ; i < leaves.length; i++) {
       leafComponents.add(leaves[i]);
     }
+    fireModified();
   }
 
   public void addLeafComponent(LeafComponentData leaf) {
     leafComponents.add(leaf);
+    fireModified();
   }
 
   public void setLeafComponent(int index, LeafComponentData leaf) {
     leafComponents.set(index, leaf);
+    fireModified();
   }
 
   public int leafCount() {
@@ -381,7 +498,14 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void addAgentAssetData(AgentAssetData data) {
+    if (data == null && this.assetData == null)
+      return;
+    if (data != null && data.equals(this.assetData))
+      return;
     this.assetData = data;
+    if (log.isDebugEnabled())
+      log.debug(this + " fireMod due to added assetData");
+    fireModified();
   }
 
   // For testing, dump out the tree from here down
@@ -416,10 +540,12 @@ public class GenericComponentData implements ComponentData, Serializable {
     for(int i = 0 ; i < data.length; i++) {
       timePhasedData.add(data[i]);
     }
+    fireModified();
   }
 
   public void setTimePhasedData(int index, TimePhasedData data) {
     timePhasedData.set(index, data);
+    fireModified();
   }
 
   public void addTimePhasedData(TimePhasedData data) {
@@ -431,7 +557,13 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void setAlibID(String alibID) {
+    if (aLibID != null && aLibID.equals(this.aLibID))
+      return;
+    if (aLibID == null && this.aLibID == null)
+      return;
     this.aLibID = alibID;
+    //    log.debug(this + " fireModified due to changed alibid");
+    fireModified();
   }
 
   public String getAlibID() {
@@ -439,7 +571,13 @@ public class GenericComponentData implements ComponentData, Serializable {
   }
 
   public void setLibID(String libID) {
+    if (libID != null && libID.equals(this.libID))
+      return;
+    if (libID == null && this.libID == null)
+      return;
     this.libID = libID;
+    //    log.debug(this + " fireModified due to changed libid");
+    fireModified();
   }
 
   public String getLibID() {
@@ -607,6 +745,55 @@ public class GenericComponentData implements ComponentData, Serializable {
 
     // If we get here, we did not find any component that is identical
     return false;
+  }
+
+  /**
+   * Has this Component been modified by a recipe, requiring possible save?
+   */
+  public boolean isModified() {
+    return modified;
+  }
+
+  /**
+   * The component has been saved. Mark it and all children as saved.
+   */
+  public void resetModified() {
+    // If this is not modified, neither are its children
+    if (! modified) return;
+//     if (log.isDebugEnabled())
+//       log.debug(this + " resetmodified");
+    modified = false;
+
+    // reset any assetdata
+    if (this.assetData != null)
+      this.assetData.resetModified();
+
+    // recurse down
+    if (children != null) {
+      for (int i = 0; i < children.size(); i++) {
+	((ComponentData)children.get(i)).resetModified();
+      }
+    }
+  }
+
+  /**
+   * The component has been modified from its initial state.
+   * Mark it and all ancestors modified.
+   **/
+  public void fireModified() {
+    // Problem: I only want to call this after the society generates
+    // the CData, and before the recipes are applied....
+
+    // make this private?
+
+    // If this is already modified, so will the parents
+    if (modified) return;
+    //    if (log.isDebugEnabled())
+    //      log.debug(this + " fireModified");
+    modified = true;
+    // recurse _up_
+    if (parent != null)
+      parent.fireModified();
   }
 
 }
