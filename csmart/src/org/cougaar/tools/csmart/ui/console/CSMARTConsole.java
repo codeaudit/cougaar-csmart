@@ -1181,11 +1181,12 @@ public class CSMARTConsole extends JFrame {
 
   /**
    * Get node -d arguments.
+   * Substitute host name for $HOST value if it occurs.
    * @param node for which to get the -d arguments
    * @return properties the -d arguments
    */
 
-  public Properties getNodeMinusD(NodeComponent nc) {
+  public Properties getNodeMinusD(NodeComponent nc, String hostName) {
     Properties result = new Properties();
     Properties props = nc.getArguments();
     boolean foundclass = false;
@@ -1193,8 +1194,13 @@ public class CSMARTConsole extends JFrame {
       String pname = (String) e.nextElement();
       if (pname.equals(COMMAND_ARGUMENTS)) continue;
       if (pname.equals(Experiment.BOOTSTRAP_CLASS)) foundclass = true;
-      result.put(pname, props.getProperty(pname));
-      
+      String value = props.getProperty(pname);
+      int index = value.indexOf("$HOST");
+      if (index != -1)
+        value = value.substring(0, index) + hostName + 
+          value.substring(index+5);
+      result.put(pname, value);
+      //      result.put(pname, props.getProperty(pname));
     }
     // make sure that the classname is "Node"
     //
@@ -1252,7 +1258,7 @@ public class CSMARTConsole extends JFrame {
         // get arguments from NodeComponent and pass them to ApplicationServer
         // note that these properties augment any properties that
         // are passed to the server in a properties file on startup
-        Properties properties = getNodeMinusD(nodeComponent);
+        Properties properties = getNodeMinusD(nodeComponent, hostName);
         java.util.List args = getNodeArguments(nodeComponent);
 
         // TODO: experiment.getTrialID can return null
@@ -1500,9 +1506,6 @@ public class CSMARTConsole extends JFrame {
       return null; // it doesn't matter what we return, the caller is going away
     }
     RemoteHost remoteAppServer = null;
-    Properties properties = getNodeMinusD(nodeComponent);
-    properties.remove("org.cougaar.core.persistence.clear");
-    java.util.List args = getNodeArguments(nodeComponent);
     // get host component by searching hosts for one with this node.
     String hostName = null;
     HostComponent[] hosts = experiment.getHostComponents();
@@ -1515,6 +1518,9 @@ public class CSMARTConsole extends JFrame {
         }
       }
     }
+    Properties properties = getNodeMinusD(nodeComponent, hostName);
+    properties.remove("org.cougaar.core.persistence.clear");
+    java.util.List args = getNodeArguments(nodeComponent);
     int remotePort = getAppServerPort(properties);
     try {
       remoteAppServer = 
@@ -1702,7 +1708,7 @@ public class CSMARTConsole extends JFrame {
       // TODO: note that if the user specified different server ports for
       // different nodes on the same host, this won't work
       Properties properties = null;
-      properties = getNodeMinusD(nodes[0]);
+      properties = getNodeMinusD(nodes[0], hostName);
       int remotePort = getAppServerPort(properties);
       RemoteHost remoteAppServer;
       try {

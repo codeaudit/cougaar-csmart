@@ -501,7 +501,7 @@ public class ConsoleInternalFrame extends JInternalFrame {
                                           GridBagConstraints.NONE,
                                           new Insets(0, 0, 5, 5),
                                           0, 0));
-    Properties properties = console.getNodeMinusD(node);
+    Properties properties = console.getNodeMinusD(node, hostName);
     Vector data = new Vector();
     //    Properties properties = node.getArguments();
     Enumeration propertyNames = properties.propertyNames();
