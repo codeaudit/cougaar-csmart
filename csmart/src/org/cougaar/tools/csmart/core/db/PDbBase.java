@@ -102,9 +102,13 @@ public class PDbBase {
       pwlog = new PrintWriter(new FileWriter(getLogName()));
     dbp = DBProperties.readQueryFile(QUERY_FILE);
     try {
+      // This next line _always_ re-parses the query file.
       dbp.addQueryFile(RecipeComponent.RECIPE_QUERY_FILE);
     } catch (FileNotFoundException e) {
       // This is normal if a user has no separate recipe query file.
+      if (log.isDebugEnabled()) {
+	log.debug("No " + RecipeComponent.RECIPE_QUERY_FILE + " recipeQueries.q file found.");
+      }
     }
     //        dbp.setDebug(true);
     String database = dbp.getProperty("database");
